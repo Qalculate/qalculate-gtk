@@ -54,6 +54,16 @@ enum {
 DECLARE_BUILTIN_FUNCTION(AnswerFunction)
 DECLARE_BUILTIN_FUNCTION(ExpressionFunction)
 
+class ViewThread : public Thread {
+protected:
+	virtual void run();
+};
+
+class CommandThread : public Thread {
+protected:
+	virtual void run();
+};
+
 bool can_display_unicode_string_function(const char *str, void *w);
 void set_unicode_buttons();
 

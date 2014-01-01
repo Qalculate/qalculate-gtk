@@ -14,8 +14,6 @@
 #  include <config.h>
 #endif
 
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
@@ -444,7 +442,7 @@ gboolean history_row_separator_func(GtkTreeModel *model, GtkTreeIter *iter, gpoi
 
 void create_main_window (void) {
 	
-	gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "main.ui", NULL);
+	gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "main.ui", NULL);
 	main_builder = gtk_builder_new_from_file(gstr);
 	g_assert(main_builder != NULL);
 	g_free(gstr);
@@ -924,7 +922,7 @@ get_functions_dialog (void)
 
 	if(!functions_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "functions.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "functions.ui", NULL);
 		functions_builder = gtk_builder_new_from_file(gstr);
 		g_assert(functions_builder != NULL);
 		g_free(gstr);
@@ -980,7 +978,7 @@ get_variables_dialog (void)
 {
 	if(!variables_builder) {
 
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "variables.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "variables.ui", NULL);
 		variables_builder = gtk_builder_new_from_file(gstr);
 		g_assert(variables_builder != NULL);
 		g_free(gstr);
@@ -1040,7 +1038,7 @@ get_units_dialog (void)
 
 	if(!units_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "units.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "units.ui", NULL);
 		units_builder = gtk_builder_new_from_file(gstr);
 		g_assert(units_builder != NULL);
 		g_free(gstr);
@@ -1109,7 +1107,7 @@ get_datasets_dialog (void)
 
 	if(!datasets_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "datasets.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "datasets.ui", NULL);
 		datasets_builder = gtk_builder_new_from_file(gstr);
 		g_assert(datasets_builder != NULL);
 		g_free(gstr);
@@ -1175,7 +1173,7 @@ get_preferences_dialog (void)
 {
 	if(!preferences_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "preferences.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "preferences.ui", NULL);
 		preferences_builder = gtk_builder_new_from_file(gstr);
 		g_assert(preferences_builder != NULL);
 		g_free(gstr);
@@ -1268,7 +1266,7 @@ get_unit_edit_dialog (void)
 
 	if(!unitedit_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "unitedit.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "unitedit.ui", NULL);
 		unitedit_builder = gtk_builder_new_from_file(gstr);
 		g_assert(unitedit_builder != NULL);
 		g_free(gstr);
@@ -1310,7 +1308,7 @@ get_function_edit_dialog (void)
 
 	if(!functionedit_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "functionedit.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "functionedit.ui", NULL);
 		functionedit_builder = gtk_builder_new_from_file(gstr);
 		g_assert(functionedit_builder != NULL);
 		g_free(gstr);
@@ -1380,7 +1378,7 @@ get_variable_edit_dialog (void)
 	
 	if(!variableedit_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "variableedit.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "variableedit.ui", NULL);
 		variableedit_builder = gtk_builder_new_from_file(gstr);
 
 		g_assert(variableedit_builder != NULL);
@@ -1420,7 +1418,7 @@ get_unknown_edit_dialog (void)
 	
 	if(!unknownedit_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "unknownedit.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "unknownedit.ui", NULL);
 		unknownedit_builder = gtk_builder_new_from_file(gstr);
 		g_assert(unknownedit_builder != NULL);
 		g_free(gstr);
@@ -1462,7 +1460,7 @@ get_matrix_edit_dialog (void)
 {
 	if(!matrixedit_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "matrixedit.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "matrixedit.ui", NULL);
 		matrixedit_builder = gtk_builder_new_from_file(gstr);
 		g_assert(matrixedit_builder != NULL);
 		g_free(gstr);
@@ -1517,7 +1515,7 @@ get_matrix_dialog (void)
 {
 	if(!matrix_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "matrix.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "matrix.ui", NULL);
 		matrix_builder = gtk_builder_new_from_file(gstr);
 		g_assert(matrix_builder != NULL);
 		g_free(gstr);
@@ -1561,7 +1559,7 @@ get_dataset_edit_dialog (void)
 
 	if(!datasetedit_builder) {
 
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "datasetedit.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "datasetedit.ui", NULL);
 		datasetedit_builder = gtk_builder_new_from_file(gstr);
 		g_assert(datasetedit_builder != NULL);
 		g_free(gstr);
@@ -1597,7 +1595,7 @@ get_dataproperty_edit_dialog (void)
 
 	if(!datasetedit_builder) {
 
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "datasetedit.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "datasetedit.ui", NULL);
 		datasetedit_builder = gtk_builder_new_from_file(gstr);
 		g_assert(datasetedit_builder != NULL);
 		g_free(gstr);
@@ -1619,7 +1617,7 @@ get_names_edit_dialog (void)
 {
 	if(!namesedit_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "namesedit.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "namesedit.ui", NULL);
 		namesedit_builder = gtk_builder_new_from_file(gstr);
 		g_assert(namesedit_builder != NULL);
 		g_free(gstr);
@@ -1664,7 +1662,7 @@ get_csv_import_dialog (void)
 
 	if(!csvimport_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "csvimport.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "csvimport.ui", NULL);
 		csvimport_builder = gtk_builder_new_from_file(gstr);
 		g_assert(csvimport_builder != NULL);
 		g_free(gstr);
@@ -1705,7 +1703,7 @@ get_csv_export_dialog (void)
 
 	if(!csvexport_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "csvexport.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "csvexport.ui", NULL);
 		csvexport_builder = gtk_builder_new_from_file(gstr);
 		g_assert(csvexport_builder != NULL);
 		g_free(gstr);
@@ -1725,7 +1723,7 @@ get_csv_export_dialog (void)
 GtkWidget* get_set_base_dialog (void) {
 	if(!setbase_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "setbase.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "setbase.ui", NULL);
 		setbase_builder = gtk_builder_new_from_file(gstr);
 		g_assert(setbase_builder != NULL);
 		g_free(gstr);
@@ -1819,7 +1817,7 @@ get_nbases_dialog (void)
 {
 	if(!nbases_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "nbases.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "nbases.ui", NULL);
 		nbases_builder = gtk_builder_new_from_file(gstr);
 		g_assert(nbases_builder != NULL);
 		g_free(gstr);
@@ -1864,7 +1862,7 @@ GtkWidget* get_argument_rules_dialog (void) {
 	
 	if(!argumentrules_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "argumentrules.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "argumentrules.ui", NULL);
 		argumentrules_builder = gtk_builder_new_from_file(gstr);
 		g_assert(argumentrules_builder != NULL);
 		g_free(gstr);
@@ -1880,7 +1878,7 @@ GtkWidget* get_argument_rules_dialog (void) {
 GtkWidget* get_decimals_dialog (void) {
 	if(!decimals_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "decimals.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "decimals.ui", NULL);
 		decimals_builder = gtk_builder_new_from_file(gstr);
 		g_assert(decimals_builder != NULL);
 		g_free(gstr);
@@ -1896,7 +1894,7 @@ GtkWidget* get_decimals_dialog (void) {
 GtkWidget* get_plot_dialog (void) {
 	if(!plot_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "plot.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "plot.ui", NULL);
 		plot_builder = gtk_builder_new_from_file(gstr);
 		g_assert(plot_builder != NULL);
 		g_free(gstr);
@@ -1931,7 +1929,7 @@ GtkWidget* get_plot_dialog (void) {
 GtkWidget* get_precision_dialog (void) {
 	if(!precision_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "precision.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "precision.ui", NULL);
 		precision_builder = gtk_builder_new_from_file(gstr);
 		g_assert(precision_builder != NULL);
 		g_free(gstr);
@@ -1948,7 +1946,7 @@ GtkWidget* get_unit_dialog (void) {
 
 	if(!unit_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "unit.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "unit.ui", NULL);
 		unit_builder = gtk_builder_new_from_file(gstr);
 		g_assert(unit_builder != NULL);
 		g_free(gstr);
@@ -1994,7 +1992,7 @@ GtkWidget* get_unit_dialog (void) {
 GtkWidget* get_periodic_dialog (void) {
 	if(!periodictable_builder) {
 	
-		gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "periodictable.ui", NULL);
+		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "periodictable.ui", NULL);
 		periodictable_builder = gtk_builder_new_from_file(gstr);
 		g_assert(periodictable_builder != NULL);
 		g_free(gstr);

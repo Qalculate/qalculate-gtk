@@ -16,6 +16,7 @@
 
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
+#include <glib/gstdio.h>
 #include <unistd.h>
 #include <sys/stat.h>
 
@@ -57,10 +58,7 @@ GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matr
 GtkBuilder *preferences_builder, *unit_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder;
 GtkBuilder *periodictable_builder;
 
-FILE *view_pipe_r, *view_pipe_w, *command_pipe_r, *command_pipe_w;
-pthread_t view_thread, command_thread;
-pthread_attr_t view_thread_attr, command_thread_attr;
-bool command_thread_started;
+Thread *view_thread, *command_thread;
 string calc_arg;
 
 bool do_timeout, check_expression_position;
@@ -74,7 +72,9 @@ static GOptionEntry options[] = {
 
 void create_application(GtkApplication *app) {
 
-	gtk_window_set_default_icon_from_file(PACKAGE_DATA_DIR "/pixmaps/qalculate.png", NULL);
+	gchar *icon_path = g_build_filename(getPackageDataDir().c_str(), "pixmaps", "qalculate.png", NULL);
+	gtk_window_set_default_icon_from_file(icon_path, NULL);
+	g_free(icon_path);
 	
 	b_busy = false; 
 	b_busy_result = false;
@@ -236,19 +236,9 @@ void create_application(GtkApplication *app) {
 
 	update_completion();
 	
-	int pipe_wr[] = {0, 0};
-	pipe(pipe_wr);
-	view_pipe_r = fdopen(pipe_wr[0], "r");
-	view_pipe_w = fdopen(pipe_wr[1], "w");
-	pthread_attr_init(&view_thread_attr);
-	pthread_create(&view_thread, &view_thread_attr, view_proc, view_pipe_r);
-	
-	int pipe_wr2[] = {0, 0};
-	pipe(pipe_wr2);
-	command_pipe_r = fdopen(pipe_wr2[0], "r");
-	command_pipe_w = fdopen(pipe_wr2[1], "w");
-	pthread_attr_init(&command_thread_attr);
-	command_thread_started = false;
+	view_thread = new ViewThread;
+	view_thread->start();
+	command_thread = new CommandThread;
 	
 	if(!calc_arg.empty()) {
 		execute_expression();
@@ -322,7 +312,7 @@ static gint qalculate_handle_local_options(GtkApplication *app, GVariantDict *op
 		}
 		fclose(file);
 		if(gstr_oldfile) {
-			mkdir(getLocalDir().c_str(), S_IRWXU);
+			g_mkdir(getLocalDir().c_str(), S_IRWXU);
 			move_file(gstr_oldfile, gstr_file);
 			g_free(gstr_oldfile);
 		}
@@ -367,7 +357,7 @@ int main (int argc, char *argv[]) {
 	gint status;
 	
 #ifdef ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
+	bindtextdomain (GETTEXT_PACKAGE, getPackageLocaleDir().c_str());
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
 #endif
