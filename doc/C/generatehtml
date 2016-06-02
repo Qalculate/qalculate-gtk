@@ -1,0 +1,1 @@
+xsltproc -o ../html/ --stringparam chunker.output.encoding UTF-8 --stringparam  use.id.as.filename 1 --stringparam chunk.section.depth 0 "http://docbook.sourceforge.net/release/xsl/current/html/chunk.xsl" qalculate-gtk.xml
