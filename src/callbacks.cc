@@ -13672,7 +13672,7 @@ void on_button_convert_clicked(GtkButton*, gpointer user_data) {
 
 void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
 	const gchar *authors[] = {"Hanna Knutsson", NULL};
-	gtk_show_about_dialog(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), "authors", authors, "comments", _("Powerful and easy to use calculator"), "license-type", GTK_LICENSE_GPL_2_0, "copyright", "Copyright © 2003–2007, 2008, 2016 Hanna Knutsson", "program-name", "Qalculate! (GTK+)", "version", VERSION, "website", "https://github.com/Qalculate/qalculate-gtk", NULL);
+	gtk_show_about_dialog(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), "authors", authors, "comments", _("Powerful and easy to use calculator"), "license-type", GTK_LICENSE_GPL_2_0, "copyright", "Copyright © 2003–2007, 2008, 2016 Hanna Knutsson", "program-name", "Qalculate! (GTK+)", "version", VERSION, "website", "http://qalculate.github.io/", NULL);
 }
 void on_menu_item_help_activate(GtkMenuItem*, gpointer) {
 	GError *error = NULL;

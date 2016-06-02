@@ -9,6 +9,7 @@ dnl  ----------------------
 AC_INIT([Qalculate! (GTK+ UI)], [0.9.8],[],[qalculate-gtk])
 AC_CONFIG_SRCDIR([src/callbacks.cc])
 AM_INIT_AUTOMAKE
+AC_CONFIG_MACRO_DIR([m4])
 AM_CONFIG_HEADER(config.h)
 AM_MAINTAINER_MODE
 
