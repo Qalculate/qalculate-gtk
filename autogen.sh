@@ -1,5 +1,4 @@
 #! /bin/sh
-
 aclocal \
 && autoheader \
 && libtoolize \
