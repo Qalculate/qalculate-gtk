@@ -3,9 +3,10 @@ Qalculate! GTK+ UI
 
 ![Image of qalculate-gtk](http://qalculate.github.io/images/qalculate-history.png)
 
-Qalculate! is a multi-purpose desktop calculator for GNU/Linux (and Mac OS). It is small and simple to use but with much power and versatility underneath. Features include customizable functions, units, arbitrary precision, plotting, and a user-friendly interface (GTK+).
+Qalculate! is a multi-purpose desktop calculator for GNU/Linux (and Mac OS). It is small and simple to use but with much power and versatility underneath. Features include customizable functions, units, arbitrary precision, plotting, and a user-friendly interface (GTK+ and CLI).
 
 Features specific to qalculate-gtk:
+
 * Graphical user interface implemented using GTK+-3
 * Flexible expression entry and separate result display
 * Displays whether result is precise or not
@@ -23,7 +24,6 @@ Features specific to qalculate-gtk:
 * Small separate utilities for base, currency and unit conversion
 * Additional text based interface with full functionality
 * and more...
-
 
 Features from libqalculate:
 
