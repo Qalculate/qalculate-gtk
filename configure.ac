@@ -1,5 +1,5 @@
 dnl
-dnl configure.in for qalculate
+dnl configure.in for qalculate-gtk
 dnl
 
 dnl  ----------------------
