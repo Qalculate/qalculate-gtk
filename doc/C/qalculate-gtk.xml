@@ -75,7 +75,7 @@ Although use of Qalculate! for simple calculations should be natural and self-ex
 	</screenshot>
 </figure>
 <para>
-	The main window provides a menu bar, the expression entry, the result display and a calculator keypad, history and conversion view which can be shown/hidden by clicking on <guilabel>Keypad</guilabel>, <guilabel>History</guilabel> and <guilabel>Conversion</guilabel>, respectively. When non-default options for the interpretion of expressions have been selected, the choice will be indicated in a small status area below the expression entry, to the right.
+	The main window provides a menu bar, the expression entry, the result display and a calculator keypad, history and conversion view (see <xref linkend="qalculate-unit-conversion"/>) which can be shown/hidden by clicking on <guilabel>Keypad</guilabel>, <guilabel>History</guilabel> and <guilabel>Conversion</guilabel>, respectively. When non-default options for the interpretion of expressions have been selected, the choice will be indicated in a small status area below the expression entry, to the right.
 </para>
 </sect1>
 <sect1 id="qalculate-expression-entry">
@@ -317,7 +317,7 @@ The menus in the menu bar provides access to most of the functionality of Qalcul
 			</row>
 			<row valign="top">
 				<entry><para>Convert To Unit Expression (<keycombo><keycap>Ctrl</keycap><keycap>T</keycap></keycombo>)</para></entry>
-				<entry><para>Opens the convert to unit dialog for conversion of result to custom unit expression. See <xref linkend="qalculate-unit-conversion"/>.</para></entry>
+				<entry><para>Opens the convert to unit view for conversion of result to custom unit expression. See <xref linkend="qalculate-unit-conversion"/>.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Convert To Base Units</para></entry>
@@ -1374,7 +1374,7 @@ Expressions can be converted to a specific unit directly in the expression entry
 <para>
 The unit conversion view can also be used. It is shown when pressing <guilabel>Conversion</guilabel>, <keycombo><keycap>Ctrl</keycap><keycap>C</keycap></keycombo>, <menuchoice><guimenu>Edit</guimenu><guimenuitem>Convert To Unit Expression...</guimenuitem></menuchoice> or <keycombo><keycap>Ctrl</keycap><keycap>T</keycap></keycombo> (the last two options moves to focus to the unit expression entry). Enter a unit expression in the text entry and press <keycap>Enter</keycap> (or click <guibutton>Convert</guibutton>), or select a unit from the list. An appropriate unit category will automatically be selected from units in the current result. If <guibutton>Continuous expression</guibutton> is checked subsequent results will automatically be converted, and if <guibutton>Set missing prefixes</guibutton> the optimal prefix will be set for unit expressions without any prefix.
 <figure id="qalculate-FIG-unit-conversion">
-	<title>Unit Conversion Dialog</title>
+	<title>Unit Conversion View</title>
 	<screenshot>
 		<mediaobject>
 			<imageobject>
