@@ -104,6 +104,7 @@ extern bool display_expression_status, enable_completion;
 extern bool use_custom_result_font, use_custom_expression_font, use_custom_status_font;
 extern string custom_result_font, custom_expression_font, custom_status_font, wget_args;
 extern string status_error_color, status_warning_color;
+extern int auto_update_exchange_rates;
 
 extern PrintOptions printops;
 extern EvaluationOptions evalops;
@@ -1065,6 +1066,7 @@ get_preferences_dialog (void)
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_division_slash")), printops.use_unicode_signs);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_division")), printops.use_unicode_signs);
 		gtk_builder_connect_signals(preferences_builder, NULL);
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_update_exchange_rates_spin_button")), (double) auto_update_exchange_rates);
 		
 	}
 

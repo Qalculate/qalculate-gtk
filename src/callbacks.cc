@@ -564,12 +564,12 @@ void update_status_text() {
 bool check_exchange_rates(GtkWidget *win = NULL) {
 	if(!CALCULATOR->exchangeRatesUsed()) return false;
 	if(auto_update_exchange_rates == 0 && win != NULL) return false;
-	if(CALCULATOR->checkExchangeRatesDate(7, false, auto_update_exchange_rates == 0)) return false;
+	if(CALCULATOR->checkExchangeRatesDate(auto_update_exchange_rates > 0 ? auto_update_exchange_rates : 7, false, auto_update_exchange_rates == 0)) return false;
 	if(auto_update_exchange_rates == 0) return false;
 	bool b = false;
 	if(auto_update_exchange_rates < 0) {
 		GtkWidget *edialog = gtk_message_dialog_new(win == NULL ? GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")) : GTK_WINDOW(win), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO, _("Do you wish to update the exchange rates now?"));
-		gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(edialog), _("It has been more than one week since the exchange rates last were update."));
+		gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(edialog), _("It has been more than one week since the exchange rates last were updated."));
 		GtkWidget *w = gtk_check_button_new_with_label(_("Do not ask again"));
 		gtk_container_add(GTK_CONTAINER(gtk_message_dialog_get_message_area(GTK_MESSAGE_DIALOG(edialog))), w);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w), FALSE);
@@ -578,7 +578,7 @@ bool check_exchange_rates(GtkWidget *win = NULL) {
 			case GTK_RESPONSE_YES: {
 				b = true;
 				if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) {
-					auto_update_exchange_rates = 1;
+					auto_update_exchange_rates = 7;
 				}
 				break;
 			}
@@ -592,7 +592,7 @@ bool check_exchange_rates(GtkWidget *win = NULL) {
 		}
 		gtk_widget_destroy(edialog);
 	}
-	if(b || auto_update_exchange_rates == 1) {
+	if(b || auto_update_exchange_rates > 0) {
 		fetch_exchange_rates(15);
 		CALCULATOR->loadExchangeRates();
 		return true;
@@ -9629,7 +9629,8 @@ void load_preferences() {
 				} else if(svar == "save_definitions_on_exit") {
 					save_defs_on_exit = v;
 				} else if(svar == "fetch_exchange_rates_at_startup") {
-					fetch_exchange_rates_at_startup = v;
+					if(auto_update_exchange_rates < 0 && v) auto_update_exchange_rates = 1;
+					//fetch_exchange_rates_at_startup = v;
 				} else if(svar == "auto_update_exchange_rates") {
 					auto_update_exchange_rates = v;
 				} else if(svar == "wget_args") {
@@ -10152,7 +10153,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "save_mode_on_exit=%i\n", save_mode_on_exit);
 	fprintf(file, "save_definitions_on_exit=%i\n", save_defs_on_exit);
 	fprintf(file, "load_global_definitions=%i\n", load_global_defs);
-	fprintf(file, "fetch_exchange_rates_at_startup=%i\n", fetch_exchange_rates_at_startup);
+	//fprintf(file, "fetch_exchange_rates_at_startup=%i\n", fetch_exchange_rates_at_startup);
 	fprintf(file, "auto_update_exchange_rates=%i\n", auto_update_exchange_rates);
 	fprintf(file, "wget_args=%s\n", wget_args.c_str());	
 	fprintf(file, "show_keypad=%i\n", (rpn_mode && show_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad)));
@@ -10617,6 +10618,30 @@ void on_colorbutton_status_warning_color_color_set(GtkColorButton *w, gpointer) 
 }
 void on_preferences_entry_wget_args_changed(GtkEditable *editable, gpointer) {
 	wget_args = gtk_entry_get_text(GTK_ENTRY(editable));
+}
+void on_preferences_update_exchange_rates_spin_button_value_changed(GtkSpinButton *spin, gpointer) {
+	auto_update_exchange_rates = gtk_spin_button_get_value_as_int(spin);
+}
+gint on_preferences_update_exchange_rates_spin_button_input(GtkSpinButton *spin, gdouble *new_value, gpointer) {
+	const gchar *text = gtk_entry_get_text(GTK_ENTRY(spin));
+	if(g_strcmp0(text, _("never")) == 0) *new_value = 0.0;
+	else if(g_strcmp0(text, _("ask")) == 0) *new_value = -1.0;
+	else *new_value = g_strtod(text, NULL);
+	return TRUE;
+}
+gboolean on_preferences_update_exchange_rates_spin_button_output(GtkSpinButton *spin, gpointer) {
+	int value = gtk_spin_button_get_value_as_int(spin);
+	if(value > 0) {
+		gchar *text;
+		text = g_strdup_printf(_("%i days"), value);
+		gtk_entry_set_text(GTK_ENTRY(spin), text);
+		g_free(text);
+	} else if(value == 0) {
+		gtk_entry_set_text(GTK_ENTRY(spin), _("never"));
+	} else {
+		gtk_entry_set_text(GTK_ENTRY(spin), _("ask"));
+	}
+	return TRUE;
 }
 void on_preferences_checkbutton_lower_case_numbers_toggled(GtkToggleButton *w, gpointer) {
 	printops.lower_case_numbers = gtk_toggle_button_get_active(w);
