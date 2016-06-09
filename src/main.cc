@@ -108,6 +108,8 @@ int main (int argc, char **argv) {
 	//create the almighty Calculator object
 	new Calculator();
 	
+	CALCULATOR->setExchangeRatesWarningEnabled(false);
+	
 	//load application specific preferences
 	load_preferences();
 

@@ -96,7 +96,7 @@ void on_tDataProperties_selection_changed(GtkTreeSelection *treeselection, gpoin
 void on_tUnitSelector_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 
-void execute_expression(bool force = true, bool do_mathoperation = false, MathOperation op = OPERATION_ADD, MathFunction *f = NULL, bool do_stack = false, size_t stack_index = 0, string execute_str = string());
+void execute_expression(bool force = true, bool do_mathoperation = false, MathOperation op = OPERATION_ADD, MathFunction *f = NULL, bool do_stack = false, size_t stack_index = 0, string execute_str = string(), string str = string());
 void setResult(Prefix *prefix = NULL, bool update_history = true, bool update_parse = false, bool force = false, string transformation = "", size_t stack_index = 0, bool register_moved = false);
 
 void set_rpn_mode(bool b);

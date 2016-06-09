@@ -561,6 +561,45 @@ void update_status_text() {
 	
 }
 
+bool check_exchange_rates(GtkWidget *win = NULL) {
+	if(!CALCULATOR->exchangeRatesUsed()) return false;
+	if(auto_update_exchange_rates == 0 && win != NULL) return false;
+	if(CALCULATOR->checkExchangeRatesDate(7, false, auto_update_exchange_rates == 0)) return false;
+	if(auto_update_exchange_rates == 0) return false;
+	bool b = false;
+	if(auto_update_exchange_rates < 0) {
+		GtkWidget *edialog = gtk_message_dialog_new(win == NULL ? GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")) : GTK_WINDOW(win), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO, _("Do you wish to update the exchange rates now?"));
+		gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(edialog), _("It has been more than one week since the exchange rates last were update."));
+		GtkWidget *w = gtk_check_button_new_with_label(_("Do not ask again"));
+		gtk_container_add(GTK_CONTAINER(gtk_message_dialog_get_message_area(GTK_MESSAGE_DIALOG(edialog))), w);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w), FALSE);
+		gtk_widget_show(w);
+		switch(gtk_dialog_run(GTK_DIALOG(edialog))) {
+			case GTK_RESPONSE_YES: {
+				b = true;
+				if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) {
+					auto_update_exchange_rates = 1;
+				}
+				break;
+			}
+			case GTK_RESPONSE_NO: {
+				if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) {
+					auto_update_exchange_rates = 0;
+				}
+				break;
+			}
+			default: {}
+		}
+		gtk_widget_destroy(edialog);
+	}
+	if(b || auto_update_exchange_rates == 1) {
+		fetch_exchange_rates(15);
+		CALCULATOR->loadExchangeRates();
+		return true;
+	}
+	return false;
+}
+
 /*
 	display errors generated under calculation
 */
@@ -572,68 +611,32 @@ void display_errors(GtkTextIter *iter = NULL, GtkWidget *win = NULL, int *inhist
 	string str = "";
 	GtkTextBuffer *tb = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(main_builder, "history")));
 	while(true) {
-		if(CALCULATOR->message()->isExchangeRatesWarning()) {
-			bool b = false;
-			if(auto_update_exchange_rates < 0) {
-				GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(win),GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO, _("Do you wish to update the exchange rates now?"));
-				gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(edialog), CALCULATOR->message()->c_message());
-				GtkWidget *w = gtk_check_button_new_with_label(_("Do not ask again"));
-				gtk_container_add(GTK_CONTAINER(gtk_message_dialog_get_message_area(GTK_MESSAGE_DIALOG(edialog))), w);
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w), FALSE);
-				gtk_widget_show(w);
-				switch(gtk_dialog_run(GTK_DIALOG(edialog))) {
-					case GTK_RESPONSE_YES: {
-						b = true;
-						if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) {
-							auto_update_exchange_rates = 1;
-						}
-						break;
-					}
-					case GTK_RESPONSE_NO: {
-						if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) {
-							auto_update_exchange_rates = 0;
-						}
-						break;
-					}
-					default: {}
-				}
-				gtk_widget_destroy(edialog);
-			}
-			if(b || auto_update_exchange_rates == 1) {
-				fetch_exchange_rates(15);
-				CALCULATOR->loadExchangeRates();
-				while(CALCULATOR->nextMessage()) {}
-				expression_calculation_updated();
-				return;
-			}
-		} else {
-			mtype = CALCULATOR->message()->type();
-			if(index > 0) {
-				if(index == 1) str = "• " + str;
-				str += "\n• ";
-			}
-			str += CALCULATOR->message()->message();
-			if(mtype == MESSAGE_ERROR || (mtype_highest != MESSAGE_ERROR && mtype == MESSAGE_WARNING)) {
-				mtype_highest = mtype;
-			}
-			if((mtype == MESSAGE_ERROR || mtype == MESSAGE_WARNING) && iter && inhistory_index) {
-				if(mtype == MESSAGE_ERROR) {
-					inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
-					inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_ERROR);
-					gtk_text_buffer_insert_with_tags_by_name(tb, iter, "- ", -1, "history_error", NULL);
-					gtk_text_buffer_insert_with_tags_by_name(tb, iter, CALCULATOR->message()->message().c_str(), -1, "history_error", NULL);
-				} else if(mtype == MESSAGE_WARNING) {
-					inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
-					inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_WARNING);
-					gtk_text_buffer_insert_with_tags_by_name(tb, iter, "- ", -1, "history_warning", NULL);
-					gtk_text_buffer_insert_with_tags_by_name(tb, iter, CALCULATOR->message()->message().c_str(), -1, "history_warning", NULL);
-				}
-				*inhistory_index += 1;
-				gtk_text_buffer_insert(tb, iter, "\n", -1);
-				gtk_text_buffer_place_cursor(tb, iter);
-			}
-			index++;
+		mtype = CALCULATOR->message()->type();
+		if(index > 0) {
+			if(index == 1) str = "• " + str;
+			str += "\n• ";
 		}
+		str += CALCULATOR->message()->message();
+		if(mtype == MESSAGE_ERROR || (mtype_highest != MESSAGE_ERROR && mtype == MESSAGE_WARNING)) {
+			mtype_highest = mtype;
+		}
+		if((mtype == MESSAGE_ERROR || mtype == MESSAGE_WARNING) && iter && inhistory_index) {
+			if(mtype == MESSAGE_ERROR) {
+				inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
+				inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_ERROR);
+				gtk_text_buffer_insert_with_tags_by_name(tb, iter, "- ", -1, "history_error", NULL);
+				gtk_text_buffer_insert_with_tags_by_name(tb, iter, CALCULATOR->message()->message().c_str(), -1, "history_error", NULL);
+			} else if(mtype == MESSAGE_WARNING) {
+				inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
+				inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_WARNING);
+				gtk_text_buffer_insert_with_tags_by_name(tb, iter, "- ", -1, "history_warning", NULL);
+				gtk_text_buffer_insert_with_tags_by_name(tb, iter, CALCULATOR->message()->message().c_str(), -1, "history_warning", NULL);
+			}
+			*inhistory_index += 1;
+			gtk_text_buffer_insert(tb, iter, "\n", -1);
+			gtk_text_buffer_place_cursor(tb, iter);
+		}
+		index++;
 		if(!CALCULATOR->nextMessage()) break;
 	}
 	if(!str.empty()) {
@@ -5608,11 +5611,11 @@ void add_to_expression_history(string str) {
 /*
 	calculate entered expression and display result
 */
-void execute_expression(bool force, bool do_mathoperation, MathOperation op, MathFunction *f, bool do_stack, size_t stack_index, string execute_str) {
+void execute_expression(bool force, bool do_mathoperation, MathOperation op, MathFunction *f, bool do_stack, size_t stack_index, string execute_str, string str) {
 
 	if(block_expression_execution) return;
 
-	string str;
+	string saved_execute_str = execute_str;
 	
 	if(b_busy || b_busy_result || b_busy_expression || b_busy_command) return;
 	
@@ -5621,24 +5624,26 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 
 	bool do_factors = false, do_fraction = false;
 
-	if(do_stack) {
-  		GtkTreeIter iter;
-		gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(stackstore), &iter, NULL, stack_index);
-		gchar *gstr;
-		gtk_tree_model_get(GTK_TREE_MODEL(stackstore), &iter, 1, &gstr, -1);
-		str = gstr;
-		g_free(gstr);
-		do_timeout = false;
-	} else {
-		str = gtk_entry_get_text(GTK_ENTRY(expression));
-		if(!force && (expression_has_changed || str.find_first_not_of(SPACES) == string::npos)) {
-			b_busy = false;
-			b_busy_expression = false;
-			return;
+	if(str.empty()) {
+		if(do_stack) {
+	  		GtkTreeIter iter;
+			gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(stackstore), &iter, NULL, stack_index);
+			gchar *gstr;
+			gtk_tree_model_get(GTK_TREE_MODEL(stackstore), &iter, 1, &gstr, -1);
+			str = gstr;
+			g_free(gstr);
+			do_timeout = false;
+		} else {
+			str = gtk_entry_get_text(GTK_ENTRY(expression));
+			if(!force && (expression_has_changed || str.find_first_not_of(SPACES) == string::npos)) {
+				b_busy = false;
+				b_busy_expression = false;
+				return;
+			}
+			do_timeout = false;
+			expression_has_changed = false;
+			if(!do_mathoperation && !str.empty()) add_to_expression_history(str);
 		}
-		do_timeout = false;
-		expression_has_changed = false;
-		if(!do_mathoperation && !str.empty()) add_to_expression_history(str);
 	}
 	
 	string from_str = str, to_str;
@@ -5729,6 +5734,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	} else {
 		parsed_tostruct->setUndefined();
 	}
+	CALCULATOR->resetExchangeRatesUsed();
 	if(do_stack) {
 		stack_size = CALCULATOR->RPNStackSize();
 		CALCULATOR->setRPNRegister(stack_index + 1, CALCULATOR->unlocalizeExpression(execute_str.empty() ? str : execute_str, evalops.parse_options), 0, evalops, parsed_mstruct, parsed_tostruct, !printops.negative_exponents);
@@ -5929,6 +5935,12 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	
 	if(rpn_mode && do_mathoperation && parsed_tostruct && !parsed_tostruct->isUndefined() && parsed_tostruct->isSymbolic()) {
 		mstruct->set(CALCULATOR->convert(*mstruct, parsed_tostruct->symbol(), evalops));
+	}
+	
+	if(!do_mathoperation && check_exchange_rates()) {
+		g_signal_handler_disconnect(G_OBJECT(gtk_builder_get_object(main_builder, "main_window")), handler_id);
+		execute_expression(force, do_mathoperation, op, f, rpn_mode, do_stack ? stack_index : 0, saved_execute_str, str);
+		return;
 	}
 	
 	if(do_factors) {
@@ -7277,7 +7289,10 @@ void convert_to_unit(GtkMenuItem*, gpointer user_data)
 	}
 	//result is stored in MathStructure *mstruct
 	do_timeout = false;
-	mstruct->set(CALCULATOR->convert(*mstruct, u, evalops, false));
+	CALCULATOR->resetExchangeRatesUsed();
+	MathStructure mstruct_new(CALCULATOR->convert(*mstruct, u, evalops, false));
+	if(check_exchange_rates()) mstruct->set(CALCULATOR->convert(*mstruct, u, evalops, false));
+	else mstruct->set(mstruct_new);
 	result_action_executed();
 	do_timeout = true;
 	focus_keeping_selection();
@@ -8970,10 +8985,12 @@ void convert_in_wUnits(int toFrom) {
 				PrintOptions po;
 				po.is_approximate = &b;
 				po.number_fraction_format = FRACTION_DECIMAL;
+				CALCULATOR->resetExchangeRatesUsed();
 				MathStructure v_mstruct = CALCULATOR->convertTimeOut(CALCULATOR->unlocalizeExpression(toValue, evalops.parse_options), uTo, uFrom, 1500, eo);
+				if(!v_mstruct.isAborted() && check_exchange_rates(get_units_dialog())) v_mstruct = CALCULATOR->convertTimeOut(CALCULATOR->unlocalizeExpression(toValue, evalops.parse_options), uTo, uFrom, 1500, eo);
 				if(v_mstruct.isAborted()) {
 					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_from_val")), CALCULATOR->timedOutString().c_str());
-				} else {
+				} else {					
 					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_from_val")), CALCULATOR->printMathStructureTimeOut(v_mstruct, 300, po).c_str());
 				}
 				b = b || v_mstruct.isApproximate();
@@ -8989,10 +9006,12 @@ void convert_in_wUnits(int toFrom) {
 				PrintOptions po;
 				po.is_approximate = &b;
 				po.number_fraction_format = FRACTION_DECIMAL;
+				CALCULATOR->resetExchangeRatesUsed();
 				MathStructure v_mstruct = CALCULATOR->convertTimeOut(CALCULATOR->unlocalizeExpression(fromValue, evalops.parse_options), uFrom, uTo, 1500, eo);
+				if(!v_mstruct.isAborted() && check_exchange_rates(get_units_dialog())) v_mstruct = CALCULATOR->convertTimeOut(CALCULATOR->unlocalizeExpression(fromValue, evalops.parse_options), uFrom, uTo, 1500, eo);
 				if(v_mstruct.isAborted()) {
 					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_to_val")), CALCULATOR->timedOutString().c_str());
-				} else {
+				} else {					
 					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_to_val")), CALCULATOR->printMathStructureTimeOut(v_mstruct, 300, po).c_str());
 				}
 				b = b || v_mstruct.isApproximate();
@@ -11540,13 +11559,19 @@ void on_menu_item_convert_to_unit_expression_activate(GtkMenuItem*, gpointer) {
 }
 void on_menu_item_convert_to_best_unit_activate(GtkMenuItem*, gpointer) {
 	do_timeout = false;
-	mstruct->set(CALCULATOR->convertToBestUnit(*mstruct, evalops));
+	CALCULATOR->resetExchangeRatesUsed();
+	MathStructure mstruct_new(CALCULATOR->convertToBestUnit(*mstruct, evalops));
+	if(check_exchange_rates()) mstruct->set(CALCULATOR->convertToBestUnit(*mstruct, evalops));
+	else mstruct->set(mstruct_new);
 	result_action_executed();
 	do_timeout = true;
 }
 void on_menu_item_convert_to_base_units_activate(GtkMenuItem*, gpointer) {
 	do_timeout = false;
-	mstruct->set(CALCULATOR->convertToBaseUnits(*mstruct, evalops));
+	CALCULATOR->resetExchangeRatesUsed();
+	MathStructure mstruct_new(CALCULATOR->convertToBaseUnits(*mstruct, evalops));
+	if(check_exchange_rates()) mstruct->set(CALCULATOR->convertToBaseUnits(*mstruct, evalops));
+	else mstruct->set(mstruct_new);
 	result_action_executed();
 	do_timeout = true;
 }
@@ -12952,7 +12977,10 @@ void on_units_button_convert_to_clicked(GtkButton*, gpointer) {
 	Unit *u = get_selected_unit();
 	if(u) {
 		do_timeout = false;
-		mstruct->set(CALCULATOR->convert(*mstruct, u, evalops, false));
+		CALCULATOR->resetExchangeRatesUsed();
+		MathStructure mstruct_new(CALCULATOR->convert(*mstruct, u, evalops, false));
+		if(check_exchange_rates()) mstruct->set(CALCULATOR->convert(*mstruct, u, evalops, false));
+		else mstruct->set(mstruct_new);
 		result_action_executed();
 		do_timeout = true;
 		focus_keeping_selection();		
@@ -14871,23 +14899,6 @@ void on_plot_button_appearance_apply_clicked(GtkButton*, gpointer) {
 	update_plot();
 }
 
-void on_unit_dialog_button_ok_clicked(GtkButton*, gpointer) {
-	do_timeout = false;
-	mstruct->set(CALCULATOR->convert(*mstruct, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unit_builder, "unit_dialog_entry_unit"))), evalops));
-	result_action_executed();
-	do_timeout = true;
-	gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(unit_builder, "unit_dialog")));
-}
-void on_unit_dialog_button_apply_clicked(GtkButton*, gpointer) {
-	do_timeout = false;
-	mstruct->set(CALCULATOR->convert(*mstruct, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unit_builder, "unit_dialog_entry_unit"))), evalops));
-	result_action_executed();
-	do_timeout = true;
-}
-void on_unit_dialog_entry_unit_activate(GtkEntry*, gpointer) {
-	on_unit_dialog_button_ok_clicked(GTK_BUTTON(gtk_builder_get_object(unit_builder, "unit_dialog_button_ok")), NULL);
-}
-
 void convert_from_convert_entry_unit() {
 	do_timeout = false;
 	string ceu_str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit")));	
@@ -14897,7 +14908,10 @@ void convert_from_convert_entry_unit() {
 			ceu_str = "?" + ceu_str;
 		}
 	}
-	mstruct->set(CALCULATOR->convert(*mstruct, ceu_str, evalops));
+	CALCULATOR->resetExchangeRatesUsed();
+	MathStructure mstruct_new(CALCULATOR->convert(*mstruct, ceu_str, evalops));
+	if(check_exchange_rates()) mstruct->set(CALCULATOR->convert(*mstruct, ceu_str, evalops));
+	else mstruct->set(mstruct_new);	
 	bool b_puup = printops.use_unit_prefixes;
 	printops.use_unit_prefixes = true;
 	result_action_executed();
