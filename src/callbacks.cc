@@ -5724,13 +5724,14 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 //	if(execute_str.empty() && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion"))) && gtk_expander_get_expanded(GTK_EXPANDER(expander_convert))) {
 	if(execute_str.empty() && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")))) {
 		string ceu_str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit")));
-		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {
-			remove_blank_ends(ceu_str);
+		remove_blank_ends(ceu_str);
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {			
 			if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[1] != '?') {
 				ceu_str = "?" + ceu_str;
 			}
 		}
-		parsed_tostruct->set(ceu_str);
+		if(ceu_str.empty()) parsed_tostruct->setUndefined();
+		else parsed_tostruct->set(ceu_str);
 	} else {
 		parsed_tostruct->setUndefined();
 	}
