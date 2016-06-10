@@ -75,6 +75,8 @@ int main (int argc, char **argv) {
 	textdomain (GETTEXT_PACKAGE);
 #endif
 
+	setlocale(LC_ALL, "");
+
 	GError *error = NULL;
 
 	gtk_init_with_args(&argc, &argv, NULL, options, GETTEXT_PACKAGE, &error);
