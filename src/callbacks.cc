@@ -5937,7 +5937,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	if(rpn_mode && do_mathoperation && parsed_tostruct && !parsed_tostruct->isUndefined() && parsed_tostruct->isSymbolic()) {
 		mstruct->set(CALCULATOR->convert(*mstruct, parsed_tostruct->symbol(), evalops));
 	}
-	
+
 	if(!do_mathoperation && check_exchange_rates()) {
 		g_signal_handler_disconnect(G_OBJECT(gtk_builder_get_object(main_builder, "main_window")), handler_id);
 		execute_expression(force, do_mathoperation, op, f, rpn_mode, do_stack ? stack_index : 0, saved_execute_str, str);
