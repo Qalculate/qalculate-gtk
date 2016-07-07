@@ -235,6 +235,17 @@ enum {
 void set_assumptions_items(AssumptionType, AssumptionSign);
 void set_mode_items(const PrintOptions&, const EvaluationOptions&, AssumptionType, AssumptionSign, bool, int, bool);
 
+string i2hex(guint value) {
+	unsigned int v = (unsigned int) value / 0x101;
+	if(value % 0x101 > 128) {
+		v++;
+	}
+	char buffer[3];
+	snprintf(buffer, 3, "%.2X", v);
+	string stmp = buffer;
+	return stmp;
+}
+
 void update_expression_icons(bool stop_icon = FALSE) {
 	if(stop_icon) {
 		gtk_entry_set_icon_tooltip_text(GTK_ENTRY(expression), GTK_ENTRY_ICON_PRIMARY, _("Stop process"));
@@ -409,12 +420,12 @@ void wrap_expression_selection() {
 }
 
 void show_message(const gchar *text, GtkWidget *win) {
-	GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(win), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, text);
+	GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(win), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", text);
 	gtk_dialog_run(GTK_DIALOG(edialog));
 	gtk_widget_destroy(edialog);
 }
 bool ask_question(const gchar *text, GtkWidget *win) {
-	GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(win), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_YES_NO, text);
+	GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(win), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_YES_NO, "%s", text);
 	int question_answer = gtk_dialog_run(GTK_DIALOG(edialog));
 	gtk_widget_destroy(edialog);
 	return question_answer == GTK_RESPONSE_YES;
@@ -676,7 +687,7 @@ void display_errors(GtkTextIter *iter = NULL, GtkWidget *win = NULL, int *inhist
 			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "message_no_button")));*/
 			gtk_revealer_set_reveal_child(GTK_REVEALER(gtk_builder_get_object(main_builder, "message_revealer")), TRUE);
 		} else if(mtype_highest != MESSAGE_INFORMATION) {
-			GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(win),GTK_DIALOG_DESTROY_WITH_PARENT, mtype_highest == MESSAGE_ERROR ? GTK_MESSAGE_ERROR : (mtype_highest == MESSAGE_WARNING ? GTK_MESSAGE_WARNING : GTK_MESSAGE_INFO), GTK_BUTTONS_CLOSE, str.c_str());
+			GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(win),GTK_DIALOG_DESTROY_WITH_PARENT, mtype_highest == MESSAGE_ERROR ? GTK_MESSAGE_ERROR : (mtype_highest == MESSAGE_WARNING ? GTK_MESSAGE_WARNING : GTK_MESSAGE_INFO), GTK_BUTTONS_CLOSE, "%s", str.c_str());
 			gtk_dialog_run(GTK_DIALOG(edialog));
 			gtk_widget_destroy(edialog);
 		}
@@ -1655,7 +1666,7 @@ void setVariableTreeItem(GtkTreeIter &iter2, Variable *v) {
 				case ASSUMPTION_SIGN_NONZERO: {value = _("non-zero"); break;}
 				default: {}
 			}
-			if(!value.empty() && !((UnknownVariable*) v)->assumptions()->type() == ASSUMPTION_TYPE_NONE) value += " ";
+			if(!value.empty() && ((UnknownVariable*) v)->assumptions()->type() != ASSUMPTION_TYPE_NONE) value += " ";
 			switch(((UnknownVariable*) v)->assumptions()->type()) {
 				case ASSUMPTION_TYPE_INTEGER: {value += _("integer"); break;}
 				case ASSUMPTION_TYPE_RATIONAL: {value += _("rational"); break;}
@@ -3158,7 +3169,7 @@ void update_completion() {
 							case ASSUMPTION_SIGN_NONZERO: {title = _("non-zero"); break;}
 							default: {}
 						}
-						if(!title.empty() && !((UnknownVariable*) v)->assumptions()->type() == ASSUMPTION_TYPE_NONE) title += " ";
+						if(!title.empty() && ((UnknownVariable*) v)->assumptions()->type() != ASSUMPTION_TYPE_NONE) title += " ";
 						switch(((UnknownVariable*) v)->assumptions()->type()) {
 							case ASSUMPTION_TYPE_INTEGER: {title += _("integer"); break;}
 							case ASSUMPTION_TYPE_RATIONAL: {title += _("rational"); break;}
@@ -10585,16 +10596,6 @@ void on_menu_item_quit_activate(GtkMenuItem*, gpointer user_data) {
 	on_gcalc_exit(NULL, NULL, user_data);
 }
 
-string i2hex(guint value) {
-	unsigned int v = (unsigned int) value / 0x101;
-	if(value % 0x101 > 128) {
-		v++;
-	}
-	char buffer[3];
-	snprintf(buffer, 3, "%.2X", v);
-	string stmp = buffer;
-	return stmp;
-}
 /*
 	change preferences
 */
