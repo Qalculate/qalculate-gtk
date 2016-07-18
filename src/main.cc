@@ -57,44 +57,20 @@ FILE *view_pipe_r, *view_pipe_w, *command_pipe_r, *command_pipe_w;
 pthread_t view_thread, command_thread;
 pthread_attr_t view_thread_attr, command_thread_attr;
 bool command_thread_started;
+string calc_arg;
 
 bool do_timeout, check_expression_position;
 gint expression_position;
 
-static const char **args;
 static GOptionEntry options[] = {
-	{ G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY,
-	&args, NULL},
+	{G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_STRING_ARRAY, NULL, N_("Expression to calculate"), N_("EXPRESSION")},
 	{NULL}
 };
-int main (int argc, char **argv) {
 
-#ifdef ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
-	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-	textdomain (GETTEXT_PACKAGE);
-#endif
+void create_application(GtkApplication *app) {
 
-	setlocale(LC_ALL, "");
-
-	GError *error = NULL;
-
-	gtk_init_with_args(&argc, &argv, NULL, options, GETTEXT_PACKAGE, &error);
-
-	gtk_window_set_default_icon_from_file(PACKAGE_DATA_DIR "/pixmaps/qalculate.png", &error);
-
-	string calc_arg;
-	for(int i = 0; args && args[i]; i++) {
-		if(i > 1) {
-			calc_arg += " ";
-		}
-		if(strlen(args[i]) >= 2 && ((args[i][0] == '\"' && args[i][strlen(args[i]) - 1] == '\"') || (args[i][0] == '\'' && args[i][strlen(args[i]) - 1] == '\''))) {
-			calc_arg += args[i] + 1;
-			calc_arg.erase(calc_arg.length() - 1);
-		} else {
-			calc_arg += args[i];
-		}
-	}
+	gtk_window_set_default_icon_from_file(PACKAGE_DATA_DIR "/pixmaps/qalculate.png", NULL);
+	
 	b_busy = false; 
 	b_busy_result = false;
 	b_busy_expression = false;
@@ -129,6 +105,9 @@ int main (int argc, char **argv) {
 	
 	//create main window
 	create_main_window();
+	
+	g_application_set_default(G_APPLICATION(app));
+	gtk_window_set_application(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), app);
 
 	while(gtk_events_pending()) gtk_main_iteration();
 	
@@ -158,7 +137,7 @@ int main (int argc, char **argv) {
 		while(gtk_events_pending()) gtk_main_iteration();
 		CALCULATOR->loadExchangeRates();
 	} else if(!CALCULATOR->loadExchangeRates() && first_time && canfetch) {
-		GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object (main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO, _("You need to download exchange rates to be able to convert between different currencies. You can later get current exchange rates by selecting “Update Exchange Rates” under the File menu.\n\nDo you want to fetch exchange rates now from the Internet?"));
+		GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO, _("You need to download exchange rates to be able to convert between different currencies. You can later get current exchange rates by selecting “Update Exchange Rates” under the File menu.\n\nDo you want to fetch exchange rates now from the Internet?"));
 		int question_answer = gtk_dialog_run(GTK_DIALOG(edialog));
 		gtk_widget_destroy(edialog);
 		while(gtk_events_pending()) gtk_main_iteration();
@@ -168,8 +147,6 @@ int main (int argc, char **argv) {
 			CALCULATOR->loadExchangeRates();
 		}
 	}
-
-	
 
 	string ans_str = _("ans");
 	vans[0] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str, m_undefined, _("Last Answer"), false));
@@ -268,8 +245,76 @@ int main (int argc, char **argv) {
 	gchar *gstr = g_build_filename(g_get_home_dir(), ".qalculate", "accelmap", NULL);
 	gtk_accel_map_load(gstr);
 	g_free(gstr);
+}
 
-	gtk_main();
+static void activate(GtkApplication *app) {
 
+	GList *list;
+
+	list = gtk_application_get_windows (app);
+	
+	if(list) {
+		gtk_window_present(GTK_WINDOW(list->data));
+		return;
+	}
+	create_application(app);
+	
+}
+
+static int qalculate_app_command_line(GtkApplication *app, GApplicationCommandLine *cmd_line) {
+	GVariantDict *options_dict = g_application_command_line_get_options_dict(cmd_line);
+	gchar **remaining = NULL;
+	g_variant_dict_lookup(options_dict, G_OPTION_REMAINING, "^as", &remaining);
+	calc_arg = "";
+	for(int i = 0; remaining && i < g_strv_length(remaining); i++) {
+		if(i > 1) {
+			calc_arg += " ";
+		}
+		if(strlen(remaining[i]) >= 2 && ((remaining[i][0] == '\"' && remaining[i][strlen(remaining[i]) - 1] == '\"') || (remaining[i][0] == '\'' && remaining[i][strlen(remaining[i]) - 1] == '\''))) {
+			calc_arg += remaining[i] + 1;
+			calc_arg.erase(calc_arg.length() - 1);
+		} else {
+			calc_arg += remaining[i];
+		}
+	}
+	if(main_builder) {
+		gtk_window_present(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
+		if(!calc_arg.empty()) {
+			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "expression")), calc_arg.c_str());
+			execute_expression();
+		}
+	} else {
+		create_application(app);
+	}
 	return 0;
 }
+
+
+int main (int argc, char *argv[]) {
+	
+	GtkApplication *app;
+	gint status;
+	
+#ifdef ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
+	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+	textdomain (GETTEXT_PACKAGE);
+#endif
+
+	setlocale(LC_ALL, "");
+
+	app = gtk_application_new("org.gtk.qalculate", G_APPLICATION_HANDLES_COMMAND_LINE);
+	g_application_add_main_option_entries(G_APPLICATION(app), options);
+	g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
+	g_signal_connect(app, "command_line", G_CALLBACK(qalculate_app_command_line), NULL);
+
+	status = g_application_run(G_APPLICATION(app), argc, argv);
+
+	g_object_unref(app);
+
+	return status;
+	
+}
+
+
+

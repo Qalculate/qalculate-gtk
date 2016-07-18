@@ -5248,6 +5248,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	i = 0;
 
 	if(b_busy) {
+		g_application_mark_busy(g_application_get_default());
 		//if(stack_index == 0) {
 			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultspinner")));
 			gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
@@ -5318,6 +5319,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		if(title_set) {
 			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultspinner")));
 			gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
+			g_application_unmark_busy(g_application_get_default());
 			while(gtk_events_pending()) gtk_main_iteration();
 		}
 		surface_result = tmp_surface;
@@ -5908,6 +5910,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		if(unit_builder) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unit_builder, "unit_action_area")), FALSE);
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionspinner")));
 		gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
+		g_application_mark_busy(g_application_get_default());
 		title_set = TRUE;
 		/*dialog = GTK_WIDGET(gtk_builder_get_object(main_builder, "progress_dialog"));
 		gtk_window_set_title(GTK_WINDOW(dialog), _("Calculating…"));
@@ -5938,6 +5941,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), _("Qalculate!"));
 		gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionspinner")));		
+		g_application_unmark_busy(g_application_get_default());
 	}
 
 	b_busy = false;
@@ -11223,7 +11227,7 @@ gboolean on_gcalc_exit(GtkWidget*, GdkEvent*, gpointer) {
 	}
 	pthread_cancel(view_thread);
 	CALCULATOR->terminateThreads();
-	gtk_main_quit();
+	g_application_quit(g_application_get_default());
 	return TRUE;
 }
 
