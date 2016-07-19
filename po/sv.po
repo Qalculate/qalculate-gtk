@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-18 13:22+0200\n"
+"POT-Creation-Date: 2016-07-19 19:23+0200\n"
 "PO-Revision-Date: 2006-05-04 12:29+0200\n"
 "Last-Translator: Hanna Knutsson <hanna_k@fmgirl.com>\n"
 "Language-Team: Swedish\n"
@@ -2628,14 +2628,18 @@ msgid "_Variable"
 msgstr "_Variabel"
 
 #: ../src/main.cc:66
+msgid "Start a new instance of the application"
+msgstr "Starta a ny instans av programmet"
+
+#: ../src/main.cc:67
 msgid "Expression to calculate"
 msgstr "Uttryck att beräkna"
 
-#: ../src/main.cc:66
+#: ../src/main.cc:67
 msgid "EXPRESSION"
 msgstr "UTTRYCK"
 
-#: ../src/main.cc:130 ../src/callbacks.cc:14131
+#: ../src/main.cc:123 ../src/callbacks.cc:14131
 msgid ""
 "<span font=\"10\">Type a mathematical expression above, e.g. \"5 + 2 / 3\",\n"
 "and press the enter key.</span>"
@@ -2644,7 +2648,7 @@ msgstr ""
 "3\",\n"
 "och tryck på entertangenten.</span>"
 
-#: ../src/main.cc:148
+#: ../src/main.cc:141
 msgid ""
 "You need to download exchange rates to be able to convert between different "
 "currencies. You can later get current exchange rates by selecting “Update "
@@ -2658,41 +2662,41 @@ msgstr ""
 "\n"
 "Vill du hämta växelkurser från Internet?"
 
-#: ../src/main.cc:159
+#: ../src/main.cc:152
 msgid "ans"
 msgstr "ans"
 
-#: ../src/main.cc:160
+#: ../src/main.cc:153
 msgid "Last Answer"
 msgstr "Senaste svaret"
 
-#: ../src/main.cc:161
+#: ../src/main.cc:154
 msgid "answer"
 msgstr "svar"
 
-#: ../src/main.cc:163
+#: ../src/main.cc:156
 msgid "Answer 2"
 msgstr "Svar 2"
 
-#: ../src/main.cc:164
+#: ../src/main.cc:157
 msgid "Answer 3"
 msgstr "Svar 3"
 
-#: ../src/main.cc:165
+#: ../src/main.cc:158
 msgid "Answer 4"
 msgstr "Svar 4"
 
-#: ../src/main.cc:166
+#: ../src/main.cc:159
 msgid "Answer 5"
 msgstr "Svar 5"
 
-#: ../src/main.cc:170
+#: ../src/main.cc:163
 #, c-format
 msgid "Failed to load global definitions!\n"
 msgstr "Fel vid inhämtande av systemvida definitioner!\n"
 
 #. if no category has been selected (previously selected has been renamed/deleted), select "All"
-#: ../src/main.cc:178 ../src/main.cc:181 ../src/main.cc:184
+#: ../src/main.cc:171 ../src/main.cc:174 ../src/main.cc:177
 #: ../src/callbacks.cc:1265 ../src/callbacks.cc:1326 ../src/callbacks.cc:1361
 #: ../src/callbacks.cc:1599 ../src/callbacks.cc:1662 ../src/callbacks.cc:1742
 #: ../src/callbacks.cc:1832 ../src/callbacks.cc:1892 ../src/callbacks.cc:1959

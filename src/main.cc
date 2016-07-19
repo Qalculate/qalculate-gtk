@@ -63,6 +63,7 @@ bool do_timeout, check_expression_position;
 gint expression_position;
 
 static GOptionEntry options[] = {
+	{"new-instance", 'n', 0, G_OPTION_ARG_NONE, NULL, N_("Start a new instance of the application"), NULL},
 	{G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_STRING_ARRAY, NULL, N_("Expression to calculate"), N_("EXPRESSION")},
 	{NULL}
 };
@@ -102,10 +103,10 @@ void create_application(GtkApplication *app) {
 
 	bool canplot = CALCULATOR->canPlot();
 	bool canfetch = CALCULATOR->canFetch();
-	
+
 	//create main window
 	create_main_window();
-	
+
 	g_application_set_default(G_APPLICATION(app));
 	gtk_window_set_application(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), app);
 
@@ -194,6 +195,7 @@ void create_application(GtkApplication *app) {
 
 	//create dynamic menus
 	generate_units_tree_struct();
+
 	generate_functions_tree_struct();
 	generate_variables_tree_struct();
 	create_fmenu();
@@ -202,7 +204,7 @@ void create_application(GtkApplication *app) {
 	//create_pmenu();	
 	create_umenu2();
 	create_pmenu2();
-	
+
 	update_unit_selector_tree();
 
 	for(int i = ((int) recent_functions_pre.size()) - 1; i >= 0; i--) {
@@ -247,7 +249,7 @@ void create_application(GtkApplication *app) {
 	g_free(gstr);
 }
 
-static void activate(GtkApplication *app) {
+static void qalculate_activate(GtkApplication *app) {
 
 	GList *list;
 
@@ -261,12 +263,21 @@ static void activate(GtkApplication *app) {
 	
 }
 
-static int qalculate_app_command_line(GtkApplication *app, GApplicationCommandLine *cmd_line) {
+static gint qalculate_handle_local_options(GtkApplication *app, GVariantDict *options_dict) {
+	gboolean b = false;
+	g_variant_dict_lookup(options_dict, "new-instance", "b", &b);
+	if(b) {
+		g_application_set_flags(G_APPLICATION(app), G_APPLICATION_NON_UNIQUE);
+	}
+	return -1;
+}
+
+static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine *cmd_line) {
 	GVariantDict *options_dict = g_application_command_line_get_options_dict(cmd_line);
 	gchar **remaining = NULL;
 	g_variant_dict_lookup(options_dict, G_OPTION_REMAINING, "^as", &remaining);
 	calc_arg = "";
-	for(int i = 0; remaining && i < g_strv_length(remaining); i++) {
+	for(int i = 0; remaining && i < (int) g_strv_length(remaining); i++) {
 		if(i > 1) {
 			calc_arg += " ";
 		}
@@ -305,8 +316,9 @@ int main (int argc, char *argv[]) {
 
 	app = gtk_application_new("org.gtk.qalculate", G_APPLICATION_HANDLES_COMMAND_LINE);
 	g_application_add_main_option_entries(G_APPLICATION(app), options);
-	g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
-	g_signal_connect(app, "command_line", G_CALLBACK(qalculate_app_command_line), NULL);
+	g_signal_connect(app, "activate", G_CALLBACK(qalculate_activate), NULL);
+	g_signal_connect(app, "handle_local_options", G_CALLBACK(qalculate_handle_local_options), NULL);
+	g_signal_connect(app, "command_line", G_CALLBACK(qalculate_command_line), NULL);
 
 	status = g_application_run(G_APPLICATION(app), argc, argv);
 
