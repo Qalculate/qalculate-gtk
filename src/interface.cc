@@ -174,12 +174,14 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_post_conversion_base")), TRUE);
 			break;
 		}
-		default: {
+		default: {			
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_post_conversion_none")), TRUE);
 			break;
 		}
 	}
 
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_mixed_units_conversion")), eo.mixed_units_conversion != MIXED_UNITS_CONVERSION_NONE);
+	
 	switch(eo.parse_options.angle_unit) {
 		case ANGLE_UNIT_DEGREES: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_degrees")), TRUE);

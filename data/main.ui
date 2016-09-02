@@ -826,6 +826,16 @@ On: 2 (m/s)</property>
                                 <signal name="activate" handler="on_menu_item_post_conversion_best_activate" swapped="no"/>
                               </object>
                             </child>
+                            <child>
+                              <object class="GtkCheckMenuItem" id="menu_item_mixed_units_conversion">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Off: (2 m)/s
+On: 2 (m/s)</property>
+                                <property name="label" translatable="yes">Convert to Mixed Units</property>
+                                <signal name="activate" handler="on_menu_item_mixed_units_conversion_activate" swapped="no"/>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>

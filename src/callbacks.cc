@@ -923,6 +923,8 @@ void display_parse_status() {
 				parsed_expression += _("optimal unit");
 			} else if(equalsIgnoreCase(str_u, "base") || equalsIgnoreCase(str_u, _("base"))) {
 				parsed_expression += _("base units");
+			} else if(equalsIgnoreCase(str_u, "mixed") || equalsIgnoreCase(str_u, _("mixed"))) {
+				parsed_expression += _("mixed units");
 			} else if(equalsIgnoreCase(str_u, "fraction") || equalsIgnoreCase(str_u, _("fraction"))) {
 				parsed_expression += _("fraction");
 			} else if(equalsIgnoreCase(str_u, "factors") || equalsIgnoreCase(str_u, _("factors"))) {
@@ -5739,11 +5741,22 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			return;
 		} else if(equalsIgnoreCase(to_str, "base") || equalsIgnoreCase(to_str, _("base"))) {
 			AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
-			evalops.auto_post_conversion = POST_CONVERSION_BEST;
+			evalops.auto_post_conversion = POST_CONVERSION_BASE;
 			b_busy = false;
 			b_busy_expression = false;
 			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			evalops.auto_post_conversion = save_auto_post_conversion;
+			evalops.parse_options.units_enabled = b_units_saved;
+			return;
+		} else if(equalsIgnoreCase(to_str, "mixed") || equalsIgnoreCase(to_str, _("mixed"))) {
+			AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
+			MixedUnitsConversion save_mixed_units_conversion = evalops.mixed_units_conversion;
+			evalops.auto_post_conversion = POST_CONVERSION_NONE;
+			b_busy = false;
+			b_busy_expression = false;
+			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			evalops.auto_post_conversion = save_auto_post_conversion;
+			evalops.mixed_units_conversion = save_mixed_units_conversion;
 			evalops.parse_options.units_enabled = b_units_saved;
 			return;
 		} else if(equalsIgnoreCase(to_str, "fraction") || equalsIgnoreCase(to_str, _("fraction"))) {
@@ -9586,6 +9599,7 @@ void load_preferences() {
 	evalops.parse_options.angle_unit = ANGLE_UNIT_RADIANS;
 	evalops.parse_options.dot_as_separator = CALCULATOR->default_dot_as_separator;
 	evalops.parse_options.comma_as_separator = false;
+	evalops.mixed_units_conversion = MIXED_UNITS_CONVERSION_DEFAULT;
 
 	rpn_mode = false;
 	rpn_keypad_only = true;
@@ -9895,6 +9909,11 @@ void load_preferences() {
 					if(v >= POST_CONVERSION_NONE && v <= POST_CONVERSION_BASE) {
 						if(mode_index == 1) evalops.auto_post_conversion = (AutoPostConversion) v;
 						else modes[mode_index].eo.auto_post_conversion = (AutoPostConversion) v;
+					}
+				} else if(svar == "mixed_units_conversion") {
+					if(v >= MIXED_UNITS_CONVERSION_NONE || v <= MIXED_UNITS_CONVERSION_FORCE_ALL) {
+						if(mode_index == 1) evalops.mixed_units_conversion = (MixedUnitsConversion) v;
+						else modes[mode_index].eo.mixed_units_conversion = (MixedUnitsConversion) v;
 					}
 				} else if(svar == "indicate_infinite_series") {
 					if(mode_index == 1) printops.indicate_infinite_series = v;
@@ -10358,7 +10377,8 @@ void save_preferences(bool mode) {
 		fprintf(file, "all_prefixes_enabled=%i\n", modes[i].po.use_all_prefixes);
 		fprintf(file, "denominator_prefix_enabled=%i\n", modes[i].po.use_denominator_prefix);
 		fprintf(file, "place_units_separately=%i\n", modes[i].po.place_units_separately);
-		fprintf(file, "auto_post_conversion=%i\n", modes[i].eo.auto_post_conversion);	
+		fprintf(file, "auto_post_conversion=%i\n", modes[i].eo.auto_post_conversion);
+		fprintf(file, "mixed_units_conversion=%i\n", modes[i].eo.mixed_units_conversion);
 		fprintf(file, "number_base=%i\n", modes[i].po.base);
 		fprintf(file, "number_base_expression=%i\n", modes[i].eo.parse_options.base);
 		fprintf(file, "read_precision=%i\n", modes[i].eo.parse_options.read_precision);
@@ -12295,6 +12315,11 @@ void on_menu_item_post_conversion_base_activate(GtkMenuItem *w, gpointer) {
 void on_menu_item_post_conversion_best_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.auto_post_conversion = POST_CONVERSION_BEST;
+	expression_calculation_updated();
+}
+void on_menu_item_mixed_units_conversion_activate(GtkMenuItem *w, gpointer) {
+	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) evalops.mixed_units_conversion = MIXED_UNITS_CONVERSION_DEFAULT;
+	else evalops.mixed_units_conversion = MIXED_UNITS_CONVERSION_NONE;
 	expression_calculation_updated();
 }
 void on_menu_item_factorize_activate(GtkMenuItem*, gpointer) {
