@@ -5781,10 +5781,10 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	}*/	
 //	if(execute_str.empty() && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion"))) && gtk_expander_get_expanded(GTK_EXPANDER(expander_convert))) {
 	if(execute_str.empty() && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")))) {
-		string ceu_str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit")));
+		string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), evalops.parse_options);
 		remove_blank_ends(ceu_str);
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {			
-			if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[1] != '?') {
+			if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-') {
 				ceu_str = "?" + ceu_str;
 			}
 		}
@@ -15036,17 +15036,17 @@ void on_plot_button_appearance_apply_clicked(GtkButton*, gpointer) {
 
 void convert_from_convert_entry_unit() {
 	do_timeout = false;
-	string ceu_str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit")));	
+	string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), evalops.parse_options);
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {
 		remove_blank_ends(ceu_str);
-		if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[1] != '?') {
+		if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-') {
 			ceu_str = "?" + ceu_str;
 		}
 	}
 	CALCULATOR->resetExchangeRatesUsed();
 	MathStructure mstruct_new(CALCULATOR->convert(*mstruct, ceu_str, evalops));
 	if(check_exchange_rates()) mstruct->set(CALCULATOR->convert(*mstruct, ceu_str, evalops));
-	else mstruct->set(mstruct_new);	
+	else mstruct->set(mstruct_new);
 	bool b_puup = printops.use_unit_prefixes;
 	printops.use_unit_prefixes = true;
 	result_action_executed();
