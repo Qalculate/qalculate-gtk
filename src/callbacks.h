@@ -458,6 +458,7 @@ void on_stackview_item_editing_canceled(GtkCellRenderer *renderer, gpointer user
 
 void on_unit_edit_entry_name_changed(GtkEditable *editable, gpointer user_data);
 void on_unit_edit_combobox_class_changed(GtkComboBox *om, gpointer user_data);
+void on_unit_edit_checkbutton_mix_toggled(GtkToggleButton *w, gpointer);
 void on_unit_edit_combo_system_changed(GtkComboBox *om, gpointer user_data);
 void on_units_button_new_clicked(GtkButton *button, gpointer user_data);
 void on_units_button_edit_clicked(GtkButton *button, gpointer user_data);

@@ -6799,12 +6799,17 @@ edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 		
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(unitedit_builder, "unit_edit_combo_category")))), u->category().c_str());
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_desc")), u->title(false).c_str());
+		
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), FALSE);
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_priority")), 1);
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_min")), 1);		
 
 		switch(u->subtype()) {
 			case SUBTYPE_ALIAS_UNIT: {
 				AliasUnit *au = (AliasUnit*) u;
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")), ((CompositeUnit*) (au->firstBaseUnit()))->preferredDisplayName(printops.abbreviate_names, true, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")).name.c_str());
 				gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp")), au->firstBaseExponent());
+				if(au->firstBaseExponent() != 1) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_frame_mix")), FALSE);
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), CALCULATOR->localizeExpression(au->expression()).c_str());
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")), CALCULATOR->localizeExpression(au->inverseExpression()).c_str());
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact")), !au->isApproximate());
@@ -6813,11 +6818,21 @@ edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact")), !u->isBuiltin());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp")), !u->isBuiltin());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")), !u->isBuiltin());
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_frame_mix")), !u->isBuiltin());
+				if(au->mixWithBase() > 0) {
+					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), TRUE);
+					gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_priority")), au->mixWithBase());
+					gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_min")), au->mixWithBaseMinimum() > 1 ? au->mixWithBaseMinimum() : 1);
+					on_unit_edit_checkbutton_mix_toggled(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), NULL);
+				}
 				break;
 			}
 			case SUBTYPE_COMPOSITE_UNIT: {
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")), ((CompositeUnit*) u)->print(false, printops.abbreviate_names, true, &can_display_unicode_string_function, (void*) gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")).c_str());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")), !u->isBuiltin());
+			}
+			default: {				
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_frame_mix")), FALSE);
 			}
 		}
 	} else {
@@ -6827,7 +6842,7 @@ edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unitedit_builder, "unit_edit_combobox_class")), UNIT_CLASS_ALIAS_UNIT);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), "1");
 		on_unit_edit_combobox_class_changed(GTK_COMBO_BOX(gtk_builder_get_object(unitedit_builder, "unit_edit_combobox_class")), NULL);
-	}
+	}	
 
 run_unit_edit_dialog:
 	gint response = gtk_dialog_run(GTK_DIALOG(dialog));
@@ -6875,6 +6890,12 @@ run_unit_edit_dialog:
 						au->setInverseExpression(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed"))), evalops.parse_options));
 						au->setExponent(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp"))));
 						au->setApproximate(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact"))));
+						if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")))) {
+							au->setMixWithBase(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_priority"))));
+							au->setMixWithBaseMinimum(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_min"))));
+						} else {
+							au->setMixWithBase(0);
+						}
 					}
 					break;
 				}
@@ -6916,6 +6937,10 @@ run_unit_edit_dialog:
 					}
 					u = new AliasUnit(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(unitedit_builder, "unit_edit_combo_category"))), "", "", "", gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_desc"))), bu, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation"))), evalops.parse_options), gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp"))), CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed"))), evalops.parse_options), true);
 					((AliasUnit*) u)->setApproximate(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact"))));
+					if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")))) {
+						((AliasUnit*) u)->setMixWithBase(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_priority"))));
+						((AliasUnit*) u)->setMixWithBaseMinimum(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_min"))));
+					}
 					break;
 				}
 				case UNIT_CLASS_COMPOSITE_UNIT: {
@@ -13009,7 +13034,29 @@ void on_unit_edit_combobox_class_changed(GtkComboBox *om, gpointer) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact")), gtk_combo_box_get_active(om) == UNIT_CLASS_ALIAS_UNIT);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_label_reversed")), gtk_combo_box_get_active(om) == UNIT_CLASS_ALIAS_UNIT);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")), gtk_combo_box_get_active(om) == UNIT_CLASS_ALIAS_UNIT);
-	
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_frame_mix")), gtk_combo_box_get_active(om) == UNIT_CLASS_ALIAS_UNIT && gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp"))) == 1);
+	if(gtk_combo_box_get_active(om) != UNIT_CLASS_ALIAS_UNIT) {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), FALSE);
+		on_unit_edit_checkbutton_mix_toggled(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), NULL);		
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp")), 1);
+	}
+}
+
+void on_unit_edit_checkbutton_mix_toggled(GtkToggleButton *w, gpointer) {
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_label_mix_priority")), gtk_toggle_button_get_active(w));
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_label_mix_min")), gtk_toggle_button_get_active(w));
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_priority")), gtk_toggle_button_get_active(w));
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_min")), gtk_toggle_button_get_active(w));
+}
+
+void on_unit_edit_spinbutton_exp_value_changed(GtkSpinButton *w, gpointer) {
+	if(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unitedit_builder, "unit_edit_combobox_class"))) != UNIT_CLASS_ALIAS_UNIT) return;
+	if(gtk_spin_button_get_value_as_int(w) != 1) {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_frame_mix")), FALSE);
+	} else {
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_frame_mix")), TRUE);
+	}
 }
 
 /*
