@@ -5752,6 +5752,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
 			MixedUnitsConversion save_mixed_units_conversion = evalops.mixed_units_conversion;
 			evalops.auto_post_conversion = POST_CONVERSION_NONE;
+			evalops.mixed_units_conversion = MIXED_UNITS_CONVERSION_FULL_INTEGER;
 			b_busy = false;
 			b_busy_expression = false;
 			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
