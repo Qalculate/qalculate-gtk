@@ -12878,7 +12878,7 @@ void on_menu_item_decimals_activate(GtkMenuItem*, gpointer) {
 }
 
 gboolean on_main_window_focus_in_event(GtkWidget*, GdkEventFocus*, gpointer) {
-	focus_keeping_selection();
+	//focus_keeping_selection();
 	return FALSE;
 }
 
