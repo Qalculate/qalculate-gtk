@@ -111,7 +111,7 @@ void create_application(GtkApplication *app) {
 	gtk_window_set_application(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), app);
 
 	while(gtk_events_pending()) gtk_main_iteration();
-	
+
 	showing_first_time_message = first_time;
 
 	if(!calc_arg.empty()) {
@@ -119,17 +119,26 @@ void create_application(GtkApplication *app) {
 	} else if(first_time) {		
 		PangoLayout *layout = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview")), NULL);
 		GdkRGBA rgba;
+#if GDK_MAJOR_VERSION > 3 || GDK_MINOR_VERSION >= 22
+		GdkDrawingContext *gdc = gdk_window_begin_draw_frame(gtk_widget_get_window(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), cairo_region_create());
+		cairo_t *cr = gdk_drawing_context_get_cairo_context(gdc);
+#else
 		cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))));
+#endif
 		pango_layout_set_markup(layout, _("<span font=\"10\">Type a mathematical expression above, e.g. \"5 + 2 / 3\",\nand press the enter key.</span>"), -1);
 		gtk_style_context_get_color(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), gtk_widget_get_state_flags(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), &rgba);
 		cairo_move_to(cr, 6, 0);
 		gdk_cairo_set_source_rgba(cr, &rgba);
 		pango_cairo_show_layout(cr, layout);
 		g_object_unref(layout);
+#if GDK_MAJOR_VERSION > 3 || GDK_MINOR_VERSION >= 22
+		gdk_window_end_draw_frame(gtk_widget_get_window(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), gdc);
+#else
 		cairo_destroy(cr);
+#endif
 	}
 
-	while(gtk_events_pending()) gtk_main_iteration();
+	while(gtk_events_pending()) gtk_main_iteration();	
 
 	//exchange rates
 	
