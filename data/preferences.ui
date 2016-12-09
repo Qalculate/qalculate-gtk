@@ -2,6 +2,13 @@
 <!-- Generated with glade 3.20.0 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
+  <object class="GtkAdjustment" id="preferences_update_exchange_rates_adjustment">
+    <property name="lower">-1</property>
+    <property name="upper">100</property>
+    <property name="value">-1</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">7</property>
+  </object>
   <object class="GtkDialog" id="preferences_dialog">
     <property name="can_focus">False</property>
     <property name="border_width">6</property>
@@ -122,6 +129,25 @@
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_allow_multiple_instances">
+                    <property name="label" translatable="yes">Allow multiple instances</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="tooltip_text" translatable="yes">Allow multiple instances of the Qalculate! main window to be open at the same time. 
+
+Note that only the mode and definitions of the last closed instance will be saved.</property>
+                    <property name="use_underline">True</property>
+                    <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_allow_multiple_instances_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_rpn_keypad_only">
                     <property name="label" translatable="yes">Use only keypad keys for RPN</property>
                     <property name="visible">True</property>
@@ -136,7 +162,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">4</property>
+                    <property name="position">5</property>
                   </packing>
                 </child>
                 <child>
@@ -153,7 +179,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">5</property>
+                    <property name="position">6</property>
                   </packing>
                 </child>
                 <child>
@@ -170,7 +196,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">6</property>
+                    <property name="position">7</property>
                   </packing>
                 </child>
                 <child>
@@ -187,7 +213,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">7</property>
+                    <property name="position">8</property>
                   </packing>
                 </child>
                 <child>
@@ -204,7 +230,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">8</property>
+                    <property name="position">9</property>
                   </packing>
                 </child>
                 <child>
@@ -221,7 +247,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">9</property>
+                    <property name="position">10</property>
                   </packing>
                 </child>
                 <child>
@@ -238,7 +264,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">10</property>
+                    <property name="position">11</property>
                   </packing>
                 </child>
                 <child>
@@ -255,7 +281,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">11</property>
+                    <property name="position">12</property>
                   </packing>
                 </child>
                 <child>
@@ -472,7 +498,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">12</property>
+                    <property name="position">13</property>
                   </packing>
                 </child>
               </object>
@@ -673,12 +699,8 @@
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkAdjustment" id="preferences_update_exchange_rates_adjustment">
-    <property name="lower">-1</property>
-    <property name="upper">100</property>
-    <property name="value">-1</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">7</property>
+    <child>
+      <placeholder/>
+    </child>
   </object>
 </interface>

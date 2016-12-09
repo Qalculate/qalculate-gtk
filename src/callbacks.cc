@@ -136,7 +136,7 @@ string custom_result_font, custom_expression_font, custom_status_font, wget_args
 int scale_n = 0;
 bool hyp_is_on, inv_is_on;
 bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes;
-extern bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message;
+extern bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message, allow_multiple_instances;
 int auto_update_exchange_rates;
 bool first_error;
 bool display_expression_status, enable_completion;
@@ -10236,6 +10236,7 @@ void save_preferences(bool mode) {
 	g_free(gstr2);
 	fprintf(file, "\n[General]\n");
 	fprintf(file, "version=%s\n", VERSION);
+	fprintf(file, "allow_multiple_instances=%i\n", allow_multiple_instances);
 	gint w, h;
 	gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
 	fprintf(file, "width=%i\n", w);
@@ -10759,6 +10760,10 @@ void on_preferences_checkbutton_save_defs_toggled(GtkToggleButton *w, gpointer) 
 }
 void on_preferences_checkbutton_save_mode_toggled(GtkToggleButton *w, gpointer) {
 	save_mode_on_exit = gtk_toggle_button_get_active(w);
+}
+void on_preferences_checkbutton_allow_multiple_instances_toggled(GtkToggleButton *w, gpointer) {
+	allow_multiple_instances = gtk_toggle_button_get_active(w);
+	save_preferences(false);
 }
 void on_preferences_checkbutton_rpn_keypad_only_toggled(GtkToggleButton *w, gpointer) {
 	rpn_keypad_only = gtk_toggle_button_get_active(w);

@@ -17,6 +17,7 @@
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 #include "support.h"
 #include "interface.h"
@@ -38,7 +39,7 @@ GtkWidget *units_window;
 string selected_unit_category;
 string selected_unit_selector_category;
 Unit *selected_unit, *selected_to_unit;
-bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message;
+bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message, allow_multiple_instances;
 cairo_surface_t *surface_result;
 GdkPixbuf *pixbuf_result;
 extern bool b_busy, b_busy_command, b_busy_result, b_busy_expression;
@@ -108,7 +109,7 @@ void create_application(GtkApplication *app) {
 	create_main_window();
 
 	g_application_set_default(G_APPLICATION(app));
-	gtk_window_set_application(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), app);
+	gtk_window_set_application(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), app);	
 
 	while(gtk_events_pending()) gtk_main_iteration();
 
@@ -268,8 +269,9 @@ static void qalculate_activate(GtkApplication *app) {
 		gtk_window_present(GTK_WINDOW(list->data));
 		return;
 	}
+
 	create_application(app);
-	
+
 }
 
 static gint qalculate_handle_local_options(GtkApplication *app, GVariantDict *options_dict) {
@@ -278,6 +280,49 @@ static gint qalculate_handle_local_options(GtkApplication *app, GVariantDict *op
 	if(b) {
 		g_application_set_flags(G_APPLICATION(app), G_APPLICATION_NON_UNIQUE);
 	}
+	allow_multiple_instances = false;
+	FILE *file = NULL;
+	gchar *gstr_oldfile = NULL;
+	gchar *gstr_file = g_build_filename(getLocalDir().c_str(), "qalculate-gtk.cfg", NULL);
+	file = fopen(gstr_file, "r");
+	if(!file) {
+		gstr_oldfile = g_build_filename(getOldLocalDir().c_str(), "qalculate-gtk.cfg", NULL);
+		file = fopen(gstr_oldfile, "r");
+		if(!file) {
+			g_free(gstr_file);
+			g_free(gstr_oldfile);
+			return -1;
+		}
+	}	
+	if(file) {
+		char line[100];
+		string stmp, svar;
+		size_t i;
+		while(true) {
+			if(fgets(line, 100, file) == NULL)
+				break;
+			stmp = line;
+			remove_blank_ends(stmp);
+			if((i = stmp.find_first_of("=")) != string::npos) {
+				svar = stmp.substr(0, i);
+				remove_blank_ends(svar);
+				if(svar == "allow_multiple_instances") {
+					string svalue = stmp.substr(i + 1, stmp.length() - (i + 1));
+					remove_blank_ends(svalue);
+					allow_multiple_instances = s2i(svalue);
+					break;
+				}
+			}
+		}
+		fclose(file);
+		if(gstr_oldfile) {
+			mkdir(getLocalDir().c_str(), S_IRWXU);
+			move_file(gstr_oldfile, gstr_file);
+			g_free(gstr_oldfile);
+		}
+	}
+	g_free(gstr_file);
+	if(allow_multiple_instances) g_application_set_flags(G_APPLICATION(app), G_APPLICATION_NON_UNIQUE);
 	return -1;
 }
 
