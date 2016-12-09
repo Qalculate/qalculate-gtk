@@ -11167,7 +11167,11 @@ gboolean on_resultview_button_press_event(GtkWidget*, GdkEventButton *event, gpo
 	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
 		if(b_busy) return TRUE;
 		update_resultview_popup();
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_resultview")), (GdkEvent*) event);
+#else
 		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_resultview")), NULL, NULL, NULL, NULL, event->button, event->time);
+#endif
 		return TRUE;
 	}
 	return FALSE;
@@ -11175,7 +11179,11 @@ gboolean on_resultview_button_press_event(GtkWidget*, GdkEventButton *event, gpo
 gboolean on_resultview_popup_menu(GtkWidget*, gpointer) {
 	if(b_busy) return TRUE;
 	update_resultview_popup();
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_resultview")), NULL);
+#else
 	gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_resultview")), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
+#endif
 	return TRUE;
 }
 
