@@ -136,7 +136,7 @@
                     <property name="receives_default">False</property>
                     <property name="tooltip_text" translatable="yes">Allow multiple instances of the Qalculate! main window to be open at the same time. 
 
-Note that only the mode and definitions of the last closed instance will be saved.</property>
+Note that only the mode, history and definitions of the last closed instance will be saved.</property>
                     <property name="use_underline">True</property>
                     <property name="draw_indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_allow_multiple_instances_toggled" swapped="no"/>
