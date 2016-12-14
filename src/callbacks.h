@@ -261,7 +261,7 @@ void on_button_sine_clicked(GtkButton *w, gpointer user_data);
 void on_button_cosine_clicked(GtkButton *w, gpointer user_data);
 void on_button_store_clicked(GtkButton *w, gpointer user_data);
 void on_button_mod_clicked(GtkButton *w, gpointer user_data);
-void on_button_factorial_clicked(GtkButton *w, gpointer user_data);
+void on_button_reciprocal_clicked(GtkButton *w, gpointer user_data);
 void on_togglebutton_expression_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 void on_togglebutton_result_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 void on_expression_changed(GtkEditable *w, gpointer user_data);

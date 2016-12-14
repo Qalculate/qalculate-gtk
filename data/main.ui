@@ -2187,19 +2187,19 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="button_factorial">
+                                  <object class="GtkButton" id="button_reciprocal">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="focus_on_click">False</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Factorial</property>
+                                    <property name="tooltip_text" translatable="yes">Reciprocal</property>
                                     <property name="use_underline">True</property>
-                                    <signal name="clicked" handler="on_button_factorial_clicked" swapped="no"/>
+                                    <signal name="clicked" handler="on_button_reciprocal_clicked" swapped="no"/>
                                     <child>
                                       <object class="GtkLabel">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label" translatable="yes">x!</property>
+                                        <property name="label" translatable="yes">1/x</property>
                                       </object>
                                     </child>
                                   </object>

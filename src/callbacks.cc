@@ -8867,10 +8867,15 @@ void new_vector(GtkMenuItem*, gpointer)
 void insertButtonFunction(const gchar *text, bool append_space = true) {
 	gint start = 0, end = 0;
 	if(gtk_editable_get_selection_bounds(GTK_EDITABLE(expression), &start, &end)) {
+		int old_length = gtk_entry_get_text_length(GTK_ENTRY(expression));
 		//set selection as argument
 		gchar *gstr = gtk_editable_get_chars(GTK_EDITABLE(expression), start, end);
 		gchar *gstr2 = g_strdup_printf("%s(%s)", text, gstr);
 		insert_text(gstr2);
+		// execute expression, if the whole expression was selected, no need for additional enter
+		if (end - start == old_length) {
+			execute_expression();
+		}
 		g_free(gstr);
 		g_free(gstr2);
 	} else {
@@ -11446,13 +11451,8 @@ void on_button_mod_clicked(GtkButton*, gpointer) {
 	insertButtonFunction(CALCULATOR->f_mod);
 }
 
-void on_button_factorial_clicked(GtkButton*, gpointer) {
-	if(rpn_mode) {
-		insertButtonFunction(CALCULATOR->f_factorial);
-		return;
-	}
-	wrap_expression_selection();
-	insert_text("!");
+void on_button_reciprocal_clicked(GtkButton*, gpointer) {
+	insertButtonFunction("inv");
 }
 
 /*
