@@ -8861,13 +8861,26 @@ void new_vector(GtkMenuItem*, gpointer)
 	edit_matrix(_("Vectors"), NULL, NULL, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), TRUE);
 }
 
+bool is_number(const gchar *str) {
+	while (*str) {
+		if ((*str < '0' || *str > '9') && *str != '.') return false;
+		str++;
+	}
+	return true;
+}
+
 /*
 	insert one-argument function when button clicked
 */
 void insertButtonFunction(const gchar *text, bool append_space = true) {
 	gint start = 0, end = 0;
+	const gchar *expr = gtk_entry_get_text(GTK_ENTRY(expression));
+	int old_length = g_utf8_strlen(expr, -1);
+	// special case: the user just entered a number, then select all, so that it gets executed
+	if (is_number(expr)) {
+		gtk_editable_select_region(GTK_EDITABLE(expression), 0, old_length);
+	}
 	if(gtk_editable_get_selection_bounds(GTK_EDITABLE(expression), &start, &end)) {
-		int old_length = gtk_entry_get_text_length(GTK_ENTRY(expression));
 		//set selection as argument
 		gchar *gstr = gtk_editable_get_chars(GTK_EDITABLE(expression), start, end);
 		gchar *gstr2 = g_strdup_printf("%s(%s)", text, gstr);
