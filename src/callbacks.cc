@@ -8878,7 +8878,7 @@ void insertButtonFunction(const gchar *text, bool append_space = true) {
 	const gchar *expr = gtk_entry_get_text(GTK_ENTRY(expression));
 	int old_length = g_utf8_strlen(expr, -1);
 	// special case: the user just entered a number, then select all, so that it gets executed
-	if(!rpn_mode && gtk_editable_get_position(GTK_EDITABLE(expression)) == old_length && is_number(expr)) {
+	if(gtk_editable_get_position(GTK_EDITABLE(expression)) == old_length && is_number(expr)) {
 		gtk_editable_select_region(GTK_EDITABLE(expression), 0, old_length);
 	}
 	if(gtk_editable_get_selection_bounds(GTK_EDITABLE(expression), &start, &end)) {
@@ -8895,18 +8895,19 @@ void insertButtonFunction(const gchar *text, bool append_space = true) {
 	} else {
 		gchar *gstr2;
 		//one-argument functions do not need parenthesis
-		if(append_space) {
+		/*if(append_space) {
 			gstr2 = g_strdup_printf("%s ", text);
 		} else {
 			gstr2 = g_strdup_printf("%s", text);
-		}
-//		gchar *gstr2 = g_strdup_printf("%s()", text);
+		}*/
+		gstr2 = g_strdup_printf("%s()", text);
 		insert_text(gstr2);
-//		gtk_editable_set_position(GTK_EDITABLE(expression), gtk_editable_get_position(GTK_EDITABLE(expression)) - 1);
+		gtk_editable_set_position(GTK_EDITABLE(expression), gtk_editable_get_position(GTK_EDITABLE(expression)) - 1);
 		g_free(gstr2);
 	}
 }
 void insertButtonFunction(MathFunction *f) {
+	if(!f) return;
 	if(rpn_mode && f->args() == 1) {
 		calculateRPN(f);
 		return;
@@ -11466,7 +11467,7 @@ void on_button_mod_clicked(GtkButton*, gpointer) {
 }
 
 void on_button_reciprocal_clicked(GtkButton*, gpointer) {
-	insertButtonFunction("inv");
+	insertButtonFunction(CALCULATOR->getFunction("inv"));
 }
 
 /*
