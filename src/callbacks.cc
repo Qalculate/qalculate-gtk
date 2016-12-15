@@ -8861,16 +8861,34 @@ void new_vector(GtkMenuItem*, gpointer)
 	edit_matrix(_("Vectors"), NULL, NULL, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), TRUE);
 }
 
+bool is_number(const gchar *str) {
+	while (*str) {
+		if ((*str < '0' || *str > '9') && *str != '.') return false;
+		str++;
+	}
+	return true;
+}
+
 /*
 	insert one-argument function when button clicked
 */
 void insertButtonFunction(const gchar *text, bool append_space = true) {
 	gint start = 0, end = 0;
+	const gchar *expr = gtk_entry_get_text(GTK_ENTRY(expression));
+	int old_length = g_utf8_strlen(expr, -1);
+	// special case: the user just entered a number, then select all, so that it gets executed
+	if (is_number(expr)) {
+		gtk_editable_select_region(GTK_EDITABLE(expression), 0, old_length);
+	}
 	if(gtk_editable_get_selection_bounds(GTK_EDITABLE(expression), &start, &end)) {
 		//set selection as argument
 		gchar *gstr = gtk_editable_get_chars(GTK_EDITABLE(expression), start, end);
 		gchar *gstr2 = g_strdup_printf("%s(%s)", text, gstr);
 		insert_text(gstr2);
+		// execute expression, if the whole expression was selected, no need for additional enter
+		if (end - start == old_length) {
+			execute_expression();
+		}
 		g_free(gstr);
 		g_free(gstr2);
 	} else {
@@ -11446,13 +11464,8 @@ void on_button_mod_clicked(GtkButton*, gpointer) {
 	insertButtonFunction(CALCULATOR->f_mod);
 }
 
-void on_button_factorial_clicked(GtkButton*, gpointer) {
-	if(rpn_mode) {
-		insertButtonFunction(CALCULATOR->f_factorial);
-		return;
-	}
-	wrap_expression_selection();
-	insert_text("!");
+void on_button_reciprocal_clicked(GtkButton*, gpointer) {
+	insertButtonFunction("inv");
 }
 
 /*
