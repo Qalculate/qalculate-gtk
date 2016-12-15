@@ -8878,7 +8878,7 @@ void insertButtonFunction(const gchar *text, bool append_space = true) {
 	const gchar *expr = gtk_entry_get_text(GTK_ENTRY(expression));
 	int old_length = g_utf8_strlen(expr, -1);
 	// special case: the user just entered a number, then select all, so that it gets executed
-	if(gtk_editable_get_position(GTK_EDITABLE(expression)) && is_number(expr)) {
+	if(!rpn_mode && gtk_editable_get_position(GTK_EDITABLE(expression)) == old_length && is_number(expr)) {
 		gtk_editable_select_region(GTK_EDITABLE(expression), 0, old_length);
 	}
 	if(gtk_editable_get_selection_bounds(GTK_EDITABLE(expression), &start, &end)) {
@@ -8887,7 +8887,7 @@ void insertButtonFunction(const gchar *text, bool append_space = true) {
 		gchar *gstr2 = g_strdup_printf("%s(%s)", text, gstr);
 		insert_text(gstr2);
 		// execute expression, if the whole expression was selected, no need for additional enter
-		if (end - start == old_length) {
+		if(!rpn_mode && end - start == old_length) {
 			execute_expression();
 		}
 		g_free(gstr);
