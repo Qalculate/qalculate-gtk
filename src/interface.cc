@@ -145,7 +145,16 @@ void set_assumptions_items(AssumptionType at, AssumptionSign as) {
 
 void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, AssumptionType at, AssumptionSign as, bool in_rpn_mode, int precision, bool initial_update) {
 
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_mode")), in_rpn_mode);
+	if(in_rpn_mode && evalops.parse_options.rpn) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_on")), true);
+	else if(in_rpn_mode) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_stack")), true);
+	else if(evalops.parse_options.rpn) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_syntax")), true);
+	else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_off")), true);
+	
+	if(in_rpn_mode && evalops.parse_options.rpn) {
+		gtk_widget_add_accelerator(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_rpn_off")), "activate", accel_group, GDK_KEY_R, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+	} else {
+		gtk_widget_add_accelerator(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_rpn_on")), "activate", accel_group, GDK_KEY_R, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+	}
 
 	switch(eo.approximation) {
 		case APPROXIMATION_EXACT: {
@@ -206,7 +215,6 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 	}
 
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_read_precision")), eo.parse_options.read_precision != DONT_READ_PRECISION);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_syntax")), eo.parse_options.rpn);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_limit_implicit_multiplication")), eo.parse_options.limit_implicit_multiplication);
 	switch(eo.parse_options.parsing_mode) {
 		case PARSING_MODE_IMPLICIT_MULTIPLICATION_FIRST: {

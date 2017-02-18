@@ -9274,7 +9274,8 @@ void on_popup_menu_item_rpn_syntax_activate(GtkMenuItem *w, gpointer) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_syntax")), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
 }
 void on_popup_menu_item_rpn_mode_activate(GtkMenuItem *w, gpointer) {
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_mode")), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
+	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_on")), true);
+	else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_off")), true);
 }
 void on_expression_populate_popup(GtkEntry*, GtkMenu *menu, gpointer) {
 	GtkWidget *item, *sub, *sub2;
@@ -9298,8 +9299,8 @@ void on_expression_populate_popup(GtkEntry*, GtkMenu *menu, gpointer) {
 	MENU_SEPARATOR
 	POPUP_CHECK_MENU_ITEM(on_popup_menu_item_limit_implicit_multiplication_activate, gtk_builder_get_object(main_builder, "menu_item_limit_implicit_multiplication"))
 	POPUP_CHECK_MENU_ITEM(on_popup_menu_item_read_precision_activate, gtk_builder_get_object(main_builder, "menu_item_read_precision"))
-	POPUP_CHECK_MENU_ITEM(on_popup_menu_item_rpn_syntax_activate, gtk_builder_get_object(main_builder, "menu_item_rpn_syntax"))
-	POPUP_CHECK_MENU_ITEM(on_popup_menu_item_rpn_mode_activate, gtk_builder_get_object(main_builder, "menu_item_rpn_mode"))
+	//POPUP_CHECK_MENU_ITEM(on_popup_menu_item_rpn_syntax_activate, gtk_builder_get_object(main_builder, "menu_item_rpn_syntax"))
+	POPUP_CHECK_MENU_ITEM_WITH_LABEL(on_popup_menu_item_rpn_mode_activate, gtk_builder_get_object(main_builder, "menu_item_rpn_on"), _("RPN Mode"))
 	MENU_SEPARATOR
 	sub2 = sub;
 	SUBMENU_ITEM(_("Meta Modes"), sub2)
@@ -11937,12 +11938,33 @@ void on_menu_item_new_unit_activate(GtkMenuItem*, gpointer) {
 	edit_unit("", NULL, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 }
 
-void on_menu_item_rpn_mode_activate(GtkMenuItem *w, gpointer) {
-	set_rpn_mode(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
+void on_menu_item_rpn_stack_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	set_rpn_mode(true);
+	evalops.parse_options.rpn = false;
+	expression_format_updated(false);
 }
 void on_menu_item_rpn_syntax_activate(GtkMenuItem *w, gpointer) {
-	evalops.parse_options.rpn = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	set_rpn_mode(false);
+	evalops.parse_options.rpn = true;
 	expression_format_updated(false);
+}
+void on_menu_item_rpn_on_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	set_rpn_mode(true);
+	evalops.parse_options.rpn = true;
+	expression_format_updated(false);
+	gtk_widget_remove_accelerator(GTK_WIDGET(w), accel_group, GDK_KEY_R, GDK_CONTROL_MASK);
+	gtk_widget_add_accelerator(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_rpn_off")), "activate", accel_group, GDK_KEY_R, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+}
+void on_menu_item_rpn_off_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	set_rpn_mode(false);
+	evalops.parse_options.rpn = false;
+	expression_format_updated(false);
+	gtk_widget_remove_accelerator(GTK_WIDGET(w), accel_group, GDK_KEY_R, GDK_CONTROL_MASK);
+	gtk_widget_add_accelerator(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_rpn_on")), "activate", accel_group, GDK_KEY_R, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 }
 void on_menu_item_limit_implicit_multiplication_activate(GtkMenuItem *w, gpointer) {
 	evalops.parse_options.limit_implicit_multiplication = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));

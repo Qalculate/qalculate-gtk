@@ -1351,15 +1351,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <signal name="activate" handler="on_menu_item_read_precision_activate" swapped="no"/>
                               </object>
                             </child>
-                            <child>
-                              <object class="GtkCheckMenuItem" id="menu_item_rpn_syntax">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="tooltip_text" translatable="yes">(De)activate use of Reverse Polish Notation syntax in expressions</property>
-                                <property name="label" translatable="yes">RPN Syntax</property>
-                                <signal name="activate" handler="on_menu_item_rpn_syntax_activate" swapped="no"/>
-                              </object>
-                            </child>
                           </object>
                         </child>
                       </object>
@@ -1371,14 +1362,52 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckMenuItem" id="menu_item_rpn_mode">
+                      <object class="GtkMenuItem" id="item_rpn_mode">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">(De)activate the Reverse Polish Notation mode</property>
                         <property name="label" translatable="yes">RPN Mode</property>
-                        <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_menu_item_rpn_mode_activate" swapped="no"/>
-                        <accelerator key="R" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <child type="submenu">
+                          <object class="GtkMenu" id="item_rpn_mode_menu">
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_rpn_off">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Activate infix notation and disable the RPN stack.</property>
+                                <property name="label" translatable="yes">RPN Off</property>
+                                <signal name="activate" handler="on_menu_item_rpn_off_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_rpn_on">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Activate both the RPN stack and RPN syntax.</property>
+                                <property name="label" translatable="yes">Full RPN Mode</property>
+                                <property name="group">menu_item_rpn_off</property>
+                                <signal name="activate" handler="on_menu_item_rpn_on_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_rpn_stack">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">RPN Stack Only</property>
+                                <property name="group">menu_item_rpn_off</property>
+                                <signal name="activate" handler="on_menu_item_rpn_stack_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_rpn_syntax">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">RPN Syntax Only</property>
+                                <property name="group">menu_item_rpn_off</property>
+                                <signal name="activate" handler="on_menu_item_rpn_syntax_activate" swapped="no"/>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -1810,8 +1839,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1835,8 +1864,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1860,8 +1889,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
