@@ -12925,50 +12925,86 @@ void on_button_registerup_clicked(GtkButton*, gpointer) {
 	GtkTreeIter iter, iter2;
 	GtkTreePath *path;
 	gint index;
-	if(gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), &model, &iter)) {
-		path = gtk_tree_model_get_path(model, &iter);
-		index = gtk_tree_path_get_indices(path)[0];
-		gtk_tree_path_free(path);
-		if(index == 0) return;
+	if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), &model, &iter)) {
+		model = gtk_tree_view_get_model(GTK_TREE_VIEW(stackview));
+		if(!gtk_tree_model_get_iter_first(model, &iter)) return;
+	}
+	path = gtk_tree_model_get_path(model, &iter);
+	index = gtk_tree_path_get_indices(path)[0];
+	gtk_tree_path_free(path);
+	if(index == 0) {
+		CALCULATOR->moveRPNRegister(1, CALCULATOR->RPNStackSize());
+		gtk_tree_model_iter_nth_child(model, &iter2, NULL, CALCULATOR->RPNStackSize() - 1);
+		gtk_list_store_move_after(stackstore, &iter, &iter2);
+	} else {
 		CALCULATOR->moveRPNRegisterUp(index + 1);
 		gtk_tree_model_iter_nth_child(model, &iter2, NULL, index - 1);
-		gtk_list_store_set(stackstore, &iter, 0, i2s(index).c_str(), -1);
-		gtk_list_store_set(stackstore, &iter2, 0, i2s(index + 1).c_str(), -1);
 		gtk_list_store_swap(stackstore, &iter, &iter2);
-		if(index == 1) {
-			mstruct->unref();
-			mstruct = CALCULATOR->getRPNRegister(1);
-			mstruct->ref();
-			setResult(NULL, true, false, false, "", 0, true);
-		}
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), index != 1);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerdown")), TRUE);
+	}	
+	if(index <= 1) {
+		mstruct->unref();
+		mstruct = CALCULATOR->getRPNRegister(1);
+		mstruct->ref();
+		setResult(NULL, true, false, false, "", 0, true);
 	}
+	updateRPNIndexes();
 }
 void on_button_registerdown_clicked(GtkButton*, gpointer) {
 	GtkTreeModel *model;
 	GtkTreeIter iter, iter2;
 	GtkTreePath *path;
 	gint index;
-	if(gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), &model, &iter)) {
-		path = gtk_tree_model_get_path(model, &iter);
-		index = gtk_tree_path_get_indices(path)[0];
-		gtk_tree_path_free(path);
-		if(index + 1 == (int) CALCULATOR->RPNStackSize()) return;
+	if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), &model, &iter)) {
+		model = gtk_tree_view_get_model(GTK_TREE_VIEW(stackview));
+		if(CALCULATOR->RPNStackSize() == 0) return;
+		if(!gtk_tree_model_iter_nth_child(model, &iter, NULL, CALCULATOR->RPNStackSize() - 1)) return;
+	}
+	path = gtk_tree_model_get_path(model, &iter);
+	index = gtk_tree_path_get_indices(path)[0];
+	gtk_tree_path_free(path);
+	if(index + 1 == (int) CALCULATOR->RPNStackSize()) {
+		CALCULATOR->moveRPNRegister(CALCULATOR->RPNStackSize(), 1);
+		gtk_tree_model_get_iter_first(model, &iter2);
+		gtk_list_store_move_before(stackstore, &iter, &iter2);
+	} else {
 		CALCULATOR->moveRPNRegisterDown(index + 1);
 		gtk_tree_model_iter_nth_child(model, &iter2, NULL, index + 1);
-		gtk_list_store_set(stackstore, &iter, 0, i2s(index + 2).c_str(), -1);
-		gtk_list_store_set(stackstore, &iter2, 0, i2s(index + 1).c_str(), -1);
 		gtk_list_store_swap(stackstore, &iter, &iter2);
-		if(index == 0) {
-			mstruct->unref();
-			mstruct = CALCULATOR->getRPNRegister(1);
-			mstruct->ref();
-			setResult(NULL, true, false, false, "", 0, true);
-		}
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), TRUE);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerdown")), index + 2 < (int) CALCULATOR->RPNStackSize());
+	}			
+	if(index == 0 || index == (int) CALCULATOR->RPNStackSize() - 1) {
+		mstruct->unref();
+		mstruct = CALCULATOR->getRPNRegister(1);
+		mstruct->ref();
+		setResult(NULL, true, false, false, "", 0, true);
 	}
+	updateRPNIndexes();
+}
+void on_button_registerswap_clicked(GtkButton*, gpointer) {
+	GtkTreeModel *model;
+	GtkTreeIter iter, iter2;
+	GtkTreePath *path;
+	gint index;
+	if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), &model, &iter)) {
+		model = gtk_tree_view_get_model(GTK_TREE_VIEW(stackview));
+		if(!gtk_tree_model_get_iter_first(model, &iter)) return;
+	}
+	path = gtk_tree_model_get_path(model, &iter);
+	index = gtk_tree_path_get_indices(path)[0];
+	gtk_tree_path_free(path);
+	if(index == 0) {		
+		if(!gtk_tree_model_iter_nth_child(model, &iter2, NULL, 1)) return;
+		CALCULATOR->moveRPNRegister(1, 2);
+	} else {
+		CALCULATOR->moveRPNRegister(1, index + 1);
+		CALCULATOR->moveRPNRegister(index, 1);
+		gtk_tree_model_get_iter_first(model, &iter2);
+	}		
+	gtk_list_store_swap(stackstore, &iter, &iter2);
+	mstruct->unref();
+	mstruct = CALCULATOR->getRPNRegister(1);
+	mstruct->ref();
+	setResult(NULL, true, false, false, "", 0, true);
+	updateRPNIndexes();
 }
 void on_button_editregister_clicked(GtkButton*, gpointer) {
 	GtkTreeModel *model;
@@ -12985,24 +13021,26 @@ void on_button_deleteregister_clicked(GtkButton*, gpointer) {
 	GtkTreeIter iter;
 	GtkTreePath *path;
 	gint index;
-	if(gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), &model, &iter)) {
-		path = gtk_tree_model_get_path(model, &iter);
-		index = gtk_tree_path_get_indices(path)[0];
-		gtk_tree_path_free(path);
-		CALCULATOR->deleteRPNRegister(index + 1);
-		gtk_list_store_remove(stackstore, &iter);
-		if(CALCULATOR->RPNStackSize() == 0) {
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), FALSE);
-			clearresult();
-			mstruct->clear();
-		} else if(index == 0) {
-			mstruct->unref();
-			mstruct = CALCULATOR->getRPNRegister(1);
-			mstruct->ref();
-			setResult(NULL, true, false, false, "", 0, true);
-		}
-		updateRPNIndexes();
+	if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), &model, &iter)) {
+		model = gtk_tree_view_get_model(GTK_TREE_VIEW(stackview));
+		if(!gtk_tree_model_get_iter_first(model, &iter)) return; 
 	}
+	path = gtk_tree_model_get_path(model, &iter);
+	index = gtk_tree_path_get_indices(path)[0];
+	gtk_tree_path_free(path);
+	CALCULATOR->deleteRPNRegister(index + 1);
+	gtk_list_store_remove(stackstore, &iter);
+	if(CALCULATOR->RPNStackSize() == 0) {
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), FALSE);
+		clearresult();
+		mstruct->clear();
+	} else if(index == 0) {
+		mstruct->unref();
+		mstruct = CALCULATOR->getRPNRegister(1);
+		mstruct->ref();
+		setResult(NULL, true, false, false, "", 0, true);
+	}
+	updateRPNIndexes();
 }
 void on_button_clearstack_clicked(GtkButton*, gpointer) {
 	CALCULATOR->clearRPNStack();
@@ -13014,21 +13052,10 @@ void on_button_clearstack_clicked(GtkButton*, gpointer) {
 void on_stackview_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 	GtkTreeModel *model;
 	GtkTreeIter iter;
-	GtkTreePath *path;
-	gint index;
 	if(gtk_tree_selection_get_selected(treeselection, &model, &iter)) {
-		path = gtk_tree_model_get_path(model, &iter);
-		index = gtk_tree_path_get_indices(path)[0];
-		gtk_tree_path_free(path);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), index != 0);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerdown")), index + 1 < (int) CALCULATOR->RPNStackSize());
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_editregister")), TRUE);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_deleteregister")), TRUE);
 	} else {
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), FALSE);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerdown")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_editregister")), FALSE);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_deleteregister")), FALSE);
 	}
 }
 void on_stackview_item_edited(GtkCellRendererText*, gchar *path, gchar *new_text, gpointer) {
