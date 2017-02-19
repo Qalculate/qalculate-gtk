@@ -474,7 +474,7 @@ void create_main_window (void) {
 	set_unicode_buttons();
 
 	if(use_custom_result_font) {
-		gchar *gstr = g_strdup_printf("* {font: %s;}", custom_result_font.c_str());
+		gchar *gstr = font_name_to_css(custom_result_font.c_str());
 		gtk_css_provider_load_from_data(resultview_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
@@ -487,7 +487,7 @@ void create_main_window (void) {
 		}
 	}
 	if(use_custom_expression_font) {
-		gchar *gstr = g_strdup_printf("* {font: %s;}", custom_expression_font.c_str());
+		gchar *gstr = font_name_to_css(custom_expression_font.c_str());
 		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
@@ -500,7 +500,7 @@ void create_main_window (void) {
 		}
 	}
 	if(use_custom_status_font) {
-		gchar *gstr = g_strdup_printf("* {font: %s;}", custom_status_font.c_str());
+		gchar *gstr = font_name_to_css(custom_status_font.c_str());
 		gtk_css_provider_load_from_data(statuslabel_l_provider, gstr, -1, NULL);
 		gtk_css_provider_load_from_data(statuslabel_l_provider, gstr, -1, NULL);
 		g_free(gstr);

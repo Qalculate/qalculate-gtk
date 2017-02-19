@@ -10537,6 +10537,26 @@ void edit_preferences() {
 	//save_preferences();
 }
 
+gchar *font_name_to_css(const char *font_name) {
+	gchar *gstr = NULL;
+	PangoFontDescription *font_desc = pango_font_description_from_string(font_name);
+	switch(pango_font_description_get_style(font_desc)) {
+		case PANGO_STYLE_NORMAL: {
+			gstr = g_strdup_printf("* {font-family: %s; font-weight: %i; font-size: %ipx;}", pango_font_description_get_family(font_desc), pango_font_description_get_weight(font_desc), pango_font_description_get_size(font_desc) / PANGO_SCALE);
+			break;
+		}
+		case PANGO_STYLE_OBLIQUE: {
+			gstr = g_strdup_printf("* {font-family: %s; font-weight: %i; font-size: %ipx; font-style: oblique;}", pango_font_description_get_family(font_desc), pango_font_description_get_weight(font_desc), pango_font_description_get_size(font_desc) / PANGO_SCALE);
+			break;
+		}
+		case PANGO_STYLE_ITALIC: {
+			gstr = g_strdup_printf("* {font-family: %s; font-weight: %i; font-size: %ipx; font-style: italic;}", pango_font_description_get_family(font_desc), pango_font_description_get_weight(font_desc), pango_font_description_get_size(font_desc) / PANGO_SCALE);
+			break;
+		}
+	}
+	return gstr;
+}
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -10835,7 +10855,7 @@ void on_preferences_checkbutton_custom_result_font_toggled(GtkToggleButton *w, g
 	use_custom_result_font = gtk_toggle_button_get_active(w);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_result_font")), use_custom_result_font);
 	if(use_custom_result_font) {
-		gchar *gstr = g_strdup_printf("* {font: %s;}", custom_result_font.c_str());
+		gchar *gstr = font_name_to_css(custom_result_font.c_str());
 		gtk_css_provider_load_from_data(resultview_provider, gstr, -1, NULL);
 		g_free(gstr);
 		result_font_modified();
@@ -10848,7 +10868,7 @@ void on_preferences_checkbutton_custom_expression_font_toggled(GtkToggleButton *
 	use_custom_expression_font = gtk_toggle_button_get_active(w);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_expression_font")), use_custom_expression_font);
 	if(use_custom_expression_font) {
-		gchar *gstr = g_strdup_printf("* {font: %s;}", custom_expression_font.c_str());
+		gchar *gstr = font_name_to_css(custom_expression_font.c_str());
 		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
@@ -10859,7 +10879,7 @@ void on_preferences_checkbutton_custom_status_font_toggled(GtkToggleButton *w, g
 	use_custom_status_font = gtk_toggle_button_get_active(w);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_status_font")), use_custom_status_font);
 	if(use_custom_status_font) {
-		gchar *gstr = g_strdup_printf("* {font: %s;}", custom_status_font.c_str());
+		gchar *gstr = font_name_to_css(custom_status_font.c_str());
 		gtk_css_provider_load_from_data(statuslabel_l_provider, gstr, -1, NULL);
 		gtk_css_provider_load_from_data(statuslabel_l_provider, gstr, -1, NULL);
 		g_free(gstr);
@@ -10904,22 +10924,23 @@ void on_preferences_radiobutton_division_toggled(GtkToggleButton *w, gpointer) {
 		result_display_updated();
 	}
 }
+
 void on_preferences_button_result_font_font_set(GtkFontButton *w, gpointer) {
 	custom_result_font = gtk_font_button_get_font_name(w);
-	gchar *gstr = g_strdup_printf("* {font: %s;}", custom_result_font.c_str());
+	gchar *gstr = font_name_to_css(custom_result_font.c_str());
 	gtk_css_provider_load_from_data(resultview_provider, gstr, -1, NULL);
 	g_free(gstr);
 	result_font_modified();
 }
 void on_preferences_button_expression_font_font_set(GtkFontButton *w, gpointer) {
 	custom_expression_font = gtk_font_button_get_font_name(w);
-	gchar *gstr = g_strdup_printf("* {font: %s;}", custom_expression_font.c_str());
+	gchar *gstr = font_name_to_css(custom_expression_font.c_str());
 	gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
 	g_free(gstr);
 }
 void on_preferences_button_status_font_font_set(GtkFontButton *w, gpointer) {
 	custom_status_font = gtk_font_button_get_font_name(w);
-	gchar *gstr = g_strdup_printf("* {font: %s;}", custom_status_font.c_str());
+	gchar *gstr = font_name_to_css(custom_status_font.c_str());
 	gtk_css_provider_load_from_data(statuslabel_l_provider, gstr, -1, NULL);
 	gtk_css_provider_load_from_data(statuslabel_l_provider, gstr, -1, NULL);
 	g_free(gstr);

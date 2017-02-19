@@ -185,6 +185,8 @@ void edit_dataset(DataSet *ds = NULL, GtkWidget *win = NULL);
 
 void edit_names(ExpressionItem *item = NULL, const gchar *namestr = NULL, GtkWidget *win = NULL, bool is_dp = false, DataProperty *dp = NULL);
 
+gchar *font_name_to_css(const char *font_name);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
