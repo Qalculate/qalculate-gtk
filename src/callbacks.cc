@@ -6123,6 +6123,13 @@ void RPNRegisterAdded(string text, gint index) {
 	gtk_list_store_set(stackstore, &iter, 0, i2s(index + 1).c_str(), 1, text.c_str(), -1);
 	updateRPNIndexes();
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), TRUE);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_copyregister")), TRUE);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_deleteregister")), TRUE);
+	if(CALCULATOR->RPNStackSize() >= 2) {
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerdown")), TRUE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), TRUE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), TRUE);
+	}
 	on_stackview_selection_changed(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), NULL);
 }
 void RPNRegisterRemoved(gint index) {
@@ -6130,7 +6137,16 @@ void RPNRegisterRemoved(gint index) {
 	gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(stackstore), &iter, NULL, index);
 	gtk_list_store_remove(stackstore, &iter);
 	updateRPNIndexes();
-	if(CALCULATOR->RPNStackSize() == 0) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), FALSE);
+	if(CALCULATOR->RPNStackSize() == 0) {
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_copyregister")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_deleteregister")), FALSE);
+	}
+	if(CALCULATOR->RPNStackSize() < 2) {
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerdown")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), FALSE);
+	}
 	on_stackview_selection_changed(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), NULL);
 }
 void RPNRegisterChanged(string text, gint index) {
@@ -13037,17 +13053,39 @@ void on_button_registerswap_clicked(GtkButton*, gpointer) {
 	if(index == 0) {		
 		if(!gtk_tree_model_iter_nth_child(model, &iter2, NULL, 1)) return;
 		CALCULATOR->moveRPNRegister(1, 2);
+		gtk_list_store_swap(stackstore, &iter, &iter2);
 	} else {
-		CALCULATOR->moveRPNRegister(1, index + 1);
 		CALCULATOR->moveRPNRegister(index, 1);
 		gtk_tree_model_get_iter_first(model, &iter2);
-	}		
-	gtk_list_store_swap(stackstore, &iter, &iter2);
+		gtk_list_store_move_before(stackstore, &iter, &iter2);
+	}			
 	mstruct->unref();
 	mstruct = CALCULATOR->getRPNRegister(1);
 	mstruct->ref();
 	setResult(NULL, true, false, false, "", 0, true);
 	updateRPNIndexes();
+}
+void on_button_copyregister_clicked(GtkButton*, gpointer) {
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	GtkTreePath *path;
+	gchar *text_copy = NULL;
+	gint index;
+	if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), &model, &iter)) {
+		model = gtk_tree_view_get_model(GTK_TREE_VIEW(stackview));
+		if(!gtk_tree_model_get_iter_first(model, &iter)) return;
+	}
+	path = gtk_tree_model_get_path(model, &iter);
+	index = gtk_tree_path_get_indices(path)[0];
+	gtk_tree_path_free(path);
+	CALCULATOR->RPNStackEnter(new MathStructure(*CALCULATOR->getRPNRegister(index + 1)));
+	gtk_tree_model_get(model, &iter, 1, &text_copy, -1);
+	RPNRegisterAdded(text_copy, 0);
+	g_free(text_copy);
+	mstruct->unref();
+	mstruct = CALCULATOR->getRPNRegister(1);
+	mstruct->ref();
+	setResult(NULL, true, false, false, "", 0, true);
 }
 void on_button_editregister_clicked(GtkButton*, gpointer) {
 	GtkTreeModel *model;
@@ -13072,9 +13110,8 @@ void on_button_deleteregister_clicked(GtkButton*, gpointer) {
 	index = gtk_tree_path_get_indices(path)[0];
 	gtk_tree_path_free(path);
 	CALCULATOR->deleteRPNRegister(index + 1);
-	gtk_list_store_remove(stackstore, &iter);
+	RPNRegisterRemoved(index);
 	if(CALCULATOR->RPNStackSize() == 0) {
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), FALSE);
 		clearresult();
 		mstruct->clear();
 	} else if(index == 0) {
@@ -13083,7 +13120,6 @@ void on_button_deleteregister_clicked(GtkButton*, gpointer) {
 		mstruct->ref();
 		setResult(NULL, true, false, false, "", 0, true);
 	}
-	updateRPNIndexes();
 }
 void on_button_clearstack_clicked(GtkButton*, gpointer) {
 	CALCULATOR->clearRPNStack();
@@ -13091,6 +13127,11 @@ void on_button_clearstack_clicked(GtkButton*, gpointer) {
 	clearresult();
 	mstruct->clear();
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), FALSE);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_copyregister")), FALSE);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_deleteregister")), FALSE);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerdown")), FALSE);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), FALSE);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), FALSE);
 }
 void on_stackview_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 	GtkTreeModel *model;
