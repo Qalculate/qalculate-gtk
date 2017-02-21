@@ -47,7 +47,8 @@ enum {
 	QALCULATE_HISTORY_WARNING,
 	QALCULATE_HISTORY_ERROR,
 	QALCULATE_HISTORY_OLD,
-	QALCULATE_HISTORY_REGISTER_MOVED
+	QALCULATE_HISTORY_REGISTER_MOVED,
+	QALCULATE_HISTORY_RPN_OPERATION
 };
 
 bool can_display_unicode_string_function(const char *str, void *w);
@@ -457,6 +458,8 @@ void on_stackview_selection_changed(GtkTreeSelection *treeselection, gpointer us
 void on_stackview_item_edited(GtkCellRendererText *renderer, gchar *path, gchar *new_text, gpointer user_data);
 void on_stackview_item_editing_started(GtkCellRenderer *renderer, GtkCellEditable *editable, gchar *path, gpointer user_data);
 void on_stackview_item_editing_canceled(GtkCellRenderer *renderer, gpointer user_data);
+
+void on_historyview_selection_changed(GtkTreeSelection *select, gpointer);
 
 void on_unit_edit_entry_name_changed(GtkEditable *editable, gpointer user_data);
 void on_unit_edit_combobox_class_changed(GtkComboBox *om, gpointer user_data);

@@ -83,13 +83,14 @@ GtkWidget *tMatrixEdit, *tMatrix;
 GtkListStore *tMatrixEdit_store, *tMatrix_store;
 extern vector<GtkTreeViewColumn*> matrix_edit_columns, matrix_columns;
 
-GtkCellRenderer *renderer, *register_renderer;
-GtkTreeViewColumn *column, *register_column;
+GtkCellRenderer *renderer, *history_renderer, *history_index_renderer, *ans_renderer, *register_renderer;
+GtkTreeViewColumn *column, *register_column, *history_column, *history_index_column, *ans_column;
 GtkTreeSelection *selection;
 
 GtkWidget *expression;
 GtkWidget *resultview;
 GtkWidget *historyview;
+GtkListStore *historystore;
 GtkWidget *stackview;
 GtkListStore *stackstore;
 GtkWidget *statuslabel_l, *statuslabel_r;
@@ -443,19 +444,11 @@ void create_main_window (void) {
 
 	expression = GTK_WIDGET(gtk_builder_get_object(main_builder, "expression"));
 	resultview = GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"));
-	historyview = GTK_WIDGET(gtk_builder_get_object(main_builder, "history"));
-
-	//gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(historyview), TRUE);
+	historyview = GTK_WIDGET(gtk_builder_get_object(main_builder, "historyview"));
 	
 	stackview = GTK_WIDGET(gtk_builder_get_object(main_builder, "stackview"));
 	statuslabel_l = GTK_WIDGET(gtk_builder_get_object(main_builder, "label_status_left"));
 	statuslabel_r = GTK_WIDGET(gtk_builder_get_object(main_builder, "label_status_right"));
-	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(main_builder, "history"))), "history_parse", "foreground", "gray40", "style", PANGO_STYLE_ITALIC, NULL);
-	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(main_builder, "history"))), "history_transformation", "style", PANGO_STYLE_ITALIC, NULL);
-	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(main_builder, "history"))), "history_error", "foreground", "red", NULL);
-	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(main_builder, "history"))), "history_warning", "foreground", "blue", NULL);
-	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(main_builder, "history"))), "history_result", "weight", PANGO_WEIGHT_BOLD, NULL);
-	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(main_builder, "history"))), "history_separator", "size-points", 6.0, NULL);
 
 	expression_provider = gtk_css_provider_new();
 	resultview_provider = gtk_css_provider_new();
@@ -551,41 +544,75 @@ void create_main_window (void) {
 
 	gtk_builder_connect_signals(main_builder, NULL);
 	g_signal_connect(accel_group, "accel_changed", G_CALLBACK(save_accels), NULL);
+	
+	historystore = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_INT, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_DOUBLE);
+	gtk_tree_view_set_model(GTK_TREE_VIEW(historyview), GTK_TREE_MODEL(historystore));
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
+	gtk_tree_selection_set_mode(selection, GTK_SELECTION_MULTIPLE);
+	history_index_renderer = gtk_cell_renderer_text_new();
+	history_index_column = gtk_tree_view_column_new_with_attributes(_("Index"), history_index_renderer, "text", 2, "size-set", 3, "size-points", 4, NULL);
+	gtk_tree_view_column_set_expand(history_index_column, FALSE);
+	gtk_tree_view_column_set_min_width(history_index_column, 30);
+	g_object_set(G_OBJECT(history_index_renderer), "ypad", 0, "xalign", 0.5, "foreground", "gray40", NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(historyview), history_index_column);
+	history_renderer = gtk_cell_renderer_text_new();
+	history_column = gtk_tree_view_column_new_with_attributes(_("History"), history_renderer, "markup", 0, "size-set", 3, "size-points", 4, NULL);
+	gtk_tree_view_column_set_expand(history_column, TRUE);
+	g_object_set(G_OBJECT(history_renderer), "ypad", 0, "xpad", 10, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(historyview), history_column);
+	g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_historyview_selection_changed), NULL);
 
-	GtkTextIter iter;
-	GtkTextBuffer *tb = gtk_text_view_get_buffer(GTK_TEXT_VIEW(historyview));
-	//bool prev_parse = false;
-	for(size_t i = 0; i < inhistory.size(); i++) {
-		gtk_text_buffer_get_end_iter(tb, &iter);
+	string history_str;
+	GtkTreeIter history_iter;
+	size_t i = inhistory.size();
+	if(i == 0) gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 2, "   ", -1);
+	while(i > 0) {
+		i--;
 		switch(inhistory_type[i]) {
 			case QALCULATE_HISTORY_EXPRESSION: {
-				if(i != 0) {
-					gtk_text_buffer_insert_with_tags_by_name(tb, &iter, "\n", -1, "history_separator", NULL);
+				if(i < inhistory.size() - 1) {
+					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 3, TRUE, 4, 2.0, -1);
 				}
-				gtk_text_buffer_insert(tb, &iter, inhistory[i].c_str(), -1);
-				gtk_text_buffer_insert(tb, &iter, " ", -1);
-				//prev_parse = false;
+				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, inhistory[i].c_str(), 1, i, 2, "   ", -1);
 				break;
 			}
 			case QALCULATE_HISTORY_REGISTER_MOVED: {
-				if(i != 0) {
-					gtk_text_buffer_insert_with_tags_by_name(tb, &iter, "\n", -1, "history_separator", NULL);
+				if(i < inhistory.size() - 1) {
+					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 3, TRUE, 4, 2.0, -1);
 				}
-				gtk_text_buffer_insert(tb, &iter, _("RPN Register Moved"), -1);
-				gtk_text_buffer_insert(tb, &iter, " ", -1);
-				//prev_parse = false;
+				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, _("RPN Register Moved"), 1, i, -1);
+				break;
+			}
+			case QALCULATE_HISTORY_RPN_OPERATION: {
+				if(i < inhistory.size() - 1) {
+					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 3, TRUE, 4, 2.0, -1);
+				}
+				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, _("RPN Register Operation"), 1, i, -1);
 				break;
 			}
 			case QALCULATE_HISTORY_TRANSFORMATION: {
-				gtk_text_buffer_insert_with_tags_by_name(tb, &iter, inhistory[i].c_str(), -1, "history_transformation", NULL);
-				gtk_text_buffer_insert_with_tags_by_name(tb, &iter, ":  ", -1, "history_transformation", NULL);
+				history_str = "<span font-style=\"italic\">";
+				history_str += inhistory[i];
+				history_str += ":  </span>";
+				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, -1);
 				break;
 			}
 			case QALCULATE_HISTORY_RESULT: {
-				gtk_text_buffer_insert(tb, &iter, "= ", -1);
-				gtk_text_buffer_insert_with_tags_by_name(tb, &iter, inhistory[i].c_str(), -1, "history_result", NULL);
-				gtk_text_buffer_insert(tb, &iter, "\n", -1);
-				//prev_parse = false;
+				if(i > 0 && inhistory_type[i - 1] == QALCULATE_HISTORY_TRANSFORMATION) {
+					gchar *expr_str = NULL;
+					gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
+					history_str = expr_str;
+					g_free(expr_str);
+					history_str += "= <span font-weight=\"bold\">";
+					history_str += inhistory[i];
+					history_str += "</span>";
+					gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), -1);
+				} else {
+					history_str = "= <span font-weight=\"bold\">";
+					history_str += inhistory[i];
+					history_str += "</span>";
+					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, -1);
+				}
 				break;
 			}
 			case QALCULATE_HISTORY_RESULT_APPROXIMATE: {
@@ -597,24 +624,39 @@ void create_main_window (void) {
 					str += _("approx.");
 					str += " ";
 				}
-				gtk_text_buffer_insert(tb, &iter, str.c_str(), -1);
-				gtk_text_buffer_insert_with_tags_by_name(tb, &iter, inhistory[i].c_str(), -1, "history_result", NULL);
-				gtk_text_buffer_insert(tb, &iter, "\n", -1);
-				//prev_parse = false;
+				history_str = str;
+				history_str += "<span font-weight=\"bold\">";
+				history_str += inhistory[i];
+				history_str += "</span>";
+				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, -1);
 				break;
 			}
 			case QALCULATE_HISTORY_PARSE_WITHEQUALS: {
-				gtk_text_buffer_insert_with_tags_by_name(tb, &iter, " ", -1, "history_parse", NULL);
-				gtk_text_buffer_insert_with_tags_by_name(tb, &iter, inhistory[i].c_str(), -1, "history_parse", NULL);
-				gtk_text_buffer_insert(tb, &iter, "\n", -1);
-				//prev_parse = true;
+				gchar *expr_str = NULL;
+				gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
+				history_str = expr_str;
+				g_free(expr_str);
+				history_str += "<span font-style=\"italic\" foreground=\"gray40\"> ";
+				history_str += inhistory[i];
+				history_str += "</span>";
+				gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), -1);
+				if(i > 0 && (inhistory_type[i - 1] == QALCULATE_HISTORY_REGISTER_MOVED || inhistory_type[i - 1] == QALCULATE_HISTORY_RPN_OPERATION)) {
+					gtk_list_store_set(historystore, &history_iter, 1, i, -1);
+				}
 				break;
 			}
 			case QALCULATE_HISTORY_PARSE: {
-				gtk_text_buffer_insert_with_tags_by_name(tb, &iter, "  = ", -1, "history_parse", NULL);
-				gtk_text_buffer_insert_with_tags_by_name(tb, &iter, inhistory[i].c_str(), -1, "history_parse", NULL);
-				gtk_text_buffer_insert(tb, &iter, "\n", -1);
-				//prev_parse = true;
+				gchar *expr_str = NULL;
+				gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
+				history_str = expr_str;
+				g_free(expr_str);
+				history_str += "<span font-style=\"italic\" foreground=\"gray40\">  = ";
+				history_str += inhistory[i];
+				history_str += "</span>";
+				gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), -1);
+				if(i > 0 && (inhistory_type[i - 1] == QALCULATE_HISTORY_REGISTER_MOVED || inhistory_type[i - 1] == QALCULATE_HISTORY_RPN_OPERATION)) {
+					gtk_list_store_set(historystore, &history_iter, 1, i, -1);
+				}
 				break;
 			}
 			case QALCULATE_HISTORY_PARSE_APPROXIMATE: {
@@ -626,32 +668,40 @@ void create_main_window (void) {
 					str += _("approx.");
 					str += " ";
 				}
-				gtk_text_buffer_insert_with_tags_by_name(tb, &iter, str.c_str(), -1, "history_parse", NULL);
-				gtk_text_buffer_insert_with_tags_by_name(tb, &iter, inhistory[i].c_str(), -1, "history_parse", NULL);
-				gtk_text_buffer_insert(tb, &iter, "\n", -1);
-				//prev_parse = true;
+				gchar *expr_str = NULL;
+				gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
+				history_str = expr_str;
+				g_free(expr_str);
+				history_str += "<span font-style=\"italic\" foreground=\"gray40\">";
+				history_str += str;
+				history_str += inhistory[i];
+				history_str += "</span>";
+				gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), -1);
+				if(i > 0 && (inhistory_type[i - 1] == QALCULATE_HISTORY_REGISTER_MOVED || inhistory_type[i - 1] == QALCULATE_HISTORY_RPN_OPERATION)) {
+					gtk_list_store_set(historystore, &history_iter, 1, i, -1);
+				}
 				break;
 			}
 			case QALCULATE_HISTORY_WARNING: {
-				gtk_text_buffer_insert_with_tags_by_name(tb, &iter, "- ", -1, "history_warning", NULL);
-				gtk_text_buffer_insert_with_tags_by_name(tb, &iter, inhistory[i].c_str(), -1, "history_warning", NULL);
-				gtk_text_buffer_insert(tb, &iter, "\n", -1);
+				history_str = "<span foreground=\"blue\">- ";
+				history_str += inhistory[i];
+				history_str += "</span>";
+				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, -1);
 				break;
 			}
 			case QALCULATE_HISTORY_ERROR: {
-				gtk_text_buffer_insert_with_tags_by_name(tb, &iter, "- ", -1, "history_error", NULL);
-				gtk_text_buffer_insert_with_tags_by_name(tb, &iter, inhistory[i].c_str(), -1, "history_error", NULL);
-				gtk_text_buffer_insert(tb, &iter, "\n", -1);
+				history_str = "<span foreground=\"red\">- ";
+				history_str += inhistory[i];
+				history_str += "</span>";
+				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, -1);
 				break;
 			}
 			case QALCULATE_HISTORY_OLD: {
-				gtk_text_buffer_insert(tb, &iter, inhistory[i].c_str(), -1);
-				gtk_text_buffer_insert(tb, &iter, "\n", -1);
-				//prev_parse = false;
+				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, inhistory[i], 1, i, -1);
 				break;
 			}
-		}		
-	}
+		}
+	}	
 
 	stackstore = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 	gtk_tree_view_set_model(GTK_TREE_VIEW(stackview), GTK_TREE_MODEL(stackstore));
