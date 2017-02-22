@@ -3037,7 +3037,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <child>
                               <object class="GtkButton" id="button_history_add">
                                 <property name="visible">True</property>
-                                <property name="sensitive">False</property>
                                 <property name="can_focus">True</property>
                                 <property name="focus_on_click">False</property>
                                 <property name="receives_default">False</property>
@@ -3061,7 +3060,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <child>
                               <object class="GtkButton" id="button_history_sub">
                                 <property name="visible">True</property>
-                                <property name="sensitive">False</property>
                                 <property name="can_focus">True</property>
                                 <property name="focus_on_click">False</property>
                                 <property name="receives_default">False</property>
@@ -3085,7 +3083,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <child>
                               <object class="GtkButton" id="button_history_times">
                                 <property name="visible">True</property>
-                                <property name="sensitive">False</property>
                                 <property name="can_focus">True</property>
                                 <property name="focus_on_click">False</property>
                                 <property name="receives_default">False</property>
@@ -3109,7 +3106,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <child>
                               <object class="GtkButton" id="button_history_divide">
                                 <property name="visible">True</property>
-                                <property name="sensitive">False</property>
                                 <property name="can_focus">True</property>
                                 <property name="focus_on_click">False</property>
                                 <property name="receives_default">False</property>
@@ -3128,6 +3124,53 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
                                 <property name="position">6</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="button_history_xy">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="focus_on_click">False</property>
+                                <property name="receives_default">False</property>
+                                <property name="tooltip_text" translatable="yes">Raise (Ctrl+*)</property>
+                                <property name="use_underline">True</property>
+                                <signal name="clicked" handler="on_button_history_xy_clicked" swapped="no"/>
+                                <child>
+                                  <object class="GtkLabel" id="label_xy1">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">x&lt;sup&gt;y&lt;/sup&gt;</property>
+                                    <property name="use_markup">True</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">7</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="button_history_sqrt">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="focus_on_click">False</property>
+                                <property name="receives_default">False</property>
+                                <property name="tooltip_text" translatable="yes">Square root</property>
+                                <property name="use_underline">True</property>
+                                <signal name="clicked" handler="on_button_history_sqrt_clicked" swapped="no"/>
+                                <child>
+                                  <object class="GtkLabel" id="label_sqrt1">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">sqrt</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">8</property>
                               </packing>
                             </child>
                           </object>
@@ -3823,8 +3866,16 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       <object class="GtkMenuItem" id="popup_menu_item_history_copy_text">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Copy Text</property>
+        <property name="label" translatable="yes">Copy Value Text</property>
         <signal name="activate" handler="on_popup_menu_item_history_copy_text_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_history_copy_full_text">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Copy Full Text</property>
+        <signal name="activate" handler="on_popup_menu_item_history_copy_full_text_activate" swapped="no"/>
       </object>
     </child>
     <child>
