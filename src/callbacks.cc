@@ -440,38 +440,57 @@ void set_unicode_buttons() {
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_add")), PLUS);
 		if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(main_builder, "label_times"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), SIGN_MULTIPLICATION);
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), MULTIPLICATION);	
-		if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(main_builder, "label_divide"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), SIGN_DIVISION_SLASH);	
+		if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(main_builder, "label_divide"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), SIGN_DIVISION_SLASH);
 		else if(can_display_unicode_string_function(SIGN_DIVISION, (void*) gtk_builder_get_object(main_builder, "label_divide"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), SIGN_DIVISION);
-		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), DIVISION);	
+		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), DIVISION);
 		if(can_display_unicode_string_function(SIGN_SQRT, (void*) gtk_builder_get_object(main_builder, "label_sqrt"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sqrt")), SIGN_SQRT);
-		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sqrt")), "sqrt");	
+		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sqrt")), "sqrt");
 		if(can_display_unicode_string_function(SIGN_MULTIDOT, (void*) gtk_builder_get_object(main_builder, "label_dot"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_dot")), SIGN_MULTIDOT);
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_dot")), CALCULATOR->getDecimalPoint().c_str());
+		
+		if(can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(main_builder, "label_history_sub"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sub")), SIGN_MINUS);
+		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sub")), MINUS);
+		if(can_display_unicode_string_function(SIGN_PLUS, (void*) gtk_builder_get_object(main_builder, "label_history_add"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_add")), SIGN_PLUS);
+		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_add")), PLUS);
+		if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(main_builder, "label_history_times"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_times")), SIGN_MULTIPLICATION);
+		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_times")), MULTIPLICATION);
+		if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(main_builder, "label_history_divide"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_divide")), SIGN_DIVISION_SLASH);
+		else if(can_display_unicode_string_function(SIGN_DIVISION, (void*) gtk_builder_get_object(main_builder, "label_history_divide"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_divide")), SIGN_DIVISION);
+		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_divide")), DIVISION);
+		if(can_display_unicode_string_function(SIGN_SQRT, (void*) gtk_builder_get_object(main_builder, "label_sqrt"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sqrt")), SIGN_SQRT);
+		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sqrt")), "sqrt");
+		
 		
 		if(can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(main_builder, "label_rpn_sub"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sub")), SIGN_MINUS);
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sub")), MINUS);
 		if(can_display_unicode_string_function(SIGN_PLUS, (void*) gtk_builder_get_object(main_builder, "label_rpn_add"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_add")), SIGN_PLUS);
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_add")), PLUS);
 		if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(main_builder, "label_rpn_times"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_times")), SIGN_MULTIPLICATION);
-		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_times")), MULTIPLICATION);	
-		if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(main_builder, "label_rpn_divide"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), SIGN_DIVISION_SLASH);	
+		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_times")), MULTIPLICATION);
+		if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(main_builder, "label_rpn_divide"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), SIGN_DIVISION_SLASH);
 		else if(can_display_unicode_string_function(SIGN_DIVISION, (void*) gtk_builder_get_object(main_builder, "label_rpn_divide"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), SIGN_DIVISION);
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), DIVISION);	
 		if(can_display_unicode_string_function(SIGN_SQRT, (void*) gtk_builder_get_object(main_builder, "label_rpn_sqrt"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), SIGN_SQRT);
-		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), "sqrt");	
+		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), "sqrt");
 	} else {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sub")), MINUS);
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_add")), PLUS);
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), MULTIPLICATION);	
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), MULTIPLICATION);
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), DIVISION);	
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sqrt")), "sqrt");	
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_dot")), CALCULATOR->getDecimalPoint().c_str());
 		
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sub")), MINUS);
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_add")), PLUS);
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_times")), MULTIPLICATION);
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_divide")), DIVISION);
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sqrt")), "sqrt");
+		
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sub")), MINUS);
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_add")), PLUS);
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_times")), MULTIPLICATION);	
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), DIVISION);	
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), "sqrt");	
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_times")), MULTIPLICATION);
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), DIVISION);
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), "sqrt");
 	}
 }
 
@@ -11913,48 +11932,71 @@ void history_operator(string str_sign) {
 	vector<size_t> selected_indeces;
 	vector<int> selected_index_type;
 	process_history_selection(NULL, &selected_indeces, &selected_index_type);
+	if(rpn_mode && selected_indeces.size() == 1 && gtk_entry_get_text_length(GTK_ENTRY(expression)) == 0 && nr_of_new_expressions > 0) {
+		selected_indeces.insert(selected_indeces.begin(), nr_of_new_expressions);
+		selected_index_type.insert(selected_index_type.begin(), INDEX_TYPE_ANS);
+	}
 	if(selected_indeces.empty()) {
 		if(!evalops.parse_options.rpn) {
 			wrap_expression_selection();
 		}
 		insert_text(str_sign.c_str());
 		return;
-	} else if(selected_indeces.size() == 1) {
-	} else {
-		string str;
-		for(size_t i = 0; i < selected_indeces.size(); i++) {
-			if(i > 0) {
+	}
+	bool only_one_value = false;
+	string str;
+	if(selected_indeces.size() == 1) {
+		str = gtk_entry_get_text(GTK_ENTRY(expression));
+		remove_blank_ends(str);
+		if(str.empty()) {
+			only_one_value = true;
+		} else {
+			str += " ";
+			if(!evalops.parse_options.rpn) {
+				str += str_sign;
 				str += " ";
-				if(!evalops.parse_options.rpn) {
-					str += str_sign;
-					str += " ";
-				}
-			}
-			if(selected_index_type[i] == INDEX_TYPE_TXT) {
-				int index = selected_indeces[i];
-				if(index > 0 && inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION) index--;
-				str += inhistory[index];
-			} else {
-				const ExpressionName *ename = NULL;
-				if(selected_index_type[i] == INDEX_TYPE_XPR) ename = &f_expression->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression);
-				else ename = &f_answer->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression);
-				str += ename->name;
-				str += "(";
-				str += i2s(selected_indeces[i]);
-				str += ")";
 			}
 		}
-		if(evalops.parse_options.rpn) {
+	}
+		
+	for(size_t i = 0; i < selected_indeces.size(); i++) {
+		if(i > 0) {
 			str += " ";
+			if(!evalops.parse_options.rpn) {
+				str += str_sign;
+				str += " ";
+			}
+		}
+		if(selected_index_type[i] == INDEX_TYPE_TXT) {
+			int index = selected_indeces[i];
+			if(index > 0 && inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION) index--;
+			str += inhistory[index];
+		} else {
+			const ExpressionName *ename = NULL;
+			if(selected_index_type[i] == INDEX_TYPE_XPR) ename = &f_expression->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression);
+			else ename = &f_answer->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression);
+			str += ename->name;
+			str += "(";
+			str += i2s(selected_indeces[i]);
+			str += ")";
+		}
+	}
+	if(evalops.parse_options.rpn && !only_one_value) {
+		str += " ";
+		if(selected_indeces.size() == 1) {
+			str += str_sign;
+		} else {
 			for(size_t i = 0; i < selected_indeces.size() - 1; i++) {
 				str += str_sign;
 			}
 		}
-		clearresult();
-		insert_text(str.c_str());
-		execute_expression();
 	}
+	gtk_entry_set_text(GTK_ENTRY(expression), "");
+	insert_text(str.c_str());
+	if(!only_one_value) execute_expression();
+
 }
+
 void on_button_history_add_clicked(GtkButton*, gpointer) {
 	history_operator(expression_add_sign());
 }
@@ -11997,7 +12039,7 @@ void on_button_history_sqrt_clicked(GtkButton*, gpointer) {
 		str += ")";
 	}
 	str += ")";
-	clearresult();
+	gtk_entry_set_text(GTK_ENTRY(expression), "");
 	insert_text(str.c_str());
 	execute_expression();
 }
@@ -12057,7 +12099,7 @@ void history_copy(bool full_text) {
 				}
 				case QALCULATE_HISTORY_RPN_OPERATION: {
 					if(i > 0) str += '\n';
-					str += _("RPN Register Operation");
+					str += _("RPN Operation");
 					add_parse = true;
 					break;
 				}

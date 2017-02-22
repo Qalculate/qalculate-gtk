@@ -1839,8 +1839,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1864,8 +1864,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1889,8 +1889,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -3040,11 +3040,11 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="can_focus">True</property>
                                 <property name="focus_on_click">False</property>
                                 <property name="receives_default">False</property>
-                                <property name="tooltip_text" translatable="yes" context="Keypad">Add selected value(s)</property>
+                                <property name="tooltip_text" translatable="yes">Add the selected value(s)</property>
                                 <property name="use_underline">True</property>
                                 <signal name="clicked" handler="on_button_history_add_clicked" swapped="no"/>
                                 <child>
-                                  <object class="GtkLabel" id="label_rpn_add1">
+                                  <object class="GtkLabel" id="label_history_add">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="label" translatable="yes">+</property>
@@ -3067,7 +3067,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="use_underline">True</property>
                                 <signal name="clicked" handler="on_button_history_sub_clicked" swapped="no"/>
                                 <child>
-                                  <object class="GtkLabel" id="label_rpn_sub1">
+                                  <object class="GtkLabel" id="label_history_sub">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="label" translatable="yes">-</property>
@@ -3086,11 +3086,11 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="can_focus">True</property>
                                 <property name="focus_on_click">False</property>
                                 <property name="receives_default">False</property>
-                                <property name="tooltip_text" translatable="yes">Multiply the selected value(s)</property>
+                                <property name="tooltip_text" translatable="yes">Multiply the the selected value(s)</property>
                                 <property name="use_underline">True</property>
                                 <signal name="clicked" handler="on_button_history_times_clicked" swapped="no"/>
                                 <child>
-                                  <object class="GtkLabel" id="label_rpn_times1">
+                                  <object class="GtkLabel" id="label_history_times">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="label" translatable="yes">*</property>
@@ -3109,11 +3109,11 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="can_focus">True</property>
                                 <property name="focus_on_click">False</property>
                                 <property name="receives_default">False</property>
-                                <property name="tooltip_text" translatable="yes">Divide the selected value(s)</property>
+                                <property name="tooltip_text" translatable="yes">Divide the the selected value(s)</property>
                                 <property name="use_underline">True</property>
                                 <signal name="clicked" handler="on_button_history_divide_clicked" swapped="no"/>
                                 <child>
-                                  <object class="GtkLabel" id="label_rpn_divide1">
+                                  <object class="GtkLabel" id="label_history_divide">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="label" translatable="yes">/</property>
@@ -3132,11 +3132,11 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="can_focus">True</property>
                                 <property name="focus_on_click">False</property>
                                 <property name="receives_default">False</property>
-                                <property name="tooltip_text" translatable="yes">Raise (Ctrl+*)</property>
+                                <property name="tooltip_text" translatable="yes">Raise to the power of the selected value</property>
                                 <property name="use_underline">True</property>
                                 <signal name="clicked" handler="on_button_history_xy_clicked" swapped="no"/>
                                 <child>
-                                  <object class="GtkLabel" id="label_xy1">
+                                  <object class="GtkLabel" id="label_history_xy">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="label" translatable="yes">x&lt;sup&gt;y&lt;/sup&gt;</property>
@@ -3156,11 +3156,11 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="can_focus">True</property>
                                 <property name="focus_on_click">False</property>
                                 <property name="receives_default">False</property>
-                                <property name="tooltip_text" translatable="yes">Square root</property>
+                                <property name="tooltip_text" translatable="yes">Calculate the square root of the selected value</property>
                                 <property name="use_underline">True</property>
                                 <signal name="clicked" handler="on_button_history_sqrt_clicked" swapped="no"/>
                                 <child>
-                                  <object class="GtkLabel" id="label_sqrt1">
+                                  <object class="GtkLabel" id="label_history_sqrt">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="label" translatable="yes">sqrt</property>
@@ -3185,7 +3185,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">page 1</property>
+                        <property name="label" translatable="yes">History</property>
                       </object>
                       <packing>
                         <property name="tab_fill">False</property>

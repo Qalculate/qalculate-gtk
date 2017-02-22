@@ -587,7 +587,7 @@ void create_main_window (void) {
 				if(i < inhistory.size() - 1) {
 					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 4, TRUE, 5, 2.0, -1);
 				}
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, _("RPN Register Operation"), 1, i, -1);
+				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, _("RPN Operation"), 1, i, -1);
 				break;
 			}
 			case QALCULATE_HISTORY_TRANSFORMATION: {
