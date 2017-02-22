@@ -238,6 +238,8 @@ extern MathFunction *f_expression;
 
 unordered_map<string, GtkTreeIter> convert_category_map;
 
+extern bool rpn_off_accelerator_set;
+
 #define TEXT_TAGS			"<span size=\"xx-large\">"
 #define TEXT_TAGS_END			"</span>"
 #define TEXT_TAGS_SMALL			"<span size=\"large\">"
@@ -5577,7 +5579,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	b_busy = false;
 	b_busy_result = false;
 	
-	gtk_tree_view_scroll_to_point(GTK_TREE_VIEW(historyview), 0, 0);
+	if(gtk_widget_get_realized(historyview)) gtk_tree_view_scroll_to_point(GTK_TREE_VIEW(historyview), 0, 0);
 
 	if(!register_moved && stack_index == 0 && mstruct->isMatrix() && (mstruct->rows() > 4 || mstruct->columns() > 4) && matrix_mstruct->isMatrix()) {
 		while(gtk_events_pending()) gtk_main_iteration();
@@ -12570,16 +12572,23 @@ void on_menu_item_rpn_on_activate(GtkMenuItem *w, gpointer) {
 	set_rpn_mode(true);
 	evalops.parse_options.rpn = true;
 	expression_format_updated(false);
-	gtk_widget_remove_accelerator(GTK_WIDGET(w), accel_group, GDK_KEY_R, GDK_CONTROL_MASK);
-	gtk_widget_add_accelerator(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_rpn_off")), "activate", accel_group, GDK_KEY_R, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+	if(!rpn_off_accelerator_set) {
+		gtk_widget_remove_accelerator(GTK_WIDGET(w), accel_group, GDK_KEY_R, GDK_CONTROL_MASK);
+		gtk_widget_add_accelerator(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_rpn_off")), "activate", accel_group, GDK_KEY_R, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+		rpn_off_accelerator_set = true;
+	}
 }
 void on_menu_item_rpn_off_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	set_rpn_mode(false);
 	evalops.parse_options.rpn = false;
 	expression_format_updated(false);
-	gtk_widget_remove_accelerator(GTK_WIDGET(w), accel_group, GDK_KEY_R, GDK_CONTROL_MASK);
-	gtk_widget_add_accelerator(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_rpn_on")), "activate", accel_group, GDK_KEY_R, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+	if(rpn_off_accelerator_set) {
+		gtk_widget_remove_accelerator(GTK_WIDGET(w), accel_group, GDK_KEY_R, GDK_CONTROL_MASK);
+		gtk_widget_add_accelerator(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_rpn_on")), "activate", accel_group, GDK_KEY_R, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+		rpn_off_accelerator_set = false;
+	}
+
 }
 void on_menu_item_limit_implicit_multiplication_activate(GtkMenuItem *w, gpointer) {
 	evalops.parse_options.limit_implicit_multiplication = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));

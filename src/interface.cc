@@ -120,6 +120,8 @@ extern deque<int> inhistory_type;
 
 gint win_height, win_width, history_height, keypad_height;
 
+bool rpn_off_accelerator_set;
+
 gint compare_categories(gconstpointer a, gconstpointer b) {
 	return strcasecmp((const char*) a, (const char*) b);
 }
@@ -153,8 +155,10 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 	
 	if(in_rpn_mode && evalops.parse_options.rpn) {
 		gtk_widget_add_accelerator(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_rpn_off")), "activate", accel_group, GDK_KEY_R, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+		rpn_off_accelerator_set = true;
 	} else {
 		gtk_widget_add_accelerator(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_rpn_on")), "activate", accel_group, GDK_KEY_R, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+		rpn_off_accelerator_set = false;
 	}
 
 	switch(eo.approximation) {
