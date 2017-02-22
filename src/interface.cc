@@ -84,7 +84,7 @@ GtkListStore *tMatrixEdit_store, *tMatrix_store;
 extern vector<GtkTreeViewColumn*> matrix_edit_columns, matrix_columns;
 
 GtkCellRenderer *renderer, *history_renderer, *history_index_renderer, *ans_renderer, *register_renderer;
-GtkTreeViewColumn *column, *register_column, *history_column, *history_index_column, *ans_column;
+GtkTreeViewColumn *column, *register_column, *history_column, *history_index_column;
 GtkTreeSelection *selection;
 
 GtkWidget *expression;
@@ -545,18 +545,18 @@ void create_main_window (void) {
 	gtk_builder_connect_signals(main_builder, NULL);
 	g_signal_connect(accel_group, "accel_changed", G_CALLBACK(save_accels), NULL);
 	
-	historystore = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_INT, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_DOUBLE);
+	historystore = gtk_list_store_new(6, G_TYPE_STRING, G_TYPE_INT, G_TYPE_STRING, G_TYPE_INT, G_TYPE_BOOLEAN, G_TYPE_DOUBLE);
 	gtk_tree_view_set_model(GTK_TREE_VIEW(historyview), GTK_TREE_MODEL(historystore));
 	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_MULTIPLE);
 	history_index_renderer = gtk_cell_renderer_text_new();
-	history_index_column = gtk_tree_view_column_new_with_attributes(_("Index"), history_index_renderer, "text", 2, "size-set", 3, "size-points", 4, NULL);
+	history_index_column = gtk_tree_view_column_new_with_attributes(_("Index"), history_index_renderer, "text", 2, "size-set", 4, "size-points", 5, NULL);
 	gtk_tree_view_column_set_expand(history_index_column, FALSE);
 	gtk_tree_view_column_set_min_width(history_index_column, 30);
 	g_object_set(G_OBJECT(history_index_renderer), "ypad", 0, "xalign", 0.5, "foreground", "gray40", NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(historyview), history_index_column);
 	history_renderer = gtk_cell_renderer_text_new();
-	history_column = gtk_tree_view_column_new_with_attributes(_("History"), history_renderer, "markup", 0, "size-set", 3, "size-points", 4, NULL);
+	history_column = gtk_tree_view_column_new_with_attributes(_("History"), history_renderer, "markup", 0, "size-set", 4, "size-points", 5, NULL);
 	gtk_tree_view_column_set_expand(history_column, TRUE);
 	g_object_set(G_OBJECT(history_renderer), "ypad", 0, "xpad", 10, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(historyview), history_column);
@@ -571,21 +571,21 @@ void create_main_window (void) {
 		switch(inhistory_type[i]) {
 			case QALCULATE_HISTORY_EXPRESSION: {
 				if(i < inhistory.size() - 1) {
-					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 3, TRUE, 4, 2.0, -1);
+					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 4, TRUE, 5, 2.0, -1);
 				}
 				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, inhistory[i].c_str(), 1, i, 2, "   ", -1);
 				break;
 			}
 			case QALCULATE_HISTORY_REGISTER_MOVED: {
 				if(i < inhistory.size() - 1) {
-					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 3, TRUE, 4, 2.0, -1);
+					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 4, TRUE, 5, 2.0, -1);
 				}
 				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, _("RPN Register Moved"), 1, i, -1);
 				break;
 			}
 			case QALCULATE_HISTORY_RPN_OPERATION: {
 				if(i < inhistory.size() - 1) {
-					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 3, TRUE, 4, 2.0, -1);
+					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 4, TRUE, 5, 2.0, -1);
 				}
 				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, _("RPN Register Operation"), 1, i, -1);
 				break;
@@ -598,7 +598,7 @@ void create_main_window (void) {
 				break;
 			}
 			case QALCULATE_HISTORY_RESULT: {
-				if(i > 0 && inhistory_type[i - 1] == QALCULATE_HISTORY_TRANSFORMATION) {
+				if(i + 1 < inhistory.size()  && inhistory_type[i + 1] == QALCULATE_HISTORY_TRANSFORMATION) {
 					gchar *expr_str = NULL;
 					gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
 					history_str = expr_str;
@@ -624,11 +624,23 @@ void create_main_window (void) {
 					str += _("approx.");
 					str += " ";
 				}
-				history_str = str;
-				history_str += "<span font-weight=\"bold\">";
-				history_str += inhistory[i];
-				history_str += "</span>";
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, -1);
+				if(i + 1 < inhistory.size() && inhistory_type[i + 1] == QALCULATE_HISTORY_TRANSFORMATION) {
+					gchar *expr_str = NULL;
+					gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
+					history_str = expr_str;
+					g_free(expr_str);
+					history_str += str;
+					history_str += "<span font-weight=\"bold\">";
+					history_str += inhistory[i];
+					history_str += "</span>";
+					gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), -1);
+				} else {
+					history_str = str;
+					history_str += "<span font-weight=\"bold\">";
+					history_str += inhistory[i];
+					history_str += "</span>";
+					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, -1);
+				}
 				break;
 			}
 			case QALCULATE_HISTORY_PARSE_WITHEQUALS: {

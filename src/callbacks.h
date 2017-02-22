@@ -51,6 +51,9 @@ enum {
 	QALCULATE_HISTORY_RPN_OPERATION
 };
 
+DECLARE_BUILTIN_FUNCTION(AnswerFunction)
+DECLARE_BUILTIN_FUNCTION(ExpressionFunction)
+
 bool can_display_unicode_string_function(const char *str, void *w);
 void set_unicode_buttons();
 
@@ -198,7 +201,6 @@ gboolean completion_match_func(GtkEntryCompletion *entrycompletion, const gchar 
 void *view_proc(void*);
 void *command_proc(void*);
 void on_message_bar_response(GtkInfoBar *w, gint response_id, gpointer);
-void on_history_populate_popup(GtkTextView *w, GtkMenu *menu, gpointer user_data);
 void on_expression_populate_popup(GtkEntry *w, GtkMenu *menu, gpointer user_data);
 void on_combobox_base_changed(GtkComboBox *w, gpointer user_data);
 void on_combobox_numerical_display_changed(GtkComboBox *w, gpointer user_data);

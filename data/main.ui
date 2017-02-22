@@ -1839,8 +1839,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1864,8 +1864,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1889,8 +1889,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -2940,6 +2940,9 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="enable_search">False</property>
                                 <property name="show_expanders">False</property>
                                 <property name="enable_grid_lines">vertical</property>
+                                <signal name="button-press-event" handler="on_historyview_button_press_event" swapped="no"/>
+                                <signal name="popup-menu" handler="on_historyview_popup_menu" swapped="no"/>
+                                <signal name="row-activated" handler="on_historyview_row_activated" swapped="no"/>
                                 <child internal-child="selection">
                                   <object class="GtkTreeSelection"/>
                                 </child>
@@ -2960,7 +2963,31 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="spacing">4</property>
                             <property name="homogeneous">True</property>
                             <child>
-                              <object class="GtkButton" id="button_history_paste">
+                              <object class="GtkButton" id="button_history_insert_value">
+                                <property name="visible">True</property>
+                                <property name="sensitive">False</property>
+                                <property name="can_focus">True</property>
+                                <property name="focus_on_click">False</property>
+                                <property name="receives_default">False</property>
+                                <property name="tooltip_text" translatable="yes">Insert the selected value</property>
+                                <property name="use_underline">True</property>
+                                <signal name="clicked" handler="on_button_history_insert_value_clicked" swapped="no"/>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">Value</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="button_history_insert_text">
                                 <property name="visible">True</property>
                                 <property name="sensitive">False</property>
                                 <property name="can_focus">True</property>
@@ -2968,12 +2995,12 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="receives_default">False</property>
                                 <property name="tooltip_text" translatable="yes">Insert the selected text</property>
                                 <property name="use_underline">True</property>
-                                <signal name="clicked" handler="on_button_history_paste_clicked" swapped="no"/>
+                                <signal name="clicked" handler="on_button_history_insert_text_clicked" swapped="no"/>
                                 <child>
-                                  <object class="GtkImage">
+                                  <object class="GtkLabel">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="stock">gtk-paste</property>
+                                    <property name="label" translatable="yes">Text</property>
                                   </object>
                                 </child>
                               </object>
@@ -2994,10 +3021,10 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="use_underline">True</property>
                                 <signal name="clicked" handler="on_button_history_copy_clicked" swapped="no"/>
                                 <child>
-                                  <object class="GtkImage">
+                                  <object class="GtkLabel">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="stock">gtk-copy</property>
+                                    <property name="label" translatable="yes">Copy</property>
                                   </object>
                                 </child>
                               </object>
@@ -3773,6 +3800,48 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       <placeholder/>
     </child>
   </object>
+  <object class="GtkMenu" id="popup_menu_historyview">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_history_insert_value">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Insert Value</property>
+        <signal name="activate" handler="on_popup_menu_item_history_insert_value_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_history_insert_text">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Insert Text</property>
+        <signal name="activate" handler="on_popup_menu_item_history_insert_text_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_history_copy_text">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Copy Text</property>
+        <signal name="activate" handler="on_popup_menu_item_history_copy_text_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_history_clear">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Clear All</property>
+        <signal name="activate" handler="on_popup_menu_item_history_clear_activate" swapped="no"/>
+      </object>
+    </child>
+  </object>
   <object class="GtkMenu" id="popup_menu_resultview">
     <property name="can_focus">False</property>
     <child>
@@ -3803,7 +3872,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="separator_popup_factorize">
+      <object class="GtkSeparatorMenuItem" id="separator_popup_factorize">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
@@ -3836,7 +3905,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="separator_popup_nonzero">
+      <object class="GtkSeparatorMenuItem" id="separator_popup_nonzero">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
@@ -3852,7 +3921,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="separator_popup_display">
+      <object class="GtkSeparatorMenuItem" id="separator_popup_display">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
@@ -3908,7 +3977,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="separator_popup_base">
+      <object class="GtkSeparatorMenuItem" id="separator_popup_base">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
@@ -3994,7 +4063,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="separator_popup_fraction">
+      <object class="GtkSeparatorMenuItem" id="separator_popup_fraction">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
@@ -4040,12 +4109,6 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="separator33">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-      </object>
-    </child>
-    <child>
       <object class="GtkCheckMenuItem" id="popup_menu_item_abbreviate_names">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
@@ -4055,7 +4118,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="separator_popup_units">
+      <object class="GtkSeparatorMenuItem" id="separator_popup_units">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
@@ -4096,7 +4159,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="separator_popup_display_prefixes">
+      <object class="GtkSeparatorMenuItem" id="separator_popup_display_prefixes">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
@@ -4139,7 +4202,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="separator_popup_unit_settings">
+      <object class="GtkSeparatorMenuItem" id="separator_popup_unit_settings">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
@@ -4163,7 +4226,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="separator_result_popup_modes">
+      <object class="GtkSeparatorMenuItem" id="separator_result_popup_modes">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
@@ -4178,7 +4241,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
           <object class="GtkMenu" id="menu_result_popup_meta_modes">
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkMenuItem" id="separator_result_popup_meta_modes">
+              <object class="GtkSeparatorMenuItem" id="separator_result_popup_meta_modes">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
               </object>
@@ -4206,7 +4269,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="separator_popup_view_matrixvector">
+      <object class="GtkSeparatorMenuItem" id="separator_popup_view_matrixvector">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>

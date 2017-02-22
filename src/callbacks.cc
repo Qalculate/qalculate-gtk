@@ -150,7 +150,7 @@ extern GtkWidget *historyview;
 extern GtkWidget *stackview;
 extern GtkListStore *stackstore, *historystore;
 extern GtkCellRenderer *register_renderer;
-extern GtkTreeViewColumn *register_column;
+extern GtkTreeViewColumn *register_column, *history_column, *history_index_column;
 extern cairo_surface_t *surface_result;
 vector<vector<GtkWidget*> > insert_element_entries;
 bool b_busy, b_busy_command, b_busy_result, b_busy_expression, b_busy_fetch;
@@ -220,9 +220,10 @@ vector<GtkWidget*> popup_result_mode_items;
 
 deque<string> inhistory;
 deque<int> inhistory_type;
-deque<MathStructure*> inhistory_value;
+vector<MathStructure*> history_parsed;
+vector<MathStructure*> history_answer;
 
-int current_inhistory_index = 0;
+int current_inhistory_index = -1;
 int history_index = 0;
 int initial_inhistory_index = 0;
 int nr_of_new_expressions = 0;
@@ -231,6 +232,9 @@ unordered_map<void*, string> number_map;
 unordered_map<void*, bool> number_approx_map;
 unordered_map<void*, string> number_exp_map;
 unordered_map<void*, bool> number_exp_minus_map;
+
+extern MathFunction *f_answer;
+extern MathFunction *f_expression;
 
 unordered_map<string, GtkTreeIter> convert_category_map;
 
@@ -260,6 +264,35 @@ unordered_map<string, GtkTreeIter> convert_category_map;
 #define PANGO_TTP_SMALL(layout, x)	if(ips.power_depth > 0) {PANGO_TT_XSMALL(layout, x);} else {PANGO_TT_SMALL(layout, x);}
 
 #define CALCULATE_SPACE_W		gint space_w, space_h; PangoLayout *layout_space = gtk_widget_create_pango_layout(resultview, NULL); PANGO_TTP(layout_space, " "); pango_layout_get_pixel_size(layout_space, &space_w, &space_h); g_object_unref(layout_space);
+
+AnswerFunction::AnswerFunction() : MathFunction("answer", 1, 1, _("Utilities"), _("History Answer Value")) {
+	setArgumentDefinition(1, new IntegerArgument(_("History Index"), ARGUMENT_MIN_MAX_NONZERO));
+	setHidden(true);
+}
+int AnswerFunction::calculate(MathStructure &mstruct, const MathStructure &vargs, const EvaluationOptions&) {
+	int index = vargs[0].number().intValue();
+	if(index < 0) index = (int) history_answer.size() + 1 + index;
+	if(index <= 0 || index > (int) history_answer.size() || history_answer[(size_t) index - 1] == NULL) {
+		CALCULATOR->error(true, _("History index %s does not exist."), vargs[0].print().c_str(), NULL);
+		return 0;
+	}
+	mstruct.set(*history_answer[(size_t) index - 1]);
+	return 1;
+}
+ExpressionFunction::ExpressionFunction() : MathFunction("expression", 1, 1, _("Utilities"), _("History Parsed Expression")) {
+	setArgumentDefinition(1, new IntegerArgument(_("History Index"), ARGUMENT_MIN_MAX_NONZERO));
+	setHidden(true);
+}
+int ExpressionFunction::calculate(MathStructure &mstruct, const MathStructure &vargs, const EvaluationOptions&) {
+	int index = vargs[0].number().intValue();
+	if(index < 0) index = (int) history_parsed.size() + 1 + index;
+	if(index <= 0 || index > (int) history_parsed.size() || history_parsed[(size_t) index - 1] == NULL) {
+		CALCULATOR->error(true, _("History index %s does not exist."), vargs[0].print().c_str(), NULL);
+		return 0;
+	}
+	mstruct.set(*history_parsed[(size_t) index - 1]);
+	return 1;
+}
 
 enum {
 	COMMAND_FACTORIZE,
@@ -687,21 +720,19 @@ void display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 			if(mtype == MESSAGE_ERROR) {
 				inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
 				inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_ERROR);
-				inhistory_value.insert(inhistory_value.begin() + *inhistory_index, NULL);
 				string history_str = "<span foreground=\"red\">- ";
 				history_str += CALCULATOR->message()->message();
 				history_str += "</span>";
 				(*history_index_p)++;
-				gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, -1);
+				gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, 3, nr_of_new_expressions, -1);
 			} else if(mtype == MESSAGE_WARNING) {
 				inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
 				inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_WARNING);
-				inhistory_value.insert(inhistory_value.begin() + *inhistory_index, NULL);
 				string history_str = "<span foreground=\"blue\">- ";
 				history_str += CALCULATOR->message()->message();
 				history_str += "</span>";
 				(*history_index_p)++;
-				gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, -1);
+				gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, 3, nr_of_new_expressions, -1);
 			}
 			inhistory_added++;
 		}
@@ -5185,36 +5216,37 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 
 	int inhistory_index = 0;
 	if(update_history) {
-		if(update_parse || register_moved) {
+		if(update_parse || register_moved || current_inhistory_index < 0) {
 			if(register_moved) {
 				result_text = _("RPN Register Moved");
 				inhistory_type.push_back(QALCULATE_HISTORY_REGISTER_MOVED);
 				inhistory.push_back("");
-				inhistory_value.push_back(NULL);
 			} else {
 				remove_blank_ends(result_text);
 				gsub("\n", " ", result_text);
 				if(result_text == _("RPN Operation")) {
 					inhistory_type.push_back(QALCULATE_HISTORY_RPN_OPERATION);
 					inhistory.push_back("");
-					inhistory_value.push_back(NULL);
 				} else {
 					inhistory_type.push_back(QALCULATE_HISTORY_EXPRESSION);
 					inhistory.push_back(result_text);
-					inhistory_value.push_back(NULL);
 				}
 			}
 			nr_of_new_expressions++;
-			gtk_list_store_insert_with_values(historystore, &history_iter, 0, 0, result_text.c_str(), 1, inhistory.size() - 1, 2, i2s(nr_of_new_expressions).c_str(), -1);
-			gtk_list_store_insert_with_values(historystore, NULL, 1, 1, -1, 3, TRUE, 4, 2.0, -1);
+			gtk_list_store_insert_with_values(historystore, &history_iter, 0, 0, result_text.c_str(), 1, inhistory.size() - 1, 2, i2s(nr_of_new_expressions).c_str(), 3, nr_of_new_expressions, -1);
+			gtk_list_store_insert_with_values(historystore, NULL, 1, 1, -1, 4, TRUE, 5, 2.0, -1);
 			history_index = 0;			
 			inhistory_index = inhistory.size() - 1;
+			history_parsed.push_back(NULL);
+			history_answer.push_back(NULL);
 		} else if(current_inhistory_index >= 0) {
 			inhistory_index = current_inhistory_index;
 			if(!transformation.empty()) {
 				string history_str = "<span font-style=\"italic\">";
 				history_str += transformation;
-				history_str += ":  </span>";
+				history_str += ":  </span>";				
+				history_index++;
+				gtk_list_store_insert_with_values(historystore, &history_iter, history_index, 0, history_str.c_str(), 1, inhistory_index, 3, nr_of_new_expressions, -1);
 				GtkTreeIter index_iter = history_iter;
 				gint index_hi = -1;
 				while(gtk_tree_model_iter_previous(GTK_TREE_MODEL(historystore), &index_iter)) {
@@ -5223,10 +5255,8 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 						gtk_list_store_set(historystore, &index_iter, 1, index_hi + 1, -1);
 					}
 				}
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, -1, -1);
 				inhistory.insert(inhistory.begin() + inhistory_index, transformation);
 				inhistory_type.insert(inhistory_type.begin() + inhistory_index, QALCULATE_HISTORY_TRANSFORMATION);
-				inhistory_value.insert(inhistory_value.begin() + inhistory_index, NULL);
 			}
 		} else {
 			b_busy = false;
@@ -5386,6 +5416,10 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		update_parse = true;
 		parsed_text = result_text;
 	}
+	if(current_inhistory_index < 0) {
+		update_parse = true;
+		current_inhistory_index = 0;
+	}
 	if(stack_index != 0) {
 		if(result_text.length() > 500000) {
 			result_text = "(…)";
@@ -5421,8 +5455,9 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			str += "</span>";
 			
 			inhistory.insert(inhistory.begin() + inhistory_index, parsed_text);
-			parsed_mstruct->ref();
-			inhistory_value.insert(inhistory_value.begin() + inhistory_index, parsed_mstruct);
+			if(nr_of_new_expressions > 0 && parsed_mstruct && !history_parsed[nr_of_new_expressions - 1]) {
+				history_parsed[nr_of_new_expressions - 1] = new MathStructure(*parsed_mstruct);
+			}
 			
 			gtk_list_store_set(historystore, &history_iter, 0, str.c_str(), 1, inhistory_index + 1, -1);
 		}
@@ -5443,19 +5478,33 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				str += _("approx.");
 			}
 		}
-		str += " ";
-		str += "<span font-weight=\"bold\">";
-		history_index++;
-		gtk_list_store_insert_with_values(historystore, &history_iter, history_index, 0, (str + result_text + "</span>").c_str(), 1, inhistory_index, -1);
+		string history_str;
+		if(!update_parse && current_inhistory_index >= 0 && !transformation.empty()) {
+			gchar *expr_str = NULL;
+			gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
+			history_str = expr_str;
+			g_free(expr_str);
+		}
+		history_str += str;
+		history_str += " <span font-weight=\"bold\">";
+		history_str += result_text;
+		history_str += "</span>";		
+		if(!update_parse && current_inhistory_index >= 0 && !transformation.empty()) {
+			gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), 1, inhistory_index + 1, -1);
+		} else {
+			history_index++;
+			gtk_list_store_insert_with_values(historystore, &history_iter, history_index, 0, history_str.c_str(), 1, inhistory_index, 3, nr_of_new_expressions, -1);
+		}
 		inhistory.insert(inhistory.begin() + inhistory_index, result_text);
 		current_inhistory_index = inhistory_index;
 		if(b_approx) {
 			inhistory_type.insert(inhistory_type.begin() + inhistory_index, QALCULATE_HISTORY_RESULT_APPROXIMATE);
 		} else {
 			inhistory_type.insert(inhistory_type.begin() + inhistory_index, QALCULATE_HISTORY_RESULT);
+		}		
+		if(update_parse && nr_of_new_expressions > 0 && mstruct && !history_answer[nr_of_new_expressions - 1]) {
+			history_answer[nr_of_new_expressions - 1] = new MathStructure(*mstruct);
 		}
-		mstruct->ref();
-		inhistory_value.insert(inhistory_value.begin() + inhistory_index, mstruct);
 		
 		GtkTreeIter index_iter = history_iter;
 		gint index_hi = -1;
@@ -9321,23 +9370,6 @@ void load_mode(size_t index) {
 	}
 }
 
-void on_popup_menu_item_clear_history_active(GtkMenuItem*, gpointer) {
-	/*GtkTextBuffer *tb = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(main_builder, "history")));
-	inhistory.clear();
-	inhistory_type.clear();
-	initial_result_pos = NULL;
-	initial_result_index = 0;
-	gtk_text_buffer_set_text(tb, "", 0);*/
-}
-void on_history_populate_popup(GtkTextView*, GtkMenu *sub, gpointer) {
-	GtkWidget *item;
-	MENU_SEPARATOR
-	item = gtk_menu_item_new_with_mnemonic(_("_Clear"));
-	gtk_widget_show(item);
-	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(on_popup_menu_item_clear_history_active), NULL);
-	gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
-	gtk_widget_set_sensitive(item, !inhistory.empty());
-}
 void on_popup_menu_item_disable_completion_activate(GtkMenuItem*, gpointer) {
 	enable_completion = false;
 	update_completion();
@@ -10270,56 +10302,43 @@ void load_preferences() {
 				} else if(svar == "history") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_OLD);
-					inhistory_value.push_front(NULL);
 				} else if(svar == "history_old") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_OLD);
-					inhistory_value.push_front(NULL);
 				} else if(svar == "history_expression") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_EXPRESSION);
-					inhistory_value.push_front(NULL);
 				} else if(svar == "history_transformation") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_TRANSFORMATION);
-					inhistory_value.push_front(NULL);
 				} else if(svar == "history_result") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_RESULT);
-					inhistory_value.push_front(NULL);
 				} else if(svar == "history_result_approximate") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_RESULT_APPROXIMATE);
-					inhistory_value.push_front(NULL);
 				} else if(svar == "history_parse") {					
 					inhistory.push_front(svalue);
 					if(old_history_format) inhistory_type.push_front(QALCULATE_HISTORY_PARSE_WITHEQUALS);
 					else inhistory_type.push_front(QALCULATE_HISTORY_PARSE);
-					inhistory_value.push_front(NULL);
 				} else if(svar == "history_parse_withequals") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_PARSE_WITHEQUALS);
-					inhistory_value.push_front(NULL);
 				} else if(svar == "history_parse_approximate") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_PARSE_APPROXIMATE);
-					inhistory_value.push_front(NULL);
 				} else if(svar == "history_register_moved") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_REGISTER_MOVED);
-					inhistory_value.push_front(NULL);
 				} else if(svar == "history_rpn_operation") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_RPN_OPERATION);
-					inhistory_value.push_front(NULL);
 				} else if(svar == "history_warning") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_WARNING);
-					inhistory_value.push_front(NULL);
 				} else if(svar == "history_error") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_ERROR);
-					inhistory_value.push_front(NULL);
 				} else if(svar == "history_continued") {
 					if(inhistory.size() > 0) {
 						inhistory[0] += "\n";
@@ -11350,7 +11369,7 @@ gboolean on_resultview_popup_menu(GtkWidget*, gpointer) {
 	if(b_busy) return TRUE;
 	update_resultview_popup();
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_resultview")), NULL);
+	gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_resultview")), NULL);
 #else
 	gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_resultview")), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
 #endif
@@ -11448,6 +11467,10 @@ gboolean on_gcalc_exit(GtkWidget*, GdkEvent*, gpointer) {
 	}
 	if(save_defs_on_exit) {
 		save_defs();
+	}
+	for(size_t i = 0; i < history_parsed.size(); i++) {
+		if(history_parsed[i]) history_parsed[i]->unref();
+		if(history_answer[i]) history_answer[i]->unref();
 	}
 	pthread_cancel(view_thread);
 	CALCULATOR->terminateThreads();
@@ -11826,13 +11849,43 @@ void on_button_rpn_reciprocal_clicked(GtkButton*, gpointer) {
 	insertButtonFunction(CALCULATOR->getFunction("inv"));
 }
 
-void on_historyview_selection_changed(GtkTreeSelection *select, gpointer) {
+void on_button_history_insert_value_clicked(GtkButton*, gpointer) {
+	if(b_busy) return;
 	GtkTreeModel *model;
 	GtkTreeIter iter;
-	int row_count = gtk_tree_selection_count_selected_rows(select);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_paste")), row_count == 1);
+	GList *selected_rows;
+	gint index = -1;
+	gint hindex = -1;
+	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
+	if(gtk_tree_selection_count_selected_rows(select) != 1) return;
+	selected_rows = gtk_tree_selection_get_selected_rows(select, &model);
+	gtk_tree_model_get_iter(model, &iter, (GtkTreePath*) selected_rows->data);
+	gtk_tree_model_get(model, &iter, 1, &hindex, 3, &index, -1);
+	if(index > 0 && hindex >= 0) {
+		const ExpressionName *ename = NULL;
+		switch(inhistory_type[(size_t) hindex]) {
+			case QALCULATE_HISTORY_RPN_OPERATION: {}
+			case QALCULATE_HISTORY_REGISTER_MOVED: {}
+			case QALCULATE_HISTORY_PARSE: {}
+			case QALCULATE_HISTORY_PARSE_APPROXIMATE: {}
+			case QALCULATE_HISTORY_EXPRESSION: {
+				ename = &f_expression->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression);
+				break;
+			}
+			default: {
+				ename = &f_answer->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression);
+			}
+		}		
+		string str = ename->name;
+		str += "(";
+		str += i2s(index);
+		str += ")";
+		insert_text(str.c_str());
+	}
+	g_list_free(selected_rows);
 }
-void on_button_history_paste_clicked(GtkButton*, gpointer) {	
+void on_button_history_insert_text_clicked(GtkButton*, gpointer) {
+	if(b_busy) return;
 	GtkTreeModel *model;
 	GtkTreeIter iter;
 	GList *selected_rows;
@@ -11846,6 +11899,115 @@ void on_button_history_paste_clicked(GtkButton*, gpointer) {
 		insert_text(inhistory[(size_t) index].c_str());
 	}
 	g_list_free(selected_rows);
+}
+void on_popup_menu_item_history_clear_activate(GtkMenuItem*, gpointer) {
+	if(b_busy) return;
+	gtk_list_store_clear(historystore);
+	inhistory.clear();
+	inhistory_type.clear();
+	for(size_t i = 0; i < history_parsed.size(); i++) {
+		if(history_parsed[i]) history_parsed[i]->unref();
+		if(history_answer[i]) history_answer[i]->unref();
+	}
+	history_parsed.clear();
+	history_answer.clear();
+	current_inhistory_index = -1;
+	history_index = 0;
+	initial_inhistory_index = 0;
+	nr_of_new_expressions = 0;	
+}
+void on_popup_menu_item_history_insert_value_activate(GtkMenuItem*, gpointer) {
+	on_button_history_insert_value_clicked(NULL, NULL);
+}
+void on_popup_menu_item_history_insert_text_activate(GtkMenuItem*, gpointer) {
+	on_button_history_insert_text_clicked(NULL, NULL);
+}
+void on_popup_menu_item_history_copy_text_activate(GtkMenuItem*, gpointer) {
+	//on_button_history_copy_clicked(NULL, NULL);
+}
+void update_historyview_popup() {
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	GList *selected_rows;
+	gint index = -1;
+	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
+	if(gtk_tree_selection_count_selected_rows(select) != 1) return;
+	selected_rows = gtk_tree_selection_get_selected_rows(select, &model);
+	/*gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_value")), !selected_rows.empty());
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_text")), !selected_rows.empty());
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_text")), !selected_rows.empty());*/
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_clear")), gtk_tree_model_get_iter_first(model, &iter));
+	g_list_free(selected_rows);
+}
+gboolean on_historyview_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
+	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
+		if(b_busy) return FALSE;
+		update_historyview_popup();
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_historyview")), (GdkEvent*) event);
+#else
+		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_historyview")), NULL, NULL, NULL, NULL, event->button, event->time);
+#endif
+	}
+	return FALSE;
+}
+gboolean on_historyview_popup_menu(GtkWidget*, gpointer) {
+	if(b_busy) return TRUE;
+	update_historyview_popup();
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+	gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_historyview")), NULL);
+#else
+	gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_historyview")), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
+#endif
+	return TRUE;
+}
+void on_historyview_selection_changed(GtkTreeSelection *select, gpointer) {
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	int row_count = gtk_tree_selection_count_selected_rows(select);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_insert_value")), row_count == 1);
+}
+void on_historyview_row_activated(GtkTreeView*, GtkTreePath *path, GtkTreeViewColumn *column, gpointer) {
+	GtkTreeIter iter;
+	gint index = -1, hindex = -1;
+	if(!gtk_tree_model_get_iter(GTK_TREE_MODEL(historystore), &iter, path)) return;
+	gtk_tree_model_get(GTK_TREE_MODEL(historystore), &iter, 1, &hindex, 3, &index, -1);
+	if(index > 0 && hindex >= 0) {
+		const ExpressionName *ename = NULL;
+		switch(inhistory_type[(size_t) hindex]) {
+			case QALCULATE_HISTORY_RPN_OPERATION: {}
+			case QALCULATE_HISTORY_REGISTER_MOVED: {
+				if(hindex == 0 || column == history_index_column) {
+					ename = &f_expression->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression);
+				} else {
+					insert_text(inhistory[(size_t) hindex - 1].c_str());
+					return;
+				}
+				break;
+			}
+			case QALCULATE_HISTORY_PARSE: {}
+			case QALCULATE_HISTORY_PARSE_APPROXIMATE: {}
+			case QALCULATE_HISTORY_EXPRESSION: {
+				if(column == history_index_column) {
+					ename = &f_expression->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression);
+				} else {
+					insert_text(inhistory[(size_t) hindex].c_str());
+					return;
+				}
+				break;
+			}
+			default: {
+				ename = &f_answer->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression);
+			}
+		}		
+		string str = ename->name;
+		str += "(";
+		str += i2s(index);
+		str += ")";
+		insert_text(str.c_str());
+	} else if(hindex >= 0) {
+		insert_text(inhistory[(size_t) hindex].c_str());
+	}
 }
 
 void on_menu_item_manage_variables_activate(GtkMenuItem*, gpointer) {

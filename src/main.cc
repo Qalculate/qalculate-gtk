@@ -49,6 +49,9 @@ extern vector<string> recent_units_pre;
 extern GtkWidget *expression;
 extern PrintOptions printops;
 
+MathFunction *f_answer;
+MathFunction *f_expression;
+
 GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *setbase_builder, *datasetedit_builder, *datasets_builder, *decimals_builder;
 GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
 GtkBuilder *preferences_builder, *unit_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder;
@@ -172,6 +175,9 @@ void create_application(GtkApplication *app) {
 	if(load_global_defs && !CALCULATOR->loadGlobalDefinitions()) {
 		g_print(_("Failed to load global definitions!\n"));
 	}
+	
+	f_answer = CALCULATOR->addFunction(new AnswerFunction());
+	f_expression = CALCULATOR->addFunction(new ExpressionFunction());
 
 	//load local definitions
 	CALCULATOR->loadLocalDefinitions();
