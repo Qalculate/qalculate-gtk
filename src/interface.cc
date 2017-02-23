@@ -431,6 +431,12 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 
 }
 
+gboolean history_row_separator_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer) {
+	gint hindex = -1;
+	gtk_tree_model_get(model, iter, 1, &hindex, -1);
+	return hindex < 0;
+}
+
 void create_main_window (void) {
 	
 	gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", "main.ui", NULL);
@@ -549,22 +555,23 @@ void create_main_window (void) {
 	gtk_builder_connect_signals(main_builder, NULL);
 	g_signal_connect(accel_group, "accel_changed", G_CALLBACK(save_accels), NULL);
 	
-	historystore = gtk_list_store_new(6, G_TYPE_STRING, G_TYPE_INT, G_TYPE_STRING, G_TYPE_INT, G_TYPE_BOOLEAN, G_TYPE_DOUBLE);
+	historystore = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_INT, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT);
 	gtk_tree_view_set_model(GTK_TREE_VIEW(historyview), GTK_TREE_MODEL(historystore));
 	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_MULTIPLE);
 	history_index_renderer = gtk_cell_renderer_text_new();
-	history_index_column = gtk_tree_view_column_new_with_attributes(_("Index"), history_index_renderer, "text", 2, "size-set", 4, "size-points", 5, NULL);
+	history_index_column = gtk_tree_view_column_new_with_attributes(_("Index"), history_index_renderer, "text", 2, "ypad", 4, NULL);
 	gtk_tree_view_column_set_expand(history_index_column, FALSE);
 	gtk_tree_view_column_set_min_width(history_index_column, 30);
 	g_object_set(G_OBJECT(history_index_renderer), "ypad", 0, "xalign", 0.5, "foreground", "gray40", NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(historyview), history_index_column);
 	history_renderer = gtk_cell_renderer_text_new();
-	history_column = gtk_tree_view_column_new_with_attributes(_("History"), history_renderer, "markup", 0, "size-set", 4, "size-points", 5, NULL);
+	history_column = gtk_tree_view_column_new_with_attributes(_("History"), history_renderer, "markup", 0, "ypad", 4, NULL);
 	gtk_tree_view_column_set_expand(history_column, TRUE);
-	g_object_set(G_OBJECT(history_renderer), "ypad", 0, "xpad", 10, NULL);
+	g_object_set(G_OBJECT(history_renderer), "xpad", 6, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(historyview), history_column);
 	g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_historyview_selection_changed), NULL);
+	gtk_tree_view_set_row_separator_func(GTK_TREE_VIEW(historyview), history_row_separator_func, NULL, NULL);
 
 	string history_str;
 	GtkTreeIter history_iter;
@@ -575,30 +582,30 @@ void create_main_window (void) {
 		switch(inhistory_type[i]) {
 			case QALCULATE_HISTORY_EXPRESSION: {
 				if(i < inhistory.size() - 1) {
-					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 4, TRUE, 5, 2.0, -1);
+					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, -1);
 				}
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, inhistory[i].c_str(), 1, i, 2, "   ", -1);
+				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, inhistory[i].c_str(), 1, i, 2, "   ", 4, EXPRESSION_YPAD, -1);
 				break;
 			}
 			case QALCULATE_HISTORY_REGISTER_MOVED: {
 				if(i < inhistory.size() - 1) {
-					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 4, TRUE, 5, 2.0, -1);
+					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, -1);
 				}
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, _("RPN Register Moved"), 1, i, -1);
+				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, _("RPN Register Moved"), 1, i, 2, "   ", 4, EXPRESSION_YPAD, -1);
 				break;
 			}
 			case QALCULATE_HISTORY_RPN_OPERATION: {
 				if(i < inhistory.size() - 1) {
-					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 4, TRUE, 5, 2.0, -1);
+					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, -1);
 				}
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, _("RPN Operation"), 1, i, -1);
+				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, _("RPN Operation"), 1, i, 2, "   ", 4, EXPRESSION_YPAD, -1);
 				break;
 			}
 			case QALCULATE_HISTORY_TRANSFORMATION: {
 				history_str = "<span font-style=\"italic\">";
 				history_str += inhistory[i];
 				history_str += ":  </span>";
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, -1);
+				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 4, 0, -1);
 				break;
 			}
 			case QALCULATE_HISTORY_RESULT: {
@@ -615,7 +622,7 @@ void create_main_window (void) {
 					history_str = "= <span font-weight=\"bold\">";
 					history_str += inhistory[i];
 					history_str += "</span>";
-					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, -1);
+					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 4, 0, -1);
 				}
 				break;
 			}
@@ -643,7 +650,7 @@ void create_main_window (void) {
 					history_str += "<span font-weight=\"bold\">";
 					history_str += inhistory[i];
 					history_str += "</span>";
-					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, -1);
+					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 4, 0, -1);
 				}
 				break;
 			}
@@ -702,18 +709,18 @@ void create_main_window (void) {
 				history_str = "<span foreground=\"blue\">- ";
 				history_str += inhistory[i];
 				history_str += "</span>";
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, -1);
+				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 4, 0, -1);
 				break;
 			}
 			case QALCULATE_HISTORY_ERROR: {
 				history_str = "<span foreground=\"red\">- ";
 				history_str += inhistory[i];
 				history_str += "</span>";
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, -1);
+				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 4, 0, -1);
 				break;
 			}
 			case QALCULATE_HISTORY_OLD: {
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, inhistory[i], 1, i, -1);
+				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, inhistory[i], 1, i, 4, 0, -1);
 				break;
 			}
 		}
