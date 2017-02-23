@@ -105,6 +105,7 @@ extern bool display_expression_status, enable_completion;
 extern bool use_custom_result_font, use_custom_expression_font, use_custom_status_font;
 extern string custom_result_font, custom_expression_font, custom_status_font, wget_args;
 extern string status_error_color, status_warning_color;
+extern bool status_error_color_set, status_warning_color_set;
 extern int auto_update_exchange_rates;
 
 extern PrintOptions printops;
@@ -519,6 +520,37 @@ void create_main_window (void) {
 			pango_font_description_free(font_desc);
 		}
 	}
+	GdkRGBA c;
+	gtk_style_context_get_color(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, &c);
+	if(!status_error_color_set) {
+		GdkRGBA c_err = c;
+		if(c_err.red >= 0.8) {
+			c_err.green /= 1.5;
+			c_err.blue /= 1.5;
+			c_err.red = 1.0;
+		} else {
+			if(c_err.red >= 0.5) c_err.red = 1.0;
+			else c_err.red += 0.5;
+		}	
+		gchar ecs[8];
+		g_snprintf(ecs, 8, "#%02x%02x%02x", (int) (c_err.red * 255), (int) (c_err.green * 255), (int) (c_err.blue * 255));
+		status_error_color = ecs;
+	}
+	
+	if(!status_warning_color_set) {
+		GdkRGBA c_warn = c;
+		if(c_warn.blue >= 0.8) {
+			c_warn.green /= 1.5;
+			c_warn.red /= 1.5;
+			c_warn.blue = 1.0;
+		} else {
+			if(c_warn.blue >= 0.3) c_warn.blue = 1.0;
+			else c_warn.blue += 0.7;
+		}
+		gchar wcs[8];
+		g_snprintf(wcs, 8, "#%02x%02x%02x", (int) (c_warn.red * 255), (int) (c_warn.green * 255), (int) (c_warn.blue * 255));
+		status_warning_color = wcs;
+	}
 	
 	gtk_widget_grab_focus(expression);
 	gtk_widget_set_can_default(expression, TRUE);
@@ -559,7 +591,6 @@ void create_main_window (void) {
 	gtk_builder_connect_signals(main_builder, NULL);
 	g_signal_connect(accel_group, "accel_changed", G_CALLBACK(save_accels), NULL);
 	
-	GdkRGBA c;
 	gtk_style_context_get_color(gtk_widget_get_style_context(historyview), GTK_STATE_FLAG_NORMAL, &c);
 	GdkRGBA c_red = c;
 	if(c_red.red >= 0.8) {
@@ -578,8 +609,8 @@ void create_main_window (void) {
 		c_blue.red /= 1.5;
 		c_blue.blue = 1.0;
 	} else {
-		if(c_blue.blue >= 0.6) c_blue.blue = 1.0;
-		else c_blue.blue += 0.4;
+		if(c_blue.blue >= 0.4) c_blue.blue = 1.0;
+		else c_blue.blue += 0.6;
 	}	
 	g_snprintf(history_warning_color, 8, "#%02x%02x%02x", (int) (c_blue.red * 255), (int) (c_blue.green * 255), (int) (c_blue.blue * 255));
 	

@@ -244,6 +244,9 @@ extern gchar history_error_color[8];
 extern gchar history_warning_color[8];
 extern gchar history_parse_color[8];
 
+bool status_error_color_set;
+bool status_warning_color_set;
+
 #define TEXT_TAGS			"<span size=\"xx-large\">"
 #define TEXT_TAGS_END			"</span>"
 #define TEXT_TAGS_SMALL			"<span size=\"large\">"
@@ -334,16 +337,6 @@ const char *expression_divide_sign() {
 	return "/";
 }
 
-string i2hex(guint value) {
-	unsigned int v = (unsigned int) value / 0x101;
-	if(value % 0x101 > 128) {
-		v++;
-	}
-	char buffer[3];
-	snprintf(buffer, 3, "%.2X", v);
-	string stmp = buffer;
-	return stmp;
-}
 
 void update_expression_icons(bool stop_icon = FALSE) {
 	if(stop_icon) {
@@ -9886,6 +9879,8 @@ void load_preferences() {
 	custom_status_font = "";
 	status_error_color = "#FF0000";
 	status_warning_color = "#0000FF";
+	status_error_color_set = false;
+	status_warning_color_set = false;
 	show_keypad = true;
 	show_history = false;
 	show_stack = true;
@@ -10277,9 +10272,11 @@ void load_preferences() {
 				} else if(svar == "custom_status_font") {
 					custom_status_font = svalue;	
 				} else if(svar == "status_error_color") {
-					status_error_color = svalue;	
+					status_error_color = svalue;
+					status_error_color_set = true;
 				} else if(svar == "status_warning_color") {
-					status_warning_color = svalue;	
+					status_warning_color = svalue;
+					status_warning_color_set = true;
 				} else if(svar == "multiplication_sign") {
 					if(svalue == "*") {
 						printops.multiplication_sign = MULTIPLICATION_SIGN_ASTERISK;
@@ -10514,8 +10511,8 @@ void save_preferences(bool mode) {
 	fprintf(file, "custom_result_font=%s\n", custom_result_font.c_str());	
 	fprintf(file, "custom_expression_font=%s\n", custom_expression_font.c_str());
 	fprintf(file, "custom_status_font=%s\n", custom_status_font.c_str());
-	if(status_error_color != "#FF0000") fprintf(file, "status_error_color=%s\n", status_error_color.c_str());
-	if(status_warning_color != "#0000FF") fprintf(file, "status_warning_color=%s\n", status_warning_color.c_str());
+	if(status_error_color_set) fprintf(file, "status_error_color=%s\n", status_error_color.c_str());
+	if(status_warning_color_set) fprintf(file, "status_warning_color=%s\n", status_warning_color.c_str());
 	fprintf(file, "multiplication_sign=%i\n", printops.multiplication_sign);
 	fprintf(file, "division_sign=%i\n", printops.division_sign);
 	for(size_t i = 0; i < expression_history.size(); i++) {
@@ -10950,19 +10947,19 @@ void on_menu_item_quit_activate(GtkMenuItem*, gpointer user_data) {
 void on_colorbutton_status_error_color_color_set(GtkColorButton *w, gpointer) {
 	GdkRGBA c;
 	gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(w), &c);
-	status_error_color = "#";
-	status_error_color += i2hex(c.red);
-	status_error_color += i2hex(c.green);
-	status_error_color += i2hex(c.blue);
+	gchar color_str[8];
+	g_snprintf(color_str, 8, "#%02x%02x%02x", (int) (c.red * 255), (int) (c.green * 255), (int) (c.blue * 255));
+	status_error_color = color_str;
+	status_error_color_set = true;
 	display_parse_status();
 }
 void on_colorbutton_status_warning_color_color_set(GtkColorButton *w, gpointer) {
 	GdkRGBA c;
 	gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(w), &c);
-	status_warning_color = "#";
-	status_warning_color += i2hex(c.red);
-	status_warning_color += i2hex(c.green);
-	status_warning_color += i2hex(c.blue);
+	gchar color_str[8];
+	g_snprintf(color_str, 8, "#%02x%02x%02x", (int) (c.red * 255), (int) (c.green * 255), (int) (c.blue * 255));
+	status_warning_color = color_str;
+	status_warning_color_set = true;
 	display_parse_status();
 }
 void on_preferences_entry_wget_args_changed(GtkEditable *editable, gpointer) {
