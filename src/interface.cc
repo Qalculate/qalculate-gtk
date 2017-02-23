@@ -122,6 +122,10 @@ gint win_height, win_width, history_height, keypad_height;
 
 bool rpn_off_accelerator_set;
 
+gchar history_error_color[8];
+gchar history_warning_color[8];
+gchar history_parse_color[8];
+
 gint compare_categories(gconstpointer a, gconstpointer b) {
 	return strcasecmp((const char*) a, (const char*) b);
 }
@@ -555,6 +559,50 @@ void create_main_window (void) {
 	gtk_builder_connect_signals(main_builder, NULL);
 	g_signal_connect(accel_group, "accel_changed", G_CALLBACK(save_accels), NULL);
 	
+	GdkRGBA c;
+	gtk_style_context_get_color(gtk_widget_get_style_context(historyview), GTK_STATE_FLAG_NORMAL, &c);
+	GdkRGBA c_red = c;
+	if(c_red.red >= 0.8) {
+		c_red.green /= 1.5;
+		c_red.blue /= 1.5;
+		c_red.red = 1.0;
+	} else {
+		if(c_red.red >= 0.5) c_red.red = 1.0;
+		else c_red.red += 0.5;
+	}	
+	g_snprintf(history_error_color, 8, "#%02x%02x%02x", (int) (c_red.red * 255), (int) (c_red.green * 255), (int) (c_red.blue * 255));
+	
+	GdkRGBA c_blue = c;
+	if(c_blue.blue >= 0.8) {
+		c_blue.green /= 1.5;
+		c_blue.red /= 1.5;
+		c_blue.blue = 1.0;
+	} else {
+		if(c_blue.blue >= 0.6) c_blue.blue = 1.0;
+		else c_blue.blue += 0.4;
+	}	
+	g_snprintf(history_warning_color, 8, "#%02x%02x%02x", (int) (c_blue.red * 255), (int) (c_blue.green * 255), (int) (c_blue.blue * 255));
+	
+	GdkRGBA c_gray = c;
+	if(c_gray.blue + c_gray.green + c_gray.red > 1.5) {
+		c_gray.green /= 1.5;
+		c_gray.red /= 1.5;
+		c_gray.blue /= 1.5;
+	} else if(c_gray.blue + c_gray.green + c_gray.red > 0.3) {
+		c_gray.green += 0.175;
+		c_gray.red += 0.175;
+		c_gray.blue += 0.175;
+	} else if(c_gray.blue + c_gray.green + c_gray.red > 0.15) {
+		c_gray.green += 0.3;
+		c_gray.red += 0.3;
+		c_gray.blue += 0.3;
+	} else {
+		c_gray.green += 0.4;
+		c_gray.red += 0.4;
+		c_gray.blue += 0.4;
+	}	
+	g_snprintf(history_parse_color, 8, "#%02x%02x%02x", (int) (c_gray.red * 255), (int) (c_gray.green * 255), (int) (c_gray.blue * 255));
+	
 	historystore = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_INT, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT);
 	gtk_tree_view_set_model(GTK_TREE_VIEW(historyview), GTK_TREE_MODEL(historystore));
 	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
@@ -563,7 +611,7 @@ void create_main_window (void) {
 	history_index_column = gtk_tree_view_column_new_with_attributes(_("Index"), history_index_renderer, "text", 2, "ypad", 4, NULL);
 	gtk_tree_view_column_set_expand(history_index_column, FALSE);
 	gtk_tree_view_column_set_min_width(history_index_column, 30);
-	g_object_set(G_OBJECT(history_index_renderer), "ypad", 0, "xalign", 0.5, "foreground", "gray40", NULL);
+	g_object_set(G_OBJECT(history_index_renderer), "ypad", 0, "xalign", 0.5, "foreground-rgba", &c_gray, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(historyview), history_index_column);
 	history_renderer = gtk_cell_renderer_text_new();
 	history_column = gtk_tree_view_column_new_with_attributes(_("History"), history_renderer, "markup", 0, "ypad", 4, NULL);
@@ -659,7 +707,9 @@ void create_main_window (void) {
 				gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
 				history_str = expr_str;
 				g_free(expr_str);
-				history_str += "<span font-style=\"italic\" foreground=\"gray40\"> ";
+				history_str += "<span font-style=\"italic\" foreground=\"";
+				history_str += history_parse_color;
+				history_str += "\">  ";
 				history_str += inhistory[i];
 				history_str += "</span>";
 				gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), -1);
@@ -673,7 +723,9 @@ void create_main_window (void) {
 				gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
 				history_str = expr_str;
 				g_free(expr_str);
-				history_str += "<span font-style=\"italic\" foreground=\"gray40\">  = ";
+				history_str += "<span font-style=\"italic\" foreground=\"";
+				history_str += history_parse_color;
+				history_str += "\">  = ";
 				history_str += inhistory[i];
 				history_str += "</span>";
 				gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), -1);
@@ -695,7 +747,9 @@ void create_main_window (void) {
 				gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
 				history_str = expr_str;
 				g_free(expr_str);
-				history_str += "<span font-style=\"italic\" foreground=\"gray40\">";
+				history_str += "<span font-style=\"italic\" foreground=\"";
+				history_str += history_parse_color;
+				history_str += "\">";
 				history_str += str;
 				history_str += inhistory[i];
 				history_str += "</span>";
@@ -706,14 +760,18 @@ void create_main_window (void) {
 				break;
 			}
 			case QALCULATE_HISTORY_WARNING: {
-				history_str = "<span foreground=\"blue\">- ";
+				history_str = "<span foreground=\"";
+				history_str += history_warning_color;
+				history_str += "\">- ";
 				history_str += inhistory[i];
 				history_str += "</span>";
 				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 4, 0, -1);
 				break;
 			}
 			case QALCULATE_HISTORY_ERROR: {
-				history_str = "<span foreground=\"red\">- ";
+				history_str = "<span foreground=\"";
+				history_str += history_error_color;
+				history_str += "\">- ";
 				history_str += inhistory[i];
 				history_str += "</span>";
 				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 4, 0, -1);

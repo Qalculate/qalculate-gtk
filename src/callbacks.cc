@@ -240,6 +240,10 @@ unordered_map<string, GtkTreeIter> convert_category_map;
 
 extern bool rpn_off_accelerator_set;
 
+extern gchar history_error_color[8];
+extern gchar history_warning_color[8];
+extern gchar history_parse_color[8];
+
 #define TEXT_TAGS			"<span size=\"xx-large\">"
 #define TEXT_TAGS_END			"</span>"
 #define TEXT_TAGS_SMALL			"<span size=\"large\">"
@@ -767,7 +771,9 @@ void display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 			if(mtype == MESSAGE_ERROR) {
 				inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
 				inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_ERROR);
-				string history_str = "<span foreground=\"red\">- ";
+				string history_str = "<span foreground=\"";
+				history_str += history_error_color;
+				history_str += "\">- ";
 				history_str += CALCULATOR->message()->message();
 				history_str += "</span>";
 				(*history_index_p)++;
@@ -775,7 +781,9 @@ void display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 			} else if(mtype == MESSAGE_WARNING) {
 				inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
 				inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_WARNING);
-				string history_str = "<span foreground=\"blue\">- ";
+				string history_str = "<span foreground=\"";
+				history_str += history_warning_color;
+				history_str += "\">- ";
 				history_str += CALCULATOR->message()->message();
 				history_str += "</span>";
 				(*history_index_p)++;
@@ -5485,7 +5493,9 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
 			string str = expr_str;
 			g_free(expr_str);
-			str += "<span font-style=\"italic\" foreground=\"gray40\">  ";
+			str += "<span font-style=\"italic\" foreground=\"";
+			str += history_parse_color;
+			str += "\">  ";
 			if(!parsed_approx) {
 				str += "=";
 				inhistory_type.insert(inhistory_type.begin() + inhistory_index, QALCULATE_HISTORY_PARSE);
