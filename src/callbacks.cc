@@ -11930,8 +11930,10 @@ void process_history_selection(vector<size_t> *selected_rows, vector<size_t> *se
 		if(hindex >= 0) {
 			if(selected_rows) selected_rows->push_back((size_t) hindex);
 			if(selected_indeces && (index <= 0 || evalops.parse_options.base > BASE_DECIMAL || evalops.parse_options.base < 0)) {
-				selected_indeces->push_back((size_t) hindex);
-				selected_index_type->push_back(INDEX_TYPE_TXT);
+				if(inhistory_type[hindex] != QALCULATE_HISTORY_WARNING && inhistory_type[hindex] != QALCULATE_HISTORY_ERROR) {
+					selected_indeces->push_back((size_t) hindex);
+					selected_index_type->push_back(INDEX_TYPE_TXT);
+				}
 			} else if(selected_indeces && index > 0) {
 				bool index_found = false;
 				size_t i = selected_indeces->size();
@@ -12040,7 +12042,12 @@ void history_operator(string str_sign) {
 			str += ")";
 		}
 	}
-	if(evalops.parse_options.rpn && !only_one_value) {
+	if(only_one_value && !evalops.parse_options.rpn) {
+		str += " ";
+		str += str_sign;
+		str += " ";
+	}
+	if(evalops.parse_options.rpn) {
 		str += " ";
 		if(selected_indeces.size() == 1) {
 			str += str_sign;
