@@ -11929,7 +11929,7 @@ void process_history_selection(vector<size_t> *selected_rows, vector<size_t> *se
 		gtk_tree_model_get(model, &iter, 1, &hindex, 3, &index, -1);
 		if(hindex >= 0) {
 			if(selected_rows) selected_rows->push_back((size_t) hindex);
-			if(selected_indeces && (index <= 0 || evalops.parse_options.base > BASE_DECIMAL || evalops.parse_options.base < 0)) {
+			if(selected_indeces && (index <= 0 || !evalops.parse_options.functions_enabled || evalops.parse_options.base > BASE_DECIMAL || evalops.parse_options.base < 0)) {
 				if(inhistory_type[hindex] != QALCULATE_HISTORY_WARNING && inhistory_type[hindex] != QALCULATE_HISTORY_ERROR) {
 					selected_indeces->push_back((size_t) hindex);
 					selected_index_type->push_back(INDEX_TYPE_TXT);
@@ -12324,7 +12324,7 @@ void on_historyview_row_activated(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 	gint index = -1, hindex = -1;
 	if(!gtk_tree_model_get_iter(GTK_TREE_MODEL(historystore), &iter, path)) return;
 	gtk_tree_model_get(GTK_TREE_MODEL(historystore), &iter, 1, &hindex, 3, &index, -1);
-	if(index > 0 && hindex >= 0 && evalops.parse_options.base <= BASE_DECIMAL && evalops.parse_options.base > 0) {
+	if(index > 0 && hindex >= 0 && evalops.parse_options.functions_enabled && evalops.parse_options.base <= BASE_DECIMAL && evalops.parse_options.base > 0) {
 		const ExpressionName *ename = NULL;
 		switch(inhistory_type[(size_t) hindex]) {
 			case QALCULATE_HISTORY_RPN_OPERATION: {}
@@ -12347,7 +12347,7 @@ void on_historyview_row_activated(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 					return;
 				}
 				break;
-			}			
+			}
 			default: {
 				ename = &f_answer->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression);
 			}
@@ -12367,7 +12367,9 @@ void on_historyview_row_activated(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 		insert_text(str.c_str());
 	} else if(hindex >= 0) {
 		if(hindex > 0 && inhistory_type[hindex] == QALCULATE_HISTORY_TRANSFORMATION) hindex--;
-		insert_text(inhistory[(size_t) hindex].c_str());
+		if(inhistory_type[hindex] != QALCULATE_HISTORY_WARNING && inhistory_type[hindex] != QALCULATE_HISTORY_ERROR) {
+			insert_text(inhistory[(size_t) hindex].c_str());
+		}
 	}
 }
 
