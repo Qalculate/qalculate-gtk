@@ -825,7 +825,7 @@ void create_main_window (void) {
 	gtk_tree_view_append_column(GTK_TREE_VIEW(stackview), column);
 	register_renderer = gtk_cell_renderer_text_new();
 	//g_object_set (G_OBJECT(register_renderer), "editable", FALSE, "ellipsize", PANGO_ELLIPSIZE_END, "xalign", 1.0, NULL);
-	g_object_set (G_OBJECT(register_renderer), "editable", TRUE, "ellipsize", PANGO_ELLIPSIZE_END, "xalign", 1.0, "mode", GTK_CELL_RENDERER_MODE_EDITABLE, NULL);
+	g_object_set(G_OBJECT(register_renderer), "editable", TRUE, "ellipsize", PANGO_ELLIPSIZE_END, "xalign", 1.0, "mode", GTK_CELL_RENDERER_MODE_EDITABLE, NULL);
 	g_signal_connect((gpointer) register_renderer, "edited", G_CALLBACK(on_stackview_item_edited), NULL);
 	g_signal_connect((gpointer) register_renderer, "editing-started", G_CALLBACK(on_stackview_item_editing_started), NULL);
 	g_signal_connect((gpointer) register_renderer, "editing-canceled", G_CALLBACK(on_stackview_item_editing_canceled), NULL);
@@ -996,6 +996,7 @@ get_variables_dialog (void)
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tVariables), column);
 		renderer = gtk_cell_renderer_text_new();
 		column = gtk_tree_view_column_new_with_attributes(_("Value"), renderer, "text", 1, NULL);
+		//g_object_set(G_OBJECT(renderer), "ellipsize", PANGO_ELLIPSIZE_NONE, NULL);
 		gtk_tree_view_column_set_sort_column_id(column, 1);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tVariables), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tVariables_selection_changed), NULL);

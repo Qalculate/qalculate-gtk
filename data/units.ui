@@ -6,8 +6,8 @@
     <property name="can_focus">False</property>
     <property name="border_width">6</property>
     <property name="title" translatable="yes">Units</property>
-    <property name="default_width">640</property>
-    <property name="default_height">475</property>
+    <property name="default_width">1100</property>
+    <property name="default_height">800</property>
     <property name="type_hint">dialog</property>
     <signal name="delete-event" handler="gtk_widget_hide" swapped="no"/>
     <child internal-child="vbox">
@@ -177,7 +177,7 @@
                 <property name="can_focus">True</property>
                 <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
-                <property name="position">210</property>
+                <property name="position">350</property>
                 <property name="position_set">True</property>
                 <child>
                   <object class="GtkGrid">
@@ -408,6 +408,9 @@
           </packing>
         </child>
       </object>
+    </child>
+    <child>
+      <placeholder/>
     </child>
   </object>
 </interface>

@@ -157,13 +157,16 @@
       <action-widget response="-6">button3</action-widget>
       <action-widget response="-5">dataobject_edit_button_ok</action-widget>
     </action-widgets>
+    <child>
+      <placeholder/>
+    </child>
   </object>
   <object class="GtkDialog" id="datasets_dialog">
     <property name="can_focus">False</property>
     <property name="border_width">6</property>
     <property name="title" translatable="yes">Data Sets</property>
-    <property name="default_width">650</property>
-    <property name="default_height">550</property>
+    <property name="default_width">1100</property>
+    <property name="default_height">800</property>
     <property name="type_hint">dialog</property>
     <signal name="delete-event" handler="gtk_widget_hide" swapped="no"/>
     <child internal-child="vbox">
@@ -202,14 +205,14 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="border_width">6</property>
-            <property name="position">200</property>
+            <property name="position">350</property>
             <property name="position_set">True</property>
             <child>
               <object class="GtkPaned" id="vpaned2">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="orientation">vertical</property>
-                <property name="position">175</property>
+                <property name="position">250</property>
                 <property name="position_set">True</property>
                 <child>
                   <object class="GtkBox" id="vbox42">
@@ -475,7 +478,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="orientation">vertical</property>
-                <property name="position">175</property>
+                <property name="position">250</property>
                 <property name="position_set">True</property>
                 <child>
                   <object class="GtkGrid">
@@ -622,6 +625,9 @@
           </packing>
         </child>
       </object>
+    </child>
+    <child>
+      <placeholder/>
     </child>
   </object>
 </interface>

@@ -1797,10 +1797,6 @@ void setVariableTreeItem(GtkTreeIter &iter2, Variable *v) {
 	} else if(v->isKnown()) {
 		if(((KnownVariable*) v)->isExpression()) {
 			value = CALCULATOR->localizeExpression(((KnownVariable*) v)->expression());
-			if(value.length() > 20) {
-				value = value.substr(0, 17);
-				value += "…";
-			}
 		} else {
 			if(((KnownVariable*) v)->get().isMatrix()) {
 				value = _("matrix");
@@ -2584,6 +2580,7 @@ void on_tDataObjects_selection_changed(GtkTreeSelection *treeselection, gpointer
 					gtk_widget_set_margin_end(label, 20);
 					gtk_grid_attach(GTK_GRID(ptable), label, 0, rows - 1, 1 , 1);
 					label = gtk_label_new(NULL);
+					gtk_widget_set_hexpand(label, TRUE);
 					gtk_label_set_markup(GTK_LABEL(label), sval.c_str()); gtk_widget_set_halign(label, GTK_ALIGN_START); gtk_label_set_selectable(GTK_LABEL(label), TRUE);
 					gtk_grid_attach(GTK_GRID(ptable), label, 1, rows - 1, 1, 1);
 					button = gtk_button_new();
