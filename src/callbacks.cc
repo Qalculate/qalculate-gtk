@@ -9646,15 +9646,18 @@ void on_expander_keypad_expanded(GObject *o, GParamSpec*, gpointer) {
 }
 void on_expander_history_expanded(GObject *o, GParamSpec*, gpointer) {
 	if(gtk_expander_get_expanded(GTK_EXPANDER(o))) {
+		bool history_was_realized = gtk_widget_get_realized(historyview);
 		gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 0);
 		show_tabs(true);
+		while(!history_was_realized && gtk_events_pending()) gtk_main_iteration();
+		if(!history_was_realized) gtk_tree_view_scroll_to_point(GTK_TREE_VIEW(historyview), 0, 0);
 		if(gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad))) {
 			gtk_expander_set_expanded(GTK_EXPANDER(expander_keypad), FALSE);
 		} else if(gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) {
 			gtk_expander_set_expanded(GTK_EXPANDER(expander_stack), FALSE);
 		} else if(gtk_expander_get_expanded(GTK_EXPANDER(expander_convert))) {
 			gtk_expander_set_expanded(GTK_EXPANDER(expander_convert), FALSE);
-		}		
+		}
 	} else if(!gtk_expander_get_expanded(GTK_EXPANDER(expander_stack)) && !gtk_expander_get_expanded(GTK_EXPANDER(expander_convert))) {
 		show_tabs(false);
 	}
