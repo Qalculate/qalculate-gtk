@@ -1839,8 +1839,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1864,8 +1864,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1889,8 +1889,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -2962,7 +2962,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="can_focus">False</property>
                             <property name="valign">start</property>
                             <property name="orientation">vertical</property>
-                            <property name="spacing">4</property>
+                            <property name="spacing">6</property>
                             <property name="homogeneous">True</property>
                             <child>
                               <object class="GtkButton" id="button_history_insert_value">
@@ -3204,7 +3204,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="can_focus">False</property>
                             <property name="valign">start</property>
                             <property name="orientation">vertical</property>
-                            <property name="spacing">4</property>
+                            <property name="spacing">6</property>
                             <property name="homogeneous">True</property>
                             <child>
                               <object class="GtkButton" id="button_rpn_add">
@@ -3410,7 +3410,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="can_focus">False</property>
                             <property name="valign">start</property>
                             <property name="orientation">vertical</property>
-                            <property name="spacing">4</property>
+                            <property name="spacing">6</property>
                             <property name="homogeneous">True</property>
                             <child>
                               <object class="GtkButton" id="button_registerup">
@@ -3422,10 +3422,10 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="tooltip_text" translatable="yes">Rotate the stack or move selected register up.</property>
                                 <signal name="clicked" handler="on_button_registerup_clicked" swapped="no"/>
                                 <child>
-                                  <object class="GtkImage" id="image1419">
+                                  <object class="GtkLabel" id="label_rpn_add1">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="icon_name">up</property>
+                                    <property name="label" translatable="yes">Up</property>
                                   </object>
                                 </child>
                               </object>
@@ -3445,10 +3445,10 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="tooltip_text" translatable="yes">Rotate the stack or move selected register down.</property>
                                 <signal name="clicked" handler="on_button_registerdown_clicked" swapped="no"/>
                                 <child>
-                                  <object class="GtkImage" id="image1424">
+                                  <object class="GtkLabel" id="label_rpn_add2">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="icon_name">down</property>
+                                    <property name="label" translatable="yes">Down</property>
                                   </object>
                                 </child>
                               </object>
@@ -3468,10 +3468,10 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="tooltip_text" translatable="yes">Swap the to top values or move the selected value to the top of the stack.</property>
                                 <signal name="clicked" handler="on_button_registerswap_clicked" swapped="no"/>
                                 <child>
-                                  <object class="GtkImage" id="image1">
+                                  <object class="GtkLabel" id="label_rpn_add3">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="icon_name">view-refresh</property>
+                                    <property name="label" translatable="yes">Swap</property>
                                   </object>
                                 </child>
                               </object>
@@ -3491,10 +3491,10 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="tooltip_text" translatable="yes">Copy the the selected or top value to the top of the stack.</property>
                                 <signal name="clicked" handler="on_button_copyregister_clicked" swapped="no"/>
                                 <child>
-                                  <object class="GtkImage" id="image2">
+                                  <object class="GtkLabel" id="label_rpn_add4">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="icon_name">edit-copy</property>
+                                    <property name="label" translatable="yes">Copy</property>
                                   </object>
                                 </child>
                               </object>
@@ -3514,10 +3514,10 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="tooltip_text" translatable="yes">Edit the selected value.</property>
                                 <signal name="clicked" handler="on_button_editregister_clicked" swapped="no"/>
                                 <child>
-                                  <object class="GtkImage" id="image1421">
+                                  <object class="GtkLabel" id="label_rpn_add5">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="icon_name">gtk-edit</property>
+                                    <property name="label" translatable="yes">Edit</property>
                                   </object>
                                 </child>
                               </object>
@@ -3537,10 +3537,10 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="tooltip_text" translatable="yes">Delete the top or selected value.</property>
                                 <signal name="clicked" handler="on_button_deleteregister_clicked" swapped="no"/>
                                 <child>
-                                  <object class="GtkImage" id="image1422">
+                                  <object class="GtkLabel" id="label_rpn_add6">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="icon_name">edit-delete</property>
+                                    <property name="label" translatable="yes">Delete</property>
                                   </object>
                                 </child>
                               </object>
@@ -3560,10 +3560,10 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="tooltip_text" translatable="yes">Clear the RPN stack.</property>
                                 <signal name="clicked" handler="on_button_clearstack_clicked" swapped="no"/>
                                 <child>
-                                  <object class="GtkImage" id="image1423">
+                                  <object class="GtkLabel" id="label_rpn_add7">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="icon_name">edit-clear</property>
+                                    <property name="label" translatable="yes">Clear</property>
                                   </object>
                                 </child>
                               </object>

@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "0.9.10">
-  <!ENTITY manrevision "0.9.10">
-  <!ENTITY date "September 2016">
+  <!ENTITY appversion "0.9.11">
+  <!ENTITY manrevision "0.9.11">
+  <!ENTITY date "February 2017">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -14,7 +14,7 @@
 <title>&app; Manual v&manrevision;</title>
 <bookinfo>
 	<copyright>
-		<year>2005-2007, 2016</year>
+		<year>2005-2007, 2016-2017</year>
 		<holder>Hanna Knutsson</holder>
 	</copyright>
 	<publisher> 
@@ -146,7 +146,7 @@ The keypad provides access to a fairly small set of traditional calculator butto
 <sect1 id="qalculate-calculation-history">
 <title>Calculation History</title>
 <para>
-The history view provides access to previous calculation results (50 rows are reloaded on restart). Previous expressions and results, as well as errors and warnings, are displayed in plain text and can be marked and copied (from the right-button context menu or with <keycombo><keycap>Ctrl</keycap><keycap>C</keycap></keycombo>) to the expression entry or elsewhere.
+The history view provides access to previous calculation results (50 rows are reloaded on restart). Previous expressions and results, as well as errors and warnings, are listed. The text of one or multiple entries can be copied to the clipboard using the <guibutton>Copy</guibutton> button to the right of the list.
 <figure id="qalculate-FIG-calculation-history">
 	<title>Calculation History</title>
 	<screenshot>
@@ -157,7 +157,11 @@ The history view provides access to previous calculation results (50 rows are re
 		</mediaobject>
 	</screenshot>
 </figure>
-
+</para>
+<para>Double click an item in the history list or use the <guibutton>Value</guibutton> or the <guibutton>Text</guibutton> button to paste the selected value or expression into the expression entry. The <guibutton>Value</guibutton> button inserts the actual value, using the answer() and expression() functions (for results and parsed expressions, respectively) with the current history index (indicated in the left column of the list), as argument, instead of the text (which might be inexact and is not guaranteed to be parsed correctly). This is not possible for the history entries of previous sessions. When an item is double clicked the the actual value is used for results, but the text for expressions, allowing editing of the expression. 
+</para>
+<para>
+The to right of the list are also buttons for mathematical operations. These acts on the selected history items (the <guibutton>+</guibutton> will calculate the sum of the selected values, while the <guibutton>-</guibutton> will calculated the difference between the first, uppermost, selected value and the rest, in order). If no value is marked the sign for the operator will be inserted into the expression entry (as the buttons on the keypad). If only one item is selected the buttons also uses the current expression (the <guibutton>+</guibutton> button will append <quote>+ [value]</quote> to the current expression). The square root button will however only act on single values.
 </para>
 </sect1>
 <sect1 id="qalculate-menus">
@@ -399,20 +403,12 @@ The menus in the menu bar provides access to most of the functionality of Qalcul
 				<entry><para>Submenu with options to automatically simplify or factorize the final result. Note that even if this is set to none, easy simplifications will be performed. In this menu, the option toggle on/off use of the assumption that unknown denominators not are zero is also found. This alternative makes it possible to avoid the situation where expressions such as <quote>(x-1)/(x-1)</quote> can not be further simplified because the denominator might be zero (if x equals 1).</para></entry>
 			</row>
 			<row valign="top">
-				<entry><para>Read Precision</para></entry>
-				<entry><para>Enables/disables interpretation of input numbers with decimals as approximate with a precision equal to the number of digits (after preceding zeroes).</para></entry>
-			</row>
-			<row valign="top">
-				<entry><para>Limit Implicit Multiplication</para></entry>
-				<entry><para>Activates/deactivates limits to implicit multiplication when parsing and displaying expressions. For details see <xref linkend="qalculate-result"/></para></entry>
+				<entry><para>Parsing Mode</para></entry>
+				<entry><para>Submenu with options to control how expressions are parsed (read/interpreted). There are three different modes to choose from. In addition the <quote>read precision</quote> option enables/disables interpretation of input numbers with decimals as approximate with a precision equal to the number of digits (after preceding zeroes), and <quote>limit implicit multiplication</quote> limits the use of implicit multiplication when parsing and displaying expressions. For more information see <xref linkend="qalculate-implicit-multiplication"/>.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>RPN Mode (<keycombo><keycap>Ctrl</keycap><keycap>R</keycap></keycombo>)</para></entry>
-				<entry><para>Toggles Reverse Polish Notation mode on/off. For details see <xref linkend="qalculate-rpn"/></para></entry>
-			</row>
-			<row valign="top">
-				<entry><para>RPN Syntax</para></entry>
-				<entry><para>Toggles use of Reverse Polish Notation syntax in expressions on/off.</para></entry>
+				<entry><para>Submenu with options to activate or deactivate the Reverse Polish Notation stack and RPN syntax. For details see <xref linkend="qalculate-rpn"/></para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Precision</para></entry>
@@ -1033,17 +1029,21 @@ Qalculate! provides flexible parsing, calculation output and result display. The
 <sect1 id="qalculate-rpn">
 <title>The RPN Mode</title>
 <para>
-The Reverse Polish Notation mode can be activated with <menuchoice><guimenu>Mode</guimenu><guimenuitem>RPN Mode</guimenuitem></menuchoice>, <keycombo><keycap>Ctrl</keycap><keycap>R</keycap></keycombo> or from the context menu of the expression entry. For details about what Reverse Polish Notation is and how it generally works, see for example the <ulink url="http://en.wikipedia.org/wiki/Reverse_Polish_notation">RPN article at Wikipedia</ulink>.
+The Reverse Polish Notation mode can be activated from <menuchoice><guimenu>Mode</guimenu><guimenuitem>RPN Mode</guimenuitem></menuchoice>, <keycombo><keycap>Ctrl</keycap><keycap>R</keycap></keycombo> or from the context menu of the expression entry. For details about what Reverse Polish Notation is and how it generally works, see for example the <ulink url="http://en.wikipedia.org/wiki/Reverse_Polish_notation">RPN article at Wikipedia</ulink>.
 </para>
 <para>
 Central to the RPN mode is the stack, a list of registers/values that is operated on by functions and operators. The stack has a variable number of registers which can hold an unlimited number of values. The stack size is dynamically changed when a new value is added and the first value on the stack is shown in the result display. Mathematical operators such as plus and minus then operates on the first two, last added, values on the stack.  The second value is changed with input from the first value. For example, the minus operator subtracts the first value from the second. Functions which require exactly one argument operates on the first value on the stack. Other functions, which require multiple arguments, must be entered in normal expression based way.
 </para>
 <para>
-The RPN mode still allows full expression to be entered (you can add <quote>5x+3+23+sin(2)</quote> directly to the stack). The buttons on the keypad do not insert operators and functions in the expression entry, but instead applies them to the stack. This is also true for the keypad keys on the keyboard. <keycap>Enter</keycap> calculates the current expressions and adds it to the stack. If the expression entry is not empty when applying an operator or function to the stack, the expression is first calculated and added to the stack. All keys on the main part of the keyboard add the corresponding characters in expression entry, unless the <guilabel>Use only keypad keys for RPN</guilabel> option is deactivated from the preferences dialog. To apply the raise operator '^' to the stack, without clicking the keypad button with the mouse, use the <keycombo><keycap>Ctrl</keycap><keycap>* (keypad)</keycap></keycombo> shortcut. If the expression only contains an operator or a function, which requires exactly one argument, the operator/function is applied to the stack.
+When the RPN stack is enabled full expression can still be entered (you can add e.g. <quote>5x+3+23+sin(2)</quote> directly to the stack). The buttons on the keypad do not insert operators and functions in the expression entry, but instead applies them to the stack. This is also true for the keypad keys on the keyboard. <keycap>Enter</keycap> calculates the current expressions and adds it to the stack (calculated mathematical expressions are automatically added to the stack when the RPN stack is enabled). If the expression entry is not empty when applying an operator or function to the stack, the expression is first calculated and added to the stack. All keys on the main part of the keyboard add the corresponding characters in the expression entry, unless the <guilabel>Use only keypad keys for RPN</guilabel> option is deactivated from the preferences dialog. To apply the raise operator '^' to the stack, without clicking the keypad button with the mouse, use the <keycombo><keycap>Ctrl</keycap><keycap>* (keypad)</keycap></keycombo> shortcut. If the expression only contains an operator or a function, which requires exactly one argument, the operator/function is applied to the stack.
 </para>
 <para>
-For example, <command>5 ENTER 3 + 2 /</command> adds 5 to the stack, then adds 3 to the stack and moves 5 down a step and adds 3 to 5. The first value, 3, is removed from the stack and the value left is 8. Then 2 is added to the stack and 8 is divided by 2, resulting in 4. This would in a single expression be entered as <quote>(5+3)/2</quote>.
+For example, <command>5 ENTER 3 + 2 /</command> adds 5 to the stack, then adds 3 to the stack and moves 5 down a step and adds 3 to 5. The first value, 3, is removed from the stack and the value left is 8. Then 2 is added to the stack and 8 is divided by 2, resulting in 4. This would in a single expression with non-RPN (infix) syntax be entered as <quote>(5+3)/2</quote>.
 </para>
+<para>
+Reverse Polish Notation can also be used directly in expression. This can be activated or deactivated separately from the RPN stack (both RPN syntax and the stack are activated when using the keyboard shortcut). When using RPN syntax, a temporary stack, separate from the previously mentioned stack, is created from the contents of each mathematical expression entered. To calculate <quote>(5+3)/2</quote>, as in the example above, with RPN syntax you should enter the expression <quote>5 3 + 2 /</quote>. Instead of actually pressing enter on the keyboard, each separate value on the stack is separated by a blank space.
+</para>
+
 <figure id="qalculate-FIG-rpn-mode">
 	<title>RPN Mode</title>
 	<screenshot>
@@ -1055,13 +1055,10 @@ For example, <command>5 ENTER 3 + 2 /</command> adds 5 to the stack, then adds 3
 	</screenshot>
 </figure>
 <para>
-The RPN mode adds a third page to the main window, for display and manipulation of the values on the stack. This shows a list of values on the stack, with the last added value on the top. On the right are buttons for moving the selected value up or down, editing or removing the selected value, or remove all values from the stack. The equals buttons do in RPN mode in addition to calculating the expression, add it to the stack.
+The RPN mode adds a third page to the main window, for display and manipulation of the values on the stack. This shows a list of values on the stack, with the last added value on the top. On the right are buttons for manipulation of the stack. The buttons move the selected value up or down, move it to the top, edit it, or removes it, in order. If no stack row is selected, the up and down buttons rotates the stack, the swap button swaps the places of the first and second value and the copy and delete buttons acts on the the top value of the stack. The last button removes all values from the stack. On the left are buttons for applying mathematical operations to the stack. These works the same as buttons on the separate keypad.
 </para>
 <para>
-Changes in the display of result only affects the first value on the stack.
-</para>
-<para>
-Note that Qalculate! in addition to the RPN mode, has a RPN syntax. The RPN syntax controls how expressions is interpreted. This means that instead of as with a traditional RPN calculator, where each value and operator is put on the stack separately, all values and operators are entered directly in an expression, with ENTER replaced by space (ex. <quote>5 2 +</quote> which corresponds to <command>5 ENTER 2 ENTER +</command>, and equals <quote>5 + 2</quote> in regular notation).
+Changes in the display of results only affects the first value on the stack.
 </para>
 </sect1>
 </chapter>
@@ -1395,7 +1392,7 @@ The final way to convert to another unit is to use the predefined units in the <
 It is also possible to let Qalculate! automagically convert the result to appropriate units with <menuchoice><guimenu>Edit</guimenu><guisubmenu>Convert To Optimal Unit</guisubmenu></menuchoice> or <menuchoice><guimenu>Edit</guimenu><guisubmenu>Convert To Base Units</guisubmenu></menuchoice> (or the corresponding options in the result context menu). If instead the corresponding choice is selected from <menuchoice><guimenu>Mode</guimenu><guimenu>Unit Display</guimenu></menuchoice>, each result will automatically be converted until the choice is deactivated (<menuchoice><guimenu>Mode</guimenu><guimenu>Unit Display</guimenu><guisubmenu>No Automatic Conversion</guisubmenu></menuchoice>).
 </para>
 <para>
-By default (controlled by <menuchoice><guimenu>Edit</guimenu><guisubmenu>Convert To Mixed Units</guisubmenu></menuchoice>) certain units, such as time units and many imperial/U.S. customary units, are automatically converted to mixed units (e.g. <quote>60.2 minutes = 1 hour to 12 seconds</quote>). When explicitely converting to a specific unit the integer value of the selected unit is preserved (<quote>1.51 h to min = 90 min + 36 s<quote>) and mixed units is not used if otherwise the unit would not be present in the result (<quote>6 in to ft = 0.5 ft<quote>). This behavior can be modified by prepending the unit with a plus or minus sign (e.g. <quote>174 cm to +in ≈ 5 ft + 8,5 in<quote>, <quote>1.51 h to -min = 90.6 min<quote>).
+By default (controlled by <menuchoice><guimenu>Edit</guimenu><guisubmenu>Convert To Mixed Units</guisubmenu></menuchoice>) certain units, such as time units and many imperial/U.S. customary units, are automatically converted to mixed units (e.g. <quote>60.2 minutes = 1 hour to 12 seconds</quote>). When explicitely converting to a specific unit the integer value of the selected unit is preserved (<quote>1.51 h to min = 90 min + 36 s</quote>) and mixed units is not used if otherwise the unit would not be present in the result (<quote>6 in to ft = 0.5 ft</quote>). This behavior can be modified by prepending the unit with a plus or minus sign (e.g. <quote>174 cm to +in ≈ 5 ft + 8,5 in</quote>, <quote>1.51 h to -min = 90.6 min</quote>).
 </para>
 </sect1>
 <sect1 id="qalculate-unit-creation">

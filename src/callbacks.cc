@@ -13739,7 +13739,7 @@ void on_button_registerswap_clicked(GtkButton*, gpointer) {
 		CALCULATOR->moveRPNRegister(1, 2);
 		gtk_list_store_swap(stackstore, &iter, &iter2);
 	} else {
-		CALCULATOR->moveRPNRegister(index, 1);
+		CALCULATOR->moveRPNRegister(index + 1, 1);
 		gtk_tree_model_get_iter_first(model, &iter2);
 		gtk_list_store_move_before(stackstore, &iter, &iter2);
 	}			
