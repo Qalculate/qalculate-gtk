@@ -168,7 +168,7 @@ vector<GtkTreeViewColumn*> matrix_edit_columns, matrix_columns;
 
 extern GtkAccelGroup *accel_group;
 
-extern gint win_height, win_width, history_height, keypad_height;
+extern gint win_height, win_width, history_height, keypad_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
 
 vector<string> expression_history;
 int expression_history_index = -1;
@@ -9865,6 +9865,21 @@ void load_preferences() {
 
 	win_width = -1;
 	win_height = -1;
+	variables_width = -1;
+	variables_height = -1;
+	variables_position = -1;
+	units_width = -1;
+	units_height = -1;
+	units_position = -1;
+	functions_width = -1;
+	functions_height = -1;
+	functions_hposition = -1;
+	functions_vposition = -1;
+	datasets_width = -1;
+	datasets_height = -1;
+	datasets_hposition = -1;
+	datasets_vposition1 = -1;
+	datasets_vposition2 = -1;
 	keypad_height = 0;
 	history_height = 300;
 	save_mode_on_exit = true;
@@ -9939,6 +9954,36 @@ void load_preferences() {
 					win_width = v;
 				} else if(svar == "height") {
 					win_height = v;
+				} else if(svar == "variables_width") {
+					variables_width = v;
+				} else if(svar == "variables_height") {
+					variables_height = v;
+				} else if(svar == "variables_panel_position") {
+					variables_position = v;
+				} else if(svar == "units_width") {
+					units_width = v;
+				} else if(svar == "units_height") {
+					units_height = v;
+				} else if(svar == "units_panel_position") {
+					units_position = v;
+				} else if(svar == "functions_width") {
+					functions_width = v;
+				} else if(svar == "functions_height") {
+					functions_height = v;
+				} else if(svar == "functions_hpanel_position") {
+					functions_hposition = v;
+				} else if(svar == "functions_vpanel_position") {
+					functions_vposition = v;
+				} else if(svar == "datasets_width") {
+					datasets_width = v;
+				} else if(svar == "datasets_height") {
+					datasets_height = v;
+				} else if(svar == "datasets_hpanel_position") {
+					datasets_hposition = v;
+				} else if(svar == "datasets_vpanel1_position") {
+					datasets_vposition1 = v;
+				} else if(svar == "datasets_vpanel2_position") {
+					datasets_vposition2 = v;
 				} else if(svar == "error_info_shown") {
 					first_error = !v;
 				} else if(svar == "save_mode_on_exit") {
@@ -10471,13 +10516,55 @@ void save_preferences(bool mode) {
 		return;
 	}
 	g_free(gstr2);
+	gint w, h;
+	if(variables_builder) {
+		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")), &w, &h);
+		variables_width = w;
+		variables_height = h;
+		variables_position = gtk_paned_get_position(GTK_PANED(gtk_builder_get_object(variables_builder, "variables_hpaned")));
+	}
+	if(units_builder) {
+		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")), &w, &h);
+		units_width = w;
+		units_height = h;
+		units_position = gtk_paned_get_position(GTK_PANED(gtk_builder_get_object(units_builder, "units_hpaned")));
+	}
+	if(functions_builder) {
+		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(functions_builder, "functions_dialog")), &w, &h);
+		functions_width = w;
+		functions_height = h;
+		functions_hposition = gtk_paned_get_position(GTK_PANED(gtk_builder_get_object(functions_builder, "functions_hpaned")));
+		functions_vposition = gtk_paned_get_position(GTK_PANED(gtk_builder_get_object(functions_builder, "functions_vpaned")));
+	}
+	if(datasets_builder) {
+		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(datasets_builder, "datasets_dialog")), &w, &h);
+		datasets_width = w;
+		datasets_height = h;
+		datasets_hposition = gtk_paned_get_position(GTK_PANED(gtk_builder_get_object(datasets_builder, "datasets_hpaned")));
+		datasets_vposition1 = gtk_paned_get_position(GTK_PANED(gtk_builder_get_object(datasets_builder, "datasets_vpaned1")));
+		datasets_vposition2 = gtk_paned_get_position(GTK_PANED(gtk_builder_get_object(datasets_builder, "datasets_vpaned2")));
+	}
 	fprintf(file, "\n[General]\n");
 	fprintf(file, "version=%s\n", VERSION);
 	fprintf(file, "allow_multiple_instances=%i\n", allow_multiple_instances);
-	gint w, h;
 	gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
 	fprintf(file, "width=%i\n", w);
 	fprintf(file, "height=%i\n", h);
+	if(variables_width > -1) fprintf(file, "variables_width=%i\n", variables_width);
+	if(variables_height > -1) fprintf(file, "variables_height=%i\n", variables_height);
+	if(variables_position > -1) fprintf(file, "variables_panel_position=%i\n", variables_position);
+	if(units_width > -1) fprintf(file, "units_width=%i\n", units_width);
+	if(units_height > -1) fprintf(file, "units_height=%i\n", units_height);
+	if(units_position > -1) fprintf(file, "units_panel_position=%i\n", units_position);
+	if(functions_width > -1) fprintf(file, "functions_width=%i\n", functions_width);
+	if(functions_height > -1) fprintf(file, "functions_height=%i\n", functions_height);
+	if(functions_hposition > -1) fprintf(file, "functions_hpanel_position=%i\n", functions_hposition);
+	if(functions_vposition > -1) fprintf(file, "functions_vpanel_position=%i\n", functions_vposition);
+	if(datasets_width > -1) fprintf(file, "datasets_width=%i\n", datasets_width);
+	if(datasets_height > -1) fprintf(file, "datasets_height=%i\n", datasets_height);
+	if(datasets_hposition > -1) fprintf(file, "datasets_hpanel_position=%i\n", datasets_hposition);
+	if(datasets_vposition1 > -1) fprintf(file, "datasets_vpanel1_position=%i\n", datasets_vposition1);
+	if(datasets_vposition2 > -1) fprintf(file, "datasets_vpanel2_position=%i\n", datasets_vposition2);
 	fprintf(file, "error_info_shown=%i\n", !first_error);
 	fprintf(file, "save_mode_on_exit=%i\n", save_mode_on_exit);
 	fprintf(file, "save_definitions_on_exit=%i\n", save_defs_on_exit);

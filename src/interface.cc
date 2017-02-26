@@ -119,7 +119,7 @@ extern vector<GtkWidget*> popup_result_mode_items;
 extern deque<string> inhistory;
 extern deque<int> inhistory_type;
 
-gint win_height, win_width, history_height, keypad_height;
+gint win_height, win_width, history_height, keypad_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
 
 bool rpn_off_accelerator_set;
 
@@ -961,6 +961,10 @@ get_functions_dialog (void)
 		GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functions_builder, "functions_textview_description")));
 		gtk_text_buffer_create_tag(buffer, "bold", "weight", PANGO_WEIGHT_BOLD, NULL);
 		gtk_text_buffer_create_tag(buffer, "italic", "style", PANGO_STYLE_ITALIC, NULL);
+		
+		if(functions_width > 0 && functions_height > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(functions_builder, "functions_dialog")), functions_width, functions_height);
+		if(functions_hposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(functions_builder, "functions_hpaned")), functions_hposition);
+		if(functions_vposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(functions_builder, "functions_vpaned")), functions_vposition);
 
 		gtk_builder_connect_signals(functions_builder, NULL);
 
@@ -1017,6 +1021,9 @@ get_variables_dialog (void)
 		gtk_tree_view_column_set_sort_column_id(column, 0);
 		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tVariableCategories_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tVariableCategories_store), 0, GTK_SORT_ASCENDING);
+		
+		if(variables_width > 0 && variables_height > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")), variables_width, variables_height);
+		if(variables_position > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(variables_builder, "variables_hpaned")), variables_position);
 
 		gtk_builder_connect_signals(variables_builder, NULL);
 
@@ -1078,7 +1085,10 @@ get_units_dialog (void)
 		gtk_tree_view_column_set_sort_column_id(column, 0);
 		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnitCategories_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnitCategories_store), 0, GTK_SORT_ASCENDING);
-
+		
+		if(units_width > 0 && units_height > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")), units_width, units_height);
+		if(units_position > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(units_builder, "units_hpaned")), units_position);
+		
 		gtk_builder_connect_signals(units_builder, NULL);
 
 		update_units_tree();
@@ -1145,6 +1155,11 @@ get_datasets_dialog (void)
 		gtk_text_buffer_create_tag(buffer, "bold", "weight", PANGO_WEIGHT_BOLD, NULL);
 		gtk_text_buffer_create_tag(buffer, "italic", "style", PANGO_STYLE_ITALIC, NULL);
 
+		if(datasets_width > 0 && datasets_height > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(datasets_builder, "datasets_dialog")), datasets_width, datasets_height);
+		if(datasets_hposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(datasets_builder, "datasets_hpaned")), datasets_hposition);
+		if(datasets_vposition1 > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(datasets_builder, "datasets_vpaned1")), datasets_vposition1);
+		if(datasets_vposition2 > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(datasets_builder, "datasets_vpaned2")), datasets_vposition2);
+		
 		gtk_builder_connect_signals(datasets_builder, NULL);
 
 		update_datasets_tree();

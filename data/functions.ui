@@ -6,8 +6,8 @@
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Functions</property>
-    <property name="default_width">1100</property>
-    <property name="default_height">800</property>
+    <property name="default_width">1000</property>
+    <property name="default_height">700</property>
     <property name="type_hint">dialog</property>
     <signal name="delete-event" handler="gtk_widget_hide" swapped="no"/>
     <child internal-child="vbox">
@@ -170,7 +170,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkPaned" id="vpaned1">
+              <object class="GtkPaned" id="functions_vpaned">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="hexpand">True</property>
@@ -179,7 +179,7 @@
                 <property name="position">450</property>
                 <property name="position_set">True</property>
                 <child>
-                  <object class="GtkPaned" id="hpaned2">
+                  <object class="GtkPaned" id="functions_hpaned">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="margin_bottom">6</property>

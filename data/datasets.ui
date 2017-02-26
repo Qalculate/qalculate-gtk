@@ -165,8 +165,8 @@
     <property name="can_focus">False</property>
     <property name="border_width">6</property>
     <property name="title" translatable="yes">Data Sets</property>
-    <property name="default_width">1100</property>
-    <property name="default_height">800</property>
+    <property name="default_width">1000</property>
+    <property name="default_height">700</property>
     <property name="type_hint">dialog</property>
     <signal name="delete-event" handler="gtk_widget_hide" swapped="no"/>
     <child internal-child="vbox">
@@ -201,14 +201,14 @@
           </packing>
         </child>
         <child>
-          <object class="GtkPaned" id="hpaned3">
+          <object class="GtkPaned" id="datasets_hpaned">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="border_width">6</property>
             <property name="position">350</property>
             <property name="position_set">True</property>
             <child>
-              <object class="GtkPaned" id="vpaned2">
+              <object class="GtkPaned" id="datasets_vpaned1">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="orientation">vertical</property>
@@ -474,7 +474,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkPaned" id="vpaned3">
+              <object class="GtkPaned" id="datasets_vpaned2">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="orientation">vertical</property>
