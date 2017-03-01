@@ -5233,8 +5233,10 @@ gboolean on_event(GtkWidget*, GdkEvent *e, gpointer) {
 void setResult(Prefix *prefix, bool update_history, bool update_parse, bool force, string transformation, size_t stack_index, bool register_moved) {
 
 	if(block_result_update) return;
+	
+	if(nr_of_new_expressions == 0 && !force) return;
 
-	if(expression_has_changed && !rpn_mode) {
+	if(expression_has_changed && (!rpn_mode || CALCULATOR->RPNStackSize() == 0)) {
 		if(!force) return;
 		execute_expression();
 		if(!prefix) return;
@@ -12357,8 +12359,8 @@ void update_historyview_popup() {
 	vector<int> selected_index_type;
 	process_history_selection(&selected_rows, &selected_indeces, &selected_index_type);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_value")), selected_indeces.size() == 1 && selected_index_type[0] != INDEX_TYPE_TXT);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_text")), selected_rows.size() == 1);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_text")), selected_rows.size() == 1);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_text")), selected_indeces.size() == 1);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_text")), selected_indeces.size() == 1);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_full_text")), !selected_rows.empty());
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_clear")), gtk_tree_model_get_iter_first(GTK_TREE_MODEL(historystore), &iter));
 }
@@ -12401,7 +12403,7 @@ void on_historyview_selection_changed(GtkTreeSelection*, gpointer) {
 	vector<int> selected_index_type;
 	process_history_selection(&selected_rows, &selected_indeces, &selected_index_type);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_insert_value")), selected_indeces.size() == 1 && selected_index_type[0] != INDEX_TYPE_TXT);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_insert_text")), selected_rows.size() == 1);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_insert_text")), selected_indeces.size() == 1);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_copy")), !selected_rows.empty());
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_sqrt")), selected_indeces.size() <= 1);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_xy")), selected_indeces.size() <= 2);
