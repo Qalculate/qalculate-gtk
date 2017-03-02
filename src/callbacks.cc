@@ -5234,13 +5234,17 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 
 	if(block_result_update) return;
 	
-	if(nr_of_new_expressions == 0 && !force) return;
-
 	if(expression_has_changed && (!rpn_mode || CALCULATOR->RPNStackSize() == 0)) {
 		if(!force) return;
 		execute_expression();
 		if(!prefix) return;
 	}
+	
+	if(rpn_mode && CALCULATOR->RPNStackSize() == 0) return;
+	
+	if(nr_of_new_expressions == 0 && !update_parse && !register_moved && update_history) {
+		update_history = false;
+	}	
 	
 	if(b_busy || b_busy_result || b_busy_expression || b_busy_command) return;
 
@@ -6233,6 +6237,10 @@ void set_rpn_mode(bool b) {
 		if(show_stack) {
 			gtk_expander_set_expanded(GTK_EXPANDER(expander_stack), TRUE);
 		}
+		expression_has_changed = true;
+		expression_has_changed2 = true;
+		expression_history_index = -1;
+		clearresult();
 	} else {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_equals")), _("="));
 		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_equals")), _("Calculate expression"));
@@ -6246,6 +6254,7 @@ void set_rpn_mode(bool b) {
 		}
 		CALCULATOR->clearRPNStack();
 		gtk_list_store_clear(stackstore);
+		clearresult();
 	}
 }
 
@@ -10610,10 +10619,10 @@ void save_preferences(bool mode) {
 	int lines = 300;
 	bool end_after_result = false;
 	bool doend = false;
-	size_t i = inhistory.size();
-	while(!doend) {
-		i--;
-		switch(inhistory_type[i]) {
+	size_t hi = inhistory.size();
+	while(!doend && hi > 0) {
+		hi--;
+		switch(inhistory_type[hi]) {
 			case QALCULATE_HISTORY_EXPRESSION: {
 				fprintf(file, "history_expression=");
 				break;
@@ -10677,20 +10686,20 @@ void save_preferences(bool mode) {
 				break;
 			}
 		}
-		size_t i3 = inhistory[i].find('\n');
+		size_t i3 = inhistory[hi].find('\n');
 		if(i3 == string::npos) {
-			fprintf(file, "%s\n", inhistory[i].c_str());
+			fprintf(file, "%s\n", inhistory[hi].c_str());
 		} else {
-			fprintf(file, "%s\n", inhistory[i].substr(0, i3).c_str());
+			fprintf(file, "%s\n", inhistory[hi].substr(0, i3).c_str());
 			i3++;
-			size_t i2 = inhistory[i].find('\n', i3);
+			size_t i2 = inhistory[hi].find('\n', i3);
 			while(i2 != string::npos) {
-				fprintf(file, "history_continued=%s\n", inhistory[i].substr(i3, i2 - i3).c_str());
+				fprintf(file, "history_continued=%s\n", inhistory[hi].substr(i3, i2 - i3).c_str());
 				lines--;
 				i3 = i2 + 1;
-				i2 = inhistory[i].find('\n', i3);
+				i2 = inhistory[hi].find('\n', i3);
 			}
-			fprintf(file, "history_continued=%s\n", inhistory[i].substr(i3, inhistory[i].length() - i3).c_str());
+			fprintf(file, "history_continued=%s\n", inhistory[hi].substr(i3, inhistory[hi].length() - i3).c_str());
 			lines--;
 		}
 	}
