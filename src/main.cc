@@ -25,7 +25,6 @@
 #include "main.h"
 
 MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct, *displayed_mstruct;
-bool prev_result_approx;
 string *parsed_to_str;
 KnownVariable *vans[5];
 GtkWidget *functions_window;
@@ -102,7 +101,6 @@ void create_application(GtkApplication *app) {
 	parsed_tostruct = new MathStructure();
 	parsed_tostruct->setUndefined();
 	matrix_mstruct = new MathStructure();
-	prev_result_approx = false;
 	parsed_to_str = new string;
 
 	bool canplot = CALCULATOR->canPlot();

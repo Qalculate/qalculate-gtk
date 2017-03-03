@@ -142,8 +142,8 @@ bool first_error;
 bool display_expression_status, enable_completion;
 bool block_unit_convert, block_unit_selector_convert;
 extern MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct, *displayed_mstruct;
-extern bool prev_result_approx;
 extern string result_text, parsed_text;
+bool result_text_approximate = false;
 string result_text_long;
 extern GtkWidget *resultview;
 extern GtkWidget *historyview;
@@ -5131,8 +5131,9 @@ void *view_proc(void *pipe) {
 		}
 
 		m.format(printops);
-		gint64 time1 = g_get_monotonic_time();		
+		gint64 time1 = g_get_monotonic_time();
 		result_text = m.print(printops);
+		result_text_approximate = *printops.is_approximate;
 		if(!b_stack && g_get_monotonic_time() - time1 < 200000) {
 			PrintOptions printops_long = printops;
 			printops_long.abbreviate_names = false; 
@@ -5198,7 +5199,7 @@ void *view_proc(void *pipe) {
 			if(!CALCULATOR->printingAborted()) {
 				printops.allow_non_usable = true;
 				printops.can_display_unicode_string_arg = (void*) resultview;
-						
+
 				MathStructure *displayed_mstruct_pre = new MathStructure(m);
 				tmp_surface = draw_structure(*displayed_mstruct_pre, printops, top_ips, NULL, scale_tmp);
 				if(displayed_mstruct) displayed_mstruct->unref();
@@ -5518,9 +5519,10 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		if(rpn_mode && !register_moved) {
 			RPNRegisterChanged(result_text, stack_index);
 		}
+
 		string str;
-		//bool b_approx = *printops.is_approximate || mstruct->isApproximate() || (!update_parse && prev_result_approx);
-		bool b_approx = *printops.is_approximate || mstruct->isApproximate();		
+
+		bool b_approx = result_text_approximate || mstruct->isApproximate();		
 		if(!b_approx) {
 			str = "=";	
 		} else {
@@ -5577,7 +5579,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			}
 			gtk_widget_set_tooltip_text(resultview, str.length() < 1000 ? str.c_str() : "");
 		}
-		prev_result_approx = *printops.is_approximate;
+
 	} else {
 		display_errors(&history_index, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &inhistory_index, message_type);
 	}
