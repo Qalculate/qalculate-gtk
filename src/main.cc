@@ -46,6 +46,7 @@ extern vector<string> recent_functions_pre;
 extern vector<string> recent_variables_pre;
 extern vector<string> recent_units_pre;
 extern GtkWidget *expression;
+extern GtkWidget *resultview;
 extern PrintOptions printops;
 
 MathFunction *f_answer;
@@ -257,6 +258,7 @@ void create_application(GtkApplication *app) {
 		setResult(NULL, false, false, false);
 		printops.base = base;
 	}
+	gtk_widget_queue_draw(resultview);
 
 	gchar *gstr = g_build_filename(g_get_home_dir(), ".qalculate", "accelmap", NULL);
 	gtk_accel_map_load(gstr);

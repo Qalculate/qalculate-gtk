@@ -12246,7 +12246,7 @@ void on_button_history_insert_text_clicked(GtkButton*, gpointer) {
 	process_history_selection(&selected_rows, NULL, NULL);
 	if(selected_rows.empty()) return;
 	int index = selected_rows[0];
-	if(index > 0 && inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION) index--;
+	if(index > 0 && (inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION || inhistory_type[index] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[index] == QALCULATE_HISTORY_REGISTER_MOVED)) index--;
 	insert_text(inhistory[index].c_str());
 }
 void history_copy(bool full_text) {
@@ -12256,7 +12256,7 @@ void history_copy(bool full_text) {
 	if(selected_rows.empty()) return;
 	if(!full_text && selected_rows.size() == 1) {
 		int index = selected_rows[0];
-		if(index > 0 && inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION) index--;;
+		if(index > 0 && (inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION || inhistory_type[index] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[index] == QALCULATE_HISTORY_REGISTER_MOVED)) index--;;
 		gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), inhistory[index].c_str(), -1);
 	} else {
 		string str;
@@ -12432,6 +12432,7 @@ void on_historyview_row_activated(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 				if(hindex == 0 || column == history_index_column) {
 					ename = &f_expression->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression);
 				} else {
+					cout << inhistory[(size_t) hindex - 1] << endl;
 					insert_text(inhistory[(size_t) hindex - 1].c_str());
 					return;
 				}
@@ -12466,7 +12467,7 @@ void on_historyview_row_activated(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 		str += ")";
 		insert_text(str.c_str());
 	} else if(hindex >= 0) {
-		if(hindex > 0 && inhistory_type[hindex] == QALCULATE_HISTORY_TRANSFORMATION) hindex--;
+		if(hindex > 0 && (inhistory_type[hindex] == QALCULATE_HISTORY_TRANSFORMATION || inhistory_type[hindex] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[hindex] == QALCULATE_HISTORY_REGISTER_MOVED)) hindex--;
 		if(inhistory_type[hindex] != QALCULATE_HISTORY_WARNING && inhistory_type[hindex] != QALCULATE_HISTORY_ERROR) {
 			insert_text(inhistory[(size_t) hindex].c_str());
 		}
