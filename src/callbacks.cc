@@ -10468,7 +10468,7 @@ void load_preferences() {
 		fclose(file);
 		if(gstr_oldfile) {
 			g_mkdir(getLocalDir().c_str(), S_IRWXU);
-			move_file(gstr_oldfile, gstr_file);
+			g_rename(gstr_oldfile, gstr_file);
 			g_free(gstr_oldfile);
 		}
 	} else {
