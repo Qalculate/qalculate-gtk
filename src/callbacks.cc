@@ -7194,7 +7194,7 @@ run_unit_edit_dialog:
 	} else if(response == GTK_RESPONSE_HELP) {
 		GError *error = NULL;
 		//gtk_show_uri(NULL, "ghelp:qalculate-gtk?qalculate-unit-creation", gtk_get_current_event_time(), &error);
-		gtk_show_uri(NULL, "file://" PACKAGE_DOC_DIR "/html/qalculate-units.html#qalculate-unit-creation", gtk_get_current_event_time(), &error);
+		gtk_show_uri_on_window(GTK_WINDOW(gtk_builder_get_object(unitedit_builder, "unit_edit_dialog")), "file://" PACKAGE_DOC_DIR "/html/qalculate-units.html#qalculate-unit-creation", gtk_get_current_event_time(), &error);
 		if(error) {
 			gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
 			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(unitedit_builder, "unit_edit_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help.\n%s"), error_str);			
@@ -7539,7 +7539,7 @@ run_function_edit_dialog:
 	} else if(response == GTK_RESPONSE_HELP) {
 		GError *error = NULL;
 		//gtk_show_uri(NULL, "ghelp:qalculate-gtk?qalculate-function-creation", gtk_get_current_event_time(), &error);
-		gtk_show_uri(NULL, "file://" PACKAGE_DOC_DIR "/html/qalculate-functions.html#qalculate-function-creation", gtk_get_current_event_time(), &error);
+		gtk_show_uri_on_window(GTK_WINDOW(gtk_builder_get_object(functionedit_builder, "function_edit_dialog")), "file://" PACKAGE_DOC_DIR "/html/qalculate-functions.html#qalculate-function-creation", gtk_get_current_event_time(), &error);
 		if(error) {
 			gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
 			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(functionedit_builder, "function_edit_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help.\n%s"), error_str);
@@ -7730,7 +7730,7 @@ run_unknown_edit_dialog:
 	} else if(response == GTK_RESPONSE_HELP) {
 		GError *error = NULL;
 		//gtk_show_uri(NULL, "ghelp:qalculate-gtk?qalculate-variable-creation", gtk_get_current_event_time(), &error);
-		gtk_show_uri(NULL, "file://" PACKAGE_DOC_DIR "/html/qalculate-variables.html#qalculate-variable-creation", gtk_get_current_event_time(), &error);		
+		gtk_show_uri_on_window(GTK_WINDOW(gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog")), "file://" PACKAGE_DOC_DIR "/html/qalculate-variables.html#qalculate-variable-creation", gtk_get_current_event_time(), &error);		
 		if(error) {
 			gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
 			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help.\n%s"), error_str);
@@ -7899,7 +7899,7 @@ run_variable_edit_dialog:
 	} else if(response == GTK_RESPONSE_HELP) {
 		GError *error = NULL;
 		//gtk_show_uri(NULL, "ghelp:qalculate-gtk?qalculate-variable-creation", gtk_get_current_event_time(), &error);
-		gtk_show_uri(NULL, "file://" PACKAGE_DOC_DIR "/html/qalculate-variables.html#qalculate-variable-creation", gtk_get_current_event_time(), &error);
+		gtk_show_uri_on_window(GTK_WINDOW(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog")), "file://" PACKAGE_DOC_DIR "/html/qalculate-variables.html#qalculate-variable-creation", gtk_get_current_event_time(), &error);
 		if(error) {
 			gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
 			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help.\n%s"), error_str);
@@ -8189,7 +8189,7 @@ run_matrix_edit_dialog:
 	} else if(response == GTK_RESPONSE_HELP) {
 		GError *error = NULL;
 		//gtk_show_uri(NULL, "ghelp:qalculate-gtk?qalculate-vectors-matrices", gtk_get_current_event_time(), &error);
-		gtk_show_uri(NULL, "file://" PACKAGE_DOC_DIR "/html/qalculate-variables.html#qalculate-vectors-matrices", gtk_get_current_event_time(), &error);
+		gtk_show_uri_on_window(GTK_WINDOW(gtk_builder_get_object(matrixedit_builder, "matrix_edit_dialog")), "file://" PACKAGE_DOC_DIR "/html/qalculate-variables.html#qalculate-vectors-matrices", gtk_get_current_event_time(), &error);
 		if(error) {
 			gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
 			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(matrixedit_builder, "matrix_edit_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help.\n%s"), error_str);
@@ -14755,7 +14755,7 @@ void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
 void on_menu_item_help_activate(GtkMenuItem*, gpointer) {
 	GError *error = NULL;
 	//gtk_show_uri(NULL, "ghelp:qalculate-gtk", gtk_get_current_event_time(), &error);
-	gtk_show_uri(NULL, "file://" PACKAGE_DOC_DIR "/html/index.html", gtk_get_current_event_time(), &error);
+	gtk_show_uri_on_window(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), "file://" PACKAGE_DOC_DIR "/html/index.html", gtk_get_current_event_time(), &error);
 	if(error) {
 		gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
 		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help for Qalculate!.\n%s"), error_str);
@@ -15699,7 +15699,7 @@ bool generate_plot(PlotParameters &pp, vector<MathStructure> &y_vectors, vector<
 void on_plot_button_help_clicked(GtkButton, gpointer) {
 	GError *error = NULL;
 	//gtk_show_uri(NULL, "ghelp:qalculate-gtk?qalculate-plotting", gtk_get_current_event_time(), &error);
-	gtk_show_uri(NULL, "file://" PACKAGE_DOC_DIR "/html/qalculate-plotting.html", gtk_get_current_event_time(), &error);	
+	gtk_show_uri_on_window(GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), "file://" PACKAGE_DOC_DIR "/html/qalculate-plotting.html", gtk_get_current_event_time(), &error);	
 	if(error) {
 		gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
 		GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help.\n%s"), error_str);
