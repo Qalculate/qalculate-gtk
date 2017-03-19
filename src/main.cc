@@ -313,7 +313,7 @@ static gint qalculate_handle_local_options(GtkApplication *app, GVariantDict *op
 		fclose(file);
 		if(gstr_oldfile) {
 			g_mkdir(getLocalDir().c_str(), S_IRWXU);
-			g_rename(gstr_oldfile, gstr_file);
+			move_file(gstr_oldfile, gstr_file);
 			g_free(gstr_oldfile);
 		}
 	}

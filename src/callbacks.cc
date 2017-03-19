@@ -5595,6 +5595,9 @@ void on_abort_command(GtkDialog*, gint, gpointer) {
 }
 
 void CommandThread::run() {
+
+	enableAsynchronousCancel();
+
 	while(true) {
 		int command_type = read<int>();
 		void *x = read<void *>();
@@ -10468,7 +10471,7 @@ void load_preferences() {
 		fclose(file);
 		if(gstr_oldfile) {
 			g_mkdir(getLocalDir().c_str(), S_IRWXU);
-			g_rename(gstr_oldfile, gstr_file);
+			move_file(gstr_oldfile, gstr_file);
 			g_free(gstr_oldfile);
 		}
 	} else {
