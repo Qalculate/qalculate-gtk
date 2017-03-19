@@ -3,11 +3,11 @@
 #
 
 htmldir = $(docdir)/html
-html_DATA = html/*.html
+html_DATA = $(top_srcdir)/doc/html/*.html
 
 figuresdir = $(docdir)/html/figures
-figures_DATA = html/figures/*.png
+figures_DATA = $(top_srcdir)/doc/html/figures/*.png
 
-EXTRA_DIST = html/*.html html/figures/*.png
+EXTRA_DIST = $(top_srcdir)/doc/html/*.html $(top_srcdir)/doc/html/figures/*.png
 
 
