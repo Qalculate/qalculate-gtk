@@ -807,7 +807,7 @@ void create_main_window (void) {
 				break;
 			}
 			case QALCULATE_HISTORY_OLD: {
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, inhistory[i], 1, i, 4, 0, -1);
+				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, inhistory[i].c_str(), 1, i, 4, 0, -1);
 				break;
 			}
 		}
