@@ -183,8 +183,12 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 	if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact")), eo.approximation == APPROXIMATION_EXACT);
 	
 	switch(eo.auto_post_conversion) {
-		case POST_CONVERSION_BEST: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_post_conversion_best")), TRUE);
+		case POST_CONVERSION_OPTIMAL: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_post_conversion_optimal")), TRUE);
+			break;
+		}
+		case POST_CONVERSION_OPTIMAL_SI: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_post_conversion_optimal_si")), TRUE);
 			break;
 		}
 		case POST_CONVERSION_BASE: {

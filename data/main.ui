@@ -817,13 +817,23 @@ On: 2 (m/s)</property>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkRadioMenuItem" id="menu_item_post_conversion_best">
+                              <object class="GtkRadioMenuItem" id="menu_item_post_conversion_optimal">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Convert to Optimal Unit</property>
                                 <property name="use_underline">True</property>
                                 <property name="group">menu_item_post_conversion_none</property>
-                                <signal name="activate" handler="on_menu_item_post_conversion_best_activate" swapped="no"/>
+                                <signal name="activate" handler="on_menu_item_post_conversion_optimal_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_post_conversion_optimal_si">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Convert to Optimal SI Unit</property>
+                                <property name="use_underline">True</property>
+                                <property name="group">menu_item_post_conversion_none</property>
+                                <signal name="activate" handler="on_menu_item_post_conversion_optimal_si_activate" swapped="no"/>
                               </object>
                             </child>
                             <child>

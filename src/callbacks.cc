@@ -5872,7 +5872,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			return;
 		} else if(equalsIgnoreCase(to_str, "optimal") || equalsIgnoreCase(to_str, _("optimal"))) {
 			AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
-			evalops.auto_post_conversion = POST_CONVERSION_BEST;
+			evalops.auto_post_conversion = POST_CONVERSION_OPTIMAL_SI;
 			b_busy = false;
 			b_busy_expression = false;
 			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
@@ -9834,7 +9834,7 @@ void load_preferences() {
 	evalops.parse_options.base = BASE_DECIMAL;
 	evalops.allow_complex = true;
 	evalops.allow_infinite = true;
-	evalops.auto_post_conversion = POST_CONVERSION_NONE;
+	evalops.auto_post_conversion = POST_CONVERSION_OPTIMAL;
 	evalops.assume_denominators_nonzero = true;
 	evalops.warn_about_denominators_assumed_nonzero = true;
 	evalops.parse_options.limit_implicit_multiplication = false;
@@ -9916,8 +9916,8 @@ void load_preferences() {
 		}
 	}
 
-	int version_numbers[] = {0, 9, 8};
-	bool old_history_format = false;	
+	int version_numbers[] = {0, 9, 11};
+	bool old_history_format = false;
 			
 	if(file) {
 		char line[10000];
@@ -10196,7 +10196,10 @@ void load_preferences() {
 					if(mode_index == 1) printops.use_denominator_prefix = v;
 					else modes[mode_index].po.use_denominator_prefix = v;
 				} else if(svar == "auto_post_conversion") {
-					if(v >= POST_CONVERSION_NONE && v <= POST_CONVERSION_BASE) {
+					if(v >= POST_CONVERSION_NONE && v <= POST_CONVERSION_OPTIMAL) {
+						/*if((v == POST_CONVERSION_NONE || v == POST_CONVERSION_OPTIMAL_SI) && version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] <= 12))) {
+							v = POST_CONVERSION_OPTIMAL;
+						}*/
 						if(mode_index == 1) evalops.auto_post_conversion = (AutoPostConversion) v;
 						else modes[mode_index].eo.auto_post_conversion = (AutoPostConversion) v;
 					}
@@ -13194,9 +13197,14 @@ void on_menu_item_post_conversion_base_activate(GtkMenuItem *w, gpointer) {
 	evalops.auto_post_conversion = POST_CONVERSION_BASE;
 	expression_calculation_updated();
 }
-void on_menu_item_post_conversion_best_activate(GtkMenuItem *w, gpointer) {
+void on_menu_item_post_conversion_optimal_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	evalops.auto_post_conversion = POST_CONVERSION_BEST;
+	evalops.auto_post_conversion = POST_CONVERSION_OPTIMAL;
+	expression_calculation_updated();
+}
+void on_menu_item_post_conversion_optimal_si_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	evalops.auto_post_conversion = POST_CONVERSION_OPTIMAL_SI;
 	expression_calculation_updated();
 }
 void on_menu_item_mixed_units_conversion_activate(GtkMenuItem *w, gpointer) {

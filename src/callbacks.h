@@ -441,7 +441,8 @@ void on_menu_item_denominator_prefixes_activate(GtkMenuItem *w, gpointer user_da
 void on_menu_item_place_units_separately_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_post_conversion_none_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_post_conversion_base_activate(GtkMenuItem *w, gpointer user_data);
-void on_menu_item_post_conversion_best_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_post_conversion_optimal_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_post_conversion_optimal_si_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_abbreviate_names_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_always_exact_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_try_exact_activate(GtkMenuItem *w, gpointer user_data);
