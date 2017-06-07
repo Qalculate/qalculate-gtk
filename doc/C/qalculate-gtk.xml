@@ -329,7 +329,11 @@ The menus in the menu bar provides access to most of the functionality of Qalcul
 			</row>
 			<row valign="top">
 				<entry><para>Convert To Optimal Unit</para></entry>
-				<entry><para>Tries to convert the units in the current result so that as few units as possible is used. Base units are prioritized.</para></entry>
+				<entry><para>Tries to convert the units in the current result so that as few units as possible is used. Only SI units are used for conversion. If the original units are equally or more optimal, than the automatic alternative, they are kept.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>Convert To Optimal SI Unit</para></entry>
+				<entry><para>Tries to convert the units in the current result so that as few units as possible is used. Non-SI units are not kept, even if the number of units used increase, and the automatic alternative is prioritized.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Insert Matrix</para></entry>
