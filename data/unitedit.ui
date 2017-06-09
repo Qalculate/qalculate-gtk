@@ -589,6 +589,7 @@
                                 <property name="tooltip_text" translatable="yes">Relation to the base unit (usually just a number)</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
+                                <signal name="changed" handler="on_unit_edit_entry_relation_changed" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
@@ -635,7 +636,9 @@
                         <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkBox" id="hbox32">
+                          <object class="GtkBox" id="unit_edit_box_reversed">
+                            <property name="visible">True</property>
+                            <property name="sensitive">False</property>
                             <property name="can_focus">False</property>
                             <property name="spacing">6</property>
                             <property name="homogeneous">True</property>
@@ -839,5 +842,8 @@
       <action-widget response="-6">unit_edit_button_cancel</action-widget>
       <action-widget response="-5">unit_edit_button_ok</action-widget>
     </action-widgets>
+    <child>
+      <placeholder/>
+    </child>
   </object>
 </interface>

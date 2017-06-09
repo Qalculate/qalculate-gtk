@@ -6950,9 +6950,7 @@ void set_edited_names(ExpressionItem *item, string str) {
 	display edit/new unit dialog
 	creates new unit if u == NULL, win is parent window
 */
-void
-edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
-{
+void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL) {
 
 	edited_unit = u;
 	names_edited = false;
@@ -7023,6 +7021,7 @@ edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 				if(au->firstBaseExponent() != 1) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_frame_mix")), FALSE);
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), CALCULATOR->localizeExpression(au->expression()).c_str());
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")), CALCULATOR->localizeExpression(au->inverseExpression()).c_str());
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_box_reversed")), au->hasComplexExpression());
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact")), !au->isApproximate());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), !u->isBuiltin());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")), !u->isBuiltin());
@@ -7050,6 +7049,7 @@ edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 		//default values
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_hidden")), false);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact")), TRUE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_box_reversed")), false);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unitedit_builder, "unit_edit_combobox_class")), UNIT_CLASS_ALIAS_UNIT);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), "1");
 		on_unit_edit_combobox_class_changed(GTK_COMBO_BOX(gtk_builder_get_object(unitedit_builder, "unit_edit_combobox_class")), NULL);
@@ -7098,7 +7098,7 @@ run_unit_edit_dialog:
 						}
 						au->setBaseUnit(bu);
 						au->setExpression(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation"))), evalops.parse_options));
-						au->setInverseExpression(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed"))), evalops.parse_options));
+						au->setInverseExpression(au->hasComplexExpression() ? CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed"))), evalops.parse_options) : "");
 						au->setExponent(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp"))));
 						au->setApproximate(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact"))));
 						if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")))) {
@@ -13930,6 +13930,11 @@ void on_stackview_item_editing_started(GtkCellRenderer*, GtkCellEditable*, gchar
 }
 void on_stackview_item_editing_canceled(GtkCellRenderer*, gpointer) {
 	b_editing_stack = false;
+}
+
+void on_unit_edit_entry_relation_changed(GtkEditable *w, gpointer) {
+	string str = gtk_entry_get_text(GTK_ENTRY(w));
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_box_reversed")), str.find("\\x") != string::npos);
 }
 
 /*
