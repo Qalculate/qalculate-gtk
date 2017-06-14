@@ -5604,7 +5604,7 @@ void CommandThread::run() {
 		switch(command_type) {
 			case COMMAND_FACTORIZE: {
 				if(!((MathStructure*) x)->integerFactorize()) {
-					((MathStructure*) x)->factorize(evalops);
+					((MathStructure*) x)->factorize(evalops, true, true, true);
 				}
 				break;
 			}
@@ -9828,7 +9828,7 @@ void load_preferences() {
 	
 	evalops.approximation = APPROXIMATION_TRY_EXACT;
 	evalops.sync_units = true;
-	evalops.structuring = STRUCTURING_SIMPLIFY;
+	evalops.structuring = STRUCTURING_HYBRID;
 	evalops.parse_options.unknowns_enabled = false;
 	evalops.parse_options.read_precision = DONT_READ_PRECISION;
 	evalops.parse_options.base = BASE_DECIMAL;
@@ -10136,7 +10136,10 @@ void load_preferences() {
 					if(mode_index == 1) evalops.warn_about_denominators_assumed_nonzero = v;
 					else modes[mode_index].eo.warn_about_denominators_assumed_nonzero = v;
 				} else if(svar == "structuring") {
-					if(v >= STRUCTURING_NONE && v <= STRUCTURING_FACTORIZE) {
+					if(v >= STRUCTURING_NONE && v <= STRUCTURING_HYBRID) {
+						/*if((v == STRUCTURING_NONE || v == STRUCTURING_SIMPLIFY) && version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] <= 12))) {
+							v = STRUCTURING_HYBRID;
+						}*/
 						if(mode_index == 1) {
 							evalops.structuring = (StructuringMode) v;
 							printops.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
@@ -12691,9 +12694,9 @@ void on_menu_item_algebraic_mode_factorize_activate(GtkMenuItem *w, gpointer) {
 	printops.allow_factorization = true;
 	expression_calculation_updated();
 }
-void on_menu_item_algebraic_mode_none_activate(GtkMenuItem *w, gpointer) {
+void on_menu_item_algebraic_mode_hybrid_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	evalops.structuring = STRUCTURING_NONE;
+	evalops.structuring = STRUCTURING_HYBRID;
 	printops.allow_factorization = false;
 	expression_calculation_updated();
 }

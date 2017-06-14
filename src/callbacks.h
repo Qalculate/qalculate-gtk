@@ -459,7 +459,7 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_assume_nonzero_denominators_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_algebraic_mode_simplify_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_algebraic_mode_factorize_activate(GtkMenuItem *w, gpointer user_data);
-void on_menu_item_algebraic_mode_none_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_algebraic_mode_hybrid_activate(GtkMenuItem *w, gpointer user_data);
 gboolean on_main_window_focus_in_event(GtkWidget *w, GdkEventFocus *e, gpointer user_data);
 
 void on_button_registerup_clicked(GtkButton *button, gpointer user_data);

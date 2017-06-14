@@ -246,8 +246,8 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_warn_about_denominators_assumed_nonzero")), eo.warn_about_denominators_assumed_nonzero);
 	
 	switch(eo.structuring) {
-		case STRUCTURING_SIMPLIFY: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_algebraic_mode_simplify")), TRUE);
+		case STRUCTURING_HYBRID: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_algebraic_mode_hybrid")), TRUE);
 			break;
 		}
 		case STRUCTURING_FACTORIZE: {
@@ -255,7 +255,7 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 			break;
 		}
 		default: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_algebraic_mode_none")), TRUE);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_algebraic_mode_simplify")), TRUE);
 			break;
 		}
 	}

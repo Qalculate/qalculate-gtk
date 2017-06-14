@@ -1248,13 +1248,13 @@ On: 1/2*pi = 0.5 pi</property>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkRadioMenuItem" id="menu_item_algebraic_mode_none">
+                              <object class="GtkRadioMenuItem" id="menu_item_algebraic_mode_hybrid">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">None</property>
+                                <property name="label" translatable="yes">Hybrid mode</property>
                                 <property name="use_underline">True</property>
                                 <property name="group">menu_item_algebraic_mode_simplify</property>
-                                <signal name="activate" handler="on_menu_item_algebraic_mode_none_activate" swapped="no"/>
+                                <signal name="activate" handler="on_menu_item_algebraic_mode_hybrid_activate" swapped="no"/>
                               </object>
                             </child>
                             <child>
