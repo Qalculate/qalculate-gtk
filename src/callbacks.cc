@@ -7632,13 +7632,13 @@ void edit_unknown(const char *category, Variable *var, GtkWidget *win) {
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unknownedit_builder, "unknown_edit_checkbutton_custom_assumptions")), TRUE);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_type")), TRUE);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_sign")), TRUE);
-			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), v->assumptions()->type());
+			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), v->assumptions()->type() - 2);
 			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), v->assumptions()->sign());
 		} else {
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unknownedit_builder, "unknown_edit_checkbutton_custom_assumptions")), FALSE);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_type")), FALSE);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_sign")), FALSE);
-			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), CALCULATOR->defaultAssumptions()->type());
+			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), CALCULATOR->defaultAssumptions()->type() - 2);
 			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), CALCULATOR->defaultAssumptions()->sign());
 		}
 	} else {
@@ -7656,7 +7656,7 @@ void edit_unknown(const char *category, Variable *var, GtkWidget *win) {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(unknownedit_builder, "unknown_edit_label_names")), "");
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combo_category")))), category);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_desc")), "");
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), CALCULATOR->defaultAssumptions()->type());
+		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), CALCULATOR->defaultAssumptions()->type() - 2);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), CALCULATOR->defaultAssumptions()->sign());
 
 	}
@@ -7702,7 +7702,7 @@ run_unknown_edit_dialog:
 			if(!v->isBuiltin()) {
 				if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unknownedit_builder, "unknown_edit_checkbutton_custom_assumptions")))) {
 					if(!v->assumptions()) v->setAssumptions(new Assumptions());
-					v->assumptions()->setType((AssumptionType) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"))));
+					v->assumptions()->setType((AssumptionType) (gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"))) + 2));
 					v->assumptions()->setSign((AssumptionSign) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"))));
 				} else {
 					v->setAssumptions(NULL);
@@ -9916,7 +9916,7 @@ void load_preferences() {
 		}
 	}
 
-	int version_numbers[] = {0, 9, 11};
+	int version_numbers[] = {0, 9, 12};
 	bool old_history_format = false;
 			
 	if(file) {
@@ -10254,9 +10254,10 @@ void load_preferences() {
 					}
 				} else if(svar == "default_assumption_type") {
 					if(v >= ASSUMPTION_TYPE_NONE && v <= ASSUMPTION_TYPE_INTEGER) {
-						if(v == ASSUMPTION_TYPE_NONE && version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] == 0))) {
+						/*if(v == ASSUMPTION_TYPE_NONE && version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] == 0))) {
 							v = ASSUMPTION_TYPE_NONMATRIX;
-						}
+						}*/
+						if(v < ASSUMPTION_TYPE_NUMBER && version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] <= 12))) v = ASSUMPTION_TYPE_NUMBER;
 						if(mode_index == 1) CALCULATOR->defaultAssumptions()->setType((AssumptionType) v);
 						else modes[mode_index].at = (AssumptionType) v;
 					}
@@ -14819,16 +14820,16 @@ void on_unknown_edit_checkbutton_custom_assumptions_toggled(GtkToggleButton *w, 
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_sign")), gtk_toggle_button_get_active(w));
 }
 void on_unknown_edit_combobox_type_changed(GtkComboBox *om, gpointer) {	
-	if((AssumptionType) gtk_combo_box_get_active(om) <= ASSUMPTION_TYPE_COMPLEX && (AssumptionSign) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"))) != ASSUMPTION_SIGN_NONZERO) {
+	if((AssumptionType) gtk_combo_box_get_active(om) + 2 <= ASSUMPTION_TYPE_COMPLEX && (AssumptionSign) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"))) != ASSUMPTION_SIGN_NONZERO) {
 		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_unknown_edit_combobox_sign_changed, NULL);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), ASSUMPTION_SIGN_UNKNOWN);	
 		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_unknown_edit_combobox_sign_changed, NULL);
 	}
 }
 void on_unknown_edit_combobox_sign_changed(GtkComboBox *om, gpointer) {	
-	if((AssumptionSign) gtk_combo_box_get_active(om) != ASSUMPTION_SIGN_NONZERO && (AssumptionSign) gtk_combo_box_get_active(om) != ASSUMPTION_SIGN_UNKNOWN && (AssumptionType) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"))) <= ASSUMPTION_TYPE_COMPLEX) {
+	if((AssumptionSign) gtk_combo_box_get_active(om) != ASSUMPTION_SIGN_NONZERO && (AssumptionSign) gtk_combo_box_get_active(om) != ASSUMPTION_SIGN_UNKNOWN && (AssumptionType) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"))) <= ASSUMPTION_TYPE_COMPLEX - 2) {
 		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_unknown_edit_combobox_type_changed, NULL);
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), ASSUMPTION_TYPE_REAL);	
+		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), ASSUMPTION_TYPE_REAL - 2);	
 		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_unknown_edit_combobox_type_changed, NULL);
 	}
 }

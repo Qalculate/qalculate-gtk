@@ -1070,7 +1070,7 @@ On: 1/2*pi = 0.5 pi</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="item18">
+                      <object class="GtkMenuItem" id="menu_item_assumptions">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Assumptions</property>
@@ -1080,21 +1080,20 @@ On: 1/2*pi = 0.5 pi</property>
                             <property name="can_focus">False</property>
                             <child>
                               <object class="GtkRadioMenuItem" id="menu_item_assumptions_none">
-                                <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Unknown</property>
                                 <property name="use_underline">True</property>
                                 <property name="active">True</property>
+                                <property name="group">menu_item_assumptions_number</property>
                                 <signal name="activate" handler="on_menu_item_assumptions_none_activate" swapped="no"/>
                               </object>
                             </child>
                             <child>
                               <object class="GtkRadioMenuItem" id="menu_item_assumptions_nonmatrix">
-                                <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Not Matrix</property>
                                 <property name="use_underline">True</property>
-                                <property name="group">menu_item_assumptions_none</property>
+                                <property name="group">menu_item_assumptions_number</property>
                                 <signal name="activate" handler="on_menu_item_assumptions_nonmatrix_activate" swapped="no"/>
                               </object>
                             </child>
@@ -1104,7 +1103,7 @@ On: 1/2*pi = 0.5 pi</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Number</property>
                                 <property name="use_underline">True</property>
-                                <property name="group">menu_item_assumptions_none</property>
+                                <property name="active">True</property>
                                 <signal name="activate" handler="on_menu_item_assumptions_number_activate" swapped="no"/>
                               </object>
                             </child>
@@ -1114,7 +1113,7 @@ On: 1/2*pi = 0.5 pi</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Complex</property>
                                 <property name="use_underline">True</property>
-                                <property name="group">menu_item_assumptions_none</property>
+                                <property name="group">menu_item_assumptions_number</property>
                                 <signal name="activate" handler="on_menu_item_assumptions_complex_activate" swapped="no"/>
                               </object>
                             </child>
@@ -1124,7 +1123,7 @@ On: 1/2*pi = 0.5 pi</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Real</property>
                                 <property name="use_underline">True</property>
-                                <property name="group">menu_item_assumptions_none</property>
+                                <property name="group">menu_item_assumptions_number</property>
                                 <signal name="activate" handler="on_menu_item_assumptions_real_activate" swapped="no"/>
                               </object>
                             </child>
@@ -1134,7 +1133,7 @@ On: 1/2*pi = 0.5 pi</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Rational</property>
                                 <property name="use_underline">True</property>
-                                <property name="group">menu_item_assumptions_none</property>
+                                <property name="group">menu_item_assumptions_number</property>
                                 <signal name="activate" handler="on_menu_item_assumptions_rational_activate" swapped="no"/>
                               </object>
                             </child>
@@ -1144,7 +1143,7 @@ On: 1/2*pi = 0.5 pi</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Integer</property>
                                 <property name="use_underline">True</property>
-                                <property name="group">menu_item_assumptions_none</property>
+                                <property name="group">menu_item_assumptions_number</property>
                                 <signal name="activate" handler="on_menu_item_assumptions_integer_activate" swapped="no"/>
                               </object>
                             </child>
@@ -1849,8 +1848,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1874,8 +1873,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1899,8 +1898,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>

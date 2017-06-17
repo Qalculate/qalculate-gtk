@@ -242,8 +242,6 @@
                     <property name="can_focus">True</property>
                     <property name="active">0</property>
                     <items>
-                      <item translatable="yes">Unknown</item>
-                      <item translatable="yes">Not Matrix</item>
                       <item translatable="yes">Number</item>
                       <item translatable="yes">Complex Number</item>
                       <item translatable="yes">Real Number</item>
@@ -410,5 +408,8 @@
       <action-widget response="-6">button3</action-widget>
       <action-widget response="-5">unknown_edit_button_ok</action-widget>
     </action-widgets>
+    <child>
+      <placeholder/>
+    </child>
   </object>
 </interface>
