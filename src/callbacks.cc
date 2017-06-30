@@ -243,6 +243,8 @@ extern gchar history_parse_color[8];
 bool status_error_color_set;
 bool status_warning_color_set;
 
+string old_fromValue, old_toValue;
+
 #define TEXT_TAGS			"<span size=\"xx-large\">"
 #define TEXT_TAGS_END			"</span>"
 #define TEXT_TAGS_SMALL			"<span size=\"large\">"
@@ -5590,7 +5592,7 @@ void on_abort_command(GtkDialog*, gint, gpointer) {
 	struct timespec rtime;
 	rtime.tv_sec = 0;
 	rtime.tv_nsec = 1000000;
-	int msecs = 250;
+	int msecs = 1000;
 	while(b_busy && msecs > 0) {
 		nanosleep(&rtime, NULL);
 		msecs--;
@@ -9301,6 +9303,8 @@ void convert_in_wUnits(int toFrom) {
 		//values
 		const gchar *fromValue = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_from_val")));
 		const gchar *toValue = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_to_val")));
+		old_fromValue = fromValue;
+		old_toValue = fromValue;
 		//determine conversion direction
 		bool b = false;
 		if(toFrom > 0) {
@@ -11552,11 +11556,11 @@ gboolean on_resultview_popup_menu(GtkWidget*, gpointer) {
 }
 
 gboolean on_units_entry_from_val_focus_out_event(GtkEntry*, GdkEventFocus*, gpointer) {
-	convert_in_wUnits(0);
+	if(old_fromValue != gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_from_val")))) convert_in_wUnits(0);
 	return FALSE;
 }
 gboolean on_units_entry_to_val_focus_out_event(GtkEntry*, GdkEventFocus*, gpointer) {
-	convert_in_wUnits(1);
+	if(old_toValue != gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_to_val")))) convert_in_wUnits(1);
 	return FALSE;
 }
 
