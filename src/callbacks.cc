@@ -9933,7 +9933,7 @@ void load_preferences() {
 		}
 	}
 
-	int version_numbers[] = {0, 9, 12};
+	int version_numbers[] = {0, 9, 13};
 	bool old_history_format = false;
 			
 	if(file) {
@@ -10154,9 +10154,9 @@ void load_preferences() {
 					else modes[mode_index].eo.warn_about_denominators_assumed_nonzero = v;
 				} else if(svar == "structuring") {
 					if(v >= STRUCTURING_NONE && v <= STRUCTURING_HYBRID) {
-						/*if((v == STRUCTURING_NONE || v == STRUCTURING_SIMPLIFY) && version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] <= 12))) {
+						if((v == STRUCTURING_NONE || v == STRUCTURING_SIMPLIFY) && version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] <= 12))) {
 							v = STRUCTURING_HYBRID;
-						}*/
+						}
 						if(mode_index == 1) {
 							evalops.structuring = (StructuringMode) v;
 							printops.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
@@ -10217,9 +10217,9 @@ void load_preferences() {
 					else modes[mode_index].po.use_denominator_prefix = v;
 				} else if(svar == "auto_post_conversion") {
 					if(v >= POST_CONVERSION_NONE && v <= POST_CONVERSION_OPTIMAL) {
-						/*if((v == POST_CONVERSION_NONE || v == POST_CONVERSION_OPTIMAL_SI) && version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] <= 12))) {
+						if((v == POST_CONVERSION_NONE || v == POST_CONVERSION_OPTIMAL_SI) && version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] <= 12))) {
 							v = POST_CONVERSION_OPTIMAL;
-						}*/
+						}
 						if(mode_index == 1) evalops.auto_post_conversion = (AutoPostConversion) v;
 						else modes[mode_index].eo.auto_post_conversion = (AutoPostConversion) v;
 					}
@@ -15806,17 +15806,34 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 	eo.parse_options = evalops.parse_options;
 	eo.parse_options.read_precision = DONT_READ_PRECISION;
 	if(type == 1 || type == 2) {
-		*y_vector = new MathStructure(CALCULATOR->calculate(CALCULATOR->unlocalizeExpression(str, evalops.parse_options), eo));
+		MathStructure *y_vector = new MathStructure();
+		if(!CALCULATOR->calculate(y_vector, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), 5000, eo)) {
+			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("It took too long to generate the plot data."));
+			gtk_dialog_run(GTK_DIALOG(d));
+			gtk_widget_destroy(d);
+		}
 		*x_vector = NULL;
 	} else {
-		MathStructure min(CALCULATOR->calculate(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_min"))), evalops.parse_options), eo));
-		MathStructure max(CALCULATOR->calculate(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_max"))), evalops.parse_options), eo));
 		*x_vector = new MathStructure();
 		(*x_vector)->clearVector();
+		MathStructure min;
+		if(!CALCULATOR->calculate(&min, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_min"))), evalops.parse_options), 1000, eo)) {
+			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("It took too long to generate the plot data."));
+			gtk_dialog_run(GTK_DIALOG(d));
+			gtk_widget_destroy(d);
+			return;
+		}
+		MathStructure max;
+		if(!CALCULATOR->calculate(&max, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_max"))), evalops.parse_options), 1000, eo)) {
+			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("It took too long to generate the plot data."));
+			gtk_dialog_run(GTK_DIALOG(d));
+			gtk_widget_destroy(d);
+			return;
+		}
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_radiobutton_step")))) {
-			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(str, min, max, CALCULATOR->calculate(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_step"))), evalops.parse_options), eo), *x_vector, str_x, evalops.parse_options));
+			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(str, min, max, CALCULATOR->calculate(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_step"))), evalops.parse_options), eo), *x_vector, str_x, evalops.parse_options, 5000));
 		} else {
-			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(str, min, max, gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_steps"))), *x_vector, str_x, evalops.parse_options));
+			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(str, min, max, gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_steps"))), *x_vector, str_x, evalops.parse_options, 5000));
 		}
 	}
 }
