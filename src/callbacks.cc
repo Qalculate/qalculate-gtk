@@ -5137,7 +5137,7 @@ void ViewThread::run() {
 		}
 		printops.can_display_unicode_string_arg = NULL;
 
-		if(!b_stack && result_text.length() > 1500) {
+		if(!b_stack && result_text.length() > 900) {
 			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
 			int index = 0;
 			//GtkTextView can not display very very long lines
