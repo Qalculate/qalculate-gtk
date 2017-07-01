@@ -15806,8 +15806,8 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 	eo.parse_options = evalops.parse_options;
 	eo.parse_options.read_precision = DONT_READ_PRECISION;
 	if(type == 1 || type == 2) {
-		MathStructure *y_vector = new MathStructure();
-		if(!CALCULATOR->calculate(y_vector, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), 5000, eo)) {
+		*y_vector = new MathStructure();
+		if(!CALCULATOR->calculate(*y_vector, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), 5000, eo)) {
 			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("It took too long to generate the plot data."));
 			gtk_dialog_run(GTK_DIALOG(d));
 			gtk_widget_destroy(d);
