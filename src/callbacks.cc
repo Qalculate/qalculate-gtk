@@ -1,7 +1,7 @@
 /*
     Qalculate (GTK+ UI)
 
-    Copyright (C) 2003-2007, 2008, 2016  Hanna Knutsson (hanna_k@fmgirl.com)
+    Copyright (C) 2003-2007, 2008, 2016  Hanna Knutsson (hanna.knutsson@protonmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -10217,7 +10217,7 @@ void load_preferences() {
 					else modes[mode_index].po.use_denominator_prefix = v;
 				} else if(svar == "auto_post_conversion") {
 					if(v >= POST_CONVERSION_NONE && v <= POST_CONVERSION_OPTIMAL) {
-						if((v == POST_CONVERSION_NONE || v == POST_CONVERSION_OPTIMAL_SI) && version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] <= 12))) {
+						if(v == POST_CONVERSION_NONE && version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] <= 12))) {
 							v = POST_CONVERSION_OPTIMAL;
 						}
 						if(mode_index == 1) evalops.auto_post_conversion = (AutoPostConversion) v;
@@ -10271,9 +10271,6 @@ void load_preferences() {
 					}
 				} else if(svar == "default_assumption_type") {
 					if(v >= ASSUMPTION_TYPE_NONE && v <= ASSUMPTION_TYPE_INTEGER) {
-						/*if(v == ASSUMPTION_TYPE_NONE && version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] == 0))) {
-							v = ASSUMPTION_TYPE_NONMATRIX;
-						}*/
 						if(v < ASSUMPTION_TYPE_NUMBER && version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] <= 12))) v = ASSUMPTION_TYPE_NUMBER;
 						if(mode_index == 1) CALCULATOR->defaultAssumptions()->setType((AssumptionType) v);
 						else modes[mode_index].at = (AssumptionType) v;
