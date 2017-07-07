@@ -12495,7 +12495,9 @@ void on_menu_item_export_csv_file_activate(GtkMenuItem*, gpointer) {
 	export_csv_file(NULL, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 }
 
-
+void on_expander_convert_activate(GtkExpander *o, gpointer) {
+	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_unit"))); 
+}
 void on_menu_item_convert_to_unit_expression_activate(GtkMenuItem*, gpointer) {
 	gtk_expander_set_expanded(GTK_EXPANDER(expander_convert), TRUE);
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_unit"))); 
@@ -12526,7 +12528,7 @@ void on_menu_item_convert_to_base_units_activate(GtkMenuItem*, gpointer) {
 	do_timeout = true;
 }
 
-void on_menu_item_set_prefix_activate(GtkMenuItem*, gpointer user_data) {	
+void on_menu_item_set_prefix_activate(GtkMenuItem*, gpointer user_data) {
 	result_prefix_changed((Prefix*) user_data);
 	focus_keeping_selection();
 }
@@ -16023,9 +16025,11 @@ void on_convert_button_set_missing_prefixes_toggled(GtkToggleButton *w, gpointer
 }
 void on_convert_button_convert_clicked(GtkButton*, gpointer) {
 	convert_from_convert_entry_unit();
+	focus_keeping_selection();
 }
 void on_convert_entry_unit_activate(GtkEntry*, gpointer) {
 	convert_from_convert_entry_unit();
+	focus_keeping_selection();
 }
 
 

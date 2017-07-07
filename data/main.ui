@@ -1886,6 +1886,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                       <object class="GtkExpander" id="expander_convert">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <signal name="activate" handler="on_expander_convert_activate" after="yes" swapped="no"/>
                         <signal name="notify::expanded" handler="on_expander_convert_expanded" swapped="no"/>
                         <child>
                           <placeholder/>
