@@ -5176,7 +5176,6 @@ void ViewThread::run() {
 			pango_layout_get_pixel_size(layout, &w, &h);
 			tmp_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w, h);
 			cairo_t *cr = cairo_create(tmp_surface);
-			//draw_background(cr, par_w, par_h);
 			GdkRGBA rgba;
 			gtk_style_context_get_color(gtk_widget_get_style_context(resultview), gtk_widget_get_state_flags(resultview), &rgba);
 			gdk_cairo_set_source_rgba(cr, &rgba);
@@ -5318,13 +5317,12 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	}
 
 	scale_n = 0;
-	//GtkWidget *dialog = NULL;
-	//CALCULATOR->saveState();
+
 	CALCULATOR->startPrintControl();
+
 	gint w = 0, h = 0;
 	bool parsed_approx = false;
 	bool title_set = FALSE;
-	//bool progress_set = FALSE;
 	
 	if(stack_index == 0) {
 		if(surface_result) {
@@ -5376,10 +5374,8 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 
 	if(b_busy) {
 		g_application_mark_busy(g_application_get_default());
-		//if(stack_index == 0) {
-			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultspinner")));
-			gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
-		//}
+		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultspinner")));
+		gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
 		gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), _("Processing…"));
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), FALSE);
@@ -5391,11 +5387,6 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	while(b_busy) {
 		while(gtk_events_pending()) gtk_main_iteration();
 		nanosleep(&rtime, NULL);
-		/*if(stack_index != 0) {
-			gtk_entry_progress_pulse(GTK_ENTRY(expression));
-			progress_set = TRUE;
-		}*/
-		//gtk_progress_bar_pulse(GTK_PROGRESS_BAR(gtk_builder_get_object(main_builder, "progress_progressbar")));
 	}
 	CALCULATOR->stopPrintControl();
 	b_busy = true;
@@ -5418,13 +5409,9 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			cairo_destroy(cr);
 			g_object_unref(layout);
 			*printops.is_approximate = false;
-		}						
-	}/* else {
-		if(progress_set) gtk_entry_set_progress_fraction(GTK_ENTRY(expression), 0.0);
-	}*/
-	/*if(dialog) {
-		gtk_widget_hide(dialog);
-	}*/
+		}
+	}
+	
 	update_expression_icons();
 	if(title_set) {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), TRUE);
@@ -5441,15 +5428,15 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			g_application_unmark_busy(g_application_get_default());
 			while(gtk_events_pending()) gtk_main_iteration();
 		}
-		surface_result = tmp_surface;
-		if(surface_result) {
-			first_draw_of_result = TRUE;
+		surface_result = NULL;
+		if(tmp_surface) {
 			showing_first_time_message = FALSE;
+			first_draw_of_result = TRUE;
+			surface_result = tmp_surface;
 			gtk_widget_queue_draw(resultview);
-			while(gtk_events_pending()) gtk_main_iteration();
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), TRUE);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), TRUE);
-		}		
+		}
 	}
 	if(register_moved) {
 		update_parse = true;
@@ -5574,6 +5561,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	b_busy = false;
 	b_busy_result = false;
 	
+	while(gtk_events_pending()) gtk_main_iteration();
 	if(gtk_widget_get_realized(historyview)) gtk_tree_view_scroll_to_point(GTK_TREE_VIEW(historyview), 0, 0);
 
 	if(!register_moved && stack_index == 0 && mstruct->isMatrix() && (mstruct->rows() > 4 || mstruct->columns() > 4) && matrix_mstruct->isMatrix()) {
