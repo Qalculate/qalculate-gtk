@@ -1801,7 +1801,7 @@ void setVariableTreeItem(GtkTreeIter &iter2, Variable *v) {
 			} else if(((KnownVariable*) v)->get().isVector()) {
 				value = _("vector");
 			} else {
-				value = CALCULATOR->printMathStructureTimeOut(((KnownVariable*) v)->get(), 30);
+				value = CALCULATOR->print(((KnownVariable*) v)->get(), 30);
 			}
 		}
 	} else {
@@ -3305,7 +3305,7 @@ void update_completion() {
 						} else if(((KnownVariable*) v)->get().isVector()) {
 							title = _("vector");
 						} else {
-							title = CALCULATOR->printMathStructureTimeOut(((KnownVariable*) v)->get(), 30);
+							title = CALCULATOR->print(((KnownVariable*) v)->get(), 30);
 						}
 					}
 				} else {
@@ -3401,7 +3401,7 @@ void update_fmenu() {
 string get_value_string(const MathStructure &mstruct_, bool rlabel = false, Prefix *prefix = NULL) {
 	printops.allow_non_usable = rlabel;
 	printops.prefix = prefix;
-	string str = CALCULATOR->printMathStructureTimeOut(mstruct_, 100, printops);
+	string str = CALCULATOR->print(mstruct_, 100, printops);
 	printops.allow_non_usable = false;
 	printops.prefix = NULL;
 	return str;
@@ -9312,7 +9312,7 @@ void convert_in_wUnits(int toFrom) {
 				if(v_mstruct.isAborted()) {
 					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_from_val")), CALCULATOR->timedOutString().c_str());
 				} else {					
-					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_from_val")), CALCULATOR->printMathStructureTimeOut(v_mstruct, 300, po).c_str());
+					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_from_val")), CALCULATOR->print(v_mstruct, 300, po).c_str());
 				}
 				b = b || v_mstruct.isApproximate();
 			}
@@ -9333,7 +9333,7 @@ void convert_in_wUnits(int toFrom) {
 				if(v_mstruct.isAborted()) {
 					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_to_val")), CALCULATOR->timedOutString().c_str());
 				} else {					
-					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_to_val")), CALCULATOR->printMathStructureTimeOut(v_mstruct, 300, po).c_str());
+					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_to_val")), CALCULATOR->print(v_mstruct, 300, po).c_str());
 				}
 				b = b || v_mstruct.isApproximate();
 			}
@@ -14684,10 +14684,10 @@ void update_nbases_entries(const MathStructure &value, int base) {
 	g_signal_handlers_block_matched((gpointer) w_hex, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_hexadecimal_changed, NULL);
 	PrintOptions po;
 	po.number_fraction_format = FRACTION_DECIMAL;
-	if(base != 10) {po.base = 10; gtk_entry_set_text(GTK_ENTRY(w_dec), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->printMathStructureTimeOut(value, 200, po).c_str());}
-	if(base != 2) {po.base = 2; gtk_entry_set_text(GTK_ENTRY(w_bin), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->printMathStructureTimeOut(value, 200, po).c_str());}	
-	if(base != 8) {po.base = 8; gtk_entry_set_text(GTK_ENTRY(w_oct), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->printMathStructureTimeOut(value, 200, po).c_str());}	
-	if(base != 16) {po.base = 16; gtk_entry_set_text(GTK_ENTRY(w_hex), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->printMathStructureTimeOut(value, 200, po).c_str());}	
+	if(base != 10) {po.base = 10; gtk_entry_set_text(GTK_ENTRY(w_dec), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}
+	if(base != 2) {po.base = 2; gtk_entry_set_text(GTK_ENTRY(w_bin), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}	
+	if(base != 8) {po.base = 8; gtk_entry_set_text(GTK_ENTRY(w_oct), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}	
+	if(base != 16) {po.base = 16; gtk_entry_set_text(GTK_ENTRY(w_hex), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}	
 	g_signal_handlers_unblock_matched((gpointer) w_dec, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_decimal_changed, NULL);			
 	g_signal_handlers_unblock_matched((gpointer) w_bin, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_binary_changed, NULL);
 	g_signal_handlers_unblock_matched((gpointer) w_oct, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_octal_changed, NULL);
