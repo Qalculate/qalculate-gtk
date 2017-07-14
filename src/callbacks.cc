@@ -3449,7 +3449,7 @@ cairo_surface_t *get_right_parenthesis(gint arc_w, gint arc_h, int) {
 
 cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrintStruct ips, gint *point_central, int scaledown) {
 
-	if(CALCULATOR->printingAborted()) return NULL;
+	if(CALCULATOR->aborted()) return NULL;
 
 	if(ips.depth == 0 && po.is_approximate) *po.is_approximate = false;
 
@@ -3575,7 +3575,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 					ips_n.wrap = m[i].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
 					surface_terms.push_back(draw_structure(m[i], po, ips_n, &hetmp, scaledown));
 				}
-				if(CALCULATOR->printingAborted()) {
+				if(CALCULATOR->aborted()) {
 					for(size_t i = 0; i < surface_terms.size(); i++) {
 						if(surface_terms[i]) cairo_surface_destroy(surface_terms[i]);
 					}
@@ -3621,7 +3621,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			gtk_style_context_get_color(gtk_widget_get_style_context(resultview), gtk_widget_get_state_flags(resultview), &rgba);
 			w = 0;
 			for(size_t i = 0; i < surface_terms.size(); i++) {
-				if(!CALCULATOR->printingAborted()) {			
+				if(!CALCULATOR->aborted()) {			
 					gdk_cairo_set_source_rgba(cr, &rgba);
 					if(i > 0) {
 						w += space_w;
@@ -3734,7 +3734,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				hetmp = 0;		
 				ips_n.wrap = m[i].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
 				surface_terms.push_back(draw_structure(m[i], po, ips_n, &hetmp, scaledown));
-				if(CALCULATOR->printingAborted()) {
+				if(CALCULATOR->aborted()) {
 					for(size_t i = 0; i < surface_terms.size(); i++) {
 						if(surface_terms[i]) cairo_surface_destroy(surface_terms[i]);
 					}
@@ -3805,7 +3805,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			gtk_style_context_get_color(gtk_widget_get_style_context(resultview), gtk_widget_get_state_flags(resultview), &rgba);
 			w = 0;
 			for(size_t i = 0; i < surface_terms.size(); i++) {
-				if(!CALCULATOR->printingAborted()) {
+				if(!CALCULATOR->aborted()) {
 					gdk_cairo_set_source_rgba(cr, &rgba);
 					if(!po.short_multiplication && i > 0) {
 						w += space_w;
@@ -4081,7 +4081,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				hetmp = 0;		
 				ips_n.wrap = m[0][1].needsParenthesis(po, ips_n, m[0], 2, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
 				surface_terms.push_back(draw_structure(m[0][1], po, ips_n, &hetmp, scaledown));
-				if(CALCULATOR->printingAborted()) {
+				if(CALCULATOR->aborted()) {
 					return NULL;
 				}
 				wtmp = cairo_image_surface_get_width(surface_terms[0]);
@@ -4099,7 +4099,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				hetmp = 0;		
 				ips_n.wrap = m[0][0].needsParenthesis(po, ips_n, m[0], 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
 				surface_terms.push_back(draw_structure(m[0][0], po, ips_n, &hetmp, scaledown));
-				if(CALCULATOR->printingAborted()) {
+				if(CALCULATOR->aborted()) {
 					cairo_surface_destroy(surface_terms[0]);
 					return NULL;
 				}
@@ -4118,7 +4118,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				hetmp = 0;		
 				ips_n.wrap = m[1][1].needsParenthesis(po, ips_n, m[1], 2, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
 				surface_terms.push_back(draw_structure(m[1][1], po, ips_n, &hetmp, scaledown));
-				if(CALCULATOR->printingAborted()) {
+				if(CALCULATOR->aborted()) {
 					cairo_surface_destroy(surface_terms[0]);
 					cairo_surface_destroy(surface_terms[1]);
 					return NULL;
@@ -4272,7 +4272,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				hetmp = 0;		
 				ips_n.wrap = m[i].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
 				surface_terms.push_back(draw_structure(m[i], po, ips_n, &hetmp, scaledown));
-				if(CALCULATOR->printingAborted()) {
+				if(CALCULATOR->aborted()) {
 					for(size_t i = 0; i < surface_terms.size(); i++) {
 						if(surface_terms[i]) cairo_surface_destroy(surface_terms[i]);
 					}
@@ -4374,7 +4374,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			gtk_style_context_get_color(gtk_widget_get_style_context(resultview), gtk_widget_get_state_flags(resultview), &rgba);
 			w = 0;
 			for(size_t i = 0; i < surface_terms.size(); i++) {
-				if(!CALCULATOR->printingAborted()) {
+				if(!CALCULATOR->aborted()) {
 					gdk_cairo_set_source_rgba(cr, &rgba);
 					if(i > 0) {
 						w += space_w;
@@ -4503,7 +4503,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 						ctmp = 0;
 						ips_n.wrap = m[index_r][index_c].needsParenthesis(po, ips_n, m, index_r + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
 						surface_elements[index_r].push_back(draw_structure(m[index_r][index_c], po, ips_n, &ctmp, scaledown));
-						if(CALCULATOR->printingAborted()) {
+						if(CALCULATOR->aborted()) {
 							break;
 						}
 						wtmp = cairo_image_surface_get_width(surface_elements[index_r][index_c]);
@@ -4528,7 +4528,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 							}						
 						}
 					}
-					if(CALCULATOR->printingAborted()) {
+					if(CALCULATOR->aborted()) {
 						break;
 					}
 					row_h.push_back(row_uh[index_r] + row_dh[index_r]);
@@ -4567,12 +4567,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				cairo_stroke(cr);
 				h = 2;
 				for(size_t index_r = 0; index_r < surface_elements.size(); index_r++) {
-					if(!CALCULATOR->printingAborted()) {
+					if(!CALCULATOR->aborted()) {
 						gdk_cairo_set_source_rgba(cr, &rgba);
 						w = wll + 1;
 					}
 					for(size_t index_c = 0; index_c < surface_elements[index_r].size(); index_c++) {
-						if(!CALCULATOR->printingAborted()) {
+						if(!CALCULATOR->aborted()) {
 							cairo_set_source_surface(cr, surface_elements[index_r][index_c], w + (col_w[index_c] - element_w[index_r][index_c]), h + row_uh[index_r] - (element_h[index_r][index_c] - element_c[index_r][index_c]));
 							cairo_paint(cr);
 							w += col_w[index_c];
@@ -4584,7 +4584,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 							cairo_surface_destroy(surface_elements[index_r][index_c]);
 						}
 					}
-					if(!CALCULATOR->printingAborted()) {
+					if(!CALCULATOR->aborted()) {
 						h += row_h[index_r];
 						h += 4;
 					}
@@ -4631,7 +4631,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			for(size_t index = 0; index < m.size(); index++) {
 				ips_n.wrap = m[index].needsParenthesis(po, ips_n, m, index + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
 				surface_args.push_back(draw_structure(m[index], po, ips_n, &ctmp, scaledown));
-				if(CALCULATOR->printingAborted()) {
+				if(CALCULATOR->aborted()) {
 					for(size_t i = 0; i < surface_args.size(); i++) {
 						if(surface_args[i]) cairo_surface_destroy(surface_args[i]);
 					}
@@ -4674,7 +4674,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			w += arc_w;
 			if(m.size() == 0) w += 2;
 			for(size_t index = 0; index < surface_args.size(); index++) {
-				if(!CALCULATOR->printingAborted()) {
+				if(!CALCULATOR->aborted()) {
 					gdk_cairo_set_source_rgba(cr, &rgba);
 					if(index > 0) {
 						cairo_move_to(cr, w, uh - comma_h / 2 - comma_h % 2);
@@ -4858,7 +4858,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			for(size_t index = 0; index < m.size(); index++) {
 				ips_n.wrap = m[index].needsParenthesis(po, ips_n, m, index + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
 				surface_args.push_back(draw_structure(m[index], po, ips_n, &ctmp, scaledown));
-				if(CALCULATOR->printingAborted()) {
+				if(CALCULATOR->aborted()) {
 					for(size_t i = 0; i < surface_args.size(); i++) {
 						if(surface_args[i]) cairo_surface_destroy(surface_args[i]);
 					}
@@ -4905,7 +4905,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			cairo_paint(cr);
 			w += arc_w;
 			for(size_t index = 0; index < surface_args.size(); index++) {
-				if(!CALCULATOR->printingAborted()) {
+				if(!CALCULATOR->aborted()) {
 					gdk_cairo_set_source_rgba(cr, &rgba);
 					if(index > 0) {
 						cairo_move_to(cr, w, uh - comma_h / 2 - comma_h % 2);
@@ -5048,13 +5048,7 @@ void clearresult() {
 }
 
 void on_abort_display(GtkDialog*, gint, gpointer) {
-	CALCULATOR->abortPrint();
-	/*view_thread->cancel();
-	CALCULATOR->restoreState();
-	CALCULATOR->clearBuffers();
-	b_busy = false;
-	b_busy_result = false;
-	view_thread->start();*/
+	CALCULATOR->abort();
 }
 
 void ViewThread::run() {
@@ -5067,6 +5061,7 @@ void ViewThread::run() {
 		x = read<void *>();
 		MathStructure *mm = (MathStructure*) x;
 		x = read<void *>();
+		CALCULATOR->startControl();
 		printops.can_display_unicode_string_arg = (void*) historyview;
 		bool b_puup = printops.use_unit_prefixes;
 		if(x) {
@@ -5087,7 +5082,7 @@ void ViewThread::run() {
 			po.can_display_unicode_string_arg = (void*) statuslabel_l;
 			po.spell_out_logical_operators = printops.spell_out_logical_operators;
 			po.restrict_to_parent_precision = false;
-			MathStructure mp(*((MathStructure*) x));								
+			MathStructure mp(*((MathStructure*) x));
 			po.is_approximate = read<bool *>();
 			mp.format(po);
 			parsed_text = mp.print(po);
@@ -5186,7 +5181,7 @@ void ViewThread::run() {
 			if(displayed_mstruct) displayed_mstruct->unref();
 			displayed_mstruct = new MathStructure(m);
 		} else if(!b_stack) {
-			if(!CALCULATOR->printingAborted()) {
+			if(!CALCULATOR->aborted()) {
 				printops.allow_non_usable = true;
 				printops.can_display_unicode_string_arg = (void*) resultview;
 
@@ -5194,7 +5189,7 @@ void ViewThread::run() {
 				tmp_surface = draw_structure(*displayed_mstruct_pre, printops, top_ips, NULL, scale_tmp);
 				if(displayed_mstruct) displayed_mstruct->unref();
 				displayed_mstruct = displayed_mstruct_pre;
-				if(tmp_surface && CALCULATOR->printingAborted()) {
+				if(tmp_surface && CALCULATOR->aborted()) {
 					cairo_surface_destroy(tmp_surface);
 					tmp_surface = NULL;
 				}
@@ -5209,6 +5204,7 @@ void ViewThread::run() {
 		}
 		printops.use_unit_prefixes = b_puup;
 		b_busy = false;
+		CALCULATOR->stopControl();
 	}
 }
 gboolean on_event(GtkWidget*, GdkEvent *e, gpointer) {
@@ -5318,8 +5314,6 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 
 	scale_n = 0;
 
-	CALCULATOR->startPrintControl();
-
 	gint w = 0, h = 0;
 	bool parsed_approx = false;
 	bool title_set = FALSE;
@@ -5388,7 +5382,6 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		while(gtk_events_pending()) gtk_main_iteration();
 		nanosleep(&rtime, NULL);
 	}
-	CALCULATOR->stopPrintControl();
 	b_busy = true;
 	b_busy_result = true;
 		
@@ -5576,7 +5569,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 }
 
 void on_abort_command(GtkDialog*, gint, gpointer) {
-	CALCULATOR->abortCalculation();
+	CALCULATOR->abort();
 	struct timespec rtime;
 	rtime.tv_sec = 0;
 	rtime.tv_nsec = 1000000;
@@ -5587,9 +5580,8 @@ void on_abort_command(GtkDialog*, gint, gpointer) {
 	}
 	if(b_busy) {
 		command_thread->cancel();
-		CALCULATOR->restoreState();
-		CALCULATOR->clearBuffers();
 		b_busy = false;
+		CALCULATOR->stopControl();
 		b_busy_command = false;
 		command_aborted = true;
 	}
@@ -5602,7 +5594,7 @@ void CommandThread::run() {
 	while(true) {
 		int command_type = read<int>();
 		void *x = read<void *>();
-		CALCULATOR->startCalculationControl();
+		CALCULATOR->startControl();
 		switch(command_type) {
 			case COMMAND_FACTORIZE: {
 				if(!((MathStructure*) x)->integerFactorize()) {
@@ -5615,9 +5607,8 @@ void CommandThread::run() {
 				break;
 			}
 		}
-		CALCULATOR->stopCalculationControl();
 		b_busy = false;
-		
+		CALCULATOR->stopControl();
 	}
 }
 
@@ -5633,8 +5624,6 @@ void executeCommand(int command_type, bool show_result = true) {
 	b_busy = true;
 	b_busy_command = true;
 	command_aborted = false;
-	//GtkWidget *dialog = NULL;
-	CALCULATOR->saveState();
 
 	if(!command_thread->running) {
 		command_thread->start();
