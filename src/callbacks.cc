@@ -9281,7 +9281,7 @@ void convert_in_wUnits(int toFrom) {
 		const gchar *fromValue = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_from_val")));
 		const gchar *toValue = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_to_val")));
 		old_fromValue = fromValue;
-		old_toValue = fromValue;
+		old_toValue = toValue;
 		//determine conversion direction
 		bool b = false;
 		if(toFrom > 0) {
@@ -9299,10 +9299,11 @@ void convert_in_wUnits(int toFrom) {
 				MathStructure v_mstruct = CALCULATOR->convertTimeOut(CALCULATOR->unlocalizeExpression(toValue, evalops.parse_options), uTo, uFrom, 1500, eo);
 				if(!v_mstruct.isAborted() && check_exchange_rates(get_units_dialog())) v_mstruct = CALCULATOR->convertTimeOut(CALCULATOR->unlocalizeExpression(toValue, evalops.parse_options), uTo, uFrom, 1500, eo);
 				if(v_mstruct.isAborted()) {
-					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_from_val")), CALCULATOR->timedOutString().c_str());
-				} else {					
-					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_from_val")), CALCULATOR->print(v_mstruct, 300, po).c_str());
+					old_fromValue = CALCULATOR->timedOutString();
+				} else {
+					old_fromValue = CALCULATOR->print(v_mstruct, 300, po);
 				}
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_from_val")), old_fromValue.c_str());
 				b = b || v_mstruct.isApproximate();
 			}
 		} else {
@@ -9320,10 +9321,11 @@ void convert_in_wUnits(int toFrom) {
 				MathStructure v_mstruct = CALCULATOR->convertTimeOut(CALCULATOR->unlocalizeExpression(fromValue, evalops.parse_options), uFrom, uTo, 1500, eo);
 				if(!v_mstruct.isAborted() && check_exchange_rates(get_units_dialog())) v_mstruct = CALCULATOR->convertTimeOut(CALCULATOR->unlocalizeExpression(fromValue, evalops.parse_options), uFrom, uTo, 1500, eo);
 				if(v_mstruct.isAborted()) {
-					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_to_val")), CALCULATOR->timedOutString().c_str());
-				} else {					
-					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_to_val")), CALCULATOR->print(v_mstruct, 300, po).c_str());
+					old_toValue = CALCULATOR->timedOutString();
+				} else {
+					old_toValue = CALCULATOR->print(v_mstruct, 300, po);
 				}
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_to_val")), old_toValue.c_str());
 				b = b || v_mstruct.isApproximate();
 			}
 		}
