@@ -125,6 +125,8 @@ gchar history_error_color[8];
 gchar history_warning_color[8];
 gchar history_parse_color[8];
 
+extern string fix_history_string(const string &str);
+
 gint compare_categories(gconstpointer a, gconstpointer b) {
 	return strcasecmp((const char*) a, (const char*) b);
 }
@@ -669,7 +671,7 @@ void create_main_window (void) {
 				if(i < inhistory.size() - 1) {
 					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, -1);
 				}
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, inhistory[i].c_str(), 1, i, 2, "   ", 4, EXPRESSION_YPAD, -1);
+				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, fix_history_string(inhistory[i]).c_str(), 1, i, 2, "   ", 4, EXPRESSION_YPAD, -1);
 				break;
 			}
 			case QALCULATE_HISTORY_REGISTER_MOVED: {
@@ -688,7 +690,7 @@ void create_main_window (void) {
 			}
 			case QALCULATE_HISTORY_TRANSFORMATION: {
 				history_str = "<span font-style=\"italic\">";
-				history_str += inhistory[i];
+				history_str += fix_history_string(inhistory[i]);
 				history_str += ":  </span>";
 				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 4, 0, -1);
 				break;
@@ -700,12 +702,12 @@ void create_main_window (void) {
 					history_str = expr_str;
 					g_free(expr_str);
 					history_str += "= <span font-weight=\"bold\">";
-					history_str += inhistory[i];
+					history_str += fix_history_string(inhistory[i]);
 					history_str += "</span>";
 					gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), -1);
 				} else {
 					history_str = "= <span font-weight=\"bold\">";
-					history_str += inhistory[i];
+					history_str += fix_history_string(inhistory[i]);
 					history_str += "</span>";
 					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 4, 0, -1);
 				}
@@ -727,13 +729,13 @@ void create_main_window (void) {
 					g_free(expr_str);
 					history_str += str;
 					history_str += "<span font-weight=\"bold\">";
-					history_str += inhistory[i];
+					history_str += fix_history_string(inhistory[i]);
 					history_str += "</span>";
 					gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), -1);
 				} else {
 					history_str = str;
 					history_str += "<span font-weight=\"bold\">";
-					history_str += inhistory[i];
+					history_str += fix_history_string(inhistory[i]);
 					history_str += "</span>";
 					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 4, 0, -1);
 				}
@@ -747,7 +749,7 @@ void create_main_window (void) {
 				history_str += "<span font-style=\"italic\" foreground=\"";
 				history_str += history_parse_color;
 				history_str += "\">  ";
-				history_str += inhistory[i];
+				history_str += fix_history_string(inhistory[i]);
 				history_str += "</span>";
 				gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), -1);
 				if(i > 0 && (inhistory_type[i - 1] == QALCULATE_HISTORY_REGISTER_MOVED || inhistory_type[i - 1] == QALCULATE_HISTORY_RPN_OPERATION)) {
@@ -763,7 +765,7 @@ void create_main_window (void) {
 				history_str += "<span font-style=\"italic\" foreground=\"";
 				history_str += history_parse_color;
 				history_str += "\">  = ";
-				history_str += inhistory[i];
+				history_str += fix_history_string(inhistory[i]);
 				history_str += "</span>";
 				gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), -1);
 				if(i > 0 && (inhistory_type[i - 1] == QALCULATE_HISTORY_REGISTER_MOVED || inhistory_type[i - 1] == QALCULATE_HISTORY_RPN_OPERATION)) {
@@ -788,7 +790,7 @@ void create_main_window (void) {
 				history_str += history_parse_color;
 				history_str += "\">";
 				history_str += str;
-				history_str += inhistory[i];
+				history_str += fix_history_string(inhistory[i]);
 				history_str += "</span>";
 				gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), -1);
 				if(i > 0 && (inhistory_type[i - 1] == QALCULATE_HISTORY_REGISTER_MOVED || inhistory_type[i - 1] == QALCULATE_HISTORY_RPN_OPERATION)) {
@@ -800,7 +802,7 @@ void create_main_window (void) {
 				history_str = "<span foreground=\"";
 				history_str += history_warning_color;
 				history_str += "\">- ";
-				history_str += inhistory[i];
+				history_str += fix_history_string(inhistory[i]);
 				history_str += "</span>";
 				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 4, 0, -1);
 				break;
@@ -809,7 +811,7 @@ void create_main_window (void) {
 				history_str = "<span foreground=\"";
 				history_str += history_error_color;
 				history_str += "\">- ";
-				history_str += inhistory[i];
+				history_str += fix_history_string(inhistory[i]);
 				history_str += "</span>";
 				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 4, 0, -1);
 				break;

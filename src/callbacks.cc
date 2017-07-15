@@ -306,6 +306,13 @@ enum {
 	COMMAND_SIMPLIFY
 };
 
+string fix_history_string(const string &str) {
+	string str2 = str;
+	gsub("&", "&amp;", str2);
+	gsub(">", "&gt;", str2);
+	gsub("<", "&lt;", str2);
+	return str2;
+}
 
 void set_assumptions_items(AssumptionType, AssumptionSign);
 void set_mode_items(const PrintOptions&, const EvaluationOptions&, AssumptionType, AssumptionSign, bool, int, bool);
@@ -765,7 +772,7 @@ void display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 				string history_str = "<span foreground=\"";
 				history_str += history_error_color;
 				history_str += "\">- ";
-				history_str += CALCULATOR->message()->message();
+				history_str += fix_history_string(CALCULATOR->message()->message());
 				history_str += "</span>";
 				(*history_index_p)++;
 				gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, 3, nr_of_new_expressions, 4, 0, -1);
@@ -775,7 +782,7 @@ void display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 				string history_str = "<span foreground=\"";
 				history_str += history_warning_color;
 				history_str += "\">- ";
-				history_str += CALCULATOR->message()->message();
+				history_str += fix_history_string(CALCULATOR->message()->message());
 				history_str += "</span>";
 				(*history_index_p)++;
 				gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, 3, nr_of_new_expressions, 4, 0, -1);
@@ -5214,6 +5221,7 @@ gboolean on_event(GtkWidget*, GdkEvent *e, gpointer) {
 	}
 	return TRUE;
 }
+
 /*
 	set result in result widget and add to history widget
 */
@@ -5271,7 +5279,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				}
 			}
 			nr_of_new_expressions++;
-			gtk_list_store_insert_with_values(historystore, &history_iter, 0, 0, result_text.c_str(), 1, inhistory.size() - 1, 2, i2s(nr_of_new_expressions).c_str(), 3, nr_of_new_expressions, 4, EXPRESSION_YPAD, -1);
+			gtk_list_store_insert_with_values(historystore, &history_iter, 0, 0, fix_history_string(result_text).c_str(), 1, inhistory.size() - 1, 2, i2s(nr_of_new_expressions).c_str(), 3, nr_of_new_expressions, 4, EXPRESSION_YPAD, -1);
 			gtk_list_store_insert_with_values(historystore, NULL, 1, 1, -1, -1);
 			history_index = 0;			
 			inhistory_index = inhistory.size() - 1;
@@ -5281,7 +5289,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			inhistory_index = current_inhistory_index;
 			if(!transformation.empty()) {
 				string history_str = "<span font-style=\"italic\">";
-				history_str += transformation;
+				history_str += fix_history_string(transformation);
 				history_str += ":  </span>";				
 				history_index++;
 				gtk_list_store_insert_with_values(historystore, &history_iter, history_index, 0, history_str.c_str(), 1, inhistory_index, 3, nr_of_new_expressions, 4, 0, -1);
@@ -5473,7 +5481,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				inhistory_type.insert(inhistory_type.begin() + inhistory_index, QALCULATE_HISTORY_PARSE_APPROXIMATE);
 			}
 			str += " ";
-			str += parsed_text;
+			str += fix_history_string(parsed_text);
 			str += "</span>";
 			
 			inhistory.insert(inhistory.begin() + inhistory_index, parsed_text);
@@ -5510,7 +5518,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		}
 		history_str += str;
 		history_str += " <span font-weight=\"bold\">";
-		history_str += result_text;
+		history_str += fix_history_string(result_text);
 		history_str += "</span>";		
 		if(!update_parse && current_inhistory_index >= 0 && !transformation.empty()) {
 			gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), 1, inhistory_index + 1, -1);
@@ -5547,7 +5555,6 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			}
 			gtk_widget_set_tooltip_text(resultview, str.length() < 1000 ? str.c_str() : "");
 		}
-
 	} else {
 		display_errors(&history_index, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &inhistory_index, message_type);
 	}
