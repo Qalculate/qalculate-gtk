@@ -5491,6 +5491,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			
 			gtk_list_store_set(historystore, &history_iter, 0, str.c_str(), 1, inhistory_index + 1, -1);
 		}
+		int history_index_bak = history_index;
 		display_errors(&history_index, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &inhistory_index, message_type);
 		if(rpn_mode && !register_moved) {
 			RPNRegisterChanged(result_text, stack_index);
@@ -5510,7 +5511,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			}
 		}
 		string history_str;
-		if(!update_parse && current_inhistory_index >= 0 && !transformation.empty()) {
+		if(!update_parse && current_inhistory_index >= 0 && !transformation.empty() && history_index == history_index_bak) {
 			gchar *expr_str = NULL;
 			gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
 			history_str = expr_str;
@@ -5520,7 +5521,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		history_str += " <span font-weight=\"bold\">";
 		history_str += fix_history_string(result_text);
 		history_str += "</span>";		
-		if(!update_parse && current_inhistory_index >= 0 && !transformation.empty()) {
+		if(!update_parse && current_inhistory_index >= 0 && !transformation.empty() && history_index_bak == history_index) {
 			gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), 1, inhistory_index + 1, -1);
 		} else {
 			history_index++;
@@ -12013,7 +12014,7 @@ void process_history_selection(vector<size_t> *selected_rows, vector<size_t> *se
 		if(hindex >= 0) {
 			if(selected_rows) selected_rows->push_back((size_t) hindex);
 			if(selected_indeces && (index <= 0 || !evalops.parse_options.functions_enabled || evalops.parse_options.base > BASE_DECIMAL || evalops.parse_options.base < 0)) {
-				if(inhistory_type[hindex] != QALCULATE_HISTORY_WARNING && inhistory_type[hindex] != QALCULATE_HISTORY_ERROR) {
+				if(inhistory_type[hindex] != QALCULATE_HISTORY_WARNING && inhistory_type[hindex] != QALCULATE_HISTORY_ERROR && (hindex < 1 || inhistory_type[hindex] != QALCULATE_HISTORY_TRANSFORMATION || inhistory_type[hindex - 1] == QALCULATE_HISTORY_RESULT || inhistory_type[hindex - 1] == QALCULATE_HISTORY_RESULT_APPROXIMATE)) {
 					selected_indeces->push_back((size_t) hindex);
 					selected_index_type->push_back(INDEX_TYPE_TXT);
 				}
@@ -12229,7 +12230,7 @@ void on_button_history_insert_text_clicked(GtkButton*, gpointer) {
 	process_history_selection(&selected_rows, NULL, NULL);
 	if(selected_rows.empty()) return;
 	int index = selected_rows[0];
-	if(index > 0 && (inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION || inhistory_type[index] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[index] == QALCULATE_HISTORY_REGISTER_MOVED)) index--;
+	if(index > 0 && ((inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION && (inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT || inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT_APPROXIMATE)) || inhistory_type[index] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[index] == QALCULATE_HISTORY_REGISTER_MOVED)) index--;
 	insert_text(inhistory[index].c_str());
 }
 void history_copy(bool full_text) {
@@ -12239,7 +12240,7 @@ void history_copy(bool full_text) {
 	if(selected_rows.empty()) return;
 	if(!full_text && selected_rows.size() == 1) {
 		int index = selected_rows[0];
-		if(index > 0 && (inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION || inhistory_type[index] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[index] == QALCULATE_HISTORY_REGISTER_MOVED)) index--;;
+		if(index > 0 && ((inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION && (inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT || inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT_APPROXIMATE)) || inhistory_type[index] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[index] == QALCULATE_HISTORY_REGISTER_MOVED)) index--;;
 		gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), inhistory[index].c_str(), -1);
 	} else {
 		string str;
