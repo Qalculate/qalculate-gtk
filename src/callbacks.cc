@@ -15104,7 +15104,7 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 		gint rh = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
 		gint rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
 		if(first_draw_of_result || result_font_updated) {
-			while(displayed_mstruct && !display_aborted && scale_n < 3 && h > (w > rw ? rh - sbh : rh)) {
+			while(displayed_mstruct && !display_aborted && scale_n < 3 && h > (w > rw - sbw ? rh - sbh : rh)) {
 				int scroll_diff = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport")));
 				double scale_div = (double) h / (gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport"))) + scroll_diff);
 				if(scale_div > 1.44) {
@@ -15123,10 +15123,11 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 		}
 		gtk_widget_set_size_request(widget, w, h);
 		if(h > sbh) rw -= sbw;
-		if(rw - 15 >= w) {
-			cairo_set_source_surface(cr, surface_result, rw - w - 15, (rh - h) / 2);
+		if(rw >= w) {
+			cairo_set_source_surface(cr, surface_result, rw - 30 >= w ? rw - w - 15 : rw - w - (rw - w) / 2, (rh - h) / 2);
 		} else {
-			cairo_set_source_surface(cr, surface_result, 0, (h > rh - sbh) ? 0 : (rh - sbh - h) / 2);
+			if(h + (rh - h) / 2 < rh - sbh) cairo_set_source_surface(cr, surface_result, 0, (rh - h) / 2);
+			else cairo_set_source_surface(cr, surface_result, 0, (h > rh - sbh) ? 0 : (rh - h - sbh) / 2);
 		}
 		cairo_paint(cr);
 		first_draw_of_result = FALSE;
