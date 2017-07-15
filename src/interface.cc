@@ -459,6 +459,10 @@ void create_main_window (void) {
 	
 	if(win_width > 0) gtk_window_set_default_size (GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width, win_height);
 
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
+	gtk_scrolled_window_set_overlay_scrolling(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "scrolled_result")), false);
+#endif
+
 	expression = GTK_WIDGET(gtk_builder_get_object(main_builder, "expression"));
 	resultview = GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"));
 	historyview = GTK_WIDGET(gtk_builder_get_object(main_builder, "historyview"));

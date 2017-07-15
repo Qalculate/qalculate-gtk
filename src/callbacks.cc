@@ -3521,6 +3521,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			g_object_unref(layout);
 			break;
 		}
+		case STRUCT_ABORTED: {}
 		case STRUCT_SYMBOLIC: {
 			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
 			string str;
@@ -15097,11 +15098,14 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 		}
 		w = cairo_image_surface_get_width(surface_result);
 		h = cairo_image_surface_get_height(surface_result);
-		gtk_widget_set_size_request(widget, w, h);
-		while(gtk_events_pending()) gtk_main_iteration();
+		gint sbw, sbh;
+		gtk_widget_get_preferred_width(gtk_scrolled_window_get_vscrollbar(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "scrolled_result"))), NULL, &sbw);
+		gtk_widget_get_preferred_height(gtk_scrolled_window_get_hscrollbar(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "scrolled_result"))), NULL, &sbh);
+		gint rh = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
+		gint rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
 		if(first_draw_of_result || result_font_updated) {
-			while(displayed_mstruct && !display_aborted && scale_n < 3 && h > gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport")))) {
-				int scroll_diff = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport"))) - 8;
+			while(displayed_mstruct && !display_aborted && scale_n < 3 && h > (w > rw ? rh - sbh : rh)) {
+				int scroll_diff = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport")));
 				double scale_div = (double) h / (gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport"))) + scroll_diff);
 				if(scale_div > 1.44) {
 					scale_n = 3;
@@ -15112,16 +15116,17 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 				}
 				cairo_surface_destroy(surface_result);
 				surface_result = draw_structure(*displayed_mstruct, printops, top_ips, NULL, scale_n);
-				w = cairo_image_surface_get_width(tmp_surface);
-				h = cairo_image_surface_get_height(tmp_surface);
-				gtk_widget_set_size_request(widget, w, h);
+				w = cairo_image_surface_get_width(surface_result);
+				h = cairo_image_surface_get_height(surface_result);
 			}
 			result_font_updated = FALSE;
 		}
-		if(gtk_widget_get_allocated_width(widget) - 15 > w) {
-			cairo_set_source_surface(cr, surface_result, gtk_widget_get_allocated_width(widget) - w - 15, (gtk_widget_get_allocated_height(widget) - h) / 2);
+		gtk_widget_set_size_request(widget, w, h);
+		if(h > sbh) rw -= sbw;
+		if(rw - 15 >= w) {
+			cairo_set_source_surface(cr, surface_result, rw - w - 15, (rh - h) / 2);
 		} else {
-			cairo_set_source_surface(cr, surface_result, 0, (gtk_widget_get_allocated_height(widget) - h) / 2);
+			cairo_set_source_surface(cr, surface_result, 0, (h > rh - sbh) ? 0 : (rh - sbh - h) / 2);
 		}
 		cairo_paint(cr);
 		first_draw_of_result = FALSE;
