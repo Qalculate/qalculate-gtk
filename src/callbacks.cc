@@ -5448,6 +5448,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		update_parse = true;
 		current_inhistory_index = 0;
 	}
+	bool do_scroll = false;
 	if(stack_index != 0) {
 		if(result_text.length() > 500000) {
 			result_text = "(…)";
@@ -5556,15 +5557,23 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			}
 			gtk_widget_set_tooltip_text(resultview, str.length() < 1000 ? str.c_str() : "");
 		}
+		do_scroll = true;
 	} else {
+		int history_index_bak = history_index;
 		display_errors(&history_index, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &inhistory_index, message_type);
+		do_scroll = (history_index != history_index_bak);
 	}
 	printops.prefix = NULL;
 	b_busy = false;
 	b_busy_result = false;
 	
 	while(gtk_events_pending()) gtk_main_iteration();
-	if(gtk_widget_get_realized(historyview)) gtk_tree_view_scroll_to_point(GTK_TREE_VIEW(historyview), 0, 0);
+	if(do_scroll && gtk_widget_get_realized(historyview)) {
+		GtkTreePath *path = gtk_tree_path_new_from_indices(0, -1);
+		gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(historyview), path, history_index_column, FALSE, 0, 0);
+		gtk_tree_view_scroll_to_point(GTK_TREE_VIEW(historyview), 0, 0);
+		gtk_tree_path_free(path);
+	}
 
 	if(!register_moved && stack_index == 0 && mstruct->isMatrix() && (mstruct->rows() > 4 || mstruct->columns() > 4) && matrix_mstruct->isMatrix()) {
 		while(gtk_events_pending()) gtk_main_iteration();
