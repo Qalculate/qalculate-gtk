@@ -3680,6 +3680,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="headers_visible">False</property>
+                                        <signal name="row-expanded" handler="on_convert_treeview_category_row_expanded" swapped="no"/>
                                         <child internal-child="selection">
                                           <object class="GtkTreeSelection"/>
                                         </child>

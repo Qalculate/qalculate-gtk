@@ -2303,10 +2303,23 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 				}
 			}
 		} else {
+			bool list_empty = true;
 			for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 				if(CALCULATOR->units[i]->isActive() && !CALCULATOR->units[i]->isHidden() && (b_all || (no_cat && CALCULATOR->units[i]->category().empty()) || CALCULATOR->units[i]->category() == selected_unit_selector_category)) {
-					setUnitSelectorTreeItem(iter2, CALCULATOR->units[i]);			
+					setUnitSelectorTreeItem(iter2, CALCULATOR->units[i]);
+					list_empty = false;
 				}
+			}
+			if(list_empty && !b_all && !no_cat) {
+				for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
+					if(CALCULATOR->units[i]->isActive() && !CALCULATOR->units[i]->isHidden() && CALCULATOR->units[i]->category().length() > selected_unit_selector_category.length() && CALCULATOR->units[i]->category()[selected_unit_selector_category.length()] == '/' && CALCULATOR->units[i]->category().substr(0, selected_unit_selector_category.length()) == selected_unit_selector_category) {
+						setUnitSelectorTreeItem(iter2, CALCULATOR->units[i]);
+					}
+				}
+			} else if(!b_all && !no_cat) {
+				GtkTreePath *path = gtk_tree_model_get_path(model, &iter);
+				gtk_tree_view_expand_row(GTK_TREE_VIEW(tUnitSelectorCategories), path, FALSE);
+				gtk_tree_path_free(path);
 			}
 		}
 		g_free(gstr);
@@ -9322,8 +9335,8 @@ void convert_in_wUnits(int toFrom) {
 				po.is_approximate = &b;
 				po.number_fraction_format = FRACTION_DECIMAL;
 				CALCULATOR->resetExchangeRatesUsed();
-				MathStructure v_mstruct = CALCULATOR->convertTimeOut(CALCULATOR->unlocalizeExpression(toValue, evalops.parse_options), uTo, uFrom, 1500, eo);
-				if(!v_mstruct.isAborted() && check_exchange_rates(get_units_dialog())) v_mstruct = CALCULATOR->convertTimeOut(CALCULATOR->unlocalizeExpression(toValue, evalops.parse_options), uTo, uFrom, 1500, eo);
+				MathStructure v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(toValue, evalops.parse_options), uTo, uFrom, 1500, eo);
+				if(!v_mstruct.isAborted() && check_exchange_rates(get_units_dialog())) v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(toValue, evalops.parse_options), uTo, uFrom, 1500, eo);
 				if(v_mstruct.isAborted()) {
 					old_fromValue = CALCULATOR->timedOutString();
 				} else {
@@ -9344,8 +9357,8 @@ void convert_in_wUnits(int toFrom) {
 				po.is_approximate = &b;
 				po.number_fraction_format = FRACTION_DECIMAL;
 				CALCULATOR->resetExchangeRatesUsed();
-				MathStructure v_mstruct = CALCULATOR->convertTimeOut(CALCULATOR->unlocalizeExpression(fromValue, evalops.parse_options), uFrom, uTo, 1500, eo);
-				if(!v_mstruct.isAborted() && check_exchange_rates(get_units_dialog())) v_mstruct = CALCULATOR->convertTimeOut(CALCULATOR->unlocalizeExpression(fromValue, evalops.parse_options), uFrom, uTo, 1500, eo);
+				MathStructure v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(fromValue, evalops.parse_options), uFrom, uTo, 1500, eo);
+				if(!v_mstruct.isAborted() && check_exchange_rates(get_units_dialog())) v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(fromValue, evalops.parse_options), uFrom, uTo, 1500, eo);
 				if(v_mstruct.isAborted()) {
 					old_toValue = CALCULATOR->timedOutString();
 				} else {
@@ -10874,6 +10887,20 @@ gchar *font_name_to_css(const char *font_name) {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+void on_convert_treeview_category_row_expanded(GtkTreeView *tree_view, GtkTreeIter*, GtkTreePath *path, gpointer) {
+	GtkTreeModel *model = gtk_tree_view_get_model(tree_view);
+	GtkTreeIter iter2, iter3;
+	gtk_tree_model_get_iter_first(model, &iter3);
+	if(gtk_tree_model_iter_children(model, &iter2, &iter3)) {
+		do {
+			GtkTreePath *path2 = gtk_tree_model_get_path(model, &iter2);
+			if(gtk_tree_path_compare(path, path2) != 0) gtk_tree_view_collapse_row(GTK_TREE_VIEW(tUnitSelectorCategories), path2);
+			gtk_tree_path_free(path2);
+		} while(gtk_tree_model_iter_next(model, &iter2));
+	}
+	gtk_tree_view_scroll_to_cell(tree_view, path, NULL, FALSE, 0, 0);
+}
 
 void on_message_bar_response(GtkInfoBar *w, gint response_id, gpointer) {
 	if(response_id == GTK_RESPONSE_CLOSE) {
