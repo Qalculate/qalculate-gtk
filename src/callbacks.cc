@@ -5368,12 +5368,9 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		view_thread->write(NULL);
 	}
 
-	struct timespec rtime;
-	rtime.tv_sec = 0;
-	rtime.tv_nsec = 10000000;
 	int i = 0;
 	while(b_busy && i < 50) {
-		nanosleep(&rtime, NULL);
+		sleep_ms(10);
 		i++;
 	}
 	i = 0;
@@ -5389,10 +5386,9 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		if(unit_builder) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unit_builder, "unit_action_area")), FALSE);
 		title_set = TRUE;
 	}
-	rtime.tv_nsec = 100000000;
 	while(b_busy) {
 		while(gtk_events_pending()) gtk_main_iteration();
-		nanosleep(&rtime, NULL);
+		sleep_ms(100);
 	}
 	b_busy = true;
 	b_busy_result = true;
@@ -5592,13 +5588,10 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 
 void on_abort_command(GtkDialog*, gint, gpointer) {
 	CALCULATOR->abort();
-	struct timespec rtime;
-	rtime.tv_sec = 0;
-	rtime.tv_nsec = 1000000;
 	int msecs = 1000;
 	while(b_busy && msecs > 0) {
-		nanosleep(&rtime, NULL);
-		msecs--;
+		sleep_ms(10);
+		msecs -= 10;
 	}
 	if(b_busy) {
 		command_thread->cancel();
@@ -5673,12 +5666,9 @@ void executeCommand(int command_type, bool show_result = true) {
 	
 	update_expression_icons(TRUE);
 
-	struct timespec rtime;
-	rtime.tv_sec = 0;
-	rtime.tv_nsec = 10000000;
 	int i = 0;
 	while(b_busy && i < 50) {
-		nanosleep(&rtime, NULL);
+		sleep_ms(10);
 		i++;
 	}
 	i = 0;
@@ -5713,10 +5703,9 @@ void executeCommand(int command_type, bool show_result = true) {
 		g_signal_connect(dialog, "response", G_CALLBACK(on_abort_command), NULL);
 		gtk_widget_show(dialog);*/
 	}
-	rtime.tv_nsec = 100000000;
 	while(b_busy) {
 		while(gtk_events_pending()) gtk_main_iteration();
-		nanosleep(&rtime, NULL);
+		sleep_ms(100);
 		gtk_entry_progress_pulse(GTK_ENTRY(expression));
 		progress_set = TRUE;
 //		gtk_progress_bar_pulse(GTK_PROGRESS_BAR(gtk_builder_get_object(main_builder, "progress_progressbar")));
@@ -6077,12 +6066,9 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		CALCULATOR->calculate(mstruct, CALCULATOR->unlocalizeExpression(execute_str.empty() ? str : execute_str, evalops.parse_options), 0, evalops, parsed_mstruct, parsed_tostruct, !printops.negative_exponents);
 	}
 
-	struct timespec rtime;
-	rtime.tv_sec = 0;
-	rtime.tv_nsec = 10000000;
 	int i = 0;
 	while(CALCULATOR->busy() && i < 50) {
-		nanosleep(&rtime, NULL);
+		sleep_ms(10);
 		i++;
 	}
 	i = 0;
@@ -6106,10 +6092,9 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		g_signal_connect(dialog, "response", G_CALLBACK(on_abort_calculation), NULL);
 		gtk_widget_show(dialog);*/
 	}
-	rtime.tv_nsec = 100000000;
 	while(CALCULATOR->busy()) {
 		while(gtk_events_pending()) gtk_main_iteration();
-		nanosleep(&rtime, NULL);
+		sleep_ms(100);
 		//gtk_entry_progress_pulse(GTK_ENTRY(expression));
 		//progress_set = TRUE;
 		//gtk_progress_bar_pulse(GTK_PROGRESS_BAR(gtk_builder_get_object(main_builder, "progress_progressbar")));
@@ -12831,13 +12816,10 @@ void fetch_exchange_rates(int timeout) {
 	pthread_attr_t fetch_thread_attr;
 	pthread_attr_init(&fetch_thread_attr);
 	if(!pthread_create(&fetch_thread, &fetch_thread_attr, fetch_proc, (void*) &timeout)) {
-		struct timespec rtime;
-		rtime.tv_sec = 0;
-		rtime.tv_nsec = 10000000;
 		int i = 0;
 		while(b_busy_fetch && i < 50) {
 			while(gtk_events_pending()) gtk_main_iteration();
-			nanosleep(&rtime, NULL);
+			sleep_ms(10);
 			i++;
 		}
 		if(b_busy_fetch) {
@@ -12845,8 +12827,8 @@ void fetch_exchange_rates(int timeout) {
 			gtk_widget_show(dialog);
 			while(b_busy_fetch) {
 				while(gtk_events_pending()) gtk_main_iteration();
-				nanosleep(&rtime, NULL);
-			}			
+				sleep_ms(10);
+			}
 			gtk_widget_destroy(dialog);
 		}
 	}
