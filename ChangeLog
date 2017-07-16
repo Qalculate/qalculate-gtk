@@ -1,3 +1,28 @@
+2017-07-16 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix set unknowns
+	* Avoid recursion in expression() and answer()
+
+2017-07-15 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix history scrolling on new result
+	* Fix history when errors during set unknowns
+	* Fix "<", ">" and "&" in history
+	* Fix result resizing and disable overlay scrolling for result
+	
+2017-07-09 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Solve issue with result sometimes not showing
+
+2017-07-07 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Let unit entry grab focus when clicking conversion expander nad move focus to expression after conversion using enter in unit entry or convert button
+	
+2017-07-01 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix vector/matrix plot
+	* Add timeout for plot series data generation
+
 2017-06-30 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Do not repeat conversion of the same value on focus out in units dialog (fixes endlessly repeating message dialog)
