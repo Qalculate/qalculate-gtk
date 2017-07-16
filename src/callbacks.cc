@@ -281,7 +281,8 @@ int AnswerFunction::calculate(MathStructure &mstruct, const MathStructure &vargs
 	if(index < 0) index = (int) history_answer.size() + 1 + index;
 	if(index <= 0 || index > (int) history_answer.size() || history_answer[(size_t) index - 1] == NULL) {
 		CALCULATOR->error(true, _("History index %s does not exist."), vargs[0].print().c_str(), NULL);
-		return 0;
+		mstruct.setUndefined();
+		return 1;
 	}
 	mstruct.set(*history_answer[(size_t) index - 1]);
 	return 1;
@@ -295,7 +296,8 @@ int ExpressionFunction::calculate(MathStructure &mstruct, const MathStructure &v
 	if(index < 0) index = (int) history_parsed.size() + 1 + index;
 	if(index <= 0 || index > (int) history_parsed.size() || history_parsed[(size_t) index - 1] == NULL) {
 		CALCULATOR->error(true, _("History index %s does not exist."), vargs[0].print().c_str(), NULL);
-		return 0;
+		mstruct.setUndefined();
+		return 1;
 	}
 	mstruct.set(*history_parsed[(size_t) index - 1]);
 	return 1;
@@ -303,7 +305,8 @@ int ExpressionFunction::calculate(MathStructure &mstruct, const MathStructure &v
 
 enum {
 	COMMAND_FACTORIZE,
-	COMMAND_SIMPLIFY
+	COMMAND_SIMPLIFY,
+	COMMAND_TRANSFORM
 };
 
 string fix_history_string(const string &str) {
@@ -5535,8 +5538,9 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		} else {
 			inhistory_type.insert(inhistory_type.begin() + inhistory_index, QALCULATE_HISTORY_RESULT);
 		}		
-		if(update_parse && nr_of_new_expressions > 0 && mstruct && !history_answer[nr_of_new_expressions - 1]) {
-			history_answer[nr_of_new_expressions - 1] = new MathStructure(*mstruct);
+		if(nr_of_new_expressions > 0 && mstruct && nr_of_new_expressions <= history_answer.size()) {
+			if(!history_answer[nr_of_new_expressions - 1]) history_answer[nr_of_new_expressions - 1] = new MathStructure(*mstruct);
+			else history_answer[nr_of_new_expressions - 1]->set(*mstruct);
 		}
 		
 		GtkTreeIter index_iter = history_iter;
@@ -5624,6 +5628,20 @@ void CommandThread::run() {
 				((MathStructure*) x)->simplify(evalops);
 				break;
 			}
+			case COMMAND_TRANSFORM: {
+				string ceu_str;
+				if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")))) {
+					ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), evalops.parse_options);
+					remove_blank_ends(ceu_str);
+					if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {			
+						if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-') {
+							ceu_str = "?" + ceu_str;
+						}
+					}
+				}
+				((MathStructure*) x)->set(CALCULATOR->calculate(*((MathStructure*) x), evalops, ceu_str));
+				break;
+			}
 		}
 		b_busy = false;
 		CALCULATOR->stopControl();
@@ -5632,7 +5650,7 @@ void CommandThread::run() {
 
 void executeCommand(int command_type, bool show_result = true) {
 
-	if(expression_has_changed && !rpn_mode) {
+	if(expression_has_changed && !rpn_mode && command_type != COMMAND_TRANSFORM) {
 		execute_expression();
 	}
 
@@ -5675,6 +5693,10 @@ void executeCommand(int command_type, bool show_result = true) {
 			}
 			case COMMAND_SIMPLIFY: {
 				progress_str = _("Simplifying…");
+				break;
+			}
+			case COMMAND_TRANSFORM: {
+				progress_str = _("Calculating…");
 				break;
 			}
 		}
@@ -5731,6 +5753,7 @@ void executeCommand(int command_type, bool show_result = true) {
 				printops.allow_factorization = false;
 				break;
 			}
+			default: {}
 		}
 		if(show_result) setResult(NULL, true, false, true);
 	}
@@ -12509,8 +12532,8 @@ void on_menu_item_convert_to_unit_expression_activate(GtkMenuItem*, gpointer) {
 void on_menu_item_convert_to_best_unit_activate(GtkMenuItem*, gpointer) {
 	do_timeout = false;
 	CALCULATOR->resetExchangeRatesUsed();
-	MathStructure mstruct_new(CALCULATOR->convertToBestUnit(*mstruct, evalops));
-	if(check_exchange_rates()) mstruct->set(CALCULATOR->convertToBestUnit(*mstruct, evalops));
+	MathStructure mstruct_new(CALCULATOR->convertToBestUnit(*mstruct, evalops, true));
+	if(check_exchange_rates()) mstruct->set(CALCULATOR->convertToBestUnit(*mstruct, evalops, true));
 	else mstruct->set(mstruct_new);
 	result_action_executed();
 	do_timeout = true;
@@ -16232,6 +16255,9 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 		show_message(_("No unknowns in result."), GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 		return;
 	}
+	unknowns.setType(STRUCT_ADDITION);
+	unknowns.sort();
+	
 	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Set Unknowns"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_OK"), GTK_RESPONSE_ACCEPT, _("_Apply"), GTK_RESPONSE_APPLY, _("_Cancel"), GTK_RESPONSE_REJECT, NULL);
 	gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_MOUSE);
 	gtk_container_set_border_width(GTK_CONTAINER(dialog), 5);
@@ -16252,6 +16278,7 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 		gtk_widget_set_halign(label, GTK_ALIGN_START);
 		gtk_grid_attach(GTK_GRID(ptable), label, 0, rows - 1, 1, 1);
 		entry[i] = gtk_entry_new();
+		gtk_widget_set_hexpand(entry[i], TRUE);
 		gtk_grid_attach(GTK_GRID(ptable), entry[i], 1, rows - 1, 1, 1);
 	}
 	MathStructure msave(*mstruct);
@@ -16264,6 +16291,7 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 		gint response = gtk_dialog_run(GTK_DIALOG(dialog));
 		bool b = false;
 		if(response == GTK_RESPONSE_ACCEPT || response == GTK_RESPONSE_APPLY) {
+			if(b_changed) mstruct->set(msave);
 			string str, result_mod = "";
 			for(size_t i = 0; i < unknowns.size(); i++) {
 				str = gtk_entry_get_text(GTK_ENTRY(entry[i]));
@@ -16279,7 +16307,7 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 						result_mod += "?";
 					} else {
 						result_mod += str;
-						mstruct->replace(unknowns[i], CALCULATOR->calculate(CALCULATOR->unlocalizeExpression(str, evalops.parse_options), evalops));
+						mstruct->replace(unknowns[i], CALCULATOR->parse(CALCULATOR->unlocalizeExpression(str, evalops.parse_options), evalops.parse_options));
 						b = true;
 						unknown_changed[i] = true;
 					}
@@ -16303,7 +16331,13 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 					expression_has_changed2 = true;
 					display_parse_status();
 				}
-				mstruct->eval(evalops);
+				if(response == GTK_RESPONSE_ACCEPT) {
+					gtk_widget_destroy(dialog);
+				} else {
+					gtk_window_set_modal(GTK_WINDOW(dialog), FALSE);
+					gtk_widget_set_sensitive(GTK_WIDGET(dialog), FALSE);
+				}
+				executeCommand(COMMAND_TRANSFORM, false);
 			}
 			if(b_changed) {
 				printops.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
@@ -16312,10 +16346,10 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 			if(response == GTK_RESPONSE_ACCEPT) {
 				break;
 			}
-			if(b) mstruct->set(msave);
-			
+			gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
+			gtk_widget_set_sensitive(GTK_WIDGET(dialog), TRUE);
 		} else {
-			if(b_changed) {
+			if(b_changed && response == GTK_RESPONSE_REJECT) {
 				string result_mod = "";
 				mstruct->set(msave);
 				for(size_t i = 0; i < unknowns.size(); i++) {
@@ -16332,10 +16366,10 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 				printops.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
 				setResult(NULL, true, false, false, result_mod);
 			}
+			gtk_widget_destroy(dialog);
 			break;
 		}
 	}
-	gtk_widget_destroy(dialog);
 }
 
 
