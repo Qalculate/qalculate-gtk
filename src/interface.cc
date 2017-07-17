@@ -457,8 +457,8 @@ void create_main_window (void) {
 	g_assert (gtk_builder_get_object(main_builder, "main_window") != NULL);
 
 	accel_group = gtk_accel_group_new();
-	gtk_window_add_accel_group (GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), accel_group);
-	
+	gtk_window_add_accel_group(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), accel_group);
+
 	if(win_width > 0) gtk_window_set_default_size (GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width, win_height);
 
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16

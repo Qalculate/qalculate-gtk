@@ -1,6 +1,14 @@
+2017-07-17 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Make it possible to stop conversion of result
+	* Use escape key to abort
+	* Abort on exit
+	* Make history and rpn tab insensitive during calculation
+
 2017-07-16 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Fix set unknowns
+	* Enhanced conversion unit category list
 	* Avoid recursion in expression() and answer()
 	* Changes in conversion unit category list - only one row expand at the same time, show units in subcategories if list otherwise empty, expand on click if units in subcategories not shown
 
@@ -10,7 +18,7 @@
 	* Fix history when errors during set unknowns
 	* Fix "<", ">" and "&" in history
 	* Fix result resizing and disable overlay scrolling for result
-	
+
 2017-07-09 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Solve issue with result sometimes not showing
@@ -18,7 +26,7 @@
 2017-07-07 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Let unit entry grab focus when clicking conversion expander nad move focus to expression after conversion using enter in unit entry or convert button
-	
+
 2017-07-01 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Fix vector/matrix plot
