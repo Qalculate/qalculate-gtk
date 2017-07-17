@@ -10889,6 +10889,7 @@ extern "C" {
 #endif
 
 void on_convert_treeview_category_row_expanded(GtkTreeView *tree_view, GtkTreeIter*, GtkTreePath *path, gpointer) {
+	if(gtk_tree_path_get_depth(path) != 2) return;
 	GtkTreeModel *model = gtk_tree_view_get_model(tree_view);
 	GtkTreeIter iter2, iter3;
 	gtk_tree_model_get_iter_first(model, &iter3);
@@ -16294,21 +16295,29 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 	string result_save = result_text;
 	gtk_widget_show_all(dialog);
 	bool b_changed = false;
-	vector<bool> unknown_changed;
-	unknown_changed.resize(unknowns.size(), false);
+	vector<string> unknown_text;
+	unknown_text.resize(unknowns.size());
 	while(true) {
 		gint response = gtk_dialog_run(GTK_DIALOG(dialog));
-		bool b = false;
+		bool b1 = false, b2 = false;
 		if(response == GTK_RESPONSE_ACCEPT || response == GTK_RESPONSE_APPLY) {
-			if(b_changed) mstruct->set(msave);
 			string str, result_mod = "";
 			for(size_t i = 0; i < unknowns.size(); i++) {
 				str = gtk_entry_get_text(GTK_ENTRY(entry[i]));
 				remove_blank_ends(str);
-				if(unknown_changed[i] || !str.empty()) {
+				if(((b1 || !b_changed) && !str.empty()) || (b_changed && unknown_text[i] != str)) {
 					if(!result_mod.empty()) {
 						result_mod += CALCULATOR->getComma();
 						result_mod += " ";
+					} else {
+						b1 = true;
+						mstruct->set(msave);
+						for(size_t i2 = 0; i2 < i; i2++) {
+							if(!unknown_text[i2].empty()) {
+								mstruct->replace(unknowns[i2], CALCULATOR->parse(CALCULATOR->unlocalizeExpression(unknown_text[i2], evalops.parse_options), evalops.parse_options));
+								b2 = true;
+							}
+						}
 					}
 					result_mod += unknowns[i].print().c_str();
 					result_mod += "=";
@@ -16317,14 +16326,17 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 					} else {
 						result_mod += str;
 						mstruct->replace(unknowns[i], CALCULATOR->parse(CALCULATOR->unlocalizeExpression(str, evalops.parse_options), evalops.parse_options));
-						b = true;
-						unknown_changed[i] = true;
+						b2 = true;
 					}
+					unknown_text[i] = str;
 				}
 			}
-			if(b) {
+			if(response == GTK_RESPONSE_ACCEPT) {
+				gtk_widget_destroy(dialog);
+			}
+			if(b2) {
 				b_changed = true;
-				if(response == GTK_RESPONSE_ACCEPT && !rpn_mode) {
+				/*if(response == GTK_RESPONSE_ACCEPT && !rpn_mode) {
 					MathStructure mp(*mstruct);
 					printops.can_display_unicode_string_arg = historyview;
 					mp.format(printops);
@@ -16339,16 +16351,16 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 					gtk_editable_select_region(GTK_EDITABLE(expression), 0, -1);
 					expression_has_changed2 = true;
 					display_parse_status();
-				}
-				if(response == GTK_RESPONSE_ACCEPT) {
-					gtk_widget_destroy(dialog);
-				} else {
+				}*/
+				if(response != GTK_RESPONSE_ACCEPT) {
 					gtk_window_set_modal(GTK_WINDOW(dialog), FALSE);
 					gtk_widget_set_sensitive(GTK_WIDGET(dialog), FALSE);
 				}
 				executeCommand(COMMAND_TRANSFORM, false);
+			} else if(b1) {
+				b_changed = false;
 			}
-			if(b_changed) {
+			if(b1 || b2) {
 				printops.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
 				setResult(NULL, true, false, false, result_mod);
 			}
@@ -16362,7 +16374,7 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 				string result_mod = "";
 				mstruct->set(msave);
 				for(size_t i = 0; i < unknowns.size(); i++) {
-					if(unknown_changed[i]) {
+					if(!unknown_text[i].empty()) {
 						if(!result_mod.empty()) {
 							result_mod += CALCULATOR->getComma();
 							result_mod += " ";
