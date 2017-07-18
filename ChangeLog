@@ -1,3 +1,14 @@
+2017-07-18 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix name input fields when cleared
+	* Set max/min value in integer input field to INT_MAX/INT_MIN
+	* Fix argument min/max input field
+	* Parse instead of calculate values in matrix edit dialog
+	* Update CSV import name logic
+	* Add (long) max time for CSV export
+	* Check for errors in more places (avoids message dialogs with no parent)
+	* Use expression string, if available, instead of value in variable edit dialog
+
 2017-07-17 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Make it possible to stop conversion of result
