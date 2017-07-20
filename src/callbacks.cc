@@ -1607,6 +1607,13 @@ void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 					str += f->description();
 					str += "\n";
 				}
+				if(!f->example(true).empty()) {
+					str += "\n";
+					str += _("Example:");
+					str += " ";
+					str += f->example(false, ename->name);
+					str += "\n";
+				}
 				if(f->subtype() == SUBTYPE_DATA_SET && !((DataSet*) f)->copyright().empty()) {
 					str += "\n";
 					str += ((DataSet*) f)->copyright();
