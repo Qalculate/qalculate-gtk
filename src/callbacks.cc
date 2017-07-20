@@ -8174,7 +8174,7 @@ run_matrix_edit_dialog:
 			r = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(matrixedit_builder, "matrix_edit_spinbutton_rows")));
 			gchar *gstr = NULL;
 			string mstr;
-			stop_timeouts = true;
+			do_timeout = false;
 			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(matrixedit_builder, "matrix_edit_radiobutton_vector")))) {
 				mstruct_new.clearVector();
 				for(size_t index_r = 0; index_r < (size_t) r && b; index_r++) {
@@ -8919,7 +8919,7 @@ run_csv_import_dialog:
 			show_message(_("No delimiter selected."), dialog);
 			goto run_csv_import_dialog;
 		}
-		stop_timeouts = true;
+		do_timeout = false;
 		if(!CALCULATOR->importCSV(str.c_str(), gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(csvimport_builder, "csv_import_spinbutton_first_row"))), gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(csvimport_builder, "csv_import_checkbutton_headers"))), delimiter, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(csvimport_builder, "csv_import_radiobutton_matrix"))), name_str, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(csvimport_builder, "csv_import_entry_desc"))), gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(csvimport_builder, "csv_import_combo_category"))))) {
 			GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not import from file \n%s"), str.c_str());
 			gtk_dialog_run(GTK_DIALOG(edialog));
@@ -9378,7 +9378,7 @@ void convert_in_wUnits(int toFrom) {
 				po.is_approximate = &b;
 				po.number_fraction_format = FRACTION_DECIMAL;
 				CALCULATOR->resetExchangeRatesUsed();
-				stop_timeouts = true;
+				do_timeout = false;
 				MathStructure v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(toValue, evalops.parse_options), uTo, uFrom, 1500, eo);
 				if(!v_mstruct.isAborted() && check_exchange_rates(get_units_dialog())) v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(toValue, evalops.parse_options), uTo, uFrom, 1500, eo);
 				if(v_mstruct.isAborted()) {
@@ -9403,7 +9403,7 @@ void convert_in_wUnits(int toFrom) {
 				po.is_approximate = &b;
 				po.number_fraction_format = FRACTION_DECIMAL;
 				CALCULATOR->resetExchangeRatesUsed();
-				stop_timeouts = true;
+				do_timeout = false;
 				MathStructure v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(fromValue, evalops.parse_options), uFrom, uTo, 1500, eo);
 				if(!v_mstruct.isAborted() && check_exchange_rates(get_units_dialog())) v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(fromValue, evalops.parse_options), uFrom, uTo, 1500, eo);
 				if(v_mstruct.isAborted()) {
@@ -14799,11 +14799,11 @@ void on_nbases_entry_decimal_changed(GtkEditable *editable, gpointer) {
 	EvaluationOptions eo;
 	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
 	MathStructure value;
-	stop_timeouts = true;
+	do_timeout = false;
 	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), evalops.parse_options), 1500, eo);
 	update_nbases_entries(value, 10);
 	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_dialog")));
-	stop_timeouts = false;
+	do_timeout = true;
 	changing_in_nbases_dialog = false;
 }
 void on_nbases_entry_binary_changed(GtkEditable *editable, gpointer) {
@@ -14817,11 +14817,11 @@ void on_nbases_entry_binary_changed(GtkEditable *editable, gpointer) {
 	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
 	changing_in_nbases_dialog = true;	
 	MathStructure value;
-	stop_timeouts = true;
+	do_timeout = false;
 	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), evalops.parse_options), 1500, eo);
 	update_nbases_entries(value, 2);
 	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_dialog")));
-	stop_timeouts = false;
+	do_timeout = true;
 	changing_in_nbases_dialog = false;
 }
 void on_nbases_entry_octal_changed(GtkEditable *editable, gpointer) {
@@ -14835,11 +14835,11 @@ void on_nbases_entry_octal_changed(GtkEditable *editable, gpointer) {
 	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
-	stop_timeouts = true;
+	do_timeout = false;
 	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), evalops.parse_options), 1500, eo);
 	update_nbases_entries(value, 8);
 	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_dialog")));
-	stop_timeouts = false;
+	do_timeout = true;
 	changing_in_nbases_dialog = false;
 }
 void on_nbases_entry_hexadecimal_changed(GtkEditable *editable, gpointer) {
@@ -14853,11 +14853,11 @@ void on_nbases_entry_hexadecimal_changed(GtkEditable *editable, gpointer) {
 	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
 	changing_in_nbases_dialog = true;	
 	MathStructure value;
-	stop_timeouts = true;
+	do_timeout = false;
 	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), evalops.parse_options), 1500, eo);
 	update_nbases_entries(value, 16);
 	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_dialog")));
-	stop_timeouts = false;
+	do_timeout = true;
 	changing_in_nbases_dialog = false;
 }
 
@@ -15854,6 +15854,7 @@ void on_plot_button_save_clicked(GtkButton*, gpointer) {
 	gtk_file_filter_add_mime_type(filter, "image/x-xfig");
 	gtk_file_filter_add_mime_type(filter, "image/svg");
 	gtk_file_filter_add_mime_type(filter, "text/x-tex");
+	gtk_file_filter_add_mime_type(filter, "application/pdf");
 	gtk_file_filter_add_mime_type(filter, "application/postscript");
 	gtk_file_filter_add_mime_type(filter, "image/x-eps");
 	gtk_file_filter_add_mime_type(filter, "image/png");
@@ -15877,10 +15878,10 @@ void on_plot_button_save_clicked(GtkButton*, gpointer) {
 		if(generate_plot(pp, y_vectors, x_vectors, pdps)) {
 			pp.filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(d));
 			pp.filetype = PLOT_FILETYPE_AUTO;
-			stop_timeouts = true;
+			do_timeout = false;
 			CALCULATOR->plotVectors(&pp, y_vectors, x_vectors, pdps);
 			display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
-			stop_timeouts = false;
+			do_timeout = true;
 			for(size_t i = 0; i < pdps.size(); i++) {
 				if(pdps[i]) delete pdps[i];
 			}
@@ -15898,10 +15899,10 @@ void update_plot() {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_button_save")), false);
 		return;
 	}
-	stop_timeouts = true;
+	do_timeout = false;
 	CALCULATOR->plotVectors(&pp, y_vectors, x_vectors, pdps);
 	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
-	stop_timeouts = false;
+	do_timeout = true;
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_button_save")), true);
 	for(size_t i = 0; i < pdps.size(); i++) {
 		if(pdps[i]) delete pdps[i];
@@ -15913,7 +15914,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 	eo.approximation = APPROXIMATION_APPROXIMATE;
 	eo.parse_options = evalops.parse_options;
 	eo.parse_options.read_precision = DONT_READ_PRECISION;
-	stop_timeouts = true;
+	do_timeout = false;
 	if(type == 1 || type == 2) {
 		*y_vector = new MathStructure();
 		if(!CALCULATOR->calculate(*y_vector, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), 5000, eo)) {
@@ -15931,7 +15932,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 			gtk_dialog_run(GTK_DIALOG(d));
 			gtk_widget_destroy(d);
 			display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
-			stop_timeouts = false;
+			do_timeout = true;
 			return;
 		}
 		MathStructure max;
@@ -15940,7 +15941,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 			gtk_dialog_run(GTK_DIALOG(d));
 			gtk_widget_destroy(d);
 			display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
-			stop_timeouts = false;
+			do_timeout = true;
 			return;
 		}
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_radiobutton_step")))) {
@@ -15950,7 +15951,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 		}
 	}
 	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
-	stop_timeouts = false;
+	do_timeout = true;
 }
 void on_plot_button_add_clicked(GtkButton*, gpointer) {
 	string expression = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_expression")));
@@ -16375,7 +16376,7 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 		bool b1 = false, b2 = false;
 		if(response == GTK_RESPONSE_ACCEPT || response == GTK_RESPONSE_APPLY) {
 			string str, result_mod = "";
-			stop_timeouts = true;
+			do_timeout = false;
 			for(size_t i = 0; i < unknowns.size(); i++) {
 				str = gtk_entry_get_text(GTK_ENTRY(entry[i]));
 				remove_blank_ends(str);
@@ -16436,7 +16437,7 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 				printops.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
 				setResult(NULL, true, false, false, result_mod);
 			}
-			stop_timeouts = false;
+			do_timeout = true;
 			if(response == GTK_RESPONSE_ACCEPT) {
 				break;
 			}

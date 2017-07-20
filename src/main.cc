@@ -199,7 +199,7 @@ void create_application(GtkApplication *app) {
 
 	//check for calculation errros regularly
 	do_timeout = true;
-	g_timeout_add(100, on_display_errors_timeout, NULL);
+	g_timeout_add(1000, on_display_errors_timeout, NULL);
 	
 	check_expression_position = true;
 	expression_position = 1;
