@@ -1,7 +1,7 @@
 /*
     Qalculate (GTK+ UI)
 
-    Copyright (C) 2003-2007, 2008, 2016  Hanna Knutsson (hanna.knutsson@protonmail.com)
+    Copyright (C) 2003-2007, 2008, 2016-2017  Hanna Knutsson (hanna.knutsson@protonmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -554,12 +554,12 @@ bool is_answer_variable(Variable *v) {
 
 void wrap_expression_selection() {
 	gint start = 0, end = 0;
-	if(gtk_editable_get_selection_bounds(GTK_EDITABLE(expression), &start, &end)) {			
+	if(gtk_editable_get_selection_bounds(GTK_EDITABLE(expression), &start, &end)) {
 		gtk_editable_select_region(GTK_EDITABLE(expression), end, end);
 		gtk_editable_insert_text(GTK_EDITABLE(expression), "(", 1, &start);
 		end++;
-		gtk_editable_insert_text(GTK_EDITABLE(expression), ")", 1, &end);				
-		gtk_editable_set_position(GTK_EDITABLE(expression), end);				
+		gtk_editable_insert_text(GTK_EDITABLE(expression), ")", 1, &end);
+		gtk_editable_set_position(GTK_EDITABLE(expression), end);
 	}
 }
 
@@ -12162,12 +12162,15 @@ void history_operator(string str_sign) {
 	bool only_one_value = false;
 	string str;
 	if(selected_indeces.size() == 1) {
-		str = gtk_entry_get_text(GTK_ENTRY(expression));
 		gint start = 0, end = 0;
 		if(gtk_editable_get_selection_bounds(GTK_EDITABLE(expression), &start, &end)) {
-			str = str.substr(start, end - start);
+			gchar *gstr = gtk_editable_get_chars(GTK_EDITABLE(expression), start, end);
+			str = gstr;
+			g_free(gstr);
+		} else {
+			str = gtk_entry_get_text(GTK_ENTRY(expression));
+			remove_blank_ends(str);
 		}
-		remove_blank_ends(str);
 		if(str.empty()) {
 			only_one_value = true;
 		} else {
@@ -14876,7 +14879,7 @@ void on_button_convert_clicked(GtkButton*, gpointer user_data) {
 
 void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
 	const gchar *authors[] = {"Hanna Knutsson", NULL};
-	gtk_show_about_dialog(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), "authors", authors, "comments", _("Powerful and easy to use calculator"), "license-type", GTK_LICENSE_GPL_2_0, "copyright", "Copyright © 2003–2007, 2008, 2016 Hanna Knutsson", "program-name", "Qalculate! (GTK+)", "version", VERSION, "website", "http://qalculate.github.io/", NULL);
+	gtk_show_about_dialog(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), "authors", authors, "comments", _("Powerful and easy to use calculator"), "license-type", GTK_LICENSE_GPL_2_0, "copyright", "Copyright © 2003–2007, 2008, 2016-2017 Hanna Knutsson", "program-name", "Qalculate! (GTK+)", "version", VERSION, "website", "http://qalculate.github.io/", NULL);
 }
 void on_menu_item_help_activate(GtkMenuItem*, gpointer) {
 	GError *error = NULL;
