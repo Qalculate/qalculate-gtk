@@ -67,7 +67,7 @@ protected:
 bool can_display_unicode_string_function(const char *str, void *w);
 void set_unicode_buttons();
 
-cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po = default_print_options, InternalPrintStruct ips = top_ips, gint *point_central = NULL, int scaledown = 0);
+cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po = default_print_options, InternalPrintStruct ips = top_ips, gint *point_central = NULL, int scaledown = 0, GdkRGBA *color = NULL);
 
 void update_status_text();
 
