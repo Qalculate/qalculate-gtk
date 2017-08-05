@@ -132,7 +132,7 @@ extern Unit *selected_to_unit;
 bool save_mode_on_exit;
 bool save_defs_on_exit;
 bool use_custom_result_font, use_custom_expression_font, use_custom_status_font;
-string custom_result_font, custom_expression_font, custom_status_font, wget_args;
+string custom_result_font, custom_expression_font, custom_status_font;
 int scale_n = 0;
 bool hyp_is_on, inv_is_on;
 bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes;
@@ -5083,13 +5083,16 @@ void on_abort_display(GtkDialog*, gint, gpointer) {
 void ViewThread::run() {
 
 	while(true) {
-		int scale_tmp = read<int>();
-		void *x = read<void *>();
+		int scale_tmp = 0;
+		if(!read(&scale_tmp)) break;
+		void *x = NULL;
+		if(!read(&x)) break;
 		MathStructure m(*((MathStructure*) x));
-		bool b_stack = read<bool>();
-		x = read<void *>();
+		bool b_stack = false;
+		if(!read(&b_stack)) break;
+		if(!read(&x)) break;
 		MathStructure *mm = (MathStructure*) x;
-		x = read<void *>();
+		if(!read(&x)) break;
 		CALCULATOR->startControl();
 		printops.can_display_unicode_string_arg = (void*) historyview;
 		bool b_puup = printops.use_unit_prefixes;
@@ -5112,10 +5115,10 @@ void ViewThread::run() {
 			po.spell_out_logical_operators = printops.spell_out_logical_operators;
 			po.restrict_to_parent_precision = false;
 			MathStructure mp(*((MathStructure*) x));
-			po.is_approximate = read<bool *>();
+			if(!read(&po.is_approximate)) break;
 			mp.format(po);
 			parsed_text = mp.print(po);
-			x = read<void *>();
+			if(!read(&x)) break;
 			mp.set(*((MathStructure*) x));
 			if(!mp.isUndefined()) {
 				parsed_text += CALCULATOR->localToString();
@@ -5284,6 +5287,13 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	b_busy = true;
 	b_busy_result = true;
 	display_aborted = false;
+	
+	if(!view_thread->running && !view_thread->start()) {
+		b_busy = false; 
+		b_busy_result = false;
+		do_timeout = true;
+		return;
+	}
 
 	GtkTreeIter history_iter;
 
@@ -5366,38 +5376,38 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	printops.prefix = prefix;
 	tmp_surface = NULL;
 
-	view_thread->write(scale_n);
+	if(!view_thread->write(scale_n)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
 	if(stack_index == 0) {
-		view_thread->write((void *) mstruct);
+		if(!view_thread->write((void *) mstruct)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
 	} else {
 		MathStructure *mreg = CALCULATOR->getRPNRegister(stack_index + 1);
-		view_thread->write((void *) mreg);
+		if(!view_thread->write((void *) mreg)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
 	}
 	bool b_stack = stack_index != 0;
-	view_thread->write(b_stack);
+	if(!view_thread->write(b_stack)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
 	if(b_stack) {
-		view_thread->write(NULL);
+		if(!view_thread->write(NULL)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
 	} else {
 		matrix_mstruct->clear();
-		view_thread->write((void *) matrix_mstruct);
+		if(!view_thread->write((void *) matrix_mstruct)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
 	}
 	if(update_parse) {
-		view_thread->write((void *) parsed_mstruct);
+		if(!view_thread->write((void *) parsed_mstruct)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
 		bool *parsed_approx_p = &parsed_approx;
-		view_thread->write((void *) parsed_approx_p);
-		view_thread->write((void *) parsed_tostruct);
+		if(!view_thread->write((void *) parsed_approx_p)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
+		if(!view_thread->write((void *) parsed_tostruct)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
 	} else {
-		view_thread->write(NULL);
+		if(!view_thread->write(NULL)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
 	}
 
 	int i = 0;
-	while(b_busy && i < 50) {
+	while(b_busy && view_thread->running && i < 50) {
 		sleep_ms(10);
 		i++;
 	}
 	i = 0;
 
-	if(b_busy) {
+	if(b_busy && view_thread->running) {
 		g_application_mark_busy(g_application_get_default());
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultspinner")));
 		gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
@@ -5411,13 +5421,13 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		if(unit_builder) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unit_builder, "unit_action_area")), FALSE);
 		title_set = TRUE;
 	}
-	while(b_busy) {
+	while(b_busy && view_thread->running) {
 		while(gtk_events_pending()) gtk_main_iteration();
 		sleep_ms(100);
 	}
 	b_busy = true;
 	b_busy_result = true;
-		
+	
 	if(stack_index == 0) {
 		display_aborted = !tmp_surface;
 		if(display_aborted) {
@@ -5632,8 +5642,10 @@ void CommandThread::run() {
 	enableAsynchronousCancel();
 
 	while(true) {
-		int command_type = read<int>();
-		void *x = read<void*>();
+		int command_type = 0;
+		if(!read(&command_type)) break;
+		void *x = NULL;
+		if(!read(&x)) break;
 		CALCULATOR->startControl();
 		switch(command_type) {
 			case COMMAND_FACTORIZE: {
@@ -5713,20 +5725,18 @@ void executeCommand(int command_type, bool show_result = true, string ceu_str = 
 	
 	rerun_command:
 
-	if(!command_thread->running) {
-		command_thread->start();
-	}
+	if(!command_thread->running && !command_thread->start()) {do_timeout = true; b_busy = false; b_busy_command = false; return;}
 
-	command_thread->write(command_type);
-	command_thread->write((void *) mfactor);
+	if(!command_thread->write(command_type)) {do_timeout = true; b_busy = false; b_busy_command = false; return;}
+	if(!command_thread->write((void *) mfactor)) {do_timeout = true; b_busy = false; b_busy_command = false; return;}
 
-	while(b_busy && i < 50) {
+	while(b_busy && command_thread->running && i < 50) {
 		sleep_ms(10);
 		i++;
 	}
 	i = 0;
 	
-	if(b_busy) {
+	if(b_busy && command_thread->running) {
 		string progress_str;
 		switch(command_type) {
 			case COMMAND_FACTORIZE: {
@@ -5756,12 +5766,13 @@ void executeCommand(int command_type, bool show_result = true, string ceu_str = 
 		if(unit_builder) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unit_builder, "unit_action_area")), FALSE);
 		title_set = TRUE;
 	}
-	while(b_busy) {
+	while(b_busy && command_thread->running) {
 		while(gtk_events_pending()) gtk_main_iteration();
 		sleep_ms(100);
 		gtk_entry_progress_pulse(GTK_ENTRY(expression));
 		progress_set = TRUE;
 	}
+	if(!command_thread->running) command_aborted = true;
 	
 	if(!command_aborted && run == 1 && command_type >= COMMAND_CONVERT_UNIT && check_exchange_rates()) {
 		b_busy = true;
@@ -5807,6 +5818,33 @@ void executeCommand(int command_type, bool show_result = true, string ceu_str = 
 		
 	do_timeout = true;
 
+}
+
+void fetch_exchange_rates(int timeout) {
+	FetchExchangeRatesThread fetch_thread;
+	if(fetch_thread.start() && fetch_thread.write(timeout)) {
+		int i = 0;
+		while(fetch_thread.running && i < 50) {
+			while(gtk_events_pending()) gtk_main_iteration();
+			sleep_ms(10);
+			i++;
+		}
+		if(fetch_thread.running) {
+			GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) (GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL), GTK_MESSAGE_INFO, GTK_BUTTONS_NONE, _("Fetching exchange rates."));
+			gtk_widget_show(dialog);
+			while(fetch_thread.running) {
+				while(gtk_events_pending()) gtk_main_iteration();
+				sleep_ms(10);
+			}
+			gtk_widget_destroy(dialog);
+		}
+	}
+}
+
+void FetchExchangeRatesThread::run() {
+	int timeout = 15;
+	if(!read(&timeout)) return;
+	CALCULATOR->fetchExchangeRates(timeout);
 }
 
 void result_display_updated() {
@@ -9725,7 +9763,12 @@ void on_expander_history_expanded(GObject *o, GParamSpec*, gpointer) {
 		gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 0);
 		show_tabs(true);
 		while(!history_was_realized && gtk_events_pending()) gtk_main_iteration();
-		if(!history_was_realized) gtk_tree_view_scroll_to_point(GTK_TREE_VIEW(historyview), 0, 0);
+		if(!history_was_realized) {
+			GtkTreePath *path = gtk_tree_path_new_from_indices(0, -1);
+			gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(historyview), path, history_index_column, FALSE, 0, 0);
+			gtk_tree_view_scroll_to_point(GTK_TREE_VIEW(historyview), 0, 0);
+			gtk_tree_path_free(path);
+		}
 		if(gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad))) {
 			gtk_expander_set_expanded(GTK_EXPANDER(expander_keypad), FALSE);
 		} else if(gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) {
@@ -9982,7 +10025,6 @@ void load_preferences() {
 	auto_update_exchange_rates = -1;
 	display_expression_status = true;
 	enable_completion = true;
-	wget_args = "--quiet --tries=1";
 	first_time = false;
 	first_error = true;
 	expression_history.clear();
@@ -9993,14 +10035,18 @@ void load_preferences() {
 	gchar *gstr_file = g_build_filename(getLocalDir().c_str(), "qalculate-gtk.cfg", NULL);
 	file = fopen(gstr_file, "r");
 	if(!file) {
+#ifndef _WIN32
 		gstr_oldfile = g_build_filename(getOldLocalDir().c_str(), "qalculate-gtk.cfg", NULL);
 		file = fopen(gstr_oldfile, "r");
 		if(!file) {
 			g_free(gstr_file);
 			g_free(gstr_oldfile);
+#endif
 			first_time = true;
 			return;
+#ifndef _WIN32
 		}
+#endif
 	}
 
 	int version_numbers[] = {1, 0, 0};
@@ -10070,8 +10116,6 @@ void load_preferences() {
 					//fetch_exchange_rates_at_startup = v;
 				} else if(svar == "auto_update_exchange_rates") {
 					auto_update_exchange_rates = v;
-				} else if(svar == "wget_args") {
-					wget_args = svalue;
 				} else if(svar == "show_keypad") {
 					show_keypad = v;
 				} else if(svar == "keypad_height") {
@@ -10650,7 +10694,6 @@ void save_preferences(bool mode) {
 	fprintf(file, "load_global_definitions=%i\n", load_global_defs);
 	//fprintf(file, "fetch_exchange_rates_at_startup=%i\n", fetch_exchange_rates_at_startup);
 	fprintf(file, "auto_update_exchange_rates=%i\n", auto_update_exchange_rates);
-	fprintf(file, "wget_args=%s\n", wget_args.c_str());	
 	fprintf(file, "show_keypad=%i\n", (rpn_mode && show_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad)));
 	h = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
 	fprintf(file, "keypad_height=%i\n", h > 10 ? h : keypad_height);
@@ -11142,9 +11185,6 @@ void on_colorbutton_status_warning_color_color_set(GtkColorButton *w, gpointer) 
 	status_warning_color = color_str;
 	status_warning_color_set = true;
 	display_parse_status();
-}
-void on_preferences_entry_wget_args_changed(GtkEditable *editable, gpointer) {
-	wget_args = gtk_entry_get_text(GTK_ENTRY(editable));
 }
 void on_preferences_update_exchange_rates_spin_button_value_changed(GtkSpinButton *spin, gpointer) {
 	auto_update_exchange_rates = gtk_spin_button_get_value_as_int(spin);
@@ -12876,34 +12916,7 @@ void on_menu_item_no_special_implicit_multiplication_activate(GtkMenuItem *w, gp
 	evalops.parse_options.parsing_mode = PARSING_MODE_CONVENTIONAL;
 	expression_format_updated(true);
 }
-void *fetch_proc(void *timeout) {
-	CALCULATOR->fetchExchangeRates(*((int*) timeout), wget_args);
-	b_busy_fetch = false;
-	return NULL;
-}
-void fetch_exchange_rates(int timeout) {
-	b_busy_fetch = true;
-	pthread_t fetch_thread;
-	pthread_attr_t fetch_thread_attr;
-	pthread_attr_init(&fetch_thread_attr);
-	if(!pthread_create(&fetch_thread, &fetch_thread_attr, fetch_proc, (void*) &timeout)) {
-		int i = 0;
-		while(b_busy_fetch && i < 50) {
-			while(gtk_events_pending()) gtk_main_iteration();
-			sleep_ms(10);
-			i++;
-		}
-		if(b_busy_fetch) {
-			GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) (GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL), GTK_MESSAGE_INFO, GTK_BUTTONS_NONE, _("Fetching exchange rates."));
-			gtk_widget_show(dialog);
-			while(b_busy_fetch) {
-				while(gtk_events_pending()) gtk_main_iteration();
-				sleep_ms(10);
-			}
-			gtk_widget_destroy(dialog);
-		}
-	}
-}
+
 void on_menu_item_fetch_exchange_rates_activate(GtkMenuItem*, gpointer) {
 	fetch_exchange_rates(15);
 	CALCULATOR->loadExchangeRates();
@@ -14896,8 +14909,28 @@ void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
 }
 void on_menu_item_help_activate(GtkMenuItem*, gpointer) {
 	GError *error = NULL;
-	//gtk_show_uri(NULL, "ghelp:qalculate-gtk", gtk_get_current_event_time(), &error);
+#ifdef _WIN32
+	char exepath[MAX_PATH];
+	GetModuleFileName(NULL, exepath, MAX_PATH);
+	string datadir(exepath);
+	datadir.resize(datadir.find_last_of('\\'));
+	if(datadir.substr(datadir.length() - 3) == "bin") {
+		datadir.resize(datadir.find_last_of('\\'));
+		datadir += "\\share\\doc\\";
+		datadir += PACKAGE;
+		datadir += "\\html\\";
+	} else if(datadir.substr(datadir.length() - 5) == ".libs") {
+		datadir.resize(datadir.find_last_of('\\'));
+		datadir.resize(datadir.find_last_of('\\'));
+		datadir += "\\doc\\html\\";
+	} else {
+		datadir += "\\doc\\";
+	}
+	datadir += "index.html";
+	gtk_show_uri_on_window(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), datadir.c_str(), gtk_get_current_event_time(), &error);
+#else
 	gtk_show_uri_on_window(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), "file://" PACKAGE_DOC_DIR "/html/index.html", gtk_get_current_event_time(), &error);
+#endif
 	if(error) {
 		gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
 		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help for Qalculate!.\n%s"), error_str);

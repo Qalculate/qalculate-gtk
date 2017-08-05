@@ -6,7 +6,7 @@ dnl  ----------------------
 dnl | initialize autotools |---------------------------------------------------
 dnl  ----------------------
 
-AC_INIT([Qalculate! (GTK+ UI)], [1.0.0],[],[qalculate-gtk])
+AC_INIT([Qalculate! (GTK+ UI)], [1.0.99],[],[qalculate-gtk])
 AC_CONFIG_SRCDIR([src/callbacks.cc])
 AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4])
@@ -60,6 +60,7 @@ AC_CANONICAL_HOST
 
 if test "$host_os" = "mingw32"; then
 	AC_DEFINE([_WIN32_WINNT], 0x501, [Target Windows version])
+	LDFLAGS="$LDFLAGS -mwindows"
 fi
 AM_CONDITIONAL(PLATFORM_LINUX, test "$host_os" = "linux")
 AM_CONDITIONAL(PLATFORM_WIN32, test "$host_os" = "mingw32")
@@ -94,21 +95,10 @@ AC_SUBST(GTK_LIBS)
 GTK_LIBS="-export-dynamic $GTK_LIBS"
 
 PKG_CHECK_MODULES(QALCULATE, [
-	libqalculate >= 1.0.0
+	libqalculate >= 1.0.99
 	])
 AC_SUBST(QALCULATE_CFLAGS)
 AC_SUBST(QALCULATE_LIBS)
-
-PKG_CHECK_MODULES(CLN, [ cln >= 1.2 ],
-                  [have_recent_cln=yes], [have_recent_cln=no])
-AC_SUBST(CLN_CPPFLAGS)
-AC_SUBST(CLN_LIBS)
-
-if test "$have_recent_cln" = "yes" ; then
-   AC_DEFINE(HAVE_LIBCLN12, 1, [Define if CLN can be used])
-   LIBS="$LIBS $CLN_LIBS"
-   CPPFLAGS="$CPPFLAGS $CLN_CPPFLAGS"
-fi
 
 AC_SUBST(QALCULATE_GTK)
 

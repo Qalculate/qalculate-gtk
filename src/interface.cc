@@ -101,7 +101,7 @@ extern bool show_keypad, show_history, show_stack, show_convert, continuous_conv
 extern bool save_mode_on_exit, save_defs_on_exit, load_global_defs, hyp_is_on, inv_is_on, fetch_exchange_rates_at_startup, allow_multiple_instances;
 extern bool display_expression_status, enable_completion;
 extern bool use_custom_result_font, use_custom_expression_font, use_custom_status_font;
-extern string custom_result_font, custom_expression_font, custom_status_font, wget_args;
+extern string custom_result_font, custom_expression_font, custom_status_font;
 extern string status_error_color, status_warning_color;
 extern bool status_error_color_set, status_warning_color_set;
 extern int auto_update_exchange_rates;
@@ -446,15 +446,42 @@ gboolean history_row_separator_func(GtkTreeModel *model, GtkTreeIter *iter, gpoi
 	return hindex < 0;
 }
 
+GtkBuilder *getBuilder(const char *filename) {
+#ifndef WIN32
+	gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", filename, NULL);
+	GtkBuilder *builder = gtk_builder_new_from_file(gstr);
+	g_free(gstr);
+	return builder;
+#else
+	char exepath[MAX_PATH];
+	GetModuleFileName(NULL, exepath, MAX_PATH);
+	string datadir(exepath);
+	datadir.resize(datadir.find_last_of('\\'));
+	if(datadir.substr(datadir.length() - 3) == "bin") {
+		datadir.resize(datadir.find_last_of('\\'));
+		datadir += "\\share\\";
+		datadir += PACKAGE;
+		datadir += "\\ui";
+	} else if(datadir.substr(datadir.length() - 5) == ".libs") {
+		datadir.resize(datadir.find_last_of('\\'));
+		datadir.resize(datadir.find_last_of('\\'));
+		datadir += "\\data";
+	} else {
+		datadir += "\\ui";
+	}
+	datadir += "\\";
+	datadir += filename;
+	return gtk_builder_new_from_file(datadir.c_str());
+#endif
+}
+
 void create_main_window (void) {
 	
-	gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "main.ui", NULL);
-	main_builder = gtk_builder_new_from_file(gstr);
+	main_builder = getBuilder("main.ui");
 	g_assert(main_builder != NULL);
-	g_free(gstr);
 	
 	/* make sure we get a valid main window */
-	g_assert (gtk_builder_get_object(main_builder, "main_window") != NULL);
+	g_assert(gtk_builder_get_object(main_builder, "main_window") != NULL);
 
 	accel_group = gtk_accel_group_new();
 	gtk_window_add_accel_group(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), accel_group);
@@ -932,10 +959,8 @@ get_functions_dialog (void)
 
 	if(!functions_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "functions.ui", NULL);
-		functions_builder = gtk_builder_new_from_file(gstr);
+		functions_builder =  getBuilder("functions.ui");
 		g_assert(functions_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(functions_builder, "functions_dialog") != NULL);
 	
@@ -988,10 +1013,8 @@ get_variables_dialog (void)
 {
 	if(!variables_builder) {
 
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "variables.ui", NULL);
-		variables_builder = gtk_builder_new_from_file(gstr);
+		variables_builder = getBuilder("variables.ui");
 		g_assert(variables_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(variables_builder, "variables_dialog") != NULL);
 
@@ -1048,10 +1071,8 @@ get_units_dialog (void)
 
 	if(!units_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "units.ui", NULL);
-		units_builder = gtk_builder_new_from_file(gstr);
+		units_builder = getBuilder("units.ui");
 		g_assert(units_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(units_builder, "units_dialog") != NULL);
 	
@@ -1117,10 +1138,8 @@ get_datasets_dialog (void)
 
 	if(!datasets_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "datasets.ui", NULL);
-		datasets_builder = gtk_builder_new_from_file(gstr);
+		datasets_builder = getBuilder("datasets.ui");
 		g_assert(datasets_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(datasets_builder, "datasets_dialog") != NULL);
 	
@@ -1183,10 +1202,8 @@ get_preferences_dialog (void)
 {
 	if(!preferences_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "preferences.ui", NULL);
-		preferences_builder = gtk_builder_new_from_file(gstr);
+		preferences_builder = getBuilder("preferences.ui");
 		g_assert(preferences_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(preferences_builder, "preferences_dialog") != NULL);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_display_expression_status")), display_expression_status);
@@ -1207,11 +1224,6 @@ get_preferences_dialog (void)
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_result_font")), use_custom_result_font);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_expression_font")), use_custom_expression_font);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_status_font")), use_custom_status_font);
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(preferences_builder, "preferences_entry_wget_args")), wget_args.c_str());	
-		if(CALCULATOR->hasGVFS()) {
-			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_entry_wget_args")));
-			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_wget_args")));
-		}
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_result_font")), use_custom_result_font);	
 		gtk_font_button_set_font_name(GTK_FONT_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_button_result_font")), custom_result_font.c_str());
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_expression_font")), use_custom_expression_font);	
@@ -1276,10 +1288,8 @@ get_unit_edit_dialog (void)
 
 	if(!unitedit_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "unitedit.ui", NULL);
-		unitedit_builder = gtk_builder_new_from_file(gstr);
+		unitedit_builder = getBuilder("unitedit.ui");
 		g_assert(unitedit_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(unitedit_builder, "unit_edit_dialog") != NULL);
 		
@@ -1318,10 +1328,8 @@ get_function_edit_dialog (void)
 
 	if(!functionedit_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "functionedit.ui", NULL);
-		functionedit_builder = gtk_builder_new_from_file(gstr);
+		functionedit_builder = getBuilder("functionedit.ui");
 		g_assert(functionedit_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(functionedit_builder, "function_edit_dialog") != NULL);
 		
@@ -1388,11 +1396,8 @@ get_variable_edit_dialog (void)
 	
 	if(!variableedit_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "variableedit.ui", NULL);
-		variableedit_builder = gtk_builder_new_from_file(gstr);
-
+		variableedit_builder = getBuilder("variableedit.ui");
 		g_assert(variableedit_builder != NULL);
-		g_free(gstr);
 			
 		g_assert (gtk_builder_get_object(variableedit_builder, "variable_edit_dialog") != NULL);
 		
@@ -1428,10 +1433,8 @@ get_unknown_edit_dialog (void)
 	
 	if(!unknownedit_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "unknownedit.ui", NULL);
-		unknownedit_builder = gtk_builder_new_from_file(gstr);
+		unknownedit_builder = getBuilder("unknownedit.ui");
 		g_assert(unknownedit_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog") != NULL);
 
@@ -1470,10 +1473,8 @@ get_matrix_edit_dialog (void)
 {
 	if(!matrixedit_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "matrixedit.ui", NULL);
-		matrixedit_builder = gtk_builder_new_from_file(gstr);
+		matrixedit_builder = getBuilder("matrixedit.ui");
 		g_assert(matrixedit_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(matrixedit_builder, "matrix_edit_dialog") != NULL);
 		
@@ -1525,10 +1526,8 @@ get_matrix_dialog (void)
 {
 	if(!matrix_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "matrix.ui", NULL);
-		matrix_builder = gtk_builder_new_from_file(gstr);
+		matrix_builder = getBuilder("matrix.ui");
 		g_assert(matrix_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(matrix_builder, "matrix_dialog") != NULL);
 
@@ -1569,10 +1568,8 @@ get_dataset_edit_dialog (void)
 
 	if(!datasetedit_builder) {
 
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "datasetedit.ui", NULL);
-		datasetedit_builder = gtk_builder_new_from_file(gstr);
+		datasetedit_builder = getBuilder("datasetedit.ui");
 		g_assert(datasetedit_builder != NULL);
-		g_free(gstr);
 
 		g_assert (gtk_builder_get_object(datasetedit_builder, "dataset_edit_dialog") != NULL);
 		
@@ -1605,10 +1602,8 @@ get_dataproperty_edit_dialog (void)
 
 	if(!datasetedit_builder) {
 
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "datasetedit.ui", NULL);
-		datasetedit_builder = gtk_builder_new_from_file(gstr);
+		datasetedit_builder = getBuilder("datasetedit.ui");
 		g_assert(datasetedit_builder != NULL);
-		g_free(gstr);
 
 		g_assert (gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_dialog") != NULL);
 
@@ -1627,10 +1622,8 @@ get_names_edit_dialog (void)
 {
 	if(!namesedit_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "namesedit.ui", NULL);
-		namesedit_builder = gtk_builder_new_from_file(gstr);
+		namesedit_builder = getBuilder("namesedit.ui");
 		g_assert(namesedit_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(namesedit_builder, "names_edit_dialog") != NULL);
 		
@@ -1672,10 +1665,8 @@ get_csv_import_dialog (void)
 
 	if(!csvimport_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "csvimport.ui", NULL);
-		csvimport_builder = gtk_builder_new_from_file(gstr);
+		csvimport_builder = getBuilder("csvimport.ui");
 		g_assert(csvimport_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(csvimport_builder, "csv_import_dialog") != NULL);
 		
@@ -1713,10 +1704,8 @@ get_csv_export_dialog (void)
 
 	if(!csvexport_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "csvexport.ui", NULL);
-		csvexport_builder = gtk_builder_new_from_file(gstr);
+		csvexport_builder = getBuilder("csvexport.ui");
 		g_assert(csvexport_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(csvexport_builder, "csv_export_dialog") != NULL);
 		
@@ -1733,10 +1722,8 @@ get_csv_export_dialog (void)
 GtkWidget* get_set_base_dialog (void) {
 	if(!setbase_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "setbase.ui", NULL);
-		setbase_builder = gtk_builder_new_from_file(gstr);
+		setbase_builder = getBuilder("setbase.ui");
 		g_assert(setbase_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(setbase_builder, "set_base_dialog") != NULL);
 
@@ -1827,10 +1814,8 @@ get_nbases_dialog (void)
 {
 	if(!nbases_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "nbases.ui", NULL);
-		nbases_builder = gtk_builder_new_from_file(gstr);
+		nbases_builder = getBuilder("nbases.ui");
 		g_assert(nbases_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(nbases_builder, "nbases_dialog") != NULL);
 		
@@ -1872,10 +1857,8 @@ GtkWidget* get_argument_rules_dialog (void) {
 	
 	if(!argumentrules_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "argumentrules.ui", NULL);
-		argumentrules_builder = gtk_builder_new_from_file(gstr);
+		argumentrules_builder = getBuilder("argumentrules.ui");
 		g_assert(argumentrules_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(argumentrules_builder, "argument_rules_dialog") != NULL);
 		
@@ -1888,10 +1871,8 @@ GtkWidget* get_argument_rules_dialog (void) {
 GtkWidget* get_decimals_dialog (void) {
 	if(!decimals_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "decimals.ui", NULL);
-		decimals_builder = gtk_builder_new_from_file(gstr);
+		decimals_builder = getBuilder("decimals.ui");
 		g_assert(decimals_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(decimals_builder, "decimals_dialog") != NULL);
 		
@@ -1904,10 +1885,8 @@ GtkWidget* get_decimals_dialog (void) {
 GtkWidget* get_plot_dialog (void) {
 	if(!plot_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "plot.ui", NULL);
-		plot_builder = gtk_builder_new_from_file(gstr);
+		plot_builder = getBuilder("plot.ui");
 		g_assert(plot_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(plot_builder, "plot_dialog") != NULL);
 		
@@ -1939,10 +1918,8 @@ GtkWidget* get_plot_dialog (void) {
 GtkWidget* get_precision_dialog (void) {
 	if(!precision_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "precision.ui", NULL);
-		precision_builder = gtk_builder_new_from_file(gstr);
+		precision_builder = getBuilder("precision.ui");
 		g_assert(precision_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(precision_builder, "precision_dialog") != NULL);
 		
@@ -1956,10 +1933,8 @@ GtkWidget* get_unit_dialog (void) {
 
 	if(!unit_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "unit.ui", NULL);
-		unit_builder = gtk_builder_new_from_file(gstr);
+		unit_builder = getBuilder("unit.ui");
 		g_assert(unit_builder != NULL);
-		g_free(gstr);
 		
 		g_assert (gtk_builder_get_object(unit_builder, "unit_dialog") != NULL);
 		
@@ -2002,10 +1977,8 @@ GtkWidget* get_unit_dialog (void) {
 GtkWidget* get_periodic_dialog (void) {
 	if(!periodictable_builder) {
 	
-		gchar *gstr = g_build_filename (getPackageDataDir().c_str(), PACKAGE, "ui", "periodictable.ui", NULL);
-		periodictable_builder = gtk_builder_new_from_file(gstr);
+		periodictable_builder = getBuilder("periodictable.ui");
 		g_assert(periodictable_builder != NULL);
-		g_free(gstr);
 	
 		g_assert (gtk_builder_get_object(periodictable_builder, "periodic_dialog") != NULL);
 		

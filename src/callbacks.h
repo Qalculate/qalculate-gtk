@@ -64,6 +64,12 @@ protected:
 	virtual void run();
 };
 
+class FetchExchangeRatesThread : public Thread {
+protected:
+	virtual void run();
+};
+
+
 bool can_display_unicode_string_function(const char *str, void *w);
 void set_unicode_buttons();
 
@@ -185,6 +191,8 @@ void new_vector(GtkMenuItem *w, gpointer user_data);
 void new_unit(GtkMenuItem *w, gpointer user_data);
 void add_as_variable();
 
+void fetch_exchange_rates(int timeout);
+
 void edit_argument(Argument *arg = NULL);
 
 void edit_unknown(const char *category = "", Variable *v = NULL, GtkWidget *win = NULL);
@@ -224,7 +232,6 @@ void on_menu_item_meta_mode_delete_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_quit_activate(GtkMenuItem *w, gpointer user_data);
 void on_colorbutton_status_error_color_color_set(GtkColorButton *w, gpointer user_data);
 void on_colorbutton_status_warning_color_color_set(GtkColorButton *w, gpointer user_data);
-void on_preferences_entry_wget_args_changed(GtkEditable *w, gpointer user_data);
 void on_preferences_checkbutton_lower_case_numbers_toggled(GtkToggleButton *w, gpointer user_data);
 void on_preferences_checkbutton_lower_case_e_toggled(GtkToggleButton *w, gpointer user_data);
 void on_preferences_checkbutton_alternative_base_prefixes_toggled(GtkToggleButton *w, gpointer user_data);
@@ -337,7 +344,6 @@ void on_menu_item_limit_implicit_multiplication_activate(GtkMenuItem *w, gpointe
 void on_menu_item_adaptive_parsing_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_ignore_whitespace_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_no_special_implicit_multiplication_activate(GtkMenuItem *w, gpointer user_data);
-void fetch_exchange_rates(int timeout);
 void on_menu_item_fetch_exchange_rates_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_save_defs_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_save_mode_activate(GtkMenuItem *w, gpointer user_data);

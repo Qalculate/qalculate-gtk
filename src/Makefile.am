@@ -5,7 +5,6 @@
 AM_CPPFLAGS = \
 	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
 	-DPACKAGE_DOC_DIR=\""$(docdir)"\" \
-	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	@GTK_CFLAGS@ \
 	@GLIB_CFLAGS@ \
 	@QALCULATE_CFLAGS@
