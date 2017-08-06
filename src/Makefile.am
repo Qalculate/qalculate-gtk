@@ -12,6 +12,10 @@ AM_CPPFLAGS = \
 bin_PROGRAMS = @QALCULATE_GTK@
 EXTRA_PROGRAMS = qalculate-gtk
 
+if PLATFORM_WIN32
+qalculate_gtk_LDFLAGS = -mwindows
+endif
+
 qalculate_gtk_SOURCES = \
 	main.cc		main.h		\
 	interface.cc	interface.h	\

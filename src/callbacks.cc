@@ -277,7 +277,7 @@ string old_fromValue, old_toValue;
 #define CALCULATE_SPACE_W		gint space_w, space_h; PangoLayout *layout_space = gtk_widget_create_pango_layout(resultview, NULL); PANGO_TTP(layout_space, " "); pango_layout_get_pixel_size(layout_space, &space_w, &space_h); g_object_unref(layout_space);
 
 AnswerFunction::AnswerFunction() : MathFunction("answer", 1, 1, _("Utilities"), _("History Answer Value")) {
-	setArgumentDefinition(1, new IntegerArgument(_("History Index"), ARGUMENT_MIN_MAX_NONZERO));
+	setArgumentDefinition(1, new IntegerArgument(_("History Index"), ARGUMENT_MIN_MAX_NONZERO, true, true, INTEGER_TYPE_SINT));
 	setHidden(true);
 }
 int AnswerFunction::calculate(MathStructure &mstruct, const MathStructure &vargs, const EvaluationOptions&) {
@@ -292,7 +292,7 @@ int AnswerFunction::calculate(MathStructure &mstruct, const MathStructure &vargs
 	return 1;
 }
 ExpressionFunction::ExpressionFunction() : MathFunction("expression", 1, 1, _("Utilities"), _("History Parsed Expression")) {
-	setArgumentDefinition(1, new IntegerArgument(_("History Index"), ARGUMENT_MIN_MAX_NONZERO));
+	setArgumentDefinition(1, new IntegerArgument(_("History Index"), ARGUMENT_MIN_MAX_NONZERO, true, true, INTEGER_TYPE_SINT));
 	setHidden(true);
 }
 int ExpressionFunction::calculate(MathStructure &mstruct, const MathStructure &vargs, const EvaluationOptions&) {
@@ -14914,12 +14914,12 @@ void on_menu_item_help_activate(GtkMenuItem*, gpointer) {
 	GetModuleFileName(NULL, exepath, MAX_PATH);
 	string datadir(exepath);
 	datadir.resize(datadir.find_last_of('\\'));
-	if(datadir.substr(datadir.length() - 3) == "bin") {
+	if(datadir.substr(datadir.length() - 4) == "\\bin") {
 		datadir.resize(datadir.find_last_of('\\'));
 		datadir += "\\share\\doc\\";
 		datadir += PACKAGE;
 		datadir += "\\html\\";
-	} else if(datadir.substr(datadir.length() - 5) == ".libs") {
+	} else if(datadir.substr(datadir.length() - 6) == "\\.libs") {
 		datadir.resize(datadir.find_last_of('\\'));
 		datadir.resize(datadir.find_last_of('\\'));
 		datadir += "\\doc\\html\\";

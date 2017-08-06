@@ -72,7 +72,16 @@ static GOptionEntry options[] = {
 
 void create_application(GtkApplication *app) {
 
+#ifdef _WIN32
+	char exepath[MAX_PATH];
+	GetModuleFileName(NULL, exepath, MAX_PATH);
+	string datadir(exepath);
+	gchar *icon_path;
+	if(datadir.find("\\.libs") != string::npos) icon_path = g_build_filename(getPackageDataDir().c_str(), "data", "qalculate.png", NULL);
+	else icon_path = g_build_filename(getPackageDataDir().c_str(), "pixmaps", "qalculate.png", NULL);
+#else
 	gchar *icon_path = g_build_filename(getPackageDataDir().c_str(), "pixmaps", "qalculate.png", NULL);
+#endif
 	gtk_window_set_default_icon_from_file(icon_path, NULL);
 	g_free(icon_path);
 	

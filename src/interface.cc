@@ -457,12 +457,12 @@ GtkBuilder *getBuilder(const char *filename) {
 	GetModuleFileName(NULL, exepath, MAX_PATH);
 	string datadir(exepath);
 	datadir.resize(datadir.find_last_of('\\'));
-	if(datadir.substr(datadir.length() - 3) == "bin") {
+	if(datadir.substr(datadir.length() - 4) == "\\bin") {
 		datadir.resize(datadir.find_last_of('\\'));
 		datadir += "\\share\\";
 		datadir += PACKAGE;
 		datadir += "\\ui";
-	} else if(datadir.substr(datadir.length() - 5) == ".libs") {
+	} else if(datadir.substr(datadir.length() - 6) == "\\.libs") {
 		datadir.resize(datadir.find_last_of('\\'));
 		datadir.resize(datadir.find_last_of('\\'));
 		datadir += "\\data";
