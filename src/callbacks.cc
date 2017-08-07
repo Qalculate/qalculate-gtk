@@ -337,16 +337,18 @@ void show_help(const char *file, GObject *parent) {
 	} else {
 		surl += "\\doc\\";
 	}
+	surl += file;
+	if(surl.find_last_of('#') != string::npos) surl.resize(surl.find_last_of('#'));
 #else
 	surl = "file://" PACKAGE_DOC_DIR "/html/";
-#endif
 	surl += file;
+#endif
 	gtk_show_uri_on_window(GTK_WINDOW(parent), surl.c_str(), gtk_get_current_event_time(), &error);
 	if(error) {
 		gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
 		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help for Qalculate!.\n%s"), error_str);
-		g_signal_connect_swapped(dialog, "response", G_CALLBACK (gtk_widget_destroy), dialog);
-		gtk_widget_show(dialog);
+		gtk_dialog_run(GTK_DIALOG(dialog));
+		gtk_widget_destroy(dialog);
 		g_free(error_str);
 		g_error_free(error);
 	}
