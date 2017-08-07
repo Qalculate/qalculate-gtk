@@ -249,7 +249,18 @@ void create_application(GtkApplication *app) {
 	}
 	gtk_widget_queue_draw(resultview);
 
-	gchar *gstr = g_build_filename(g_get_home_dir(), ".qalculate", "accelmap", NULL);
+	gchar *gstr = g_build_filename(getLocalDir().c_str(), "accelmap", NULL);
+#ifndef _WIN32
+	if(!fileExists(gstr)) {
+		g_free(gstr);
+		gstr = g_build_filename(getOldLocalDir().c_str(), "accelmap", NULL);
+		gtk_accel_map_load(gstr);
+		g_remove(gstr);
+		g_rmdir(getOldLocalDir().c_str());
+		g_free(gstr);
+		return;
+	}
+#endif
 	gtk_accel_map_load(gstr);
 	g_free(gstr);
 }
@@ -281,13 +292,17 @@ static gint qalculate_handle_local_options(GtkApplication *app, GVariantDict *op
 	gchar *gstr_file = g_build_filename(getLocalDir().c_str(), "qalculate-gtk.cfg", NULL);
 	file = fopen(gstr_file, "r");
 	if(!file) {
+#ifndef _WIN32
 		gstr_oldfile = g_build_filename(getOldLocalDir().c_str(), "qalculate-gtk.cfg", NULL);
 		file = fopen(gstr_oldfile, "r");
 		if(!file) {
-			g_free(gstr_file);
 			g_free(gstr_oldfile);
+#endif
+			g_free(gstr_file);
 			return -1;
+#ifndef _WIN32
 		}
+#endif
 	}	
 	if(file) {
 		char line[100];

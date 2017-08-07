@@ -317,6 +317,41 @@ enum {
 	COMMAND_CONVERT_OPTIMAL
 };
 
+void show_help(const char *file, GObject *parent) {
+	GError *error = NULL;
+	string surl;
+#ifdef _WIN32
+	char exepath[MAX_PATH];
+	GetModuleFileName(NULL, exepath, MAX_PATH);
+	surl = exepath;
+	surl.resize(surl.find_last_of('\\'));
+	if(surl.substr(surl.length() - 4) == "\\bin") {
+		surl.resize(surl.find_last_of('\\'));
+		surl += "\\share\\doc\\";
+		surl += PACKAGE;
+		surl += "\\html\\";
+	} else if(surl.substr(surl.length() - 6) == "\\.libs") {
+		surl.resize(surl.find_last_of('\\'));
+		surl.resize(surl.find_last_of('\\'));
+		surl += "\\doc\\html\\";
+	} else {
+		surl += "\\doc\\";
+	}
+#else
+	surl = "file://" PACKAGE_DOC_DIR "/html/";
+#endif
+	surl += file;
+	gtk_show_uri_on_window(GTK_WINDOW(parent), surl.c_str(), gtk_get_current_event_time(), &error);
+	if(error) {
+		gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
+		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help for Qalculate!.\n%s"), error_str);
+		g_signal_connect_swapped(dialog, "response", G_CALLBACK (gtk_widget_destroy), dialog);
+		gtk_widget_show(dialog);
+		g_free(error_str);
+		g_error_free(error);
+	}
+}
+
 string fix_history_string(const string &str) {
 	string str2 = str;
 	gsub("&", "&amp;", str2);
@@ -7292,17 +7327,7 @@ run_unit_edit_dialog:
 		update_umenus();
 		unit_inserted(u);
 	} else if(response == GTK_RESPONSE_HELP) {
-		GError *error = NULL;
-		//gtk_show_uri(NULL, "ghelp:qalculate-gtk?qalculate-unit-creation", gtk_get_current_event_time(), &error);
-		gtk_show_uri_on_window(GTK_WINDOW(gtk_builder_get_object(unitedit_builder, "unit_edit_dialog")), "file://" PACKAGE_DOC_DIR "/html/qalculate-units.html#qalculate-unit-creation", gtk_get_current_event_time(), &error);
-		if(error) {
-			gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
-			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(unitedit_builder, "unit_edit_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help.\n%s"), error_str);			
-			gtk_dialog_run(GTK_DIALOG(d));
-			gtk_widget_destroy(d);
-			g_free(error_str);
-			g_error_free(error);
-		}
+		show_help("qalculate-units.html#qalculate-unit-creation", gtk_builder_get_object(unitedit_builder, "unit_edit_dialog")); 
 		goto run_unit_edit_dialog;
 	}
 	edited_unit = NULL;
@@ -7644,17 +7669,7 @@ run_function_edit_dialog:
 		update_fmenu();	
 		function_inserted(f);
 	} else if(response == GTK_RESPONSE_HELP) {
-		GError *error = NULL;
-		//gtk_show_uri(NULL, "ghelp:qalculate-gtk?qalculate-function-creation", gtk_get_current_event_time(), &error);
-		gtk_show_uri_on_window(GTK_WINDOW(gtk_builder_get_object(functionedit_builder, "function_edit_dialog")), "file://" PACKAGE_DOC_DIR "/html/qalculate-functions.html#qalculate-function-creation", gtk_get_current_event_time(), &error);
-		if(error) {
-			gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
-			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(functionedit_builder, "function_edit_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help.\n%s"), error_str);
-			gtk_dialog_run(GTK_DIALOG(d));
-			gtk_widget_destroy(d);
-			g_free(error_str);
-			g_error_free(error);
-		}
+		show_help("qalculate-functions.html#qalculate-function-creation", gtk_builder_get_object(functionedit_builder, "function_edit_dialog")); 
 		goto run_function_edit_dialog;
 	}
 	edited_function = NULL;
@@ -7829,17 +7844,7 @@ run_unknown_edit_dialog:
 		update_vmenu();
 		variable_inserted(v);
 	} else if(response == GTK_RESPONSE_HELP) {
-		GError *error = NULL;
-		//gtk_show_uri(NULL, "ghelp:qalculate-gtk?qalculate-variable-creation", gtk_get_current_event_time(), &error);
-		gtk_show_uri_on_window(GTK_WINDOW(gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog")), "file://" PACKAGE_DOC_DIR "/html/qalculate-variables.html#qalculate-variable-creation", gtk_get_current_event_time(), &error);		
-		if(error) {
-			gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
-			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help.\n%s"), error_str);
-			gtk_dialog_run(GTK_DIALOG(d));
-			gtk_widget_destroy(d);
-			g_free(error_str);
-			g_error_free(error);
-		}
+		show_help("qalculate-variables.html#qalculate-variable-creation", gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog")); 
 		goto run_unknown_edit_dialog;
 	}
 	edited_unknown = NULL;
@@ -8003,17 +8008,7 @@ run_variable_edit_dialog:
 		update_vmenu();
 		variable_inserted(v);
 	} else if(response == GTK_RESPONSE_HELP) {
-		GError *error = NULL;
-		//gtk_show_uri(NULL, "ghelp:qalculate-gtk?qalculate-variable-creation", gtk_get_current_event_time(), &error);
-		gtk_show_uri_on_window(GTK_WINDOW(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog")), "file://" PACKAGE_DOC_DIR "/html/qalculate-variables.html#qalculate-variable-creation", gtk_get_current_event_time(), &error);
-		if(error) {
-			gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
-			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help.\n%s"), error_str);
-			gtk_dialog_run(GTK_DIALOG(d));
-			gtk_widget_destroy(d);
-			g_free(error_str);
-			g_error_free(error);
-		}
+		show_help("qalculate-variables.html#qalculate-variable-creation", gtk_builder_get_object(variableedit_builder, "variable_edit_dialog")); 
 		goto run_variable_edit_dialog;
 	}
 	edited_variable = NULL;
@@ -8290,17 +8285,7 @@ run_matrix_edit_dialog:
 		update_vmenu();
 		variable_inserted(v);
 	} else if(response == GTK_RESPONSE_HELP) {
-		GError *error = NULL;
-		//gtk_show_uri(NULL, "ghelp:qalculate-gtk?qalculate-vectors-matrices", gtk_get_current_event_time(), &error);
-		gtk_show_uri_on_window(GTK_WINDOW(gtk_builder_get_object(matrixedit_builder, "matrix_edit_dialog")), "file://" PACKAGE_DOC_DIR "/html/qalculate-variables.html#qalculate-vectors-matrices", gtk_get_current_event_time(), &error);
-		if(error) {
-			gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
-			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(matrixedit_builder, "matrix_edit_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help.\n%s"), error_str);
-			gtk_dialog_run(GTK_DIALOG(d));
-			gtk_widget_destroy(d);
-			g_free(error_str);
-			g_error_free(error);
-		}
+		show_help("qalculate-variables.html#qalculate-vectors-matrices", gtk_builder_get_object(matrixedit_builder, "matrix_edit_dialog")); 
 		goto run_matrix_edit_dialog;
 	}
 	edited_matrix = NULL;
@@ -9467,7 +9452,7 @@ void convert_in_wUnits(int toFrom) {
 }
 
 /*
-	save definitions to ~/.qalculate/qalculate.cfg
+	save definitions to ~/.conf/qalculate/qalculate.cfg
 	the hard work is done in the Calculator class
 */
 void save_defs() {
@@ -10039,9 +10024,9 @@ void load_preferences() {
 		gstr_oldfile = g_build_filename(getOldLocalDir().c_str(), "qalculate-gtk.cfg", NULL);
 		file = fopen(gstr_oldfile, "r");
 		if(!file) {
-			g_free(gstr_file);
 			g_free(gstr_oldfile);
 #endif
+			g_free(gstr_file);
 			first_time = true;
 			return;
 #ifndef _WIN32
@@ -11762,6 +11747,7 @@ gboolean on_gcalc_exit(GtkWidget*, GdkEvent*, gpointer) {
 	if(plot_builder && gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")))) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
 	}
+	//save_accels();
 	if(save_mode_on_exit) {
 		save_mode();
 	} else {
@@ -11781,10 +11767,8 @@ gboolean on_gcalc_exit(GtkWidget*, GdkEvent*, gpointer) {
 }
 
 void save_accels() {
-	gchar *gstr = g_build_filename(g_get_home_dir(), ".qalculate", NULL);
-	g_mkdir(gstr, S_IRWXU);
-	g_free(gstr);
-	gstr = g_build_filename(g_get_home_dir(), ".qalculate", "accelmap", NULL);
+	g_mkdir(getLocalDir().c_str(), S_IRWXU);
+	gchar *gstr = g_build_filename(getLocalDir().c_str(), "accelmap", NULL);
 	gtk_accel_map_save(gstr);
 	g_free(gstr);
 }
@@ -14907,38 +14891,9 @@ void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
 	const gchar *authors[] = {"Hanna Knutsson", NULL};
 	gtk_show_about_dialog(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), "authors", authors, "comments", _("Powerful and easy to use calculator"), "license-type", GTK_LICENSE_GPL_2_0, "copyright", "Copyright © 2003–2007, 2008, 2016-2017 Hanna Knutsson", "program-name", "Qalculate! (GTK+)", "version", VERSION, "website", "http://qalculate.github.io/", NULL);
 }
+
 void on_menu_item_help_activate(GtkMenuItem*, gpointer) {
-	GError *error = NULL;
-#ifdef _WIN32
-	char exepath[MAX_PATH];
-	GetModuleFileName(NULL, exepath, MAX_PATH);
-	string datadir(exepath);
-	datadir.resize(datadir.find_last_of('\\'));
-	if(datadir.substr(datadir.length() - 4) == "\\bin") {
-		datadir.resize(datadir.find_last_of('\\'));
-		datadir += "\\share\\doc\\";
-		datadir += PACKAGE;
-		datadir += "\\html\\";
-	} else if(datadir.substr(datadir.length() - 6) == "\\.libs") {
-		datadir.resize(datadir.find_last_of('\\'));
-		datadir.resize(datadir.find_last_of('\\'));
-		datadir += "\\doc\\html\\";
-	} else {
-		datadir += "\\doc\\";
-	}
-	datadir += "index.html";
-	gtk_show_uri_on_window(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), datadir.c_str(), gtk_get_current_event_time(), &error);
-#else
-	gtk_show_uri_on_window(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), "file://" PACKAGE_DOC_DIR "/html/index.html", gtk_get_current_event_time(), &error);
-#endif
-	if(error) {
-		gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
-		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help for Qalculate!.\n%s"), error_str);
-		g_signal_connect_swapped(dialog, "response", G_CALLBACK (gtk_widget_destroy), dialog);
-		gtk_widget_show(dialog);
-		g_free(error_str);
-		g_error_free(error);
-	}
+	show_help("index.html", gtk_builder_get_object(main_builder, "main_window"));
 }
 
 /*
@@ -15882,17 +15837,7 @@ bool generate_plot(PlotParameters &pp, vector<MathStructure> &y_vectors, vector<
 	return true;
 }
 void on_plot_button_help_clicked(GtkButton, gpointer) {
-	GError *error = NULL;
-	//gtk_show_uri(NULL, "ghelp:qalculate-gtk?qalculate-plotting", gtk_get_current_event_time(), &error);
-	gtk_show_uri_on_window(GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), "file://" PACKAGE_DOC_DIR "/html/qalculate-plotting.html", gtk_get_current_event_time(), &error);	
-	if(error) {
-		gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
-		GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help.\n%s"), error_str);
-		gtk_dialog_run(GTK_DIALOG(d));
-		gtk_widget_destroy(d);
-		g_free(error_str);
-		g_error_free(error);
-	}
+	show_help("qalculate-plotting.html", gtk_builder_get_object(plot_builder, "plot_dialog")); 
 }
 void on_plot_button_save_clicked(GtkButton*, gpointer) {
 	GtkWidget *d;
