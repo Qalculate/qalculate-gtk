@@ -157,18 +157,8 @@ void create_application(GtkApplication *app) {
 	if(fetch_exchange_rates_at_startup && canfetch) {
 		fetch_exchange_rates(5);
 		while(gtk_events_pending()) gtk_main_iteration();
-		CALCULATOR->loadExchangeRates();
-	} else if(!CALCULATOR->loadExchangeRates() && first_time && canfetch) {
-		GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO, _("You need to download exchange rates to be able to convert between different currencies. You can later get current exchange rates by selecting “Update Exchange Rates” under the File menu.\n\nDo you want to fetch exchange rates now from the Internet?"));
-		int question_answer = gtk_dialog_run(GTK_DIALOG(edialog));
-		gtk_widget_destroy(edialog);
-		while(gtk_events_pending()) gtk_main_iteration();
-		if(question_answer == GTK_RESPONSE_YES) {
-			fetch_exchange_rates(5);
-			while(gtk_events_pending()) gtk_main_iteration();
-			CALCULATOR->loadExchangeRates();
-		}
 	}
+	CALCULATOR->loadExchangeRates();
 
 	string ans_str = _("ans");
 	vans[0] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str, m_undefined, _("Last Answer"), false));
