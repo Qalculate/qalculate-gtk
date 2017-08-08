@@ -318,12 +318,12 @@ enum {
 };
 
 void show_help(const char *file, GObject *parent) {
-	GError *error = NULL;
 	string surl;
 #ifdef _WIN32
 	char exepath[MAX_PATH];
 	GetModuleFileName(NULL, exepath, MAX_PATH);
-	surl = exepath;
+	surl = "file://";
+	surl += exepath;
 	surl.resize(surl.find_last_of('\\'));
 	if(surl.substr(surl.length() - 4) == "\\bin") {
 		surl.resize(surl.find_last_of('\\'));
@@ -337,17 +337,22 @@ void show_help(const char *file, GObject *parent) {
 	} else {
 		surl += "\\doc\\";
 	}
+	gsub("\\", "/", surl);
 	surl += file;
-	if(surl.find_last_of('#') != string::npos) surl.resize(surl.find_last_of('#'));
+	if((int) ShellExecuteA(NULL, "open", surl.c_str(), NULL, NULL, SW_SHOWNORMAL) <= 32) {
+		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help for Qalculate!."));
+		gtk_dialog_run(GTK_DIALOG(dialog));
+		gtk_widget_destroy(dialog);
+	}
 #else
+	GError *error = NULL;
 	surl = "file://" PACKAGE_DOC_DIR "/html/";
 	surl += file;
-#endif
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+#	if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 	gtk_show_uri_on_window(GTK_WINDOW(parent), surl.c_str(), gtk_get_current_event_time(), &error);
-#else
+#	else
 	gtk_show_uri(NULL, surl.c_str(), gtk_get_current_event_time(), &error);
-#endif
+#	endif
 	if(error) {
 		gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
 		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help for Qalculate!.\n%s"), error_str);
@@ -356,6 +361,7 @@ void show_help(const char *file, GObject *parent) {
 		g_free(error_str);
 		g_error_free(error);
 	}
+#endif
 }
 
 string fix_history_string(const string &str) {
