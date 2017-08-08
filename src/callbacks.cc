@@ -343,7 +343,11 @@ void show_help(const char *file, GObject *parent) {
 	surl = "file://" PACKAGE_DOC_DIR "/html/";
 	surl += file;
 #endif
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 	gtk_show_uri_on_window(GTK_WINDOW(parent), surl.c_str(), gtk_get_current_event_time(), &error);
+#else
+	gtk_show_uri(NULL, surl.c_str(), gtk_get_current_event_time(), &error);
+#endif
 	if(error) {
 		gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
 		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help for Qalculate!.\n%s"), error_str);
