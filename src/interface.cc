@@ -169,20 +169,20 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 	switch(eo.approximation) {
 		case APPROXIMATION_EXACT: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_always_exact")), TRUE);
+			if(initial_update) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), 0);
 			break;
 		}
 		case APPROXIMATION_TRY_EXACT: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_try_exact")), TRUE);
-			if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact")), FALSE);
+			if(initial_update) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), 1);
 			break;
 		}
 		case APPROXIMATION_APPROXIMATE: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_approximate")), TRUE);
-			if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact")), FALSE);
+			if(initial_update) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), 2);
 			break;
 		}
 	}
-	if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact")), eo.approximation == APPROXIMATION_EXACT);
 	
 	switch(eo.auto_post_conversion) {
 		case POST_CONVERSION_OPTIMAL: {
@@ -363,25 +363,28 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_allow_complex")), eo.allow_complex);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_allow_infinite")), eo.allow_infinite);
 
-	switch (po.number_fraction_format) {
+	switch(po.number_fraction_format) {
 		case FRACTION_DECIMAL: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
+			if(initial_update) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 0);
 			break;
 		}
 		case FRACTION_DECIMAL_EXACT: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal_exact")), TRUE);
+			if(initial_update) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 1);
 			break;
 		}
 		case FRACTION_COMBINED: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
+			if(initial_update) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 3);
 			break;		
 		}
 		case FRACTION_FRACTIONAL: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
+			if(initial_update) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 2);
 			break;		
 		}
 	}
-	if(initial_update) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gtk_builder_get_object(main_builder, "button_fraction")), po.number_fraction_format == FRACTION_FRACTIONAL);
 
 	set_assumptions_items(at, as);
 	
@@ -475,8 +478,117 @@ GtkBuilder *getBuilder(const char *filename) {
 #endif
 }
 
-void create_main_window (void) {
+void create_button_menus(void) {
+
+	GtkWidget *item, *sub;
+	Variable *v;
+	MathFunction *f;
 	
+	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_xy"));
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_sq->title(true).c_str(), insert_button_function, CALCULATOR->f_sq)
+	f = CALCULATOR->getFunction("inv");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_exp->title(true).c_str(), insert_button_function, CALCULATOR->f_exp)
+	f = CALCULATOR->getFunction("exp2");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	f = CALCULATOR->getFunction("exp10");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	f = CALCULATOR->getFunction("cis");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	
+	g_signal_connect(gtk_builder_get_object(main_builder, "button_sqrt"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_sqrt);
+	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_sqrt"));
+	f = CALCULATOR->getFunction("cbrt");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	f = CALCULATOR->getFunction("root");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	f = CALCULATOR->getFunction("sqrtpi");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	
+	g_signal_connect(gtk_builder_get_object(main_builder, "button_ln"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_ln);
+	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_ln"));
+	f = CALCULATOR->getFunction("log10");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	f = CALCULATOR->getFunction("log2");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_logn->title(true).c_str(), insert_button_function, CALCULATOR->f_logn)
+	
+	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_fac"));
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_factorial2->title(true).c_str(), insert_button_function, CALCULATOR->f_factorial2)
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_multifactorial->title(true).c_str(), insert_button_function, CALCULATOR->f_multifactorial)
+	f = CALCULATOR->getFunction("hyperfactorial");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	f = CALCULATOR->getFunction("superfactorial");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	f = CALCULATOR->getFunction("perm");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	f = CALCULATOR->getFunction("comb");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_binomial->title(true).c_str(), insert_button_function, CALCULATOR->f_binomial)
+	
+	g_signal_connect(gtk_builder_get_object(main_builder, "button_mod"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_mod);
+	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_mod"));
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_rem->title(true).c_str(), insert_button_function, CALCULATOR->f_rem)
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_gcd->title(true).c_str(), insert_button_function, CALCULATOR->f_gcd)
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_lcm->title(true).c_str(), insert_button_function, CALCULATOR->f_lcm)
+	
+	g_signal_connect(gtk_builder_get_object(main_builder, "button_sine"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_sin);
+	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_sin"));
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_sinh->title(true).c_str(), insert_button_function, CALCULATOR->f_sinh)
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_asin->title(true).c_str(), insert_button_function, CALCULATOR->f_asin)
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_asinh->title(true).c_str(), insert_button_function, CALCULATOR->f_asinh)
+	
+	g_signal_connect(gtk_builder_get_object(main_builder, "button_cosine"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_cos);
+	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_cos"));
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_cosh->title(true).c_str(), insert_button_function, CALCULATOR->f_cosh)
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_acos->title(true).c_str(), insert_button_function, CALCULATOR->f_acos)
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_acosh->title(true).c_str(), insert_button_function, CALCULATOR->f_acosh)
+	
+	g_signal_connect(gtk_builder_get_object(main_builder, "button_tan"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_tan);
+	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_tan"));
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_tanh->title(true).c_str(), insert_button_function, CALCULATOR->f_tanh)
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_atan->title(true).c_str(), insert_button_function, CALCULATOR->f_atan)
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_atanh->title(true).c_str(), insert_button_function, CALCULATOR->f_atanh)
+	
+	g_signal_connect(gtk_builder_get_object(main_builder, "button_sum"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_sum);
+	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_sum"));
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_product->title(true).c_str(), insert_button_function, CALCULATOR->f_product)
+	
+	
+	g_signal_connect(gtk_builder_get_object(main_builder, "button_mean"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->getFunction("mean"));
+	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_mean"));
+	f = CALCULATOR->getFunction("median");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	f = CALCULATOR->getFunction("var");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	f = CALCULATOR->getFunction("stdev");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	f = CALCULATOR->getFunction("stderr");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	f = CALCULATOR->getFunction("harmmean");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	f = CALCULATOR->getFunction("geomean");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	
+	g_signal_connect(gtk_builder_get_object(main_builder, "button_pi"), "clicked", G_CALLBACK(insert_button_variable), (gpointer) CALCULATOR->v_pi);
+	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_pi"));
+	MENU_ITEM_WITH_POINTER(CALCULATOR->v_e->title(true).c_str(), insert_button_variable, CALCULATOR->v_e)
+	v = CALCULATOR->getVariable("apery");
+	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
+	v = CALCULATOR->getVariable("catalan");
+	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
+	v = CALCULATOR->getVariable("euler");
+	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
+	v = CALCULATOR->getVariable("golden");
+	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
+	v = CALCULATOR->getVariable("omega");
+	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
+	v = CALCULATOR->getVariable("pythagoras");
+	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
+}
+
+void create_main_window(void) {
+
 	main_builder = getBuilder("main.ui");
 	g_assert(main_builder != NULL);
 	
@@ -491,6 +603,16 @@ void create_main_window (void) {
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
 	gtk_scrolled_window_set_overlay_scrolling(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "scrolled_result")), false);
 #endif
+
+	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_sin")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_sin")));
+	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_cos")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_cos")));
+	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_tan")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tan")));
+	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_sqrt")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_sqrt")));
+	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_xy")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_xy")));
+	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_ln")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_ln")));
+	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_sum")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_sum")));
+	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_mean")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_mean")));
+	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_pi")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_pi")));
 
 	expression = GTK_WIDGET(gtk_builder_get_object(main_builder, "expression"));
 	resultview = GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"));
@@ -508,9 +630,6 @@ void create_main_window (void) {
 	gtk_style_context_add_provider(gtk_widget_get_style_context(resultview), GTK_STYLE_PROVIDER(resultview_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(statuslabel_l), GTK_STYLE_PROVIDER(statuslabel_l_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(statuslabel_r), GTK_STYLE_PROVIDER(statuslabel_r_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gtk_builder_get_object(main_builder, "button_hyp")), hyp_is_on);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gtk_builder_get_object(main_builder, "button_inv")), inv_is_on);
 	
 	set_mode_items(printops, evalops, CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign(), rpn_mode, CALCULATOR->getPrecision(), true);
 

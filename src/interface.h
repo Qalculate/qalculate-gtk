@@ -125,6 +125,7 @@ enum {
 	PLOTLEGEND_MENU_OUTSIDE
 };
 
+void create_button_menus(void);
 void create_main_window (void);
 GtkWidget* get_functions_dialog (void);
 GtkWidget* get_variables_dialog (void);

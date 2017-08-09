@@ -183,6 +183,9 @@ void insert_variable(GtkMenuItem *w, gpointer user_data);
 void insert_prefix(GtkMenuItem *w, gpointer user_data);
 void insert_unit(GtkMenuItem *w, gpointer user_data);
 
+void insert_button_function(GtkMenuItem *w, gpointer user_data);
+void insert_button_variable(GtkWidget *w, gpointer user_data);
+
 void new_function(GtkMenuItem *w, gpointer user_data);
 void new_unknown(GtkMenuItem *w, gpointer user_data);
 void new_variable(GtkMenuItem *w, gpointer user_data);
@@ -222,6 +225,8 @@ void on_message_bar_response(GtkInfoBar *w, gint response_id, gpointer);
 void on_expression_populate_popup(GtkEntry *w, GtkMenu *menu, gpointer user_data);
 void on_combobox_base_changed(GtkComboBox *w, gpointer user_data);
 void on_combobox_numerical_display_changed(GtkComboBox *w, gpointer user_data);
+void on_combobox_fraction_mode_changed(GtkComboBox *w, gpointer user_data);
+void on_combobox_approximation_changed(GtkComboBox *w, gpointer user_data);
 void on_expander_keypad_expanded(GObject *o, GParamSpec *param_spec, gpointer user_data);
 void on_expander_history_expanded(GObject *o, GParamSpec *param_spec, gpointer user_data);
 void on_expander_stack_expanded(GObject *o, GParamSpec *param_spec, gpointer user_data);
