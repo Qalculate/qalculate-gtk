@@ -533,7 +533,7 @@ void set_unicode_buttons() {
 		
 		if(can_display_unicode_string_function(SIGN_SQRT, (void*) gtk_builder_get_object(main_builder, "label_sqrt"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sqrt")), SIGN_SQRT);
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sqrt")), "sqrt");
-		if(can_display_unicode_string_function("x̄", (void*) gtk_builder_get_object(main_builder, "label_mean"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_mean")), "x̄");
+		if(can_display_unicode_string_function("x̄", (void*) gtk_builder_get_object(main_builder, "label_mean"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_mean")), "<i>x̄</i>");
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_mean")), "mean");
 		if(can_display_unicode_string_function("∑", (void*) gtk_builder_get_object(main_builder, "label_sum"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sum")), "∑");
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sum")), "sum");
@@ -1763,7 +1763,7 @@ void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 						dp = ds->getNextProperty(&it);
 					}
 				}
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_edit")), TRUE);
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_edit")), !CALCULATOR->functions[i]->isBuiltin());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_deactivate")), TRUE);
 				if(CALCULATOR->functions[i]->isActive()) {
 					gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(functions_builder, "functions_buttonlabel_deactivate")), _("Deacti_vate"));
@@ -1991,7 +1991,7 @@ void on_tVariables_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 		selected_variable = v;
 		for(size_t i = 0; i < CALCULATOR->variables.size(); i++) {
 			if(CALCULATOR->variables[i] == selected_variable) {
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_edit")), !is_answer_variable(CALCULATOR->variables[i]));
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_edit")), !CALCULATOR->variables[i]->isBuiltin() && !is_answer_variable(CALCULATOR->variables[i]));
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_insert")), CALCULATOR->variables[i]->isActive());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_deactivate")), !is_answer_variable(CALCULATOR->variables[i]));
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_export")), CALCULATOR->variables[i]->isKnown());
@@ -2244,7 +2244,7 @@ void on_tUnits_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_button_delete")), CALCULATOR->units[i]->isLocal());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_button_convert_to")), TRUE);
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_button_insert")), CALCULATOR->units[i]->isActive());
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_button_edit")), TRUE);
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_button_edit")), !CALCULATOR->units[i]->isBuiltin());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_button_deactivate")), TRUE);
 				if(CALCULATOR->units[i]->isActive()) {
 					gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(units_builder, "units_buttonlabel_deactivate")), _("Deacti_vate"));
@@ -14659,6 +14659,7 @@ void on_variables_button_delete_clicked(GtkButton*, gpointer) {
 		}
 		//ensure that all references are removed in Calculator
 		v->destroy();
+
 		//update menus and trees
 		if(gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariables)), &model, &iter)) {
 			//reselect selected variable category

@@ -47,6 +47,7 @@
     <signal name="popped-up" handler="on_menu_x_popped_up" swapped="no"/>
     <child>
       <object class="GtkMenuItem" id="menu_item_x_default">
+        <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Default assumptions</property>
         <property name="use_underline">True</property>
@@ -55,6 +56,7 @@
     </child>
     <child>
       <object class="GtkSeparatorMenuItem" id="separator_x1">
+        <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
     </child>
@@ -189,6 +191,7 @@
     <signal name="popped-up" handler="on_menu_y_popped_up" swapped="no"/>
     <child>
       <object class="GtkMenuItem" id="menu_item_y_default">
+        <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Default assumptions</property>
         <property name="use_underline">True</property>
@@ -197,6 +200,7 @@
     </child>
     <child>
       <object class="GtkSeparatorMenuItem" id="separator_y1">
+        <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
     </child>
@@ -327,6 +331,7 @@
     <signal name="popped-up" handler="on_menu_z_popped_up" swapped="no"/>
     <child>
       <object class="GtkMenuItem" id="menu_item_z_default">
+        <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Default assumptions</property>
         <property name="use_underline">True</property>
@@ -335,6 +340,7 @@
     </child>
     <child>
       <object class="GtkSeparatorMenuItem" id="separator_z1">
+        <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
     </child>
