@@ -130,7 +130,6 @@
                   <object class="GtkTextView" id="simple_function_edit_textview_expression">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="tooltip_text" translatable="yes">Use \x for the first, \y for the second and \z for the third argument. For more information click the help button.</property>
                     <property name="pixels_above_lines">3</property>
                     <property name="wrap_mode">word</property>
                     <property name="left_margin">3</property>
@@ -156,7 +155,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If this is a matrix or vector</property>
+                    <property name="tooltip_text" translatable="yes">Use x, y and z for 1st, 2nd and 3rd function argument, respectively.</property>
                     <property name="use_underline">True</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
@@ -173,7 +172,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If this is a matrix or vector</property>
+                    <property name="tooltip_text" translatable="yes">Use \x, \y and \z for 1st, 2nd and 3rd function argument, respectively. This avoids potential conflicts with variables, functions and units.</property>
                     <property name="use_underline">True</property>
                     <property name="draw_indicator">True</property>
                     <property name="group">simple_function_edit_radiobutton_noslash</property>
