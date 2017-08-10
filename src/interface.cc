@@ -484,6 +484,11 @@ void create_button_menus(void) {
 	Variable *v;
 	MathFunction *f;
 	
+	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_bases"));
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_shift->title(true).c_str(), insert_button_function, CALCULATOR->f_shift)
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_xor->title(true).c_str(), insert_button_function, CALCULATOR->f_xor)
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_bitxor->title(true).c_str(), insert_button_function, CALCULATOR->f_bitxor)
+	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_xy"));
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_sq->title(true).c_str(), insert_button_function, CALCULATOR->f_sq)
 	f = CALCULATOR->getFunction("inv");
@@ -524,11 +529,14 @@ void create_button_menus(void) {
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	f = CALCULATOR->getFunction("comb");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	f = CALCULATOR->getFunction("derangements");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_binomial->title(true).c_str(), insert_button_function, CALCULATOR->f_binomial)
 	
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_mod"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_mod);
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_mod"));
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_rem->title(true).c_str(), insert_button_function, CALCULATOR->f_rem)
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_abs->title(true).c_str(), insert_button_function, CALCULATOR->f_abs)
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_gcd->title(true).c_str(), insert_button_function, CALCULATOR->f_gcd)
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_lcm->title(true).c_str(), insert_button_function, CALCULATOR->f_lcm)
 	
@@ -573,21 +581,23 @@ void create_button_menus(void) {
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_pi"), "clicked", G_CALLBACK(insert_button_variable), (gpointer) CALCULATOR->v_pi);
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_pi"));
 	MENU_ITEM_WITH_POINTER(CALCULATOR->v_e->title(true).c_str(), insert_button_variable, CALCULATOR->v_e)
-	v = CALCULATOR->getVariable("apery");
-	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
-	v = CALCULATOR->getVariable("catalan");
-	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
 	v = CALCULATOR->getVariable("euler");
 	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
 	v = CALCULATOR->getVariable("golden");
 	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
-	v = CALCULATOR->getVariable("omega");
-	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
 	v = CALCULATOR->getVariable("pythagoras");
+	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
+	MENU_SEPARATOR
+	v = CALCULATOR->getVariable("c");
+	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
+	v = CALCULATOR->getVariable("newtonian_constant");
+	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
+	v = CALCULATOR->getVariable("planck");
+	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
+	v = CALCULATOR->getVariable("boltzmann");
 	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_factorize"));
-	MENU_ITEM(_("Simplify"), on_menu_item_simplify_activate)
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_solve->title(true).c_str(), insert_button_function, CALCULATOR->f_solve)
 	f = CALCULATOR->getFunction("solve2");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
@@ -596,6 +606,9 @@ void create_button_menus(void) {
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_diff->title(true).c_str(), insert_button_function, CALCULATOR->f_diff)
 	f = CALCULATOR->getFunction("extremum");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	MENU_SEPARATOR
+	MENU_ITEM(_("Simplify"), on_menu_item_simplify_activate)
+	MENU_ITEM(_("Set unknowns"), on_menu_item_set_unknowns_activate)
 
 }
 
