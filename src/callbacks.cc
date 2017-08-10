@@ -67,7 +67,7 @@ extern gint expression_position;
 extern GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *setbase_builder, *datasetedit_builder, *datasets_builder, *decimals_builder;
 extern GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
 extern GtkBuilder *preferences_builder, *unit_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder;
-extern GtkBuilder *periodictable_builder;
+extern GtkBuilder *periodictable_builder, *simplefunctionedit_builder;
 
 bool changing_in_nbases_dialog;
 
@@ -533,7 +533,7 @@ void set_unicode_buttons() {
 		
 		if(can_display_unicode_string_function(SIGN_SQRT, (void*) gtk_builder_get_object(main_builder, "label_sqrt"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sqrt")), SIGN_SQRT);
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sqrt")), "sqrt");
-		if(can_display_unicode_string_function("x̄", (void*) gtk_builder_get_object(main_builder, "label_mean"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_mean")), "<i>x̄</i>");
+		if(can_display_unicode_string_function("x̄", (void*) gtk_builder_get_object(main_builder, "label_mean"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_mean")), "x̄");
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_mean")), "mean");
 		if(can_display_unicode_string_function("∑", (void*) gtk_builder_get_object(main_builder, "label_sum"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sum")), "∑");
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sum")), "sum");
@@ -7510,6 +7510,24 @@ void edit_argument(Argument *arg) {
 	gtk_widget_hide(dialog);
 }
 
+
+void delete_function(MathFunction *f) {
+	if(f && f->isLocal()) {
+		for(size_t i = 0; i < recent_functions.size(); i++) {
+			if(recent_functions[i] == f) {
+				recent_functions.erase(recent_functions.begin() + i);
+				gtk_widget_destroy(recent_function_items[i]);
+				recent_function_items.erase(recent_function_items.begin() + i);
+				break;
+			}
+		}
+		//ensure removal of all references in Calculator
+		f->destroy();
+		//update menus and trees
+		update_fmenu();
+	}
+}
+
 /*
 	display edit/new function dialog
 	creates new function if f == NULL, win is parent window
@@ -7702,6 +7720,101 @@ run_function_edit_dialog:
 	} else if(response == GTK_RESPONSE_HELP) {
 		show_help("qalculate-functions.html#qalculate-function-creation", gtk_builder_get_object(functionedit_builder, "function_edit_dialog")); 
 		goto run_function_edit_dialog;
+	}
+	edited_function = NULL;
+	names_edited = false;
+	editing_function = false;
+	gtk_widget_hide(dialog);
+}
+
+/*
+	display edit/new function dialog
+	creates new function if f == NULL, win is parent window
+*/
+void edit_function_simple(const char *category = "", MathFunction *f = NULL, GtkWidget *win = NULL) {
+
+	if(f && f->subtype() == SUBTYPE_DATA_SET) {
+		edit_dataset((DataSet*) f, win);
+		return;
+	}
+
+	GtkWidget *dialog = get_simple_function_edit_dialog();
+	if(win) gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(win));
+
+	edited_function = f;
+	editing_function = true;
+	
+	if(f) {
+		if(f->isLocal() && f->subtype() == SUBTYPE_USER_FUNCTION) gtk_window_set_title(GTK_WINDOW(dialog), _("Edit Function"));
+		else return edit_function(category, f, win);
+		if(((UserFunction*) f)->countSubfunctions() > 0 || f->countNames() > 1 || !f->condition().empty() || f->lastArgumentDefinitionIndex() > 0 || !f->description().empty() || !f->title(false).empty() || !f->category().empty()) return edit_function(category, f, win);
+	} else {
+		gtk_window_set_title(GTK_WINDOW(dialog), _("New Function"));
+	}
+
+	GtkTextBuffer *expression_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_textview_expression")));
+
+	//clear entries
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_entry_name")), "");
+	gtk_text_buffer_set_text(expression_buffer, "", -1);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_button_ok")), TRUE);
+
+	if(f) {
+		//fill in original paramaters
+		gtk_text_buffer_set_text(expression_buffer, CALCULATOR->localizeExpression(((UserFunction*) f)->formula()).c_str(), -1);
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_entry_name")), f->getName(1).name.c_str());
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_radiobutton_slash")), TRUE);
+	} else {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_radiobutton_noslash")), TRUE);
+	}
+
+	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_entry_name")));
+	
+run_simple_function_edit_dialog:
+	gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+	if(response == GTK_RESPONSE_OK) {
+		//clicked "OK"
+		string str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_entry_name")));
+		remove_blank_ends(str);
+		if(str.empty()) {
+			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_entry_name")));
+			show_message(_("Empty name field."), dialog);
+			goto run_simple_function_edit_dialog;
+		}
+		GtkTextIter e_iter_s, e_iter_e;
+		gtk_text_buffer_get_start_iter(expression_buffer, &e_iter_s);
+		gtk_text_buffer_get_end_iter(expression_buffer, &e_iter_e);		
+		string str2 = CALCULATOR->unlocalizeExpression(gtk_text_buffer_get_text(expression_buffer, &e_iter_s, &e_iter_e, FALSE), evalops.parse_options);
+		remove_blank_ends(str2);
+		gsub("\n", " ", str2);
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_radiobutton_noslash")))) {
+			gsub("x", "\\x", str2);
+			gsub("y", "\\y", str2);
+			gsub("z", "\\z", str2);
+		}
+		if(str2.empty()) {
+			//no expression/relation -- open dialog again
+			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_textview_expression")));
+			show_message(_("Empty expression field."), dialog);
+			goto run_simple_function_edit_dialog;
+		}
+		//function with the same name exists -- overwrite or open the dialog again
+		if((!f || !f->hasName(str)) && CALCULATOR->functionNameTaken(str, f) && !ask_question(_("A function with the same name already exists.\nDo you want to overwrite the function?"), dialog)) {
+			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_entry_name")));
+			goto run_simple_function_edit_dialog;
+		}
+		if(f) {
+			//edited an existing function
+			f->setLocal(true);
+			((UserFunction*) f)->setFormula(str2);
+			f->setName(str, 1);
+		} else {
+			//new function
+			f = new UserFunction(category, str, str2);
+			CALCULATOR->addFunction(f);
+		}
+		update_fmenu();
+		function_inserted(f);
 	}
 	edited_function = NULL;
 	names_edited = false;
@@ -9104,6 +9217,9 @@ void edit_names(ExpressionItem *item, const gchar *namestr, GtkWidget *win, bool
 	
 	GtkTreeIter iter;
 	
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_editbox1")), !(item->isBuiltin() && !(item->type() == TYPE_FUNCTION && item->subtype() == SUBTYPE_DATA_SET)));
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_editbox2")), !(item->isBuiltin() && !(item->type() == TYPE_FUNCTION && item->subtype() == SUBTYPE_DATA_SET)));
+	
 	if(!names_edited) {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_button_modify")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_button_remove")), FALSE);
@@ -9210,6 +9326,12 @@ bool is_number(const gchar *expr) {
 	}
 	return true;
 }
+bool last_is_number(const gchar *expr) {
+	string str = CALCULATOR->unlocalizeExpression(expr, evalops.parse_options);
+	CALCULATOR->parseSigns(str);
+	if(str.empty()) return false;
+	return is_not_in(OPERATORS SPACES SEXADOT DOT LEFT_VECTOR_WRAP LEFT_PARENTHESIS COMMAS, str.back());
+}
 
 /*
 	insert one-argument function when button clicked
@@ -9219,7 +9341,7 @@ void insertButtonFunction(const gchar *text, bool append_space = true) {
 	const gchar *expr = gtk_entry_get_text(GTK_ENTRY(expression));
 	int old_length = g_utf8_strlen(expr, -1);
 	// special case: the user just entered a number, then select all, so that it gets executed
-	if(gtk_editable_get_position(GTK_EDITABLE(expression)) == old_length && is_number(expr)) {
+	if(gtk_editable_get_position(GTK_EDITABLE(expression)) == old_length && last_is_number(expr)) {
 		gtk_editable_select_region(GTK_EDITABLE(expression), 0, old_length);
 	}
 	if(gtk_editable_get_selection_bounds(GTK_EDITABLE(expression), &start, &end)) {
@@ -12081,7 +12203,7 @@ void on_button_i_clicked(GtkButton*, gpointer) {
 	insert_text("i");
 }
 void on_button_new_function_clicked(GtkButton*, gpointer) {
-	edit_function("", NULL, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
+	edit_function_simple("", NULL, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 }
 void on_button_fac_clicked(GtkButton*, gpointer) {
 	insert_text("!");
@@ -13146,6 +13268,68 @@ void on_menu_item_z_unknown_activate(GtkMenuItem *w, gpointer) {
 	set_sign("z", ASSUMPTION_SIGN_UNKNOWN);
 }
 
+void on_popup_menu_fx_edit_activate(GtkMenuItem *w, gpointer data) {
+	edit_function_simple("", (MathFunction*) data, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
+}
+void on_popup_menu_fx_delete_activate(GtkMenuItem *w, gpointer data) {
+	// For some reason a dialog is required to close/update the menu with the deleted function
+	if(ask_question(_("Are you sure you want to delete the function?"), GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")))) {
+		delete_function((MathFunction*) data);
+	}
+}
+
+gulong on_popup_menu_fx_edit_activate_handler = 0, on_popup_menu_fx_delete_activate_handler = 0;
+
+gboolean on_menu_fx_popup_menu(GtkWidget*, gpointer data) {
+	if(b_busy) return TRUE;
+	if(on_popup_menu_fx_edit_activate_handler != 0) g_signal_handler_disconnect(gtk_builder_get_object(main_builder, "popup_menu_fx_edit"), on_popup_menu_fx_edit_activate_handler);
+	if(on_popup_menu_fx_delete_activate_handler != 0) g_signal_handler_disconnect(gtk_builder_get_object(main_builder, "popup_menu_fx_delete"), on_popup_menu_fx_delete_activate_handler);
+	on_popup_menu_fx_edit_activate_handler = g_signal_connect(gtk_builder_get_object(main_builder, "popup_menu_fx_edit"), "activate", G_CALLBACK(on_popup_menu_fx_edit_activate), data);
+	on_popup_menu_fx_delete_activate_handler = g_signal_connect(gtk_builder_get_object(main_builder, "popup_menu_fx_delete"), "activate", G_CALLBACK(on_popup_menu_fx_delete_activate), data);
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+	gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_fx")), NULL);
+#else
+	gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_fx")), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
+#endif
+	return TRUE;
+}
+
+gboolean on_menu_fx_button_press(GtkWidget *widget, GdkEventButton *event, gpointer data) {
+	/* Ignore double-clicks and triple-clicks */
+	if(gdk_event_triggers_context_menu((GdkEvent *) event) && event->type == GDK_BUTTON_PRESS) {
+		on_menu_fx_popup_menu(widget, data);
+		return TRUE;
+	}
+	return FALSE;
+}
+
+void on_menu_fx_popped_up(GtkMenu *sub, gpointer) {
+	GtkWidget *item;
+	GList *list = gtk_container_get_children(GTK_CONTAINER(sub));
+	for(GList *l = list; l != NULL; l = l->next) {
+		gtk_widget_destroy(GTK_WIDGET(l->data));
+	}
+	g_list_free(list);
+	bool b = false;
+	for(size_t i = 0; i < CALCULATOR->functions.size(); i++) {
+		if(CALCULATOR->functions[i]->isLocal() && !CALCULATOR->functions[i]->isBuiltin() && CALCULATOR->functions[i]->isActive() && !CALCULATOR->functions[i]->isHidden()) {
+			MENU_ITEM_WITH_POINTER(CALCULATOR->functions[i]->title(true).c_str(), insert_button_function, CALCULATOR->functions[i])
+			g_signal_connect(G_OBJECT(item), "button-press-event", G_CALLBACK(on_menu_fx_button_press), CALCULATOR->functions[i]);
+			g_signal_connect(G_OBJECT(item), "popup-menu", G_CALLBACK(on_menu_fx_popup_menu), (gpointer) CALCULATOR->functions[i]);
+			b = true;
+		}
+	}
+	bool b2 = false;
+	for(size_t i = 0; i < recent_functions.size(); i++) {
+		if(!recent_functions[i]->isLocal() && CALCULATOR->stillHasFunction(recent_functions[i])) {
+			if(!b2 && b) {
+				MENU_SEPARATOR
+				b2 = true;
+			}
+			MENU_ITEM_WITH_POINTER(recent_functions[i]->title(true).c_str(), insert_button_function, recent_functions[i])
+		}
+	}
+}
 
 void on_menu_item_enable_variables_activate(GtkMenuItem *w, gpointer) {
 	evalops.parse_options.variables_enabled = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
@@ -13220,6 +13404,9 @@ void on_menu_item_new_vector_activate(GtkMenuItem*, gpointer) {
 }
 void on_menu_item_new_function_activate(GtkMenuItem*, gpointer) {
 	edit_function("", NULL, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
+}
+void on_menu_item_new_function_simple_activate(GtkMenuItem*, gpointer) {
+	edit_function_simple("", NULL, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 }
 void on_menu_item_new_dataset_activate(GtkMenuItem*, gpointer) {
 	edit_dataset(NULL, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));

@@ -4,8 +4,8 @@
 
 ui_DATA = argumentrules.ui csvexport.ui csvimport.ui datasetedit.ui datasets.ui decimals.ui \
 	functionedit.ui functions.ui main.ui matrix.ui matrixedit.ui namesedit.ui nbases.ui \
-	setbase.ui periodictable.ui plot.ui precision.ui preferences.ui unitedit.ui \
-	units.ui unknownedit.ui variableedit.ui variables.ui
+	setbase.ui periodictable.ui plot.ui precision.ui preferences.ui simplefunctionedit.ui \
+	unitedit.ui units.ui unknownedit.ui variableedit.ui variables.ui
 uidir = $(datadir)/$(PACKAGE)/ui
 
 # this is for gnome

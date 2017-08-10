@@ -10,6 +10,15 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
   </object>
+  <object class="GtkMenu" id="menu_factorize">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+  </object>
+  <object class="GtkMenu" id="menu_fx">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <signal name="popped-up" handler="on_menu_fx_popped_up" swapped="no"/>
+  </object>
   <object class="GtkMenu" id="menu_ln">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -543,6 +552,14 @@
                                 <property name="label" translatable="yes">Function</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="on_menu_item_new_function_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkMenuItem" id="menu_item_new_function_simple">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Function (simplified)</property>
+                                <signal name="activate" handler="on_menu_item_new_function_simple_activate" swapped="no"/>
                               </object>
                             </child>
                             <child>
@@ -3055,7 +3072,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                           <object class="GtkBox" id="vbox3">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="valign">start</property>
                             <property name="orientation">vertical</property>
                             <property name="spacing">6</property>
                             <child>
@@ -3063,6 +3079,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="hexpand">True</property>
+                                <property name="vexpand">True</property>
                                 <property name="row_spacing">6</property>
                                 <property name="column_spacing">6</property>
                                 <property name="row_homogeneous">True</property>
@@ -3280,7 +3297,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel" id="label_xy">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">&lt;i&gt;x&lt;sup&gt;y&lt;/sup&gt;&lt;/i&gt;</property>
+                                            <property name="label">x&lt;sup&gt;&lt;small&gt;y&lt;/small&gt;&lt;/sup&gt;</property>
                                             <property name="use_markup">True</property>
                                           </object>
                                         </child>
@@ -3729,7 +3746,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel" id="label_fac">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">&lt;i&gt;x&lt;/i&gt;!</property>
+                                            <property name="label">x!</property>
                                             <property name="use_markup">True</property>
                                           </object>
                                         </child>
@@ -3764,21 +3781,100 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="button_factorize">
+                                  <object class="GtkBox" id="box_fx">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="focus_on_click">False</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Factorize</property>
-                                    <property name="use_underline">True</property>
-                                    <signal name="clicked" handler="on_button_factorize_clicked" swapped="no"/>
+                                    <property name="can_focus">False</property>
                                     <child>
-                                      <object class="GtkLabel" id="label_factorize">
+                                      <object class="GtkButton" id="button_new_function">
                                         <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="label">(&lt;i&gt;x&lt;/i&gt;+&lt;i&gt;y&lt;/i&gt;)&lt;sup&gt;2&lt;/sup&gt;</property>
-                                        <property name="use_markup">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="focus_on_click">False</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="tooltip_text" translatable="yes">Create a new function</property>
+                                        <property name="use_underline">True</property>
+                                        <signal name="clicked" handler="on_button_new_function_clicked" swapped="no"/>
+                                        <child>
+                                          <object class="GtkLabel" id="label_functions">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="label">&lt;i&gt;f(x)&lt;/i&gt;</property>
+                                            <property name="use_markup">True</property>
+                                          </object>
+                                        </child>
                                       </object>
+                                      <packing>
+                                        <property name="expand">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkMenuButton" id="mb_fx">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="focus_on_click">False</property>
+                                        <property name="receives_default">True</property>
+                                        <property name="popup">menu_fx</property>
+                                        <child>
+                                          <placeholder/>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkBox" id="box_factorize">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <child>
+                                      <object class="GtkButton" id="button_factorize">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="focus_on_click">False</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="tooltip_text" translatable="yes">Factorize</property>
+                                        <property name="use_underline">True</property>
+                                        <signal name="clicked" handler="on_button_factorize_clicked" swapped="no"/>
+                                        <child>
+                                          <object class="GtkLabel" id="label_factorize">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="label">a(x)&lt;sup&gt;b&lt;/sup&gt;</property>
+                                            <property name="use_markup">True</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkMenuButton" id="mb_factorize">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="focus_on_click">False</property>
+                                        <property name="receives_default">True</property>
+                                        <property name="popup">menu_factorize</property>
+                                        <child>
+                                          <placeholder/>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
                                     </child>
                                   </object>
                                   <packing>
@@ -3787,117 +3883,16 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkBox" id="hbox3">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="halign">start</property>
-                                    <property name="valign">center</property>
-                                    <property name="border_width">6</property>
-                                    <property name="spacing">6</property>
-                                    <child>
-                                      <object class="GtkRadioButton" id="radiobutton_degrees">
-                                        <property name="label" translatable="yes">Degrees</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="focus_on_click">False</property>
-                                        <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">Degrees</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="active">True</property>
-                                        <property name="draw_indicator">True</property>
-                                        <signal name="toggled" handler="on_radiobutton_degrees_toggled" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkRadioButton" id="radiobutton_radians">
-                                        <property name="label" translatable="yes">Radians</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="focus_on_click">False</property>
-                                        <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">Radians</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="draw_indicator">True</property>
-                                        <property name="group">radiobutton_degrees</property>
-                                        <signal name="toggled" handler="on_radiobutton_radians_toggled" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkRadioButton" id="radiobutton_gradians">
-                                        <property name="label" translatable="yes">Gradians</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="focus_on_click">False</property>
-                                        <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">Gradians</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="draw_indicator">True</property>
-                                        <property name="group">radiobutton_degrees</property>
-                                        <signal name="toggled" handler="on_radiobutton_gradians_toggled" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">2</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkRadioButton" id="radiobutton_no_default_angle_unit">
-                                        <property name="label" translatable="yes">None</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="focus_on_click">False</property>
-                                        <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">No default angle unit</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="draw_indicator">True</property>
-                                        <property name="group">radiobutton_degrees</property>
-                                        <signal name="toggled" handler="on_radiobutton_no_default_angle_unit_toggled" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">3</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">3</property>
-                                    <property name="width">4</property>
-                                  </packing>
+                                  <placeholder/>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="button_new_function">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="focus_on_click">False</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Create a new function</property>
-                                    <property name="use_underline">True</property>
-                                    <signal name="clicked" handler="on_button_new_function_clicked" swapped="no"/>
-                                    <child>
-                                      <object class="GtkLabel" id="label_functions">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="label">&lt;i&gt;f(x)&lt;/i&gt;</property>
-                                        <property name="use_markup">True</property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">0</property>
-                                  </packing>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
                                 </child>
                               </object>
                               <packing>
@@ -4857,6 +4852,26 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
     </child>
     <child type="titlebar">
       <placeholder/>
+    </child>
+  </object>
+  <object class="GtkMenu" id="popup_menu_fx">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_fx_edit">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Edit</property>
+        <property name="use_underline">True</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_fx_delete">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Delete</property>
+        <property name="use_underline">True</property>
+      </object>
     </child>
   </object>
   <object class="GtkMenu" id="popup_menu_historyview">

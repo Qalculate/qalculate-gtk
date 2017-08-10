@@ -71,7 +71,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="hbox98">
+              <object class="GtkBox" id="names_edit_editbox1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="spacing">6</property>
@@ -185,7 +185,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkGrid">
+              <object class="GtkGrid" id="names_edit_editbox2">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="row_spacing">6</property>
@@ -311,5 +311,8 @@
     <action-widgets>
       <action-widget response="-7">closebutton1</action-widget>
     </action-widgets>
+    <child>
+      <placeholder/>
+    </child>
   </object>
 </interface>

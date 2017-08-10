@@ -31,7 +31,7 @@
 extern GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *datasetedit_builder, *datasets_builder, *setbase_builder, *decimals_builder;
 extern GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
 extern GtkBuilder *preferences_builder, *unit_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder;
-extern GtkBuilder *periodictable_builder;
+extern GtkBuilder *periodictable_builder, *simplefunctionedit_builder;
 extern vector<mode_struct> modes;
 
 GtkWidget *tFunctionCategories;
@@ -208,22 +208,22 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 	switch(eo.parse_options.angle_unit) {
 		case ANGLE_UNIT_DEGREES: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_degrees")), TRUE);
-			if(initial_update) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gtk_builder_get_object(main_builder, "radiobutton_degrees")), TRUE);
+			//if(initial_update) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gtk_builder_get_object(main_builder, "radiobutton_degrees")), TRUE);
 			break;
 		}
 		case ANGLE_UNIT_RADIANS: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_radians")), TRUE);
-			if(initial_update) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gtk_builder_get_object(main_builder, "radiobutton_radians")), TRUE);
+			//if(initial_update) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gtk_builder_get_object(main_builder, "radiobutton_radians")), TRUE);
 			break;
 		}
 		case ANGLE_UNIT_GRADIANS: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_gradians")), TRUE);
-			if(initial_update) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gtk_builder_get_object(main_builder, "radiobutton_gradians")), TRUE);
+			//if(initial_update) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gtk_builder_get_object(main_builder, "radiobutton_gradians")), TRUE);
 			break;
 		}
 		default: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_no_default_angle_unit")), TRUE);
-			if(initial_update) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gtk_builder_get_object(main_builder, "radiobutton_no_default_angle_unit")), TRUE);
+			//if(initial_update) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gtk_builder_get_object(main_builder, "radiobutton_no_default_angle_unit")), TRUE);
 			break;
 		}
 	}
@@ -585,6 +585,18 @@ void create_button_menus(void) {
 	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
 	v = CALCULATOR->getVariable("pythagoras");
 	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
+	
+	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_factorize"));
+	MENU_ITEM(_("Simplify"), on_menu_item_simplify_activate)
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_solve->title(true).c_str(), insert_button_function, CALCULATOR->f_solve)
+	f = CALCULATOR->getFunction("solve2");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	f = CALCULATOR->getFunction("linearfunction");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_diff->title(true).c_str(), insert_button_function, CALCULATOR->f_diff)
+	f = CALCULATOR->getFunction("extremum");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+
 }
 
 void create_main_window(void) {
@@ -1509,6 +1521,25 @@ get_function_edit_dialog (void)
 	
 	return GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_dialog"));
 }
+
+GtkWidget*
+get_simple_function_edit_dialog (void)
+{
+
+	if(!simplefunctionedit_builder) {
+	
+		simplefunctionedit_builder = getBuilder("simplefunctionedit.ui");
+		g_assert(simplefunctionedit_builder != NULL);
+	
+		g_assert(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_dialog") != NULL);
+		
+		gtk_builder_connect_signals(simplefunctionedit_builder, NULL);
+	
+	}
+	
+	return GTK_WIDGET(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_dialog"));
+}
+
 GtkWidget*
 get_variable_edit_dialog (void)
 {
