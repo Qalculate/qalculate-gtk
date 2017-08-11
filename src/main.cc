@@ -216,9 +216,9 @@ void create_application(GtkApplication *app) {
 	generate_functions_tree_struct();
 	generate_variables_tree_struct();
 	create_fmenu();
-	create_vmenu();	
+	create_vmenu();
 	create_umenu();
-	//create_pmenu();	
+	//create_pmenu();
 	create_umenu2();
 	create_pmenu2();
 

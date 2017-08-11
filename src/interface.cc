@@ -119,6 +119,9 @@ extern deque<int> inhistory_type;
 
 gint win_height, win_width, history_height, keypad_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
 
+extern Unit *latest_button_unit, *latest_button_currency;
+extern string latest_button_unit_pre, latest_button_currency_pre;
+
 bool rpn_off_accelerator_set;
 
 gchar history_error_color[8];
@@ -491,45 +494,45 @@ void create_button_menus(void) {
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_xy"));
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_sq->title(true).c_str(), insert_button_function, CALCULATOR->f_sq)
-	f = CALCULATOR->getFunction("inv");
+	f = CALCULATOR->getActiveFunction("inv");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_exp->title(true).c_str(), insert_button_function, CALCULATOR->f_exp)
-	f = CALCULATOR->getFunction("exp2");
+	f = CALCULATOR->getActiveFunction("exp2");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
-	f = CALCULATOR->getFunction("exp10");
+	f = CALCULATOR->getActiveFunction("exp10");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
-	f = CALCULATOR->getFunction("cis");
+	f = CALCULATOR->getActiveFunction("cis");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_sqrt"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_sqrt);
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_sqrt"));
-	f = CALCULATOR->getFunction("cbrt");
+	f = CALCULATOR->getActiveFunction("cbrt");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
-	f = CALCULATOR->getFunction("root");
+	f = CALCULATOR->getActiveFunction("root");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
-	f = CALCULATOR->getFunction("sqrtpi");
+	f = CALCULATOR->getActiveFunction("sqrtpi");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_ln"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_ln);
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_ln"));
-	f = CALCULATOR->getFunction("log10");
+	f = CALCULATOR->getActiveFunction("log10");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
-	f = CALCULATOR->getFunction("log2");
+	f = CALCULATOR->getActiveFunction("log2");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_logn->title(true).c_str(), insert_button_function, CALCULATOR->f_logn)
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_fac"));
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_factorial2->title(true).c_str(), insert_button_function, CALCULATOR->f_factorial2)
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_multifactorial->title(true).c_str(), insert_button_function, CALCULATOR->f_multifactorial)
-	f = CALCULATOR->getFunction("hyperfactorial");
+	f = CALCULATOR->getActiveFunction("hyperfactorial");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
-	f = CALCULATOR->getFunction("superfactorial");
+	f = CALCULATOR->getActiveFunction("superfactorial");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
-	f = CALCULATOR->getFunction("perm");
+	f = CALCULATOR->getActiveFunction("perm");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
-	f = CALCULATOR->getFunction("comb");
+	f = CALCULATOR->getActiveFunction("comb");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
-	f = CALCULATOR->getFunction("derangements");
+	f = CALCULATOR->getActiveFunction("derangements");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_binomial->title(true).c_str(), insert_button_function, CALCULATOR->f_binomial)
 	
@@ -561,50 +564,52 @@ void create_button_menus(void) {
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_sum"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_sum);
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_sum"));
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_product->title(true).c_str(), insert_button_function, CALCULATOR->f_product)
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_for->title(true).c_str(), insert_button_function, CALCULATOR->f_for)
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_if->title(true).c_str(), insert_button_function, CALCULATOR->f_if)
 	
 	
-	g_signal_connect(gtk_builder_get_object(main_builder, "button_mean"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->getFunction("mean"));
+	g_signal_connect(gtk_builder_get_object(main_builder, "button_mean"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->getActiveFunction("mean"));
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_mean"));
-	f = CALCULATOR->getFunction("median");
+	f = CALCULATOR->getActiveFunction("median");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
-	f = CALCULATOR->getFunction("var");
+	f = CALCULATOR->getActiveFunction("var");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
-	f = CALCULATOR->getFunction("stdev");
+	f = CALCULATOR->getActiveFunction("stdev");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
-	f = CALCULATOR->getFunction("stderr");
+	f = CALCULATOR->getActiveFunction("stderr");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
-	f = CALCULATOR->getFunction("harmmean");
+	f = CALCULATOR->getActiveFunction("harmmean");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
-	f = CALCULATOR->getFunction("geomean");
+	f = CALCULATOR->getActiveFunction("geomean");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_pi"), "clicked", G_CALLBACK(insert_button_variable), (gpointer) CALCULATOR->v_pi);
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_pi"));
 	MENU_ITEM_WITH_POINTER(CALCULATOR->v_e->title(true).c_str(), insert_button_variable, CALCULATOR->v_e)
-	v = CALCULATOR->getVariable("euler");
+	v = CALCULATOR->getActiveVariable("euler");
 	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
-	v = CALCULATOR->getVariable("golden");
+	v = CALCULATOR->getActiveVariable("golden");
 	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
-	v = CALCULATOR->getVariable("pythagoras");
+	v = CALCULATOR->getActiveVariable("pythagoras");
 	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
 	MENU_SEPARATOR
-	v = CALCULATOR->getVariable("c");
+	v = CALCULATOR->getActiveVariable("c");
 	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
-	v = CALCULATOR->getVariable("newtonian_constant");
+	v = CALCULATOR->getActiveVariable("newtonian_constant");
 	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
-	v = CALCULATOR->getVariable("planck");
+	v = CALCULATOR->getActiveVariable("planck");
 	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
-	v = CALCULATOR->getVariable("boltzmann");
+	v = CALCULATOR->getActiveVariable("boltzmann");
 	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_factorize"));
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_solve->title(true).c_str(), insert_button_function, CALCULATOR->f_solve)
-	f = CALCULATOR->getFunction("solve2");
+	f = CALCULATOR->getActiveFunction("solve2");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
-	f = CALCULATOR->getFunction("linearfunction");
+	f = CALCULATOR->getActiveFunction("linearfunction");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_diff->title(true).c_str(), insert_button_function, CALCULATOR->f_diff)
-	f = CALCULATOR->getFunction("extremum");
+	f = CALCULATOR->getActiveFunction("extremum");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	MENU_SEPARATOR
 	MENU_ITEM(_("Simplify"), on_menu_item_simplify_activate)
@@ -613,10 +618,84 @@ void create_button_menus(void) {
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_i"));
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_re->title(true).c_str(), insert_button_function, CALCULATOR->f_re)
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_im->title(true).c_str(), insert_button_function, CALCULATOR->f_im)
-	f = CALCULATOR->getFunction("arg");
+	f = CALCULATOR->getActiveFunction("arg");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
-	f = CALCULATOR->getFunction("conj");
+	f = CALCULATOR->getActiveFunction("conj");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	
+	if(!latest_button_unit_pre.empty()) {
+		latest_button_unit = CALCULATOR->getActiveUnit(latest_button_unit_pre);
+		if(!latest_button_unit) latest_button_unit = CALCULATOR->getCompositeUnit(latest_button_unit_pre);
+	}
+	if(latest_button_unit) {
+		string si_label_str;
+		if(latest_button_unit->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+			si_label_str = ((CompositeUnit*) latest_button_unit)->print(false, true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expression);
+		} else {
+		
+			si_label_str = latest_button_unit->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression).name;
+		}
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_si")), si_label_str.c_str());
+	}
+	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_si"));
+	const char *si_units[] = {"m", "g", "s", "A", "K", "mol", "cd", "Hz", "N", "Pa", "J", "W", "C", "V", "F", "ohm", "S", "Wb", "T", "H", "oC", "lm", "lx", "Bq", "Gy", "Sv", "kat"};
+	vector<Unit*> to_us;
+	for(size_t i = 0; i < 27; i++) {
+		Unit * u = CALCULATOR->getActiveUnit(si_units[i]);
+		if(u && !u->isHidden()) {
+			bool b = false;
+			for(size_t i2 = 0; i2 < to_us.size(); i2++) {
+				if(u->title(true) < to_us[i2]->title(true)) {
+					to_us.insert(to_us.begin() + i2, u);
+					b = true;
+					break;
+				}
+			}
+			if(!b) to_us.push_back(u);
+		}
+	}
+	for(size_t i = 0; i < to_us.size(); i++) {
+		MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), insert_button_unit, to_us[i])
+	}
+
+	if(!latest_button_currency_pre.empty()) {
+		latest_button_currency = CALCULATOR->getActiveUnit(latest_button_currency_pre);
+	}
+	if(!latest_button_currency) latest_button_currency = CALCULATOR->u_euro;
+	if(latest_button_currency) {
+		string unit_label_str;
+		if(latest_button_currency->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+			unit_label_str = ((CompositeUnit*) latest_button_currency)->print(false, true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expression);
+		} else {
+		
+			unit_label_str = latest_button_currency->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression).name;
+		}
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_euro")), unit_label_str.c_str());
+	}
+	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_euro"));
+	string s_cat = CALCULATOR->u_euro->category();
+	if(!s_cat.empty()) {
+		to_us.clear();
+		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
+			if(CALCULATOR->units[i]->category() == s_cat) {
+				Unit *u = CALCULATOR->units[i];
+				if(u->isActive() && !u->isHidden() && u->isBuiltin()) {
+					bool b = false;
+					for(size_t i2 = 0; i2 < to_us.size(); i2++) {
+						if(u->title(true) < to_us[i2]->title(true)) {
+							to_us.insert(to_us.begin() + i2, u);
+							b = true;
+							break;
+						}
+					}
+					if(!b) to_us.push_back(u);
+				}
+			}
+		}
+		for(size_t i = 0; i < to_us.size(); i++) {
+			MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), insert_button_currency, to_us[i])
+		}
+	}
 
 }
 

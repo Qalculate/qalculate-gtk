@@ -185,6 +185,8 @@ void insert_unit(GtkMenuItem *w, gpointer user_data);
 
 void insert_button_function(GtkMenuItem *w, gpointer user_data);
 void insert_button_variable(GtkWidget *w, gpointer user_data);
+void insert_button_unit(GtkMenuItem *w, gpointer user_data);
+void insert_button_currency(GtkMenuItem *w, gpointer user_data);
 
 void new_function(GtkMenuItem *w, gpointer user_data);
 void new_unknown(GtkMenuItem *w, gpointer user_data);
