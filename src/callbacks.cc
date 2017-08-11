@@ -12273,7 +12273,8 @@ void on_button_brace_close_clicked(GtkButton*, gpointer) {
 }
 void on_button_brace_wrap_clicked(GtkButton*, gpointer) {
 	gint istart = 0, iend = 0;
-	if(gtk_entry_get_text_length(GTK_ENTRY(expression)) == 0) {
+	gint il = gtk_entry_get_text_length(GTK_ENTRY(expression));
+	if(il == 0) {
 		gtk_editable_insert_text(GTK_EDITABLE(expression), "()", 2, &iend);
 		gtk_editable_set_position(GTK_EDITABLE(expression), iend - 1);
 		return;
@@ -12284,14 +12285,44 @@ void on_button_brace_wrap_clicked(GtkButton*, gpointer) {
 	} else {
 		istart = 0;
 		iend = gtk_editable_get_position(GTK_EDITABLE(expression));
-		if(iend <= 0) {
+		if(iend > 0) {
+			gchar *gstr = gtk_editable_get_chars(GTK_EDITABLE(expression), istart, iend);
+			string str = CALCULATOR->unlocalizeExpression(gstr, evalops.parse_options);
+			g_free(gstr);
+			CALCULATOR->parseSigns(str);
+			if(str.empty() || is_in(OPERATORS SPACES SEXADOT DOT LEFT_VECTOR_WRAP LEFT_PARENTHESIS COMMAS, str.back())) {
+				istart = iend;
+				iend = il;
+			}
+		} else {
 			goto_start = true;
-			iend = gtk_entry_get_text_length(GTK_ENTRY(expression));
+			iend = il;
+			gchar *gstr = gtk_editable_get_chars(GTK_EDITABLE(expression), istart, iend);
+			string str = CALCULATOR->unlocalizeExpression(gstr, evalops.parse_options);
+			g_free(gstr);
+			CALCULATOR->parseSigns(str);
+			if(str.empty() || (is_in(OPERATORS SPACES SEXADOT DOT RIGHT_VECTOR_WRAP RIGHT_PARENTHESIS COMMAS, str.front()) && str.front() != MINUS_CH)) {
+				iend = istart;
+			}
 		}
 	}
+	if(istart >= iend) {
+		gtk_editable_insert_text(GTK_EDITABLE(expression), "()", 2, &istart);
+		gtk_editable_set_position(GTK_EDITABLE(expression), istart - 1);
+		return;
+	}
+	cout << istart << ":" << iend << endl;
 	gtk_editable_insert_text(GTK_EDITABLE(expression), "(", 1, &istart);
 	iend++;
 	gtk_editable_insert_text(GTK_EDITABLE(expression), ")", 1, &iend);
+	gchar *gstr = gtk_editable_get_chars(GTK_EDITABLE(expression), istart, iend - 1);
+	string str = CALCULATOR->unlocalizeExpression(gstr, evalops.parse_options);
+	g_free(gstr);
+	CALCULATOR->parseSigns(str);
+	if(str.empty() || is_in(OPERATORS SPACES SEXADOT DOT LEFT_VECTOR_WRAP LEFT_PARENTHESIS COMMAS, str.back())) {
+		iend--;
+		goto_start = false;
+	}
 	gtk_editable_set_position(GTK_EDITABLE(expression), goto_start ? istart - 1 : iend);
 }
 void on_button_i_clicked(GtkButton*, gpointer) {
