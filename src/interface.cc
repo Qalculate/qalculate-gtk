@@ -609,6 +609,14 @@ void create_button_menus(void) {
 	MENU_SEPARATOR
 	MENU_ITEM(_("Simplify"), on_menu_item_simplify_activate)
 	MENU_ITEM(_("Set unknowns"), on_menu_item_set_unknowns_activate)
+	
+	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_i"));
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_re->title(true).c_str(), insert_button_function, CALCULATOR->f_re)
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_im->title(true).c_str(), insert_button_function, CALCULATOR->f_im)
+	f = CALCULATOR->getFunction("arg");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	f = CALCULATOR->getFunction("conj");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 
 }
 

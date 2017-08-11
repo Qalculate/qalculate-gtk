@@ -12271,6 +12271,29 @@ void on_button_brace_open_clicked(GtkButton*, gpointer) {
 void on_button_brace_close_clicked(GtkButton*, gpointer) {
 	insert_text(")");
 }
+void on_button_brace_wrap_clicked(GtkButton*, gpointer) {
+	gint istart = 0, iend = 0;
+	if(gtk_entry_get_text_length(GTK_ENTRY(expression)) == 0) {
+		gtk_editable_insert_text(GTK_EDITABLE(expression), "()", 2, &iend);
+		gtk_editable_set_position(GTK_EDITABLE(expression), iend - 1);
+		return;
+	}
+	bool goto_start = false;
+	if(gtk_editable_get_selection_bounds(GTK_EDITABLE(expression), &istart, &iend)) {
+		gtk_editable_select_region(GTK_EDITABLE(expression), iend, iend);
+	} else {
+		istart = 0;
+		iend = gtk_editable_get_position(GTK_EDITABLE(expression));
+		if(iend <= 0) {
+			goto_start = true;
+			iend = gtk_entry_get_text_length(GTK_ENTRY(expression));
+		}
+	}
+	gtk_editable_insert_text(GTK_EDITABLE(expression), "(", 1, &istart);
+	iend++;
+	gtk_editable_insert_text(GTK_EDITABLE(expression), ")", 1, &iend);
+	gtk_editable_set_position(GTK_EDITABLE(expression), goto_start ? istart - 1 : iend);
+}
 void on_button_i_clicked(GtkButton*, gpointer) {
 	insert_text("i");
 }
