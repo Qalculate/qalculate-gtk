@@ -7116,6 +7116,7 @@ void insert_button_unit(GtkMenuItem*, gpointer user_data) {
 			si_label_str = latest_button_unit->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression).name;
 		}
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_si")), si_label_str.c_str());
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_si")), latest_button_unit->title(true).c_str());
 	}
 }
 void insert_button_currency(GtkMenuItem*, gpointer user_data) {
@@ -7134,6 +7135,7 @@ void insert_button_currency(GtkMenuItem*, gpointer user_data) {
 			currency_label_str = latest_button_currency->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression).name;
 		}
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_euro")), currency_label_str.c_str());
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_euro")), latest_button_currency->title(true).c_str());
 	}
 }
 
@@ -12346,6 +12348,15 @@ void on_button_brace_wrap_clicked(GtkButton*, gpointer) {
 			if(str.empty() || is_in(OPERATORS SPACES SEXADOT DOT LEFT_VECTOR_WRAP LEFT_PARENTHESIS COMMAS, str.back())) {
 				istart = iend;
 				iend = il;
+				if(istart < iend) {
+					gstr = gtk_editable_get_chars(GTK_EDITABLE(expression), istart, iend);
+					str = CALCULATOR->unlocalizeExpression(gstr, evalops.parse_options);
+					g_free(gstr);
+					CALCULATOR->parseSigns(str);
+					if(str.empty() || (is_in(OPERATORS SPACES SEXADOT DOT RIGHT_VECTOR_WRAP LEFT_PARENTHESIS RIGHT_PARENTHESIS COMMAS, str.front()) && str.front() != MINUS_CH)) {
+						iend = 0;
+					}
+				}
 			}
 		} else {
 			goto_start = true;
@@ -12354,7 +12365,7 @@ void on_button_brace_wrap_clicked(GtkButton*, gpointer) {
 			string str = CALCULATOR->unlocalizeExpression(gstr, evalops.parse_options);
 			g_free(gstr);
 			CALCULATOR->parseSigns(str);
-			if(str.empty() || (is_in(OPERATORS SPACES SEXADOT DOT RIGHT_VECTOR_WRAP RIGHT_PARENTHESIS COMMAS, str.front()) && str.front() != MINUS_CH)) {
+			if(str.empty() || (is_in(OPERATORS SPACES SEXADOT DOT RIGHT_VECTOR_WRAP LEFT_PARENTHESIS RIGHT_PARENTHESIS COMMAS, str.front()) && str.front() != MINUS_CH)) {
 				iend = istart;
 			}
 		}
@@ -12364,7 +12375,6 @@ void on_button_brace_wrap_clicked(GtkButton*, gpointer) {
 		gtk_editable_set_position(GTK_EDITABLE(expression), istart - 1);
 		return;
 	}
-	cout << istart << ":" << iend << endl;
 	gtk_editable_insert_text(GTK_EDITABLE(expression), "(", 1, &istart);
 	iend++;
 	gtk_editable_insert_text(GTK_EDITABLE(expression), ")", 1, &iend);
@@ -13186,6 +13196,7 @@ void on_menu_item_assumptions_unknown_activate(GtkMenuItem *w, gpointer) {
 }
 
 void set_type(const char *var, AssumptionType at) {
+	if(block_expression_execution) return;
 	Variable *v = CALCULATOR->getActiveVariable(var);
 	if(!v || v->isKnown()) return;
 	UnknownVariable *uv = (UnknownVariable*) v;
@@ -13194,6 +13205,7 @@ void set_type(const char *var, AssumptionType at) {
 	expression_calculation_updated();
 }
 void set_sign(const char *var, AssumptionSign as) {
+	if(block_expression_execution) return;
 	Variable *v = CALCULATOR->getActiveVariable(var);
 	if(!v || v->isKnown()) return;
 	UnknownVariable *uv = (UnknownVariable*) v;
@@ -13236,7 +13248,8 @@ void set_x_assumptions_items() {
 	}
 	block_expression_execution = b_bak;
 }
-void on_menu_x_popped_up(GtkMenu*) {
+void on_mb_x_toggled(GtkToggleButton *w, gpointer) {
+	if(!gtk_toggle_button_get_active(w)) return;
 	set_x_assumptions_items();
 }
 
@@ -13323,7 +13336,8 @@ void set_y_assumptions_items() {
 	}
 	block_expression_execution = b_bak;
 }
-void on_menu_y_popped_up(GtkMenu*) {
+void on_mb_y_toggled(GtkToggleButton *w, gpointer) {
+	if(!gtk_toggle_button_get_active(w)) return;
 	set_y_assumptions_items();
 }
 
@@ -13410,7 +13424,8 @@ void set_z_assumptions_items() {
 	}
 	block_expression_execution = b_bak;
 }
-void on_menu_z_popped_up(GtkMenu*) {
+void on_mb_z_toggled(GtkToggleButton *w, gpointer) {
+	if(!gtk_toggle_button_get_active(w)) return;
 	set_z_assumptions_items();
 }
 
@@ -13470,7 +13485,35 @@ void on_menu_item_z_unknown_activate(GtkMenuItem *w, gpointer) {
 	set_sign("z", ASSUMPTION_SIGN_UNKNOWN);
 }
 
-void on_menu_to_popped_up(GtkMenu *sub, gpointer) {
+void menu_to_bin(GtkMenuItem*, gpointer) {
+	int save_base = printops.base;
+	printops.base = BASE_BINARY;
+	result_format_updated();
+	printops.base = save_base;
+}
+void menu_to_oct(GtkMenuItem*, gpointer) {
+	int save_base = printops.base;
+	printops.base = BASE_OCTAL;
+	result_format_updated();
+	printops.base = save_base;
+}
+void menu_to_hex(GtkMenuItem*, gpointer) {
+	int save_base = printops.base;
+	printops.base = BASE_HEXADECIMAL;
+	result_format_updated();
+	printops.base = save_base;
+}
+void menu_to_fraction(GtkMenuItem*, gpointer) {
+	NumberFractionFormat save_format = printops.number_fraction_format;
+	if(mstruct && mstruct->isNumber()) printops.number_fraction_format = FRACTION_COMBINED;
+	else printops.number_fraction_format = FRACTION_FRACTIONAL;
+	result_format_updated();
+	printops.number_fraction_format = save_format;
+}
+void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
+	if(!gtk_toggle_button_get_active(w)) return;
+	GtkWidget *sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_to"));
+	if(expression_has_changed && !rpn_mode) execute_expression(true);
 	GtkWidget *item;
 	GList *list = gtk_container_get_children(GTK_CONTAINER(sub));
 	for(GList *l = list; l != NULL; l = l->next) {
@@ -13480,50 +13523,106 @@ void on_menu_to_popped_up(GtkMenu *sub, gpointer) {
 	MENU_ITEM(_("Base units"), on_menu_item_convert_to_base_units_activate);
 	MENU_ITEM(_("Optimal unit"), on_menu_item_convert_to_best_unit_activate);
 	MENU_ITEM(_("Optimal prefix"), on_menu_item_set_prefix_activate);
-	if(!mstruct || !displayed_mstruct) return;
+	MENU_SEPARATOR
+	if(!mstruct || !displayed_mstruct || !mstruct->containsType(STRUCT_UNIT, true)) {
+		MENU_ITEM(_("Number bases"), on_menu_item_convert_number_bases_activate)
+		MENU_ITEM(_("Binary"), menu_to_bin)
+		MENU_ITEM(_("Octal"), menu_to_oct)
+		MENU_ITEM(_("Hexadecimal"), menu_to_hex)
+		MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)
+		MENU_ITEM(_("Fraction"), menu_to_fraction)
+		return;
+	}
 	string s_cat;
 	Unit *u = CALCULATOR->findMatchingUnit(*mstruct);
 	if(u) s_cat = u->category();
-	if(s_cat.empty()) return;
 	vector<Unit*> to_us;
-	for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
-		if(CALCULATOR->units[i]->category() == s_cat) {
-			u = CALCULATOR->units[i];
-			if(u->isActive() && !u->isHidden()) {
+	size_t i_added = 0;
+	if(!s_cat.empty()) {
+		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
+			if(CALCULATOR->units[i]->category() == s_cat) {
+				u = CALCULATOR->units[i];
+				if(u->isActive() && !u->isHidden()) {
+					bool b = false;
+					for(size_t i2 = 0; i2 < to_us.size(); i2++) {
+						if(u->title(true) < to_us[i2]->title(true)) {
+							to_us.insert(to_us.begin() + i2, u);
+							b = true;
+							break;
+						}
+					}
+					if(!b) to_us.push_back(u);
+					i_added++;
+				}
+			}
+		}
+		for(size_t i = 0; i < to_us.size(); i++) {
+			if((i + 4) % 9 == 0 && i + 1 != to_us.size()) {SUBMENU_ITEM(_("more"), sub);}
+			MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), convert_to_unit, to_us[i])
+			// Show further items in a submenu
+		}
+	}
+	if(i_added + 3 < 9) {
+		const char *si_units[] = {"m", "g", "s", "A", "K", "L"};
+		vector<Unit*> to_us2;
+		for(size_t i = 0; i < 6 && i_added + 3 < 9; i++) {
+			Unit * u = CALCULATOR->getActiveUnit(si_units[i]);
+			if(u && !u->isHidden()) {
 				bool b = false;
 				for(size_t i2 = 0; i2 < to_us.size(); i2++) {
-					if(u->title(true) < to_us[i2]->title(true)) {
-						to_us.insert(to_us.begin() + i2, u);
+					if(u == to_us[i2]) {
 						b = true;
 						break;
 					}
 				}
-				if(!b) to_us.push_back(u);
+				for(size_t i2 = 0; !b && i2 < to_us2.size(); i2++) {
+					if(u->title(true) < to_us2[i2]->title(true)) {
+						to_us2.insert(to_us2.begin() + i2, u);
+						b = true;
+						break;
+					}
+				}
+				if(!b) {
+					to_us2.push_back(u);
+					i_added++;
+				}
 			}
 		}
-	}
-	if(to_us.size() > 0) {MENU_SEPARATOR}
-	for(size_t i = 0; i < to_us.size(); i++) {
-		MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), convert_to_unit, to_us[i])
+		for(size_t i = 0; i < to_us2.size(); i++) {
+			MENU_ITEM_WITH_POINTER(to_us2[i]->title(true).c_str(), convert_to_unit, to_us2[i])
+		}
 	}
 }
 
-void on_menu_units_popped_up(GtkMenu *sub, gpointer) {
+void on_mb_units_toggled(GtkToggleButton *w, gpointer) {
+	if(!gtk_toggle_button_get_active(w)) return;
+	GtkMenu *sub = GTK_MENU(gtk_builder_get_object(main_builder, "menu_units"));
 	GtkWidget *item;
 	GList *list = gtk_container_get_children(GTK_CONTAINER(sub));
 	for(GList *l = list; l != NULL; l = l->next) {
 		gtk_widget_destroy(GTK_WIDGET(l->data));
 	}
 	g_list_free(list);
+	const char *si_units[] = {"m", "g", "s", "A", "K"};
+	size_t i_added = 0;
 	for(size_t i = 0; i < recent_units.size(); i++) {
 		if(!recent_units[i]->isLocal() && CALCULATOR->stillHasUnit(recent_units[i])) {
 			MENU_ITEM_WITH_POINTER(recent_units[i]->title(true).c_str(), insert_unit, recent_units[i])
+			i_added++;
 		}
 	}
+	for(size_t i = 0; i_added < 5 && i < 5; i++) {
+		Unit * u = CALCULATOR->getActiveUnit(si_units[i]);
+		if(u && !u->isHidden()) {
+			MENU_ITEM_WITH_POINTER(u->title(true).c_str(), insert_unit, u)
+			i_added++;
+		}
+	}
+	
 	MENU_SEPARATOR
 	Prefix *p = CALCULATOR->getPrefix("giga");
 	if(p) {MENU_ITEM_WITH_POINTER(p->longName(true, printops.use_unicode_signs).c_str(), insert_prefix, p);}
-	p = CALCULATOR->getPrefix("meta");
+	p = CALCULATOR->getPrefix("mega");
 	if(p) {MENU_ITEM_WITH_POINTER(p->longName(true, printops.use_unicode_signs).c_str(), insert_prefix, p);}
 	p = CALCULATOR->getPrefix("kilo");
 	if(p) {MENU_ITEM_WITH_POINTER(p->longName(true, printops.use_unicode_signs).c_str(), insert_prefix, p);}
@@ -13568,7 +13667,9 @@ gboolean on_menu_fx_button_press(GtkWidget *widget, GdkEventButton *event, gpoin
 	return FALSE;
 }
 
-void on_menu_fx_popped_up(GtkMenu *sub, gpointer) {
+void on_mb_fx_toggled(GtkToggleButton *w, gpointer) {
+	if(!gtk_toggle_button_get_active(w)) return;
+	GtkMenu *sub = GTK_MENU(gtk_builder_get_object(main_builder, "menu_fx"));
 	GtkWidget *item;
 	GList *list = gtk_container_get_children(GTK_CONTAINER(sub));
 	for(GList *l = list; l != NULL; l = l->next) {
@@ -13587,13 +13688,12 @@ void on_menu_fx_popped_up(GtkMenu *sub, gpointer) {
 	bool b2 = false;
 	for(size_t i = 0; i < recent_functions.size(); i++) {
 		if(!recent_functions[i]->isLocal() && CALCULATOR->stillHasFunction(recent_functions[i])) {
-			if(!b2 && b) {
-				MENU_SEPARATOR
-				b2 = true;
-			}
+			if(!b2 && b) {MENU_SEPARATOR}
+			b2 = true;
 			MENU_ITEM_WITH_POINTER(recent_functions[i]->title(true).c_str(), insert_button_function_save, recent_functions[i])
 		}
 	}
+	if(!b2 && !b) {MENU_NO_ITEMS(_("No items found"))}
 }
 
 void on_popup_menu_sto_set_activate(GtkMenuItem *w, gpointer data) {
@@ -13636,7 +13736,9 @@ gboolean on_menu_sto_button_press(GtkWidget *widget, GdkEventButton *event, gpoi
 	return FALSE;
 }
 
-void on_menu_sto_popped_up(GtkMenu *sub, gpointer) {
+void on_mb_sto_toggled(GtkToggleButton *w, gpointer) {
+	if(!gtk_toggle_button_get_active(w)) return;
+	GtkMenu *sub = GTK_MENU(gtk_builder_get_object(main_builder, "menu_sto"));
 	GtkWidget *item;
 	GList *list = gtk_container_get_children(GTK_CONTAINER(sub));
 	for(GList *l = list; l != NULL; l = l->next) {
@@ -13655,13 +13757,12 @@ void on_menu_sto_popped_up(GtkMenu *sub, gpointer) {
 	bool b2 = false;
 	for(size_t i = 0; i < recent_variables.size(); i++) {
 		if(!recent_variables[i]->isLocal() && CALCULATOR->stillHasVariable(recent_variables[i])) {
-			if(!b2 && b) {
-				MENU_SEPARATOR
-				b2 = true;
-			}
+			if(!b2 && b) {MENU_SEPARATOR}
+			b2 = true;
 			MENU_ITEM_WITH_POINTER(recent_variables[i]->title(true).c_str(), insert_variable, recent_variables[i])
 		}
 	}
+	if(!b2 && !b) {MENU_NO_ITEMS(_("No items found"))}
 }
 
 
@@ -14238,6 +14339,7 @@ void convert_number_bases(const gchar *initial_expression) {
 	gtk_window_present(GTK_WINDOW(dialog));
 }
 void on_menu_item_convert_number_bases_activate(GtkMenuItem*, gpointer) {
+	if(!result_text.empty()) return convert_number_bases(result_text.c_str());
 	string str = gtk_entry_get_text(GTK_ENTRY(expression)), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	convert_number_bases(str.c_str());

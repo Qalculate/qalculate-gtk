@@ -623,6 +623,8 @@ void create_button_menus(void) {
 	f = CALCULATOR->getActiveFunction("conj");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	
+	
+	//g_signal_connect_data(gtk_builder_get_object(main_builder, "mb_to"), "activate", G_CALLBACK(on_mb_to_clicked), NULL);
 	if(!latest_button_unit_pre.empty()) {
 		latest_button_unit = CALCULATOR->getActiveUnit(latest_button_unit_pre);
 		if(!latest_button_unit) latest_button_unit = CALCULATOR->getCompositeUnit(latest_button_unit_pre);
@@ -636,12 +638,38 @@ void create_button_menus(void) {
 			si_label_str = latest_button_unit->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression).name;
 		}
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_si")), si_label_str.c_str());
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_si")), latest_button_unit->title(true).c_str());
 	}
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_si"));
-	const char *si_units[] = {"m", "g", "s", "A", "K", "mol", "cd", "Hz", "N", "Pa", "J", "W", "C", "V", "F", "ohm", "S", "Wb", "T", "H", "oC", "lm", "lx", "Bq", "Gy", "Sv", "kat"};
+	const char *si_units[] = {"m", "g", "s", "A", "K", "N", "Pa", "J", "W", "L", "V", "ohm", "oC", "cd", "mol", "C", "Hz", "F", "S", "Wb", "T", "H", "lm", "lx", "Bq", "Gy", "Sv", "kat"};
 	vector<Unit*> to_us;
-	for(size_t i = 0; i < 27; i++) {
-		Unit * u = CALCULATOR->getActiveUnit(si_units[i]);
+	size_t si_i = 0;
+	size_t i_added = 0;
+	for(; si_i < 27 && i_added < 12; si_i++) {
+		Unit * u = CALCULATOR->getActiveUnit(si_units[si_i]);
+		if(u && !u->isHidden()) {
+			bool b = false;
+			for(size_t i2 = 0; i2 < to_us.size(); i2++) {
+				if(u->title(true) < to_us[i2]->title(true)) {
+					to_us.insert(to_us.begin() + i2, u);
+					b = true;
+					break;
+				}
+			}
+			if(!b) to_us.push_back(u);
+			i_added++;
+		}
+	}
+	for(size_t i = 0; i < to_us.size(); i++) {
+		MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), insert_button_unit, to_us[i])
+	}
+	
+	// Show further items in a submenu
+	if(si_i < 27) {SUBMENU_ITEM(_("more"), sub);}
+	
+	to_us.clear();
+	for(; si_i < 27; si_i++) {
+		Unit * u = CALCULATOR->getActiveUnit(si_units[si_i]);
 		if(u && !u->isHidden()) {
 			bool b = false;
 			for(size_t i2 = 0; i2 < to_us.size(); i2++) {
@@ -657,31 +685,93 @@ void create_button_menus(void) {
 	for(size_t i = 0; i < to_us.size(); i++) {
 		MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), insert_button_unit, to_us[i])
 	}
+	/*i_added = 0;
+	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_si"));
+	for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
+		if(!CALCULATOR->units[i]->isHidden() && CALCULATOR->units[i]->subtype() != SUBTYPE_COMPOSITE_UNIT && (CALCULATOR->units[i]->system() == "Imperial" || CALCULATOR->units[i]->system() == "US" || CALCULATOR->units[i]->system() == "Imperial/US")) {
+			Unit *u = CALCULATOR->units[i];
+			if(u->referenceName().find("UK_") == string::npos && u->referenceName().find("US_") == string::npos) {
+				i_added++;
+				if(i_added == 1) {SUBMENU_ITEM(_("Imperial/US"), sub);}
+				// Show further items in a submenu
+				else if(i_added % 10 == 0) {SUBMENU_ITEM(_("more"), sub);}
+				MENU_ITEM_WITH_POINTER(u->title(true).c_str(), insert_button_unit, u)
+			}
+		}
+	}
+	i_added = 0;
+	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_si"));
+	for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
+		if(!CALCULATOR->units[i]->isHidden() && CALCULATOR->units[i]->subtype() != SUBTYPE_COMPOSITE_UNIT && CALCULATOR->units[i]->system() == "CGS") {
+			Unit *u = CALCULATOR->units[i];
+			i_added++;
+			if(i_added == 1) {SUBMENU_ITEM("CGS", sub);}
+			// Show further items in a submenu
+			else if(i_added % 10 == 0) {SUBMENU_ITEM(_("more"), sub);}
+			MENU_ITEM_WITH_POINTER(u->title(true).c_str(), insert_button_unit, u)
+		}
+	}*/
+	
 
 	if(!latest_button_currency_pre.empty()) {
 		latest_button_currency = CALCULATOR->getActiveUnit(latest_button_currency_pre);
 	}
+	string local_currency;
+	struct lconv *lc = localeconv();
+	if(lc) local_currency = lc->int_curr_symbol;
+	remove_blank_ends(local_currency);
+	if(!latest_button_currency && !local_currency.empty()) latest_button_currency = CALCULATOR->getActiveUnit(local_currency);
 	if(!latest_button_currency) latest_button_currency = CALCULATOR->u_euro;
-	if(latest_button_currency) {
-		string unit_label_str;
-		if(latest_button_currency->subtype() == SUBTYPE_COMPOSITE_UNIT) {
-			unit_label_str = ((CompositeUnit*) latest_button_currency)->print(false, true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expression);
-		} else {
-		
-			unit_label_str = latest_button_currency->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression).name;
-		}
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_euro")), unit_label_str.c_str());
+	string unit_label_str;
+	if(latest_button_currency->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+		unit_label_str = ((CompositeUnit*) latest_button_currency)->print(false, true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expression);
+	} else {
+	
+		unit_label_str = latest_button_currency->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression).name;
 	}
+	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_euro")), unit_label_str.c_str());
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_euro")), latest_button_currency->title(true).c_str());
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_euro"));
+	const char *currency_units[] = {"USD", "GBP", "JPY"};
+	to_us.clear();
+	for(size_t i = 0; i < 5; i++) {
+		Unit * u;
+		if(i == 0) u = CALCULATOR->u_euro;
+		else if(i == 1) u = CALCULATOR->getActiveUnit(local_currency);
+		else u = CALCULATOR->getActiveUnit(currency_units[i - 2]);
+		if(u && !u->isHidden()) {
+			bool b = false;
+			for(size_t i2 = 0; i2 < to_us.size(); i2++) {
+				if(u == to_us[i2]) {
+					b = true;
+					break;
+				}
+				if(u->title(true) < to_us[i2]->title(true)) {
+					to_us.insert(to_us.begin() + i2, u);
+					b = true;
+					break;
+				}
+			}
+			if(!b) to_us.push_back(u);
+		}
+	}
+	for(size_t i = 0; i < to_us.size(); i++) {
+		MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), insert_button_currency, to_us[i])
+	}
+
+	i_added = to_us.size();
 	string s_cat = CALCULATOR->u_euro->category();
 	if(!s_cat.empty()) {
-		to_us.clear();
 		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 			if(CALCULATOR->units[i]->category() == s_cat) {
 				Unit *u = CALCULATOR->units[i];
 				if(u->isActive() && !u->isHidden() && u->isBuiltin()) {
 					bool b = false;
 					for(size_t i2 = 0; i2 < to_us.size(); i2++) {
+						if(i2 < i_added && u == to_us[i2]) {
+							b = true;
+							break;
+						}
 						if(u->title(true) < to_us[i2]->title(true)) {
 							to_us.insert(to_us.begin() + i2, u);
 							b = true;
@@ -692,7 +782,9 @@ void create_button_menus(void) {
 				}
 			}
 		}
-		for(size_t i = 0; i < to_us.size(); i++) {
+		for(size_t i = i_added; i < to_us.size(); i++) {
+			// Show further items in a submenu
+			if(i == i_added) {SUBMENU_ITEM(_("more"), sub);}
 			MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), insert_button_currency, to_us[i])
 		}
 	}

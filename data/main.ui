@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated with glade 3.20.0 -->
 <interface>
-  <requires lib="gtk+" version="3.12"/>
+  <requires lib="gtk+" version="3.10"/>
   <object class="GtkMenu" id="menu_bases">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -25,7 +25,6 @@
   <object class="GtkMenu" id="menu_fx">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <signal name="popped-up" handler="on_menu_fx_popped_up" swapped="no"/>
   </object>
   <object class="GtkMenu" id="menu_i">
     <property name="visible">True</property>
@@ -66,7 +65,6 @@
   <object class="GtkMenu" id="menu_sto">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <signal name="popped-up" handler="on_menu_sto_popped_up" swapped="no"/>
   </object>
   <object class="GtkMenu" id="menu_sum">
     <property name="visible">True</property>
@@ -79,16 +77,13 @@
   <object class="GtkMenu" id="menu_to">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <signal name="popped-up" handler="on_menu_to_popped_up" swapped="no"/>
   </object>
   <object class="GtkMenu" id="menu_units">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <signal name="popped-up" handler="on_menu_units_popped_up" swapped="no"/>
   </object>
   <object class="GtkMenu" id="menu_x">
     <property name="can_focus">False</property>
-    <signal name="popped-up" handler="on_menu_x_popped_up" swapped="no"/>
     <child>
       <object class="GtkMenuItem" id="menu_item_x_default">
         <property name="visible">True</property>
@@ -232,7 +227,6 @@
   </object>
   <object class="GtkMenu" id="menu_y">
     <property name="can_focus">False</property>
-    <signal name="popped-up" handler="on_menu_y_popped_up" swapped="no"/>
     <child>
       <object class="GtkMenuItem" id="menu_item_y_default">
         <property name="visible">True</property>
@@ -372,7 +366,6 @@
   </object>
   <object class="GtkMenu" id="menu_z">
     <property name="can_focus">False</property>
-    <signal name="popped-up" handler="on_menu_z_popped_up" swapped="no"/>
     <child>
       <object class="GtkMenuItem" id="menu_item_z_default">
         <property name="visible">True</property>
@@ -3498,6 +3491,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="focus_on_click">False</property>
                                         <property name="receives_default">True</property>
                                         <property name="popup">menu_x</property>
+                                        <signal name="toggled" handler="on_mb_x_toggled" swapped="no"/>
                                         <child>
                                           <placeholder/>
                                         </child>
@@ -3549,6 +3543,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="focus_on_click">False</property>
                                         <property name="receives_default">True</property>
                                         <property name="popup">menu_y</property>
+                                        <signal name="toggled" handler="on_mb_y_toggled" swapped="no"/>
                                         <child>
                                           <placeholder/>
                                         </child>
@@ -3600,6 +3595,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="focus_on_click">False</property>
                                         <property name="receives_default">True</property>
                                         <property name="popup">menu_z</property>
+                                        <signal name="toggled" handler="on_mb_z_toggled" swapped="no"/>
                                         <child>
                                           <placeholder/>
                                         </child>
@@ -3751,6 +3747,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="focus_on_click">False</property>
                                         <property name="receives_default">True</property>
                                         <property name="popup">menu_fx</property>
+                                        <signal name="toggled" handler="on_mb_fx_toggled" swapped="no"/>
                                         <child>
                                           <placeholder/>
                                         </child>
@@ -3952,6 +3949,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="focus_on_click">False</property>
                                         <property name="receives_default">True</property>
                                         <property name="popup">menu_sto</property>
+                                        <signal name="toggled" handler="on_mb_sto_toggled" swapped="no"/>
                                         <child>
                                           <placeholder/>
                                         </child>
@@ -4103,6 +4101,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="focus_on_click">False</property>
                                         <property name="receives_default">True</property>
                                         <property name="popup">menu_units</property>
+                                        <signal name="toggled" handler="on_mb_units_toggled" swapped="no"/>
                                         <child>
                                           <placeholder/>
                                         </child>
@@ -4205,6 +4204,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="focus_on_click">False</property>
                                         <property name="receives_default">True</property>
                                         <property name="popup">menu_to</property>
+                                        <signal name="toggled" handler="on_mb_to_toggled" swapped="no"/>
                                         <child>
                                           <placeholder/>
                                         </child>
@@ -4231,7 +4231,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="can_focus">True</property>
                                         <property name="focus_on_click">False</property>
                                         <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">Currency</property>
                                         <property name="use_underline">True</property>
                                         <signal name="clicked" handler="on_button_euro_clicked" swapped="no"/>
                                         <child>
