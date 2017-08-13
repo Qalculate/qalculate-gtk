@@ -56,7 +56,7 @@ MathFunction *f_expression;
 GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *setbase_builder, *datasetedit_builder, *datasets_builder, *decimals_builder;
 GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
 GtkBuilder *preferences_builder, *unit_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder;
-GtkBuilder *periodictable_builder, *simplefunctionedit_builder;
+GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_builder;
 
 Thread *view_thread, *command_thread;
 string calc_arg;
@@ -93,7 +93,7 @@ void create_application(GtkApplication *app) {
 	main_builder = NULL; argumentrules_builder = NULL; 
 	csvimport_builder = NULL; datasetedit_builder = NULL; datasets_builder = NULL; decimals_builder = NULL; functionedit_builder = NULL; 
 	functions_builder = NULL; matrixedit_builder = NULL; matrix_builder = NULL; namesedit_builder = NULL; nbases_builder = NULL; plot_builder = NULL; 
-	precision_builder = NULL; preferences_builder = NULL; unit_builder = NULL; 
+	precision_builder = NULL; preferences_builder = NULL; unit_builder = NULL; percentage_builder = NULL; 
 	unitedit_builder = NULL; units_builder = NULL; unknownedit_builder = NULL; variableedit_builder = NULL; 
 	variables_builder = NULL; csvexport_builder = NULL; setbase_builder = NULL; periodictable_builder = NULL, simplefunctionedit_builder = NULL;
 

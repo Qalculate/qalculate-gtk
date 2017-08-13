@@ -31,7 +31,7 @@
 extern GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *datasetedit_builder, *datasets_builder, *setbase_builder, *decimals_builder;
 extern GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
 extern GtkBuilder *preferences_builder, *unit_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder;
-extern GtkBuilder *periodictable_builder, *simplefunctionedit_builder;
+extern GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_builder;
 extern vector<mode_struct> modes;
 
 GtkWidget *tFunctionCategories;
@@ -491,6 +491,9 @@ void create_button_menus(void) {
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_shift->title(true).c_str(), insert_button_function, CALCULATOR->f_shift)
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_xor->title(true).c_str(), insert_button_function, CALCULATOR->f_xor)
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_bitxor->title(true).c_str(), insert_button_function, CALCULATOR->f_bitxor)
+	
+	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_percent"));
+	MENU_ITEM(_("Simple percent calculation"), on_menu_item_show_percentage_dialog_activate)
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_xy"));
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_sq->title(true).c_str(), insert_button_function, CALCULATOR->f_sq)
@@ -2171,6 +2174,37 @@ get_nbases_dialog (void)
 	}
 
 	return GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_dialog"));
+}
+GtkWidget*
+get_percentage_dialog (void)
+{
+	if(!percentage_builder) {
+	
+		percentage_builder = getBuilder("percentage.ui");
+		g_assert(percentage_builder != NULL);
+	
+		g_assert (gtk_builder_get_object(percentage_builder, "percentage_dialog") != NULL);
+		
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_1")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_2")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_3")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_4")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_5")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_6")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_7")), 1.0);
+
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
+		gtk_text_view_set_left_margin(GTK_TEXT_VIEW(gtk_builder_get_object(percentage_builder, "percentage_description")), 12);
+		gtk_text_view_set_right_margin(GTK_TEXT_VIEW(gtk_builder_get_object(percentage_builder, "percentage_description")), 12);
+		gtk_text_view_set_top_margin(GTK_TEXT_VIEW(gtk_builder_get_object(percentage_builder, "percentage_description")), 12);
+		gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(gtk_builder_get_object(percentage_builder, "percentage_description")), 12);
+#endif
+		
+		gtk_builder_connect_signals(percentage_builder, NULL);
+		
+	}
+
+	return GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_dialog"));
 }
 
 GtkWidget *create_InfoWidget(const gchar *text) {

@@ -67,7 +67,7 @@ extern gint expression_position;
 extern GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *setbase_builder, *datasetedit_builder, *datasets_builder, *decimals_builder;
 extern GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
 extern GtkBuilder *preferences_builder, *unit_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder;
-extern GtkBuilder *periodictable_builder, *simplefunctionedit_builder;
+extern GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_builder;
 
 bool changing_in_nbases_dialog;
 
@@ -12411,8 +12411,11 @@ void on_button_euro_clicked(GtkButton*, gpointer) {
 
 void on_button_to_clicked(GtkButton*, gpointer) {
 	const gchar *gstr = gtk_entry_get_text(GTK_ENTRY(expression));
-	if(strlen(gstr) > 0 && gstr[strlen(gstr) - 1] != ' ') insert_text((string(SPACE) + CALCULATOR->localToString()).c_str());
-	else insert_text(CALCULATOR->localToString().c_str());
+	string to_str = CALCULATOR->localToString();
+	remove_blank_ends(to_str);
+	to_str += ' ';
+	if(strlen(gstr) > 0 && gstr[strlen(gstr) - 1] != ' ') to_str.insert(0, " ");
+	insert_text(to_str.c_str());
 }
 void on_button_new_function_clicked(GtkButton*, gpointer) {
 	edit_function_simple("", NULL, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
@@ -14344,6 +14347,20 @@ void on_menu_item_convert_number_bases_activate(GtkMenuItem*, gpointer) {
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	convert_number_bases(str.c_str());
 }
+void show_percentage_dialog(const gchar *initial_expression) {
+	GtkWidget *dialog = get_percentage_dialog();
+	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
+	on_percentage_button_clear_clicked(NULL, NULL);
+	if(strlen(initial_expression) > 0 && strcmp(initial_expression, "0") != 0) gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_1")), initial_expression);
+	gtk_widget_show(dialog);
+	gtk_window_present(GTK_WINDOW(dialog));
+}
+void on_menu_item_show_percentage_dialog_activate(GtkMenuItem*, gpointer) {
+	if(!result_text.empty()) return show_percentage_dialog(result_text.c_str());
+	string str = gtk_entry_get_text(GTK_ENTRY(expression)), str2;
+	CALCULATOR->separateToExpression(str, str2, evalops, true);
+	show_percentage_dialog(str.c_str());
+}
 void on_menu_item_periodic_table_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = get_periodic_dialog();
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
@@ -15784,6 +15801,160 @@ void on_matrix_spinbutton_rows_value_changed(GtkSpinButton *w, gpointer) {
 	}
 }
 
+bool updating_percentage_entries = false;
+void update_percentage_entries();
+vector<int> percentage_entries_changes;
+void on_percentage_button_calculate_clicked(GtkWidget*, gpointer) {
+	update_percentage_entries();
+}
+void on_percentage_button_clear_clicked(GtkWidget*, gpointer) {
+	percentage_entries_changes.clear();
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_1")), "");
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_2")), "");
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_3")), "");
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_4")), "");
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_5")), "");
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_6")), "");
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_7")), "");
+}
+void percentage_entry_changed(int entry_id, GtkEntry *w) {
+	for(size_t i = 0; i < percentage_entries_changes.size(); i++) {
+		if(percentage_entries_changes[i] == entry_id) {
+			percentage_entries_changes.erase(percentage_entries_changes.begin() + i);
+			break;
+		}
+	}
+	if(gtk_entry_get_text_length(w) == 0) return;
+	percentage_entries_changes.push_back(entry_id);
+}
+void on_percentage_entry_1_changed(GtkEditable *w, gpointer) {percentage_entry_changed(1, GTK_ENTRY(w));}
+void on_percentage_entry_2_changed(GtkEditable *w, gpointer) {percentage_entry_changed(2, GTK_ENTRY(w));}
+void on_percentage_entry_3_changed(GtkEditable *w, gpointer) {percentage_entry_changed(4, GTK_ENTRY(w));}
+void on_percentage_entry_4_changed(GtkEditable *w, gpointer) {percentage_entry_changed(8, GTK_ENTRY(w));}
+void on_percentage_entry_5_changed(GtkEditable *w, gpointer) {percentage_entry_changed(16, GTK_ENTRY(w));}
+void on_percentage_entry_6_changed(GtkEditable *w, gpointer) {percentage_entry_changed(32, GTK_ENTRY(w));}
+void on_percentage_entry_7_changed(GtkEditable *w, gpointer) {percentage_entry_changed(64, GTK_ENTRY(w));}
+void on_percentage_entry_1_activate(GtkEditable *w, gpointer) {percentage_entry_changed(1, GTK_ENTRY(w)); update_percentage_entries();}
+void on_percentage_entry_2_activate(GtkEditable *w, gpointer) {percentage_entry_changed(2, GTK_ENTRY(w)); update_percentage_entries();}
+void on_percentage_entry_3_activate(GtkEditable *w, gpointer) {percentage_entry_changed(4, GTK_ENTRY(w)); update_percentage_entries();}
+void on_percentage_entry_4_activate(GtkEditable *w, gpointer) {percentage_entry_changed(8, GTK_ENTRY(w)); update_percentage_entries();}
+void on_percentage_entry_5_activate(GtkEditable *w, gpointer) {percentage_entry_changed(16, GTK_ENTRY(w)); update_percentage_entries();}
+void on_percentage_entry_6_activate(GtkEditable *w, gpointer) {percentage_entry_changed(32, GTK_ENTRY(w)); update_percentage_entries();}
+void on_percentage_entry_7_activate(GtkEditable *w, gpointer) {percentage_entry_changed(64, GTK_ENTRY(w)); update_percentage_entries();}
+void update_percentage_entries() {
+	if(updating_percentage_entries) return;
+	if(percentage_entries_changes.size() < 2) return;
+	int variant = percentage_entries_changes[percentage_entries_changes.size() - 1];
+	int variant2 = percentage_entries_changes[percentage_entries_changes.size() - 2];
+	if(variant > 4) {
+		for(int i = percentage_entries_changes.size() - 3; i >= 0 && variant2 > 4; i--) {
+			variant2 = percentage_entries_changes[(size_t) i];
+		}
+		if(variant2 > 4) return;
+	}
+	variant += variant2;
+	updating_percentage_entries = true;
+	GtkWidget *w1 = GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_entry_1"));
+	GtkWidget *w2 = GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_entry_2"));
+	GtkWidget *w3 = GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_entry_3"));
+	GtkWidget *w4 = GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_entry_4"));
+	GtkWidget *w5 = GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_entry_5"));
+	GtkWidget *w6 = GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_entry_6"));
+	GtkWidget *w7 = GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_entry_7"));
+	g_signal_handlers_block_matched((gpointer) w1, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_1_changed, NULL);
+	g_signal_handlers_block_matched((gpointer) w2, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_2_changed, NULL);
+	g_signal_handlers_block_matched((gpointer) w3, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_3_changed, NULL);
+	g_signal_handlers_block_matched((gpointer) w4, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_4_changed, NULL);
+	g_signal_handlers_block_matched((gpointer) w5, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_5_changed, NULL);
+	g_signal_handlers_block_matched((gpointer) w6, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_6_changed, NULL);
+	g_signal_handlers_block_matched((gpointer) w7, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_7_changed, NULL);
+	MathStructure m1, m2, m3, m4, m5, m6, m7, m1_pre, m2_pre;
+	string str1, str2;
+	switch(variant) {
+		case 3: {str1 = gtk_entry_get_text(GTK_ENTRY(w1)); str2 = gtk_entry_get_text(GTK_ENTRY(w2)); break;}
+		case 5: {str1 = gtk_entry_get_text(GTK_ENTRY(w1)); str2 = gtk_entry_get_text(GTK_ENTRY(w3)); break;}
+		case 9: {str1 = gtk_entry_get_text(GTK_ENTRY(w1)); str2 = gtk_entry_get_text(GTK_ENTRY(w4)); break;}
+		case 17: {str1 = gtk_entry_get_text(GTK_ENTRY(w1)); str2 = gtk_entry_get_text(GTK_ENTRY(w5)); break;}
+		case 33: {str1 = gtk_entry_get_text(GTK_ENTRY(w1)); str2 = gtk_entry_get_text(GTK_ENTRY(w6)); break;}
+		case 65: {str1 = gtk_entry_get_text(GTK_ENTRY(w1)); str2 = gtk_entry_get_text(GTK_ENTRY(w7)); break;}
+		case 6: {str1 = gtk_entry_get_text(GTK_ENTRY(w2)); str2 = gtk_entry_get_text(GTK_ENTRY(w3)); break;}
+		case 10: {str1 = gtk_entry_get_text(GTK_ENTRY(w2)); str2 = gtk_entry_get_text(GTK_ENTRY(w4)); break;}
+		case 18: {str1 = gtk_entry_get_text(GTK_ENTRY(w2)); str2 = gtk_entry_get_text(GTK_ENTRY(w5)); break;}
+		case 34: {str1 = gtk_entry_get_text(GTK_ENTRY(w2)); str2 = gtk_entry_get_text(GTK_ENTRY(w6)); break;}
+		case 66: {str1 = gtk_entry_get_text(GTK_ENTRY(w2)); str2 = gtk_entry_get_text(GTK_ENTRY(w7)); break;}
+		case 12: {str1 = gtk_entry_get_text(GTK_ENTRY(w3)); str2 = gtk_entry_get_text(GTK_ENTRY(w4)); break;}
+		case 20: {str1 = gtk_entry_get_text(GTK_ENTRY(w3)); str2 = gtk_entry_get_text(GTK_ENTRY(w5)); break;}
+		case 36: {str1 = gtk_entry_get_text(GTK_ENTRY(w3)); str2 = gtk_entry_get_text(GTK_ENTRY(w6)); break;}
+		case 68: {str1 = gtk_entry_get_text(GTK_ENTRY(w3)); str2 = gtk_entry_get_text(GTK_ENTRY(w7)); break;}
+		default: {variant = 0;}
+	}
+	do_timeout = false;
+	if(variant != 0) {
+		m1_pre.set(CALCULATOR->parse(CALCULATOR->unlocalizeExpression(str1)));
+		m2_pre.set(CALCULATOR->parse(CALCULATOR->unlocalizeExpression(str2)));
+	}
+	switch(variant) {
+		case 3: {m1 = m1_pre; m2 = m2_pre; break;}
+		case 5: {m1 = m1_pre; m2 = m2_pre; m2 += m1; break;}
+		case 9: {m1 = m1_pre; m2 = m2_pre; m2 /= 100; m2 += 1; m2 *= m1; break;}
+		case 17: {m1 = m1_pre; m2_pre /= 100; m2_pre += 1; m2 = m1; m2 /= m2_pre; break;}
+		case 33: {m1 = m1_pre; m2 = m2_pre; m2 /= 100; m2 *= m1; break;}
+		case 65: {m1 = m1_pre; m2_pre /= 100; m2 = m1; m2 /= m2_pre; break;}
+		case 6: {m2 = m1_pre; m1 = m1_pre; m1 -= m2_pre; break;}
+		case 10: {m2 = m1_pre; m2_pre /= 100; m2_pre += 1; m1 = m2; m1 /= m2_pre; break;}
+		case 18: {m2 = m1_pre; m2_pre /= 100; m2_pre += 1; m1 = m2; m1 *= m2_pre; break;}
+		case 34: {m2 = m1_pre; m2_pre /= 100; m1 = m2; m1 /= m2_pre; break;}
+		case 66: {m2 = m1_pre; m2_pre /= 100; m1 = m2; m1 *= m2_pre; break;}
+		case 12: {m1 = m1_pre; m2_pre /= 100; m1 /= m2_pre; m2 = m1; m2 += m1_pre; break;}
+		case 20: {m1_pre.negate(); m2 = m1_pre; m2_pre /= 100; m2 /= m2_pre; m1 = m2; m1 += m1_pre; break;}
+		case 36: {m1 = m1_pre; m2_pre /= 100; m2_pre -= 1; m1 /= m2_pre; m2 = m1; m2 += m1_pre; break;}
+		case 68: {m1_pre.negate(); m2 = m1_pre; m2_pre /= 100; m2_pre -= 1; m2 /= m2_pre; m1 = m2; m1 += m1_pre; break;}
+		default: {variant = 0;}
+	}
+	if(variant != 0) {
+		m3 = m2; m3 -= m1;
+		m6 = m2; m6 /= m1;
+		m7 = m1; m7 /= m2;
+		m4 = m6; m4 -= 1;
+		m5 = m7; m5 -= 1;
+		m4 *= 100; m5 *= 100; m6 *= 100; m7 *= 100;
+		EvaluationOptions eo;
+		eo.parse_options = evalops.parse_options;
+		eo.parse_options.rpn = false;
+		eo.parse_options.base = 10;
+		eo.assume_denominators_nonzero = true;
+		eo.warn_about_denominators_assumed_nonzero = false;
+		CALCULATOR->calculate(&m1, 500, eo);
+		CALCULATOR->calculate(&m2, 500, eo);
+		CALCULATOR->calculate(&m3, 500, eo);
+		CALCULATOR->calculate(&m4, 500, eo);
+		CALCULATOR->calculate(&m5, 500, eo);
+		CALCULATOR->calculate(&m6, 500, eo);
+		CALCULATOR->calculate(&m7, 500, eo);
+		PrintOptions po = printops;
+		po.base = 10;
+		po.number_fraction_format = FRACTION_DECIMAL;
+		gtk_entry_set_text(GTK_ENTRY(w1), m1.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(m1, 200, po).c_str());
+		gtk_entry_set_text(GTK_ENTRY(w2), m2.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(m2, 200, po).c_str());
+		gtk_entry_set_text(GTK_ENTRY(w3), m3.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(m3, 200, po).c_str());
+		po.max_decimals = 2;
+		po.use_max_decimals = true;
+		gtk_entry_set_text(GTK_ENTRY(w4), m4.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(m4, 200, po).c_str());
+		gtk_entry_set_text(GTK_ENTRY(w5), m5.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(m5, 200, po).c_str());
+		gtk_entry_set_text(GTK_ENTRY(w6), m6.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(m6, 200, po).c_str());
+		gtk_entry_set_text(GTK_ENTRY(w7), m7.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(m7, 200, po).c_str());
+	}
+	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_dialog")));
+	do_timeout = true;
+	g_signal_handlers_unblock_matched((gpointer) w1, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_1_changed, NULL);
+	g_signal_handlers_unblock_matched((gpointer) w2, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_2_changed, NULL);
+	g_signal_handlers_unblock_matched((gpointer) w3, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_3_changed, NULL);
+	g_signal_handlers_unblock_matched((gpointer) w4, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_4_changed, NULL);
+	g_signal_handlers_unblock_matched((gpointer) w5, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_5_changed, NULL);
+	g_signal_handlers_unblock_matched((gpointer) w6, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_6_changed, NULL);
+	g_signal_handlers_unblock_matched((gpointer) w7, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_7_changed, NULL);
+	updating_percentage_entries = false;
+}
 
 void update_nbases_entries(const MathStructure &value, int base) {
 	GtkWidget *w_dec, *w_bin, *w_oct, *w_hex;
