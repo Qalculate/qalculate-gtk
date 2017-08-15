@@ -78,6 +78,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po = default_prin
 void update_status_text();
 
 void set_result_size_request();
+void set_expression_size_request();
 
 void create_umenu(void);
 void create_umenu2(void);
@@ -218,13 +219,12 @@ gchar *font_name_to_css(const char *font_name);
 extern "C" {
 #endif
 
-gboolean on_completion_match_selected(GtkEntryCompletion *entrycompletion, GtkTreeModel *model, GtkTreeIter *iter, gpointer user_data);
-gboolean completion_match_func(GtkEntryCompletion *entrycompletion, const gchar *key, GtkTreeIter *iter, gpointer user_data);
+void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewColumn*, gpointer);
 
 void *view_proc(void*);
 void *command_proc(void*);
 void on_message_bar_response(GtkInfoBar *w, gint response_id, gpointer);
-void on_expression_populate_popup(GtkEntry *w, GtkMenu *menu, gpointer user_data);
+void on_expressiontext_populate_popup(GtkTextView *w, GtkMenu *menu, gpointer user_data);
 void on_combobox_base_changed(GtkComboBox *w, gpointer user_data);
 void on_combobox_numerical_display_changed(GtkComboBox *w, gpointer user_data);
 void on_combobox_fraction_mode_changed(GtkComboBox *w, gpointer user_data);
@@ -315,7 +315,7 @@ void on_button_divide_clicked(GtkButton *w, gpointer user_data);
 void on_button_ans_clicked(GtkButton *w, gpointer user_data);
 void on_button_exp_clicked(GtkButton *w, gpointer user_data);
 void on_button_xy_clicked(GtkButton *w, gpointer user_data);
-void on_button_square_clicked(GtkButton *w, gpointer user_data);
+void on_button_square_clicked();
 void on_button_sqrt_clicked(GtkButton *w, gpointer user_data);
 void on_button_log_clicked(GtkButton *w, gpointer user_data);
 void on_button_ln_clicked(GtkButton *w, gpointer user_data);
@@ -554,12 +554,14 @@ void on_decimals_dialog_spinbutton_min_value_changed(GtkSpinButton *w, gpointer 
 void on_decimals_dialog_checkbutton_max_toggled(GtkToggleButton *w, gpointer user_data);
 void on_decimals_dialog_checkbutton_min_toggled(GtkToggleButton *w, gpointer user_data);
 
-gboolean on_expression_button_press_event(GtkWidget *w, GdkEventButton *event, gpointer user_data);
+gboolean on_expressiontext_button_press_event(GtkWidget *w, GdkEventButton *event, gpointer user_data);
 
 gboolean on_resultview_button_press_event(GtkWidget *w, GdkEventButton *event, gpointer user_data);
 gboolean on_resultview_popup_menu(GtkWidget *w, gpointer user_data);
 
-gboolean on_expression_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer user_data);
+gboolean on_expressiontext_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer user_data);
+
+void on_expressionbuffer_cursor_position_notify();
 
 gboolean on_resultview_draw(GtkWidget *w, cairo_t *cr, gpointer user_data);
 

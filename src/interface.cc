@@ -34,6 +34,8 @@ extern GtkBuilder *preferences_builder, *unit_builder, *unitedit_builder, *units
 extern GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_builder;
 extern vector<mode_struct> modes;
 
+GtkWidget *mainwindow;
+
 GtkWidget *tFunctionCategories;
 GtkWidget *tFunctions;
 GtkListStore *tFunctions_store;
@@ -67,6 +69,8 @@ GtkListStore *tNames_store;
 
 GtkWidget *tabs, *expander_keypad, *expander_history, *expander_stack, *expander_convert;
 GtkEntryCompletion *completion;
+GtkWidget *completion_view, *completion_window, *completion_scrolled;
+GtkTreeModel *completion_filter;
 GtkListStore *completion_store;
 
 GtkWidget *tFunctionArguments;
@@ -85,7 +89,9 @@ GtkCellRenderer *renderer, *history_renderer, *history_index_renderer, *ans_rend
 GtkTreeViewColumn *column, *register_column, *history_column, *history_index_column;
 GtkTreeSelection *selection;
 
-GtkWidget *expression;
+GtkWidget *expressiontext;
+GtkTextBuffer *expressionbuffer;
+extern GtkTextIter current_object_start, current_object_end;
 GtkWidget *resultview;
 GtkWidget *historyview;
 GtkListStore *historystore;
@@ -493,19 +499,19 @@ void create_button_menus(void) {
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_bitxor->title(true).c_str(), insert_button_function, CALCULATOR->f_bitxor)
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_percent"));
-	MENU_ITEM(_("Simple percent calculation"), on_menu_item_show_percentage_dialog_activate)
+	MENU_ITEM(_("Percent calculation tool"), on_menu_item_show_percentage_dialog_activate)
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_xy"));
-	MENU_ITEM_WITH_POINTER(CALCULATOR->f_sq->title(true).c_str(), insert_button_function, CALCULATOR->f_sq)
+	MENU_ITEM_MARKUP("x<sup><small>2</small></sup>", on_button_square_clicked)
 	f = CALCULATOR->getActiveFunction("inv");
-	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
-	MENU_ITEM_WITH_POINTER(CALCULATOR->f_exp->title(true).c_str(), insert_button_function, CALCULATOR->f_exp)
+	if(f) {MENU_ITEM_WITH_POINTER("1/x", insert_button_function, f);}
+	MENU_ITEM_MARKUP_WITH_POINTER("e<sup><small>x</small></sup>", insert_button_function, CALCULATOR->f_exp)
 	f = CALCULATOR->getActiveFunction("exp2");
-	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	if(f) {MENU_ITEM_MARKUP_WITH_POINTER("2<sup><small>x</small></sup>", insert_button_function, f);}
 	f = CALCULATOR->getActiveFunction("exp10");
-	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	if(f) {MENU_ITEM_MARKUP_WITH_POINTER("10<sup><small>x</small></sup>", insert_button_function, f);}
 	f = CALCULATOR->getActiveFunction("cis");
-	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	if(f) {MENU_ITEM_MARKUP_WITH_POINTER("e<sup><small>xi</small></sup>", insert_button_function, f);}
 	
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_sqrt"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_sqrt);
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_sqrt"));
@@ -635,10 +641,10 @@ void create_button_menus(void) {
 	if(latest_button_unit) {
 		string si_label_str;
 		if(latest_button_unit->subtype() == SUBTYPE_COMPOSITE_UNIT) {
-			si_label_str = ((CompositeUnit*) latest_button_unit)->print(false, true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expression);
+			si_label_str = ((CompositeUnit*) latest_button_unit)->print(false, true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
 		} else {
 		
-			si_label_str = latest_button_unit->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression).name;
+			si_label_str = latest_button_unit->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name;
 		}
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_si")), si_label_str.c_str());
 		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_si")), latest_button_unit->title(true).c_str());
@@ -727,10 +733,10 @@ void create_button_menus(void) {
 	if(!latest_button_currency) latest_button_currency = CALCULATOR->u_euro;
 	string unit_label_str;
 	if(latest_button_currency->subtype() == SUBTYPE_COMPOSITE_UNIT) {
-		unit_label_str = ((CompositeUnit*) latest_button_currency)->print(false, true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expression);
+		unit_label_str = ((CompositeUnit*) latest_button_currency)->print(false, true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
 	} else {
 	
-		unit_label_str = latest_button_currency->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression).name;
+		unit_label_str = latest_button_currency->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name;
 	}
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_euro")), unit_label_str.c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_euro")), latest_button_currency->title(true).c_str());
@@ -801,6 +807,8 @@ void create_main_window(void) {
 	
 	/* make sure we get a valid main window */
 	g_assert(gtk_builder_get_object(main_builder, "main_window") != NULL);
+	
+	mainwindow = GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window"));
 
 	accel_group = gtk_accel_group_new();
 	gtk_window_add_accel_group(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), accel_group);
@@ -821,9 +829,19 @@ void create_main_window(void) {
 	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_mean")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_mean")));
 	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_pi")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_pi")));
 
-	expression = GTK_WIDGET(gtk_builder_get_object(main_builder, "expression"));
+	expressiontext = GTK_WIDGET(gtk_builder_get_object(main_builder, "expressiontext"));
+	expressionbuffer = GTK_TEXT_BUFFER(gtk_builder_get_object(main_builder, "expressionbuffer"));
+	gtk_text_buffer_get_end_iter(expressionbuffer, &current_object_start);
+	gtk_text_buffer_get_end_iter(expressionbuffer, &current_object_end);
 	resultview = GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"));
 	historyview = GTK_WIDGET(gtk_builder_get_object(main_builder, "historyview"));
+	
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
+	gtk_text_view_set_left_margin(GTK_TEXT_VIEW(expressiontext), 6);
+	gtk_text_view_set_right_margin(GTK_TEXT_VIEW(expressiontext), 6);
+	gtk_text_view_set_top_margin(GTK_TEXT_VIEW(expressiontext), 6);
+	gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(expressiontext), 6);
+#endif 
 	
 	stackview = GTK_WIDGET(gtk_builder_get_object(main_builder, "stackview"));
 	statuslabel_l = GTK_WIDGET(gtk_builder_get_object(main_builder, "label_status_left"));
@@ -833,7 +851,7 @@ void create_main_window(void) {
 	resultview_provider = gtk_css_provider_new();
 	statuslabel_l_provider = gtk_css_provider_new();
 	statuslabel_r_provider = gtk_css_provider_new();
-	gtk_style_context_add_provider(gtk_widget_get_style_context(expression), GTK_STYLE_PROVIDER(expression_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_style_context_add_provider(gtk_widget_get_style_context(expressiontext), GTK_STYLE_PROVIDER(expression_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(resultview), GTK_STYLE_PROVIDER(resultview_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(statuslabel_l), GTK_STYLE_PROVIDER(statuslabel_l_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(statuslabel_r), GTK_STYLE_PROVIDER(statuslabel_r_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
@@ -863,7 +881,7 @@ void create_main_window(void) {
 		//gtk_css_provider_load_from_data(expression_provider, "* {font-size: large;}", -1, NULL);
 		if(custom_expression_font.empty()) {
 			PangoFontDescription *font_desc;
-			gtk_style_context_get(gtk_widget_get_style_context(expression), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+			gtk_style_context_get(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
 			custom_expression_font = pango_font_description_to_string(font_desc);
 			pango_font_description_free(font_desc);
 		}
@@ -913,9 +931,9 @@ void create_main_window(void) {
 		status_warning_color = wcs;
 	}
 	
-	gtk_widget_grab_focus(expression);
-	gtk_widget_set_can_default(expression, TRUE);
-	gtk_widget_grab_default(expression);
+	gtk_widget_grab_focus(expressiontext);
+	gtk_widget_set_can_default(expressiontext, TRUE);
+	gtk_widget_grab_default(expressiontext);
 
 	expander_keypad = GTK_WIDGET(gtk_builder_get_object(main_builder, "expander_keypad"));
 	expander_history = GTK_WIDGET(gtk_builder_get_object(main_builder, "expander_history"));
@@ -1197,7 +1215,7 @@ void create_main_window(void) {
 	if(rpn_mode) {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_equals")), _("Ent"));
 		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_equals")), _("Calculate expression and add to stack"));
-		gtk_entry_set_icon_tooltip_text(GTK_ENTRY(expression), GTK_ENTRY_ICON_PRIMARY, _("Calculate expression and add to stack"));
+		gtk_entry_set_icon_tooltip_text(GTK_ENTRY(expressiontext), GTK_ENTRY_ICON_PRIMARY, _("Calculate expression and add to stack"));
 	} else {
 		gtk_widget_hide(expander_stack);
 	}
@@ -1205,22 +1223,31 @@ void create_main_window(void) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), FALSE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), FALSE);
 
-/*	Completion	*/	
-	completion = gtk_entry_completion_new();
-	gtk_entry_set_completion(GTK_ENTRY(expression), completion);
-	completion_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+/*	Completion	*/
+	completion_view = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionview"));
+	completion_scrolled = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionscrolled"));
+	completion_window = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionwindow"));
+	completion_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN);
+	completion_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(completion_store), NULL);
+	gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(completion_filter), 3);
+	gtk_tree_view_set_model(GTK_TREE_VIEW(completion_view), completion_filter);
+
+	gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
+	renderer = gtk_cell_renderer_text_new();
+	column = gtk_tree_view_column_new();
+	gtk_tree_view_column_pack_start(column, renderer, TRUE);
+	gtk_tree_view_column_set_attributes(column, renderer, "markup", 0, NULL);
+	gtk_tree_view_column_set_sort_column_id(column, 0);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(completion_view), column);
+	renderer = gtk_cell_renderer_text_new();
+	column = gtk_tree_view_column_new();
+	g_object_set(G_OBJECT(renderer), "style", PANGO_STYLE_ITALIC, NULL);
+	gtk_tree_view_column_pack_end(column, renderer, FALSE);
+	gtk_tree_view_column_set_attributes(column, renderer, "text", 1, NULL);
+	gtk_tree_view_column_set_sort_column_id(column, 1);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(completion_view), column);
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(completion_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_store), 0, GTK_SORT_ASCENDING);
-	gtk_entry_completion_set_model(completion, GTK_TREE_MODEL(completion_store));
-	g_object_unref(completion_store);
-	GtkCellRenderer *cell = gtk_cell_renderer_text_new();
-	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(completion), cell, TRUE);
-	gtk_cell_layout_add_attribute(GTK_CELL_LAYOUT(completion), cell, "text", 0);	
-	cell = gtk_cell_renderer_text_new();
-	gtk_cell_layout_pack_end(GTK_CELL_LAYOUT(completion), cell, FALSE);
-	gtk_cell_layout_add_attribute(GTK_CELL_LAYOUT(completion), cell, "text", 1);
-	gtk_entry_completion_set_match_func(completion, &completion_match_func, NULL, NULL);
-	g_signal_connect((gpointer) completion, "match-selected", G_CALLBACK(on_completion_match_selected), NULL);
 	
 	for(size_t i = 0; i < modes.size(); i++) {
 		GtkWidget *item = gtk_menu_item_new_with_label(modes[i].name.c_str()); 
@@ -1272,6 +1299,7 @@ void create_main_window(void) {
 	gtk_widget_show (GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 	
 	set_result_size_request();
+	set_expression_size_request();
 	
 	gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width > 0 ? win_width : 100, win_height > 0 ? win_height : 100);
 

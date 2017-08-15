@@ -202,7 +202,7 @@ void create_application(GtkApplication *app) {
 	
 	check_expression_position = true;
 	expression_position = 1;
-	g_timeout_add(50, on_check_expression_position_timeout, NULL);
+	//g_timeout_add(50, on_check_expression_position_timeout, NULL);
 	
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object (main_builder, "menu_item_plot_functions")), canplot);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object (main_builder, "menu_item_fetch_exchange_rates")), canfetch);
