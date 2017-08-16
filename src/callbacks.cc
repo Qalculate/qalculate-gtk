@@ -9510,26 +9510,25 @@ bool last_is_number(const gchar *expr) {
 	insert one-argument function when button clicked
 */
 void insertButtonFunction(const gchar *text, bool append_space = true) {
-	gint start = 0, end = 0;
-	GtkTextIter istart, iend;
+	GtkTextIter istart, iend, ipos;
 	gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
 	gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
 	gchar *expr = gtk_text_buffer_get_text(expressionbuffer, &istart, &iend, FALSE);
-	int old_length = g_utf8_strlen(expr, -1);
+	GtkTextMark *mpos = gtk_text_buffer_get_insert(expressionbuffer);
+	gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mpos);
 	// special case: the user just entered a number, then select all, so that it gets executed
-	if(gtk_text_iter_is_end(&iend) && last_is_number(expr)) {
+	if(gtk_text_iter_is_end(&ipos) && last_is_number(expr)) {
 		gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
 	}
 	if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
 		gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
+		// execute expression, if the whole expression was selected, no need for additional enter
+		bool do_exec = !rpn_mode && gtk_text_iter_is_start(&istart) && gtk_text_iter_is_end(&iend);
 		//set selection as argument
 		gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &istart, &iend, FALSE);
 		gchar *gstr2 = g_strdup_printf("%s(%s)", text, gstr);
 		insert_text(gstr2);
-		// execute expression, if the whole expression was selected, no need for additional enter
-		if(!rpn_mode && end - start == old_length) {
-			execute_expression();
-		}
+		if(do_exec) execute_expression();
 		g_free(gstr);
 		g_free(gstr2);
 	} else {
