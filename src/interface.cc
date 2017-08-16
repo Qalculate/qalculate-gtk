@@ -499,7 +499,7 @@ void create_button_menus(void) {
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_bitxor->title(true).c_str(), insert_button_function, CALCULATOR->f_bitxor)
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_percent"));
-	MENU_ITEM(_("Percent calculation tool"), on_menu_item_show_percentage_dialog_activate)
+	MENU_ITEM(_("Percentage calculation tool"), on_menu_item_show_percentage_dialog_activate)
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_xy"));
 	MENU_ITEM_MARKUP("x<sup><small>2</small></sup>", on_button_square_clicked)
@@ -1226,6 +1226,7 @@ void create_main_window(void) {
 /*	Completion	*/
 	completion_view = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionview"));
 	completion_scrolled = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionscrolled"));
+	gtk_widget_set_size_request(gtk_scrolled_window_get_vscrollbar(GTK_SCROLLED_WINDOW(completion_scrolled)), -1, 0);
 	completion_window = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionwindow"));
 	completion_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN);
 	completion_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(completion_store), NULL);
@@ -1234,17 +1235,16 @@ void create_main_window(void) {
 
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new();
-	gtk_tree_view_column_pack_start(column, renderer, TRUE);
-	gtk_tree_view_column_set_attributes(column, renderer, "markup", 0, NULL);
-	gtk_tree_view_column_set_sort_column_id(column, 0);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(completion_view), column);
+	GtkCellArea *area = gtk_cell_area_box_new();
+	gtk_cell_area_box_set_spacing(GTK_CELL_AREA_BOX(area), 12);
+	column = gtk_tree_view_column_new_with_area(area);
+	gtk_cell_area_box_pack_start(GTK_CELL_AREA_BOX(area), renderer, TRUE, TRUE, TRUE);
+	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(area), renderer, "markup", 0, NULL);
 	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new();
 	g_object_set(G_OBJECT(renderer), "style", PANGO_STYLE_ITALIC, NULL);
-	gtk_tree_view_column_pack_end(column, renderer, FALSE);
-	gtk_tree_view_column_set_attributes(column, renderer, "text", 1, NULL);
-	gtk_tree_view_column_set_sort_column_id(column, 1);
+	gtk_cell_area_box_pack_end(GTK_CELL_AREA_BOX(area), renderer, FALSE, TRUE, TRUE);
+	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(area), renderer, "text", 1, NULL);
+	gtk_tree_view_column_set_sort_column_id(column, 0);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(completion_view), column);
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(completion_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_store), 0, GTK_SORT_ASCENDING);

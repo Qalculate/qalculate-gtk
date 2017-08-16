@@ -405,6 +405,7 @@ void on_menu_item_assumptions_nonpositive_activate(GtkMenuItem *w, gpointer user
 void on_menu_item_assumptions_unknown_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_assume_nonzero_denominators_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_abort_activate(GtkMenuItem *w, gpointer user_data);
+void on_popup_menu_item_clear_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_display_normal_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_display_engineering_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_display_scientific_activate(GtkMenuItem *w, gpointer user_data);
