@@ -6462,6 +6462,8 @@ void set_rpn_mode(bool b) {
 	if(rpn_mode) {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_equals")), _("Ent"));
 		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_equals")), _("Calculate expression and add to stack"));
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "expression_button_equals")), _("Ent"));
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), _("Calculate expression and add to stack"));
 		gtk_widget_show(expander_stack);
 		show_history = gtk_expander_get_expanded(GTK_EXPANDER(expander_history));
 		show_keypad = gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad));
@@ -6476,6 +6478,8 @@ void set_rpn_mode(bool b) {
 	} else {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_equals")), _("="));
 		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_equals")), _("Calculate expression"));
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "expression_button_equals")), _("="));
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), _("Calculate expression"));
 		gtk_widget_hide(expander_stack);
 		show_stack = gtk_expander_get_expanded(GTK_EXPANDER(expander_stack));
 		if(show_stack) {
@@ -9507,9 +9511,18 @@ bool last_is_number(const gchar *expr) {
 }
 
 /*
-	insert one-argument function when button clicked
+	insert function when button clicked
 */
-void insertButtonFunction(const gchar *text, bool append_space = true) {
+void insertButtonFunction(MathFunction *f, bool save_to_recent = false) {
+	if(!f) return;
+	if(rpn_mode && f->args() == 1) {
+		calculateRPN(f);
+		return;
+	}
+	if(f->minargs() > 1) return insert_function(f, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), save_to_recent);
+	
+	//insert one-argument function
+	const ExpressionName *ename = &f->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
 	GtkTextIter istart, iend, ipos;
 	gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
 	gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
@@ -9517,7 +9530,7 @@ void insertButtonFunction(const gchar *text, bool append_space = true) {
 	GtkTextMark *mpos = gtk_text_buffer_get_insert(expressionbuffer);
 	gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mpos);
 	// special case: the user just entered a number, then select all, so that it gets executed
-	if(gtk_text_iter_is_end(&ipos) && last_is_number(expr)) {
+	if(f != CALCULATOR->f_factorial && gtk_text_iter_is_end(&ipos) && last_is_number(expr)) {
 		gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
 	}
 	if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
@@ -9526,38 +9539,37 @@ void insertButtonFunction(const gchar *text, bool append_space = true) {
 		bool do_exec = !rpn_mode && gtk_text_iter_is_start(&istart) && gtk_text_iter_is_end(&iend);
 		//set selection as argument
 		gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &istart, &iend, FALSE);
-		gchar *gstr2 = g_strdup_printf("%s(%s)", text, gstr);
+		gchar *gstr2;
+		if(f == CALCULATOR->f_factorial) {
+			gstr2 = g_strdup_printf("(%s)!", gstr);
+		} else {
+			gstr2 = g_strdup_printf("%s(%s)", ename->name.c_str(), gstr);
+		}
 		insert_text(gstr2);
 		if(do_exec) execute_expression();
 		g_free(gstr);
 		g_free(gstr2);
 	} else {
-		gchar *gstr2;
-		//one-argument functions do not need parenthesis
-		/*if(append_space) {
-			gstr2 = g_strdup_printf("%s ", text);
+		if(f == CALCULATOR->f_factorial) {
+			insert_text("!");
 		} else {
-			gstr2 = g_strdup_printf("%s", text);
-		}*/
-		gstr2 = g_strdup_printf("%s()", text);
-		insert_text(gstr2);
-		GtkTextIter iter;
-		gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iter, gtk_text_buffer_get_insert(expressionbuffer));
-		gtk_text_iter_backward_char(&iter);
-		gtk_text_buffer_place_cursor(expressionbuffer, &iter);
-		g_free(gstr2);
+			gchar *gstr2;
+			//one-argument functions do not need parenthesis
+			/*if(!text_length_is_one(ename->name)) {
+				gstr2 = g_strdup_printf("%s ", text);
+			} else {
+				gstr2 = g_strdup_printf("%s", text);
+			}*/
+			gstr2 = g_strdup_printf("%s()", ename->name.c_str());
+			insert_text(gstr2);
+			GtkTextIter iter;
+			gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iter, gtk_text_buffer_get_insert(expressionbuffer));
+			gtk_text_iter_backward_char(&iter);
+			gtk_text_buffer_place_cursor(expressionbuffer, &iter);
+			g_free(gstr2);
+		}
 	}
 	g_free(expr);
-}
-void insertButtonFunction(MathFunction *f, bool save_to_recent = false) {
-	if(!f) return;
-	if(rpn_mode && f->args() == 1) {
-		calculateRPN(f);
-		return;
-	}
-	if(f->minargs() > 1) return insert_function(f, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), save_to_recent);
-	const ExpressionName *ename = &f->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
-	insertButtonFunction(ename->name.c_str(), !text_length_is_one(ename->name));
 	if(save_to_recent) function_inserted(f);
 }
 void insert_button_function(GtkMenuItem*, gpointer user_data) {
@@ -9575,12 +9587,6 @@ void button_pressed(GtkButton*, gpointer user_data) {
 	insert_text((gchar*) user_data);
 }
 
-/*
-	Button clicked -- insert corresponding function
-*/
-void button_function_pressed(GtkButton*, gpointer user_data) {
-	insertButtonFunction((gchar*) user_data);
-}
 
 /*
 	Update angle menu
@@ -12707,7 +12713,7 @@ void on_button_new_function_clicked(GtkButton*, gpointer) {
 	edit_function_simple("", NULL, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 }
 void on_button_fac_clicked(GtkButton*, gpointer) {
-	insert_text("!");
+	insertButtonFunction(CALCULATOR->f_factorial);
 }
 void on_button_comma_clicked(GtkButton*, gpointer) {
 	insert_text(CALCULATOR->getComma().c_str());
@@ -13007,8 +13013,7 @@ void on_button_history_sqrt_clicked(GtkButton*, gpointer) {
 	vector<int> selected_index_type;
 	process_history_selection(NULL, &selected_indeces, &selected_index_type);
 	if(selected_indeces.empty()) {
-		const ExpressionName *ename = &CALCULATOR->f_sqrt->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
-		insertButtonFunction(ename->name.c_str(), !text_length_is_one(ename->name));
+		insertButtonFunction(CALCULATOR->f_sqrt);
 		return;
 	}	
 	const ExpressionName *ename2 = &CALCULATOR->f_sqrt->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);

@@ -1214,8 +1214,9 @@ void create_main_window(void) {
 
 	if(rpn_mode) {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_equals")), _("Ent"));
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "expression_button_equals")), _("Ent"));
 		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_equals")), _("Calculate expression and add to stack"));
-		gtk_entry_set_icon_tooltip_text(GTK_ENTRY(expressiontext), GTK_ENTRY_ICON_PRIMARY, _("Calculate expression and add to stack"));
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), _("Calculate expression and add to stack"));
 	} else {
 		gtk_widget_hide(expander_stack);
 	}
