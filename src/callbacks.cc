@@ -9503,7 +9503,7 @@ bool last_is_number(const gchar *expr) {
 	string str = CALCULATOR->unlocalizeExpression(expr, evalops.parse_options);
 	CALCULATOR->parseSigns(str);
 	if(str.empty()) return false;
-	return is_not_in(OPERATORS SPACES SEXADOT DOT LEFT_VECTOR_WRAP LEFT_PARENTHESIS COMMAS, str.back());
+	return is_not_in(OPERATORS SPACES SEXADOT DOT LEFT_VECTOR_WRAP LEFT_PARENTHESIS COMMAS, str[str.length() - 1]);
 }
 
 /*
@@ -12368,7 +12368,10 @@ void completion_resize_popup(int matches) {
 	gint x, y;
 	gint items, height = 0, items_y = 0, height_diff;
 	GdkDisplay *display;
+
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 	GdkMonitor *monitor;
+#endif
 	GdkRectangle area, bufloc, rect;
 	GdkWindow *window;
 	GtkRequisition popup_req;
@@ -12418,8 +12421,13 @@ void completion_resize_popup(int matches) {
 	}
 
 	display = gtk_widget_get_display(GTK_WIDGET(expressiontext));
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 	monitor = gdk_display_get_monitor_at_window(display, window);
 	gdk_monitor_get_workarea(monitor, &area);
+#else
+	GdkScreen *screen = gdk_display_get_default_screen(display);
+	gdk_screen_get_monitor_workarea(screen, gdk_screen_get_monitor_at_window(screen, window), &area);
+#endif
 
 	gtk_tree_view_columns_autosize(GTK_TREE_VIEW(completion_view));
 	gtk_scrolled_window_set_min_content_height(GTK_SCROLLED_WINDOW(completion_scrolled), height);
@@ -12610,7 +12618,7 @@ void on_button_brace_wrap_clicked(GtkButton*, gpointer) {
 			string str = CALCULATOR->unlocalizeExpression(gstr, evalops.parse_options);
 			g_free(gstr);
 			CALCULATOR->parseSigns(str);
-			if(str.empty() || is_in(OPERATORS SPACES SEXADOT DOT LEFT_VECTOR_WRAP LEFT_PARENTHESIS COMMAS, str.back())) {
+			if(str.empty() || is_in(OPERATORS SPACES SEXADOT DOT LEFT_VECTOR_WRAP LEFT_PARENTHESIS COMMAS, str[str.length() - 1])) {
 				istart = iend;
 				gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
 				if(gtk_text_iter_compare(&istart, &iend) < 0) {
@@ -12618,7 +12626,7 @@ void on_button_brace_wrap_clicked(GtkButton*, gpointer) {
 					str = CALCULATOR->unlocalizeExpression(gstr, evalops.parse_options);
 					g_free(gstr);
 					CALCULATOR->parseSigns(str);
-					if(str.empty() || (is_in(OPERATORS SPACES SEXADOT DOT RIGHT_VECTOR_WRAP LEFT_PARENTHESIS RIGHT_PARENTHESIS COMMAS, str.front()) && str.front() != MINUS_CH)) {
+					if(str.empty() || (is_in(OPERATORS SPACES SEXADOT DOT RIGHT_VECTOR_WRAP LEFT_PARENTHESIS RIGHT_PARENTHESIS COMMAS, str[0]) && str[0] != MINUS_CH)) {
 						iend = istart;
 					}
 				}
@@ -12630,7 +12638,7 @@ void on_button_brace_wrap_clicked(GtkButton*, gpointer) {
 			string str = CALCULATOR->unlocalizeExpression(gstr, evalops.parse_options);
 			g_free(gstr);
 			CALCULATOR->parseSigns(str);
-			if(str.empty() || (is_in(OPERATORS SPACES SEXADOT DOT RIGHT_VECTOR_WRAP LEFT_PARENTHESIS RIGHT_PARENTHESIS COMMAS, str.front()) && str.front() != MINUS_CH)) {
+			if(str.empty() || (is_in(OPERATORS SPACES SEXADOT DOT RIGHT_VECTOR_WRAP LEFT_PARENTHESIS RIGHT_PARENTHESIS COMMAS, str[0]) && str[0] != MINUS_CH)) {
 				iend = istart;
 			}
 		}
@@ -12653,7 +12661,7 @@ void on_button_brace_wrap_clicked(GtkButton*, gpointer) {
 	string str = CALCULATOR->unlocalizeExpression(gstr, evalops.parse_options);
 	g_free(gstr);
 	CALCULATOR->parseSigns(str);
-	if(str.empty() || is_in(OPERATORS SPACES SEXADOT DOT LEFT_VECTOR_WRAP LEFT_PARENTHESIS COMMAS, str.back())) {
+	if(str.empty() || is_in(OPERATORS SPACES SEXADOT DOT LEFT_VECTOR_WRAP LEFT_PARENTHESIS COMMAS, str[str.length() - 1])) {
 		gtk_text_iter_backward_char(&iend);
 		goto_start = false;
 	}
