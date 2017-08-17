@@ -5494,7 +5494,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		parsed_text = "aborted";
 	}
 
-	if(rpn_mode && stack_index == 0) {
+	if(stack_index == 0) {
 		clearresult();
 	}
 	
