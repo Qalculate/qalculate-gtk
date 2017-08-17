@@ -2,7 +2,7 @@
 
 <a href="https://github.com/Qalculate/qalculate-gtk/raw/master/data/qalculate-gtk-appdata-1.png"><img src="https://github.com/Qalculate/qalculate-gtk/raw/master/data/qalculate-gtk-appdata-1.png" width="446"></a>
 
-Qalculate! is a multi-purpose cross-platform desktop calculator for GNU/Linux (and Mac OS). It is small and simple to use but with much power and versatility underneath. Features include customizable functions, units, arbitrary precision, plotting, and a user-friendly interface (GTK+ and CLI).
+Qalculate! is a multi-purpose cross-platform desktop calculator. It is small and simple to use but with much power and versatility underneath. Features include customizable functions, units, arbitrary precision, plotting, and a user-friendly interface (GTK+ and CLI).
 
 ## Installation
 In a terminal window in the top source code directory run
