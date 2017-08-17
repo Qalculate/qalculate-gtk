@@ -6750,7 +6750,7 @@ void apply_function(MathFunction *f, GtkWidget* = NULL) {
 		str += "()";
 	} else {
 		str += "(";
-		str += vans[0]->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressionbuffer).name;
+		str += get_expression_text();
 		str += ")";
 	}
 	gtk_text_buffer_set_text(expressionbuffer, "", -1);
@@ -13968,7 +13968,60 @@ void on_mb_fx_toggled(GtkToggleButton *w, gpointer) {
 			MENU_ITEM_WITH_POINTER(recent_functions[i]->title(true).c_str(), insert_button_function_save, recent_functions[i])
 		}
 	}
-	if(!b2 && !b) {MENU_NO_ITEMS(_("No items found"))}
+	if(b2 || b) {MENU_SEPARATOR}
+	MENU_ITEM(_("All functions"), on_menu_item_manage_functions_activate);
+}
+
+
+void on_mb_pi_toggled(GtkToggleButton *w, gpointer) {
+	
+	if(!gtk_toggle_button_get_active(w)) return;
+	GtkMenu *sub = GTK_MENU(gtk_builder_get_object(main_builder, "menu_pi"));
+	GtkWidget *item;
+	GList *list = gtk_container_get_children(GTK_CONTAINER(sub));
+	for(GList *l = list; l != NULL; l = l->next) {
+		gtk_widget_destroy(GTK_WIDGET(l->data));
+	}
+	g_list_free(list);
+	
+	MENU_ITEM_WITH_POINTER(CALCULATOR->v_e->title(true).c_str(), insert_button_variable, CALCULATOR->v_e)
+	Variable *v = CALCULATOR->getActiveVariable("euler");
+	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
+	v = CALCULATOR->getActiveVariable("golden");
+	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
+	MENU_SEPARATOR
+
+	int i_added = 0;
+	for(size_t i = 0; i < recent_variables.size(); i++) {
+		if(!recent_variables[i]->isLocal() && CALCULATOR->stillHasVariable(recent_variables[i])) {
+			MENU_ITEM_WITH_POINTER(recent_variables[i]->title(true).c_str(), insert_variable, recent_variables[i])
+			i_added++;
+		}
+	}
+	if(i_added < 5)	{
+		v = CALCULATOR->getActiveVariable("c");
+		if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v); i_added++;}
+	}
+	if(i_added < 5)	{
+		v = CALCULATOR->getActiveVariable("newtonian_constant");
+		if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v); i_added++;}
+	}
+	if(i_added < 5)	{
+		v = CALCULATOR->getActiveVariable("planck");
+		if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v); i_added++;}
+	}
+	if(i_added < 5)	{
+		v = CALCULATOR->getActiveVariable("boltzmann");
+		if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v); i_added++;}
+	}
+	if(i_added < 5)	{
+		v = CALCULATOR->getActiveVariable("avogadro");
+		if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v); i_added++;}
+	}
+	
+	MENU_SEPARATOR
+	MENU_ITEM(_("All variables"), on_menu_item_manage_variables_activate);
+	
 }
 
 void on_popup_menu_sto_set_activate(GtkMenuItem *w, gpointer data) {
@@ -14029,15 +14082,7 @@ void on_mb_sto_toggled(GtkToggleButton *w, gpointer) {
 			b = true;
 		}
 	}
-	bool b2 = false;
-	for(size_t i = 0; i < recent_variables.size(); i++) {
-		if(!recent_variables[i]->isLocal() && CALCULATOR->stillHasVariable(recent_variables[i])) {
-			if(!b2 && b) {MENU_SEPARATOR}
-			b2 = true;
-			MENU_ITEM_WITH_POINTER(recent_variables[i]->title(true).c_str(), insert_variable, recent_variables[i])
-		}
-	}
-	if(!b2 && !b) {MENU_NO_ITEMS(_("No items found"))}
+	if(!b) {MENU_NO_ITEMS(_("No items found"))}
 }
 
 

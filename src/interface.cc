@@ -593,23 +593,6 @@ void create_button_menus(void) {
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_pi"), "clicked", G_CALLBACK(insert_button_variable), (gpointer) CALCULATOR->v_pi);
-	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_pi"));
-	MENU_ITEM_WITH_POINTER(CALCULATOR->v_e->title(true).c_str(), insert_button_variable, CALCULATOR->v_e)
-	v = CALCULATOR->getActiveVariable("euler");
-	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
-	v = CALCULATOR->getActiveVariable("golden");
-	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
-	v = CALCULATOR->getActiveVariable("pythagoras");
-	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
-	MENU_SEPARATOR
-	v = CALCULATOR->getActiveVariable("c");
-	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
-	v = CALCULATOR->getActiveVariable("newtonian_constant");
-	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
-	v = CALCULATOR->getActiveVariable("planck");
-	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
-	v = CALCULATOR->getActiveVariable("boltzmann");
-	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_factorize"));
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_solve->title(true).c_str(), insert_button_function, CALCULATOR->f_solve)
