@@ -2,8 +2,8 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "1.0.0">
-  <!ENTITY manrevision "1.0.0">
+  <!ENTITY appversion "2.0.0">
+  <!ENTITY manrevision "2.0.0">
   <!ENTITY date "February 2017">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
@@ -41,7 +41,7 @@
 <chapter id="qalculate-introduction">
 <title>Introduction</title>
 <para>
-Qalculate! is not your regular software replication of the cheapest available calculator. Qalculate! aims to make full use of the superior interface, power and flexibility of modern computers.
+Qalculate! is powerful and highly flexible desktop calculator, that aims to make use of the capabilities of modern computers.
 </para>
 <para>
 The center of attention in Qalculate! is the expression entry, Instead of entering each number in a mathematical expression separately, you can directly write the whole expression and later modify it. Just enter an expression as you would write it on paper, press <keycap>Enter</keycap> and voila!
@@ -69,7 +69,7 @@ Although use of Qalculate! for simple calculations should be natural and self-ex
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/mainwindow.png" format="PNG"/>
+				<imagedata fileref="figures/mainwindow.png" format="PNG" width="690"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -81,14 +81,14 @@ Although use of Qalculate! for simple calculations should be natural and self-ex
 <sect1 id="qalculate-expression-entry">
 <title>Expression Entry</title>
 <para>
-The expression entry is the most important part of the Qalculate! user interface. The normal calculation procedure in Qalculate! is to type in a mathematical expression (ex. <quote>5+5</quote>) and press <keycap>Enter</keycap> (or click <guibutton>Execute</guibutton>). The result (<quote>10</quote>) is then displayed below the expression entry in the result display.
+The expression entry is the most important part of the Qalculate! user interface. The normal calculation procedure in Qalculate! is to type in a mathematical expression (ex. <quote>5+5</quote>) and press <keycap>Enter</keycap> (or click <guibutton>=</guibutton>). The result (<quote>10</quote>) is then displayed below the expression entry in the result display.
 </para>
 <figure id="qalculate-FIG-completion">
 	<title>Completion</title>
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/completion.png" format="PNG"/>
+				<imagedata fileref="figures/completion.png" format="PNG" width="485"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -103,7 +103,10 @@ As the expression is typed in, the area directly direclty below the expression e
 After execution of an expression, the whole expression will be marked. This normally means that if something new is entered, the old expression will be overwritten. If, however, an operator (+, −, *, /, ^) is entered first, the old expression will instead be the target of action. The operator will then apply to the whole expression, which is put in parenthesis. This works on all marked ranges, meaning that this way an expression can conveniently be put in parenthesis. Functions set the selection as their first argument.
 </para>
 <para>
-The <keycap>Page Up</keycap> and <keycap>Page Down</keycap> keys will access previously entered expressions. With focus in the expression entry, <keycap>Page Up</keycap> traverses backwards in the expression history and <keycap>Page Down</keycap> forward. 
+The <keycap>Page Up</keycap> and <keycap>Page Down</keycap> keys will access previously entered expressions. With focus in the expression entry, <keycap>Page Up</keycap> traverses backwards in the expression history and <keycap>Page Down</keycap> forward. The <keycap>Up</keycap> and <keycap>Down</keycap> can also be used for the same purpose when the completion list is not shown.
+</para>
+<para>
+Although the expression entry can display multiple lines of text the up and down errors on the keyboard can not be used for navigation inside the field and the <keycap>Enter</keycap> does not insert a line feed. New lines are automatically created when needed.
 </para>
 <para>
 The font used for the expression entry can be selected in the preferences dialog (<menuchoice><guimenu>Edit</guimenu><guimenuitem>Preferences</guimenuitem></menuchoice>).
@@ -130,17 +133,219 @@ To copy the result, either select <menuchoice><guimenu>Edit</guimenu><guimenuite
 <sect1 id="qalculate-calculator-buttons">
 <title>Keypad</title>
 <para>
-The keypad provides access to a fairly small set of traditional calculator buttons, which work as expected. The top buttons (from left to right) toggles exact calculation, toggles fractional number display, selects display mode and selects number base in result (see <xref linkend="qalculate-result"/>).
+The keypad provides access to a simple traditional number pad and as well as more advanced functionality.
 <figure id="qalculate-FIG-calculator-buttons">
 	<title>Keypad</title>
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/calculator-buttons.png" format="PNG"/>
+				<imagedata fileref="figures/calculator-buttons.png" format="PNG" width="680"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
 </figure>
+</para>
+<para>
+The top buttons (from left to right) switches between exact and approximate calculation, changes fractional number display, selects display mode and selects number base in result (see <xref linkend="qalculate-result"/>).
+</para>
+<para>
+The buttons on the right provides the following sets of functionality:
+<variablelist>
+<varlistentry>
+<term>Numbers (0-9)</term>
+<listitem><para>
+These buttons provides straight forward input of numbers into the expression entry, as the keys on the keyboard. Marked/selected text in the expression entry is overwritten.
+</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>Decimal point (. or ,) and argument separator (, or ;)</term>
+<listitem><para>
+The character used for these varies between different locales. The argument separator is used for separation of arguments to functions that takes more than one argument, as well as to separate elements in vectors and matrices (although this is not strictly necessary). Selection is overwritten.
+</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>Operators (+, -, *, /)</term>
+<listitem><para>
+Inserts the character for addition, subtraction, multiplication or division into the expression entry. Text selections are placed in parentheses. This, together with the fact that recently calculted expressions are automitically selected in the entry, means that if you click 5, 9, +, 2, =, * and 2 in order, the result expression is "(59+2)*2". In rpn mode the operators acts on the top two registers in the stack.
+</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>EXP</term>
+<listitem><para>
+Inserts the shorthand notation (E or e) for ten raised to the power of x. <quote>2E6</quote> equals <quote>2 * 10^6</quote> (this only applies to digits: <quote>xEy &ne; x*10^y</quote>). Selection is overwritten.
+</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>Equals sign</term>
+<listitem><para>
+Calculates the current expression (and adds it to the stack in rpn mode).
+</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>AC and DEL</term>
+<listitem><para>
+AC clears the expression entry fully, while DEL deletes one character the to the right or, if the cursor is at the end of the expression, to the left of the cursor.
+</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>Parentheses</term>
+<listitem><para>
+The "(x)" button places opening and closing parantheses around the selected text in the expression entry. If no text is selected either the expression to the right of the cursor (if the cursor is at the begining of the expression or if there is an operator or left parenthesis to the left of the cursor) or to the left of the cursor is put inside parentheses. If the expression is empty, as well as in some other cases (to avoid broken expression), empty parentheses are inserted. The other two buttons insert a single opening or closing parenthesis and overwrites any selection.
+</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>ANS</term>
+<listitem><para>
+Inserts the first answer variable. This variable always contains the last calculated result. Selection is overwritten.
+</para></listitem>
+</varlistentry>
+</variablelist>
+</para>
+<para>
+Most of the buttons to the left inserts or applies mathematical functions to the expression. All buttons on the left is paired with buttons, with downward arrows, that opens a menu with related functionality (generally more mathematical functions).
+</para>
+<para>
+The mathematical functions accessed using the keypad buttons (and menus) behave differently depending on the current edited expression. If the cursor is at the end of the expression and there is no operator or parentehesis immediately to left of the cursor (at the end of expression), the whole expression is used as function argument and the expression is immediately calculaed using the function (If you type <quote>5+2</quote> and then click <guibutton>sin</guibutton>, <quote>sin(5+2)</quote> will be calculated). If text in the expression is selected, the selection will be used as the function argument. If the whole expression was selected the resulting expression will immediately be calculated. Functions that requires more than one argument do not follow these rules and instead opens a separate dialog for argument input. In RPN mode the function will always be applied to the register(s) at the top of stack, if the current expression is empty and there are enough registers for functions that require more one argument.
+</para>
+<para>
+Below follows a list of the buttons on the left side (including their menus and associated actions), from left the right, top to bottom:
+<table id="qalculate-TBL-keypad-left" frame="topbot" colsep="1">
+	<title>New Menu</title> 
+	<tgroup cols="2" colsep="1" rowsep="0">
+		<colspec colname="COLSPEC0" colwidth="50*"/>
+		<colspec colname="COLSPEC1"/>
+		<colspec colname="COLSPEC2"/>
+		<thead>
+			<row valign="top">
+				<entry colname="COLSPEC0"><para>Button</para></entry>
+				<entry colname="COLSPEC1"><para>Action</para></entry>
+				<entry colname="COLSPEC1"><para>Menu</para></entry>
+			</row>
+		</thead> 
+                <tbody>
+			<row valign="top">
+				<entry><para>STO</para></entry>
+				<entry><para>Stores the current result in a variable. See <xref linkend="qalculate-variable-creation"/>.</para></entry>
+				<entry><para>A list of created variables. Left click to insert (overwrites selection). Right click for the option to edit or delete the variable, or store the current result in the variable.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>f(x)</para></entry>
+				<entry><para>Creates a new function. See <xref linkend="qalculate-function-creation"/>.</para></entry>
+				<entry><para>Created and recently used (accessed from this menu, the menubar or the function manager) functions. The last item opens the function manager.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>0xff</para></entry>
+				<entry><para>Opens the convert number bases dialog.</para></entry>
+				<entry><para>shift(), bitXor() and xor() functions.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>%</para></entry>
+				<entry><para>Inserts the percent symbol (overwrites selection).</para></entry>
+				<entry><para>Open the percentage calculation tool.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>x!</para></entry>
+				<entry><para>Factorial symbol. Puts selection in parentheses and calculates the expression immediately if the whole expression is selected.</para></entry>
+				<entry><para>Other factorial functions and functions related to combinatorics.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>ln</para></entry>
+				<entry><para>Natural logarithm function.</para></entry>
+				<entry><para>Other logarithmic functions.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>&radic;</para></entry>
+				<entry><para>Square root function.</para></entry>
+				<entry><para>Other root functions.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>x<superscript>y</superscript></para></entry>
+				<entry><para>Inserts exponentiation operator. Text selections are placed in parentheses.</para></entry>
+				<entry><para>Exponential functions. x<superscript>2</superscript> works as the button x<superscript>y</superscript> but inserts <quote>^2</quote>.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>mod</para></entry>
+				<entry><para>Modulus function.</para></entry>
+				<entry><para>rem(), abs(), gcd() and lcm() functions.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>x&#772;</para></entry>
+				<entry><para>Statistical mean function.</para></entry>
+				<entry><para>A selection of statistical functions.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>&Sigma;</para></entry>
+				<entry><para>Summation function.</para></entry>
+				<entry><para>&Pi;, for() and if() functions.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para></para></entry>
+				<entry><para>Insert the pi variable (overwrites selection).</para></entry>
+				<entry><para>e, eulers constant and golden ratio variables, and recently used variables (accessed from this menu, the menubar or the variable manager) and/or a selection of physical constants. The last item opens the variable manager.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>sin</para></entry>
+				<entry><para>Sine function.</para></entry>
+				<entry><para>sinh(), asin() and asinh() functions.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>cos</para></entry>
+				<entry><para>Cosine function.</para></entry>
+				<entry><para>cosh(), acos() and acosh() functions.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>tan</para></entry>
+				<entry><para>Tangent function.</para></entry>
+				<entry><para>tanh(), atan() and atanh() functions.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>i</para></entry>
+				<entry><para>Inserts the imaginary unit (i<superscript>2</superscript> = −1) i (overwrites selection).</para></entry>
+				<entry><para>Complex number functions.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>a(x)<superscript>b</superscript></para></entry>
+				<entry><para>Factorizes the result (or the current expression).</para></entry>
+				<entry><para></para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>z</para></entry>
+				<entry><para>Inserts the unknown variable <emphasis>z</emphasis> (overwrites selection).</para></entry>
+				<entry><para>Assumptions for the <emphasis>z</emphasis> variable.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>y</para></entry>
+				<entry><para>Inserts the unknown variable <emphasis>y</emphasis> (overwrites selection).</para></entry>
+				<entry><para>Assumptions for the <emphasis>y</emphasis> variable.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>x</para></entry>
+				<entry><para>Inserts the unknown variable <emphasis>x</emphasis> (overwrites selection).</para></entry>
+				<entry><para>Assumptions for the <emphasis>x</emphasis> variable.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>u</para></entry>
+				<entry><para>Opens the unit manager.</para></entry>
+				<entry><para>Recently used units and/or a selection of common units, and a selection of prefixes.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>kg</para></entry>
+				<entry><para>Inserts the most recently used unit from the associated menu, or kilogram (overwrites selection).</para></entry>
+				<entry><para>All SI base units and SI derived units with special names and symbols, plus litre.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>&euro; (or local currency)</para></entry>
+				<entry><para>Inserts the most recently used unit from the associated menu, or euro/local currency (overwrites selection).</para></entry>
+				<entry><para>All current currency units (excludes currencies replaced by euro).</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>to</para></entry>
+				<entry><para>Inserts the convert to operator (selection is unselected). The expression before <quote>to</quote> is converted to the unit expression after <quote>to</quote>. See <xref linkend="qalculate-to"/>.</para></entry>
+				<entry><para>Convert to base units, optimal unit, or optimal prefix. Below is a list of appropriate units (with common units appended) to convert the current result to. If the result does not include any units options to convert the result to different number bases, fraction and factors appear. The current expression (if modified) is calculated when the menu is opened.</para></entry>
+			</row>
+		</tbody>
+	</tgroup>
+</table>
 </para>
 </sect1>
 <sect1 id="qalculate-calculation-history">
@@ -152,7 +357,7 @@ The history view provides access to previous calculation results (50 rows are re
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/calculation-history.png" format="PNG"/>
+				<imagedata fileref="figures/calculation-history.png" format="PNG" width="485"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -218,6 +423,10 @@ The menus in the menu bar provides access to most of the functionality of Qalcul
 				<entry><para>Opens the number bases converter. See <xref linkend="qalculate-convert-number-bases-dialog"/></para></entry>
 			</row>
 			<row valign="top">
+				<entry><para>Percentage Calculation Tool</para></entry>
+				<entry><para>Opens a window for quick and easy percentage calculation.</para></entry>
+			</row>
+			<row valign="top">
 				<entry><para>Periodic Table</para></entry>
 				<entry><para>Shows a periodic table, with property values which can be inserted in the expression, in a new window.</para></entry>
 			</row>
@@ -259,6 +468,10 @@ The menus in the menu bar provides access to most of the functionality of Qalcul
 			<row valign="top">
 				<entry><para>Function</para></entry>
 				<entry><para>Opens the function edit dialog for creation of a new function.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>Function (simplified)</para></entry>
+				<entry><para>Opens a simplified function edit dialog, with fewer options, for creation of a new function.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Data Set</para></entry>
@@ -537,7 +750,7 @@ The manager windows provide a structural way of working with variables, function
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/variable-manager.png" format="PNG"/>
+				<imagedata fileref="figures/variable-manager.png" format="PNG" width="519"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -553,7 +766,7 @@ The buttons on the right work on the selected object in the list. <guibutton>New
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/function-manager.png" format="PNG"/>
+				<imagedata fileref="figures/function-manager.png" format="PNG" width="512"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -566,7 +779,7 @@ The function manager has a description box at the bottom, which shows the syntax
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/unit-manager.png" format="PNG"/>
+				<imagedata fileref="figures/unit-manager.png" format="PNG" width="557"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -587,7 +800,7 @@ The number bases dialog, accessible from the <guimenu>File Menu</guimenu>, is an
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/convert-number-bases.png" format="PNG"/>
+				<imagedata fileref="figures/convert-number-bases.png" format="PNG" width="177"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -1033,19 +1246,22 @@ Qalculate! provides flexible parsing, calculation output and result display. The
 <sect1 id="qalculate-rpn">
 <title>The RPN Mode</title>
 <para>
-The Reverse Polish Notation mode can be activated from <menuchoice><guimenu>Mode</guimenu><guimenuitem>RPN Mode</guimenuitem></menuchoice>, <keycombo><keycap>Ctrl</keycap><keycap>R</keycap></keycombo> or from the context menu of the expression entry. For details about what Reverse Polish Notation is and how it generally works, see for example the <ulink url="http://en.wikipedia.org/wiki/Reverse_Polish_notation">RPN article at Wikipedia</ulink>.
+The Reverse Polish Notation mode can be activated from <menuchoice><guimenu>Mode</guimenu><guimenuitem>RPN Mode</guimenuitem></menuchoice>, <keycombo><keycap>Ctrl</keycap><keycap>R</keycap></keycombo> (will also enable RPN syntax) or from the context menu of the expression entry. For details about what Reverse Polish Notation is and how it generally works, see for example the <ulink url="http://en.wikipedia.org/wiki/Reverse_Polish_notation">RPN article at Wikipedia</ulink>.
 </para>
 <para>
-Central to the RPN mode is the stack, a list of registers/values that is operated on by functions and operators. The stack has a variable number of registers which can hold an unlimited number of values. The stack size is dynamically changed when a new value is added and the first value on the stack is shown in the result display. Mathematical operators such as plus and minus then operates on the first two, last added, values on the stack.  The second value is changed with input from the first value. For example, the minus operator subtracts the first value from the second. Functions which require exactly one argument operates on the first value on the stack. Other functions, which require multiple arguments, must be entered in normal expression based way.
-</para>
-<para>
-When the RPN stack is enabled full expression can still be entered (you can add e.g. <quote>5x+3+23+sin(2)</quote> directly to the stack). The buttons on the keypad do not insert operators and functions in the expression entry, but instead applies them to the stack. This is also true for the keypad keys on the keyboard. <keycap>Enter</keycap> calculates the current expressions and adds it to the stack (calculated mathematical expressions are automatically added to the stack when the RPN stack is enabled). If the expression entry is not empty when applying an operator or function to the stack, the expression is first calculated and added to the stack. All keys on the main part of the keyboard add the corresponding characters in the expression entry, unless the <guilabel>Use only keypad keys for RPN</guilabel> option is deactivated from the preferences dialog. To apply the raise operator '^' to the stack, without clicking the keypad button with the mouse, use the <keycombo><keycap>Ctrl</keycap><keycap>* (keypad)</keycap></keycombo> shortcut. If the expression only contains an operator or a function, which requires exactly one argument, the operator/function is applied to the stack.
+Central to the RPN mode is the stack, a list of registers/values that is operated on by functions and operators. The stack has a variable number of registers which can hold an unlimited number of values. The stack size is dynamically changed when a new value is added and the first value on the stack is shown in the result display. Mathematical operators such as plus and minus then operates on the first two, last added, values on the stack. The second value is changed with input from the first value. For example, the minus operator subtracts the first value from the second.
 </para>
 <para>
 For example, <command>5 ENTER 3 + 2 /</command> adds 5 to the stack, then adds 3 to the stack and moves 5 down a step and adds 3 to 5. The first value, 3, is removed from the stack and the value left is 8. Then 2 is added to the stack and 8 is divided by 2, resulting in 4. This would in a single expression with non-RPN (infix) syntax be entered as <quote>(5+3)/2</quote>.
 </para>
 <para>
-Reverse Polish Notation can also be used directly in expression. This can be activated or deactivated separately from the RPN stack (both RPN syntax and the stack are activated when using the keyboard shortcut). When using RPN syntax, a temporary stack, separate from the previously mentioned stack, is created from the contents of each mathematical expression entered. To calculate <quote>(5+3)/2</quote>, as in the example above, with RPN syntax you should enter the expression <quote>5 3 + 2 /</quote>. Instead of actually pressing enter on the keyboard, each separate value on the stack is separated by a blank space.
+Functions operate on the top values of the stack. Functions which require multiply arguments, fill the arguments in reversed order from the top (e.g. <command>5 ENTER 2 ENTER rem</command> equals <quote>rem(5, 2)</quote>). Functions with a vector argument uses all stack regsters (unless the top value is a vector). This is quite useful for statistical functions (e.g. <command>5 ENTER 2 ENTER 3 ENTER 4 ENTER harmmean</command> calculates the harmonic mean of 5, 2, 3, and 4 and leaves the result, 3.1169, as the only value on the stack).
+</para>
+<para>
+When the RPN stack is enabled, full expressions can still be entered (you can add e.g. <quote>5x+3+23+sin(2)</quote> directly to the stack). The buttons on the keypad do not insert operators and functions in the expression entry, but instead applies them to the stack. This is also true for the keypad keys on the keyboard. <keycap>Enter</keycap> calculates the current expressions and adds it to the stack (calculated mathematical expressions are automatically added to the stack when the RPN stack is enabled). If the expression entry is not empty when applying an operator or function to the stack, the expression is first calculated and added to the stack. All keys on the main part of the keyboard add the corresponding characters in the expression entry, unless the <guilabel>Use only keypad keys for RPN</guilabel> option is deactivated from the preferences dialog. To apply the raise operator '^' to the stack, without clicking the keypad button with the mouse, use the <keycombo><keycap>Ctrl</keycap><keycap>* (keypad)</keycap></keycombo> shortcut. If the expression only contains an operator or a single function without arguments, the operator/function is applied to the stack.
+</para>
+<para>
+Reverse Polish Notation can also be used directly in expression. This can be activated or deactivated separately from the RPN stack (both RPN syntax and the stack are activated when using the keyboard shortcut). When using RPN syntax, a temporary stack, separate from the previously mentioned stack, is created from the contents of each mathematical expression entered. To calculate <quote>(5+3)/2</quote>, as in the example above, with RPN syntax you should enter the expression <quote>5 3 + 2 /</quote>. Instead of actually pressing enter on the keyboard, each separate value on the stack is separated by a blank space. The RPN syntax only supports functions that require exactly one argument.
 </para>
 
 <figure id="qalculate-FIG-rpn-mode">
@@ -1053,7 +1269,7 @@ Reverse Polish Notation can also be used directly in expression. This can be act
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/rpn-mode.png" format="PNG"/>
+				<imagedata fileref="figures/rpn-mode.png" format="PNG" width="485"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -1094,7 +1310,7 @@ For a complete list of available variables see <xref linkend="qalculate-definiti
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/store-variable.png" format="PNG"/>
+				<imagedata fileref="figures/store-variable.png" format="PNG" width="221"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -1110,7 +1326,7 @@ Known variables can also be created from scratch by selecting <menuchoice><guime
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/edit-variable.png" format="PNG"/>
+				<imagedata fileref="figures/edit-variable.png" format="PNG" width="223"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -1137,7 +1353,7 @@ Vectors and matrices are most effectively used stored in a variable. Qalculate! 
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/edit-matrix.png" format="PNG"/>
+				<imagedata fileref="figures/edit-matrix.png" format="PNG" width="325"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -1153,7 +1369,7 @@ Matrices and vectors can also be loaded from data files. These files most be pla
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/import-csv.png" format="PNG"/>
+				<imagedata fileref="figures/import-csv.png" format="PNG" width="240"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -1177,7 +1393,7 @@ Functions is normally entered in an expression by writing the name followed by a
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/insert-function.png" format="PNG"/>
+				<imagedata fileref="figures/insert-function.png" format="PNG" width="529"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -1232,6 +1448,12 @@ Includes <command>diff()</command>, which calculates the derivative of an expres
 <term>Combinatorics</term>
 <listitem><para>
 Contains functions such as <command>perm()</command> for permutations, <command>comb()</command> for combinations, and <command>factorial()</command>.
+</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>Comblex Numbers</term>
+<listitem><para>
+Contains functions useful for calculations with complex numbers, including <command>arg()</command> for principal argument and <command>conj()</command> for conjugate.
 </para></listitem>
 </varlistentry>
 <varlistentry>
@@ -1300,6 +1522,12 @@ Contains subcategories arithmetics, number bases, and rounding, in addition to f
 </para></listitem>
 </varlistentry>
 <varlistentry>
+<term>Special Functions</term>
+<listitem><para>
+Includes <command>beta()</command>, <command>gamma()</command> and similar functions, as well as Riemann zeta (<command>zeta()</command>) and Kronecker delta (<command>kronecker()</command>).
+</para></listitem>
+</varlistentry>
+<varlistentry>
 <term>Statistics</term>
 <listitem><para>
 Contains a lot of functions for descriptive statistics and some statistical tests. Data sets are stored as vectors. Generally, functions with a vector/data set as last argument can take elements/samples as a variable number of arguments directly instead of in a vector (ex. <quote>mean(1, 2, 3)</quote> equals <quote>mean(vector(1, 2, 3))</quote>). Also contains the <command>rand()</command> function, which returns a pseudo random number between 0 and 1, and does not take any arguments.
@@ -1323,7 +1551,23 @@ Various utility functions. Most are only useful in definition of other functions
 <sect1 id="qalculate-function-creation">
 <title>Function creation/editing</title>
 <para>
-Functions are a bit more complex than variables, but can nevertheless be relatively easily created. <menuchoice><guimenu>File</guimenu><guisubmenu>New</guisubmenu><guimenuitem>Function</guimenuitem></menuchoice> or click <guibutton>New</guibutton> in the function manager and the function edit dialog pops up. This dialog consists of two tabs/pages; the first with general descriptive information and the last for the function definition. First enter a name, used to reference the function in an expression. If an expression is entered a bit further down, then the function will already be fully working. A bit more does however need to be said about the function expression.
+Functions are a bit more complex than variables, but can nevertheless be relatively easily created. Select <menuchoice><guimenu>File</guimenu><guisubmenu>New</guisubmenu><guimenuitem>Function</guimenuitem></menuchoice> or <menuchoice><guimenu>File</guimenu><guisubmenu>New</guisubmenu><guimenuitem>Function (simplified)</guimenuitem></menuchoice>), or click the <guibutton>f(x)</guibutton> on the keypad or <guibutton>New</guibutton> in the function manager and a function edit dialog pops up. There are two different dialogs for function creation.
+</para>
+<para>
+The simple function edit dialog only allows entry of a single name and an expression. You have here the option to use x, y and z with or wihout (default) a backslash for argument placeholders in the expressions. The expression <quote>x^4</quote> then creates a function which calculates the fourth power of a single argument. If you name it for example <quote>sqsq</quote>, <quote>sqsq(2)</quote> will calculate <quote>2^4</quote>. The use of \x, \y, \z avoid any possible conflict with variables, units and functions. When you edit an existing function, it will use the notation with backslash. 
+</para>
+<figure id="qalculate-FIG-edit-function-simplified">
+	<title>Simplified Function Edit Dialog</title>
+	<screenshot>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="figures/edit-function-simplified.png" format="PNG" width="191"/>
+			</imageobject>
+		</mediaobject>
+	</screenshot>
+</figure>
+<para>
+The advanced dialog, with access to all function properties, consists of two tabs/pages; the first with general descriptive information and the last for the function definition. First enter a name, used to reference the function in an expression. If an expression is entered a bit further down, then the function will already be fully working. A bit more does however need to be said about the function expression.
 </para>
 <para>
 The expression of a function is basically a normal expression with placeholders for arguments. These placeholders consists of a backslash and a letter — x, y, z for the 1st, 2nd and 3rd arguments and a to u for argument 4 to 24. They are replaced by entered arguments when a function is calculated. The placeholders naturally also decide the number of arguments that a function requires. For example the function for triangle area (<quote>base * height / 2</quote>) has the name triangle and the expression <quote>(\x*\y)/2</quote>, which gives that <quote>triangle(2, 3)</quote> equals <quote>(2*3) / 2</quote> and returns <quote>3</quote> as result. An argument can be used more than one time and all arguments must not necessarily be in order in the expression.
@@ -1332,7 +1576,7 @@ The expression of a function is basically a normal expression with placeholders 
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/edit-function.png" format="PNG"/>
+				<imagedata fileref="figures/edit-function.png" format="PNG" width="232"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -1367,8 +1611,7 @@ For a complete list of available units see <xref linkend="qalculate-definitions-
 <para>
 Among units, Qalculate! has support for currencies with up-to-date exchange rates. Currencies are normally referenced with the standard three letter code due to name clashes, but a number of currency unit can also be accessed through their regular name and symbol. U.S. dollars can, for example, be referenced both as USD and dollar/dollars, or with the $ symbol. 
 </para>
-<para>
-<application>Wget</application> or <application>gvfs</application> must be installed on the computer for exchange rate updates to be enabled. Current exchange rates are automatically fetched from the European Central Bank on the Internet, the first time Qalculate! is started. By default the exchange rates will thereafter have to be updated manually from <menuchoice><guimenu>File</guimenu><guimenuitem>Update Exchange Rates</guimenuitem></menuchoice>, unless automatic updates are enabled in the preferences dialog.
+<para>The exchange rates can to be updated manually from the <menuchoice><guimenu>File</guimenu><guimenuitem>Update Exchange Rates</guimenuitem></menuchoice>, or automatically at specific intervals (by default once every week, but it can be changed in the preferences dialog), when needed (when currencies are converted).
 </para>
 </sect1>
 <sect1 id="qalculate-unit-conversion">
@@ -1383,11 +1626,14 @@ The unit conversion view can also be used. It is shown when pressing <guilabel>C
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/convert-unit.png" format="PNG"/>
+				<imagedata fileref="figures/convert-unit.png" format="PNG" width="485"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
 </figure>
+</para>
+<para>
+The menu associated with the <guibutton>to</guibutton> keypad button also provides a automatically generated list of units for conversion.
 </para>
 <para>
 The final way to convert to another unit is to use the predefined units in the <menuchoice><guimenu>Edit</guimenu><guisubmenu>Convert To Unit</guisubmenu></menuchoice> menu or press <guibutton>Convert Result</guibutton> in the unit manager, which also provides quick conversion of a value between two selected units. <menuchoice><guimenu>Edit</guimenu><guisubmenu>Set Prefix</guisubmenu></menuchoice> can be used to select a prefix.
@@ -1411,7 +1657,7 @@ Select <menuchoice><guimenu>File</guimenu><guisubmenu>New</guisubmenu><guimenuit
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/edit-unit.png" format="PNG"/>
+				<imagedata fileref="figures/edit-unit.png" format="PNG" width="306"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -1443,7 +1689,7 @@ To plot functions or data sets, select <menuchoice><guimenu>File</guimenu><guime
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/plot-data.png" format="PNG"/>
+				<imagedata fileref="figures/plot-data.png" format="PNG" width="304"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -1470,7 +1716,7 @@ For functions, the function range — min and max x value, and the number of val
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/plot-settings.png" format="PNG"/>
+				<imagedata fileref="figures/plot-settings.png" format="PNG" width="304"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -1486,7 +1732,7 @@ To update the plot window, click <guibutton>Apply</guibutton> at the bottom of t
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/gnuplot.png" format="PNG"/>
+				<imagedata fileref="figures/gnuplot.png" format="PNG" width="488"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>

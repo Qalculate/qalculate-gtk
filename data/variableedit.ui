@@ -223,6 +223,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="tooltip_text" translatable="yes">Value of this variable (expression)</property>
+                    <property name="xalign">1</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
                   </object>
@@ -356,5 +357,8 @@
       <action-widget response="-6">variable_edit_button_cancel</action-widget>
       <action-widget response="-5">variable_edit_button_ok</action-widget>
     </action-widgets>
+    <child>
+      <placeholder/>
+    </child>
   </object>
 </interface>

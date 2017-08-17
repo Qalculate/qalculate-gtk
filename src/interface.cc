@@ -490,7 +490,6 @@ GtkBuilder *getBuilder(const char *filename) {
 void create_button_menus(void) {
 
 	GtkWidget *item, *sub;
-	Variable *v;
 	MathFunction *f;
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_bases"));

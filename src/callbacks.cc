@@ -1845,7 +1845,7 @@ void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 					gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(functions_builder, "functions_buttonlabel_deactivate")), _("Acti_vate"));
 				}
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_insert")), CALCULATOR->functions[i]->isActive());
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_apply")), CALCULATOR->functions[i]->isActive() && CALCULATOR->functions[i]->minargs() <= 1);
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_apply")), CALCULATOR->functions[i]->isActive() && (CALCULATOR->functions[i]->minargs() <= 1 || rpn_mode));
 				//user cannot delete global definitions
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_delete")), CALCULATOR->functions[i]->isLocal());
 			}
@@ -6293,13 +6293,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					if(in_par) f = CALCULATOR->getActiveFunction(str2.substr(0, in_par));
 					else f = CALCULATOR->getActiveFunction(str2);
 				}
-				if(f && f->minargs() > 1) {
-					show_message("Can only apply functions wich requires one argument on RPN stack.", GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
-					f = NULL;
-					b_busy = false;
-					b_busy_expression = false;
-					return;
-				}
 				if(f && f->minargs() > 0) {
 					do_mathoperation = true;
 					CALCULATOR->calculateRPN(f, 0, evalops, parsed_mstruct);
@@ -6390,9 +6383,11 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	printops.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
 	if(rpn_mode && (!do_stack || stack_index == 0)) {
 		gtk_text_buffer_set_text(expressionbuffer, "", -1);
-		if(CALCULATOR->RPNStackSize() < stack_size) {
+		while(CALCULATOR->RPNStackSize() < stack_size) {
 			RPNRegisterRemoved(1);
-		} else if(CALCULATOR->RPNStackSize() > stack_size) {
+			stack_size--;
+		}
+		if(CALCULATOR->RPNStackSize() > stack_size) {
 			RPNRegisterAdded("");
 		}
 	}
@@ -8244,7 +8239,7 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 		string v_name = CALCULATOR->getName();
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")), v_name.c_str());
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(variableedit_builder, "variable_edit_label_names")), "");
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_value")), get_value_string(*mstruct).c_str());
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_value")), displayed_mstruct ? get_value_string(*mstruct).c_str() : get_expression_text().c_str());
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(variableedit_builder, "variable_edit_combo_category")))), category);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_desc")), "");
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(variableedit_builder, "variable_edit_checkbutton_exact")), !mstruct_ || !mstruct_->isApproximate());
@@ -9515,7 +9510,7 @@ bool last_is_number(const gchar *expr) {
 */
 void insertButtonFunction(MathFunction *f, bool save_to_recent = false) {
 	if(!f) return;
-	if(rpn_mode && f->args() == 1) {
+	if(rpn_mode && (f->minargs() <= 1 || CALCULATOR->RPNStackSize() >= f->minargs())) {
 		calculateRPN(f);
 		return;
 	}
@@ -12344,7 +12339,7 @@ void on_button_reciprocal_clicked(GtkButton*, gpointer) {
 	STO button clicked -- store result
 */
 void on_button_store_clicked(GtkButton*, gpointer) {
-	if(displayed_mstruct && mstruct) add_as_variable();
+	if(displayed_mstruct && mstruct && !mstruct->isZero()) add_as_variable();
 	else edit_variable(_("My Variables"), NULL, NULL, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 }
 
@@ -12699,6 +12694,10 @@ void on_button_euro_clicked(GtkButton*, gpointer) {
 
 void on_button_to_clicked(GtkButton*, gpointer) {
 	GtkTextIter istart, iend;
+	if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
+		gtk_text_buffer_get_bounds(expressionbuffer, &istart, &iend);
+		gtk_text_buffer_select_range(expressionbuffer, &iend, &iend);
+	}
 	gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
 	gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
 	gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &istart, &iend, FALSE);
