@@ -1,11 +1,11 @@
 # qalculate-gtk
 Qalculate! GTK+ UI
 
-![Image of qalculate-gtk](https://github.com/Qalculate/qalculate-gtk/raw/master/data/qalculate-gtk-appdata-1.png)
+<a href="https://github.com/Qalculate/qalculate-gtk/raw/master/data/qalculate-gtk-appdata-1.png"><img src="https://github.com/Qalculate/qalculate-gtk/raw/master/data/qalculate-gtk-appdata-1.png" align="left" width="446"></a>
 
 Qalculate! is a multi-purpose cross-platform desktop calculator for GNU/Linux (and Mac OS). It is small and simple to use but with much power and versatility underneath. Features include customizable functions, units, arbitrary precision, plotting, and a user-friendly interface (GTK+ and CLI).
 
-##Installation
+## Installation
 In a terminal window in the top source code directory run
 * `./autogen.sh` *(not required if using a release source tarball, only if using the git version)*
 * `./configure`
@@ -15,11 +15,11 @@ In a terminal window in the top source code directory run
 If libqalculate has been installed in the default /usr/local path you it might be necessary to specify the pkgconfig path when running configure:
 `PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure`
 
-##Requirements
+## Requirements
 * GTK+ (>= 3.10)
 * libqalculate 1.0.0
 
-##Features
+## Features
 Features specific to qalculate-gtk:
 
 * Graphical user interface implemented using GTK+-3
