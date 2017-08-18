@@ -5755,7 +5755,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		gtk_tree_path_free(path);
 	}
 
-	if(!register_moved && stack_index == 0 && mstruct->isMatrix() && (mstruct->rows() > 4 || mstruct->columns() > 4) && matrix_mstruct->isMatrix()) {
+	if(!register_moved && stack_index == 0 && mstruct->isMatrix() && (mstruct->rows() > 4 || mstruct->columns() > 4) && matrix_mstruct->isMatrix() && matrix_mstruct->columns() < 200) {
 		while(gtk_events_pending()) gtk_main_iteration();
 		gtk_widget_grab_focus(expressiontext);
 		if(update_history && update_parse && force) {
@@ -8456,7 +8456,7 @@ void edit_matrix(const char *category, Variable *var, MathStructure *mstruct_, G
 	on_matrix_edit_spinbutton_columns_value_changed(GTK_SPIN_BUTTON(gtk_builder_get_object(matrixedit_builder, "matrix_edit_spinbutton_columns")), NULL);
 	on_matrix_edit_spinbutton_rows_value_changed(GTK_SPIN_BUTTON(gtk_builder_get_object(matrixedit_builder, "matrix_edit_spinbutton_rows")), NULL);		
 
-	CALCULATOR->startPrintControl(1200);
+	CALCULATOR->startControl(2000);
 	PrintOptions po;
 	po.number_fraction_format = FRACTION_DECIMAL_EXACT;
 	while(gtk_events_pending()) gtk_main_iteration();
@@ -8482,10 +8482,10 @@ void edit_matrix(const char *category, Variable *var, MathStructure *mstruct_, G
 		}
 		b = gtk_tree_model_iter_next(GTK_TREE_MODEL(tMatrixEdit_store), &iter);
 	}
-	CALCULATOR->stopPrintControl();
+	CALCULATOR->stopControl();
 	if(r > 0 && c > 0) {
 		GtkTreePath *path = gtk_tree_path_new_from_indices(0, -1);
-		gtk_tree_view_set_cursor(GTK_TREE_VIEW(tMatrixEdit), path, matrix_edit_columns[0], FALSE);
+		gtk_tree_view_set_cursor(GTK_TREE_VIEW(tMatrixEdit), path, matrix_edit_columns[0], TRUE);
 		while(gtk_events_pending()) gtk_main_iteration();
 		gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(tMatrixEdit), path, matrix_edit_columns[0], FALSE, 0.0, 0.0);
 		on_tMatrixEdit_cursor_changed(GTK_TREE_VIEW(tMatrixEdit), NULL);
@@ -8531,7 +8531,6 @@ run_matrix_edit_dialog:
 				mstruct_new.clearVector();
 				for(size_t index_r = 0; index_r < (size_t) r && b; index_r++) {
 					for(size_t index_c = 0; index_c < (size_t) c; index_c++) {
-						//gtk_tree_model_get(GTK_TREE_MODEL(tMatrixEdit_store), &iter, index_c * 2, &gstr, -1);
 						gtk_tree_model_get(GTK_TREE_MODEL(tMatrixEdit_store), &iter, index_c, &gstr, -1);
 						mstr = gstr;
 						g_free(gstr);
@@ -8547,7 +8546,6 @@ run_matrix_edit_dialog:
 				mstruct_new.resizeMatrix((size_t) r, (size_t) c, m_undefined);
 				for(size_t index_r = 0; index_r < (size_t) r && b; index_r++) {
 					for(size_t index_c = 0; index_c < (size_t) c; index_c++) {
-						//gtk_tree_model_get(GTK_TREE_MODEL(tMatrixEdit_store), &iter, index_c * 2, &gstr, -1);
 						gtk_tree_model_get(GTK_TREE_MODEL(tMatrixEdit_store), &iter, index_c, &gstr, -1);
 						mstr = gstr;
 						g_free(gstr);
@@ -8671,6 +8669,7 @@ void insert_matrix(const MathStructure *initial_value, GtkWidget *win, gboolean 
 	while(gtk_events_pending()) gtk_main_iteration();
 	GtkTreeIter iter;
 	bool b = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tMatrix_store), &iter);
+	CALCULATOR->startControl(5000);
 	for(size_t index_r = 0; b && index_r < (size_t) r; index_r++) {
 		for(size_t index_c = 0; index_c < (size_t) c; index_c++) {
 			if(create_vector) {
@@ -8691,10 +8690,11 @@ void insert_matrix(const MathStructure *initial_value, GtkWidget *win, gboolean 
 		}
 		b = gtk_tree_model_iter_next(GTK_TREE_MODEL(tMatrix_store), &iter);
 	}
+	CALCULATOR->stopControl();
 
 	if(r > 0 && c > 0) {
 		GtkTreePath *path = gtk_tree_path_new_from_indices(0, -1);
-		gtk_tree_view_set_cursor(GTK_TREE_VIEW(tMatrix), path, matrix_columns[0], FALSE);
+		gtk_tree_view_set_cursor(GTK_TREE_VIEW(tMatrix), path, matrix_columns[0], TRUE);
 		while(gtk_events_pending()) gtk_main_iteration();
 		gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(tMatrix), path, matrix_columns[0], FALSE, 0.0, 0.0);
 		on_tMatrix_cursor_changed(GTK_TREE_VIEW(tMatrix), NULL);
@@ -8717,7 +8717,6 @@ void insert_matrix(const MathStructure *initial_value, GtkWidget *win, gboolean 
 			matrixstr = "[";
 			for(size_t index_r = 0; index_r < (size_t) r && b; index_r++) {
 				for(size_t index_c = 0; index_c < (size_t) c; index_c++) {
-					//gtk_tree_model_get(GTK_TREE_MODEL(tMatrix_store), &iter, index_c * 2, &gstr, -1);
 					gtk_tree_model_get(GTK_TREE_MODEL(tMatrix_store), &iter, index_c, &gstr, -1);
 					str = gstr;
 					g_free(gstr);
@@ -8754,7 +8753,6 @@ void insert_matrix(const MathStructure *initial_value, GtkWidget *win, gboolean 
 					} else {
 						b2 = true;
 					}
-					//gtk_tree_model_get(GTK_TREE_MODEL(tMatrix_store), &iter, index_c * 2, &gstr, -1);
 					gtk_tree_model_get(GTK_TREE_MODEL(tMatrix_store), &iter, index_c, &gstr, -1);
 					str = gstr;
 					remove_blank_ends(str);
@@ -15785,9 +15783,69 @@ void on_variable_edit_entry_name_changed(GtkEditable *editable, gpointer) {
 
 void on_tMatrixEdit_edited(GtkCellRendererText *cell, gchar *path_string, gchar *new_text, gpointer model) {
 	GtkTreeIter iter;
-	gint i_column = GPOINTER_TO_INT (g_object_get_data(G_OBJECT(cell), "column"));
+	gint i_column = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(cell), "column"));
 	gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model), &iter, path_string);
 	gtk_list_store_set(GTK_LIST_STORE (model), &iter, i_column, new_text, -1);
+}
+gboolean on_tMatrixEdit_editable_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer renderer) {
+	switch(event->keyval) {
+		case GDK_KEY_Up: {}
+		case GDK_KEY_Down: {}
+		case GDK_KEY_Tab: {}
+		case GDK_KEY_ISO_Enter: {}
+		case GDK_KEY_KP_Enter: {}
+		case GDK_KEY_Return: {
+			gtk_cell_editable_editing_done(GTK_CELL_EDITABLE(w));
+			GtkTreeViewColumn *column = NULL;
+			GtkTreePath *path = NULL;
+			gtk_tree_view_get_cursor(GTK_TREE_VIEW(tMatrixEdit), &path, &column);
+			if(path) {
+				if(column) {		
+					for(size_t i = 0; i < matrix_edit_columns.size(); i++) {
+						if(matrix_edit_columns[i] == column) {
+							if(event->keyval == GDK_KEY_Tab) {
+								i++;
+								if(i >= matrix_edit_columns.size()) {
+									gtk_tree_path_next(path);
+									GtkTreeIter iter;
+									if(!gtk_tree_model_get_iter(GTK_TREE_MODEL(tMatrixEdit_store), &iter, path)) {
+										gtk_tree_path_free(path);
+										path = gtk_tree_path_new_first();
+									}
+									i = 0;
+								}
+							} else {
+								if(event->keyval == GDK_KEY_Up) {
+									if(!gtk_tree_path_prev(path)) {
+										gtk_tree_path_free(path);
+										path = gtk_tree_path_new_from_indices(gtk_tree_model_iter_n_children(GTK_TREE_MODEL(tMatrixEdit_store), NULL) - 1, -1);
+									}
+								} else {
+									gtk_tree_path_next(path);
+									GtkTreeIter iter;
+									if(!gtk_tree_model_get_iter(GTK_TREE_MODEL(tMatrixEdit_store), &iter, path)) {
+										gtk_tree_path_free(path);
+										if(event->keyval != GDK_KEY_Up) return TRUE;
+										path = gtk_tree_path_new_first();
+									}
+								}
+							}
+							gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(tMatrixEdit), path, matrix_edit_columns[i], FALSE, 0.0, 0.0);
+							while(gtk_events_pending()) gtk_main_iteration();
+							gtk_tree_view_set_cursor(GTK_TREE_VIEW(tMatrixEdit), path, matrix_edit_columns[i], TRUE);
+							on_tMatrixEdit_cursor_changed(GTK_TREE_VIEW(tMatrixEdit), NULL);
+						}
+					}
+				}
+				gtk_tree_path_free(path);
+			}
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+void on_tMatrixEdit_editing_started(GtkCellRenderer *renderer, GtkCellEditable *editable, gchar *path, gpointer user_data) {
+	g_signal_connect(G_OBJECT(editable), "key-press-event", G_CALLBACK(on_tMatrixEdit_editable_key_press_event), renderer);
 }
 gboolean on_tMatrixEdit_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
 	switch(event->keyval) {
@@ -15807,6 +15865,11 @@ gboolean on_tMatrixEdit_key_press_event(GtkWidget*, GdkEventKey *event, gpointer
 								gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(tMatrixEdit), path, matrix_edit_columns[i], FALSE, 0.0, 0.0);
 							} else {
 								gtk_tree_path_next(path);
+								GtkTreeIter iter;
+								if(!gtk_tree_model_get_iter(GTK_TREE_MODEL(tMatrixEdit_store), &iter, path)) {
+									gtk_tree_path_free(path);
+									path = gtk_tree_path_new_first();
+								}
 								gtk_tree_view_set_cursor(GTK_TREE_VIEW(tMatrixEdit), path, matrix_edit_columns[0], FALSE);
 								while(gtk_events_pending()) gtk_main_iteration();
 								gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(tMatrixEdit), path, matrix_edit_columns[0], FALSE, 0.0, 0.0);
@@ -15861,16 +15924,12 @@ gboolean on_tMatrixEdit_cursor_changed(GtkTreeView*, gpointer) {
 	GtkTreeViewColumn *column = NULL;
 	GtkTreePath *path = NULL;
 	GtkTreeIter iter;
-	/*if(gtk_list_store_iter_is_valid(GTK_LIST_STORE(tMatrixEdit_store), &matrix_edit_prev_iter)) {
-		gtk_list_store_set(GTK_LIST_STORE(tMatrixEdit_store), &matrix_edit_prev_iter, matrix_edit_prev_column * 2 + 1, &stackview->style->base[GTK_STATE_NORMAL], -1);
-	}*/
 	gtk_tree_view_get_cursor(GTK_TREE_VIEW(tMatrixEdit), &path, &column);
 	bool b = false;
 	if(path) {
 		if(column) {
 			if(gtk_tree_model_get_iter(GTK_TREE_MODEL(tMatrixEdit_store), &iter, path)) {
 				gint i_column = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(column), "column"));
-				//gtk_list_store_set(GTK_LIST_STORE(tMatrixEdit_store), &iter, i_column * 2 + 1, &stackview->style->mid[GTK_STATE_NORMAL], -1);
 				matrix_edit_prev_iter = iter;
 				matrix_edit_prev_column = i_column;
 				gchar *pos_str;
@@ -15906,9 +15965,10 @@ void on_matrix_edit_spinbutton_columns_value_changed(GtkSpinButton *w, gpointer)
 			g_object_set(G_OBJECT(matrix_edit_renderer), "xalign", 1.0, NULL);
 			g_object_set_data(G_OBJECT(matrix_edit_renderer), "column", GINT_TO_POINTER(index_c));
 			g_signal_connect(G_OBJECT(matrix_edit_renderer), "edited", G_CALLBACK(on_tMatrixEdit_edited), GTK_TREE_MODEL(tMatrixEdit_store));
-			//GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(i2s(index_c).c_str(), matrix_edit_renderer, "text", index_c * 2, "background-gdk", index_c * 2 + 1, NULL);
+			g_signal_connect(G_OBJECT(matrix_edit_renderer), "editing-started", G_CALLBACK(on_tMatrixEdit_editing_started), GTK_TREE_MODEL(tMatrixEdit_store));
 			GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(i2s(index_c).c_str(), matrix_edit_renderer, "text", index_c, NULL);
-			g_object_set_data (G_OBJECT(column), "column", GINT_TO_POINTER(index_c));
+			g_object_set_data(G_OBJECT(column), "column", GINT_TO_POINTER(index_c));
+			g_object_set_data(G_OBJECT(column), "renderer", (gpointer) matrix_edit_renderer);
 			gtk_tree_view_column_set_min_width(column, 50);
 			gtk_tree_view_column_set_alignment(column, 0.5);
 			gtk_tree_view_append_column(GTK_TREE_VIEW(tMatrixEdit), column);
@@ -15918,8 +15978,6 @@ void on_matrix_edit_spinbutton_columns_value_changed(GtkSpinButton *w, gpointer)
 		bool b_matrix = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(matrixedit_builder, "matrix_edit_radiobutton_matrix")));
 		while(true) {
 			for(gint index_c = c; index_c < new_c; index_c++) {
-				//if(b_matrix) gtk_list_store_set(GTK_LIST_STORE(tMatrixEdit_store), &iter, index_c * 2, "0", index_c * 2 + 1, &stackview->style->base[GTK_STATE_NORMAL], -1);
-				//else gtk_list_store_set(GTK_LIST_STORE(tMatrixEdit_store), &iter, index_c * 2, "", index_c * 2 + 1, &stackview->style->base[GTK_STATE_NORMAL], -1);
 				if(b_matrix) gtk_list_store_set(GTK_LIST_STORE(tMatrixEdit_store), &iter, index_c, "0", -1);
 				else gtk_list_store_set(GTK_LIST_STORE(tMatrixEdit_store), &iter, index_c, "", -1);
 			}
@@ -15937,8 +15995,6 @@ void on_matrix_edit_spinbutton_rows_value_changed(GtkSpinButton *w, gpointer) {
 		while(r < new_r) {
 			gtk_list_store_append(GTK_LIST_STORE(tMatrixEdit_store), &iter);
 			for(gint i = 0; i < c; i++) {
-				//if(b_matrix) gtk_list_store_set(GTK_LIST_STORE(tMatrixEdit_store), &iter, i * 2, "0", i * 2 + 1, &stackview->style->base[GTK_STATE_NORMAL], -1);
-				//else gtk_list_store_set(GTK_LIST_STORE(tMatrixEdit_store), &iter, i * 2, "", i * 2 + 1, &stackview->style->base[GTK_STATE_NORMAL], -1);
 				if(b_matrix) gtk_list_store_set(GTK_LIST_STORE(tMatrixEdit_store), &iter, i, "0", -1);
 				else gtk_list_store_set(GTK_LIST_STORE(tMatrixEdit_store), &iter, i, "", -1);
 			}
@@ -15954,9 +16010,69 @@ void on_matrix_edit_spinbutton_rows_value_changed(GtkSpinButton *w, gpointer) {
 
 void on_tMatrix_edited(GtkCellRendererText *cell, gchar *path_string, gchar *new_text, gpointer model) {
 	GtkTreeIter iter;
-	gint i_column = GPOINTER_TO_INT (g_object_get_data(G_OBJECT(cell), "column"));
-	gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model), &iter, path_string);
-	gtk_list_store_set(GTK_LIST_STORE (model), &iter, i_column, new_text, -1);
+	gint i_column = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(cell), "column"));
+	gtk_tree_model_get_iter_from_string(GTK_TREE_MODEL(model), &iter, path_string);
+	gtk_list_store_set(GTK_LIST_STORE(model), &iter, i_column, new_text, -1);
+}
+gboolean on_tMatrix_editable_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer renderer) {
+	switch(event->keyval) {
+		case GDK_KEY_Up: {}
+		case GDK_KEY_Down: {}
+		case GDK_KEY_Tab: {}
+		case GDK_KEY_ISO_Enter: {}
+		case GDK_KEY_KP_Enter: {}
+		case GDK_KEY_Return: {
+			gtk_cell_editable_editing_done(GTK_CELL_EDITABLE(w));
+			GtkTreeViewColumn *column = NULL;
+			GtkTreePath *path = NULL;
+			gtk_tree_view_get_cursor(GTK_TREE_VIEW(tMatrix), &path, &column);
+			if(path) {
+				if(column) {		
+					for(size_t i = 0; i < matrix_columns.size(); i++) {
+						if(matrix_columns[i] == column) {
+							if(event->keyval == GDK_KEY_Tab) {
+								i++;
+								if(i >= matrix_columns.size()) {
+									gtk_tree_path_next(path);
+									GtkTreeIter iter;
+									if(!gtk_tree_model_get_iter(GTK_TREE_MODEL(tMatrix_store), &iter, path)) {
+										gtk_tree_path_free(path);
+										path = gtk_tree_path_new_first();
+									}
+									i = 0;
+								}
+							} else {
+								if(event->keyval == GDK_KEY_Up) {
+									if(!gtk_tree_path_prev(path)) {
+										gtk_tree_path_free(path);
+										path = gtk_tree_path_new_from_indices(gtk_tree_model_iter_n_children(GTK_TREE_MODEL(tMatrix_store), NULL) - 1, -1);
+									}
+								} else {
+									gtk_tree_path_next(path);
+									GtkTreeIter iter;
+									if(!gtk_tree_model_get_iter(GTK_TREE_MODEL(tMatrix_store), &iter, path)) {
+										gtk_tree_path_free(path);
+										if(event->keyval != GDK_KEY_Up) return TRUE;
+										path = gtk_tree_path_new_first();
+									}
+								}
+							}
+							gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(tMatrix), path, matrix_columns[i], FALSE, 0.0, 0.0);
+							while(gtk_events_pending()) gtk_main_iteration();
+							gtk_tree_view_set_cursor(GTK_TREE_VIEW(tMatrix), path, matrix_columns[i], TRUE);
+							on_tMatrix_cursor_changed(GTK_TREE_VIEW(tMatrix), NULL);
+						}
+					}
+				}
+				gtk_tree_path_free(path);
+			}
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+void on_tMatrix_editing_started(GtkCellRenderer *renderer, GtkCellEditable *editable, gchar *path, gpointer user_data) {
+	g_signal_connect(G_OBJECT(editable), "key-press-event", G_CALLBACK(on_tMatrix_editable_key_press_event), renderer);
 }
 gboolean on_tMatrix_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
 	switch(event->keyval) {
@@ -15964,7 +16080,7 @@ gboolean on_tMatrix_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
 		case GDK_KEY_Tab: {
 			GtkTreeViewColumn *column = NULL;
 			GtkTreePath *path = NULL;
-			gtk_tree_view_get_cursor(GTK_TREE_VIEW(tMatrix), &path, &column);			
+			gtk_tree_view_get_cursor(GTK_TREE_VIEW(tMatrix), &path, &column);
 			if(path) {
 				if(column) {
 					for(size_t i = 0; i < matrix_columns.size(); i++) {
@@ -15976,12 +16092,17 @@ gboolean on_tMatrix_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
 								gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(tMatrix), path, matrix_columns[i], FALSE, 0.0, 0.0);
 							} else {
 								gtk_tree_path_next(path);
+								GtkTreeIter iter;
+								if(!gtk_tree_model_get_iter(GTK_TREE_MODEL(tMatrix_store), &iter, path)) {
+									gtk_tree_path_free(path);
+									path = gtk_tree_path_new_first();
+								}
 								gtk_tree_view_set_cursor(GTK_TREE_VIEW(tMatrix), path, matrix_columns[0], FALSE);
 								while(gtk_events_pending()) gtk_main_iteration();
 								gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(tMatrix), path, matrix_columns[0], FALSE, 0.0, 0.0);
 							}
 							gtk_tree_path_free(path);
-							on_tMatrix_cursor_changed(GTK_TREE_VIEW(tMatrix), NULL);							
+							on_tMatrix_cursor_changed(GTK_TREE_VIEW(tMatrix), NULL);
 							return TRUE;
 						}
 					}
@@ -16017,7 +16138,7 @@ gboolean on_tMatrix_button_press_event(GtkWidget*, GdkEventButton *event, gpoint
 	if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(tMatrix), (gint) event->x, (gint) event->y, &path, &column, NULL, NULL) && path && column) {
 		gtk_tree_view_set_cursor(GTK_TREE_VIEW(tMatrix), path, column, TRUE);
 		gtk_tree_path_free(path);
-		return FALSE;
+		return TRUE;
 	}
 	if(path) gtk_tree_path_free(path);
 	return FALSE;
@@ -16030,16 +16151,12 @@ gboolean on_tMatrix_cursor_changed(GtkTreeView*, gpointer) {
 	GtkTreeViewColumn *column = NULL;
 	GtkTreePath *path = NULL;
 	GtkTreeIter iter;
-	/*if(gtk_list_store_iter_is_valid(GTK_LIST_STORE(tMatrix_store), &matrix_prev_iter)) {
-		gtk_list_store_set(GTK_LIST_STORE(tMatrix_store), &matrix_prev_iter, matrix_prev_column * 2 + 1, &stackview->style->base[GTK_STATE_NORMAL], -1);
-	}*/
 	gtk_tree_view_get_cursor(GTK_TREE_VIEW(tMatrix), &path, &column);
 	bool b = false;
 	if(path) {
 		if(column) {
 			if(gtk_tree_model_get_iter(GTK_TREE_MODEL(tMatrix_store), &iter, path)) {
 				gint i_column = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(column), "column"));
-				//gtk_list_store_set(GTK_LIST_STORE(tMatrix_store), &iter, i_column * 2 + 1, &stackview->style->mid[GTK_STATE_NORMAL], -1);
 				matrix_prev_iter = iter;
 				matrix_prev_column = i_column;
 				gchar *pos_str;
@@ -16075,7 +16192,7 @@ void on_matrix_spinbutton_columns_value_changed(GtkSpinButton *w, gpointer) {
 			g_object_set(G_OBJECT(matrix_renderer), "xalign", 1.0, NULL);
 			g_object_set_data(G_OBJECT(matrix_renderer), "column", GINT_TO_POINTER(index_c));
 			g_signal_connect(G_OBJECT(matrix_renderer), "edited", G_CALLBACK(on_tMatrix_edited), GTK_TREE_MODEL(tMatrix_store));
-			//GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(i2s(index_c).c_str(), matrix_renderer, "text", index_c * 2, "background-gdk", index_c * 2 + 1, NULL);
+			g_signal_connect(G_OBJECT(matrix_renderer), "editing-started", G_CALLBACK(on_tMatrix_editing_started), GTK_TREE_MODEL(tMatrix_store));
 			GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(i2s(index_c).c_str(), matrix_renderer, "text", index_c, NULL);
 			g_object_set_data (G_OBJECT(column), "column", GINT_TO_POINTER(index_c));
 			gtk_tree_view_column_set_min_width(column, 50);
@@ -16087,8 +16204,6 @@ void on_matrix_spinbutton_columns_value_changed(GtkSpinButton *w, gpointer) {
 		bool b_matrix = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(matrix_builder, "matrix_radiobutton_matrix")));
 		while(true) {
 			for(gint index_c = c; index_c < new_c; index_c++) {
-				//if(b_matrix) gtk_list_store_set(GTK_LIST_STORE(tMatrix_store), &iter, index_c * 2, "0", index_c * 2 + 1, &stackview->style->base[GTK_STATE_NORMAL], -1);
-				//else gtk_list_store_set(GTK_LIST_STORE(tMatrix_store), &iter, index_c * 2, "", index_c * 2 + 1, &stackview->style->base[GTK_STATE_NORMAL], -1);
 				if(b_matrix) gtk_list_store_set(GTK_LIST_STORE(tMatrix_store), &iter, index_c, "0", -1);
 				else gtk_list_store_set(GTK_LIST_STORE(tMatrix_store), &iter, index_c, "", -1);
 			}
@@ -16106,8 +16221,6 @@ void on_matrix_spinbutton_rows_value_changed(GtkSpinButton *w, gpointer) {
 		while(r < new_r) {
 			gtk_list_store_append(GTK_LIST_STORE(tMatrix_store), &iter);
 			for(gint i = 0; i < c; i++) {
-				//if(b_matrix) gtk_list_store_set(GTK_LIST_STORE(tMatrix_store), &iter, i * 2, "0", i * 2 + 1, &stackview->style->base[GTK_STATE_NORMAL], -1);
-				//else gtk_list_store_set(GTK_LIST_STORE(tMatrix_store), &iter, i * 2, "", i * 2 + 1, &stackview->style->base[GTK_STATE_NORMAL], -1);
 				if(b_matrix) gtk_list_store_set(GTK_LIST_STORE(tMatrix_store), &iter, i, "0", -1);
 				else gtk_list_store_set(GTK_LIST_STORE(tMatrix_store), &iter, i, "", -1);
 			}

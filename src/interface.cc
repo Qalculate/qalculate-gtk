@@ -1837,17 +1837,13 @@ get_matrix_edit_dialog (void)
 	
 		g_assert (gtk_builder_get_object(matrixedit_builder, "matrix_edit_dialog") != NULL);
 		
-		//GType types[20000];
-		GType types[10000];
-		//for(gint i = 0; i < 20000; i += 2) {
-		for(gint i = 0; i < 10000; i += 1) {
+		GType types[200];
+		for(gint i = 0; i < 200; i += 1) {
 			types[i] = G_TYPE_STRING;
-			//types[i + 1] = GDK_TYPE_COLOR;
 		}
-		tMatrixEdit_store = gtk_list_store_newv(10000, types);
+		tMatrixEdit_store = gtk_list_store_newv(200, types);
 		tMatrixEdit = GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_view"));
 		gtk_tree_view_set_model (GTK_TREE_VIEW(tMatrixEdit), GTK_TREE_MODEL(tMatrixEdit_store));
-		//gtk_widget_override_background_color(tMatrixEdit, GTK_STATE_NORMAL, &stackview->style->bg[GTK_STATE_NORMAL]);
 		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tMatrixEdit));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_NONE);
 		
@@ -1890,11 +1886,6 @@ get_matrix_dialog (void)
 	
 		g_assert (gtk_builder_get_object(matrix_builder, "matrix_dialog") != NULL);
 
-		/*GType types[20000];
-		for(gint i = 0; i < 20000; i += 2) {
-			types[i] = G_TYPE_STRING;
-			types[i + 1] = GDK_TYPE_COLOR;
-		}*/
 		GType types[10000];
 		for(gint i = 0; i < 10000; i++) {
 			types[i] = G_TYPE_STRING;
@@ -1902,7 +1893,6 @@ get_matrix_dialog (void)
 		tMatrix_store = gtk_list_store_newv(10000, types);
 		tMatrix = GTK_WIDGET(gtk_builder_get_object(matrix_builder, "matrix_view"));
 		gtk_tree_view_set_model (GTK_TREE_VIEW(tMatrix), GTK_TREE_MODEL(tMatrix_store));
-		//gtk_widget_modify_base(tMatrix, GTK_STATE_NORMAL, &stackview->style->bg[GTK_STATE_NORMAL]);
 		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tMatrix));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_NONE);
 
