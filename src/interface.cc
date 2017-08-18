@@ -459,7 +459,10 @@ gboolean history_row_separator_func(GtkTreeModel *model, GtkTreeIter *iter, gpoi
 }
 
 GtkBuilder *getBuilder(const char *filename) {
-#ifndef WIN32
+	string resstr = "/qalculate-gtk/ui/";
+	resstr += filename;
+	return gtk_builder_new_from_resource(resstr.c_str());
+/*#ifndef WIN32
 	gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", filename, NULL);
 	GtkBuilder *builder = gtk_builder_new_from_file(gstr);
 	g_free(gstr);
@@ -484,7 +487,7 @@ GtkBuilder *getBuilder(const char *filename) {
 	datadir += "\\";
 	datadir += filename;
 	return gtk_builder_new_from_file(datadir.c_str());
-#endif
+#endif*/
 }
 
 void create_button_menus(void) {

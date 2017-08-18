@@ -16,11 +16,15 @@ if PLATFORM_WIN32
 qalculate_gtk_LDFLAGS = -mwindows
 endif
 
+ui.c : $(top_srcdir)/data/ui.gresource.xml $(top_srcdir)/data/*.ui
+	glib-compile-resources --generate-source --target=$@ --sourcedir=$(top_srcdir)/data $(top_srcdir)/data/ui.gresource.xml
+
 qalculate_gtk_SOURCES = \
 	main.cc		main.h		\
 	interface.cc	interface.h	\
 	callbacks.cc	callbacks.h	\
-	support.h
+	support.h \
+	ui.c
 
 qalculate_gtk_LDADD = \
 	@GLIB_LIBS@ \

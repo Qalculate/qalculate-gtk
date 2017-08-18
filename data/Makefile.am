@@ -2,11 +2,10 @@
 # data/Makefile.am for qalculate
 #
 
-ui_DATA = argumentrules.ui csvexport.ui csvimport.ui datasetedit.ui datasets.ui decimals.ui \
+noinst_DATA = argumentrules.ui csvexport.ui csvimport.ui datasetedit.ui datasets.ui decimals.ui \
 	functionedit.ui functions.ui main.ui matrix.ui matrixedit.ui namesedit.ui nbases.ui \
 	setbase.ui percentage.ui periodictable.ui plot.ui precision.ui preferences.ui simplefunctionedit.ui \
-	unitedit.ui units.ui unknownedit.ui variableedit.ui variables.ui
-uidir = $(datadir)/$(PACKAGE)/ui
+	unitedit.ui units.ui unknownedit.ui variableedit.ui variables.ui ui.gresource.xml
 
 # this is for gnome
 
@@ -26,6 +25,6 @@ pixmaps_DATA = qalculate.png
 EXTRA_DIST = \
 	$(desktop_IN_FILES)	\
 	$(appdata_IN_FILES)	\
-	$(ui_DATA)	\
-	$(pixmaps_DATA)
+	$(pixmaps_DATA) \
+	$(noinst_DATA)
 

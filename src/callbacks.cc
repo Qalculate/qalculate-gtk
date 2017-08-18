@@ -9510,7 +9510,7 @@ bool last_is_number(const gchar *expr) {
 */
 void insertButtonFunction(MathFunction *f, bool save_to_recent = false) {
 	if(!f) return;
-	if(rpn_mode && (f->minargs() <= 1 || CALCULATOR->RPNStackSize() >= f->minargs())) {
+	if(rpn_mode && (f->minargs() <= 1 || (int) CALCULATOR->RPNStackSize() >= f->minargs())) {
 		calculateRPN(f);
 		return;
 	}
