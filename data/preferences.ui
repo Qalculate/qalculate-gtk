@@ -319,11 +319,12 @@ Note that only the mode, history and definitions of the last closed instance wil
                       <object class="GtkBox" id="hbox2">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="halign">start</property>
                         <property name="spacing">6</property>
                         <property name="homogeneous">True</property>
                         <child>
                           <object class="GtkRadioButton" id="preferences_radiobutton_division_slash">
-                            <property name="label" translatable="yes">/</property>
+                            <property name="label">/</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -340,7 +341,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                         </child>
                         <child>
                           <object class="GtkRadioButton" id="preferences_radiobutton_division">
-                            <property name="label" translatable="yes">/</property>
+                            <property name="label">/</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -357,7 +358,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                         </child>
                         <child>
                           <object class="GtkRadioButton" id="preferences_radiobutton_slash">
-                            <property name="label" translatable="yes">/</property>
+                            <property name="label">/</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -382,11 +383,12 @@ Note that only the mode, history and definitions of the last closed instance wil
                       <object class="GtkBox" id="hbox1">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="halign">start</property>
                         <property name="spacing">6</property>
                         <property name="homogeneous">True</property>
                         <child>
                           <object class="GtkRadioButton" id="preferences_radiobutton_dot">
-                            <property name="label" translatable="yes">.</property>
+                            <property name="label">.</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -403,7 +405,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                         </child>
                         <child>
                           <object class="GtkRadioButton" id="preferences_radiobutton_ex">
-                            <property name="label" translatable="yes">x</property>
+                            <property name="label">x</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -419,8 +421,26 @@ Note that only the mode, history and definitions of the last closed instance wil
                           </packing>
                         </child>
                         <child>
+                          <object class="GtkRadioButton" id="preferences_radiobutton_altdot">
+                            <property name="label">.</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="use_underline">True</property>
+                            <property name="active">True</property>
+                            <property name="draw_indicator">True</property>
+                            <property name="group">preferences_radiobutton_dot</property>
+                            <signal name="toggled" handler="on_preferences_radiobutton_altdot_toggled" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                        <child>
                           <object class="GtkRadioButton" id="preferences_radiobutton_asterisk">
-                            <property name="label" translatable="yes">*</property>
+                            <property name="label">*</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -432,7 +452,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
+                            <property name="position">3</property>
                           </packing>
                         </child>
                       </object>
@@ -457,6 +477,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                       <object class="GtkSpinButton" id="preferences_update_exchange_rates_spin_button">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="hexpand">True</property>
                         <property name="adjustment">preferences_update_exchange_rates_adjustment</property>
                         <property name="value">7</property>
                         <signal name="input" handler="on_preferences_update_exchange_rates_spin_button_input" swapped="no"/>
@@ -569,7 +590,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="font">Sans 12</property>
-                    <property name="preview_text"/>
+                    <property name="preview_text">1+2−3×4/√(π)²</property>
                     <property name="use_font">True</property>
                     <property name="use_size">True</property>
                     <signal name="font-set" handler="on_preferences_button_status_font_font_set" swapped="no"/>
@@ -586,7 +607,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="font">Sans 12</property>
-                    <property name="preview_text"/>
+                    <property name="preview_text">1+2−3×4/√(π)²</property>
                     <property name="use_font">True</property>
                     <property name="use_size">True</property>
                     <signal name="font-set" handler="on_preferences_button_expression_font_font_set" swapped="no"/>
@@ -637,7 +658,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="font">Sans 12</property>
-                    <property name="preview_text"/>
+                    <property name="preview_text">·1+2−3×4/√(π)²</property>
                     <property name="use_font">True</property>
                     <property name="use_size">True</property>
                     <signal name="font-set" handler="on_preferences_button_result_font_font_set" swapped="no"/>

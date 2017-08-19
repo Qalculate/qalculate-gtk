@@ -426,29 +426,54 @@ bool expression_is_empty() {
 void set_assumptions_items(AssumptionType, AssumptionSign);
 void set_mode_items(const PrintOptions&, const EvaluationOptions&, AssumptionType, AssumptionSign, bool, int, bool);
 
+string sdot, saltdot, sdiv, sslash, stimes, sminus;
+string sdot_s, saltdot_s, sdiv_s, sslash_s, stimes_s, sminus_s;
+
+void set_operator_symbols() {
+	if(can_display_unicode_string_function_exact(SIGN_MINUS, (void*) expressiontext)) sminus = SIGN_MINUS;
+	else sminus = "-";
+	if(can_display_unicode_string_function(SIGN_DIVISION, (void*) expressiontext)) sdiv = SIGN_DIVISION;
+	else sdiv = "/";
+	sslash = "/";
+	if(can_display_unicode_string_function(SIGN_MULTIDOT, (void*) expressiontext)) sdot = SIGN_MULTIDOT;
+	else sdot = "*";
+	if(can_display_unicode_string_function(SIGN_MIDDLEDOT, (void*) expressiontext)) saltdot = SIGN_MIDDLEDOT;
+	else saltdot = "*";
+	if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) expressiontext)) stimes = SIGN_MULTIPLICATION;
+	else stimes = "*";
+	
+	if(can_display_unicode_string_function_exact(SIGN_MINUS, (void*) statuslabel_l)) sminus_s = SIGN_MINUS;
+	else sminus_s = "-";
+	if(can_display_unicode_string_function(SIGN_DIVISION, (void*) statuslabel_l)) sdiv_s = SIGN_DIVISION;
+	else sdiv_s = "/";
+	if(can_display_unicode_string_function_exact(SIGN_DIVISION, (void*) statuslabel_l)) sslash_s = SIGN_DIVISION_SLASH;
+	else sslash_s = "/";
+	if(can_display_unicode_string_function(SIGN_MULTIDOT, (void*) statuslabel_l)) sdot_s = SIGN_MULTIDOT;
+	else sdot_s = "*";
+	if(can_display_unicode_string_function(SIGN_MIDDLEDOT, (void*) statuslabel_l)) saltdot_s = SIGN_MIDDLEDOT;
+	else saltdot_s = "*";
+	if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) statuslabel_l)) stimes_s = SIGN_MULTIPLICATION;
+	else stimes_s = "*";
+}
+
 const char *expression_add_sign() {
 	//if(printops.use_unicode_signs) return SIGN_PLUS;
 	return "+";
 }
 const char *expression_sub_sign() {
-	if(printops.use_unicode_signs) return SIGN_MINUS;
-	return "-";
+	if(!printops.use_unicode_signs) return "-";
+	return sminus.c_str();
 }
 const char *expression_times_sign() {
-	if(printops.use_unicode_signs && printops.multiplication_sign == MULTIPLICATION_SIGN_DOT && can_display_unicode_string_function(SIGN_MULTIDOT, (void*) expressiontext)) {
-		return SIGN_MULTIDOT;
-	} else if(printops.use_unicode_signs && printops.multiplication_sign == MULTIPLICATION_SIGN_DOT && can_display_unicode_string_function(SIGN_SMALLCIRCLE, (void*) expressiontext)) {
-		return SIGN_SMALLCIRCLE;
-	} else if(printops.use_unicode_signs && printops.multiplication_sign == MULTIPLICATION_SIGN_X && can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) expressiontext)) {
-		return SIGN_MULTIPLICATION;
-	}
+	if(printops.use_unicode_signs && printops.multiplication_sign == MULTIPLICATION_SIGN_DOT) return sdot.c_str();
+	else if(printops.use_unicode_signs && printops.multiplication_sign == MULTIPLICATION_SIGN_ALTDOT) return saltdot.c_str();
+	else if(printops.use_unicode_signs && printops.multiplication_sign == MULTIPLICATION_SIGN_X) return stimes.c_str();
 	return "*";
 }
 const char *expression_divide_sign() {
-	if(printops.use_unicode_signs && printops.division_sign == DIVISION_SIGN_DIVISION && can_display_unicode_string_function(SIGN_DIVISION, (void*) expressiontext)) {
-		return SIGN_DIVISION;
-	}
-	return "/";
+	if(!printops.use_unicode_signs) return "/";
+	if(printops.division_sign == DIVISION_SIGN_DIVISION) return sdiv.c_str();
+	return sslash.c_str();
 }
 
 #define EXPRESSION_STOP 1
@@ -484,11 +509,13 @@ void result_font_modified() {
 	while(gtk_events_pending()) gtk_main_iteration();
 	set_result_size_request();
 	result_font_updated = TRUE;
+	set_operator_symbols();
 	result_display_updated();
 }
 void expression_font_modified() {
 	while(gtk_events_pending()) gtk_main_iteration();
 	set_expression_size_request();
+	set_operator_symbols();
 }
 
 
@@ -529,6 +556,10 @@ PangoCoverageLevel get_least_coverage(const gchar *gstr, GtkWidget *widget) {
 bool can_display_unicode_string_function(const char *str, void *w) {
 	if(!w) w = (void*) historyview;
 	return get_least_coverage(str, (GtkWidget*) w) >= PANGO_COVERAGE_APPROXIMATE;
+}
+bool can_display_unicode_string_function_exact(const char *str, void *w) {
+	if(!w) w = (void*) historyview;
+	return get_least_coverage(str, (GtkWidget*) w) >= PANGO_COVERAGE_EXACT;
 }
 
 void set_result_size_request() {
@@ -709,19 +740,17 @@ void set_status_text(string text, bool break_begin = false, bool had_errors = fa
 
 	string str;
 	if(had_errors) {
-		str = "<span size=\"small\" foreground=\"";
+		str = "<span foreground=\"";
 		str += status_error_color;
 		str += "\">";
 	} else if(had_warnings) {
-		str = "<span size=\"small\" foreground=\"";
+		str = "<span foreground=\"";
 		str += status_warning_color;
 		str += "\">";
-	} else {
-		str = "<span size=\"small\">";
 	}
 	if(text.empty()) str += " ";
 	else str += text;
-	str += "</span>";
+	if(had_errors || had_warnings) str += "</span>";
 
 	if(break_begin) gtk_label_set_ellipsize(GTK_LABEL(statuslabel_l), PANGO_ELLIPSIZE_START);
 	else gtk_label_set_ellipsize(GTK_LABEL(statuslabel_l), PANGO_ELLIPSIZE_END);
@@ -734,7 +763,7 @@ void display_parse_status();
 
 void update_status_text() {
 
-	string str = "<span size=\"x-small\">";
+	string str = "<span size=\"small\">";
 	
 	bool b = false;
 	if(evalops.approximation == APPROXIMATION_EXACT) {
@@ -1060,10 +1089,7 @@ void display_function_hint(MathFunction *f, int arg_index = 1) {
 				str += "</b>";
 				if(i_reduced < 2) {
 					PangoLayout *layout_test = gtk_widget_create_pango_layout(statuslabel_l, NULL);
-					string str3 = "<span size=\"small\">";
-					str3 += str;
-					str3 += "</span>";
-					pango_layout_set_markup(layout_test, str3.c_str(), -1);
+					pango_layout_set_markup(layout_test, str.c_str(), -1);
 					gint w, h;
 					pango_layout_get_pixel_size(layout_test, &w, &h);
 					if(w > gtk_widget_get_allocated_width(statuslabel_l) - 20) {
@@ -3883,11 +3909,9 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			PangoLayout *layout_mul = gtk_widget_create_pango_layout(resultview, NULL);
 			string str;
 			if(po.use_unicode_signs && po.multiplication_sign == MULTIPLICATION_SIGN_DOT && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MULTIDOT, po.can_display_unicode_string_arg))) {
-				TTP(str, SIGN_MULTIDOT);
-			} else if(po.use_unicode_signs && po.multiplication_sign == MULTIPLICATION_SIGN_DOT && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MULTIBULLET, po.can_display_unicode_string_arg))) {
-				TTP(str, SIGN_MULTIBULLET);
-			} else if(po.use_unicode_signs && po.multiplication_sign == MULTIPLICATION_SIGN_DOT && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_SMALLCIRCLE, po.can_display_unicode_string_arg))) {
-				TTP(str, SIGN_SMALLCIRCLE);
+				TTP_SMALL(str, SIGN_MULTIDOT);
+			} else if(po.use_unicode_signs && (po.multiplication_sign == MULTIPLICATION_SIGN_DOT || po.multiplication_sign == MULTIPLICATION_SIGN_ALTDOT) && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MIDDLEDOT, po.can_display_unicode_string_arg))) {
+				TTP_SMALL(str, SIGN_MIDDLEDOT);
 			} else if(po.use_unicode_signs && po.multiplication_sign == MULTIPLICATION_SIGN_X && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MULTIPLICATION, po.can_display_unicode_string_arg))) {
 				TTP_SMALL(str, SIGN_MULTIPLICATION);
 			} else {
@@ -10292,7 +10316,7 @@ void load_preferences() {
 	default_plot_color = true;
 	default_plot_use_sampling_rate = true;
 
-	printops.multiplication_sign = MULTIPLICATION_SIGN_DOT;
+	printops.multiplication_sign = MULTIPLICATION_SIGN_X;
 	printops.division_sign = DIVISION_SIGN_DIVISION_SLASH;
 	printops.is_approximate = new bool(false);
 	printops.prefix = NULL;
@@ -10825,11 +10849,16 @@ void load_preferences() {
 						printops.multiplication_sign = MULTIPLICATION_SIGN_ASTERISK;
 					} else if(svalue == SIGN_MULTIDOT) {
 						printops.multiplication_sign = MULTIPLICATION_SIGN_DOT;
+					} else if(svalue == SIGN_MIDDLEDOT) {
+						printops.multiplication_sign = MULTIPLICATION_SIGN_ALTDOT;
 					} else if(svalue == SIGN_MULTIPLICATION) {
 						printops.multiplication_sign = MULTIPLICATION_SIGN_X;
-					} else if(v >= MULTIPLICATION_SIGN_ASTERISK && v <= MULTIPLICATION_SIGN_X) {
+					} else if(v >= MULTIPLICATION_SIGN_ASTERISK && v <= MULTIPLICATION_SIGN_ALTDOT) {
 						printops.multiplication_sign = (MultiplicationSign) v;
 					}
+					/*if(printops.multiplication_sign == MULTIPLICATION_SIGN_DOT && (version_numbers[0] < 1 || (version_numbers[0] == 1 && version_numbers[1] < 1))) {
+						printops.multiplication_sign = MULTIPLICATION_SIGN_X;
+					}*/
 				} else if(svar == "division_sign") {
 					if(v >= DIVISION_SIGN_SLASH && v <= DIVISION_SIGN_DIVISION) printops.division_sign = (DivisionSign) v;
 				} else if(svar == "recent_functions") {
@@ -11343,20 +11372,22 @@ void edit_preferences() {
 gchar *font_name_to_css(const char *font_name) {
 	gchar *gstr = NULL;
 	PangoFontDescription *font_desc = pango_font_description_from_string(font_name);
+	gint size = pango_font_description_get_size(font_desc) / PANGO_SCALE;
 	switch(pango_font_description_get_style(font_desc)) {
 		case PANGO_STYLE_NORMAL: {
-			gstr = g_strdup_printf("* {font-family: %s; font-weight: %i; font-size: %ipx;}", pango_font_description_get_family(font_desc), pango_font_description_get_weight(font_desc), pango_font_description_get_size(font_desc) / PANGO_SCALE);
+			gstr = g_strdup_printf("* {font-family: %s; font-weight: %i; font-size: %ipt;}", pango_font_description_get_family(font_desc), pango_font_description_get_weight(font_desc), size);
 			break;
 		}
 		case PANGO_STYLE_OBLIQUE: {
-			gstr = g_strdup_printf("* {font-family: %s; font-weight: %i; font-size: %ipx; font-style: oblique;}", pango_font_description_get_family(font_desc), pango_font_description_get_weight(font_desc), pango_font_description_get_size(font_desc) / PANGO_SCALE);
+			gstr = g_strdup_printf("* {font-family: %s; font-weight: %i; font-size: %ipt; font-style: oblique;}", pango_font_description_get_family(font_desc), pango_font_description_get_weight(font_desc), size);
 			break;
 		}
 		case PANGO_STYLE_ITALIC: {
-			gstr = g_strdup_printf("* {font-family: %s; font-weight: %i; font-size: %ipx; font-style: italic;}", pango_font_description_get_family(font_desc), pango_font_description_get_weight(font_desc), pango_font_description_get_size(font_desc) / PANGO_SCALE);
+			gstr = g_strdup_printf("* {font-family: %s; font-weight: %i; font-size: %ipt; font-style: italic;}", pango_font_description_get_family(font_desc), pango_font_description_get_weight(font_desc), size);
 			break;
 		}
 	}
+	pango_font_description_free(font_desc);
 	return gstr;
 }
 
@@ -11593,10 +11624,12 @@ void on_preferences_checkbutton_spell_out_logical_operators_toggled(GtkToggleBut
 }
 void on_preferences_checkbutton_unicode_signs_toggled(GtkToggleButton *w, gpointer) {
 	printops.use_unicode_signs = gtk_toggle_button_get_active(w);
+	set_operator_symbols();
 	set_unicode_buttons();
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_asterisk")), printops.use_unicode_signs);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_ex")), printops.use_unicode_signs);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_dot")), printops.use_unicode_signs);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_altdot")), printops.use_unicode_signs);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_slash")), printops.use_unicode_signs);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_division_slash")), printops.use_unicode_signs);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_division")), printops.use_unicode_signs);
@@ -11658,7 +11691,7 @@ void on_preferences_checkbutton_custom_result_font_toggled(GtkToggleButton *w, g
 		gtk_css_provider_load_from_data(resultview_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
-		gtk_css_provider_load_from_data(resultview_provider, "", -1, NULL);
+		gtk_css_provider_load_from_data(resultview_provider, "* {font-size: larger;}", -1, NULL);
 	}
 	result_font_modified();
 }
@@ -11680,16 +11713,23 @@ void on_preferences_checkbutton_custom_status_font_toggled(GtkToggleButton *w, g
 	if(use_custom_status_font) {
 		gchar *gstr = font_name_to_css(custom_status_font.c_str());
 		gtk_css_provider_load_from_data(statuslabel_l_provider, gstr, -1, NULL);
-		gtk_css_provider_load_from_data(statuslabel_l_provider, gstr, -1, NULL);
+		gtk_css_provider_load_from_data(statuslabel_r_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
-		gtk_css_provider_load_from_data(statuslabel_l_provider, "", -1, NULL);
-		gtk_css_provider_load_from_data(statuslabel_r_provider, "", -1, NULL);
+		gtk_css_provider_load_from_data(statuslabel_l_provider, "* {font-size: smaller;}", -1, NULL);
+		gtk_css_provider_load_from_data(statuslabel_r_provider, "* {font-size: smaller;}", -1, NULL);
 	}
+	set_operator_symbols();
 }
 void on_preferences_radiobutton_dot_toggled(GtkToggleButton *w, gpointer) {
 	if(gtk_toggle_button_get_active(w)) {
 		printops.multiplication_sign = MULTIPLICATION_SIGN_DOT;
+		result_display_updated();
+	}
+}
+void on_preferences_radiobutton_altdot_toggled(GtkToggleButton *w, gpointer) {
+	if(gtk_toggle_button_get_active(w)) {
+		printops.multiplication_sign = MULTIPLICATION_SIGN_ALTDOT;
 		result_display_updated();
 	}
 }
@@ -11742,8 +11782,9 @@ void on_preferences_button_status_font_font_set(GtkFontButton *w, gpointer) {
 	custom_status_font = gtk_font_button_get_font_name(w);
 	gchar *gstr = font_name_to_css(custom_status_font.c_str());
 	gtk_css_provider_load_from_data(statuslabel_l_provider, gstr, -1, NULL);
-	gtk_css_provider_load_from_data(statuslabel_l_provider, gstr, -1, NULL);
+	gtk_css_provider_load_from_data(statuslabel_r_provider, gstr, -1, NULL);
 	g_free(gstr);
+	set_operator_symbols();
 }
 
 /*
@@ -16815,32 +16856,23 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 	switch(event->keyval) {
 		case GDK_KEY_KP_Multiply: {}
 		case GDK_KEY_asterisk: {
-			if(printops.use_unicode_signs && printops.multiplication_sign == MULTIPLICATION_SIGN_DOT && can_display_unicode_string_function(SIGN_MULTIDOT, (void*) expressiontext)) {
-				overwrite_expression_selection(SIGN_MULTIDOT);
-			} else if(printops.use_unicode_signs && printops.multiplication_sign == MULTIPLICATION_SIGN_DOT && can_display_unicode_string_function(SIGN_SMALLCIRCLE, (void*) expressiontext)) {
-				overwrite_expression_selection(SIGN_SMALLCIRCLE);
-			} else if(printops.use_unicode_signs && printops.multiplication_sign == MULTIPLICATION_SIGN_X && can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) expressiontext)) {
-				overwrite_expression_selection(SIGN_MULTIPLICATION);
-			} else {
-				overwrite_expression_selection("*");
-			}
-			return TRUE;			
+			overwrite_expression_selection(expression_times_sign());
+			return TRUE;
 		}
 		case GDK_KEY_KP_Divide: {}
 		case GDK_KEY_slash: {
-			if(printops.use_unicode_signs && printops.division_sign == DIVISION_SIGN_DIVISION && can_display_unicode_string_function(SIGN_DIVISION, (void*) expressiontext)) {
-				overwrite_expression_selection(SIGN_DIVISION);
-				return TRUE;			
-			}
-			break;
+			overwrite_expression_selection(expression_divide_sign());
+			return TRUE;
 		}
 		case GDK_KEY_KP_Subtract: {}
 		case GDK_KEY_minus: {
-			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_MINUS, (void*) expressiontext)) {
-				overwrite_expression_selection(SIGN_MINUS);
-				return TRUE;
-			}
-			break;
+			overwrite_expression_selection(expression_sub_sign());
+			return TRUE;
+		}
+		case GDK_KEY_KP_Add: {}
+		case GDK_KEY_plus: {
+			overwrite_expression_selection(expression_add_sign());
+			return TRUE;
 		}
 		case GDK_KEY_braceleft: {}
 		case GDK_KEY_braceright: {

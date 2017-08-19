@@ -850,7 +850,7 @@ void create_main_window(void) {
 		gtk_css_provider_load_from_data(resultview_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
-		//gtk_css_provider_load_from_data(resultview_provider, "* {font-size: large;}", -1, NULL);
+		gtk_css_provider_load_from_data(resultview_provider, "* {font-size: larger;}", -1, NULL);
 		if(custom_result_font.empty()) {
 			PangoFontDescription *font_desc;
 			gtk_style_context_get(gtk_widget_get_style_context(resultview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
@@ -863,7 +863,6 @@ void create_main_window(void) {
 		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
-		//gtk_css_provider_load_from_data(expression_provider, "* {font-size: large;}", -1, NULL);
 		if(custom_expression_font.empty()) {
 			PangoFontDescription *font_desc;
 			gtk_style_context_get(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
@@ -874,9 +873,11 @@ void create_main_window(void) {
 	if(use_custom_status_font) {
 		gchar *gstr = font_name_to_css(custom_status_font.c_str());
 		gtk_css_provider_load_from_data(statuslabel_l_provider, gstr, -1, NULL);
-		gtk_css_provider_load_from_data(statuslabel_l_provider, gstr, -1, NULL);
+		gtk_css_provider_load_from_data(statuslabel_r_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
+		gtk_css_provider_load_from_data(statuslabel_l_provider, "* {font-size: smaller;}", -1, NULL);
+		gtk_css_provider_load_from_data(statuslabel_r_provider, "* {font-size: smaller;}", -1, NULL);
 		if(custom_status_font.empty()) {
 			PangoFontDescription *font_desc;
 			gtk_style_context_get(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
@@ -884,6 +885,7 @@ void create_main_window(void) {
 			pango_font_description_free(font_desc);
 		}
 	}
+	set_operator_symbols();
 	GdkRGBA c;
 	gtk_style_context_get_color(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, &c);
 	if(!status_error_color_set) {
@@ -1536,7 +1538,6 @@ get_datasets_dialog (void)
 	return GTK_WIDGET(gtk_builder_get_object(datasets_builder, "datasets_dialog"));
 }
 
-
 GtkWidget*
 get_preferences_dialog (void)
 {
@@ -1575,12 +1576,16 @@ get_preferences_dialog (void)
 		gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(gtk_builder_get_object(preferences_builder, "colorbutton_status_error_color")), &c);
 		gdk_rgba_parse(&c, status_warning_color.c_str());
 		gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(gtk_builder_get_object(preferences_builder, "colorbutton_status_warning_color")), &c);
-		if(can_display_unicode_string_function(SIGN_MULTIDOT, (void*) gtk_builder_get_object(preferences_builder, "preferences_radiobutton_dot"))) gtk_button_set_label(GTK_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_dot")), SIGN_MULTIDOT);
-		else gtk_button_set_label(GTK_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_dot")), SIGN_SMALLCIRCLE);
+		gtk_button_set_label(GTK_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_dot")), SIGN_MULTIDOT);
+		gtk_button_set_label(GTK_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_altdot")), SIGN_MIDDLEDOT);
 		gtk_button_set_label(GTK_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_ex")), SIGN_MULTIPLICATION);
 		switch(printops.multiplication_sign) {
 			case MULTIPLICATION_SIGN_DOT: {
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_dot")), TRUE);
+				break;
+			}
+			case MULTIPLICATION_SIGN_ALTDOT: {
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_altdot")), TRUE);
 				break;
 			}
 			case MULTIPLICATION_SIGN_X: {
