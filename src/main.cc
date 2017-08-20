@@ -127,7 +127,7 @@ void create_application(GtkApplication *app) {
 	showing_first_time_message = first_time;
 
 	if(!calc_arg.empty()) {
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "expression")), calc_arg.c_str());
+		gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_builder_get_object(main_builder, "expressionbuffer")), calc_arg.c_str(), -1);
 	} else if(first_time) {		
 		PangoLayout *layout = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview")), NULL);
 		GdkRGBA rgba;
@@ -358,7 +358,7 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 	if(main_builder) {
 		gtk_window_present(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 		if(!calc_arg.empty()) {
-			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "expression")), calc_arg.c_str());
+			gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_builder_get_object(main_builder, "expressionbuffer")), calc_arg.c_str(), -1);
 			execute_expression();
 		}
 	} else {

@@ -59,7 +59,7 @@
                 <property name="can_focus">False</property>
                 <property name="border_width">18</property>
                 <property name="orientation">vertical</property>
-                <property name="spacing">6</property>
+                <property name="spacing">12</property>
                 <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_display_expression_status">
                     <property name="label" translatable="yes">Display expression status</property>
@@ -289,7 +289,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="hexpand">True</property>
-                    <property name="row_spacing">6</property>
+                    <property name="row_spacing">12</property>
                     <property name="column_spacing">12</property>
                     <child>
                       <object class="GtkLabel" id="preferences_label_multi_sign">
@@ -515,7 +515,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                 <property name="halign">start</property>
                 <property name="valign">start</property>
                 <property name="border_width">18</property>
-                <property name="row_spacing">6</property>
+                <property name="row_spacing">12</property>
                 <property name="column_spacing">12</property>
                 <child>
                   <object class="GtkLabel" id="label2">
@@ -658,7 +658,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="font">Sans 12</property>
-                    <property name="preview_text">·1+2−3×4/√(π)²</property>
+                    <property name="preview_text">1+2−3×4/√(π)²</property>
                     <property name="use_font">True</property>
                     <property name="use_size">True</property>
                     <signal name="font-set" handler="on_preferences_button_result_font_font_set" swapped="no"/>

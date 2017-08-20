@@ -228,6 +228,10 @@ deque<int> inhistory_type;
 vector<MathStructure*> history_parsed;
 vector<MathStructure*> history_answer;
 
+deque<string> expression_undo_buffer;
+size_t undo_index = 0;
+bool add_to_undo = true;
+
 int current_inhistory_index = -1;
 int history_index = 0;
 int initial_inhistory_index = 0;
@@ -413,7 +417,9 @@ string get_selected_expression_text(bool return_all_if_no_sel = false) {
 }
 void overwrite_expression_selection(const gchar *text) {
 	block_completion();
+	add_to_undo = false;
 	gtk_text_buffer_delete_selection(expressionbuffer, FALSE, TRUE);
+	add_to_undo = true;
 	if(text) gtk_text_buffer_insert_at_cursor(expressionbuffer, text, -1);
 	unblock_completion();
 }
@@ -710,13 +716,17 @@ void wrap_expression_selection() {
 	gtk_text_buffer_get_iter_at_mark(expressionbuffer, &istart, mstart);
 	gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iend, mend);
 	if(gtk_text_iter_compare(&istart, &iend) > 0) {
+		add_to_undo = false;
 		gtk_text_buffer_insert(expressionbuffer, &iend, "(", -1);
 		gtk_text_buffer_get_iter_at_mark(expressionbuffer, &istart, mstart);
+		add_to_undo = true;
 		gtk_text_buffer_insert(expressionbuffer, &istart, ")", -1);
 		gtk_text_buffer_place_cursor(expressionbuffer, &istart);
 	} else {
+		add_to_undo = false;
 		gtk_text_buffer_insert(expressionbuffer, &istart, "(", -1);
 		gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iend, mend);
+		add_to_undo = true;
 		gtk_text_buffer_insert(expressionbuffer, &iend, ")", -1);
 		gtk_text_buffer_place_cursor(expressionbuffer, &iend);
 	}
@@ -3689,6 +3699,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 					str += "-";
 				}
 				str += exp;
+			} else if(po.base == BASE_SEXAGESIMAL || po.base == BASE_TIME) {
+				string estr;
+				if(po.lower_case_e) {TTP(estr, "e");}
+				else {TTP_SMALL(estr, "E");}
+				if(po.lower_case_e) gsub("e", estr, str);
+				else gsub("E", estr, str);
 			}
 			if(po.base != BASE_DECIMAL && po.base != BASE_HEXADECIMAL && po.base > 0 && po.base <= 36) {
 				TTBP_SMALL(str)
@@ -8463,15 +8479,17 @@ void edit_matrix(const char *category, Variable *var, MathStructure *mstruct_, G
 	if(create_vector) {
 		if(old_vctr) {
 			r = old_vctr->countChildren();
-			c = (int) ::sqrt((double) r) + 4;
+			c = (int) ::sqrt(::sqrt((double) r)) + 8;
+			if(c < 10) c = 10;
 			if(r % c > 0) {
 				r = r / c + 1;
 			} else {
 				r = r / c;
 			}
+			if(r < 100) r = 100;
 		} else {
-			c = 6;
-			r = 4;
+			c = 10;
+			r = 100;
 		}
 	}
 
@@ -8640,6 +8658,10 @@ void insert_matrix(const MathStructure *initial_value, GtkWidget *win, gboolean 
 	if(initial_value && !initial_value->isVector()) {
 		return;
 	}
+	
+	GtkTextIter istart, iend;
+	gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
+
 	if(initial_value) {
 		create_vector = !initial_value->isMatrix();
 	}
@@ -8668,15 +8690,17 @@ void insert_matrix(const MathStructure *initial_value, GtkWidget *win, gboolean 
 	if(create_vector) {
 		if(initial_value) {
 			r = initial_value->countChildren();
-			c = (int) ::sqrt(r) + 4;
+			c = (int) sqrt(::sqrt(r)) + 8;
+			if(c < 10) c = 10;
 			if(r % c > 0) {
 				r = r / c + 1;
 			} else {
 				r = r / c;
 			}
+			if(r < 100) r = 100;
 		} else {
-			c = 6;
-			r = 4;
+			c = 10;
+			r = 100;
 		}
 	} else if(initial_value) {
 		c = initial_value->columns();
@@ -8788,6 +8812,7 @@ void insert_matrix(const MathStructure *initial_value, GtkWidget *win, gboolean 
 			}
 			matrixstr += "]";
 		}
+		gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
 		insert_text(matrixstr.c_str());
 	}
 	gtk_widget_hide(dialog);
@@ -9941,6 +9966,52 @@ void on_popup_menu_item_rpn_mode_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_on")), true);
 	else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_off")), true);
 }
+void expression_set_from_undo_buffer() {
+	if(undo_index < expression_undo_buffer.size()) {
+		string str_old = get_expression_text();
+		string str_new = expression_undo_buffer[undo_index];
+		if(str_old == str_new) return;
+		size_t i;
+		add_to_undo = false;
+		GtkTextIter istart, iend;
+		if((i = str_old.find(str_new)) != string::npos) {
+			if(i != 0) {
+				gtk_text_buffer_get_iter_at_offset(expressionbuffer, &iend, g_utf8_strlen(str_old.c_str(), i));
+				gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
+				gtk_text_buffer_delete(expressionbuffer, &istart, &iend);
+			}
+			if(i + str_new.length() < str_old.length()) {
+				gtk_text_buffer_get_iter_at_offset(expressionbuffer, &istart, g_utf8_strlen(str_new.c_str(), -1));
+				gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
+				gtk_text_buffer_delete(expressionbuffer, &istart, &iend);
+			}
+		} else if((i = str_new.find(str_old)) != string::npos) {
+			if(i + str_old.length() < str_new.length()) {
+				gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
+				gtk_text_buffer_insert(expressionbuffer, &iend, str_new.substr(i + str_old.length(), str_new.length() - (i + str_old.length())).c_str(), -1);
+			}
+			if(i > 0) {
+				gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
+				gtk_text_buffer_insert(expressionbuffer, &istart, str_new.substr(0, i).c_str(), -1);
+			}
+		} else {
+			gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(expressiontext), FALSE);
+			gtk_text_buffer_set_text(expressionbuffer, str_new.c_str(), -1);
+			gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(expressiontext), TRUE);
+		}
+		add_to_undo = true;
+	}
+}
+void expression_undo() {
+	if(undo_index == 0) return;
+	undo_index--;
+	expression_set_from_undo_buffer();
+}
+void expression_redo() {
+	if(undo_index >= expression_undo_buffer.size() - 1) return;
+	undo_index++;
+	expression_set_from_undo_buffer();
+}
 void on_expressiontext_populate_popup(GtkTextView*, GtkMenu *menu, gpointer) {
 	GtkWidget *item, *sub, *sub2;
 	GSList *group = NULL;
@@ -9951,8 +10022,13 @@ void on_expressiontext_populate_popup(GtkTextView*, GtkMenu *menu, gpointer) {
 		MENU_ITEM(_("Abort"), on_popup_menu_item_abort_activate)
 		return;
 	}
-	MENU_ITEM(_("Clear"), on_popup_menu_item_clear_activate)
+	MENU_ITEM(_("Undo"), expression_undo)
+	if(undo_index == 0) gtk_widget_set_sensitive(item, FALSE);
+	MENU_ITEM(_("Redo"), expression_redo)
+	if(undo_index >= expression_undo_buffer.size() - 1) gtk_widget_set_sensitive(item, FALSE);
 	MENU_SEPARATOR
+	MENU_ITEM(_("Clear"), on_popup_menu_item_clear_activate)
+	if(expression_is_empty()) gtk_widget_set_sensitive(item, FALSE);
 	if(enable_completion) {
 		MENU_ITEM(_("Disable Completion"), on_popup_menu_item_disable_completion_activate)
 	} else {
@@ -11531,7 +11607,9 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 	g_free(gstr2);
 	if(!ename) return;
 	block_completion();
+	add_to_undo = false;
 	gtk_text_buffer_delete(expressionbuffer, &current_object_start, &current_object_end);
+	add_to_undo = true;
 	GtkTextIter ipos = current_object_start;
 	if(item->type() == TYPE_FUNCTION) {
 		GtkTextIter ipos2 = ipos;
@@ -12567,6 +12645,14 @@ void do_completion() {
 	}
 }
 void on_expressionbuffer_changed(GtkTextBuffer*, gpointer) {
+	if(add_to_undo) {
+		if(expression_undo_buffer.size() > 100) expression_undo_buffer.pop_front();
+		else undo_index++;
+		while(undo_index < expression_undo_buffer.size()) {
+			expression_undo_buffer.pop_back();
+		}
+		expression_undo_buffer.push_back(get_expression_text());
+	}
 	expression_has_changed = true;
 	expression_has_changed2 = true;
 	current_object_has_changed = true;
@@ -12695,8 +12781,10 @@ void on_button_brace_wrap_clicked(GtkButton*, gpointer) {
 	gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &istart, &iend, FALSE);
 	GtkTextMark *mstart = gtk_text_buffer_create_mark(expressionbuffer, "istart", &istart, TRUE);
 	GtkTextMark *mend = gtk_text_buffer_create_mark(expressionbuffer, "iend", &iend, FALSE);
+	add_to_undo = false;
 	gtk_text_buffer_insert(expressionbuffer, &istart, "(", -1);
 	gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iend, mend);
+	add_to_undo = true;
 	gtk_text_buffer_insert(expressionbuffer, &iend, ")", -1);
 	gtk_text_buffer_get_iter_at_mark(expressionbuffer, &istart, mstart);
 	gtk_text_buffer_delete_mark(expressionbuffer, mstart);
@@ -13024,7 +13112,9 @@ void history_operator(string str_sign) {
 			}
 		}
 	}
+	add_to_undo = false;
 	gtk_text_buffer_set_text(expressionbuffer, "", -1);
+	add_to_undo = true;
 	insert_text(str.c_str());
 	if(!only_one_value) execute_expression();
 
@@ -13079,7 +13169,9 @@ void on_button_history_sqrt_clicked(GtkButton*, gpointer) {
 		str += ")";
 	}
 	str += ")";
+	add_to_undo = false;
 	gtk_text_buffer_set_text(expressionbuffer, "", -1);
+	add_to_undo = true;
 	insert_text(str.c_str());
 	execute_expression();
 }
@@ -16013,6 +16105,7 @@ void on_matrix_edit_spinbutton_columns_value_changed(GtkSpinButton *w, gpointer)
 			gtk_tree_view_column_set_min_width(column, 50);
 			gtk_tree_view_column_set_alignment(column, 0.5);
 			gtk_tree_view_append_column(GTK_TREE_VIEW(tMatrixEdit), column);
+			gtk_tree_view_column_set_expand(column, TRUE);
 			matrix_edit_columns.push_back(column);
 		}
 		if(!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tMatrixEdit_store), &iter)) return;
@@ -16239,6 +16332,7 @@ void on_matrix_spinbutton_columns_value_changed(GtkSpinButton *w, gpointer) {
 			gtk_tree_view_column_set_min_width(column, 50);
 			gtk_tree_view_column_set_alignment(column, 0.5);
 			gtk_tree_view_append_column(GTK_TREE_VIEW(tMatrix), column);
+			gtk_tree_view_column_set_expand(column, TRUE);
 			matrix_columns.push_back(column);
 		}
 		if(!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tMatrix_store), &iter)) return;
@@ -16851,6 +16945,18 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 		case GDK_KEY_KP_Separator: {
 			gtk_text_buffer_set_text(expressionbuffer, CALCULATOR->getDecimalPoint().c_str(), -1);
 			return TRUE;
+		}
+	}
+	if(event->state & GDK_CONTROL_MASK) {
+		switch(event->keyval) {
+			case GDK_KEY_Z: {
+				expression_redo();
+				return true;
+			}
+			case GDK_KEY_z: {
+				expression_undo();
+				return true;
+			}
 		}
 	}
 	switch(event->keyval) {

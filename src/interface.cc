@@ -123,6 +123,8 @@ extern vector<GtkWidget*> popup_result_mode_items;
 extern deque<string> inhistory;
 extern deque<int> inhistory_type;
 
+extern deque<string> expression_undo_buffer;
+
 gint win_height, win_width, history_height, keypad_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
 
 extern Unit *latest_button_unit, *latest_button_currency;
@@ -618,7 +620,6 @@ void create_button_menus(void) {
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	
 	
-	//g_signal_connect_data(gtk_builder_get_object(main_builder, "mb_to"), "activate", G_CALLBACK(on_mb_to_clicked), NULL);
 	if(!latest_button_unit_pre.empty()) {
 		latest_button_unit = CALCULATOR->getActiveUnit(latest_button_unit_pre);
 		if(!latest_button_unit) latest_button_unit = CALCULATOR->getCompositeUnit(latest_button_unit_pre);
@@ -820,6 +821,8 @@ void create_main_window(void) {
 	gtk_text_buffer_get_end_iter(expressionbuffer, &current_object_end);
 	resultview = GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"));
 	historyview = GTK_WIDGET(gtk_builder_get_object(main_builder, "historyview"));
+	
+	expression_undo_buffer.push_back("");
 	
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
 	gtk_text_view_set_left_margin(GTK_TEXT_VIEW(expressiontext), 6);
