@@ -137,6 +137,7 @@ extern Unit *selected_to_unit;
 bool save_mode_on_exit;
 bool save_defs_on_exit;
 bool use_custom_result_font, use_custom_expression_font, use_custom_status_font;
+bool save_custom_result_font = false, save_custom_expression_font = false, save_custom_status_font = false;
 string custom_result_font, custom_expression_font, custom_status_font;
 int scale_n = 0;
 bool hyp_is_on, inv_is_on;
@@ -415,6 +416,15 @@ string get_selected_expression_text(bool return_all_if_no_sel = false) {
 	g_free(gtext);
 	return text;
 }
+void add_expression_to_undo() {
+	if(expression_undo_buffer.size() > 100) expression_undo_buffer.pop_front();
+	else undo_index++;
+	while(undo_index < expression_undo_buffer.size()) {
+		expression_undo_buffer.pop_back();
+	}
+	expression_undo_buffer.push_back(get_expression_text());
+}
+
 void overwrite_expression_selection(const gchar *text) {
 	block_completion();
 	add_to_undo = false;
@@ -422,6 +432,16 @@ void overwrite_expression_selection(const gchar *text) {
 	add_to_undo = true;
 	if(text) gtk_text_buffer_insert_at_cursor(expressionbuffer, text, -1);
 	unblock_completion();
+}
+void set_expression_text(const gchar *text) {
+	bool b = add_to_undo;
+	add_to_undo = false;
+	gtk_text_buffer_set_text(expressionbuffer, text, -1);
+	add_to_undo = b;
+	if(add_to_undo) add_expression_to_undo();
+}
+void clear_expression_text() {
+	gtk_text_buffer_set_text(expressionbuffer, "", -1);
 }
 bool expression_is_empty() {
 	GtkTextIter istart;
@@ -6422,7 +6442,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	}
 	printops.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
 	if(rpn_mode && (!do_stack || stack_index == 0)) {
-		gtk_text_buffer_set_text(expressionbuffer, "", -1);
+		clear_expression_text();
 		while(CALCULATOR->RPNStackSize() < stack_size) {
 			RPNRegisterRemoved(1);
 			stack_size--;
@@ -6788,7 +6808,9 @@ void apply_function(MathFunction *f, GtkWidget* = NULL) {
 		str += get_expression_text();
 		str += ")";
 	}
+	add_to_undo = false;
 	gtk_text_buffer_set_text(expressionbuffer, "", -1);
+	add_to_undo = true;
 	insert_text(str.c_str());
 	execute_expression();
 	function_inserted(f);
@@ -7156,13 +7178,14 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 		}
 		str += ")";
 		
+		add_to_undo = false;
 		//redo selection if "OK" was clicked, clear expression entry "Execute"
 		if(response == GTK_RESPONSE_ACCEPT) {
 			gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
 		} else {
 			gtk_text_buffer_set_text(expressionbuffer, "", -1);
 		}
-		
+		add_to_undo = true;
 		insert_text(str.c_str());
 		//Calculate directly when "Execute" was clicked
 		if(response == GTK_RESPONSE_APPLY) {
@@ -9974,31 +9997,102 @@ void expression_set_from_undo_buffer() {
 		size_t i;
 		add_to_undo = false;
 		GtkTextIter istart, iend;
-		if((i = str_old.find(str_new)) != string::npos) {
-			if(i != 0) {
-				gtk_text_buffer_get_iter_at_offset(expressionbuffer, &iend, g_utf8_strlen(str_old.c_str(), i));
-				gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
-				gtk_text_buffer_delete(expressionbuffer, &istart, &iend);
+		if(str_old.length() > str_new.length()) {
+			if((i = str_old.find(str_new)) != string::npos) {
+				if(i != 0) {
+					gtk_text_buffer_get_iter_at_offset(expressionbuffer, &iend, g_utf8_strlen(str_old.c_str(), i));
+					gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
+					gtk_text_buffer_delete(expressionbuffer, &istart, &iend);
+				}
+				if(i + str_new.length() < str_old.length()) {
+					gtk_text_buffer_get_iter_at_offset(expressionbuffer, &istart, g_utf8_strlen(str_new.c_str(), -1));
+					gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
+					gtk_text_buffer_delete(expressionbuffer, &istart, &iend);
+				}
+				add_to_undo = true;
+				return;
 			}
-			if(i + str_new.length() < str_old.length()) {
-				gtk_text_buffer_get_iter_at_offset(expressionbuffer, &istart, g_utf8_strlen(str_new.c_str(), -1));
-				gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
-				gtk_text_buffer_delete(expressionbuffer, &istart, &iend);
+			for(i = 0; i < str_new.length(); i++) {
+				if(str_new[i] != str_old[i]) {
+					if(i == 0) break;
+					string str_test = str_old.substr(0, i);
+					str_test += str_old.substr(i + str_old.length() - str_new.length());
+					if(str_test == str_new) {
+						gtk_text_buffer_get_iter_at_offset(expressionbuffer, &istart, g_utf8_strlen(str_old.c_str(), i));
+						gtk_text_buffer_get_iter_at_offset(expressionbuffer, &iend, g_utf8_strlen(str_old.c_str(), i + str_old.length() - str_new.length()));
+						gtk_text_buffer_delete(expressionbuffer, &istart, &iend);
+						add_to_undo = true;
+						return;
+					}
+					if(str_new.length() + 1 == str_old.length()) break;
+					str_test = str_old.substr(0, i);
+					str_test += str_old.substr(i + str_old.length() - str_new.length() - 1);
+					size_t i2 = i;
+					while((i2 = str_test.find(')', i2 + 1)) != string::npos) {
+						string str_test2 = str_test;
+						str_test2.erase(str_test2.begin() + i2);
+						if(str_test2 == str_new) {
+							gtk_text_buffer_get_iter_at_offset(expressionbuffer, &istart, g_utf8_strlen(str_old.c_str(), i));
+							gtk_text_buffer_get_iter_at_offset(expressionbuffer, &iend, g_utf8_strlen(str_old.c_str(), i + str_old.length() - str_new.length() - 1));
+							gtk_text_buffer_delete(expressionbuffer, &istart, &iend);
+							gtk_text_buffer_get_iter_at_offset(expressionbuffer, &istart, g_utf8_strlen(str_old.c_str(), i2));
+							iend = istart;
+							gtk_text_iter_forward_char(&iend);
+							gtk_text_buffer_delete(expressionbuffer, &istart, &iend);
+							add_to_undo = true;
+							return;
+						}
+					}
+					break;
+				}
 			}
-		} else if((i = str_new.find(str_old)) != string::npos) {
-			if(i + str_old.length() < str_new.length()) {
-				gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
-				gtk_text_buffer_insert(expressionbuffer, &iend, str_new.substr(i + str_old.length(), str_new.length() - (i + str_old.length())).c_str(), -1);
+		} else if(str_new.length() > str_old.length()) {
+			if((i = str_new.find(str_old)) != string::npos) {
+				if(i + str_old.length() < str_new.length()) {
+					gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
+					gtk_text_buffer_insert(expressionbuffer, &iend, str_new.substr(i + str_old.length(), str_new.length() - (i + str_old.length())).c_str(), -1);
+				}
+				if(i > 0) {
+					gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
+					gtk_text_buffer_insert(expressionbuffer, &istart, str_new.substr(0, i).c_str(), -1);
+				}
+				add_to_undo = true;
+				return;
 			}
-			if(i > 0) {
-				gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
-				gtk_text_buffer_insert(expressionbuffer, &istart, str_new.substr(0, i).c_str(), -1);
+			for(i = 0; i < str_old.length(); i++) {
+				if(str_old[i] != str_new[i]) {
+					if(i == 0) break;
+					string str_test = str_new.substr(0, i);
+					str_test += str_new.substr(i + str_new.length() - str_old.length());
+					if(str_test == str_old) {
+						gtk_text_buffer_get_iter_at_offset(expressionbuffer, &istart, g_utf8_strlen(str_new.c_str(), i));
+						gtk_text_buffer_insert(expressionbuffer, &istart, str_new.substr(i, str_new.length() - str_old.length()).c_str(), -1);
+						add_to_undo = true;
+						return;
+					}
+					if(str_old.length() + 1 == str_new.length()) break;
+					str_test = str_new.substr(0, i);
+					str_test += str_new.substr(i + str_new.length() - str_old.length() - 1);
+					size_t i2 = i;
+					while((i2 = str_test.find(')', i2 + 1)) != string::npos) {
+						string str_test2 = str_test;
+						str_test2.erase(str_test2.begin() + i2);
+						if(str_test2 == str_old) {
+							gtk_text_buffer_get_iter_at_offset(expressionbuffer, &istart, g_utf8_strlen(str_new.c_str(), i));
+							gtk_text_buffer_insert(expressionbuffer, &istart, str_new.substr(i, str_new.length() - str_old.length() - 1).c_str(), -1);
+							gtk_text_buffer_get_iter_at_offset(expressionbuffer, &istart, g_utf8_strlen(str_new.c_str(), i2 + str_new.length() - str_old.length() - 1));
+							gtk_text_buffer_insert(expressionbuffer, &istart, ")", -1);
+							add_to_undo = true;
+							return;
+						}
+					}
+					break;
+				}
 			}
-		} else {
-			gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(expressiontext), FALSE);
-			gtk_text_buffer_set_text(expressionbuffer, str_new.c_str(), -1);
-			gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(expressiontext), TRUE);
 		}
+		gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(expressiontext), FALSE);
+		gtk_text_buffer_set_text(expressionbuffer, str_new.c_str(), -1);
+		gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(expressiontext), TRUE);
 		add_to_undo = true;
 	}
 }
@@ -10905,15 +10999,18 @@ void load_preferences() {
 				} else if(svar == "use_custom_result_font") {
 					use_custom_result_font = v;
 				} else if(svar == "use_custom_expression_font") {
-					use_custom_expression_font = v;											
+					use_custom_expression_font = v;
 				} else if(svar == "use_custom_status_font") {
-					use_custom_status_font = v;											
+					use_custom_status_font = v;
 				} else if(svar == "custom_result_font") {
 					custom_result_font = svalue;
+					save_custom_result_font = true;
 				} else if(svar == "custom_expression_font") {
-					custom_expression_font = svalue;	
+					custom_expression_font = svalue;
+					save_custom_expression_font = true;
 				} else if(svar == "custom_status_font") {
-					custom_status_font = svalue;	
+					custom_status_font = svalue;
+					save_custom_status_font = true;
 				} else if(svar == "status_error_color") {
 					status_error_color = svalue;
 					status_error_color_set = true;
@@ -11199,11 +11296,11 @@ void save_preferences(bool mode) {
 	fprintf(file, "dot_as_separator=%i\n", evalops.parse_options.dot_as_separator);
 	fprintf(file, "comma_as_separator=%i\n", evalops.parse_options.comma_as_separator);
 	fprintf(file, "use_custom_result_font=%i\n", use_custom_result_font);	
-	fprintf(file, "use_custom_expression_font=%i\n", use_custom_expression_font);	
-	fprintf(file, "use_custom_status_font=%i\n", use_custom_status_font);	
-	fprintf(file, "custom_result_font=%s\n", custom_result_font.c_str());	
-	fprintf(file, "custom_expression_font=%s\n", custom_expression_font.c_str());
-	fprintf(file, "custom_status_font=%s\n", custom_status_font.c_str());
+	fprintf(file, "use_custom_expression_font=%i\n", use_custom_expression_font);
+	fprintf(file, "use_custom_status_font=%i\n", use_custom_status_font);
+	if(use_custom_result_font || save_custom_result_font) fprintf(file, "custom_result_font=%s\n", custom_result_font.c_str());	
+	if(use_custom_expression_font || save_custom_expression_font) fprintf(file, "custom_expression_font=%s\n", custom_expression_font.c_str());
+	if(use_custom_status_font || save_custom_status_font) fprintf(file, "custom_status_font=%s\n", custom_status_font.c_str());
 	if(status_error_color_set) fprintf(file, "status_error_color=%s\n", status_error_color.c_str());
 	if(status_warning_color_set) fprintf(file, "status_warning_color=%s\n", status_warning_color.c_str());
 	fprintf(file, "multiplication_sign=%i\n", printops.multiplication_sign);
@@ -11764,6 +11861,8 @@ void on_preferences_checkbutton_enable_completion_toggled(GtkToggleButton *w, gp
 void on_preferences_checkbutton_custom_result_font_toggled(GtkToggleButton *w, gpointer) {
 	use_custom_result_font = gtk_toggle_button_get_active(w);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_result_font")), use_custom_result_font);
+	gint h_old, h_new;
+	gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), NULL, &h_old);
 	if(use_custom_result_font) {
 		gchar *gstr = font_name_to_css(custom_result_font.c_str());
 		gtk_css_provider_load_from_data(resultview_provider, gstr, -1, NULL);
@@ -11772,10 +11871,17 @@ void on_preferences_checkbutton_custom_result_font_toggled(GtkToggleButton *w, g
 		gtk_css_provider_load_from_data(resultview_provider, "* {font-size: larger;}", -1, NULL);
 	}
 	result_font_modified();
+	gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), NULL, &h_new);
+	gint winh, winw;
+	gtk_window_get_size(GTK_WINDOW(mainwindow), &winw, &winh);
+	winh += (h_new - h_old);
+	gtk_window_resize(GTK_WINDOW(mainwindow), winw, winh);
 }
 void on_preferences_checkbutton_custom_expression_font_toggled(GtkToggleButton *w, gpointer) {
 	use_custom_expression_font = gtk_toggle_button_get_active(w);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_expression_font")), use_custom_expression_font);
+	gint h_old, h_new;
+	gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h_old);
 	if(use_custom_expression_font) {
 		gchar *gstr = font_name_to_css(custom_expression_font.c_str());
 		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
@@ -11784,10 +11890,16 @@ void on_preferences_checkbutton_custom_expression_font_toggled(GtkToggleButton *
 		gtk_css_provider_load_from_data(expression_provider, "", -1, NULL);
 	}
 	expression_font_modified();
+	gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h_new);
+	gint winh, winw;
+	gtk_window_get_size(GTK_WINDOW(mainwindow), &winw, &winh);
+	winh += (h_new - h_old);
+	gtk_window_resize(GTK_WINDOW(mainwindow), winw, winh);
 }
 void on_preferences_checkbutton_custom_status_font_toggled(GtkToggleButton *w, gpointer) {
 	use_custom_status_font = gtk_toggle_button_get_active(w);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_status_font")), use_custom_status_font);
+	gint h_old = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")));
 	if(use_custom_status_font) {
 		gchar *gstr = font_name_to_css(custom_status_font.c_str());
 		gtk_css_provider_load_from_data(statuslabel_l_provider, gstr, -1, NULL);
@@ -11798,6 +11910,12 @@ void on_preferences_checkbutton_custom_status_font_toggled(GtkToggleButton *w, g
 		gtk_css_provider_load_from_data(statuslabel_r_provider, "* {font-size: smaller;}", -1, NULL);
 	}
 	set_operator_symbols();
+	while(gtk_events_pending()) gtk_main_iteration();
+	gint h_new = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")));
+	gint winh, winw;
+	gtk_window_get_size(GTK_WINDOW(mainwindow), &winw, &winh);
+	winh += (h_new - h_old);
+	gtk_window_resize(GTK_WINDOW(mainwindow), winw, winh);
 }
 void on_preferences_radiobutton_dot_toggled(GtkToggleButton *w, gpointer) {
 	if(gtk_toggle_button_get_active(w)) {
@@ -11843,26 +11961,50 @@ void on_preferences_radiobutton_division_toggled(GtkToggleButton *w, gpointer) {
 }
 
 void on_preferences_button_result_font_font_set(GtkFontButton *w, gpointer) {
+	save_custom_result_font = true;
 	custom_result_font = gtk_font_button_get_font_name(w);
+	gint h_old, h_new;
+	gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), NULL, &h_old);
 	gchar *gstr = font_name_to_css(custom_result_font.c_str());
 	gtk_css_provider_load_from_data(resultview_provider, gstr, -1, NULL);
 	g_free(gstr);
 	result_font_modified();
+	gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), NULL, &h_new);
+	gint winh, winw;
+	gtk_window_get_size(GTK_WINDOW(mainwindow), &winw, &winh);
+	winh += (h_new - h_old);
+	gtk_window_resize(GTK_WINDOW(mainwindow), winw, winh);
 }
 void on_preferences_button_expression_font_font_set(GtkFontButton *w, gpointer) {
+	save_custom_expression_font = true;
 	custom_expression_font = gtk_font_button_get_font_name(w);
+	gint h_old, h_new;
+	gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h_old);
 	gchar *gstr = font_name_to_css(custom_expression_font.c_str());
 	gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
 	g_free(gstr);
 	expression_font_modified();
+	gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h_new);
+	gint winh, winw;
+	gtk_window_get_size(GTK_WINDOW(mainwindow), &winw, &winh);
+	winh += (h_new - h_old);
+	gtk_window_resize(GTK_WINDOW(mainwindow), winw, winh);
 }
 void on_preferences_button_status_font_font_set(GtkFontButton *w, gpointer) {
+	save_custom_status_font = true;
 	custom_status_font = gtk_font_button_get_font_name(w);
+	gint h_old = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")));
 	gchar *gstr = font_name_to_css(custom_status_font.c_str());
 	gtk_css_provider_load_from_data(statuslabel_l_provider, gstr, -1, NULL);
 	gtk_css_provider_load_from_data(statuslabel_r_provider, gstr, -1, NULL);
 	g_free(gstr);
 	set_operator_symbols();
+	while(gtk_events_pending()) gtk_main_iteration();
+	gint h_new = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")));
+	gint winh, winw;
+	gtk_window_get_size(GTK_WINDOW(mainwindow), &winw, &winh);
+	winh += (h_new - h_old);
+	gtk_window_resize(GTK_WINDOW(mainwindow), winw, winh);
 }
 
 /*
@@ -12137,7 +12279,7 @@ void on_expression_button_clicked(GtkButton*, gpointer) {
 	if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals"))) {
 		execute_expression();
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_clear"))) {
-		gtk_text_buffer_set_text(expressionbuffer, "", -1);
+		clear_expression_text();
 		gtk_widget_grab_focus(expressiontext);
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon"))) {
 		gtk_widget_trigger_tooltip_query(w);
@@ -12320,7 +12462,7 @@ void on_button_del_clicked(GtkButton*, gpointer) {
 	AC button clicked -- clear expression entry
 */
 void on_button_ac_clicked(GtkButton*, gpointer) {
-	gtk_text_buffer_set_text(expressionbuffer, "", -1);
+	clear_expression_text();
 	gtk_widget_grab_focus(expressiontext);
 }
 
@@ -12645,14 +12787,7 @@ void do_completion() {
 	}
 }
 void on_expressionbuffer_changed(GtkTextBuffer*, gpointer) {
-	if(add_to_undo) {
-		if(expression_undo_buffer.size() > 100) expression_undo_buffer.pop_front();
-		else undo_index++;
-		while(undo_index < expression_undo_buffer.size()) {
-			expression_undo_buffer.pop_back();
-		}
-		expression_undo_buffer.push_back(get_expression_text());
-	}
+	if(add_to_undo) add_expression_to_undo();
 	expression_has_changed = true;
 	expression_has_changed2 = true;
 	current_object_has_changed = true;
@@ -12720,7 +12855,7 @@ void on_button_brace_wrap_clicked(GtkButton*, gpointer) {
 	GtkTextIter istart, iend, ipos;
 	gint il = expr.length();
 	if(il == 0) {
-		gtk_text_buffer_set_text(expressionbuffer, "()", -1);
+		set_expression_text("()");
 		gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
 		gtk_text_iter_forward_char(&istart);
 		gtk_text_buffer_place_cursor(expressionbuffer, &istart);
@@ -14171,7 +14306,7 @@ gulong on_popup_menu_sto_set_activate_handler = 0, on_popup_menu_sto_edit_activa
 
 gboolean on_menu_sto_popup_menu(GtkWidget*, gpointer data) {
 	if(b_busy) return TRUE;
-	if(on_popup_menu_sto_set_activate_handler != 0) g_signal_handler_disconnect(gtk_builder_get_object(main_builder, "popup_menu_sto_set"), on_popup_menu_sto_edit_activate_handler);
+	if(on_popup_menu_sto_set_activate_handler != 0) g_signal_handler_disconnect(gtk_builder_get_object(main_builder, "popup_menu_sto_set"), on_popup_menu_sto_set_activate_handler);
 	if(on_popup_menu_sto_edit_activate_handler != 0) g_signal_handler_disconnect(gtk_builder_get_object(main_builder, "popup_menu_sto_edit"), on_popup_menu_sto_edit_activate_handler);
 	if(on_popup_menu_sto_delete_activate_handler != 0) g_signal_handler_disconnect(gtk_builder_get_object(main_builder, "popup_menu_sto_delete"), on_popup_menu_sto_delete_activate_handler);
 	if(((Variable*) data)->isKnown() && mstruct && displayed_mstruct) on_popup_menu_sto_set_activate_handler = g_signal_connect(gtk_builder_get_object(main_builder, "popup_menu_sto_set"), "activate", G_CALLBACK(on_popup_menu_sto_set_activate), data);
@@ -14939,7 +15074,7 @@ void on_popup_menu_item_abort_activate(GtkMenuItem*, gpointer) {
 	else if(b_busy_command) on_abort_command(NULL, 0, NULL);
 }
 void on_popup_menu_item_clear_activate(GtkMenuItem*, gpointer) {
-	gtk_text_buffer_set_text(expressionbuffer, "", -1);
+	clear_expression_text();
 	gtk_widget_grab_focus(expressiontext);
 }
 void on_popup_menu_item_display_normal_activate(GtkMenuItem *w, gpointer) {
@@ -16899,7 +17034,7 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 				expression_history_index++;
 				dont_change_index = true;
 				block_completion();
-				gtk_text_buffer_set_text(expressionbuffer, expression_history[expression_history_index].c_str(), -1);
+				set_expression_text(expression_history[expression_history_index].c_str());
 				unblock_completion();
 				dont_change_index = false;
 			}
@@ -16933,9 +17068,9 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 				dont_change_index = true;
 				block_completion();
 				if(expression_history_index < 0) {
-					gtk_text_buffer_set_text(expressionbuffer, "", -1);
+					clear_expression_text();
 				} else {
-					gtk_text_buffer_set_text(expressionbuffer, expression_history[expression_history_index].c_str(), -1);
+					set_expression_text(expression_history[expression_history_index].c_str());
 				}
 				unblock_completion();
 				dont_change_index = false;
@@ -16943,7 +17078,7 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 			return TRUE;
 		}
 		case GDK_KEY_KP_Separator: {
-			gtk_text_buffer_set_text(expressionbuffer, CALCULATOR->getDecimalPoint().c_str(), -1);
+			overwrite_expression_selection(CALCULATOR->getDecimalPoint().c_str());
 			return TRUE;
 		}
 	}
