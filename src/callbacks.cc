@@ -10565,7 +10565,7 @@ void load_preferences() {
 	datasets_vposition1 = -1;
 	datasets_vposition2 = -1;
 	keypad_height = 0;
-	history_height = 300;
+	history_height = 0;
 	save_mode_on_exit = true;
 	save_defs_on_exit = true;
 	hyp_is_on = false;
@@ -10642,8 +10642,8 @@ void load_preferences() {
 					old_history_format = (version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] <= 4)));
 				} else if(svar == "width") {
 					win_width = v;
-				} else if(svar == "height") {
-					win_height = v;
+				/*} else if(svar == "height") {
+					win_height = v;*/
 				} else if(svar == "variables_width") {
 					variables_width = v;
 				} else if(svar == "variables_height") {
@@ -10687,8 +10687,8 @@ void load_preferences() {
 					auto_update_exchange_rates = v;
 				} else if(svar == "show_keypad") {
 					show_keypad = v;
-				} else if(svar == "keypad_height") {
-					keypad_height = v;
+				/*} else if(svar == "keypad_height") {
+					keypad_height = v;*/
 				} else if(svar == "show_history") {
 					show_history = v;
 				} else if(svar == "history_height") {
@@ -10975,7 +10975,7 @@ void load_preferences() {
 				} else if(svar == "short_multiplication") {
 					if(mode_index == 1) printops.short_multiplication = v;
 					else modes[mode_index].po.short_multiplication = v;
-/*				} else if(svar == "hyp_is_on") {
+				/*} else if(svar == "hyp_is_on") {
 					hyp_is_on = v;
 				} else if(svar == "inv_is_on") {
 					inv_is_on = v;*/
@@ -11029,7 +11029,7 @@ void load_preferences() {
 					} else if(v >= MULTIPLICATION_SIGN_ASTERISK && v <= MULTIPLICATION_SIGN_ALTDOT) {
 						printops.multiplication_sign = (MultiplicationSign) v;
 					}
-					/*if(printops.multiplication_sign == MULTIPLICATION_SIGN_DOT && (version_numbers[0] < 1 || (version_numbers[0] == 1 && version_numbers[1] < 1))) {
+					/*if(printops.multiplication_sign == MULTIPLICATION_SIGN_DOT && version_numbers[0] < 2) {
 						printops.multiplication_sign = MULTIPLICATION_SIGN_X;
 					}*/
 				} else if(svar == "division_sign") {
@@ -11253,7 +11253,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "allow_multiple_instances=%i\n", allow_multiple_instances);
 	gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
 	fprintf(file, "width=%i\n", w);
-	fprintf(file, "height=%i\n", h);
+	//fprintf(file, "height=%i\n", h);
 	if(variables_width > -1) fprintf(file, "variables_width=%i\n", variables_width);
 	if(variables_height > -1) fprintf(file, "variables_height=%i\n", variables_height);
 	if(variables_position > -1) fprintf(file, "variables_panel_position=%i\n", variables_position);
@@ -11276,8 +11276,8 @@ void save_preferences(bool mode) {
 	//fprintf(file, "fetch_exchange_rates_at_startup=%i\n", fetch_exchange_rates_at_startup);
 	fprintf(file, "auto_update_exchange_rates=%i\n", auto_update_exchange_rates);
 	fprintf(file, "show_keypad=%i\n", (rpn_mode && show_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad)));
-	h = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
-	fprintf(file, "keypad_height=%i\n", h > 10 ? h : keypad_height);
+	//h = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
+	//fprintf(file, "keypad_height=%i\n", h > 10 ? h : keypad_height);
 	fprintf(file, "show_history=%i\n", (rpn_mode && show_history && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_history)));
 	h = gtk_widget_get_allocated_height(tabs);
 	fprintf(file, "history_height=%i\n", h > 10 ? h : history_height);

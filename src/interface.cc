@@ -799,7 +799,7 @@ void create_main_window(void) {
 	accel_group = gtk_accel_group_new();
 	gtk_window_add_accel_group(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), accel_group);
 
-	if(win_width > 0) gtk_window_set_default_size (GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width, win_height);
+	if(win_width > 0) gtk_window_set_default_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width, win_height > 0 ? win_height : -1);
 
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
 	gtk_scrolled_window_set_overlay_scrolling(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "scrolled_result")), false);
@@ -930,6 +930,8 @@ void create_main_window(void) {
 	expander_stack = GTK_WIDGET(gtk_builder_get_object(main_builder, "expander_stack"));
 	expander_convert = GTK_WIDGET(gtk_builder_get_object(main_builder, "expander_convert"));
 	tabs = GTK_WIDGET(gtk_builder_get_object(main_builder, "tabs"));
+	if(history_height > 0) gtk_widget_set_size_request(tabs, -1, history_height);
+	if(keypad_height > 0) gtk_widget_set_size_request(tabs, -1, keypad_height);
 	if(show_stack && rpn_mode) {
 		gtk_expander_set_expanded(GTK_EXPANDER(expander_stack), TRUE);
 		gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 1);
@@ -1283,16 +1285,18 @@ void create_main_window(void) {
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnitSelectorCategories_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnitSelectorCategories_store), 0, GTK_SORT_ASCENDING);
 	
-	if(win_width > 0) {
+	/*if(win_width > 0) {
+		
 		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width, win_height);
-	}
-
-	gtk_widget_show (GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
+	}*/
 	
 	set_result_size_request();
 	set_expression_size_request();
 	
-	gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width > 0 ? win_width : 100, win_height > 0 ? win_height : 100);
+	if(win_height <= 0) gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), NULL, &win_height);
+	if(win_width > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width, win_height);
+	
+	gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 
 	update_status_text();
 	
