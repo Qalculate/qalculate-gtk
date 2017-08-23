@@ -492,6 +492,8 @@ GtkBuilder *getBuilder(const char *filename) {
 #endif*/
 }
 
+#define SUP_STRING(X) string("<span size=\"x-small\" rise=\"" + i2s((int) (pango_font_description_get_size(font_desc) / 1.5)) + "\">") + string(X) + "</span>"
+
 void create_button_menus(void) {
 
 	GtkWidget *item, *sub;
@@ -504,18 +506,29 @@ void create_button_menus(void) {
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_percent"));
 	MENU_ITEM(_("Percentage calculation tool"), on_menu_item_show_percentage_dialog_activate)
+
+
+	PangoFontDescription *font_desc;
+	gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_xy"))), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+	
+	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_xy")), (string("x") + SUP_STRING("y")).c_str());
+	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_xy")), (string("x") + SUP_STRING("y")).c_str());
+	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_xy")), (string("x") + SUP_STRING("y")).c_str());
+	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize")), (string("a(x)") + SUP_STRING("b")).c_str());
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_xy"));
-	MENU_ITEM_MARKUP("x<sup><small>2</small></sup>", on_button_square_clicked)
+	MENU_ITEM_MARKUP((string("x") + SUP_STRING("2")).c_str(), on_button_square_clicked)
 	f = CALCULATOR->getActiveFunction("inv");
 	if(f) {MENU_ITEM_WITH_POINTER("1/x", insert_button_function, f);}
-	MENU_ITEM_MARKUP_WITH_POINTER("e<sup><small>x</small></sup>", insert_button_function, CALCULATOR->f_exp)
+	MENU_ITEM_MARKUP_WITH_POINTER((string("e") + SUP_STRING("x")).c_str(), insert_button_function, CALCULATOR->f_exp)
 	f = CALCULATOR->getActiveFunction("exp2");
-	if(f) {MENU_ITEM_MARKUP_WITH_POINTER("2<sup><small>x</small></sup>", insert_button_function, f);}
+	if(f) {MENU_ITEM_MARKUP_WITH_POINTER((string("2") + SUP_STRING("x")).c_str(), insert_button_function, f);}
 	f = CALCULATOR->getActiveFunction("exp10");
-	if(f) {MENU_ITEM_MARKUP_WITH_POINTER("10<sup><small>x</small></sup>", insert_button_function, f);}
+	if(f) {MENU_ITEM_MARKUP_WITH_POINTER((string("10") + SUP_STRING("x")).c_str(), insert_button_function, f);}
 	f = CALCULATOR->getActiveFunction("cis");
-	if(f) {MENU_ITEM_MARKUP_WITH_POINTER("e<sup><small>xi</small></sup>", insert_button_function, f);}
+	if(f) {MENU_ITEM_MARKUP_WITH_POINTER((string("e") + SUP_STRING("xi")).c_str(), insert_button_function, f);}
+	
+	pango_font_description_free(font_desc);
 	
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_sqrt"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_sqrt);
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_sqrt"));
@@ -680,33 +693,6 @@ void create_button_menus(void) {
 	for(size_t i = 0; i < to_us.size(); i++) {
 		MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), insert_button_unit, to_us[i])
 	}
-	/*i_added = 0;
-	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_si"));
-	for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
-		if(!CALCULATOR->units[i]->isHidden() && CALCULATOR->units[i]->subtype() != SUBTYPE_COMPOSITE_UNIT && (CALCULATOR->units[i]->system() == "Imperial" || CALCULATOR->units[i]->system() == "US" || CALCULATOR->units[i]->system() == "Imperial/US")) {
-			Unit *u = CALCULATOR->units[i];
-			if(u->referenceName().find("UK_") == string::npos && u->referenceName().find("US_") == string::npos) {
-				i_added++;
-				if(i_added == 1) {SUBMENU_ITEM(_("Imperial/US"), sub);}
-				// Show further items in a submenu
-				else if(i_added % 10 == 0) {SUBMENU_ITEM(_("more"), sub);}
-				MENU_ITEM_WITH_POINTER(u->title(true).c_str(), insert_button_unit, u)
-			}
-		}
-	}
-	i_added = 0;
-	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_si"));
-	for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
-		if(!CALCULATOR->units[i]->isHidden() && CALCULATOR->units[i]->subtype() != SUBTYPE_COMPOSITE_UNIT && CALCULATOR->units[i]->system() == "CGS") {
-			Unit *u = CALCULATOR->units[i];
-			i_added++;
-			if(i_added == 1) {SUBMENU_ITEM("CGS", sub);}
-			// Show further items in a submenu
-			else if(i_added % 10 == 0) {SUBMENU_ITEM(_("more"), sub);}
-			MENU_ITEM_WITH_POINTER(u->title(true).c_str(), insert_button_unit, u)
-		}
-	}*/
-	
 
 	if(!latest_button_currency_pre.empty()) {
 		latest_button_currency = CALCULATOR->getActiveUnit(latest_button_currency_pre);

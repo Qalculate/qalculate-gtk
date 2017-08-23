@@ -1016,7 +1016,7 @@ void display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 			}
 			update_expression_icons(EXPRESSION_INFO);
 			if(first_error) {
-				gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "message_label")), _("Errors, warnings and other information generated during the last calculation is shown when holding the pointer over the icon that appears to the right of the expression entry."));
+				gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "message_label")), _("When errors, warnings and other information are generated during calculation the button to the right of the expression entry changes to reflect this. If you hold the pointer over or click the button, the message will be shown."));
 				gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "message_icon")));
 				gtk_info_bar_set_message_type(GTK_INFO_BAR(gtk_builder_get_object(main_builder, "message_bar")), GTK_MESSAGE_INFO);
 				gtk_info_bar_set_show_close_button(GTK_INFO_BAR(gtk_builder_get_object(main_builder, "message_bar")), TRUE);
@@ -3287,6 +3287,7 @@ void create_vmenu() {
 
 }
 
+
 /*
 	generate prefixes submenu in expression menu
 */
@@ -3294,18 +3295,20 @@ void create_pmenu(GtkWidget *item) {
 //	GtkWidget *item;
 	GtkWidget *sub;
 //	item = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_expression_prefixes"));
-	sub = gtk_menu_new(); gtk_widget_show (sub); gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), sub);	
+	sub = gtk_menu_new(); gtk_widget_show (sub); gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), sub);
+	PangoFontDescription *font_desc;
+	gtk_style_context_get(gtk_widget_get_style_context(item), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
 	int index = 0;
 	Prefix *p = CALCULATOR->getPrefix(index);
 	while(p) {
 		gchar *gstr = NULL;
 		switch(p->type()) {
 			case PREFIX_DECIMAL: {
-				gstr = g_strdup_printf("%s (10<sup>%i</sup>)", p->name(false, true, &can_display_unicode_string_function, (void*) item).c_str(), ((DecimalPrefix*) p)->exponent());
+				gstr = g_strdup_printf("%s (10<span size=\"x-small\" rise=\"%i\">%i</span>)", p->name(false, true, &can_display_unicode_string_function, (void*) item).c_str(), (int) (pango_font_description_get_size(font_desc) / 1.5), ((DecimalPrefix*) p)->exponent());
 				break;
 			}
 			case PREFIX_BINARY: {
-				gstr = g_strdup_printf("%s (2<sup>%i</sup>)", p->name(false, true, &can_display_unicode_string_function, (void*) item).c_str(), ((BinaryPrefix*) p)->exponent());
+				gstr = g_strdup_printf("%s (2<span size=\"x-small\" rise=\"%i\">%i</span>)", p->name(false, true, &can_display_unicode_string_function, (void*) item).c_str(), (int) (pango_font_description_get_size(font_desc) / 1.5), ((BinaryPrefix*) p)->exponent());
 				break;
 			}
 			case PREFIX_NUMBER: {				
@@ -3319,6 +3322,7 @@ void create_pmenu(GtkWidget *item) {
 		index++;
 		p = CALCULATOR->getPrefix(index);
 	}
+	pango_font_description_free(font_desc);
 }
 
 /*
