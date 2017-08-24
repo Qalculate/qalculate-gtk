@@ -7750,7 +7750,7 @@ void delete_function(MathFunction *f) {
 	display edit/new function dialog
 	creates new function if f == NULL, win is parent window
 */
-void edit_function(const char *category = "", MathFunction *f = NULL, GtkWidget *win = NULL) {
+void edit_function(const char *category = "", MathFunction *f = NULL, GtkWidget *win = NULL, const char *name = NULL, const char *expression = NULL) {
 
 	if(f && f->subtype() == SUBTYPE_DATA_SET) {
 		edit_dataset((DataSet*) f, win);
@@ -7832,6 +7832,8 @@ void edit_function(const char *category = "", MathFunction *f = NULL, GtkWidget 
 			}
 		}
 	}
+	if(name) gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")), name);
+	if(expression) gtk_text_buffer_set_text(expression_buffer, expression, -1);
 	update_function_arguments_list(f);
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")));
 	gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(functionedit_builder, "function_edit_tabs")), 0);
@@ -7852,8 +7854,10 @@ run_function_edit_dialog:
 		}
 		GtkTextIter e_iter_s, e_iter_e;
 		gtk_text_buffer_get_start_iter(expression_buffer, &e_iter_s);
-		gtk_text_buffer_get_end_iter(expression_buffer, &e_iter_e);		
-		string str2 = CALCULATOR->unlocalizeExpression(gtk_text_buffer_get_text(expression_buffer, &e_iter_s, &e_iter_e, FALSE), evalops.parse_options);
+		gtk_text_buffer_get_end_iter(expression_buffer, &e_iter_e);
+		gchar *gstr = gtk_text_buffer_get_text(expression_buffer, &e_iter_s, &e_iter_e, FALSE);
+		string str2 = CALCULATOR->unlocalizeExpression(gstr, evalops.parse_options);
+		g_free(gstr);
 		remove_blank_ends(str2);
 		gsub("\n", " ", str2);
 		if(!(f && f->isBuiltin()) && str2.empty()) {
@@ -7866,6 +7870,7 @@ run_function_edit_dialog:
 		GtkTextIter d_iter_s, d_iter_e;
 		gtk_text_buffer_get_start_iter(description_buffer, &d_iter_s);
 		gtk_text_buffer_get_end_iter(description_buffer, &d_iter_e);
+		gchar *gstr_descr = gtk_text_buffer_get_text(description_buffer, &d_iter_s, &d_iter_e, FALSE);
 		//function with the same name exists -- overwrite or open the dialog again
 		if((!f || !f->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->functionNameTaken(str, f) && !ask_question(_("A function with the same name already exists.\nDo you want to overwrite the function?"), dialog)) {
 			gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(functionedit_builder, "function_edit_tabs")), 0);
@@ -7878,15 +7883,16 @@ run_function_edit_dialog:
 			//edited an existing function
 			f->setCategory(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(functionedit_builder, "function_edit_combo_category"))));
 			f->setTitle(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_desc"))));
-			f->setDescription(gtk_text_buffer_get_text(description_buffer, &d_iter_s, &d_iter_e, FALSE));
+			f->setDescription(gstr_descr);
 			if(!f->isBuiltin()) {				
 				f->clearArgumentDefinitions();
 			}	
 		} else {
 			//new function
-			f = new UserFunction(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT((gtk_builder_get_object(functionedit_builder, "function_edit_combo_category")))), "", "", true, -1, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_desc"))), gtk_text_buffer_get_text(description_buffer, &d_iter_s, &d_iter_e, FALSE));
+			f = new UserFunction(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT((gtk_builder_get_object(functionedit_builder, "function_edit_combo_category")))), "", "", true, -1, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_desc"))), gstr_descr);
 			add_func = true;
 		}
+		g_free(gstr_descr);
 		if(f) {
 			f->setCondition(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_condition"))), evalops.parse_options));
 			GtkTreeIter iter;
@@ -8001,8 +8007,10 @@ run_simple_function_edit_dialog:
 		}
 		GtkTextIter e_iter_s, e_iter_e;
 		gtk_text_buffer_get_start_iter(expression_buffer, &e_iter_s);
-		gtk_text_buffer_get_end_iter(expression_buffer, &e_iter_e);		
-		string str2 = CALCULATOR->unlocalizeExpression(gtk_text_buffer_get_text(expression_buffer, &e_iter_s, &e_iter_e, FALSE), evalops.parse_options);
+		gtk_text_buffer_get_end_iter(expression_buffer, &e_iter_e);;
+		gchar *gstr = gtk_text_buffer_get_text(expression_buffer, &e_iter_s, &e_iter_e, FALSE);
+		string str2 = CALCULATOR->unlocalizeExpression(gstr, evalops.parse_options);
+		g_free(gstr);
 		remove_blank_ends(str2);
 		gsub("\n", " ", str2);
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_radiobutton_noslash")))) {
@@ -8038,6 +8046,20 @@ run_simple_function_edit_dialog:
 	names_edited = false;
 	editing_function = false;
 	gtk_widget_hide(dialog);
+	if(response == 1) {
+		GtkTextIter e_iter_s, e_iter_e;
+		gtk_text_buffer_get_start_iter(expression_buffer, &e_iter_s);
+		gtk_text_buffer_get_end_iter(expression_buffer, &e_iter_e);;
+		gchar *gstr = gtk_text_buffer_get_text(expression_buffer, &e_iter_s, &e_iter_e, FALSE);
+		string str2 = gstr;
+		g_free(gstr);
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_radiobutton_noslash")))) {
+			gsub("x", "\\x", str2);
+			gsub("y", "\\y", str2);
+			gsub("z", "\\z", str2);
+		}
+		edit_function(category, f, win, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_entry_name"))), str2.c_str());
+	}
 }
 
 /*
@@ -9055,8 +9077,10 @@ bool edit_dataproperty(DataProperty *dp) {
 	
 		GtkTextIter e_iter_s, e_iter_e;
 		gtk_text_buffer_get_start_iter(description_buffer, &e_iter_s);
-		gtk_text_buffer_get_end_iter(description_buffer, &e_iter_e);			
-		dp->setDescription(gtk_text_buffer_get_text(description_buffer, &e_iter_s, &e_iter_e, FALSE));
+		gtk_text_buffer_get_end_iter(description_buffer, &e_iter_e);
+		gchar *gstr = gtk_text_buffer_get_text(description_buffer, &e_iter_s, &e_iter_e, FALSE);
+		dp->setDescription(gstr);
+		g_free(gstr);
 		
 		switch(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_combobox_type")))) {
 			case 0: {
@@ -9203,16 +9227,18 @@ void edit_dataset(DataSet *ds, GtkWidget *win) {
 			goto run_dataset_edit_dialog;
 		}
 		bool add_func = false;
+		gchar *gstr_descr = gtk_text_buffer_get_text(description_buffer, &d_iter_s, &d_iter_e, FALSE);
 		if(ds) {
 			//edited an existing dataset
 			ds->setTitle(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_desc"))));
 			if(ds->isLocal()) ds->setDefaultDataFile(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_file"))));
-			ds->setDescription(gtk_text_buffer_get_text(description_buffer, &d_iter_s, &d_iter_e, FALSE));
+			ds->setDescription(gstr_descr);
 		} else {
 			//new dataset
-			ds = new DataSet(_("Data Sets"), "", gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_file"))), gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_desc"))), gtk_text_buffer_get_text(description_buffer, &d_iter_s, &d_iter_e, FALSE), true);
+			ds = new DataSet(_("Data Sets"), "", gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_file"))), gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_desc"))), gstr_descr, true);
 			add_func = true;
 		}
+		g_free(gstr_descr);
 		string str2;
 		if(ds) {
 			str2 = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_object_name")));
@@ -9230,7 +9256,9 @@ void edit_dataset(DataSet *ds, GtkWidget *win) {
 				arg->setName(str2);
 			}
 			ds->setDefaultProperty(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_default_property"))));
-			ds->setCopyright(gtk_text_buffer_get_text(copyright_buffer, &c_iter_s, &c_iter_e, FALSE));
+			gchar *gstr = gtk_text_buffer_get_text(copyright_buffer, &c_iter_s, &c_iter_e, FALSE);
+			ds->setCopyright(gstr);
+			g_free(gstr);
 			DataPropertyIter it;
 			for(size_t i = 0; i < tmp_props.size();) {
 				if(!tmp_props[i]) {

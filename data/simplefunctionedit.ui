@@ -21,6 +21,21 @@
             <property name="can_focus">False</property>
             <property name="layout_style">end</property>
             <child>
+              <object class="GtkButton" id="simple_function_edit_button_advanced">
+                <property name="label" translatable="yes">Advanced</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+                <property name="secondary">True</property>
+                <property name="non_homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkButton" id="simple_function_edit_button_cancel">
                 <property name="label" translatable="yes">_Cancel</property>
                 <property name="visible">True</property>
@@ -200,6 +215,7 @@
       </object>
     </child>
     <action-widgets>
+      <action-widget response="1">simple_function_edit_button_advanced</action-widget>
       <action-widget response="-6">simple_function_edit_button_cancel</action-widget>
       <action-widget response="-5">simple_function_edit_button_ok</action-widget>
     </action-widgets>
