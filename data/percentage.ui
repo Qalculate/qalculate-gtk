@@ -2,9 +2,6 @@
 <!-- Generated with glade 3.20.0 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
-  <object class="GtkTextBuffer" id="textbuffer1">
-    <property name="text" translatable="yes">Enter two values, of which at most one is a percentage, and the others will be calculated for you.</property>
-  </object>
   <object class="GtkDialog" id="percentage_dialog">
     <property name="can_focus">False</property>
     <property name="border_width">6</property>
@@ -375,24 +372,33 @@
               </packing>
             </child>
             <child>
-              <object class="GtkTextView" id="percentage_description">
+              <object class="GtkScrolledWindow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="editable">False</property>
-                <property name="wrap_mode">word</property>
-                <property name="left_margin">6</property>
-                <property name="right_margin">6</property>
-                <property name="buffer">textbuffer1</property>
+                <property name="hscrollbar_policy">never</property>
+                <property name="vscrollbar_policy">never</property>
+                <property name="shadow_type">in</property>
+                <child>
+                  <object class="GtkTextView" id="percentage_description">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="editable">False</property>
+                    <property name="wrap_mode">word</property>
+                    <property name="left_margin">6</property>
+                    <property name="right_margin">6</property>
+                    <property name="buffer">textbuffer1</property>
+                  </object>
+                </child>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
+            <property name="expand">True</property>
             <property name="fill">True</property>
             <property name="position">0</property>
           </packing>
@@ -402,5 +408,8 @@
     <child>
       <placeholder/>
     </child>
+  </object>
+  <object class="GtkTextBuffer" id="textbuffer1">
+    <property name="text" translatable="yes">Enter two values, of which at most one is a percentage, and the others will be calculated for you.</property>
   </object>
 </interface>
