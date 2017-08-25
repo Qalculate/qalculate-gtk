@@ -2685,8 +2685,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2710,8 +2710,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2736,8 +2736,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -2790,6 +2790,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                           <object class="GtkComboBoxText" id="combobox_approximation">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Approximation mode</property>
                             <property name="active">0</property>
                             <items>
                               <item id="&lt;Ange ID&gt;" translatable="yes">Always exact</item>
@@ -2808,6 +2809,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                           <object class="GtkComboBoxText" id="combobox_fraction_mode">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Fractional display</property>
                             <property name="active">0</property>
                             <items>
                               <item id="&lt;Ange ID&gt;" translatable="yes">Decimal rationals</item>
@@ -2827,6 +2829,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                           <object class="GtkComboBoxText" id="combobox_numerical_display">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Numerical display</property>
                             <property name="active">0</property>
                             <items>
                               <item translatable="yes">Normal</item>
@@ -2847,6 +2850,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                           <object class="GtkComboBoxText" id="combobox_base">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Number base</property>
                             <property name="active">2</property>
                             <items>
                               <item translatable="yes">Binary</item>
@@ -3228,7 +3232,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="can_focus">True</property>
                                 <property name="focus_on_click">False</property>
                                 <property name="receives_default">False</property>
-                                <property name="tooltip_text" translatable="yes">Decimal Point</property>
+                                <property name="tooltip_text" translatable="yes">Decimal point</property>
                                 <property name="use_underline">True</property>
                                 <signal name="clicked" handler="on_button_dot_clicked" swapped="no"/>
                                 <child>
@@ -3318,6 +3322,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="can_focus">True</property>
                                 <property name="focus_on_click">False</property>
                                 <property name="receives_default">False</property>
+                                <property name="tooltip_text" translatable="yes">Left parenthesis</property>
                                 <property name="use_underline">True</property>
                                 <signal name="clicked" handler="on_button_brace_open_clicked" swapped="no"/>
                                 <child>
@@ -3339,6 +3344,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="can_focus">True</property>
                                 <property name="focus_on_click">False</property>
                                 <property name="receives_default">False</property>
+                                <property name="tooltip_text" translatable="yes">Right parenthesis</property>
                                 <property name="use_underline">True</property>
                                 <signal name="clicked" handler="on_button_brace_close_clicked" swapped="no"/>
                                 <child>
@@ -3360,6 +3366,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="can_focus">True</property>
                                 <property name="focus_on_click">False</property>
                                 <property name="receives_default">False</property>
+                                <property name="tooltip_text" translatable="yes">Delete</property>
                                 <property name="use_underline">True</property>
                                 <signal name="clicked" handler="on_button_del_clicked" swapped="no"/>
                                 <child>
@@ -3381,6 +3388,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="can_focus">True</property>
                                 <property name="focus_on_click">False</property>
                                 <property name="receives_default">False</property>
+                                <property name="tooltip_text" translatable="yes">Argument separator</property>
                                 <property name="use_underline">True</property>
                                 <signal name="clicked" handler="on_button_comma_clicked" swapped="no"/>
                                 <child>
@@ -3402,6 +3410,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="can_focus">True</property>
                                 <property name="focus_on_click">False</property>
                                 <property name="receives_default">False</property>
+                                <property name="tooltip_text" translatable="yes">Smart parentheses</property>
                                 <property name="use_underline">True</property>
                                 <signal name="clicked" handler="on_button_brace_wrap_clicked" swapped="no"/>
                                 <child>
@@ -4356,6 +4365,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="can_focus">True</property>
                                         <property name="focus_on_click">False</property>
                                         <property name="receives_default">False</property>
+                                        <property name="tooltip_text" translatable="yes">Imaginary unit i (√-1)</property>
                                         <property name="use_underline">True</property>
                                         <signal name="clicked" handler="on_button_i_clicked" swapped="no"/>
                                         <child>
