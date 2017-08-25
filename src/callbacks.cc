@@ -6141,6 +6141,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	b_busy_expression = true;
 
 	bool do_factors = false, do_fraction = false;
+	if(do_stack && !rpn_mode) do_stack = false;
 
 	if(str.empty()) {
 		if(do_stack) {
@@ -6176,36 +6177,36 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		if(equalsIgnoreCase(to_str, "hex") || equalsIgnoreCase(to_str, "hexadecimal") || equalsIgnoreCase(to_str, _("hexadecimal"))) {
 			int save_base = printops.base;
 			printops.base = BASE_HEXADECIMAL;
+			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
 			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			printops.base = save_base;
-			evalops.parse_options.units_enabled = b_units_saved;
 			return;
 		} else if(equalsIgnoreCase(to_str, "oct") || equalsIgnoreCase(to_str, "octal") || equalsIgnoreCase(to_str, _("octal"))) {
 			int save_base = printops.base;
 			printops.base = BASE_OCTAL;
+			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
 			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			printops.base = save_base;
-			evalops.parse_options.units_enabled = b_units_saved;
 			return;
 		} else if(equalsIgnoreCase(to_str, "bin") || equalsIgnoreCase(to_str, "binary") || equalsIgnoreCase(to_str, _("binary"))) {
 			int save_base = printops.base;
 			printops.base = BASE_BINARY;
+			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
 			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			printops.base = save_base;
-			evalops.parse_options.units_enabled = b_units_saved;
 			return;
 		} else if(equalsIgnoreCase(to_str, "bases") || equalsIgnoreCase(to_str, _("bases"))) {
 			b_busy = false;
 			b_busy_expression = false;
+			evalops.parse_options.units_enabled = b_units_saved;
 			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			convert_number_bases(from_str.c_str());
-			evalops.parse_options.units_enabled = b_units_saved;
 			return;
 		} else if(equalsIgnoreCase(to_str, "optimal") || equalsIgnoreCase(to_str, _("optimal"))) {
 			AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
@@ -10650,7 +10651,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {1, 0, 0};
+	int version_numbers[] = {2, 0, 0};
 	bool old_history_format = false;
 			
 	if(file) {
@@ -11061,9 +11062,9 @@ void load_preferences() {
 					} else if(v >= MULTIPLICATION_SIGN_ASTERISK && v <= MULTIPLICATION_SIGN_ALTDOT) {
 						printops.multiplication_sign = (MultiplicationSign) v;
 					}
-					/*if(printops.multiplication_sign == MULTIPLICATION_SIGN_DOT && version_numbers[0] < 2) {
+					if(printops.multiplication_sign == MULTIPLICATION_SIGN_DOT && version_numbers[0] < 2) {
 						printops.multiplication_sign = MULTIPLICATION_SIGN_X;
-					}*/
+					}
 				} else if(svar == "division_sign") {
 					if(v >= DIVISION_SIGN_SLASH && v <= DIVISION_SIGN_DIVISION) printops.division_sign = (DivisionSign) v;
 				} else if(svar == "recent_functions") {
@@ -16819,11 +16820,10 @@ void on_menu_item_help_activate(GtkMenuItem*, gpointer) {
 */
 void on_precision_dialog_spinbutton_precision_value_changed(GtkSpinButton *w, gpointer) {
 	CALCULATOR->setPrecision(gtk_spin_button_get_value_as_int(w));
-//	execute_expression();
 }
 void on_precision_dialog_button_recalculate_clicked(GtkButton*, gpointer) {
 	CALCULATOR->setPrecision(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(precision_builder, "precision_dialog_spinbutton_precision"))));
-	execute_expression();
+	execute_expression(true, false, OPERATION_ADD, NULL, rpn_mode);
 }
 
 

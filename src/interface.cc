@@ -821,6 +821,12 @@ void create_main_window(void) {
 	statuslabel_l = GTK_WIDGET(gtk_builder_get_object(main_builder, "label_status_left"));
 	statuslabel_r = GTK_WIDGET(gtk_builder_get_object(main_builder, "label_status_right"));
 
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
+	gtk_label_set_xalign(GTK_LABEL(statuslabel_l), 0.0);
+#else
+	gtk_misc_set_alignment(GTK_MISC(statuslabel_l), 0.0, 0.5);
+#endif 
+
 	expression_provider = gtk_css_provider_new();
 	resultview_provider = gtk_css_provider_new();
 	statuslabel_l_provider = gtk_css_provider_new();
