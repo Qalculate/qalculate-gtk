@@ -10987,7 +10987,8 @@ void load_preferences() {
 					}
 				} else if(svar == "default_assumption_type") {
 					if(v >= ASSUMPTION_TYPE_NONE && v <= ASSUMPTION_TYPE_INTEGER) {
-						if(v < ASSUMPTION_TYPE_NUMBER && version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] <= 12))) v = ASSUMPTION_TYPE_NUMBER;
+						if(v < ASSUMPTION_TYPE_NUMBER && version_numbers[0] < 1) v = ASSUMPTION_TYPE_NUMBER;
+						if(v == ASSUMPTION_TYPE_COMPLEX && version_numbers[0] < 2) v = ASSUMPTION_TYPE_NUMBER;
 						if(mode_index == 1) CALCULATOR->defaultAssumptions()->setType((AssumptionType) v);
 						else modes[mode_index].at = (AssumptionType) v;
 					}
