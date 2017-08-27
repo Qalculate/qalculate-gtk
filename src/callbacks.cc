@@ -12701,6 +12701,15 @@ void completion_resize_popup(int matches) {
 	items_y = rect.y;
 	height_diff -= rect.height;
 	if(height_diff < 2) height_diff = 2;
+
+	display = gtk_widget_get_display(GTK_WIDGET(expressiontext));
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+	monitor = gdk_display_get_monitor_at_window(display, window);
+	gdk_monitor_get_workarea(monitor, &area);
+#else
+	GdkScreen *screen = gdk_display_get_default_screen(display);
+	gdk_screen_get_monitor_workarea(screen, gdk_screen_get_monitor_at_window(screen, window), &area);
+#endif
 	
 	items = matches;
 	if(items > 20) items = 20;
@@ -12717,15 +12726,6 @@ void completion_resize_popup(int matches) {
 		gtk_tree_path_free(path);
 		height = rect.y + rect.height - items_y + height_diff;
 	}
-
-	display = gtk_widget_get_display(GTK_WIDGET(expressiontext));
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-	monitor = gdk_display_get_monitor_at_window(display, window);
-	gdk_monitor_get_workarea(monitor, &area);
-#else
-	GdkScreen *screen = gdk_display_get_default_screen(display);
-	gdk_screen_get_monitor_workarea(screen, gdk_screen_get_monitor_at_window(screen, window), &area);
-#endif
 
 	gtk_scrolled_window_set_min_content_height(GTK_SCROLLED_WINDOW(completion_scrolled), height);
 
@@ -14527,8 +14527,11 @@ void on_menu_item_no_special_implicit_multiplication_activate(GtkMenuItem *w, gp
 }
 
 void on_menu_item_fetch_exchange_rates_activate(GtkMenuItem*, gpointer) {
+	do_timeout = false;
 	fetch_exchange_rates(15);
 	CALCULATOR->loadExchangeRates();
+	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
+	do_timeout = true;
 	expression_calculation_updated();
 }
 void on_menu_item_save_defs_activate(GtkMenuItem*, gpointer) {
