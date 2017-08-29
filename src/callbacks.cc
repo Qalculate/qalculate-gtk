@@ -83,6 +83,7 @@ extern GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l
 
 extern GtkWidget *expressiontext, *statuslabel_l, *statuslabel_r;
 extern GtkTextBuffer *expressionbuffer;
+extern GtkTextTag *expression_par_tag;
 extern GtkWidget *f_menu, *v_menu, *u_menu, *u_menu2, *recent_menu;
 extern KnownVariable *vans[5];
 extern GtkWidget *tPlotFunctions;
@@ -1297,6 +1298,68 @@ void display_parse_status() {
 }
 
 
+void highlight_parentheses() {
+	GtkTextMark *mcur = gtk_text_buffer_get_insert(expressionbuffer);
+	if(!mcur) return;
+	GtkTextIter icur, istart, iend;
+	gtk_text_buffer_get_iter_at_mark(expressionbuffer, &icur, mcur);
+	gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
+	gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
+	gtk_text_buffer_remove_tag(expressionbuffer, expression_par_tag, &istart, &iend);
+	bool b = false;
+	b = (gtk_text_iter_get_char(&icur) == ')');
+	if(!b && gtk_text_iter_backward_char(&icur)) {
+		b = (gtk_text_iter_get_char(&icur) == ')');
+		if(!b) gtk_text_iter_forward_char(&icur);
+	}
+	if(b) {
+		GtkTextIter ipar2 = icur;
+		int pars = 1;
+		while(gtk_text_iter_backward_char(&ipar2)) {
+			if(gtk_text_iter_get_char(&ipar2) == ')') {
+				pars++;
+			} else if(gtk_text_iter_get_char(&ipar2) == '(') {
+				pars--;
+				if(pars == 0) break;
+			}
+		}
+		if(pars == 0) {
+			GtkTextIter inext = icur;
+			gtk_text_iter_forward_char(&inext);
+			gtk_text_buffer_apply_tag(expressionbuffer, expression_par_tag, &icur, &inext);
+			inext = ipar2;
+			gtk_text_iter_forward_char(&inext);
+			gtk_text_buffer_apply_tag(expressionbuffer, expression_par_tag, &ipar2, &inext);
+		}
+	} else {
+		b = (gtk_text_iter_get_char(&icur) == '(');
+		if(!b && gtk_text_iter_backward_char(&icur)) {
+			b = (gtk_text_iter_get_char(&icur) == '(');
+			if(!b) gtk_text_iter_forward_char(&icur);
+		}
+		if(b) {
+			GtkTextIter ipar2 = icur;
+			int pars = 1;
+			while(gtk_text_iter_forward_char(&ipar2)) {
+				if(gtk_text_iter_get_char(&ipar2) == '(') {
+					pars++;
+				} else if(gtk_text_iter_get_char(&ipar2) == ')') {
+					pars--;
+					if(pars == 0) break;
+				}
+			}
+			if(pars == 0) {
+				GtkTextIter inext = icur;
+				gtk_text_iter_forward_char(&inext);
+				gtk_text_buffer_apply_tag(expressionbuffer, expression_par_tag, &icur, &inext);
+				inext = ipar2;
+				gtk_text_iter_forward_char(&inext);
+				gtk_text_buffer_apply_tag(expressionbuffer, expression_par_tag, &ipar2, &inext);
+			}
+		}
+	}
+}
+
 void on_expressionbuffer_cursor_position_notify() {
 	if(expression_has_changed_pos) {
 		expression_has_changed_pos = false;
@@ -1304,6 +1367,7 @@ void on_expressionbuffer_cursor_position_notify() {
 	}
 	gtk_widget_hide(completion_window);
 	if(!check_expression_position) return;
+	highlight_parentheses();
 	display_parse_status();
 }
 
@@ -12842,6 +12906,7 @@ void on_expressionbuffer_changed(GtkTextBuffer*, gpointer) {
 	expression_has_changed2 = true;
 	current_object_has_changed = true;
 	expression_has_changed_pos = true;
+	highlight_parentheses();
 	display_parse_status();
 	if(!completion_blocked) {
 		do_completion();

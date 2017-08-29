@@ -91,6 +91,7 @@ GtkTreeSelection *selection;
 
 GtkWidget *expressiontext;
 GtkTextBuffer *expressionbuffer;
+GtkTextTag *expression_par_tag;
 extern GtkTextIter current_object_start, current_object_end;
 GtkWidget *resultview;
 GtkWidget *historyview;
@@ -912,6 +913,17 @@ void create_main_window(void) {
 		g_snprintf(wcs, 8, "#%02x%02x%02x", (int) (c_warn.red * 255), (int) (c_warn.green * 255), (int) (c_warn.blue * 255));
 		status_warning_color = wcs;
 	}
+	
+	gtk_style_context_get_color(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, &c);
+	if(c.green >= 0.8) {
+		c.red /= 1.5;
+		c.blue /= 1.5;
+		c.green = 1.0;
+	} else {
+		if(c.green >= 0.5) c.green = 1.0;
+		else c.green += 0.5;
+	}
+	expression_par_tag = gtk_text_buffer_create_tag(expressionbuffer, "curpar", "foreground-rgba", &c, "weight", PANGO_WEIGHT_BOLD, NULL);
 	
 	gtk_widget_grab_focus(expressiontext);
 	gtk_widget_set_can_default(expressiontext, TRUE);
