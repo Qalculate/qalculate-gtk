@@ -287,33 +287,49 @@ string old_fromValue, old_toValue;
 #define CALCULATE_SPACE_W		gint space_w, space_h; PangoLayout *layout_space = gtk_widget_create_pango_layout(resultview, NULL); PANGO_TTP(layout_space, " "); pango_layout_get_pixel_size(layout_space, &space_w, &space_h); g_object_unref(layout_space);
 
 AnswerFunction::AnswerFunction() : MathFunction("answer", 1, 1, _("Utilities"), _("History Answer Value")) {
-	setArgumentDefinition(1, new IntegerArgument(_("History Index"), ARGUMENT_MIN_MAX_NONZERO, true, true, INTEGER_TYPE_SINT));
+	VectorArgument *arg = new VectorArgument(_("History Index(es)"));
+	arg->addArgument(new IntegerArgument("", ARGUMENT_MIN_MAX_NONZERO, true, true, INTEGER_TYPE_SINT));
+	setArgumentDefinition(1, arg);
 	setHidden(true);
 }
 int AnswerFunction::calculate(MathStructure &mstruct, const MathStructure &vargs, const EvaluationOptions&) {
-	int index = vargs[0].number().intValue();
-	if(index < 0) index = (int) history_answer.size() + 1 + index;
-	if(index <= 0 || index > (int) history_answer.size() || history_answer[(size_t) index - 1] == NULL) {
-		CALCULATOR->error(true, _("History index %s does not exist."), vargs[0].print().c_str(), NULL);
-		mstruct.setUndefined();
-		return 1;
+	if(vargs[0].size() == 0) return 0;
+	if(vargs[0].size() > 1) mstruct.clearVector();
+	for(size_t i = 0; i < vargs[0].size(); i++) {
+		int index = vargs[0][i].number().intValue();
+		if(index < 0) index = (int) history_answer.size() + 1 + index;
+		if(index <= 0 || index > (int) history_answer.size() || history_answer[(size_t) index - 1] == NULL) {
+			CALCULATOR->error(true, _("History index %s does not exist."), vargs[0][i].print().c_str(), NULL);
+			if(vargs[0].size() == 1) mstruct.setUndefined();
+			else mstruct.addChild(m_undefined);
+		} else {
+			if(vargs[0].size() == 1) mstruct.set(*history_answer[(size_t) index - 1]);
+			else mstruct.addChild(*history_answer[(size_t) index - 1]);
+		}
 	}
-	mstruct.set(*history_answer[(size_t) index - 1]);
 	return 1;
 }
 ExpressionFunction::ExpressionFunction() : MathFunction("expression", 1, 1, _("Utilities"), _("History Parsed Expression")) {
-	setArgumentDefinition(1, new IntegerArgument(_("History Index"), ARGUMENT_MIN_MAX_NONZERO, true, true, INTEGER_TYPE_SINT));
+	VectorArgument *arg = new VectorArgument(_("History Index(es)"));
+	arg->addArgument(new IntegerArgument("", ARGUMENT_MIN_MAX_NONZERO, true, true, INTEGER_TYPE_SINT));
+	setArgumentDefinition(1, arg);
 	setHidden(true);
 }
 int ExpressionFunction::calculate(MathStructure &mstruct, const MathStructure &vargs, const EvaluationOptions&) {
-	int index = vargs[0].number().intValue();
-	if(index < 0) index = (int) history_parsed.size() + 1 + index;
-	if(index <= 0 || index > (int) history_parsed.size() || history_parsed[(size_t) index - 1] == NULL) {
-		CALCULATOR->error(true, _("History index %s does not exist."), vargs[0].print().c_str(), NULL);
-		mstruct.setUndefined();
-		return 1;
+	if(vargs[0].size() == 0) return 0;
+	if(vargs[0].size() > 1) mstruct.clearVector();
+	for(size_t i = 0; i < vargs[0].size(); i++) {
+		int index = vargs[0][i].number().intValue();
+		if(index < 0) index = (int) history_parsed.size() + 1 + index;
+		if(index <= 0 || index > (int) history_parsed.size() || history_parsed[(size_t) index - 1] == NULL) {
+			CALCULATOR->error(true, _("History index %s does not exist."), vargs[0][i].print().c_str(), NULL);
+			if(vargs[0].size() == 1) mstruct.setUndefined();
+			else mstruct.addChild(m_undefined);
+		} else {
+			if(vargs[0].size() == 1) mstruct.set(*history_parsed[(size_t) index - 1]);
+			else mstruct.addChild(*history_parsed[(size_t) index - 1]);
+		}
 	}
-	mstruct.set(*history_parsed[(size_t) index - 1]);
 	return 1;
 }
 
@@ -13351,18 +13367,23 @@ void on_button_history_insert_value_clicked(GtkButton*, gpointer) {
 	process_history_selection(NULL, &selected_indeces, &selected_index_type);
 	if(selected_indeces.empty() || selected_index_type[0] == INDEX_TYPE_TXT) return;
 	const ExpressionName *ename = NULL;
-	if(selected_index_type[0] == INDEX_TYPE_XPR) ename = &f_expression->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+	if(selected_indeces.size() == 1 && selected_index_type[0] == INDEX_TYPE_XPR) ename = &f_expression->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
 	else ename = &f_answer->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
 	string str = ename->name;
 	str += "(";
-	if(evalops.parse_options.base != BASE_DECIMAL) {
-		Number nr(selected_indeces[0], 1);
-		PrintOptions po;
-		po.base = evalops.parse_options.base;
-		po.base_display = BASE_DISPLAY_NONE;
-		str += nr.print(po);
-	} else {
-		str += i2s(selected_indeces[0]);
+	for(size_t i = 0; i < selected_indeces.size(); i++) {
+		if(selected_index_type[i] != INDEX_TYPE_TXT) {
+			if(i > 0) {str += CALCULATOR->getComma(); str += ' ';}
+			if(evalops.parse_options.base != BASE_DECIMAL) {
+				Number nr(selected_indeces[i], 1);
+				PrintOptions po;
+				po.base = evalops.parse_options.base;
+				po.base_display = BASE_DISPLAY_NONE;
+				str += nr.print(po);
+			} else {
+				str += i2s(selected_indeces[i]);
+			}
+		}
 	}
 	str += ")";
 	insert_text(str.c_str());
@@ -13496,7 +13517,7 @@ void update_historyview_popup() {
 	vector<size_t> selected_indeces;
 	vector<int> selected_index_type;
 	process_history_selection(&selected_rows, &selected_indeces, &selected_index_type);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_value")), selected_indeces.size() == 1 && selected_index_type[0] != INDEX_TYPE_TXT);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_value")), selected_indeces.size() > 0 && selected_index_type[0] != INDEX_TYPE_TXT);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_text")), selected_indeces.size() == 1);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_text")), selected_indeces.size() == 1);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_full_text")), !selected_rows.empty());
@@ -13540,7 +13561,7 @@ void on_historyview_selection_changed(GtkTreeSelection*, gpointer) {
 	vector<size_t> selected_indeces;
 	vector<int> selected_index_type;
 	process_history_selection(&selected_rows, &selected_indeces, &selected_index_type);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_insert_value")), selected_indeces.size() == 1 && selected_index_type[0] != INDEX_TYPE_TXT);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_insert_value")), selected_indeces.size() > 0 && selected_index_type[0] != INDEX_TYPE_TXT);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_insert_text")), selected_indeces.size() == 1);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_copy")), !selected_rows.empty());
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_sqrt")), selected_indeces.size() <= 1);
