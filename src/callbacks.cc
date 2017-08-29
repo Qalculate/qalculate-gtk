@@ -216,7 +216,7 @@ bool stop_timeouts = false;
 PrintOptions printops, parse_printops;
 EvaluationOptions evalops;
 
-bool rpn_mode, rpn_keypad_only;
+bool rpn_mode, rpn_keys;
 
 extern Thread *view_thread, *command_thread;
 bool exit_in_progress = false, command_aborted = false, display_aborted = false, result_too_long = false;
@@ -248,8 +248,6 @@ extern MathFunction *f_answer;
 extern MathFunction *f_expression;
 
 unordered_map<string, GtkTreeIter> convert_category_map;
-
-extern bool rpn_off_accelerator_set;
 
 extern gchar history_error_color[8];
 extern gchar history_warning_color[8];
@@ -10099,8 +10097,7 @@ void on_popup_menu_item_rpn_syntax_activate(GtkMenuItem *w, gpointer) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_syntax")), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
 }
 void on_popup_menu_item_rpn_mode_activate(GtkMenuItem *w, gpointer) {
-	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_on")), true);
-	else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_off")), true);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_mode")), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
 }
 void expression_set_from_undo_buffer() {
 	if(undo_index < expression_undo_buffer.size()) {
@@ -10248,8 +10245,8 @@ void on_expressiontext_populate_popup(GtkTextView*, GtkMenu *menu, gpointer) {
 	MENU_SEPARATOR
 	POPUP_CHECK_MENU_ITEM(on_popup_menu_item_limit_implicit_multiplication_activate, gtk_builder_get_object(main_builder, "menu_item_limit_implicit_multiplication"))
 	POPUP_CHECK_MENU_ITEM(on_popup_menu_item_read_precision_activate, gtk_builder_get_object(main_builder, "menu_item_read_precision"))
-	//POPUP_CHECK_MENU_ITEM(on_popup_menu_item_rpn_syntax_activate, gtk_builder_get_object(main_builder, "menu_item_rpn_syntax"))
-	POPUP_CHECK_MENU_ITEM_WITH_LABEL(on_popup_menu_item_rpn_mode_activate, gtk_builder_get_object(main_builder, "menu_item_rpn_on"), _("RPN Mode"))
+	POPUP_CHECK_MENU_ITEM(on_popup_menu_item_rpn_syntax_activate, gtk_builder_get_object(main_builder, "menu_item_rpn_syntax"))
+	POPUP_CHECK_MENU_ITEM(on_popup_menu_item_rpn_mode_activate, gtk_builder_get_object(main_builder, "menu_item_rpn_mode"))
 	MENU_SEPARATOR
 	sub2 = sub;
 	SUBMENU_ITEM(_("Meta Modes"), sub2)
@@ -10654,7 +10651,7 @@ void load_preferences() {
 	evalops.mixed_units_conversion = MIXED_UNITS_CONVERSION_DEFAULT;
 	
 	rpn_mode = false;
-	rpn_keypad_only = true;
+	rpn_keys = true;
 	
 	save_mode_as(_("Preset"));
 	save_mode_as(_("Default"));
@@ -11044,8 +11041,8 @@ void load_preferences() {
 				} else if(svar == "in_rpn_mode") {
 					if(mode_index == 1) rpn_mode = v;
 					else modes[mode_index].rpn_mode = v;
-				} else if(svar == "rpn_keypad_only") {
-					rpn_keypad_only = v;
+				} else if(svar == "rpn_keys") {
+					rpn_keys = v;
 				} else if(svar == "rpn_syntax") {
 					if(mode_index == 1) evalops.parse_options.rpn = v;
 					else modes[mode_index].eo.parse_options.rpn = v;
@@ -11399,7 +11396,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "show_convert=%i\n", (rpn_mode && show_convert && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)));
 	fprintf(file, "continuous_conversion=%i\n", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion"))));
 	fprintf(file, "set_missing_prefixes=%i\n", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))));
-	fprintf(file, "rpn_keypad_only=%i\n", rpn_keypad_only);
+	fprintf(file, "rpn_keys=%i\n", rpn_keys);
 	fprintf(file, "display_expression_status=%i\n", display_expression_status);
 	fprintf(file, "enable_completion=%i\n", enable_completion);
 	fprintf(file, "use_unicode_signs=%i\n", printops.use_unicode_signs);
@@ -11935,8 +11932,8 @@ void on_preferences_checkbutton_allow_multiple_instances_toggled(GtkToggleButton
 	allow_multiple_instances = gtk_toggle_button_get_active(w);
 	save_preferences(false);
 }
-void on_preferences_checkbutton_rpn_keypad_only_toggled(GtkToggleButton *w, gpointer) {
-	rpn_keypad_only = gtk_toggle_button_get_active(w);
+void on_preferences_checkbutton_rpn_keys_toggled(GtkToggleButton *w, gpointer) {
+	rpn_keys = gtk_toggle_button_get_active(w);
 }
 void on_preferences_checkbutton_dot_as_separator_toggled(GtkToggleButton *w, gpointer) {
 	evalops.parse_options.dot_as_separator = gtk_toggle_button_get_active(w);
@@ -14555,40 +14552,12 @@ void on_menu_item_new_unit_activate(GtkMenuItem*, gpointer) {
 	edit_unit("", NULL, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 }
 
-void on_menu_item_rpn_stack_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	set_rpn_mode(true);
-	evalops.parse_options.rpn = false;
-	expression_format_updated(false);
+void on_menu_item_rpn_mode_activate(GtkMenuItem *w, gpointer) {
+	set_rpn_mode(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
 }
 void on_menu_item_rpn_syntax_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	set_rpn_mode(false);
-	evalops.parse_options.rpn = true;
+	evalops.parse_options.rpn = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
 	expression_format_updated(false);
-}
-void on_menu_item_rpn_on_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	set_rpn_mode(true);
-	evalops.parse_options.rpn = true;
-	expression_format_updated(false);
-	if(!rpn_off_accelerator_set) {
-		gtk_widget_remove_accelerator(GTK_WIDGET(w), accel_group, GDK_KEY_R, GDK_CONTROL_MASK);
-		gtk_widget_add_accelerator(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_rpn_off")), "activate", accel_group, GDK_KEY_R, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-		rpn_off_accelerator_set = true;
-	}
-}
-void on_menu_item_rpn_off_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	set_rpn_mode(false);
-	evalops.parse_options.rpn = false;
-	expression_format_updated(false);
-	if(rpn_off_accelerator_set) {
-		gtk_widget_remove_accelerator(GTK_WIDGET(w), accel_group, GDK_KEY_R, GDK_CONTROL_MASK);
-		gtk_widget_add_accelerator(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_rpn_on")), "activate", accel_group, GDK_KEY_R, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-		rpn_off_accelerator_set = false;
-	}
-
 }
 void on_menu_item_limit_implicit_multiplication_activate(GtkMenuItem *w, gpointer) {
 	evalops.parse_options.limit_implicit_multiplication = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
@@ -17008,7 +16977,7 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 		}
 		case GDK_KEY_asciicircum: {}
 		case GDK_KEY_dead_circumflex: {
-			if(rpn_mode && !rpn_keypad_only) {
+			if(rpn_mode && rpn_keys) {
 				calculateRPN(OPERATION_RAISE);
 				return TRUE;
 			}
@@ -17019,7 +16988,7 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 			return TRUE;
 		}
 		case GDK_KEY_KP_Divide: {
-			if(rpn_mode) {
+			if(rpn_mode && rpn_keys) {
 				calculateRPN(OPERATION_DIVIDE);
 				return TRUE;
 			}
@@ -17030,7 +16999,7 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 		}
 		case GDK_KEY_KP_Multiply: {
 			if(event->state & GDK_CONTROL_MASK) {
-				if(rpn_mode) {
+				if(rpn_mode && rpn_keys) {
 					calculateRPN(OPERATION_RAISE);
 					return TRUE;
 				}
@@ -17050,7 +17019,7 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 			break;
 		}
 		case GDK_KEY_KP_Add: {
-			if(rpn_mode) {
+			if(rpn_mode && rpn_keys) {
 				calculateRPN(OPERATION_ADD);
 				return TRUE;
 			}
@@ -17060,7 +17029,7 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 			break;
 		}
 		case GDK_KEY_KP_Subtract: {
-			if(rpn_mode) {
+			if(rpn_mode && rpn_keys) {
 				calculateRPN(OPERATION_SUBTRACT);
 				return TRUE;
 			}
@@ -17071,7 +17040,7 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 		}
 		case GDK_KEY_asterisk: {
 			if(event->state & GDK_CONTROL_MASK) {
-				if(rpn_mode && !rpn_keypad_only) {
+				if(rpn_mode && rpn_keys) {
 					calculateRPN(OPERATION_RAISE);
 					return TRUE;
 				}
@@ -17081,25 +17050,25 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 				overwrite_expression_selection("^");
 				return TRUE;
 			}
-			if(rpn_mode && !rpn_keypad_only) {
+			if(rpn_mode && rpn_keys) {
 				calculateRPN(OPERATION_MULTIPLY);
 				return TRUE;
 			}
 		}
 		case GDK_KEY_slash: {
-			if(rpn_mode && !rpn_keypad_only) {
+			if(rpn_mode && rpn_keys) {
 				calculateRPN(OPERATION_DIVIDE);
 				return TRUE;
 			}
 		}
 		case GDK_KEY_plus: {
-			if(rpn_mode && !rpn_keypad_only) {
+			if(rpn_mode && rpn_keys) {
 				calculateRPN(OPERATION_ADD);
 				return TRUE;
 			}
 		}
 		case GDK_KEY_minus: {
-			if(rpn_mode && !rpn_keypad_only) {
+			if(rpn_mode && rpn_keys) {
 				calculateRPN(OPERATION_SUBTRACT);
 				return TRUE;
 			}
@@ -17110,7 +17079,7 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 		}
 		case GDK_KEY_E: {
 			if(event->state & GDK_CONTROL_MASK) {
-				if(rpn_mode) {
+				if(rpn_mode && rpn_keys) {
 					calculateRPN(OPERATION_EXP10);
 					return TRUE;
 				}

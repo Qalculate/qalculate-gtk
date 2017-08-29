@@ -251,7 +251,7 @@ void on_preferences_checkbutton_enable_completion_toggled(GtkToggleButton *w, gp
 void on_preferences_checkbutton_fetch_exchange_rates_toggled(GtkToggleButton *w, gpointer user_data);
 void on_preferences_checkbutton_save_defs_toggled(GtkToggleButton *w, gpointer user_data);
 void on_preferences_checkbutton_save_mode_toggled(GtkToggleButton *w, gpointer user_data);
-void on_preferences_checkbutton_rpn_keypad_only_toggled(GtkToggleButton *w, gpointer);
+void on_preferences_checkbutton_rpn_keys_only_toggled(GtkToggleButton *w, gpointer);
 void on_preferences_checkbutton_dot_as_separator_toggled(GtkToggleButton *w, gpointer);
 void on_preferences_checkbutton_load_defs_toggled(GtkToggleButton *w, gpointer user_data);
 void on_preferences_checkbutton_custom_result_font_toggled(GtkToggleButton *w, gpointer user_data);

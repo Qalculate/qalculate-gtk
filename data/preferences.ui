@@ -148,16 +148,16 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="preferences_checkbutton_rpn_keypad_only">
-                    <property name="label" translatable="yes">Use only keypad keys for RPN</property>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_rpn_keys">
+                    <property name="label" translatable="yes">Use keyboard keys for RPN</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">Use only keypad keys for RPN operations (+-*/^) and use the rest of the keyboard for expression entry</property>
+                    <property name="tooltip_text" translatable="yes">Use keyboard operator keys for RPN operations (+-*/^).</property>
                     <property name="use_underline">True</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
-                    <signal name="toggled" handler="on_preferences_checkbutton_rpn_keypad_only_toggled" swapped="no"/>
+                    <signal name="toggled" handler="on_preferences_checkbutton_rpn_keys_toggled" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
