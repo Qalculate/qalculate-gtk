@@ -621,11 +621,11 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			</row>
 			<row valign="top">
 				<entry><para>Parsing Mode</para></entry>
-				<entry><para>Submenu with options to control how expressions are parsed (read/interpreted). There are three different modes to choose from. In addition the <quote>read precision</quote> option enables/disables interpretation of input numbers with decimals as approximate with a precision equal to the number of digits (after preceding zeroes), and <quote>limit implicit multiplication</quote> limits the use of implicit multiplication when parsing and displaying expressions. For more information see <xref linkend="qalculate-implicit-multiplication"/>.</para></entry>
+				<entry><para>Submenu with options to control how expressions are parsed (read/interpreted). There are three different modes to choose from. In addition the <quote>read precision</quote> option enables/disables interpretation of input numbers with decimals as approximate with a precision equal to the number of digits (after preceding zeroes), and <quote>limit implicit multiplication</quote> limits the use of implicit multiplication when parsing and displaying expressions. For more information see <xref linkend="qalculate-implicit-multiplication"/>. In this menu you also find the option to switch to RPN syntax for expression parsing.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>RPN Mode (<keycombo><keycap>Ctrl</keycap><keycap>R</keycap></keycombo>)</para></entry>
-				<entry><para>Submenu with options to activate or deactivate the Reverse Polish Notation stack and RPN syntax. For details see <xref linkend="qalculate-rpn"/></para></entry>
+				<entry><para>(De)activates the Reverse Polish Notation stack (not RPN syntax). For details see <xref linkend="qalculate-rpn"/></para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Precision</para></entry>
@@ -1246,7 +1246,7 @@ Putting <quote> to </quote> followed by an expression at the end of the mathemat
 <sect1 id="qalculate-rpn">
 <title>The RPN Mode</title>
 <para>
-The Reverse Polish Notation mode can be activated from <menuchoice><guimenu>Mode</guimenu><guimenuitem>RPN Mode</guimenuitem></menuchoice>, <keycombo><keycap>Ctrl</keycap><keycap>R</keycap></keycombo> (will also enable RPN syntax) or from the context menu of the expression entry. For details about what Reverse Polish Notation is and how it generally works, see for example the <ulink url="http://en.wikipedia.org/wiki/Reverse_Polish_notation">RPN article at Wikipedia</ulink>.
+The Reverse Polish Notation mode can be activated from <menuchoice><guimenu>Mode</guimenu><guimenuitem>RPN Mode</guimenuitem></menuchoice>, <keycombo><keycap>Ctrl</keycap><keycap>R</keycap></keycombo> or from the context menu of the expression entry. For details about what Reverse Polish Notation is and how it generally works, see for example the <ulink url="http://en.wikipedia.org/wiki/Reverse_Polish_notation">RPN article at Wikipedia</ulink>.
 </para>
 <para>
 Central to the RPN mode is the stack, a list of registers/values that is operated on by functions and operators. The stack has a variable number of registers which can hold an unlimited number of values. The stack size is dynamically changed when a new value is added and the first value on the stack is shown in the result display. Mathematical operators such as plus and minus then operates on the first two, last added, values on the stack. The second value is changed with input from the first value. For example, the minus operator subtracts the first value from the second.
@@ -1258,12 +1258,8 @@ For example, <command>5 ENTER 3 + 2 /</command> adds 5 to the stack, then adds 3
 Functions operate on the top values of the stack. Functions which require multiply arguments, fill the arguments in reversed order from the top (e.g. <command>5 ENTER 2 ENTER rem</command> equals <quote>rem(5, 2)</quote>). Functions with a vector argument uses all stack regsters (unless the top value is a vector). This is quite useful for statistical functions (e.g. <command>5 ENTER 2 ENTER 3 ENTER 4 ENTER harmmean</command> calculates the harmonic mean of 5, 2, 3, and 4 and leaves the result, 3.1169, as the only value on the stack).
 </para>
 <para>
-When the RPN stack is enabled, full expressions can still be entered (you can add e.g. <quote>5x+3+23+sin(2)</quote> directly to the stack). The buttons on the keypad do not insert operators and functions in the expression entry, but instead applies them to the stack. This is also true for the keypad keys on the keyboard. <keycap>Enter</keycap> calculates the current expressions and adds it to the stack (calculated mathematical expressions are automatically added to the stack when the RPN stack is enabled). If the expression entry is not empty when applying an operator or function to the stack, the expression is first calculated and added to the stack. All keys on the main part of the keyboard add the corresponding characters in the expression entry, unless the <guilabel>Use only keypad keys for RPN</guilabel> option is deactivated from the preferences dialog. To apply the raise operator '^' to the stack, without clicking the keypad button with the mouse, use the <keycombo><keycap>Ctrl</keycap><keycap>* (keypad)</keycap></keycombo> shortcut. If the expression only contains an operator or a single function without arguments, the operator/function is applied to the stack.
+When the RPN stack is enabled, full expressions can still be entered (you can add e.g. <quote>5x+3+23+sin(2)</quote> directly to the stack). The buttons on the keypad do not insert operators and functions in the expression entry, but instead applies them to the stack. This is also true for the keys on the keyboard, unless deactivated in the preferences (<menuchoice><guimenu>Edit</guimenu><guimenuitem>Preferences</guimenuitem></menuchoice>). <keycap>Enter</keycap> calculates the current expressions and adds it to the stack (calculated mathematical expressions are automatically added to the stack when the RPN stack is enabled). If the expression entry is not empty when applying an operator or function to the stack, the expression is first calculated and added to the stack. All keys on the main part of the keyboard add the corresponding characters in the expression entry, unless the <guilabel>Use only keypad keys for RPN</guilabel> option is deactivated from the preferences dialog. To apply the raise operator '^' to the stack, without clicking the keypad button with the mouse, use the <keycombo><keycap>Ctrl</keycap><keycap>* (keypad)</keycap></keycombo> shortcut. If the expression only contains an operator or a single function without arguments, the operator/function is applied to the stack.
 </para>
-<para>
-Reverse Polish Notation can also be used directly in expression. This can be activated or deactivated separately from the RPN stack (both RPN syntax and the stack are activated when using the keyboard shortcut). When using RPN syntax, a temporary stack, separate from the previously mentioned stack, is created from the contents of each mathematical expression entered. To calculate <quote>(5+3)/2</quote>, as in the example above, with RPN syntax you should enter the expression <quote>5 3 + 2 /</quote>. Instead of actually pressing enter on the keyboard, each separate value on the stack is separated by a blank space. The RPN syntax only supports functions that require exactly one argument.
-</para>
-
 <figure id="qalculate-FIG-rpn-mode">
 	<title>RPN Mode</title>
 	<screenshot>
@@ -1275,10 +1271,10 @@ Reverse Polish Notation can also be used directly in expression. This can be act
 	</screenshot>
 </figure>
 <para>
-The RPN mode adds a third page to the main window, for display and manipulation of the values on the stack. This shows a list of values on the stack, with the last added value on the top. On the right are buttons for manipulation of the stack. The buttons move the selected value up or down, move it to the top, edit it, or removes it, in order. If no stack row is selected, the up and down buttons rotates the stack, the swap button swaps the places of the first and second value and the copy and delete buttons acts on the the top value of the stack. The last button removes all values from the stack. On the left are buttons for applying mathematical operations to the stack. These works the same as buttons on the separate keypad.
+The RPN mode adds a third page to the main window, for display and manipulation of the values on the stack. This shows a list of values on the stack, with the last added value on the top. On the right are buttons for manipulation of the stack. The buttons move the selected value up or down, move it to the top, edit it, or removes it, in order. If no stack row is selected, the up and down buttons rotates the stack, the swap button swaps the places of the first and second value and the copy and delete buttons acts on the the top value of the stack. The last button removes all values from the stack. On the left are buttons for applying mathematical operations to the stack. These works the same as buttons on the separate keypad. Changes in the display of results only affects the first value on the stack.
 </para>
 <para>
-Changes in the display of results only affects the first value on the stack.
+Reverse Polish Notation can also be used directly in expression. This can be activated or deactivated separately from the RPN stack (<menuchoice><guimenu>Mode</guimenu><guimenuitem>Parsing Mode</guimenuitem><guimenuitem>RPN Syntax</guimenuitem></menuchoice>). When using RPN syntax, a temporary stack, separate from the previously mentioned stack, is created from the contents of each mathematical expression entered. To calculate <quote>(5+3)/2</quote>, as in the example above, with RPN syntax you should enter the expression <quote>5 3 + 2 /</quote>. Instead of actually pressing enter on the keyboard, each separate value on the stack is separated by a blank space. The RPN syntax only supports functions that require exactly one argument.
 </para>
 </sect1>
 </chapter>
@@ -1611,7 +1607,7 @@ For a complete list of available units see <xref linkend="qalculate-definitions-
 <para>
 Among units, &app; has support for currencies with up-to-date exchange rates. Currencies are normally referenced with the standard three letter code due to name clashes, but a number of currency unit can also be accessed through their regular name and symbol. U.S. dollars can, for example, be referenced both as USD and dollar/dollars, or with the $ symbol. 
 </para>
-<para>The exchange rates can to be updated manually from the <menuchoice><guimenu>File</guimenu><guimenuitem>Update Exchange Rates</guimenuitem></menuchoice>, or automatically at specific intervals (by default once every week, but it can be changed in the preferences dialog), when needed (when currencies are converted).
+<para>The exchange rates can to be updated manually from <menuchoice><guimenu>File</guimenu><guimenuitem>Update Exchange Rates</guimenuitem></menuchoice>, or automatically at specific intervals (by default once every week, but it can be changed in the preferences dialog), when needed (when currencies are converted).
 </para>
 </sect1>
 <sect1 id="qalculate-unit-conversion">

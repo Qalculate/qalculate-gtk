@@ -9689,9 +9689,9 @@ bool last_is_number(const gchar *expr) {
 /*
 	insert function when button clicked
 */
-void insertButtonFunction(MathFunction *f, bool save_to_recent = false) {
+void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool apply_to_stack = true) {
 	if(!f) return;
-	if(rpn_mode && (f->minargs() <= 1 || (int) CALCULATOR->RPNStackSize() >= f->minargs())) {
+	if(rpn_mode && apply_to_stack && (f->minargs() <= 1 || (int) CALCULATOR->RPNStackSize() >= f->minargs())) {
 		calculateRPN(f);
 		return;
 	}
@@ -9753,6 +9753,9 @@ void insert_button_function(GtkMenuItem*, gpointer user_data) {
 }
 void insert_button_function_save(GtkMenuItem*, gpointer user_data) {
 	insertButtonFunction((MathFunction*) user_data, true);
+}
+void insert_button_function_norpn(GtkMenuItem*, gpointer user_data) {
+	insertButtonFunction((MathFunction*) user_data, true, false);
 }
 
 
@@ -13223,7 +13226,7 @@ void on_button_rpn_reciprocal_clicked(GtkButton*, gpointer) {
 #define INDEX_TYPE_ANS 0
 #define INDEX_TYPE_XPR 1
 #define INDEX_TYPE_TXT 2
-void process_history_selection(vector<size_t> *selected_rows, vector<size_t> *selected_indeces, vector<int> *selected_index_type) {
+void process_history_selection(vector<size_t> *selected_rows, vector<size_t> *selected_indeces, vector<int> *selected_index_type, bool ans_priority = false) {
 	GtkTreeModel *model;
 	GtkTreeIter iter;
 	GList *selected_list, *current_selected_list;
@@ -13258,11 +13261,12 @@ void process_history_selection(vector<size_t> *selected_rows, vector<size_t> *se
 					case QALCULATE_HISTORY_PARSE_APPROXIMATE: {}
 					case QALCULATE_HISTORY_RPN_OPERATION: {
 						if(!index_found) selected_index_type->push_back(INDEX_TYPE_XPR);
-						else selected_index_type->at(i - 1) = INDEX_TYPE_XPR;
+						else if(!ans_priority) selected_index_type->at(i - 1) = INDEX_TYPE_XPR;
 						break;
 					}
 					default: {
 						if(!index_found) selected_index_type->push_back(INDEX_TYPE_ANS);
+						else if(ans_priority) selected_index_type->at(i - 1) = INDEX_TYPE_ANS;
 					}
 				}
 			}
@@ -13428,8 +13432,13 @@ void on_button_history_insert_value_clicked(GtkButton*, gpointer) {
 	vector<int> selected_index_type;
 	process_history_selection(NULL, &selected_indeces, &selected_index_type);
 	if(selected_indeces.empty() || selected_index_type[0] == INDEX_TYPE_TXT) return;
+	if(selected_indeces.size() > 1) {
+		selected_indeces.clear();
+		selected_index_type.clear();
+		process_history_selection(NULL, &selected_indeces, &selected_index_type, true);
+	}
 	const ExpressionName *ename = NULL;
-	if(selected_indeces.size() == 1 && selected_index_type[0] == INDEX_TYPE_XPR) ename = &f_expression->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+	if(selected_index_type[0] == INDEX_TYPE_XPR && (selected_indeces.size() == 1 || selected_index_type[1] == INDEX_TYPE_XPR)) ename = &f_expression->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
 	else ename = &f_answer->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
 	string str = ename->name;
 	str += "(";
@@ -13579,7 +13588,7 @@ void update_historyview_popup() {
 	vector<size_t> selected_indeces;
 	vector<int> selected_index_type;
 	process_history_selection(&selected_rows, &selected_indeces, &selected_index_type);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_value")), selected_indeces.size() > 0 && selected_index_type[0] != INDEX_TYPE_TXT);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_value")), selected_indeces.size() > 0 && selected_index_type[0] != INDEX_TYPE_TXT && selected_index_type.back() != INDEX_TYPE_TXT);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_text")), selected_indeces.size() == 1);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_text")), selected_indeces.size() == 1);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_full_text")), !selected_rows.empty());
@@ -13623,7 +13632,7 @@ void on_historyview_selection_changed(GtkTreeSelection*, gpointer) {
 	vector<size_t> selected_indeces;
 	vector<int> selected_index_type;
 	process_history_selection(&selected_rows, &selected_indeces, &selected_index_type);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_insert_value")), selected_indeces.size() > 0 && selected_index_type[0] != INDEX_TYPE_TXT);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_insert_value")), selected_indeces.size() > 0 && selected_index_type[0] != INDEX_TYPE_TXT && selected_index_type.back() != INDEX_TYPE_TXT);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_insert_text")), selected_indeces.size() == 1);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_copy")), !selected_rows.empty());
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_sqrt")), selected_indeces.size() <= 1);
