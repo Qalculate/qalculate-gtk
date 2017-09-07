@@ -521,10 +521,8 @@ void create_button_menus(void) {
 	
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_sqrt"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_sqrt);
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_sqrt"));
-	f = CALCULATOR->getActiveFunction("cbrt");
-	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
-	f = CALCULATOR->getActiveFunction("root");
-	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_cbrt->title(true).c_str(), insert_button_function, CALCULATOR->f_cbrt);
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_root->title(true).c_str(), insert_button_function, CALCULATOR->f_root);
 	f = CALCULATOR->getActiveFunction("sqrtpi");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	
