@@ -688,7 +688,9 @@ void create_button_menus(void) {
 	struct lconv *lc = localeconv();
 	if(lc) local_currency = lc->int_curr_symbol;
 	remove_blank_ends(local_currency);
-	if(!latest_button_currency && !local_currency.empty()) latest_button_currency = CALCULATOR->getActiveUnit(local_currency);
+	Unit *u_local_currency = NULL;
+	if(!local_currency.empty()) u_local_currency = CALCULATOR->getActiveUnit(local_currency);
+	if(!latest_button_currency && u_local_currency) latest_button_currency = u_local_currency;
 	if(!latest_button_currency) latest_button_currency = CALCULATOR->u_euro;
 	string unit_label_str;
 	if(latest_button_currency->subtype() == SUBTYPE_COMPOSITE_UNIT) {
@@ -705,7 +707,7 @@ void create_button_menus(void) {
 	for(size_t i = 0; i < 5; i++) {
 		Unit * u;
 		if(i == 0) u = CALCULATOR->u_euro;
-		else if(i == 1) u = CALCULATOR->getActiveUnit(local_currency);
+		else if(i == 1) u = u_local_currency;
 		else u = CALCULATOR->getActiveUnit(currency_units[i - 2]);
 		if(u && !u->isHidden()) {
 			bool b = false;
@@ -728,25 +730,40 @@ void create_button_menus(void) {
 	}
 
 	i_added = to_us.size();
+	vector<Unit*> to_us2;
 	string s_cat = CALCULATOR->u_euro->category();
 	if(!s_cat.empty()) {
 		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 			if(CALCULATOR->units[i]->category() == s_cat) {
 				Unit *u = CALCULATOR->units[i];
-				if(u->isActive() && !u->isHidden() && u->isBuiltin()) {
+				if(u->isActive() && u->isBuiltin()) {
 					bool b = false;
-					for(size_t i2 = 0; i2 < to_us.size(); i2++) {
-						if(i2 < i_added && u == to_us[i2]) {
-							b = true;
-							break;
+					if(u->isHidden() && u != u_local_currency) {
+						for(int i2 = to_us2.size() - 1; i2 >= 0; i2--) {
+							if(u->title(true) > to_us2[(size_t) i2]->title(true)) {
+								if((size_t) i2 == to_us2.size() - 1) to_us2.push_back(u);
+								else to_us2.insert(to_us2.begin() + (size_t) i2 + 1, u);
+								b = true;
+								break;
+							}
 						}
-						if(u->title(true) < to_us[i2]->title(true)) {
-							to_us.insert(to_us.begin() + i2, u);
-							b = true;
-							break;
+						if(!b) to_us2.insert(to_us2.begin(), u);
+					} else {
+						for(size_t i2 = 0; i2 < i_added; i2++) {
+							if(u == to_us[i2]) {
+								b = true;
+								break;
+							}
 						}
+						for(size_t i2 = to_us.size() - 1; !b && i2 >= i_added; i2--) {
+							if(u->title(true) > to_us[i2]->title(true)) {
+								if(i2 == to_us.size() - 1) to_us.push_back(u);
+								else to_us.insert(to_us.begin() + i2 + 1, u);
+								b = true;
+							}
+						}
+						if(!b) to_us.insert(to_us.begin() + i_added, u);
 					}
-					if(!b) to_us.push_back(u);
 				}
 			}
 		}
@@ -754,6 +771,11 @@ void create_button_menus(void) {
 			// Show further items in a submenu
 			if(i == i_added) {SUBMENU_ITEM(_("more"), sub);}
 			MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), insert_button_currency, to_us[i])
+		}
+		if(to_us2.size() > 0) SUBMENU_ITEM(_("more"), sub)
+		for(size_t i = i_added; i < to_us2.size(); i++) {
+			// Show further items in a submenu
+			MENU_ITEM_WITH_POINTER(to_us2[i]->title(true).c_str(), insert_button_currency, to_us2[i])
 		}
 	}
 

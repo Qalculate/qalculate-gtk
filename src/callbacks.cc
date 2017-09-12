@@ -3174,10 +3174,21 @@ void create_umenu() {
 			SUBMENU_ITEM_PREPEND(titem->item.c_str(), sub3)
 			menus.push(sub);
 			sub3 = sub;
+			bool is_currencies = false;
 			for(size_t i = 0; i < titem->objects.size(); i++) {
 				u = (Unit*) titem->objects[i];
+				if(!is_currencies && u == CALCULATOR->u_euro) is_currencies = true;
 				if(u->isActive() && !u->isHidden()) {
 					MENU_ITEM_WITH_POINTER(u->title(true).c_str(), insert_unit, u)
+				}
+			}
+			if(is_currencies) {
+				SUBMENU_ITEM_PREPEND(_("more"), sub3)
+				for(size_t i = 0; i < titem->objects.size(); i++) {
+					u = (Unit*) titem->objects[i];
+					if(u->isActive() && u->isHidden()) {
+						MENU_ITEM_WITH_POINTER(u->title(true).c_str(), insert_unit, u)
+					}
 				}
 			}
 		} else {
@@ -3249,10 +3260,21 @@ void create_umenu2() {
 			SUBMENU_ITEM_PREPEND(titem->item.c_str(), sub3)
 			menus.push(sub);
 			sub3 = sub;
+			bool is_currencies = false;
 			for(size_t i = 0; i < titem->objects.size(); i++) {
 				u = (Unit*) titem->objects[i];
+				if(!is_currencies && u == CALCULATOR->u_euro) is_currencies = true;
 				if(u->isActive() && !u->isHidden()) {
 					MENU_ITEM_WITH_POINTER(u->title(true).c_str(), convert_to_unit, u)
+				}
+			}
+			if(is_currencies) {
+				SUBMENU_ITEM_PREPEND(_("more"), sub3)
+				for(size_t i = 0; i < titem->objects.size(); i++) {
+					u = (Unit*) titem->objects[i];
+					if(u->isActive() && u->isHidden()) {
+						MENU_ITEM_WITH_POINTER(u->title(true).c_str(), convert_to_unit, u)
+					}
 				}
 			}
 		} else {
