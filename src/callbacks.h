@@ -100,7 +100,7 @@ void generate_variables_tree_struct();
 void generate_units_tree_struct();
 
 gboolean on_display_errors_timeout(gpointer data);
-gboolean on_check_expression_position_timeout(gpointer data);
+gboolean on_check_version_idle(gpointer data);
 
 void update_functions_tree();
 void update_variables_tree();

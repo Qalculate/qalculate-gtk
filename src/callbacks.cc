@@ -258,6 +258,9 @@ bool status_warning_color_set;
 
 string old_fromValue, old_toValue;
 
+extern QalculateDate last_version_check_date;
+string last_found_version;
+
 #define TEXT_TAGS			"<span size=\"xx-large\">"
 #define TEXT_TAGS_END			"</span>"
 #define TEXT_TAGS_SMALL			"<span size=\"large\">"
@@ -1074,6 +1077,44 @@ gboolean on_display_errors_timeout(gpointer) {
 	}
 	display_errors();
 	return true;
+}
+
+gboolean on_activate_link(GtkLabel*, gchar *uri, gpointer) {
+#ifdef _WIN32
+	ShellExecuteA(NULL, "open", uri, NULL, NULL, SW_SHOWNORMAL)
+	return TRUE;
+#else
+	cout << "A" << endl;
+	return FALSE;
+#endif
+}
+
+gboolean on_check_version_idle(gpointer) {
+	string new_version;
+#ifdef _WIN32
+	int ret = checkAvailableVersion("windows", VERSION, &new_version, 1);
+#else
+	int ret = checkAvailableVersion("qalculate-gtk", VERSION, &new_version, 1);
+#endif
+	if(ret > 0 && new_version != last_found_version) {
+		last_found_version = new_version;
+		GtkWidget *dialog = gtk_dialog_new_with_buttons(NULL, GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Close"), GTK_RESPONSE_REJECT, NULL);
+		gtk_container_set_border_width(GTK_CONTAINER(dialog), 5);
+		GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
+		gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
+		gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox);
+		GtkWidget *label = gtk_label_new(NULL);
+		gchar *gstr = g_strdup_printf(_("A new version of %s is available.\n\nYou can get version %s at %s."), "Qalculate!", new_version.c_str(), "<a href=\"http://qalculate.github.io/downloads.html\">qalculate.github.io</a>");
+		gtk_label_set_markup(GTK_LABEL(label), gstr);
+		g_free(gstr);
+		gtk_container_add(GTK_CONTAINER(hbox), label);
+		g_signal_connect(G_OBJECT(label), "activate-link", G_CALLBACK(on_activate_link), NULL);
+		gtk_widget_show_all(dialog);
+		gtk_dialog_run(GTK_DIALOG(dialog));
+		gtk_widget_destroy(dialog);
+	}
+	last_version_check_date.setToCurrentDate();
+	return FALSE;
 }
 
 void display_function_hint(MathFunction *f, int arg_index = 1) {
@@ -10832,6 +10873,10 @@ void load_preferences() {
 	expression_history.clear();
 	expression_history_index = -1;
 	
+#ifdef _WIN32
+	last_version_check_date.setToCurrentDate();
+#endif
+	
 	latest_button_unit = NULL;
 	latest_button_currency = NULL;
 
@@ -10921,6 +10966,12 @@ void load_preferences() {
 					//fetch_exchange_rates_at_startup = v;
 				} else if(svar == "auto_update_exchange_rates") {
 					auto_update_exchange_rates = v;
+#ifdef _WIN32
+				} else if(svar == "last_version_check") {
+					last_version_check_date.set(svalue);
+				} else if(svar == "last_found_version") {
+					last_found_version = svalue;
+#endif
 				} else if(svar == "show_keypad") {
 					show_keypad = v;
 				/*} else if(svar == "keypad_height") {
@@ -11512,6 +11563,10 @@ void save_preferences(bool mode) {
 	fprintf(file, "load_global_definitions=%i\n", load_global_defs);
 	//fprintf(file, "fetch_exchange_rates_at_startup=%i\n", fetch_exchange_rates_at_startup);
 	fprintf(file, "auto_update_exchange_rates=%i\n", auto_update_exchange_rates);
+#ifdef _WIN32
+	fprintf(file, "last_version_check=%s\n", last_version_check_date.toISOString().c_str());
+	if(!last_found_version.empty()) fprintf(file, "last_found_version=%s\n", last_found_version.c_str());
+#endif
 	fprintf(file, "show_keypad=%i\n", (rpn_mode && show_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad)));
 	//h = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
 	//fprintf(file, "keypad_height=%i\n", h > 10 ? h : keypad_height);
@@ -16989,9 +17044,30 @@ void on_button_convert_clicked(GtkButton*, gpointer user_data) {
 	on_menu_item_convert_to_unit_expression_activate(NULL, user_data);
 }
 
+
+gboolean on_about_activate_link(GtkAboutDialog*, gchar *uri, gpointer) {
+#ifdef _WIN32
+	ShellExecuteA(NULL, "open", uri, NULL, NULL, SW_SHOWNORMAL)
+	return TRUE;
+#else
+	return FALSE;
+#endif
+}
+
 void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
 	const gchar *authors[] = {"Hanna Knutsson", NULL};
-	gtk_show_about_dialog(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), "authors", authors, "comments", _("Powerful and easy to use calculator"), "license-type", GTK_LICENSE_GPL_2_0, "copyright", "Copyright © 2003–2007, 2008, 2016-2017 Hanna Knutsson", "program-name", "Qalculate! (GTK+)", "version", VERSION, "website", "http://qalculate.github.io/", NULL);
+	GtkWidget *dialog = gtk_about_dialog_new();
+	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(dialog), authors);
+	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), _("Powerful and easy to use calculator"));
+	gtk_about_dialog_set_license_type(GTK_ABOUT_DIALOG(dialog), GTK_LICENSE_GPL_2_0);
+	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016-2017 Hanna Knutsson");
+	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(dialog), "Qalculate! (GTK+)");
+	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dialog), VERSION);
+	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(dialog), "http://qalculate.github.io/");
+	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(mainwindow));
+	g_signal_connect(G_OBJECT(dialog), "activate-link", G_CALLBACK(on_about_activate_link), NULL);
+	gtk_dialog_run(GTK_DIALOG(dialog));
+	gtk_widget_destroy(dialog);
 }
 
 void on_menu_item_help_activate(GtkMenuItem*, gpointer) {
