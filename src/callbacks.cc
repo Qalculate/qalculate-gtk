@@ -7063,7 +7063,7 @@ void apply_function(MathFunction *f, GtkWidget* = NULL) {
 }
 
 gint on_function_int_input(GtkSpinButton *entry, gpointer new_value, gpointer) {
-	string str = get_expression_text();
+	string str = gtk_entry_get_text(GTK_ENTRY(entry));
 	remove_blank_ends(str);
 	if(str.find_first_not_of(NUMBERS) != string::npos) {
 		MathStructure value;
@@ -7181,13 +7181,13 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 			switch(arg->type()) {
 				case ARGUMENT_TYPE_INTEGER: {
 					IntegerArgument *iarg = (IntegerArgument*) arg;
-					gint min = INT_MIN, max = INT_MAX;
+					glong min = LONG_MIN, max = LONG_MAX;
 					if(iarg->min()) {
-						min = iarg->min()->intValue();
+						min = iarg->min()->lintValue();
 					}
 					if(iarg->max()) {
-						max = iarg->max()->intValue();
-					}				
+						max = iarg->max()->lintValue();
+					}
 					entry[i] = gtk_spin_button_new_with_range(min, max, 1);
 					gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(entry[i]), FALSE);
 					gtk_entry_set_alignment(GTK_ENTRY(entry[i]), 1.0);
