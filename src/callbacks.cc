@@ -17349,6 +17349,12 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 				}
 				return TRUE;
 			}
+			GtkTextIter ipos;
+			GtkTextMark *mark = gtk_text_buffer_get_insert(expressionbuffer);
+			if(mark) {
+				gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mark);
+				if(gtk_text_view_backward_display_line(GTK_TEXT_VIEW(expressiontext), &ipos)) break;
+			}
 		}
 		case GDK_KEY_KP_Page_Up: {}
 		case GDK_KEY_Page_Up: {
@@ -17382,6 +17388,12 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 					gtk_tree_path_free(path);
 				}
 				return TRUE;
+			}
+			GtkTextIter ipos;
+			GtkTextMark *mark = gtk_text_buffer_get_insert(expressionbuffer);
+			if(mark) {
+				gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mark);
+				if(gtk_text_view_forward_display_line(GTK_TEXT_VIEW(expressiontext), &ipos)) break;
 			}
 		}
 		case GDK_KEY_KP_Page_Down: {}
