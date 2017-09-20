@@ -17292,6 +17292,36 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 			}
 			break;
 		}
+		case GDK_KEY_End: {
+			GtkTextIter iend;
+			gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
+			if(event->state & GDK_SHIFT_MASK) {
+				GtkTextIter iselstart, iselend, ipos;
+				GtkTextMark *mark = gtk_text_buffer_get_insert(expressionbuffer);
+				if(mark) gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mark);
+				if(!gtk_text_buffer_get_selection_bounds(expressionbuffer, &iselstart, &iselend)) gtk_text_buffer_select_range(expressionbuffer, &ipos, &iend);
+				else if(gtk_text_iter_equal(&iselstart, &ipos)) gtk_text_buffer_select_range(expressionbuffer, &iselend, &iend);
+				else gtk_text_buffer_select_range(expressionbuffer, &iselstart, &iend);
+			} else {
+				gtk_text_buffer_place_cursor(expressionbuffer, &iend);
+			}
+			return TRUE;
+		}
+		case GDK_KEY_Home: {
+			GtkTextIter istart;
+			gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
+			if(event->state & GDK_SHIFT_MASK) {
+				GtkTextIter iselstart, iselend, ipos;
+				GtkTextMark *mark = gtk_text_buffer_get_insert(expressionbuffer);
+				if(mark) gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mark);
+				if(!gtk_text_buffer_get_selection_bounds(expressionbuffer, &iselstart, &iselend)) gtk_text_buffer_select_range(expressionbuffer, &istart, &ipos);
+				else if(gtk_text_iter_equal(&iselend, &ipos)) gtk_text_buffer_select_range(expressionbuffer, &istart, &iselstart);
+				else gtk_text_buffer_select_range(expressionbuffer, &istart, &iselend);
+			} else {
+				gtk_text_buffer_place_cursor(expressionbuffer, &istart);
+			}
+			return TRUE;
+		}
 		case GDK_KEY_Up: {
 			if(gtk_widget_get_visible(completion_window)) {
 				GtkTreeIter iter;
@@ -17320,6 +17350,7 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 				return TRUE;
 			}
 		}
+		case GDK_KEY_KP_Page_Up: {}
 		case GDK_KEY_Page_Up: {
 			if(expression_history_index + 1 < (int) expression_history.size()) {
 				expression_history_index++;
@@ -17353,6 +17384,7 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 				return TRUE;
 			}
 		}
+		case GDK_KEY_KP_Page_Down: {}
 		case GDK_KEY_Page_Down: {
 			if(expression_history_index > -1) {
 				expression_history_index--;

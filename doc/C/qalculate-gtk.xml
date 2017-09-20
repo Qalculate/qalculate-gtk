@@ -1469,7 +1469,7 @@ Includes <command>days()</command> and <command>yearfrac()</command> which retur
 <varlistentry>
 <term>Exponents &amp; Logarithms</term>
 <listitem><para>
-Standard logarithmic and exponential functions. <command>ln()</command> calculates the natural logarithm of a number, while <command>log()</command> allows a choice of base as the second argument. The <command>cbrt()</command> and <command>root()</command> functions calculates the real root for roots of odd degree and differs in this regard from the exponential operator, <quote>^</quote>, for negative values (<quote>cbrt(-8) = -(8)^(1/3) = -2</quote>, but <quote>(-8)^(1/3) = 1 + 1.73i</quote>). For even degrees the principal root is always returned.
+Standard logarithmic and exponential functions. <command>ln()</command> calculates the natural logarithm of a number, while <command>log()</command> allows a choice of base as the second argument. The <command>cbrt()</command> and <command>root()</command> functions only calculates real roots. For roots of odd degree the root functions give a different answer than the exponential operator, <quote>^</quote>, for negative values (<quote>cbrt(-8) = -(8)^(1/3) = -2</quote>, but <quote>(-8)^(1/3) = 1 + 1.73i</quote>).
 </para></listitem>
 </varlistentry>
 <varlistentry>
