@@ -2036,16 +2036,6 @@ On: 1/2*pi = 0.5 pi</property>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkRadioMenuItem" id="menu_item_algebraic_mode_hybrid">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Hybrid mode</property>
-                                <property name="use_underline">True</property>
-                                <property name="group">menu_item_algebraic_mode_simplify</property>
-                                <signal name="activate" handler="on_menu_item_algebraic_mode_hybrid_activate" swapped="no"/>
-                              </object>
-                            </child>
-                            <child>
                               <object class="GtkSeparatorMenuItem" id="separator_algebraic_mode">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
@@ -2656,8 +2646,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2681,8 +2671,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2707,8 +2697,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>

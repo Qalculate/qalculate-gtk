@@ -10753,7 +10753,7 @@ void load_preferences() {
 	default_plot_min = "0";
 	default_plot_max = "10";
 	default_plot_step = "1";
-	default_plot_sampling_rate = 100;
+	default_plot_sampling_rate = 101;
 	default_plot_rows = false;
 	default_plot_type = 0;
 	default_plot_style = PLOT_STYLE_LINES;
@@ -10801,7 +10801,7 @@ void load_preferences() {
 	
 	evalops.approximation = APPROXIMATION_TRY_EXACT;
 	evalops.sync_units = true;
-	evalops.structuring = STRUCTURING_HYBRID;
+	evalops.structuring = STRUCTURING_SIMPLIFY;
 	evalops.parse_options.unknowns_enabled = false;
 	evalops.parse_options.read_precision = DONT_READ_PRECISION;
 	evalops.parse_options.base = BASE_DECIMAL;
@@ -10899,7 +10899,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {2, 0, 0};
+	int version_numbers[] = {2, 1, 0};
 	bool old_history_format = false;
 			
 	if(file) {
@@ -11123,9 +11123,9 @@ void load_preferences() {
 					if(mode_index == 1) evalops.warn_about_denominators_assumed_nonzero = v;
 					else modes[mode_index].eo.warn_about_denominators_assumed_nonzero = v;
 				} else if(svar == "structuring") {
-					if(v >= STRUCTURING_NONE && v <= STRUCTURING_HYBRID) {
-						if((v == STRUCTURING_NONE || v == STRUCTURING_SIMPLIFY) && version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] <= 12))) {
-							v = STRUCTURING_HYBRID;
+					if(v >= STRUCTURING_NONE && v <= STRUCTURING_FACTORIZE) {
+						if((v == STRUCTURING_NONE) && version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] <= 12))) {
+							v = STRUCTURING_SIMPLIFY;
 						}
 						if(mode_index == 1) {
 							evalops.structuring = (StructuringMode) v;
@@ -14695,12 +14695,6 @@ void on_menu_item_algebraic_mode_factorize_activate(GtkMenuItem *w, gpointer) {
 	printops.allow_factorization = true;
 	expression_calculation_updated();
 }
-void on_menu_item_algebraic_mode_hybrid_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	evalops.structuring = STRUCTURING_HYBRID;
-	printops.allow_factorization = false;
-	expression_calculation_updated();
-}
 void on_menu_item_read_precision_activate(GtkMenuItem *w, gpointer) {
 	 if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) evalops.parse_options.read_precision = READ_PRECISION_WHEN_DECIMALS;
 	 else evalops.parse_options.read_precision = DONT_READ_PRECISION;
@@ -17299,9 +17293,9 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 				GtkTextIter iselstart, iselend, ipos;
 				GtkTextMark *mark = gtk_text_buffer_get_insert(expressionbuffer);
 				if(mark) gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mark);
-				if(!gtk_text_buffer_get_selection_bounds(expressionbuffer, &iselstart, &iselend)) gtk_text_buffer_select_range(expressionbuffer, &ipos, &iend);
-				else if(gtk_text_iter_equal(&iselstart, &ipos)) gtk_text_buffer_select_range(expressionbuffer, &iselend, &iend);
-				else gtk_text_buffer_select_range(expressionbuffer, &iselstart, &iend);
+				if(!gtk_text_buffer_get_selection_bounds(expressionbuffer, &iselstart, &iselend)) gtk_text_buffer_select_range(expressionbuffer, &iend, &ipos);
+				else if(gtk_text_iter_equal(&iselstart, &ipos)) gtk_text_buffer_select_range(expressionbuffer, &iend, &iselend);
+				else gtk_text_buffer_select_range(expressionbuffer, &iend, &iselstart);
 			} else {
 				gtk_text_buffer_place_cursor(expressionbuffer, &iend);
 			}
