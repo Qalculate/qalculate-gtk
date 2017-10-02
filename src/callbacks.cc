@@ -1081,10 +1081,9 @@ gboolean on_display_errors_timeout(gpointer) {
 
 gboolean on_activate_link(GtkLabel*, gchar *uri, gpointer) {
 #ifdef _WIN32
-	ShellExecuteA(NULL, "open", uri, NULL, NULL, SW_SHOWNORMAL)
+	ShellExecuteA(NULL, "open", uri, NULL, NULL, SW_SHOWNORMAL);
 	return TRUE;
 #else
-	cout << "A" << endl;
 	return FALSE;
 #endif
 }
@@ -1092,9 +1091,9 @@ gboolean on_activate_link(GtkLabel*, gchar *uri, gpointer) {
 gboolean on_check_version_idle(gpointer) {
 	string new_version;
 #ifdef _WIN32
-	int ret = checkAvailableVersion("windows", VERSION, &new_version, 1);
+	int ret = checkAvailableVersion("windows", VERSION, &new_version, 5);
 #else
-	int ret = checkAvailableVersion("qalculate-gtk", VERSION, &new_version, 1);
+	int ret = checkAvailableVersion("qalculate-gtk", VERSION, &new_version, 5);
 #endif
 	if(ret > 0 && new_version != last_found_version) {
 		last_found_version = new_version;
@@ -6104,7 +6103,7 @@ void CommandThread::run() {
 		switch(command_type) {
 			case COMMAND_FACTORIZE: {
 				if(!((MathStructure*) x)->integerFactorize()) {
-					((MathStructure*) x)->factorize(evalops, true, -1, 0);
+					((MathStructure*) x)->factorize(evalops, true, -1, 0, true, 2);
 				}
 				break;
 			}
@@ -17041,7 +17040,7 @@ void on_button_convert_clicked(GtkButton*, gpointer user_data) {
 
 gboolean on_about_activate_link(GtkAboutDialog*, gchar *uri, gpointer) {
 #ifdef _WIN32
-	ShellExecuteA(NULL, "open", uri, NULL, NULL, SW_SHOWNORMAL)
+	ShellExecuteA(NULL, "open", uri, NULL, NULL, SW_SHOWNORMAL);
 	return TRUE;
 #else
 	return FALSE;
