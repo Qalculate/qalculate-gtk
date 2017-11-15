@@ -820,7 +820,7 @@ void update_status_text() {
 	bool b = false;
 	if(CALCULATOR->usesIntervalArithmetics()) {
 		STATUS_SPACE
-		str += _("INTERVAL");
+		str += _("INTVL");
 	} else if(evalops.approximation == APPROXIMATION_EXACT) {
 		STATUS_SPACE
 		str += _("EXACT");
@@ -3869,6 +3869,8 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				value_str += it->second;
 				if(number_approx_map.find((void*) &m.number()) != number_approx_map.end()) {
 					if(po.is_approximate && !(*po.is_approximate) && number_approx_map[(void*) &m.number()]) *po.is_approximate = true;
+				}
+				if(number_exp_map.find((void*) &m.number()) != number_exp_map.end()) {
 					exp = number_exp_map[(void*) &m.number()];
 					exp_minus = number_exp_minus_map[(void*) &m.number()];
 				}
@@ -3887,6 +3889,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				MathStructure mnr(m_one);
 				mnr.multiply(m_one);
 				number_map[(void*) &mnr[0].number()] = value_str;
+				number_approx_map[(void*) &mnr[0].number()] = number_approx_map[(void*) &m.number()];
 				mnr[1].raise(m_one);
 				number_map[(void*) &mnr[1][0].number()] = "10";
 				if(exp_minus) {
@@ -3900,6 +3903,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				else number_map.erase(&mnr[1][1].number());
 				number_map.erase(&mnr[1][0].number());
 				number_map.erase(&mnr[0].number());
+				number_approx_map.erase(&mnr[0].number());
 				return surface;
 			}
 			str += value_str;
@@ -5804,7 +5808,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 					inhistory.push_back(result_text);
 					if(adaptive_interval_display) {
 						if(parsed_mstruct && parsed_mstruct->containsFunction(CALCULATOR->f_interval)) printops.interval_display = INTERVAL_DISPLAY_INTERVAL;
-						else if(result_text.find("+/-") != string::npos || result_text.find("±") != string::npos) printops.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
+						else if(result_text.find("+/-") != string::npos || result_text.find("+/" SIGN_MINUS) != string::npos || result_text.find("±") != string::npos) printops.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
 						else printops.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 					}
 				}
@@ -15738,7 +15742,7 @@ void on_menu_item_always_exact_activate(GtkMenuItem *w, gpointer) {
 }
 void on_menu_item_interval_arithmetics_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	evalops.approximation = APPROXIMATION_APPROXIMATE;
+	evalops.approximation = APPROXIMATION_TRY_EXACT;
 	CALCULATOR->useIntervalArithmetics(true);
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_approximation"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_approximation_changed, NULL);
