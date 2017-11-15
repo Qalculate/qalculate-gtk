@@ -1507,6 +1507,65 @@ On: y - x</property>
                       </object>
                     </child>
                     <child>
+                      <object class="GtkMenuItem" id="menu_interval_display">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Interval Display</property>
+                        <child type="submenu">
+                          <object class="GtkMenu" id="item_menu_interval_display">
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_interval_adaptive">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Off: 1/2*pi ≈ 1.5707963
+On: 1/2*pi = 0.5 pi</property>
+                                <property name="label" translatable="yes">Adaptive</property>
+                                <signal name="activate" handler="on_menu_item_interval_adaptive_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_interval_significant">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Calculates an interval of possible values and keeps track of precision changes. </property>
+                                <property name="label" translatable="yes">Significant Digits</property>
+                                <property name="group">menu_item_interval_adaptive</property>
+                                <signal name="activate" handler="on_menu_item_interval_significant_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_interval_interval">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Interval</property>
+                                <property name="group">menu_item_interval_adaptive</property>
+                                <signal name="activate" handler="on_menu_item_interval_interval_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_interval_plusminus">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Plus/Minus</property>
+                                <property name="group">menu_item_interval_adaptive</property>
+                                <signal name="activate" handler="on_menu_item_interval_plusminus_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_interval_midpoint">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Midpoint</property>
+                                <property name="group">menu_item_interval_adaptive</property>
+                                <signal name="activate" handler="on_menu_item_interval_midpoint_activate" swapped="no"/>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkMenuItem" id="menu_item_units_mode">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -1644,60 +1703,6 @@ On: 2 (m/s)</property>
 3,2 h = 3 h + 12 min</property>
                                 <property name="label" translatable="yes">Convert to Mixed Units</property>
                                 <signal name="activate" handler="on_menu_item_mixed_units_conversion_activate" swapped="no"/>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkMenuItem" id="menu_item_angle_unit">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Change angle unit used in trigonometric functions</property>
-                        <property name="label" translatable="yes">Angle Unit</property>
-                        <property name="use_underline">True</property>
-                        <child type="submenu">
-                          <object class="GtkMenu" id="menu_item_angle_unit_menu">
-                            <property name="can_focus">False</property>
-                            <child>
-                              <object class="GtkRadioMenuItem" id="menu_item_degrees">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Degrees</property>
-                                <property name="use_underline">True</property>
-                                <property name="active">True</property>
-                                <signal name="activate" handler="on_menu_item_degrees_activate" swapped="no"/>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkRadioMenuItem" id="menu_item_radians">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Radians</property>
-                                <property name="use_underline">True</property>
-                                <property name="group">menu_item_degrees</property>
-                                <signal name="activate" handler="on_menu_item_radians_activate" swapped="no"/>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkRadioMenuItem" id="menu_item_gradians">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Gradians</property>
-                                <property name="use_underline">True</property>
-                                <property name="group">menu_item_degrees</property>
-                                <signal name="activate" handler="on_menu_item_gradians_activate" swapped="no"/>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkRadioMenuItem" id="menu_item_no_default_angle_unit">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">None</property>
-                                <property name="use_underline">True</property>
-                                <property name="group">menu_item_degrees</property>
-                                <signal name="activate" handler="on_menu_item_no_default_angle_unit_activate" swapped="no"/>
                               </object>
                             </child>
                           </object>
@@ -1844,12 +1849,22 @@ On: 1/2*pi = 0.5 pi</property>
                               </object>
                             </child>
                             <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_interval_arithmetics">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Calculates an interval of possible values and keeps track of precision changes. </property>
+                                <property name="label" translatable="yes">Interval Arithmetics</property>
+                                <property name="active">True</property>
+                                <property name="group">menu_item_always_exact</property>
+                                <signal name="activate" handler="on_menu_item_interval_arithmetics_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
                               <object class="GtkRadioMenuItem" id="menu_item_try_exact">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Try Exact</property>
                                 <property name="use_underline">True</property>
-                                <property name="active">True</property>
                                 <property name="group">menu_item_always_exact</property>
                                 <signal name="activate" handler="on_menu_item_try_exact_activate" swapped="no"/>
                               </object>
@@ -1862,6 +1877,60 @@ On: 1/2*pi = 0.5 pi</property>
                                 <property name="use_underline">True</property>
                                 <property name="group">menu_item_always_exact</property>
                                 <signal name="activate" handler="on_menu_item_approximate_activate" swapped="no"/>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="menu_item_angle_unit">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Change angle unit used in trigonometric functions</property>
+                        <property name="label" translatable="yes">Angle Unit</property>
+                        <property name="use_underline">True</property>
+                        <child type="submenu">
+                          <object class="GtkMenu" id="menu_item_angle_unit_menu">
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_degrees">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Degrees</property>
+                                <property name="use_underline">True</property>
+                                <property name="active">True</property>
+                                <signal name="activate" handler="on_menu_item_degrees_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_radians">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Radians</property>
+                                <property name="use_underline">True</property>
+                                <property name="group">menu_item_degrees</property>
+                                <signal name="activate" handler="on_menu_item_radians_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_gradians">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Gradians</property>
+                                <property name="use_underline">True</property>
+                                <property name="group">menu_item_degrees</property>
+                                <signal name="activate" handler="on_menu_item_gradians_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_no_default_angle_unit">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">None</property>
+                                <property name="use_underline">True</property>
+                                <property name="group">menu_item_degrees</property>
+                                <signal name="activate" handler="on_menu_item_no_default_angle_unit_activate" swapped="no"/>
                               </object>
                             </child>
                           </object>
@@ -2655,8 +2724,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2680,8 +2749,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2706,8 +2775,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -2763,7 +2832,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="tooltip_text" translatable="yes">Approximation mode</property>
                             <property name="active">0</property>
                             <items>
-                              <item id="&lt;Ange ID&gt;" translatable="yes">Always exact</item>
+                              <item translatable="yes">Always exact</item>
+                              <item translatable="yes">Interval arithmetics</item>
                               <item translatable="yes">Try exact</item>
                               <item translatable="yes">Approximate</item>
                             </items>

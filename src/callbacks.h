@@ -34,6 +34,8 @@ struct mode_struct {
 	int precision;
 	string name;
 	bool rpn_mode;
+	bool interval;
+	bool adaptive_interval_display;
 };
 
 enum {
@@ -287,7 +289,6 @@ void on_button_ac_clicked(GtkButton *w, gpointer user_data);
 void on_button_hyp_toggled(GtkToggleButton *w, gpointer user_data);
 void on_button_inv_toggled(GtkToggleButton *w, gpointer user_data);
 void on_button_fraction_toggled(GtkToggleButton *w, gpointer user_data);
-void on_button_exact_toggled(GtkToggleButton *w, gpointer user_data);
 void on_button_tan_clicked(GtkButton *w, gpointer user_data);
 void on_button_sine_clicked(GtkButton *w, gpointer user_data);
 void on_button_cosine_clicked(GtkButton *w, gpointer user_data);
@@ -457,6 +458,11 @@ void on_menu_item_fraction_decimal_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_fraction_decimal_exact_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_fraction_combined_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_fraction_fraction_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_interval_adaptive_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_interval_significant_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_interval_interval_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_interval_plusminus_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_interval_midpoint_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_all_prefixes_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_denominator_prefixes_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_place_units_separately_activate(GtkMenuItem *w, gpointer user_data);
@@ -468,6 +474,7 @@ void on_menu_item_abbreviate_names_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_always_exact_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_try_exact_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_approximate_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_interval_arithmetics_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_save_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_save_image_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_copy_activate(GtkMenuItem *w, gpointer user_data);

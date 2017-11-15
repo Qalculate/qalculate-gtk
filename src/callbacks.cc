@@ -217,6 +217,7 @@ PrintOptions printops, parse_printops;
 EvaluationOptions evalops;
 
 bool rpn_mode, rpn_keys;
+bool adaptive_interval_display;
 
 extern Thread *view_thread, *command_thread;
 bool exit_in_progress = false, command_aborted = false, display_aborted = false, result_too_long = false;
@@ -816,7 +817,10 @@ void update_status_text() {
 	string str = "<span size=\"small\">";
 	
 	bool b = false;
-	if(evalops.approximation == APPROXIMATION_EXACT) {
+	if(CALCULATOR->usesIntervalArithmetics()) {
+		STATUS_SPACE
+		str += _("INTERVAL");
+	} else if(evalops.approximation == APPROXIMATION_EXACT) {
 		STATUS_SPACE
 		str += _("EXACT");
 	} else if(evalops.approximation == APPROXIMATION_APPROXIMATE) {
@@ -1281,7 +1285,7 @@ void display_parse_status() {
 		}
 		PrintOptions po;
 		po.preserve_format = true;
-		po.show_ending_zeroes = true;
+		po.show_ending_zeroes = evalops.parse_options.read_precision != DONT_READ_PRECISION && !CALCULATOR->usesIntervalArithmetics();
 		po.lower_case_e = printops.lower_case_e;
 		po.lower_case_numbers = printops.lower_case_numbers;
 		po.base_display = printops.base_display;
@@ -1297,6 +1301,7 @@ void display_parse_status() {
 		po.can_display_unicode_string_arg = (void*) statuslabel_l;
 		po.spell_out_logical_operators = printops.spell_out_logical_operators;
 		po.restrict_to_parent_precision = false;
+		po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
 		mparse.format(po);
 		parsed_expression = mparse.print(po);
 		if(!str_u.empty()) {
@@ -2133,13 +2138,17 @@ void setVariableTreeItem(GtkTreeIter &iter2, Variable *v) {
 	} else if(v->isKnown()) {
 		if(((KnownVariable*) v)->isExpression()) {
 			value = CALCULATOR->localizeExpression(((KnownVariable*) v)->expression());
+			if(!((KnownVariable*) v)->uncertainty().empty()) {value += "±"; value += ((KnownVariable*) v)->uncertainty();}
+			if(!((KnownVariable*) v)->unit().empty()) {value += " "; value += ((KnownVariable*) v)->unit();}
 		} else {
 			if(((KnownVariable*) v)->get().isMatrix()) {
 				value = _("matrix");
 			} else if(((KnownVariable*) v)->get().isVector()) {
 				value = _("vector");
 			} else {
-				value = CALCULATOR->print(((KnownVariable*) v)->get(), 30);
+				PrintOptions po;
+				po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
+				value = CALCULATOR->print(((KnownVariable*) v)->get(), 30, po);
 			}
 		}
 	} else {
@@ -3684,13 +3693,17 @@ void update_completion() {
 				} else if(v->isKnown()) {
 					if(((KnownVariable*) v)->isExpression()) {
 						title = CALCULATOR->localizeExpression(((KnownVariable*) v)->expression());
+						if(!((KnownVariable*) v)->uncertainty().empty()) {title += "±"; title += ((KnownVariable*) v)->uncertainty();}
+						if(!((KnownVariable*) v)->unit().empty()) {title += " "; title += ((KnownVariable*) v)->unit();}
 					} else {
 						if(((KnownVariable*) v)->get().isMatrix()) {
 							title = _("matrix");
 						} else if(((KnownVariable*) v)->get().isVector()) {
 							title = _("vector");
 						} else {
-							title = CALCULATOR->print(((KnownVariable*) v)->get(), 30);
+							PrintOptions po;
+							po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
+							title = CALCULATOR->print(((KnownVariable*) v)->get(), 30, po);
 						}
 					}
 				} else {
@@ -5547,7 +5560,7 @@ void ViewThread::run() {
 		if(x) {
 			PrintOptions po;
 			po.preserve_format = true;
-			po.show_ending_zeroes = true;
+			po.show_ending_zeroes = evalops.parse_options.read_precision != DONT_READ_PRECISION && !CALCULATOR->usesIntervalArithmetics();
 			po.lower_case_e = printops.lower_case_e;
 			po.lower_case_numbers = printops.lower_case_numbers;
 			po.base_display = printops.base_display;
@@ -5562,6 +5575,7 @@ void ViewThread::run() {
 			po.can_display_unicode_string_arg = (void*) statuslabel_l;
 			po.spell_out_logical_operators = printops.spell_out_logical_operators;
 			po.restrict_to_parent_precision = false;
+			po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
 			MathStructure mp(*((MathStructure*) x));
 			if(!read(&po.is_approximate)) break;
 			mp.format(po);
@@ -5574,7 +5588,7 @@ void ViewThread::run() {
 				parsed_text += mp.print(po); 
 				printops.use_unit_prefixes = true;
 			}
-		}			
+		}
 		printops.allow_non_usable = false;
 
 		if(mm && m.isMatrix()) {
@@ -5764,6 +5778,11 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				} else {
 					inhistory_type.push_back(QALCULATE_HISTORY_EXPRESSION);
 					inhistory.push_back(result_text);
+					if(adaptive_interval_display) {
+						if(parsed_mstruct && parsed_mstruct->containsFunction(CALCULATOR->f_interval)) printops.interval_display = INTERVAL_DISPLAY_INTERVAL;
+						else if(result_text.find("+/-") != string::npos || result_text.find("±") != string::npos) printops.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
+						else printops.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
+					}
 				}
 			}
 			nr_of_new_expressions++;
@@ -7660,7 +7679,8 @@ void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")), ((CompositeUnit*) (au->firstBaseUnit()))->preferredDisplayName(printops.abbreviate_names, true, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")).name.c_str());
 				gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp")), au->firstBaseExponent());
 				if(au->firstBaseExponent() != 1) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_frame_mix")), FALSE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), CALCULATOR->localizeExpression(au->expression()).c_str());
+				if(au->uncertainty().empty()) gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), CALCULATOR->localizeExpression(au->expression()).c_str());
+				else gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), CALCULATOR->localizeExpression(au->expression() + "±" + au->uncertainty()).c_str());
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")), CALCULATOR->localizeExpression(au->inverseExpression()).c_str());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_box_reversed")), au->hasComplexExpression());
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact")), !au->isApproximate());
@@ -8567,8 +8587,15 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 	if(v) {
 		//fill in original parameters
 		set_name_label_and_entry(v, GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")), GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_label_names")));
-		if(v->isExpression()) gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_value")), CALCULATOR->localizeExpression(v->expression()).c_str());
-		else gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_value")), get_value_string(v->get(), false, NULL).c_str());
+		string value_str;
+		if(v->isExpression()) {
+			value_str = CALCULATOR->localizeExpression(v->expression());
+			if(!v->uncertainty().empty()) {value_str += "±"; value_str += v->uncertainty();}
+			if(!v->unit().empty()) {value_str += " "; value_str += v->unit();}
+		} else {
+			value_str = get_value_string(v->get(), false, NULL);
+		}
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_value")), value_str.c_str());
 		bool b_approx = *printops.is_approximate || v->isApproximate();
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(variableedit_builder, "variable_edit_checkbutton_exact")), !b_approx);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")), !v->isBuiltin());
@@ -8807,6 +8834,7 @@ void edit_matrix(const char *category, Variable *var, MathStructure *mstruct_, G
 	CALCULATOR->startControl(2000);
 	PrintOptions po;
 	po.number_fraction_format = FRACTION_DECIMAL_EXACT;
+	po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
 	while(gtk_events_pending()) gtk_main_iteration();
 	GtkTreeIter iter;
 	bool b = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tMatrixEdit_store), &iter);
@@ -10108,6 +10136,7 @@ void convert_in_wUnits(int toFrom) {
 				PrintOptions po;
 				po.is_approximate = &b;
 				po.number_fraction_format = FRACTION_DECIMAL;
+				po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 				CALCULATOR->resetExchangeRatesUsed();
 				do_timeout = false;
 				MathStructure v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(toValue, evalops.parse_options), uTo, uFrom, 1500, eo);
@@ -10133,6 +10162,7 @@ void convert_in_wUnits(int toFrom) {
 				PrintOptions po;
 				po.is_approximate = &b;
 				po.number_fraction_format = FRACTION_DECIMAL;
+				po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 				CALCULATOR->resetExchangeRatesUsed();
 				do_timeout = false;
 				MathStructure v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(fromValue, evalops.parse_options), uFrom, uTo, 1500, eo);
@@ -10180,6 +10210,8 @@ void save_mode() {
 */
 void set_saved_mode() {
 	modes[1].precision = CALCULATOR->getPrecision();
+	modes[1].interval = CALCULATOR->usesIntervalArithmetics();
+	modes[1].adaptive_interval_display = adaptive_interval_display;
 	modes[1].po = printops;
 	modes[1].po.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
 	modes[1].eo = evalops;
@@ -10206,6 +10238,8 @@ size_t save_mode_as(string name, bool *new_mode = NULL) {
 	modes[index].po.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
 	modes[index].eo = evalops;
 	modes[index].precision = CALCULATOR->getPrecision();
+	modes[index].interval = CALCULATOR->usesIntervalArithmetics();
+	modes[index].adaptive_interval_display = adaptive_interval_display;
 	modes[index].at = CALCULATOR->defaultAssumptions()->type();
 	modes[index].as = CALCULATOR->defaultAssumptions()->sign();
 	modes[index].name = name;
@@ -10548,15 +10582,19 @@ void on_combobox_fraction_mode_changed(GtkComboBox *w, gpointer) {
 }
 void on_combobox_approximation_changed(GtkComboBox *w, gpointer) {
 	switch(gtk_combo_box_get_active(w)) {
-		case 0: {
+		case ALWAYS_EXACT_INDEX: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_always_exact")), TRUE);
 			break;
 		}
-		case 1: {
+		case INTERVAL_ARITHMETICS_INDEX: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_arithmetics")), TRUE);
+			break;
+		}
+		case TRY_EXACT_INDEX: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_try_exact")), TRUE);
 			break;
 		}
-		case 2: {
+		case APPROXIMATE_INDEX: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_approximate")), TRUE);
 			break;
 		}
@@ -10817,6 +10855,7 @@ void load_preferences() {
 	printops.allow_factorization = false;
 	printops.spell_out_logical_operators = true;
 	printops.exp_to_root = true;
+	printops.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 	
 	evalops.approximation = APPROXIMATION_TRY_EXACT;
 	evalops.sync_units = true;
@@ -10835,6 +10874,10 @@ void load_preferences() {
 	evalops.parse_options.dot_as_separator = CALCULATOR->default_dot_as_separator;
 	evalops.parse_options.comma_as_separator = false;
 	evalops.mixed_units_conversion = MIXED_UNITS_CONVERSION_DEFAULT;
+	
+	adaptive_interval_display = true;
+	
+	CALCULATOR->useIntervalArithmetics(true);
 	
 	rpn_mode = false;
 	rpn_keys = true;
@@ -11029,6 +11072,20 @@ void load_preferences() {
 				} else if(svar == "min_exp") {
 					if(mode_index == 1) printops.min_exp = v;
 					else modes[mode_index].po.min_exp = v;
+				} else if(svar == "interval_arithmetics") {
+					if(mode_index == 1) CALCULATOR->useIntervalArithmetics(v);
+					else modes[mode_index].interval = v;
+				} else if(svar == "interval_display") {
+					if(v == 0) {
+						if(mode_index == 1) {printops.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS; adaptive_interval_display = true;}
+						else {modes[mode_index].po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS; modes[mode_index].adaptive_interval_display = true;}
+					} else {
+						v--;
+						if(v >= INTERVAL_DISPLAY_SIGNIFICANT_DIGITS && v <= INTERVAL_DISPLAY_UPPER) {
+							if(mode_index == 1) {printops.interval_display = (IntervalDisplay) v; adaptive_interval_display = false;}
+							else {modes[mode_index].po.interval_display = (IntervalDisplay) v; modes[mode_index].adaptive_interval_display = false;}
+						}
+					}
 				} else if(svar == "negative_exponents") {
 					if(mode_index == 1) printops.negative_exponents = v;
 					else modes[mode_index].po.negative_exponents = v;
@@ -11231,6 +11288,7 @@ void load_preferences() {
 					else modes[mode_index].eo.approximation = APPROXIMATION_EXACT;
 				} else if(svar == "approximation") {
 					if(v >= APPROXIMATION_EXACT && v <= APPROXIMATION_APPROXIMATE) {
+						if(v == APPROXIMATION_EXACT && (version_numbers[0] < 2 || (version_numbers[0] == 2 && version_numbers[1] < 2))) CALCULATOR->useIntervalArithmetics(false);
 						if(mode_index == 1) evalops.approximation = (ApproximationMode) v;
 						else modes[mode_index].eo.approximation = (ApproximationMode) v;
 					}
@@ -11737,12 +11795,14 @@ void save_preferences(bool mode) {
 		fprintf(file, "min_deci=%i\n", modes[i].po.min_decimals);
 		fprintf(file, "use_min_deci=%i\n", modes[i].po.use_min_decimals);
 		fprintf(file, "max_deci=%i\n", modes[i].po.max_decimals);
-		fprintf(file, "use_max_deci=%i\n", modes[i].po.use_max_decimals);	
+		fprintf(file, "use_max_deci=%i\n", modes[i].po.use_max_decimals);
 		fprintf(file, "precision=%i\n", modes[i].precision);
+		fprintf(file, "interval_arithmetics=%i\n", modes[i].interval);
+		fprintf(file, "interval_display=%i\n", modes[i].adaptive_interval_display ? 0 : modes[i].po.interval_display + 1);
 		fprintf(file, "min_exp=%i\n", modes[i].po.min_exp);
 		fprintf(file, "negative_exponents=%i\n", modes[i].po.negative_exponents);
 		fprintf(file, "sort_minus_last=%i\n", modes[i].po.sort_options.minus_last);
-		fprintf(file, "number_fraction_format=%i\n", modes[i].po.number_fraction_format);	
+		fprintf(file, "number_fraction_format=%i\n", modes[i].po.number_fraction_format);
 		fprintf(file, "use_prefixes=%i\n", modes[i].po.use_unit_prefixes);
 		fprintf(file, "use_prefixes_for_all_units=%i\n", modes[i].po.use_prefixes_for_all_units);
 		fprintf(file, "use_prefixes_for_currencies=%i\n", modes[i].po.use_prefixes_for_currencies);
@@ -11761,9 +11821,9 @@ void save_preferences(bool mode) {
 		fprintf(file, "angle_unit=%i\n", modes[i].eo.parse_options.angle_unit);
 		fprintf(file, "functions_enabled=%i\n", modes[i].eo.parse_options.functions_enabled);
 		fprintf(file, "variables_enabled=%i\n", modes[i].eo.parse_options.variables_enabled);
-		fprintf(file, "calculate_functions=%i\n", modes[i].eo.calculate_functions);	
-		fprintf(file, "calculate_variables=%i\n", modes[i].eo.calculate_variables);	
-		fprintf(file, "sync_units=%i\n", modes[i].eo.sync_units);	
+		fprintf(file, "calculate_functions=%i\n", modes[i].eo.calculate_functions);
+		fprintf(file, "calculate_variables=%i\n", modes[i].eo.calculate_variables);
+		fprintf(file, "sync_units=%i\n", modes[i].eo.sync_units);
 		fprintf(file, "unknownvariables_enabled=%i\n", modes[i].eo.parse_options.unknowns_enabled);
 		fprintf(file, "units_enabled=%i\n", modes[i].eo.parse_options.units_enabled);
 		fprintf(file, "allow_complex=%i\n", modes[i].eo.allow_complex);
@@ -11771,7 +11831,7 @@ void save_preferences(bool mode) {
 		fprintf(file, "indicate_infinite_series=%i\n", modes[i].po.indicate_infinite_series);
 		fprintf(file, "show_ending_zeroes=%i\n", modes[i].po.show_ending_zeroes);
 		fprintf(file, "round_halfway_to_even=%i\n", modes[i].po.round_halfway_to_even);
-		fprintf(file, "approximation=%i\n", modes[i].eo.approximation);	
+		fprintf(file, "approximation=%i\n", modes[i].eo.approximation);
 		fprintf(file, "in_rpn_mode=%i\n", modes[i].rpn_mode);
 		fprintf(file, "rpn_syntax=%i\n", modes[i].eo.parse_options.rpn);
 		fprintf(file, "limit_implicit_multiplication=%i\n", modes[i].eo.parse_options.limit_implicit_multiplication);
@@ -12819,27 +12879,6 @@ void on_button_fraction_toggled(GtkToggleButton *w, gpointer) {
 		g_signal_handlers_unblock_matched((gpointer) w_fraction, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_decimal_activate, NULL);
 	}
 	result_format_updated();
-	focus_keeping_selection();
-}
-
-/*
-	exact button toggled
-*/
-void on_button_exact_toggled(GtkToggleButton *w, gpointer) {
-	if(gtk_toggle_button_get_active(w)) {
-		evalops.approximation = APPROXIMATION_EXACT;
-		GtkWidget *w_exact = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_always_exact"));
-		g_signal_handlers_block_matched((gpointer) w_exact, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_always_exact_activate, NULL);		
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(w_exact), TRUE);		
-		g_signal_handlers_unblock_matched((gpointer) w_exact, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_always_exact_activate, NULL);		
-	} else {
-		evalops.approximation = APPROXIMATION_TRY_EXACT;
-		GtkWidget *w_exact = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_try_exact"));
-		g_signal_handlers_block_matched((gpointer) w_exact, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_try_exact_activate, NULL);		
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(w_exact), TRUE);		
-		g_signal_handlers_unblock_matched((gpointer) w_exact, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_try_exact_activate, NULL);		
-	}
-	expression_calculation_updated();
 	focus_keeping_selection();
 }
 
@@ -15656,9 +15695,21 @@ void on_menu_item_sort_minus_last_activate(GtkMenuItem *w, gpointer) {
 void on_menu_item_always_exact_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.approximation = APPROXIMATION_EXACT;
+	CALCULATOR->useIntervalArithmetics(false);
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_approximation"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_approximation_changed, NULL);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), 0);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), ALWAYS_EXACT_INDEX);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_approximation"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_approximation_changed, NULL);
+	
+	expression_calculation_updated();
+}
+void on_menu_item_interval_arithmetics_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	evalops.approximation = APPROXIMATION_APPROXIMATE;
+	CALCULATOR->useIntervalArithmetics(true);
+
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_approximation"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_approximation_changed, NULL);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), INTERVAL_ARITHMETICS_INDEX);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_approximation"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_approximation_changed, NULL);
 	
 	expression_calculation_updated();
@@ -15666,9 +15717,10 @@ void on_menu_item_always_exact_activate(GtkMenuItem *w, gpointer) {
 void on_menu_item_try_exact_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.approximation = APPROXIMATION_TRY_EXACT;
+	CALCULATOR->useIntervalArithmetics(false);
 	
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_approximation"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_approximation_changed, NULL);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), 1);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), TRY_EXACT_INDEX);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_approximation"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_approximation_changed, NULL);
 
 	expression_calculation_updated();
@@ -15676,16 +15728,16 @@ void on_menu_item_try_exact_activate(GtkMenuItem *w, gpointer) {
 void on_menu_item_approximate_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.approximation = APPROXIMATION_APPROXIMATE;
+	CALCULATOR->useIntervalArithmetics(false);
 	
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_approximation"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_approximation_changed, NULL);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), 2);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), APPROXIMATE_INDEX);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_approximation"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_approximation_changed, NULL);
 	
 	expression_calculation_updated();
 }
 void on_menu_item_fraction_decimal_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)))
-		return;
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.number_fraction_format = FRACTION_DECIMAL;
 	
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
@@ -15695,8 +15747,7 @@ void on_menu_item_fraction_decimal_activate(GtkMenuItem *w, gpointer) {
 	result_format_updated();
 }
 void on_menu_item_fraction_decimal_exact_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)))
-		return;
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.number_fraction_format = FRACTION_DECIMAL_EXACT;
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
@@ -15706,8 +15757,7 @@ void on_menu_item_fraction_decimal_exact_activate(GtkMenuItem *w, gpointer) {
 	result_format_updated();
 }
 void on_menu_item_fraction_combined_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)))
-		return;
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.number_fraction_format = FRACTION_COMBINED;
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
@@ -15717,14 +15767,43 @@ void on_menu_item_fraction_combined_activate(GtkMenuItem *w, gpointer) {
 	result_format_updated();
 }
 void on_menu_item_fraction_fraction_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)))
-		return;
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.number_fraction_format = FRACTION_FRACTIONAL;
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 2);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
 	
+	result_format_updated();
+}
+void on_menu_item_interval_adaptive_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	adaptive_interval_display = true;
+	printops.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
+	result_format_updated();
+}
+void on_menu_item_interval_significant_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	adaptive_interval_display = false;
+	printops.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
+	result_format_updated();
+}
+void on_menu_item_interval_interval_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	adaptive_interval_display = false;
+	printops.interval_display = INTERVAL_DISPLAY_INTERVAL;
+	result_format_updated();
+}
+void on_menu_item_interval_plusminus_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	adaptive_interval_display = false;
+	printops.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
+	result_format_updated();
+}
+void on_menu_item_interval_midpoint_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	adaptive_interval_display = false;
+	printops.interval_display = INTERVAL_DISPLAY_MIDPOINT;
 	result_format_updated();
 }
 
@@ -16977,6 +17056,7 @@ void update_percentage_entries() {
 		PrintOptions po = printops;
 		po.base = 10;
 		po.number_fraction_format = FRACTION_DECIMAL;
+		po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 		gtk_entry_set_text(GTK_ENTRY(w1), m1.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(m1, 200, po).c_str());
 		gtk_entry_set_text(GTK_ENTRY(w2), m2.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(m2, 200, po).c_str());
 		gtk_entry_set_text(GTK_ENTRY(w3), m3.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(m3, 200, po).c_str());
@@ -17011,6 +17091,7 @@ void update_nbases_entries(const MathStructure &value, int base) {
 	g_signal_handlers_block_matched((gpointer) w_hex, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_hexadecimal_changed, NULL);
 	PrintOptions po;
 	po.number_fraction_format = FRACTION_DECIMAL;
+	po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 	if(base != 10) {po.base = 10; gtk_entry_set_text(GTK_ENTRY(w_dec), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}
 	if(base != 2) {po.base = 2; gtk_entry_set_text(GTK_ENTRY(w_bin), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}	
 	if(base != 8) {po.base = 8; gtk_entry_set_text(GTK_ENTRY(w_oct), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}	
