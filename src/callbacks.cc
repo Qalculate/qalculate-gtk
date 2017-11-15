@@ -218,6 +218,7 @@ EvaluationOptions evalops;
 
 bool rpn_mode, rpn_keys;
 bool adaptive_interval_display;
+bool use_e_notation;
 
 extern Thread *view_thread, *command_thread;
 bool exit_in_progress = false, command_aborted = false, display_aborted = false, result_too_long = false;
@@ -3856,22 +3857,24 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 
 	switch(m.type()) {
 		case STRUCT_NUMBER: {
-			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
 			string str;
 			string exp = "";
-			bool exp_minus;
+			bool exp_minus = false;
 			ips_n.exp = &exp;
 			ips_n.exp_minus = &exp_minus;
 			TTBP(str)
 			unordered_map<void*, string>::iterator it = number_map.find((void*) &m.number());
+			string value_str;
 			if(it != number_map.end()) {
-				if(po.is_approximate && !(*po.is_approximate) && number_approx_map[(void*) &m.number()]) *po.is_approximate = true;
-				str += it->second;
-				exp = number_exp_map[(void*) &m.number()];
-				exp_minus = number_exp_minus_map[(void*) &m.number()];
+				value_str += it->second;
+				if(number_approx_map.find((void*) &m.number()) != number_approx_map.end()) {
+					if(po.is_approximate && !(*po.is_approximate) && number_approx_map[(void*) &m.number()]) *po.is_approximate = true;
+					exp = number_exp_map[(void*) &m.number()];
+					exp_minus = number_exp_minus_map[(void*) &m.number()];
+				}
 			} else {
-				number_map[(void*) &m.number()] = m.number().print(po, ips_n);
-				str += number_map[(void*) &m.number()];
+				value_str = m.number().print(po, ips_n);
+				number_map[(void*) &m.number()] = value_str;
 				number_exp_map[(void*) &m.number()] = exp;
 				number_exp_minus_map[(void*) &m.number()] = exp_minus;
 				if(po.is_approximate) {
@@ -3880,6 +3883,27 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 					number_approx_map[(void*) &m.number()] = FALSE;
 				}
 			}
+			if(!use_e_notation && !exp.empty()) {
+				MathStructure mnr(m_one);
+				mnr.multiply(m_one);
+				number_map[(void*) &mnr[0].number()] = value_str;
+				mnr[1].raise(m_one);
+				number_map[(void*) &mnr[1][0].number()] = "10";
+				if(exp_minus) {
+					mnr[1][1].transform(STRUCT_NEGATE);
+					number_map[(void*) &mnr[1][1][0].number()] = exp;
+				} else {
+					number_map[(void*) &mnr[1][1].number()] = exp;
+				}
+				surface = draw_structure(mnr, po, ips, point_central, scaledown, color);
+				if(exp_minus) number_map.erase(&mnr[1][1][0].number());
+				else number_map.erase(&mnr[1][1].number());
+				number_map.erase(&mnr[1][0].number());
+				number_map.erase(&mnr[0].number());
+				return surface;
+			}
+			str += value_str;
+			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
 			if(!exp.empty()) {
 				if(po.lower_case_e) {TTP(str, "e");}
 				else {TTP_SMALL(str, "E");}
@@ -10875,6 +10899,8 @@ void load_preferences() {
 	evalops.parse_options.comma_as_separator = false;
 	evalops.mixed_units_conversion = MIXED_UNITS_CONVERSION_DEFAULT;
 	
+	use_e_notation = false;
+	
 	adaptive_interval_display = true;
 	
 	CALCULATOR->useIntervalArithmetics(true);
@@ -11350,6 +11376,8 @@ void load_preferences() {
 					printops.lower_case_numbers = v;	
 				} else if(svar == "lower_case_e") {
 					printops.lower_case_e = v;	
+				} else if(svar == "e_notation") {
+					use_e_notation = v;
 				} else if(svar == "base_display") {
 					if(v >= BASE_DISPLAY_NONE && v <= BASE_DISPLAY_ALTERNATIVE) printops.base_display = (BaseDisplay) v;
 				} else if(svar == "spell_out_logical_operators") {
@@ -11659,6 +11687,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "enable_completion=%i\n", enable_completion);
 	fprintf(file, "use_unicode_signs=%i\n", printops.use_unicode_signs);
 	fprintf(file, "lower_case_numbers=%i\n", printops.lower_case_numbers);
+	fprintf(file, "e_notation=%i\n", use_e_notation);
 	fprintf(file, "lower_case_e=%i\n", printops.lower_case_e);
 	fprintf(file, "base_display=%i\n", printops.base_display);
 	fprintf(file, "spell_out_logical_operators=%i\n", printops.spell_out_logical_operators);
@@ -12157,6 +12186,10 @@ void on_preferences_checkbutton_lower_case_numbers_toggled(GtkToggleButton *w, g
 }
 void on_preferences_checkbutton_lower_case_e_toggled(GtkToggleButton *w, gpointer) {
 	printops.lower_case_e = gtk_toggle_button_get_active(w);
+	result_format_updated();
+}
+void on_preferences_checkbutton_e_notation_toggled(GtkToggleButton *w, gpointer) {
+	use_e_notation = gtk_toggle_button_get_active(w);
 	result_format_updated();
 }
 void on_preferences_checkbutton_alternative_base_prefixes_toggled(GtkToggleButton *w, gpointer) {
