@@ -36,6 +36,7 @@ struct mode_struct {
 	bool rpn_mode;
 	bool interval;
 	bool adaptive_interval_display;
+	bool variable_units_enabled;
 };
 
 enum {
@@ -341,6 +342,7 @@ void on_menu_item_enable_functions_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_enable_units_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_enable_unknown_variables_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_calculate_variables_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_enable_variable_units_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_allow_complex_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_allow_infinite_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_new_unknown_activate(GtkMenuItem *w, gpointer user_data);

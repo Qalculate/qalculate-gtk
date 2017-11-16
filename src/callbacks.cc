@@ -10240,6 +10240,7 @@ void set_saved_mode() {
 	modes[1].precision = CALCULATOR->getPrecision();
 	modes[1].interval = CALCULATOR->usesIntervalArithmetics();
 	modes[1].adaptive_interval_display = adaptive_interval_display;
+	modes[1].variable_units_enabled = CALCULATOR->variableUnitsEnabled();
 	modes[1].po = printops;
 	modes[1].po.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
 	modes[1].eo = evalops;
@@ -10268,6 +10269,7 @@ size_t save_mode_as(string name, bool *new_mode = NULL) {
 	modes[index].precision = CALCULATOR->getPrecision();
 	modes[index].interval = CALCULATOR->usesIntervalArithmetics();
 	modes[index].adaptive_interval_display = adaptive_interval_display;
+	modes[index].variable_units_enabled = CALCULATOR->variableUnitsEnabled();
 	modes[index].at = CALCULATOR->defaultAssumptions()->type();
 	modes[index].as = CALCULATOR->defaultAssumptions()->sign();
 	modes[index].name = name;
@@ -11261,6 +11263,9 @@ void load_preferences() {
 				} else if(svar == "calculate_variables") {
 					if(mode_index == 1) evalops.calculate_variables = v;
 					else modes[mode_index].eo.calculate_variables = v;
+				} else if(svar == "variable_units_enabled") {
+					if(mode_index == 1) CALCULATOR->setVariableUnitsEnabled(v);
+					else modes[mode_index].variable_units_enabled = v;
 				} else if(svar == "calculate_functions") {
 					if(mode_index == 1) evalops.calculate_functions = v;
 					else modes[mode_index].eo.calculate_functions = v;
@@ -11856,6 +11861,7 @@ void save_preferences(bool mode) {
 		fprintf(file, "variables_enabled=%i\n", modes[i].eo.parse_options.variables_enabled);
 		fprintf(file, "calculate_functions=%i\n", modes[i].eo.calculate_functions);
 		fprintf(file, "calculate_variables=%i\n", modes[i].eo.calculate_variables);
+		fprintf(file, "variable_units_enabled=%i\n", modes[i].variable_units_enabled);
 		fprintf(file, "sync_units=%i\n", modes[i].eo.sync_units);
 		fprintf(file, "unknownvariables_enabled=%i\n", modes[i].eo.parse_options.unknowns_enabled);
 		fprintf(file, "units_enabled=%i\n", modes[i].eo.parse_options.units_enabled);
@@ -14774,6 +14780,10 @@ void on_menu_item_enable_unknown_variables_activate(GtkMenuItem *w, gpointer) {
 }
 void on_menu_item_calculate_variables_activate(GtkMenuItem *w, gpointer) {
 	evalops.calculate_variables = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
+	expression_calculation_updated();
+}
+void on_menu_item_enable_variable_units_activate(GtkMenuItem *w, gpointer) {
+	CALCULATOR->setVariableUnitsEnabled(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
 	expression_calculation_updated();
 }
 void on_menu_item_allow_complex_activate(GtkMenuItem *w, gpointer) {

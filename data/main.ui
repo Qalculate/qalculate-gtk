@@ -1780,6 +1780,15 @@ On: 2 (m/s)</property>
                               </object>
                             </child>
                             <child>
+                              <object class="GtkCheckMenuItem" id="menu_item_enable_variable_units">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Units in Physical Constants</property>
+                                <property name="active">True</property>
+                                <signal name="activate" handler="on_menu_item_enable_variable_units_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
                               <object class="GtkCheckMenuItem" id="menu_item_calculate_variables">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
