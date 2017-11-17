@@ -115,13 +115,13 @@ The font used for the expression entry can be selected in the preferences dialog
 <sect1 id="qalculate-result-display">
 <title>Result Display</title>
 <para>
-The result of calculations is displayed in the open area below the expression entry. The font used for the result display can be selected in the preferences dialog (<menuchoice><guimenu>Edit</guimenu><guimenuitem>Preferences</guimenuitem></menuchoice>). Use of Unicode signs can be turned off in the same dialog. Otherwise &app; will try to make the result as fancy as possible and print π for pi, √ for sqrt, € for euro, and so on. Information about customization of the mathematical result output is available in <xref linkend="qalculate-result"/>.
+The result of calculations is displayed in the open area below the expression entry. The font used for the result display can be selected in the preferences dialog (<menuchoice><guimenu>Edit</guimenu><guimenuitem>Preferences</guimenuitem></menuchoice>). Use of Unicode signs can be turned off in the same dialog. Otherwise &app; will try to make the result as fancy as possible and print π for pi, √ for sqrt, € for euro, and so on. Information about customization of the mathematical result output is available in <xref linkend="qalculate-mode"/>.
 </para>
 <para>
 In front of the result an equals or approximately equals sign is shown. This indicates whether &app; was able to calculate/display the result exact or only approximate, in the current mode.
 </para>
 <para>
-The result display has a context menu, which pops up when clicking with the right mouse button anywhere in the field. This menu provides a subset of the display alternatives from the mode menu (<xref linkend="qalculate-TBL-mode-menu"/>) and some actions from the edit menu (<xref linkend="qalculate-TBL-edit-menu"/>). See more info in <xref linkend="qalculate-result"/>.
+The result display has a context menu, which pops up when clicking with the right mouse button anywhere in the field. This menu provides a subset of the display alternatives from the mode menu (<xref linkend="qalculate-TBL-mode-menu"/>) and some actions from the edit menu (<xref linkend="qalculate-TBL-edit-menu"/>). See more info in <xref linkend="qalculate-mode"/>.
 </para>
 <para>
 If you hold the pointer over the result area a tooltip will show the text representation of the result. To make it more obvious what the result means, abbreviations and implicit multiplication are not used here, and excessive parentheses are shown.
@@ -146,7 +146,7 @@ The keypad provides access to a simple traditional number pad and as well as mor
 </figure>
 </para>
 <para>
-The top buttons (from left to right) switches between exact and approximate calculation, changes fractional number display, selects display mode and selects number base in result (see <xref linkend="qalculate-result"/>).
+The top buttons (from left to right) switches between exact and approximate calculation, changes fractional number display, selects display mode and selects number base in result (see <xref linkend="qalculate-mode"/>).
 </para>
 <para>
 The buttons on the right provides the following sets of functionality:
@@ -585,19 +585,19 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			</row>
 			<row valign="top">
 				<entry><para>Numerical Display</para></entry>
-				<entry><para>Submenu which selects numerical display mode. See <xref linkend="qalculate-result"/>.</para></entry>
+				<entry><para>Submenu which selects numerical display mode. See <xref linkend="qalculate-mode"/>.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Fractional Display</para></entry>
-				<entry><para>Submenu which selects decimal, fractional or combined fractional display. See <xref linkend="qalculate-result"/>.</para></entry>
+				<entry><para>Submenu which selects decimal, fractional or combined fractional display. See <xref linkend="qalculate-mode"/>.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>Interval Display</para></entry>
+				<entry><para>Submenu with options that determines how the result of interval arithmetics are shown. The adaptive option is the same as significant digits display unless an interval has been explicitely specified in the expression.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Unit Display</para></entry>
-				<entry><para>Submenu which controls the display of units and prefixes. See <xref linkend="qalculate-result"/>.</para></entry>
-			</row>
-			<row valign="top">
-				<entry><para>Angle Unit</para></entry>
-				<entry><para>Submenu which sets the default angle unit for trigonometric functions.</para></entry>
+				<entry><para>Submenu which controls the display of units and prefixes. See <xref linkend="qalculate-mode"/>.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Abbreviate Names</para></entry>
@@ -605,11 +605,15 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			</row>
 			<row valign="top">
 				<entry><para>Enabled Objects</para></entry>
-				<entry><para>Submenu which enables/disables variables, functions, units and unknowns (will not affect defined unknown variables and quoted unknowns), and calculation of variables (If calculation of variables is not on, all variables will be treated as unknown). Here you can also disable complex and infinite results.</para></entry>
+				<entry><para>Submenu which enables/disables variables, functions, units and unknowns (will not affect defined unknown variables and quoted unknowns), calculation of variables (if calculation of variables is not on, all variables will be treated as unknown), and units in variables for physical constants. Here you can also disable complex and infinite results.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Approximation</para></entry>
 				<entry><para>Submenu which switches between different approximation modes.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>Angle Unit</para></entry>
+				<entry><para>Submenu which sets the default angle unit for trigonometric functions.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Assumptions</para></entry>
@@ -826,6 +830,12 @@ In &app; mathematical entities, such as numbers and variables, are referred to a
 		<listitem><para>
 		These are the regular numbers composed by digits 0-9 and a decimal sign — a dot, or a comma if it is the default decimal point in the locale/language used. If comma is used as decimal sign, the dot is still kept as an alternative decimal sign, if not explicitely turned off in the preferences dialog with <guibutton>Ignore dots in number</guibutton> (to allow it to be used as thousand separator instead). Numbers include integers, real numbers, and complex numbers. The imaginary part of complex numbers are written with as regular number followed by the special variable <quote>i</quote>, which represents the square root of -1 (ex. <quote>2 + 3i</quote>). Spaces between digits are ignored (<quote>5  5 = 55</quote>). <quote>E</quote> (or <quote>e</quote>) can be considered as a shortcut for writing many zeroes and is equivalent to multiplication by 10 raised to the power of the right-hand value (ex. <quote>5E3 = 5000</quote>).</para>
 		<para>Sexagesimal numbers (and time) can be entered directly using colons (ex. <quote>5:30 = 5.5</quote>). A number immediately preceeded <quote>0b</quote>, <quote>0o</quote> or <quote>0x</quote> are interpreted as a number with base 2, 8 or 16, respectively (if the default base is 10, ex. <quote>0x3f = 63</quote>). The number base in can also be selected, either by using the <command>base()</command>, <command>bin()</command>, <command>oct()</command>, <command>hex()</command> and <command>roman()</command> functions, or by setting the base used for all numbers in the whole expression from <menuchoice><guimenu>Mode</guimenu><guisubmenu>Number Base</guisubmenu><guimenuitem>Select Result and Expression Base...</guimenuitem></menuchoice>. Note that duodecimal (base 12) numbers use 'X' and 'E' (or upside down 2 and 3), instead of 'A' and 'B', for the tenth and eleventh digit. When input bases higher than ten, excluding twelve, are used, functions, variables and units are not parsed.
+		</para></listitem>
+	</varlistentry>
+	<varlistentry>
+		<term>Intervals</term>
+		<listitem><para>
+		A number interval can be entered using the <command>interval()</command> function (specifies the upper and lower limit of the interval), or using <quote>±</quote> or <quote>+/-</quote>, specifying the width of the interval after the mid value (e.g. <quote>5±1 = interval(4, 6)</quote>). If interval arithmetics and the read precision option is activated, decimal numbers are interpreted as an interval between the numbers that are normally rounded to the entered number (ex. <quote>1.1 = 1.1±0.05</quote>).
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -1144,7 +1154,7 @@ Putting <quote> to </quote> followed by an expression at the end of the mathemat
 </sect1>
 </chapter>
 
-<chapter id="qalculate-result">
+<chapter id="qalculate-mode">
 <title>Calculator Modes</title>
 <para>
 &app; provides flexible parsing, calculation output and result display. There are several ways in which parsing of expression and display of results can be customized. These modes can generally be changed through the mode menu. The state of each mode can be saved under a name in <menuchoice><guimenu>Mode</guimenu><guisubmenu>Meta Modes</guisubmenu></menuchoice> for quick access. The Preset and Default meta modes are always available and represents the state when &app; is load for the first time and the mode settings automatically loaded at each startup (and by default saved on exit), respectively. Different modes are summarized below.
@@ -1213,7 +1223,7 @@ Putting <quote> to </quote> followed by an expression at the end of the mathemat
 	<varlistentry>
 		<term>Approximation</term>
 		<listitem><para>
-				When always exact mode is on, the calculation will not go further than what can be calculated exactly (ex. <quote>sqrt(2+3) = sqrt(5)</quote>). The  default <quote>Try Exact</quote> mode, will calculate the result exact as far as possible and then approximately. Approximate mode will directly calculate a approximate result, thus being a bit faster but giving a less correct approximate indication (<quote>sin(pi/2)</quote> return approximately one instead of exactly one).
+				When always exact mode is on, the calculation will not go further than what can be calculated exactly (ex. <quote>sqrt(2+3) = sqrt(5)</quote>). The  default <quote>Try Exact</quote> mode, will calculate the result exact as far as possible and then approximately. Approximate mode will directly calculate a approximate result, thus being a bit faster but giving a less correct approximate indication (<quote>sin(pi/2)</quote> return approximately one instead of exactly one). If the interval arithmetics mode is activated the precision of the final result is guaranteed by calculating an interval for every approximate value (See <xref linkend="qalculate-interval-arithmetics"/>).
 			</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -1227,7 +1237,7 @@ Putting <quote> to </quote> followed by an expression at the end of the mathemat
 		<term>Parsing Mode</term>
 		<listitem><para>
 				These options controls how expressions are interpreted. There are three main modes, which mainly controls if implicit multiplication is handled differently from explicit multiplication and if spaces are taken into account or not.  See <xref linkend="qalculate-implicit-multiplication"/>.
-				If the read precsion option is activated, decimal numbers are intrepeted as approximate with precision equal to the number of digits (ex. <quote>1.1 * 1.1 ≈ 1.2</quote>).
+				If the read precsion option is activated, decimal numbers are intrepeted as approximate with precision equal to the number of digits (ex. <quote>1.1 * 1.1 ≈ 1.2</quote>). If interval arithmetics is enabled, decimal numbers are interpreted as an interval between the numbers that are normally rounded to the entered number (ex. <quote>1.1 = 1.1±0.05</quote>).
 			</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -1243,6 +1253,24 @@ Putting <quote> to </quote> followed by an expression at the end of the mathemat
 			</para></listitem>
 	</varlistentry>	
 </variablelist>
+<sect1 id="qalculate-interval-arithmetics">
+<title>Interval Arithmetics</title>
+<para>
+Interval arithmetics can be used explicitly to do calculations on an interval (defined using the <command>interval()</command> function or <quote>±</quote> notation), or implicitly for all approximate calculations to keep track of precision changes. The latter is especially useful for calculation using numbers with few implicit digits, in combination with the <quote>read precision</quote> mode, for calculation with approximate physical constants, which are defined as an interval using standard uncertainty values, or to gracefully handle for example catastrophic cancellation (in subtracting two nearly equal numbers). Interval arithmetics can be (de)activated using <menuchoice><guimenu>Mode</guimenu><guimenu>Approximation</guimenu><guimenuitem>Interval Arithmetics</guimenuitem></menuchoice> or from the corresponding menu on the keypad.
+</para>
+<para>
+The main issue with interval arithmetics is handling of dependent values. The simple expression <quote>2 * interval(1, 2) - pi * interval(1, 2)</quote> gives as result <quote>interval(-4.283, 0.858)</quote>, which is correct if the two intervals in the expression are unrelated. If they on the instead refers to the same measurement the true result should be <quote>-interval(1.141, 2.283)</quote>, but &app; has no way of knowing this. There are some ways the circumvent this issue <quote>interval(1, 2) * (2 - pi)</quote> returns the correct interval. &app; can handle this automatically for variables. If <quote>interval(1, 2)</quote> is stored as variable <quote>var1</quote>, <quote>2 * var1 - pi * var1</quote> will be automatically be transformed to <quote>var1 * (2 - pi)</quote>. Similarly expressions of the form ax+bx^2 will be transformed to return the correct interval and simplification without expansion will occur before calculation (e.g. <quote>(var1 + 1)^3/(var1 + 1)</quote> will be simplified to <quote>(var1 + 1)^2</quote>, but not further, before calculation), but other more complex expressions may result in a wide interval. Note that although explicit intervals in expressions will be interpreted as expected regardless of the calculator mode, variables with expansions will be interpreted as a single value with limited precision (determined by the width of the interval) unless interval arithmetics is activated.
+</para>
+<para>
+Some non-invertible functions (including bessel and airy functions) are not properly support and only the function value for the end values of the interval are calculated. Trigonometric functions should however give correct intervals for real and imaginary numbers, but will in some cases for complex numbers with both a real and imaginary part return a too wide interval.
+</para>
+<para>
+Generally, the resulting interval will be guaranteed to include the true interval, but may often for non-trivial expression (especially involving complex numbers) return an interval that is to wide. Infinity values in intervals are currently not supported.
+</para>
+<para>
+For implicit interval arithmetics the result is by default shown as an ordinary number with the number of significant digits determined by the width of the interval(<quote>interval(2.075, 2.15) = 2.1</quote>), unless the interval is too wide. If the <command>interval()</command> has been used in the expression the result is by default displayed as an interval, and if <quote>±</quote> notation has been used, it will also be used in the result. The default behaviour can be changed from<menuchoice><guimenu>Mode</guimenu><guimenu>Interval Display</guimenu></menuchoice>. The midpoint alternative displays the value halfway between the lower and upper limit of the interval (<quote>interval(2.075, 2.15) = 2.1125</quote>).
+</para>
+</sect1>
 <sect1 id="qalculate-rpn">
 <title>The RPN Mode</title>
 <para>
