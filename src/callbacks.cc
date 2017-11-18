@@ -5376,7 +5376,13 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 
 			for(size_t index = 0; index < m.size(); index++) {
 				ips_n.wrap = m[index].needsParenthesis(po, ips_n, m, index + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+				IntervalDisplay id_bak = po.interval_display;
+				if(m.function() == CALCULATOR->f_interval && m[index].isNumber()) {
+					if(index == 0) po.interval_display = INTERVAL_DISPLAY_LOWER;
+					else if(index == 1) po.interval_display = INTERVAL_DISPLAY_UPPER;
+				}
 				surface_args.push_back(draw_structure(m[index], po, ips_n, &ctmp, scaledown, color));
+				po.interval_display = id_bak;
 				if(CALCULATOR->aborted()) {
 					for(size_t i = 0; i < surface_args.size(); i++) {
 						if(surface_args[i]) cairo_surface_destroy(surface_args[i]);
@@ -5569,6 +5575,16 @@ void on_abort_display(GtkDialog*, gint, gpointer) {
 	CALCULATOR->abort();
 }
 
+void replace_interval_with_function(MathStructure &m) {
+	if(m.isNumber() && m.number().isInterval()) {
+		m.transform(STRUCT_FUNCTION);
+		m.setFunction(CALCULATOR->f_interval);
+		m.addChild(m[0]);
+	} else {
+		for(size_t i = 0; i < m.size(); i++) replace_interval_with_function(m[i]);
+	}
+}
+
 void ViewThread::run() {
 
 	while(true) {
@@ -5717,6 +5733,7 @@ void ViewThread::run() {
 				printops.can_display_unicode_string_arg = (void*) resultview;
 
 				MathStructure *displayed_mstruct_pre = new MathStructure(m);
+				if(printops.interval_display == INTERVAL_DISPLAY_INTERVAL) replace_interval_with_function(*displayed_mstruct_pre);
 				tmp_surface = draw_structure(*displayed_mstruct_pre, printops, top_ips, NULL, scale_tmp);
 				if(displayed_mstruct) displayed_mstruct->unref();
 				displayed_mstruct = displayed_mstruct_pre;
@@ -10993,7 +11010,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {2, 1, 0};
+	int version_numbers[] = {2, 2, 0};
 	bool old_history_format = false;
 			
 	if(file) {

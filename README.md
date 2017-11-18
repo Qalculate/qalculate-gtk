@@ -16,7 +16,7 @@ If libqalculate has been installed in the default /usr/local path you it might b
 
 ## Requirements
 * GTK+ (>= 3.10)
-* libqalculate 2.1.0
+* libqalculate 2.2.0
 
 ## Features
 Features specific to qalculate-gtk:
@@ -51,6 +51,7 @@ Features from libqalculate:
    * Matrices and vectors, and related operations (determinants etc.)
    * Verbose error messages
    * Arbitrary precision
+   * Interval arithmetics
    * RPN mode
 * Result display:
    * Supports all number bases from 2 to 36, plus sexagesimal numbers, time format and roman numerals
