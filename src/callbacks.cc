@@ -1293,6 +1293,7 @@ void display_parse_status() {
 		po.abbreviate_names = false;
 		po.hide_underscore_spaces = true;
 		po.use_unicode_signs = printops.use_unicode_signs;
+		po.thousands_separator = printops.thousands_separator;
 		po.multiplication_sign = printops.multiplication_sign;
 		po.division_sign = printops.division_sign;
 		po.short_multiplication = false;
@@ -5610,6 +5611,7 @@ void ViewThread::run() {
 			po.base_display = printops.base_display;
 			po.abbreviate_names = false;
 			po.use_unicode_signs = printops.use_unicode_signs;
+			po.thousands_separator = printops.thousands_separator;
 			po.multiplication_sign = printops.multiplication_sign;
 			po.division_sign = printops.division_sign;
 			po.short_multiplication = false;
@@ -10885,6 +10887,7 @@ void load_preferences() {
 	printops.number_fraction_format = FRACTION_DECIMAL;
 	printops.abbreviate_names = true;
 	printops.use_unicode_signs = true;
+	printops.thousands_separator = THOUSANDS_SEPARATOR_SPACE;
 	printops.use_unit_prefixes = true;
 	printops.use_prefixes_for_currencies = false;
 	printops.use_prefixes_for_all_units = false;
@@ -11397,7 +11400,9 @@ void load_preferences() {
 				} else if(svar == "inv_is_on") {
 					inv_is_on = v;*/
 				} else if(svar == "use_unicode_signs" && (version_numbers[0] > 0 || version_numbers[1] > 7 || (version_numbers[1] == 7 && version_numbers[2] > 0))) {
-					printops.use_unicode_signs = v;	
+					printops.use_unicode_signs = v;
+					if(printops.use_unicode_signs) printops.thousands_separator = THOUSANDS_SEPARATOR_SPACE;
+					else printops.thousands_separator = THOUSANDS_SEPARATOR_NONE;
 				} else if(svar == "lower_case_numbers") {
 					printops.lower_case_numbers = v;	
 				} else if(svar == "lower_case_e") {
@@ -12230,6 +12235,8 @@ void on_preferences_checkbutton_spell_out_logical_operators_toggled(GtkToggleBut
 }
 void on_preferences_checkbutton_unicode_signs_toggled(GtkToggleButton *w, gpointer) {
 	printops.use_unicode_signs = gtk_toggle_button_get_active(w);
+	if(printops.use_unicode_signs) printops.thousands_separator = THOUSANDS_SEPARATOR_SPACE;
+	else printops.thousands_separator = THOUSANDS_SEPARATOR_NONE;
 	set_operator_symbols();
 	set_unicode_buttons();
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_asterisk")), printops.use_unicode_signs);
