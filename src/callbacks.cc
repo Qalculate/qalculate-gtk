@@ -9823,8 +9823,8 @@ void edit_names(ExpressionItem *item, const gchar *namestr, GtkWidget *win, bool
 	
 	GtkTreeIter iter;
 	
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_editbox1")), !(item->isBuiltin() && !(item->type() == TYPE_FUNCTION && item->subtype() == SUBTYPE_DATA_SET)));
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_editbox2")), !(item->isBuiltin() && !(item->type() == TYPE_FUNCTION && item->subtype() == SUBTYPE_DATA_SET)));
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_editbox1")), !(item && item->isBuiltin() && !(item->type() == TYPE_FUNCTION && item->subtype() == SUBTYPE_DATA_SET)));
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_editbox2")), !(item && item->isBuiltin() && !(item->type() == TYPE_FUNCTION && item->subtype() == SUBTYPE_DATA_SET)));
 	
 	if(!names_edited) {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_button_modify")), FALSE);
