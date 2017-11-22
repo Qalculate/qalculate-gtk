@@ -1290,10 +1290,11 @@ void display_parse_status() {
 		po.lower_case_e = printops.lower_case_e;
 		po.lower_case_numbers = printops.lower_case_numbers;
 		po.base_display = printops.base_display;
+		po.base = evalops.parse_options.base;
 		po.abbreviate_names = false;
 		po.hide_underscore_spaces = true;
 		po.use_unicode_signs = printops.use_unicode_signs;
-		po.thousands_separator = printops.thousands_separator;
+		po.digit_grouping = printops.digit_grouping;
 		po.multiplication_sign = printops.multiplication_sign;
 		po.division_sign = printops.division_sign;
 		po.short_multiplication = false;
@@ -5609,9 +5610,10 @@ void ViewThread::run() {
 			po.lower_case_e = printops.lower_case_e;
 			po.lower_case_numbers = printops.lower_case_numbers;
 			po.base_display = printops.base_display;
+			po.base = evalops.parse_options.base;
 			po.abbreviate_names = false;
 			po.use_unicode_signs = printops.use_unicode_signs;
-			po.thousands_separator = printops.thousands_separator;
+			po.digit_grouping = printops.digit_grouping;
 			po.multiplication_sign = printops.multiplication_sign;
 			po.division_sign = printops.division_sign;
 			po.short_multiplication = false;
@@ -10887,7 +10889,7 @@ void load_preferences() {
 	printops.number_fraction_format = FRACTION_DECIMAL;
 	printops.abbreviate_names = true;
 	printops.use_unicode_signs = true;
-	printops.thousands_separator = THOUSANDS_SEPARATOR_SPACE;
+	printops.digit_grouping = DIGIT_GROUPING_STANDARD;
 	printops.use_unit_prefixes = true;
 	printops.use_prefixes_for_currencies = false;
 	printops.use_prefixes_for_all_units = false;
@@ -11335,17 +11337,30 @@ void load_preferences() {
 				} else if(svar == "show_ending_zeroes") {
 					if(mode_index == 1) printops.show_ending_zeroes = v;
 					else modes[mode_index].po.show_ending_zeroes = v;
+				} else if(svar == "digit_grouping") {
+					if(v >= DIGIT_GROUPING_NONE && v <= DIGIT_GROUPING_LOCALE) {
+						printops.digit_grouping = (DigitGrouping) v;
+					}
 				} else if(svar == "round_halfway_to_even") {
 					if(mode_index == 1) printops.round_halfway_to_even = v;	
 					else modes[mode_index].po.round_halfway_to_even = v;	
 				} else if(svar == "always_exact") {		//obsolete
-					if(mode_index == 1) evalops.approximation = APPROXIMATION_EXACT;
-					else modes[mode_index].eo.approximation = APPROXIMATION_EXACT;
+					if(mode_index == 1) {
+						evalops.approximation = APPROXIMATION_EXACT;
+						CALCULATOR->useIntervalArithmetics(false);
+					} else {
+						modes[mode_index].eo.approximation = APPROXIMATION_EXACT;
+						modes[mode_index].interval = false;
+					}
 				} else if(svar == "approximation") {
 					if(v >= APPROXIMATION_EXACT && v <= APPROXIMATION_APPROXIMATE) {
-						if(v == APPROXIMATION_EXACT && (version_numbers[0] < 2 || (version_numbers[0] == 2 && version_numbers[1] < 2))) CALCULATOR->useIntervalArithmetics(false);
-						if(mode_index == 1) evalops.approximation = (ApproximationMode) v;
-						else modes[mode_index].eo.approximation = (ApproximationMode) v;
+						if(mode_index == 1) {
+							evalops.approximation = (ApproximationMode) v;
+							if(v == APPROXIMATION_EXACT && (version_numbers[0] < 2 || (version_numbers[0] == 2 && version_numbers[1] < 2))) CALCULATOR->useIntervalArithmetics(false);
+						} else {
+							modes[mode_index].eo.approximation = (ApproximationMode) v;
+							if(v == APPROXIMATION_EXACT && (version_numbers[0] < 2 || (version_numbers[0] == 2 && version_numbers[1] < 2))) modes[mode_index].interval = false;
+						}
 					}
 				} else if(svar == "in_rpn_mode") {
 					if(mode_index == 1) rpn_mode = v;
@@ -11401,8 +11416,6 @@ void load_preferences() {
 					inv_is_on = v;*/
 				} else if(svar == "use_unicode_signs" && (version_numbers[0] > 0 || version_numbers[1] > 7 || (version_numbers[1] == 7 && version_numbers[2] > 0))) {
 					printops.use_unicode_signs = v;
-					if(printops.use_unicode_signs) printops.thousands_separator = THOUSANDS_SEPARATOR_SPACE;
-					else printops.thousands_separator = THOUSANDS_SEPARATOR_NONE;
 				} else if(svar == "lower_case_numbers") {
 					printops.lower_case_numbers = v;	
 				} else if(svar == "lower_case_e") {
@@ -11722,6 +11735,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "lower_case_e=%i\n", printops.lower_case_e);
 	fprintf(file, "base_display=%i\n", printops.base_display);
 	fprintf(file, "spell_out_logical_operators=%i\n", printops.spell_out_logical_operators);
+	fprintf(file, "digit_grouping=%i\n", printops.digit_grouping);
 	fprintf(file, "dot_as_separator=%i\n", evalops.parse_options.dot_as_separator);
 	fprintf(file, "comma_as_separator=%i\n", evalops.parse_options.comma_as_separator);
 	fprintf(file, "use_custom_result_font=%i\n", use_custom_result_font);	
@@ -12235,8 +12249,6 @@ void on_preferences_checkbutton_spell_out_logical_operators_toggled(GtkToggleBut
 }
 void on_preferences_checkbutton_unicode_signs_toggled(GtkToggleButton *w, gpointer) {
 	printops.use_unicode_signs = gtk_toggle_button_get_active(w);
-	if(printops.use_unicode_signs) printops.thousands_separator = THOUSANDS_SEPARATOR_SPACE;
-	else printops.thousands_separator = THOUSANDS_SEPARATOR_NONE;
 	set_operator_symbols();
 	set_unicode_buttons();
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_asterisk")), printops.use_unicode_signs);
@@ -12395,6 +12407,24 @@ void on_preferences_radiobutton_division_toggled(GtkToggleButton *w, gpointer) {
 	if(gtk_toggle_button_get_active(w)) {
 		printops.division_sign = DIVISION_SIGN_DIVISION;
 		result_display_updated();
+	}
+}
+void on_preferences_radiobutton_digit_grouping_none_toggled(GtkToggleButton *w, gpointer) {
+	if(gtk_toggle_button_get_active(w)) {
+		printops.digit_grouping = DIGIT_GROUPING_NONE;
+		result_format_updated();
+	}
+}
+void on_preferences_radiobutton_digit_grouping_standard_toggled(GtkToggleButton *w, gpointer) {
+	if(gtk_toggle_button_get_active(w)) {
+		printops.digit_grouping = DIGIT_GROUPING_STANDARD;
+		result_format_updated();
+	}
+}
+void on_preferences_radiobutton_digit_grouping_locale_toggled(GtkToggleButton *w, gpointer) {
+	if(gtk_toggle_button_get_active(w)) {
+		printops.digit_grouping = DIGIT_GROUPING_LOCALE;
+		result_format_updated();
 	}
 }
 

@@ -268,6 +268,9 @@ void on_preferences_radiobutton_asterisk_toggled(GtkToggleButton *w, gpointer us
 void on_preferences_radiobutton_slash_toggled(GtkToggleButton *w, gpointer user_data);
 void on_preferences_radiobutton_division_slash_toggled(GtkToggleButton *w, gpointer user_data);
 void on_preferences_radiobutton_division_toggled(GtkToggleButton *w, gpointer user_data);
+void on_preferences_radiobutton_digit_grouping_none_toggled(GtkToggleButton *w, gpointer user_data);
+void on_preferences_radiobutton_digit_grouping_standard_toggled(GtkToggleButton *w, gpointer user_data);
+void on_preferences_radiobutton_digit_grouping_locale_toggled(GtkToggleButton *w, gpointer user_data);
 void on_preferences_button_result_font_toggled(GtkButton *w, gpointer user_data);
 void on_preferences_button_expression_font_toggled(GtkButton *w, gpointer user_data);
 void on_preferences_button_status_font_toggled(GtkButton *w, gpointer user_data);
