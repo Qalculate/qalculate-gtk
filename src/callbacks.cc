@@ -933,7 +933,7 @@ void update_status_text() {
 	
 }
 
-bool check_exchange_rates(GtkWidget *win = NULL) {
+bool check_exchange_rates(GtkWidget *win = NULL, bool set_result = false) {
 	if(!CALCULATOR->exchangeRatesUsed()) return false;
 	if(auto_update_exchange_rates == 0 && win != NULL) return false;
 	if(CALCULATOR->checkExchangeRatesDate(auto_update_exchange_rates > 0 ? auto_update_exchange_rates : 7, false, auto_update_exchange_rates == 0)) return false;
@@ -965,7 +965,8 @@ bool check_exchange_rates(GtkWidget *win = NULL) {
 		gtk_widget_destroy(edialog);
 	}
 	if(b || auto_update_exchange_rates > 0) {
-		fetch_exchange_rates(15);
+		if(!b && set_result) setResult(NULL, false, false, false, "", 0, false);
+		fetch_exchange_rates(b ? 15 : 8);
 		CALCULATOR->loadExchangeRates();
 		return true;
 	}
@@ -4700,7 +4701,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			if(m.type() == STRUCT_COMPARISON) {
 				switch(m.comparisonType()) {
 					case COMPARISON_EQUALS: {
-						if(ips.depth == 0 && po.use_unicode_signs && ((po.is_approximate && *po.is_approximate) || m.isApproximate()) && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, po.can_display_unicode_string_arg))) {
+						if((ips.depth == 0 || (po.interval_display != INTERVAL_DISPLAY_INTERVAL && m.containsInterval())) && po.use_unicode_signs && ((po.is_approximate && *po.is_approximate) || m.isApproximate()) && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, po.can_display_unicode_string_arg))) {
 							str += SIGN_ALMOST_EQUAL;
 						} else {
 							str += "=";
@@ -6303,7 +6304,7 @@ void executeCommand(int command_type, bool show_result = true, string ceu_str = 
 	}
 	if(!command_thread->running) command_aborted = true;
 	
-	if(!command_aborted && run == 1 && command_type >= COMMAND_CONVERT_UNIT && check_exchange_rates()) {
+	if(!command_aborted && run == 1 && command_type >= COMMAND_CONVERT_UNIT && check_exchange_rates(NULL, show_result)) {
 		b_busy = true;
 		mfactor->set(*mstruct);
 		run = 2;
@@ -6351,6 +6352,10 @@ void executeCommand(int command_type, bool show_result = true, string ceu_str = 
 }
 
 void fetch_exchange_rates(int timeout) {
+	bool b_busy_bak = b_busy;
+	bool do_timeout_bak = do_timeout;
+	b_busy = true;
+	do_timeout = false;
 	FetchExchangeRatesThread fetch_thread;
 	if(fetch_thread.start() && fetch_thread.write(timeout)) {
 		int i = 0;
@@ -6369,6 +6374,8 @@ void fetch_exchange_rates(int timeout) {
 			gtk_widget_destroy(dialog);
 		}
 	}
+	b_busy = b_busy_bak;
+	do_timeout = do_timeout_bak;
 }
 
 void FetchExchangeRatesThread::run() {
@@ -6785,8 +6792,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	if(rpn_mode && do_mathoperation && parsed_tostruct && !parsed_tostruct->isUndefined() && parsed_tostruct->isSymbolic()) {
 		mstruct->set(CALCULATOR->convert(*mstruct, parsed_tostruct->symbol(), evalops));
 	}
-
-	if(!do_mathoperation && check_exchange_rates()) {
+	
+	if(!do_mathoperation && check_exchange_rates(NULL, (!do_stack || stack_index == 0) && !do_factors && !do_fraction)) {
 		execute_expression(force, do_mathoperation, op, f, rpn_mode, do_stack ? stack_index : 0, saved_execute_str, str);
 		return;
 	}
@@ -17715,8 +17722,9 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 	if(surface_result) {
 		gint w = 0, h = 0;		
 		if(!first_draw_of_result) {
-			if(b_busy) return TRUE;
-			if(display_aborted || (!displayed_mstruct && result_too_long)) {
+			if(b_busy) {
+				if(b_busy_result) return TRUE;
+			} else if(display_aborted || (!displayed_mstruct && result_too_long)) {
 				PangoLayout *layout = gtk_widget_create_pango_layout(widget, NULL);
 				pango_layout_set_markup(layout, display_aborted ? _("result processing was aborted") : _("result is too long\nsee history"), -1);
 				pango_layout_get_pixel_size(layout, &w, &h);
@@ -17759,7 +17767,7 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 		gtk_widget_get_preferred_height(gtk_scrolled_window_get_hscrollbar(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "scrolled_result"))), NULL, &sbh);
 		gint rh = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
 		gint rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
-		if(first_draw_of_result || result_font_updated) {
+		if(first_draw_of_result || (!b_busy && result_font_updated)) {
 			while(displayed_mstruct && !display_aborted && scale_n < 3 && h > (w > rw - sbw ? rh - sbh : rh)) {
 				int scroll_diff = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport")));
 				double scale_div = (double) h / (gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport"))) + scroll_diff);
