@@ -1265,7 +1265,7 @@ The main issue with interval arithmetics is handling of dependent values. The si
 Some non-invertible functions (including bessel and airy functions) are not properly support and only the function value for the end values of the interval are calculated. Trigonometric functions should however give correct intervals for real and imaginary numbers, but will in some cases for complex numbers with both a real and imaginary part return a too wide interval.
 </para>
 <para>
-Generally, the resulting interval will be guaranteed to include the true interval, but may often for non-trivial expression (especially involving complex numbers) return an interval that is to wide. Infinity values in intervals are currently not supported.
+Generally, the resulting interval will be guaranteed to include the true interval, but may often for non-trivial expression (especially involving complex numbers) return an interval that is to wide.
 </para>
 <para>
 For implicit interval arithmetics the result is by default shown as an ordinary number with the number of significant digits determined by the width of the interval(<quote>interval(2.075, 2.15) = 2.1</quote>), unless the interval is too wide. If the <command>interval()</command> has been used in the expression the result is by default displayed as an interval, and if <quote>±</quote> notation has been used, it will also be used in the result. The default behaviour can be changed from<menuchoice><guimenu>Mode</guimenu><guimenu>Interval Display</guimenu></menuchoice>. The midpoint alternative displays the value halfway between the lower and upper limit of the interval (<quote>interval(2.075, 2.15) = 2.1125</quote>).

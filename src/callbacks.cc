@@ -3889,25 +3889,42 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				}
 			}
 			if(!use_e_notation && !exp.empty()) {
-				MathStructure mnr(m_one);
-				mnr.multiply(m_one);
-				number_map[(void*) &mnr[0].number()] = value_str;
-				number_approx_map[(void*) &mnr[0].number()] = number_approx_map[(void*) &m.number()];
-				mnr[1].raise(m_one);
-				number_map[(void*) &mnr[1][0].number()] = "10";
-				if(exp_minus) {
-					mnr[1][1].transform(STRUCT_NEGATE);
-					number_map[(void*) &mnr[1][1][0].number()] = exp;
+				if(value_str == "1") {
+					MathStructure mnr(m_one);
+					mnr.raise(m_one);
+					number_map[(void*) &mnr[0].number()] = "10";
+					if(exp_minus) {
+						mnr[1].transform(STRUCT_NEGATE);
+						number_map[(void*) &mnr[1][0].number()] = exp;
+					} else {
+						number_map[(void*) &mnr[1].number()] = exp;
+					}
+					surface = draw_structure(mnr, po, ips, point_central, scaledown, color);
+					if(exp_minus) number_map.erase(&mnr[1][0].number());
+					else number_map.erase(&mnr[1].number());
+					number_map.erase(&mnr[0].number());
+					return surface;
 				} else {
-					number_map[(void*) &mnr[1][1].number()] = exp;
+					MathStructure mnr(m_one);
+					mnr.multiply(m_one);
+					number_map[(void*) &mnr[0].number()] = value_str;
+					number_approx_map[(void*) &mnr[0].number()] = number_approx_map[(void*) &m.number()];
+					mnr[1].raise(m_one);
+					number_map[(void*) &mnr[1][0].number()] = "10";
+					if(exp_minus) {
+						mnr[1][1].transform(STRUCT_NEGATE);
+						number_map[(void*) &mnr[1][1][0].number()] = exp;
+					} else {
+						number_map[(void*) &mnr[1][1].number()] = exp;
+					}
+					surface = draw_structure(mnr, po, ips, point_central, scaledown, color);
+					if(exp_minus) number_map.erase(&mnr[1][1][0].number());
+					else number_map.erase(&mnr[1][1].number());
+					number_map.erase(&mnr[1][0].number());
+					number_map.erase(&mnr[0].number());
+					number_approx_map.erase(&mnr[0].number());
+					return surface;
 				}
-				surface = draw_structure(mnr, po, ips, point_central, scaledown, color);
-				if(exp_minus) number_map.erase(&mnr[1][1][0].number());
-				else number_map.erase(&mnr[1][1].number());
-				number_map.erase(&mnr[1][0].number());
-				number_map.erase(&mnr[0].number());
-				number_approx_map.erase(&mnr[0].number());
-				return surface;
 			}
 			str += value_str;
 			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
