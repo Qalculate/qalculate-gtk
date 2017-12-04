@@ -1858,14 +1858,14 @@ On: 1/2*pi = 0.5 pi</property>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkRadioMenuItem" id="menu_item_interval_arithmetics">
+                              <object class="GtkRadioMenuItem" id="menu_item_interval_arithmetic">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="tooltip_text" translatable="yes">Calculates an interval of possible values and keeps track of precision changes.</property>
-                                <property name="label" translatable="yes">Interval Arithmetics</property>
+                                <property name="label" translatable="yes">Interval Arithmetic</property>
                                 <property name="active">True</property>
                                 <property name="group">menu_item_always_exact</property>
-                                <signal name="activate" handler="on_menu_item_interval_arithmetics_activate" swapped="no"/>
+                                <signal name="activate" handler="on_menu_item_interval_arithmetic_activate" swapped="no"/>
                               </object>
                             </child>
                             <child>

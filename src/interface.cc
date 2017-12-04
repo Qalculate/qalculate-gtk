@@ -173,16 +173,16 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 			break;
 		}
 		case APPROXIMATION_TRY_EXACT: {
-			if(!CALCULATOR->usesIntervalArithmetics()) {
+			if(!CALCULATOR->usesIntervalArithmetic()) {
 				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_try_exact")), TRUE);
 				if(initial_update) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), TRY_EXACT_INDEX);
 				break;
 			}
 		}
 		default: {
-			if(CALCULATOR->usesIntervalArithmetics()) {
-				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_arithmetics")), TRUE);
-				if(initial_update) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), INTERVAL_ARITHMETICS_INDEX);
+			if(CALCULATOR->usesIntervalArithmetic()) {
+				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_arithmetic")), TRUE);
+				if(initial_update) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), INTERVAL_ARITHMETIC_INDEX);
 			} else {
 				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_approximate")), TRUE);
 				if(initial_update) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), APPROXIMATE_INDEX);

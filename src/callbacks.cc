@@ -818,7 +818,7 @@ void update_status_text() {
 	string str = "<span size=\"small\">";
 	
 	bool b = false;
-	if(CALCULATOR->usesIntervalArithmetics()) {
+	if(CALCULATOR->usesIntervalArithmetic()) {
 		STATUS_SPACE
 		str += _("INTVL");
 	} else if(evalops.approximation == APPROXIMATION_EXACT) {
@@ -1287,7 +1287,7 @@ void display_parse_status() {
 		}
 		PrintOptions po;
 		po.preserve_format = true;
-		po.show_ending_zeroes = evalops.parse_options.read_precision != DONT_READ_PRECISION && !CALCULATOR->usesIntervalArithmetics();
+		po.show_ending_zeroes = evalops.parse_options.read_precision != DONT_READ_PRECISION && !CALCULATOR->usesIntervalArithmetic();
 		po.lower_case_e = printops.lower_case_e;
 		po.lower_case_numbers = printops.lower_case_numbers;
 		po.base_display = printops.base_display;
@@ -5624,7 +5624,7 @@ void ViewThread::run() {
 		if(x) {
 			PrintOptions po;
 			po.preserve_format = true;
-			po.show_ending_zeroes = evalops.parse_options.read_precision != DONT_READ_PRECISION && !CALCULATOR->usesIntervalArithmetics();
+			po.show_ending_zeroes = evalops.parse_options.read_precision != DONT_READ_PRECISION && !CALCULATOR->usesIntervalArithmetic();
 			po.lower_case_e = printops.lower_case_e;
 			po.lower_case_numbers = printops.lower_case_numbers;
 			po.base_display = printops.base_display;
@@ -10283,7 +10283,7 @@ void save_mode() {
 */
 void set_saved_mode() {
 	modes[1].precision = CALCULATOR->getPrecision();
-	modes[1].interval = CALCULATOR->usesIntervalArithmetics();
+	modes[1].interval = CALCULATOR->usesIntervalArithmetic();
 	modes[1].adaptive_interval_display = adaptive_interval_display;
 	modes[1].variable_units_enabled = CALCULATOR->variableUnitsEnabled();
 	modes[1].po = printops;
@@ -10312,7 +10312,7 @@ size_t save_mode_as(string name, bool *new_mode = NULL) {
 	modes[index].po.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
 	modes[index].eo = evalops;
 	modes[index].precision = CALCULATOR->getPrecision();
-	modes[index].interval = CALCULATOR->usesIntervalArithmetics();
+	modes[index].interval = CALCULATOR->usesIntervalArithmetic();
 	modes[index].adaptive_interval_display = adaptive_interval_display;
 	modes[index].variable_units_enabled = CALCULATOR->variableUnitsEnabled();
 	modes[index].at = CALCULATOR->defaultAssumptions()->type();
@@ -10661,8 +10661,8 @@ void on_combobox_approximation_changed(GtkComboBox *w, gpointer) {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_always_exact")), TRUE);
 			break;
 		}
-		case INTERVAL_ARITHMETICS_INDEX: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_arithmetics")), TRUE);
+		case INTERVAL_ARITHMETIC_INDEX: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_arithmetic")), TRUE);
 			break;
 		}
 		case TRY_EXACT_INDEX: {
@@ -10955,7 +10955,7 @@ void load_preferences() {
 	
 	adaptive_interval_display = true;
 	
-	CALCULATOR->useIntervalArithmetics(true);
+	CALCULATOR->useIntervalArithmetic(true);
 	
 	rpn_mode = false;
 	rpn_keys = true;
@@ -11150,8 +11150,8 @@ void load_preferences() {
 				} else if(svar == "min_exp") {
 					if(mode_index == 1) printops.min_exp = v;
 					else modes[mode_index].po.min_exp = v;
-				} else if(svar == "interval_arithmetics") {
-					if(mode_index == 1) CALCULATOR->useIntervalArithmetics(v);
+				} else if(svar == "interval_arithmetic") {
+					if(mode_index == 1) CALCULATOR->useIntervalArithmetic(v);
 					else modes[mode_index].interval = v;
 				} else if(svar == "interval_display") {
 					if(v == 0) {
@@ -11371,7 +11371,7 @@ void load_preferences() {
 				} else if(svar == "always_exact") {		//obsolete
 					if(mode_index == 1) {
 						evalops.approximation = APPROXIMATION_EXACT;
-						CALCULATOR->useIntervalArithmetics(false);
+						CALCULATOR->useIntervalArithmetic(false);
 					} else {
 						modes[mode_index].eo.approximation = APPROXIMATION_EXACT;
 						modes[mode_index].interval = false;
@@ -11380,7 +11380,7 @@ void load_preferences() {
 					if(v >= APPROXIMATION_EXACT && v <= APPROXIMATION_APPROXIMATE) {
 						if(mode_index == 1) {
 							evalops.approximation = (ApproximationMode) v;
-							if(v == APPROXIMATION_EXACT && (version_numbers[0] < 2 || (version_numbers[0] == 2 && version_numbers[1] < 2))) CALCULATOR->useIntervalArithmetics(false);
+							if(v == APPROXIMATION_EXACT && (version_numbers[0] < 2 || (version_numbers[0] == 2 && version_numbers[1] < 2))) CALCULATOR->useIntervalArithmetic(false);
 						} else {
 							modes[mode_index].eo.approximation = (ApproximationMode) v;
 							if(v == APPROXIMATION_EXACT && (version_numbers[0] < 2 || (version_numbers[0] == 2 && version_numbers[1] < 2))) modes[mode_index].interval = false;
@@ -11895,7 +11895,7 @@ void save_preferences(bool mode) {
 		fprintf(file, "max_deci=%i\n", modes[i].po.max_decimals);
 		fprintf(file, "use_max_deci=%i\n", modes[i].po.use_max_decimals);
 		fprintf(file, "precision=%i\n", modes[i].precision);
-		fprintf(file, "interval_arithmetics=%i\n", modes[i].interval);
+		fprintf(file, "interval_arithmetic=%i\n", modes[i].interval);
 		fprintf(file, "interval_display=%i\n", modes[i].adaptive_interval_display ? 0 : modes[i].po.interval_display + 1);
 		fprintf(file, "min_exp=%i\n", modes[i].po.min_exp);
 		fprintf(file, "negative_exponents=%i\n", modes[i].po.negative_exponents);
@@ -15820,7 +15820,7 @@ void on_menu_item_sort_minus_last_activate(GtkMenuItem *w, gpointer) {
 void on_menu_item_always_exact_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.approximation = APPROXIMATION_EXACT;
-	CALCULATOR->useIntervalArithmetics(false);
+	CALCULATOR->useIntervalArithmetic(false);
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_approximation"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_approximation_changed, NULL);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), ALWAYS_EXACT_INDEX);
@@ -15828,13 +15828,13 @@ void on_menu_item_always_exact_activate(GtkMenuItem *w, gpointer) {
 	
 	expression_calculation_updated();
 }
-void on_menu_item_interval_arithmetics_activate(GtkMenuItem *w, gpointer) {
+void on_menu_item_interval_arithmetic_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.approximation = APPROXIMATION_TRY_EXACT;
-	CALCULATOR->useIntervalArithmetics(true);
+	CALCULATOR->useIntervalArithmetic(true);
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_approximation"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_approximation_changed, NULL);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), INTERVAL_ARITHMETICS_INDEX);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), INTERVAL_ARITHMETIC_INDEX);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_approximation"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_approximation_changed, NULL);
 	
 	expression_calculation_updated();
@@ -15842,7 +15842,7 @@ void on_menu_item_interval_arithmetics_activate(GtkMenuItem *w, gpointer) {
 void on_menu_item_try_exact_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.approximation = APPROXIMATION_TRY_EXACT;
-	CALCULATOR->useIntervalArithmetics(false);
+	CALCULATOR->useIntervalArithmetic(false);
 	
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_approximation"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_approximation_changed, NULL);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), TRY_EXACT_INDEX);
@@ -15853,7 +15853,7 @@ void on_menu_item_try_exact_activate(GtkMenuItem *w, gpointer) {
 void on_menu_item_approximate_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.approximation = APPROXIMATION_APPROXIMATE;
-	CALCULATOR->useIntervalArithmetics(false);
+	CALCULATOR->useIntervalArithmetic(false);
 	
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_approximation"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_approximation_changed, NULL);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), APPROXIMATE_INDEX);

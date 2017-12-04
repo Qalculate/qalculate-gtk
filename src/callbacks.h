@@ -480,7 +480,7 @@ void on_menu_item_abbreviate_names_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_always_exact_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_try_exact_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_approximate_activate(GtkMenuItem *w, gpointer user_data);
-void on_menu_item_interval_arithmetics_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_interval_arithmetic_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_save_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_save_image_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_copy_activate(GtkMenuItem *w, gpointer user_data);
