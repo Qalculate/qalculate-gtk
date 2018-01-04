@@ -16612,7 +16612,7 @@ gboolean on_tMatrixEdit_editable_key_press_event(GtkWidget *w, GdkEventKey *even
 			GtkTreePath *path = NULL;
 			gtk_tree_view_get_cursor(GTK_TREE_VIEW(tMatrixEdit), &path, &column);
 			if(path) {
-				if(column) {		
+				if(column) {
 					for(size_t i = 0; i < matrix_edit_columns.size(); i++) {
 						if(matrix_edit_columns[i] == column) {
 							if(event->keyval == GDK_KEY_Tab) {
@@ -16646,6 +16646,7 @@ gboolean on_tMatrixEdit_editable_key_press_event(GtkWidget *w, GdkEventKey *even
 							while(gtk_events_pending()) gtk_main_iteration();
 							gtk_tree_view_set_cursor(GTK_TREE_VIEW(tMatrixEdit), path, matrix_edit_columns[i], TRUE);
 							on_tMatrixEdit_cursor_changed(GTK_TREE_VIEW(tMatrixEdit), NULL);
+							break;
 						}
 					}
 				}
@@ -16874,6 +16875,7 @@ gboolean on_tMatrix_editable_key_press_event(GtkWidget *w, GdkEventKey *event, g
 							while(gtk_events_pending()) gtk_main_iteration();
 							gtk_tree_view_set_cursor(GTK_TREE_VIEW(tMatrix), path, matrix_columns[i], TRUE);
 							on_tMatrix_cursor_changed(GTK_TREE_VIEW(tMatrix), NULL);
+							break;
 						}
 					}
 				}
