@@ -3173,9 +3173,9 @@ void on_tNames_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 	GtkTreeIter iter;
 	selected_subfunction = 0;
 	if(gtk_tree_selection_get_selected(treeselection, &model, &iter)) {
-		gboolean abbreviation = FALSE, suffix = FALSE, unicode = FALSE, plural = FALSE, reference = FALSE, avoid_input = FALSE, case_sensitive = FALSE;
+		gboolean abbreviation = FALSE, suffix = FALSE, unicode = FALSE, plural = FALSE, reference = FALSE, avoid_input = FALSE, case_sensitive = FALSE, completion_only = FALSE;
 		gchar *name;
-		gtk_tree_model_get(model, &iter, NAMES_NAME_COLUMN, &name, NAMES_ABBREVIATION_COLUMN, &abbreviation, NAMES_SUFFIX_COLUMN, &suffix, NAMES_UNICODE_COLUMN, &unicode, NAMES_PLURAL_COLUMN, &plural, NAMES_REFERENCE_COLUMN, &reference, NAMES_AVOID_INPUT_COLUMN, &avoid_input, NAMES_CASE_SENSITIVE_COLUMN, &case_sensitive, -1);
+		gtk_tree_model_get(model, &iter, NAMES_NAME_COLUMN, &name, NAMES_ABBREVIATION_COLUMN, &abbreviation, NAMES_SUFFIX_COLUMN, &suffix, NAMES_UNICODE_COLUMN, &unicode, NAMES_PLURAL_COLUMN, &plural, NAMES_REFERENCE_COLUMN, &reference, NAMES_AVOID_INPUT_COLUMN, &avoid_input, NAMES_CASE_SENSITIVE_COLUMN, &case_sensitive, NAMES_COMPLETION_ONLY_COLUMN, &completion_only, -1);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name")), name);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_abbreviation")), abbreviation);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_suffix")), suffix);
@@ -3184,6 +3184,7 @@ void on_tNames_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference")), reference);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_avoid_input")), avoid_input);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_case_sensitive")), case_sensitive);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_completion_only")), completion_only);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_button_modify")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_button_remove")), TRUE);
 		g_free(name);
@@ -3647,7 +3648,7 @@ void update_completion() {
 			str += "()";
 			for(size_t name_i = 1; name_i <= CALCULATOR->functions[i]->countNames(); name_i++) {
 				ename = &CALCULATOR->functions[i]->getName(name_i);
-				if(ename && ename != ename_r && !ename->plural && (!ename->unicode || can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))) {
+				if(ename && ename != ename_r && !ename->completion_only && !ename->plural && (!ename->unicode || can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))) {
 					str += " <i>";
 					if(ename->suffix && ename->name.length() > 1) {
 						str += sub_suffix(ename);
@@ -3668,7 +3669,7 @@ void update_completion() {
 			ename_r = &CALCULATOR->variables[i]->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
 			for(size_t name_i = 1; name_i <= CALCULATOR->variables[i]->countNames(); name_i++) {
 				ename = &CALCULATOR->variables[i]->getName(name_i);
-				if(ename && ename != ename_r && !ename->plural && (!ename->unicode || can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))) {
+				if(ename && ename != ename_r && !ename->completion_only && !ename->plural && (!ename->unicode || can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))) {
 					if(!b) {
 						if(ename_r->suffix && ename_r->name.length() > 1) {
 							str = sub_suffix(ename_r);
@@ -3748,7 +3749,7 @@ void update_completion() {
 			ename_r = &CALCULATOR->units[i]->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
 			for(size_t name_i = 1; name_i <= CALCULATOR->units[i]->countNames(); name_i++) {
 				ename = &CALCULATOR->units[i]->getName(name_i);
-				if(ename && ename != ename_r && !ename->plural && (!ename->unicode || can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))) {
+				if(ename && ename != ename_r && !ename->completion_only && !ename->plural && (!ename->unicode || can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))) {
 					if(!b) {
 						if(ename_r->suffix && ename_r->name.length() > 1) {
 							str = sub_suffix(ename_r);
@@ -7655,11 +7656,12 @@ void set_edited_names(ExpressionItem *item, string str) {
 			gchar *gstr;
 			while(true) {	
 				gboolean abbreviation = FALSE, suffix = FALSE, unicode = FALSE, plural = FALSE;
-				gboolean reference = FALSE, avoid_input = FALSE, case_sensitive = FALSE;
-				gtk_tree_model_get(GTK_TREE_MODEL(tNames_store), &iter, NAMES_NAME_COLUMN, &gstr, NAMES_ABBREVIATION_COLUMN, &abbreviation, NAMES_SUFFIX_COLUMN, &suffix, NAMES_UNICODE_COLUMN, &unicode, NAMES_PLURAL_COLUMN, &plural, NAMES_REFERENCE_COLUMN, &reference, NAMES_AVOID_INPUT_COLUMN, &avoid_input, NAMES_CASE_SENSITIVE_COLUMN, &case_sensitive, -1);
+				gboolean reference = FALSE, avoid_input = FALSE, case_sensitive = FALSE, completion_only = FALSE;
+				gtk_tree_model_get(GTK_TREE_MODEL(tNames_store), &iter, NAMES_NAME_COLUMN, &gstr, NAMES_ABBREVIATION_COLUMN, &abbreviation, NAMES_SUFFIX_COLUMN, &suffix, NAMES_UNICODE_COLUMN, &unicode, NAMES_PLURAL_COLUMN, &plural, NAMES_REFERENCE_COLUMN, &reference, NAMES_AVOID_INPUT_COLUMN, &avoid_input, NAMES_CASE_SENSITIVE_COLUMN, &case_sensitive, NAMES_COMPLETION_ONLY_COLUMN, &completion_only, -1);
 				ename.name = gstr; ename.abbreviation = abbreviation; ename.suffix = suffix;
 				ename.unicode = unicode; ename.plural = plural; ename.reference = reference; 
 				ename.avoid_input = avoid_input; ename.case_sensitive = case_sensitive;
+				ename.completion_only = completion_only;
 				item->addName(ename);
 				g_free(gstr);
 				if(!gtk_tree_model_iter_next(GTK_TREE_MODEL(tNames_store), &iter)) break;
@@ -9864,6 +9866,7 @@ void edit_names(ExpressionItem *item, const gchar *namestr, GtkWidget *win, bool
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_avoid_input")), FALSE);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_case_sensitive")), FALSE);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_unicode")), FALSE);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_completion_only")), FALSE);
 		
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_abbreviation")), !is_dp);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_plural")), !is_dp);
@@ -9871,6 +9874,7 @@ void edit_names(ExpressionItem *item, const gchar *namestr, GtkWidget *win, bool
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_avoid_input")), !is_dp);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_case_sensitive")), !is_dp);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_unicode")), !is_dp);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_completion_only")), !is_dp);
 
 		gtk_list_store_clear(tNames_store);
 		
@@ -9878,7 +9882,7 @@ void edit_names(ExpressionItem *item, const gchar *namestr, GtkWidget *win, bool
 			for(size_t i = 1; i <= item->countNames(); i++) {
 				const ExpressionName *ename = &item->getName(i);
 				gtk_list_store_append(tNames_store, &iter);
-				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, ename->name.c_str(), NAMES_ABBREVIATION_STRING_COLUMN, b2yn(ename->abbreviation), NAMES_PLURAL_STRING_COLUMN, b2yn(ename->plural), NAMES_REFERENCE_STRING_COLUMN, b2yn(ename->reference), NAMES_ABBREVIATION_COLUMN, ename->abbreviation, NAMES_PLURAL_COLUMN, ename->plural, NAMES_UNICODE_COLUMN, ename->unicode, NAMES_REFERENCE_COLUMN, ename->reference, NAMES_SUFFIX_COLUMN, ename->suffix, NAMES_AVOID_INPUT_COLUMN, ename->avoid_input, NAMES_CASE_SENSITIVE_COLUMN, ename->case_sensitive, -1);
+				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, ename->name.c_str(), NAMES_ABBREVIATION_STRING_COLUMN, b2yn(ename->abbreviation), NAMES_PLURAL_STRING_COLUMN, b2yn(ename->plural), NAMES_REFERENCE_STRING_COLUMN, b2yn(ename->reference), NAMES_ABBREVIATION_COLUMN, ename->abbreviation, NAMES_PLURAL_COLUMN, ename->plural, NAMES_UNICODE_COLUMN, ename->unicode, NAMES_REFERENCE_COLUMN, ename->reference, NAMES_SUFFIX_COLUMN, ename->suffix, NAMES_AVOID_INPUT_COLUMN, ename->avoid_input, NAMES_CASE_SENSITIVE_COLUMN, ename->case_sensitive, NAMES_COMPLETION_ONLY_COLUMN, ename->completion_only, -1);
 				if(i == 1 && namestr && strlen(namestr) > 0) {
 					gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, namestr, -1);
 				}
@@ -9886,7 +9890,7 @@ void edit_names(ExpressionItem *item, const gchar *namestr, GtkWidget *win, bool
 		} else if(is_dp && dp && dp->countNames() > 0) {
 			for(size_t i = 1; i <= dp->countNames(); i++) {
 				gtk_list_store_append(tNames_store, &iter);
-				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, dp->getName(i).c_str(), NAMES_ABBREVIATION_STRING_COLUMN, "-", NAMES_PLURAL_STRING_COLUMN, "-", NAMES_REFERENCE_STRING_COLUMN, b2yn(dp->nameIsReference(i)), NAMES_ABBREVIATION_COLUMN, FALSE, NAMES_PLURAL_COLUMN, FALSE, NAMES_UNICODE_COLUMN, FALSE, NAMES_REFERENCE_COLUMN, dp->nameIsReference(i), NAMES_SUFFIX_COLUMN, FALSE, NAMES_AVOID_INPUT_COLUMN, FALSE, NAMES_CASE_SENSITIVE_COLUMN, FALSE, -1);
+				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, dp->getName(i).c_str(), NAMES_ABBREVIATION_STRING_COLUMN, "-", NAMES_PLURAL_STRING_COLUMN, "-", NAMES_REFERENCE_STRING_COLUMN, b2yn(dp->nameIsReference(i)), NAMES_ABBREVIATION_COLUMN, FALSE, NAMES_PLURAL_COLUMN, FALSE, NAMES_UNICODE_COLUMN, FALSE, NAMES_REFERENCE_COLUMN, dp->nameIsReference(i), NAMES_SUFFIX_COLUMN, FALSE, NAMES_AVOID_INPUT_COLUMN, FALSE, NAMES_CASE_SENSITIVE_COLUMN, FALSE, NAMES_COMPLETION_ONLY_COLUMN, FALSE, -1);
 				if(i == 1 && namestr && strlen(namestr) > 0) {
 					gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, namestr, -1);
 				}
@@ -9894,10 +9898,10 @@ void edit_names(ExpressionItem *item, const gchar *namestr, GtkWidget *win, bool
 		} else if(namestr && strlen(namestr) > 0) {
 			gtk_list_store_append(tNames_store, &iter);
 			if(is_dp) {
-				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, namestr, NAMES_ABBREVIATION_STRING_COLUMN, "-", NAMES_PLURAL_STRING_COLUMN, "-", NAMES_REFERENCE_STRING_COLUMN, b2yn(true), NAMES_ABBREVIATION_COLUMN, FALSE, NAMES_PLURAL_COLUMN, FALSE, NAMES_UNICODE_COLUMN, FALSE, NAMES_REFERENCE_COLUMN, TRUE, NAMES_SUFFIX_COLUMN, FALSE, NAMES_AVOID_INPUT_COLUMN, FALSE, NAMES_CASE_SENSITIVE_COLUMN, FALSE, -1);
+				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, namestr, NAMES_ABBREVIATION_STRING_COLUMN, "-", NAMES_PLURAL_STRING_COLUMN, "-", NAMES_REFERENCE_STRING_COLUMN, b2yn(true), NAMES_ABBREVIATION_COLUMN, FALSE, NAMES_PLURAL_COLUMN, FALSE, NAMES_UNICODE_COLUMN, FALSE, NAMES_REFERENCE_COLUMN, TRUE, NAMES_SUFFIX_COLUMN, FALSE, NAMES_AVOID_INPUT_COLUMN, FALSE, NAMES_CASE_SENSITIVE_COLUMN, FALSE, NAMES_COMPLETION_ONLY_COLUMN, FALSE, -1);
 			} else {
 				ExpressionName ename(namestr);	
-				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, ename.name.c_str(), NAMES_ABBREVIATION_STRING_COLUMN, b2yn(ename.abbreviation), NAMES_PLURAL_STRING_COLUMN, b2yn(ename.plural), NAMES_REFERENCE_STRING_COLUMN, b2yn(ename.reference), NAMES_ABBREVIATION_COLUMN, ename.abbreviation, NAMES_PLURAL_COLUMN, ename.plural, NAMES_UNICODE_COLUMN, ename.unicode, NAMES_REFERENCE_COLUMN, ename.reference, NAMES_SUFFIX_COLUMN, ename.suffix, NAMES_AVOID_INPUT_COLUMN, ename.avoid_input, NAMES_CASE_SENSITIVE_COLUMN, ename.case_sensitive, -1);
+				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, ename.name.c_str(), NAMES_ABBREVIATION_STRING_COLUMN, b2yn(ename.abbreviation), NAMES_PLURAL_STRING_COLUMN, b2yn(ename.plural), NAMES_REFERENCE_STRING_COLUMN, b2yn(ename.reference), NAMES_ABBREVIATION_COLUMN, ename.abbreviation, NAMES_PLURAL_COLUMN, ename.plural, NAMES_UNICODE_COLUMN, ename.unicode, NAMES_REFERENCE_COLUMN, ename.reference, NAMES_SUFFIX_COLUMN, ename.suffix, NAMES_AVOID_INPUT_COLUMN, ename.avoid_input, NAMES_CASE_SENSITIVE_COLUMN, ename.case_sensitive, NAMES_COMPLETION_ONLY_COLUMN, ename.completion_only, -1);
 			}
 		}
 	} else if(namestr && strlen(namestr) > 0) {
@@ -12169,6 +12173,9 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 				ename = NULL;
 			}
 		}
+	}
+	if(ename && ename->completion_only) {
+		ename = &item->preferredInputName(ename->abbreviation, printops.use_unicode_signs, ename->plural, false, &can_display_unicode_string_function, (void*) expressiontext);	
 	}
 	if(!ename) ename = ename_r;
 	g_free(gstr2);
@@ -18219,8 +18226,10 @@ void on_names_edit_button_add_clicked(GtkButton*, gpointer) {
 	}
 	GtkTreeIter iter;
 	gtk_list_store_append(tNames_store, &iter);
-	if(editing_dataproperty) gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name"))), NAMES_ABBREVIATION_STRING_COLUMN, "-", NAMES_PLURAL_STRING_COLUMN, "-", NAMES_REFERENCE_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference")))), NAMES_ABBREVIATION_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_abbreviation"))), NAMES_PLURAL_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_plural"))), NAMES_UNICODE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_unicode"))), NAMES_REFERENCE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference"))), NAMES_SUFFIX_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_suffix"))), NAMES_AVOID_INPUT_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_avoid_input"))), NAMES_CASE_SENSITIVE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_case_sensitive"))), -1);
-	else gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name"))), NAMES_ABBREVIATION_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_abbreviation")))), NAMES_PLURAL_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_plural")))), NAMES_REFERENCE_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference")))), NAMES_ABBREVIATION_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_abbreviation"))), NAMES_PLURAL_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_plural"))), NAMES_UNICODE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_unicode"))), NAMES_REFERENCE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference"))), NAMES_SUFFIX_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_suffix"))), NAMES_AVOID_INPUT_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_avoid_input"))), NAMES_CASE_SENSITIVE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_case_sensitive"))), -1);
+	if(editing_dataproperty) gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name"))), NAMES_ABBREVIATION_STRING_COLUMN, "-", NAMES_PLURAL_STRING_COLUMN, "-", NAMES_REFERENCE_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference")))), NAMES_ABBREVIATION_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_abbreviation"))), NAMES_PLURAL_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_plural"))), NAMES_UNICODE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_unicode"))), NAMES_REFERENCE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference"))), NAMES_SUFFIX_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_suffix"))), NAMES_AVOID_INPUT_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_avoid_input"))), NAMES_COMPLETION_ONLY_COLUMN, 
+gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_completion_only"))), NAMES_CASE_SENSITIVE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_case_sensitive"))), -1);
+	else gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name"))), NAMES_ABBREVIATION_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_abbreviation")))), NAMES_PLURAL_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_plural")))), NAMES_REFERENCE_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference")))), NAMES_ABBREVIATION_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_abbreviation"))), NAMES_PLURAL_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_plural"))), NAMES_UNICODE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_unicode"))), NAMES_REFERENCE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference"))), NAMES_SUFFIX_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_suffix"))), NAMES_AVOID_INPUT_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_avoid_input"))), NAMES_COMPLETION_ONLY_COLUMN, 
+gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_completion_only"))), NAMES_CASE_SENSITIVE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_case_sensitive"))), -1);
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name")), "");
 }
 void on_names_edit_button_modify_clicked(GtkButton*, gpointer) {
@@ -18246,8 +18255,8 @@ void on_names_edit_button_modify_clicked(GtkButton*, gpointer) {
 			}
 		}
 		g_free(gstr);
-		if(editing_dataproperty) gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name"))), NAMES_ABBREVIATION_STRING_COLUMN, "-", NAMES_PLURAL_STRING_COLUMN, "-", NAMES_REFERENCE_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference")))), NAMES_ABBREVIATION_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_abbreviation"))), NAMES_PLURAL_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_plural"))), NAMES_UNICODE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_unicode"))), NAMES_REFERENCE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference"))), NAMES_SUFFIX_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_suffix"))), NAMES_AVOID_INPUT_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_avoid_input"))), NAMES_CASE_SENSITIVE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_case_sensitive"))), -1);
-		else gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name"))), NAMES_ABBREVIATION_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_abbreviation")))), NAMES_PLURAL_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_plural")))), NAMES_REFERENCE_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference")))), NAMES_ABBREVIATION_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_abbreviation"))), NAMES_PLURAL_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_plural"))), NAMES_UNICODE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_unicode"))), NAMES_REFERENCE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference"))), NAMES_SUFFIX_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_suffix"))), NAMES_AVOID_INPUT_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_avoid_input"))), NAMES_CASE_SENSITIVE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_case_sensitive"))), -1);
+		if(editing_dataproperty) gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name"))), NAMES_ABBREVIATION_STRING_COLUMN, "-", NAMES_PLURAL_STRING_COLUMN, "-", NAMES_REFERENCE_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference")))), NAMES_ABBREVIATION_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_abbreviation"))), NAMES_PLURAL_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_plural"))), NAMES_UNICODE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_unicode"))), NAMES_REFERENCE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference"))), NAMES_SUFFIX_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_suffix"))), NAMES_AVOID_INPUT_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_avoid_input"))), NAMES_COMPLETION_ONLY_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_completion_only"))), NAMES_CASE_SENSITIVE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_case_sensitive"))), -1);
+		else gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name"))), NAMES_ABBREVIATION_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_abbreviation")))), NAMES_PLURAL_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_plural")))), NAMES_REFERENCE_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference")))), NAMES_ABBREVIATION_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_abbreviation"))), NAMES_PLURAL_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_plural"))), NAMES_UNICODE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_unicode"))), NAMES_REFERENCE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference"))), NAMES_SUFFIX_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_suffix"))), NAMES_AVOID_INPUT_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_avoid_input"))), NAMES_COMPLETION_ONLY_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_completion_only"))), NAMES_CASE_SENSITIVE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_case_sensitive"))), -1);
 	}
 }
 void on_names_edit_button_remove_clicked(GtkButton*, gpointer) {
