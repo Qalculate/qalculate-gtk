@@ -18451,6 +18451,10 @@ bool generate_plot(PlotParameters &pp, vector<MathStructure> &y_vectors, vector<
 	pp.y_log = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_checkbutton_ylog")));
 	pp.x_log_base = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_xlog_base")));
 	pp.y_log_base = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_ylog_base")));
+	pp.auto_y_min = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_checkbutton_ymin")));
+	pp.auto_y_max = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_checkbutton_ymax")));
+	pp.y_min = gtk_spin_button_get_value(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_ymin")));
+	pp.y_max = gtk_spin_button_get_value(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_ymax")));
 	pp.color = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_radiobutton_color")));
 	pp.show_all_borders = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_checkbutton_full_border")));
 	return true;
@@ -18673,6 +18677,12 @@ void on_plot_checkbutton_xlog_toggled(GtkToggleButton *w, gpointer) {
 }
 void on_plot_checkbutton_ylog_toggled(GtkToggleButton *w, gpointer) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_spinbutton_ylog_base")), gtk_toggle_button_get_active(w));
+}
+void on_plot_checkbutton_ymin_toggled(GtkToggleButton *w, gpointer) {
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_spinbutton_ymin")), gtk_toggle_button_get_active(w));
+}
+void on_plot_checkbutton_ymax_toggled(GtkToggleButton *w, gpointer) {
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_spinbutton_ymax")), gtk_toggle_button_get_active(w));
 }
 void on_plot_radiobutton_step_toggled(GtkToggleButton *w, gpointer) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_entry_step")), gtk_toggle_button_get_active(w));
