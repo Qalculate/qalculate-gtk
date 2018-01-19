@@ -351,7 +351,6 @@ enum {
 };
 
 void remove_separator(string &copy_text) {
-	if(printops.base != BASE_DECIMAL) return;
 	for(size_t i = ((CALCULATOR->local_digit_group_separator.empty() || CALCULATOR->local_digit_group_separator == " ") ? 1 : 0); i < 3; i++) {
 		string str_sep;
 		if(i == 0) str_sep = CALCULATOR->local_digit_group_separator;
@@ -707,7 +706,7 @@ void set_unicode_buttons() {
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_pi")), "pi");
 	} else {
 		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sub")), "<b>" MINUS "</b>");
-		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_add")), "<b>" PLUS "/<b>");
+		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_add")), "<b>" PLUS "</b>");
 		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), "<b>" MULTIPLICATION "</b>");
 		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), "<b>" DIVISION "</b>");
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sqrt")), "sqrt");
