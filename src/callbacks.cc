@@ -18410,6 +18410,7 @@ bool generate_plot(PlotParameters &pp, vector<MathStructure> &y_vectors, vector<
 			if(pdp->title.empty()) {
 				pdp->title = gstr2;
 			}
+			pdp->test_continuous = type != 1 && type != 2;
 			switch(smoothing) {
 				case SMOOTHING_MENU_NONE: {pdp->smoothing = PLOT_SMOOTHING_NONE; break;}
 				case SMOOTHING_MENU_UNIQUE: {pdp->smoothing = PLOT_SMOOTHING_UNIQUE; break;}
@@ -18527,6 +18528,7 @@ void update_plot() {
 }
 
 void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, int type, string str, string str_x) {
+	CALCULATOR->beginTemporaryStopIntervalArithmetic();
 	EvaluationOptions eo;
 	eo.approximation = APPROXIMATION_APPROXIMATE;
 	eo.parse_options = evalops.parse_options;
@@ -18567,6 +18569,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(str, min, max, gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_steps"))), *x_vector, str_x, evalops.parse_options, 5000));
 		}
 	}
+	CALCULATOR->endTemporaryStopIntervalArithmetic();
 	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
 	do_timeout = true;
 }
