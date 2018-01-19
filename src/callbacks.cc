@@ -352,26 +352,20 @@ enum {
 
 void remove_separator(string &copy_text) {
 	if(printops.base != BASE_DECIMAL) return;
-	string str_sep = CALCULATOR->local_digit_group_separator;
-	if(str_sep.empty()) return;
-	size_t index = copy_text.find(str_sep);
-	while(index != string::npos) {
-		if(index > 0 && index + str_sep.length() < copy_text.length() && copy_text[index - 1] >= '0' && copy_text[index - 1] <= '9' && copy_text[index + str_sep.length()] >= '0' && copy_text[index + str_sep.length()] <= '9') {
-			copy_text.erase(index, str_sep.length());
-		} else {
-			index++;
+	for(size_t i = ((CALCULATOR->local_digit_group_separator.empty() || CALCULATOR->local_digit_group_separator == " ") ? 1 : 0); i < 3; i++) {
+		string str_sep;
+		if(i == 0) str_sep = CALCULATOR->local_digit_group_separator;
+		else if(i == 1) str_sep = " ";
+		else str_sep = " ";
+		size_t index = copy_text.find(str_sep);
+		while(index != string::npos) {
+			if(index > 0 && index + str_sep.length() < copy_text.length() && copy_text[index - 1] >= '0' && copy_text[index - 1] <= '9' && copy_text[index + str_sep.length()] >= '0' && copy_text[index + str_sep.length()] <= '9') {
+				copy_text.erase(index, str_sep.length());
+			} else {
+				index++;
+			}
+			index = copy_text.find(str_sep, index);
 		}
-		index = copy_text.find(str_sep, index);
-	}
-	if(str_sep == " ") str_sep = " ";
-	index = copy_text.find(str_sep);
-	while(index != string::npos) {
-		if(index > 0 && index + str_sep.length() < copy_text.length() && copy_text[index - 1] >= '0' && copy_text[index - 1] <= '9' && copy_text[index + str_sep.length()] >= '0' && copy_text[index + str_sep.length()] <= '9') {
-			copy_text.erase(index, str_sep.length());
-		} else {
-			index++;
-		}
-		index = copy_text.find(str_sep, index);
 	}
 }
 
