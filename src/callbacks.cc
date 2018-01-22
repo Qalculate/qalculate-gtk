@@ -194,6 +194,7 @@ string default_plot_min = "0";
 string default_plot_max = "10";
 string default_plot_step = "1";
 int default_plot_sampling_rate = 100;
+int default_plot_linewidth = 2;
 bool default_plot_use_sampling_rate = true;
 bool default_plot_rows = false;
 int default_plot_type = 0;
@@ -10908,7 +10909,8 @@ void load_preferences() {
 	default_plot_min = "0";
 	default_plot_max = "10";
 	default_plot_step = "1";
-	default_plot_sampling_rate = 101;
+	default_plot_sampling_rate = 1001;
+	default_plot_linewidth = 2;
 	default_plot_rows = false;
 	default_plot_type = 0;
 	default_plot_style = PLOT_STYLE_LINES;
@@ -11613,7 +11615,11 @@ void load_preferences() {
 				} else if(svar == "plot_type") {
 					default_plot_type = v;	
 				} else if(svar == "plot_color") {
-					default_plot_color = v;
+					if(version_numbers[0] > 2 || (version_numbers[0] == 2 && (version_numbers[1] > 2 || (version_numbers[1] == 2 && version_numbers[2] > 1)))) {
+						default_plot_color = v;
+					}
+				} else if(svar == "plot_linewidth") {
+					default_plot_linewidth = v;
 				} else if(svar == "expression_history") {
 					expression_history.push_back(svalue);		
 				} else if(svar == "history") {
@@ -11984,6 +11990,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "plot_rows=%i\n", default_plot_rows);
 	fprintf(file, "plot_type=%i\n", default_plot_type);
 	fprintf(file, "plot_color=%i\n", default_plot_color);
+	fprintf(file, "plot_linewidth=%i\n", default_plot_linewidth);
 
 	fclose(file);
 	
@@ -15544,6 +15551,7 @@ void on_menu_item_plot_functions_activate(GtkMenuItem*, gpointer) {
 			case PLOT_STYLE_DOTS: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_style")), PLOTSTYLE_MENU_DOTS); break;}
 		}
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_steps")), default_plot_sampling_rate);
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_linewidth")), default_plot_linewidth);
 		
 		gtk_widget_show(dialog);
 		gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(plot_builder, "plot_notebook")), 2);
@@ -15597,6 +15605,7 @@ void on_plot_dialog_hide(GtkWidget*, gpointer) {
 		case PLOTSTYLE_MENU_DOTS: {default_plot_style = PLOT_STYLE_DOTS; break;}
 	}
 	default_plot_sampling_rate = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_steps")));
+	default_plot_linewidth = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_linewidth")));
 	GtkTreeIter iter;
 	bool b = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tPlotFunctions_store), &iter);
 	while(b) {
@@ -18451,6 +18460,7 @@ bool generate_plot(PlotParameters &pp, vector<MathStructure> &y_vectors, vector<
 	pp.y_max = gtk_spin_button_get_value(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_ymax")));
 	pp.color = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_radiobutton_color")));
 	pp.show_all_borders = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_checkbutton_full_border")));
+	pp.linewidth = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_linewidth")));
 	return true;
 }
 void on_plot_button_help_clicked(GtkButton, gpointer) {
