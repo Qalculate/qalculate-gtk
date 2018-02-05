@@ -10719,6 +10719,7 @@ void show_tabs(bool do_show) {
 		set_expression_size_request();
 		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), w, h);
 	}
+	gtk_widget_set_vexpand(resultview, !gtk_widget_get_visible(tabs) && !gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons"))));
 }
 void show_keypad_widget(bool do_show) {
 	if(do_show == gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")))) return;
@@ -10739,6 +10740,7 @@ void show_keypad_widget(bool do_show) {
 		set_expression_size_request();
 		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), w, h);
 	}
+	gtk_widget_set_vexpand(resultview, !gtk_widget_get_visible(tabs) && !gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons"))));
 }
 
 void on_expander_keypad_expanded(GObject *o, GParamSpec*, gpointer) {	

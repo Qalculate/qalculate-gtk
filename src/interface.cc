@@ -988,6 +988,7 @@ void create_main_window(void) {
 	} else {
 		gtk_widget_hide(tabs);
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
+		gtk_widget_set_vexpand(resultview, TRUE);
 	}
 	
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")), continuous_conversion);
