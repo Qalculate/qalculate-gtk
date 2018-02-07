@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.20.2 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
+  <object class="GtkTextBuffer" id="textbuffer1">
+    <property name="text" translatable="yes">Enter two values, of which at most one is a percentage, and the others will be calculated for you.</property>
+  </object>
   <object class="GtkDialog" id="percentage_dialog">
     <property name="can_focus">False</property>
     <property name="border_width">6</property>
@@ -115,7 +118,6 @@
                   <object class="GtkEntry" id="percentage_entry_1">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="tooltip_text" translatable="yes">Decimal value</property>
                     <property name="hexpand">True</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
@@ -143,7 +145,6 @@
                   <object class="GtkEntry" id="percentage_entry_3">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="tooltip_text" translatable="yes">Binary value</property>
                     <property name="hexpand">True</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
@@ -159,7 +160,6 @@
                   <object class="GtkEntry" id="percentage_entry_4">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="tooltip_text" translatable="yes">Octal value</property>
                     <property name="hexpand">True</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
@@ -187,7 +187,6 @@
                   <object class="GtkEntry" id="percentage_entry_2">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="tooltip_text" translatable="yes">Binary value</property>
                     <property name="hexpand">True</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
@@ -215,7 +214,6 @@
                   <object class="GtkEntry" id="percentage_entry_6">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="tooltip_text" translatable="yes">Hexadecimal value</property>
                     <property name="hexpand">True</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
@@ -231,7 +229,6 @@
                   <object class="GtkEntry" id="percentage_entry_7">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="tooltip_text" translatable="yes">Hexadecimal value</property>
                     <property name="hexpand">True</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
@@ -259,7 +256,6 @@
                   <object class="GtkEntry" id="percentage_entry_5">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="tooltip_text" translatable="yes">Octal value</property>
                     <property name="hexpand">True</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
@@ -408,8 +404,5 @@
     <child>
       <placeholder/>
     </child>
-  </object>
-  <object class="GtkTextBuffer" id="textbuffer1">
-    <property name="text" translatable="yes">Enter two values, of which at most one is a percentage, and the others will be calculated for you.</property>
   </object>
 </interface>
