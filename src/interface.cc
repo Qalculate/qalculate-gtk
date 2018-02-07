@@ -1332,6 +1332,9 @@ void create_main_window(void) {
 	if(win_width > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width, win_height);
 	
 	gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
+	
+	if(history_height > 0) gtk_widget_set_size_request(tabs, -1, -1);
+	if(keypad_height > 0) gtk_widget_set_size_request(tabs, -1, -1);
 
 	update_status_text();
 	
