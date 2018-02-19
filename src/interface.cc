@@ -630,6 +630,8 @@ void create_button_menus(void) {
 	f = CALCULATOR->getActiveFunction("linearfunction");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_diff->title(true).c_str(), insert_button_function, CALCULATOR->f_diff)
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_integrate->title(true).c_str(), insert_button_function, CALCULATOR->f_integrate)
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_dsolve->title(true).c_str(), insert_button_function, CALCULATOR->f_dsolve)
 	f = CALCULATOR->getActiveFunction("extremum");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	MENU_SEPARATOR
