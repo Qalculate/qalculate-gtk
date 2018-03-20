@@ -338,7 +338,7 @@ static gint qalculate_handle_local_options(GtkApplication *app, GVariantDict *op
 		}
 		fclose(file);
 		if(gstr_oldfile) {
-			g_mkdir(getLocalDir().c_str(), S_IRWXU);
+			recursiveMakeDir(getLocalDir());
 			move_file(gstr_oldfile, gstr_file);
 			g_free(gstr_oldfile);
 		}

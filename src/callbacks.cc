@@ -492,7 +492,7 @@ bool expression_is_empty() {
 }
 
 void set_assumptions_items(AssumptionType, AssumptionSign);
-void set_mode_items(const PrintOptions&, const EvaluationOptions&, AssumptionType, AssumptionSign, bool, int, bool);
+void set_mode_items(const PrintOptions&, const EvaluationOptions&, AssumptionType, AssumptionSign, bool, int, bool, bool);
 
 string sdot, saltdot, sdiv, sslash, stimes, sminus;
 string sdot_s, saltdot_s, sdiv_s, sslash_s, stimes_s, sminus_s;
@@ -2659,14 +2659,14 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 		if(!b_all && !no_cat && selected_unit_selector_category[0] == '/') {
 			string str = selected_unit_selector_category.substr(1, selected_unit_selector_category.length() - 1);
 			for(size_t i = 0; i < CALCULATOR->units.size(); i++) {	
-				if(CALCULATOR->units[i]->isActive() && !CALCULATOR->units[i]->isHidden() && CALCULATOR->units[i]->category().substr(0, selected_unit_selector_category.length() - 1) == str) {
+				if(CALCULATOR->units[i]->isActive() && (!CALCULATOR->units[i]->isHidden() || CALCULATOR->units[i]->baseUnit() == CALCULATOR->u_euro) && CALCULATOR->units[i]->category().substr(0, selected_unit_selector_category.length() - 1) == str) {
 					setUnitSelectorTreeItem(iter2, CALCULATOR->units[i]);
 				}
 			}
 		} else {
 			bool list_empty = true;
 			for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
-				if(CALCULATOR->units[i]->isActive() && !CALCULATOR->units[i]->isHidden() && (b_all || (no_cat && CALCULATOR->units[i]->category().empty()) || CALCULATOR->units[i]->category() == selected_unit_selector_category)) {
+				if(CALCULATOR->units[i]->isActive() && (!CALCULATOR->units[i]->isHidden() || CALCULATOR->units[i]->baseUnit() == CALCULATOR->u_euro) && (b_all || (no_cat && CALCULATOR->units[i]->category().empty()) || CALCULATOR->units[i]->category() == selected_unit_selector_category)) {
 					setUnitSelectorTreeItem(iter2, CALCULATOR->units[i]);
 					list_empty = false;
 				}
@@ -2674,7 +2674,7 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 			bool collapse_all = true;
 			if(list_empty && !b_all && !no_cat) {
 				for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
-					if(CALCULATOR->units[i]->isActive() && !CALCULATOR->units[i]->isHidden() && CALCULATOR->units[i]->category().length() > selected_unit_selector_category.length() && CALCULATOR->units[i]->category()[selected_unit_selector_category.length()] == '/' && CALCULATOR->units[i]->category().substr(0, selected_unit_selector_category.length()) == selected_unit_selector_category) {
+					if(CALCULATOR->units[i]->isActive() && (!CALCULATOR->units[i]->isHidden() || CALCULATOR->units[i]->baseUnit() == CALCULATOR->u_euro) && CALCULATOR->units[i]->category().length() > selected_unit_selector_category.length() && CALCULATOR->units[i]->category()[selected_unit_selector_category.length()] == '/' && CALCULATOR->units[i]->category().substr(0, selected_unit_selector_category.length()) == selected_unit_selector_category) {
 						setUnitSelectorTreeItem(iter2, CALCULATOR->units[i]);
 					}
 				}
@@ -3656,7 +3656,7 @@ void update_completion() {
 	
 	string str;
 	for(size_t i = 0; i < CALCULATOR->functions.size(); i++) {
-		if(CALCULATOR->functions[i]->isActive()) {
+		if(CALCULATOR->functions[i]->isActive() && !CALCULATOR->functions[i]->isActive()) {
 			gtk_list_store_append(completion_store, &iter);
 			const ExpressionName *ename, *ename_r;
 			ename_r = &CALCULATOR->functions[i]->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
@@ -3682,7 +3682,7 @@ void update_completion() {
 		}
 	}
 	for(size_t i = 0; i < CALCULATOR->variables.size(); i++) {
-		if(CALCULATOR->variables[i]->isActive()) {
+		if(CALCULATOR->variables[i]->isActive() && !CALCULATOR->variables[i]->isHidden()) {
 			gtk_list_store_append(completion_store, &iter);
 			const ExpressionName *ename, *ename_r;
 			bool b = false;
@@ -3762,7 +3762,7 @@ void update_completion() {
 		}
 	}
 	for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
-		if(CALCULATOR->units[i]->isActive() && CALCULATOR->units[i]->subtype() != SUBTYPE_COMPOSITE_UNIT) {
+		if(CALCULATOR->units[i]->isActive() && !CALCULATOR->units[i]->isHidden() && CALCULATOR->units[i]->subtype() != SUBTYPE_COMPOSITE_UNIT) {
 			gtk_list_store_append(completion_store, &iter);
 			const ExpressionName *ename, *ename_r;
 			bool b = false;
@@ -5416,6 +5416,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			dh = function_h / 2;
 
 			for(size_t index = 0; index < m.size(); index++) {
+				if(index == 1 && m.function() == CALCULATOR->f_signum && mstruct[1].isZero()) break;
 				ips_n.wrap = m[index].needsParenthesis(po, ips_n, m, index + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
 				IntervalDisplay id_bak = po.interval_display;
 				if(m.function() == CALCULATOR->f_interval && m[index].isNumber()) {
@@ -10350,7 +10351,8 @@ void load_mode(const mode_struct &mode) {
 	block_result_update = true;
 	block_expression_execution = true;
 	block_display_parse = true;
-	set_mode_items(mode.po, mode.eo, mode.at, mode.as, mode.rpn_mode, mode.precision, false);
+	set_mode_items(mode.po, mode.eo, mode.at, mode.as, mode.rpn_mode, mode.precision, mode.interval, false);
+	evalops.approximation = mode.eo.approximation;
 	block_result_update = false;
 	block_expression_execution = false;
 	block_display_parse = false;
@@ -11682,7 +11684,7 @@ void load_preferences() {
 		}
 		fclose(file);
 		if(gstr_oldfile) {
-			g_mkdir(getLocalDir().c_str(), S_IRWXU);
+			recursiveMakeDir(getLocalDir());
 			move_file(gstr_oldfile, gstr_file);
 			g_free(gstr_oldfile);
 		}
@@ -11705,7 +11707,7 @@ void load_preferences() {
 void save_preferences(bool mode) {
 	FILE *file = NULL;
 	string homedir = getLocalDir();
-	g_mkdir(homedir.c_str(), S_IRWXU);
+	recursiveMakeDir(homedir);
 	gchar *gstr2 = g_build_filename(homedir.c_str(), "qalculate-gtk.cfg", NULL);
 	file = fopen(gstr2, "w+");
 	if(file == NULL) {
@@ -12497,7 +12499,7 @@ void on_preferences_radiobutton_digit_grouping_locale_toggled(GtkToggleButton *w
 
 void on_preferences_button_result_font_font_set(GtkFontButton *w, gpointer) {
 	save_custom_result_font = true;
-	custom_result_font = gtk_font_button_get_font_name(w);
+	custom_result_font = gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w));
 	gint h_old, h_new;
 	gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), NULL, &h_old);
 	gchar *gstr = font_name_to_css(custom_result_font.c_str());
@@ -12512,7 +12514,7 @@ void on_preferences_button_result_font_font_set(GtkFontButton *w, gpointer) {
 }
 void on_preferences_button_expression_font_font_set(GtkFontButton *w, gpointer) {
 	save_custom_expression_font = true;
-	custom_expression_font = gtk_font_button_get_font_name(w);
+	custom_expression_font = gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w));
 	gint h_old, h_new;
 	gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h_old);
 	gchar *gstr = font_name_to_css(custom_expression_font.c_str());
@@ -12527,7 +12529,7 @@ void on_preferences_button_expression_font_font_set(GtkFontButton *w, gpointer) 
 }
 void on_preferences_button_status_font_font_set(GtkFontButton *w, gpointer) {
 	save_custom_status_font = true;
-	custom_status_font = gtk_font_button_get_font_name(w);
+	custom_status_font = gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w));
 	gint h_old = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")));
 	gchar *gstr = font_name_to_css(custom_status_font.c_str());
 	gtk_css_provider_load_from_data(statuslabel_l_provider, gstr, -1, NULL);
@@ -12965,7 +12967,7 @@ gboolean on_gcalc_exit(GtkWidget*, GdkEvent*, gpointer) {
 }
 
 void save_accels() {
-	g_mkdir(getLocalDir().c_str(), S_IRWXU);
+	recursiveMakeDir(getLocalDir());
 	gchar *gstr = g_build_filename(getLocalDir().c_str(), "accelmap", NULL);
 	gtk_accel_map_save(gstr);
 	g_free(gstr);
