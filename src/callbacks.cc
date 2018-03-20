@@ -14619,7 +14619,87 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 	if(u) s_cat = u->category();
 	vector<Unit*> to_us;
 	size_t i_added = 0;
-	if(!s_cat.empty()) {
+	if(u->baseUnit() == CALCULATOR->u_euro) {
+		string local_currency;
+		struct lconv *lc = localeconv();
+		if(lc) local_currency = lc->int_curr_symbol;
+		remove_blank_ends(local_currency);
+		Unit *u_local_currency = NULL;
+		if(!local_currency.empty()) u_local_currency = CALCULATOR->getActiveUnit(local_currency);
+		const char *currency_units[] = {"USD", "GBP", "JPY"};
+		to_us.clear();
+		if(latest_button_currency) to_us.push_back(latest_button_currency);
+		for(size_t i = 0; i < 5; i++) {
+			Unit * u;
+			if(i == 0) u = CALCULATOR->u_euro;
+			else if(i == 1) u = u_local_currency;
+			else u = CALCULATOR->getActiveUnit(currency_units[i - 2]);
+			if(u && (i == 1 || !u->isHidden())) {
+				bool b = false;
+				for(size_t i2 = 0; i2 < to_us.size(); i2++) {
+					if(u == to_us[i2]) {
+						b = true;
+						break;
+					}
+					if(u->title(true) < to_us[i2]->title(true)) {
+						to_us.insert(to_us.begin() + i2, u);
+						b = true;
+						break;
+					}
+				}
+				if(!b) to_us.push_back(u);
+			}
+		}
+		for(size_t i = 0; i < to_us.size(); i++) {
+			MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), convert_to_unit, to_us[i])
+		}
+		i_added = to_us.size();
+		vector<Unit*> to_us2;
+		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
+			if(CALCULATOR->units[i]->baseUnit() == CALCULATOR->u_euro) {
+				Unit *u = CALCULATOR->units[i];
+				if(u->isActive() && u->isBuiltin()) {
+					bool b = false;
+					if(u->isHidden() && u != u_local_currency) {
+						for(int i2 = to_us2.size() - 1; i2 >= 0; i2--) {
+							if(u->title(true) > to_us2[(size_t) i2]->title(true)) {
+								if((size_t) i2 == to_us2.size() - 1) to_us2.push_back(u);
+								else to_us2.insert(to_us2.begin() + (size_t) i2 + 1, u);
+								b = true;
+								break;
+							}
+						}
+						if(!b) to_us2.insert(to_us2.begin(), u);
+					} else {
+						for(size_t i2 = 0; i2 < i_added; i2++) {
+							if(u == to_us[i2]) {
+								b = true;
+								break;
+							}
+						}
+						for(size_t i2 = to_us.size() - 1; !b && i2 >= i_added; i2--) {
+							if(u->title(true) > to_us[i2]->title(true)) {
+								if(i2 == to_us.size() - 1) to_us.push_back(u);
+								else to_us.insert(to_us.begin() + i2 + 1, u);
+								b = true;
+							}
+						}
+						if(!b) to_us.insert(to_us.begin() + i_added, u);
+					}
+				}
+			}
+		}
+		for(size_t i = i_added; i < to_us.size(); i++) {
+			// Show further items in a submenu
+			if(i == i_added) {SUBMENU_ITEM(_("more"), sub);}
+			MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), convert_to_unit, to_us[i])
+		}
+		if(to_us2.size() > 0) {SUBMENU_ITEM(_("more"), sub);}
+		for(size_t i = i_added; i < to_us2.size(); i++) {
+			// Show further items in a submenu
+			MENU_ITEM_WITH_POINTER(to_us2[i]->title(true).c_str(), convert_to_unit, to_us2[i])
+		}
+	} else if(!s_cat.empty()) {
 		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 			if(CALCULATOR->units[i]->category() == s_cat) {
 				u = CALCULATOR->units[i];
@@ -14638,7 +14718,7 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 			}
 		}
 		for(size_t i = 0; i < to_us.size(); i++) {
-			if((i + 4) % 9 == 0 && i + 1 != to_us.size()) {SUBMENU_ITEM(_("more"), sub);}
+			if(i + 4 == 9 && i + 1 != to_us.size()) {SUBMENU_ITEM(_("more"), sub);}
 			MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), convert_to_unit, to_us[i])
 			// Show further items in a submenu
 		}
