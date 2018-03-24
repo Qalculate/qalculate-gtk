@@ -11070,7 +11070,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {2, 2, 1};
+	int version_numbers[] = {2, 3, 0};
 	bool old_history_format = false;
 			
 	if(file) {
