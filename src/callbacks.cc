@@ -8467,6 +8467,21 @@ void convert_to_unit(GtkMenuItem*, gpointer user_data)
 	focus_keeping_selection();
 }
 
+void convert_to_unit_noprefix(GtkMenuItem*, gpointer user_data)
+{
+	GtkWidget *edialog;
+	Unit *u = (Unit*) user_data;
+	if(!u) {
+		edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Unit does not exist"));
+		gtk_dialog_run(GTK_DIALOG(edialog));
+		gtk_widget_destroy(edialog);
+	}
+	string ceu_str = u->name();
+	//result is stored in MathStructure *mstruct
+	executeCommand(COMMAND_CONVERT_STRING, true, ceu_str);
+	focus_keeping_selection();
+}
+
 void edit_unknown(const char *category, Variable *var, GtkWidget *win) {
 
 	if(var != NULL && var->isKnown()) {
@@ -14615,11 +14630,11 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 		return;
 	}
 	string s_cat;
-	Unit *u = CALCULATOR->findMatchingUnit(*mstruct);
-	if(u) s_cat = u->category();
+	Unit *u_result = CALCULATOR->findMatchingUnit(*mstruct);
+	if(u_result) s_cat = u_result->category();
 	vector<Unit*> to_us;
 	size_t i_added = 0;
-	if(u->baseUnit() == CALCULATOR->u_euro) {
+	if(u_result && u_result->baseUnit() == CALCULATOR->u_euro) {
 		string local_currency;
 		struct lconv *lc = localeconv();
 		if(lc) local_currency = lc->int_curr_symbol;
@@ -14628,13 +14643,13 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 		if(!local_currency.empty()) u_local_currency = CALCULATOR->getActiveUnit(local_currency);
 		const char *currency_units[] = {"USD", "GBP", "JPY"};
 		to_us.clear();
-		if(latest_button_currency) to_us.push_back(latest_button_currency);
+		if(latest_button_currency && latest_button_currency != u_result) to_us.push_back(latest_button_currency);
 		for(size_t i = 0; i < 5; i++) {
 			Unit * u;
 			if(i == 0) u = CALCULATOR->u_euro;
 			else if(i == 1) u = u_local_currency;
 			else u = CALCULATOR->getActiveUnit(currency_units[i - 2]);
-			if(u && (i == 1 || !u->isHidden())) {
+			if(u && u != u_result && (i == 1 || !u->isHidden())) {
 				bool b = false;
 				for(size_t i2 = 0; i2 < to_us.size(); i2++) {
 					if(u == to_us[i2]) {
@@ -14658,7 +14673,7 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 			if(CALCULATOR->units[i]->baseUnit() == CALCULATOR->u_euro) {
 				Unit *u = CALCULATOR->units[i];
-				if(u->isActive() && u->isBuiltin()) {
+				if(u != u_result && u->isActive()) {
 					bool b = false;
 					if(u->isHidden() && u != u_local_currency) {
 						for(int i2 = to_us2.size() - 1; i2 >= 0; i2--) {
@@ -14702,7 +14717,7 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 	} else if(!s_cat.empty()) {
 		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 			if(CALCULATOR->units[i]->category() == s_cat) {
-				u = CALCULATOR->units[i];
+				Unit *u = CALCULATOR->units[i];
 				if(u->isActive() && !u->isHidden()) {
 					bool b = false;
 					for(size_t i2 = 0; i2 < to_us.size(); i2++) {
@@ -14719,7 +14734,7 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 		}
 		for(size_t i = 0; i < to_us.size(); i++) {
 			if(i + 4 == 9 && i + 1 != to_us.size()) {SUBMENU_ITEM(_("more"), sub);}
-			MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), convert_to_unit, to_us[i])
+			MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), to_us[i] == u_result ? convert_to_unit_noprefix : convert_to_unit, to_us[i])
 			// Show further items in a submenu
 		}
 	}
@@ -14728,7 +14743,7 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 		vector<Unit*> to_us2;
 		for(size_t i = 0; i < 6 && i_added + 3 < 9; i++) {
 			Unit * u = CALCULATOR->getActiveUnit(si_units[i]);
-			if(u && !u->isHidden()) {
+			if(!u->isHidden()) {
 				bool b = false;
 				for(size_t i2 = 0; i2 < to_us.size(); i2++) {
 					if(u == to_us[i2]) {
@@ -14750,7 +14765,7 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 			}
 		}
 		for(size_t i = 0; i < to_us2.size(); i++) {
-			MENU_ITEM_WITH_POINTER(to_us2[i]->title(true).c_str(), convert_to_unit, to_us2[i])
+			MENU_ITEM_WITH_POINTER(to_us2[i]->title(true).c_str(), to_us2[i] == u_result ? convert_to_unit_noprefix : convert_to_unit, to_us2[i])
 		}
 	}
 }

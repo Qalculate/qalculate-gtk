@@ -761,7 +761,7 @@ void create_button_menus(void) {
 	for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 		if(CALCULATOR->units[i]->baseUnit() == CALCULATOR->u_euro) {
 			Unit *u = CALCULATOR->units[i];
-			if(u->isActive() && u->isBuiltin()) {
+			if(u->isActive()) {
 				bool b = false;
 				if(u->isHidden() && u != u_local_currency) {
 					for(int i2 = to_us2.size() - 1; i2 >= 0; i2--) {
