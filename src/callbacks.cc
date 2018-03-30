@@ -3656,7 +3656,7 @@ void update_completion() {
 	
 	string str;
 	for(size_t i = 0; i < CALCULATOR->functions.size(); i++) {
-		if(CALCULATOR->functions[i]->isActive() && !CALCULATOR->functions[i]->isActive()) {
+		if(CALCULATOR->functions[i]->isActive() && !CALCULATOR->functions[i]->isHidden()) {
 			gtk_list_store_append(completion_store, &iter);
 			const ExpressionName *ename, *ename_r;
 			ename_r = &CALCULATOR->functions[i]->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
