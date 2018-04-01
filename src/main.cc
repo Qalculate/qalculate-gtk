@@ -64,7 +64,7 @@ string calc_arg;
 bool do_timeout, check_expression_position;
 gint expression_position;
 
-QalculateDate last_version_check_date;
+QalculateDateTime last_version_check_date;
 
 static GOptionEntry options[] = {
 	{"new-instance", 'n', 0, G_OPTION_ARG_NONE, NULL, N_("Start a new instance of the application"), NULL},
@@ -271,7 +271,7 @@ void create_application(GtkApplication *app) {
 	g_free(gstr);
 	
 #ifdef _WIN32
-	QalculateDate next_version_check_date(last_version_check_date);
+	QalculateDateTime next_version_check_date(last_version_check_date);
 	next_version_check_date.addDays(14);
 	if(!next_version_check_date.isFutureDate()) g_idle_add(on_check_version_idle, NULL);
 #endif

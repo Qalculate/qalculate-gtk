@@ -145,6 +145,7 @@ bool hyp_is_on, inv_is_on;
 bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes;
 bool copy_separator;
 extern bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message, allow_multiple_instances;
+int b_decimal_comma;
 int auto_update_exchange_rates;
 bool first_error;
 bool display_expression_status, enable_completion;
@@ -262,7 +263,7 @@ bool status_warning_color_set;
 
 string old_fromValue, old_toValue;
 
-extern QalculateDate last_version_check_date;
+extern QalculateDateTime last_version_check_date;
 string last_found_version;
 
 #define TEXT_TAGS			"<span size=\"xx-large\">"
@@ -3996,6 +3997,28 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			str += m.symbol();
 			TTE(str)
 			str += "</i>";
+			pango_layout_set_markup(layout, str.c_str(), -1);
+			PangoRectangle rect;
+			pango_layout_get_pixel_size(layout, &w, &h);
+			pango_layout_get_pixel_extents(layout, &rect, NULL);
+			w = rect.width + rect.x;
+			w += 1;
+			central_point = h / 2;
+			surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+			cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+			cr = cairo_create(surface);
+			gdk_cairo_set_source_rgba(cr, color);
+			cairo_move_to(cr, 1, 0);
+			pango_cairo_show_layout(cr, layout);
+			g_object_unref(layout);
+			break;
+		}
+		case STRUCT_DATETIME: {
+			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
+			string str;
+			TTBP(str)
+			str += m.datetime()->print(po);
+			TTE(str)
 			pango_layout_set_markup(layout, str.c_str(), -1);
 			PangoRectangle rect;
 			pango_layout_get_pixel_size(layout, &w, &h);
@@ -10994,6 +11017,7 @@ void load_preferences() {
 	evalops.parse_options.dot_as_separator = CALCULATOR->default_dot_as_separator;
 	evalops.parse_options.comma_as_separator = false;
 	evalops.mixed_units_conversion = MIXED_UNITS_CONVERSION_DEFAULT;
+	b_decimal_comma = -1;
 	
 	copy_separator = true;
 	
@@ -11498,11 +11522,15 @@ void load_preferences() {
 					printops.spell_out_logical_operators = v;
 				} else if(svar == "copy_separator") {
 					copy_separator = v;
+				} else if(svar == "decimal_comma") {
+					b_decimal_comma = v;
+					if(v == 0) CALCULATOR->useDecimalPoint(evalops.parse_options.comma_as_separator);
+					else if(v > 0) CALCULATOR->useDecimalComma();
 				} else if(svar == "dot_as_separator") {
 					evalops.parse_options.dot_as_separator = v;
 				} else if(svar == "comma_as_separator") {
 					evalops.parse_options.comma_as_separator = v;
-					if(CALCULATOR->getDecimalPoint() != ",") {						
+					if(CALCULATOR->getDecimalPoint() != COMMA) {
 						CALCULATOR->useDecimalPoint(evalops.parse_options.comma_as_separator);
 					}
 				} else if(svar == "use_custom_result_font") {
@@ -11813,6 +11841,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "spell_out_logical_operators=%i\n", printops.spell_out_logical_operators);
 	fprintf(file, "digit_grouping=%i\n", printops.digit_grouping);
 	fprintf(file, "copy_separator=%i\n", copy_separator);
+	fprintf(file, "decimal_comma=%i\n", b_decimal_comma);
 	fprintf(file, "dot_as_separator=%i\n", evalops.parse_options.dot_as_separator);
 	fprintf(file, "comma_as_separator=%i\n", evalops.parse_options.comma_as_separator);
 	fprintf(file, "use_custom_result_font=%i\n", use_custom_result_font);	
@@ -12357,6 +12386,21 @@ void on_preferences_checkbutton_allow_multiple_instances_toggled(GtkToggleButton
 }
 void on_preferences_checkbutton_rpn_keys_toggled(GtkToggleButton *w, gpointer) {
 	rpn_keys = gtk_toggle_button_get_active(w);
+}
+void on_preferences_checkbutton_decimal_comma_toggled(GtkToggleButton *w, gpointer) {
+	b_decimal_comma = gtk_toggle_button_get_active(w);
+	if(b_decimal_comma) {
+		CALCULATOR->useDecimalComma();
+		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_dot_as_separator")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_comma_as_separator")));
+	} else {
+		CALCULATOR->useDecimalPoint(evalops.parse_options.comma_as_separator);
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_dot_as_separator")));
+		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_comma_as_separator")));
+	}
+	expression_format_updated(false);
+	result_display_updated();
+	set_unicode_buttons();
 }
 void on_preferences_checkbutton_dot_as_separator_toggled(GtkToggleButton *w, gpointer) {
 	evalops.parse_options.dot_as_separator = gtk_toggle_button_get_active(w);
