@@ -1351,6 +1351,8 @@ void display_parse_status() {
 				parsed_expression += _("fraction");
 			} else if(equalsIgnoreCase(str_u, "factors") || equalsIgnoreCase(str_u, _("factors"))) {
 				parsed_expression += _("factors");
+			} else if(equalsIgnoreCase(str_u, "utc") || equalsIgnoreCase(str_u, "gmt")) {
+				parsed_expression += _("UTC time zone");
 			} else {			
 				CALCULATOR->beginTemporaryStopMessages();
 				CompositeUnit cu("", "temporary_composite_parse", "", str_u);
@@ -6593,6 +6595,14 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			b_busy_expression = false;
 			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			printops.base = save_base;
+			return;
+		} else if(equalsIgnoreCase(to_str, "utc") || equalsIgnoreCase(to_str, "gmt")) {
+			printops.time_zone = TIME_ZONE_UTC;
+			evalops.parse_options.units_enabled = b_units_saved;
+			b_busy = false;
+			b_busy_expression = false;
+			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			printops.time_zone = TIME_ZONE_LOCAL;
 			return;
 		} else if(equalsIgnoreCase(to_str, "bases") || equalsIgnoreCase(to_str, _("bases"))) {
 			b_busy = false;
