@@ -244,6 +244,7 @@ int history_index = 0;
 int initial_inhistory_index = 0;
 int nr_of_new_expressions = 0;
 
+unordered_map<void*, string> date_map;
 unordered_map<void*, string> number_map;
 unordered_map<void*, bool> number_approx_map;
 unordered_map<void*, string> number_exp_map;
@@ -4019,7 +4020,14 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
 			string str;
 			TTBP(str)
-			str += m.datetime()->print(po);
+			unordered_map<void*, string>::iterator it = date_map.find((void*) m.datetime());
+			if(it != date_map.end()) {
+				str += it->second;
+			} else {
+				string value_str = m.datetime()->print(po);
+				date_map[(void*) m.datetime()] = value_str;
+				str += value_str;
+			}
 			TTE(str)
 			pango_layout_set_markup(layout, str.c_str(), -1);
 			PangoRectangle rect;
@@ -5619,7 +5627,8 @@ void clearresult() {
 		displayed_mstruct->unref();
 		displayed_mstruct = NULL;
 		if(!surface_result) gtk_widget_queue_draw(resultview);
-	}	
+	}
+	date_map.clear();
 	number_map.clear();
 	number_exp_map.clear();
 	number_exp_minus_map.clear();
@@ -7416,7 +7425,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 					}
 				}
 				default: {
-					if(i >= f->minargs() && !has_vector) {
+					if(i >= f->minargs() && !has_vector && defstr.empty()) {
 						typestr = "(";
 						typestr += _("optional");
 					}
@@ -7424,7 +7433,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 					if(typestr.empty()) {
 						typestr = "(";
 					} else if(!argtype.empty()) {
-						typestr += " ";
+						typestr += ", ";
 					}
 					if(!argtype.empty()) {
 						typestr += argtype;
@@ -7442,7 +7451,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 			gtk_entry_set_alignment(GTK_ENTRY(entry[i]), 1.0);
 		}
 		gtk_widget_set_hexpand(entry[i], TRUE);
-		if(typestr.empty() && i >= f->minargs() && !has_vector) {
+		if(typestr.empty() && i >= f->minargs() && !has_vector && defstr.empty()) {
 			typestr = "(";
 			typestr += _("optional");
 			typestr += ")";			
@@ -11119,7 +11128,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {2, 3, 0};
+	int version_numbers[] = {2, 3, 1};
 	bool old_history_format = false;
 			
 	if(file) {

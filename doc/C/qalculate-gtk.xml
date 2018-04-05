@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "2.3.0">
-  <!ENTITY manrevision "2.3.0">
-  <!ENTITY date "Mars 2018">
+  <!ENTITY appversion "2.3.1">
+  <!ENTITY manrevision "2.3.1">
+  <!ENTITY date "April 2018">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -867,11 +867,17 @@ In &app; mathematical entities, such as numbers and variables, are referred to a
 		<listitem><para>
 		Unknowns are text strings without any associated value. If &app; finds a character that are not associated with any variable, function or unit in an expression, then it will be regarded as an unknown variable. These are temporary unknown variables with default assumptions. Unknowns can also be explicitly entered by putting a text string in quotes. This is also necessary for undefined unknown variables with more than one character (ex.<quote>xy</quote> is just one object, while xy means x * y). See <xref linkend="qalculate-variables"/>.
 		</para></listitem>
+	</varlistentry>
+	<varlistentry>
+		<term>Date and Time</term>
+		<listitem><para>
+		Date/time values are specified using quoted text string (quotes are not needed for function arguments), using standard date and time format (YYYY-MM-DDTHH:MM:SS). Some local formats are also supported, but not recommended. The local time zone are used, unless a time zone is specified at the end of the time string (Z/UTC/GMT or +/-HH:MM). Date/time supports a small subset of arithmetic operations. The time units represents calender time, instead of average values, when aadded or subtracted to a date.
+		</para></listitem>
 	</varlistentry>	
 	<varlistentry>
 		<term>Text</term>
 		<listitem><para>
-		This category represent a number of different function argument types, such as regular text, dates and file names. They can, but do not need to be put in quotes except when containing the argument separator (<quote>,</quote> or <quote>;</quote>).
+		This category represent a number of different function argument types, such as regular text and file names. They can, but do not need to be put in quotes except when containing the argument separator (<quote>,</quote> or <quote>;</quote>).
 		</para></listitem>
 	</varlistentry>		
 </variablelist>
@@ -1148,6 +1154,10 @@ Putting <quote> to </quote> followed by an expression at the end of the mathemat
 <varlistentry>
 <term>factors</term>
 <listitem><para>Show factorized (algebraic or integer factorization).</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>utc</term>
+<listitem><para>Show date and time using UTC time zone.</para></listitem>
 </varlistentry>
 </variablelist>
 </para>
