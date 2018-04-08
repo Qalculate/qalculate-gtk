@@ -6,7 +6,7 @@ dnl  ----------------------
 dnl | initialize autotools |---------------------------------------------------
 dnl  ----------------------
 
-AC_INIT([Qalculate! (GTK+ UI)], [2.3.1],[],[qalculate-gtk])
+AC_INIT([Qalculate! (GTK+ UI)], [2.4.0],[],[qalculate-gtk])
 AC_CONFIG_SRCDIR([src/callbacks.cc])
 AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4])
@@ -91,7 +91,7 @@ AC_SUBST(GTK_LIBS)
 GTK_LIBS="-export-dynamic $GTK_LIBS"
 
 PKG_CHECK_MODULES(QALCULATE, [
-	libqalculate >= 2.3.1
+	libqalculate >= 2.4.0
 	])
 AC_SUBST(QALCULATE_CFLAGS)
 AC_SUBST(QALCULATE_LIBS)

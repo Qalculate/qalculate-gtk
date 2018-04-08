@@ -1149,8 +1149,8 @@ gboolean on_check_version_idle(gpointer) {
 	return FALSE;
 }
 
-void display_function_hint(MathFunction *f, int arg_index = 1) {
-	if(!f) return;
+bool display_function_hint(MathFunction *f, int arg_index = 1) {
+	if(!f) return false;
 	int iargs = f->maxargs();
 	Argument *arg;
 	Argument default_arg;
@@ -1158,10 +1158,13 @@ void display_function_hint(MathFunction *f, int arg_index = 1) {
 	const ExpressionName *ename = &f->preferredName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) statuslabel_l);
 	bool last_is_vctr = f->getArgumentDefinition(iargs) && f->getArgumentDefinition(iargs)->type() == ARGUMENT_TYPE_VECTOR;
 	if(arg_index > iargs && iargs >= 0 && !last_is_vctr) {
+		if(iargs == 1 && f->getArgumentDefinition(1) && f->getArgumentDefinition(1)->handlesVector()) {
+			return false;
+		}
 		gchar *gstr = g_strdup_printf(_("Too many arguments for %s()."), ename->name.c_str());
 		set_status_text(gstr, false, false, true);
 		g_free(gstr);
-		return;
+		return true;
 	}
 	str += ename->name;		
 	if(iargs < 0) {
@@ -1244,6 +1247,7 @@ void display_function_hint(MathFunction *f, int arg_index = 1) {
 	}
 	str += ")";
 	set_status_text(str);
+	return true;
 }
 
 void display_parse_status() {
@@ -1290,11 +1294,12 @@ void display_parse_status() {
 		had_warnings = warnings_count > 0;
 		evalops.parse_options.unended_function = NULL;
 	}
+	bool b_func = false;
 	if(mfunc.isFunction()) {
 		if(mfunc.countChildren() == 0) {
-			display_function_hint(mfunc.function(), 1);
+			b_func = display_function_hint(mfunc.function(), 1);
 		} else {
-			display_function_hint(mfunc.function(), mfunc.countChildren());
+			b_func = display_function_hint(mfunc.function(), mfunc.countChildren());
 		}
 	}
 	if(expression_has_changed2) {
@@ -1369,9 +1374,9 @@ void display_parse_status() {
 		gsub("&", "&amp;", parsed_expression);
 		gsub(">", "&gt;", parsed_expression);
 		gsub("<", "&lt;", parsed_expression);
-		if(!mfunc.isFunction()) set_status_text(parsed_expression.c_str(), true, had_errors, had_warnings);
+		if(!b_func) set_status_text(parsed_expression.c_str(), true, had_errors, had_warnings);
 		expression_has_changed2 = false;
-	} else if(!mfunc.isFunction()) {
+	} else if(!b_func) {
 		set_status_text(parsed_expression.c_str(), true, parsed_had_errors, parsed_had_warnings);
 	}
 	evalops.parse_options.preserve_format = false;
@@ -5449,7 +5454,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			dh = function_h / 2;
 
 			for(size_t index = 0; index < m.size(); index++) {
-				if(index == 1 && m.function() == CALCULATOR->f_signum && mstruct[1].isZero()) break;
+				if(index == 1 && m.function() == CALCULATOR->f_signum && m[1].isZero()) break;
 				ips_n.wrap = m[index].needsParenthesis(po, ips_n, m, index + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
 				IntervalDisplay id_bak = po.interval_display;
 				if(m.function() == CALCULATOR->f_interval && m[index].isNumber()) {
@@ -8014,6 +8019,7 @@ void edit_argument(Argument *arg) {
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_enable_condition")), !arg->getCustomCondition().empty());
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_entry_condition")), !arg->getCustomCondition().empty());
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_forbid_zero")), arg->zeroForbidden());
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_handle_vector")), arg->handlesVector());
 	switch(arg->type()) {
 		case ARGUMENT_TYPE_NUMBER: {
 			NumberArgument *farg = (NumberArgument*) arg;
@@ -8094,6 +8100,7 @@ void edit_argument(Argument *arg) {
 		arg->setTests(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_enable_test"))));
 		arg->setMatrixAllowed(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_allow_matrix"))));
 		arg->setZeroForbidden(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_forbid_zero"))));
+		arg->setHandleVector(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_handle_vector"))));
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_enable_condition")))) {
 			arg->setCustomCondition(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(argumentrules_builder, "argument_rules_entry_condition"))));
 		} else {
@@ -11128,7 +11135,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {2, 3, 1};
+	int version_numbers[] = {2, 4, 0};
 	bool old_history_format = false;
 			
 	if(file) {
