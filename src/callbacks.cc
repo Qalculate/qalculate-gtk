@@ -1359,14 +1359,21 @@ void display_parse_status() {
 				parsed_expression += _("factors");
 			} else if(equalsIgnoreCase(str_u, "utc") || equalsIgnoreCase(str_u, "gmt")) {
 				parsed_expression += _("UTC time zone");
-			} else {			
-				CALCULATOR->beginTemporaryStopMessages();
-				CompositeUnit cu("", "temporary_composite_parse", "", str_u);
-				int warnings_count;
-				had_errors = CALCULATOR->endTemporaryStopMessages(NULL, &warnings_count) > 0 || had_errors;
-				had_warnings = had_warnings || warnings_count > 0;
-				mparse = cu.generateMathStructure(!printops.negative_exponents);
-				mparse.format(po);
+			} else {
+				Variable *v = CALCULATOR->getVariable(str_u);
+				if(v && (!v->isKnown() || ((KnownVariable*) v)->unit().empty())) v = NULL;
+				if(v && CALCULATOR->getUnit(str_u)) v = NULL;
+				if(v) {
+					mparse = v;
+				} else {
+					CALCULATOR->beginTemporaryStopMessages();
+					CompositeUnit cu("", "temporary_composite_parse", "", str_u);
+					int warnings_count;
+					had_errors = CALCULATOR->endTemporaryStopMessages(NULL, &warnings_count) > 0 || had_errors;
+					had_warnings = had_warnings || warnings_count > 0;
+					mparse = cu.generateMathStructure(!printops.negative_exponents);
+					mparse.format(po);
+				}
 				parsed_expression += mparse.print(po);
 			}
 		}
@@ -9704,7 +9711,6 @@ void edit_dataset(DataSet *ds, GtkWidget *win) {
 			gchar *gstr = gtk_text_buffer_get_text(copyright_buffer, &c_iter_s, &c_iter_e, FALSE);
 			ds->setCopyright(gstr);
 			g_free(gstr);
-			DataPropertyIter it;
 			for(size_t i = 0; i < tmp_props.size();) {
 				if(!tmp_props[i]) {
 					if(tmp_props_orig[i]) ds->delProperty(tmp_props_orig[i]);
@@ -13356,7 +13362,7 @@ void do_completion() {
 			bool b_match = false;
 			if(item) {
 				if((editing_to_expression || !evalops.parse_options.functions_enabled) && item->type() == TYPE_FUNCTION) {}
-				else if((editing_to_expression || !evalops.parse_options.variables_enabled) && item->type() == TYPE_VARIABLE) {}
+				else if(item->type() == TYPE_VARIABLE && (!evalops.parse_options.variables_enabled || (editing_to_expression && (!((Variable*) item)->isKnown() || ((KnownVariable*) item)->unit().empty())))) {}
 				else if(!evalops.parse_options.units_enabled && item->type() == TYPE_UNIT) {}
 				else {
 					for(size_t name_i = 1; name_i <= item->countNames() && !b_match; name_i++) {
