@@ -350,7 +350,8 @@ enum {
 	COMMAND_CONVERT_UNIT,
 	COMMAND_CONVERT_STRING,
 	COMMAND_CONVERT_BASE,
-	COMMAND_CONVERT_OPTIMAL
+	COMMAND_CONVERT_OPTIMAL,
+	COMMAND_CALCULATE
 };
 
 void remove_separator(string &copy_text) {
@@ -6303,6 +6304,13 @@ void CommandThread::run() {
 				((MathStructure*) x)->set(CALCULATOR->convertToBaseUnits(*((MathStructure*) x), evalops));
 				break;
 			}
+			case COMMAND_CALCULATE: {
+				EvaluationOptions eo2 = evalops;
+				eo2.calculate_functions = false;
+				eo2.sync_units = false;
+				((MathStructure*) x)->calculatesub(eo2, eo2, true);
+				break;
+			}
 		}
 		b_busy = false;
 		CALCULATOR->stopControl();
@@ -6482,11 +6490,22 @@ void result_action_executed() {
 	printops.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
 	setResult(NULL, true, false, true);
 }
+bool contains_prefix(const MathStructure &m) {
+	if(m.isUnit() && (m.prefix() || m.unit()->subtype() == SUBTYPE_COMPOSITE_UNIT)) return true;
+	for(size_t i = 0; i < m.size(); i++) {
+		if(contains_prefix(m[i])) return true;
+	}
+	return false;
+}
 void result_prefix_changed(Prefix *prefix) {
 	bool b_use_unit_prefixes = printops.use_unit_prefixes;
 	bool b_use_prefixes_for_all_units = printops.use_prefixes_for_all_units;
-	if(!prefix) {
+	if(contains_prefix(*mstruct)) {
 		mstruct->unformat(evalops);
+		executeCommand(COMMAND_CALCULATE, false);
+	}
+	if(!prefix) {
+		//mstruct->unformat(evalops);
 		printops.use_unit_prefixes = true; 
 		printops.use_prefixes_for_all_units = true;
 	}
@@ -14700,18 +14719,13 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 		gtk_widget_destroy(GTK_WIDGET(l->data));
 	}
 	g_list_free(list);
-	if(mstruct && displayed_mstruct && mstruct->isDateTime()) {
-		MENU_ITEM("UTC", menu_to_utc)
-		return;
-	}
+	MENU_ITEM(_("Base units"), on_menu_item_convert_to_base_units_activate);
+	MENU_ITEM(_("Optimal unit"), on_menu_item_convert_to_best_unit_activate);
+	MENU_ITEM(_("Optimal prefix"), on_menu_item_set_prefix_activate);
+	MENU_SEPARATOR
 	if(!mstruct || !displayed_mstruct || !mstruct->containsType(STRUCT_UNIT, true)) {
-		if(!mstruct || !displayed_mstruct) {
-			MENU_ITEM(_("Base units"), on_menu_item_convert_to_base_units_activate);
-			MENU_ITEM(_("Optimal unit"), on_menu_item_convert_to_best_unit_activate);
-			MENU_ITEM(_("Optimal prefix"), on_menu_item_set_prefix_activate);
-			MENU_SEPARATOR
-		}
-		MENU_ITEM(_("Number bases"), on_menu_item_convert_number_bases_activate)
+		if(mstruct && displayed_mstruct && mstruct->isDateTime()) {MENU_ITEM("UTC", menu_to_utc)}
+		else {MENU_ITEM(_("Number bases"), on_menu_item_convert_number_bases_activate)}
 		MENU_ITEM(_("Binary"), menu_to_bin)
 		MENU_ITEM(_("Octal"), menu_to_oct)
 		MENU_ITEM(_("Duodecimal"), menu_to_duo)
@@ -14720,10 +14734,6 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 		MENU_ITEM(_("Fraction"), menu_to_fraction)
 		return;
 	}
-	MENU_ITEM(_("Base units"), on_menu_item_convert_to_base_units_activate);
-	MENU_ITEM(_("Optimal unit"), on_menu_item_convert_to_best_unit_activate);
-	MENU_ITEM(_("Optimal prefix"), on_menu_item_set_prefix_activate);
-	MENU_SEPARATOR
 	string s_cat;
 	Unit *u_result = CALCULATOR->findMatchingUnit(*mstruct);
 	if(u_result) s_cat = u_result->category();
