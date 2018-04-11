@@ -5679,7 +5679,7 @@ void ViewThread::run() {
 		int scale_tmp = 0;
 		if(!read(&scale_tmp)) break;
 		void *x = NULL;
-		if(!read(&x)) break;
+		if(!read(&x) || !x) break;
 		MathStructure m(*((MathStructure*) x));
 		bool b_stack = false;
 		if(!read(&b_stack)) break;
@@ -5845,6 +5845,7 @@ void ViewThread::run() {
 		CALCULATOR->stopControl();
 	}
 }
+
 gboolean on_event(GtkWidget*, GdkEvent *e, gpointer) {
 	if(e->type == GDK_EXPOSE || e->type == GDK_PROPERTY_NOTIFY || e->type == GDK_CONFIGURE || e->type == GDK_FOCUS_CHANGE || e->type == GDK_VISIBILITY_NOTIFY) {
 		return FALSE;
@@ -13051,7 +13052,10 @@ gboolean on_gcalc_exit(GtkWidget*, GdkEvent*, gpointer) {
 		if(history_parsed[i]) history_parsed[i]->unref();
 		if(history_answer[i]) history_answer[i]->unref();
 	}
-	view_thread->cancel();
+	if(view_thread->running) {
+		view_thread->write(0);
+		view_thread->write(NULL);
+	}
 	CALCULATOR->terminateThreads();
 	g_application_quit(g_application_get_default());
 	return TRUE;
@@ -14674,6 +14678,11 @@ void menu_to_hex(GtkMenuItem*, gpointer) {
 	result_format_updated();
 	printops.base = save_base;
 }
+void menu_to_utc(GtkMenuItem*, gpointer) {
+	printops.time_zone = TIME_ZONE_UTC;
+	result_format_updated();
+	printops.time_zone = TIME_ZONE_LOCAL;
+}
 void menu_to_fraction(GtkMenuItem*, gpointer) {
 	NumberFractionFormat save_format = printops.number_fraction_format;
 	if(mstruct && mstruct->isNumber()) printops.number_fraction_format = FRACTION_COMBINED;
@@ -14691,11 +14700,17 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 		gtk_widget_destroy(GTK_WIDGET(l->data));
 	}
 	g_list_free(list);
-	MENU_ITEM(_("Base units"), on_menu_item_convert_to_base_units_activate);
-	MENU_ITEM(_("Optimal unit"), on_menu_item_convert_to_best_unit_activate);
-	MENU_ITEM(_("Optimal prefix"), on_menu_item_set_prefix_activate);
-	MENU_SEPARATOR
+	if(mstruct && displayed_mstruct && mstruct->isDateTime()) {
+		MENU_ITEM("UTC", menu_to_utc)
+		return;
+	}
 	if(!mstruct || !displayed_mstruct || !mstruct->containsType(STRUCT_UNIT, true)) {
+		if(!mstruct || !displayed_mstruct) {
+			MENU_ITEM(_("Base units"), on_menu_item_convert_to_base_units_activate);
+			MENU_ITEM(_("Optimal unit"), on_menu_item_convert_to_best_unit_activate);
+			MENU_ITEM(_("Optimal prefix"), on_menu_item_set_prefix_activate);
+			MENU_SEPARATOR
+		}
 		MENU_ITEM(_("Number bases"), on_menu_item_convert_number_bases_activate)
 		MENU_ITEM(_("Binary"), menu_to_bin)
 		MENU_ITEM(_("Octal"), menu_to_oct)
@@ -14705,6 +14720,10 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 		MENU_ITEM(_("Fraction"), menu_to_fraction)
 		return;
 	}
+	MENU_ITEM(_("Base units"), on_menu_item_convert_to_base_units_activate);
+	MENU_ITEM(_("Optimal unit"), on_menu_item_convert_to_best_unit_activate);
+	MENU_ITEM(_("Optimal prefix"), on_menu_item_set_prefix_activate);
+	MENU_SEPARATOR
 	string s_cat;
 	Unit *u_result = CALCULATOR->findMatchingUnit(*mstruct);
 	if(u_result) s_cat = u_result->category();

@@ -16,7 +16,7 @@ If libqalculate has been installed in the default /usr/local path you it might b
 
 ## Requirements
 * GTK+ (>= 3.10)
-* libqalculate 2.3.0
+* libqalculate 2.4.0
 
 ## Features
 Features specific to qalculate-gtk:
