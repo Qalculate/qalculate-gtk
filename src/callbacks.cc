@@ -1319,6 +1319,7 @@ void display_parse_status() {
 		po.lower_case_e = printops.lower_case_e;
 		po.lower_case_numbers = printops.lower_case_numbers;
 		po.base_display = printops.base_display;
+		po.twos_complement = printops.twos_complement;
 		po.base = evalops.parse_options.base;
 		po.abbreviate_names = false;
 		po.hide_underscore_spaces = true;
@@ -5697,6 +5698,7 @@ void ViewThread::run() {
 			po.lower_case_e = printops.lower_case_e;
 			po.lower_case_numbers = printops.lower_case_numbers;
 			po.base_display = printops.base_display;
+			po.twos_complement = printops.twos_complement;
 			po.base = evalops.parse_options.base;
 			po.abbreviate_names = false;
 			po.use_unicode_signs = printops.use_unicode_signs;
@@ -11045,6 +11047,7 @@ void load_preferences() {
 	printops.lower_case_numbers = false;
 	printops.lower_case_e = false;
 	printops.base_display = BASE_DISPLAY_NORMAL;
+	printops.twos_complement = true;
 	printops.limit_implicit_multiplication = false;
 	printops.can_display_unicode_string_function = &can_display_unicode_string_function;
 	printops.allow_factorization = false;
@@ -11570,6 +11573,8 @@ void load_preferences() {
 					use_e_notation = v;
 				} else if(svar == "base_display") {
 					if(v >= BASE_DISPLAY_NONE && v <= BASE_DISPLAY_ALTERNATIVE) printops.base_display = (BaseDisplay) v;
+				} else if(svar == "twos_complement") {
+					printops.twos_complement = v;
 				} else if(svar == "spell_out_logical_operators") {
 					printops.spell_out_logical_operators = v;
 				} else if(svar == "copy_separator") {
@@ -11890,6 +11895,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "e_notation=%i\n", use_e_notation);
 	fprintf(file, "lower_case_e=%i\n", printops.lower_case_e);
 	fprintf(file, "base_display=%i\n", printops.base_display);
+	fprintf(file, "twos_complement=%i\n", printops.twos_complement);
 	fprintf(file, "spell_out_logical_operators=%i\n", printops.spell_out_logical_operators);
 	fprintf(file, "digit_grouping=%i\n", printops.digit_grouping);
 	fprintf(file, "copy_separator=%i\n", copy_separator);
@@ -12406,6 +12412,10 @@ void on_preferences_checkbutton_e_notation_toggled(GtkToggleButton *w, gpointer)
 void on_preferences_checkbutton_alternative_base_prefixes_toggled(GtkToggleButton *w, gpointer) {
 	if(gtk_toggle_button_get_active(w)) printops.base_display = BASE_DISPLAY_ALTERNATIVE;
 	else printops.base_display = BASE_DISPLAY_NORMAL;
+	result_format_updated();
+}
+void on_preferences_checkbutton_twos_complement_toggled(GtkToggleButton *w, gpointer) {
+	printops.twos_complement = gtk_toggle_button_get_active(w);
 	result_format_updated();
 }
 void on_preferences_checkbutton_spell_out_logical_operators_toggled(GtkToggleButton *w, gpointer) {
@@ -17477,8 +17487,9 @@ void update_nbases_entries(const MathStructure &value, int base) {
 	PrintOptions po;
 	po.number_fraction_format = FRACTION_DECIMAL;
 	po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
+	po.twos_complement = printops.twos_complement;
 	if(base != 10) {po.base = 10; gtk_entry_set_text(GTK_ENTRY(w_dec), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}
-	if(base != 2) {po.base = 2; gtk_entry_set_text(GTK_ENTRY(w_bin), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}	
+	if(base != 2) {po.base = 2; gtk_entry_set_text(GTK_ENTRY(w_bin), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}
 	if(base != 8) {po.base = 8; gtk_entry_set_text(GTK_ENTRY(w_oct), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}	
 	if(base != 16) {po.base = 16; gtk_entry_set_text(GTK_ENTRY(w_hex), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}
 	g_signal_handlers_unblock_matched((gpointer) w_dec, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_decimal_changed, NULL);
