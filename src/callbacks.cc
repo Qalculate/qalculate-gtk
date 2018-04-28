@@ -159,7 +159,7 @@ extern GtkWidget *historyview;
 extern GtkWidget *stackview;
 extern GtkListStore *stackstore, *historystore;
 extern GtkCellRenderer *register_renderer;
-extern GtkTreeViewColumn *register_column, *history_column, *history_index_column;
+extern GtkTreeViewColumn *register_column, *history_column, *history_index_column, *flag_column;
 extern cairo_surface_t *surface_result;
 vector<vector<GtkWidget*> > insert_element_entries;
 bool b_busy, b_busy_command, b_busy_result, b_busy_expression, b_busy_fetch;
@@ -2647,7 +2647,17 @@ void update_unit_selector_tree() {
 void setUnitSelectorTreeItem(GtkTreeIter &iter2, Unit *u) {
 	gtk_list_store_append(tUnitSelector_store, &iter2);
 	string snames, sbase;
-	gtk_list_store_set(tUnitSelector_store, &iter2, 0, u->title(true).c_str(), 1, (gpointer) u, -1);
+	if(u->baseUnit() == CALCULATOR->u_euro) {
+		string imagefile = "/qalculate-gtk/flags/"; imagefile += u->referenceName(); imagefile += ".png"; 
+		GdkPixbuf *flagbuf = NULL;
+		if(g_resources_get_info(imagefile.c_str(), G_RESOURCE_LOOKUP_FLAGS_NONE, NULL, NULL, NULL)) {
+			flagbuf = gdk_pixbuf_new_from_resource(imagefile.c_str(), NULL);
+		}
+		gtk_list_store_set(tUnitSelector_store, &iter2, 0, u->title(true).c_str(), 1, (gpointer) u, 2, flagbuf, -1);
+		if(flagbuf) g_object_unref(flagbuf);
+	} else {
+		gtk_list_store_set(tUnitSelector_store, &iter2, 0, u->title(true).c_str(), 1, (gpointer) u, -1);
+	}
 }
 
 /*
@@ -2674,10 +2684,12 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 		} else if(selected_unit_selector_category == _("Uncategorized")) {
 			no_cat = true;
 		}
+		bool b_currencies = false;
 		if(!b_all && !no_cat && selected_unit_selector_category[0] == '/') {
 			string str = selected_unit_selector_category.substr(1, selected_unit_selector_category.length() - 1);
 			for(size_t i = 0; i < CALCULATOR->units.size(); i++) {	
 				if(CALCULATOR->units[i]->isActive() && (!CALCULATOR->units[i]->isHidden() || CALCULATOR->units[i]->baseUnit() == CALCULATOR->u_euro) && CALCULATOR->units[i]->category().substr(0, selected_unit_selector_category.length() - 1) == str) {
+					if(!b_currencies && CALCULATOR->units[i]->baseUnit() == CALCULATOR->u_euro) b_currencies = true;
 					setUnitSelectorTreeItem(iter2, CALCULATOR->units[i]);
 				}
 			}
@@ -2685,6 +2697,7 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 			bool list_empty = true;
 			for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 				if(CALCULATOR->units[i]->isActive() && (!CALCULATOR->units[i]->isHidden() || CALCULATOR->units[i]->baseUnit() == CALCULATOR->u_euro) && (b_all || (no_cat && CALCULATOR->units[i]->category().empty()) || CALCULATOR->units[i]->category() == selected_unit_selector_category)) {
+					if(!b_currencies && !b_all && !no_cat && CALCULATOR->units[i]->baseUnit() == CALCULATOR->u_euro) b_currencies = true;
 					setUnitSelectorTreeItem(iter2, CALCULATOR->units[i]);
 					list_empty = false;
 				}
@@ -2693,6 +2706,7 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 			if(list_empty && !b_all && !no_cat) {
 				for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 					if(CALCULATOR->units[i]->isActive() && (!CALCULATOR->units[i]->isHidden() || CALCULATOR->units[i]->baseUnit() == CALCULATOR->u_euro) && CALCULATOR->units[i]->category().length() > selected_unit_selector_category.length() && CALCULATOR->units[i]->category()[selected_unit_selector_category.length()] == '/' && CALCULATOR->units[i]->category().substr(0, selected_unit_selector_category.length()) == selected_unit_selector_category) {
+						if(!b_currencies && !b_all && !no_cat && CALCULATOR->units[i]->baseUnit() == CALCULATOR->u_euro) b_currencies = true;
 						setUnitSelectorTreeItem(iter2, CALCULATOR->units[i]);
 					}
 				}
@@ -2718,6 +2732,7 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 				gtk_tree_path_free(path);
 			}
 		}
+		gtk_tree_view_column_set_visible(flag_column, b_currencies);
 		g_free(gstr);
 	} else {
 		selected_unit_selector_category = "";
@@ -3276,9 +3291,10 @@ void create_umenu() {
 			bool is_currencies = false;
 			for(size_t i = 0; i < titem->objects.size(); i++) {
 				u = (Unit*) titem->objects[i];
-				if(!is_currencies && u == CALCULATOR->u_euro) is_currencies = true;
+				if(!is_currencies && u->baseUnit() == CALCULATOR->u_euro) is_currencies = true;
 				if(u->isActive() && !u->isHidden()) {
-					MENU_ITEM_WITH_POINTER(u->title(true).c_str(), insert_unit, u)
+					if(is_currencies) {MENU_ITEM_WITH_POINTER_AND_FLAG(u->title(true).c_str(), insert_unit, u)}
+					else {MENU_ITEM_WITH_POINTER(u->title(true).c_str(), insert_unit, u)}
 				}
 			}
 			if(is_currencies) {
@@ -3286,7 +3302,7 @@ void create_umenu() {
 				for(size_t i = 0; i < titem->objects.size(); i++) {
 					u = (Unit*) titem->objects[i];
 					if(u->isActive() && u->isHidden()) {
-						MENU_ITEM_WITH_POINTER(u->title(true).c_str(), insert_unit, u)
+						MENU_ITEM_WITH_POINTER_AND_FLAG(u->title(true).c_str(), insert_unit, u)
 					}
 				}
 			}
@@ -3362,9 +3378,10 @@ void create_umenu2() {
 			bool is_currencies = false;
 			for(size_t i = 0; i < titem->objects.size(); i++) {
 				u = (Unit*) titem->objects[i];
-				if(!is_currencies && u == CALCULATOR->u_euro) is_currencies = true;
+				if(!is_currencies && u->baseUnit() == CALCULATOR->u_euro) is_currencies = true;
 				if(u->isActive() && !u->isHidden()) {
-					MENU_ITEM_WITH_POINTER(u->title(true).c_str(), convert_to_unit, u)
+					if(is_currencies) {MENU_ITEM_WITH_POINTER_AND_FLAG(u->title(true).c_str(), convert_to_unit, u)}
+					else {MENU_ITEM_WITH_POINTER(u->title(true).c_str(), convert_to_unit, u)}
 				}
 			}
 			if(is_currencies) {
@@ -3372,7 +3389,7 @@ void create_umenu2() {
 				for(size_t i = 0; i < titem->objects.size(); i++) {
 					u = (Unit*) titem->objects[i];
 					if(u->isActive() && u->isHidden()) {
-						MENU_ITEM_WITH_POINTER(u->title(true).c_str(), convert_to_unit, u)
+						MENU_ITEM_WITH_POINTER_AND_FLAG(u->title(true).c_str(), convert_to_unit, u)
 					}
 				}
 			}
@@ -3985,6 +4002,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				TTBP_SMALL(str)
 				str += "<sub>";
 				str += i2s(po.base);
+				if(po.base == 2 && po.twos_complement && m.number().isNegative() && !exp_minus) str += '-';
 				str += "</sub>";
 				TTE(str)
 			}
@@ -14781,7 +14799,7 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 			}
 		}
 		for(size_t i = 0; i < to_us.size(); i++) {
-			MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), convert_to_unit, to_us[i])
+			MENU_ITEM_WITH_POINTER_AND_FLAG(to_us[i]->title(true).c_str(), convert_to_unit, to_us[i])
 		}
 		i_added = to_us.size();
 		vector<Unit*> to_us2;
@@ -14822,12 +14840,12 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 		for(size_t i = i_added; i < to_us.size(); i++) {
 			// Show further items in a submenu
 			if(i == i_added) {SUBMENU_ITEM(_("more"), sub);}
-			MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), convert_to_unit, to_us[i])
+			MENU_ITEM_WITH_POINTER_AND_FLAG(to_us[i]->title(true).c_str(), convert_to_unit, to_us[i])
 		}
 		if(to_us2.size() > 0) {SUBMENU_ITEM(_("more"), sub);}
 		for(size_t i = i_added; i < to_us2.size(); i++) {
 			// Show further items in a submenu
-			MENU_ITEM_WITH_POINTER(to_us2[i]->title(true).c_str(), convert_to_unit, to_us2[i])
+			MENU_ITEM_WITH_POINTER_AND_FLAG(to_us2[i]->title(true).c_str(), convert_to_unit, to_us2[i])
 		}
 	} else if(!s_cat.empty()) {
 		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {

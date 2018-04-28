@@ -86,7 +86,7 @@ GtkListStore *tMatrixEdit_store, *tMatrix_store;
 extern vector<GtkTreeViewColumn*> matrix_edit_columns, matrix_columns;
 
 GtkCellRenderer *renderer, *history_renderer, *history_index_renderer, *ans_renderer, *register_renderer;
-GtkTreeViewColumn *column, *register_column, *history_column, *history_index_column;
+GtkTreeViewColumn *column, *register_column, *history_column, *history_index_column, *flag_column;
 GtkTreeSelection *selection;
 
 GtkWidget *expressiontext;
@@ -753,7 +753,7 @@ void create_button_menus(void) {
 		}
 	}
 	for(size_t i = 0; i < to_us.size(); i++) {
-		MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), insert_button_currency, to_us[i])
+		MENU_ITEM_WITH_POINTER_AND_FLAG(to_us[i]->title(true).c_str(), insert_button_currency, to_us[i])
 	}
 
 	i_added = to_us.size();
@@ -795,12 +795,12 @@ void create_button_menus(void) {
 	for(size_t i = i_added; i < to_us.size(); i++) {
 		// Show further items in a submenu
 		if(i == i_added) {SUBMENU_ITEM(_("more"), sub);}
-		MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), insert_button_currency, to_us[i])
+		MENU_ITEM_WITH_POINTER_AND_FLAG(to_us[i]->title(true).c_str(), insert_button_currency, to_us[i])
 	}
 	if(to_us2.size() > 0) {SUBMENU_ITEM(_("more"), sub);}
 	for(size_t i = i_added; i < to_us2.size(); i++) {
 		// Show further items in a submenu
-		MENU_ITEM_WITH_POINTER(to_us2[i]->title(true).c_str(), insert_button_currency, to_us2[i])
+		MENU_ITEM_WITH_POINTER_AND_FLAG(to_us2[i]->title(true).c_str(), insert_button_currency, to_us2[i])
 	}
 
 }
@@ -1297,13 +1297,16 @@ void create_main_window(void) {
 	tUnitSelectorCategories = GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_treeview_category"));
 	tUnitSelector = GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_treeview_unit"));
 	
-	tUnitSelector_store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+	tUnitSelector_store = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_PIXBUF);
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnitSelector_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnitSelector_store), 0, GTK_SORT_ASCENDING);
 	gtk_tree_view_set_model(GTK_TREE_VIEW(tUnitSelector), GTK_TREE_MODEL(tUnitSelector_store));
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector));
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+	GtkCellRenderer *renderer = gtk_cell_renderer_pixbuf_new();
+	flag_column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "pixbuf", 2, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(tUnitSelector), flag_column);
+	renderer = gtk_cell_renderer_text_new();
 	GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", 0, NULL);
 	gtk_tree_view_column_set_sort_column_id(column, 0);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(tUnitSelector), column);
