@@ -159,7 +159,7 @@ extern GtkWidget *historyview;
 extern GtkWidget *stackview;
 extern GtkListStore *stackstore, *historystore;
 extern GtkCellRenderer *register_renderer;
-extern GtkTreeViewColumn *register_column, *history_column, *history_index_column, *flag_column;
+extern GtkTreeViewColumn *register_column, *history_column, *history_index_column, *flag_column, *units_flag_column;
 extern cairo_surface_t *surface_result;
 vector<vector<GtkWidget*> > insert_element_entries;
 bool b_busy, b_busy_command, b_busy_result, b_busy_expression, b_busy_fetch;
@@ -2434,6 +2434,15 @@ void setUnitTreeItem(GtkTreeIter &iter2, Unit *u) {
 	}
 	//display descriptive name (title), or name if no title defined
 	gtk_list_store_set(tUnits_store, &iter2, UNITS_TITLE_COLUMN, u->title(true).c_str(), UNITS_NAMES_COLUMN, snames.c_str(), UNITS_BASE_COLUMN, sbase.c_str(), UNITS_POINTER_COLUMN, (gpointer) u, -1);
+	if(u->isCurrency()) {
+		string imagefile = "/qalculate-gtk/flags/"; imagefile += u->referenceName(); imagefile += ".png"; 
+		GdkPixbuf *flagbuf = NULL;
+		if(g_resources_get_info(imagefile.c_str(), G_RESOURCE_LOOKUP_FLAGS_NONE, NULL, NULL, NULL)) {
+			flagbuf = gdk_pixbuf_new_from_resource(imagefile.c_str(), NULL);
+		}
+		gtk_list_store_set(tUnits_store, &iter2, UNITS_FLAG_COLUMN, flagbuf, -1);
+		if(flagbuf) g_object_unref(flagbuf);
+	}
 	if(u == selected_unit) {
 		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnits)), &iter2);
 	}
@@ -2459,6 +2468,7 @@ void on_tUnitCategories_selection_changed(GtkTreeSelection *treeselection, gpoin
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_button_convert_to")), FALSE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_frame_convert")), FALSE);
 	if(gtk_tree_selection_get_selected(treeselection, &model, &iter)) {
+		bool b_currencies = false;
 		gchar *gstr;
 		gtk_tree_model_get(model, &iter, 1, &gstr, -1);
 		selected_unit_category = gstr;
@@ -2473,13 +2483,15 @@ void on_tUnitCategories_selection_changed(GtkTreeSelection *treeselection, gpoin
 			string str = selected_unit_category.substr(1, selected_unit_category.length() - 1);
 			for(size_t i = 0; i < CALCULATOR->units.size(); i++) {	
 				if(CALCULATOR->units[i]->isActive() && CALCULATOR->units[i]->category().substr(0, selected_unit_category.length() - 1) == str) {
+					if(CALCULATOR->units[i]->isCurrency()) b_currencies = true;
 					setUnitTreeItem(iter2, CALCULATOR->units[i]);
 				}
 			}
 		} else {
 			for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 				if((b_inactive && !CALCULATOR->units[i]->isActive()) || (CALCULATOR->units[i]->isActive() && (b_all || (no_cat && CALCULATOR->units[i]->category().empty()) || (!b_inactive && CALCULATOR->units[i]->category() == selected_unit_category)))) {
-					setUnitTreeItem(iter2, CALCULATOR->units[i]);			
+					if(!b_all && !no_cat && !b_inactive && !b_currencies && CALCULATOR->units[i]->isCurrency()) b_currencies = true;
+					setUnitTreeItem(iter2, CALCULATOR->units[i]);
 				}
 			}
 		}
@@ -2487,6 +2499,7 @@ void on_tUnitCategories_selection_changed(GtkTreeSelection *treeselection, gpoin
 			gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnits_store), &iter2);
 			gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnits)), &iter2);
 		}
+		gtk_tree_view_column_set_visible(units_flag_column, b_currencies);
 		g_free(gstr);
 	} else {
 		selected_unit_category = "";
@@ -2503,7 +2516,6 @@ void on_tUnitCategories_selection_changed(GtkTreeSelection *treeselection, gpoin
 			selected_to_unit = u;	
 		}
 		if(u) {
-			
 			gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(units_builder, "units_combobox_to_unit")), gstr);
 			if(selected_to_unit == u) {
 				h = i;
@@ -2528,7 +2540,8 @@ void on_tUnitCategories_selection_changed(GtkTreeSelection *treeselection, gpoin
 		}
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(units_builder, "units_combobox_to_unit")), h);
 	}
-
+	gtk_combo_box_popup(GTK_COMBO_BOX(gtk_builder_get_object(units_builder, "units_combobox_to_unit")));
+	gtk_combo_box_popdown(GTK_COMBO_BOX(gtk_builder_get_object(units_builder, "units_combobox_to_unit")));
 	block_unit_convert = false;		
 	//update conversion display
 	convert_in_wUnits();
@@ -2647,7 +2660,7 @@ void update_unit_selector_tree() {
 void setUnitSelectorTreeItem(GtkTreeIter &iter2, Unit *u) {
 	gtk_list_store_append(tUnitSelector_store, &iter2);
 	string snames, sbase;
-	if(u->baseUnit() == CALCULATOR->u_euro) {
+	if(u->isCurrency()) {
 		string imagefile = "/qalculate-gtk/flags/"; imagefile += u->referenceName(); imagefile += ".png"; 
 		GdkPixbuf *flagbuf = NULL;
 		if(g_resources_get_info(imagefile.c_str(), G_RESOURCE_LOOKUP_FLAGS_NONE, NULL, NULL, NULL)) {
@@ -2675,6 +2688,7 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 	g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnitSelector_selection_changed, NULL);
 	gtk_list_store_clear(tUnitSelector_store);
 	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnitSelector_selection_changed, NULL);
+	int count = 0;
 	if(gtk_tree_selection_get_selected(treeselection, &model, &iter)) {
 		gchar *gstr;
 		gtk_tree_model_get(model, &iter, 1, &gstr, -1);
@@ -2688,26 +2702,29 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 		if(!b_all && !no_cat && selected_unit_selector_category[0] == '/') {
 			string str = selected_unit_selector_category.substr(1, selected_unit_selector_category.length() - 1);
 			for(size_t i = 0; i < CALCULATOR->units.size(); i++) {	
-				if(CALCULATOR->units[i]->isActive() && (!CALCULATOR->units[i]->isHidden() || CALCULATOR->units[i]->baseUnit() == CALCULATOR->u_euro) && CALCULATOR->units[i]->category().substr(0, selected_unit_selector_category.length() - 1) == str) {
-					if(!b_currencies && CALCULATOR->units[i]->baseUnit() == CALCULATOR->u_euro) b_currencies = true;
+				if(CALCULATOR->units[i]->isActive() && (!CALCULATOR->units[i]->isHidden() || CALCULATOR->units[i]->isCurrency()) && CALCULATOR->units[i]->category().substr(0, selected_unit_selector_category.length() - 1) == str) {
+					if(!b_currencies && CALCULATOR->units[i]->isCurrency()) b_currencies = true;
 					setUnitSelectorTreeItem(iter2, CALCULATOR->units[i]);
+					count++;
 				}
 			}
 		} else {
 			bool list_empty = true;
 			for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
-				if(CALCULATOR->units[i]->isActive() && (!CALCULATOR->units[i]->isHidden() || CALCULATOR->units[i]->baseUnit() == CALCULATOR->u_euro) && (b_all || (no_cat && CALCULATOR->units[i]->category().empty()) || CALCULATOR->units[i]->category() == selected_unit_selector_category)) {
-					if(!b_currencies && !b_all && !no_cat && CALCULATOR->units[i]->baseUnit() == CALCULATOR->u_euro) b_currencies = true;
+				if(CALCULATOR->units[i]->isActive() && (!CALCULATOR->units[i]->isHidden() || CALCULATOR->units[i]->isCurrency()) && (b_all || (no_cat && CALCULATOR->units[i]->category().empty()) || CALCULATOR->units[i]->category() == selected_unit_selector_category)) {
+					if(!b_currencies && !b_all && !no_cat && CALCULATOR->units[i]->isCurrency()) b_currencies = true;
 					setUnitSelectorTreeItem(iter2, CALCULATOR->units[i]);
+					count++;
 					list_empty = false;
 				}
 			}
 			bool collapse_all = true;
 			if(list_empty && !b_all && !no_cat) {
 				for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
-					if(CALCULATOR->units[i]->isActive() && (!CALCULATOR->units[i]->isHidden() || CALCULATOR->units[i]->baseUnit() == CALCULATOR->u_euro) && CALCULATOR->units[i]->category().length() > selected_unit_selector_category.length() && CALCULATOR->units[i]->category()[selected_unit_selector_category.length()] == '/' && CALCULATOR->units[i]->category().substr(0, selected_unit_selector_category.length()) == selected_unit_selector_category) {
-						if(!b_currencies && !b_all && !no_cat && CALCULATOR->units[i]->baseUnit() == CALCULATOR->u_euro) b_currencies = true;
+					if(CALCULATOR->units[i]->isActive() && (!CALCULATOR->units[i]->isHidden() || CALCULATOR->units[i]->isCurrency()) && CALCULATOR->units[i]->category().length() > selected_unit_selector_category.length() && CALCULATOR->units[i]->category()[selected_unit_selector_category.length()] == '/' && CALCULATOR->units[i]->category().substr(0, selected_unit_selector_category.length()) == selected_unit_selector_category) {
+						if(!b_currencies && !b_all && !no_cat && CALCULATOR->units[i]->isCurrency()) b_currencies = true;
 						setUnitSelectorTreeItem(iter2, CALCULATOR->units[i]);
+						count++;
 					}
 				}
 			} else if(!b_all && !no_cat) {
@@ -2737,7 +2754,8 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 	} else {
 		selected_unit_selector_category = "";
 	}
-	
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_box_search")), count >= 30);
+	gtk_tree_view_set_search_entry(GTK_TREE_VIEW(tUnitSelector), count >= 30 ? GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_search")) : NULL);
 	block_unit_selector_convert = false;
 	
 }
@@ -3291,7 +3309,7 @@ void create_umenu() {
 			bool is_currencies = false;
 			for(size_t i = 0; i < titem->objects.size(); i++) {
 				u = (Unit*) titem->objects[i];
-				if(!is_currencies && u->baseUnit() == CALCULATOR->u_euro) is_currencies = true;
+				if(!is_currencies && u->isCurrency()) is_currencies = true;
 				if(u->isActive() && !u->isHidden()) {
 					if(is_currencies) {MENU_ITEM_WITH_POINTER_AND_FLAG(u->title(true).c_str(), insert_unit, u)}
 					else {MENU_ITEM_WITH_POINTER(u->title(true).c_str(), insert_unit, u)}
@@ -3378,7 +3396,7 @@ void create_umenu2() {
 			bool is_currencies = false;
 			for(size_t i = 0; i < titem->objects.size(); i++) {
 				u = (Unit*) titem->objects[i];
-				if(!is_currencies && u->baseUnit() == CALCULATOR->u_euro) is_currencies = true;
+				if(!is_currencies && u->isCurrency()) is_currencies = true;
 				if(u->isActive() && !u->isHidden()) {
 					if(is_currencies) {MENU_ITEM_WITH_POINTER_AND_FLAG(u->title(true).c_str(), convert_to_unit, u)}
 					else {MENU_ITEM_WITH_POINTER(u->title(true).c_str(), convert_to_unit, u)}
@@ -14767,7 +14785,7 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 	if(u_result) s_cat = u_result->category();
 	vector<Unit*> to_us;
 	size_t i_added = 0;
-	if(u_result && u_result->baseUnit() == CALCULATOR->u_euro) {
+	if(u_result && u_result->isCurrency()) {
 		string local_currency;
 		struct lconv *lc = localeconv();
 		if(lc) local_currency = lc->int_curr_symbol;
@@ -14804,7 +14822,7 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 		i_added = to_us.size();
 		vector<Unit*> to_us2;
 		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
-			if(CALCULATOR->units[i]->baseUnit() == CALCULATOR->u_euro) {
+			if(CALCULATOR->units[i]->isCurrency()) {
 				Unit *u = CALCULATOR->units[i];
 				if(u != u_result && u->isActive()) {
 					bool b = false;
@@ -17691,8 +17709,19 @@ void on_unknown_edit_combobox_sign_changed(GtkComboBox *om, gpointer) {
 gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 	if(gtk_widget_has_focus(expressiontext) || b_editing_stack) return FALSE;
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_unit")))) return FALSE;
-	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_treeview_category"))) || gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_treeview_unit")))) {
-		if(!(event->keyval >= GDK_KEY_KP_Multiply && event->keyval <= GDK_KEY_KP_9) && !(event->keyval >= GDK_KEY_parenleft && event->keyval <= GDK_KEY_A)) return FALSE;
+	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")))) return FALSE;
+	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_treeview_unit")))) {
+		if(!(event->keyval >= GDK_KEY_KP_Multiply && event->keyval <= GDK_KEY_KP_9) && !(event->keyval >= GDK_KEY_parenleft && event->keyval <= GDK_KEY_A)) {
+			if(gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")))) {
+				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")));
+			}
+			return FALSE;
+		}
+	}
+	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_treeview_category")))) {
+		if(!(event->keyval >= GDK_KEY_KP_Multiply && event->keyval <= GDK_KEY_KP_9) && !(event->keyval >= GDK_KEY_parenleft && event->keyval <= GDK_KEY_A)) {
+			return FALSE;
+		}
 	}
 	if(event->keyval > GDK_KEY_Hyper_R || event->keyval < GDK_KEY_Shift_L) {
 		GtkWidget *w = gtk_window_get_focus(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
@@ -19312,8 +19341,6 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 		}
 	}
 }
-
-
 
 #ifdef __cplusplus
 }

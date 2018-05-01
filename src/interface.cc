@@ -86,7 +86,7 @@ GtkListStore *tMatrixEdit_store, *tMatrix_store;
 extern vector<GtkTreeViewColumn*> matrix_edit_columns, matrix_columns;
 
 GtkCellRenderer *renderer, *history_renderer, *history_index_renderer, *ans_renderer, *register_renderer;
-GtkTreeViewColumn *column, *register_column, *history_column, *history_index_column, *flag_column;
+GtkTreeViewColumn *column, *register_column, *history_column, *history_index_column, *flag_column, *units_flag_column;
 GtkTreeSelection *selection;
 
 GtkWidget *expressiontext;
@@ -805,6 +805,28 @@ void create_button_menus(void) {
 
 }
 
+gboolean unit_tree_search_equal_func(GtkTreeModel *model, gint col, const gchar *key, GtkTreeIter *iter, gpointer) {
+	Unit *u;
+	gtk_tree_model_get(model, iter, col, &u, -1);
+	if(!u) return TRUE;
+	if(u->title().find("obsolete") == string::npos && equalsIgnoreCase(key, u->title(true).substr(0, strlen(key)))) return FALSE;
+	if(!u->countries().empty() && strlen(key) > 2) {
+		string countries = u->countries();
+		while(true) {
+			size_t i = countries.find(',');
+			if(i == string::npos) {
+				if(equalsIgnoreCase(key, countries.substr(0, strlen(key)))) return FALSE;
+				break;
+			} else {
+				if(strlen(key) <= i && equalsIgnoreCase(key, countries.substr(0, strlen(key)))) return FALSE;
+				countries = countries.substr(i + 1);
+				remove_blank_ends(countries);
+			}
+		}
+	}
+	return TRUE;
+}
+
 void create_main_window(void) {
 
 	main_builder = getBuilder("main.ui");
@@ -1304,7 +1326,7 @@ void create_main_window(void) {
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector));
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 	GtkCellRenderer *renderer = gtk_cell_renderer_pixbuf_new();
-	flag_column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "pixbuf", 2, NULL);
+	flag_column = gtk_tree_view_column_new_with_attributes(_("Flag"), renderer, "pixbuf", 2, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(tUnitSelector), flag_column);
 	renderer = gtk_cell_renderer_text_new();
 	GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", 0, NULL);
@@ -1312,6 +1334,9 @@ void create_main_window(void) {
 	gtk_tree_view_append_column(GTK_TREE_VIEW(tUnitSelector), column);
 	g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tUnitSelector_selection_changed), NULL);
 	gtk_tree_view_set_enable_search(GTK_TREE_VIEW(tUnitSelector), TRUE);
+	gtk_tree_view_set_search_column(GTK_TREE_VIEW(tUnitSelector), 1);
+	gtk_tree_view_set_search_equal_func(GTK_TREE_VIEW(tUnitSelector), unit_tree_search_equal_func, NULL, NULL);
+	gtk_tree_view_set_search_entry(GTK_TREE_VIEW(tUnitSelector), GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_search")));
 
 	tUnitSelectorCategories_store = gtk_tree_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 	gtk_tree_view_set_model(GTK_TREE_VIEW(tUnitSelectorCategories), GTK_TREE_MODEL(tUnitSelectorCategories_store));
@@ -1469,12 +1494,15 @@ get_units_dialog (void)
 		g_assert (gtk_builder_get_object(units_builder, "units_dialog") != NULL);
 	
 		tUnitCategories = GTK_WIDGET(gtk_builder_get_object(units_builder, "units_treeview_category"));
-		tUnits		= GTK_WIDGET(gtk_builder_get_object(units_builder, "units_treeview_unit"));
+		tUnits = GTK_WIDGET(gtk_builder_get_object(units_builder, "units_treeview_unit"));
 
-		tUnits_store = gtk_list_store_new(UNITS_N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
+		tUnits_store = gtk_list_store_new(UNITS_N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_PIXBUF);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tUnits), GTK_TREE_MODEL(tUnits_store));
 		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnits));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
+		GtkCellRenderer *renderer = gtk_cell_renderer_pixbuf_new();
+		units_flag_column = gtk_tree_view_column_new_with_attributes(_("Flag"), renderer, "pixbuf", UNITS_FLAG_COLUMN, NULL);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(tUnits), units_flag_column);
 		renderer = gtk_cell_renderer_text_new();
 		column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", UNITS_TITLE_COLUMN, NULL);
 		gtk_tree_view_column_set_sort_column_id(column, UNITS_TITLE_COLUMN);
@@ -1494,6 +1522,8 @@ get_units_dialog (void)
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnits_store), UNITS_TITLE_COLUMN, GTK_SORT_ASCENDING);
 
 		gtk_tree_view_set_enable_search(GTK_TREE_VIEW(tUnits), TRUE);
+		gtk_tree_view_set_search_column(GTK_TREE_VIEW(tUnits), UNITS_POINTER_COLUMN);
+		gtk_tree_view_set_search_equal_func(GTK_TREE_VIEW(tUnits), unit_tree_search_equal_func, NULL, NULL);
 
 		tUnitCategories_store = gtk_tree_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tUnitCategories), GTK_TREE_MODEL(tUnitCategories_store));

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.4 -->
+<!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkWindow" id="completionwindow">
@@ -13,6 +13,9 @@
     <property name="deletable">False</property>
     <signal name="button-press-event" handler="on_completionwindow_button_press_event" swapped="no"/>
     <signal name="key-press-event" handler="on_completionwindow_key_press_event" swapped="no"/>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
     <child>
       <object class="GtkFrame">
         <property name="visible">True</property>
@@ -48,9 +51,6 @@
           <placeholder/>
         </child>
       </object>
-    </child>
-    <child type="titlebar">
-      <placeholder/>
     </child>
   </object>
   <object class="GtkTextBuffer" id="expressionbuffer">
@@ -783,6 +783,9 @@
     <signal name="destroy-event" handler="on_gcalc_exit" swapped="no"/>
     <signal name="focus-in-event" handler="on_main_window_focus_in_event" swapped="no"/>
     <signal name="key-press-event" handler="on_key_press_event" swapped="no"/>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
     <child>
       <object class="GtkBox" id="top_vbox">
         <property name="visible">True</property>
@@ -2733,8 +2736,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2758,8 +2761,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2784,8 +2787,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -5555,6 +5558,39 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="top_attach">1</property>
                                   </packing>
                                 </child>
+                                <child>
+                                  <object class="GtkBox" id="convert_box_search">
+                                    <property name="can_focus">False</property>
+                                    <property name="spacing">6</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="label" translatable="yes">Search:</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkEntry" id="convert_entry_search">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">2</property>
+                                  </packing>
+                                </child>
                               </object>
                               <packing>
                                 <property name="resize">True</property>
@@ -5667,9 +5703,6 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
           </packing>
         </child>
       </object>
-    </child>
-    <child type="titlebar">
-      <placeholder/>
     </child>
   </object>
   <object class="GtkMenu" id="popup_menu_fx">
