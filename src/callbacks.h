@@ -672,6 +672,9 @@ void on_convert_entry_unit_activate(GtkEntry *entry, gpointer user_data);
 void on_element_button_clicked(GtkButton *w, gpointer user_data);
 
 void on_convert_entry_search_changed(GtkEntry *w, gpointer user_data);
+void on_units_entry_search_changed(GtkEntry *w, gpointer user_data);
+void on_functions_entry_search_changed(GtkEntry *w, gpointer user_data);
+void on_variables_entry_search_changed(GtkEntry *w, gpointer user_data);
 
 void save_accels();
 

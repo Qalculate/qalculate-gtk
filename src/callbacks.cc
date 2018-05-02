@@ -94,12 +94,15 @@ extern GtkWidget *tSubfunctions;
 extern GtkListStore *tSubfunctions_store;
 extern GtkWidget *tFunctions, *tFunctionCategories;
 extern GtkListStore *tFunctions_store;
+extern GtkTreeModel *tFunctions_store_filter;
 extern GtkTreeStore *tFunctionCategories_store;
 extern GtkWidget *tVariables, *tVariableCategories;
 extern GtkListStore *tVariables_store;
+extern GtkTreeModel *tVariables_store_filter;
 extern GtkTreeStore *tVariableCategories_store;
 extern GtkWidget *tUnits, *tUnitCategories;
 extern GtkListStore *tUnits_store;
+extern GtkTreeModel *tUnits_store_filter;
 extern GtkTreeStore *tUnitCategories_store;
 extern GtkWidget *tUnitSelectorCategories;
 extern GtkWidget *tUnitSelector;
@@ -1832,7 +1835,7 @@ void update_functions_tree() {
 
 void setFunctionTreeItem(GtkTreeIter &iter2, MathFunction *f) {
 	gtk_list_store_append(tFunctions_store, &iter2);
-	gtk_list_store_set(tFunctions_store, &iter2, 0, f->title(true).c_str(), 1, (gpointer) f, -1);
+	gtk_list_store_set(tFunctions_store, &iter2, 0, f->title(true).c_str(), 1, (gpointer) f, 2, TRUE, -1);
 	if(f == selected_function) {
 		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctions)), &iter2);
 	}
@@ -1846,6 +1849,9 @@ void on_tFunctionCategories_selection_changed(GtkTreeSelection *treeselection, g
 	GtkTreeIter iter, iter2;
 	bool no_cat = false, b_all = false, b_inactive = false;
 	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctions));
+	g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_functions_entry_search_changed, NULL);
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functions_builder, "functions_entry_search")), "");
+	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_functions_entry_search_changed, NULL);
 	g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tFunctions_selection_changed, NULL);
 	gtk_list_store_clear(tFunctions_store);
 	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tFunctions_selection_changed, NULL);
@@ -1880,8 +1886,9 @@ void on_tFunctionCategories_selection_changed(GtkTreeSelection *treeselection, g
 			}
 		}
 		if(!selected_function || !gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctions)), &model2, &iter2)) {
-			gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tFunctions_store), &iter2);
-			gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctions)), &iter2);
+			if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tFunctions_store_filter), &iter2)) {
+				gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctions)), &iter2);
+			}
 		}
 		g_free(gstr);
 	} else {
@@ -2219,7 +2226,7 @@ void setVariableTreeItem(GtkTreeIter &iter2, Variable *v) {
 			value = _("default assumptions");
 		}		
 	}
-	gtk_list_store_set(tVariables_store, &iter2, 0, v->title(true).c_str(), 1, value.c_str(), 2, (gpointer) v, -1);
+	gtk_list_store_set(tVariables_store, &iter2, 0, v->title(true).c_str(), 1, value.c_str(), 2, (gpointer) v, 3, TRUE, -1);
 	if(v == selected_variable) {
 		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariables)), &iter2);
 	}
@@ -2233,6 +2240,9 @@ void on_tVariableCategories_selection_changed(GtkTreeSelection *treeselection, g
 	GtkTreeIter iter, iter2;
 	bool no_cat = false, b_all = false, b_inactive = false;
 	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariables));
+	g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_variables_entry_search_changed, NULL);
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variables_builder, "variables_entry_search")), "");
+	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_variables_entry_search_changed, NULL);
 	g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tVariables_selection_changed, NULL);
 	gtk_list_store_clear(tVariables_store);
 	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tVariables_selection_changed, NULL);
@@ -2270,8 +2280,9 @@ void on_tVariableCategories_selection_changed(GtkTreeSelection *treeselection, g
 		}
 
 		if(!selected_variable || !gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariables)), &model2, &iter2)) {
-			gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tVariables_store), &iter2);
-			gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariables)), &iter2);
+			if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tVariables_store_filter), &iter2)) {
+				gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariables)), &iter2);
+			}
 		}
 		g_free(gstr);
 
@@ -2434,7 +2445,7 @@ void setUnitTreeItem(GtkTreeIter &iter2, Unit *u) {
 		}
 	}
 	//display descriptive name (title), or name if no title defined
-	gtk_list_store_set(tUnits_store, &iter2, UNITS_TITLE_COLUMN, u->title(true).c_str(), UNITS_NAMES_COLUMN, snames.c_str(), UNITS_BASE_COLUMN, sbase.c_str(), UNITS_POINTER_COLUMN, (gpointer) u, -1);
+	gtk_list_store_set(tUnits_store, &iter2, UNITS_TITLE_COLUMN, u->title(true).c_str(), UNITS_NAMES_COLUMN, snames.c_str(), UNITS_BASE_COLUMN, sbase.c_str(), UNITS_POINTER_COLUMN, (gpointer) u, UNITS_VISIBLE_COLUMN, TRUE, -1);
 	if(u->isCurrency()) {
 		string imagefile = "/qalculate-gtk/flags/"; imagefile += u->referenceName(); imagefile += ".png"; 
 		GdkPixbuf *flagbuf = NULL;
@@ -2459,6 +2470,9 @@ void on_tUnitCategories_selection_changed(GtkTreeSelection *treeselection, gpoin
 	block_unit_convert = true;
 	bool no_cat = false, b_all = false, b_inactive = false;
 	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnits));
+	g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_units_entry_search_changed, NULL);
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_search")), "");
+	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_units_entry_search_changed, NULL);
 	g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnits_selection_changed, NULL);
 	gtk_list_store_clear(tUnits_store);
 	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnits_selection_changed, NULL);
@@ -2497,8 +2511,9 @@ void on_tUnitCategories_selection_changed(GtkTreeSelection *treeselection, gpoin
 			}
 		}
 		if(!selected_unit || !gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnits)), &model2, &iter2)) {
-			gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnits_store), &iter2);
-			gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnits)), &iter2);
+			if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnits_store_filter), &iter2)) {
+				gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnits)), &iter2);
+			}
 		}
 		gtk_tree_view_column_set_visible(units_flag_column, b_currencies);
 		g_free(gstr);
@@ -2655,6 +2670,169 @@ void update_unit_selector_tree() {
 		EXPAND_ITER(model, tUnitSelectorCategories, iter)
 		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelectorCategories)), &iter);
 	}
+}
+
+void on_functions_entry_search_changed(GtkEntry *w, gpointer) {
+	GtkTreeIter iter, iter_sel;
+	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctions));
+	GtkTreeModel *model;
+	MathFunction *u_sel = NULL;
+	bool b_unsel = false;
+	if(gtk_tree_selection_get_selected(select, &model, &iter_sel)) gtk_tree_model_get(model, &iter_sel, 1, &u_sel, -1);
+	g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tFunctions_selection_changed, NULL);
+	if(!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tFunctions_store), &iter)) return;
+	string str = gtk_entry_get_text(w);
+	remove_blank_ends(str);
+	do {
+		bool b = str.empty();
+		MathFunction *u = NULL;
+		if(!b) gtk_tree_model_get(GTK_TREE_MODEL(tFunctions_store), &iter, 1, &u, -1);
+		if(u) {
+			string title = u->title(true);
+			remove_blank_ends(title);
+			while(title.length() >= str.length()) {
+				if(equalsIgnoreCase(str, title.substr(0, str.length()))) {
+					b = true;
+					break;
+				}
+				size_t i = title.find(' ');
+				if(i == string::npos) break;
+				title = title.substr(i + 1);
+				remove_blank_ends(title);
+			}
+			for(size_t i2 = 1; i2 <= u->countNames(); i2++) {
+				if(u->getName(i2).case_sensitive) {
+					if(str == u->getName(i2).name.substr(0, str.length())) {
+						b = true;
+						break;
+					}
+				} else {
+					if(equalsIgnoreCase(str, u->getName(i2).name.substr(0, str.length()))) {
+						b = true;
+						break;
+					}
+				}
+			}
+			if(u == u_sel) b_unsel = !b;
+		}
+		gtk_list_store_set(tFunctions_store, &iter, 2, b, -1);
+	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tFunctions_store), &iter));
+	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tFunctions_selection_changed, NULL);
+	if(b_unsel) gtk_tree_selection_unselect_all(select);
+}
+void on_variables_entry_search_changed(GtkEntry *w, gpointer) {
+	GtkTreeIter iter, iter_sel;
+	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariables));
+	GtkTreeModel *model;
+	Variable *u_sel = NULL;
+	bool b_unsel = false;
+	if(gtk_tree_selection_get_selected(select, &model, &iter_sel)) gtk_tree_model_get(model, &iter_sel, 2, &u_sel, -1);
+	g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tVariables_selection_changed, NULL);
+	if(!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tVariables_store), &iter)) return;
+	string str = gtk_entry_get_text(w);
+	remove_blank_ends(str);
+	do {
+		bool b = str.empty();
+		Variable *u = NULL;
+		if(!b) gtk_tree_model_get(GTK_TREE_MODEL(tVariables_store), &iter, 2, &u, -1);
+		if(u) {
+			string title = u->title(true);
+			remove_blank_ends(title);
+			while(title.length() >= str.length()) {
+				if(equalsIgnoreCase(str, title.substr(0, str.length()))) {
+					b = true;
+					break;
+				}
+				size_t i = title.find(' ');
+				if(i == string::npos) break;
+				title = title.substr(i + 1);
+				remove_blank_ends(title);
+			}
+			for(size_t i2 = 1; i2 <= u->countNames(); i2++) {
+				if(u->getName(i2).case_sensitive) {
+					if(str == u->getName(i2).name.substr(0, str.length())) {
+						b = true;
+						break;
+					}
+				} else {
+					if(equalsIgnoreCase(str, u->getName(i2).name.substr(0, str.length()))) {
+						b = true;
+						break;
+					}
+				}
+			}
+			if(u == u_sel) b_unsel = !b;
+		}
+		gtk_list_store_set(tVariables_store, &iter, 3, b, -1);
+	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tVariables_store), &iter));
+	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tVariables_selection_changed, NULL);
+	if(b_unsel) gtk_tree_selection_unselect_all(select);
+}
+
+void on_units_entry_search_changed(GtkEntry *w, gpointer) {
+	GtkTreeIter iter, iter_sel;
+	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnits));
+	GtkTreeModel *model;
+	Unit *u_sel = NULL;
+	bool b_unsel = false;
+	if(gtk_tree_selection_get_selected(select, &model, &iter_sel)) gtk_tree_model_get(model, &iter_sel, UNITS_POINTER_COLUMN, &u_sel, -1);
+	g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnits_selection_changed, NULL);
+	if(!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnits_store), &iter)) return;
+	string str = gtk_entry_get_text(w);
+	remove_blank_ends(str);
+	do {
+		bool b = str.empty();
+		Unit *u = NULL;
+		if(!b) gtk_tree_model_get(GTK_TREE_MODEL(tUnits_store), &iter, UNITS_POINTER_COLUMN, &u, -1);
+		if(u) {
+			string title = u->title(true);
+			remove_blank_ends(title);
+			while(title.length() >= str.length()) {
+				if(equalsIgnoreCase(str, title.substr(0, str.length()))) {
+					b = true;
+					break;
+				}
+				size_t i = title.find(' ');
+				if(i == string::npos) break;
+				title = title.substr(i + 1);
+				remove_blank_ends(title);
+			}
+			for(size_t i2 = 1; i2 <= u->countNames(); i2++) {
+				if(u->getName(i2).case_sensitive) {
+					if(str == u->getName(i2).name.substr(0, str.length())) {
+						b = true;
+						break;
+					}
+				} else {
+					if(equalsIgnoreCase(str, u->getName(i2).name.substr(0, str.length()))) {
+						b = true;
+						break;
+					}
+				}
+			}
+			if(!b && u->countries().length() >= str.length()) {
+				string countries = u->countries();
+				while(true) {
+					size_t i = countries.find(',');
+					if(i == string::npos) {
+						if(equalsIgnoreCase(str, countries.substr(0, str.length()))) b = true;
+						break;
+					} else {
+						if(str.length() <= i && equalsIgnoreCase(str, countries.substr(0, str.length()))) {
+							b = true;
+							break;
+						}
+						countries = countries.substr(i + 1);
+						remove_blank_ends(countries);
+					}
+				}
+			}
+			if(u == u_sel) b_unsel = !b;
+		}
+		gtk_list_store_set(tUnits_store, &iter, UNITS_VISIBLE_COLUMN, b, -1);
+	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tUnits_store), &iter));
+	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnits_selection_changed, NULL);
+	if(b_unsel) gtk_tree_selection_unselect_all(select);
 }
 
 void on_convert_entry_search_changed(GtkEntry *w, gpointer) {
@@ -17865,13 +18043,52 @@ void on_unknown_edit_combobox_sign_changed(GtkComboBox *om, gpointer) {
 	}
 }
 
+gboolean on_variables_treeview_variable_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
+	if(gtk_widget_has_focus(GTK_WIDGET(tVariables))) {
+		if(gdk_keyval_to_unicode(event->keyval) > 0) {
+			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_entry_search")));
+			gchar buffer[10];
+			g_unichar_to_utf8(gdk_keyval_to_unicode(event->keyval), buffer);
+			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variables_builder, "variables_entry_search")), buffer);
+			gtk_editable_set_position(GTK_EDITABLE(gtk_builder_get_object(variables_builder, "variables_entry_search")), -1);
+			return TRUE;
+		}
+	} 
+	return FALSE;
+}
+gboolean on_functions_treeview_function_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
+	if(gtk_widget_has_focus(GTK_WIDGET(tFunctions))) {
+		if(gdk_keyval_to_unicode(event->keyval) > 0) {
+			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_entry_search")));
+			gchar buffer[10];
+			g_unichar_to_utf8(gdk_keyval_to_unicode(event->keyval), buffer);
+			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functions_builder, "functions_entry_search")), buffer);
+			gtk_editable_set_position(GTK_EDITABLE(gtk_builder_get_object(functions_builder, "functions_entry_search")), -1);
+			return TRUE;
+		}
+	} 
+	return FALSE;
+}
+gboolean on_units_treeview_unit_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
+	if(gtk_widget_has_focus(GTK_WIDGET(tUnits))) {
+		if(gdk_keyval_to_unicode(event->keyval) > 0) {
+			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_entry_search")));
+			gchar buffer[10];
+			g_unichar_to_utf8(gdk_keyval_to_unicode(event->keyval), buffer);
+			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_search")), buffer);
+			gtk_editable_set_position(GTK_EDITABLE(gtk_builder_get_object(units_builder, "units_entry_search")), -1);
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
 gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 	if(gtk_widget_has_focus(expressiontext) || b_editing_stack) return FALSE;
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_unit")))) return FALSE;
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")))) return FALSE;
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_treeview_unit")))) {
 		if(!(event->keyval >= GDK_KEY_KP_Multiply && event->keyval <= GDK_KEY_KP_9) && !(event->keyval >= GDK_KEY_parenleft && event->keyval <= GDK_KEY_A)) {
-			if(gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")))) {
+			if(gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search"))) && gdk_keyval_to_unicode(event->keyval) > 0) {
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")));
 			}
 			return FALSE;

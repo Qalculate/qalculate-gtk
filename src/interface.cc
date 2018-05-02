@@ -39,16 +39,19 @@ GtkWidget *mainwindow;
 GtkWidget *tFunctionCategories;
 GtkWidget *tFunctions;
 GtkListStore *tFunctions_store;
+GtkTreeModel *tFunctions_store_filter;
 GtkTreeStore *tFunctionCategories_store;
 
 GtkWidget *tVariableCategories;
 GtkWidget *tVariables;
 GtkListStore *tVariables_store;
+GtkTreeModel *tVariables_store_filter;
 GtkTreeStore *tVariableCategories_store;
 
 GtkWidget *tUnitCategories;
 GtkWidget *tUnits;
 GtkListStore *tUnits_store;
+GtkTreeModel *tUnits_store_filter;
 GtkTreeStore *tUnitCategories_store;
 
 GtkWidget *tUnitSelectorCategories;
@@ -1343,8 +1346,10 @@ get_functions_dialog (void)
 		tFunctionCategories = GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_treeview_category"));
 		tFunctions	= GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_treeview_function"));
 
-		tFunctions_store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tFunctions), GTK_TREE_MODEL(tFunctions_store));
+		tFunctions_store = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN);
+		tFunctions_store_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(tFunctions_store), NULL);
+		gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(tFunctions_store_filter), 2);
+		gtk_tree_view_set_model(GTK_TREE_VIEW(tFunctions), GTK_TREE_MODEL(tFunctions_store_filter));
 		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctions));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 		renderer = gtk_cell_renderer_text_new();
@@ -1354,6 +1359,8 @@ get_functions_dialog (void)
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tFunctions_selection_changed), NULL);
 		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tFunctions_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tFunctions_store), 0, GTK_SORT_ASCENDING);
+		
+		gtk_tree_view_set_enable_search(GTK_TREE_VIEW(tFunctions), FALSE);
 
 		tFunctionCategories_store = gtk_tree_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tFunctionCategories), GTK_TREE_MODEL(tFunctionCategories_store));
@@ -1374,6 +1381,12 @@ get_functions_dialog (void)
 		if(functions_width > 0 && functions_height > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(functions_builder, "functions_dialog")), functions_width, functions_height);
 		if(functions_hposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(functions_builder, "functions_hpaned")), functions_hposition);
 		if(functions_vposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(functions_builder, "functions_vpaned")), functions_vposition);
+		
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
+		g_signal_connect(gtk_builder_get_object(functions_builder, "functions_entry_search"), "changed", G_CALLBACK(on_functions_entry_search_changed), NULL);
+#else
+		g_signal_connect(gtk_builder_get_object(functions_builder, "functions_entry_search"), "search-changed", G_CALLBACK(on_functions_entry_search_changed), NULL);
+#endif
 
 		gtk_builder_connect_signals(functions_builder, NULL);
 
@@ -1397,8 +1410,10 @@ get_variables_dialog (void)
 		tVariableCategories = GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_treeview_category"));
 		tVariables = GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_treeview_variable"));
 
-		tVariables_store = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tVariables), GTK_TREE_MODEL(tVariables_store));
+		tVariables_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN);
+		tVariables_store_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(tVariables_store), NULL);
+		gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(tVariables_store_filter), 3);
+		gtk_tree_view_set_model(GTK_TREE_VIEW(tVariables), GTK_TREE_MODEL(tVariables_store_filter));
 		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariables));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 		renderer = gtk_cell_renderer_text_new();
@@ -1415,7 +1430,7 @@ get_variables_dialog (void)
 		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tVariables_store), 1, int_string_sort_func, GINT_TO_POINTER(1), NULL);
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tVariables_store), 0, GTK_SORT_ASCENDING);
 
-		gtk_tree_view_set_enable_search(GTK_TREE_VIEW(tVariables), TRUE);
+		gtk_tree_view_set_enable_search(GTK_TREE_VIEW(tVariables), FALSE);
 
 		tVariableCategories_store = gtk_tree_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tVariableCategories), GTK_TREE_MODEL(tVariableCategories_store));
@@ -1431,6 +1446,12 @@ get_variables_dialog (void)
 		
 		if(variables_width > 0 && variables_height > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")), variables_width, variables_height);
 		if(variables_position > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(variables_builder, "variables_hpaned")), variables_position);
+		
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
+		g_signal_connect(gtk_builder_get_object(variables_builder, "variables_entry_search"), "changed", G_CALLBACK(on_variables_entry_search_changed), NULL);
+#else
+		g_signal_connect(gtk_builder_get_object(variables_builder, "variables_entry_search"), "search-changed", G_CALLBACK(on_variables_entry_search_changed), NULL);
+#endif
 
 		gtk_builder_connect_signals(variables_builder, NULL);
 
@@ -1455,8 +1476,10 @@ get_units_dialog (void)
 		tUnitCategories = GTK_WIDGET(gtk_builder_get_object(units_builder, "units_treeview_category"));
 		tUnits = GTK_WIDGET(gtk_builder_get_object(units_builder, "units_treeview_unit"));
 
-		tUnits_store = gtk_list_store_new(UNITS_N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_PIXBUF);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tUnits), GTK_TREE_MODEL(tUnits_store));
+		tUnits_store = gtk_list_store_new(UNITS_N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_PIXBUF, G_TYPE_BOOLEAN);
+		tUnits_store_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(tUnits_store), NULL);
+		gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(tUnits_store_filter), UNITS_VISIBLE_COLUMN);
+		gtk_tree_view_set_model(GTK_TREE_VIEW(tUnits), GTK_TREE_MODEL(tUnits_store_filter));
 		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnits));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 		GtkCellRenderer *renderer = gtk_cell_renderer_pixbuf_new();
@@ -1480,8 +1503,7 @@ get_units_dialog (void)
 		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnits_store), UNITS_BASE_COLUMN, string_sort_func, GINT_TO_POINTER(UNITS_BASE_COLUMN), NULL);
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnits_store), UNITS_TITLE_COLUMN, GTK_SORT_ASCENDING);
 
-		gtk_tree_view_set_enable_search(GTK_TREE_VIEW(tUnits), TRUE);
-		gtk_tree_view_set_search_column(GTK_TREE_VIEW(tUnits), UNITS_TITLE_COLUMN);
+		gtk_tree_view_set_enable_search(GTK_TREE_VIEW(tUnits), FALSE);
 
 		tUnitCategories_store = gtk_tree_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tUnitCategories), GTK_TREE_MODEL(tUnitCategories_store));
@@ -1497,6 +1519,12 @@ get_units_dialog (void)
 		
 		if(units_width > 0 && units_height > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")), units_width, units_height);
 		if(units_position > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(units_builder, "units_hpaned")), units_position);
+		
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
+		g_signal_connect(gtk_builder_get_object(units_builder, "units_entry_search"), "changed", G_CALLBACK(on_units_entry_search_changed), NULL);
+#else
+		g_signal_connect(gtk_builder_get_object(units_builder, "units_entry_search"), "search-changed", G_CALLBACK(on_units_entry_search_changed), NULL);
+#endif
 		
 		gtk_builder_connect_signals(units_builder, NULL);
 
