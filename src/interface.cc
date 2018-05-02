@@ -51,8 +51,10 @@ GtkTreeStore *tVariableCategories_store;
 GtkWidget *tUnitCategories;
 GtkWidget *tUnits;
 GtkListStore *tUnits_store;
-GtkTreeModel *tUnits_store_filter;
+GtkTreeModel *tUnits_store_filter, *units_convert_filter;
 GtkTreeStore *tUnitCategories_store;
+GtkWidget *units_convert_view, *units_convert_window, *units_convert_scrolled;
+GtkCellRenderer *units_convert_flag_renderer;
 
 GtkWidget *tUnitSelectorCategories;
 GtkWidget *tUnitSelector;
@@ -1472,11 +1474,11 @@ get_units_dialog (void)
 		g_assert(units_builder != NULL);
 	
 		g_assert (gtk_builder_get_object(units_builder, "units_dialog") != NULL);
-	
+		
 		tUnitCategories = GTK_WIDGET(gtk_builder_get_object(units_builder, "units_treeview_category"));
 		tUnits = GTK_WIDGET(gtk_builder_get_object(units_builder, "units_treeview_unit"));
 
-		tUnits_store = gtk_list_store_new(UNITS_N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_PIXBUF, G_TYPE_BOOLEAN);
+		tUnits_store = gtk_list_store_new(UNITS_N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_PIXBUF, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
 		tUnits_store_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(tUnits_store), NULL);
 		gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(tUnits_store_filter), UNITS_VISIBLE_COLUMN);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tUnits), GTK_TREE_MODEL(tUnits_store_filter));
@@ -1517,13 +1519,33 @@ get_units_dialog (void)
 		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnitCategories_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnitCategories_store), 0, GTK_SORT_ASCENDING);
 		
+		units_convert_window = GTK_WIDGET(gtk_builder_get_object(units_builder, "units_convert_window"));
+		units_convert_scrolled = GTK_WIDGET(gtk_builder_get_object(units_builder, "units_convert_scrolled"));
+		units_convert_view = GTK_WIDGET(gtk_builder_get_object(units_builder, "units_convert_view"));
+		units_convert_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(tUnits_store), NULL);
+		gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(units_convert_filter), UNITS_VISIBLE_COLUMN_CONVERT);
+		gtk_tree_view_set_model(GTK_TREE_VIEW(units_convert_view), GTK_TREE_MODEL(units_convert_filter));
+		units_convert_flag_renderer = gtk_cell_renderer_pixbuf_new();
+		GtkCellArea *area = gtk_cell_area_box_new();
+		gtk_cell_area_box_set_spacing(GTK_CELL_AREA_BOX(area), 12);
+		gtk_cell_area_box_pack_start(GTK_CELL_AREA_BOX(area), units_convert_flag_renderer, FALSE, TRUE, TRUE);
+		gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(area), units_convert_flag_renderer, "pixbuf", UNITS_FLAG_COLUMN, NULL);
+		renderer = gtk_cell_renderer_text_new();
+		gtk_cell_area_box_pack_start(GTK_CELL_AREA_BOX(area), renderer, TRUE, TRUE, TRUE);
+		gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(area), renderer, "text", UNITS_TITLE_COLUMN, NULL);
+		column = gtk_tree_view_column_new_with_area(area);
+		gtk_tree_view_column_set_sort_column_id(column, UNITS_TITLE_COLUMN);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(units_convert_view), column);
+		
 		if(units_width > 0 && units_height > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")), units_width, units_height);
 		if(units_position > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(units_builder, "units_hpaned")), units_position);
 		
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
 		g_signal_connect(gtk_builder_get_object(units_builder, "units_entry_search"), "changed", G_CALLBACK(on_units_entry_search_changed), NULL);
+		g_signal_connect(gtk_builder_get_object(units_builder, "units_convert_search"), "changed", G_CALLBACK(on_units_convert_search_changed), NULL);
 #else
 		g_signal_connect(gtk_builder_get_object(units_builder, "units_entry_search"), "search-changed", G_CALLBACK(on_units_entry_search_changed), NULL);
+		g_signal_connect(gtk_builder_get_object(units_builder, "units_convert_search"), "search-changed", G_CALLBACK(on_units_convert_search_changed), NULL);
 #endif
 		
 		gtk_builder_connect_signals(units_builder, NULL);

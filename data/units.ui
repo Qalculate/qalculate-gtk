@@ -9,7 +9,9 @@
     <property name="default_width">1000</property>
     <property name="default_height">700</property>
     <property name="type_hint">dialog</property>
+    <signal name="button-press-event" handler="on_units_dialog_button_press_event" swapped="no"/>
     <signal name="delete-event" handler="gtk_widget_hide" swapped="no"/>
+    <signal name="delete-event" handler="on_units_dialog_delete_event" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -399,12 +401,47 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkComboBoxText" id="units_combobox_to_unit">
+                  <object class="GtkToggleButton" id="units_convert_to_button">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="tooltip_text" translatable="yes">Unit to convert to</property>
-                    <property name="halign">start</property>
-                    <signal name="changed" handler="on_units_combobox_to_unit_changed" swapped="no"/>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <signal name="focus-out-event" handler="on_units_convert_to_button_focus_out_event" swapped="no"/>
+                    <signal name="key-press-event" handler="on_units_convert_to_button_key_press_event" swapped="no"/>
+                    <signal name="toggled" handler="on_units_convert_to_button_toggled" swapped="no"/>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="spacing">6</property>
+                        <child>
+                          <object class="GtkLabel" id="units_label_to_unit">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="width_chars">20</property>
+                            <property name="xalign">0</property>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">end</property>
+                            <property name="icon_name">pan-down-symbolic</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="pack_type">end</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                   <packing>
                     <property name="left_attach">2</property>
@@ -417,6 +454,74 @@
                 <property name="top_attach">1</property>
               </packing>
             </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="units_convert_window">
+    <property name="can_focus">False</property>
+    <property name="type">popup</property>
+    <property name="resizable">False</property>
+    <property name="type_hint">combo</property>
+    <property name="skip_taskbar_hint">True</property>
+    <property name="skip_pager_hint">True</property>
+    <property name="decorated">False</property>
+    <property name="deletable">False</property>
+    <property name="transient_for">units_dialog</property>
+    <signal name="button-press-event" handler="on_units_convert_window_button_press_event" swapped="no"/>
+    <signal name="key-press-event" handler="on_units_convert_window_key_press_event" swapped="no"/>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkScrolledWindow" id="units_convert_scrolled">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+            <property name="hscrollbar_policy">never</property>
+            <child>
+              <object class="GtkTreeView" id="units_convert_view">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="headers_visible">False</property>
+                <property name="enable_search">False</property>
+                <property name="hover_selection">True</property>
+                <property name="show_expanders">False</property>
+                <property name="activate_on_single_click">True</property>
+                <signal name="enter-notify-event" handler="on_units_convert_view_enter_notify_event" swapped="no"/>
+                <signal name="motion-notify-event" handler="on_units_convert_view_motion_notify_event" swapped="no"/>
+                <signal name="row-activated" handler="on_units_convert_view_row_activated" swapped="no"/>
+                <child internal-child="selection">
+                  <object class="GtkTreeSelection"/>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSearchEntry" id="units_convert_search">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="primary_icon_name">edit-find-symbolic</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">False</property>
           </object>
           <packing>
             <property name="expand">False</property>

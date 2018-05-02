@@ -226,6 +226,8 @@ extern "C" {
 #endif
 
 void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewColumn*, gpointer);
+void on_units_convert_view_row_activated(GtkTreeView*, GtkTreePath *path, GtkTreeViewColumn*, gpointer);
+void units_convert_resize_popup();
 
 void *view_proc(void*);
 void *command_proc(void*);
@@ -673,6 +675,7 @@ void on_element_button_clicked(GtkButton *w, gpointer user_data);
 
 void on_convert_entry_search_changed(GtkEntry *w, gpointer user_data);
 void on_units_entry_search_changed(GtkEntry *w, gpointer user_data);
+void on_units_convert_search_changed(GtkEntry *w, gpointer user_data);
 void on_functions_entry_search_changed(GtkEntry *w, gpointer user_data);
 void on_variables_entry_search_changed(GtkEntry *w, gpointer user_data);
 
