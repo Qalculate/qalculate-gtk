@@ -104,6 +104,7 @@ extern GtkTreeStore *tUnitCategories_store;
 extern GtkWidget *tUnitSelectorCategories;
 extern GtkWidget *tUnitSelector;
 extern GtkListStore *tUnitSelector_store;
+extern GtkTreeModel *tUnitSelector_store_filter;
 extern GtkTreeStore *tUnitSelectorCategories_store;
 extern GtkWidget *tDataObjects, *tDatasets;
 extern GtkListStore *tDataObjects_store, *tDatasets_store;
@@ -2587,7 +2588,6 @@ void on_tUnits_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 }
 
 void update_unit_selector_tree() {
-	//if(!unit_builder) return;
 	GtkTreeIter iter, iter2, iter3;
 	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(tUnitSelectorCategories));
 	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelectorCategories));
@@ -2657,6 +2657,59 @@ void update_unit_selector_tree() {
 	}
 }
 
+void on_convert_entry_search_changed(GtkEntry *w, gpointer) {
+	GtkTreeIter iter, iter_sel;
+	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector));
+	GtkTreeModel *model;
+	Unit *u_sel = NULL;
+	bool b_unsel = false;
+	if(gtk_tree_selection_get_selected(select, &model, &iter_sel)) gtk_tree_model_get(model, &iter_sel, 1, &u_sel, -1);
+	g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnitSelector_selection_changed, NULL);
+	if(!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnitSelector_store), &iter)) return;
+	string str = gtk_entry_get_text(w);
+	remove_blank_ends(str);
+	do {
+		bool b = str.empty();
+		Unit *u = NULL;
+		if(!b) gtk_tree_model_get(GTK_TREE_MODEL(tUnitSelector_store), &iter, 1, &u, -1);
+		if(u) {
+			string title = u->title(true);
+			remove_blank_ends(title);
+			while(title.length() >= str.length()) {
+				if(equalsIgnoreCase(str, title.substr(0, str.length()))) {
+					b = true;
+					break;
+				}
+				size_t i = title.find(' ');
+				if(i == string::npos) break;
+				title = title.substr(i + 1);
+				remove_blank_ends(title);
+			}
+			if(!b && u->countries().length() >= str.length()) {
+				string countries = u->countries();
+				while(true) {
+					size_t i = countries.find(',');
+					if(i == string::npos) {
+						if(equalsIgnoreCase(str, countries.substr(0, str.length()))) b = true;
+						break;
+					} else {
+						if(str.length() <= i && equalsIgnoreCase(str, countries.substr(0, str.length()))) {
+							b = true;
+							break;
+						}
+						countries = countries.substr(i + 1);
+						remove_blank_ends(countries);
+					}
+				}
+			}
+			if(u == u_sel) b_unsel = !b;
+		}
+		gtk_list_store_set(tUnitSelector_store, &iter, 3, b, -1);
+	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tUnitSelector_store), &iter));
+	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnitSelector_selection_changed, NULL);
+	if(b_unsel) gtk_tree_selection_unselect_all(select);
+}
+
 void setUnitSelectorTreeItem(GtkTreeIter &iter2, Unit *u) {
 	gtk_list_store_append(tUnitSelector_store, &iter2);
 	string snames, sbase;
@@ -2666,10 +2719,10 @@ void setUnitSelectorTreeItem(GtkTreeIter &iter2, Unit *u) {
 		if(g_resources_get_info(imagefile.c_str(), G_RESOURCE_LOOKUP_FLAGS_NONE, NULL, NULL, NULL)) {
 			flagbuf = gdk_pixbuf_new_from_resource(imagefile.c_str(), NULL);
 		}
-		gtk_list_store_set(tUnitSelector_store, &iter2, 0, u->title(true).c_str(), 1, (gpointer) u, 2, flagbuf, -1);
+		gtk_list_store_set(tUnitSelector_store, &iter2, 0, u->title(true).c_str(), 1, (gpointer) u, 2, flagbuf, 3, TRUE, -1);
 		if(flagbuf) g_object_unref(flagbuf);
 	} else {
-		gtk_list_store_set(tUnitSelector_store, &iter2, 0, u->title(true).c_str(), 1, (gpointer) u, -1);
+		gtk_list_store_set(tUnitSelector_store, &iter2, 0, u->title(true).c_str(), 1, (gpointer) u, 3, TRUE, -1);
 	}
 }
 
@@ -2685,6 +2738,9 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 
 	bool no_cat = false, b_all = false;
 	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector));
+	g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_convert_entry_search_changed, NULL);
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_search")), "");
+	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_convert_entry_search_changed, NULL);
 	g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnitSelector_selection_changed, NULL);
 	gtk_list_store_clear(tUnitSelector_store);
 	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnitSelector_selection_changed, NULL);
@@ -2753,9 +2809,8 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 		g_free(gstr);
 	} else {
 		selected_unit_selector_category = "";
-	}
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_box_search")), count >= 30);
-	gtk_tree_view_set_search_entry(GTK_TREE_VIEW(tUnitSelector), count >= 30 ? GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_search")) : NULL);
+	}	
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")), count >= 30);
 	block_unit_selector_convert = false;
 	
 }
@@ -2768,7 +2823,11 @@ void on_tUnitSelector_selection_changed(GtkTreeSelection *treeselection, gpointe
 		gtk_tree_model_get(model, &iter, 1, &u, -1);
 		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 			if(CALCULATOR->units[i] == u) {
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit")), u->print(false, printops.abbreviate_names, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) gtk_builder_get_object(main_builder, "convert_entry_unit")).c_str());
+				if(u->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit")), ((CompositeUnit*) u)->print(true, printops.abbreviate_names, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) gtk_builder_get_object(main_builder, "convert_entry_unit")).c_str());
+				} else {
+					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit")), u->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(main_builder, "convert_entry_unit")).name.c_str());
+				}
 				if(!block_unit_selector_convert) convert_from_convert_entry_unit();
 			}
 		}
@@ -14185,6 +14244,105 @@ gboolean on_historyview_button_press_event(GtkWidget*, GdkEventButton *event, gp
 	}
 	return FALSE;
 }
+Unit *popup_convert_unit = NULL;
+void update_convert_popup() {
+	GtkTreeIter iter_sel;
+	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector));
+	GtkTreeModel *model;
+	Unit *u_sel = popup_convert_unit;
+	if(!u_sel && gtk_tree_selection_get_selected(select, &model, &iter_sel)) gtk_tree_model_get(model, &iter_sel, 1, &u_sel, -1);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_convert_insert")), u_sel != NULL);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_convert_convert")), u_sel != NULL);
+}
+void on_popup_menu_convert_insert_activate(GtkMenuItem*, gpointer) {
+	GtkTreeIter iter_sel;
+	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector));
+	GtkTreeModel *model;
+	Unit *u = popup_convert_unit;
+	if(!u && gtk_tree_selection_get_selected(select, &model, &iter_sel)) gtk_tree_model_get(model, &iter_sel, 1, &u, -1);
+	if(u) {
+		if(u->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+			insert_text(((CompositeUnit*) u)->print(true, printops.abbreviate_names, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext).c_str());
+		} else {
+			insert_text(u->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, true, false, &can_display_unicode_string_function, (void*) expressiontext).name.c_str());
+		}
+		unit_inserted(u);
+	}
+}
+void on_popup_menu_convert_convert_activate(GtkMenuItem*, gpointer) {
+	GtkTreeIter iter_sel;
+	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector));
+	GtkTreeModel *model;
+	Unit *u = popup_convert_unit;
+	if(!u && gtk_tree_selection_get_selected(select, &model, &iter_sel)) gtk_tree_model_get(model, &iter_sel, 1, &u, -1);
+	if(u) {
+		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
+			if(CALCULATOR->units[i] == u) {
+				if(u->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit")), ((CompositeUnit*) u)->print(true, printops.abbreviate_names, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) gtk_builder_get_object(main_builder, "convert_entry_unit")).c_str());
+				} else {
+					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit")), u->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(main_builder, "convert_entry_unit")).name.c_str());
+				}
+				if(!block_unit_selector_convert) convert_from_convert_entry_unit();
+			}
+		}
+	}
+}
+gboolean on_convert_treeview_unit_button_press_event(GtkWidget *w, GdkEventButton *event, gpointer) {
+	GtkTreePath *path = NULL;
+	if(event->type == GDK_BUTTON_PRESS && event->button == 2) {
+		if(b_busy) return TRUE;
+		if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(w), event->x, event->y, &path, NULL, NULL, NULL)) {
+			GtkTreeIter iter;
+			if(gtk_tree_model_get_iter(tUnitSelector_store_filter, &iter, path)) {
+				Unit *u = NULL;
+				gtk_tree_model_get(tUnitSelector_store_filter, &iter, 1, &u, -1);
+				if(u) {
+					if(u->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+						insert_text(((CompositeUnit*) u)->print(true, printops.abbreviate_names, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext).c_str());
+					} else {
+						insert_text(u->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, true, false, &can_display_unicode_string_function, (void*) expressiontext).name.c_str());
+					}
+					unit_inserted(u);
+				}
+				gtk_tree_path_free(path);
+				return TRUE;
+			}
+			gtk_tree_path_free(path);
+		}
+	} else if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
+		if(b_busy) return TRUE;
+		if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(w), event->x, event->y, &path, NULL, NULL, NULL)) {
+			GtkTreeIter iter;
+			if(gtk_tree_model_get_iter(tUnitSelector_store_filter, &iter, path)) {
+				gtk_tree_model_get(tUnitSelector_store_filter, &iter, 1, &popup_convert_unit, -1);
+			} else {
+				popup_convert_unit = NULL;
+			}
+			gtk_tree_path_free(path);
+		}
+		
+		update_convert_popup();
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_convert")), (GdkEvent*) event);
+#else
+		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_convert")), NULL, NULL, NULL, NULL, event->button, event->time);
+#endif
+		return TRUE;
+	}
+	return FALSE;
+}
+gboolean on_convert_treeview_unit_popup_menu(GtkWidget*, gpointer) {
+	if(b_busy) return TRUE;
+	popup_convert_unit = NULL;
+	update_convert_popup();
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+	gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_convert")), NULL);
+#else
+	gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_convert")), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
+#endif
+	return TRUE;
+}
 gboolean on_historyview_popup_menu(GtkWidget*, gpointer) {
 	if(b_busy) return TRUE;
 	update_historyview_popup();
@@ -16610,10 +16768,11 @@ void on_units_button_edit_clicked(GtkButton*, gpointer) {
 void on_units_button_insert_clicked(GtkButton*, gpointer) {
 	Unit *u = get_selected_unit();
 	if(u) {
-		gchar *gstr;
-		gstr = g_strdup(u->print(true, printops.abbreviate_names, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext).c_str());
-		insert_text(gstr);
-		g_free(gstr);
+		if(u->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+			insert_text(((CompositeUnit*) u)->print(true, printops.abbreviate_names, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext).c_str());
+		} else {
+			insert_text(u->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, true, false, &can_display_unicode_string_function, (void*) expressiontext).name.c_str());
+		}
 	}
 }
 

@@ -54,6 +54,7 @@ GtkTreeStore *tUnitCategories_store;
 GtkWidget *tUnitSelectorCategories;
 GtkWidget *tUnitSelector;
 GtkListStore *tUnitSelector_store;
+GtkTreeModel *tUnitSelector_store_filter;
 GtkTreeStore *tUnitSelectorCategories_store;
 
 GtkWidget *tDatasets;
@@ -478,32 +479,6 @@ GtkBuilder *getBuilder(const char *filename) {
 	string resstr = "/qalculate-gtk/ui/";
 	resstr += filename;
 	return gtk_builder_new_from_resource(resstr.c_str());
-/*#ifndef WIN32
-	gchar *gstr = g_build_filename (PACKAGE_DATA_DIR, PACKAGE, "ui", filename, NULL);
-	GtkBuilder *builder = gtk_builder_new_from_file(gstr);
-	g_free(gstr);
-	return builder;
-#else
-	char exepath[MAX_PATH];
-	GetModuleFileName(NULL, exepath, MAX_PATH);
-	string datadir(exepath);
-	datadir.resize(datadir.find_last_of('\\'));
-	if(datadir.substr(datadir.length() - 4) == "\\bin") {
-		datadir.resize(datadir.find_last_of('\\'));
-		datadir += "\\share\\";
-		datadir += PACKAGE;
-		datadir += "\\ui";
-	} else if(datadir.substr(datadir.length() - 6) == "\\.libs") {
-		datadir.resize(datadir.find_last_of('\\'));
-		datadir.resize(datadir.find_last_of('\\'));
-		datadir += "\\data";
-	} else {
-		datadir += "\\ui";
-	}
-	datadir += "\\";
-	datadir += filename;
-	return gtk_builder_new_from_file(datadir.c_str());
-#endif*/
 }
 
 #define SUP_STRING(X) string("<span size=\"x-small\" rise=\"" + i2s((int) (pango_font_description_get_size(font_desc) / 1.5)) + "\">") + string(X) + "</span>"
@@ -803,28 +778,6 @@ void create_button_menus(void) {
 		MENU_ITEM_WITH_POINTER_AND_FLAG(to_us2[i]->title(true).c_str(), insert_button_currency, to_us2[i])
 	}
 
-}
-
-gboolean unit_tree_search_equal_func(GtkTreeModel *model, gint col, const gchar *key, GtkTreeIter *iter, gpointer) {
-	Unit *u;
-	gtk_tree_model_get(model, iter, col, &u, -1);
-	if(!u) return TRUE;
-	if(u->title().find("obsolete") == string::npos && equalsIgnoreCase(key, u->title(true).substr(0, strlen(key)))) return FALSE;
-	if(!u->countries().empty() && strlen(key) > 2) {
-		string countries = u->countries();
-		while(true) {
-			size_t i = countries.find(',');
-			if(i == string::npos) {
-				if(equalsIgnoreCase(key, countries.substr(0, strlen(key)))) return FALSE;
-				break;
-			} else {
-				if(strlen(key) <= i && equalsIgnoreCase(key, countries.substr(0, strlen(key)))) return FALSE;
-				countries = countries.substr(i + 1);
-				remove_blank_ends(countries);
-			}
-		}
-	}
-	return TRUE;
 }
 
 void create_main_window(void) {
@@ -1319,10 +1272,12 @@ void create_main_window(void) {
 	tUnitSelectorCategories = GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_treeview_category"));
 	tUnitSelector = GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_treeview_unit"));
 	
-	tUnitSelector_store = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_PIXBUF);
+	tUnitSelector_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_PIXBUF, G_TYPE_BOOLEAN);
+	tUnitSelector_store_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(tUnitSelector_store), NULL);
+	gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(tUnitSelector_store_filter), 3);
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnitSelector_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnitSelector_store), 0, GTK_SORT_ASCENDING);
-	gtk_tree_view_set_model(GTK_TREE_VIEW(tUnitSelector), GTK_TREE_MODEL(tUnitSelector_store));
+	gtk_tree_view_set_model(GTK_TREE_VIEW(tUnitSelector), GTK_TREE_MODEL(tUnitSelector_store_filter));
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector));
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 	GtkCellRenderer *renderer = gtk_cell_renderer_pixbuf_new();
@@ -1334,9 +1289,7 @@ void create_main_window(void) {
 	gtk_tree_view_append_column(GTK_TREE_VIEW(tUnitSelector), column);
 	g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tUnitSelector_selection_changed), NULL);
 	gtk_tree_view_set_enable_search(GTK_TREE_VIEW(tUnitSelector), TRUE);
-	gtk_tree_view_set_search_column(GTK_TREE_VIEW(tUnitSelector), 1);
-	gtk_tree_view_set_search_equal_func(GTK_TREE_VIEW(tUnitSelector), unit_tree_search_equal_func, NULL, NULL);
-	gtk_tree_view_set_search_entry(GTK_TREE_VIEW(tUnitSelector), GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_search")));
+	gtk_tree_view_set_search_column(GTK_TREE_VIEW(tUnitSelector), 0);
 
 	tUnitSelectorCategories_store = gtk_tree_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 	gtk_tree_view_set_model(GTK_TREE_VIEW(tUnitSelectorCategories), GTK_TREE_MODEL(tUnitSelectorCategories_store));
@@ -1349,6 +1302,12 @@ void create_main_window(void) {
 	gtk_tree_view_column_set_sort_column_id(column, 0);
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnitSelectorCategories_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnitSelectorCategories_store), 0, GTK_SORT_ASCENDING);
+
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
+	g_signal_connect(gtk_builder_get_object(main_builder, "convert_entry_search"), "changed", G_CALLBACK(on_convert_entry_search_changed), NULL);
+#else
+	g_signal_connect(gtk_builder_get_object(main_builder, "convert_entry_search"), "search-changed", G_CALLBACK(on_convert_entry_search_changed), NULL);
+#endif
 	
 	/*if(win_width > 0) {
 		
@@ -1522,8 +1481,7 @@ get_units_dialog (void)
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnits_store), UNITS_TITLE_COLUMN, GTK_SORT_ASCENDING);
 
 		gtk_tree_view_set_enable_search(GTK_TREE_VIEW(tUnits), TRUE);
-		gtk_tree_view_set_search_column(GTK_TREE_VIEW(tUnits), UNITS_POINTER_COLUMN);
-		gtk_tree_view_set_search_equal_func(GTK_TREE_VIEW(tUnits), unit_tree_search_equal_func, NULL, NULL);
+		gtk_tree_view_set_search_column(GTK_TREE_VIEW(tUnits), UNITS_TITLE_COLUMN);
 
 		tUnitCategories_store = gtk_tree_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tUnitCategories), GTK_TREE_MODEL(tUnitCategories_store));
