@@ -30,7 +30,7 @@
 
 extern GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *datasetedit_builder, *datasets_builder, *setbase_builder, *decimals_builder;
 extern GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
-extern GtkBuilder *preferences_builder, *unit_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder;
+extern GtkBuilder *preferences_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder;
 extern GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_builder;
 extern vector<mode_struct> modes;
 
@@ -1293,8 +1293,7 @@ void create_main_window(void) {
 	gtk_tree_view_column_set_sort_column_id(column, 0);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(tUnitSelector), column);
 	g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tUnitSelector_selection_changed), NULL);
-	gtk_tree_view_set_enable_search(GTK_TREE_VIEW(tUnitSelector), TRUE);
-	gtk_tree_view_set_search_column(GTK_TREE_VIEW(tUnitSelector), 0);
+	gtk_tree_view_set_enable_search(GTK_TREE_VIEW(tUnitSelector), FALSE);
 
 	tUnitSelectorCategories_store = gtk_tree_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 	gtk_tree_view_set_model(GTK_TREE_VIEW(tUnitSelectorCategories), GTK_TREE_MODEL(tUnitSelectorCategories_store));
@@ -2403,51 +2402,6 @@ GtkWidget* get_precision_dialog (void) {
 	}
 
 	return GTK_WIDGET(gtk_builder_get_object(precision_builder, "precision_dialog"));
-}
-GtkWidget* get_unit_dialog (void) {
-
-	if(!unit_builder) {
-	
-		unit_builder = getBuilder("unit.ui");
-		g_assert(unit_builder != NULL);
-		
-		g_assert (gtk_builder_get_object(unit_builder, "unit_dialog") != NULL);
-		
-		tUnitSelectorCategories = GTK_WIDGET(gtk_builder_get_object(unit_builder, "unit_dialog_treeview_category"));
-		tUnitSelector		= GTK_WIDGET(gtk_builder_get_object(unit_builder, "unit_dialog_treeview_unit"));
-	
-		tUnitSelector_store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnitSelector_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
-		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnitSelector_store), 0, GTK_SORT_ASCENDING);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tUnitSelector), GTK_TREE_MODEL(tUnitSelector_store));
-		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
-		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", 0, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, 0);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tUnitSelector), column);
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tUnitSelector_selection_changed), NULL);
-		gtk_tree_view_set_enable_search(GTK_TREE_VIEW(tUnitSelector), TRUE);
-
-		tUnitSelectorCategories_store = gtk_tree_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tUnitSelectorCategories), GTK_TREE_MODEL(tUnitSelectorCategories_store));
-		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelectorCategories));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Category"), renderer, "text", 0, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tUnitSelectorCategories), column);
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tUnitSelectorCategories_selection_changed), NULL);
-		gtk_tree_view_column_set_sort_column_id(column, 0);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnitSelectorCategories_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
-		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnitSelectorCategories_store), 0, GTK_SORT_ASCENDING);
-		
-		gtk_builder_connect_signals(unit_builder, NULL);
-		
-		update_unit_selector_tree();
-	
-	}
-	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(unit_builder, "unit_dialog_entry_unit")));
-	return GTK_WIDGET(gtk_builder_get_object(unit_builder, "unit_dialog"));
 }
 GtkWidget* get_periodic_dialog (void) {
 	if(!periodictable_builder) {
