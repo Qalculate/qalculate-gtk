@@ -2869,7 +2869,7 @@ void on_units_convert_search_changed(GtkEntry *w, gpointer) {
 		gtk_list_store_set(tUnits_store, &iter, UNITS_VISIBLE_COLUMN_CONVERT, b, -1);
 	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tUnits_store), &iter));
 	while(gtk_events_pending()) gtk_main_iteration();
-	if(gtk_widget_is_visible(units_convert_window)) units_convert_resize_popup();
+	//if(gtk_widget_is_visible(units_convert_window)) units_convert_resize_popup();
 }
 
 void on_convert_entry_search_changed(GtkEntry *w, gpointer) {
@@ -3983,7 +3983,7 @@ void update_completion() {
 	
 	string str;
 	for(size_t i = 0; i < CALCULATOR->functions.size(); i++) {
-		if(CALCULATOR->functions[i]->isActive() && !CALCULATOR->functions[i]->isHidden()) {
+		if(CALCULATOR->functions[i]->isActive()) {
 			gtk_list_store_append(completion_store, &iter);
 			const ExpressionName *ename, *ename_r;
 			ename_r = &CALCULATOR->functions[i]->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
@@ -4009,7 +4009,7 @@ void update_completion() {
 		}
 	}
 	for(size_t i = 0; i < CALCULATOR->variables.size(); i++) {
-		if(CALCULATOR->variables[i]->isActive() && !CALCULATOR->variables[i]->isHidden()) {
+		if(CALCULATOR->variables[i]->isActive()) {
 			gtk_list_store_append(completion_store, &iter);
 			const ExpressionName *ename, *ename_r;
 			bool b = false;
@@ -4089,7 +4089,7 @@ void update_completion() {
 		}
 	}
 	for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
-		if(CALCULATOR->units[i]->isActive() && !CALCULATOR->units[i]->isHidden() && CALCULATOR->units[i]->subtype() != SUBTYPE_COMPOSITE_UNIT) {
+		if(CALCULATOR->units[i]->isActive() && CALCULATOR->units[i]->subtype() != SUBTYPE_COMPOSITE_UNIT) {
 			gtk_list_store_append(completion_store, &iter);
 			const ExpressionName *ename, *ename_r;
 			bool b = false;
@@ -13693,9 +13693,10 @@ void units_convert_resize_popup() {
 	gtk_widget_get_preferred_size(units_convert_window, &popup_req, NULL);
 	
 	if(popup_req.width < rect.width + 2) popup_req.width = rect.width + 2;
-	if(popup_req.width < alloc.width) popup_req.width = alloc.width;
-	gtk_scrolled_window_set_min_content_width(GTK_SCROLLED_WINDOW(units_convert_scrolled), popup_req.width);
-	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_convert_search")), popup_req.width, -1);
+	if(popup_req.width < alloc.width) {
+		popup_req.width = alloc.width;
+		gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_convert_search")), popup_req.width, -1);
+	}
 
 	if(x < area.x) x = area.x;
 	else if(x + popup_req.width > area.x + area.width) x = area.x + area.width - popup_req.width;
@@ -13873,12 +13874,16 @@ void do_completion() {
 				else {
 					for(size_t name_i = 1; name_i <= item->countNames() && !b_match; name_i++) {
 						const ExpressionName *ename = &item->getName(name_i);
-						if(ename && strlen(gstr2) <= ename->name.length()) {
-							b_match = true;
-							for(size_t i = 0; i < strlen(gstr2); i++) {
-								if(ename->name[i] != gstr2[i]) {
-									b_match = false;
-									break;
+						if(ename) {
+							if(item->isHidden() && (item->type() != TYPE_UNIT || strlen(gstr2) == 1 || !((Unit*) item)->isCurrency()) && ename) {
+								b_match = (strcmp(ename->name.c_str(), gstr2) == 0);
+							} else if(strlen(gstr2) <= ename->name.length()) {
+								b_match = true;
+								for(size_t i = 0; i < strlen(gstr2); i++) {
+									if(ename->name[i] != gstr2[i]) {
+										b_match = false;
+										break;
+									}
 								}
 							}
 						}

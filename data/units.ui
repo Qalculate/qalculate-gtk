@@ -285,6 +285,7 @@
                         <property name="primary_icon_name">edit-find-symbolic</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">False</property>
+                        <signal name="search-changed" handler="on_units_entry_search_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -519,9 +520,12 @@
           <object class="GtkSearchEntry" id="units_convert_search">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="editable">False</property>
             <property name="primary_icon_name">edit-find-symbolic</property>
             <property name="primary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">False</property>
+            <property name="placeholder_text" translatable="yes">Type anywhere</property>
+            <signal name="search-changed" handler="on_units_convert_search_changed" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>

@@ -281,6 +281,7 @@
                         <property name="primary_icon_name">edit-find-symbolic</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">False</property>
+                        <signal name="search-changed" handler="on_variables_entry_search_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>

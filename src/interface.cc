@@ -1308,12 +1308,6 @@ void create_main_window(void) {
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnitSelectorCategories_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnitSelectorCategories_store), 0, GTK_SORT_ASCENDING);
 
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
-	g_signal_connect(gtk_builder_get_object(main_builder, "convert_entry_search"), "changed", G_CALLBACK(on_convert_entry_search_changed), NULL);
-#else
-	g_signal_connect(gtk_builder_get_object(main_builder, "convert_entry_search"), "search-changed", G_CALLBACK(on_convert_entry_search_changed), NULL);
-#endif
-	
 	/*if(win_width > 0) {
 		
 		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width, win_height);
@@ -1384,12 +1378,6 @@ get_functions_dialog (void)
 		if(functions_hposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(functions_builder, "functions_hpaned")), functions_hposition);
 		if(functions_vposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(functions_builder, "functions_vpaned")), functions_vposition);
 		
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
-		g_signal_connect(gtk_builder_get_object(functions_builder, "functions_entry_search"), "changed", G_CALLBACK(on_functions_entry_search_changed), NULL);
-#else
-		g_signal_connect(gtk_builder_get_object(functions_builder, "functions_entry_search"), "search-changed", G_CALLBACK(on_functions_entry_search_changed), NULL);
-#endif
-
 		gtk_builder_connect_signals(functions_builder, NULL);
 
 		update_functions_tree();
@@ -1448,12 +1436,6 @@ get_variables_dialog (void)
 		
 		if(variables_width > 0 && variables_height > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")), variables_width, variables_height);
 		if(variables_position > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(variables_builder, "variables_hpaned")), variables_position);
-		
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
-		g_signal_connect(gtk_builder_get_object(variables_builder, "variables_entry_search"), "changed", G_CALLBACK(on_variables_entry_search_changed), NULL);
-#else
-		g_signal_connect(gtk_builder_get_object(variables_builder, "variables_entry_search"), "search-changed", G_CALLBACK(on_variables_entry_search_changed), NULL);
-#endif
 
 		gtk_builder_connect_signals(variables_builder, NULL);
 
@@ -1539,14 +1521,6 @@ get_units_dialog (void)
 		
 		if(units_width > 0 && units_height > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")), units_width, units_height);
 		if(units_position > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(units_builder, "units_hpaned")), units_position);
-		
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
-		g_signal_connect(gtk_builder_get_object(units_builder, "units_entry_search"), "changed", G_CALLBACK(on_units_entry_search_changed), NULL);
-		g_signal_connect(gtk_builder_get_object(units_builder, "units_convert_search"), "changed", G_CALLBACK(on_units_convert_search_changed), NULL);
-#else
-		g_signal_connect(gtk_builder_get_object(units_builder, "units_entry_search"), "search-changed", G_CALLBACK(on_units_entry_search_changed), NULL);
-		g_signal_connect(gtk_builder_get_object(units_builder, "units_convert_search"), "search-changed", G_CALLBACK(on_units_convert_search_changed), NULL);
-#endif
 		
 		gtk_builder_connect_signals(units_builder, NULL);
 
