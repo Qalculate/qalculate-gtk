@@ -1506,6 +1506,8 @@ get_units_dialog (void)
 		units_convert_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(tUnits_store), NULL);
 		gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(units_convert_filter), UNITS_VISIBLE_COLUMN_CONVERT);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(units_convert_view), GTK_TREE_MODEL(units_convert_filter));
+		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(units_convert_view));
+		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 		units_convert_flag_renderer = gtk_cell_renderer_pixbuf_new();
 		GtkCellArea *area = gtk_cell_area_box_new();
 		gtk_cell_area_box_set_spacing(GTK_CELL_AREA_BOX(area), 12);

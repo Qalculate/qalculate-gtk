@@ -10,6 +10,7 @@
     <property name="default_height">700</property>
     <property name="type_hint">dialog</property>
     <signal name="delete-event" handler="gtk_widget_hide" swapped="no"/>
+    <signal name="key-press-event" handler="on_variables_dialog_key_press_event" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -263,7 +264,6 @@
                             <property name="has_focus">True</property>
                             <property name="headers_visible">False</property>
                             <property name="enable_search">False</property>
-                            <signal name="key-press-event" handler="on_variables_treeview_variable_key_press_event" swapped="no"/>
                             <child internal-child="selection">
                               <object class="GtkTreeSelection"/>
                             </child>

@@ -180,6 +180,8 @@ vector<DataProperty*> tmp_props_orig;
 string command_convert_units_string;
 Unit *command_convert_unit;
 
+int block_conversion_category_switch = 0;
+
 extern GtkWidget *tMatrixEdit, *tMatrix;
 extern GtkListStore *tMatrixEdit_store, *tMatrix_store;
 vector<GtkTreeViewColumn*> matrix_edit_columns, matrix_columns;
@@ -2698,7 +2700,13 @@ void on_functions_entry_search_changed(GtkEntry *w, gpointer) {
 		gtk_widget_grab_focus(tFunctions);
 	} else {
 		if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tFunctions_store_filter), &iter)) {
+			gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctions)));
 			gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctions)), &iter);
+			GtkTreePath *path = gtk_tree_model_get_path(tFunctions_store_filter, &iter);
+			if(path) {
+				gtk_tree_view_set_cursor(GTK_TREE_VIEW(tFunctions), path, NULL, FALSE);
+				gtk_tree_path_free(path);
+			}
 		}
 	}
 }
@@ -2747,7 +2755,13 @@ void on_variables_entry_search_changed(GtkEntry *w, gpointer) {
 		gtk_widget_grab_focus(tVariables);
 	} else {
 		if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tVariables_store_filter), &iter)) {
+			gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariables)));
 			gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariables)), &iter);
+			GtkTreePath *path = gtk_tree_model_get_path(tVariables_store_filter, &iter);
+			if(path) {
+				gtk_tree_view_set_cursor(GTK_TREE_VIEW(tVariables), path, NULL, FALSE);
+				gtk_tree_path_free(path);
+			}
 		}
 	}
 }
@@ -2814,7 +2828,13 @@ void on_units_entry_search_changed(GtkEntry *w, gpointer) {
 		gtk_widget_grab_focus(tUnits);
 	} else {
 		if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnits_store_filter), &iter)) {
+			gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnits)));
 			gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnits)), &iter);
+			GtkTreePath *path = gtk_tree_model_get_path(tUnits_store_filter, &iter);
+			if(path) {
+				gtk_tree_view_set_cursor(GTK_TREE_VIEW(tUnits), path, NULL, FALSE);
+				gtk_tree_path_free(path);
+			}
 		}
 	}
 }
@@ -2876,6 +2896,7 @@ void on_units_convert_search_changed(GtkEntry *w, gpointer) {
 	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tUnits_store), &iter));
 	if(!str.empty()) {
 		if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(units_convert_filter), &iter)) {
+			gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(units_convert_view)));
 			gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(units_convert_view)), &iter);
 		}
 	}
@@ -2908,6 +2929,19 @@ void on_convert_entry_search_changed(GtkEntry *w, gpointer) {
 				title = title.substr(i + 1);
 				remove_blank_ends(title);
 			}
+			for(size_t i2 = 1; i2 <= u->countNames(); i2++) {
+				if(u->getName(i2).case_sensitive) {
+					if(str == u->getName(i2).name.substr(0, str.length())) {
+						b = true;
+						break;
+					}
+				} else {
+					if(equalsIgnoreCase(str, u->getName(i2).name.substr(0, str.length()))) {
+						b = true;
+						break;
+					}
+				}
+			}
 			if(!b && u->countries().length() >= str.length()) {
 				string countries = u->countries();
 				while(true) {
@@ -2929,14 +2963,20 @@ void on_convert_entry_search_changed(GtkEntry *w, gpointer) {
 		if(b) count++;
 		gtk_list_store_set(tUnitSelector_store, &iter, 3, b, -1);
 	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tUnitSelector_store), &iter));
-	if(str.empty() && count < 30) {
+	/*if(str.empty() && count < 30) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")));
 		gtk_widget_grab_focus(tUnitSelector);
-	}
+	}*/
 	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnitSelector_selection_changed, NULL);
 	if(!str.empty()) {
 		if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnitSelector_store_filter), &iter)) {
+			gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector)));
 			gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector)), &iter);
+			GtkTreePath *path = gtk_tree_model_get_path(tUnitSelector_store_filter, &iter);
+			if(path) {
+				gtk_tree_view_set_cursor(GTK_TREE_VIEW(tUnitSelector), path, NULL, FALSE);
+				gtk_tree_path_free(path);
+			}
 		}
 	}
 }
@@ -3041,7 +3081,7 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 	} else {
 		selected_unit_selector_category = "";
 	}	
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")), count >= 30);
+	//gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")), count >= 30);
 	block_unit_selector_convert = false;
 	
 }
@@ -7254,7 +7294,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		setResult(NULL, true, (!do_stack || stack_index == 0), true, "", do_stack ? stack_index : 0);
 	}
 
-	if(!do_stack || stack_index == 0) {
+	if((!do_stack || stack_index == 0) && !block_conversion_category_switch) {
 		Unit *u = CALCULATOR->findMatchingUnit(*mstruct);
 		if(u && !u->category().empty()) {
 			string s_cat = u->category();
@@ -11483,7 +11523,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {2, 4, 0};
+	int version_numbers[] = {2, 5, 0};
 	bool old_history_format = false;
 			
 	if(file) {
@@ -18263,41 +18303,56 @@ void on_unknown_edit_combobox_sign_changed(GtkComboBox *om, gpointer) {
 	}
 }
 
-gboolean on_variables_treeview_variable_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
-	if(gtk_widget_has_focus(GTK_WIDGET(tVariables))) {
-		if(gdk_keyval_to_unicode(event->keyval) > 0) {
-			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_entry_search")));
-			gchar buffer[10];
-			buffer[g_unichar_to_utf8(gdk_keyval_to_unicode(event->keyval), buffer)] = '\0';
-			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variables_builder, "variables_entry_search")), buffer);
-			gtk_editable_set_position(GTK_EDITABLE(gtk_builder_get_object(variables_builder, "variables_entry_search")), -1);
+gboolean on_variables_dialog_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
+	if(gtk_widget_has_focus(GTK_WIDGET(tVariables)) && gdk_keyval_to_unicode(event->keyval) > 32) {
+		gint start_pos = 0, end_pos = 0;
+		gtk_editable_get_selection_bounds(GTK_EDITABLE(gtk_builder_get_object(variables_builder, "variables_entry_search")), &start_pos, &end_pos);
+		gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_entry_search")));
+		gtk_editable_select_region(GTK_EDITABLE(gtk_builder_get_object(variables_builder, "variables_entry_search")), start_pos, end_pos);
+	}
+	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_entry_search")))) {
+		if(event->keyval == GDK_KEY_Escape) {
+			gtk_widget_hide(o);
 			return TRUE;
 		}
-	} 
+		if(event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_Page_Up || event->keyval == GDK_KEY_Page_Down || event->keyval == GDK_KEY_KP_Page_Up || event->keyval == GDK_KEY_KP_Page_Down) {
+			gtk_widget_grab_focus(GTK_WIDGET(tVariables));
+		}
+	}
 	return FALSE;
 }
-gboolean on_functions_treeview_function_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
-	if(gtk_widget_has_focus(GTK_WIDGET(tFunctions))) {
-		if(gdk_keyval_to_unicode(event->keyval) > 0) {
-			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_entry_search")));
-			gchar buffer[10];
-			buffer[g_unichar_to_utf8(gdk_keyval_to_unicode(event->keyval), buffer)] = '\0';;
-			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functions_builder, "functions_entry_search")), buffer);
-			gtk_editable_set_position(GTK_EDITABLE(gtk_builder_get_object(functions_builder, "functions_entry_search")), -1);
+gboolean on_functions_dialog_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
+	if(gtk_widget_has_focus(GTK_WIDGET(tFunctions)) && gdk_keyval_to_unicode(event->keyval) > 32) {
+		gint start_pos = 0, end_pos = 0;
+		gtk_editable_get_selection_bounds(GTK_EDITABLE(gtk_builder_get_object(functions_builder, "functions_entry_search")), &start_pos, &end_pos);
+		gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_entry_search")));
+		gtk_editable_select_region(GTK_EDITABLE(gtk_builder_get_object(functions_builder, "functions_entry_search")), start_pos, end_pos);
+	}
+	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_entry_search")))) {
+		if(event->keyval == GDK_KEY_Escape) {
+			gtk_widget_hide(o);
 			return TRUE;
 		}
-	} 
+		if(event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_Page_Up || event->keyval == GDK_KEY_Page_Down || event->keyval == GDK_KEY_KP_Page_Up || event->keyval == GDK_KEY_KP_Page_Down) {
+			gtk_widget_grab_focus(GTK_WIDGET(tFunctions));
+		}
+	}
 	return FALSE;
 }
-gboolean on_units_treeview_unit_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
-	if(gtk_widget_has_focus(GTK_WIDGET(tUnits))) {
-		if(gdk_keyval_to_unicode(event->keyval) > 0) {
-			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_entry_search")));
-			gchar buffer[10];
-			buffer[g_unichar_to_utf8(gdk_keyval_to_unicode(event->keyval), buffer)] = '\0';;
-			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_search")), buffer);
-			gtk_editable_set_position(GTK_EDITABLE(gtk_builder_get_object(units_builder, "units_entry_search")), -1);
+gboolean on_units_dialog_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
+	if(gtk_widget_has_focus(GTK_WIDGET(tUnits)) && gdk_keyval_to_unicode(event->keyval) > 32) {
+		gint start_pos = 0, end_pos = 0;
+		gtk_editable_get_selection_bounds(GTK_EDITABLE(gtk_builder_get_object(units_builder, "units_entry_search")), &start_pos, &end_pos);
+		gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_entry_search")));
+		gtk_editable_select_region(GTK_EDITABLE(gtk_builder_get_object(units_builder, "units_entry_search")), start_pos, end_pos);
+	}
+	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_entry_search")))) {
+		if(event->keyval == GDK_KEY_Escape) {
+			gtk_widget_hide(o);
 			return TRUE;
+		}
+		if(event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_Page_Up || event->keyval == GDK_KEY_Page_Down || event->keyval == GDK_KEY_KP_Page_Up || event->keyval == GDK_KEY_KP_Page_Down) {
+			gtk_widget_grab_focus(GTK_WIDGET(tUnits));
 		}
 	}
 	return FALSE;
@@ -18411,13 +18466,14 @@ gboolean on_units_convert_to_button_key_press_event(GtkWidget*, GdkEventKey *eve
 				units_convert_hover_blocked = true;
 				GtkTreePath *path = gtk_tree_model_get_path(units_convert_filter, &iter);
 				gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(units_convert_view), path, NULL, FALSE, 0.0, 0.0);
+				gtk_tree_selection_unselect_all(selection);
 				gtk_tree_selection_select_iter(selection, &iter);
 				gtk_tree_path_free(path);
 			}
 			return TRUE;
 		}
 	}
-	if(gdk_keyval_to_unicode(event->keyval) > 0) {
+	if(gdk_keyval_to_unicode(event->keyval) > 32) {
 		gchar buffer[10];
 		buffer[g_unichar_to_utf8(gdk_keyval_to_unicode(event->keyval), buffer)] = '\0';
 		string str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_convert_search")));
@@ -18427,15 +18483,24 @@ gboolean on_units_convert_to_button_key_press_event(GtkWidget*, GdkEventKey *eve
 	}
 	return FALSE;
 }
+
 gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 	if(gtk_widget_has_focus(expressiontext) || b_editing_stack) return FALSE;
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_unit")))) return FALSE;
-	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")))) return FALSE;
+	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")))) {
+		if(event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_Page_Up || event->keyval == GDK_KEY_Page_Down || event->keyval == GDK_KEY_KP_Page_Up || event->keyval == GDK_KEY_KP_Page_Down) {
+			gtk_widget_grab_focus(GTK_WIDGET(tUnitSelector));
+		}
+		return FALSE;
+	}
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_treeview_unit")))) {
 		if(!(event->keyval >= GDK_KEY_KP_Multiply && event->keyval <= GDK_KEY_KP_9) && !(event->keyval >= GDK_KEY_parenleft && event->keyval <= GDK_KEY_A)) {
-			if(gdk_keyval_to_unicode(event->keyval) > 0) {
-				gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")));
+			if(gdk_keyval_to_unicode(event->keyval) > 32) {
+				//gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")));
+				gint start_pos = 0, end_pos = 0;
+				gtk_editable_get_selection_bounds(GTK_EDITABLE(gtk_builder_get_object(main_builder, "convert_entry_search")), &start_pos, &end_pos);
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")));
+				gtk_editable_select_region(GTK_EDITABLE(gtk_builder_get_object(main_builder, "convert_entry_search")), start_pos, end_pos);
 			}
 			return FALSE;
 		}
@@ -19740,7 +19805,9 @@ void convert_from_convert_entry_unit() {
 	}
 	bool b_puup = printops.use_unit_prefixes;
 	printops.use_unit_prefixes = true;
+	block_conversion_category_switch++;
 	executeCommand(COMMAND_CONVERT_STRING, true, ceu_str);
+	block_conversion_category_switch--;
 	printops.use_unit_prefixes = b_puup;
 	do_timeout = true;
 }
