@@ -978,7 +978,7 @@ void create_main_window(void) {
 
 	gtk_builder_connect_signals(main_builder, NULL);
 	g_signal_connect(accel_group, "accel_changed", G_CALLBACK(save_accels), NULL);
-	
+
 	gtk_style_context_get_color(gtk_widget_get_style_context(historyview), GTK_STATE_FLAG_NORMAL, &c);
 	GdkRGBA c_red = c;
 	if(c_red.red >= 0.8) {
@@ -1008,9 +1008,9 @@ void create_main_window(void) {
 		c_gray.red /= 1.5;
 		c_gray.blue /= 1.5;
 	} else if(c_gray.blue + c_gray.green + c_gray.red > 0.3) {
-		c_gray.green += 0.175;
-		c_gray.red += 0.175;
-		c_gray.blue += 0.175;
+		c_gray.green += 0.235;
+		c_gray.red += 0.235;
+		c_gray.blue += 0.235;
 	} else if(c_gray.blue + c_gray.green + c_gray.red > 0.15) {
 		c_gray.green += 0.3;
 		c_gray.red += 0.3;
@@ -1039,6 +1039,26 @@ void create_main_window(void) {
 	gtk_tree_view_append_column(GTK_TREE_VIEW(historyview), history_column);
 	g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_historyview_selection_changed), NULL);
 	gtk_tree_view_set_row_separator_func(GTK_TREE_VIEW(historyview), history_row_separator_func, NULL, NULL);
+	
+	// Fix for breeze-gtk and Ubuntu theme
+	gchar *theme_name;
+	g_object_get(gtk_settings_get_default(), "gtk-theme-name", &theme_name, NULL);
+	if(theme_name) {
+		string themestr = theme_name;
+		if(themestr.substr(0, 7) != "Adwaita" && themestr.substr(0, 6) != "ooxmox") {
+			GtkCssProvider *historyview_provider = gtk_css_provider_new();
+			gtk_tree_view_set_grid_lines(GTK_TREE_VIEW(historyview), GTK_TREE_VIEW_GRID_LINES_NONE);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(historyview), GTK_STYLE_PROVIDER(historyview_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			if(themestr == "Breeze") {
+				gtk_css_provider_load_from_data(historyview_provider, "treeview.view {-GtkTreeView-horizontal-separator: 0;}\ntreeview.view.separator {min-height: 2px; color: #cecece;}", -1, NULL);
+			} else if(themestr == "Breeze-Dark") {
+				gtk_css_provider_load_from_data(historyview_provider, "treeview.view {-GtkTreeView-horizontal-separator: 0;}\ntreeview.view.separator {min-height: 2px; color: #313131;}", -1, NULL);
+			} else {
+				gtk_css_provider_load_from_data(historyview_provider, "treeview.view {-GtkTreeView-horizontal-separator: 0;}\ntreeview.view.separator {min-height: 2px;}", -1, NULL);
+			}
+		}
+		g_free(theme_name);
+	}
 
 	string history_str;
 	GtkTreeIter history_iter;
