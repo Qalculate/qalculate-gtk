@@ -362,6 +362,58 @@ enum {
 	COMMAND_CALCULATE
 };
 
+bool title_matches(ExpressionItem *item, const string &str, size_t minlength = 0) {
+	if(item->title(true).length() >= str.length()) {
+		string title = item->title(true);
+		remove_blank_ends(title);
+		while(title.length() >= str.length()) {
+			size_t i = title.find(' ');
+			if(str.length() == title.length()) {
+				if(equalsIgnoreCase(str, title)) return true;
+			} else if((str.length() >= minlength || (i != string::npos && str.length() == i)) && equalsIgnoreCase(str, title.substr(0, str.length()))) {
+				return true;
+			}
+			if(i == string::npos) break;
+			title = title.substr(i + 1);
+			remove_blank_ends(title);
+		}
+	}
+	return false;
+}
+bool name_matches(ExpressionItem *item, const string &str) {
+	for(size_t i2 = 1; i2 <= item->countNames(); i2++) {
+		if(item->getName(i2).case_sensitive) {
+			if(str == item->getName(i2).name.substr(0, str.length())) {
+				return true;
+			}
+		} else {
+			if(equalsIgnoreCase(str, item->getName(i2).name.substr(0, str.length()))) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+bool country_matches(Unit *u, const string &str, size_t minlength = 0) {
+	if(u->countries().length() >= str.length()) {
+		string countries = u->countries();
+		while(true) {
+			size_t i = countries.find(',');
+			if(i == string::npos) {
+				if((str.length() >= minlength || str.length() == countries.length()) && equalsIgnoreCase(str, countries.substr(0, str.length()))) return true;
+				break;
+			} else {
+				if((str.length() >= minlength || str.length() == i) && str.length() <= i && equalsIgnoreCase(str, countries.substr(0, str.length()))) {
+					return true;
+				}
+				countries = countries.substr(i + 1);
+				remove_blank_ends(countries);
+			}
+		}
+	}
+	return false;
+}
+
 void remove_separator(string &copy_text) {
 	for(size_t i = ((CALCULATOR->local_digit_group_separator.empty() || CALCULATOR->local_digit_group_separator == " ") ? 1 : 0); i < 3; i++) {
 		string str_sep;
@@ -2778,48 +2830,9 @@ void on_units_entry_search_changed(GtkEntry *w, gpointer) {
 		Unit *u = NULL;
 		if(!b) gtk_tree_model_get(GTK_TREE_MODEL(tUnits_store), &iter, UNITS_POINTER_COLUMN, &u, -1);
 		if(u) {
-			string title = u->title(true);
-			remove_blank_ends(title);
-			while(title.length() >= str.length()) {
-				if(equalsIgnoreCase(str, title.substr(0, str.length()))) {
-					b = true;
-					break;
-				}
-				size_t i = title.find(' ');
-				if(i == string::npos) break;
-				title = title.substr(i + 1);
-				remove_blank_ends(title);
-			}
-			for(size_t i2 = 1; i2 <= u->countNames(); i2++) {
-				if(u->getName(i2).case_sensitive) {
-					if(str == u->getName(i2).name.substr(0, str.length())) {
-						b = true;
-						break;
-					}
-				} else {
-					if(equalsIgnoreCase(str, u->getName(i2).name.substr(0, str.length()))) {
-						b = true;
-						break;
-					}
-				}
-			}
-			if(!b && u->countries().length() >= str.length()) {
-				string countries = u->countries();
-				while(true) {
-					size_t i = countries.find(',');
-					if(i == string::npos) {
-						if(equalsIgnoreCase(str, countries.substr(0, str.length()))) b = true;
-						break;
-					} else {
-						if(str.length() <= i && equalsIgnoreCase(str, countries.substr(0, str.length()))) {
-							b = true;
-							break;
-						}
-						countries = countries.substr(i + 1);
-						remove_blank_ends(countries);
-					}
-				}
-			}
+			b = name_matches(u, str);
+			if(!b) b = title_matches(u, str);
+			if(!b) b = country_matches(u, str);
 		}
 		gtk_list_store_set(tUnits_store, &iter, UNITS_VISIBLE_COLUMN, b, -1);
 	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tUnits_store), &iter));
@@ -2849,48 +2862,9 @@ void on_units_convert_search_changed(GtkEntry *w, gpointer) {
 		Unit *u = NULL;
 		if(!b) gtk_tree_model_get(GTK_TREE_MODEL(tUnits_store), &iter, UNITS_POINTER_COLUMN, &u, -1);
 		if(u) {
-			string title = u->title(true);
-			remove_blank_ends(title);
-			while(title.length() >= str.length()) {
-				if(equalsIgnoreCase(str, title.substr(0, str.length()))) {
-					b = true;
-					break;
-				}
-				size_t i = title.find(' ');
-				if(i == string::npos) break;
-				title = title.substr(i + 1);
-				remove_blank_ends(title);
-			}
-			for(size_t i2 = 1; i2 <= u->countNames(); i2++) {
-				if(u->getName(i2).case_sensitive) {
-					if(str == u->getName(i2).name.substr(0, str.length())) {
-						b = true;
-						break;
-					}
-				} else {
-					if(equalsIgnoreCase(str, u->getName(i2).name.substr(0, str.length()))) {
-						b = true;
-						break;
-					}
-				}
-			}
-			if(!b && u->countries().length() >= str.length()) {
-				string countries = u->countries();
-				while(true) {
-					size_t i = countries.find(',');
-					if(i == string::npos) {
-						if(equalsIgnoreCase(str, countries.substr(0, str.length()))) b = true;
-						break;
-					} else {
-						if(str.length() <= i && equalsIgnoreCase(str, countries.substr(0, str.length()))) {
-							b = true;
-							break;
-						}
-						countries = countries.substr(i + 1);
-						remove_blank_ends(countries);
-					}
-				}
-			}
+			b = name_matches(u, str);
+			if(!b) b = title_matches(u, str);
+			if(!b) b = country_matches(u, str);
 		}
 		gtk_list_store_set(tUnits_store, &iter, UNITS_VISIBLE_COLUMN_CONVERT, b, -1);
 	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tUnits_store), &iter));
@@ -2916,49 +2890,10 @@ void on_convert_entry_search_changed(GtkEntry *w, gpointer) {
 		bool b = str.empty();
 		Unit *u = NULL;
 		if(!b) gtk_tree_model_get(GTK_TREE_MODEL(tUnitSelector_store), &iter, 1, &u, -1);
-		if(u) {
-			string title = u->title(true);
-			remove_blank_ends(title);
-			while(title.length() >= str.length()) {
-				if(equalsIgnoreCase(str, title.substr(0, str.length()))) {
-					b = true;
-					break;
-				}
-				size_t i = title.find(' ');
-				if(i == string::npos) break;
-				title = title.substr(i + 1);
-				remove_blank_ends(title);
-			}
-			for(size_t i2 = 1; i2 <= u->countNames(); i2++) {
-				if(u->getName(i2).case_sensitive) {
-					if(str == u->getName(i2).name.substr(0, str.length())) {
-						b = true;
-						break;
-					}
-				} else {
-					if(equalsIgnoreCase(str, u->getName(i2).name.substr(0, str.length()))) {
-						b = true;
-						break;
-					}
-				}
-			}
-			if(!b && u->countries().length() >= str.length()) {
-				string countries = u->countries();
-				while(true) {
-					size_t i = countries.find(',');
-					if(i == string::npos) {
-						if(equalsIgnoreCase(str, countries.substr(0, str.length()))) b = true;
-						break;
-					} else {
-						if(str.length() <= i && equalsIgnoreCase(str, countries.substr(0, str.length()))) {
-							b = true;
-							break;
-						}
-						countries = countries.substr(i + 1);
-						remove_blank_ends(countries);
-					}
-				}
-			}
+		if(u) {			
+			b = name_matches(u, str);
+			if(!b) b = title_matches(u, str);
+			if(!b) b = country_matches(u, str);
 		}
 		if(b) count++;
 		gtk_list_store_set(tUnitSelector_store, &iter, 3, b, -1);
@@ -4583,6 +4518,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			break;
 		}
 		case STRUCT_MULTIPLICATION: {
+		
 			ips_n.depth++;
 			
 			vector<cairo_surface_t*> surface_terms;
@@ -5555,6 +5491,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			TTBP(str);
 			
 			const ExpressionName *ename = &m.unit()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, m.isPlural(), po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
+
 			if(m.prefix()) {
 				str += m.prefix()->name(po.abbreviate_names && ename->abbreviation && (ename->suffix || ename->name.find("_") == string::npos), po.use_unicode_signs, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
 			}
@@ -5588,12 +5525,34 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			pango_layout_set_markup(layout, str.c_str(), -1);
 			pango_layout_get_pixel_size(layout, &w, &h);
 			central_point = h / 2;
+			cairo_surface_t *flag_s = NULL;
+			gint flag_width = 0;
+			gint flag_height = 0;
+			if(m.unit()->isCurrency() && ename->name.length() == 3 && ename->name == m.unit()->referenceName()) {
+				string imagefile = "/qalculate-gtk/flags/"; imagefile += m.unit()->referenceName(); imagefile += ".png";
+				GdkPixbuf *pixbuf = NULL;
+				if(h < 40) pixbuf = gdk_pixbuf_new_from_resource_at_scale(imagefile.c_str(), -1, h / 2.5, TRUE, NULL);
+				else pixbuf = gdk_pixbuf_new_from_resource(imagefile.c_str(), NULL);
+				if(pixbuf) {
+					flag_s = gdk_cairo_surface_create_from_pixbuf(pixbuf, 1, NULL);
+					flag_height = cairo_image_surface_get_height(flag_s);
+					flag_width = cairo_image_surface_get_width(flag_s);
+					w += flag_width + 2;
+					g_object_unref(pixbuf);
+				}
+			}
 			surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 			cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
 			cr = cairo_create(surface);
 			gdk_cairo_set_source_rgba(cr, color);
 			cairo_move_to(cr, 0, 0);
 			pango_cairo_show_layout(cr, layout);
+			if(flag_s) {
+				gdk_cairo_set_source_rgba(cr, color);
+				cairo_set_source_surface(cr, flag_s, w - flag_width - 2, h / 10);
+				cairo_paint(cr);
+				cairo_surface_destroy(flag_s);
+			}
 			g_object_unref(layout);
 			break;
 		}
@@ -13922,6 +13881,7 @@ void do_completion() {
 		return;
 	}
 	gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &current_object_start, &current_object_end, FALSE);
+	string str = gstr2;
 	GtkTreeIter iter;
 	int matches = 0;
 	if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(completion_store), &iter)) {
@@ -13938,17 +13898,21 @@ void do_completion() {
 						const ExpressionName *ename = &item->getName(name_i);
 						if(ename) {
 							if(item->isHidden() && (item->type() != TYPE_UNIT || strlen(gstr2) == 1 || !((Unit*) item)->isCurrency()) && ename) {
-								b_match = (strcmp(ename->name.c_str(), gstr2) == 0);
-							} else if(strlen(gstr2) <= ename->name.length()) {
+								b_match = (ename->name.c_str() == str);
+							} else if(str.length() <= ename->name.length()) {
 								b_match = true;
-								for(size_t i = 0; i < strlen(gstr2); i++) {
-									if(ename->name[i] != gstr2[i]) {
+								for(size_t i = 0; i < str.length(); i++) {
+									if(ename->name[i] != str[i]) {
 										b_match = false;
 										break;
 									}
 								}
 							}
 						}
+					}
+					if(!b_match && item->type() == TYPE_UNIT && ((Unit*) item)->isCurrency()) {
+						if(title_matches(item, str, 3)) b_match = true;
+						else if(country_matches((Unit*) item, str, 3)) b_match = true;
 					}
 				}
 			}
