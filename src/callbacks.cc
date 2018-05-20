@@ -258,6 +258,8 @@ unordered_map<void*, bool> number_approx_map;
 unordered_map<void*, string> number_exp_map;
 unordered_map<void*, bool> number_exp_minus_map;
 
+unordered_map<string, GdkPixbuf*> flag_images;
+
 extern MathFunction *f_answer;
 extern MathFunction *f_expression;
 
@@ -2553,13 +2555,10 @@ void setUnitTreeItem(GtkTreeIter &iter2, Unit *u) {
 	//display descriptive name (title), or name if no title defined
 	gtk_list_store_set(tUnits_store, &iter2, UNITS_TITLE_COLUMN, u->title(true).c_str(), UNITS_NAMES_COLUMN, snames.c_str(), UNITS_BASE_COLUMN, sbase.c_str(), UNITS_POINTER_COLUMN, (gpointer) u, UNITS_VISIBLE_COLUMN, TRUE, UNITS_VISIBLE_COLUMN_CONVERT, TRUE, -1);
 	if(u->isCurrency()) {
-		string imagefile = "/qalculate-gtk/flags/"; imagefile += u->referenceName(); imagefile += ".png"; 
-		GdkPixbuf *flagbuf = NULL;
-		if(g_resources_get_info(imagefile.c_str(), G_RESOURCE_LOOKUP_FLAGS_NONE, NULL, NULL, NULL)) {
-			flagbuf = gdk_pixbuf_new_from_resource(imagefile.c_str(), NULL);
+		unordered_map<string, GdkPixbuf*>::const_iterator it_flag = flag_images.find(u->referenceName()); 
+		if(it_flag != flag_images.end()) {
+			gtk_list_store_set(tUnits_store, &iter2, UNITS_FLAG_COLUMN, it_flag->second, -1);
 		}
-		gtk_list_store_set(tUnits_store, &iter2, UNITS_FLAG_COLUMN, flagbuf, -1);
-		if(flagbuf) g_object_unref(flagbuf);
 	}
 	GtkTreeIter iter;
 	if(u == selected_unit && gtk_tree_model_filter_convert_child_iter_to_iter(GTK_TREE_MODEL_FILTER(tUnits_store_filter), &iter, &iter2)) {
@@ -2968,13 +2967,8 @@ void setUnitSelectorTreeItem(GtkTreeIter &iter2, Unit *u) {
 	gtk_list_store_append(tUnitSelector_store, &iter2);
 	string snames, sbase;
 	if(u->isCurrency()) {
-		string imagefile = "/qalculate-gtk/flags/"; imagefile += u->referenceName(); imagefile += ".png"; 
-		GdkPixbuf *flagbuf = NULL;
-		if(g_resources_get_info(imagefile.c_str(), G_RESOURCE_LOOKUP_FLAGS_NONE, NULL, NULL, NULL)) {
-			flagbuf = gdk_pixbuf_new_from_resource(imagefile.c_str(), NULL);
-		}
-		gtk_list_store_set(tUnitSelector_store, &iter2, 0, u->title(true).c_str(), 1, (gpointer) u, 2, flagbuf, 3, TRUE, -1);
-		if(flagbuf) g_object_unref(flagbuf);
+		unordered_map<string, GdkPixbuf*>::const_iterator it_flag = flag_images.find(u->referenceName()); 
+		gtk_list_store_set(tUnitSelector_store, &iter2, 0, u->title(true).c_str(), 1, (gpointer) u, 2, it_flag == flag_images.end() ? NULL : it_flag->second, 3, TRUE, -1);
 	} else {
 		gtk_list_store_set(tUnitSelector_store, &iter2, 0, u->title(true).c_str(), 1, (gpointer) u, 3, TRUE, -1);
 	}
@@ -4128,13 +4122,14 @@ void update_completion() {
 		}
 	}
 	for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
-		if(CALCULATOR->units[i]->isActive() && CALCULATOR->units[i]->subtype() != SUBTYPE_COMPOSITE_UNIT) {
+		Unit *u = CALCULATOR->units[i];
+		if(u->isActive() && u->subtype() != SUBTYPE_COMPOSITE_UNIT) {
 			gtk_list_store_append(completion_store, &iter);
 			const ExpressionName *ename, *ename_r;
 			bool b = false;
-			ename_r = &CALCULATOR->units[i]->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
-			for(size_t name_i = 1; name_i <= CALCULATOR->units[i]->countNames(); name_i++) {
-				ename = &CALCULATOR->units[i]->getName(name_i);
+			ename_r = &u->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+			for(size_t name_i = 1; name_i <= u->countNames(); name_i++) {
+				ename = &u->getName(name_i);
 				if(ename && ename != ename_r && !ename->completion_only && !ename->plural && (!ename->unicode || can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))) {
 					if(!b) {
 						if(ename_r->suffix && ename_r->name.length() > 1) {
@@ -4153,8 +4148,10 @@ void update_completion() {
 					str += "</i>";
 				}
 			}
-			if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, CALCULATOR->units[i]->title().c_str(), 2, CALCULATOR->units[i], 3, FALSE, 4, 0, -1);
-			else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, CALCULATOR->units[i]->title().c_str(), 2, CALCULATOR->units[i], 3, FALSE, 4, 0, -1);
+			unordered_map<string, GdkPixbuf*>::const_iterator it_flag = flag_images.end();
+			if(u->isCurrency()) it_flag = flag_images.find(u->referenceName()); 	
+			if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, u->title().c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_images.end() ? NULL : it_flag->second, -1);
+			else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, u->title().c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_images.end() ? NULL : it_flag->second, -1);
 		}
 	}	
 }
@@ -12666,55 +12663,61 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 	gtk_tree_model_get_iter(completion_sort, &iter, path);
 	ExpressionItem *item = NULL;
 	const ExpressionName *ename = NULL, *ename_r = NULL;
-	gtk_tree_model_get(completion_sort, &iter, 2, &item, -1);
+	gint i_type = 0;
+	gtk_tree_model_get(completion_sort, &iter, 2, &item, 4, &i_type, -1);
 	if(!item) return;
-	ename_r = &item->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);	
-	gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &current_object_start, &current_object_end, FALSE);
-	for(size_t name_i = 0; name_i <= item->countNames() && !ename; name_i++) {
-		if(name_i == 0) {
-			ename = ename_r;
-		} else {
+	ename_r = &item->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+	if(i_type > 1) {
+		ename = ename_r;
+	} else {
+		gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &current_object_start, &current_object_end, FALSE);
+		cout << gstr2 << endl;
+		for(size_t name_i = 0; name_i <= item->countNames() && !ename; name_i++) {
+			if(name_i == 0) {
+				ename = ename_r;
+			} else {
+				ename = &item->getName(name_i);
+				if(!ename || ename == ename_r || ename->plural || (ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext)))) {
+					ename = NULL;
+				}
+			}
+			if(ename) {
+				if(strlen(gstr2) <= ename->name.length()) {
+					for(size_t i = 0; i < strlen(gstr2); i++) {
+						if(ename->name[i] != gstr2[i]) {
+							ename = NULL;
+							break;
+						}
+					}
+				} else {
+					ename = NULL;
+				}
+			}
+		}
+		for(size_t name_i = 1; name_i <= item->countNames() && !ename; name_i++) {
 			ename = &item->getName(name_i);
-			if(!ename || ename == ename_r || ename->plural || (ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext)))) {
+			if(!ename || ename == ename_r || (!ename->plural && !(ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))))) {
 				ename = NULL;
 			}
-		}
-		if(ename) {
-			if(strlen(gstr2) <= ename->name.length()) {
-				for(size_t i = 0; i < strlen(gstr2); i++) {
-					if(ename->name[i] != gstr2[i]) {
-						ename = NULL;
-						break;
+			if(ename) {
+				if(strlen(gstr2) <= ename->name.length()) {
+					for(size_t i = 0; i < strlen(gstr2); i++) {
+						if(ename->name[i] != gstr2[i]) {
+							ename = NULL;
+							break;
+						}
 					}
+				} else {
+					ename = NULL;
 				}
-			} else {
-				ename = NULL;
 			}
 		}
-	}
-	for(size_t name_i = 1; name_i <= item->countNames() && !ename; name_i++) {
-		ename = &item->getName(name_i);
-		if(!ename || ename == ename_r || (!ename->plural && !(ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))))) {
-			ename = NULL;
+		if(ename && ename->completion_only) {
+			ename = &item->preferredInputName(ename->abbreviation, printops.use_unicode_signs, ename->plural, false, &can_display_unicode_string_function, (void*) expressiontext);	
 		}
-		if(ename) {
-			if(strlen(gstr2) <= ename->name.length()) {
-				for(size_t i = 0; i < strlen(gstr2); i++) {
-					if(ename->name[i] != gstr2[i]) {
-						ename = NULL;
-						break;
-					}
-				}
-			} else {
-				ename = NULL;
-			}
-		}
+		if(!ename) ename = ename_r;
+		g_free(gstr2);
 	}
-	if(ename && ename->completion_only) {
-		ename = &item->preferredInputName(ename->abbreviation, printops.use_unicode_signs, ename->plural, false, &can_display_unicode_string_function, (void*) expressiontext);	
-	}
-	if(!ename) ename = ename_r;
-	g_free(gstr2);
 	if(!ename) return;
 	block_completion();
 	add_to_undo = false;

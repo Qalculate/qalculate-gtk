@@ -28,6 +28,37 @@
 
 #include <deque>
 
+#if HAVE_UNORDERED_MAP
+#	include <unordered_map>
+#elif 	defined(__GNUC__)
+
+#	ifndef __has_include
+#	define __has_include(x) 0
+#	endif
+
+#	if (defined(__clang__) && __has_include(<tr1/unordered_map>)) || (__GNUC__ >= 4 && __GNUC_MINOR__ >= 3)
+#		include <tr1/unordered_map>
+		namespace Sgi = std;
+#		define unordered_map std::tr1::unordered_map
+#	else
+#		if __GNUC__ < 3
+#			include <hash_map.h>
+			namespace Sgi { using ::hash_map; }; // inherit globals
+#		else
+#			include <ext/hash_map>
+#			if __GNUC__ == 3 && __GNUC_MINOR__ == 0
+				namespace Sgi = std;               // GCC 3.0
+#			else
+				namespace Sgi = ::__gnu_cxx;       // GCC 3.1 and later
+#			endif
+#		endif
+#		define unordered_map Sgi::hash_map
+#	endif
+#else      // ...  there are other compilers, right?
+	namespace Sgi = std;
+#	define unordered_map Sgi::hash_map
+#endif
+
 extern GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *datasetedit_builder, *datasets_builder, *setbase_builder, *decimals_builder;
 extern GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
 extern GtkBuilder *preferences_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder;
@@ -141,6 +172,8 @@ extern string latest_button_unit_pre, latest_button_currency_pre;
 gchar history_error_color[8];
 gchar history_warning_color[8];
 gchar history_parse_color[8];
+
+extern unordered_map<string, GdkPixbuf*> flag_images;
 
 extern string fix_history_string(const string &str);
 
@@ -813,6 +846,19 @@ void create_main_window(void) {
 	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_sum")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_sum")));
 	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_mean")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_mean")));
 	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_pi")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_pi")));
+	
+	char **flags_r = g_resources_enumerate_children("/qalculate-gtk/flags", G_RESOURCE_LOOKUP_FLAGS_NONE, NULL);
+	if(flags_r) {
+		for(size_t i = 0; flags_r[i] != NULL; i++) {
+			string flag_s = flags_r[i];
+			size_t i_ext = flag_s.find(".", 1);
+			if(i_ext != string::npos) {
+				GdkPixbuf *flagbuf = gdk_pixbuf_new_from_resource((string("/qalculate-gtk/flags/") + flag_s).c_str(), NULL);
+				if(flagbuf) flag_images[flag_s.substr(0, i_ext)] = flagbuf;
+			}
+		}
+		g_strfreev(flags_r);
+	}
 
 	expressiontext = GTK_WIDGET(gtk_builder_get_object(main_builder, "expressiontext"));
 	expressionbuffer = GTK_TEXT_BUFFER(gtk_builder_get_object(main_builder, "expressionbuffer"));
@@ -1258,7 +1304,7 @@ void create_main_window(void) {
 	completion_scrolled = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionscrolled"));
 	gtk_widget_set_size_request(gtk_scrolled_window_get_vscrollbar(GTK_SCROLLED_WINDOW(completion_scrolled)), -1, 0);
 	completion_window = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionwindow"));
-	completion_store = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN, G_TYPE_INT);
+	completion_store = gtk_list_store_new(6, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN, G_TYPE_INT, GDK_TYPE_PIXBUF);
 	completion_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(completion_store), NULL);
 	gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(completion_filter), 3);
 	completion_sort = gtk_tree_model_sort_new_with_model(completion_filter);
@@ -1271,6 +1317,9 @@ void create_main_window(void) {
 	column = gtk_tree_view_column_new_with_area(area);
 	gtk_cell_area_box_pack_start(GTK_CELL_AREA_BOX(area), renderer, TRUE, TRUE, TRUE);
 	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(area), renderer, "markup", 0, NULL);
+	renderer = gtk_cell_renderer_pixbuf_new();
+	gtk_cell_area_box_pack_end(GTK_CELL_AREA_BOX(area), renderer, FALSE, TRUE, TRUE);
+	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(area), renderer, "pixbuf", 5, NULL);
 	renderer = gtk_cell_renderer_text_new();
 	g_object_set(G_OBJECT(renderer), "style", PANGO_STYLE_ITALIC, NULL);
 	gtk_cell_area_box_pack_end(GTK_CELL_AREA_BOX(area), renderer, FALSE, TRUE, TRUE);
