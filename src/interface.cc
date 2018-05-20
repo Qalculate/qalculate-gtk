@@ -76,7 +76,7 @@ GtkListStore *tNames_store;
 GtkWidget *tabs, *expander_keypad, *expander_history, *expander_stack, *expander_convert;
 GtkEntryCompletion *completion;
 GtkWidget *completion_view, *completion_window, *completion_scrolled;
-GtkTreeModel *completion_filter;
+GtkTreeModel *completion_filter, *completion_sort;
 GtkListStore *completion_store;
 
 GtkWidget *tFunctionArguments;
@@ -1258,11 +1258,12 @@ void create_main_window(void) {
 	completion_scrolled = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionscrolled"));
 	gtk_widget_set_size_request(gtk_scrolled_window_get_vscrollbar(GTK_SCROLLED_WINDOW(completion_scrolled)), -1, 0);
 	completion_window = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionwindow"));
-	completion_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN);
+	completion_store = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN, G_TYPE_INT);
 	completion_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(completion_store), NULL);
 	gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(completion_filter), 3);
-	gtk_tree_view_set_model(GTK_TREE_VIEW(completion_view), completion_filter);
-
+	completion_sort = gtk_tree_model_sort_new_with_model(completion_filter);
+	gtk_tree_view_set_model(GTK_TREE_VIEW(completion_view), completion_sort);
+	
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 	renderer = gtk_cell_renderer_text_new();
 	GtkCellArea *area = gtk_cell_area_box_new();
@@ -1276,8 +1277,10 @@ void create_main_window(void) {
 	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(area), renderer, "text", 1, NULL);
 	gtk_tree_view_column_set_sort_column_id(column, 0);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(completion_view), column);
-	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(completion_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
+	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(completion_store), 0, string_sort_func, NULL, NULL);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_store), 0, GTK_SORT_ASCENDING);
+	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(completion_sort), 0, completion_sort_func, NULL, NULL);
+	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_sort), 0, GTK_SORT_ASCENDING);
 	
 	for(size_t i = 0; i < modes.size(); i++) {
 		GtkWidget *item = gtk_menu_item_new_with_label(modes[i].name.c_str()); 
