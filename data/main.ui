@@ -1086,6 +1086,16 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkMenuItem" id="menu_item_expand_partial_fractions">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Apply partial fraction decomposition to symbolic expression.</property>
+                        <property name="label" translatable="yes">Expand Partial Fractions</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menu_item_expand_partial_fractions_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkMenuItem" id="menu_item_set_unknowns">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -2736,8 +2746,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2761,8 +2771,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2787,8 +2797,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -5830,6 +5840,16 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
         <property name="label" translatable="yes">_Simplify</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_menu_item_simplify_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_expand_partial_fractions">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Apply partial fraction decomposition to symbolic expression.</property>
+        <property name="label" translatable="yes">Expand Partial Fractions</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_menu_item_expand_partial_fractions_activate" swapped="no"/>
       </object>
     </child>
     <child>

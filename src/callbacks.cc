@@ -355,6 +355,7 @@ int ExpressionFunction::calculate(MathStructure &mstruct, const MathStructure &v
 
 enum {
 	COMMAND_FACTORIZE,
+	COMMAND_EXPAND_PARTIAL_FRACTIONS,
 	COMMAND_SIMPLIFY,
 	COMMAND_TRANSFORM,
 	COMMAND_CONVERT_UNIT,
@@ -1449,6 +1450,7 @@ void display_parse_status() {
 		parsed_expression = mparse.print(po);
 		if(!str_u.empty()) {
 			parsed_expression += CALCULATOR->localToString();
+			remove_duplicate_blanks(str_u);
 			if(equalsIgnoreCase(str_u, "hex") || equalsIgnoreCase(str_u, "hexadecimal") || equalsIgnoreCase(str_u, _("hexadecimal"))) {
 				parsed_expression += _("hexadecimal number");
 			} else if(equalsIgnoreCase(str_u, "oct") || equalsIgnoreCase(str_u, "octal") || equalsIgnoreCase(str_u, _("octal"))) {
@@ -1469,6 +1471,10 @@ void display_parse_status() {
 				parsed_expression += _("fraction");
 			} else if(equalsIgnoreCase(str_u, "factors") || equalsIgnoreCase(str_u, _("factors"))) {
 				parsed_expression += _("factors");
+			} else if(equalsIgnoreCase(str_u, "factors") || equalsIgnoreCase(str_u, _("factors"))) {
+				parsed_expression += _("factors");
+			} else if(equalsIgnoreCase(str_u, "partial fraction") || equalsIgnoreCase(str_u, _("partial fraction"))) {
+				parsed_expression += _("expanded partial fractions");
 			} else if(equalsIgnoreCase(str_u, "utc") || equalsIgnoreCase(str_u, "gmt")) {
 				parsed_expression += _("UTC time zone");
 			} else {
@@ -5572,7 +5578,6 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			central_point = h / 2;
 			cairo_surface_t *flag_s = NULL;
 			gint flag_width = 0;
-			gint flag_height = 0;
 			if(m.unit()->isCurrency() && ename->name.length() == 3 && ename->name == m.unit()->referenceName()) {
 				string imagefile = "/qalculate-gtk/flags/"; imagefile += m.unit()->referenceName(); imagefile += ".png";
 				GdkPixbuf *pixbuf = NULL;
@@ -5580,7 +5585,6 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				else pixbuf = gdk_pixbuf_new_from_resource(imagefile.c_str(), NULL);
 				if(pixbuf) {
 					flag_s = gdk_cairo_surface_create_from_pixbuf(pixbuf, 1, NULL);
-					flag_height = cairo_image_surface_get_height(flag_s);
 					flag_width = cairo_image_surface_get_width(flag_s);
 					w += flag_width + 2;
 					g_object_unref(pixbuf);
@@ -6623,6 +6627,103 @@ void on_abort_command(GtkDialog*, gint, gpointer) {
 	}
 }
 
+extern bool polynomial_long_division(const MathStructure &mnum, const MathStructure &mden, const MathStructure &xvar_pre, MathStructure &mquotient, MathStructure &mrem, const EvaluationOptions &eo, bool check_args = false, bool for_newtonraphson = false);
+bool expand_partial_fractions(MathStructure &m, const EvaluationOptions &eo, bool do_simplify = true) {
+	MathStructure mtest(m);
+	if(do_simplify) {
+		mtest.simplify(eo);
+		mtest.calculatesub(eo, eo, true);
+	}
+	if(mtest.isPower() && mtest[1].representsNegative()) {
+		MathStructure x_var = mtest[0].find_x_var();
+		if(!x_var.isUndefined() && mtest[0].factorize(eo, false, 0, 0, false, false, NULL, x_var)) {
+			if(mtest.decomposeFractions(x_var, eo) && mtest.isAddition()) {
+				m = mtest;
+				return true;
+			}
+		}
+	} else if(mtest.isMultiplication()) {
+		for(size_t i = 0; i < mtest.size(); i++) {
+			if(mtest[i].isPower() && mtest[i][1].isMinusOne() && mtest[i][0].isAddition()) {
+				MathStructure x_var = mtest[i][0].find_x_var();
+				if(!x_var.isUndefined()) {
+					MathStructure mfac(mtest);
+					mfac.delChild(i + 1, true);
+					bool b_poly = true;
+					if(mfac.contains(x_var, true)) {
+						MathStructure mquo, mrem;
+						b_poly = polynomial_long_division(mfac, mtest[i][0], x_var, mquo, mrem, eo, true);
+						if(b_poly && !mquo.isZero()) {
+							MathStructure m = mquo;
+							if(!mrem.isZero()) {
+								m += mrem;
+								m.last() *= mtest[i];
+								m.childrenUpdated();
+							}
+							expand_partial_fractions(m, eo, false);
+							return true;
+						}
+					}
+					if(b_poly && mtest[i][0].factorize(eo, false, 0, 0, false, false, NULL, x_var)) {
+						MathStructure mmul(1, 1, 0);
+						while(mtest[i][0].isMultiplication() && mtest[i][0].size() >= 2 && !mtest[i][0][0].containsRepresentativeOf(x_var, true)) {
+							if(mmul.isOne()) {
+								mmul = mtest[i][0][0];
+								mmul.calculateInverse(eo);
+							} else {
+								mmul *= mtest[i][0][0];
+								mmul.last().calculateInverse(eo);
+								mmul.calculateMultiplyLast(eo);
+							}
+							mtest[i][0].delChild(1, true);
+						}
+						for(size_t i2 = 0; i2 < mtest.size();) {
+							if(i2 != i && !mtest[i2].containsRepresentativeOf(x_var, true)) {
+								if(mmul.isOne()) {
+									mmul = mtest[i2];
+								} else {
+									mmul.calculateMultiply(mtest[i2], eo);
+								}
+								if(mtest.size() == 2) {
+									mtest.setToChild(i + 1, true);
+									break;
+								} else {
+									mtest.delChild(i2 + 1);
+									if(i2 < i) i--;
+								}
+							} else {
+								i2++;
+							}
+						}
+						if(mtest.decomposeFractions(x_var, eo) && mtest.isAddition()) {
+							m = mtest;
+							if(!mmul.isOne()) {
+								for(size_t i2 = 0; i2 < m.size(); i2++) {
+									m[i2].calculateMultiply(mmul, eo);
+								}
+							}
+							return true;
+						}
+					}
+				}
+			}
+		}
+	} else {
+		bool b = false;
+		for(size_t i = 0; i < mtest.size(); i++) {
+			if(expand_partial_fractions(mtest[i], eo, false)) {
+				b = true;
+			}
+		}
+		if(b) {
+			m = mtest;
+			m.calculatesub(eo, eo, false);
+			return true;
+		}
+	}
+	return false;
+}
+
 void CommandThread::run() {
 
 	enableAsynchronousCancel();
@@ -6638,6 +6739,10 @@ void CommandThread::run() {
 				if(!((MathStructure*) x)->integerFactorize()) {
 					((MathStructure*) x)->factorize(evalops, true, -1, 0, true, 2);
 				}
+				break;
+			}
+			case COMMAND_EXPAND_PARTIAL_FRACTIONS: {
+				expand_partial_fractions(*((MathStructure*) x), evalops);
 				break;
 			}
 			case COMMAND_SIMPLIFY: {
@@ -6734,6 +6839,10 @@ void executeCommand(int command_type, bool show_result = true, string ceu_str = 
 		switch(command_type) {
 			case COMMAND_FACTORIZE: {
 				progress_str = _("Factorizing…");
+				break;
+			}
+			case COMMAND_EXPAND_PARTIAL_FRACTIONS: {
+				progress_str = _("Expanding partial fractions…");
 				break;
 			}
 			case COMMAND_SIMPLIFY: {
@@ -6935,7 +7044,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	b_busy = true;
 	b_busy_expression = true;
 
-	bool do_factors = false, do_fraction = false;
+	bool do_factors = false, do_fraction = false, do_pfe = false;
 	if(do_stack && !rpn_mode) do_stack = false;
 
 	if(str.empty()) {
@@ -6969,6 +7078,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	bool b_units_saved = evalops.parse_options.units_enabled;
 	evalops.parse_options.units_enabled = true;
 	if(execute_str.empty() && CALCULATOR->separateToExpression(from_str, to_str, evalops, true)) {
+		remove_duplicate_blanks(to_str);
 		if(equalsIgnoreCase(to_str, "hex") || equalsIgnoreCase(to_str, "hexadecimal") || equalsIgnoreCase(to_str, _("hexadecimal"))) {
 			int save_base = printops.base;
 			printops.base = BASE_HEXADECIMAL;
@@ -7055,6 +7165,9 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			execute_str = from_str;
 		} else if(equalsIgnoreCase(to_str, "factors") || equalsIgnoreCase(to_str, _("factors"))) {
 			do_factors = true;
+			execute_str = from_str;
+		} else if(equalsIgnoreCase(to_str, "partial fraction") || equalsIgnoreCase(to_str, _("partial fraction"))) {
+			do_pfe = true;
 			execute_str = from_str;
 		}
 	}
@@ -7272,19 +7385,19 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		mstruct->set(CALCULATOR->convert(*mstruct, parsed_tostruct->symbol(), evalops));
 	}
 	
-	if(!do_mathoperation && check_exchange_rates(NULL, (!do_stack || stack_index == 0) && !do_factors && !do_fraction)) {
+	if(!do_mathoperation && check_exchange_rates(NULL, (!do_stack || stack_index == 0) && !do_pfe && !do_factors && !do_fraction)) {
 		execute_expression(force, do_mathoperation, op, f, rpn_mode, do_stack ? stack_index : 0, saved_execute_str, str);
 		return;
 	}
 	
-	if(do_factors) {
+	if(do_factors || do_pfe) {
 		if(do_stack && stack_index != 0) {
 			MathStructure *save_mstruct = mstruct;
 			mstruct = CALCULATOR->getRPNRegister(stack_index + 1);
-			executeCommand(COMMAND_FACTORIZE, false);
+			executeCommand(do_pfe ? COMMAND_EXPAND_PARTIAL_FRACTIONS : COMMAND_FACTORIZE, false);
 			mstruct = save_mstruct;
 		} else {
-			executeCommand(COMMAND_FACTORIZE, false);
+			executeCommand(do_pfe ? COMMAND_EXPAND_PARTIAL_FRACTIONS : COMMAND_FACTORIZE, false);
 		}
 	}
 	
@@ -12671,7 +12784,6 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 		ename = ename_r;
 	} else {
 		gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &current_object_start, &current_object_end, FALSE);
-		cout << gstr2 << endl;
 		for(size_t name_i = 0; name_i <= item->countNames() && !ename; name_i++) {
 			if(name_i == 0) {
 				ename = ename_r;
@@ -13111,6 +13223,14 @@ void on_units_entry_to_val_activate(GtkEntry*, gpointer) {
 	convert_in_wUnits(1);
 }
 
+bool contains_polynomial_division(MathStructure &m) {
+	if(m.isPower() && m[0].containsType(STRUCT_ADDITION) && m[1].representsNegative()) return true;
+	for(size_t i = 0; i < m.size(); i++) {
+		if(contains_polynomial_division(m[i])) return true;
+	}
+	return false;
+}
+
 void update_resultview_popup() {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_octal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_octal_activate, NULL);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_decimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_decimal_activate, NULL);
@@ -13192,6 +13312,8 @@ void update_resultview_popup() {
 		} else {
 			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_simplify")));
 		}
+		if(contains_polynomial_division(*mstruct)) gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_expand_partial_fractions")));
+		else gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_expand_partial_fractions")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_factorize")));
 	} else {
 		if(mstruct && mstruct->isNumber() && mstruct->number().isInteger() && !mstruct->number().isZero()) {
@@ -13201,6 +13323,7 @@ void update_resultview_popup() {
 			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_factorize")));
 		}
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_simplify")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_expand_partial_fractions")));
 	}
 	if(mstruct && mstruct->containsDivision()) {
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_assume_nonzero_denominators")));
@@ -16323,6 +16446,9 @@ void on_menu_item_mixed_units_conversion_activate(GtkMenuItem *w, gpointer) {
 }
 void on_menu_item_factorize_activate(GtkMenuItem*, gpointer) {
 	executeCommand(COMMAND_FACTORIZE);
+}
+void on_menu_item_expand_partial_fractions_activate(GtkMenuItem*, gpointer) {
+	executeCommand(COMMAND_EXPAND_PARTIAL_FRACTIONS);
 }
 void on_menu_item_simplify_activate(GtkMenuItem*, gpointer) {
 	executeCommand(COMMAND_SIMPLIFY);

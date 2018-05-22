@@ -122,9 +122,8 @@ GtkWidget *tMatrixEdit, *tMatrix;
 GtkListStore *tMatrixEdit_store, *tMatrix_store;
 extern vector<GtkTreeViewColumn*> matrix_edit_columns, matrix_columns;
 
-GtkCellRenderer *renderer, *history_renderer, *history_index_renderer, *ans_renderer, *register_renderer;
-GtkTreeViewColumn *column, *register_column, *history_column, *history_index_column, *flag_column, *units_flag_column;
-GtkTreeSelection *selection;
+GtkCellRenderer *history_renderer, *history_index_renderer, *ans_renderer, *register_renderer;
+GtkTreeViewColumn *register_column, *history_column, *history_index_column, *flag_column, *units_flag_column;
 
 GtkWidget *expressiontext;
 GtkTextBuffer *expressionbuffer;
@@ -649,6 +648,7 @@ void create_button_menus(void) {
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	MENU_SEPARATOR
 	MENU_ITEM(_("Simplify"), on_menu_item_simplify_activate)
+	MENU_ITEM(_("Expand Partial Fractions"), on_menu_item_expand_partial_fractions_activate)
 	MENU_ITEM(_("Set unknowns"), on_menu_item_set_unknowns_activate)
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_i"));
@@ -1070,7 +1070,7 @@ void create_main_window(void) {
 	
 	historystore = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_INT, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT);
 	gtk_tree_view_set_model(GTK_TREE_VIEW(historyview), GTK_TREE_MODEL(historystore));
-	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
+	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_MULTIPLE);
 	history_index_renderer = gtk_cell_renderer_text_new();
 	history_index_column = gtk_tree_view_column_new_with_attributes(_("Index"), history_index_renderer, "text", 2, "ypad", 4, NULL);
@@ -1273,12 +1273,11 @@ void create_main_window(void) {
 	gtk_tree_view_set_model(GTK_TREE_VIEW(stackview), GTK_TREE_MODEL(stackstore));
 	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview));
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-	renderer = gtk_cell_renderer_text_new();
+	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
 	g_object_set (G_OBJECT(renderer), "xalign", 0.5, NULL);
-	column = gtk_tree_view_column_new_with_attributes(_("Index"), renderer, "text", 0, NULL);
+	GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Index"), renderer, "text", 0, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(stackview), column);
 	register_renderer = gtk_cell_renderer_text_new();
-	//g_object_set (G_OBJECT(register_renderer), "editable", FALSE, "ellipsize", PANGO_ELLIPSIZE_END, "xalign", 1.0, NULL);
 	g_object_set(G_OBJECT(register_renderer), "editable", TRUE, "ellipsize", PANGO_ELLIPSIZE_END, "xalign", 1.0, "mode", GTK_CELL_RENDERER_MODE_EDITABLE, NULL);
 	g_signal_connect((gpointer) register_renderer, "edited", G_CALLBACK(on_stackview_item_edited), NULL);
 	g_signal_connect((gpointer) register_renderer, "editing-started", G_CALLBACK(on_stackview_item_editing_started), NULL);
@@ -1318,6 +1317,7 @@ void create_main_window(void) {
 	gtk_cell_area_box_pack_start(GTK_CELL_AREA_BOX(area), renderer, TRUE, TRUE, TRUE);
 	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(area), renderer, "markup", 0, NULL);
 	renderer = gtk_cell_renderer_pixbuf_new();
+	gtk_cell_renderer_set_padding(renderer, 2, 0);
 	gtk_cell_area_box_pack_end(GTK_CELL_AREA_BOX(area), renderer, FALSE, TRUE, TRUE);
 	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(area), renderer, "pixbuf", 5, NULL);
 	renderer = gtk_cell_renderer_text_new();
@@ -1355,13 +1355,14 @@ void create_main_window(void) {
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnitSelector_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnitSelector_store), 0, GTK_SORT_ASCENDING);
 	gtk_tree_view_set_model(GTK_TREE_VIEW(tUnitSelector), GTK_TREE_MODEL(tUnitSelector_store_filter));
-	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector));
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector));
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-	GtkCellRenderer *renderer = gtk_cell_renderer_pixbuf_new();
+	renderer = gtk_cell_renderer_pixbuf_new();
+	gtk_cell_renderer_set_padding(renderer, 4, 0);
 	flag_column = gtk_tree_view_column_new_with_attributes(_("Flag"), renderer, "pixbuf", 2, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(tUnitSelector), flag_column);
 	renderer = gtk_cell_renderer_text_new();
-	GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", 0, NULL);
+	column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", 0, NULL);
 	gtk_tree_view_column_set_sort_column_id(column, 0);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(tUnitSelector), column);
 	g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tUnitSelector_selection_changed), NULL);
@@ -1379,11 +1380,6 @@ void create_main_window(void) {
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnitSelectorCategories_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnitSelectorCategories_store), 0, GTK_SORT_ASCENDING);
 
-	/*if(win_width > 0) {
-		
-		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width, win_height);
-	}*/
-	
 	set_result_size_request();
 	set_expression_size_request();
 	
@@ -1417,10 +1413,10 @@ get_functions_dialog (void)
 		tFunctions_store_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(tFunctions_store), NULL);
 		gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(tFunctions_store_filter), 2);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tFunctions), GTK_TREE_MODEL(tFunctions_store_filter));
-		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctions));
+		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctions));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Function"), renderer, "text", 0, NULL);
+		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Function"), renderer, "text", 0, NULL);
 		gtk_tree_view_column_set_sort_column_id(column, 0);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tFunctions), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tFunctions_selection_changed), NULL);
@@ -1475,10 +1471,10 @@ get_variables_dialog (void)
 		tVariables_store_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(tVariables_store), NULL);
 		gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(tVariables_store_filter), 3);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tVariables), GTK_TREE_MODEL(tVariables_store_filter));
-		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariables));
+		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariables));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Variable"), renderer, "text", 0, NULL);
+		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Variable"), renderer, "text", 0, NULL);
 		gtk_tree_view_column_set_sort_column_id(column, 0);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tVariables), column);
 		renderer = gtk_cell_renderer_text_new();
@@ -1535,13 +1531,14 @@ get_units_dialog (void)
 		tUnits_store_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(tUnits_store), NULL);
 		gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(tUnits_store_filter), UNITS_VISIBLE_COLUMN);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tUnits), GTK_TREE_MODEL(tUnits_store_filter));
-		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnits));
+		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnits));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 		GtkCellRenderer *renderer = gtk_cell_renderer_pixbuf_new();
+		gtk_cell_renderer_set_padding(renderer, 4, 0);
 		units_flag_column = gtk_tree_view_column_new_with_attributes(_("Flag"), renderer, "pixbuf", UNITS_FLAG_COLUMN, NULL);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tUnits), units_flag_column);
 		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", UNITS_TITLE_COLUMN, NULL);
+		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", UNITS_TITLE_COLUMN, NULL);
 		gtk_tree_view_column_set_sort_column_id(column, UNITS_TITLE_COLUMN);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tUnits), column);
 		renderer = gtk_cell_renderer_text_new();
@@ -1625,10 +1622,10 @@ get_datasets_dialog (void)
 
 		tDataObjects_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tDataObjects), GTK_TREE_MODEL(tDataObjects_store));
-		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tDataObjects));
+		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tDataObjects));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes("Key 1", renderer, "text", 0, NULL);
+		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes("Key 1", renderer, "text", 0, NULL);
 		gtk_tree_view_column_set_sort_column_id(column, 0);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tDataObjects), column);
 		renderer = gtk_cell_renderer_text_new();
@@ -1834,10 +1831,10 @@ get_function_edit_dialog (void)
 		tFunctionArguments = GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_treeview_arguments"));
 		tFunctionArguments_store = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tFunctionArguments), GTK_TREE_MODEL(tFunctionArguments_store));
-		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctionArguments));
+		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctionArguments));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", 0, NULL);
+		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", 0, NULL);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tFunctionArguments), column);
 		renderer = gtk_cell_renderer_text_new();
 		column = gtk_tree_view_column_new_with_attributes(_("Type"), renderer, "text", 1, NULL);
@@ -2002,7 +1999,7 @@ get_matrix_edit_dialog (void)
 		tMatrixEdit_store = gtk_list_store_newv(200, types);
 		tMatrixEdit = GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_view"));
 		gtk_tree_view_set_model (GTK_TREE_VIEW(tMatrixEdit), GTK_TREE_MODEL(tMatrixEdit_store));
-		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tMatrixEdit));
+		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tMatrixEdit));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_NONE);
 		
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(matrixedit_builder, "matrix_edit_combo_category")))), _("Matrices"));
@@ -2051,7 +2048,7 @@ get_matrix_dialog (void)
 		tMatrix_store = gtk_list_store_newv(10000, types);
 		tMatrix = GTK_WIDGET(gtk_builder_get_object(matrix_builder, "matrix_view"));
 		gtk_tree_view_set_model (GTK_TREE_VIEW(tMatrix), GTK_TREE_MODEL(tMatrix_store));
-		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tMatrix));
+		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tMatrix));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_NONE);
 
 		gtk_builder_connect_signals(matrix_builder, NULL);
@@ -2083,10 +2080,10 @@ get_dataset_edit_dialog (void)
 		tDataProperties = GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_treeview_properties"));
 		tDataProperties_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tDataProperties), GTK_TREE_MODEL(tDataProperties_store));
-		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tDataProperties));
+		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tDataProperties));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Title"), renderer, "text", 0, NULL);
+		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Title"), renderer, "text", 0, NULL);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tDataProperties), column);
 		renderer = gtk_cell_renderer_text_new();
 		column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", 1, NULL);
@@ -2138,10 +2135,10 @@ get_names_edit_dialog (void)
 
 		tNames_store = gtk_list_store_new(NAMES_N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tNames), GTK_TREE_MODEL(tNames_store));
-		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tNames));
+		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tNames));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", NAMES_NAME_COLUMN, NULL);
+		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", NAMES_NAME_COLUMN, NULL);
 		gtk_tree_view_column_set_sort_column_id(column, NAMES_NAME_COLUMN);
 		gtk_tree_view_column_set_expand(column, TRUE);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tNames), column);
@@ -2441,10 +2438,10 @@ GtkWidget* get_plot_dialog (void) {
 		tPlotFunctions = GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_treeview_data"));
 		tPlotFunctions_store = gtk_list_store_new(10, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_POINTER, G_TYPE_POINTER, G_TYPE_STRING);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tPlotFunctions), GTK_TREE_MODEL(tPlotFunctions_store));
-		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tPlotFunctions));
+		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tPlotFunctions));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Title"), renderer, "text", 0, NULL);
+		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Title"), renderer, "text", 0, NULL);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tPlotFunctions), column);
 		renderer = gtk_cell_renderer_text_new();
 		column = gtk_tree_view_column_new_with_attributes(_("Expression"), renderer, "text", 1, NULL);

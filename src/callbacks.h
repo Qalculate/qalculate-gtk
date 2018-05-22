@@ -493,6 +493,7 @@ void on_menu_item_decimals_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_plot_functions_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_factorize_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_simplify_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_expand_partial_fractions_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_set_unknowns_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_assume_nonzero_denominators_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_algebraic_mode_simplify_activate(GtkMenuItem *w, gpointer user_data);
