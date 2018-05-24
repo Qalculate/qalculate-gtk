@@ -62,7 +62,7 @@
 extern GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *datasetedit_builder, *datasets_builder, *setbase_builder, *decimals_builder;
 extern GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
 extern GtkBuilder *preferences_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder;
-extern GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_builder;
+extern GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_builder, *calendarconversion_builder;
 extern vector<mode_struct> modes;
 
 GtkWidget *mainwindow;
@@ -2374,6 +2374,65 @@ get_percentage_dialog (void)
 	}
 
 	return GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_dialog"));
+}
+
+GtkWidget* get_calendarconversion_dialog(void) {
+	if(!calendarconversion_builder) {
+	
+		calendarconversion_builder = getBuilder("calendarconversion.ui");
+		g_assert(calendarconversion_builder != NULL);
+	
+		g_assert(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog") != NULL);
+		
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_1")), _("Gregorian"));
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_2")), _("Milanković"));
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_3")), _("Julian"));
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_4")), _("Islamic"));
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_5")), _("Hebrew"));
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_6")), _("Egyptian"));
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_7")), _("Persian"));
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_8")), _("Coptic"));
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_9")), _("Ethiopic"));
+		
+		QalculateDateTime date;
+		date.setToCurrentDate();
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_1")), i2s(date.year()).c_str());
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_1")), i2s(date.month()).c_str());
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_1")), i2s(date.day()).c_str());
+		
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_1")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_1")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_1")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_2")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_2")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_2")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_3")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_3")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_3")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_4")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_4")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_4")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_5")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_5")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_5")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_6")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_6")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_6")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_7")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_7")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_7")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_8")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_8")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_8")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_9")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_9")), 1.0);
+		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_9")), 1.0);
+		
+		gtk_builder_connect_signals(calendarconversion_builder, NULL);
+		
+	}
+
+	return GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog"));
 }
 
 GtkWidget *create_InfoWidget(const gchar *text) {

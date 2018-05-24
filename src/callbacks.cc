@@ -67,7 +67,7 @@ extern gint expression_position;
 extern GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *setbase_builder, *datasetedit_builder, *datasets_builder, *decimals_builder;
 extern GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
 extern GtkBuilder *preferences_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder;
-extern GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_builder;
+extern GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_builder, *calendarconversion_builder;
 
 extern GtkWidget *mainwindow;
 
@@ -6627,103 +6627,6 @@ void on_abort_command(GtkDialog*, gint, gpointer) {
 	}
 }
 
-extern bool polynomial_long_division(const MathStructure &mnum, const MathStructure &mden, const MathStructure &xvar_pre, MathStructure &mquotient, MathStructure &mrem, const EvaluationOptions &eo, bool check_args = false, bool for_newtonraphson = false);
-bool expand_partial_fractions(MathStructure &m, const EvaluationOptions &eo, bool do_simplify = true) {
-	MathStructure mtest(m);
-	if(do_simplify) {
-		mtest.simplify(eo);
-		mtest.calculatesub(eo, eo, true);
-	}
-	if(mtest.isPower() && mtest[1].representsNegative()) {
-		MathStructure x_var = mtest[0].find_x_var();
-		if(!x_var.isUndefined() && mtest[0].factorize(eo, false, 0, 0, false, false, NULL, x_var)) {
-			if(mtest.decomposeFractions(x_var, eo) && mtest.isAddition()) {
-				m = mtest;
-				return true;
-			}
-		}
-	} else if(mtest.isMultiplication()) {
-		for(size_t i = 0; i < mtest.size(); i++) {
-			if(mtest[i].isPower() && mtest[i][1].isMinusOne() && mtest[i][0].isAddition()) {
-				MathStructure x_var = mtest[i][0].find_x_var();
-				if(!x_var.isUndefined()) {
-					MathStructure mfac(mtest);
-					mfac.delChild(i + 1, true);
-					bool b_poly = true;
-					if(mfac.contains(x_var, true)) {
-						MathStructure mquo, mrem;
-						b_poly = polynomial_long_division(mfac, mtest[i][0], x_var, mquo, mrem, eo, true);
-						if(b_poly && !mquo.isZero()) {
-							MathStructure m = mquo;
-							if(!mrem.isZero()) {
-								m += mrem;
-								m.last() *= mtest[i];
-								m.childrenUpdated();
-							}
-							expand_partial_fractions(m, eo, false);
-							return true;
-						}
-					}
-					if(b_poly && mtest[i][0].factorize(eo, false, 0, 0, false, false, NULL, x_var)) {
-						MathStructure mmul(1, 1, 0);
-						while(mtest[i][0].isMultiplication() && mtest[i][0].size() >= 2 && !mtest[i][0][0].containsRepresentativeOf(x_var, true)) {
-							if(mmul.isOne()) {
-								mmul = mtest[i][0][0];
-								mmul.calculateInverse(eo);
-							} else {
-								mmul *= mtest[i][0][0];
-								mmul.last().calculateInverse(eo);
-								mmul.calculateMultiplyLast(eo);
-							}
-							mtest[i][0].delChild(1, true);
-						}
-						for(size_t i2 = 0; i2 < mtest.size();) {
-							if(i2 != i && !mtest[i2].containsRepresentativeOf(x_var, true)) {
-								if(mmul.isOne()) {
-									mmul = mtest[i2];
-								} else {
-									mmul.calculateMultiply(mtest[i2], eo);
-								}
-								if(mtest.size() == 2) {
-									mtest.setToChild(i + 1, true);
-									break;
-								} else {
-									mtest.delChild(i2 + 1);
-									if(i2 < i) i--;
-								}
-							} else {
-								i2++;
-							}
-						}
-						if(mtest.decomposeFractions(x_var, eo) && mtest.isAddition()) {
-							m = mtest;
-							if(!mmul.isOne()) {
-								for(size_t i2 = 0; i2 < m.size(); i2++) {
-									m[i2].calculateMultiply(mmul, eo);
-								}
-							}
-							return true;
-						}
-					}
-				}
-			}
-		}
-	} else {
-		bool b = false;
-		for(size_t i = 0; i < mtest.size(); i++) {
-			if(expand_partial_fractions(mtest[i], eo, false)) {
-				b = true;
-			}
-		}
-		if(b) {
-			m = mtest;
-			m.calculatesub(eo, eo, false);
-			return true;
-		}
-	}
-	return false;
-}
-
 void CommandThread::run() {
 
 	enableAsynchronousCancel();
@@ -6742,7 +6645,7 @@ void CommandThread::run() {
 				break;
 			}
 			case COMMAND_EXPAND_PARTIAL_FRACTIONS: {
-				expand_partial_fractions(*((MathStructure*) x), evalops);
+				((MathStructure*) x)->expandPartialFractions(evalops);
 				break;
 			}
 			case COMMAND_SIMPLIFY: {
@@ -13259,8 +13162,9 @@ void update_resultview_popup() {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_fraction_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_fraction_fraction_activate, NULL);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_assume_nonzero_denominators"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_assume_nonzero_denominators_activate, NULL);
 	bool b_unit = mstruct && mstruct->containsType(STRUCT_UNIT);
+	bool b_date = mstruct && mstruct->isDateTime();
 	
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_abbreviate_names")), !b_busy);	
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_abbreviate_names")), !b_busy && !b_date);	
 	
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_display_prefixes")), b_unit);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_no_prefixes")), b_unit);
@@ -13276,23 +13180,33 @@ void update_resultview_popup() {
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_set_optimal_prefix")), b_unit);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_units")), b_unit);
 	
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_octal")), !b_unit);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_decimal")), !b_unit);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_duodecimal")), !b_unit);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_hexadecimal")), !b_unit);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_binary")), !b_unit);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_octal")), !b_unit && !b_date);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_decimal")), !b_unit && !b_date);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_duodecimal")), !b_unit && !b_date);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_hexadecimal")), !b_unit && !b_date);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_binary")), !b_unit && !b_date);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_roman")), FALSE);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_sexagesimal")), FALSE);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_time_format")), FALSE);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_custom_base")), FALSE);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_base")), !b_unit);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_base")), !b_unit && !b_date);
 	
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_normal")), !b_unit);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_engineering")), !b_unit);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_scientific")), !b_unit);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_normal")), !b_unit && !b_date);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_engineering")), !b_unit && !b_date);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_scientific")), !b_unit && !b_date);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_purely_scientific")), FALSE);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_non_scientific")), FALSE);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_display")), !b_unit);	
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_display")), !b_unit && !b_date);
+	
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_fraction")), !b_date);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_decimal")), !b_date);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_decimal_exact")), !b_date);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_combined")), !b_date);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_fraction")), !b_date);
+
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_calendarconversion")), b_date);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_to_utc")), b_date);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_display_date")), b_date);
 	
 	if(mstruct && mstruct->containsUnknowns()) {
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_set_unknowns")));
@@ -16496,6 +16410,31 @@ void on_menu_item_show_percentage_dialog_activate(GtkMenuItem*, gpointer) {
 	string str = get_selected_expression_text(true), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	show_percentage_dialog(str.c_str());
+}
+void show_calendarconversion_dialog() {
+	GtkWidget *dialog = get_calendarconversion_dialog();
+	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
+	gtk_widget_show(dialog);
+	gtk_window_present(GTK_WINDOW(dialog));
+}
+void on_menu_item_show_calendarconversion_dialog_activate(GtkMenuItem*, gpointer) {
+	show_calendarconversion_dialog();
+	if(displayed_mstruct && displayed_mstruct->isDateTime()) {
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_1")), i2s(displayed_mstruct->datetime()->year()).c_str());
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_1")), i2s(displayed_mstruct->datetime()->month()).c_str());
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_1")), i2s(displayed_mstruct->datetime()->day()).c_str());
+	}
+}
+void on_popup_menu_item_calendarconversion_activate(GtkMenuItem *w, gpointer) {
+	show_calendarconversion_dialog();
+	if(mstruct && mstruct->isDateTime()) {
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_1")), i2s(mstruct->datetime()->year()).c_str());
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_1")), i2s(mstruct->datetime()->month()).c_str());
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_1")), i2s(mstruct->datetime()->day()).c_str());
+	}
+}
+void on_popup_menu_item_to_utc_activate(GtkMenuItem *w, gpointer) {
+	menu_to_utc(w, NULL);
 }
 void on_menu_item_periodic_table_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = get_periodic_dialog();

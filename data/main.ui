@@ -977,6 +977,15 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkMenuItem" id="menu_item_show_calendarconversion_dialog">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Calendar Conversion</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menu_item_show_calendarconversion_dialog_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkMenuItem" id="menu_item_show_percentage_dialog">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -1089,7 +1098,7 @@
                       <object class="GtkMenuItem" id="menu_item_expand_partial_fractions">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Apply partial fraction decomposition to symbolic expression.</property>
+                        <property name="tooltip_text" translatable="yes">Apply partial fraction decomposition to the current result.</property>
                         <property name="label" translatable="yes">Expand Partial Fractions</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_menu_item_expand_partial_fractions_activate" swapped="no"/>
@@ -5846,7 +5855,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       <object class="GtkMenuItem" id="popup_menu_item_expand_partial_fractions">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">Apply partial fraction decomposition to symbolic expression.</property>
+        <property name="tooltip_text" translatable="yes">Apply partial fraction decomposition to the current result.</property>
         <property name="label" translatable="yes">Expand Partial Fractions</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_menu_item_expand_partial_fractions_activate" swapped="no"/>
@@ -6122,6 +6131,30 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Set Optimal Prefix</property>
         <signal name="activate" handler="on_menu_item_set_prefix_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="separator_popup_display_date">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_to_utc">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Convert to UTC</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_popup_menu_item_to_utc_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_calendarconversion">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Convert to Calendars</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_popup_menu_item_calendarconversion_activate" swapped="no"/>
       </object>
     </child>
     <child>

@@ -161,6 +161,7 @@ GtkWidget* get_csv_export_dialog (void);
 GtkWidget* get_set_base_dialog (void);
 GtkWidget* get_nbases_dialog (void);
 GtkWidget* get_percentage_dialog (void);
+GtkWidget* get_calendarconversion_dialog (void);
 GtkWidget* get_argument_rules_dialog (void);
 GtkWidget* get_decimals_dialog (void);
 GtkWidget* get_plot_dialog (void);

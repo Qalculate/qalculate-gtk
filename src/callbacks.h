@@ -565,6 +565,10 @@ void on_percentage_button_clear_clicked(GtkWidget*, gpointer);
 
 void on_menu_item_show_percentage_dialog_activate(GtkMenuItem *w, gpointer user_data);
 
+void on_menu_item_show_calendarconversion_dialog_activate(GtkMenuItem *w, gpointer user_data);
+void on_popup_menu_item_calendarconversion_activate(GtkMenuItem *w, gpointer user_data);
+void on_popup_menu_item_to_utc_activate(GtkMenuItem *w, gpointer user_data);
+
 void on_button_functions_clicked(GtkButton *button, gpointer user_data);
 void on_button_variables_clicked(GtkButton *button, gpointer user_data);
 void on_button_units_clicked(GtkButton *button, gpointer user_data);
