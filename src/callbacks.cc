@@ -79,6 +79,8 @@ extern GtkWidget *completion_view, *completion_window, *completion_scrolled;
 extern GtkListStore *completion_store;
 extern GtkTreeModel *completion_filter, *completion_sort;
 
+extern unordered_map<size_t, GtkWidget*> cal_year, cal_month, cal_day;
+
 extern GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider;
 
 extern GtkWidget *expressiontext, *statuslabel_l, *statuslabel_r;
@@ -1461,6 +1463,8 @@ void display_parse_status() {
 				parsed_expression += _("binary number");
 			} else if(equalsIgnoreCase(str_u, "bases") || equalsIgnoreCase(str_u, _("bases"))) {
 				parsed_expression += _("number bases");
+			} else if(equalsIgnoreCase(str_u, "calendars") || equalsIgnoreCase(str_u, _("calendars"))) {
+				parsed_expression += _("calendars");
 			} else if(equalsIgnoreCase(str_u, "optimal") || equalsIgnoreCase(str_u, _("optimal"))) {
 				parsed_expression += _("optimal unit");
 			} else if(equalsIgnoreCase(str_u, "base") || equalsIgnoreCase(str_u, _("base"))) {
@@ -7032,6 +7036,13 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			evalops.parse_options.units_enabled = b_units_saved;
 			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			convert_number_bases(from_str.c_str());
+			return;
+		} else if(equalsIgnoreCase(to_str, "calendars") || equalsIgnoreCase(to_str, _("calendars"))) {
+			b_busy = false;
+			b_busy_expression = false;
+			evalops.parse_options.units_enabled = b_units_saved;
+			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			on_popup_menu_item_calendarconversion_activate(NULL, NULL);
 			return;
 		} else if(equalsIgnoreCase(to_str, "optimal") || equalsIgnoreCase(to_str, _("optimal"))) {
 			AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
@@ -13700,10 +13711,10 @@ void on_button_store_clicked(GtkButton*, gpointer) {
 
 bool completion_ignore_enter = false, completion_hover_blocked = false;
 
-gboolean on_completionview_enter_notify_event(GtkWidget*, GdkEventCrossing*, gpointer data) {
+gboolean on_completionview_enter_notify_event(GtkWidget*, GdkEventCrossing*, gpointer) {
 	return completion_ignore_enter;
 }
-gboolean on_completionview_motion_notify_event(GtkWidget*, GdkEventMotion*, gpointer data) {
+gboolean on_completionview_motion_notify_event(GtkWidget*, GdkEventMotion*, gpointer) {
 	completion_ignore_enter = FALSE;
 	if(completion_hover_blocked) {
 		gtk_tree_view_set_hover_selection(GTK_TREE_VIEW(completion_view), TRUE);
@@ -13724,10 +13735,10 @@ gboolean on_completionwindow_button_press_event(GtkWidget *widget, GdkEventButto
 
 bool units_convert_ignore_enter = false, units_convert_hover_blocked = false;
 
-gboolean on_units_convert_view_enter_notify_event(GtkWidget*, GdkEventCrossing*, gpointer data) {
+gboolean on_units_convert_view_enter_notify_event(GtkWidget*, GdkEventCrossing*, gpointer) {
 	return units_convert_ignore_enter;
 }
-gboolean on_units_convert_view_motion_notify_event(GtkWidget*, GdkEventMotion*, gpointer data) {
+gboolean on_units_convert_view_motion_notify_event(GtkWidget*, GdkEventMotion*, gpointer) {
 	units_convert_ignore_enter = FALSE;
 	if(units_convert_hover_blocked) {
 		gtk_tree_view_set_hover_selection(GTK_TREE_VIEW(units_convert_view), TRUE);
@@ -13735,12 +13746,12 @@ gboolean on_units_convert_view_motion_notify_event(GtkWidget*, GdkEventMotion*, 
 	}
 	return FALSE;
 }
-gboolean on_units_convert_window_key_press_event(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
+gboolean on_units_convert_window_key_press_event(GtkWidget *widget, GdkEventKey *event, gpointer) {
 	if(!gtk_widget_get_mapped(units_convert_window)) return FALSE;
 	gtk_widget_event(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_convert_to_button")), (GdkEvent*) event);
 	return TRUE;
 }
-gboolean on_units_convert_window_button_press_event(GtkWidget *widget, GdkEventButton *event, gpointer user_data) {
+gboolean on_units_convert_window_button_press_event(GtkWidget *widget, GdkEventButton *event, gpointer) {
 	if(!gtk_widget_get_mapped(units_convert_window)) return FALSE;
 	gtk_widget_hide(units_convert_window);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(units_builder, "units_convert_to_button")), FALSE);
@@ -15443,7 +15454,8 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 		MENU_ITEM(_("Octal"), menu_to_oct)
 		MENU_ITEM(_("Duodecimal"), menu_to_duo)
 		MENU_ITEM(_("Hexadecimal"), menu_to_hex)
-		MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)
+		if(mstruct && displayed_mstruct && mstruct->isDateTime()) {MENU_ITEM(_("Calendars"), on_popup_menu_item_calendarconversion_activate)}
+		else {MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)}
 		MENU_ITEM(_("Fraction"), menu_to_fraction)
 		return;
 	}
@@ -16417,20 +16429,51 @@ void show_calendarconversion_dialog() {
 	gtk_widget_show(dialog);
 	gtk_window_present(GTK_WINDOW(dialog));
 }
+bool block_calendar_conversion = false;
+void calendar_changed(GtkWidget*, gpointer data) {
+	if(block_calendar_conversion) return;
+	block_calendar_conversion = true;
+	gint i = GPOINTER_TO_INT(data);
+	long int y = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(cal_year[(size_t) i]));
+	long int m = gtk_combo_box_get_active(GTK_COMBO_BOX(cal_month[(size_t) i])) + 1;
+	long int d = gtk_combo_box_get_active(GTK_COMBO_BOX(cal_day[(size_t) i])) + 1;
+	QalculateDateTime date;
+	if(!calendarToDate(date, y, m, d, (CalendarSystem) i)) {
+		show_message(_("Conversion to Gregorian calendar failed."), GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog")));
+		block_calendar_conversion = false;
+		return;
+	}
+	cout << date << endl;
+	bool b_failed = false;
+	for(size_t i2 = 0; i2 < 6; i2++) {
+		if(i2 != (size_t) i && cal_year.count(i2) > 0) {
+			if(dateToCalendar(date, y, m, d, (CalendarSystem) i2) && y <= G_MAXINT && y >= G_MININT && m <= 13 && d <= 31) {
+				gtk_spin_button_set_value(GTK_SPIN_BUTTON(cal_year[i2]), y);
+				gtk_combo_box_set_active(GTK_COMBO_BOX(cal_month[i2]), m - 1);
+				gtk_combo_box_set_active(GTK_COMBO_BOX(cal_day[i2]), d - 1);
+			} else {
+				b_failed = true;
+			}
+		}
+	}
+	//if(b_failed) show_message(_("Conversion failed."), GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog")));
+	block_calendar_conversion = false;
+}
+
 void on_menu_item_show_calendarconversion_dialog_activate(GtkMenuItem*, gpointer) {
 	show_calendarconversion_dialog();
-	if(displayed_mstruct && displayed_mstruct->isDateTime()) {
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_1")), i2s(displayed_mstruct->datetime()->year()).c_str());
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_1")), i2s(displayed_mstruct->datetime()->month()).c_str());
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_1")), i2s(displayed_mstruct->datetime()->day()).c_str());
+	if(displayed_mstruct && mstruct && mstruct->isDateTime()) {
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(cal_year[CALENDAR_GREGORIAN]), mstruct->datetime()->year());
+		gtk_combo_box_set_active(GTK_COMBO_BOX(cal_month[CALENDAR_GREGORIAN]), mstruct->datetime()->month() - 1);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(cal_day[CALENDAR_GREGORIAN]), mstruct->datetime()->day() - 1);
 	}
 }
 void on_popup_menu_item_calendarconversion_activate(GtkMenuItem *w, gpointer) {
 	show_calendarconversion_dialog();
 	if(mstruct && mstruct->isDateTime()) {
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_1")), i2s(mstruct->datetime()->year()).c_str());
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_1")), i2s(mstruct->datetime()->month()).c_str());
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_1")), i2s(mstruct->datetime()->day()).c_str());
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(cal_year[CALENDAR_GREGORIAN]), mstruct->datetime()->year());
+		gtk_combo_box_set_active(GTK_COMBO_BOX(cal_month[CALENDAR_GREGORIAN]), mstruct->datetime()->month() - 1);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(cal_day[CALENDAR_GREGORIAN]), mstruct->datetime()->day() - 1);
 	}
 }
 void on_popup_menu_item_to_utc_activate(GtkMenuItem *w, gpointer) {

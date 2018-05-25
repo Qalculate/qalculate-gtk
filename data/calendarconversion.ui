@@ -5,7 +5,7 @@
   <object class="GtkDialog" id="calendar_dialog">
     <property name="can_focus">False</property>
     <property name="border_width">6</property>
-    <property name="title" translatable="yes">Percentage</property>
+    <property name="title" translatable="yes">Calendar Conversion</property>
     <property name="type_hint">normal</property>
     <signal name="delete-event" handler="gtk_widget_hide" swapped="yes"/>
     <signal name="destroy-event" handler="gtk_widget_hide" swapped="yes"/>
@@ -57,11 +57,9 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkEntry" id="entry_year_1">
+                  <object class="GtkSpinButton" id="year_1">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_1_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -70,13 +68,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry_month_1">
+                  <object class="GtkComboBoxText" id="month_1">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">2</property>
-                    <property name="max_width_chars">2</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_1_changed" swapped="no"/>
+                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -85,13 +79,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry_day_1">
+                  <object class="GtkComboBoxText" id="day_1">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">2</property>
-                    <property name="max_width_chars">2</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_entry_day_1_changed" swapped="no"/>
+                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -200,11 +190,9 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkEntry" id="entry_year_2">
+                  <object class="GtkSpinButton" id="year_2">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_2_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -213,13 +201,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry_month_2">
+                  <object class="GtkComboBoxText" id="month_2">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">2</property>
-                    <property name="max_width_chars">2</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="onon_calendar_2_changed" swapped="no"/>
+                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -228,13 +212,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry_day_2">
+                  <object class="GtkComboBoxText" id="day_2">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">2</property>
-                    <property name="max_width_chars">2</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_2_changed" swapped="no"/>
+                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -253,11 +233,9 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkEntry" id="entry_year_3">
+                  <object class="GtkSpinButton" id="year_3">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_3_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -266,13 +244,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry_month_3">
+                  <object class="GtkComboBoxText" id="month_3">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">2</property>
-                    <property name="max_width_chars">2</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_3_changed" swapped="no"/>
+                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -281,13 +255,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry_day_3">
+                  <object class="GtkComboBoxText" id="day_3">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">2</property>
-                    <property name="max_width_chars">2</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_3_changed" swapped="no"/>
+                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -306,11 +276,9 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkEntry" id="entry_year_4">
+                  <object class="GtkSpinButton" id="year_4">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_4_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -319,13 +287,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry_month_4">
+                  <object class="GtkComboBoxText" id="month_4">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">2</property>
-                    <property name="max_width_chars">2</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_4_changed" swapped="no"/>
+                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -334,13 +298,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry_day_4">
+                  <object class="GtkComboBoxText" id="day_4">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">2</property>
-                    <property name="max_width_chars">2</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_4_changed" swapped="no"/>
+                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -359,11 +319,9 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkEntry" id="entry_year_5">
+                  <object class="GtkSpinButton" id="year_5">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_5_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -372,13 +330,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry_month_5">
+                  <object class="GtkComboBoxText" id="month_5">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">2</property>
-                    <property name="max_width_chars">2</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_5_changed" swapped="no"/>
+                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -387,13 +341,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry_day_5">
+                  <object class="GtkComboBoxText" id="day_5">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">2</property>
-                    <property name="max_width_chars">2</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_5_changed" swapped="no"/>
+                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -412,11 +362,9 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkEntry" id="entry_year_6">
+                  <object class="GtkSpinButton" id="year_6">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_6_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -425,13 +373,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry_month_6">
+                  <object class="GtkComboBoxText" id="month_6">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">2</property>
-                    <property name="max_width_chars">2</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_6_changed" swapped="no"/>
+                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -440,13 +384,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry_day_6">
+                  <object class="GtkComboBoxText" id="day_6">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">2</property>
-                    <property name="max_width_chars">2</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_6_changed" swapped="no"/>
+                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -465,11 +405,9 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkEntry" id="entry_year_7">
+                  <object class="GtkSpinButton" id="year_7">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_7_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -478,13 +416,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry_month_7">
+                  <object class="GtkComboBoxText" id="month_7">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">2</property>
-                    <property name="max_width_chars">2</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_7_changed" swapped="no"/>
+                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -493,13 +427,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry_day_7">
+                  <object class="GtkComboBoxText" id="day_7">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">2</property>
-                    <property name="max_width_chars">2</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_7_changed" swapped="no"/>
+                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -518,11 +448,9 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkEntry" id="entry_year_8">
+                  <object class="GtkSpinButton" id="year_8">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_8_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -531,13 +459,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry_month_8">
+                  <object class="GtkComboBoxText" id="month_8">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">2</property>
-                    <property name="max_width_chars">2</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_8_changed" swapped="no"/>
+                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -546,13 +470,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry_day_8">
+                  <object class="GtkComboBoxText" id="day_8">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">2</property>
-                    <property name="max_width_chars">2</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_8_changed" swapped="no"/>
+                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -571,11 +491,9 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkEntry" id="entry_year_9">
+                  <object class="GtkSpinButton" id="year_9">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_9_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -584,13 +502,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry_month_9">
+                  <object class="GtkComboBoxText" id="month_9">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">2</property>
-                    <property name="max_width_chars">2</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_9_changed" swapped="no"/>
+                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -599,13 +513,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry_day_9">
+                  <object class="GtkComboBoxText" id="day_9">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">2</property>
-                    <property name="max_width_chars">2</property>
-                    <property name="input_purpose">digits</property>
-                    <signal name="changed" handler="on_calendar_9_changed" swapped="no"/>
+                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>

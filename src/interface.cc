@@ -2376,6 +2376,8 @@ get_percentage_dialog (void)
 	return GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_dialog"));
 }
 
+unordered_map<size_t, GtkWidget*> cal_year, cal_month, cal_day;
+
 GtkWidget* get_calendarconversion_dialog(void) {
 	if(!calendarconversion_builder) {
 	
@@ -2385,50 +2387,71 @@ GtkWidget* get_calendarconversion_dialog(void) {
 		g_assert(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog") != NULL);
 		
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_1")), _("Gregorian"));
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_2")), _("Milanković"));
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_3")), _("Julian"));
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_4")), _("Islamic"));
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_5")), _("Hebrew"));
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_6")), _("Egyptian"));
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_7")), _("Persian"));
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_8")), _("Coptic"));
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_9")), _("Ethiopic"));
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_6")), _("Revised Julian"));
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_5")), _("Julian"));
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_3")), _("Islamic"));
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_2")), _("Hebrew"));
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_9")), _("Egyptian"));
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_4")), _("Persian"));
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_7")), _("Coptic"));
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_8")), _("Ethiopic"));
+		
+		cal_year[CALENDAR_GREGORIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_1"));
+		cal_month[CALENDAR_GREGORIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_1"));
+		cal_day[CALENDAR_GREGORIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_1"));
+		cal_year[CALENDAR_HEBREW] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_2"));
+		cal_month[CALENDAR_HEBREW] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_2"));
+		cal_day[CALENDAR_HEBREW] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_2"));
+		cal_year[CALENDAR_ISLAMIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_3"));
+		cal_month[CALENDAR_ISLAMIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_3"));
+		cal_day[CALENDAR_ISLAMIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_3"));
+		cal_year[CALENDAR_PERSIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_4"));
+		cal_month[CALENDAR_PERSIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_4"));
+		cal_day[CALENDAR_PERSIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_4"));
+		cal_year[CALENDAR_JULIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_5"));
+		cal_month[CALENDAR_JULIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_5"));
+		cal_day[CALENDAR_JULIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_5"));
+		cal_year[CALENDAR_MILANKOVIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_6"));
+		cal_month[CALENDAR_MILANKOVIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_6"));
+		cal_day[CALENDAR_MILANKOVIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_6"));
+		cal_year[CALENDAR_COPTIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_7"));
+		cal_month[CALENDAR_COPTIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_7"));
+		cal_day[CALENDAR_COPTIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_7"));
+		cal_year[CALENDAR_ETHIOPIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_8"));
+		cal_month[CALENDAR_ETHIOPIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_8"));
+		cal_day[CALENDAR_ETHIOPIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_8"));
+		cal_year[CALENDAR_EGYPTIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_9"));
+		cal_month[CALENDAR_EGYPTIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_9"));
+		cal_day[CALENDAR_EGYPTIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_9"));
+		
+		for(size_t i = 0; i < NUMBER_OF_CALENDARS; i++) {
+			if(cal_year.count(i) > 0) {
+				gtk_spin_button_set_range(GTK_SPIN_BUTTON(cal_year[i]), G_MININT, G_MAXINT);
+				gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(cal_year[i]), TRUE);
+				gtk_spin_button_set_increments(GTK_SPIN_BUTTON(cal_year[i]), 1.0, 10.0);
+				gtk_spin_button_set_digits(GTK_SPIN_BUTTON(cal_year[i]), 0);
+				gtk_entry_set_alignment(GTK_ENTRY(cal_year[i]), 1.0);
+				for(size_t i2 = 1; i2 <= (size_t) numberOfMonths((CalendarSystem) i); i2++) gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(cal_month[i]), monthName(i2, (CalendarSystem) i).c_str());
+				for(size_t i2 = 1; i2 <= 31; i2++) gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(cal_day[i]), i2s(i2).c_str());
+			}
+		}
 		
 		QalculateDateTime date;
 		date.setToCurrentDate();
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_1")), i2s(date.year()).c_str());
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_1")), i2s(date.month()).c_str());
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_1")), i2s(date.day()).c_str());
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(cal_year[CALENDAR_GREGORIAN]), date.year());
+		gtk_combo_box_set_active(GTK_COMBO_BOX(cal_month[CALENDAR_GREGORIAN]), date.month() - 1);
 		
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_1")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_1")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_1")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_2")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_2")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_2")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_3")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_3")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_3")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_4")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_4")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_4")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_5")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_5")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_5")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_6")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_6")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_6")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_7")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_7")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_7")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_8")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_8")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_8")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_year_9")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_month_9")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(calendarconversion_builder, "entry_day_9")), 1.0);
+		for(size_t i = 0; i < NUMBER_OF_CALENDARS; i++) {
+			if(cal_year.count(i) > 0) {
+				g_signal_connect(cal_year[i], "value-changed", G_CALLBACK(calendar_changed), GINT_TO_POINTER((gint) i));
+				g_signal_connect(cal_month[i], "changed", G_CALLBACK(calendar_changed), GINT_TO_POINTER((gint) i));
+				g_signal_connect(cal_day[i], "changed", G_CALLBACK(calendar_changed), GINT_TO_POINTER((gint) i));
+			}
+		}
 		
 		gtk_builder_connect_signals(calendarconversion_builder, NULL);
+		
+		gtk_combo_box_set_active(GTK_COMBO_BOX(cal_day[CALENDAR_GREGORIAN]), date.day() - 1);
 		
 	}
 
