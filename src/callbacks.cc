@@ -16443,9 +16443,8 @@ void calendar_changed(GtkWidget*, gpointer data) {
 		block_calendar_conversion = false;
 		return;
 	}
-	cout << date << endl;
 	bool b_failed = false;
-	for(size_t i2 = 0; i2 < 6; i2++) {
+	for(size_t i2 = 0; i2 < NUMBER_OF_CALENDARS; i2++) {
 		if(i2 != (size_t) i && cal_year.count(i2) > 0) {
 			if(dateToCalendar(date, y, m, d, (CalendarSystem) i2) && y <= G_MAXINT && y >= G_MININT && m <= 13 && d <= 31) {
 				gtk_spin_button_set_value(GTK_SPIN_BUTTON(cal_year[i2]), y);
@@ -16456,7 +16455,7 @@ void calendar_changed(GtkWidget*, gpointer data) {
 			}
 		}
 	}
-	//if(b_failed) show_message(_("Conversion failed."), GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog")));
+	if(b_failed) show_message(_("Conversion failed."), GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog")));
 	block_calendar_conversion = false;
 }
 
