@@ -466,6 +466,24 @@ bool country_matches(Unit *u, const string &str, size_t minlength = 0) {
 	}
 	return false;
 }
+bool completion_names_match(string name, const string &str, size_t minlength = 0) {
+	size_t i = 0;
+	while(true) {
+		size_t i2 = name.find(i == 0 ? " <i>" : "</i>", i);
+		if(equalsIgnoreCase(str, name, i, i2, minlength)) {
+			return true;
+		}
+		if(i2 == string::npos) break;
+		if(i == 0) {
+			i = i2 + 4;
+		} else {
+			i = name.find("<i>", i2);
+			if(i == string::npos) break;
+			i += 3;
+		}
+	}
+	return false;
+}
 
 void remove_separator(string &copy_text) {
 	for(size_t i = ((CALCULATOR->local_digit_group_separator.empty() || CALCULATOR->local_digit_group_separator == " ") ? 1 : 0); i < 3; i++) {
@@ -1479,8 +1497,6 @@ void display_parse_status() {
 				parsed_expression += _("mixed units");
 			} else if(equalsIgnoreCase(str_u, "fraction") || equalsIgnoreCase(str_u, _("fraction"))) {
 				parsed_expression += _("fraction");
-			} else if(equalsIgnoreCase(str_u, "factors") || equalsIgnoreCase(str_u, _("factors"))) {
-				parsed_expression += _("factors");
 			} else if(equalsIgnoreCase(str_u, "factors") || equalsIgnoreCase(str_u, _("factors"))) {
 				parsed_expression += _("factors");
 			} else if(equalsIgnoreCase(str_u, "partial fraction") || equalsIgnoreCase(str_u, _("partial fraction"))) {
@@ -4169,7 +4185,40 @@ void update_completion() {
 			if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, u->title().c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_images.end() ? NULL : it_flag->second, -1);
 			else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, u->title().c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_images.end() ? NULL : it_flag->second, -1);
 		}
-	}	
+	}
+#define COMPLETION_CONVERT_STRING(x) str = str = _(x); if(str != x) {str += " <i>"; str += x; str += "</i>";}
+	COMPLETION_CONVERT_STRING("bases")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Number bases"), 2, NULL, 3, FALSE, 4, 0, -1);
+	COMPLETION_CONVERT_STRING("base")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Base Units"), 2, NULL, 3, FALSE, 4, 0, -1);
+	COMPLETION_CONVERT_STRING("binary") str += " <i>"; str += "bin"; str += "</i>";
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Binary number"), 2, NULL, 3, FALSE, 4, 0, -1);
+	COMPLETION_CONVERT_STRING("calendars")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Calendars"), 2, NULL, 3, FALSE, 4, 0, -1);
+	COMPLETION_CONVERT_STRING("duodecimal") str += " <i>"; str += "duo"; str += "</i>";
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Duodecimal number"), 2, NULL, 3, FALSE, 4, 0, -1);
+	COMPLETION_CONVERT_STRING("factors")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Factors"), 2, NULL, 3, FALSE, 4, 0, -1);
+	COMPLETION_CONVERT_STRING("fraction")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Fraction"), 2, NULL, 3, FALSE, 4, 0, -1);
+	COMPLETION_CONVERT_STRING("hexadecimal") str += " <i>"; str += "hex"; str += "</i>";
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Hexadecimal number"), 2, NULL, 3, FALSE, 4, 0, -1);
+	COMPLETION_CONVERT_STRING("mixed")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Mixed units"), 2, NULL, 3, FALSE, 4, 0, -1);
+	COMPLETION_CONVERT_STRING("octal") str += " <i>"; str += "oct"; str += "</i>";
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Octal number"), 2, NULL, 3, FALSE, 4, 0, -1);
+	COMPLETION_CONVERT_STRING("optimal")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Optimal units"), 2, NULL, 3, FALSE, 4, 0, -1);
+	COMPLETION_CONVERT_STRING("partial fraction")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Expanded partial fractions"), 2, NULL, 3, FALSE, 4, 0, -1);
+	COMPLETION_CONVERT_STRING("roman")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Roman numerals"), 2, NULL, 3, FALSE, 4, 0, -1);
+	COMPLETION_CONVERT_STRING("sexagesimal") str += " <i>"; str += "sexa"; str += "</i>";
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Sexagesimal number"), 2, NULL, 3, FALSE, 4, 0, -1);
+	COMPLETION_CONVERT_STRING("time")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Time format"), 2, NULL, 3, FALSE, 4, 0, -1);
+	COMPLETION_CONVERT_STRING("utc")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("UTC time zone"), 2, NULL, 3, FALSE, 4, 0, -1);
 }
 
 /*
@@ -12721,77 +12770,86 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 	set_current_object();
 	GtkTreeIter iter;
 	gtk_tree_model_get_iter(completion_sort, &iter, path);
+	string str;
 	ExpressionItem *item = NULL;
 	const ExpressionName *ename = NULL, *ename_r = NULL;
 	gint i_type = 0;
 	gtk_tree_model_get(completion_sort, &iter, 2, &item, 4, &i_type, -1);
-	if(!item) return;
-	ename_r = &item->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
-	if(i_type > 1) {
-		ename = ename_r;
+	if(!item) {
+		gchar *gstr;
+		gtk_tree_model_get(completion_sort, &iter, 0, &gstr, -1);
+		str = gstr;
+		size_t i = str.find("<i>", 2);
+		if(i != string::npos) {str = str.substr(0, i - 1);}
+		g_free(gstr);
 	} else {
-		gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &current_object_start, &current_object_end, FALSE);
-		for(size_t name_i = 0; name_i <= item->countNames() && !ename; name_i++) {
-			if(name_i == 0) {
-				ename = ename_r;
-			} else {
+		ename_r = &item->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+		if(i_type > 1) {
+			ename = ename_r;
+		} else {
+			gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &current_object_start, &current_object_end, FALSE);
+			for(size_t name_i = 0; name_i <= item->countNames() && !ename; name_i++) {
+				if(name_i == 0) {
+					ename = ename_r;
+				} else {
+					ename = &item->getName(name_i);
+					if(!ename || ename == ename_r || ename->plural || (ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext)))) {
+						ename = NULL;
+					}
+				}
+				if(ename) {
+					if(strlen(gstr2) <= ename->name.length()) {
+						for(size_t i = 0; i < strlen(gstr2); i++) {
+							if(ename->name[i] != gstr2[i]) {
+								ename = NULL;
+								break;
+							}
+						}
+					} else {
+						ename = NULL;
+					}
+				}
+			}
+			for(size_t name_i = 1; name_i <= item->countNames() && !ename; name_i++) {
 				ename = &item->getName(name_i);
-				if(!ename || ename == ename_r || ename->plural || (ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext)))) {
+				if(!ename || ename == ename_r || (!ename->plural && !(ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))))) {
 					ename = NULL;
 				}
-			}
-			if(ename) {
-				if(strlen(gstr2) <= ename->name.length()) {
-					for(size_t i = 0; i < strlen(gstr2); i++) {
-						if(ename->name[i] != gstr2[i]) {
-							ename = NULL;
-							break;
+				if(ename) {
+					if(strlen(gstr2) <= ename->name.length()) {
+						for(size_t i = 0; i < strlen(gstr2); i++) {
+							if(ename->name[i] != gstr2[i]) {
+								ename = NULL;
+								break;
+							}
 						}
+					} else {
+						ename = NULL;
 					}
-				} else {
-					ename = NULL;
 				}
 			}
-		}
-		for(size_t name_i = 1; name_i <= item->countNames() && !ename; name_i++) {
-			ename = &item->getName(name_i);
-			if(!ename || ename == ename_r || (!ename->plural && !(ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))))) {
-				ename = NULL;
+			if(ename && ename->completion_only) {
+				ename = &item->preferredInputName(ename->abbreviation, printops.use_unicode_signs, ename->plural, false, &can_display_unicode_string_function, (void*) expressiontext);	
 			}
-			if(ename) {
-				if(strlen(gstr2) <= ename->name.length()) {
-					for(size_t i = 0; i < strlen(gstr2); i++) {
-						if(ename->name[i] != gstr2[i]) {
-							ename = NULL;
-							break;
-						}
-					}
-				} else {
-					ename = NULL;
-				}
-			}
+			if(!ename) ename = ename_r;
+			g_free(gstr2);
 		}
-		if(ename && ename->completion_only) {
-			ename = &item->preferredInputName(ename->abbreviation, printops.use_unicode_signs, ename->plural, false, &can_display_unicode_string_function, (void*) expressiontext);	
-		}
-		if(!ename) ename = ename_r;
-		g_free(gstr2);
+		if(!ename) return;
+		str = ename->name;
 	}
-	if(!ename) return;
 	block_completion();
 	add_to_undo = false;
 	gtk_text_buffer_delete(expressionbuffer, &current_object_start, &current_object_end);
 	add_to_undo = true;
 	GtkTextIter ipos = current_object_start;
-	if(item->type() == TYPE_FUNCTION) {
+	if(item && item->type() == TYPE_FUNCTION) {
 		GtkTextIter ipos2 = ipos;
 		gtk_text_iter_forward_char(&ipos2);
 		gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &ipos, &ipos2, FALSE);
 		if(strlen(gstr) > 0 && gstr[0] == '(') {
-			gtk_text_buffer_insert(expressionbuffer, &ipos, ename->name.c_str(), -1);
+			gtk_text_buffer_insert(expressionbuffer, &ipos, str.c_str(), -1);
 			gtk_text_buffer_place_cursor(expressionbuffer, &ipos);
 		} else {
-			string str = ename->name;
 			str += "()";
 			gtk_text_buffer_insert(expressionbuffer, &ipos, str.c_str(), -1);
 			gtk_text_iter_backward_char(&ipos);
@@ -12799,7 +12857,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 		}
 		g_free(gstr);
 	} else {
-		gtk_text_buffer_insert(expressionbuffer, &ipos, ename->name.c_str(), -1);
+		gtk_text_buffer_insert(expressionbuffer, &ipos, str.c_str(), -1);
 		gtk_text_buffer_place_cursor(expressionbuffer, &ipos);
 	}
 	gtk_widget_hide(completion_window);
@@ -14066,6 +14124,13 @@ void do_completion() {
 						else if(item->type() == TYPE_UNIT && ((Unit*) item)->isCurrency() && country_matches((Unit*) item, str, 3)) b_match = 3;
 					}
 				}
+			} else if(editing_to_expression) {
+				gchar *gstr;
+				gtk_tree_model_get(GTK_TREE_MODEL(completion_store), &iter, 0, &gstr, -1);
+				if(completion_names_match(gstr, str)) {
+					b_match = 1;
+				}
+				g_free(gstr);
 			}
 			gtk_list_store_set(completion_store, &iter, 3, b_match > 0, 4, b_match, -1);
 			if(b_match) matches++;
