@@ -1461,6 +1461,12 @@ void display_parse_status() {
 				parsed_expression += _("duodecimal number");
 			} else if(equalsIgnoreCase(str_u, "bin") || equalsIgnoreCase(str_u, "binary") || equalsIgnoreCase(str_u, _("binary"))) {
 				parsed_expression += _("binary number");
+			} else if(equalsIgnoreCase(str_u, "roman") || equalsIgnoreCase(str_u, _("roman"))) {
+				parsed_expression += _("roman numerals");
+			} else if(equalsIgnoreCase(str_u, "sexa") || equalsIgnoreCase(str_u, "sexagesimal") || equalsIgnoreCase(str_u, _("sexagesimal"))) {
+				parsed_expression += _("sexagesimal number");
+			} else if(equalsIgnoreCase(str_u, "time") || equalsIgnoreCase(str_u, _("time"))) {
+				parsed_expression += _("time format");
 			} else if(equalsIgnoreCase(str_u, "bases") || equalsIgnoreCase(str_u, _("bases"))) {
 				parsed_expression += _("number bases");
 			} else if(equalsIgnoreCase(str_u, "calendars") || equalsIgnoreCase(str_u, _("calendars"))) {
@@ -7016,6 +7022,33 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		} else if(equalsIgnoreCase(to_str, "bin") || equalsIgnoreCase(to_str, "binary") || equalsIgnoreCase(to_str, _("binary"))) {
 			int save_base = printops.base;
 			printops.base = BASE_BINARY;
+			evalops.parse_options.units_enabled = b_units_saved;
+			b_busy = false;
+			b_busy_expression = false;
+			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			printops.base = save_base;
+			return;
+		} else if(equalsIgnoreCase(to_str, "roman") || equalsIgnoreCase(to_str, _("roman"))) {
+			int save_base = printops.base;
+			printops.base = BASE_ROMAN_NUMERALS;
+			evalops.parse_options.units_enabled = b_units_saved;
+			b_busy = false;
+			b_busy_expression = false;
+			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			printops.base = save_base;
+			return;
+		} else if(equalsIgnoreCase(to_str, "sexa") || equalsIgnoreCase(to_str, "sexagesimal") || equalsIgnoreCase(to_str, _("sexagesimal"))) {
+			int save_base = printops.base;
+			printops.base = BASE_SEXAGESIMAL;
+			evalops.parse_options.units_enabled = b_units_saved;
+			b_busy = false;
+			b_busy_expression = false;
+			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			printops.base = save_base;
+			return;
+		} else if(equalsIgnoreCase(to_str, "time") || equalsIgnoreCase(to_str, _("time"))) {
+			int save_base = printops.base;
+			printops.base = BASE_TIME;
 			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
