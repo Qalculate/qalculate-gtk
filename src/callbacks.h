@@ -560,6 +560,9 @@ void on_nbases_entry_decimal_changed(GtkEditable *editable, gpointer user_data);
 void on_nbases_entry_binary_changed(GtkEditable *editable, gpointer user_data);
 void on_nbases_entry_octal_changed(GtkEditable *editable, gpointer user_data);
 void on_nbases_entry_hexadecimal_changed(GtkEditable *editable, gpointer user_data);
+void on_nbases_entry_duo_changed(GtkEditable *editable, gpointer user_data);
+void on_nbases_entry_roman_changed(GtkEditable *editable, gpointer user_data);
+void on_nbases_entry_sexa_changed(GtkEditable *editable, gpointer user_data);
 
 void on_percentage_button_clear_clicked(GtkWidget*, gpointer);
 

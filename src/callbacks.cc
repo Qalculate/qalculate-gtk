@@ -13263,6 +13263,7 @@ void update_resultview_popup() {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_fraction_combined"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_fraction_combined_activate, NULL);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_fraction_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_fraction_fraction_activate, NULL);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_assume_nonzero_denominators"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_assume_nonzero_denominators_activate, NULL);
+
 	bool b_unit = mstruct && mstruct->containsType(STRUCT_UNIT);
 	bool b_date = mstruct && mstruct->isDateTime();
 	
@@ -15519,6 +15520,12 @@ void menu_to_hex(GtkMenuItem*, gpointer) {
 	result_format_updated();
 	printops.base = save_base;
 }
+void menu_to_roman(GtkMenuItem*, gpointer) {
+	int save_base = printops.base;
+	printops.base = BASE_ROMAN_NUMERALS;
+	result_format_updated();
+	printops.base = save_base;
+}
 void menu_to_utc(GtkMenuItem*, gpointer) {
 	printops.time_zone = TIME_ZONE_UTC;
 	result_format_updated();
@@ -15546,15 +15553,18 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 	MENU_ITEM(_("Optimal prefix"), on_menu_item_set_prefix_activate);
 	MENU_SEPARATOR
 	if(!mstruct || !displayed_mstruct || !mstruct->containsType(STRUCT_UNIT, true)) {
-		if(mstruct && displayed_mstruct && mstruct->isDateTime()) {MENU_ITEM("UTC", menu_to_utc)}
-		else {MENU_ITEM(_("Number bases"), on_menu_item_convert_number_bases_activate)}
+		bool b_date = (mstruct && displayed_mstruct && mstruct->isDateTime());
+		bool b_integ = (mstruct && displayed_mstruct && mstruct->isInteger());
+		if(b_date) {MENU_ITEM(_("Calendars"), on_popup_menu_item_calendarconversion_activate)}
+		if(b_date) {MENU_ITEM("UTC", menu_to_utc)}
+		if(!b_date) {MENU_ITEM(_("Number bases"), on_menu_item_convert_number_bases_activate)}
 		MENU_ITEM(_("Binary"), menu_to_bin)
 		MENU_ITEM(_("Octal"), menu_to_oct)
 		MENU_ITEM(_("Duodecimal"), menu_to_duo)
 		MENU_ITEM(_("Hexadecimal"), menu_to_hex)
-		if(mstruct && displayed_mstruct && mstruct->isDateTime()) {MENU_ITEM(_("Calendars"), on_popup_menu_item_calendarconversion_activate)}
-		else {MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)}
-		MENU_ITEM(_("Fraction"), menu_to_fraction)
+		if(b_integ) {MENU_ITEM(_("Roman"), menu_to_roman)}
+		MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)
+		if(!b_integ && !b_date) {MENU_ITEM(_("Fraction"), menu_to_fraction)}
 		return;
 	}
 	string s_cat;
@@ -15569,15 +15579,16 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 		remove_blank_ends(local_currency);
 		Unit *u_local_currency = NULL;
 		if(!local_currency.empty()) u_local_currency = CALCULATOR->getActiveUnit(local_currency);
-		const char *currency_units[] = {"USD", "GBP", "JPY"};
+		const char *currency_units[] = {"USD", "GBP", "JPY", "CNY", "INR", "CAD", "BRL"};
 		to_us.clear();
 		if(latest_button_currency && latest_button_currency != u_result) to_us.push_back(latest_button_currency);
-		for(size_t i = 0; i < 5; i++) {
+		for(size_t i = 0; i < 9 && to_us.size() < 6; i++) {
 			Unit * u;
 			if(i == 0) u = CALCULATOR->u_euro;
 			else if(i == 1) u = u_local_currency;
 			else u = CALCULATOR->getActiveUnit(currency_units[i - 2]);
 			if(u && u != u_result && (i == 1 || !u->isHidden())) {
+				cout << u->name() << endl;
 				bool b = false;
 				for(size_t i2 = 0; i2 < to_us.size(); i2++) {
 					if(u == to_us[i2]) {
@@ -15661,15 +15672,15 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 			}
 		}
 		for(size_t i = 0; i < to_us.size(); i++) {
-			if(i + 4 == 9 && i + 1 != to_us.size()) {SUBMENU_ITEM(_("more"), sub);}
+			if(i + 4 == 10 && i + 1 != to_us.size()) {SUBMENU_ITEM(_("more"), sub);}
 			MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), to_us[i] == u_result ? convert_to_unit_noprefix : convert_to_unit, to_us[i])
 			// Show further items in a submenu
 		}
 	}
-	if(i_added + 3 < 9) {
-		const char *si_units[] = {"m", "g", "s", "A", "K", "L"};
+	if(i_added + 3 < 10) {
+		const char *si_units[] = {"m", "g", "s", "A", "K", "L", "J", "N"};
 		vector<Unit*> to_us2;
-		for(size_t i = 0; i < 6 && i_added + 3 < 9; i++) {
+		for(size_t i = 0; i < 8 && i_added + 3 < 10; i++) {
 			Unit * u = CALCULATOR->getActiveUnit(si_units[i]);
 			if(!u->isHidden()) {
 				bool b = false;
@@ -15683,6 +15694,7 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 					if(u->title(true) < to_us2[i2]->title(true)) {
 						to_us2.insert(to_us2.begin() + i2, u);
 						b = true;
+						i_added++;
 						break;
 					}
 				}
@@ -16492,6 +16504,16 @@ void convert_number_bases(const gchar *initial_expression) {
 		}
 		case BASE_HEXADECIMAL: {
 			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_hexadecimal")), initial_expression);
+			break;
+		}
+		case BASE_DUODECIMAL: {
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(nbases_builder, "nbases_button_more")), TRUE); 
+			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_duo")), initial_expression);
+			break;
+		}
+		case BASE_ROMAN_NUMERALS: {
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(nbases_builder, "nbases_button_more")), TRUE); 
+			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_roman")), initial_expression);
 			break;
 		}
 		default: {
@@ -18347,27 +18369,50 @@ void update_percentage_entries() {
 }
 
 void update_nbases_entries(const MathStructure &value, int base) {
-	GtkWidget *w_dec, *w_bin, *w_oct, *w_hex;
+	GtkWidget *w_dec, *w_bin, *w_oct, *w_hex, *w_duo, *w_roman;
 	w_dec = GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_entry_decimal"));
 	w_bin = GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_entry_binary"));
 	w_oct = GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_entry_octal"));
 	w_hex = GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_entry_hexadecimal"));
+	w_duo = GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_entry_duo"));
+	w_roman = GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_entry_roman"));
+	//GtkWidget *w_sexa = GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_entry_sexa"));
 	g_signal_handlers_block_matched((gpointer) w_dec, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_decimal_changed, NULL);			
 	g_signal_handlers_block_matched((gpointer) w_bin, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_binary_changed, NULL);
 	g_signal_handlers_block_matched((gpointer) w_oct, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_octal_changed, NULL);
 	g_signal_handlers_block_matched((gpointer) w_hex, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_hexadecimal_changed, NULL);
+	g_signal_handlers_block_matched((gpointer) w_duo, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_duo_changed, NULL);
+	g_signal_handlers_block_matched((gpointer) w_roman, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_roman_changed, NULL);
+	//g_signal_handlers_block_matched((gpointer) w_sexa, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_sexa_changed, NULL);
 	PrintOptions po;
 	po.number_fraction_format = FRACTION_DECIMAL;
 	po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 	po.twos_complement = printops.twos_complement;
+	po.use_unicode_signs = printops.use_unicode_signs;
 	if(base != 10) {po.base = 10; gtk_entry_set_text(GTK_ENTRY(w_dec), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}
 	if(base != 2) {po.base = 2; gtk_entry_set_text(GTK_ENTRY(w_bin), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}
-	if(base != 8) {po.base = 8; gtk_entry_set_text(GTK_ENTRY(w_oct), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}	
+	if(base != 8) {po.base = 8; gtk_entry_set_text(GTK_ENTRY(w_oct), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}
+	if(base != 12) {po.base = 12; gtk_entry_set_text(GTK_ENTRY(w_duo), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}
 	if(base != 16) {po.base = 16; gtk_entry_set_text(GTK_ENTRY(w_hex), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}
+	if(base != BASE_ROMAN_NUMERALS) {
+		if(value.isAborted()) {
+			gtk_entry_set_text(GTK_ENTRY(w_roman), CALCULATOR->timedOutString().c_str());
+		} else if(!value.isNumber() || !value.number().isReal() || !(value.number() <= 9999) || !(value.number() >= -9999)) {
+			gtk_entry_set_text(GTK_ENTRY(w_roman), "-");
+		} else {
+			Number nr = value.number(); nr.round();
+			po.base = BASE_ROMAN_NUMERALS;
+			gtk_entry_set_text(GTK_ENTRY(w_roman), nr.print(po).c_str());
+		}
+	}
+	//if(base != 60) {po.use_unicode_signs = true; po.base = 60; gtk_entry_set_text(GTK_ENTRY(w_sexa), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str()); po.use_unicode_signs = printops.use_unicode_signs;}
 	g_signal_handlers_unblock_matched((gpointer) w_dec, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_decimal_changed, NULL);
 	g_signal_handlers_unblock_matched((gpointer) w_bin, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_binary_changed, NULL);
 	g_signal_handlers_unblock_matched((gpointer) w_oct, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_octal_changed, NULL);
 	g_signal_handlers_unblock_matched((gpointer) w_hex, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_hexadecimal_changed, NULL);
+	g_signal_handlers_unblock_matched((gpointer) w_duo, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_duo_changed, NULL);
+	g_signal_handlers_unblock_matched((gpointer) w_roman, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_roman_changed, NULL);
+	//g_signal_handlers_unblock_matched((gpointer) w_sexa, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_sexa_changed, NULL);
 }
 void on_nbases_button_close_clicked(GtkButton*, gpointer) {
 	gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_dialog")));
@@ -18443,6 +18488,75 @@ void on_nbases_entry_hexadecimal_changed(GtkEditable *editable, gpointer) {
 	do_timeout = true;
 	changing_in_nbases_dialog = false;
 }
+void on_nbases_entry_duo_changed(GtkEditable *editable, gpointer) {
+	if(changing_in_nbases_dialog) return;
+	string str = gtk_entry_get_text(GTK_ENTRY(editable));
+	remove_blank_ends(str);
+	if(str.empty()) return;	
+	if(is_in(OPERATORS, str[str.length() - 1])) return;
+	EvaluationOptions eo;
+	eo.parse_options.base = BASE_DUODECIMAL;
+	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
+	changing_in_nbases_dialog = true;	
+	MathStructure value;
+	do_timeout = false;
+	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), evalops.parse_options), 1500, eo);
+	update_nbases_entries(value, 12);
+	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_dialog")));
+	do_timeout = true;
+	changing_in_nbases_dialog = false;
+}
+void on_nbases_entry_roman_changed(GtkEditable *editable, gpointer) {
+	if(changing_in_nbases_dialog) return;
+	string str = gtk_entry_get_text(GTK_ENTRY(editable));
+	remove_blank_ends(str);
+	if(str.empty()) return;	
+	if(is_in(OPERATORS, str[str.length() - 1])) return;
+	EvaluationOptions eo;
+	eo.parse_options.base = BASE_ROMAN_NUMERALS;
+	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
+	changing_in_nbases_dialog = true;	
+	MathStructure value;
+	do_timeout = false;
+	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), evalops.parse_options), 1500, eo);
+	update_nbases_entries(value, BASE_ROMAN_NUMERALS);
+	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_dialog")));
+	do_timeout = true;
+	changing_in_nbases_dialog = false;
+}
+/*void on_nbases_entry_sexa_changed(GtkEditable *editable, gpointer) {
+	if(changing_in_nbases_dialog) return;
+	string str = gtk_entry_get_text(GTK_ENTRY(editable));
+	remove_blank_ends(str);
+	if(str.empty()) return;	
+	if(is_in(OPERATORS, str[str.length() - 1])) return;
+	EvaluationOptions eo;
+	eo.parse_options.base = BASE_DECIMAL;
+	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
+	changing_in_nbases_dialog = true;
+	MathStructure value;
+	do_timeout = false;
+	if(str.find(SIGN_DEGREE) != string::npos) str = string("(") + str + string(")") + "/" SIGN_DEGREE;
+	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), evalops.parse_options), 1500, eo);
+	update_nbases_entries(value, 60);
+	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_dialog")));
+	do_timeout = true;
+	changing_in_nbases_dialog = false;
+}
+void on_nbases_button_more_toggled(GtkToggleButton *w, gpointer) {
+	bool b = gtk_toggle_button_get_active(w);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_entry_duo")), b);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_entry_sexa")), b);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_entry_roman")), b);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_label_duodecimal")), b);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_label_sexagesimal")), b);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_label_roman")), b);
+	gint wd, hg;
+	gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(nbases_builder, "nbases_dialog")), &wd, &hg);
+	gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(nbases_builder, "nbases_dialog")), wd, 1);
+	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_entry_decimal")));
+}*/
+
 
 void on_button_functions_clicked(GtkButton*, gpointer) {
 	manage_functions();
