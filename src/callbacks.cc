@@ -80,6 +80,7 @@ extern GtkListStore *completion_store;
 extern GtkTreeModel *completion_filter, *completion_sort;
 
 extern unordered_map<size_t, GtkWidget*> cal_year, cal_month, cal_day;
+extern GtkWidget *chinese_stem, *chinese_branch;
 
 extern GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider;
 
@@ -1481,7 +1482,7 @@ void display_parse_status() {
 				parsed_expression += _("binary number");
 			} else if(equalsIgnoreCase(str_u, "roman") || equalsIgnoreCase(str_u, _("roman"))) {
 				parsed_expression += _("roman numerals");
-			} else if(equalsIgnoreCase(str_u, "sexa") || equalsIgnoreCase(str_u, "sexagesimal") || equalsIgnoreCase(str_u, _("sexagesimal"))) {
+			} else if(equalsIgnoreCase(str_u, "sex") || equalsIgnoreCase(str_u, "sexagesimal") || equalsIgnoreCase(str_u, _("sexagesimal"))) {
 				parsed_expression += _("sexagesimal number");
 			} else if(equalsIgnoreCase(str_u, "time") || equalsIgnoreCase(str_u, _("time"))) {
 				parsed_expression += _("time format");
@@ -4213,7 +4214,7 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Expanded partial fractions"), 2, NULL, 3, FALSE, 4, 0, -1);
 	COMPLETION_CONVERT_STRING("roman")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Roman numerals"), 2, NULL, 3, FALSE, 4, 0, -1);
-	COMPLETION_CONVERT_STRING("sexagesimal") str += " <i>"; str += "sexa"; str += "</i>";
+	COMPLETION_CONVERT_STRING("sexagesimal") str += " <i>"; str += "sex"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Sexagesimal number"), 2, NULL, 3, FALSE, 4, 0, -1);
 	COMPLETION_CONVERT_STRING("time")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Time format"), 2, NULL, 3, FALSE, 4, 0, -1);
@@ -7086,7 +7087,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			printops.base = save_base;
 			return;
-		} else if(equalsIgnoreCase(to_str, "sexa") || equalsIgnoreCase(to_str, "sexagesimal") || equalsIgnoreCase(to_str, _("sexagesimal"))) {
+		} else if(equalsIgnoreCase(to_str, "sex") || equalsIgnoreCase(to_str, "sexagesimal") || equalsIgnoreCase(to_str, _("sexagesimal"))) {
 			int save_base = printops.base;
 			printops.base = BASE_SEXAGESIMAL;
 			evalops.parse_options.units_enabled = b_units_saved;
@@ -16554,7 +16555,18 @@ void calendar_changed(GtkWidget*, gpointer data) {
 	if(block_calendar_conversion) return;
 	block_calendar_conversion = true;
 	gint i = GPOINTER_TO_INT(data);
-	long int y = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(cal_year[(size_t) i]));
+	long int y;
+	if(i == CALENDAR_CHINESE) {
+		long int cy = chineseStemBranchToCycleYear((gtk_combo_box_get_active(GTK_COMBO_BOX(chinese_stem)) * 2) + 1, gtk_combo_box_get_active(GTK_COMBO_BOX(chinese_branch)) + 1);
+		if(cy <= 0) {
+			show_message(_("The selected Chinese year does not exist."), GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog")));
+			block_calendar_conversion = false;
+			return;
+		}
+		y = chineseCycleYearToYear(79, cy);
+	} else {
+		y = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(cal_year[(size_t) i]));
+	}
 	long int m = gtk_combo_box_get_active(GTK_COMBO_BOX(cal_month[(size_t) i])) + 1;
 	long int d = gtk_combo_box_get_active(GTK_COMBO_BOX(cal_day[(size_t) i])) + 1;
 	QalculateDateTime date;
@@ -16565,9 +16577,16 @@ void calendar_changed(GtkWidget*, gpointer data) {
 	}
 	bool b_failed = false;
 	for(size_t i2 = 0; i2 < NUMBER_OF_CALENDARS; i2++) {
-		if(i2 != (size_t) i && cal_year.count(i2) > 0) {
-			if(dateToCalendar(date, y, m, d, (CalendarSystem) i2) && y <= G_MAXINT && y >= G_MININT && m <= 13 && d <= 31) {
-				gtk_spin_button_set_value(GTK_SPIN_BUTTON(cal_year[i2]), y);
+		if(i2 != (size_t) i && cal_day.count(i2) > 0) {
+			if(dateToCalendar(date, y, m, d, (CalendarSystem) i2) && y <= G_MAXINT && y >= G_MININT && m <= numberOfMonths((CalendarSystem) i2) && d <= 31) {
+				if(i2 == CALENDAR_CHINESE) {
+					long int cy, yc, st, br;
+					chineseYearInfo(y, cy, yc, st, br);
+					gtk_combo_box_set_active(GTK_COMBO_BOX(chinese_stem), (st - 1) / 2);
+					gtk_combo_box_set_active(GTK_COMBO_BOX(chinese_branch), br - 1);
+				} else {
+					gtk_spin_button_set_value(GTK_SPIN_BUTTON(cal_year[i2]), y);
+				}
 				gtk_combo_box_set_active(GTK_COMBO_BOX(cal_month[i2]), m - 1);
 				gtk_combo_box_set_active(GTK_COMBO_BOX(cal_day[i2]), d - 1);
 			} else {
@@ -18422,7 +18441,7 @@ void on_nbases_entry_decimal_changed(GtkEditable *editable, gpointer) {
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
 	if(str.empty()) return;
-	if(is_in(OPERATORS EXP, str[str.length() - 1])) return;
+	if(is_in(OPERATORS EXP LEFT_PARENTHESIS, str[str.length() - 1])) return;
 	changing_in_nbases_dialog = true;	
 	EvaluationOptions eo;
 	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
@@ -18439,7 +18458,7 @@ void on_nbases_entry_binary_changed(GtkEditable *editable, gpointer) {
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
 	if(str.empty()) return;
-	if(is_in(OPERATORS, str[str.length() - 1])) return;
+	if(is_in(OPERATORS LEFT_PARENTHESIS, str[str.length() - 1])) return;
 	EvaluationOptions eo;
 	eo.parse_options.base = BASE_BINARY;
 	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
@@ -18457,7 +18476,7 @@ void on_nbases_entry_octal_changed(GtkEditable *editable, gpointer) {
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
 	if(str.empty()) return;	
-	if(is_in(OPERATORS, str[str.length() - 1])) return;
+	if(is_in(OPERATORS LEFT_PARENTHESIS, str[str.length() - 1])) return;
 	EvaluationOptions eo;
 	eo.parse_options.base = BASE_OCTAL;
 	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
@@ -18475,7 +18494,7 @@ void on_nbases_entry_hexadecimal_changed(GtkEditable *editable, gpointer) {
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
 	if(str.empty()) return;	
-	if(is_in(OPERATORS, str[str.length() - 1])) return;
+	if(is_in(OPERATORS LEFT_PARENTHESIS, str[str.length() - 1])) return;
 	EvaluationOptions eo;
 	eo.parse_options.base = BASE_HEXADECIMAL;
 	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
@@ -18493,7 +18512,7 @@ void on_nbases_entry_duo_changed(GtkEditable *editable, gpointer) {
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
 	if(str.empty()) return;	
-	if(is_in(OPERATORS, str[str.length() - 1])) return;
+	if(is_in(OPERATORS LEFT_PARENTHESIS, str[str.length() - 1])) return;
 	EvaluationOptions eo;
 	eo.parse_options.base = BASE_DUODECIMAL;
 	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
@@ -18511,7 +18530,7 @@ void on_nbases_entry_roman_changed(GtkEditable *editable, gpointer) {
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
 	if(str.empty()) return;	
-	if(is_in(OPERATORS, str[str.length() - 1])) return;
+	if(is_in(OPERATORS LEFT_PARENTHESIS, str[str.length() - 1])) return;
 	EvaluationOptions eo;
 	eo.parse_options.base = BASE_ROMAN_NUMERALS;
 	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
