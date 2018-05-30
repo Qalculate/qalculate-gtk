@@ -1472,6 +1472,14 @@ void display_parse_status() {
 		if(!str_u.empty()) {
 			parsed_expression += CALCULATOR->localToString();
 			remove_duplicate_blanks(str_u);
+			string to_str1, to_str2;
+			size_t ispace = str_u.find_first_of(SPACES);
+			if(ispace != string::npos) {
+				to_str1 = str_u.substr(0, ispace);
+				remove_blank_ends(to_str1);
+				to_str2 = str_u.substr(ispace + 1);
+				remove_blank_ends(to_str2);
+			}
 			if(equalsIgnoreCase(str_u, "hex") || equalsIgnoreCase(str_u, "hexadecimal") || equalsIgnoreCase(str_u, _("hexadecimal"))) {
 				parsed_expression += _("hexadecimal number");
 			} else if(equalsIgnoreCase(str_u, "oct") || equalsIgnoreCase(str_u, "octal") || equalsIgnoreCase(str_u, _("octal"))) {
@@ -1482,7 +1490,7 @@ void display_parse_status() {
 				parsed_expression += _("binary number");
 			} else if(equalsIgnoreCase(str_u, "roman") || equalsIgnoreCase(str_u, _("roman"))) {
 				parsed_expression += _("roman numerals");
-			} else if(equalsIgnoreCase(str_u, "sex") || equalsIgnoreCase(str_u, "sexagesimal") || equalsIgnoreCase(str_u, _("sexagesimal"))) {
+			} else if(equalsIgnoreCase(str_u, "sexa") || equalsIgnoreCase(str_u, "sexagesimal") || equalsIgnoreCase(str_u, _("sexagesimal"))) {
 				parsed_expression += _("sexagesimal number");
 			} else if(equalsIgnoreCase(str_u, "time") || equalsIgnoreCase(str_u, _("time"))) {
 				parsed_expression += _("time format");
@@ -1504,6 +1512,10 @@ void display_parse_status() {
 				parsed_expression += _("expanded partial fractions");
 			} else if(equalsIgnoreCase(str_u, "utc") || equalsIgnoreCase(str_u, "gmt")) {
 				parsed_expression += _("UTC time zone");
+			} else if((equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str2, _("base"))) && s2i(to_str2) >= 2 && (s2i(to_str2) <= 32 || s2i(to_str2) == BASE_SEXAGESIMAL)) {
+				gchar *gstr = g_strdup_printf(_("number base %i"), s2i(to_str2));
+				parsed_expression += gstr;
+				g_free(gstr);
 			} else {
 				Variable *v = CALCULATOR->getVariable(str_u);
 				if(v && (!v->isKnown() || ((KnownVariable*) v)->unit().empty())) v = NULL;
@@ -4214,7 +4226,7 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Expanded partial fractions"), 2, NULL, 3, FALSE, 4, 0, -1);
 	COMPLETION_CONVERT_STRING("roman")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Roman numerals"), 2, NULL, 3, FALSE, 4, 0, -1);
-	COMPLETION_CONVERT_STRING("sexagesimal") str += " <i>"; str += "sex"; str += "</i>";
+	COMPLETION_CONVERT_STRING("sexagesimal") str += " <i>"; str += "sexa"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Sexagesimal number"), 2, NULL, 3, FALSE, 4, 0, -1);
 	COMPLETION_CONVERT_STRING("time")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Time format"), 2, NULL, 3, FALSE, 4, 0, -1);
@@ -7042,6 +7054,14 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	evalops.parse_options.units_enabled = true;
 	if(execute_str.empty() && CALCULATOR->separateToExpression(from_str, to_str, evalops, true)) {
 		remove_duplicate_blanks(to_str);
+		string to_str1, to_str2;
+		size_t ispace = to_str.find_first_of(SPACES);
+		if(ispace != string::npos) {
+			to_str1 = to_str.substr(0, ispace);
+			remove_blank_ends(to_str1);
+			to_str2 = to_str.substr(ispace + 1);
+			remove_blank_ends(to_str2);
+		}
 		if(equalsIgnoreCase(to_str, "hex") || equalsIgnoreCase(to_str, "hexadecimal") || equalsIgnoreCase(to_str, _("hexadecimal"))) {
 			int save_base = printops.base;
 			printops.base = BASE_HEXADECIMAL;
@@ -7087,7 +7107,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			printops.base = save_base;
 			return;
-		} else if(equalsIgnoreCase(to_str, "sex") || equalsIgnoreCase(to_str, "sexagesimal") || equalsIgnoreCase(to_str, _("sexagesimal"))) {
+		} else if(equalsIgnoreCase(to_str, "sexa") || equalsIgnoreCase(to_str, "sexagesimal") || equalsIgnoreCase(to_str, _("sexagesimal"))) {
 			int save_base = printops.base;
 			printops.base = BASE_SEXAGESIMAL;
 			evalops.parse_options.units_enabled = b_units_saved;
@@ -7166,6 +7186,15 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		} else if(equalsIgnoreCase(to_str, "partial fraction") || equalsIgnoreCase(to_str, _("partial fraction"))) {
 			do_pfe = true;
 			execute_str = from_str;
+		} else if((equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _("base"))) && s2i(to_str2) >= 2 && (s2i(to_str2) <= 32 || s2i(to_str2) == BASE_SEXAGESIMAL)) {
+			int save_base = printops.base;
+			printops.base = s2i(to_str2);
+			evalops.parse_options.units_enabled = b_units_saved;
+			b_busy = false;
+			b_busy_expression = false;
+			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			printops.base = save_base;
+			return;
 		}
 	}
 	evalops.parse_options.units_enabled = b_units_saved;
@@ -11637,7 +11666,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {2, 5, 0};
+	int version_numbers[] = {2, 6, 0};
 	bool old_history_format = false;
 			
 	if(file) {
@@ -16577,7 +16606,7 @@ void calendar_changed(GtkWidget*, gpointer data) {
 	}
 	bool b_failed = false;
 	for(size_t i2 = 0; i2 < NUMBER_OF_CALENDARS; i2++) {
-		if(i2 != (size_t) i && cal_day.count(i2) > 0) {
+		if(cal_day.count(i2) > 0) {
 			if(dateToCalendar(date, y, m, d, (CalendarSystem) i2) && y <= G_MAXINT && y >= G_MININT && m <= numberOfMonths((CalendarSystem) i2) && d <= 31) {
 				if(i2 == CALENDAR_CHINESE) {
 					long int cy, yc, st, br;

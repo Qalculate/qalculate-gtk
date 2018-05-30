@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "2.5.0">
-  <!ENTITY manrevision "2.5.0">
-  <!ENTITY date "April 2018">
+  <!ENTITY appversion "2.6.0">
+  <!ENTITY manrevision "2.6.0">
+  <!ENTITY date "May 2018">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -14,7 +14,7 @@
 <title>&app; Manual v&manrevision;</title>
 <bookinfo>
 	<copyright>
-		<year>2005-2007, 2016-2017</year>
+		<year>2005-2007, 2016-2018</year>
 		<holder>Hanna Knutsson</holder>
 	</copyright>
 	<publisher> 
@@ -421,6 +421,10 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			<row valign="top">
 				<entry><para>Convert Number Bases (<keycombo><keycap>Ctrl</keycap><keycap>B</keycap></keycombo>)</para></entry>
 				<entry><para>Opens the number bases converter. See <xref linkend="qalculate-convert-number-bases-dialog"/></para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>Calendar Conversion</para></entry>
+				<entry><para>Opens a window for conversion of dates between different calendars.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Percentage Calculation Tool</para></entry>
@@ -1163,6 +1167,11 @@ Putting <quote> to </quote> followed by an expression at the end of the mathemat
 <term>roman</term>
 <listitem><para>Show as Roman numerals.</para></listitem>
 </varlistentry>
+<varlistentry>
+<term>base #</term>
+<listitem><para>Show using the specified base (e.g. base 20).</para></listitem>
+</varlistentry>
+<varlistentry>
 <varlistentry>
 <term>bases</term>
 <listitem><para>Show as binary, octal, decimal and hexadecimal number (opens convert bases dialog with the mathematical expression).</para></listitem>

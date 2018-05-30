@@ -2458,11 +2458,6 @@ GtkWidget* get_calendarconversion_dialog(void) {
 		cal_month[CALENDAR_ETHIOPIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_10"));
 		cal_day[CALENDAR_ETHIOPIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_10"));
 		
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_10")));
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_10")));
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_10")));
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_10")));
-		
 		for(size_t i = 0; i < NUMBER_OF_CALENDARS; i++) {
 			if(cal_day.count(i) > 0) {
 				if(i == CALENDAR_CHINESE) {
