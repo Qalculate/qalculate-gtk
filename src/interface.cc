@@ -1859,6 +1859,9 @@ get_function_edit_dialog (void)
 		
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(functionedit_builder, "function_edit_combobox_argument_type")), 0);
 		
+		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_description"))), "changed", G_CALLBACK(on_function_changed), NULL);
+		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_expression"))), "changed", G_CALLBACK(on_function_changed), NULL);
+		
 		gtk_builder_connect_signals(functionedit_builder, NULL);
 	
 	}
@@ -2091,7 +2094,11 @@ get_dataset_edit_dialog (void)
 		renderer = gtk_cell_renderer_text_new();
 		column = gtk_tree_view_column_new_with_attributes(_("Type"), renderer, "text", 2, NULL);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tDataProperties), column);	
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tDataProperties_selection_changed), NULL);		
+		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tDataProperties_selection_changed), NULL);
+		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(datasetedit_builder, "dataset_edit_textview_description"))), "changed", G_CALLBACK(on_dataset_changed), NULL);
+		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(datasetedit_builder, "dataset_edit_textview_copyright"))), "changed", G_CALLBACK(on_dataset_changed), NULL);
+		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_textview_description"))), "changed", G_CALLBACK(on_dataproperty_changed), NULL);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_combobox_type")), 0);
 		
 		gtk_builder_connect_signals(datasetedit_builder, NULL);
 	
@@ -2103,19 +2110,6 @@ get_dataset_edit_dialog (void)
 GtkWidget*
 get_dataproperty_edit_dialog (void)
 {
-
-	if(!datasetedit_builder) {
-
-		datasetedit_builder = getBuilder("datasetedit.ui");
-		g_assert(datasetedit_builder != NULL);
-
-		g_assert (gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_dialog") != NULL);
-
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_combobox_type")), 0);
-		
-		gtk_builder_connect_signals(datasetedit_builder, NULL);
-	
-	}
 
 	return GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_dialog"));
 }
@@ -2379,7 +2373,7 @@ get_percentage_dialog (void)
 	return GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_dialog"));
 }
 
-unordered_map<size_t, GtkWidget*> cal_year, cal_month, cal_day;
+unordered_map<size_t, GtkWidget*> cal_year, cal_month, cal_day, cal_label;
 GtkWidget *chinese_stem, *chinese_branch;
 
 GtkWidget* get_calendarconversion_dialog(void) {
@@ -2428,35 +2422,45 @@ GtkWidget* get_calendarconversion_dialog(void) {
 		cal_year[CALENDAR_GREGORIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_1"));
 		cal_month[CALENDAR_GREGORIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_1"));
 		cal_day[CALENDAR_GREGORIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_1"));
+		cal_label[CALENDAR_GREGORIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_1"));
 		cal_year[CALENDAR_HEBREW] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_2"));
 		cal_month[CALENDAR_HEBREW] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_2"));
 		cal_day[CALENDAR_HEBREW] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_2"));
+		cal_label[CALENDAR_HEBREW] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_2"));
 		cal_year[CALENDAR_ISLAMIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_3"));
 		cal_month[CALENDAR_ISLAMIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_3"));
 		cal_day[CALENDAR_ISLAMIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_3"));
+		cal_label[CALENDAR_ISLAMIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_3"));
 		cal_year[CALENDAR_PERSIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_4"));
 		cal_month[CALENDAR_PERSIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_4"));
 		cal_day[CALENDAR_PERSIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_4"));
+		cal_label[CALENDAR_PERSIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_4"));
 		cal_year[CALENDAR_INDIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_5"));
 		cal_month[CALENDAR_INDIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_5"));
 		cal_day[CALENDAR_INDIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_5"));
+		cal_label[CALENDAR_INDIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_5"));
 		cal_year[CALENDAR_CHINESE] = NULL;
 		chinese_stem = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "stem_6"));
 		chinese_branch = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "branch_6"));
 		cal_month[CALENDAR_CHINESE] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_6"));
 		cal_day[CALENDAR_CHINESE] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_6"));
+		cal_label[CALENDAR_CHINESE] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_6"));
 		cal_year[CALENDAR_JULIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_7"));
 		cal_month[CALENDAR_JULIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_7"));
 		cal_day[CALENDAR_JULIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_7"));
+		cal_label[CALENDAR_JULIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_7"));
 		cal_year[CALENDAR_MILANKOVIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_8"));
 		cal_month[CALENDAR_MILANKOVIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_8"));
 		cal_day[CALENDAR_MILANKOVIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_8"));
+		cal_label[CALENDAR_MILANKOVIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_8"));
 		cal_year[CALENDAR_COPTIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_9"));
 		cal_month[CALENDAR_COPTIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_9"));
 		cal_day[CALENDAR_COPTIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_9"));
+		cal_label[CALENDAR_COPTIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_9"));
 		cal_year[CALENDAR_ETHIOPIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_10"));
 		cal_month[CALENDAR_ETHIOPIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_10"));
 		cal_day[CALENDAR_ETHIOPIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_10"));
+		cal_label[CALENDAR_ETHIOPIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_10"));
 		
 		for(size_t i = 0; i < NUMBER_OF_CALENDARS; i++) {
 			if(cal_day.count(i) > 0) {

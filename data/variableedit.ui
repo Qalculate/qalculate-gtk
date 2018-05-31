@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkDialog" id="variable_edit_dialog">
@@ -9,6 +9,9 @@
     <property name="resizable">False</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
+    <child>
+      <placeholder/>
+    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbox37">
         <property name="visible">True</property>
@@ -123,6 +126,7 @@
                                 <property name="tooltip_text" translatable="yes">Name used to reference this variable in expressions</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
+                                <signal name="changed" handler="on_variable_changed" swapped="no"/>
                                 <signal name="changed" handler="on_variable_edit_entry_name_changed" swapped="no"/>
                               </object>
                               <packing>
@@ -226,6 +230,7 @@
                     <property name="xalign">1</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
+                    <signal name="changed" handler="on_variable_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -252,6 +257,7 @@
                 <property name="use_underline">True</property>
                 <property name="active">True</property>
                 <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_variable_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -287,6 +293,7 @@
                     <child internal-child="entry">
                       <object class="GtkEntry">
                         <property name="can_focus">True</property>
+                        <signal name="changed" handler="on_variable_changed" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -329,6 +336,7 @@
                     <property name="tooltip_text" translatable="yes">Title displayed in menus and in variable manager</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
+                    <signal name="changed" handler="on_variable_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -357,8 +365,5 @@
       <action-widget response="-6">variable_edit_button_cancel</action-widget>
       <action-widget response="-5">variable_edit_button_ok</action-widget>
     </action-widgets>
-    <child>
-      <placeholder/>
-    </child>
   </object>
 </interface>

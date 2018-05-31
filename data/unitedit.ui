@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkAdjustment" id="adjustment1">
@@ -30,6 +30,9 @@
     <property name="resizable">False</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
+    <child>
+      <placeholder/>
+    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox5">
         <property name="visible">True</property>
@@ -144,6 +147,7 @@
                             <property name="tooltip_text" translatable="yes">Singular form of this unit's name</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
+                            <signal name="changed" handler="on_unit_changed" swapped="no"/>
                             <signal name="changed" handler="on_unit_edit_entry_name_changed" swapped="no"/>
                           </object>
                           <packing>
@@ -225,6 +229,7 @@
                             <property name="tooltip_text" translatable="yes">Title displayed in menus and in unit manager</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
+                            <signal name="changed" handler="on_unit_changed" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -249,6 +254,7 @@
                         <property name="halign">end</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_unit_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -318,6 +324,7 @@
                               <item translatable="yes">Alias</item>
                               <item translatable="yes">Composite Unit</item>
                             </items>
+                            <signal name="changed" handler="on_unit_changed" swapped="no"/>
                             <signal name="changed" handler="on_unit_edit_combobox_class_changed" swapped="no"/>
                           </object>
                           <packing>
@@ -360,6 +367,7 @@
                             <child internal-child="entry">
                               <object class="GtkEntry">
                                 <property name="can_focus">True</property>
+                                <signal name="changed" handler="on_unit_changed" swapped="no"/>
                               </object>
                             </child>
                           </object>
@@ -410,6 +418,7 @@
                             <child internal-child="entry">
                               <object class="GtkEntry">
                                 <property name="can_focus">True</property>
+                                <signal name="changed" handler="on_unit_changed" swapped="no"/>
                               </object>
                             </child>
                           </object>
@@ -435,6 +444,7 @@
                         <property name="halign">end</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_unit_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -499,6 +509,7 @@
                             <property name="tooltip_text" translatable="yes">Unit (for alias unit) or units (for composite unit) that this unit as defined in relation to</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
+                            <signal name="changed" handler="on_unit_changed" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -543,6 +554,7 @@
                             <property name="adjustment">adjustment1</property>
                             <property name="climb_rate">1</property>
                             <property name="value">1</property>
+                            <signal name="changed" handler="on_unit_changed" swapped="no"/>
                             <signal name="value-changed" handler="on_unit_edit_spinbutton_exp_value_changed" swapped="no"/>
                           </object>
                           <packing>
@@ -589,6 +601,7 @@
                                 <property name="tooltip_text" translatable="yes">Relation to the base unit (usually just a number)</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
+                                <signal name="changed" handler="on_unit_changed" swapped="no"/>
                                 <signal name="changed" handler="on_unit_edit_entry_relation_changed" swapped="no"/>
                               </object>
                               <packing>
@@ -616,6 +629,7 @@
                             <property name="use_underline">True</property>
                             <property name="active">True</property>
                             <property name="draw_indicator">True</property>
+                            <signal name="toggled" handler="on_unit_changed" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -662,6 +676,7 @@
                                 <property name="tooltip_text" translatable="yes">You probably do not need to define this</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
+                                <signal name="changed" handler="on_unit_changed" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
@@ -745,6 +760,7 @@
                             <property name="adjustment">adjustment2</property>
                             <property name="climb_rate">1</property>
                             <property name="value">1</property>
+                            <signal name="changed" handler="on_unit_changed" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -788,6 +804,7 @@
                             <property name="adjustment">adjustment3</property>
                             <property name="climb_rate">1</property>
                             <property name="value">1</property>
+                            <signal name="changed" handler="on_unit_changed" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -810,6 +827,7 @@
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
                     <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="on_unit_changed" swapped="no"/>
                     <signal name="toggled" handler="on_unit_edit_checkbutton_mix_toggled" swapped="no"/>
                     <child>
                       <object class="GtkLabel" id="unit_edit_label_mix_title">
@@ -842,8 +860,5 @@
       <action-widget response="-6">unit_edit_button_cancel</action-widget>
       <action-widget response="-5">unit_edit_button_ok</action-widget>
     </action-widgets>
-    <child>
-      <placeholder/>
-    </child>
   </object>
 </interface>

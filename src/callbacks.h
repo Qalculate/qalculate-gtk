@@ -206,7 +206,7 @@ void add_as_variable();
 
 void fetch_exchange_rates(int timeout);
 
-void edit_argument(Argument *arg = NULL);
+bool edit_argument(Argument *arg = NULL);
 
 void edit_unknown(const char *category = "", Variable *v = NULL, GtkWidget *win = NULL);
 void edit_variable(const char *category = "", Variable *v = NULL, MathStructure *mstruct_ = NULL, GtkWidget *win = NULL);
@@ -541,6 +541,17 @@ void on_variable_edit_entry_name_changed(GtkEditable *editable, gpointer user_da
 void on_unknown_edit_checkbutton_custom_assumptions_toggled(GtkToggleButton *w, gpointer user_data);
 void on_unknown_edit_combobox_type_changed(GtkComboBox *om, gpointer user_data);
 void on_unknown_edit_combobox_sign_changed(GtkComboBox *om, gpointer user_data);
+
+void on_function_changed();
+void on_argument_changed();
+void on_unit_changed();
+void on_variable_changed();
+void on_dataset_changed();
+void on_dataobject_changed();
+void on_dataproperty_changed();
+void on_matrix_changed();
+void on_unknown_changed();
+void on_name_changed();
 
 void on_dataset_edit_entry_name_changed(GtkEditable *editable, gpointer user_data);
 void on_dataset_edit_button_new_property_clicked(GtkButton *button, gpointer user_data);

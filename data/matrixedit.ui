@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkAdjustment" id="adjustment1">
@@ -25,6 +25,9 @@
     <property name="modal">True</property>
     <property name="default_height">400</property>
     <property name="type_hint">dialog</property>
+    <child>
+      <placeholder/>
+    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbox48">
         <property name="visible">True</property>
@@ -129,6 +132,7 @@
                     <property name="tooltip_text" translatable="yes">Name used to reference this variable in expressions</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
+                    <signal name="changed" handler="on_matrix_changed" swapped="no"/>
                     <signal name="changed" handler="on_variable_edit_entry_name_changed" swapped="no"/>
                   </object>
                   <packing>
@@ -211,6 +215,7 @@
                     <child internal-child="entry">
                       <object class="GtkEntry">
                         <property name="can_focus">True</property>
+                        <signal name="changed" handler="on_matrix_changed" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -253,6 +258,7 @@
                     <property name="tooltip_text" translatable="yes">Title displayed in menus and in variable manager</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
+                    <signal name="changed" handler="on_matrix_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -296,6 +302,7 @@
                     <property name="adjustment">adjustment1</property>
                     <property name="climb_rate">1</property>
                     <property name="numeric">True</property>
+                    <signal name="value-changed" handler="on_matrix_changed" swapped="no"/>
                     <signal name="value-changed" handler="on_matrix_edit_spinbutton_rows_value_changed" swapped="no"/>
                   </object>
                   <packing>
@@ -340,6 +347,7 @@
                     <property name="adjustment">adjustment2</property>
                     <property name="climb_rate">1</property>
                     <property name="numeric">True</property>
+                    <signal name="value-changed" handler="on_matrix_changed" swapped="no"/>
                     <signal name="value-changed" handler="on_matrix_edit_spinbutton_columns_value_changed" swapped="no"/>
                   </object>
                   <packing>
@@ -371,6 +379,7 @@
                     <property name="use_underline">True</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="on_matrix_changed" swapped="no"/>
                     <signal name="toggled" handler="on_matrix_edit_radiobutton_matrix_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -389,6 +398,7 @@
                     <property name="use_underline">True</property>
                     <property name="draw_indicator">True</property>
                     <property name="group">matrix_edit_radiobutton_matrix</property>
+                    <signal name="toggled" handler="on_matrix_changed" swapped="no"/>
                     <signal name="toggled" handler="on_matrix_edit_radiobutton_vector_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -495,8 +505,5 @@
       <action-widget response="-6">matrix_edit_button_cancel</action-widget>
       <action-widget response="-5">matrix_edit_button_ok</action-widget>
     </action-widgets>
-    <child>
-      <placeholder/>
-    </child>
   </object>
 </interface>

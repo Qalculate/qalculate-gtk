@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkDialog" id="dataproperty_edit_dialog">
@@ -9,6 +9,9 @@
     <property name="resizable">False</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
+    <child>
+      <placeholder/>
+    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbox59">
         <property name="visible">True</property>
@@ -37,7 +40,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="button3">
+              <object class="GtkButton" id="dataproperty_edit_button_ok">
                 <property name="label" translatable="yes">_OK</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -93,6 +96,7 @@
                     <property name="tooltip_text" translatable="yes">Name used for reference</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
+                    <signal name="changed" handler="on_dataproperty_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -173,6 +177,7 @@
                     <property name="tooltip_text" translatable="yes">Title displayed in menus and in data set manager</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
+                    <signal name="changed" handler="on_dataproperty_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -269,6 +274,7 @@
                       <item translatable="yes">Number</item>
                       <item translatable="yes">Expression</item>
                     </items>
+                    <signal name="changed" handler="on_dataproperty_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -297,6 +303,7 @@
                     <property name="receives_default">False</property>
                     <property name="use_underline">True</property>
                     <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="on_dataproperty_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -312,6 +319,7 @@
                     <property name="receives_default">False</property>
                     <property name="use_underline">True</property>
                     <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="on_dataproperty_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -340,6 +348,7 @@
                     <property name="receives_default">False</property>
                     <property name="use_underline">True</property>
                     <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="on_dataproperty_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -355,6 +364,7 @@
                     <property name="receives_default">False</property>
                     <property name="use_underline">True</property>
                     <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="on_dataproperty_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -383,6 +393,7 @@
                     <property name="receives_default">False</property>
                     <property name="use_underline">True</property>
                     <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="on_dataproperty_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -425,6 +436,7 @@
                     <property name="can_focus">True</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
+                    <signal name="changed" handler="on_dataproperty_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -450,7 +462,7 @@
     </child>
     <action-widgets>
       <action-widget response="-6">button2</action-widget>
-      <action-widget response="-5">button3</action-widget>
+      <action-widget response="-5">dataproperty_edit_button_ok</action-widget>
     </action-widgets>
   </object>
   <object class="GtkDialog" id="dataset_edit_dialog">
@@ -460,6 +472,9 @@
     <property name="resizable">False</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
+    <child>
+      <placeholder/>
+    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbox27">
         <property name="visible">True</property>
@@ -548,6 +563,7 @@
                         <property name="tooltip_text" translatable="yes">Title displayed in menus and in data set manager</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
+                        <signal name="changed" handler="on_dataset_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -587,6 +603,7 @@
                         <property name="can_focus">True</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
+                        <signal name="changed" handler="on_dataset_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -865,6 +882,7 @@
                         <property name="tooltip_text" translatable="yes">Name used to invoke the function in expressions</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
+                        <signal name="changed" handler="on_dataset_changed" swapped="no"/>
                         <signal name="changed" handler="on_dataset_edit_entry_name_changed" swapped="no"/>
                       </object>
                       <packing>
@@ -945,6 +963,7 @@
                         <property name="can_focus">True</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
+                        <signal name="changed" handler="on_dataset_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -984,6 +1003,7 @@
                         <property name="can_focus">True</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
+                        <signal name="changed" handler="on_dataset_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -1023,6 +1043,7 @@
                         <property name="can_focus">True</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
+                        <signal name="changed" handler="on_dataset_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>

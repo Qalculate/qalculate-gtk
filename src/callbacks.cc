@@ -79,7 +79,7 @@ extern GtkWidget *completion_view, *completion_window, *completion_scrolled;
 extern GtkListStore *completion_store;
 extern GtkTreeModel *completion_filter, *completion_sort;
 
-extern unordered_map<size_t, GtkWidget*> cal_year, cal_month, cal_day;
+extern unordered_map<size_t, GtkWidget*> cal_year, cal_month, cal_day, cal_label;
 extern GtkWidget *chinese_stem, *chinese_branch;
 
 extern GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider;
@@ -8314,8 +8314,6 @@ void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 	gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(unitedit_builder, "unit_edit_combo_system")))), "");
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(unitedit_builder, "unit_edit_label_names")), "");
 
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_button_ok")), TRUE);
-
 	if(u) {
 		//fill in original parameters
 		if(u->subtype() == SUBTYPE_BASE_UNIT) {
@@ -8381,6 +8379,7 @@ void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_frame_mix")), FALSE);
 			}
 		}
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_button_ok")), FALSE);
 	} else {
 		//default values
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_hidden")), false);
@@ -8389,7 +8388,8 @@ void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unitedit_builder, "unit_edit_combobox_class")), UNIT_CLASS_ALIAS_UNIT);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), "1");
 		on_unit_edit_combobox_class_changed(GTK_COMBO_BOX(gtk_builder_get_object(unitedit_builder, "unit_edit_combobox_class")), NULL);
-	}	
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_button_ok")), TRUE);
+	}
 
 run_unit_edit_dialog:
 	gint response = gtk_dialog_run(GTK_DIALOG(dialog));
@@ -8537,7 +8537,7 @@ run_unit_edit_dialog:
 	gtk_widget_hide(dialog);
 }
 
-void edit_argument(Argument *arg) {
+bool edit_argument(Argument *arg) {
 	if(!arg) {
 		arg = new Argument();
 	}
@@ -8627,7 +8627,7 @@ void edit_argument(Argument *arg) {
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_box_max")), FALSE);
 		}
 	}
-
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_button_ok")), FALSE);
 	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
 		arg->setTests(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_enable_test"))));
 		arg->setMatrixAllowed(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_allow_matrix"))));
@@ -8677,9 +8677,13 @@ void edit_argument(Argument *arg) {
 		if(gtk_tree_selection_get_selected(select, &model, &iter)) {
 			gtk_list_store_set(tFunctionArguments_store, &iter, 0, arg->name().c_str(), 1, arg->printlong().c_str(), 2, (gpointer) arg, -1);
 		}
+		edited_argument = NULL;
+		gtk_widget_hide(dialog);
+		return true;
 	}
 	edited_argument = NULL;
 	gtk_widget_hide(dialog);
+	return false;
 }
 
 
@@ -8744,7 +8748,6 @@ void edit_function(const char *category = "", MathFunction *f = NULL, GtkWidget 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(functionedit_builder, "function_edit_checkbutton_hidden")), false);
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_argument_name")), "");
 
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_ok")), TRUE);	
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_combobox_argument_type")), !f || !f->isBuiltin());
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_add_argument")), !f || !f->isBuiltin());
 
@@ -8785,6 +8788,9 @@ void edit_function(const char *category = "", MathFunction *f = NULL, GtkWidget 
 				last_subfunction_index = i;
 			}
 		}
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_ok")), FALSE);
+	} else {
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_ok")), TRUE);
 	}
 	if(name) gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")), name);
 	if(expression) gtk_text_buffer_set_text(expression_buffer, expression, -1);
@@ -9110,6 +9116,7 @@ void edit_unknown(const char *category, Variable *var, GtkWidget *win) {
 			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), CALCULATOR->defaultAssumptions()->type() - 2);
 			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), CALCULATOR->defaultAssumptions()->sign());
 		}
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_button_ok")), FALSE);
 	} else {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_name")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), TRUE);
@@ -9127,7 +9134,7 @@ void edit_unknown(const char *category, Variable *var, GtkWidget *win) {
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_desc")), "");
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), CALCULATOR->defaultAssumptions()->type() - 2);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), CALCULATOR->defaultAssumptions()->sign());
-
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_button_ok")), TRUE);
 	}
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_unknown_edit_combobox_type_changed, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_unknown_edit_combobox_sign_changed, NULL);
@@ -9262,8 +9269,6 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 		gtk_window_set_title(GTK_WINDOW(dialog), _("New Variable"));
 	}
 
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_button_ok")), TRUE);
-
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(variableedit_builder, "variable_edit_label_names")), "");
 
 	if(mstruct_) {
@@ -9295,6 +9300,7 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_checkbutton_exact")), !v->isBuiltin());
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(variableedit_builder, "variable_edit_combo_category")))), v->category().c_str());
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_desc")), v->title(false).c_str());
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_button_ok")), FALSE);
 	} else {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_value")), TRUE);
@@ -9308,6 +9314,7 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(variableedit_builder, "variable_edit_combo_category")))), category);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_desc")), "");
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(variableedit_builder, "variable_edit_checkbutton_exact")), !mstruct_ || !mstruct_->isApproximate());
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_button_ok")), TRUE);
 	}
 	
 	CALCULATOR->endTemporaryStopMessages();
@@ -9449,7 +9456,6 @@ void edit_matrix(const char *category, Variable *var, MathStructure *mstruct_, G
 			gtk_window_set_title(GTK_WINDOW(dialog), _("New Matrix"));
 		}	
 	}
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_button_ok")), TRUE);		
 
 	int r = 4, c = 4;
 	const MathStructure *old_vctr = NULL;
@@ -9471,6 +9477,7 @@ void edit_matrix(const char *category, Variable *var, MathStructure *mstruct_, G
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_radiobutton_vector")), !v->isBuiltin());								
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(matrixedit_builder, "matrix_edit_combo_category")))), v->category().c_str());
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_desc")), v->title(false).c_str());	
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_button_ok")), FALSE);
 	} else {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_name")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_spinbutton_rows")), TRUE);		
@@ -9484,7 +9491,8 @@ void edit_matrix(const char *category, Variable *var, MathStructure *mstruct_, G
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_name")), v_name.c_str());
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(matrixedit_builder, "matrix_edit_label_names")), "");
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(matrixedit_builder, "matrix_edit_combo_category")))), category);
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_desc")), "");		
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_desc")), "");
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_button_ok")), TRUE);
 	}
 	if(mstruct_) {
 		//forced value
@@ -9494,11 +9502,13 @@ void edit_matrix(const char *category, Variable *var, MathStructure *mstruct_, G
 			c = mstruct_->columns();
 			r = mstruct_->rows();
 		}
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_spinbutton_rows")), FALSE);		
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_spinbutton_rows")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_spinbutton_columns")), FALSE);				
 		//gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_table_elements")), FALSE);						
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_radiobutton_matrix")), FALSE);		
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_radiobutton_vector")), FALSE);		
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_radiobutton_matrix")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_radiobutton_vector")), FALSE);
+		
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_button_ok")), TRUE);
 	}
 
 	if(create_vector) {
@@ -9896,12 +9906,16 @@ void edit_dataobject(DataSet *ds, DataObject *o, GtkWidget *win) {
 		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(om), NULL, _("Approximate"));
 		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(om), NULL, _("Exact"));
 		gtk_combo_box_set_active(GTK_COMBO_BOX(om), iapprox + 1);
+		
+		g_signal_connect(entry, "changed", G_CALLBACK(on_dataobject_changed), NULL);
+		g_signal_connect(om, "changed", G_CALLBACK(on_dataobject_changed), NULL);
 
 		gtk_grid_attach(GTK_GRID(ptable), om, 3, rows - 1, 1, 1);
 
 		rows++;
 		dp = ds->getNextProperty(&it);
 	}
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasets_builder, "dataobject_edit_button_ok")), FALSE);
 	gtk_widget_show_all(ptable);
 	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
 		bool new_object = (o == NULL);
@@ -9978,7 +9992,7 @@ void update_dataset_property_list(DataSet*) {
 	}
 }
 
-bool edit_dataproperty(DataProperty *dp) {
+bool edit_dataproperty(DataProperty *dp, bool new_property = false) {
 
 	GtkWidget *dialog = get_dataproperty_edit_dialog();	
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(datasetedit_builder, "dataset_edit_dialog")));
@@ -10029,6 +10043,8 @@ bool edit_dataproperty(DataProperty *dp) {
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_entry_name")));
 	
 	bool return_val = false;
+	
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_button_ok")), new_property);
 
 	run_dataproperty_edit_dialog:
 	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
@@ -10142,11 +10158,9 @@ void edit_dataset(DataSet *ds, GtkWidget *win) {
 	gtk_text_buffer_set_text(description_buffer, "", -1);
 	gtk_text_buffer_set_text(copyright_buffer, "", -1);
 
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_button_ok")), TRUE);	
-
 	gtk_list_store_clear(tDataProperties_store);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_button_edit_property")), FALSE);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_button_del_property")), FALSE);		
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_button_del_property")), FALSE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_button_new_property")), TRUE);
 	
 	if(ds) {
@@ -10172,7 +10186,11 @@ void edit_dataset(DataSet *ds, GtkWidget *win) {
 			tmp_props_orig.push_back(dp);
 			dp = ds->getNextProperty(&it);
 		}
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_button_ok")), FALSE);
+	} else {
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_button_ok")), TRUE);
 	}
+	
 	update_dataset_property_list(ds);
 	
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_name")));
@@ -15618,7 +15636,6 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 			else if(i == 1) u = u_local_currency;
 			else u = CALCULATOR->getActiveUnit(currency_units[i - 2]);
 			if(u && u != u_result && (i == 1 || !u->isHidden())) {
-				cout << u->name() << endl;
 				bool b = false;
 				for(size_t i2 = 0; i2 < to_us.size(); i2++) {
 					if(u == to_us[i2]) {
@@ -16604,7 +16621,7 @@ void calendar_changed(GtkWidget*, gpointer data) {
 		block_calendar_conversion = false;
 		return;
 	}
-	bool b_failed = false;
+	string failed_str;
 	for(size_t i2 = 0; i2 < NUMBER_OF_CALENDARS; i2++) {
 		if(cal_day.count(i2) > 0) {
 			if(dateToCalendar(date, y, m, d, (CalendarSystem) i2) && y <= G_MAXINT && y >= G_MININT && m <= numberOfMonths((CalendarSystem) i2) && d <= 31) {
@@ -16619,11 +16636,16 @@ void calendar_changed(GtkWidget*, gpointer data) {
 				gtk_combo_box_set_active(GTK_COMBO_BOX(cal_month[i2]), m - 1);
 				gtk_combo_box_set_active(GTK_COMBO_BOX(cal_day[i2]), d - 1);
 			} else {
-				b_failed = true;
+				if(!failed_str.empty()) failed_str += ", ";
+				failed_str += gtk_label_get_text(GTK_LABEL(cal_label[i2]));
 			}
 		}
 	}
-	if(b_failed) show_message(_("Conversion failed."), GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog")));
+	if(!failed_str.empty()) {
+		gchar *gstr = g_strdup_printf(_("Calendar conversion failed for: %s."), failed_str.c_str());
+		show_message(gstr, GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog")));
+		g_free(gstr);
+	}
 	block_calendar_conversion = false;
 }
 
@@ -17803,11 +17825,40 @@ void on_variable_edit_entry_name_changed(GtkEditable *editable, gpointer) {
 	correct_name_entry(editable, TYPE_VARIABLE, (gpointer) on_variable_edit_entry_name_changed);
 }
 
+void on_variable_changed() {
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_button_ok")), TRUE);
+}
+void on_function_changed() {
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_ok")), TRUE);
+}
+void on_argument_changed() {
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_button_ok")), TRUE);
+}
+void on_unit_changed() {
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_button_ok")), TRUE);
+}
+void on_dataset_changed() {
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_button_ok")), TRUE);
+}
+void on_dataobject_changed() {
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasets_builder, "dataobject_edit_button_ok")), TRUE);
+}
+void on_dataproperty_changed() {
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_button_ok")), TRUE);
+}
+void on_matrix_changed() {
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_button_ok")), TRUE);
+}
+void on_unknown_changed() {
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_button_ok")), TRUE);
+}
+
 void on_tMatrixEdit_edited(GtkCellRendererText *cell, gchar *path_string, gchar *new_text, gpointer model) {
 	GtkTreeIter iter;
 	gint i_column = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(cell), "column"));
 	gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model), &iter, path_string);
 	gtk_list_store_set(GTK_LIST_STORE (model), &iter, i_column, new_text, -1);
+	on_matrix_changed();
 }
 gboolean on_tMatrixEdit_editable_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer renderer) {
 	switch(event->keyval) {
@@ -19477,6 +19528,7 @@ void on_function_edit_button_add_subfunction_clicked(GtkButton*, gpointer) {
 		gtk_list_store_set(tSubfunctions_store, &iter, 0, str.c_str(), 1, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_subexpression"))), 2, _("No"), 3, last_subfunction_index, 4, FALSE, -1);
 	}
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_subexpression")), "");
+	on_function_changed();
 }
 void on_function_edit_button_modify_subfunction_clicked(GtkButton*, gpointer) {
 	GtkTreeModel *model;
@@ -19487,6 +19539,7 @@ void on_function_edit_button_modify_subfunction_clicked(GtkButton*, gpointer) {
 		} else {
 			gtk_list_store_set(tSubfunctions_store, &iter, 1, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_subexpression"))), 2, _("No"), 4, FALSE, -1);
 		}
+		on_function_changed();
 	}
 }
 void on_function_edit_button_remove_subfunction_clicked(GtkButton*, gpointer) {
@@ -19504,6 +19557,7 @@ void on_function_edit_button_remove_subfunction_clicked(GtkButton*, gpointer) {
 		}
 		gtk_list_store_remove(tSubfunctions_store, &iter);
 		last_subfunction_index--;
+		on_function_changed();
 	}
 }
 void on_function_edit_entry_subexpression_activate(GtkEntry*, gpointer) {
@@ -19550,6 +19604,7 @@ void on_function_edit_button_add_argument_clicked(GtkButton*, gpointer) {
 	arg->setName(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_argument_name"))));		
 	gtk_list_store_set(tFunctionArguments_store, &iter, 0, arg->name().c_str(), 1, arg->printlong().c_str(), 2, arg, -1);
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_argument_name")), "");
+	on_function_changed();
 }
 void on_function_edit_button_remove_argument_clicked(GtkButton*, gpointer) {
 	GtkTreeModel *model;
@@ -19561,6 +19616,7 @@ void on_function_edit_button_remove_argument_clicked(GtkButton*, gpointer) {
 			selected_argument = NULL;
 		}
 		gtk_list_store_remove(tFunctionArguments_store, &iter);
+		on_function_changed();
 	}
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_argument_name")), "");
 }
@@ -19635,6 +19691,7 @@ void on_function_edit_button_modify_argument_clicked(GtkButton*, gpointer) {
 		}
 		selected_argument->setName(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_argument_name"))));
 		gtk_list_store_set(tFunctionArguments_store, &iter, 0, selected_argument->name().c_str(), 1, selected_argument->printlong().c_str(), 2, (gpointer) selected_argument, -1);
+		on_function_changed();
 	}
 }
 void on_function_edit_entry_argument_name_activate(GtkEntry*, gpointer) {
@@ -19645,7 +19702,7 @@ void on_function_edit_entry_argument_name_activate(GtkEntry*, gpointer) {
 	}
 }
 void on_function_edit_button_rules_clicked(GtkButton*, gpointer) {
-	edit_argument(get_selected_argument());
+	if(edit_argument(get_selected_argument())) on_function_changed();
 }
 void on_argument_rules_checkbutton_enable_min_toggled(GtkToggleButton *w, gpointer) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_spinbutton_min")), gtk_toggle_button_get_active(w));
@@ -19728,6 +19785,7 @@ gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_
 	else gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name"))), NAMES_ABBREVIATION_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_abbreviation")))), NAMES_PLURAL_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_plural")))), NAMES_REFERENCE_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference")))), NAMES_ABBREVIATION_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_abbreviation"))), NAMES_PLURAL_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_plural"))), NAMES_UNICODE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_unicode"))), NAMES_REFERENCE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference"))), NAMES_SUFFIX_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_suffix"))), NAMES_AVOID_INPUT_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_avoid_input"))), NAMES_COMPLETION_ONLY_COLUMN, 
 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_completion_only"))), NAMES_CASE_SENSITIVE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_case_sensitive"))), -1);
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name")), "");
+	on_name_changed();
 }
 void on_names_edit_button_modify_clicked(GtkButton*, gpointer) {
 	GtkTreeModel *model;
@@ -19754,7 +19812,17 @@ void on_names_edit_button_modify_clicked(GtkButton*, gpointer) {
 		g_free(gstr);
 		if(editing_dataproperty) gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name"))), NAMES_ABBREVIATION_STRING_COLUMN, "-", NAMES_PLURAL_STRING_COLUMN, "-", NAMES_REFERENCE_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference")))), NAMES_ABBREVIATION_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_abbreviation"))), NAMES_PLURAL_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_plural"))), NAMES_UNICODE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_unicode"))), NAMES_REFERENCE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference"))), NAMES_SUFFIX_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_suffix"))), NAMES_AVOID_INPUT_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_avoid_input"))), NAMES_COMPLETION_ONLY_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_completion_only"))), NAMES_CASE_SENSITIVE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_case_sensitive"))), -1);
 		else gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name"))), NAMES_ABBREVIATION_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_abbreviation")))), NAMES_PLURAL_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_plural")))), NAMES_REFERENCE_STRING_COLUMN, b2yn(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference")))), NAMES_ABBREVIATION_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_abbreviation"))), NAMES_PLURAL_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_plural"))), NAMES_UNICODE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_unicode"))), NAMES_REFERENCE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_reference"))), NAMES_SUFFIX_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_suffix"))), NAMES_AVOID_INPUT_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_avoid_input"))), NAMES_COMPLETION_ONLY_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_completion_only"))), NAMES_CASE_SENSITIVE_COLUMN, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(namesedit_builder, "names_edit_checkbutton_case_sensitive"))), -1);
+		on_name_changed();
 	}
+}
+void on_name_changed() {
+	if(editing_function) on_function_changed();
+	if(editing_unknown) on_unknown_changed();
+	if(editing_matrix) on_matrix_changed();
+	if(editing_unit) on_unit_changed();
+	if(editing_variable) on_variable_changed();
+	if(editing_dataproperty) on_dataproperty_changed();
+	else if(editing_dataset) on_dataset_changed();
 }
 void on_names_edit_button_remove_clicked(GtkButton*, gpointer) {
 	GtkTreeModel *model;
@@ -19762,6 +19830,7 @@ void on_names_edit_button_remove_clicked(GtkButton*, gpointer) {
 	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tNames));
 	if(gtk_tree_selection_get_selected(select, &model, &iter)) {
 		gtk_list_store_remove(tNames_store, &iter);
+		on_name_changed();
 	}
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name")), "");
 }
@@ -20371,18 +20440,20 @@ void on_dataset_edit_entry_name_changed(GtkEditable *editable, gpointer) {
 void on_dataset_edit_button_new_property_clicked(GtkButton*, gpointer) {
 	DataProperty *dp = new DataProperty(edited_dataset);
 	dp->setUserModified(true);
-	if(edit_dataproperty(dp)) {
+	if(edit_dataproperty(dp, true)) {
 		tmp_props.push_back(dp);
 		tmp_props_orig.push_back(NULL);
 		update_dataset_property_list(edited_dataset);
+		on_dataset_changed();
 	} else {
 		delete dp;
 	}
 }
 void on_dataset_edit_button_edit_property_clicked(GtkButton*, gpointer) {
 	if(selected_dataproperty) {
-		if(edit_dataproperty(selected_dataproperty)) {
+		if(edit_dataproperty(selected_dataproperty, false)) {
 			update_dataset_property_list(edited_dataset);
+			on_dataset_changed();
 		}
 	}
 }
@@ -20400,6 +20471,7 @@ void on_dataset_edit_button_del_property_clicked(GtkButton*, gpointer) {
 			}
 		}
 		update_dataset_property_list(edited_dataset);
+		on_dataset_changed();
 	}
 }
 void on_dataset_edit_button_names_clicked(GtkButton*, gpointer) {

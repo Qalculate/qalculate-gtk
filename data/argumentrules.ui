@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.4 -->
+<!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkAdjustment" id="adjustment_max">
@@ -23,6 +23,9 @@
     <property name="resizable">False</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
+    <child>
+      <placeholder/>
+    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbox56">
         <property name="visible">True</property>
@@ -56,7 +59,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="button7">
+              <object class="GtkButton" id="argument_rules_button_ok">
                 <property name="label" translatable="yes">_OK</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -95,6 +98,7 @@
                 <property name="use_underline">True</property>
                 <property name="active">True</property>
                 <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_argument_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -116,6 +120,7 @@
                     <property name="receives_default">False</property>
                     <property name="use_underline">True</property>
                     <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="on_argument_changed" swapped="no"/>
                     <signal name="toggled" handler="on_argument_rules_checkbutton_enable_condition_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -132,6 +137,7 @@
                     <property name="tooltip_text" translatable="yes">Ex. if argument is a matrix that must have equal number of rows and columns: rows(\x) = columns(\x)</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
+                    <signal name="changed" handler="on_argument_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -155,6 +161,7 @@
                 <property name="use_underline">True</property>
                 <property name="active">True</property>
                 <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_argument_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -170,6 +177,7 @@
                 <property name="receives_default">False</property>
                 <property name="use_underline">True</property>
                 <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_argument_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -186,6 +194,7 @@
                 <property name="tooltip_text" translatable="yes">Calculate function for each separate element in vector.</property>
                 <property name="use_underline">True</property>
                 <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_argument_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -214,6 +223,7 @@
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_argument_changed" swapped="no"/>
                         <signal name="toggled" handler="on_argument_rules_checkbutton_enable_min_toggled" swapped="no"/>
                       </object>
                       <packing>
@@ -232,6 +242,7 @@
                         <property name="adjustment">adjustment_min</property>
                         <property name="climb_rate">1</property>
                         <property name="numeric">True</property>
+                        <signal name="changed" handler="on_argument_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -257,6 +268,7 @@
                     <property name="use_underline">True</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="on_argument_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -292,6 +304,7 @@
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_argument_changed" swapped="no"/>
                         <signal name="toggled" handler="on_argument_rules_checkbutton_enable_max_toggled" swapped="no"/>
                       </object>
                       <packing>
@@ -310,6 +323,7 @@
                         <property name="adjustment">adjustment_max</property>
                         <property name="climb_rate">1</property>
                         <property name="numeric">True</property>
+                        <signal name="changed" handler="on_argument_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -335,6 +349,7 @@
                     <property name="use_underline">True</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="on_argument_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -360,10 +375,7 @@
     </child>
     <action-widgets>
       <action-widget response="-6">button6</action-widget>
-      <action-widget response="-5">button7</action-widget>
+      <action-widget response="-5">argument_rules_button_ok</action-widget>
     </action-widgets>
-    <child>
-      <placeholder/>
-    </child>
   </object>
 </interface>
