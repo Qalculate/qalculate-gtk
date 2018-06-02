@@ -4062,6 +4062,8 @@ void update_completion() {
 	
 	gtk_list_store_clear(completion_store);
 	
+	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_store), 1, GTK_SORT_ASCENDING);
+	
 	if(!enable_completion) return;
 	
 	string str;
@@ -4278,6 +4280,7 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Time format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("utc")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("UTC time zone"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
+	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_store), GTK_TREE_SORTABLE_UNSORTED_SORT_COLUMN_ID, GTK_SORT_ASCENDING);
 }
 
 /*
@@ -12689,7 +12692,7 @@ gint string_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpoin
 /*
 	completion sort function
 */
-gint completion_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer) {
+gint completion_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer user_data) {
 	gint i1 = 0, i2 = 0;
 	gtk_tree_model_get(model, a, 4, &i1, -1);
 	gtk_tree_model_get(model, b, 4, &i2, -1);
@@ -12697,8 +12700,9 @@ gint completion_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, g
 	if(i1 > i2) return 1;
 	gchar *gstr1, *gstr2;
 	gint retval;
-	gtk_tree_model_get(model, a, 0, &gstr1, -1);
-	gtk_tree_model_get(model, b, 0, &gstr2, -1);
+	gint cid = GPOINTER_TO_INT(user_data);
+	gtk_tree_model_get(model, a, cid, &gstr1, -1);
+	gtk_tree_model_get(model, b, cid, &gstr2, -1);
 	retval = g_ascii_strcasecmp(gstr1, gstr2);
 	g_free(gstr1);
 	g_free(gstr2);
@@ -12870,7 +12874,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 	string str;
 	ExpressionItem *item = NULL;
 	Prefix *prefix = NULL;
-	const ExpressionName *ename = NULL, *ename_r = NULL;
+	const ExpressionName *ename = NULL, *ename_r = NULL, *ename_r2;
 	gint i_type = 0;
 	guint i_match = 0;
 	gtk_tree_model_get(completion_sort, &iter, 2, &item, 4, &i_type, 7, &i_match, 8, &prefix, -1);
@@ -12883,17 +12887,22 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 		if(strlen(gstr_pre) - strlen(gstr_next) >= i_match) break;
 	}
 	if(item) {
-		ename_r = &item->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
-		if(i_type > 1) {
+		ename_r = &item->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+		if(i_type > 2) {
 			ename = ename_r;
 		} else {
+			if(printops.abbreviate_names && ename_r->abbreviation) ename_r2 = &item->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+			else ename_r2 = NULL;
+			if(ename_r2 == ename_r) ename_r2 = NULL;
 			gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &object_start, &current_object_end, FALSE);
-			for(size_t name_i = 0; name_i <= item->countNames() && !ename; name_i++) {
+			for(size_t name_i = 0; name_i <= (ename_r2 ? item->countNames() + 1 : item->countNames()) && !ename; name_i++) {
 				if(name_i == 0) {
 					ename = ename_r;
+				} else if(name_i == 1 && ename_r2) {
+					ename = ename_r2;
 				} else {
-					ename = &item->getName(name_i);
-					if(!ename || ename == ename_r || ename->plural || (ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext)))) {
+					ename = &item->getName(ename_r2 ? name_i - 1 : name_i);
+					if(!ename || ename == ename_r || ename == ename_r2 || ename->plural || (ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext)))) {
 						ename = NULL;
 					}
 				}
@@ -12912,7 +12921,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 			}
 			for(size_t name_i = 1; name_i <= item->countNames() && !ename; name_i++) {
 				ename = &item->getName(name_i);
-				if(!ename || ename == ename_r || (!ename->plural && !(ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))))) {
+				if(!ename || ename == ename_r || ename == ename_r2 || (!ename->plural && !(ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))))) {
 					ename = NULL;
 				}
 				if(ename) {
@@ -12929,7 +12938,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 				}
 			}
 			if(ename && ename->completion_only) {
-				ename = &item->preferredInputName(ename->abbreviation, printops.use_unicode_signs, ename->plural, false, &can_display_unicode_string_function, (void*) expressiontext);	
+				ename = &item->preferredInputName(ename->abbreviation, printops.use_unicode_signs, ename->plural, false, &can_display_unicode_string_function, (void*) expressiontext);
 			}
 			if(!ename) ename = ename_r;
 			g_free(gstr2);
@@ -12938,10 +12947,11 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 		str = ename->name;
 	} else if(prefix) {
 		gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &object_start, &current_object_end, FALSE);
-		for(size_t name_i = 0; name_i < 2; name_i++) {
+		for(size_t name_i = (printops.abbreviate_names ? 1 : 0); name_i < 3; name_i++) {
 			const string *pname;
-			if(name_i == 0) pname = &prefix->shortName(false);
-			else if(name_i == 1) pname = &prefix->unicodeName(false);
+			if(name_i == 0) pname = &prefix->longName(false);
+			else if(name_i == 1) pname = &prefix->shortName(false);
+			else if(name_i == 2) pname = &prefix->unicodeName(false);
 			if(!pname->empty() && strlen(gstr2) <= pname->length()) {
 				bool b = true;
 				for(size_t i = 0; i < strlen(gstr2); i++) {
@@ -12951,7 +12961,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 					}
 				}
 				if(b) {
-					if(name_i == 0 && printops.use_unicode_signs) str = prefix->unicodeName();
+					if(name_i == 1 && printops.use_unicode_signs) str = prefix->unicodeName();
 					else str = *pname;
 					break;
 				}
@@ -14226,6 +14236,7 @@ void do_completion() {
 	int matches = 0;
 	if(str.length() > 0 && is_not_in(NUMBERS NOT_IN_NAMES, str[0]) && gtk_tree_model_get_iter_first(GTK_TREE_MODEL(completion_store), &iter)) {
 		string str2, str3, str4;
+		Prefix *p2 = NULL, *p3 = NULL, *p4 = NULL;
 		if(str.length() > 1) {
 			for(size_t pi = 1; ; pi++) {
 				Prefix *prefix = CALCULATOR->getPrefix(pi);
@@ -14244,9 +14255,9 @@ void do_completion() {
 							}
 						}
 						if(pmatch) {
-							if(str2.empty()) str2 = str.substr(pname->length());
-							else if(str3.empty()) str3 = str.substr(pname->length());
-							else if(str4.empty()) str4 = str.substr(pname->length());
+							if(str2.empty()) {p2 = prefix; str2 = str.substr(pname->length());}
+							else if(str3.empty()) {p3 = prefix; str3 = str.substr(pname->length());}
+							else if(str4.empty()) {p4 = prefix; str4 = str.substr(pname->length());}
 						}
 					}
 				}
@@ -14270,7 +14281,7 @@ void do_completion() {
 								b_match = (ename->name == str) ? 1 : 0;
 							} else {
 								for(size_t icmp = 0; icmp < 4; icmp++) {
-									if(icmp == 1 && (item->type() != TYPE_UNIT || str2.empty() || ((Unit*) item)->system().find("Imperial") != string::npos || ((Unit*) item)->system().find("US") != string::npos)) break;
+									if(icmp == 1 && (item->type() != TYPE_UNIT || str2.empty() || !((Unit*) item)->useWithPrefixesByDefault())) break;
 									const string *cmpstr;
 									if(icmp == 0) cmpstr = &str;
 									else if(icmp == 1) cmpstr = &str2;
@@ -14287,7 +14298,12 @@ void do_completion() {
 										}
 										if(b_match && ename->name == *cmpstr) b_match = 1;
 										if(b_match) {
-											if(icmp > 0) i_match = str.length() - cmpstr->length();
+											if(icmp > 0) {
+												if(icmp == 1) prefix = p2;
+												else if(icmp == 2) prefix = p3;
+												else if(icmp == 3) prefix = p4;
+												i_match = str.length() - cmpstr->length();
+											}
 											break;
 										}
 									}
@@ -14297,7 +14313,7 @@ void do_completion() {
 					}
 					if(b_match == 2 && item->countNames() > 1) {
 						for(size_t icmp = 0; icmp < 4 && b_match > 1; icmp++) {
-							if(icmp == 1 && (item->type() != TYPE_UNIT || str2.empty() || ((Unit*) item)->system().find("Imperial") != string::npos || ((Unit*) item)->system().find("US") != string::npos)) break;
+							if(icmp == 1 && (item->type() != TYPE_UNIT || str2.empty() || !((Unit*) item)->useWithPrefixesByDefault())) break;
 							const string *cmpstr;
 							if(icmp == 0) cmpstr = &str;
 							else if(icmp == 1) cmpstr = &str2;
@@ -14305,13 +14321,46 @@ void do_completion() {
 							else cmpstr = &str4;
 							if(cmpstr->empty()) break;
 							for(size_t name_i = 1; name_i <= item->countNames(); name_i++) {
-								if(item->getName(name_i).name == *cmpstr) {b_match = 1; break;}
+								if(item->getName(name_i).name == *cmpstr) {
+									if(icmp == 1) prefix = p2;
+									else if(icmp == 2) prefix = p3;
+									else if(icmp == 3) prefix = p4;
+									else prefix = NULL;
+									b_match = 1; break;
+								}
 							}
 						}
 					}
 					if(!b_match) {
 						if(title_matches(item, str, 3)) b_match = 3;
 						else if(item->type() == TYPE_UNIT && ((Unit*) item)->isCurrency() && country_matches((Unit*) item, str, 3)) b_match = 4;
+					}
+				}
+				if(b_match) {
+					gchar *gstr;
+					gtk_tree_model_get(GTK_TREE_MODEL(completion_store), &iter, 0, &gstr, -1);
+					if(gstr && strlen(gstr) > 0) {
+						string nstr;
+						if(gstr[0] == '<') {
+							nstr = gstr;
+							size_t i = nstr.find("-) </small>");
+							if(i != string::npos && i > 2) {
+								if(prefix && prefix->longName() == nstr.substr(8, i - 8)) {
+									prefix = NULL;
+								} else {
+									nstr = nstr.substr(i + 11);
+									if(!prefix) gtk_list_store_set(completion_store, &iter, 0, nstr.c_str(), -1);
+								}
+							}
+						}
+						if(prefix) {
+							if(nstr.empty()) nstr = gstr;
+							nstr.insert(0, "-) </small>");
+							nstr.insert(0, prefix->longName());
+							nstr.insert(0, "<small>(");
+							gtk_list_store_set(completion_store, &iter, 0, nstr.c_str(), -1);
+						}
+						g_free(gstr);
 					}
 				}
 			} else if(prefix) {
@@ -14331,6 +14380,7 @@ void do_completion() {
 						if(b_match && *pname == str) b_match = 1;
 					}
 				}
+				prefix = NULL;
 			} else if(editing_to_expression) {
 				gchar *gstr;
 				gtk_tree_model_get(GTK_TREE_MODEL(completion_store), &iter, 0, &gstr, -1);
