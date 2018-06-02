@@ -543,6 +543,7 @@ void on_unknown_edit_combobox_type_changed(GtkComboBox *om, gpointer user_data);
 void on_unknown_edit_combobox_sign_changed(GtkComboBox *om, gpointer user_data);
 
 void on_function_changed();
+void on_simple_function_changed();
 void on_argument_changed();
 void on_unit_changed();
 void on_variable_changed();

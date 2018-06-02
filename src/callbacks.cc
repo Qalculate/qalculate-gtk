@@ -64,6 +64,9 @@
 extern bool do_timeout, check_expression_position;
 extern gint expression_position;
 
+#define COMPLETION_TIMEOUT_1 0
+#define COMPLETION_TIMEOUT_2 0
+
 extern GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *setbase_builder, *datasetedit_builder, *datasets_builder, *decimals_builder;
 extern GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
 extern GtkBuilder *preferences_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder;
@@ -276,6 +279,8 @@ bool status_error_color_set;
 bool status_warning_color_set;
 
 string old_fromValue, old_toValue;
+
+guint completion_timeout_id = 0;
 
 extern QalculateDateTime last_version_check_date;
 string last_found_version;
@@ -4083,7 +4088,7 @@ void update_completion() {
 					str += "()</i>";
 				}
 			}			
-			gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, CALCULATOR->functions[i]->title().c_str(), 2, CALCULATOR->functions[i], 3, FALSE, 4, 0, -1);
+			gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, CALCULATOR->functions[i]->title().c_str(), 2, CALCULATOR->functions[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 		}
 	}
 	for(size_t i = 0; i < CALCULATOR->variables.size(); i++) {
@@ -4113,8 +4118,8 @@ void update_completion() {
 				}
 			}
 			if(!CALCULATOR->variables[i]->title(false).empty()) {
-				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, CALCULATOR->variables[i]->title().c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, -1);
-				else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, CALCULATOR->variables[i]->title().c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, -1);
+				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, CALCULATOR->variables[i]->title().c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
+				else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, CALCULATOR->variables[i]->title().c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 			} else {
 				Variable *v = CALCULATOR->variables[i];
 				string title;
@@ -4161,8 +4166,8 @@ void update_completion() {
 						title = _("default assumptions");
 					}		
 				}
-				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, -1);
-				else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, title.c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, -1);
+				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
+				else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, title.c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 			}
 		}
 	}
@@ -4195,43 +4200,84 @@ void update_completion() {
 			}
 			unordered_map<string, GdkPixbuf*>::const_iterator it_flag = flag_images.end();
 			if(u->isCurrency()) it_flag = flag_images.find(u->referenceName()); 	
-			if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, u->title().c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_images.end() ? NULL : it_flag->second, -1);
-			else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, u->title().c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_images.end() ? NULL : it_flag->second, -1);
+			if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, u->title().c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_images.end() ? NULL : it_flag->second, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
+			else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, u->title().c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_images.end() ? NULL : it_flag->second, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 		}
 	}
+	PangoFontDescription *font_desc;
+	gtk_style_context_get(gtk_widget_get_style_context(completion_view), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+	for(size_t i = 1; ; i++) {
+		Prefix *p = CALCULATOR->getPrefix(i);
+		if(!p) break;
+		gtk_list_store_append(completion_store, &iter);
+		str = "";
+		for(size_t name_i = 1; name_i <= 3; name_i++) {
+			const string *pstr;
+			if(name_i == 1) pstr = &p->longName(false);
+			else if(name_i == 2) pstr = &p->unicodeName(false);
+			else pstr = &p->shortName(false);
+			if(!pstr->empty()) {
+				if(!str.empty()) {
+					str += " <i>";
+					str += *pstr;
+					str += "</i>";
+				} else {
+					str += *pstr;
+				}
+			}
+		}
+		gchar *gstr = NULL;
+		switch(p->type()) {
+			case PREFIX_DECIMAL: {
+				gstr = g_strdup_printf("%s: 10<span size=\"x-small\" rise=\"%i\">%i</span>", _("Prefix"), (int) (pango_font_description_get_size(font_desc) / 1.5), ((DecimalPrefix*) p)->exponent());
+				break;
+			}
+			case PREFIX_BINARY: {
+				gstr = g_strdup_printf("%s: 2<span size=\"x-small\" rise=\"%i\">%i</span>", _("Prefix"), (int) (pango_font_description_get_size(font_desc) / 1.5), ((BinaryPrefix*) p)->exponent());
+				break;
+			}
+			case PREFIX_NUMBER: {				
+				gstr = g_strdup_printf("%s: %s", _("Prefix"), ((NumberPrefix*) p)->value().print().c_str());
+				break;
+			}			
+		}
+		gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, gstr, 2, NULL, 3, FALSE, 4, 0, 5, NULL, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, p, -1);
+		g_free(gstr);
+	}
+	pango_font_description_free(font_desc);
 #define COMPLETION_CONVERT_STRING(x) str = str = _(x); if(str != x) {str += " <i>"; str += x; str += "</i>";}
 	COMPLETION_CONVERT_STRING("bases")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Number bases"), 2, NULL, 3, FALSE, 4, 0, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Number bases"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("base")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Base Units"), 2, NULL, 3, FALSE, 4, 0, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Base Units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("binary") str += " <i>"; str += "bin"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Binary number"), 2, NULL, 3, FALSE, 4, 0, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Binary number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("calendars")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Calendars"), 2, NULL, 3, FALSE, 4, 0, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Calendars"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("duodecimal") str += " <i>"; str += "duo"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Duodecimal number"), 2, NULL, 3, FALSE, 4, 0, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Duodecimal number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("factors")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Factors"), 2, NULL, 3, FALSE, 4, 0, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Factors"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("fraction")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Fraction"), 2, NULL, 3, FALSE, 4, 0, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Fraction"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("hexadecimal") str += " <i>"; str += "hex"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Hexadecimal number"), 2, NULL, 3, FALSE, 4, 0, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Hexadecimal number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("mixed")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Mixed units"), 2, NULL, 3, FALSE, 4, 0, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Mixed units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("octal") str += " <i>"; str += "oct"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Octal number"), 2, NULL, 3, FALSE, 4, 0, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Octal number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("optimal")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Optimal units"), 2, NULL, 3, FALSE, 4, 0, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Optimal units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("partial fraction")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Expanded partial fractions"), 2, NULL, 3, FALSE, 4, 0, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Expanded partial fractions"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("roman")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Roman numerals"), 2, NULL, 3, FALSE, 4, 0, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Roman numerals"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("sexagesimal") str += " <i>"; str += "sexa"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Sexagesimal number"), 2, NULL, 3, FALSE, 4, 0, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Sexagesimal number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("time")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Time format"), 2, NULL, 3, FALSE, 4, 0, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Time format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("utc")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("UTC time zone"), 2, NULL, 3, FALSE, 4, 0, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("UTC time zone"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 }
 
 /*
@@ -7016,6 +7062,11 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	
 	if(b_busy || b_busy_result || b_busy_expression || b_busy_command) return;
 	
+	if(completion_timeout_id != 0) {
+		g_source_remove(completion_timeout_id);
+		completion_timeout_id = 0;
+	}
+	
 	b_busy = true;
 	b_busy_expression = true;
 
@@ -8379,7 +8430,6 @@ void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_frame_mix")), FALSE);
 			}
 		}
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_button_ok")), FALSE);
 	} else {
 		//default values
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_hidden")), false);
@@ -8390,6 +8440,7 @@ void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 		on_unit_edit_combobox_class_changed(GTK_COMBO_BOX(gtk_builder_get_object(unitedit_builder, "unit_edit_combobox_class")), NULL);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_button_ok")), TRUE);
 	}
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_button_ok")), FALSE);
 
 run_unit_edit_dialog:
 	gint response = gtk_dialog_run(GTK_DIALOG(dialog));
@@ -8708,7 +8759,7 @@ void delete_function(MathFunction *f) {
 	display edit/new function dialog
 	creates new function if f == NULL, win is parent window
 */
-void edit_function(const char *category = "", MathFunction *f = NULL, GtkWidget *win = NULL, const char *name = NULL, const char *expression = NULL) {
+void edit_function(const char *category = "", MathFunction *f = NULL, GtkWidget *win = NULL, const char *name = NULL, const char *expression = NULL, bool enable_ok = true) {
 
 	if(f && f->subtype() == SUBTYPE_DATA_SET) {
 		edit_dataset((DataSet*) f, win);
@@ -8788,12 +8839,10 @@ void edit_function(const char *category = "", MathFunction *f = NULL, GtkWidget 
 				last_subfunction_index = i;
 			}
 		}
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_ok")), FALSE);
-	} else {
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_ok")), TRUE);
 	}
 	if(name) gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")), name);
 	if(expression) gtk_text_buffer_set_text(expression_buffer, expression, -1);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_ok")), enable_ok && (name || expression));
 	update_function_arguments_list(f);
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")));
 	gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(functionedit_builder, "function_edit_tabs")), 0);
@@ -8941,7 +8990,6 @@ void edit_function_simple(const char *category = "", MathFunction *f = NULL, Gtk
 	//clear entries
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_entry_name")), "");
 	gtk_text_buffer_set_text(expression_buffer, "", -1);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_button_ok")), TRUE);
 
 	if(f) {
 		//fill in original paramaters
@@ -8951,6 +8999,8 @@ void edit_function_simple(const char *category = "", MathFunction *f = NULL, Gtk
 	} else {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_radiobutton_noslash")), TRUE);
 	}
+	
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_button_ok")), FALSE);
 
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_entry_name")));
 	
@@ -9018,7 +9068,7 @@ run_simple_function_edit_dialog:
 			gsub("y", "\\y", str2);
 			gsub("z", "\\z", str2);
 		}
-		edit_function(category, f, win, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_entry_name"))), str2.c_str());
+		edit_function(category, f, win, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_entry_name"))), str2.c_str(), gtk_widget_get_sensitive(GTK_WIDGET(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_button_ok"))));
 	}
 }
 
@@ -10186,10 +10236,9 @@ void edit_dataset(DataSet *ds, GtkWidget *win) {
 			tmp_props_orig.push_back(dp);
 			dp = ds->getNextProperty(&it);
 		}
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_button_ok")), FALSE);
-	} else {
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_button_ok")), TRUE);
+		
 	}
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_button_ok")), FALSE);
 	
 	update_dataset_property_list(ds);
 	
@@ -12820,22 +12869,25 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 	gtk_tree_model_get_iter(completion_sort, &iter, path);
 	string str;
 	ExpressionItem *item = NULL;
+	Prefix *prefix = NULL;
 	const ExpressionName *ename = NULL, *ename_r = NULL;
 	gint i_type = 0;
-	gtk_tree_model_get(completion_sort, &iter, 2, &item, 4, &i_type, -1);
-	if(!item) {
-		gchar *gstr;
-		gtk_tree_model_get(completion_sort, &iter, 0, &gstr, -1);
-		str = gstr;
-		size_t i = str.find("<i>", 2);
-		if(i != string::npos) {str = str.substr(0, i - 1);}
-		g_free(gstr);
-	} else {
+	guint i_match = 0;
+	gtk_tree_model_get(completion_sort, &iter, 2, &item, 4, &i_type, 7, &i_match, 8, &prefix, -1);
+	gchar *gstr_pre = gtk_text_buffer_get_text(expressionbuffer, &current_object_start, &current_object_end, FALSE);
+	GtkTextIter object_start = current_object_start;
+	gchar *gstr_next = gstr_pre;
+	while(i_match > 0) {
+		gtk_text_iter_forward_char(&object_start);
+		gstr_next = g_utf8_next_char(gstr_next);
+		if(strlen(gstr_pre) - strlen(gstr_next) >= i_match) break;
+	}
+	if(item) {
 		ename_r = &item->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
 		if(i_type > 1) {
 			ename = ename_r;
 		} else {
-			gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &current_object_start, &current_object_end, FALSE);
+			gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &object_start, &current_object_end, FALSE);
 			for(size_t name_i = 0; name_i <= item->countNames() && !ename; name_i++) {
 				if(name_i == 0) {
 					ename = ename_r;
@@ -12884,12 +12936,42 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 		}
 		if(!ename) return;
 		str = ename->name;
+	} else if(prefix) {
+		gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &object_start, &current_object_end, FALSE);
+		for(size_t name_i = 0; name_i < 2; name_i++) {
+			const string *pname;
+			if(name_i == 0) pname = &prefix->shortName(false);
+			else if(name_i == 1) pname = &prefix->unicodeName(false);
+			if(!pname->empty() && strlen(gstr2) <= pname->length()) {
+				bool b = true;
+				for(size_t i = 0; i < strlen(gstr2); i++) {
+					if(gstr2[i] != (*pname)[i]) {
+						b = false;
+						break;
+					}
+				}
+				if(b) {
+					if(name_i == 0 && printops.use_unicode_signs) str = prefix->unicodeName();
+					else str = *pname;
+					break;
+				}
+			}
+		}
+		if(str.empty()) str = prefix->longName();
+		g_free(gstr2);
+	} else {
+		gchar *gstr;
+		gtk_tree_model_get(completion_sort, &iter, 0, &gstr, -1);
+		str = gstr;
+		size_t i = str.find("<i>", 2);
+		if(i != string::npos) {str = str.substr(0, i - 1);}
+		g_free(gstr);
 	}
 	block_completion();
 	add_to_undo = false;
-	gtk_text_buffer_delete(expressionbuffer, &current_object_start, &current_object_end);
+	gtk_text_buffer_delete(expressionbuffer, &object_start, &current_object_end);
 	add_to_undo = true;
-	GtkTextIter ipos = current_object_start;
+	GtkTextIter ipos = object_start;
 	if(item && item->type() == TYPE_FUNCTION) {
 		GtkTextIter ipos2 = ipos;
 		gtk_text_iter_forward_char(&ipos2);
@@ -14142,11 +14224,40 @@ void do_completion() {
 	string str = gstr2;
 	GtkTreeIter iter;
 	int matches = 0;
-	if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(completion_store), &iter)) {
+	if(str.length() > 0 && is_not_in(NUMBERS NOT_IN_NAMES, str[0]) && gtk_tree_model_get_iter_first(GTK_TREE_MODEL(completion_store), &iter)) {
+		string str2, str3, str4;
+		if(str.length() > 1) {
+			for(size_t pi = 1; ; pi++) {
+				Prefix *prefix = CALCULATOR->getPrefix(pi);
+				if(!prefix) break;
+				for(size_t name_i = 0; name_i < 3; name_i++) {
+					const string *pname;
+					if(name_i == 0) pname = &prefix->shortName(false);
+					else if(name_i == 1) pname = &prefix->longName(false);
+					else pname = &prefix->unicodeName(false);
+					if(!pname->empty() && pname->length() < str.length()) {
+						bool pmatch = true;
+						for(size_t i = 0; i < pname->length(); i++) {
+							if((*pname)[i] != str[i]) {
+								pmatch = false;
+								break;
+							}
+						}
+						if(pmatch) {
+							if(str2.empty()) str2 = str.substr(pname->length());
+							else if(str3.empty()) str3 = str.substr(pname->length());
+							else if(str4.empty()) str4 = str.substr(pname->length());
+						}
+					}
+				}
+			}
+		}
 		do {
 			ExpressionItem *item = NULL;
-			gtk_tree_model_get(GTK_TREE_MODEL(completion_store), &iter, 2, &item, -1);
+			Prefix *prefix = NULL;
+			gtk_tree_model_get(GTK_TREE_MODEL(completion_store), &iter, 2, &item, 8, &prefix, -1);
 			int b_match = false;
+			size_t i_match = 0;
 			if(item) {
 				if((editing_to_expression || !evalops.parse_options.functions_enabled) && item->type() == TYPE_FUNCTION) {}
 				else if(item->type() == TYPE_VARIABLE && (!evalops.parse_options.variables_enabled || (editing_to_expression && (!((Variable*) item)->isKnown() || ((KnownVariable*) item)->unit().empty())))) {}
@@ -14155,33 +14266,80 @@ void do_completion() {
 					for(size_t name_i = 1; name_i <= item->countNames() && !b_match; name_i++) {
 						const ExpressionName *ename = &item->getName(name_i);
 						if(ename) {
-							if(item->isHidden() && (item->type() != TYPE_UNIT || strlen(gstr2) == 1 || !((Unit*) item)->isCurrency()) && ename) {
-								b_match = (ename->name == str);
-							} else if(str.length() <= ename->name.length()) {
-								b_match = 1;
-								for(size_t i = 0; i < str.length(); i++) {
-									if(ename->name[i] != str[i]) {
-										b_match = false;
-										break;
+							if(item->isHidden() && (item->type() != TYPE_UNIT || str.length() == 1 || !((Unit*) item)->isCurrency()) && ename) {
+								b_match = (ename->name == str) ? 1 : 0;
+							} else {
+								for(size_t icmp = 0; icmp < 4; icmp++) {
+									if(icmp == 1 && (item->type() != TYPE_UNIT || str2.empty() || ((Unit*) item)->system().find("Imperial") != string::npos || ((Unit*) item)->system().find("US") != string::npos)) break;
+									const string *cmpstr;
+									if(icmp == 0) cmpstr = &str;
+									else if(icmp == 1) cmpstr = &str2;
+									else if(icmp == 2) cmpstr = &str3;
+									else cmpstr = &str4;
+									if(cmpstr->empty()) break;
+									if(cmpstr->length() <= ename->name.length()) {
+										b_match = 2;
+										for(size_t i = 0; i < cmpstr->length(); i++) {
+											if(ename->name[i] != (*cmpstr)[i]) {
+												b_match = false;
+												break;
+											}
+										}
+										if(b_match && ename->name == *cmpstr) b_match = 1;
+										if(b_match) {
+											if(icmp > 0) i_match = str.length() - cmpstr->length();
+											break;
+										}
 									}
 								}
 							}
 						}
 					}
+					if(b_match == 2 && item->countNames() > 1) {
+						for(size_t icmp = 0; icmp < 4 && b_match > 1; icmp++) {
+							if(icmp == 1 && (item->type() != TYPE_UNIT || str2.empty() || ((Unit*) item)->system().find("Imperial") != string::npos || ((Unit*) item)->system().find("US") != string::npos)) break;
+							const string *cmpstr;
+							if(icmp == 0) cmpstr = &str;
+							else if(icmp == 1) cmpstr = &str2;
+							else if(icmp == 2) cmpstr = &str3;
+							else cmpstr = &str4;
+							if(cmpstr->empty()) break;
+							for(size_t name_i = 1; name_i <= item->countNames(); name_i++) {
+								if(item->getName(name_i).name == *cmpstr) {b_match = 1; break;}
+							}
+						}
+					}
 					if(!b_match) {
-						if(title_matches(item, str, 3)) b_match = 2;
-						else if(item->type() == TYPE_UNIT && ((Unit*) item)->isCurrency() && country_matches((Unit*) item, str, 3)) b_match = 3;
+						if(title_matches(item, str, 3)) b_match = 3;
+						else if(item->type() == TYPE_UNIT && ((Unit*) item)->isCurrency() && country_matches((Unit*) item, str, 3)) b_match = 4;
+					}
+				}
+			} else if(prefix) {
+				for(size_t name_i = 0; name_i < 3 && !b_match; name_i++) {
+					const string *pname;
+					if(name_i == 0) pname = &prefix->shortName(false);
+					else if(name_i == 1) pname = &prefix->unicodeName(false);
+					else pname = &prefix->longName(false);
+					if(!pname->empty() && str.length() <= pname->length()) {
+						b_match = 2;
+						for(size_t i = 0; i < str.length(); i++) {
+							if(str[i] != (*pname)[i]) {
+								b_match = false;
+								break;
+							}
+						}
+						if(b_match && *pname == str) b_match = 1;
 					}
 				}
 			} else if(editing_to_expression) {
 				gchar *gstr;
 				gtk_tree_model_get(GTK_TREE_MODEL(completion_store), &iter, 0, &gstr, -1);
 				if(completion_names_match(gstr, str)) {
-					b_match = 1;
+					b_match = 2;
 				}
 				g_free(gstr);
 			}
-			gtk_list_store_set(completion_store, &iter, 3, b_match > 0, 4, b_match, -1);
+			gtk_list_store_set(completion_store, &iter, 3, b_match > 0, 4, b_match, 6, b_match == 1 ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL, 7, i_match, -1);
 			if(b_match) matches++;
 		} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(completion_store), &iter));
 	}
@@ -14202,7 +14360,17 @@ void do_completion() {
 		gtk_widget_hide(completion_window);
 	}
 }
+
+gboolean do_completion_timeout(gpointer) {
+	if(!completion_blocked) do_completion();
+	completion_timeout_id = 0;
+	return false;
+}
 void on_expressionbuffer_changed(GtkTextBuffer*, gpointer) {
+	if(completion_timeout_id != 0) {
+		g_source_remove(completion_timeout_id);
+		completion_timeout_id = 0;
+	}
 	if(add_to_undo) add_expression_to_undo();
 	expression_has_changed = true;
 	expression_has_changed2 = true;
@@ -14211,7 +14379,22 @@ void on_expressionbuffer_changed(GtkTextBuffer*, gpointer) {
 	highlight_parentheses();
 	display_parse_status();
 	if(!completion_blocked) {
-		do_completion();
+		if(COMPLETION_TIMEOUT_1 <= 0 || gtk_widget_is_visible(completion_window)) {
+			do_completion();
+		} else {
+			set_current_object();
+			if(!gtk_text_iter_is_end(&current_object_start)) {
+				gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &current_object_start, &current_object_end, FALSE);
+				if(strlen(gstr2) == 1) {
+					completion_timeout_id = g_timeout_add(COMPLETION_TIMEOUT_1, do_completion_timeout, NULL);
+				} else if(COMPLETION_TIMEOUT_2 > 0) {
+					completion_timeout_id = g_timeout_add(COMPLETION_TIMEOUT_2, do_completion_timeout, NULL);
+				} else {
+					do_completion();
+				}
+				g_free(gstr2);
+			}
+		}
 	}
 	if(result_text.empty()) return;
 	if(!dont_change_index) expression_history_index = -1;
@@ -17830,6 +18013,9 @@ void on_variable_changed() {
 }
 void on_function_changed() {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_ok")), TRUE);
+}
+void on_simple_function_changed() {
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_button_ok")), TRUE);
 }
 void on_argument_changed() {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_button_ok")), TRUE);
