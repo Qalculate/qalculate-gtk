@@ -230,7 +230,7 @@ GtkTextIter current_object_start, current_object_end;
 bool editing_to_expression = false;
 bool stop_timeouts = false;
 
-PrintOptions printops, parse_printops;
+PrintOptions printops, parse_printops, displayed_printops;
 EvaluationOptions evalops;
 
 bool rpn_mode, rpn_keys;
@@ -6315,6 +6315,7 @@ void ViewThread::run() {
 			*printops.is_approximate = false;
 			if(displayed_mstruct) displayed_mstruct->unref();
 			displayed_mstruct = new MathStructure(m);
+			displayed_printops = printops;
 		} else if(!b_stack) {
 			if(!CALCULATOR->aborted()) {
 				printops.allow_non_usable = true;
@@ -6336,6 +6337,8 @@ void ViewThread::run() {
 			if(!tmp_surface && displayed_mstruct) {
 				displayed_mstruct->unref();
 				displayed_mstruct = NULL;
+			} else {
+				displayed_printops = printops;
 			}
 		}
 		printops.use_unit_prefixes = b_puup;
@@ -12363,6 +12366,7 @@ void load_preferences() {
 	} else {
 		first_time = true;
 	}
+	displayed_printops = printops;
 	initial_inhistory_index = inhistory.size() - 1;
 	g_free(gstr_file);
 	show_history = show_history && !show_keypad;
@@ -16769,11 +16773,11 @@ void on_menu_item_expand_partial_fractions_activate(GtkMenuItem*, gpointer) {
 void on_menu_item_simplify_activate(GtkMenuItem*, gpointer) {
 	executeCommand(COMMAND_SIMPLIFY);
 }
-void convert_number_bases(const gchar *initial_expression) {
+void convert_number_bases(const gchar *initial_expression, bool b_result) {
 	changing_in_nbases_dialog = false;
 	GtkWidget *dialog = get_nbases_dialog();
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
-	switch(evalops.parse_options.base) {
+	switch(b_result ? displayed_printops.base : evalops.parse_options.base) {
 		case BASE_BINARY: {
 			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_binary")), initial_expression);
 			break;
@@ -16804,10 +16808,10 @@ void convert_number_bases(const gchar *initial_expression) {
 	gtk_window_present(GTK_WINDOW(dialog));
 }
 void on_menu_item_convert_number_bases_activate(GtkMenuItem*, gpointer) {
-	if(!result_text.empty()) return convert_number_bases(result_text.c_str());
+	if(!result_text.empty()) return convert_number_bases(result_text.c_str(), true);
 	string str = get_selected_expression_text(true), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
-	convert_number_bases(str.c_str());
+	convert_number_bases(str.c_str(), false);
 }
 void show_percentage_dialog(const gchar *initial_expression) {
 	GtkWidget *dialog = get_percentage_dialog();
@@ -17414,7 +17418,7 @@ void on_menu_item_save_image_activate(GtkMenuItem*, gpointer) {
 		color.green = 0.0;
 		color.blue = 0.0;
 		color.alpha = 1.0;
-		cairo_surface_t *s = draw_structure(*displayed_mstruct, printops, top_ips, NULL, 1, &color);
+		cairo_surface_t *s = draw_structure(*displayed_mstruct, displayed_printops, top_ips, NULL, 1, &color);
 		if(s) {
 			cairo_surface_flush(s);
 			cairo_surface_write_to_png(s, gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(d)));
@@ -18735,7 +18739,7 @@ void update_nbases_entries(const MathStructure &value, int base) {
 		} else if(!value.isNumber() || !value.number().isReal() || !(value.number() <= 9999) || !(value.number() >= -9999)) {
 			gtk_entry_set_text(GTK_ENTRY(w_roman), "-");
 		} else {
-			Number nr = value.number(); nr.round();
+			Number nr = value.number(); nr.round(printops.round_halfway_to_even);
 			po.base = BASE_ROMAN_NUMERALS;
 			gtk_entry_set_text(GTK_ENTRY(w_roman), nr.print(po).c_str());
 		}
@@ -18903,9 +18907,7 @@ void on_button_units_clicked(GtkButton*, gpointer) {
 	manage_units();
 }
 void on_button_bases_clicked(GtkButton*, gpointer) {
-	string str = get_selected_expression_text(true), str2;
-	CALCULATOR->separateToExpression(str, str2, evalops, true);
-	convert_number_bases(str.c_str());
+	on_menu_item_convert_number_bases_activate(NULL, NULL);
 }
 void on_button_convert_clicked(GtkButton*, gpointer user_data) {
 	on_menu_item_convert_to_unit_expression_activate(NULL, user_data);
@@ -19565,7 +19567,7 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 					cairo_destroy(cr2);
 					g_object_unref(layout);
 				} else {
-					tmp_surface = draw_structure(*displayed_mstruct, printops, top_ips, NULL, scale_n);
+					tmp_surface = draw_structure(*displayed_mstruct, displayed_printops, top_ips, NULL, scale_n);
 				}
 				surface_result = tmp_surface;
 			}
@@ -19589,7 +19591,7 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 					scale_n++;
 				}
 				cairo_surface_destroy(surface_result);
-				surface_result = draw_structure(*displayed_mstruct, printops, top_ips, NULL, scale_n);
+				surface_result = draw_structure(*displayed_mstruct, displayed_printops, top_ips, NULL, scale_n);
 				w = cairo_image_surface_get_width(surface_result) / scalefactor;
 				h = cairo_image_surface_get_height(surface_result) / scalefactor;
 			}

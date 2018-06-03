@@ -404,7 +404,7 @@ void on_set_base_radiobutton_input_hexadecimal_toggled(GtkToggleButton *w, gpoin
 void on_set_base_radiobutton_input_other_toggled(GtkToggleButton *w, gpointer user_data);
 void on_set_base_radiobutton_input_roman_toggled(GtkToggleButton *w, gpointer user_data);
 void on_set_base_spinbutton_input_other_value_changed(GtkSpinButton *w, gpointer user_data);
-void convert_number_bases(const gchar *initial_expression);
+void convert_number_bases(const gchar *initial_expression, bool b_result = false);
 void on_menu_item_convert_number_bases_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_periodic_table_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_assumptions_integer_activate(GtkMenuItem *w, gpointer user_data);
