@@ -1517,7 +1517,7 @@ void display_parse_status() {
 				parsed_expression += _("expanded partial fractions");
 			} else if(equalsIgnoreCase(str_u, "utc") || equalsIgnoreCase(str_u, "gmt")) {
 				parsed_expression += _("UTC time zone");
-			} else if((equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str2, _("base"))) && s2i(to_str2) >= 2 && (s2i(to_str2) <= 32 || s2i(to_str2) == BASE_SEXAGESIMAL)) {
+			} else if((equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str2, _("base"))) && s2i(to_str2) >= 2 && (s2i(to_str2) <= 36 || s2i(to_str2) == BASE_SEXAGESIMAL)) {
 				gchar *gstr = g_strdup_printf(_("number base %i"), s2i(to_str2));
 				parsed_expression += gstr;
 				g_free(gstr);
@@ -4399,11 +4399,11 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 					number_approx_map[(void*) &m.number()] = FALSE;
 				}
 			}
-			if(!use_e_notation && !exp.empty()) {
+			if((!use_e_notation || (po.base != BASE_DECIMAL && po.base >= 2 && po.base <= 36)) && !exp.empty()) {
 				if(value_str == "1") {
 					MathStructure mnr(m_one);
 					mnr.raise(m_one);
-					number_map[(void*) &mnr[0].number()] = "10";
+					number_map[(void*) &mnr[0].number()] = (po.base != BASE_DECIMAL && po.base >= 2 && po.base <= 36) ? i2s(po.base) : "10";
 					if(exp_minus) {
 						mnr[1].transform(STRUCT_NEGATE);
 						number_map[(void*) &mnr[1][0].number()] = exp;
@@ -4421,7 +4421,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 					number_map[(void*) &mnr[0].number()] = value_str;
 					number_approx_map[(void*) &mnr[0].number()] = number_approx_map[(void*) &m.number()];
 					mnr[1].raise(m_one);
-					number_map[(void*) &mnr[1][0].number()] = "10";
+					number_map[(void*) &mnr[1][0].number()] = (po.base != BASE_DECIMAL && po.base >= 2 && po.base <= 36) ? i2s(po.base) : "10";
 					if(exp_minus) {
 						mnr[1][1].transform(STRUCT_NEGATE);
 						number_map[(void*) &mnr[1][1][0].number()] = exp;
@@ -4457,7 +4457,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				TTBP_SMALL(str)
 				str += "<sub>";
 				str += i2s(po.base);
-				if(po.base == 2 && po.twos_complement && m.number().isNegative() && !exp_minus) str += '-';
+				if(po.base == 2 && po.twos_complement && m.number().isNegative() && str.find(SIGN_MINUS) == string::npos && str.find("-") == string::npos) str += '-';
 				str += "</sub>";
 				TTE(str)
 			}
@@ -7243,7 +7243,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		} else if(equalsIgnoreCase(to_str, "partial fraction") || equalsIgnoreCase(to_str, _("partial fraction"))) {
 			do_pfe = true;
 			execute_str = from_str;
-		} else if((equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _("base"))) && s2i(to_str2) >= 2 && (s2i(to_str2) <= 32 || s2i(to_str2) == BASE_SEXAGESIMAL)) {
+		} else if((equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _("base"))) && s2i(to_str2) >= 2 && (s2i(to_str2) <= 36 || s2i(to_str2) == BASE_SEXAGESIMAL)) {
 			int save_base = printops.base;
 			printops.base = s2i(to_str2);
 			evalops.parse_options.units_enabled = b_units_saved;
@@ -14020,6 +14020,7 @@ void units_convert_resize_popup() {
 	y += alloc.y;
 
 	gtk_widget_realize(units_convert_view);
+	while(gtk_events_pending()) gtk_main_iteration();
 	gtk_tree_view_columns_autosize(GTK_TREE_VIEW(units_convert_view));
 	column = gtk_tree_view_get_column(GTK_TREE_VIEW(units_convert_view), 0);
 	
@@ -14151,6 +14152,7 @@ void completion_resize_popup(int matches) {
 	y += bufloc.y;
 
 	gtk_widget_realize(completion_view);
+	while(gtk_events_pending()) gtk_main_iteration();
 	gtk_tree_view_columns_autosize(GTK_TREE_VIEW(completion_view));
 	column = gtk_tree_view_get_column(GTK_TREE_VIEW(completion_view), 0);
 	
@@ -18728,11 +18730,25 @@ void update_nbases_entries(const MathStructure &value, int base) {
 	po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 	po.twos_complement = printops.twos_complement;
 	po.use_unicode_signs = printops.use_unicode_signs;
-	if(base != 10) {po.base = 10; gtk_entry_set_text(GTK_ENTRY(w_dec), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}
-	if(base != 2) {po.base = 2; gtk_entry_set_text(GTK_ENTRY(w_bin), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}
-	if(base != 8) {po.base = 8; gtk_entry_set_text(GTK_ENTRY(w_oct), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}
-	if(base != 12) {po.base = 12; gtk_entry_set_text(GTK_ENTRY(w_duo), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}
-	if(base != 16) {po.base = 16; gtk_entry_set_text(GTK_ENTRY(w_hex), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str());}
+	po.lower_case_e = printops.lower_case_e;
+	po.lower_case_numbers = printops.lower_case_numbers;
+	po.base_display = printops.base_display;
+	po.abbreviate_names = printops.abbreviate_names;
+	po.digit_grouping = printops.digit_grouping;
+	po.multiplication_sign = printops.multiplication_sign;
+	po.division_sign = printops.division_sign;
+	po.short_multiplication = printops.short_multiplication;
+	po.excessive_parenthesis = printops.excessive_parenthesis;
+	po.can_display_unicode_string_function = &can_display_unicode_string_function;
+	po.can_display_unicode_string_arg = (void*) w_dec;
+	po.spell_out_logical_operators = printops.spell_out_logical_operators;
+	po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
+	string str;
+	if(base != 10) {po.base = 10; str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po); if(str.length() > 1000) {str = _("result is too long");} gtk_entry_set_text(GTK_ENTRY(w_dec), str.c_str());}
+	if(base != 2) {po.base = 2; str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po); if(str.length() > 1000) {str = _("result is too long");} gtk_entry_set_text(GTK_ENTRY(w_bin), str.c_str());}
+	if(base != 8) {po.base = 8; str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po); if(str.length() > 1000) {str = _("result is too long");} gtk_entry_set_text(GTK_ENTRY(w_oct), str.c_str());}
+	if(base != 12) {po.base = 12; str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po); if(str.length() > 1000) {str = _("result is too long");} gtk_entry_set_text(GTK_ENTRY(w_duo), str.c_str());}
+	if(base != 16) {po.base = 16; str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po); if(str.length() > 1000) {str = _("result is too long");} gtk_entry_set_text(GTK_ENTRY(w_hex), str.c_str());}
 	if(base != BASE_ROMAN_NUMERALS) {
 		if(value.isAborted()) {
 			gtk_entry_set_text(GTK_ENTRY(w_roman), CALCULATOR->timedOutString().c_str());
