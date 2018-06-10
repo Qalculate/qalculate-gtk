@@ -12955,7 +12955,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 			const string *pname;
 			if(name_i == 0) pname = &prefix->longName(false);
 			else if(name_i == 1) pname = &prefix->shortName(false);
-			else if(name_i == 2) pname = &prefix->unicodeName(false);
+			else pname = &prefix->unicodeName(false);
 			if(!pname->empty() && strlen(gstr2) <= pname->length()) {
 				bool b = true;
 				for(size_t i = 0; i < strlen(gstr2); i++) {
