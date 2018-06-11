@@ -7062,7 +7062,7 @@ void add_to_expression_history(string str) {
 /*
 	calculate entered expression and display result
 */
-void execute_expression(bool force, bool do_mathoperation, MathOperation op, MathFunction *f, bool do_stack, size_t stack_index, string execute_str, string str) {
+void execute_expression(bool force, bool do_mathoperation, MathOperation op, MathFunction *f, bool do_stack, size_t stack_index, string execute_str, string str, bool check_exrates) {
 
 	if(block_expression_execution || exit_in_progress) return;
 
@@ -7470,8 +7470,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		mstruct->set(CALCULATOR->convert(*mstruct, parsed_tostruct->symbol(), evalops));
 	}
 	
-	if(!do_mathoperation && check_exchange_rates(NULL, (!do_stack || stack_index == 0) && !do_pfe && !do_factors && !do_fraction)) {
-		execute_expression(force, do_mathoperation, op, f, rpn_mode, do_stack ? stack_index : 0, saved_execute_str, str);
+	if(!do_mathoperation && check_exrates && check_exchange_rates(NULL, (!do_stack || stack_index == 0) && !do_pfe && !do_factors && !do_fraction)) {
+		execute_expression(force, do_mathoperation, op, f, rpn_mode, do_stack ? stack_index : 0, saved_execute_str, str, false);
 		return;
 	}
 	
@@ -16332,6 +16332,7 @@ void on_menu_item_fetch_exchange_rates_activate(GtkMenuItem*, gpointer) {
 	CALCULATOR->loadExchangeRates();
 	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 	do_timeout = true;
+	while(gtk_events_pending()) gtk_main_iteration();
 	expression_calculation_updated();
 }
 void on_menu_item_save_defs_activate(GtkMenuItem*, gpointer) {
