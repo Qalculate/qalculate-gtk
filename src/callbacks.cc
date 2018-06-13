@@ -4783,7 +4783,30 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				if(hetmp > dh) {
 					dh = hetmp;
 				}
-				par_prev = ips_n.wrap;		
+				par_prev = ips_n.wrap;
+			}
+			cairo_surface_t *flag_s = NULL;
+			gint flag_width = 0;
+			size_t flag_i = 0;
+			if(m.size() == 2 && ((m[0].isUnit() && m[0].unit()->isCurrency() && m[1].isNumber()) || (m[1].isUnit() && m[1].unit()->isCurrency() && m[0].isNumber()))) {
+				size_t i_unit = 0;
+				if(m[1].isUnit()) {
+					i_unit = 1;
+					flag_i = 1;
+				} else if(nm[1] == MULTIPLICATION_SIGN_NONE) {
+					flag_i = 1;
+				}
+				string imagefile = "/qalculate-gtk/flags/"; imagefile += m[i_unit].unit()->referenceName(); imagefile += ".png";
+				GdkPixbuf *pixbuf = NULL;
+				h = hpt[flag_i];
+				if(h < 48) pixbuf = gdk_pixbuf_new_from_resource_at_scale(imagefile.c_str(), -1, h / 3, TRUE, NULL);
+				else pixbuf = gdk_pixbuf_new_from_resource(imagefile.c_str(), NULL);
+				if(pixbuf) {
+					flag_s = gdk_cairo_surface_create_from_pixbuf(pixbuf, 1, NULL);
+					flag_width = cairo_image_surface_get_width(flag_s);
+					w += flag_width + 2;
+					g_object_unref(pixbuf);
+				}
 			}
 			central_point = dh;
 			h = dh + uh;
@@ -4828,8 +4851,24 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 					cairo_set_source_surface(cr, surface_terms[i], w, uh - (hpt[i] - cpt[i]));
 					cairo_paint(cr);
 					w += wpt[i];
+					if(flag_s && i == 0 && flag_i == 0) {
+						gdk_cairo_set_source_rgba(cr, color);
+						cairo_set_source_surface(cr, flag_s, w + 2, uh - (hpt[i] - cpt[i]) + hpt[i] / 8);
+						cairo_paint(cr);
+						cairo_surface_destroy(flag_s);
+						flag_s = NULL;
+						w += flag_width + 2;
+					}
 				}
 				cairo_surface_destroy(surface_terms[i]);
+			}
+			if(flag_s) {
+				if(!CALCULATOR->aborted()) {
+					gdk_cairo_set_source_rgba(cr, color);
+					cairo_set_source_surface(cr, flag_s, w + 2, uh - (hpt.back() - cpt.back()) + hpt.back() / 8);
+					cairo_paint(cr);
+				}
+				cairo_surface_destroy(flag_s);
 			}
 			g_object_unref(layout_mul);
 			break;
@@ -5699,32 +5738,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			pango_layout_set_markup(layout, str.c_str(), -1);
 			pango_layout_get_pixel_size(layout, &w, &h);
 			central_point = h / 2;
-			cairo_surface_t *flag_s = NULL;
-			gint flag_width = 0;
-			if(m.unit()->isCurrency() && ename->name.length() == 3 && ename->name == m.unit()->referenceName()) {
-				string imagefile = "/qalculate-gtk/flags/"; imagefile += m.unit()->referenceName(); imagefile += ".png";
-				GdkPixbuf *pixbuf = NULL;
-				if(h < 40) pixbuf = gdk_pixbuf_new_from_resource_at_scale(imagefile.c_str(), -1, h / 2.5, TRUE, NULL);
-				else pixbuf = gdk_pixbuf_new_from_resource(imagefile.c_str(), NULL);
-				if(pixbuf) {
-					flag_s = gdk_cairo_surface_create_from_pixbuf(pixbuf, 1, NULL);
-					flag_width = cairo_image_surface_get_width(flag_s);
-					w += flag_width + 2;
-					g_object_unref(pixbuf);
-				}
-			}
 			surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 			cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
 			cr = cairo_create(surface);
 			gdk_cairo_set_source_rgba(cr, color);
 			cairo_move_to(cr, 0, 0);
 			pango_cairo_show_layout(cr, layout);
-			if(flag_s) {
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_set_source_surface(cr, flag_s, w - flag_width - 2, h / 8);
-				cairo_paint(cr);
-				cairo_surface_destroy(flag_s);
-			}
 			g_object_unref(layout);
 			break;
 		}
