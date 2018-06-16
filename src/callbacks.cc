@@ -3448,6 +3448,8 @@ void on_tPlotFunctions_selection_changed(GtkTreeSelection *treeselection, gpoint
 		g_free(gstr2);
 		g_free(gstr3);
 	} else {
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_expression")), "");
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_variable")), "");
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_button_modify")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_button_remove")), FALSE);
 	}
@@ -20467,8 +20469,6 @@ void on_plot_button_remove_clicked(GtkButton*, gpointer) {
 		if(x_vector) delete x_vector;
 		if(y_vector) delete y_vector;
 		gtk_list_store_remove(tPlotFunctions_store, &iter);
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_expression")), "");
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_title")), "");	
 		update_plot();
 	}
 }
