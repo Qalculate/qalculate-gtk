@@ -6972,13 +6972,13 @@ void executeCommand(int command_type, bool show_result = true, string ceu_str = 
 
 }
 
-void fetch_exchange_rates(int timeout) {
+void fetch_exchange_rates(int timeout, int n) {
 	bool b_busy_bak = b_busy;
 	bool do_timeout_bak = do_timeout;
 	b_busy = true;
 	do_timeout = false;
 	FetchExchangeRatesThread fetch_thread;
-	if(fetch_thread.start() && fetch_thread.write(timeout)) {
+	if(fetch_thread.start() && fetch_thread.write(timeout) && fetch_thread.write(n)) {
 		int i = 0;
 		while(fetch_thread.running && i < 50) {
 			while(gtk_events_pending()) gtk_main_iteration();
@@ -7001,8 +7001,10 @@ void fetch_exchange_rates(int timeout) {
 
 void FetchExchangeRatesThread::run() {
 	int timeout = 15;
+	int n = -1;
 	if(!read(&timeout)) return;
-	CALCULATOR->fetchExchangeRates(timeout);
+	if(!read(&n)) return;
+	CALCULATOR->fetchExchangeRates(timeout, n);
 }
 
 void result_display_updated() {
@@ -16997,6 +16999,8 @@ void on_menu_item_plot_functions_activate(GtkMenuItem*, gpointer) {
 		gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(plot_builder, "plot_notebook")), 2);
 		gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(plot_builder, "plot_notebook")), 1);
 		gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(plot_builder, "plot_notebook")), 0);
+		
+		gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_entry_expression")));
 	} else {
 		gtk_window_present(GTK_WINDOW(dialog));
 	}
@@ -20410,6 +20414,7 @@ void on_plot_button_add_clicked(GtkButton*, gpointer) {
 	gtk_list_store_append(tPlotFunctions_store, &iter);
 	gtk_list_store_set(tPlotFunctions_store, &iter, 0, title.c_str(), 1, expression.c_str(), 2, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_style"))), 3, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_smoothing"))), 4, type, 5, axis, 6, rows, 7, x_vector, 8, y_vector, 9, str_x.c_str(), -1);
 	gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tPlotFunctions)), &iter);
+	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_entry_expression")));
 	update_plot();
 }
 void on_plot_button_modify_clicked(GtkButton*, gpointer) {
@@ -20456,6 +20461,7 @@ void on_plot_button_modify_clicked(GtkButton*, gpointer) {
 		generate_plot_series(&x_vector, &y_vector, type, expression, str_x);
 		rows = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_checkbutton_rows")));
 		gtk_list_store_set(tPlotFunctions_store, &iter, 0, title.c_str(), 1, expression.c_str(), 2, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_style"))), 3, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_smoothing"))), 4, type, 5, axis, 6, rows, 7, x_vector, 8, y_vector, 9, str_x.c_str(), -1);
+		gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_entry_expression")));
 		update_plot();
 	}
 }
@@ -20469,6 +20475,7 @@ void on_plot_button_remove_clicked(GtkButton*, gpointer) {
 		if(x_vector) delete x_vector;
 		if(y_vector) delete y_vector;
 		gtk_list_store_remove(tPlotFunctions_store, &iter);
+		gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_entry_expression")));
 		update_plot();
 	}
 }

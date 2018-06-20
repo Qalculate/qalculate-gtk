@@ -204,7 +204,7 @@ void new_vector(GtkMenuItem *w, gpointer user_data);
 void new_unit(GtkMenuItem *w, gpointer user_data);
 void add_as_variable();
 
-void fetch_exchange_rates(int timeout);
+void fetch_exchange_rates(int timeout, int n = -1);
 
 bool edit_argument(Argument *arg = NULL);
 
