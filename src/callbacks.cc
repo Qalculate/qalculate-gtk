@@ -160,7 +160,7 @@ extern bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showi
 int b_decimal_comma;
 int auto_update_exchange_rates;
 bool first_error;
-bool display_expression_status, enable_completion;
+bool display_expression_status;
 bool block_unit_convert, block_unit_selector_convert;
 extern MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct, *displayed_mstruct;
 extern string result_text, parsed_text;
@@ -284,6 +284,10 @@ guint completion_timeout_id = 0;
 
 extern QalculateDateTime last_version_check_date;
 string last_found_version;
+
+int completion_level = 4;
+
+bool keep_function_dialog_open = false;
 
 #define TEXT_TAGS			"<span size=\"xx-large\">"
 #define TEXT_TAGS_END			"</span>"
@@ -4060,6 +4064,8 @@ string sub_suffix(const ExpressionName *ename) {
 	return str;
 }
 
+GtkTreeIter completion_separator_iter;
+
 void update_completion() {
 
 	GtkTreeIter iter;
@@ -4067,8 +4073,6 @@ void update_completion() {
 	gtk_list_store_clear(completion_store);
 	
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_store), 1, GTK_SORT_ASCENDING);
-	
-	if(!enable_completion) return;
 	
 	string str;
 	for(size_t i = 0; i < CALCULATOR->functions.size(); i++) {
@@ -4284,6 +4288,7 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Time format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("utc")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("UTC time zone"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
+	gtk_list_store_append(completion_store, &completion_separator_iter); gtk_list_store_set(completion_store, &completion_separator_iter, 0, "", 1, "", 2, NULL, 3, FALSE, 4, 3, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_store), GTK_TREE_SORTABLE_UNSORTED_SORT_COLUMN_ID, GTK_SORT_ASCENDING);
 }
 
@@ -7869,6 +7874,165 @@ gint on_function_int_input(GtkSpinButton *entry, gpointer new_value, gpointer) {
 	return FALSE;
 }
 
+struct FunctionDialog {
+	GtkWidget *dialog;
+	GtkWidget *b_cancel, *b_exec, *b_insert, *b_keepopen, *w_result;
+	vector<GtkWidget*> label;
+	vector<GtkWidget*> entry;
+	vector<GtkWidget*> type_label;
+	vector<GtkWidget*> boolean_buttons;
+	vector<int> boolean_index;
+	GtkListStore *properties_store;
+	bool add_to_menu, keep_open;
+	int args;
+};
+
+unordered_map<MathFunction*, FunctionDialog*> function_dialogs;
+
+void insert_function_do(MathFunction *f, FunctionDialog *fd) {
+	string str = f->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name + "(", str2;
+	for(int i = 0; i < fd->args; i++) {
+		if(f->getArgumentDefinition(i + 1) && f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_BOOLEAN) {
+			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fd->boolean_buttons[fd->boolean_index[i]]))) {
+				str2 = "1";
+			} else {
+				str2 = "0";
+			}
+		} else if(evalops.parse_options.base != BASE_DECIMAL && f->getArgumentDefinition(i + 1) && f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_INTEGER) {
+			Number nr(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(fd->entry[i])), 1);
+			PrintOptions po;
+			po.base = evalops.parse_options.base;
+			po.base_display = BASE_DISPLAY_NONE;
+			str2 = nr.print(po);
+		} else if(fd->properties_store && f->getArgumentDefinition(i + 1) && f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_DATA_PROPERTY) {
+			GtkTreeIter iter;
+			DataProperty *dp = NULL;
+			if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(fd->entry[i]), &iter)) {
+				gtk_tree_model_get(GTK_TREE_MODEL(fd->properties_store), &iter, 1, &dp, -1);
+			}	
+			if(dp) {
+				str2 = dp->getName();
+			} else {
+				str2 = "info";
+			}
+		} else {
+			str2 = gtk_entry_get_text(GTK_ENTRY(fd->entry[i]));
+		}
+
+		//if the minimum number of function arguments have been filled, do not add anymore if entry is empty
+		if(i >= f->minargs()) {
+			remove_blank_ends(str2);
+		}
+		if((i < f->minargs() || !str2.empty()) && f->getArgumentDefinition(i + 1) && (f->getArgumentDefinition(i + 1)->suggestsQuotes() || (f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_TEXT && str2.find(CALCULATOR->getComma()) != string::npos))) {
+			if(str2.length() < 1 || (str2[0] != '\"' && str[0] != '\'')) { 
+				str2.insert(0, "\"");
+				str2 += "\"";
+			}
+		}
+		if(i > 0) {
+			str += CALCULATOR->getComma();
+			str += " ";
+		}
+		str += str2;
+	}
+	str += ")";
+	insert_text(str.c_str());
+	if(fd->add_to_menu) function_inserted(f);
+}
+
+void on_insert_function_delete(GtkWidget*, GdkEvent*, gpointer p) {
+	MathFunction *f = (MathFunction*) p;
+	FunctionDialog *fd = function_dialogs[f];
+	gtk_widget_destroy(fd->dialog);
+	delete fd;
+	function_dialogs.erase(f);
+}
+void on_insert_function_close(GtkWidget*, gpointer p) {
+	MathFunction *f = (MathFunction*) p;
+	FunctionDialog *fd = function_dialogs[f];
+	gtk_widget_destroy(fd->dialog);
+	delete fd;
+	function_dialogs.erase(f);
+}
+void on_insert_function_exec(GtkWidget*, gpointer p) {
+	MathFunction *f = (MathFunction*) p;
+	FunctionDialog *fd = function_dialogs[f];
+	gtk_text_buffer_set_text(expressionbuffer, "", -1);
+	insert_function_do(f, fd);
+	execute_expression();
+	if(fd->keep_open) {
+		string str;
+		bool b_approx = result_text_approximate || (mstruct && mstruct->isApproximate());
+		if(!b_approx) {
+			str = "=";
+		} else {
+			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_ALMOST_EQUAL, (void*) historyview)) {
+				str = SIGN_ALMOST_EQUAL;
+			} else {
+				str = "= ";
+				str += _("approx.");
+			}
+		}
+		str += " <span font-weight=\"bold\">";
+		str += fix_history_string(result_text);
+		str += "</span> ";
+		gtk_label_set_markup(GTK_LABEL(fd->w_result), str.c_str());
+		gtk_widget_grab_focus(fd->entry[0]);
+	} else {
+		gtk_widget_destroy(fd->dialog);
+		delete fd;
+		function_dialogs.erase(f);
+	}
+}
+void on_insert_function_insert(GtkWidget*, gpointer p) {
+	GtkTextIter istart, iend;
+	gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
+	add_to_undo = false;
+	gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
+	add_to_undo = true;
+	MathFunction *f = (MathFunction*) p;
+	FunctionDialog *fd = function_dialogs[f];
+	insert_function_do(f, fd);
+	if(fd->keep_open) {
+		gtk_widget_grab_focus(fd->entry[0]);
+	} else {
+		gtk_widget_destroy(fd->dialog);
+		delete fd;
+		function_dialogs.erase(f);
+	}
+}
+void on_insert_function_keepopen(GtkToggleButton *w, gpointer p) {
+	MathFunction *f = (MathFunction*) p;
+	FunctionDialog *fd = function_dialogs[f];
+	fd->keep_open = gtk_toggle_button_get_active(w);
+	keep_function_dialog_open = fd->keep_open;
+}
+void on_insert_function_changed(GtkWidget *w, gpointer p) {
+	MathFunction *f = (MathFunction*) p;
+	FunctionDialog *fd = function_dialogs[f];
+	gtk_label_set_text(GTK_LABEL(fd->w_result), "");
+}
+void on_insert_function_entry_activated(GtkWidget *w, gpointer p) {
+	MathFunction *f = (MathFunction*) p;
+	FunctionDialog *fd = function_dialogs[f];
+	for(int i = 0; i < fd->args; i++) {
+		if(fd->entry[i] == w) {
+			if(i == fd->args - 1) {
+				if(fd->keep_open) on_insert_function_exec(w, p);
+				else on_insert_function_insert(w, p);
+			} else {
+				if(f->getArgumentDefinition(i + 2) && f->getArgumentDefinition(i + 2)->type() == ARGUMENT_TYPE_BOOLEAN) {
+					gtk_widget_grab_focus(fd->boolean_buttons[fd->boolean_index[i + 1]]);
+				} else {
+					gtk_widget_grab_focus(fd->entry[i + 1]);
+				}
+			}
+			break;
+		}
+	}
+	
+}
+
 /*
 	insert function
 	pops up an argument entry dialog and inserts function into expression entry
@@ -7889,23 +8053,43 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 		return;
 	}
 	
-	GtkTextIter istart, iend;
-	gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
+	if(function_dialogs.find(f) != function_dialogs.end()) {
+		FunctionDialog *fd = function_dialogs[f];
+		gtk_window_present(GTK_WINDOW(fd->dialog));
+		return;
+	}
+	
+	FunctionDialog *fd = new FunctionDialog;
+	
+	function_dialogs[f] = fd;
+	
+	fd->add_to_menu = add_to_menu;
 	
 	string f_title = f->title(true);
-	GtkWidget *dialog = gtk_dialog_new_with_buttons(f_title.c_str(), GTK_WINDOW(parent), GTK_DIALOG_DESTROY_WITH_PARENT, _("_Cancel"), GTK_RESPONSE_REJECT, NULL);
+	fd->dialog = gtk_dialog_new();
+	gtk_window_set_title(GTK_WINDOW(fd->dialog), f_title.c_str());
+	gtk_window_set_transient_for(GTK_WINDOW(fd->dialog), GTK_WINDOW(parent));
+	gtk_window_set_destroy_with_parent(GTK_WINDOW(fd->dialog), TRUE);
+	
+	fd->b_keepopen = gtk_check_button_new_with_label(_("Keep open"));
+	gtk_dialog_add_action_widget(GTK_DIALOG(fd->dialog), fd->b_keepopen, GTK_RESPONSE_NONE);
+	fd->keep_open = keep_function_dialog_open;
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fd->b_keepopen), fd->keep_open);
 
-	GtkWidget *b_exec = gtk_button_new_with_mnemonic(_("_Execute"));
-	gtk_dialog_add_action_widget(GTK_DIALOG(dialog), b_exec, GTK_RESPONSE_APPLY);
+	fd->b_cancel = gtk_button_new_with_mnemonic(_("_Close"));
+	gtk_dialog_add_action_widget(GTK_DIALOG(fd->dialog), fd->b_cancel, GTK_RESPONSE_REJECT);
 
-	GtkWidget *b_insert = gtk_button_new_with_mnemonic(_("_Insert"));
-	gtk_dialog_add_action_widget(GTK_DIALOG(dialog), b_insert, GTK_RESPONSE_ACCEPT);
+	fd->b_exec = gtk_button_new_with_mnemonic(_("_Execute"));
+	gtk_dialog_add_action_widget(GTK_DIALOG(fd->dialog), fd->b_exec, GTK_RESPONSE_APPLY);
 
-	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
-	gtk_window_set_resizable(GTK_WINDOW(dialog), FALSE);
+	fd->b_insert = gtk_button_new_with_mnemonic(_("_Insert"));
+	gtk_dialog_add_action_widget(GTK_DIALOG(fd->dialog), fd->b_insert, GTK_RESPONSE_ACCEPT);
+
+	gtk_container_set_border_width(GTK_CONTAINER(fd->dialog), 6);
+	gtk_window_set_resizable(GTK_WINDOW(fd->dialog), FALSE);
 	GtkWidget *vbox_pre = gtk_box_new(GTK_ORIENTATION_VERTICAL, 12);
 	gtk_container_set_border_width(GTK_CONTAINER(vbox_pre), 12);
-	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), vbox_pre);
+	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(fd->dialog))), vbox_pre);
 	f_title.insert(0, "<b>");
 	f_title += "</b>";
 	GtkWidget *title_label = gtk_label_new(f_title.c_str());
@@ -7924,27 +8108,37 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 		args = 1;
 		has_vector = true;
 	}
+	fd->args = args;
 
 	GtkWidget *table = gtk_grid_new();
 	gtk_grid_set_row_spacing(GTK_GRID(table), 6);
 	gtk_grid_set_column_spacing(GTK_GRID(table), 12);
 	gtk_container_add(GTK_CONTAINER(vbox_pre), table);
 	gtk_widget_set_hexpand(table, TRUE);
-	vector<GtkWidget*> label;
-	vector<GtkWidget*> entry;
-	vector<GtkWidget*> type_label;
-	label.resize(args, NULL);
-	entry.resize(args, NULL);
-	type_label.resize(args, NULL);
-	vector<GtkWidget*> boolean_buttons;
-	vector<int> boolean_index;
-	boolean_index.resize(args, 0);
+	fd->label.resize(args, NULL);
+	fd->entry.resize(args, NULL);
+	fd->type_label.resize(args, NULL);
+	fd->boolean_index.resize(args, 0);
+
+	fd->w_result = gtk_label_new("");
+	gtk_label_set_max_width_chars(GTK_LABEL(fd->w_result), 20);
+	gtk_label_set_ellipsize(GTK_LABEL(fd->w_result), PANGO_ELLIPSIZE_MIDDLE);
+	gtk_widget_set_hexpand(fd->w_result, TRUE);
+	gtk_label_set_selectable(GTK_LABEL(fd->w_result), TRUE);
+
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
+	gtk_label_set_xalign(GTK_LABEL(fd->w_result), 1.0);
+#else
+	gtk_misc_set_alignment(GTK_MISC(fd->w_result), 1.0, 0.5);
+#endif 
+
+
 	int bindex = 0;
 	string argstr, typestr, defstr; 
 	string argtype;
 	//create argument entries
 	Argument *arg;
-	GtkListStore *properties_store = NULL;
+	fd->properties_store = NULL;
 	for(int i = 0; i < args; i++) {
 		arg = f->getArgumentDefinition(i + 1);
 		if(!arg || arg->name().empty()) {
@@ -7964,9 +8158,9 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 		if(arg && (arg->suggestsQuotes() || arg->type() == ARGUMENT_TYPE_TEXT) && defstr.length() >= 2 && defstr[0] == '\"' && defstr[defstr.length() - 1] == '\"') {
 			defstr = defstr.substr(1, defstr.length() - 2);
 		}
-		label[i] = gtk_label_new(argstr.c_str());
-		gtk_widget_set_halign(label[i], GTK_ALIGN_END);
-		gtk_widget_set_hexpand(label[i], FALSE);
+		fd->label[i] = gtk_label_new(argstr.c_str());
+		gtk_widget_set_halign(fd->label[i], GTK_ALIGN_END);
+		gtk_widget_set_hexpand(fd->label[i], FALSE);
 		if(arg) {
 			switch(arg->type()) {
 				case ARGUMENT_TYPE_INTEGER: {
@@ -7978,47 +8172,51 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 					if(iarg->max()) {
 						max = iarg->max()->lintValue();
 					}
-					entry[i] = gtk_spin_button_new_with_range(min, max, 1);
-					gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(entry[i]), FALSE);
-					gtk_entry_set_alignment(GTK_ENTRY(entry[i]), 1.0);
-					g_signal_connect(GTK_SPIN_BUTTON(entry[i]), "input", G_CALLBACK(on_function_int_input), NULL);
+					fd->entry[i] = gtk_spin_button_new_with_range(min, max, 1);
+					gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(fd->entry[i]), FALSE);
+					gtk_entry_set_alignment(GTK_ENTRY(fd->entry[i]), 1.0);
+					g_signal_connect(GTK_SPIN_BUTTON(fd->entry[i]), "input", G_CALLBACK(on_function_int_input), NULL);
 					if(!f->getDefaultValue(i + 1).empty()) {
-						gtk_spin_button_set_value(GTK_SPIN_BUTTON(entry[i]), s2i(f->getDefaultValue(i + 1)));
+						gtk_spin_button_set_value(GTK_SPIN_BUTTON(fd->entry[i]), s2i(f->getDefaultValue(i + 1)));
 					} else if(!arg->zeroForbidden() && min <= 0 && max >= 0) {
-						gtk_spin_button_set_value(GTK_SPIN_BUTTON(entry[i]), 0);
+						gtk_spin_button_set_value(GTK_SPIN_BUTTON(fd->entry[i]), 0);
 					} else {
 						if(max < 0) {
-							gtk_spin_button_set_value(GTK_SPIN_BUTTON(entry[i]), max);
+							gtk_spin_button_set_value(GTK_SPIN_BUTTON(fd->entry[i]), max);
 						} else if(min <= 1) {
-							gtk_spin_button_set_value(GTK_SPIN_BUTTON(entry[i]), 1);
+							gtk_spin_button_set_value(GTK_SPIN_BUTTON(fd->entry[i]), 1);
 						} else {
-							gtk_spin_button_set_value(GTK_SPIN_BUTTON(entry[i]), min);
+							gtk_spin_button_set_value(GTK_SPIN_BUTTON(fd->entry[i]), min);
 						}
 					}
+					g_signal_connect((gpointer) fd->entry[i], "changed", G_CALLBACK(on_insert_function_changed), (gpointer) f);
+					g_signal_connect((gpointer) fd->entry[i], "activate", G_CALLBACK(on_insert_function_entry_activated), (gpointer) f);
 					break;
 				}
 				case ARGUMENT_TYPE_BOOLEAN: {
-					boolean_index[i] = bindex;
+					fd->boolean_index[i] = bindex;
 					bindex += 2;
-					entry[i] = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
-					gtk_box_set_homogeneous(GTK_BOX(entry[i]), TRUE);
-					gtk_widget_set_halign(entry[i], GTK_ALIGN_START);
-					boolean_buttons.push_back(gtk_radio_button_new_with_label(NULL, _("True")));
-					gtk_box_pack_start(GTK_BOX(entry[i]), boolean_buttons[boolean_buttons.size() - 1], TRUE, TRUE, 0);
-					boolean_buttons.push_back(gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(boolean_buttons[boolean_buttons.size() - 1]), _("False")));
-					gtk_box_pack_end(GTK_BOX(entry[i]), boolean_buttons[boolean_buttons.size() - 1], TRUE, TRUE, 0);
-					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(boolean_buttons[boolean_buttons.size() - 1]), TRUE);
+					fd->entry[i] = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
+					gtk_box_set_homogeneous(GTK_BOX(fd->entry[i]), TRUE);
+					gtk_widget_set_halign(fd->entry[i], GTK_ALIGN_START);
+					fd->boolean_buttons.push_back(gtk_radio_button_new_with_label(NULL, _("True")));
+					gtk_box_pack_start(GTK_BOX(fd->entry[i]), fd->boolean_buttons[fd->boolean_buttons.size() - 1], TRUE, TRUE, 0);
+					fd->boolean_buttons.push_back(gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(fd->boolean_buttons[fd->boolean_buttons.size() - 1]), _("False")));
+					gtk_box_pack_end(GTK_BOX(fd->entry[i]), fd->boolean_buttons[fd->boolean_buttons.size() - 1], TRUE, TRUE, 0);
+					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fd->boolean_buttons[fd->boolean_buttons.size() - 1]), TRUE);
+					g_signal_connect((gpointer) fd->boolean_buttons[fd->boolean_buttons.size() - 1], "toggled", G_CALLBACK(on_insert_function_changed), (gpointer) f);
+					g_signal_connect((gpointer) fd->boolean_buttons[fd->boolean_buttons.size() - 2], "toggled", G_CALLBACK(on_insert_function_changed), (gpointer) f);
 					break;
 				}
 				case ARGUMENT_TYPE_DATA_PROPERTY: {
 					if(f->subtype() == SUBTYPE_DATA_SET) {
-						properties_store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
-						gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(properties_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
-						gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(properties_store), 0, GTK_SORT_ASCENDING);
-						entry[i] = gtk_combo_box_new_with_model(GTK_TREE_MODEL(properties_store));
+						fd->properties_store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+						gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(fd->properties_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
+						gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(fd->properties_store), 0, GTK_SORT_ASCENDING);
+						fd->entry[i] = gtk_combo_box_new_with_model(GTK_TREE_MODEL(fd->properties_store));
 						GtkCellRenderer *cell = gtk_cell_renderer_text_new();
-						gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(entry[i]), cell, TRUE);
-						gtk_cell_layout_add_attribute(GTK_CELL_LAYOUT(entry[i]), cell, "text", 0);
+						gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(fd->entry[i]), cell, TRUE);
+						gtk_cell_layout_add_attribute(GTK_CELL_LAYOUT(fd->entry[i]), cell, "text", 0);
 						DataPropertyIter it;
 						DataSet *ds = (DataSet*) f;
 						DataProperty *dp = ds->getFirstProperty(&it);
@@ -8026,20 +8224,21 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 						bool active_set = false;
 						while(dp) {
 							if(!dp->isHidden()) {
-								gtk_list_store_append(properties_store, &iter);
+								gtk_list_store_append(fd->properties_store, &iter);
 								if(!active_set && defstr == dp->getName()) {
-									gtk_combo_box_set_active_iter(GTK_COMBO_BOX(entry[i]), &iter);
+									gtk_combo_box_set_active_iter(GTK_COMBO_BOX(fd->entry[i]), &iter);
 									active_set = true;
 								}
-								gtk_list_store_set(properties_store, &iter, 0, dp->title().c_str(), 1, (gpointer) dp, -1);
+								gtk_list_store_set(fd->properties_store, &iter, 0, dp->title().c_str(), 1, (gpointer) dp, -1);
 							}
 							dp = ds->getNextProperty(&it);
 						}
-						gtk_list_store_append(properties_store, &iter);
+						gtk_list_store_append(fd->properties_store, &iter);
 						if(!active_set) {
-							gtk_combo_box_set_active_iter(GTK_COMBO_BOX(entry[i]), &iter);
+							gtk_combo_box_set_active_iter(GTK_COMBO_BOX(fd->entry[i]), &iter);
 						}
-						gtk_list_store_set(properties_store, &iter, 0, _("Info"), 1, (gpointer) NULL, -1);
+						gtk_list_store_set(fd->properties_store, &iter, 0, _("Info"), 1, (gpointer) NULL, -1);
+						g_signal_connect((gpointer) fd->entry[i], "changed", G_CALLBACK(on_insert_function_changed), (gpointer) f);
 						break;
 					}
 				}
@@ -8061,15 +8260,19 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 					if(typestr.length() == 2) {
 						typestr = "";
 					}
-					entry[i] = gtk_entry_new();
-					gtk_entry_set_alignment(GTK_ENTRY(entry[i]), 1.0);
+					fd->entry[i] = gtk_entry_new();
+					gtk_entry_set_alignment(GTK_ENTRY(fd->entry[i]), 1.0);
+					g_signal_connect((gpointer) fd->entry[i], "changed", G_CALLBACK(on_insert_function_changed), (gpointer) f);
+					g_signal_connect((gpointer) fd->entry[i], "activate", G_CALLBACK(on_insert_function_entry_activated), (gpointer) f);
 				}
 			}
 		} else {
-			entry[i] = gtk_entry_new();
-			gtk_entry_set_alignment(GTK_ENTRY(entry[i]), 1.0);
+			fd->entry[i] = gtk_entry_new();
+			gtk_entry_set_alignment(GTK_ENTRY(fd->entry[i]), 1.0);
+			g_signal_connect((gpointer) fd->entry[i], "changed", G_CALLBACK(on_insert_function_changed), (gpointer) f);
+			g_signal_connect((gpointer) fd->entry[i], "activate", G_CALLBACK(on_insert_function_entry_activated), (gpointer) f);
 		}
-		gtk_widget_set_hexpand(entry[i], TRUE);
+		gtk_widget_set_hexpand(fd->entry[i], TRUE);
 		if(typestr.empty() && i >= f->minargs() && !has_vector && defstr.empty()) {
 			typestr = "(";
 			typestr += _("optional");
@@ -8079,52 +8282,58 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 			switch(arg->type()) {		
 				case ARGUMENT_TYPE_DATE: {
 					typestr = typestr.substr(1, typestr.length() - 2);
-					type_label[i] = gtk_button_new_with_label(typestr.c_str());
-					g_signal_connect((gpointer) type_label[i], "clicked", G_CALLBACK(on_type_label_date_clicked), (gpointer) entry[i]);
+					fd->type_label[i] = gtk_button_new_with_label(typestr.c_str());
+					g_signal_connect((gpointer) fd->type_label[i], "clicked", G_CALLBACK(on_type_label_date_clicked), (gpointer) fd->entry[i]);
 					break;
 				}
 				case ARGUMENT_TYPE_FILE: {
 					typestr = typestr.substr(1, typestr.length() - 2);
-					type_label[i] = gtk_button_new_with_label(typestr.c_str());
-					g_signal_connect((gpointer) type_label[i], "clicked", G_CALLBACK(on_type_label_file_clicked), (gpointer) entry[i]);
+					fd->type_label[i] = gtk_button_new_with_label(typestr.c_str());
+					g_signal_connect((gpointer) fd->type_label[i], "clicked", G_CALLBACK(on_type_label_file_clicked), (gpointer) fd->entry[i]);
 					break;
 				}
 				default: {
-					type_label[i] = gtk_label_new(typestr.c_str());
+					fd->type_label[i] = gtk_label_new(typestr.c_str());
 				}
 			}
 		} else if(!typestr.empty()) {
-			type_label[i] = gtk_label_new(typestr.c_str());
+			fd->type_label[i] = gtk_label_new(typestr.c_str());
 		} else {
-			type_label[i] = NULL;
+			fd->type_label[i] = NULL;
 		}
 		if(arg && arg->type() == ARGUMENT_TYPE_BOOLEAN) {
 			if(defstr == "1") {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(boolean_buttons[boolean_buttons.size() - 2]), TRUE);
+				g_signal_handlers_block_matched((gpointer) fd->boolean_buttons[fd->boolean_buttons.size() - 2], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fd->boolean_buttons[fd->boolean_buttons.size() - 2]), TRUE);
+				g_signal_handlers_unblock_matched((gpointer) fd->boolean_buttons[fd->boolean_buttons.size() - 2], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
 			}
-		} else if(properties_store && arg && arg->type() == ARGUMENT_TYPE_DATA_PROPERTY) {
+		} else if(fd->properties_store && arg && arg->type() == ARGUMENT_TYPE_DATA_PROPERTY) {
 		} else {
-			gtk_entry_set_text(GTK_ENTRY(entry[i]), defstr.c_str());
+			g_signal_handlers_block_matched((gpointer) fd->entry[i], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
+			gtk_entry_set_text(GTK_ENTRY(fd->entry[i]), defstr.c_str());
 			//insert selection in expression entry into the first argument entry
 			if(i == 0) {
-				gtk_entry_set_text(GTK_ENTRY(entry[i]), get_selected_expression_text(true).c_str());
+				gtk_entry_set_text(GTK_ENTRY(fd->entry[i]), get_selected_expression_text(true).c_str());
 				if(arg && arg->type() == ARGUMENT_TYPE_INTEGER) {
-					gtk_spin_button_update(GTK_SPIN_BUTTON(entry[i]));
+					gtk_spin_button_update(GTK_SPIN_BUTTON(fd->entry[i]));
 				}
 			}
+			g_signal_handlers_unblock_matched((gpointer) fd->entry[i], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
 		}
-		gtk_grid_attach(GTK_GRID(table), label[i], 0, i, 1, 1);
-		gtk_grid_attach(GTK_GRID(table), entry[i], 1, i, 1, 1);
-		if(type_label[i]) {
-			gtk_widget_set_hexpand(type_label[i], FALSE);
-			gtk_widget_set_halign(type_label[i], GTK_ALIGN_START);
-			gtk_grid_attach(GTK_GRID(table), type_label[i], 2, i, 1, 1);
+		gtk_grid_attach(GTK_GRID(table), fd->label[i], 0, i, 1, 1);
+		gtk_grid_attach(GTK_GRID(table), fd->entry[i], 1, i, 1, 1);
+		if(fd->type_label[i]) {
+			gtk_widget_set_hexpand(fd->type_label[i], FALSE);
+			gtk_widget_set_halign(fd->type_label[i], GTK_ALIGN_START);
+			gtk_grid_attach(GTK_GRID(table), fd->type_label[i], 2, i, 1, 1);
 		}
 	}
+	
 	//display function description
 	if(!f->description().empty() || !f->example(true).empty()) {
 		GtkWidget *descr_frame = gtk_scrolled_window_new(NULL, NULL);
 		gtk_container_add(GTK_CONTAINER(vbox_pre), descr_frame);
+		gtk_container_add(GTK_CONTAINER(vbox_pre), fd->w_result);
 		GtkWidget *descr = gtk_text_view_new();
 		gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(descr), GTK_WRAP_WORD);
 		gtk_text_view_set_editable(GTK_TEXT_VIEW(descr), FALSE);
@@ -8162,74 +8371,18 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 		if(h > nh) h = nh;
 		if(h < 100) h = 100;
 		gtk_widget_set_size_request(descr_frame, -1, h);
+	} else {
+		gtk_grid_attach(GTK_GRID(table), fd->w_result, 0, args, 2, 1);
 	}
-	gtk_widget_show_all(dialog);
-	gint response = gtk_dialog_run(GTK_DIALOG(dialog));
-	if(response == GTK_RESPONSE_ACCEPT || response == GTK_RESPONSE_APPLY) {
-		
-		string str = f->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name + "(", str2;
-		for(int i = 0; i < args; i++) {
-			if(f->getArgumentDefinition(i + 1) && f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_BOOLEAN) {
-				if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(boolean_buttons[boolean_index[i]]))) {
-					str2 = "1";
-				} else {
-					str2 = "0";
-				}
-			} else if(evalops.parse_options.base != BASE_DECIMAL && f->getArgumentDefinition(i + 1) && f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_INTEGER) {
-				Number nr(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(entry[i])), 1);
-				PrintOptions po;
-				po.base = evalops.parse_options.base;
-				po.base_display = BASE_DISPLAY_NONE;
-				str2 = nr.print(po);
-			} else if(properties_store && f->getArgumentDefinition(i + 1) && f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_DATA_PROPERTY) {
-				GtkTreeIter iter;
-				DataProperty *dp = NULL;
-				if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(entry[i]), &iter)) {
-					gtk_tree_model_get(GTK_TREE_MODEL(properties_store), &iter, 1, &dp, -1);
-				}	
-				if(dp) {
-					str2 = dp->getName();
-				} else {
-					str2 = "info";
-				}
-			} else {
-				str2 = gtk_entry_get_text(GTK_ENTRY(entry[i]));
-			}
+	
+	g_signal_connect((gpointer) fd->b_exec, "clicked", G_CALLBACK(on_insert_function_exec), (gpointer) f);
+	g_signal_connect((gpointer) fd->b_insert, "clicked", G_CALLBACK(on_insert_function_insert), (gpointer) f);
+	g_signal_connect((gpointer) fd->b_cancel, "clicked", G_CALLBACK(on_insert_function_close), (gpointer) f);
+	g_signal_connect((gpointer) fd->b_keepopen, "toggled", G_CALLBACK(on_insert_function_keepopen), (gpointer) f);
+	g_signal_connect((gpointer) fd->dialog, "delete-event", G_CALLBACK(on_insert_function_delete), (gpointer) f);
+	
+	gtk_widget_show_all(fd->dialog);
 
-			//if the minimum number of function arguments have been filled, do not add anymore if entry is empty
-			if(i >= f->minargs()) {
-				remove_blank_ends(str2);
-			}
-			if((i < f->minargs() || !str2.empty()) && f->getArgumentDefinition(i + 1) && (f->getArgumentDefinition(i + 1)->suggestsQuotes() || (f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_TEXT && str2.find(CALCULATOR->getComma()) != string::npos))) {
-				if(str2.length() < 1 || (str2[0] != '\"' && str[0] != '\'')) { 
-					str2.insert(0, "\"");
-					str2 += "\"";
-				}
-			}
-			if(i > 0) {
-				str += CALCULATOR->getComma();
-				str += " ";
-			}
-			str += str2;
-		}
-		str += ")";
-		
-		add_to_undo = false;
-		//redo selection if "OK" was clicked, clear expression entry "Execute"
-		if(response == GTK_RESPONSE_ACCEPT) {
-			gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
-		} else {
-			gtk_text_buffer_set_text(expressionbuffer, "", -1);
-		}
-		add_to_undo = true;
-		insert_text(str.c_str());
-		//Calculate directly when "Execute" was clicked
-		if(response == GTK_RESPONSE_APPLY) {
-			execute_expression();
-		}
-		if(add_to_menu) function_inserted(f);
-	}
-	gtk_widget_destroy(dialog);
 }
 
 /*
@@ -11078,13 +11231,9 @@ void load_mode(size_t index) {
 	}
 }
 
-void on_popup_menu_item_disable_completion_activate(GtkMenuItem*, gpointer) {
-	enable_completion = false;
-	update_completion();
-}
-void on_popup_menu_item_enable_completion_activate(GtkMenuItem*, gpointer) {
-	enable_completion = true;
-	update_completion();
+void on_popup_menu_item_completion_level_toggled(GtkCheckMenuItem *w, gpointer p) {
+	if(!gtk_check_menu_item_get_active(w)) return;
+	completion_level = GPOINTER_TO_INT(p);
 }
 void on_popup_menu_item_read_precision_activate(GtkMenuItem *w, gpointer) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_read_precision")), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
@@ -11229,6 +11378,8 @@ void on_expressiontext_populate_popup(GtkTextView*, GtkMenu *menu, gpointer) {
 	GSList *group = NULL;
 	gchar *gstr;
 	sub = GTK_WIDGET(menu);
+	MENU_ITEM(_("Clear"), on_popup_menu_item_clear_activate)
+	if(expression_is_empty()) gtk_widget_set_sensitive(item, FALSE);
 	MENU_SEPARATOR
 	if(b_busy) {
 		MENU_ITEM(_("Abort"), on_popup_menu_item_abort_activate)
@@ -11239,13 +11390,24 @@ void on_expressiontext_populate_popup(GtkTextView*, GtkMenu *menu, gpointer) {
 	MENU_ITEM(_("Redo"), expression_redo)
 	if(undo_index >= expression_undo_buffer.size() - 1) gtk_widget_set_sensitive(item, FALSE);
 	MENU_SEPARATOR
-	MENU_ITEM(_("Clear"), on_popup_menu_item_clear_activate)
-	if(expression_is_empty()) gtk_widget_set_sensitive(item, FALSE);
-	if(enable_completion) {
-		MENU_ITEM(_("Disable Completion"), on_popup_menu_item_disable_completion_activate)
-	} else {
-		MENU_ITEM(_("Enable Completion"), on_popup_menu_item_enable_completion_activate)
+	sub2 = sub;
+	SUBMENU_ITEM(_("Completion Mode"), sub2);
+	for(gint i = 0; i < 5; i++) {
+		switch(i) {
+			case 1: {item = gtk_radio_menu_item_new_with_label(group, _("Limited strict completion")); break;}
+			case 2: {item = gtk_radio_menu_item_new_with_label(group, _("Strict completion")); break;}
+			case 3: {item = gtk_radio_menu_item_new_with_label(group, _("Limited full completion")); break;}
+			case 4: {item = gtk_radio_menu_item_new_with_label(group, _("Full completion")); break;}
+			default: {item = gtk_radio_menu_item_new_with_label(group, _("No completion"));}
+		}
+		group = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(item));
+		gtk_widget_show(item);
+		if(i == completion_level) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), TRUE);
+		g_signal_connect(G_OBJECT(item), "toggled", G_CALLBACK(on_popup_menu_item_completion_level_toggled), GINT_TO_POINTER(i));
+		gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
 	}
+	sub = sub2;
+	group = NULL;
 	MENU_SEPARATOR
 	POPUP_RADIO_MENU_ITEM(on_popup_menu_item_adaptive_parsing_activate, gtk_builder_get_object(main_builder, "menu_item_adaptive_parsing"))
 	POPUP_RADIO_MENU_ITEM(on_popup_menu_item_ignore_whitespace_activate, gtk_builder_get_object(main_builder, "menu_item_ignore_whitespace"))
@@ -11674,6 +11836,8 @@ void load_preferences() {
 	evalops.mixed_units_conversion = MIXED_UNITS_CONVERSION_DEFAULT;
 	b_decimal_comma = -1;
 	
+	keep_function_dialog_open = false;
+	
 	copy_separator = true;
 	
 	use_e_notation = false;
@@ -11732,7 +11896,7 @@ void load_preferences() {
 	fetch_exchange_rates_at_startup = false;
 	auto_update_exchange_rates = -1;
 	display_expression_status = true;
-	enable_completion = true;
+	completion_level = 4;
 	first_time = false;
 	first_error = true;
 	expression_history.clear();
@@ -11820,6 +11984,8 @@ void load_preferences() {
 					datasets_vposition1 = v;
 				} else if(svar == "datasets_vpanel2_position") {
 					datasets_vposition2 = v;
+				} else if(svar == "keep_function_dialog_open") {
+					keep_function_dialog_open = v;
 				} else if(svar == "error_info_shown") {
 					first_error = !v;
 				} else if(svar == "save_mode_on_exit") {
@@ -11856,7 +12022,12 @@ void load_preferences() {
 				} else if(svar == "display_expression_status") {
 					display_expression_status = v;
 				} else if(svar == "enable_completion") {
-					enable_completion = v;
+					if(v) completion_level = 4;
+					else completion_level = 0;
+				} else if(svar == "completion_level") {
+					completion_level = v;
+					if(completion_level < 0) completion_level = 0;
+					else if(completion_level > 4) completion_level = 4;
 				} else if(svar == "min_deci") {
 					if(mode_index == 1) printops.min_decimals = v;
 					else modes[mode_index].po.min_decimals = v;
@@ -12468,6 +12639,7 @@ void save_preferences(bool mode) {
 	if(datasets_hposition > -1) fprintf(file, "datasets_hpanel_position=%i\n", datasets_hposition);
 	if(datasets_vposition1 > -1) fprintf(file, "datasets_vpanel1_position=%i\n", datasets_vposition1);
 	if(datasets_vposition2 > -1) fprintf(file, "datasets_vpanel2_position=%i\n", datasets_vposition2);
+	fprintf(file, "keep_function_dialog_open=%i\n", keep_function_dialog_open);
 	fprintf(file, "error_info_shown=%i\n", !first_error);
 	fprintf(file, "save_mode_on_exit=%i\n", save_mode_on_exit);
 	fprintf(file, "save_definitions_on_exit=%i\n", save_defs_on_exit);
@@ -12490,7 +12662,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "set_missing_prefixes=%i\n", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))));
 	fprintf(file, "rpn_keys=%i\n", rpn_keys);
 	fprintf(file, "display_expression_status=%i\n", display_expression_status);
-	fprintf(file, "enable_completion=%i\n", enable_completion);
+	fprintf(file, "completion_level=%i\n", completion_level);
 	fprintf(file, "use_unicode_signs=%i\n", printops.use_unicode_signs);
 	fprintf(file, "lower_case_numbers=%i\n", printops.lower_case_numbers);
 	fprintf(file, "e_notation=%i\n", use_e_notation);
@@ -12907,6 +13079,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 	gint i_type = 0;
 	guint i_match = 0;
 	gtk_tree_model_get(completion_sort, &iter, 2, &item, 4, &i_type, 7, &i_match, 8, &prefix, -1);
+	if(i_type == 3) return;
 	gchar *gstr_pre = gtk_text_buffer_get_text(expressionbuffer, &current_object_start, &current_object_end, FALSE);
 	GtkTextIter object_start = current_object_start;
 	gchar *gstr_next = gstr_pre;
@@ -13175,15 +13348,6 @@ void on_preferences_checkbutton_display_expression_status_toggled(GtkToggleButto
 	} else {
 		display_expression_status = false;
 		set_status_text("");
-	}
-}
-void on_preferences_checkbutton_enable_completion_toggled(GtkToggleButton *w, gpointer) {
-	if(gtk_toggle_button_get_active(w)) {
-		enable_completion = true;
-		update_completion();
-	} else {
-		enable_completion = false;
-		update_completion();
 	}
 }
 void on_preferences_checkbutton_custom_result_font_toggled(GtkToggleButton *w, gpointer) {
@@ -14256,6 +14420,7 @@ void completion_resize_popup(int matches) {
 }
 
 void do_completion() {
+	if(completion_level <= 0) return;
 	set_current_object();
 	if(gtk_text_iter_is_end(&current_object_start)) {
 		gtk_widget_hide(completion_window); 
@@ -14263,12 +14428,15 @@ void do_completion() {
 	}
 	gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &current_object_start, &current_object_end, FALSE);
 	string str = gstr2;
+	g_free(gstr2);
+	if(completion_level == 1 && str.length() == 1) return;
 	GtkTreeIter iter;
 	int matches = 0;
+	bool show_separator1 = false, show_separator2 = false;
 	if(str.length() > 0 && is_not_in(NUMBERS NOT_IN_NAMES, str[0]) && gtk_tree_model_get_iter_first(GTK_TREE_MODEL(completion_store), &iter)) {
 		string str2, str3, str4;
 		Prefix *p2 = NULL, *p3 = NULL, *p4 = NULL;
-		if(str.length() > 1) {
+		if(str.length() > (completion_level == 1 ? 2 : 1)) {
 			for(size_t pi = 1; ; pi++) {
 				Prefix *prefix = CALCULATOR->getPrefix(pi);
 				if(!prefix) break;
@@ -14277,7 +14445,7 @@ void do_completion() {
 					if(name_i == 0) pname = &prefix->shortName(false);
 					else if(name_i == 1) pname = &prefix->longName(false);
 					else pname = &prefix->unicodeName(false);
-					if(!pname->empty() && pname->length() < str.length()) {
+					if(!pname->empty() && pname->length() < str.length() - (completion_level == 1 ? 1 : 0)) {
 						bool pmatch = true;
 						for(size_t i = 0; i < pname->length(); i++) {
 							if((*pname)[i] != str[i]) {
@@ -14362,9 +14530,9 @@ void do_completion() {
 							}
 						}
 					}
-					if(!b_match) {
-						if(title_matches(item, str, 3)) b_match = 3;
-						else if(item->type() == TYPE_UNIT && ((Unit*) item)->isCurrency() && country_matches((Unit*) item, str, 3)) b_match = 4;
+					if(!b_match && completion_level >= 3) {
+						if(title_matches(item, str, completion_level > 3 ? 1 : 2)) b_match = 4;
+						else if(item->type() == TYPE_UNIT && ((Unit*) item)->isCurrency() && country_matches((Unit*) item, str, completion_level > 3 ? 1 : 3)) b_match = 5;
 					}
 				}
 				if(b_match) {
@@ -14421,11 +14589,14 @@ void do_completion() {
 				g_free(gstr);
 			}
 			gtk_list_store_set(completion_store, &iter, 3, b_match > 0, 4, b_match, 6, b_match == 1 ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL, 7, i_match, -1);
+			if(b_match > 3) show_separator2 = true;
+			if(b_match < 3) show_separator1 = true;
 			if(b_match) matches++;
 		} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(completion_store), &iter));
 	}
-	g_free(gstr2);
 	if(matches > 0) {
+		gtk_list_store_set(completion_store, &completion_separator_iter, 3, show_separator1 && show_separator2, 4, 3, -1);
+		if(show_separator1 && show_separator2) matches++;
 		completion_ignore_enter = TRUE;
 		completion_resize_popup(matches);
 		if(!gtk_widget_is_visible(completion_window)) {
@@ -19442,8 +19613,13 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 				GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(completion_view));
 				bool b = false;
 				if(gtk_tree_selection_get_selected(selection, NULL, &iter)) {
-					if(gtk_tree_model_iter_previous(completion_sort, &iter)) b = true;
-					else gtk_tree_selection_unselect_all(selection);
+					if(gtk_tree_model_iter_previous(completion_sort, &iter)) {
+						gint i_prio = 0;
+						gtk_tree_model_get(GTK_TREE_MODEL(completion_sort), &iter, 4, &i_prio, -1);
+						if(i_prio != 3 || gtk_tree_model_iter_previous(completion_sort, &iter)) b = true;
+					} else {
+						gtk_tree_selection_unselect_all(selection);
+					}
 				} else {
 					gint rows = gtk_tree_model_iter_n_children(completion_sort, NULL);
 					if(rows > 0) {
@@ -19488,8 +19664,13 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 				GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(completion_view));
 				bool b = false;
 				if(gtk_tree_selection_get_selected(selection, NULL, &iter)) {
-					if(gtk_tree_model_iter_next(completion_sort, &iter)) b = true;
-					else gtk_tree_selection_unselect_all(selection);
+					if(gtk_tree_model_iter_next(completion_sort, &iter)) {
+						gint i_prio = 0;
+						gtk_tree_model_get(GTK_TREE_MODEL(completion_sort), &iter, 4, &i_prio, -1);
+						if(i_prio != 3 || gtk_tree_model_iter_next(completion_sort, &iter)) b = true;
+					} else {
+						gtk_tree_selection_unselect_all(selection);
+					}
 				} else {
 					if(gtk_tree_model_get_iter_first(completion_sort, &iter)) b = true;
 				}

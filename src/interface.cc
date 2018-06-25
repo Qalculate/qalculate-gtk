@@ -142,7 +142,7 @@ GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provid
 
 extern bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes;
 extern bool save_mode_on_exit, save_defs_on_exit, load_global_defs, hyp_is_on, inv_is_on, fetch_exchange_rates_at_startup, allow_multiple_instances;
-extern bool display_expression_status, enable_completion;
+extern bool display_expression_status;
 extern bool use_custom_result_font, use_custom_expression_font, use_custom_status_font;
 extern string custom_result_font, custom_expression_font, custom_status_font;
 extern string status_error_color, status_warning_color;
@@ -506,6 +506,11 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 
 }
 
+gboolean completion_row_separator_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer) {
+	gint i;
+	gtk_tree_model_get(model, iter, 4, &i, -1);
+	return i == 3;
+}
 gboolean history_row_separator_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer) {
 	gint hindex = -1;
 	gtk_tree_model_get(model, iter, 1, &hindex, -1);
@@ -875,6 +880,10 @@ void create_main_window(void) {
 	gtk_text_view_set_top_margin(GTK_TEXT_VIEW(expressiontext), 6);
 	gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(expressiontext), 6);
 #endif 
+
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION > 22 || (GTK_MINOR_VERSION == 22 && GTK_MICRO_VERSION >= 20)
+	gtk_text_view_set_input_hints(GTK_TEXT_VIEW(expressiontext), GTK_INPUT_HINT_NO_EMOJI);
+#endif 
 	
 	stackview = GTK_WIDGET(gtk_builder_get_object(main_builder, "stackview"));
 	statuslabel_l = GTK_WIDGET(gtk_builder_get_object(main_builder, "label_status_left"));
@@ -1086,6 +1095,8 @@ void create_main_window(void) {
 	g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_historyview_selection_changed), NULL);
 	gtk_tree_view_set_row_separator_func(GTK_TREE_VIEW(historyview), history_row_separator_func, NULL, NULL);
 	
+	completion_view = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionview"));
+	
 	// Fix for breeze-gtk and Ubuntu theme
 	gchar *theme_name;
 	g_object_get(gtk_settings_get_default(), "gtk-theme-name", &theme_name, NULL);
@@ -1095,6 +1106,7 @@ void create_main_window(void) {
 			GtkCssProvider *historyview_provider = gtk_css_provider_new();
 			gtk_tree_view_set_grid_lines(GTK_TREE_VIEW(historyview), GTK_TREE_VIEW_GRID_LINES_NONE);
 			gtk_style_context_add_provider(gtk_widget_get_style_context(historyview), GTK_STYLE_PROVIDER(historyview_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(completion_view), GTK_STYLE_PROVIDER(historyview_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 			if(themestr == "Breeze") {
 				gtk_css_provider_load_from_data(historyview_provider, "treeview.view {-GtkTreeView-horizontal-separator: 0;}\ntreeview.view.separator {min-height: 2px; color: #cecece;}", -1, NULL);
 			} else if(themestr == "Breeze-Dark") {
@@ -1299,7 +1311,6 @@ void create_main_window(void) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), FALSE);
 
 /*	Completion	*/
-	completion_view = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionview"));
 	completion_scrolled = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionscrolled"));
 	gtk_widget_set_size_request(gtk_scrolled_window_get_vscrollbar(GTK_SCROLLED_WINDOW(completion_scrolled)), -1, 0);
 	completion_window = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionwindow"));
@@ -1308,6 +1319,7 @@ void create_main_window(void) {
 	gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(completion_filter), 3);
 	completion_sort = gtk_tree_model_sort_new_with_model(completion_filter);
 	gtk_tree_view_set_model(GTK_TREE_VIEW(completion_view), completion_sort);
+	gtk_tree_view_set_row_separator_func(GTK_TREE_VIEW(completion_view), completion_row_separator_func, NULL, NULL);
 	
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 	renderer = gtk_cell_renderer_text_new();

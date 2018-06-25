@@ -256,7 +256,6 @@ void on_preferences_checkbutton_alternative_base_prefixes_toggled(GtkToggleButto
 void on_preferences_checkbutton_spell_out_logical_operators_toggled(GtkToggleButton *w, gpointer user_data);
 void on_preferences_checkbutton_unicode_signs_toggled(GtkToggleButton *w, gpointer user_data);
 void on_preferences_checkbutton_display_expression_status_toggled(GtkToggleButton *w, gpointer user_data);
-void on_preferences_checkbutton_enable_completion_toggled(GtkToggleButton *w, gpointer user_data);
 void on_preferences_checkbutton_fetch_exchange_rates_toggled(GtkToggleButton *w, gpointer user_data);
 void on_preferences_checkbutton_save_defs_toggled(GtkToggleButton *w, gpointer user_data);
 void on_preferences_checkbutton_save_mode_toggled(GtkToggleButton *w, gpointer user_data);
