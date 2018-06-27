@@ -321,7 +321,6 @@ AnswerFunction::AnswerFunction() : MathFunction(_("answer"), 1, 1, _("Utilities"
 	VectorArgument *arg = new VectorArgument(_("History Index(es)"));
 	arg->addArgument(new IntegerArgument("", ARGUMENT_MIN_MAX_NONZERO, true, true, INTEGER_TYPE_SINT));
 	setArgumentDefinition(1, arg);
-	setHidden(true);
 }
 int AnswerFunction::calculate(MathStructure &mstruct, const MathStructure &vargs, const EvaluationOptions&) {
 	if(vargs[0].size() == 0) return 0;
@@ -345,7 +344,6 @@ ExpressionFunction::ExpressionFunction() : MathFunction(_("expression"), 1, 1, _
 	VectorArgument *arg = new VectorArgument(_("History Index(es)"));
 	arg->addArgument(new IntegerArgument("", ARGUMENT_MIN_MAX_NONZERO, true, true, INTEGER_TYPE_SINT));
 	setArgumentDefinition(1, arg);
-	setHidden(true);
 }
 int ExpressionFunction::calculate(MathStructure &mstruct, const MathStructure &vargs, const EvaluationOptions&) {
 	if(vargs[0].size() == 0) return 0;
@@ -14588,10 +14586,12 @@ void do_completion() {
 				}
 				g_free(gstr);
 			}
-			gtk_list_store_set(completion_store, &iter, 3, b_match > 0, 4, b_match, 6, b_match == 1 ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL, 7, i_match, -1);
-			if(b_match > 3) show_separator2 = true;
-			if(b_match < 3) show_separator1 = true;
-			if(b_match) matches++;
+			gtk_list_store_set(completion_store, &iter, 3, b_match > 0, 4, b_match, 6, b_match == 1 ? PANGO_WEIGHT_BOLD : (b_match > 3 ? PANGO_WEIGHT_LIGHT : PANGO_WEIGHT_NORMAL), 7, i_match, -1);
+			if(b_match) {
+				matches++;
+				if(b_match > 3) show_separator2 = true;
+				else if(b_match < 3) show_separator1 = true;
+			}
 		} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(completion_store), &iter));
 	}
 	if(matches > 0) {
