@@ -64,9 +64,6 @@
 extern bool do_timeout, check_expression_position;
 extern gint expression_position;
 
-#define COMPLETION_TIMEOUT_1 0
-#define COMPLETION_TIMEOUT_2 0
-
 extern GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *setbase_builder, *datasetedit_builder, *datasets_builder, *decimals_builder;
 extern GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
 extern GtkBuilder *preferences_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder;
@@ -281,11 +278,13 @@ bool status_warning_color_set;
 string old_fromValue, old_toValue;
 
 guint completion_timeout_id = 0;
+int completion_delay = 0;
 
 extern QalculateDateTime last_version_check_date;
 string last_found_version;
 
-int completion_level = 4;
+int completion_min = 1, completion_min2 = 2;
+bool enable_completion = true, enable_completion2 = true;
 
 bool keep_function_dialog_open = false;
 
@@ -11250,7 +11249,13 @@ void load_mode(size_t index) {
 
 void on_popup_menu_item_completion_level_toggled(GtkCheckMenuItem *w, gpointer p) {
 	if(!gtk_check_menu_item_get_active(w)) return;
-	completion_level = GPOINTER_TO_INT(p);
+	int completion_level = GPOINTER_TO_INT(p);
+	enable_completion = completion_level > 0;
+	enable_completion2 = completion_level > 2;
+	if(completion_level > 1) completion_min = 1;
+	else completion_min = 2;
+	if(completion_level > 3) completion_min2 = 1;
+	else completion_min2 = 2;
 }
 void on_popup_menu_item_read_precision_activate(GtkMenuItem *w, gpointer) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_read_precision")), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
@@ -11409,6 +11414,16 @@ void on_expressiontext_populate_popup(GtkTextView*, GtkMenu *menu, gpointer) {
 	MENU_SEPARATOR
 	sub2 = sub;
 	SUBMENU_ITEM(_("Completion Mode"), sub2);
+	int completion_level = 0;
+	if(enable_completion) {
+		if(enable_completion2) {
+			if(completion_min2 > 1) completion_level = 3;
+			else completion_level = 4;
+		} else {
+			if(completion_min > 1) completion_level = 1;
+			else completion_level = 2;
+		}
+	}
 	for(gint i = 0; i < 5; i++) {
 		switch(i) {
 			case 1: {item = gtk_radio_menu_item_new_with_label(group, _("Limited strict completion")); break;}
@@ -11913,7 +11928,11 @@ void load_preferences() {
 	fetch_exchange_rates_at_startup = false;
 	auto_update_exchange_rates = -1;
 	display_expression_status = true;
-	completion_level = 4;
+	enable_completion = true;
+	enable_completion2 = true;
+	completion_min = 1;
+	completion_min2 = 1;
+	completion_delay = 0;
 	first_time = false;
 	first_error = true;
 	expression_history.clear();
@@ -12039,12 +12058,18 @@ void load_preferences() {
 				} else if(svar == "display_expression_status") {
 					display_expression_status = v;
 				} else if(svar == "enable_completion") {
-					if(v) completion_level = 4;
-					else completion_level = 0;
-				} else if(svar == "completion_level") {
-					completion_level = v;
-					if(completion_level < 0) completion_level = 0;
-					else if(completion_level > 4) completion_level = 4;
+					enable_completion = v;
+				} else if(svar == "enable_completion2") {
+					enable_completion2 = v;
+				} else if(svar == "completion_min") {
+					if(v < 1) v = 1;
+					completion_min = v;
+				} else if(svar == "completion_min2") {
+					if(v < 1) v = 1;
+					completion_min2 = v;
+				} else if(svar == "completion_delay") {
+					if(v < 0) v = 0;
+					completion_delay = v;
 				} else if(svar == "min_deci") {
 					if(mode_index == 1) printops.min_decimals = v;
 					else modes[mode_index].po.min_decimals = v;
@@ -12679,7 +12704,11 @@ void save_preferences(bool mode) {
 	fprintf(file, "set_missing_prefixes=%i\n", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))));
 	fprintf(file, "rpn_keys=%i\n", rpn_keys);
 	fprintf(file, "display_expression_status=%i\n", display_expression_status);
-	fprintf(file, "completion_level=%i\n", completion_level);
+	fprintf(file, "enable_completion=%i\n", enable_completion);
+	fprintf(file, "enable_completion2=%i\n", enable_completion);
+	fprintf(file, "completion_min=%i\n", completion_min);
+	fprintf(file, "completion_min2=%i\n", completion_min2);
+	fprintf(file, "completion_delay=%i\n", completion_delay);
 	fprintf(file, "use_unicode_signs=%i\n", printops.use_unicode_signs);
 	fprintf(file, "lower_case_numbers=%i\n", printops.lower_case_numbers);
 	fprintf(file, "e_notation=%i\n", use_e_notation);
@@ -13485,6 +13514,39 @@ void on_preferences_radiobutton_digit_grouping_locale_toggled(GtkToggleButton *w
 		printops.digit_grouping = DIGIT_GROUPING_LOCALE;
 		result_format_updated();
 	}
+}
+
+void on_preferences_checkbutton_enable_completion_toggled(GtkToggleButton *w, gpointer) {
+	enable_completion = gtk_toggle_button_get_active(w);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_min")), enable_completion);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min")), enable_completion);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_enable_completion2")), enable_completion);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_min2")), enable_completion && enable_completion2);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min2")), enable_completion && enable_completion2);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_delay")), enable_completion);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay")), enable_completion);
+}
+void on_preferences_checkbutton_enable_completion2_toggled(GtkToggleButton *w, gpointer) {
+	enable_completion2 = gtk_toggle_button_get_active(w);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_min2")), enable_completion && enable_completion2);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min2")), enable_completion && enable_completion2);
+}
+void on_preferences_spin_completion_min_value_changed(GtkSpinButton *spin, gpointer) {
+	completion_min = gtk_spin_button_get_value_as_int(spin);
+	if(completion_min2 < completion_min) {
+		completion_min2 = completion_min;
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min2")), (double) completion_min2);
+	}
+}
+void on_preferences_spin_completion_min2_value_changed(GtkSpinButton *spin, gpointer) {
+	completion_min2 = gtk_spin_button_get_value_as_int(spin);
+	if(completion_min2 < completion_min) {
+		completion_min = completion_min2;
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min")), (double) completion_min);
+	}
+}
+void on_preferences_spin_completion_delay_value_changed(GtkSpinButton *spin, gpointer) {
+	completion_delay = gtk_spin_button_get_value_as_int(spin);
 }
 
 void on_preferences_button_result_font_font_set(GtkFontButton *w, gpointer) {
@@ -14437,7 +14499,7 @@ void completion_resize_popup(int matches) {
 }
 
 void do_completion() {
-	if(completion_level <= 0) return;
+	if(!enable_completion) {gtk_widget_hide(completion_window); return;}
 	set_current_object();
 	if(gtk_text_iter_is_end(&current_object_start)) {
 		gtk_widget_hide(completion_window); 
@@ -14446,14 +14508,14 @@ void do_completion() {
 	gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &current_object_start, &current_object_end, FALSE);
 	string str = gstr2;
 	g_free(gstr2);
-	if(completion_level == 1 && str.length() == 1) return;
+	if(str.length() < completion_min) {gtk_widget_hide(completion_window); return;}
 	GtkTreeIter iter;
 	int matches = 0;
 	bool show_separator1 = false, show_separator2 = false;
 	if(str.length() > 0 && is_not_in(NUMBERS NOT_IN_NAMES, str[0]) && gtk_tree_model_get_iter_first(GTK_TREE_MODEL(completion_store), &iter)) {
 		string str2, str3, str4;
 		Prefix *p2 = NULL, *p3 = NULL, *p4 = NULL;
-		if(str.length() > (completion_level == 1 ? 2 : 1)) {
+		if(str.length() > completion_min) {
 			for(size_t pi = 1; ; pi++) {
 				Prefix *prefix = CALCULATOR->getPrefix(pi);
 				if(!prefix) break;
@@ -14462,7 +14524,7 @@ void do_completion() {
 					if(name_i == 0) pname = &prefix->shortName(false);
 					else if(name_i == 1) pname = &prefix->longName(false);
 					else pname = &prefix->unicodeName(false);
-					if(!pname->empty() && pname->length() < str.length() - (completion_level == 1 ? 1 : 0)) {
+					if(!pname->empty() && pname->length() < str.length() - completion_min + 1) {
 						bool pmatch = true;
 						for(size_t i = 0; i < pname->length(); i++) {
 							if((*pname)[i] != str[i]) {
@@ -14547,9 +14609,9 @@ void do_completion() {
 							}
 						}
 					}
-					if(!b_match && completion_level >= 3) {
-						if(title_matches(item, str, completion_level > 3 ? 1 : 2)) b_match = 4;
-						else if(item->type() == TYPE_UNIT && ((Unit*) item)->isCurrency() && country_matches((Unit*) item, str, completion_level > 3 ? 1 : 3)) b_match = 5;
+					if(!b_match && enable_completion2) {
+						if(title_matches(item, str, completion_min2)) b_match = 4;
+						else if(item->type() == TYPE_UNIT && ((Unit*) item)->isCurrency() && country_matches((Unit*) item, str, completion_min2)) b_match = 5;
 					}
 				}
 				if(b_match) {
@@ -14650,21 +14712,10 @@ void on_expressionbuffer_changed(GtkTextBuffer*, gpointer) {
 	highlight_parentheses();
 	display_parse_status();
 	if(!completion_blocked) {
-		if(COMPLETION_TIMEOUT_1 <= 0 || gtk_widget_is_visible(completion_window)) {
+		if(completion_delay <= 0 || gtk_widget_is_visible(completion_window)) {
 			do_completion();
 		} else {
-			set_current_object();
-			if(!gtk_text_iter_is_end(&current_object_start)) {
-				gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &current_object_start, &current_object_end, FALSE);
-				if(strlen(gstr2) == 1) {
-					completion_timeout_id = g_timeout_add(COMPLETION_TIMEOUT_1, do_completion_timeout, NULL);
-				} else if(COMPLETION_TIMEOUT_2 > 0) {
-					completion_timeout_id = g_timeout_add(COMPLETION_TIMEOUT_2, do_completion_timeout, NULL);
-				} else {
-					do_completion();
-				}
-				g_free(gstr2);
-			}
+			completion_timeout_id = g_timeout_add(completion_delay, do_completion_timeout, NULL);
 		}
 	}
 	if(result_text.empty()) return;
