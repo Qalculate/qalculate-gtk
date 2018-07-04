@@ -7955,6 +7955,7 @@ void on_insert_function_close(GtkWidget*, gpointer p) {
 void on_insert_function_exec(GtkWidget*, gpointer p) {
 	MathFunction *f = (MathFunction*) p;
 	FunctionDialog *fd = function_dialogs[f];
+	if(!fd->keep_open) gtk_widget_hide(fd->dialog);
 	gtk_text_buffer_set_text(expressionbuffer, "", -1);
 	insert_function_do(f, fd);
 	execute_expression();
@@ -7983,13 +7984,9 @@ void on_insert_function_exec(GtkWidget*, gpointer p) {
 	}
 }
 void on_insert_function_insert(GtkWidget*, gpointer p) {
-	GtkTextIter istart, iend;
-	gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
-	add_to_undo = false;
-	gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
-	add_to_undo = true;
 	MathFunction *f = (MathFunction*) p;
 	FunctionDialog *fd = function_dialogs[f];
+	if(!fd->keep_open) gtk_widget_hide(fd->dialog);
 	insert_function_do(f, fd);
 	if(fd->keep_open) {
 		gtk_widget_grab_focus(fd->entry[0]);
@@ -8051,8 +8048,26 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 		return;
 	}
 	
+	GtkTextIter istart, iend;
+	gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
+	
 	if(function_dialogs.find(f) != function_dialogs.end()) {
 		FunctionDialog *fd = function_dialogs[f];
+		if(fd->args > 0) {
+			Argument *arg = f->getArgumentDefinition(1);
+			if(arg && arg->type() == ARGUMENT_TYPE_BOOLEAN) {
+			} else if(fd->properties_store && arg && arg->type() == ARGUMENT_TYPE_DATA_PROPERTY) {
+			} else {
+				g_signal_handlers_block_matched((gpointer) fd->entry[0], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
+				//insert selection in expression entry into the first argument entry
+				gtk_entry_set_text(GTK_ENTRY(fd->entry[0]), get_selected_expression_text(true).c_str());
+				if(arg && arg->type() == ARGUMENT_TYPE_INTEGER) {
+					gtk_spin_button_update(GTK_SPIN_BUTTON(fd->entry[0]));
+				}
+				g_signal_handlers_unblock_matched((gpointer) fd->entry[0], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
+			}
+			gtk_widget_grab_focus(fd->entry[0]);
+		}
 		gtk_window_present(GTK_WINDOW(fd->dialog));
 		return;
 	}
@@ -8077,7 +8092,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 	fd->b_cancel = gtk_button_new_with_mnemonic(_("_Close"));
 	gtk_dialog_add_action_widget(GTK_DIALOG(fd->dialog), fd->b_cancel, GTK_RESPONSE_REJECT);
 
-	fd->b_exec = gtk_button_new_with_mnemonic(_("_Execute"));
+	fd->b_exec = gtk_button_new_with_mnemonic(_("C_alculate"));
 	gtk_dialog_add_action_widget(GTK_DIALOG(fd->dialog), fd->b_exec, GTK_RESPONSE_APPLY);
 
 	fd->b_insert = gtk_button_new_with_mnemonic(_("_Insert"));
@@ -8380,6 +8395,10 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 	g_signal_connect((gpointer) fd->dialog, "delete-event", G_CALLBACK(on_insert_function_delete), (gpointer) f);
 	
 	gtk_widget_show_all(fd->dialog);
+	
+	add_to_undo = false;
+	gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
+	add_to_undo = true;
 
 }
 
