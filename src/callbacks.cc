@@ -1129,7 +1129,7 @@ bool check_exchange_rates(GtkWidget *win = NULL, bool set_result = false) {
 	if(b || auto_update_exchange_rates > 0) {
 		if(auto_update_exchange_rates <= 0) i = -1;
 		if(!b && set_result) setResult(NULL, false, false, false, "", 0, false);
-		fetch_exchange_rates(b ? 15 : 8);
+		fetch_exchange_rates(b ? 15 : 8, i);
 		CALCULATOR->loadExchangeRates();
 		return true;
 	}
@@ -11964,7 +11964,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {2, 6, 0};
+	int version_numbers[] = {2, 6, 1};
 	bool old_history_format = false;
 			
 	if(file) {
@@ -12705,7 +12705,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "rpn_keys=%i\n", rpn_keys);
 	fprintf(file, "display_expression_status=%i\n", display_expression_status);
 	fprintf(file, "enable_completion=%i\n", enable_completion);
-	fprintf(file, "enable_completion2=%i\n", enable_completion);
+	fprintf(file, "enable_completion2=%i\n", enable_completion2);
 	fprintf(file, "completion_min=%i\n", completion_min);
 	fprintf(file, "completion_min2=%i\n", completion_min2);
 	fprintf(file, "completion_delay=%i\n", completion_delay);
