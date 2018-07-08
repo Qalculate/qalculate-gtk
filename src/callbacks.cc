@@ -14508,14 +14508,14 @@ void do_completion() {
 	gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &current_object_start, &current_object_end, FALSE);
 	string str = gstr2;
 	g_free(gstr2);
-	if(str.length() < completion_min) {gtk_widget_hide(completion_window); return;}
+	if(str.length() < (size_t) completion_min) {gtk_widget_hide(completion_window); return;}
 	GtkTreeIter iter;
 	int matches = 0;
 	bool show_separator1 = false, show_separator2 = false;
 	if(str.length() > 0 && is_not_in(NUMBERS NOT_IN_NAMES, str[0]) && gtk_tree_model_get_iter_first(GTK_TREE_MODEL(completion_store), &iter)) {
 		string str2, str3, str4;
 		Prefix *p2 = NULL, *p3 = NULL, *p4 = NULL;
-		if(str.length() > completion_min) {
+		if(str.length() > (size_t) completion_min) {
 			for(size_t pi = 1; ; pi++) {
 				Prefix *prefix = CALCULATOR->getPrefix(pi);
 				if(!prefix) break;
