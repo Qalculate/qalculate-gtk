@@ -1102,6 +1102,8 @@ void create_main_window(void) {
 	completion_view = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionview"));
 	gtk_style_context_add_provider(gtk_widget_get_style_context(completion_view), GTK_STYLE_PROVIDER(expression_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+	
 	// Fix for breeze-gtk and Ubuntu theme
 	gchar *theme_name;
 	g_object_get(gtk_settings_get_default(), "gtk-theme-name", &theme_name, NULL);
@@ -1125,10 +1127,11 @@ void create_main_window(void) {
 		g_free(theme_name);
 	}
 
+#endif
+
 	string history_str;
 	GtkTreeIter history_iter;
 	size_t i = inhistory.size();
-	if(i == 0) gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 2, "   ", -1);
 	while(i > 0) {
 		i--;
 		switch(inhistory_type[i]) {
@@ -1286,7 +1289,8 @@ void create_main_window(void) {
 				break;
 			}
 		}
-	}	
+	}
+	if(inhistory.size() != 0) gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 2, "   ", -1);
 
 	stackstore = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 	gtk_tree_view_set_model(GTK_TREE_VIEW(stackview), GTK_TREE_MODEL(stackstore));

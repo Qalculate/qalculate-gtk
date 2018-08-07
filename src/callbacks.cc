@@ -161,6 +161,7 @@ bool display_expression_status;
 bool block_unit_convert, block_unit_selector_convert;
 extern MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct, *displayed_mstruct;
 extern string result_text, parsed_text;
+string previous_expression;
 bool result_text_approximate = false;
 string result_text_long;
 extern GtkWidget *resultview;
@@ -1420,15 +1421,16 @@ void display_parse_status() {
 		if(!gtk_text_iter_is_end(&ipos)) {
 			gtext = gtk_text_buffer_get_text(expressionbuffer, &istart, &ipos, FALSE);
 			str_e = CALCULATOR->unlocalizeExpression(gtext, evalops.parse_options);
-			if(!CALCULATOR->separateToExpression(str_e, str_u, evalops)) {
+			if(!CALCULATOR->separateToExpression(str_e, str_u, evalops, false, true)) {
 				CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
 			}
 			g_free(gtext);
 		} else {
 			str_e = CALCULATOR->unlocalizeExpression(text, evalops.parse_options);
-			CALCULATOR->separateToExpression(str_e, str_u, evalops);
-			CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
-			full_parsed = true;
+			if(!CALCULATOR->separateToExpression(str_e, str_u, evalops, false, true)) {
+				CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
+				full_parsed = true;
+			}
 		}
 		int warnings_count;
 		had_errors = CALCULATOR->endTemporaryStopMessages(NULL, &warnings_count) > 0;
@@ -1447,8 +1449,8 @@ void display_parse_status() {
 		if(!full_parsed) {
 			CALCULATOR->beginTemporaryStopMessages();
 			str_e = CALCULATOR->unlocalizeExpression(text, evalops.parse_options);
-			CALCULATOR->separateToExpression(str_e, str_u, evalops);			
-			CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
+			CALCULATOR->separateToExpression(str_e, str_u, evalops, false, true);
+			if(!str_e.empty()) CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
 			int warnings_count;
 			had_errors = CALCULATOR->endTemporaryStopMessages(NULL, &warnings_count) > 0;
 			had_warnings = warnings_count > 0;
@@ -1475,10 +1477,19 @@ void display_parse_status() {
 		po.spell_out_logical_operators = printops.spell_out_logical_operators;
 		po.restrict_to_parent_precision = false;
 		po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
-		mparse.format(po);
-		parsed_expression = mparse.print(po);
+		if(str_e.empty()) {
+			parsed_expression = "";
+		} else {
+			mparse.format(po);
+			parsed_expression = mparse.print(po);
+		}
 		if(!str_u.empty()) {
-			parsed_expression += CALCULATOR->localToString();
+			if(parsed_expression.empty()) {
+				parsed_expression += CALCULATOR->localToString(false);
+				parsed_expression += " ";
+			} else {
+				parsed_expression += CALCULATOR->localToString();
+			}
 			remove_duplicate_blanks(str_u);
 			string to_str1, to_str2;
 			size_t ispace = str_u.find_first_of(SPACES);
@@ -6213,6 +6224,9 @@ void ViewThread::run() {
 		bool b_puup = printops.use_unit_prefixes;
 		if(x) {
 			PrintOptions po;
+			if(!read(&po.is_approximate)) break;
+			void *x_to = NULL;
+			if(!read(&x_to)) break;
 			po.preserve_format = true;
 			po.show_ending_zeroes = evalops.parse_options.read_precision != DONT_READ_PRECISION && !CALCULATOR->usesIntervalArithmetic();
 			po.lower_case_e = printops.lower_case_e;
@@ -6234,12 +6248,11 @@ void ViewThread::run() {
 			po.restrict_to_parent_precision = false;
 			po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
 			MathStructure mp(*((MathStructure*) x));
-			if(!read(&po.is_approximate)) break;
 			mp.format(po);
+			po.preserve_format = (x_to != NULL);
 			parsed_text = mp.print(po);
-			if(!read(&x)) break;
-			mp.set(*((MathStructure*) x));
-			if(!mp.isUndefined()) {
+			if(x_to && !((MathStructure*) x_to)->isUndefined()) {
+				mp.set(*((MathStructure*) x_to));
 				parsed_text += CALCULATOR->localToString();
 				mp.format(po);
 				parsed_text += mp.print(po); 
@@ -6423,6 +6436,8 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	}
 
 	GtkTreeIter history_iter;
+	
+	bool b_rpn_operation = false;
 
 	int inhistory_index = 0;
 	if(update_history) {
@@ -6435,6 +6450,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				remove_blank_ends(result_text);
 				gsub("\n", " ", result_text);
 				if(result_text == _("RPN Operation")) {
+					b_rpn_operation = true;
 					inhistory_type.push_back(QALCULATE_HISTORY_RPN_OPERATION);
 					inhistory.push_back("");
 				} else {
@@ -6529,7 +6545,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		if(!view_thread->write((void *) parsed_mstruct)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
 		bool *parsed_approx_p = &parsed_approx;
 		if(!view_thread->write((void *) parsed_approx_p)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
-		if(!view_thread->write((void *) parsed_tostruct)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
+		if(!view_thread->write((void *) (b_rpn_operation ? NULL : parsed_tostruct))) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
 	} else {
 		if(!view_thread->write(NULL)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
 	}
@@ -7084,6 +7100,21 @@ void add_to_expression_history(string str) {
 	expression_history_index = 0;
 }
 
+void set_previous_expression() {
+	if(rpn_mode) {
+		clear_expression_text();
+	} else {
+		rpn_mode = true;
+		gtk_text_buffer_set_text(expressionbuffer, previous_expression.c_str(), -1);
+		rpn_mode = false;
+		gtk_widget_grab_focus(expressiontext);
+		GtkTextIter istart, iend;
+		gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
+		gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
+		gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
+	}
+}
+
 /*
 	calculate entered expression and display result
 */
@@ -7136,7 +7167,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	string from_str = str, to_str;
 	bool b_units_saved = evalops.parse_options.units_enabled;
 	evalops.parse_options.units_enabled = true;
-	if(execute_str.empty() && CALCULATOR->separateToExpression(from_str, to_str, evalops, true)) {
+	if(execute_str.empty() && CALCULATOR->separateToExpression(from_str, to_str, evalops, true, !do_stack)) {
 		remove_duplicate_blanks(to_str);
 		string to_str1, to_str2;
 		size_t ispace = to_str.find_first_of(SPACES);
@@ -7152,7 +7183,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
-			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
+			else execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			printops.base = save_base;
 			return;
 		} else if(equalsIgnoreCase(to_str, "oct") || equalsIgnoreCase(to_str, "octal") || equalsIgnoreCase(to_str, _("octal"))) {
@@ -7161,7 +7193,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
-			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
+			else execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			printops.base = save_base;
 			return;
 		} else if(equalsIgnoreCase(to_str, "duo") || equalsIgnoreCase(to_str, "duodecimal") || equalsIgnoreCase(to_str, _("duodecimal"))) {
@@ -7170,7 +7203,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
-			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
+			else execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			printops.base = save_base;
 			return;
 		} else if(equalsIgnoreCase(to_str, "bin") || equalsIgnoreCase(to_str, "binary") || equalsIgnoreCase(to_str, _("binary"))) {
@@ -7179,7 +7213,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
-			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
+			else execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			printops.base = save_base;
 			return;
 		} else if(equalsIgnoreCase(to_str, "roman") || equalsIgnoreCase(to_str, _("roman"))) {
@@ -7188,7 +7223,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
-			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
+			else execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			printops.base = save_base;
 			return;
 		} else if(equalsIgnoreCase(to_str, "sexa") || equalsIgnoreCase(to_str, "sexagesimal") || equalsIgnoreCase(to_str, _("sexagesimal"))) {
@@ -7197,7 +7233,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
-			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
+			else execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			printops.base = save_base;
 			return;
 		} else if(equalsIgnoreCase(to_str, "time") || equalsIgnoreCase(to_str, _("time"))) {
@@ -7206,7 +7243,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
-			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
+			else execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			printops.base = save_base;
 			return;
 		} else if(equalsIgnoreCase(to_str, "utc") || equalsIgnoreCase(to_str, "gmt")) {
@@ -7214,42 +7252,59 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
-			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
+			else execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			printops.time_zone = TIME_ZONE_LOCAL;
 			return;
 		} else if(equalsIgnoreCase(to_str, "bases") || equalsIgnoreCase(to_str, _("bases"))) {
 			b_busy = false;
 			b_busy_expression = false;
 			evalops.parse_options.units_enabled = b_units_saved;
-			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
-			convert_number_bases(from_str.c_str());
+			if(from_str.empty()) {
+				set_previous_expression();
+				convert_number_bases(result_text.c_str());
+			} else {
+				execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+				convert_number_bases(from_str.c_str());
+			}
 			return;
 		} else if(equalsIgnoreCase(to_str, "calendars") || equalsIgnoreCase(to_str, _("calendars"))) {
 			b_busy = false;
 			b_busy_expression = false;
 			evalops.parse_options.units_enabled = b_units_saved;
-			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			if(from_str.empty()) set_previous_expression();
+			else execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			on_popup_menu_item_calendarconversion_activate(NULL, NULL);
 			return;
 		} else if(equalsIgnoreCase(to_str, "optimal") || equalsIgnoreCase(to_str, _("optimal"))) {
-			AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
-			evalops.auto_post_conversion = POST_CONVERSION_OPTIMAL_SI;
 			b_busy = false;
 			b_busy_expression = false;
-			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
-			evalops.auto_post_conversion = save_auto_post_conversion;
-			evalops.parse_options.units_enabled = b_units_saved;
+			if(from_str.empty()) {
+				executeCommand(COMMAND_CONVERT_OPTIMAL);
+				set_previous_expression();
+			} else {
+				AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
+				evalops.auto_post_conversion = POST_CONVERSION_OPTIMAL_SI;
+				execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+				evalops.auto_post_conversion = save_auto_post_conversion;
+				evalops.parse_options.units_enabled = b_units_saved;
+			}
 			return;
 		} else if(equalsIgnoreCase(to_str, "base") || equalsIgnoreCase(to_str, _("base"))) {
-			AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
-			evalops.auto_post_conversion = POST_CONVERSION_BASE;
 			b_busy = false;
 			b_busy_expression = false;
-			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
-			evalops.auto_post_conversion = save_auto_post_conversion;
-			evalops.parse_options.units_enabled = b_units_saved;
+			if(from_str.empty()) {
+				executeCommand(COMMAND_CONVERT_BASE);
+				set_previous_expression();
+			} else {
+				AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
+				evalops.auto_post_conversion = POST_CONVERSION_BASE;
+				execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+				evalops.auto_post_conversion = save_auto_post_conversion;
+				evalops.parse_options.units_enabled = b_units_saved;
+			}
 			return;
-		} else if(equalsIgnoreCase(to_str, "mixed") || equalsIgnoreCase(to_str, _("mixed"))) {
+		} else if(!from_str.empty() && (equalsIgnoreCase(to_str, "mixed") || equalsIgnoreCase(to_str, _("mixed")))) {
 			AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
 			MixedUnitsConversion save_mixed_units_conversion = evalops.mixed_units_conversion;
 			evalops.auto_post_conversion = POST_CONVERSION_NONE;
@@ -7262,12 +7317,35 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			evalops.parse_options.units_enabled = b_units_saved;
 			return;
 		} else if(equalsIgnoreCase(to_str, "fraction") || equalsIgnoreCase(to_str, _("fraction"))) {
+			if(from_str.empty()) {
+				b_busy = false;
+				b_busy_expression = false;
+				if(mstruct && mstruct->isNumber()) printops.number_fraction_format = FRACTION_COMBINED;
+				else printops.number_fraction_format = FRACTION_FRACTIONAL;
+				setResult(NULL, true, false, false);
+				set_previous_expression();
+				return;
+			}
 			do_fraction = true;
 			execute_str = from_str;
 		} else if(equalsIgnoreCase(to_str, "factors") || equalsIgnoreCase(to_str, _("factors"))) {
+			if(from_str.empty()) {
+				b_busy = false;
+				b_busy_expression = false;
+				executeCommand(COMMAND_FACTORIZE);
+				set_previous_expression();
+				return;
+			}
 			do_factors = true;
 			execute_str = from_str;
 		} else if(equalsIgnoreCase(to_str, "partial fraction") || equalsIgnoreCase(to_str, _("partial fraction"))) {
+			if(from_str.empty()) {
+				b_busy = false;
+				b_busy_expression = false;
+				executeCommand(COMMAND_EXPAND_PARTIAL_FRACTIONS);
+				set_previous_expression();
+				return;
+			}
 			do_pfe = true;
 			execute_str = from_str;
 		} else if((equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _("base"))) && s2i(to_str2) >= 2 && (s2i(to_str2) <= 36 || s2i(to_str2) == BASE_SEXAGESIMAL)) {
@@ -7276,8 +7354,15 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
-			execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
+			else execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			printops.base = save_base;
+			return;
+		} else if(from_str.empty()) {
+			b_busy = false;
+			b_busy_expression = false;
+			executeCommand(COMMAND_CONVERT_STRING, true, to_str);
+			set_previous_expression();
 			return;
 		}
 	}
@@ -7510,7 +7595,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			executeCommand(do_pfe ? COMMAND_EXPAND_PARTIAL_FRACTIONS : COMMAND_FACTORIZE, false);
 		}
 	}
-	
+	if(!do_stack) previous_expression = execute_str.empty() ? str : execute_str;
 	if(do_fraction) {
 		NumberFractionFormat save_format = printops.number_fraction_format;
 		if(((!do_stack || stack_index == 0) && mstruct->isNumber()) || (do_stack && stack_index != 0 && CALCULATOR->getRPNRegister(stack_index + 1)->isNumber())) printops.number_fraction_format = FRACTION_COMBINED;
@@ -13064,7 +13149,7 @@ void set_current_object() {
 	}
 	gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &istart, &ipos, FALSE);
 	gchar *p = gstr + strlen(gstr);
-	editing_to_expression = CALCULATOR->hasToExpression(gstr);
+	editing_to_expression = CALCULATOR->hasToExpression(gstr, true);
 	bool non_number_before = false;
 	while(gtk_text_iter_backward_char(&ipos2)) {
 		p = g_utf8_prev_char(p);
