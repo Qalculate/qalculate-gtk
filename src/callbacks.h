@@ -449,6 +449,12 @@ void on_popup_menu_item_all_prefixes_activate(GtkMenuItem *w, gpointer user_data
 void on_popup_menu_item_denominator_prefixes_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_view_matrix_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_view_vector_activate(GtkMenuItem *w, gpointer user_data);
+void on_popup_menu_item_complex_rectangular_activate(GtkMenuItem *w, gpointer user_data);
+void on_popup_menu_item_complex_exponential_activate(GtkMenuItem *w, gpointer user_data);
+void on_popup_menu_item_complex_polar_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_complex_rectangular_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_complex_exponential_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_complex_polar_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_display_normal_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_display_engineering_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_display_scientific_activate(GtkMenuItem *w, gpointer user_data);

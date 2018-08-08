@@ -372,7 +372,8 @@ enum {
 	COMMAND_CONVERT_STRING,
 	COMMAND_CONVERT_BASE,
 	COMMAND_CONVERT_OPTIMAL,
-	COMMAND_CALCULATE
+	COMMAND_CALCULATE,
+	COMMAND_EVAL
 };
 
 bool equalsIgnoreCase(const string &str1, const string &str2, size_t i2, size_t i2_end, size_t minlength) {
@@ -1529,6 +1530,12 @@ void display_parse_status() {
 				parsed_expression += _("factors");
 			} else if(equalsIgnoreCase(str_u, "partial fraction") || equalsIgnoreCase(str_u, _("partial fraction"))) {
 				parsed_expression += _("expanded partial fractions");
+			} else if(equalsIgnoreCase(str_u, "rectangular") || equalsIgnoreCase(str_u, "cartesian") || equalsIgnoreCase(str_u, _("rectangular")) || equalsIgnoreCase(str_u, _("cartesian"))) {
+				parsed_expression += _("complex rectangular form");
+			} else if(equalsIgnoreCase(str_u, "exponential") || equalsIgnoreCase(str_u, _("exponential"))) {
+				parsed_expression += _("complex exponential form");
+			} else if(equalsIgnoreCase(str_u, "polar") || equalsIgnoreCase(str_u, _("polar"))) {
+				parsed_expression += _("complex polar form");
 			} else if(equalsIgnoreCase(str_u, "utc") || equalsIgnoreCase(str_u, "gmt")) {
 				parsed_expression += _("UTC time zone");
 			} else if((equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str2, _("base"))) && s2i(to_str2) >= 2 && (s2i(to_str2) <= 36 || s2i(to_str2) == BASE_SEXAGESIMAL)) {
@@ -4263,7 +4270,9 @@ void update_completion() {
 		g_free(gstr);
 	}
 	pango_font_description_free(font_desc);
-#define COMPLETION_CONVERT_STRING(x) str = str = _(x); if(str != x) {str += " <i>"; str += x; str += "</i>";}
+	string str2;
+#define COMPLETION_CONVERT_STRING(x) str = _(x); if(str != x) {str += " <i>"; str += x; str += "</i>";}
+#define COMPLETION_CONVERT_STRING2(x, y) str = _(x); str += " <i>"; if(str != x) {str += x;} str2 = _(y); if(str2 != y) {str += " "; str += y;} str += " "; str += str2; str += "</i>";
 	COMPLETION_CONVERT_STRING("bases")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Number bases"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("base")
@@ -4274,6 +4283,8 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Calendars"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("duodecimal") str += " <i>"; str += "duo"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Duodecimal number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
+	COMPLETION_CONVERT_STRING("exponential")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex exponential form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("factors")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Factors"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("fraction")
@@ -4288,6 +4299,10 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Optimal units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("partial fraction")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Expanded partial fractions"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
+	COMPLETION_CONVERT_STRING("polar")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex polar form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
+	COMPLETION_CONVERT_STRING2("rectangular", "cartesian") 
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex rectangular form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("roman")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Roman numerals"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("sexagesimal") str += " <i>"; str += "sexa"; str += "</i>";
@@ -6854,6 +6869,10 @@ void CommandThread::run() {
 				((MathStructure*) x)->calculatesub(eo2, eo2, true);
 				break;
 			}
+			case COMMAND_EVAL: {
+				((MathStructure*) x)->eval(evalops);
+				break;
+			}
 		}
 		b_busy = false;
 		CALCULATOR->stopControl();
@@ -6917,6 +6936,7 @@ void executeCommand(int command_type, bool show_result = true, string ceu_str = 
 				progress_str = _("Simplifying…");
 				break;
 			}
+			case COMMAND_EVAL: {}
 			case COMMAND_TRANSFORM: {
 				progress_str = _("Calculating…");
 				break;
@@ -7064,7 +7084,7 @@ void result_prefix_changed(Prefix *prefix) {
 void expression_calculation_updated() {
 	expression_has_changed2 = true;
 	display_parse_status();
-	if(!rpn_mode) execute_expression(false);
+	if(!rpn_mode) execute_expression(COMMAND_EVAL);
 	update_status_text();
 }
 void expression_format_updated(bool recalculate) {
@@ -7165,8 +7185,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	}
 	
 	string from_str = str, to_str;
-	bool b_units_saved = evalops.parse_options.units_enabled;
-	evalops.parse_options.units_enabled = true;
 	if(execute_str.empty() && CALCULATOR->separateToExpression(from_str, to_str, evalops, true, !do_stack)) {
 		remove_duplicate_blanks(to_str);
 		string to_str1, to_str2;
@@ -7180,7 +7198,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		if(equalsIgnoreCase(to_str, "hex") || equalsIgnoreCase(to_str, "hexadecimal") || equalsIgnoreCase(to_str, _("hexadecimal"))) {
 			int save_base = printops.base;
 			printops.base = BASE_HEXADECIMAL;
-			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
 			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
@@ -7190,7 +7207,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		} else if(equalsIgnoreCase(to_str, "oct") || equalsIgnoreCase(to_str, "octal") || equalsIgnoreCase(to_str, _("octal"))) {
 			int save_base = printops.base;
 			printops.base = BASE_OCTAL;
-			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
 			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
@@ -7200,7 +7216,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		} else if(equalsIgnoreCase(to_str, "duo") || equalsIgnoreCase(to_str, "duodecimal") || equalsIgnoreCase(to_str, _("duodecimal"))) {
 			int save_base = printops.base;
 			printops.base = 12;
-			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
 			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
@@ -7210,7 +7225,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		} else if(equalsIgnoreCase(to_str, "bin") || equalsIgnoreCase(to_str, "binary") || equalsIgnoreCase(to_str, _("binary"))) {
 			int save_base = printops.base;
 			printops.base = BASE_BINARY;
-			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
 			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
@@ -7220,7 +7234,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		} else if(equalsIgnoreCase(to_str, "roman") || equalsIgnoreCase(to_str, _("roman"))) {
 			int save_base = printops.base;
 			printops.base = BASE_ROMAN_NUMERALS;
-			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
 			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
@@ -7230,7 +7243,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		} else if(equalsIgnoreCase(to_str, "sexa") || equalsIgnoreCase(to_str, "sexagesimal") || equalsIgnoreCase(to_str, _("sexagesimal"))) {
 			int save_base = printops.base;
 			printops.base = BASE_SEXAGESIMAL;
-			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
 			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
@@ -7240,7 +7252,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		} else if(equalsIgnoreCase(to_str, "time") || equalsIgnoreCase(to_str, _("time"))) {
 			int save_base = printops.base;
 			printops.base = BASE_TIME;
-			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
 			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
@@ -7249,7 +7260,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			return;
 		} else if(equalsIgnoreCase(to_str, "utc") || equalsIgnoreCase(to_str, "gmt")) {
 			printops.time_zone = TIME_ZONE_UTC;
-			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
 			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
@@ -7259,7 +7269,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		} else if(equalsIgnoreCase(to_str, "bases") || equalsIgnoreCase(to_str, _("bases"))) {
 			b_busy = false;
 			b_busy_expression = false;
-			evalops.parse_options.units_enabled = b_units_saved;
 			if(from_str.empty()) {
 				set_previous_expression();
 				convert_number_bases(result_text.c_str());
@@ -7271,10 +7280,48 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		} else if(equalsIgnoreCase(to_str, "calendars") || equalsIgnoreCase(to_str, _("calendars"))) {
 			b_busy = false;
 			b_busy_expression = false;
-			evalops.parse_options.units_enabled = b_units_saved;
 			if(from_str.empty()) set_previous_expression();
 			else execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			on_popup_menu_item_calendarconversion_activate(NULL, NULL);
+			return;
+		} else if(equalsIgnoreCase(to_str, "rectangular") || equalsIgnoreCase(to_str, "cartesian") || equalsIgnoreCase(to_str, _("rectangular")) || equalsIgnoreCase(to_str, _("cartesian"))) {
+			b_busy = false;
+			b_busy_expression = false;
+			ComplexNumberForm cnf_bak = evalops.complex_number_form;
+			evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
+			if(from_str.empty()) {
+				executeCommand(COMMAND_EVAL);
+				set_previous_expression();
+			} else {
+				execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			}
+			evalops.complex_number_form = cnf_bak;
+			return;
+		} else if(equalsIgnoreCase(to_str, "exponential") || equalsIgnoreCase(to_str, _("exponential"))) {
+			b_busy = false;
+			b_busy_expression = false;
+			ComplexNumberForm cnf_bak = evalops.complex_number_form;
+			evalops.complex_number_form = COMPLEX_NUMBER_FORM_EXPONENTIAL;
+			if(from_str.empty()) {
+				executeCommand(COMMAND_EVAL);
+				set_previous_expression();
+			} else {
+				execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			}
+			evalops.complex_number_form = cnf_bak;
+			return;
+		} else if(equalsIgnoreCase(to_str, "polar") || equalsIgnoreCase(to_str, _("polar"))) {
+			b_busy = false;
+			b_busy_expression = false;
+			ComplexNumberForm cnf_bak = evalops.complex_number_form;
+			evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
+			if(from_str.empty()) {
+				executeCommand(COMMAND_EVAL);
+				set_previous_expression();
+			} else {
+				execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			}
+			evalops.complex_number_form = cnf_bak;
 			return;
 		} else if(equalsIgnoreCase(to_str, "optimal") || equalsIgnoreCase(to_str, _("optimal"))) {
 			b_busy = false;
@@ -7283,6 +7330,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				executeCommand(COMMAND_CONVERT_OPTIMAL);
 				set_previous_expression();
 			} else {
+				bool b_units_saved = evalops.parse_options.units_enabled;
+				evalops.parse_options.units_enabled = true;
 				AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
 				evalops.auto_post_conversion = POST_CONVERSION_OPTIMAL_SI;
 				execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
@@ -7297,6 +7346,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				executeCommand(COMMAND_CONVERT_BASE);
 				set_previous_expression();
 			} else {
+				bool b_units_saved = evalops.parse_options.units_enabled;
+				evalops.parse_options.units_enabled = true;
 				AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
 				evalops.auto_post_conversion = POST_CONVERSION_BASE;
 				execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
@@ -7305,6 +7356,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			}
 			return;
 		} else if(!from_str.empty() && (equalsIgnoreCase(to_str, "mixed") || equalsIgnoreCase(to_str, _("mixed")))) {
+			bool b_units_saved = evalops.parse_options.units_enabled;
+			evalops.parse_options.units_enabled = true;
 			AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
 			MixedUnitsConversion save_mixed_units_conversion = evalops.mixed_units_conversion;
 			evalops.auto_post_conversion = POST_CONVERSION_NONE;
@@ -7351,7 +7404,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		} else if((equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _("base"))) && s2i(to_str2) >= 2 && (s2i(to_str2) <= 36 || s2i(to_str2) == BASE_SEXAGESIMAL)) {
 			int save_base = printops.base;
 			printops.base = s2i(to_str2);
-			evalops.parse_options.units_enabled = b_units_saved;
 			b_busy = false;
 			b_busy_expression = false;
 			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
@@ -7366,7 +7418,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			return;
 		}
 	}
-	evalops.parse_options.units_enabled = b_units_saved;
 
 	size_t stack_size = 0;
 	
@@ -11951,6 +12002,7 @@ void load_preferences() {
 	evalops.parse_options.dot_as_separator = CALCULATOR->default_dot_as_separator;
 	evalops.parse_options.comma_as_separator = false;
 	evalops.mixed_units_conversion = MIXED_UNITS_CONVERSION_DEFAULT;
+	evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
 	b_decimal_comma = -1;
 	
 	keep_function_dialog_open = false;
@@ -12278,6 +12330,10 @@ void load_preferences() {
 					if(v >= FRACTION_DECIMAL && v <= FRACTION_COMBINED) {
 						if(mode_index == 1) printops.number_fraction_format = (NumberFractionFormat) v;
 						else modes[mode_index].po.number_fraction_format = (NumberFractionFormat) v;
+					}
+				} else if(svar == "complex_number_form") {
+					if(v >= COMPLEX_NUMBER_FORM_RECTANGULAR && v <= COMPLEX_NUMBER_FORM_POLAR) {
+						evalops.complex_number_form = (ComplexNumberForm) v;
 					}
 				} else if(svar == "number_base") {
 					if(mode_index == 1) printops.base = v;
@@ -12945,6 +13001,7 @@ void save_preferences(bool mode) {
 		fprintf(file, "negative_exponents=%i\n", modes[i].po.negative_exponents);
 		fprintf(file, "sort_minus_last=%i\n", modes[i].po.sort_options.minus_last);
 		fprintf(file, "number_fraction_format=%i\n", modes[i].po.number_fraction_format);
+		fprintf(file, "complex_number_form=%i\n", modes[i].eo.complex_number_form);
 		fprintf(file, "use_prefixes=%i\n", modes[i].po.use_unit_prefixes);
 		fprintf(file, "use_prefixes_for_all_units=%i\n", modes[i].po.use_prefixes_for_all_units);
 		fprintf(file, "use_prefixes_for_currencies=%i\n", modes[i].po.use_prefixes_for_currencies);
@@ -13732,6 +13789,13 @@ bool contains_polynomial_division(MathStructure &m) {
 	}
 	return false;
 }
+bool contains_imaginary_number(MathStructure &m) {
+	if(m.isNumber() && m.number().hasImaginaryPart()) return true;
+	for(size_t i = 0; i < m.size(); i++) {
+		if(contains_imaginary_number(m[i])) return true;
+	}
+	return false;
+}
 
 void update_resultview_popup() {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_octal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_octal_activate, NULL);
@@ -13760,9 +13824,13 @@ void update_resultview_popup() {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_fraction_combined"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_fraction_combined_activate, NULL);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_fraction_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_fraction_fraction_activate, NULL);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_assume_nonzero_denominators"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_assume_nonzero_denominators_activate, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_rectangular"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_rectangular_activate, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_exponential"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_exponential_activate, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_polar"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_polar_activate, NULL);
 
 	bool b_unit = mstruct && mstruct->containsType(STRUCT_UNIT);
 	bool b_date = mstruct && mstruct->isDateTime();
+	bool b_complex = mstruct && contains_imaginary_number(*mstruct);
 	
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_abbreviate_names")), !b_busy && !b_date);	
 	
@@ -13780,16 +13848,21 @@ void update_resultview_popup() {
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_set_optimal_prefix")), b_unit);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_units")), b_unit);
 	
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_octal")), !b_unit && !b_date);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_decimal")), !b_unit && !b_date);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_duodecimal")), !b_unit && !b_date);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_hexadecimal")), !b_unit && !b_date);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_binary")), !b_unit && !b_date);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_octal")), !b_unit && !b_date && !b_complex);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_decimal")), !b_unit && !b_date && !b_complex);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_duodecimal")), !b_unit && !b_date && !b_complex);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_hexadecimal")), !b_unit && !b_date && !b_complex);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_binary")), !b_unit && !b_date && !b_complex);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_roman")), FALSE);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_sexagesimal")), FALSE);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_time_format")), FALSE);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_custom_base")), FALSE);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_base")), !b_unit && !b_date);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_base")), !b_unit && !b_date && !b_complex);
+	
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_complex_rectangular")), b_complex);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_complex_exponential")), b_complex);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_complex_polar")), b_complex);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_complex")), b_complex);
 	
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_normal")), !b_unit && !b_date);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_engineering")), !b_unit && !b_date);
@@ -13951,6 +14024,20 @@ void update_resultview_popup() {
 			break;		
 		}
 	}
+	switch(evalops.complex_number_form) {
+		case COMPLEX_NUMBER_FORM_RECTANGULAR: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_complex_rectangular")), TRUE);
+			break;
+		}
+		case COMPLEX_NUMBER_FORM_EXPONENTIAL: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_complex_exponential")), TRUE);
+			break;
+		}
+		case COMPLEX_NUMBER_FORM_POLAR: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_complex_polar")), TRUE);
+			break;
+		}
+	}
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_octal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_octal_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_decimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_decimal_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_duodecimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_duodecimal_activate, NULL);
@@ -13977,6 +14064,9 @@ void update_resultview_popup() {
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_fraction_combined"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_fraction_combined_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_fraction_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_fraction_fraction_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_assume_nonzero_denominators"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_assume_nonzero_denominators_activate, NULL);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_rectangular"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_rectangular_activate, NULL);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_exponential"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_exponential_activate, NULL);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_polar"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_polar_activate, NULL);
 }
 void on_expression_button_clicked(GtkButton*, gpointer) {
 	GtkWidget *w = gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack")));
@@ -16176,6 +16266,24 @@ void menu_to_fraction(GtkMenuItem*, gpointer) {
 	result_format_updated();
 	printops.number_fraction_format = save_format;
 }
+void menu_to_rectangular(GtkMenuItem*, gpointer) {
+	ComplexNumberForm cnf_bak = evalops.complex_number_form;
+	evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
+	executeCommand(COMMAND_EVAL);
+	evalops.complex_number_form = cnf_bak;
+}
+void menu_to_exponential(GtkMenuItem*, gpointer) {
+	ComplexNumberForm cnf_bak = evalops.complex_number_form;
+	evalops.complex_number_form = COMPLEX_NUMBER_FORM_EXPONENTIAL;
+	executeCommand(COMMAND_EVAL);
+	evalops.complex_number_form = cnf_bak;
+}
+void menu_to_polar(GtkMenuItem*, gpointer) {
+	ComplexNumberForm cnf_bak = evalops.complex_number_form;
+	evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
+	executeCommand(COMMAND_EVAL);
+	evalops.complex_number_form = cnf_bak;
+}
 void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(w)) return;
 	GtkWidget *sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_to"));
@@ -16193,6 +16301,7 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 	if(!mstruct || !displayed_mstruct || !mstruct->containsType(STRUCT_UNIT, true)) {
 		bool b_date = (mstruct && displayed_mstruct && mstruct->isDateTime());
 		bool b_integ = (mstruct && displayed_mstruct && mstruct->isInteger());
+		bool b_complex = (mstruct && displayed_mstruct && contains_imaginary_number(*mstruct));
 		if(b_date) {MENU_ITEM(_("Calendars"), on_popup_menu_item_calendarconversion_activate)}
 		if(b_date) {MENU_ITEM("UTC", menu_to_utc)}
 		if(!b_date) {MENU_ITEM(_("Number bases"), on_menu_item_convert_number_bases_activate)}
@@ -16201,8 +16310,11 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 		MENU_ITEM(_("Duodecimal"), menu_to_duo)
 		MENU_ITEM(_("Hexadecimal"), menu_to_hex)
 		if(b_integ) {MENU_ITEM(_("Roman"), menu_to_roman)}
-		MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)
+		if(!b_complex) MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)
 		if(!b_integ && !b_date) {MENU_ITEM(_("Fraction"), menu_to_fraction)}
+		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_RECTANGULAR) {MENU_ITEM(_("Rectangular"), menu_to_rectangular)}
+		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_EXPONENTIAL) {MENU_ITEM(_("Exponential"), menu_to_exponential)}
+		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_POLAR) {MENU_ITEM(_("Polar"), menu_to_polar)}
 		return;
 	}
 	string s_cat;
@@ -17456,6 +17568,18 @@ void on_popup_menu_item_display_non_scientific_activate(GtkMenuItem *w, gpointer
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_negative_exponents"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_negative_exponents_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sort_minus_last"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_sort_minus_last_activate, NULL);
 }
+void on_popup_menu_item_complex_rectangular_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_complex_rectangular")), TRUE);
+}
+void on_popup_menu_item_complex_exponential_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_complex_exponential")), TRUE);
+}
+void on_popup_menu_item_complex_polar_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_complex_polar")), TRUE);
+}
 void on_popup_menu_item_display_no_prefixes_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_no_prefixes")), TRUE);
@@ -17750,6 +17874,22 @@ void on_menu_item_interval_midpoint_activate(GtkMenuItem *w, gpointer) {
 	adaptive_interval_display = false;
 	printops.interval_display = INTERVAL_DISPLAY_MIDPOINT;
 	result_format_updated();
+}
+
+void on_menu_item_complex_rectangular_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
+	expression_calculation_updated();
+}
+void on_menu_item_complex_exponential_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	evalops.complex_number_form = COMPLEX_NUMBER_FORM_EXPONENTIAL;
+	expression_calculation_updated();
+}
+void on_menu_item_complex_polar_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
+	expression_calculation_updated();
 }
 
 void on_menu_item_save_activate(GtkMenuItem*, gpointer) {

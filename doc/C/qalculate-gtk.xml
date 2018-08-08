@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "2.6.0">
-  <!ENTITY manrevision "2.6.0">
-  <!ENTITY date "May 2018">
+  <!ENTITY appversion "2.6.2">
+  <!ENTITY manrevision "2.6.2">
+  <!ENTITY date "August 2018">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -81,7 +81,7 @@ Although use of &app; for simple calculations should be natural and self-explana
 <sect1 id="qalculate-expression-entry">
 <title>Expression Entry</title>
 <para>
-The expression entry is the most important part of the &app; user interface. The normal calculation procedure in &app; is to type in a mathematical expression (ex. <quote>5+5</quote>) and press <keycap>Enter</keycap> (or click <guibutton>=</guibutton>). The result (<quote>10</quote>) is then displayed below the expression entry in the result display.
+The expression entry is the most important part of the &app; user interface. The normal calculation procedure in &app; is to type in a mathematical expression (e.g. <quote>5+5</quote>) and press <keycap>Enter</keycap> (or click <guibutton>=</guibutton>). The result (<quote>10</quote>) is then displayed below the expression entry in the result display.
 </para>
 <figure id="qalculate-FIG-completion">
 	<title>Completion</title>
@@ -97,7 +97,7 @@ The expression entry is the most important part of the &app; user interface. The
 &app; helps out with the expression by giving a list of possible endings to words representing functions, variables and units. The list will narrow with each letter typed. Select an item in the list and the name will be completed. If a function was selected, parenthesis will be added and the position moved for immediate entry of arguments.
 </para>
 <para>
-As the expression is typed in, the area directly direclty below the expression entry, to the left, will show useful information. By default the calculator's interpretation of the expression is shown (ex. <quote>5 * meter</quote> for <quote>5m</quote>). The interpretation will be displayed in red (configurable) if there are errors in the expression or in blue for lesser errors (for example too many arguments in a function). If the last typed in text represents a function and arguments are about to be entered, the functions name and its arguments will be displayed. The first argument in the information text is highlighted and includes information about its type and restrictions and when an argument has been entered, the next will be highlighted.
+As the expression is typed in, the area directly direclty below the expression entry, to the left, will show useful information. By default the calculator's interpretation of the expression is shown (e.g. <quote>5 * meter</quote> for <quote>5m</quote>). The interpretation will be displayed in red (configurable) if there are errors in the expression or in blue for lesser errors (for example too many arguments in a function). If the last typed in text represents a function and arguments are about to be entered, the functions name and its arguments will be displayed. The first argument in the information text is highlighted and includes information about its type and restrictions and when an argument has been entered, the next will be highlighted.
 </para>
 <para>
 After execution of an expression, the whole expression will be marked. This normally means that if something new is entered, the old expression will be overwritten. If, however, an operator (+, −, *, /, ^) is entered first, the old expression will instead be the target of action. The operator will then apply to the whole expression, which is put in parenthesis. This works on all marked ranges, meaning that this way an expression can conveniently be put in parenthesis. Functions set the selection as their first argument.
@@ -306,7 +306,7 @@ Below follows a list of the buttons on the left side (including their menus and 
 			<row valign="top">
 				<entry><para>a(x)<superscript>b</superscript></para></entry>
 				<entry><para>Factorizes the result (or the current expression).</para></entry>
-				<entry><para></para></entry>
+				<entry><para>Functions for derivatives, integrals and equations, and actions for simplification, expansion of partial fractions and replacement of unknowns.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>z</para></entry>
@@ -523,6 +523,10 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			<row valign="top">
 				<entry><para>Simplify</para></entry>
 				<entry><para>Simplifies the current result. Note that easy simplifications are always automatically performed.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>Expand Partial Fractions</para></entry>
+				<entry><para>Applies partial fraction decomposition to the current result.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Set Unknowns...</para></entry>
@@ -832,14 +836,14 @@ In &app; mathematical entities, such as numbers and variables, are referred to a
 	<varlistentry>
 		<term>Numbers</term>
 		<listitem><para>
-		These are the regular numbers composed by digits 0-9 and a decimal sign — a dot, or a comma if it is the default decimal point in the locale/language used. If comma is used as decimal sign, the dot is still kept as an alternative decimal sign, if not explicitely turned off in the preferences dialog with <guibutton>Ignore dots in number</guibutton> (to allow it to be used as thousand separator instead). Numbers include integers, real numbers, and complex numbers. The imaginary part of complex numbers are written with as regular number followed by the special variable <quote>i</quote>, which represents the square root of -1 (ex. <quote>2 + 3i</quote>). Spaces between digits are ignored (<quote>5  5 = 55</quote>). <quote>E</quote> (or <quote>e</quote>) can be considered as a shortcut for writing many zeroes and is equivalent to multiplication by 10 raised to the power of the right-hand value (ex. <quote>5E3 = 5000</quote>).</para>
-		<para>Sexagesimal numbers (and time) can be entered directly using colons (ex. <quote>5:30 = 5.5</quote>). A number immediately preceeded <quote>0b</quote>, <quote>0o</quote> or <quote>0x</quote> are interpreted as a number with base 2, 8 or 16, respectively (if the default base is 10, ex. <quote>0x3f = 63</quote>). The number base in can also be selected, either by using the <command>base()</command>, <command>bin()</command>, <command>oct()</command>, <command>hex()</command> and <command>roman()</command> functions, or by setting the base used for all numbers in the whole expression from <menuchoice><guimenu>Mode</guimenu><guisubmenu>Number Base</guisubmenu><guimenuitem>Select Result and Expression Base...</guimenuitem></menuchoice>. Note that duodecimal (base 12) numbers use 'X' and 'E' (or upside down 2 and 3), instead of 'A' and 'B', for the tenth and eleventh digit. When input bases higher than ten, excluding twelve, are used, functions, variables and units are not parsed.
+		These are the regular numbers composed by digits 0-9 and a decimal sign — a dot, or a comma if it is the default decimal point in the locale/language used. If comma is used as decimal sign, the dot is still kept as an alternative decimal sign, if not explicitely turned off in the preferences dialog with <guibutton>Ignore dots in number</guibutton> (to allow it to be used as thousand separator instead). Numbers include integers, real numbers, and complex numbers. The imaginary part of complex numbers are written with as regular number followed by the special variable <quote>i</quote>, which represents the square root of -1 (e.g. <quote>2 + 3i</quote>). Spaces between digits are ignored (<quote>5  5 = 55</quote>). <quote>E</quote> (or <quote>e</quote>) can be considered as a shortcut for writing many zeroes and is equivalent to multiplication by 10 raised to the power of the right-hand value (e.g. <quote>5E3 = 5000</quote>).</para>
+		<para>Sexagesimal numbers (and time) can be entered directly using colons (e.g. <quote>5:30 = 5.5</quote>). A number immediately preceeded <quote>0b</quote>, <quote>0o</quote> or <quote>0x</quote> are interpreted as a number with base 2, 8 or 16, respectively (if the default base is 10, e.g. <quote>0x3f = 63</quote>). The number base in can also be selected, either by using the <command>base()</command>, <command>bin()</command>, <command>oct()</command>, <command>hex()</command> and <command>roman()</command> functions, or by setting the base used for all numbers in the whole expression from <menuchoice><guimenu>Mode</guimenu><guisubmenu>Number Base</guisubmenu><guimenuitem>Select Result and Expression Base...</guimenuitem></menuchoice>. Note that duodecimal (base 12) numbers use 'X' and 'E' (or upside down 2 and 3), instead of 'A' and 'B', for the tenth and eleventh digit. When input bases higher than ten, excluding twelve, are used, functions, variables and units are not parsed.
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
 		<term>Intervals</term>
 		<listitem><para>
-		A number interval can be entered using the <command>interval()</command> function (specifies the upper and lower limit of the interval), or using <quote>±</quote> or <quote>+/-</quote>, specifying the width of the interval after the mid value (e.g. <quote>5±1 = interval(4, 6)</quote>). If interval arithmetic and the read precision option is activated, decimal numbers are interpreted as an interval between the numbers that are normally rounded to the entered number (ex. <quote>1.1 = 1.1±0.05</quote>).
+		A number interval can be entered using the <command>interval()</command> function (specifies the upper and lower limit of the interval), or using <quote>±</quote> or <quote>+/-</quote>, specifying the width of the interval after the mid value (e.g. <quote>5±1 = interval(4, 6)</quote>). If interval arithmetic and the read precision option is activated, decimal numbers are interpreted as an interval between the numbers that are normally rounded to the entered number (e.g. <quote>1.1 = 1.1±0.05</quote>).
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -863,13 +867,13 @@ In &app; mathematical entities, such as numbers and variables, are referred to a
 	<varlistentry>
 		<term>Units and Prefixes</term>
 		<listitem><para>
-		&app; understands abbreviated, plural and singular forms of unit names and prefixes. Prefixes must be put immediately before the unit to be interpreted as prefixes — <quote>5 mm = 0.005 m</quote>, but <quote>5 m m = 5 m^2</quote>. Also, for convenience units allow the power operator to be left out. A number following immediately after a unit is interpreted as an exponent (ex. <quote>5 m2 = 5 m^2</quote>). This does not apply to currencies, as they might be put in front of the quantity. More information in <xref linkend="qalculate-units"/>.
+		&app; understands abbreviated, plural and singular forms of unit names and prefixes. Prefixes must be put immediately before the unit to be interpreted as prefixes — <quote>5 mm = 0.005 m</quote>, but <quote>5 m m = 5 m^2</quote>. Also, for convenience units allow the power operator to be left out. A number following immediately after a unit is interpreted as an exponent (e.g. <quote>5 m2 = 5 m^2</quote>). This does not apply to currencies, as they might be put in front of the quantity. More information in <xref linkend="qalculate-units"/>.
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
 		<term>Unknowns</term>
 		<listitem><para>
-		Unknowns are text strings without any associated value. If &app; finds a character that are not associated with any variable, function or unit in an expression, then it will be regarded as an unknown variable. These are temporary unknown variables with default assumptions. Unknowns can also be explicitly entered by putting a text string in quotes. This is also necessary for undefined unknown variables with more than one character (ex.<quote>xy</quote> is just one object, while xy means x * y). See <xref linkend="qalculate-variables"/>.
+		Unknowns are text strings without any associated value. If &app; finds a character that are not associated with any variable, function or unit in an expression, then it will be regarded as an unknown variable. These are temporary unknown variables with default assumptions. Unknowns can also be explicitly entered by putting a text string in quotes. This is also necessary for undefined unknown variables with more than one character (e.g.<quote>xy</quote> is just one object, while xy means x * y). See <xref linkend="qalculate-variables"/>.
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -1074,7 +1078,7 @@ The following operators are defined in &app; and may be used in expressions.
 	</tgroup>
 </table>
 <para>
-The operator names <quote>plus</quote>, <quote>minus</quote>, <quote>times</quote>, <quote>per</quote>, <quote>AND</quote> and <quote>OR</quote> may also be used, surrounded by space, for the corresponding operation (ex. <quote>5 plus 2</quote>, but not <quote>5plus2</quote>, equals <quote>5 + 2</quote>).
+The operator names <quote>plus</quote>, <quote>minus</quote>, <quote>times</quote>, <quote>per</quote>, <quote>AND</quote> and <quote>OR</quote> may also be used, surrounded by space, for the corresponding operation (e.g. <quote>5 plus 2</quote>, but not <quote>5plus2</quote>, equals <quote>5 + 2</quote>).
 These operator names are localized, but <quote>AND</quote> and <quote>OR</quote> are always available.
 In addition to these operators there are a couple of shortcuts for certain functions, such as <quote>5!</quote> which equals <quote>factorial(5)</quote>. 
 </para>
@@ -1087,7 +1091,7 @@ Usually, mathematical expressions are written as normally expected. Standard ope
 	<listitem><para>Parenthesis</para></listitem>
 	<listitem><para>E (10^x)</para></listitem>
 	<listitem><para>Exponents (x^y)</para></listitem>
-	<listitem><para>Functions (ex. <quote>sqrt(2)</quote>)</para></listitem>	
+	<listitem><para>Functions (e.g. <quote>sqrt(2)</quote>)</para></listitem>	
 	<listitem><para>Multiplication and division (*, /)</para></listitem>
 	<listitem><para>Addition and subtraction (+, −)</para></listitem>
 	<listitem><para>Bitwise NOT (~)</para></listitem>
@@ -1104,7 +1108,7 @@ Usually, mathematical expressions are written as normally expected. Standard ope
 <sect1 id="qalculate-implicit-multiplication">
 <title>Implicit Multiplication and Parsing Modes</title>
 <para>
-The evaluation of short/implicit multiplication, without any multiplication sign (ex. <quote>5x</quote>, <quote>5(2+3)</quote>), differs depending on the parsing mode. In the conventional mode implicit multiplication does not differ from explicit multiplication (<quote>12/2(1+2) = 12/2*3 = 18</quote>, <quote>5x/5y = 5*x/5*y = xy</quote>). In the <quote>parse implicit multiplication first</quote> mode, implicit multiplication is parsed before explicit multiplication (<quote>12/2(1+2) = 12/(2*3) = 2</quote>, <quote>5x/5y = (5*x)/(5*y) = x/y</quote>). The default adaptive mode works as the <quote>parse implicit multiplication first</quote> mode, unless spaces are found (<quote>1/5x = 1/(5*x)</quote>, but <quote>1/5 x = (1/5)*x</quote>). In the adaptive mode unit expressions are parsed separately (<quote>5 m/5 m/s = (5*m)/(5*(m/s)) = 1 s</quote>). Function arguments without parentheses are an exception, where implicit multiplication in front of variables and units is parsed first regardless of mode (<quote>sqrt 2x = sqrt(2x)</quote>).
+The evaluation of short/implicit multiplication, without any multiplication sign (e.g. <quote>5x</quote>, <quote>5(2+3)</quote>), differs depending on the parsing mode. In the conventional mode implicit multiplication does not differ from explicit multiplication (<quote>12/2(1+2) = 12/2*3 = 18</quote>, <quote>5x/5y = 5*x/5*y = xy</quote>). In the <quote>parse implicit multiplication first</quote> mode, implicit multiplication is parsed before explicit multiplication (<quote>12/2(1+2) = 12/(2*3) = 2</quote>, <quote>5x/5y = (5*x)/(5*y) = x/y</quote>). The default adaptive mode works as the <quote>parse implicit multiplication first</quote> mode, unless spaces are found (<quote>1/5x = 1/(5*x)</quote>, but <quote>1/5 x = (1/5)*x</quote>). In the adaptive mode unit expressions are parsed separately (<quote>5 m/5 m/s = (5*m)/(5*(m/s)) = 1 s</quote>). Function arguments without parentheses are an exception, where implicit multiplication in front of variables and units is parsed first regardless of mode (<quote>sqrt 2x = sqrt(2x)</quote>).
 </para>
 <para>
 If the limit implicit multiplication option is activated, the use of implicit multiplication when parsing expressions and displaying results will be limited to avoid confusion. For example, if this mode is not activated and <quote>integrte(5x)</quote> is accidently typed instead of <quote>integrate(5x)</quote>, the expression is interpreted as <quote>int(e * e * (5 * x) * gr * t)</quote> (displayed in history window). The result will then without any error be <quote>int(2.3940139x * km^2)</quote> instead of <quote>2.5x^2</quote>. If limit implicit multiplication is activated, the mistyped expression would instead show an error telling that <quote>integrte</quote> is not a valid variable, function or unit (unless unknowns is enabled in which case the result will be <quote>5 "integrate" * x</quote>). When implicit multiplication is limited, variables, functions and units must be separated by a space, operator or parenthesis (<quote>xy</quote> does not equal <quote>x * y</quote>).
@@ -1176,6 +1180,18 @@ Putting <quote> to </quote> followed by an expression at the end of the mathemat
 <listitem><para>Show as binary, octal, decimal and hexadecimal number (opens convert bases dialog with the mathematical expression).</para></listitem>
 </varlistentry>
 <varlistentry>
+<term>rectangular / cartesian</term>
+<listitem><para>Show complex number in rectangular form.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>exponential</term>
+<listitem><para>Show complex number in exponential form.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>polar</term>
+<listitem><para>Show complex number in polar form.</para></listitem>
+</varlistentry>
+<varlistentry>
 <term>fraction</term>
 <listitem><para>Show as number in combined fractional format.</para></listitem>
 </varlistentry>
@@ -1215,88 +1231,94 @@ Putting <quote> to </quote> followed by an expression at the end of the mathemat
 	<varlistentry>
 		<term>Numerical Display</term>
 		<listitem><para>
-				These modes mainly control when numbers are displayed exponentially (ex. <quote>2.62E3</quote> which equals <quote>2620</quote>). In the default normal mode, numbers are displayed in exponential format if the exponent will be greater than the current precision. In scientific mode the lowest exponent is 3. In simple numerical mode the exponential format is never used and it is always used in purely scientific mode. In the engineering mode, the exponent is always a multiple of three. This is naturally equivalently true for numbers less than one and negative exponents. When the scientific modes are selected in the keypad (not from the menubar), negative exponents are automatically activated and sort minus last deactivated, while normal and simple modes do the opposite.
-			</para></listitem>
+				These modes mainly control when numbers are displayed exponentially (e.g. <quote>2.62E3</quote> which equals <quote>2620</quote>). In the default normal mode, numbers are displayed in exponential format if the exponent will be greater than the current precision. In scientific mode the lowest exponent is 3. In simple numerical mode the exponential format is never used and it is always used in purely scientific mode. In the engineering mode, the exponent is always a multiple of three. This is naturally equivalently true for numbers less than one and negative exponents. When the scientific modes are selected in the keypad (not from the menubar), negative exponents are automatically activated and sort minus last deactivated, while normal and simple modes do the opposite.
+		</para></listitem>
 	</varlistentry>
 	<varlistentry>
 		<term>Indicate Repeating Decimals</term>
 		<listitem><para>
-				If this option is on, &app; will not round infinitely repeating digit sequences, if the digits in the sequence fits the maximum number of decimals. Instead <quote>…</quote> will be displayed after the repeated digits and the result indicated as exact (compare <quote>9/11 ≈ 0,81818182</quote> with <quote>9/11 = 0,81 81…</quote>).
+			If this option is on, &app; will not round infinitely repeating digit sequences, if the digits in the sequence fits the maximum number of decimals. Instead <quote>…</quote> will be displayed after the repeated digits and the result indicated as exact (compare <quote>9/11 ≈ 0,81818182</quote> with <quote>9/11 = 0,81 81…</quote>).
 			</para></listitem>
 	</varlistentry>
 	<varlistentry>
 		<term>Round Halfway Number To Even</term>
 		<listitem><para>
-				With this option, halfway numbers will be rounded to even instead of upwards (ex. 2.65 is then rounded to 2.6 instead of 2.7). Note that this behavior is always applied in the <command>round()</command> function.
-			</para></listitem>
+			With this option, halfway numbers will be rounded to even instead of upwards (e.g. 2.65 is then rounded to 2.6 instead of 2.7). Note that this behavior is always applied in the <command>round()</command> function.
+		</para></listitem>
 	</varlistentry>
 	<varlistentry>
 		<term>Show Ending Zeroes</term>
 		<listitem><para>
-				if this option is on, approximate numbers in the result will be appended with zeroes, so that the number of digits (after preceding zeroes) will equal the precision.
-			</para></listitem>
+			if this option is on, approximate numbers in the result will be appended with zeroes, so that the number of digits (after preceding zeroes) will equal the precision.
+		</para></listitem>
 	</varlistentry>
 	<varlistentry>
 		<term>Negative Exponents</term>
 		<listitem><para>
-				If negative exponents is activated, division is shown as a negative power (ex. <quote>x * y^-1</quote> instead of <quote>x / y</quote>). 
-			</para></listitem>
+			If negative exponents is activated, division is shown as a negative power (e.g. <quote>x * y^-1</quote> instead of <quote>x / y</quote>). 
+		</para></listitem>
 	</varlistentry>
 	<varlistentry>
 		<term>Sort Minus Last</term>
 		<listitem><para>
-				This option decides if minus signs should be avoided in the first positions of the result expression.
-			</para></listitem>
+			This option decides if minus signs should be avoided in the first positions of the result expression.
+		</para></listitem>
+	</varlistentry>
+	<varlistentry>
+		<term>Complex Number Form</term>
+		<listitem><para>
+			Complex number can be displayed in rectangular/cartesian (e.g. <quote>5i + 2</quote>), exponential (e.g. <quote>5.39 * e^1.19</quote>) or polar form (e.g. <quote>5.39 * (cos(1.19) + i * sin(1.19))</quote>). 
+		</para></listitem>
 	</varlistentry>
 	<varlistentry>
 		<term>Fractional Display</term>
 		<listitem><para>
-				This controls if numbers are displayed in fractional or decimal mode. Decimal mode displays numbers as usually expected (<quote>6/4 = 1.5</quote>), combined displays a whole number and a fraction (<quote>6/4 = 1 1/2</quote>) and fractional only displays as fraction (<quote>6/4 = 3/2</quote>).
-			</para></listitem>
+			This controls if numbers are displayed in fractional or decimal mode. Decimal mode displays numbers as usually expected (<quote>6/4 = 1.5</quote>), combined displays a whole number and a fraction (<quote>6/4 = 1 1/2</quote>) and fractional only displays as fraction (<quote>6/4 = 3/2</quote>).
+		</para></listitem>
 	</varlistentry>
 	<varlistentry>
 		<term>Unit Display</term>
 		<listitem><para>
-				The automatic use of prefixes for units in results can be toggled on and off. By default prefixes are only used for a selection of units (mainly standard SI and CGS units), but this can be changed to also include currencies or all other units. By default prefixes representing a power of ten not dividable by three (centi, deci, deca and hekto) are not used and need to be enabled. If denominator prefixes are not explicitly enabled, prefixes will only be set for the numerator in a fractional unit expression (ex. <quote>1 Mg/m</quote> or <quote>1 kg/mm</quote>), unless there is no unit in the numerator. The place units separately alternative controls the display of unit expressions in result. If it is enabled (default) units will be displayed separate from other parts of the expression at the end (compare <quote>(5x*m)/(y*s)</quote> and <quote>5x/y m/s</quote>).
-			</para></listitem>
+			The automatic use of prefixes for units in results can be toggled on and off. By default prefixes are only used for a selection of units (mainly standard SI and CGS units), but this can be changed to also include currencies or all other units. By default prefixes representing a power of ten not dividable by three (centi, deci, deca and hekto) are not used and need to be enabled. If denominator prefixes are not explicitly enabled, prefixes will only be set for the numerator in a fractional unit expression (e.g. <quote>1 Mg/m</quote> or <quote>1 kg/mm</quote>), unless there is no unit in the numerator. The place units separately alternative controls the display of unit expressions in result. If it is enabled (default) units will be displayed separate from other parts of the expression at the end (compare <quote>(5x*m)/(y*s)</quote> and <quote>5x/y m/s</quote>).
+		</para></listitem>
 	</varlistentry>
 	<varlistentry>
 		<term>Abbreviate Names</term>
 		<listitem><para>
-				The display of unit, prefix, variable and function names can be controlled by selecting to display abbreviations or full length names (ex. <quote>5 cm</quote> or <quote>5 centimeters</quote>). Both abbreviations and long names can however always be entered in expressions.
-			</para></listitem>
+			The display of unit, prefix, variable and function names can be controlled by selecting to display abbreviations or full length names (e.g. <quote>5 cm</quote> or <quote>5 centimeters</quote>). Both abbreviations and long names can however always be entered in expressions.
+		</para></listitem>
 	</varlistentry>
 	<varlistentry>
 		<term>Approximation</term>
 		<listitem><para>
-				When always exact mode is on, the calculation will not go further than what can be calculated exactly (ex. <quote>sqrt(2+3) = sqrt(5)</quote>). The  default <quote>Try Exact</quote> mode, will calculate the result exact as far as possible and then approximately. Approximate mode will directly calculate a approximate result, thus being a bit faster but giving a less correct approximate indication (<quote>sin(pi/2)</quote> return approximately one instead of exactly one). If the interval arithmetic mode is activated the precision of the final result is guaranteed by calculating an interval for every approximate value (See <xref linkend="qalculate-interval-arithmetic"/>).
-			</para></listitem>
+			When always exact mode is on, the calculation will not go further than what can be calculated exactly (e.g. <quote>sqrt(2+3) = sqrt(5)</quote>). The  default <quote>Try Exact</quote> mode, will calculate the result exact as far as possible and then approximately. Approximate mode will directly calculate a approximate result, thus being a bit faster but giving a less correct approximate indication (<quote>sin(pi/2)</quote> return approximately one instead of exactly one). If the interval arithmetic mode is activated the precision of the final result is guaranteed by calculating an interval for every approximate value (See <xref linkend="qalculate-interval-arithmetic"/>).
+		</para></listitem>
 	</varlistentry>
 	<varlistentry>
 		<term>Assumptions</term>
 		<listitem><para>
-				This controls the default assumptions for unknown variables without explicitly defined assumptions. See <xref linkend="qalculate-variables"/>.
-				The assume denominators non-zero alternative makes it possible to avoid the situation where expressions such as <quote>(x-1)/(x-1)</quote> can not be further simplified because the denominator might be zero (if x equals 1). With this alternative activated the example can be reduced to 1.
-			</para></listitem>
+			This controls the default assumptions for unknown variables without explicitly defined assumptions. See <xref linkend="qalculate-variables"/>.
+			The assume denominators non-zero alternative makes it possible to avoid the situation where expressions such as <quote>(x-1)/(x-1)</quote> can not be further simplified because the denominator might be zero (if x equals 1). With this alternative activated the example can be reduced to 1.
+		</para></listitem>
 	</varlistentry>
 	<varlistentry>
 		<term>Parsing Mode</term>
 		<listitem><para>
-				These options controls how expressions are interpreted. There are three main modes, which mainly controls if implicit multiplication is handled differently from explicit multiplication and if spaces are taken into account or not.  See <xref linkend="qalculate-implicit-multiplication"/>.
-				If the read precsion option is activated, decimal numbers are intrepeted as approximate with precision equal to the number of digits (ex. <quote>1.1 * 1.1 ≈ 1.2</quote>). If interval arithmetic is enabled, decimal numbers are interpreted as an interval between the numbers that are normally rounded to the entered number (ex. <quote>1.1 = 1.1±0.05</quote>).
-			</para></listitem>
+			These options controls how expressions are interpreted. There are three main modes, which mainly controls if implicit multiplication is handled differently from explicit multiplication and if spaces are taken into account or not.  See <xref linkend="qalculate-implicit-multiplication"/>.
+			If the read precsion option is activated, decimal numbers are intrepeted as approximate with precision equal to the number of digits (e.g. <quote>1.1 * 1.1 ≈ 1.2</quote>). If interval arithmetic is enabled, decimal numbers are interpreted as an interval between the numbers that are normally rounded to the entered number (e.g. <quote>1.1 = 1.1±0.05</quote>).
+		</para></listitem>
 	</varlistentry>
 	<varlistentry>
 		<term>Precision</term>
 		<listitem><para>
-				Precision controls the precision in approximate numbers and the number of significant digits. If the read precision option is turned on, input numbers with decimals will be interpreted as approximate with a precision equal to the number of digits (ex. <quote>2.50 + 3.4567 = 5.96</quote>).
-			</para></listitem>
+			Precision controls the precision in approximate numbers and the number of significant digits. If the read precision option is turned on, input numbers with decimals will be interpreted as approximate with a precision equal to the number of digits (e.g. <quote>2.50 + 3.4567 = 5.96</quote>).
+		</para></listitem>
 	</varlistentry>
 	<varlistentry>
 		<term>Decimals</term>
 		<listitem><para>
-				In the decimals dialog, the number of decimals displayed can be controlled. This includes minimal (will fill out with zeroes) and maximal number of decimals (will round numbers).
-			</para></listitem>
+			In the decimals dialog, the number of decimals displayed can be controlled. This includes minimal (will fill out with zeroes) and maximal number of decimals (will round numbers).
+		</para></listitem>
 	</varlistentry>	
 </variablelist>
 <sect1 id="qalculate-interval-arithmetic">
@@ -1359,7 +1381,7 @@ Reverse Polish Notation can also be used directly in expression. This can be act
 Variables are used to conveniently store a fixed value/result under a name. Variables can store everything that a result may contain, including numbers, units, variables, unsolved expressions and functions etc.
 </para>
 <para>
-There two different kinds of variables known and unknown. Known variables represents a fixed value, usually a number, while unknown variables represents a range or type of values (ex. a non-negative integer). 
+There two different kinds of variables known and unknown. Known variables represents a fixed value, usually a number, while unknown variables represents a range or type of values (e.g. a non-negative integer). 
 </para>
 <para>
 Some common constants that can only be approximately represented by a real number, such as pi and e, are special known variables. They are not fixed but are recalculated each time precision changes, thereby not compromising the arbitrary precision of &app;.
@@ -1472,7 +1494,7 @@ Functions is normally entered in an expression by writing the name followed by a
 The insert function dialog presents an easy way to insert a function and its arguments.
 </para>
 <para>
-Although it can lower the readability of an expression, it is perfectly legal to skip the parenthesis and put the arguments after a space, and end with a space or operator. This is most useful in short expressions with single argument functions (ex. <quote>sqrt 5</quote>).
+Although it can lower the readability of an expression, it is perfectly legal to skip the parenthesis and put the arguments after a space, and end with a space or operator. This is most useful in short expressions with single argument functions (e.g. <quote>sqrt 5</quote>).
 </para>
 <para>
 Argument types include:
@@ -1508,7 +1530,7 @@ Here the main function categories and some of their members are described, to gi
 <varlistentry>
 <term>Algebra</term>
 <listitem><para>
-Contains <command>sum()</command> and <command>product()</command>, which corresponds to the sum and product signs. <command>solve()</command> solves equations (ex. <quote>solve(x * 2 = 8)</quote> returns <quote>4</quote> meaning that x equals 4). Use <command>solve2()</command> and <command>multisolve()</command> to solve multiple equations with multiple variables.
+Contains <command>sum()</command> and <command>product()</command>, which corresponds to the sum and product signs. <command>solve()</command> solves equations (e.g. <quote>solve(x * 2 = 8)</quote> returns <quote>4</quote> meaning that x equals 4). Use <command>solve2()</command> and <command>multisolve()</command> to solve multiple equations with multiple variables.
 </para></listitem>
 </varlistentry>
 <varlistentry>
@@ -1533,7 +1555,7 @@ Contains functions useful for calculations with complex numbers, including <comm
 <term>Data Sets</term>
 <listitem><para>
 A data set consists of a set of properties and objects, which can be accessed by a function which takes two arguments — object and property. The function returns the object's value for the selected property.
-For example, the data in the <quote>Elements</quote> data set is accessed with the <command>atom()</command> function, with the element (referenced using atomic symbol, number or name) and property (ex. weight) as arguments.
+For example, the data in the <quote>Elements</quote> data set is accessed with the <command>atom()</command> function, with the element (referenced using atomic symbol, number or name) and property (e.g. weight) as arguments.
 The special property <quote>info</quote> displays all properties of the object in a dialog window.
 </para></listitem>
 </varlistentry>
@@ -1603,7 +1625,7 @@ Includes <command>beta()</command>, <command>gamma()</command> and similar funct
 <varlistentry>
 <term>Statistics</term>
 <listitem><para>
-Contains a lot of functions for descriptive statistics and some statistical tests. Data sets are stored as vectors. Generally, functions with a vector/data set as last argument can take elements/samples as a variable number of arguments directly instead of in a vector (ex. <quote>mean(1, 2, 3)</quote> equals <quote>mean(vector(1, 2, 3))</quote>). Also contains the <command>rand()</command> function, which returns a pseudo random number between 0 and 1, and does not take any arguments.
+Contains a lot of functions for descriptive statistics and some statistical tests. Data sets are stored as vectors. Generally, functions with a vector/data set as last argument can take elements/samples as a variable number of arguments directly instead of in a vector (e.g. <quote>mean(1, 2, 3)</quote> equals <quote>mean(vector(1, 2, 3))</quote>). Also contains the <command>rand()</command> function, which returns a pseudo random number between 0 and 1, and does not take any arguments.
 </para></listitem>
 </varlistentry>
 <varlistentry>
@@ -1615,7 +1637,7 @@ Trigonometric functions, including <command>sin()</command>, <command>cos()</com
 <varlistentry>
 <term>Utilities</term>
 <listitem><para>
-Various utility functions. Most are only useful in definition of other functions. The <command>save()</command> function can however be a quick way of storing a value in a variable, and <command>csum()</command> can be a powerful tool for data processing. This category also contains some functions, such as <command>char()</command> and <command>ascii()</command>, that might be useful for programmers. , <command>replace()</command> provides an easy way of replacing unknown variables by known expressions in a value (ex. <quote>replace(5x^2+x, x, 3)</quote> equals <quote>5*3^2+3</quote>).
+Various utility functions. Most are only useful in definition of other functions. The <command>save()</command> function can however be a quick way of storing a value in a variable, and <command>csum()</command> can be a powerful tool for data processing. This category also contains some functions, such as <command>char()</command> and <command>ascii()</command>, that might be useful for programmers. , <command>replace()</command> provides an easy way of replacing unknown variables by known expressions in a value (e.g. <quote>replace(5x^2+x, x, 3)</quote> equals <quote>5*3^2+3</quote>).
 </para></listitem>
 </varlistentry>
 </variablelist>
@@ -1656,7 +1678,7 @@ The expression of a function is basically a normal expression with placeholders 
 </figure>
 </para>
 <para>
-Additionally, optional arguments can be put in the expression with upper-case (X, Y, Z, ...) instead of lower-case letters (x, y, z, ...). The default value can be put in brackets after the letter (ex. <quote>\X{2}</quote>). The default value may be omitted and is then zero. All additional arguments after an optional argument must also be optional. 
+Additionally, optional arguments can be put in the expression with upper-case (X, Y, Z, ...) instead of lower-case letters (x, y, z, ...). The default value can be put in brackets after the letter (e.g. <quote>\X{2}</quote>). The default value may be omitted and is then zero. All additional arguments after an optional argument must also be optional. 
 </para>
 <para>
 A condition that must be true (&gt;0) for the function to be calculated, can optionally be entered in the text field below the expression. This follows the same conventions as function expressions. For example if the second argument must be higher than the first, <quote>\y &gt; \x</quote> may be entered as condition.
@@ -1690,7 +1712,7 @@ Among units, &app; has support for currencies with up-to-date exchange rates. Cu
 <sect1 id="qalculate-unit-conversion">
 <title>Conversion</title>
 <para>
-Expressions can be converted to a specific unit directly in the expression entry with the <quote>to</quote> operator, which converts the left-hand expression to a specified unit (ex. <quote>5 feet + 2 inches to cm</quote> converts the result of <quote>5 feet + 2 inches</quote> to centimeters and displays it). Unit expressions may only contain units, prefixes, exponents, multiplication and division. By default, no prefix will be added to units typed without prefix, but this behavior can be modified by putting a question mark in front of the unit expression (<quote>6 561 ft to m ≈ 2000 m</quote> but <quote>6 561 ft to ?m ≈ 2 km</quote>). Type <quote>to optimal</quote> to get optimal unit, <quote>to base</quote> for base units, or <quote>to mixed</quote> to force the use of mixed units (see below). Other elements are ignored (except <quote>bin</quote>, <quote>oct</quote> and <quote>hex</quote>). 
+Expressions can be converted to a specific unit directly in the expression entry with the <quote>to</quote> operator, which converts the left-hand expression to a specified unit (e.g. <quote>5 feet + 2 inches to cm</quote> converts the result of <quote>5 feet + 2 inches</quote> to centimeters and displays it). Unit expressions may only contain units, prefixes, exponents, multiplication and division. By default, no prefix will be added to units typed without prefix, but this behavior can be modified by putting a question mark in front of the unit expression (<quote>6 561 ft to m ≈ 2000 m</quote> but <quote>6 561 ft to ?m ≈ 2 km</quote>). Type <quote>to optimal</quote> to get optimal unit, <quote>to base</quote> for base units, or <quote>to mixed</quote> to force the use of mixed units (see below). Other elements are ignored (except <quote>bin</quote>, <quote>oct</quote> and <quote>hex</quote>). 
 </para>
 <para>
 The unit conversion view can also be used. It is shown when pressing <guilabel>Conversion</guilabel>, <keycombo><keycap>Ctrl</keycap><keycap>C</keycap></keycombo>, <menuchoice><guimenu>Edit</guimenu><guimenuitem>Convert To Unit Expression...</guimenuitem></menuchoice> or <keycombo><keycap>Ctrl</keycap><keycap>T</keycap></keycombo> (the last two options moves to focus to the unit expression entry). Enter a unit expression in the text entry and press <keycap>Enter</keycap> (or click <guibutton>Convert</guibutton>), or select a unit from the list. An appropriate unit category will automatically be selected from units in the current result. If <guibutton>Continuous expression</guibutton> is checked subsequent results will automatically be converted, and if <guibutton>Set missing prefixes</guibutton> the optimal prefix will be set for unit expressions without any prefix. A unit can be inserted directly into the expression entry from the list by middle click selection or using the context menu.
@@ -1738,13 +1760,13 @@ Select <menuchoice><guimenu>File</guimenu><guisubmenu>New</guisubmenu><guimenuit
 First the unit class needs to be selected. Depending on the unit class, different elements in the dialog will be enabled. For all units, category and descriptive name can be specified to keep them well organized. A unit can also be hidden from unit menus with the corresponding check box, which can be useful for some composite units.
 </para>
 <para>
-Base and alias units normally have three different name forms defined for use in expressions — abbreviation (ex. <quote>m</quote>), singular (<quote>meter</quote>) and plural (<quote>meters</quote>). Composite units only have an internal name, used to reference the unit in definitions of other units.
+Base and alias units normally have three different name forms defined for use in expressions — abbreviation (e.g. <quote>m</quote>), singular (<quote>meter</quote>) and plural (<quote>meters</quote>). Composite units only have an internal name, used to reference the unit in definitions of other units.
 </para>
 <para>
-For base units, the name is all that is needed. For alias units, on the other hand, a base unit, exponent and relation are necessary. The base unit must not necessarily be of the base unit class and it is recommended that an alias unit is defined in relation to the closest unit (ex. 1ft = 3 hands, 1 hand = 4 in, and 1 in = 0.0254 m). The relation is usually just a number that tells how large quantity of the base unit is needed to get the alias unit (alias unit = base unit * relation). The check box below relation in the dialog specifies if the relation is exact or approximate. The exponent defines the exponential relation to the base unit, so that the alias unit equals the base unit raised to the exponent. For simple unit relations this gives: alias unit = relation * base unit^exponent.
+For base units, the name is all that is needed. For alias units, on the other hand, a base unit, exponent and relation are necessary. The base unit must not necessarily be of the base unit class and it is recommended that an alias unit is defined in relation to the closest unit (e.g. 1ft = 3 hands, 1 hand = 4 in, and 1 in = 0.0254 m). The relation is usually just a number that tells how large quantity of the base unit is needed to get the alias unit (alias unit = base unit * relation). The check box below relation in the dialog specifies if the relation is exact or approximate. The exponent defines the exponential relation to the base unit, so that the alias unit equals the base unit raised to the exponent. For simple unit relations this gives: alias unit = relation * base unit^exponent.
 </para>
 <para>
-Composite units need a unit expression with multiple units as base, in the base unit field. These expressions may only contain units, prefixes, exponents, multiplication and division (ex. <quote>km/h</quote>). 
+Composite units need a unit expression with multiple units as base, in the base unit field. These expressions may only contain units, prefixes, exponents, multiplication and division (e.g. <quote>km/h</quote>). 
 </para>
 </sect1>
 </chapter>
@@ -1768,7 +1790,7 @@ To plot functions or data sets, select <menuchoice><guimenu>File</guimenu><guime
 	</screenshot>
 </figure>
 <para>
-Plot functions are normal expressions that represents f(x) in y=f(x) (ex. <quote>sin(x)</quote>). The x can be specified as a different unknown variable (x, y, z) or a quoted text string (actually any mathematical expression which will then be matched in the plot expression and replaced by the values on the x axis) in the variable entry below the function/data list.
+Plot functions are normal expressions that represents f(x) in y=f(x) (e.g. <quote>sin(x)</quote>). The x can be specified as a different unknown variable (x, y, z) or a quoted text string (actually any mathematical expression which will then be matched in the plot expression and replaced by the values on the x axis) in the variable entry below the function/data list.
 </para>
 <para>
 To plot a data set, enter an expression that results in a matrix or vector. Select <interface>Vector/Matrix</interface> below and vectors will appear as one series and matrices will appear with each column or row (if selected) as a series, If the paired matrix option instead is selected, the first column/row of the matrix will constitute the y-values and the second the x-values.
