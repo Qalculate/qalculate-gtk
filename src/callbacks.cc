@@ -7084,7 +7084,7 @@ void result_prefix_changed(Prefix *prefix) {
 void expression_calculation_updated() {
 	expression_has_changed2 = true;
 	display_parse_status();
-	if(!rpn_mode) execute_expression(COMMAND_EVAL);
+	if(!rpn_mode) execute_expression(false);
 	update_status_text();
 }
 void expression_format_updated(bool recalculate) {
@@ -12003,6 +12003,7 @@ void load_preferences() {
 	evalops.parse_options.comma_as_separator = false;
 	evalops.mixed_units_conversion = MIXED_UNITS_CONVERSION_DEFAULT;
 	evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
+	evalops.local_currency_conversion = true;
 	b_decimal_comma = -1;
 	
 	keep_function_dialog_open = false;
@@ -12101,7 +12102,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {2, 6, 1};
+	int version_numbers[] = {2, 6, 2};
 	bool old_history_format = false;
 			
 	if(file) {
@@ -12434,6 +12435,8 @@ void load_preferences() {
 						if(mode_index == 1) evalops.mixed_units_conversion = (MixedUnitsConversion) v;
 						else modes[mode_index].eo.mixed_units_conversion = (MixedUnitsConversion) v;
 					}
+				} else if(svar == "local_currency_conversion") {
+					evalops.local_currency_conversion = v;
 				} else if(svar == "indicate_infinite_series") {
 					if(mode_index == 1) printops.indicate_infinite_series = v;
 					else modes[mode_index].po.indicate_infinite_series = v;
@@ -12829,6 +12832,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "load_global_definitions=%i\n", load_global_defs);
 	//fprintf(file, "fetch_exchange_rates_at_startup=%i\n", fetch_exchange_rates_at_startup);
 	fprintf(file, "auto_update_exchange_rates=%i\n", auto_update_exchange_rates);
+	fprintf(file, "local_currency_conversion=%i\n", evalops.local_currency_conversion);
 #ifdef _WIN32
 	fprintf(file, "last_version_check=%s\n", last_version_check_date.toISOString().c_str());
 	if(!last_found_version.empty()) fprintf(file, "last_found_version=%s\n", last_found_version.c_str());
@@ -13442,6 +13446,10 @@ gboolean on_preferences_update_exchange_rates_spin_button_output(GtkSpinButton *
 		gtk_entry_set_text(GTK_ENTRY(spin), _("ask"));
 	}
 	return TRUE;
+}
+void on_preferences_checkbutton_local_currency_conversion_toggled(GtkToggleButton *w, gpointer) {
+	evalops.local_currency_conversion = gtk_toggle_button_get_active(w);
+	expression_calculation_updated();
 }
 void on_preferences_checkbutton_copy_separator_toggled(GtkToggleButton *w, gpointer) {
 	copy_separator = gtk_toggle_button_get_active(w);
@@ -16310,7 +16318,7 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 		MENU_ITEM(_("Duodecimal"), menu_to_duo)
 		MENU_ITEM(_("Hexadecimal"), menu_to_hex)
 		if(b_integ) {MENU_ITEM(_("Roman"), menu_to_roman)}
-		if(!b_complex) MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)
+		if(!b_complex) {MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)}
 		if(!b_integ && !b_date) {MENU_ITEM(_("Fraction"), menu_to_fraction)}
 		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_RECTANGULAR) {MENU_ITEM(_("Rectangular"), menu_to_rectangular)}
 		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_EXPONENTIAL) {MENU_ITEM(_("Exponential"), menu_to_exponential)}
@@ -16323,12 +16331,7 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 	vector<Unit*> to_us;
 	size_t i_added = 0;
 	if(u_result && u_result->isCurrency()) {
-		string local_currency;
-		struct lconv *lc = localeconv();
-		if(lc) local_currency = lc->int_curr_symbol;
-		remove_blank_ends(local_currency);
-		Unit *u_local_currency = NULL;
-		if(!local_currency.empty()) u_local_currency = CALCULATOR->getActiveUnit(local_currency);
+		Unit *u_local_currency = CALCULATOR->getLocalCurrency();
 		const char *currency_units[] = {"USD", "GBP", "JPY", "CNY", "INR", "CAD", "BRL"};
 		to_us.clear();
 		if(latest_button_currency && latest_button_currency != u_result) to_us.push_back(latest_button_currency);

@@ -748,12 +748,7 @@ void create_button_menus(void) {
 	if(!latest_button_currency_pre.empty()) {
 		latest_button_currency = CALCULATOR->getActiveUnit(latest_button_currency_pre);
 	}
-	string local_currency;
-	struct lconv *lc = localeconv();
-	if(lc) local_currency = lc->int_curr_symbol;
-	remove_blank_ends(local_currency);
-	Unit *u_local_currency = NULL;
-	if(!local_currency.empty()) u_local_currency = CALCULATOR->getActiveUnit(local_currency);
+	Unit *u_local_currency = CALCULATOR->getLocalCurrency();
 	if(!latest_button_currency && u_local_currency) latest_button_currency = u_local_currency;
 	if(!latest_button_currency) latest_button_currency = CALCULATOR->u_euro;
 	string unit_label_str;
@@ -1718,6 +1713,7 @@ get_preferences_dialog (void)
 		g_assert (gtk_builder_get_object(preferences_builder, "preferences_dialog") != NULL);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_display_expression_status")), display_expression_status);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_fetch_exchange_rates")), fetch_exchange_rates_at_startup);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_local_currency_conversion")), evalops.local_currency_conversion);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_save_mode")), save_mode_on_exit);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_allow_multiple_instances")), allow_multiple_instances);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_unicode_signs")), printops.use_unicode_signs);
