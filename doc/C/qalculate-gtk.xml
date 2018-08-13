@@ -550,11 +550,11 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			</row>
 			<row valign="top">
 				<entry><para>Convert To Optimal Unit</para></entry>
-				<entry><para>Tries to convert the units in the current result so that as few units as possible is used. Only SI units are used for conversion. If the original units are equally or more optimal, than the automatic alternative, they are kept.</para></entry>
+				<entry><para>Tries to convert the units in the current result so that as few units as possible is used. Only SI units are used for conversion. If the original units are equally or more optimal, than the automatic alternative, they are kept. Currencies are converted to the local currency, unless deactivated in the preferences dialog.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Convert To Optimal SI Unit</para></entry>
-				<entry><para>Tries to convert the units in the current result so that as few units as possible is used. Non-SI units are not kept, even if the number of units used increase, and the automatic alternative is prioritized.</para></entry>
+				<entry><para>Tries to convert the units in the current result so that as few units as possible is used. Non-SI units are not kept, even if the number of units used increase, and the automatic alternative is prioritized. Currencies are converted to the local currency, unless deactivated in the preferences dialog.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Insert Matrix</para></entry>
@@ -633,7 +633,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			</row>
 			<row valign="top">
 				<entry><para>Parsing Mode</para></entry>
-				<entry><para>Submenu with options to control how expressions are parsed (read/interpreted). There are three different modes to choose from. In addition the <quote>read precision</quote> option enables/disables interpretation of input numbers with decimals as approximate with a precision equal to the number of digits (after preceding zeroes), and <quote>limit implicit multiplication</quote> limits the use of implicit multiplication when parsing and displaying expressions. For more information see <xref linkend="qalculate-implicit-multiplication"/>. In this menu you also find the option to switch to RPN syntax for expression parsing.</para></entry>
+				<entry><para>Submenu with options to control how expressions are parsed (read/interpreted). There are three different modes to choose from. In addition the <quote>read precision</quote> option enables/disables interpretation of input numbers with decimals as approximate with a precision equal to the number of digits (after preceding zeroes), and <quote>limit implicit multiplication</quote> limits the use of implicit multiplication for parsing and display of expressions. For more information see <xref linkend="qalculate-implicit-multiplication"/>. In this menu you also find the option to switch to RPN syntax for expression parsing.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>RPN Mode (<keycombo><keycap>Ctrl</keycap><keycap>R</keycap></keycombo>)</para></entry>
@@ -1283,7 +1283,11 @@ If <quote>to</quote> is not preceded by an expression, the previous result will 
 		<term>Unit Display</term>
 		<listitem><para>
 			The automatic use of prefixes for units in results can be toggled on and off. By default prefixes are only used for a selection of units (mainly standard SI and CGS units), but this can be changed to also include currencies or all other units. By default prefixes representing a power of ten not dividable by three (centi, deci, deca and hekto) are not used and need to be enabled. If denominator prefixes are not explicitly enabled, prefixes will only be set for the numerator in a fractional unit expression (e.g. <quote>1 Mg/m</quote> or <quote>1 kg/mm</quote>), unless there is no unit in the numerator. The place units separately alternative controls the display of unit expressions in result. If it is enabled (default) units will be displayed separate from other parts of the expression at the end (compare <quote>(5x*m)/(y*s)</quote> and <quote>5x/y m/s</quote>).
-		</para></listitem>
+		</para>
+		<para>
+			Units can be automatically converted to base units or the optimal units in results. Optimal conversion means that the number of units in the result is reduced to as few units as possible. Only SI units are used for conversion. If <guimenuitem>Convert to Optimal SI unit</guimenuitem> is activated, non-SI units are converted to SI units, even if equally or less optimal than the original unit(s). In optimal unit mode, currencies are converted to the local currency, unless deactivated in the preferences dialog. Mixed units conversion allows certain units, such as time units and many imperial/U.S. customary units, to be converted to a combination of appropriate units, e.g. <quote>60.2 minutes = 1 hour to 12 seconds</quote>.
+		</para>
+		</listitem>
 	</varlistentry>
 	<varlistentry>
 		<term>Abbreviate Names</term>
@@ -1327,7 +1331,7 @@ If <quote>to</quote> is not preceded by an expression, the previous result will 
 <sect1 id="qalculate-interval-arithmetic">
 <title>Interval Arithmetic</title>
 <para>
-Interval arithmetic can be used explicitly to do calculations on an interval (defined using the <command>interval()</command> function or <quote>±</quote> notation), or implicitly for all approximate calculations to keep track of precision changes. The latter is especially useful for calculation using numbers with few implicit digits, in combination with the <quote>read precision</quote> mode, for calculation with approximate physical constants, which are defined as an interval using standard uncertainty values (if interval arithmetic is activated), or to gracefully handle for example catastrophic cancellation (in subtracting two nearly equal numbers). Interval arithmetic can be (de)activated using <menuchoice><guimenu>Mode</guimenu><guimenu>Approximation</guimenu><guimenuitem>Interval Arithmetic</guimenuitem></menuchoice> or from the corresponding menu on the keypad.
+Interval arithmetic can be used explicitly to perform calculations on an interval (defined using the <command>interval()</command> function or <quote>±</quote> notation), or implicitly for all approximate calculations to keep track of precision changes. The latter is especially useful for calculation using numbers with few implicit digits, in combination with the <quote>read precision</quote> mode, for calculation with approximate physical constants, which are defined as an interval using standard uncertainty values (if interval arithmetic is activated), or to gracefully handle for example catastrophic cancellation (in subtracting two nearly equal numbers). Interval arithmetic can be (de)activated using <menuchoice><guimenu>Mode</guimenu><guimenu>Approximation</guimenu><guimenuitem>Interval Arithmetic</guimenuitem></menuchoice> or from the corresponding menu on the keypad.
 </para>
 <para>
 The main issue with interval arithmetic is handling of dependent values. The simple expression <quote>2 * interval(1, 2) - pi * interval(1, 2)</quote> gives as result <quote>interval(-4.283, 0.858)</quote>, which is correct if the two intervals in the expression are unrelated. If they on the instead refers to the same measurement the true result should be <quote>-interval(1.141, 2.283)</quote>, but &app; has no way of knowing this. There are some ways the circumvent this issue <quote>interval(1, 2) * (2 - pi)</quote> returns the correct interval. &app; is in most cases able to handle this automatically with variables and function arguments for most differentiable functions.
@@ -1740,7 +1744,7 @@ The final way to convert to another unit is to use the predefined units in the <
 It is also possible to let &app; automagically convert the result to appropriate units with <menuchoice><guimenu>Edit</guimenu><guisubmenu>Convert To Optimal Unit</guisubmenu></menuchoice> or <menuchoice><guimenu>Edit</guimenu><guisubmenu>Convert To Base Units</guisubmenu></menuchoice> (or the corresponding options in the result context menu). If instead the corresponding choice is selected from <menuchoice><guimenu>Mode</guimenu><guimenu>Unit Display</guimenu></menuchoice>, each result will automatically be converted until the choice is deactivated (<menuchoice><guimenu>Mode</guimenu><guimenu>Unit Display</guimenu><guisubmenu>No Automatic Conversion</guisubmenu></menuchoice>).
 </para>
 <para>
-By default (controlled by <menuchoice><guimenu>Edit</guimenu><guisubmenu>Convert To Mixed Units</guisubmenu></menuchoice>) certain units, such as time units and many imperial/U.S. customary units, are automatically converted to mixed units (e.g. <quote>60.2 minutes = 1 hour to 12 seconds</quote>). When explicitely converting to a specific unit the integer value of the selected unit is preserved (<quote>1.51 h to min = 90 min + 36 s</quote>) and mixed units is not used if otherwise the unit would not be present in the result (<quote>6 in to ft = 0.5 ft</quote>). This behavior can be modified by prepending the unit with a plus or minus sign (e.g. <quote>174 cm to +in ≈ 5 ft + 8,5 in</quote>, <quote>1.51 h to -min = 90.6 min</quote>).
+By default (controlled by <menuchoice><guimenu>Mode</guimenu><guisubmenu>Unit Display</guisubmenu><guimenuitem>Convert To Mixed Units</guimenuitem></menuchoice>) certain units, such as time units and many imperial/U.S. customary units, are automatically converted to mixed units (e.g. <quote>60.2 minutes = 1 hour to 12 seconds</quote>). When explicitely converting to a specific unit the integer value of the selected unit is preserved (<quote>1.51 h to min = 90 min + 36 s</quote>) and mixed units is not used if otherwise the unit would not be present in the result (<quote>6 in to ft = 0.5 ft</quote>). This behavior can be modified by prepending the unit with a plus or minus sign (e.g. <quote>174 cm to +in ≈ 5 ft + 8,5 in</quote>, <quote>1.51 h to -min = 90.6 min</quote>).
 </para>
 </sect1>
 <sect1 id="qalculate-unit-creation">
