@@ -5971,11 +5971,14 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			pango_layout_get_pixel_size(layout_comma, &comma_w, &comma_h);
 			PangoLayout *layout_function = gtk_widget_create_pango_layout(resultview, NULL);
 		
-			str = "";	
+			str = "";
 			TTBP(str);
+			
+			bool b_one_arg = m.function() == CALCULATOR->f_signum;
 			
 			const ExpressionName *ename = &m.function()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
 			if(ename->suffix && ename->name.length() > 1) {
+				
 				size_t i = ename->name.rfind('_');
 				bool b = i == string::npos || i == ename->name.length() - 1 || i == 0;
 				size_t i2 = 1;
@@ -5997,6 +6000,14 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				TTE(str);
 			} else {
 				str += ename->name;
+				if((m.function() == CALCULATOR->f_lambert_w || m.function() == CALCULATOR->f_logn) && m.size() == 2 && ((m[1].size() == 0 && (!m[1].isNumber() || (m[1].number().isInteger() && m[1].number() < 100 && m[1].number() > -100))) || (m[1].isNegate() && m[1][0].size() == 0 && (!m[1][0].isNumber() || (m[1][0].number().isInteger() && m[1][0].number() < 100 && m[1][0].number() > -100))))) {
+					b_one_arg = true;
+					TTBP_SMALL(str);
+					str += "<sub>";
+					str += m[1].print(po);
+					str += "</sub>";
+					TTE(str);
+				}
 			}
 			gsub("_", " ", str);
 			
@@ -6009,7 +6020,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			dh = function_h / 2;
 
 			for(size_t index = 0; index < m.size(); index++) {
-				if(index == 1 && m.function() == CALCULATOR->f_signum && m[1].isZero()) break;
+				if(index == 1 && b_one_arg) break;
 				ips_n.wrap = m[index].needsParenthesis(po, ips_n, m, index + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
 				IntervalDisplay id_bak = po.interval_display;
 				if(m.function() == CALCULATOR->f_interval && m[index].isNumber()) {
@@ -6472,8 +6483,9 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 					inhistory_type.push_back(QALCULATE_HISTORY_EXPRESSION);
 					inhistory.push_back(result_text);
 					if(adaptive_interval_display) {
+						string expression_str = get_expression_text();
 						if(parsed_mstruct && parsed_mstruct->containsFunction(CALCULATOR->f_interval)) printops.interval_display = INTERVAL_DISPLAY_INTERVAL;
-						else if(result_text.find("+/-") != string::npos || result_text.find("+/" SIGN_MINUS) != string::npos || result_text.find("±") != string::npos) printops.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
+						else if(expression_str.find("+/-") != string::npos || expression_str.find("+/" SIGN_MINUS) != string::npos || expression_str.find("±") != string::npos) printops.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
 						else printops.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 					}
 				}
@@ -7050,6 +7062,10 @@ void result_display_updated() {
 	update_status_text();
 }
 void result_format_updated() {
+	IntervalDisplay ivdisp = printops.interval_display;
+	printops.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
+	CALCULATOR->setMessagePrintOptions(printops);
+	printops.interval_display = ivdisp;
 	setResult(NULL, true, false, false);
 	update_status_text();
 }
@@ -12096,13 +12112,17 @@ void load_preferences() {
 #endif
 			g_free(gstr_file);
 			first_time = true;
+			IntervalDisplay ivdisp = printops.interval_display;
+			printops.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
+			CALCULATOR->setMessagePrintOptions(printops);
+			printops.interval_display = ivdisp;
 			return;
 #ifndef _WIN32
 		}
 #endif
 	}
 
-	int version_numbers[] = {2, 6, 2};
+	int version_numbers[] = {2, 7, 0};
 	bool old_history_format = false;
 			
 	if(file) {
@@ -12748,6 +12768,10 @@ void load_preferences() {
 	} else {
 		first_time = true;
 	}
+	IntervalDisplay ivdisp = printops.interval_display;
+	printops.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
+	CALCULATOR->setMessagePrintOptions(printops);
+	printops.interval_display = ivdisp;
 	displayed_printops = printops;
 	initial_inhistory_index = inhistory.size() - 1;
 	g_free(gstr_file);
@@ -19442,7 +19466,7 @@ void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
 	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(dialog), authors);
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), _("Powerful and easy to use calculator"));
 	gtk_about_dialog_set_license_type(GTK_ABOUT_DIALOG(dialog), GTK_LICENSE_GPL_2_0);
-	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016-2017 Hanna Knutsson");
+	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016-2018 Hanna Knutsson");
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(dialog), "Qalculate! (GTK+)");
 	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dialog), VERSION);
 	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(dialog), "http://qalculate.github.io/");
