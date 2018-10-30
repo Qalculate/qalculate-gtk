@@ -57,6 +57,7 @@
                 <property name="can_focus">False</property>
                 <property name="valign">start</property>
                 <property name="orientation">vertical</property>
+                <property name="spacing">6</property>
                 <property name="layout_style">start</property>
                 <child>
                   <object class="GtkButton" id="variables_button_new">
@@ -119,6 +120,9 @@
                     <property name="tooltip_text" translatable="yes">Delete the selected variable</property>
                     <property name="use_underline">True</property>
                     <signal name="clicked" handler="on_variables_button_delete_clicked" swapped="no"/>
+                    <style>
+                      <class name="destructive-action"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -166,9 +170,6 @@
                     <property name="position">5</property>
                   </packing>
                 </child>
-                <style>
-                  <class name="linked"/>
-                </style>
               </object>
               <packing>
                 <property name="left_attach">1</property>
