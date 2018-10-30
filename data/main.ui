@@ -5809,13 +5809,14 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="border_width">6</property>
-                        <property name="row_spacing">6</property>
+                        <property name="row_spacing">12</property>
                         <property name="column_spacing">6</property>
                         <child>
                           <object class="GtkLabel" id="convert_label_unit">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="halign">end</property>
+                            <property name="margin_right">12</property>
                             <property name="label" translatable="yes">Unit expression</property>
                           </object>
                           <packing>
