@@ -140,6 +140,9 @@
                     <property name="tooltip_text" translatable="yes">Delete the selected unit</property>
                     <property name="use_underline">True</property>
                     <signal name="clicked" handler="on_units_button_delete_clicked" swapped="no"/>
+                    <style>
+                      <class name="destructive-action"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -534,6 +537,9 @@
             <property name="position">1</property>
           </packing>
         </child>
+        <style>
+          <class name="linked"/>
+        </style>
       </object>
     </child>
   </object>

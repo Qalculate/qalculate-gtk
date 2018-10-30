@@ -120,6 +120,9 @@
                     <property name="tooltip_text" translatable="yes">Delete the selected function</property>
                     <property name="use_underline">True</property>
                     <signal name="clicked" handler="on_functions_button_delete_clicked" swapped="no"/>
+                    <style>
+                      <class name="destructive-action"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="expand">False</property>

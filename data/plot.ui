@@ -515,7 +515,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="halign">end</property>
-                        <property name="spacing">6</property>
                         <property name="homogeneous">True</property>
                         <child>
                           <object class="GtkButton" id="plot_button_add">
@@ -567,6 +566,9 @@
                             <property name="position">2</property>
                           </packing>
                         </child>
+                        <style>
+                          <class name="linked"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
