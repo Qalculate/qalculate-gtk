@@ -60,7 +60,6 @@
                 <property name="can_focus">False</property>
                 <property name="halign">start</property>
                 <property name="orientation">vertical</property>
-                <property name="spacing">6</property>
                 <property name="layout_style">start</property>
                 <child>
                   <object class="GtkButton" id="units_button_new">
@@ -170,6 +169,9 @@
                     <property name="position">5</property>
                   </packing>
                 </child>
+                <style>
+                  <class name="linked"/>
+                </style>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -534,6 +536,9 @@
             <property name="position">1</property>
           </packing>
         </child>
+        <style>
+          <class name="linked"/>
+        </style>
       </object>
     </child>
   </object>
