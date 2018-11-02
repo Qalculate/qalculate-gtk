@@ -825,7 +825,6 @@ void set_unicode_buttons() {
 		else if(can_display_unicode_string_function(SIGN_DIVISION, (void*) gtk_builder_get_object(main_builder, "label_history_divide"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_divide")), SIGN_DIVISION);
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_divide")), DIVISION);
 		
-		
 		if(can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(main_builder, "label_rpn_sub"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sub")), SIGN_MINUS);
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sub")), MINUS);
 		if(can_display_unicode_string_function(SIGN_PLUS, (void*) gtk_builder_get_object(main_builder, "label_rpn_add"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_add")), SIGN_PLUS);
@@ -865,16 +864,61 @@ void set_unicode_buttons() {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_times")), MULTIPLICATION);
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), DIVISION);
 	}
-	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_comma")), CALCULATOR->getComma().c_str());
 
-	if(can_display_unicode_string_function("⤭", (void*) gtk_builder_get_object(main_builder, "label_swap"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_swap")), "<span size=\"large\">⤭</span>");
-	else if(can_display_unicode_string_function("⇆", (void*) gtk_builder_get_object(main_builder, "label_swap"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_swap")), "<span size=\"large\">⇆</span>");
-	else if(can_display_unicode_string_function("↔", (void*) gtk_builder_get_object(main_builder, "label_swap"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_swap")), "<span size=\"large\">↔</span>");
-	else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_swap")), _("Swap"));
+#define SUP_STRING(X) string("<span size=\"x-small\" rise=\"" + i2s((int) (pango_font_description_get_size(font_desc) / 1.5)) + "\">") + string(X) + "</span>"
+
+	PangoFontDescription *font_desc;
+	gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_history_xy"))), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_xy")), (string("<i>x") + SUP_STRING("y") + string("</i>")).c_str());
+	pango_font_description_free(font_desc);
+	gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_rpn_xy"))), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_xy")), (string("<i>x") + SUP_STRING("y") + string("</i>")).c_str());
+	pango_font_description_free(font_desc);
+
+
+	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_comma")), CALCULATOR->getComma().c_str());
 	if(can_display_unicode_string_function(SIGN_SQRT, (void*) gtk_builder_get_object(main_builder, "label_history_sqrt"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sqrt")), SIGN_SQRT);
 	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sqrt")), "sqrt");
 	if(can_display_unicode_string_function(SIGN_SQRT, (void*) gtk_builder_get_object(main_builder, "label_rpn_sqrt"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), SIGN_SQRT);
 	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), "sqrt");
+
+
+	GtkRequisition a, b;
+	gint w, h;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_reciprocal")), &a, NULL);
+	w = a.width; h = a.height;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_xy")), &a, NULL);
+	if(a.width > w) w = a.width; if(a.height > h) h = a.height;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sqrt")), &a, NULL);
+	if(a.width > w) w = a.width; if(a.height > h) h = a.height;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), &a, NULL);
+	if(a.width > w) w = a.width; if(a.height > h) h = a.height;
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), w, h);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_copyregister")), w, h);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_editregister")), w, h);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), w, h);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_add")), w, h);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sqrt")), w, h);
+
+	string swap_label;
+	if(can_display_unicode_string_function("⤭", (void*) gtk_builder_get_object(main_builder, "label_swap"))) swap_label = "⤭";
+	else if(can_display_unicode_string_function("⇆", (void*) gtk_builder_get_object(main_builder, "label_swap"))) swap_label = "⇆";
+	else if(can_display_unicode_string_function("↔", (void*) gtk_builder_get_object(main_builder, "label_swap"))) swap_label = "↔";
+	if(swap_label.empty()) {
+		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_swap")), _("Swap"));
+	} else {
+		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_swap")), (string("<span size=\"large\">") + swap_label + "</span>").c_str());
+		gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), &a, NULL);
+		gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), &b, NULL);
+		if(a.height > b.height) {
+			gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_swap")), swap_label.c_str());
+			gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), &a, NULL);
+			gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), &b, NULL);
+			if(a.height > b.height) {
+				gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_swap")), (string("<span size=\"small\">") + swap_label + "</span>").c_str());
+			}
+		}
+	}
 
 }
 
