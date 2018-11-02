@@ -883,7 +883,7 @@ void set_unicode_buttons() {
 	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), "sqrt");
 
 
-	GtkRequisition a, b;
+	GtkRequisition a;
 	gint w, h;
 	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_reciprocal")), &a, NULL);
 	w = a.width; h = a.height;
@@ -909,12 +909,10 @@ void set_unicode_buttons() {
 	} else {
 		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_swap")), (string("<span size=\"large\">") + swap_label + "</span>").c_str());
 		gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), &a, NULL);
-		gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), &b, NULL);
-		if(a.height > b.height) {
+		if(a.height > h) {
 			gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_swap")), swap_label.c_str());
 			gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), &a, NULL);
-			gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), &b, NULL);
-			if(a.height > b.height) {
+			if(a.height > h) {
 				gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_swap")), (string("<span size=\"small\">") + swap_label + "</span>").c_str());
 			}
 		}
