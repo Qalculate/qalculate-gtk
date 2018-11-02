@@ -806,13 +806,13 @@ For more information about variables, functions and units, see <xref linkend="qa
 <sect1 id="qalculate-convert-number-bases-dialog">
 <title>Convert Number Bases Dialog</title>
 <para>
-The number bases dialog, accessible from the <guimenu>File Menu</guimenu>, is an efficient and convenient tool for conversion between binary, octal, decimal and hexadecimal numbers. This dialog contains entries for each number base. When a number is typed in any of the entries, the others are automatically updated to display the current number in their format. Numbers, or expressions, entered follow the same rules as expressions in the main expression entry.
+The number bases dialog, accessible from the <guimenu>File Menu</guimenu>, is an efficient and convenient tool for conversion between binary, octal, decimal, dudecimal, hexadecimal and Roman numbers. This dialog contains entries for each number base. When a number is typed in any of the entries, the others are automatically updated to display the current number in their format. Numbers, or expressions, entered follow the same rules as expressions in the main expression entry.
 <figure id="qalculate-FIG-convert-number-bases">
 	<title>Convert Number Bases Dialog</title>
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/convert-number-bases.png" format="PNG" width="177"/>
+				<imagedata fileref="figures/convert-number-bases.png" format="PNG" width="311"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -873,7 +873,7 @@ In &app; mathematical entities, such as numbers and variables, are referred to a
 	<varlistentry>
 		<term>Unknowns</term>
 		<listitem><para>
-		Unknowns are text strings without any associated value. If &app; finds a character that are not associated with any variable, function or unit in an expression, then it will be regarded as an unknown variable. These are temporary unknown variables with default assumptions. Unknowns can also be explicitly entered by putting a text string in quotes. This is also necessary for undefined unknown variables with more than one character (e.g.<quote>xy</quote> is just one object, while xy means x * y). See <xref linkend="qalculate-variables"/>.
+		Unknowns are text strings without any associated value. These are temporary unknown variables with default assumptions. Unknowns can also be explicitly entered by placing a backslash (<quote>\</quote>) before a single character (e.g. <quote>5\a + 2\b</quote>) or using quotation marks (<quote>"</quote> or <quote>'</quote>) before and after a text string (e.g. <quote>5 "apples" + 2 "bananas"</quote>). If unknowns are activated ((<menuchoice><guimenu>Mode</guimenu><guimenu>Enabled Objects</guimenu><guimenuitem>Unknowns</guimenuitem></menuchoice>)) and &app; finds a character that are not associated with any variable, function or unit in an expression, then it will be regarded as an unknown variable. See <xref linkend="qalculate-variables"/>.
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -1177,7 +1177,7 @@ Putting <quote> to </quote> followed by an expression at the end of the mathemat
 </varlistentry>
 <varlistentry>
 <term>bases</term>
-<listitem><para>Show as binary, octal, decimal and hexadecimal number (opens convert bases dialog with the mathematical expression).</para></listitem>
+<listitem><para>Show as binary, octal, decimal, duodecimal, hexadecimal and Roman number (opens convert bases dialog with the mathematical expression).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>rectangular / cartesian</term>
@@ -1620,7 +1620,7 @@ A category for functions that do not fit elsewhere.
 <varlistentry>
 <term>Number Theory</term>
 <listitem><para>
-Contains subcategories arithmetic, number bases, and rounding, in addition to functions such as <command>abs()</command>, which returns the absolute value of a number, and <command>gcd()</command>, the greatest common divisor. <command>round()</command> is the standard rounding function (note that halfway numbers are rounded to even). The functions for number bases translates a text string, representing an expression (bases that use letters does not allow variables, functions and units) with numbers in a different base, to a decimal number. Includes <command>bin()</command> for binary numbers, <command>hex()</command> for hexadecimal numbers, <command>oct()</command> for octal numbers and <command>base()</command> for numbers in a base between 2 and 36 specified in the second argument.
+Contains subcategories arithmetic, number bases, and rounding, in addition to functions such as <command>abs()</command>, which returns the absolute value of a number (<quote>|</quote> can also be used; e.g. <quote>|-5| = abs(-5) = 5</quote>, and <command>gcd()</command>, the greatest common divisor. <command>round()</command> is the standard rounding function (note that halfway numbers are rounded to even). The functions for number bases translates a text string, representing an expression (bases that use letters does not allow variables, functions and units) with numbers in a different base, to a decimal number. Includes <command>bin()</command> for binary numbers, <command>hex()</command> for hexadecimal numbers, <command>oct()</command> for octal numbers and <command>base()</command> for numbers in a base between 2 and 36 specified in the second argument.
 </para></listitem>
 </varlistentry>
 <varlistentry>
