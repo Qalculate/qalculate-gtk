@@ -837,6 +837,9 @@ void create_button_menus(void) {
 
 void create_main_window(void) {
 
+	GtkIconTheme * theme = gtk_icon_theme_get_default();
+	gtk_icon_theme_add_resource_path(theme, "/qalculate-gtk/icons");
+
 	main_builder = getBuilder("main.ui");
 	g_assert(main_builder != NULL);
 	

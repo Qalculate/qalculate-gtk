@@ -2794,8 +2794,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2819,8 +2819,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2845,8 +2845,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -3609,7 +3609,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel" id="label_fac">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">&lt;i&gt;x&lt;/i&gt;!</property>
+                                            <property name="label">&lt;i&gt;x!&lt;/i&gt;</property>
                                             <property name="use_markup">True</property>
                                           </object>
                                         </child>
@@ -3718,7 +3718,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel" id="label_factorize">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">a(&lt;i&gt;x&lt;/i&gt;)&lt;sup&gt;b&lt;/sup&gt;</property>
+                                            <property name="label">a&lt;i&gt;(x)&lt;/i&gt;&lt;sup&gt;b&lt;/sup&gt;</property>
                                             <property name="use_markup">True</property>
                                           </object>
                                         </child>
@@ -4814,7 +4814,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                   <object class="GtkLabel">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="label">(&lt;i&gt;x&lt;/i&gt;)</property>
+                                    <property name="label">&lt;i&gt;(x)&lt;/i&gt;</property>
                                     <property name="use_markup">True</property>
                                   </object>
                                 </child>
@@ -5161,7 +5161,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkLabel" id="label_history_sqrt">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">sqrt</property>
+                                        <property name="label">√</property>
                                       </object>
                                     </child>
                                   </object>
@@ -5368,7 +5368,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkLabel" id="label_rpn_sqrt">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">sqrt</property>
+                                        <property name="label">√</property>
                                       </object>
                                     </child>
                                   </object>
@@ -5512,11 +5512,10 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="tooltip_text" translatable="yes">Swap the to top values or move the selected value to the top of the stack.</property>
                                     <signal name="clicked" handler="on_button_registerswap_clicked" swapped="no"/>
                                     <child>
-                                      <object class="GtkLabel" id="label_swap">
+                                      <object class="GtkImage" id="image_swap">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label" translatable="yes">⤭</property>
-                                        <property name="use_markup">True</property>
+                                        <property name="icon_name">rpn-swap-symbolic</property>
                                       </object>
                                     </child>
                                   </object>

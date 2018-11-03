@@ -882,7 +882,6 @@ void set_unicode_buttons() {
 	if(can_display_unicode_string_function(SIGN_SQRT, (void*) gtk_builder_get_object(main_builder, "label_rpn_sqrt"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), SIGN_SQRT);
 	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), "sqrt");
 
-
 	GtkRequisition a;
 	gint w, h;
 	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_reciprocal")), &a, NULL);
@@ -899,24 +898,6 @@ void set_unicode_buttons() {
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), w, h);
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_add")), w, h);
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sqrt")), w, h);
-
-	string swap_label;
-	if(can_display_unicode_string_function("⤭", (void*) gtk_builder_get_object(main_builder, "label_swap"))) swap_label = "⤭";
-	else if(can_display_unicode_string_function("⇆", (void*) gtk_builder_get_object(main_builder, "label_swap"))) swap_label = "⇆";
-	else if(can_display_unicode_string_function("↔", (void*) gtk_builder_get_object(main_builder, "label_swap"))) swap_label = "↔";
-	if(swap_label.empty()) {
-		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_swap")), _("Swap"));
-	} else {
-		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_swap")), (string("<span size=\"large\">") + swap_label + "</span>").c_str());
-		gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), &a, NULL);
-		if(a.height > h) {
-			gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_swap")), swap_label.c_str());
-			gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), &a, NULL);
-			if(a.height > h) {
-				gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_swap")), (string("<span size=\"small\">") + swap_label + "</span>").c_str());
-			}
-		}
-	}
 
 }
 
