@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "2.8.0">
-  <!ENTITY manrevision "2.8.0">
-  <!ENTITY date "October 2018">
+  <!ENTITY appversion "2.8.1">
+  <!ENTITY manrevision "2.8.1">
+  <!ENTITY date "November 2018">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -1318,7 +1318,7 @@ If <quote>to</quote> is not preceded by an expression, the previous result will 
 	<varlistentry>
 		<term>Precision</term>
 		<listitem><para>
-			Precision controls the precision in approximate numbers and the number of significant digits. If the read precision option is turned on, input numbers with decimals will be interpreted as approximate with a precision equal to the number of digits (e.g. <quote>2.50 + 3.4567 = 5.96</quote>).
+			Precision specifies the default number of significant digits displayed and determines the precision used for approximate calculations. The internal precision is higher than the one specified, but will nevertheless not completely protect against loss of significance/catastrophic cancellation (and you will not be alterted unless interval arithmetic is activated). If the read precision option is turned on, input numbers with decimals will be interpreted as approximate with a precision equal to the number of digits (e.g. <quote>2.50 + 3.4567 = 5.96</quote>).
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>

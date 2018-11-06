@@ -887,11 +887,14 @@ void set_unicode_buttons() {
 	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_reciprocal")), &a, NULL);
 	w = a.width; h = a.height;
 	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_xy")), &a, NULL);
-	if(a.width > w) w = a.width; if(a.height > h) h = a.height;
+	if(a.width > w) w = a.width;
+	if(a.height > h) h = a.height;
 	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sqrt")), &a, NULL);
-	if(a.width > w) w = a.width; if(a.height > h) h = a.height;
+	if(a.width > w) w = a.width;
+	if(a.height > h) h = a.height;
 	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), &a, NULL);
-	if(a.width > w) w = a.width; if(a.height > h) h = a.height;
+	if(a.width > w) w = a.width;
+	if(a.height > h) h = a.height;
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), w, h);
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_copyregister")), w, h);
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_editregister")), w, h);
@@ -7416,10 +7419,15 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			if(from_str.empty()) {
 				b_busy = false;
 				b_busy_expression = false;
+				bool saved_restrict_fraction_length = printops.restrict_fraction_length;
+				NumberFractionFormat saved_number_fraction_format = printops.number_fraction_format;
+				printops.restrict_fraction_length = false;
 				if(mstruct && mstruct->isNumber()) printops.number_fraction_format = FRACTION_COMBINED;
 				else printops.number_fraction_format = FRACTION_FRACTIONAL;
 				setResult(NULL, true, false, false);
 				set_previous_expression();
+				printops.number_fraction_format = saved_number_fraction_format;
+				printops.restrict_fraction_length = saved_restrict_fraction_length;
 				return;
 			}
 			do_fraction = true;
@@ -7692,10 +7700,13 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	if(!do_stack) previous_expression = execute_str.empty() ? str : execute_str;
 	if(do_fraction) {
 		NumberFractionFormat save_format = printops.number_fraction_format;
+		bool save_restrict_fraction_length = printops.restrict_fraction_length;
+		printops.restrict_fraction_length = false;
 		if(((!do_stack || stack_index == 0) && mstruct->isNumber()) || (do_stack && stack_index != 0 && CALCULATOR->getRPNRegister(stack_index + 1)->isNumber())) printops.number_fraction_format = FRACTION_COMBINED;
 		else printops.number_fraction_format = FRACTION_FRACTIONAL;
 		setResult(NULL, true, (!do_stack || stack_index == 0), true, "", do_stack ? stack_index : 0);
 		printops.number_fraction_format = save_format;
+		printops.restrict_fraction_length = save_restrict_fraction_length;
 	} else {
 		setResult(NULL, true, (!do_stack || stack_index == 0), true, "", do_stack ? stack_index : 0);
 	}
@@ -12005,6 +12016,7 @@ void load_preferences() {
 	printops.show_ending_zeroes = false;
 	printops.round_halfway_to_even = false;
 	printops.number_fraction_format = FRACTION_DECIMAL;
+	printops.restrict_fraction_length = false;
 	printops.abbreviate_names = true;
 	printops.use_unicode_signs = true;
 	printops.digit_grouping = DIGIT_GROUPING_STANDARD;
@@ -12149,7 +12161,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {2, 8, 0};
+	int version_numbers[] = {2, 8, 1};
 	bool old_history_format = false;
 			
 	if(file) {
@@ -12374,11 +12386,15 @@ void load_preferences() {
 							break;
 						}
 					}
+					if(mode_index == 1) printops.restrict_fraction_length = (printops.number_fraction_format == FRACTION_FRACTIONAL);
+					else modes[mode_index].po.restrict_fraction_length = (modes[mode_index].po.number_fraction_format == FRACTION_FRACTIONAL);
 				} else if(svar == "number_fraction_format") {
 					if(v >= FRACTION_DECIMAL && v <= FRACTION_COMBINED) {
 						if(mode_index == 1) printops.number_fraction_format = (NumberFractionFormat) v;
 						else modes[mode_index].po.number_fraction_format = (NumberFractionFormat) v;
 					}
+					if(mode_index == 1) printops.restrict_fraction_length = (printops.number_fraction_format == FRACTION_FRACTIONAL);
+					else modes[mode_index].po.restrict_fraction_length = (modes[mode_index].po.number_fraction_format == FRACTION_FRACTIONAL);
 				} else if(svar == "complex_number_form") {
 					if(v >= COMPLEX_NUMBER_FORM_RECTANGULAR && v <= COMPLEX_NUMBER_FORM_POLAR) {
 						evalops.complex_number_form = (ComplexNumberForm) v;
@@ -14366,6 +14382,7 @@ void on_button_fraction_toggled(GtkToggleButton *w, gpointer) {
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(w_fraction), TRUE);
 		g_signal_handlers_unblock_matched((gpointer) w_fraction, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_decimal_activate, NULL);
 	}
+	printops.restrict_fraction_length = (printops.number_fraction_format = FRACTION_FRACTIONAL);
 	result_format_updated();
 	focus_keeping_selection();
 }
@@ -16320,10 +16337,13 @@ void menu_to_utc(GtkMenuItem*, gpointer) {
 }
 void menu_to_fraction(GtkMenuItem*, gpointer) {
 	NumberFractionFormat save_format = printops.number_fraction_format;
+	bool save_restrict_fraction_length = printops.restrict_fraction_length;
+	printops.restrict_fraction_length = false;
 	if(mstruct && mstruct->isNumber()) printops.number_fraction_format = FRACTION_COMBINED;
 	else printops.number_fraction_format = FRACTION_FRACTIONAL;
 	result_format_updated();
 	printops.number_fraction_format = save_format;
+	printops.restrict_fraction_length = save_restrict_fraction_length;
 }
 void menu_to_rectangular(GtkMenuItem*, gpointer) {
 	ComplexNumberForm cnf_bak = evalops.complex_number_form;
@@ -17862,6 +17882,7 @@ void on_menu_item_approximate_activate(GtkMenuItem *w, gpointer) {
 void on_menu_item_fraction_decimal_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.number_fraction_format = FRACTION_DECIMAL;
+	printops.restrict_fraction_length = false;
 	
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 0);
@@ -17872,6 +17893,7 @@ void on_menu_item_fraction_decimal_activate(GtkMenuItem *w, gpointer) {
 void on_menu_item_fraction_decimal_exact_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.number_fraction_format = FRACTION_DECIMAL_EXACT;
+	printops.restrict_fraction_length = false;
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 1);
@@ -17882,6 +17904,7 @@ void on_menu_item_fraction_decimal_exact_activate(GtkMenuItem *w, gpointer) {
 void on_menu_item_fraction_combined_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.number_fraction_format = FRACTION_COMBINED;
+	printops.restrict_fraction_length = false;
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 3);
@@ -17892,6 +17915,7 @@ void on_menu_item_fraction_combined_activate(GtkMenuItem *w, gpointer) {
 void on_menu_item_fraction_fraction_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.number_fraction_format = FRACTION_FRACTIONAL;
+	printops.restrict_fraction_length = true;
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 2);

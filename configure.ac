@@ -6,7 +6,7 @@ dnl  ----------------------
 dnl | initialize autotools |---------------------------------------------------
 dnl  ----------------------
 
-AC_INIT([Qalculate! (GTK+ UI)], [2.8.0],[],[qalculate-gtk])
+AC_INIT([Qalculate! (GTK+ UI)], [2.8.1],[],[qalculate-gtk])
 AC_CONFIG_SRCDIR([src/callbacks.cc])
 AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4])
