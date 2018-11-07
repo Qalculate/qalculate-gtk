@@ -561,8 +561,8 @@ void create_button_menus(void) {
 	PangoFontDescription *font_desc;
 	gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_xy"))), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
 	
-	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_xy")), (string("<i>x") + SUP_STRING("y") + string("</i>")).c_str());
-	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize")), (string("a(<i>x</i>)") + SUP_STRING("b")).c_str());
+	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_xy")), (string("x") + SUP_STRING("y")).c_str());
+	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize")), (string("a(x)") + SUP_STRING("b")).c_str());
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_xy"));
 	MENU_ITEM_MARKUP((string("x") + SUP_STRING("2")).c_str(), on_button_square_clicked)

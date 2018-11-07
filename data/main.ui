@@ -2794,8 +2794,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2819,8 +2819,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2845,8 +2845,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -3609,7 +3609,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel" id="label_fac">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">&lt;i&gt;x!&lt;/i&gt;</property>
+                                            <property name="label">x!</property>
                                             <property name="use_markup">True</property>
                                           </object>
                                         </child>
@@ -3718,7 +3718,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel" id="label_factorize">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">a&lt;i&gt;(x)&lt;/i&gt;&lt;sup&gt;b&lt;/sup&gt;</property>
+                                            <property name="label">a(x)&lt;sup&gt;b&lt;/sup&gt;</property>
                                             <property name="use_markup">True</property>
                                           </object>
                                         </child>
@@ -4814,7 +4814,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                   <object class="GtkLabel">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="label">&lt;i&gt;(x)&lt;/i&gt;</property>
+                                    <property name="label">(x)</property>
                                     <property name="use_markup">True</property>
                                   </object>
                                 </child>
@@ -5137,7 +5137,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkLabel" id="label_history_xy">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">&lt;i&gt;x&lt;sup&gt;&lt;small&gt;y&lt;/small&gt;&lt;/sup&gt;&lt;/i&gt;</property>
+                                        <property name="label">x&lt;sup&gt;&lt;small&gt;y&lt;/small&gt;&lt;/sup&gt;</property>
                                         <property name="use_markup">True</property>
                                       </object>
                                     </child>
@@ -5327,7 +5327,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkLabel" id="label_rpn_xy">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">&lt;i&gt;x&lt;sup&gt;&lt;small&gt;y&lt;/small&gt;&lt;/sup&gt;&lt;/i&gt;</property>
+                                        <property name="label">x&lt;sup&gt;&lt;small&gt;y&lt;/small&gt;&lt;/sup&gt;</property>
                                         <property name="use_markup">True</property>
                                       </object>
                                     </child>
@@ -5392,7 +5392,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkLabel">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">1/&lt;i&gt;x&lt;/i&gt;</property>
+                                        <property name="label">1/x</property>
                                         <property name="use_markup">True</property>
                                       </object>
                                     </child>

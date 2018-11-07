@@ -869,10 +869,10 @@ void set_unicode_buttons() {
 
 	PangoFontDescription *font_desc;
 	gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_history_xy"))), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_xy")), (string("<i>x") + SUP_STRING("y") + string("</i>")).c_str());
+	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_xy")), (string("x") + SUP_STRING("y")).c_str());
 	pango_font_description_free(font_desc);
 	gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_rpn_xy"))), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_xy")), (string("<i>x") + SUP_STRING("y") + string("</i>")).c_str());
+	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_xy")), (string("x") + SUP_STRING("y")).c_str());
 	pango_font_description_free(font_desc);
 
 
