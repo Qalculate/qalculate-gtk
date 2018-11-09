@@ -1180,6 +1180,7 @@ void create_main_window(void) {
 	gtk_tree_view_column_set_expand(history_column, TRUE);
 	g_object_set(G_OBJECT(history_renderer), "xpad", 6, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(historyview), history_column);
+	g_signal_connect_after(gtk_builder_get_object(main_builder, "historyscrolled"), "size-allocate", G_CALLBACK(on_history_resize), NULL);
 	g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_historyview_selection_changed), NULL);
 	gtk_tree_view_set_row_separator_func(GTK_TREE_VIEW(historyview), history_row_separator_func, NULL, NULL);
 	

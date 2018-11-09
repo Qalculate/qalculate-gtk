@@ -232,6 +232,7 @@ void units_convert_resize_popup();
 
 void *view_proc(void*);
 void *command_proc(void*);
+void on_history_resize(GtkWidget*, GdkRectangle*, gpointer);
 void on_message_bar_response(GtkInfoBar *w, gint response_id, gpointer);
 void on_expressiontext_populate_popup(GtkTextView *w, GtkMenu *menu, gpointer user_data);
 void on_combobox_base_changed(GtkComboBox *w, gpointer user_data);

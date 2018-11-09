@@ -171,6 +171,7 @@ extern GtkListStore *stackstore, *historystore;
 extern GtkCellRenderer *register_renderer;
 extern GtkTreeViewColumn *register_column, *history_column, *history_index_column, *flag_column, *units_flag_column;
 extern cairo_surface_t *surface_result;
+gint history_width = 0;
 vector<vector<GtkWidget*> > insert_element_entries;
 bool b_busy, b_busy_command, b_busy_result, b_busy_expression, b_busy_fetch;
 cairo_surface_t *tmp_surface;
@@ -375,6 +376,8 @@ enum {
 	COMMAND_CALCULATE,
 	COMMAND_EVAL
 };
+
+void add_line_breaks(string &str, int expr = false, size_t first_i = 0);
 
 bool equalsIgnoreCase(const string &str1, const string &str2, size_t i2, size_t i2_end, size_t minlength) {
 	if(str1.empty() || str2.empty()) return false;
@@ -1192,20 +1195,26 @@ void display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 			if(mtype == MESSAGE_ERROR) {
 				inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
 				inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_ERROR);
+				string history_message = "- ";
+				history_message += CALCULATOR->message()->message();
+				add_line_breaks(history_message, false, 2);
 				string history_str = "<span foreground=\"";
 				history_str += history_error_color;
-				history_str += "\">- ";
-				history_str += fix_history_string(CALCULATOR->message()->message());
+				history_str += "\">";
+				history_str += fix_history_string(history_message);
 				history_str += "</span>";
 				(*history_index_p)++;
 				gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, 3, nr_of_new_expressions, 4, 0, -1);
 			} else if(mtype == MESSAGE_WARNING) {
 				inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
 				inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_WARNING);
+				string history_message = "- ";
+				history_message += CALCULATOR->message()->message();
+				add_line_breaks(history_message, false, 2);
 				string history_str = "<span foreground=\"";
 				history_str += history_warning_color;
-				history_str += "\">- ";
-				history_str += fix_history_string(CALCULATOR->message()->message());
+				history_str += "\">";
+				history_str += fix_history_string(history_message);
 				history_str += "</span>";
 				(*history_index_p)++;
 				gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, 3, nr_of_new_expressions, 4, 0, -1);
@@ -1273,6 +1282,12 @@ void display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 		}
 
 	}
+}
+
+void on_history_resize(GtkWidget*, GdkRectangle *alloc, gpointer) {
+	gint hsep = 0;
+	gtk_widget_style_get(historyview, "horizontal-separator", &hsep, NULL);
+	history_width = alloc->width - gtk_tree_view_column_get_width(history_index_column) - hsep * 4;
 }
 
 gboolean on_display_errors_timeout(gpointer) {
@@ -6355,9 +6370,9 @@ void ViewThread::run() {
 		result_too_long = false;
 		if(!b_stack && result_text.length() > 900) {
 			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-			int index = 0;
+			//int index = 0;
 			//GtkTextView can not display very very long lines
-			while(result_text.length() - index > 2500) {
+			/*while(result_text.length() - index > 2500) {
 				size_t index_utf8 = (index == 0 ? 2498 : 2500) + index;
 				size_t space_index = 0;
 				while(space_index < 100 && result_text[index_utf8 - space_index] != ' ') {
@@ -6372,7 +6387,7 @@ void ViewThread::run() {
 				}
 				result_text.insert(index_utf8, "\n");
 				index = index_utf8;
-			}
+			}*/
 			result_too_long = true;
 			pango_layout_set_markup(layout, _("result is too long\nsee history"), -1);
 			gint w = 0, h = 0;
@@ -6446,6 +6461,145 @@ gboolean on_event(GtkWidget*, GdkEvent *e, gpointer) {
 		return FALSE;
 	}
 	return TRUE;
+}
+
+void add_line_breaks(string &str, int expr, size_t first_i) {
+	PangoLayout *layout = gtk_widget_create_pango_layout(historyview, "");
+	PangoFontDescription *font_desc;
+	gtk_style_context_get(gtk_widget_get_style_context(historyview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+	pango_font_description_set_weight(font_desc, PANGO_WEIGHT_BOLD);
+	pango_layout_set_font_description(layout, font_desc);
+	int r = 1;
+	size_t i_row = 0;
+	size_t indent = 0;
+	size_t lb_point = string::npos;
+	size_t c = 0;
+	int b_or = 0;
+	if(expr > 1 && str.find("||") != string::npos) b_or = 2;
+	else if(expr > 1 && str.find(_("or")) != string::npos) b_or = 1;
+	for(size_t i = first_i; i < str.length(); i++) {
+		if(r != 1 && i - i_row <= indent) {
+			if(str[i] == ' ') {
+				str.erase(i, 1);
+				if(i >= str.length()) break;
+			} else if(str[i] <= 0 && (unsigned char) str[i] >= 0xC2) {
+				size_t l = 1;
+				while(i + l < str.length() && str[i + l] <= 0 && (unsigned char) str[i + l] < 0xC2) l++;
+				if(str.substr(i, l) == " ") {
+					str.erase(i, l);
+					if(i >= str.length()) break;
+				}
+			}
+		}
+		if(str[i] > 0 || (unsigned char) str[i] >= 0xC2) {
+			if(str[i] == '\n') {
+				r++;
+				i_row = i + 1;
+				lb_point = string::npos;
+			} else {
+				if(i - i_row > indent) {
+					if(is_in(" \t", str[i])) {
+						if(i + 1 == str.length() || is_not_in("0123456789", str[i + 1]) || is_not_in("0123456789", str[i - 1])) {
+							if(b_or == 1 && str.length() > i + strlen("or") + 2 && str.substr(i + 1, strlen(_("or"))) == _("or") && str[i + strlen(_("or")) + 1] == ' ') {
+								i = i + strlen(_("or")) + 1;
+								str[i] = '\n';
+								i_row = i + 1;
+								lb_point = string::npos;
+								c = 0;
+							} else if(b_or == 2 && str.length() > i + 2 + 2 && str.substr(i + 1, 2) == "||" && str[i + 2 + 1] == ' ') {
+								i = i + 2 + 1;
+								str[i] = '\n';
+								i_row = i + 1;
+								lb_point = string::npos;
+								c = 0;
+							} else if(c > 10) {
+								string teststr = str.substr(i_row, i - i_row);
+								pango_layout_set_text(layout, teststr.c_str(), -1);
+								gint w = 0;
+								pango_layout_get_pixel_size(layout, &w, NULL);
+								if(w >= history_width - 10) {
+									bool cbreak = lb_point == string::npos;
+									if(!cbreak && expr) {
+										teststr = str.substr(i_row, lb_point - i_row);
+										pango_layout_set_text(layout, teststr.c_str(), -1);
+										pango_layout_get_pixel_size(layout, &w, NULL);
+										cbreak = (w >= history_width - 10 || w < (history_width - 10) / 2);
+									}
+									if(cbreak) {
+										do {
+											do {
+												i--;
+											} while(i > i_row && str[i] <= 0 && (unsigned char) str[i] < 0xC2);
+											teststr.pop_back();
+											pango_layout_set_text(layout, teststr.c_str(), -1);
+											pango_layout_get_pixel_size(layout, &w, NULL);
+											if(w < history_width - 10) {
+												str.insert(i, "\n");
+												i_row = i + 1;
+												lb_point = string::npos;
+												break;
+											}
+										} while(i > i_row);
+										return;
+									} else {
+										str[lb_point] = '\n';
+										i = lb_point;
+										i_row = i + 1;
+										lb_point = string::npos;
+									}
+									c = 0;
+								} else {
+									lb_point = i;
+									c++;
+								}
+							}
+						}
+					} else if(c >= 100 && c % 100 == 0) {
+						string teststr = str.substr(i_row, i - i_row);
+						pango_layout_set_text(layout, teststr.c_str(), -1);
+						gint w = 0;
+						pango_layout_get_pixel_size(layout, &w, NULL);
+						if(w >= history_width - 10) {
+							bool cbreak = lb_point == string::npos;
+							if(!cbreak && expr) {
+								teststr = str.substr(i_row, lb_point - i_row);
+								pango_layout_set_text(layout, teststr.c_str(), -1);
+								pango_layout_get_pixel_size(layout, &w, NULL);
+								cbreak = (w >= history_width - 10 || w < (history_width - 10) / 2);
+							}
+							if(cbreak) {
+								do {
+									do {
+										i--;
+									} while(i > i_row && str[i] <= 0 && (unsigned char) str[i] < 0xC2);
+									teststr.pop_back();
+									pango_layout_set_text(layout, teststr.c_str(), -1);
+									pango_layout_get_pixel_size(layout, &w, NULL);
+									if(w < history_width - 10) {
+										str.insert(i, "\n");
+										i_row = i + 1;
+										break;
+									}
+								} while(i > i_row);
+							} else {
+								str[lb_point] = '\n';
+								i = lb_point;
+								i_row = i + 1;
+								lb_point = string::npos;
+							}
+							c = 0;
+						} else {
+							c++;
+						}
+					} else {
+						c++;
+					}
+				}
+			}
+		}
+	}
+	g_object_unref(layout);
+	pango_font_description_free(font_desc);
 }
 
 /*
@@ -6744,26 +6898,37 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 
 		bool b_approx = result_text_approximate || mstruct->isApproximate();		
 		if(!b_approx) {
-			str = "=";	
+			str = "=";
 		} else {
 			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_ALMOST_EQUAL, (void*) historyview)) {
-				str = SIGN_ALMOST_EQUAL;		
+				str = SIGN_ALMOST_EQUAL;
 			} else {
 				str = "= ";
 				str += _("approx.");
 			}
 		}
 		string history_str;
+		size_t trans_l = 0;
 		if(!update_parse && current_inhistory_index >= 0 && !transformation.empty() && history_index == history_index_bak) {
 			gchar *expr_str = NULL;
 			gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
 			history_str = expr_str;
+			history_str = history_str.substr(26, history_str.length() - 33);
+			trans_l = history_str.length();
 			g_free(expr_str);
 		}
 		history_str += str;
-		history_str += " <span font-weight=\"bold\">";
-		history_str += fix_history_string(result_text);
-		history_str += "</span>";		
+		history_str += " ";
+		size_t history_expr_i = history_str.length();
+		history_str += result_text;
+		add_line_breaks(history_str, 2, history_expr_i);
+		history_str = fix_history_string(history_str);
+		history_str.insert(history_expr_i, " <span font-weight=\"bold\">");
+		history_str += "</span>";
+		if(trans_l > 0) {
+			history_str.insert(trans_l, "</span>");
+			history_str.insert(0, "<span font-style=\"italic\">");
+		}
 		if(!update_parse && current_inhistory_index >= 0 && !transformation.empty() && history_index_bak == history_index) {
 			gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), 1, inhistory_index + 1, -1);
 		} else {
