@@ -158,9 +158,6 @@ extern bool rpn_mode, rpn_keys, adaptive_interval_display, use_e_notation;
 extern vector<GtkWidget*> mode_items;
 extern vector<GtkWidget*> popup_result_mode_items;
 
-extern deque<string> inhistory;
-extern deque<int> inhistory_type;
-
 extern deque<string> expression_undo_buffer;
 
 gint win_height, win_width, history_height, keypad_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
@@ -1165,7 +1162,7 @@ void create_main_window(void) {
 	}	
 	g_snprintf(history_parse_color, 8, "#%02x%02x%02x", (int) (c_gray.red * 255), (int) (c_gray.green * 255), (int) (c_gray.blue * 255));
 	
-	historystore = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_INT, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT);
+	historystore = gtk_list_store_new(7, G_TYPE_STRING, G_TYPE_INT, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT, G_TYPE_FLOAT, G_TYPE_INT);
 	gtk_tree_view_set_model(GTK_TREE_VIEW(historyview), GTK_TREE_MODEL(historystore));
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_MULTIPLE);
@@ -1176,9 +1173,12 @@ void create_main_window(void) {
 	g_object_set(G_OBJECT(history_index_renderer), "ypad", 0, "xalign", 0.5, "foreground-rgba", &c_gray, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(historyview), history_index_column);
 	history_renderer = gtk_cell_renderer_text_new();
-	history_column = gtk_tree_view_column_new_with_attributes(_("History"), history_renderer, "markup", 0, "ypad", 4, NULL);
+	history_column = gtk_tree_view_column_new_with_attributes(_("History"), history_renderer, "markup", 0, "ypad", 4, "xalign", 5, "alignment", 6, NULL);
 	gtk_tree_view_column_set_expand(history_column, TRUE);
-	g_object_set(G_OBJECT(history_renderer), "xpad", 6, NULL);
+	GtkWidget *scrollbar = gtk_scrolled_window_get_vscrollbar(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "historyscrolled")));
+	gint scroll_width = 14;
+	if(scrollbar) gtk_widget_get_preferred_width(scrollbar, NULL, &scroll_width);
+	g_object_set(G_OBJECT(history_renderer), "xpad", scroll_width, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(historyview), history_column);
 	g_signal_connect_after(gtk_builder_get_object(main_builder, "historyscrolled"), "size-allocate", G_CALLBACK(on_history_resize), NULL);
 	g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_historyview_selection_changed), NULL);
@@ -1209,169 +1209,6 @@ void create_main_window(void) {
 #endif
 
 	if(theme_name) g_free(theme_name);
-
-	string history_str;
-	GtkTreeIter history_iter;
-	size_t i = inhistory.size();
-	while(i > 0) {
-		i--;
-		switch(inhistory_type[i]) {
-			case QALCULATE_HISTORY_EXPRESSION: {
-				if(i < inhistory.size() - 1) {
-					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, -1);
-				}
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, fix_history_string(inhistory[i]).c_str(), 1, i, 2, "   ", 4, EXPRESSION_YPAD, -1);
-				break;
-			}
-			case QALCULATE_HISTORY_REGISTER_MOVED: {
-				if(i < inhistory.size() - 1) {
-					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, -1);
-				}
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, _("RPN Register Moved"), 1, i, 2, "   ", 4, EXPRESSION_YPAD, -1);
-				break;
-			}
-			case QALCULATE_HISTORY_RPN_OPERATION: {
-				if(i < inhistory.size() - 1) {
-					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, -1);
-				}
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, _("RPN Operation"), 1, i, 2, "   ", 4, EXPRESSION_YPAD, -1);
-				break;
-			}
-			case QALCULATE_HISTORY_TRANSFORMATION: {
-				history_str = "<span font-style=\"italic\">";
-				history_str += fix_history_string(inhistory[i]);
-				history_str += ":  </span>";
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 4, 0, -1);
-				break;
-			}
-			case QALCULATE_HISTORY_RESULT: {
-				if(i + 1 < inhistory.size()  && inhistory_type[i + 1] == QALCULATE_HISTORY_TRANSFORMATION) {
-					gchar *expr_str = NULL;
-					gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
-					history_str = expr_str;
-					g_free(expr_str);
-					history_str += "= <span font-weight=\"bold\">";
-					history_str += fix_history_string(inhistory[i]);
-					history_str += "</span>";
-					gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), -1);
-				} else {
-					history_str = "= <span font-weight=\"bold\">";
-					history_str += fix_history_string(inhistory[i]);
-					history_str += "</span>";
-					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 4, 0, -1);
-				}
-				break;
-			}
-			case QALCULATE_HISTORY_RESULT_APPROXIMATE: {
-				string str;
-				if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_ALMOST_EQUAL, (void*) historyview)) {
-					str = SIGN_ALMOST_EQUAL " ";
-				} else {
-					str = "= ";
-					str += _("approx.");
-					str += " ";
-				}
-				if(i + 1 < inhistory.size() && inhistory_type[i + 1] == QALCULATE_HISTORY_TRANSFORMATION) {
-					gchar *expr_str = NULL;
-					gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
-					history_str = expr_str;
-					g_free(expr_str);
-					history_str += str;
-					history_str += "<span font-weight=\"bold\">";
-					history_str += fix_history_string(inhistory[i]);
-					history_str += "</span>";
-					gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), -1);
-				} else {
-					history_str = str;
-					history_str += "<span font-weight=\"bold\">";
-					history_str += fix_history_string(inhistory[i]);
-					history_str += "</span>";
-					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 4, 0, -1);
-				}
-				break;
-			}
-			case QALCULATE_HISTORY_PARSE_WITHEQUALS: {
-				gchar *expr_str = NULL;
-				gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
-				history_str = expr_str;
-				g_free(expr_str);
-				history_str += "<span font-style=\"italic\" foreground=\"";
-				history_str += history_parse_color;
-				history_str += "\">  ";
-				history_str += fix_history_string(inhistory[i]);
-				history_str += "</span>";
-				gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), -1);
-				if(i > 0 && (inhistory_type[i - 1] == QALCULATE_HISTORY_REGISTER_MOVED || inhistory_type[i - 1] == QALCULATE_HISTORY_RPN_OPERATION)) {
-					gtk_list_store_set(historystore, &history_iter, 1, i, -1);
-				}
-				break;
-			}
-			case QALCULATE_HISTORY_PARSE: {
-				gchar *expr_str = NULL;
-				gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
-				history_str = expr_str;
-				g_free(expr_str);
-				history_str += "<span font-style=\"italic\" foreground=\"";
-				history_str += history_parse_color;
-				history_str += "\">  = ";
-				history_str += fix_history_string(inhistory[i]);
-				history_str += "</span>";
-				gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), -1);
-				if(i > 0 && (inhistory_type[i - 1] == QALCULATE_HISTORY_REGISTER_MOVED || inhistory_type[i - 1] == QALCULATE_HISTORY_RPN_OPERATION)) {
-					gtk_list_store_set(historystore, &history_iter, 1, i, -1);
-				}
-				break;
-			}
-			case QALCULATE_HISTORY_PARSE_APPROXIMATE: {
-				string str = "  ";
-				if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_ALMOST_EQUAL, (void*) historyview)) {
-					str += SIGN_ALMOST_EQUAL " ";
-				} else {
-					str += "= ";
-					str += _("approx.");
-					str += " ";
-				}
-				gchar *expr_str = NULL;
-				gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
-				history_str = expr_str;
-				g_free(expr_str);
-				history_str += "<span font-style=\"italic\" foreground=\"";
-				history_str += history_parse_color;
-				history_str += "\">";
-				history_str += str;
-				history_str += fix_history_string(inhistory[i]);
-				history_str += "</span>";
-				gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), -1);
-				if(i > 0 && (inhistory_type[i - 1] == QALCULATE_HISTORY_REGISTER_MOVED || inhistory_type[i - 1] == QALCULATE_HISTORY_RPN_OPERATION)) {
-					gtk_list_store_set(historystore, &history_iter, 1, i, -1);
-				}
-				break;
-			}
-			case QALCULATE_HISTORY_WARNING: {
-				history_str = "<span foreground=\"";
-				history_str += history_warning_color;
-				history_str += "\">- ";
-				history_str += fix_history_string(inhistory[i]);
-				history_str += "</span>";
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 4, 0, -1);
-				break;
-			}
-			case QALCULATE_HISTORY_ERROR: {
-				history_str = "<span foreground=\"";
-				history_str += history_error_color;
-				history_str += "\">- ";
-				history_str += fix_history_string(inhistory[i]);
-				history_str += "</span>";
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 4, 0, -1);
-				break;
-			}
-			case QALCULATE_HISTORY_OLD: {
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, inhistory[i].c_str(), 1, i, 4, 0, -1);
-				break;
-			}
-		}
-	}
-	if(inhistory.size() != 0) gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 2, "   ", -1);
 
 	stackstore = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 	gtk_tree_view_set_model(GTK_TREE_VIEW(stackview), GTK_TREE_MODEL(stackstore));
