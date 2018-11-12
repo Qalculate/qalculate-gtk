@@ -6556,8 +6556,6 @@ void reload_history() {
 				add_line_breaks(history_str, 2, history_expr_i);
 				fix_history_string2(history_str);
 				improve_result_text(history_str);
-				/*history_str.insert(history_expr_i, "<span font-weight=\"bold\">");
-				history_str += "</span>";*/
 				if(trans_l > 0) {
 					trans_l = history_str.find(":  ");
 					if(trans_l != string::npos) {
@@ -6648,8 +6646,7 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 	PangoFontDescription *font_desc = NULL;
 	if(expr == 3) {
 		gtk_style_context_get(gtk_widget_get_style_context(historyview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-		/*if(expr == 2) pango_font_description_set_weight(font_desc, PANGO_WEIGHT_BOLD);
-		else if(expr == 3)*/ pango_font_description_set_style(font_desc, PANGO_STYLE_ITALIC);
+		pango_font_description_set_style(font_desc, PANGO_STYLE_ITALIC);
 		pango_layout_set_font_description(layout, font_desc);
 	}
 	int r = 1;
@@ -6682,77 +6679,83 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 				lb_point = string::npos;
 			} else {
 				if(i - i_row > indent) {
-					if(is_in(" \t", str[i]) && i + 1 < str.length()) {
-						if(is_not_in("0123456789", str[i + 1]) || is_not_in("0123456789", str[i - 1])) {
-							if(b_or == 1 && str.length() > i + strlen("or") + 2 && str.substr(i + 1, strlen(_("or"))) == _("or") && str[i + strlen(_("or")) + 1] == ' ') {
-								i = i + strlen(_("or")) + 1;
-								str[i] = '\n';
-								i_row = i + 1;
-								lb_point = string::npos;
-								c = 0;
-							} else if(b_or == 2 && str.length() > i + 2 + 2 && str.substr(i + 1, 2) == "||" && str[i + 2 + 1] == ' ') {
-								i = i + 2 + 1;
-								str[i] = '\n';
-								i_row = i + 1;
-								lb_point = string::npos;
-								c = 0;
-							} else if(c > 10) {
-								string teststr = str.substr(i_row, i - i_row);
-								pango_layout_set_text(layout, teststr.c_str(), -1);
-								gint w = 0;
-								pango_layout_get_pixel_size(layout, &w, NULL);
-								if(w > history_width) {
-									bool cbreak = lb_point == string::npos;
-									if(!cbreak && expr) {
-										teststr = str.substr(i_row, lb_point - i_row);
-										pango_layout_set_text(layout, teststr.c_str(), -1);
-										pango_layout_get_pixel_size(layout, &w, NULL);
-										cbreak = (w > history_width || w < history_width / 3);
-										if(w <= history_width) teststr = str.substr(i_row, i - i_row);
-									}
-									if(cbreak) {
-										while(true) {
-											while(teststr.back() <= 0 && (unsigned char) teststr.back() < 0xC0) {
-												i--;
-												teststr.pop_back();
-												if(i == i_row) return;
-											}
+					if(is_in(" \t", str[i]) && i + 1 < str.length() && (is_not_in("0123456789", str[i + 1]) || is_not_in("0123456789", str[i - 1]))) {
+						if(b_or == 1 && str.length() > i + strlen("or") + 2 && str.substr(i + 1, strlen(_("or"))) == _("or") && str[i + strlen(_("or")) + 1] == ' ') {
+							i = i + strlen(_("or")) + 1;
+							str[i] = '\n';
+							i_row = i + 1;
+							lb_point = string::npos;
+							c = 0;
+						} else if(b_or == 2 && str.length() > i + 2 + 2 && str.substr(i + 1, 2) == "||" && str[i + 2 + 1] == ' ') {
+							i = i + 2 + 1;
+							str[i] = '\n';
+							i_row = i + 1;
+							lb_point = string::npos;
+							c = 0;
+						} else if(c > 10) {
+							string teststr = str.substr(i_row, i - i_row);
+							pango_layout_set_text(layout, teststr.c_str(), -1);
+							gint w = 0;
+							pango_layout_get_pixel_size(layout, &w, NULL);
+							if(w > history_width) {
+								bool cbreak = lb_point == string::npos;
+								if(!cbreak && expr) {
+									teststr = str.substr(i_row, lb_point - i_row);
+									pango_layout_set_text(layout, teststr.c_str(), -1);
+									pango_layout_get_pixel_size(layout, &w, NULL);
+									cbreak = (w > history_width || w < history_width / 3);
+									if(w <= history_width) teststr = str.substr(i_row, i - i_row);
+								}
+								if(cbreak) {
+									while(true) {
+										while(teststr.back() <= 0 && (unsigned char) teststr.back() < 0xC0) {
 											i--;
 											teststr.pop_back();
 											if(i == i_row) return;
-											pango_layout_set_text(layout, teststr.c_str(), -1);
-											pango_layout_get_pixel_size(layout, &w, NULL);
-											if(w <= history_width) {
-												i++;
-												if(i > 3 && str[i] <= '9' && str[i] >= '0' && str[i - 1] <= '9' && str[i - 1] >= '0') {
-													if(str[i - 2] == ' ' && str[i - 3] <= '9' && str[i - 3] >= '0') i--;
-													else if(str[i - 3] == ' ' && str[i - 4] <= '9' && str[i - 4] >= '0') i -= 2;
-													else if(teststr.length() > 6) {
-														size_t i2 = teststr.find(" ", teststr.length() - 6);
-														if(i2 != string::npos && i2 > 0 && teststr[i2 - 1] <= '9' && teststr[i2 - 1] >= '0') {
-															i = i2;
-														}
+										}
+										i--;
+										teststr.pop_back();
+										if(i == i_row) return;
+										pango_layout_set_text(layout, teststr.c_str(), -1);
+										pango_layout_get_pixel_size(layout, &w, NULL);
+										if(w <= history_width) {
+											i++;
+											if(str[i - 1] == ' ') {
+												i--;
+											} else if(str[i - 1] < 0) {
+												if(teststr.find(" ", teststr.length() - 3) == teststr.length() - 3) i -= 3;
+											} else if(i > 3 && str[i] <= '9' && str[i] >= '0' && str[i - 1] <= '9' && str[i - 1] >= '0') {
+												if(str[i - 2] == ' ' && str[i - 3] <= '9' && str[i - 3] >= '0') i -= 2;
+												else if(str[i - 3] == ' ' && str[i - 4] <= '9' && str[i - 4] >= '0') i -= 3;
+												else if((str[i - 2] == '.' || str[i - 2] == ',') && str[i - 3] <= '9' && str[i - 3] >= '0') i--;
+												else if((str[i - 3] == '.' || str[i - 3] == ',') && str[i - 4] <= '9' && str[i - 4] >= '0') i -= 2;
+												else if(teststr.length() > 6) {
+													size_t i2 = teststr.find(" ", teststr.length() - 6);
+													if(i2 != string::npos && i2 > 0 && teststr[i2 - 1] <= '9' && teststr[i2 - 1] >= '0') {
+														i = i2 + i_row;
 													}
 												}
-												str.insert(i, "\n");
-												i_row = i + 1;
-												r++;
-												lb_point = string::npos;
-												break;
+											} else if(i > 4 && (str[i] == '.' || str[i] == ',') && str[i - 1] <= '9' && str[i - 1] >= '0' && str[i - 4] == str[i] && str[i - 5] <= '9' && str[i - 5] >= '0') {
+												i -= 3;
 											}
+											str.insert(i, "\n");
+											i_row = i + 1;
+											r++;
+											lb_point = string::npos;
+											break;
 										}
-									} else {
-										str[lb_point] = '\n';
-										i = lb_point;
-										i_row = i + 1;
-										r++;
-										lb_point = string::npos;
 									}
-									c = 0;
 								} else {
-									lb_point = i;
-									c++;
+									str[lb_point] = '\n';
+									i = lb_point;
+									i_row = i + 1;
+									r++;
+									lb_point = string::npos;
 								}
+								c = 0;
+							} else {
+								lb_point = i;
+								c++;
 							}
 						}
 					} else if(i + 1 == str.length() || (c >= 50 && c % 50 == 0)) {
@@ -6791,15 +6794,23 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 									pango_layout_get_pixel_size(layout, &w, NULL);
 									if(w <= history_width) {
 										i++;
-										if(i > 3 && str[i] <= '9' && str[i] >= '0' && str[i - 1] <= '9' && str[i - 1] >= '0') {
-											if(str[i - 2] == ' ' && str[i - 3] <= '9' && str[i - 3] >= '0') i--;
-											else if(str[i - 3] == ' ' && str[i - 4] <= '9' && str[i - 4] >= '0') i -= 2;
+										if(str[i - 1] == ' ') {
+											i--;
+										} else if(str[i - 1] < 0) {
+											if(teststr.find(" ", teststr.length() - 3) == teststr.length() - 3) i -= 3;
+										} else if(i > 3 && str[i] <= '9' && str[i] >= '0' && str[i - 1] <= '9' && str[i - 1] >= '0') {
+											if(str[i - 2] == ' ' && str[i - 3] <= '9' && str[i - 3] >= '0') i -= 2;
+											else if(str[i - 3] == ' ' && str[i - 4] <= '9' && str[i - 4] >= '0') i -= 3;
+											else if((str[i - 2] == '.' || str[i - 2] == ',') && str[i - 3] <= '9' && str[i - 3] >= '0') i--;
+											else if((str[i - 3] == '.' || str[i - 3] == ',') && str[i - 4] <= '9' && str[i - 4] >= '0') i -= 2;
 											else if(teststr.length() > 6) {
 												size_t i2 = teststr.find(" ", teststr.length() - 6);
 												if(i2 != string::npos && i2 > 0 && teststr[i2 - 1] <= '9' && teststr[i2 - 1] >= '0') {
-													i = i2;
+													i = i2 + i_row;
 												}
 											}
+										} else if(i > 4 && (str[i] == '.' || str[i] == ',') && str[i - 1] <= '9' && str[i - 1] >= '0' && str[i - 4] == str[i] && str[i - 5] <= '9' && str[i - 5] >= '0') {
+											i -= 3;
 										}
 										str.insert(i, "\n");
 										i_row = i + 1;
@@ -7175,8 +7186,6 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		add_line_breaks(history_str, 2, history_expr_i);
 		fix_history_string2(history_str);
 		improve_result_text(history_str);
-		/*history_str.insert(history_expr_i, "<span font-weight=\"bold\">");
-		history_str += "</span>";*/
 		if(trans_l > 0) {
 			trans_l = history_str.find(":  ");
 			if(trans_l != string::npos) {
