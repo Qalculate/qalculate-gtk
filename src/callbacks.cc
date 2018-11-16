@@ -579,55 +579,55 @@ void unfix_history_string(string &str) {
 	gsub("&gt;", ">", str);
 	gsub("&lt;", "<", str);
 }
-void improve_result_text(string &result_text) {
+void improve_result_text(string &resstr) {
 	size_t i1 = 0, i2 = 0;
-	while(i1 + 2 < result_text.length()) {
-		i1 = result_text.find('\"', i1);
+	while(i1 + 2 < resstr.length()) {
+		i1 = resstr.find_first_of("\"\'", i1);
 		if(i1 == string::npos) break;
-		i2 = result_text.find('\"', i1 + 1);
+		i2 = resstr.find(resstr[i1], i1 + 1);
 		if(i2 == string::npos) break;
 		if(i2 - i1 > 2) {
-			if(!text_length_is_one(result_text.substr(i1 + 1, i2 - i1 - 1))) {
+			if(!text_length_is_one(resstr.substr(i1 + 1, i2 - i1 - 1))) {
 				i1 = i2 + 1;
 				continue;
 			}
 		}
-		if(i1 > 1 && result_text[i1 - 1] == ' ' && is_not_in(OPERATORS, result_text[i1 - 2])) {
-			if(result_text[i1 - 2] < 0) {
+		if(i1 > 1 && resstr[i1 - 1] == ' ' && is_not_in(OPERATORS SPACES, resstr[i1 - 2])) {
+			if(resstr[i1 - 2] < 0) {
 				size_t i3 = i1 - 2;
-				while(i3 > 0 && result_text[i3] < 0 && (unsigned char) result_text[i3] < 0xC0) i3--;
-				string str = result_text.substr(i3, i1 - i3 - 1);
+				while(i3 > 0 && resstr[i3] < 0 && (unsigned char) resstr[i3] < 0xC0) i3--;
+				string str = resstr.substr(i3, i1 - i3 - 1);
 				if(str != SIGN_DIVISION && str != SIGN_DIVISION_SLASH && str != SIGN_MULTIPLICATION && str != SIGN_MULTIDOT && str != SIGN_SMALLCIRCLE && str != SIGN_MULTIBULLET && str != SIGN_MINUS && str != SIGN_PLUS && str != SIGN_NOT_EQUAL && str != SIGN_GREATER_OR_EQUAL && str != SIGN_LESS_OR_EQUAL) {
-					result_text.replace(i1 - 1, 2, "<i>");
+					resstr.replace(i1 - 1, 2, "<i>");
 					i2 += 1;
 				} else {
-					result_text.replace(i1, 1, "<i>");
+					resstr.replace(i1, 1, "<i>");
 					i2 += 2;
 				}
 			} else {
-				result_text.replace(i1 - 1, 2, "<i>");
+				resstr.replace(i1 - 1, 2, "<i>");
 				i2 += 1;
 			}
 		} else {
-			result_text.replace(i1, 1, "<i>");
+			resstr.replace(i1, 1, "<i>");
 			i2 += 2;
 		}
-		result_text.replace(i2, 1, "</i>");
+		resstr.replace(i2, 1, "</i>");
 		i1 = i2 + 4;
 	}
 	i1 = 1;
-	while(i1 < result_text.length()) {
-		i1 = result_text.find('_', i1);
-		if(i1 == string::npos || i1 + 1 == result_text.length()) break;
-		if(is_not_in(NOT_IN_NAMES, result_text[i1 + 1])) {
+	while(i1 < resstr.length()) {
+		i1 = resstr.find('_', i1);
+		if(i1 == string::npos || i1 + 1 == resstr.length()) break;
+		if(is_not_in(NOT_IN_NAMES, resstr[i1 + 1])) {
 			size_t l = 1;
-			if(result_text[i1 + 1] < 0) {
-				while(i1 + l + 1 < result_text.length() && result_text[i1 + l + 1] < 0 && (unsigned char) result_text[i1 + l + 1] < 0xC0) l++;
+			if(resstr[i1 + 1] < 0) {
+				while(i1 + l + 1 < resstr.length() && resstr[i1 + l + 1] < 0 && (unsigned char) resstr[i1 + l + 1] < 0xC0) l++;
 			}
-			if(i1 + l + 1 == result_text.length() || result_text[i1 + l + 1] == ' ' || result_text[i1 + l + 1] == '\n') {
-				result_text.replace(i1, 1, "<sub>");
+			if(i1 + l + 1 == resstr.length() || resstr[i1 + l + 1] == ' ' || resstr[i1 + l + 1] == '\n') {
+				resstr.replace(i1, 1, "<sub>");
 				i1 += 4;
-				result_text.insert(i1 + l + 1, "</sub>");
+				resstr.insert(i1 + l + 1, "</sub>");
 				i1 += 6;
 			}
 		}
@@ -6542,7 +6542,7 @@ void reload_history() {
 				}
 				if(inhistory_type[i] == QALCULATE_HISTORY_RESULT_APPROXIMATE) {
 					if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_ALMOST_EQUAL, (void*) historyview)) {
-						history_str += SIGN_ALMOST_EQUAL " ";
+						history_str += SIGN_ALMOST_EQUAL;
 					} else {
 						history_str += "= ";
 						history_str += _("approx.");
@@ -20608,7 +20608,7 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 		gint rh = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
 		gint rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
 		if(first_draw_of_result || (!b_busy && result_font_updated)) {
-			while(displayed_mstruct && !display_aborted && scale_n < 3 && h > (w > rw - sbw ? rh - sbh : rh)) {
+			while(displayed_mstruct && !display_aborted && scale_n < 3 && (w > rw || h > (w > rw - sbw ? rh - sbh : rh))) {
 				int scroll_diff = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport")));
 				double scale_div = (double) h / (gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport"))) + scroll_diff);
 				if(scale_div > 1.44) {

@@ -1773,6 +1773,9 @@ Base and alias units normally have three different name forms defined for use in
 For base units, the name is all that is needed. For alias units, on the other hand, a base unit, exponent and relation are necessary. The base unit must not necessarily be of the base unit class and it is recommended that an alias unit is defined in relation to the closest unit (e.g. 1ft = 3 hands, 1 hand = 4 in, and 1 in = 0.0254 m). The relation is usually just a number that tells how large quantity of the base unit is needed to get the alias unit (alias unit = base unit * relation). The check box below relation in the dialog specifies if the relation is exact or approximate. The exponent defines the exponential relation to the base unit, so that the alias unit equals the base unit raised to the exponent. For simple unit relations this gives: alias unit = relation * base unit^exponent.
 </para>
 <para>
+It is possible to create units with non-linear relation to the base unit. Replace the factor with <quote>\x</quote> and the exponent with <quote>\y</quote> (e.g. <quote>\x + 273.15</quote> for degrees Celsius with Kelvin as base unit). For non-linear relations the reverse relation (for conversion back from the base unit) should also be specified (<quote>\x - 273.15</quote> for degrees Celsius).
+</para>
+<para>
 Composite units need a unit expression with multiple units as base, in the base unit field. These expressions may only contain units, prefixes, exponents, multiplication and division (e.g. <quote>km/h</quote>). 
 </para>
 </sect1>

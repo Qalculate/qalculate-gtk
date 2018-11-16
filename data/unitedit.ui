@@ -598,7 +598,9 @@
                               <object class="GtkEntry" id="unit_edit_entry_relation">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="tooltip_text" translatable="yes">Relation to the base unit (usually just a number)</property>
+                                <property name="tooltip_text" translatable="yes">Relation to the base unit. For linear relations this should just be a number.
+
+For non-linear relations use \x for the factor and \y for the exponent (e.g. "\x + 273.15" for the relation between degrees Celsius and Kelvin).</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
                                 <signal name="changed" handler="on_unit_changed" swapped="no"/>
@@ -673,7 +675,7 @@
                               <object class="GtkEntry" id="unit_edit_entry_reversed">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="tooltip_text" translatable="yes">You probably do not need to define this</property>
+                                <property name="tooltip_text" translatable="yes">Specify for non-linear relation, for conversion back to the base unit.</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
                                 <signal name="changed" handler="on_unit_changed" swapped="no"/>
