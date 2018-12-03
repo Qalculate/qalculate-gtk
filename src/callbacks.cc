@@ -6708,13 +6708,13 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 								}
 								if(cbreak) {
 									while(true) {
-										while(teststr.back() <= 0 && (unsigned char) teststr.back() < 0xC0) {
+										while(teststr[teststr.length() - 1] <= 0 && (unsigned char) teststr[teststr.length() - 1] < 0xC0) {
 											i--;
-											teststr.pop_back();
+											teststr.erase(teststr.length() - 1, 1);
 											if(i == i_row) return;
 										}
 										i--;
-										teststr.pop_back();
+										teststr.erase(teststr.length() - 1, 1);
 										if(i == i_row) return;
 										pango_layout_set_text(layout, teststr.c_str(), -1);
 										pango_layout_get_pixel_size(layout, &w, NULL);
@@ -6782,13 +6782,13 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 							}
 							if(cbreak) {
 								while(true) {
-									while(teststr.back() <= 0 && (unsigned char) teststr.back() < 0xC0) {
+									while(teststr[teststr.length() - 1] <= 0 && (unsigned char) teststr[teststr.length() - 1] < 0xC0) {
 										i--;
-										teststr.pop_back();
+										teststr.erase(teststr.length() - 1, 1);
 										if(i == i_row) return;
 									}
 									i--;
-									teststr.pop_back();
+									teststr.erase(teststr.length() - 1, 1);
 									if(i == i_row) return;
 									pango_layout_set_text(layout, teststr.c_str(), -1);
 									pango_layout_get_pixel_size(layout, &w, NULL);
