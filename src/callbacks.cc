@@ -12271,7 +12271,7 @@ void on_expander_history_expanded(GObject *o, GParamSpec*, gpointer) {
 		gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 0);
 		show_tabs(true);
 		while(!history_was_realized && gtk_events_pending()) gtk_main_iteration();
-		if(!history_was_realized) {
+		if(!history_was_realized && nr_of_new_expressions > 0) {
 			GtkTreePath *path = gtk_tree_path_new_from_indices(0, -1);
 			gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(historyview), path, history_index_column, FALSE, 0, 0);
 			gtk_tree_view_scroll_to_point(GTK_TREE_VIEW(historyview), 0, 0);
