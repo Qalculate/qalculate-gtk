@@ -1,7 +1,7 @@
 /*
     Qalculate (GTK+ UI)
 
-    Copyright (C) 2003-2007, 2008, 2016-2017  Hanna Knutsson (hanna.knutsson@protonmail.com)
+    Copyright (C) 2003-2007, 2008, 2016-2019  Hanna Knutsson (hanna.knutsson@protonmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -1659,6 +1659,45 @@ void display_parse_status() {
 				parsed_expression += _("complex polar form");
 			} else if(equalsIgnoreCase(str_u, "utc") || equalsIgnoreCase(str_u, "gmt")) {
 				parsed_expression += _("UTC time zone");
+			} else if(str_u.length() > 3 && (equalsIgnoreCase(str_u.substr(0, 3), "utc") || equalsIgnoreCase(str_u.substr(0, 3), "gmt"))) {
+				str_u = str_u.substr(3);
+				parsed_expression += "UTC";
+				remove_blanks(str_u);
+				bool b_minus = false;
+				if(str_u[0] == '+') {
+					str_u.erase(0, 1);
+				} else if(str_u[0] == '-') {
+					b_minus = true;
+					str_u.erase(0, 1);
+				} else if(str_u.find(SIGN_MINUS) == 0) {
+					b_minus = true;
+					str_u.erase(0, strlen(SIGN_MINUS));
+				}
+				unsigned int tzh = 0, tzm = 0;
+				int itz = 0;
+				if(!str_u..empty() && sscanf(str_u.c_str(), "%2u:%2u", &tzh, &tzm) > 0) {
+					itz = tzh * 60 + tzm;
+				} else {
+					had_errors = true;
+				}
+				if(itz > 0) {
+					if(b_minus) parsed_expression += '-';
+					else parsed_expression += '+';
+					if(itz < 60) {
+						parsed_expression += "00";
+					} else {
+						if(itz < 60 * 10) parsed_expression += '0';
+						parsed_expression += i2s(itz / 60);
+					}
+					if(itz % 60 > 0) {
+						parsed_expression += ":";
+						if(itz % 60 < 10) parsed_expression += '0';
+						parsed_expression += i2s(itz % 60);
+					}
+				}
+			} else if(str_u == "CET") {
+				parsed_expression += "UTC";
+				parsed_expression += "+01";
 			} else if((equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str2, _("base"))) && s2i(to_str2) >= 2 && (s2i(to_str2) <= 36 || s2i(to_str2) == BASE_SEXAGESIMAL)) {
 				gchar *gstr = g_strdup_printf(_("number base %i"), s2i(to_str2));
 				parsed_expression += gstr;
@@ -4261,6 +4300,28 @@ void update_completion() {
 						str += ename->name;
 					}
 					str += "</i>";
+				}
+			}
+			if(printops.use_unicode_signs && can_display_unicode_string_function("→", (void*) expressiontext)) {
+				size_t pos = 0;
+				if(b) {
+					pos = str.find("_to_");
+				} else {
+					pos = ename_r->name.find("_to_");
+					if(pos != string::npos) {
+						str = ename_r->name;
+						b = true;
+					}
+				}
+				if(b) {
+					while(pos != string::npos) {
+						if((pos == 1 && str[0] == 'm') || (pos > 1 && str[pos - 1] == 'm' && str[pos - 2] == '>')) {
+							str.replace(pos, 4, "<span size=\"small\"><sup>-1</sup></span>→");
+						} else {
+							str.replace(pos, 4, "→");
+						}
+						pos = str.find("_to_", pos);
+					}
 				}
 			}
 			if(!CALCULATOR->variables[i]->title(false).empty()) {
@@ -7740,6 +7801,46 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			b_busy_expression = false;
 			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
 			else execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			printops.time_zone = TIME_ZONE_LOCAL;
+			return;
+		} else if(to_str.length() > 3 && (equalsIgnoreCase(to_str.substr(0, 3), "utc") || equalsIgnoreCase(to_str.substr(0, 3), "gmt"))) {
+			to_str = to_str.substr(3);
+			remove_blanks(to_str);
+			bool b_minus = false;
+			if(to_str[0] == '+') {
+				to_str.erase(0, 1);
+			} else if(to_str[0] == '-') {
+				b_minus = true;
+				to_str.erase(0, 1);
+			} else if(to_str.find(SIGN_MINUS) == 0) {
+				b_minus = true;
+				to_str.erase(0, strlen(SIGN_MINUS));
+			}
+			unsigned int tzh = 0, tzm = 0;
+			int itz = 0;
+			if(!to_str.empty() && sscanf(to_str.c_str(), "%2u:%2u", &tzh, &tzm) > 0) {
+				itz = tzh * 60 + tzm;
+				if(b_minus) itz = -itz;
+			} else {
+				CALCULATOR->error(true, _("Time zone parsing failed."), NULL);
+			}
+			printops.time_zone = TIME_ZONE_CUSTOM;
+			printops.custom_time_zone = itz;
+			b_busy = false;
+			b_busy_expression = false;
+			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
+			else execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			printops.custom_time_zone = 0;
+			printops.time_zone = TIME_ZONE_LOCAL;
+			return;
+		} else if(to_str == "CET") {
+			printops.time_zone = TIME_ZONE_CUSTOM;
+			printops.custom_time_zone = 60;
+			b_busy = false;
+			b_busy_expression = false;
+			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
+			else execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			printops.custom_time_zone = 0;
 			printops.time_zone = TIME_ZONE_LOCAL;
 			return;
 		} else if(equalsIgnoreCase(to_str, "bases") || equalsIgnoreCase(to_str, _("bases"))) {
