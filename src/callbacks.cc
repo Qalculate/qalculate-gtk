@@ -1675,7 +1675,7 @@ void display_parse_status() {
 				}
 				unsigned int tzh = 0, tzm = 0;
 				int itz = 0;
-				if(!str_u..empty() && sscanf(str_u.c_str(), "%2u:%2u", &tzh, &tzm) > 0) {
+				if(!str_u.empty() && sscanf(str_u.c_str(), "%2u:%2u", &tzh, &tzm) > 0) {
 					itz = tzh * 60 + tzm;
 				} else {
 					had_errors = true;
