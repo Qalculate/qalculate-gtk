@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "2.8.2">
-  <!ENTITY manrevision "2.8.2">
-  <!ENTITY date "December 2018">
+  <!ENTITY appversion "2.9.0">
+  <!ENTITY manrevision "2.9.0">
+  <!ENTITY date "January 2019">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -14,7 +14,7 @@
 <title>&app; Manual v&manrevision;</title>
 <bookinfo>
 	<copyright>
-		<year>2005-2007, 2016-2018</year>
+		<year>2005-2007, 2016-2019</year>
 		<holder>Hanna Knutsson</holder>
 	</copyright>
 	<publisher> 
@@ -601,7 +601,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			</row>
 			<row valign="top">
 				<entry><para>Interval Display</para></entry>
-				<entry><para>Submenu with options that determines how the result of interval arithmetic are shown. The adaptive option is the same as significant digits display unless an interval has been explicitely specified in the expression.</para></entry>
+				<entry><para>Submenu with options that determines how the result of interval arithmetic and values with associated uncertainty are shown. The adaptive option is the same as significant digits display unless an interval has been explicitely specified in the expression.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Unit Display</para></entry>
@@ -843,7 +843,7 @@ In &app; mathematical entities, such as numbers and variables, are referred to a
 	<varlistentry>
 		<term>Intervals</term>
 		<listitem><para>
-		A number interval can be entered using the <command>interval()</command> function (specifies the upper and lower limit of the interval), or using <quote>±</quote> or <quote>+/-</quote>, specifying the width of the interval after the mid value (e.g. <quote>5±1 = interval(4, 6)</quote>). If interval arithmetic and the read precision option is activated, decimal numbers are interpreted as an interval between the numbers that are normally rounded to the entered number (e.g. <quote>1.1 = 1.1±0.05</quote>).
+		A number interval can be entered using the <command>interval()</command> function (specifies the upper and lower limit of the interval), or using <quote>±</quote> or <quote>+/-</quote>, specifying the width of the interval after the mid value (e.g. <quote>5±1 = interval(4, 6)</quote>). If the read precision option is activated, decimal numbers are interpreted as an interval between the numbers that are normally rounded to the entered number (e.g. <quote>1.1 = 1.1±0.05</quote>). If interval arithmetic is deactivated, the interval interpreted as the standard uncertainty (deviation) of the value.
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -1208,8 +1208,12 @@ Putting <quote> to </quote> followed by an expression at the end of the mathemat
 <listitem><para>Show date in different calendars (opens calendar conversion dialog).</para></listitem>
 </varlistentry>
 <varlistentry>
-<term>utc</term>
+<term>UTC</term>
 <listitem><para>Show date and time using UTC time zone.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>UTC+/-hh[:mm]</term>
+<listitem><para>Show date and time using specified time zone (e.g. UTC+08).</para></listitem>
 </varlistentry>
 </variablelist>
 </para>
@@ -1312,13 +1316,13 @@ If <quote>to</quote> is not preceded by an expression, the previous result will 
 		<term>Parsing Mode</term>
 		<listitem><para>
 			These options controls how expressions are interpreted. There are three main modes, which mainly controls if implicit multiplication is handled differently from explicit multiplication and if spaces are taken into account or not.  See <xref linkend="qalculate-implicit-multiplication"/>.
-			If the read precsion option is activated, decimal numbers are intrepeted as approximate with precision equal to the number of digits (e.g. <quote>1.1 * 1.1 ≈ 1.2</quote>). If interval arithmetic is enabled, decimal numbers are interpreted as an interval between the numbers that are normally rounded to the entered number (e.g. <quote>1.1 = 1.1±0.05</quote>).
+			If the read precsion option is activated, decimal numbers are intrepeted as approximate with precision equal to the number of digits (e.g. <quote>1.1 * 3.20 = 1.1±0.05 * 3.20±0.005 ≈ 3.5±0.2</quote>).
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
 		<term>Precision</term>
 		<listitem><para>
-			Precision specifies the default number of significant digits displayed and determines the precision used for approximate calculations. The internal precision is higher than the one specified, but will nevertheless not completely protect against loss of significance/catastrophic cancellation (and you will not be alterted unless interval arithmetic is activated). If the read precision option is turned on, input numbers with decimals will be interpreted as approximate with a precision equal to the number of digits (e.g. <quote>2.50 + 3.4567 = 5.96</quote>).
+			Precision specifies the default number of significant digits displayed and determines the precision used for approximate calculations. The internal precision is higher than the one specified, but will nevertheless not completely protect against loss of significance/catastrophic cancellation (and you will not be alterted unless interval arithmetic is activated).
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -1328,24 +1332,6 @@ If <quote>to</quote> is not preceded by an expression, the previous result will 
 		</para></listitem>
 	</varlistentry>	
 </variablelist>
-<sect1 id="qalculate-interval-arithmetic">
-<title>Interval Arithmetic</title>
-<para>
-Interval arithmetic can be used explicitly to perform calculations on an interval (defined using the <command>interval()</command> function or <quote>±</quote> notation), or implicitly for all approximate calculations to keep track of precision changes. The latter is especially useful for calculation using numbers with few implicit digits, in combination with the <quote>read precision</quote> mode, for calculation with approximate physical constants, which are defined as an interval using standard uncertainty values (if interval arithmetic is activated), or to gracefully handle for example catastrophic cancellation (in subtracting two nearly equal numbers). Interval arithmetic can be (de)activated using <menuchoice><guimenu>Mode</guimenu><guimenu>Approximation</guimenu><guimenuitem>Interval Arithmetic</guimenuitem></menuchoice> or from the corresponding menu on the keypad.
-</para>
-<para>
-The main issue with interval arithmetic is handling of dependent values. The simple expression <quote>2 * interval(1, 2) - pi * interval(1, 2)</quote> gives as result <quote>interval(-4.283, 0.858)</quote>, which is correct if the two intervals in the expression are unrelated. If they on the instead refers to the same measurement the true result should be <quote>-interval(1.141, 2.283)</quote>, but &app; has no way of knowing this. There are some ways the circumvent this issue <quote>interval(1, 2) * (2 - pi)</quote> returns the correct interval. &app; is in most cases able to handle this automatically with variables and function arguments for most differentiable functions.
-</para>
-<para>
-Some non-invertible functions (including bessel and airy functions) are not properly support and only the function value for the end values of the interval are calculated. Trigonometric functions should however give correct intervals for real and imaginary numbers, but will in some cases for complex numbers with both a real and imaginary part return a too wide interval.
-</para>
-<para>
-Generally, the resulting interval will be guaranteed to include the true interval, but may often for non-trivial expression (especially involving complex numbers) return an interval that is to wide.
-</para>
-<para>
-For implicit interval arithmetic the result is by default shown as an ordinary number with the number of significant digits determined by the width of the interval(<quote>interval(2.075, 2.15) = 2.1</quote>), unless the interval is too wide. If the <command>interval()</command> has been used in the expression the result is by default displayed as an interval, and if <quote>±</quote> notation has been used, it will also be used in the result. The default behaviour can be changed from<menuchoice><guimenu>Mode</guimenu><guimenu>Interval Display</guimenu></menuchoice>. The midpoint alternative displays the value halfway between the lower and upper limit of the interval (<quote>interval(2.075, 2.15) = 2.1125</quote>). Note that, for the plus/minus notation, the same midpoint (not the result for the midpoint of intervals in the expression) is displayed in front of the plus/minus symbol.
-</para>
-</sect1>
 <sect1 id="qalculate-rpn">
 <title>The RPN Mode</title>
 <para>
@@ -1381,7 +1367,34 @@ Reverse Polish Notation can also be used directly in expression. This can be act
 </para>
 </sect1>
 </chapter>
-
+<chapter id="qalculate-interval-arithmetic">
+<title>Propagation of Uncertainty and Interval Arithmetic</title>
+<para>
+If interval arithmetic is not activated, propagation of uncertainty is estimated using the variance formula, using partial derivatives, as shown below. This applies to numbers, defined using the <command>interval()</command> function or <quote>±</quote> notation, or with <quote>read precision</quote> enabled, and variables, including physical constants, with specified standard uncertainty.
+</para>
+<figure id="qalculate-FIG-variance-formula">
+	<title>Variance Formula</title>
+	<screenshot>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="figures/variance-formula.svg" format="SVG" width="350"/>
+			</imageobject>
+		</mediaobject>
+	</screenshot>
+</figure>
+<para>
+When interval arithmetic is activated, it replaces the variance formula for interval calculations and estaimation of uncertainty propagation. Interval arithmetic is also used implicitly for all approximate calculations to keep track of precision changes, and gracefully handle for example catastrophic cancellation (in subtraction two nearly equal numbers). Interval arithmetic can be (de)activated using <menuchoice><guimenu>Mode</guimenu><guimenu>Approximation</guimenu><guimenuitem>Interval Arithmetic</guimenuitem></menuchoice> or from the corresponding menu on the keypad.
+</para>
+<para>
+Some non-invertible functions (including bessel and airy functions) are not properly supported and only the function value for the end values of the interval are calculated. Trigonometric functions should however give correct intervals for real and imaginary numbers, but will in some cases for complex numbers with both a real and imaginary part return a too wide interval.
+</para>
+<para>
+Generally, the resulting interval will be guaranteed to include the true interval, but may often for non-trivial expression (especially involving complex numbers) return an interval that is too wide.
+</para>
+<para>
+The result is by default shown as an ordinary number with the number of significant digits determined by the width of the interval(<quote>interval(2.075, 2.15) = 2.1</quote>), unless the interval is too wide. If the <command>interval()</command> function has been used in the expression the result is by default displayed as an interval, and if <quote>±</quote> notation has been used, it will also be used in the result. The default behaviour can be changed from<menuchoice><guimenu>Mode</guimenu><guimenu>Interval Display</guimenu></menuchoice>. The midpoint alternative displays the value halfway between the lower and upper limit of the interval (<quote>interval(2.075, 2.15) = 2.1125</quote>). Note that, for the plus/minus notation, the same midpoint (not the result for the midpoint of intervals in the expression) is displayed in front of the plus/minus symbol.
+</para>
+</chapter>
 <chapter id="qalculate-variables">
 <title>Variables</title>
 <para>

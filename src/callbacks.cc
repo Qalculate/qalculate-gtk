@@ -4302,6 +4302,10 @@ void update_completion() {
 					str += "</i>";
 				}
 			}
+			if(!b && ename_r->suffix && ename_r->name.length() > 1) {
+				str = sub_suffix(ename_r);
+				b = true;
+			}
 			if(printops.use_unicode_signs && can_display_unicode_string_function("→", (void*) expressiontext)) {
 				size_t pos = 0;
 				if(b) {
@@ -4404,6 +4408,10 @@ void update_completion() {
 					}
 					str += "</i>";
 				}
+			}
+			if(!b && ename_r->suffix && ename_r->name.length() > 1) {
+				str = sub_suffix(ename_r);
+				b = true;
 			}
 			unordered_map<string, GdkPixbuf*>::const_iterator it_flag = flag_images.end();
 			if(u->isCurrency()) it_flag = flag_images.find(u->referenceName()); 	
@@ -18392,7 +18400,7 @@ void on_menu_item_try_exact_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.approximation = APPROXIMATION_TRY_EXACT;
 	CALCULATOR->useIntervalArithmetic(false);
-	
+
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_approximation"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_approximation_changed, NULL);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_approximation")), TRY_EXACT_INDEX);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_approximation"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_approximation_changed, NULL);
