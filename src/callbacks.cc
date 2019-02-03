@@ -6026,7 +6026,79 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 		}
 		case STRUCT_FUNCTION: {
 		
-			if(SHOW_WITH_ROOT_SIGN(m)) {
+			if(m.function() == CALCULATOR->f_interval && m.size() == 2 && m[0].isAddition() && m[0].size() == 2 && m[1].isAddition() && m[1].size() == 2) {
+				MathStructure *mmid = NULL, *munc = NULL;
+				if(m[0][0].equals(m[1][0], true, true)) {
+					mmid = &m[0][0];
+					if(m[0][1].isNegate() && m[0][1][0].equals(m[1][1], true, true)) munc = &m[1][1];
+					if(m[1][1].isNegate() && m[1][1][0].equals(m[0][1], true, true)) munc = &m[0][1];
+				} else if(m[0][1].equals(m[1][1], true, true)) {
+					mmid = &m[0][1];
+					if(m[0][0].isNegate() && m[0][0][0].equals(m[1][0], true, true)) munc = &m[1][0];
+					if(m[1][0].isNegate() && m[1][0][0].equals(m[0][0], true, true)) munc = &m[0][0];
+				} else if(m[0][0].equals(m[1][1], true, true)) {
+					mmid = &m[0][0];
+					if(m[0][1].isNegate() && m[0][1][0].equals(m[1][0], true, true)) munc = &m[1][0];
+					if(m[1][0].isNegate() && m[1][0][0].equals(m[0][1], true, true)) munc = &m[0][1];
+				} else if(m[0][1].equals(m[1][0], true, true)) {
+					mmid = &m[0][0];
+					if(m[0][0].isNegate() && m[0][0][0].equals(m[1][1], true, true)) munc = &m[1][1];
+					if(m[1][1].isNegate() && m[1][1][0].equals(m[0][0], true, true)) munc = &m[0][0];
+				}
+				if(mmid && munc) {
+					ips_n.depth++;
+					gint unc_uh, unc_w, unc_dh, mid_w, mid_dh, mid_uh, dh = 0, uh = 0, w = 0, h = 0;
+					cairo_surface_t *mid_surface = NULL, *unc_surface = NULL;
+					ips_n.wrap = true;
+					mid_surface = draw_structure(*mmid, po, ips_n, &mid_dh, scaledown, color);
+					if(!mid_surface) {
+						return NULL;
+					}
+					mid_w = cairo_image_surface_get_width(mid_surface) / scalefactor;
+					h = cairo_image_surface_get_height(mid_surface) / scalefactor;
+					mid_uh = h - mid_dh;
+					ips_n.wrap = true;
+					unc_surface = draw_structure(*munc, po, ips_n, &unc_dh, scaledown, color);
+					unc_w = cairo_image_surface_get_width(unc_surface) / scalefactor;
+					h = cairo_image_surface_get_height(unc_surface) / scalefactor;
+					unc_uh = h - unc_dh;
+					h = 0;
+					gint pm_w, pm_h;
+					PangoLayout *layout_pm = gtk_widget_create_pango_layout(resultview, NULL);
+					PANGO_TTP(layout_pm, SIGN_PLUSMINUS);
+					pango_layout_get_pixel_size(layout_pm, &pm_w, &pm_h);
+					w = mid_w + unc_w + pm_w;
+					dh = mid_dh; uh = mid_uh;
+					if(unc_dh > dh) h = unc_dh;
+					if(unc_uh > uh) uh = unc_uh;
+					if(pm_h / 2 > dh) {
+						dh = pm_h / 2;
+					}
+					if(pm_h / 2 + pm_h % 2 > uh) {
+						uh = pm_h / 2 + pm_h % 2;
+					}
+					h = uh + dh;
+					central_point = dh;
+					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+					cr = cairo_create(surface);
+					gdk_cairo_set_source_rgba(cr, color);
+					w = 0;
+					cairo_set_source_surface(cr, mid_surface, w, uh - mid_uh);
+					cairo_paint(cr);
+					w += mid_w;
+					gdk_cairo_set_source_rgba(cr, color);
+					cairo_move_to(cr, w, uh - pm_h / 2 - pm_h % 2);
+					pango_cairo_show_layout(cr, layout_pm);
+					w += pm_w;
+					cairo_set_source_surface(cr, unc_surface, w, uh - unc_uh);
+					cairo_paint(cr);
+					g_object_unref(layout_pm);
+					cairo_surface_destroy(mid_surface);
+					cairo_surface_destroy(unc_surface);
+					break;
+				}
+			} else if(SHOW_WITH_ROOT_SIGN(m)) {
 
 				ips_n.depth++;
 				gint arg_w, arg_h, root_w, root_h, sign_w, sign_h, h, w, ctmp;
@@ -10267,7 +10339,7 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 		if(v->isExpression()) {
 			value_str = CALCULATOR->localizeExpression(v->expression());
 			if(!v->uncertainty().empty()) {value_str += "±"; value_str += v->uncertainty();}
-			if(!v->unit().empty()) {value_str += " "; value_str += v->unit();}
+			if(!v->unit().empty() && v->unit() != "auto") {value_str += " "; value_str += v->unit();}
 		} else {
 			value_str = get_value_string(v->get(), false, NULL);
 		}
@@ -12700,7 +12772,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {2, 8, 2};
+	int version_numbers[] = {2, 9, 0};
 	bool old_history_format = false;
 			
 	if(file) {

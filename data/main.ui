@@ -2794,8 +2794,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2819,8 +2819,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2845,8 +2845,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -5693,6 +5693,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="tooltip_text" translatable="yes">Unit(s) and prefix to convert result to</property>
                             <property name="hexpand">True</property>
                             <property name="primary_icon_activatable">False</property>
+                            <signal name="activate" handler="on_convert_entry_unit_activate" swapped="no"/>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -5827,6 +5828,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <signal name="clicked" handler="on_convert_button_convert_clicked" swapped="no"/>
                           </object>
                           <packing>
                             <property name="left_attach">2</property>

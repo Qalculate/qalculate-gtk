@@ -4,7 +4,7 @@
   <!ENTITY legal SYSTEM "legal.xml">
   <!ENTITY appversion "2.9.0">
   <!ENTITY manrevision "2.9.0">
-  <!ENTITY date "January 2019">
+  <!ENTITY date "February 2019">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -1370,17 +1370,15 @@ Reverse Polish Notation can also be used directly in expression. This can be act
 <chapter id="qalculate-interval-arithmetic">
 <title>Propagation of Uncertainty and Interval Arithmetic</title>
 <para>
-If interval arithmetic is not activated, propagation of uncertainty is estimated using the variance formula, using partial derivatives, as shown below. This applies to numbers, defined using the <command>interval()</command> function or <quote>±</quote> notation, or with <quote>read precision</quote> enabled, and variables, including physical constants, with specified standard uncertainty.
+If interval arithmetic is not activated, propagation of uncertainty is estimated using the variance formula, using partial derivatives, as shown below. This applies to numbers, defined using the <command>interval()</command> function or <quote>±</quote> notation, or with <quote>read precision</quote> enabled, and variables, including physical constants, with specified standard uncertainty. The uncertainty will be calculated separately for non-differentiable functions.
 </para>
 <figure id="qalculate-FIG-variance-formula">
 	<title>Variance Formula</title>
-	<screenshot>
-		<mediaobject>
-			<imageobject>
-				<imagedata fileref="figures/variance-formula.svg" format="SVG" width="350"/>
-			</imageobject>
-		</mediaobject>
-	</screenshot>
+	<mediaobject>
+		<imageobject>
+			<imagedata fileref="figures/variance-formula.svg" format="SVG" width="350"/>
+		</imageobject>
+	</mediaobject>
 </figure>
 <para>
 When interval arithmetic is activated, it replaces the variance formula for interval calculations and estaimation of uncertainty propagation. Interval arithmetic is also used implicitly for all approximate calculations to keep track of precision changes, and gracefully handle for example catastrophic cancellation (in subtraction two nearly equal numbers). Interval arithmetic can be (de)activated using <menuchoice><guimenu>Mode</guimenu><guimenu>Approximation</guimenu><guimenuitem>Interval Arithmetic</guimenuitem></menuchoice> or from the corresponding menu on the keypad.
