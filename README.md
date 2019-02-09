@@ -2,7 +2,7 @@
 
 <a href="https://github.com/Qalculate/qalculate-gtk/raw/master/data/qalculate-gtk-appdata-1.png"><img src="https://github.com/Qalculate/qalculate-gtk/raw/master/data/qalculate-gtk-appdata-1.png" width="446"></a>
 
-Qalculate! is a multi-purpose cross-platform desktop calculator. It is simple to use but provides power and versatility normally reserved for complicated math packages, as well as useful tools for everyday needs (such as currency conversion and percent calculation). Features include a large library of customizable functions, unit calculations and conversion, symbolic calculations (including integrals and equations), arbitrary precision, interval arithmetic, plotting, and a user-friendly interface (GTK+ and CLI).
+Qalculate! is a multi-purpose cross-platform desktop calculator. It is simple to use but provides power and versatility normally reserved for complicated math packages, as well as useful tools for everyday needs (such as currency conversion and percent calculation). Features include a large library of customizable functions, unit calculations and conversion, symbolic calculations (including integrals and equations), arbitrary precision, uncertainty propagation, interval arithmetic, plotting, and a user-friendly interface (GTK+ and CLI).
 
 ## Installation
 In a terminal window in the top source code directory run
@@ -46,6 +46,7 @@ Features from libqalculate:
    * Fault-tolerant parsing of strings: log 5 / 2 .5 (3) + (2( 3 +5 = ln(5) / (2.5 * 3) + 2 * (3 + 5)
    * Expressions may contain any combination of numbers, functions, units, variables, vectors and matrices, and dates
    * Supports complex and infinite numbers
+   * Propagation of uncertainty
    * Interval arithmetic (for determination of the number of significant digits or direct calculation with intervals of numbers)
    * Supports all number bases from 2 to 36, time format and roman numerals
    * Ability to disable functions, variables, units or unknown variables for less confusion: ex. when you do not want (a+b)^2 to mean (are+barn)^2 but ("a"+"b")^2

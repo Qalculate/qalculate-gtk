@@ -6049,7 +6049,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 					ips_n.depth++;
 					gint unc_uh, unc_w, unc_dh, mid_w, mid_dh, mid_uh, dh = 0, uh = 0, w = 0, h = 0;
 					cairo_surface_t *mid_surface = NULL, *unc_surface = NULL;
-					ips_n.wrap = true;
+					ips_n.wrap = !mmid->isNumber();
 					mid_surface = draw_structure(*mmid, po, ips_n, &mid_dh, scaledown, color);
 					if(!mid_surface) {
 						return NULL;
@@ -6057,7 +6057,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 					mid_w = cairo_image_surface_get_width(mid_surface) / scalefactor;
 					h = cairo_image_surface_get_height(mid_surface) / scalefactor;
 					mid_uh = h - mid_dh;
-					ips_n.wrap = true;
+					ips_n.wrap = !munc->isNumber();
 					unc_surface = draw_structure(*munc, po, ips_n, &unc_dh, scaledown, color);
 					unc_w = cairo_image_surface_get_width(unc_surface) / scalefactor;
 					h = cairo_image_surface_get_height(unc_surface) / scalefactor;
@@ -12624,7 +12624,7 @@ void load_preferences() {
 	printops.negative_exponents = false;
 	printops.sort_options.minus_last = true;
 	printops.indicate_infinite_series = false;
-	printops.show_ending_zeroes = false;
+	printops.show_ending_zeroes = true;
 	printops.round_halfway_to_even = false;
 	printops.number_fraction_format = FRACTION_DECIMAL;
 	printops.restrict_fraction_length = false;
@@ -13115,8 +13115,10 @@ void load_preferences() {
 					if(mode_index == 1) printops.indicate_infinite_series = v;
 					else modes[mode_index].po.indicate_infinite_series = v;
 				} else if(svar == "show_ending_zeroes") {
-					if(mode_index == 1) printops.show_ending_zeroes = v;
-					else modes[mode_index].po.show_ending_zeroes = v;
+					if(version_numbers[0] > 2 || (version_numbers[0] == 2 && version_numbers[1] >= 9)) {
+						if(mode_index == 1) printops.show_ending_zeroes = v;
+						else modes[mode_index].po.show_ending_zeroes = v;
+					}
 				} else if(svar == "digit_grouping") {
 					if(v >= DIGIT_GROUPING_NONE && v <= DIGIT_GROUPING_LOCALE) {
 						printops.digit_grouping = (DigitGrouping) v;
