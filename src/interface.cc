@@ -1172,7 +1172,7 @@ void create_main_window(void) {
 	history_index_column = gtk_tree_view_column_new_with_attributes(_("Index"), history_index_renderer, "text", 2, "ypad", 4, NULL);
 	gtk_tree_view_column_set_expand(history_index_column, FALSE);
 	gtk_tree_view_column_set_min_width(history_index_column, 30);
-	g_object_set(G_OBJECT(history_index_renderer), "ypad", 0, "xalign", 0.5, "foreground-rgba", &c_gray, NULL);
+	g_object_set(G_OBJECT(history_index_renderer), "ypad", 0, "yalign", 0.0, "xalign", 0.5, "foreground-rgba", &c_gray, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(historyview), history_index_column);
 	history_renderer = gtk_cell_renderer_text_new();
 	history_column = gtk_tree_view_column_new_with_attributes(_("History"), history_renderer, "markup", 0, "ypad", 4, "xpad", 5, "xalign", 6, "alignment", 7, NULL);
