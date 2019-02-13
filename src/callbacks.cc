@@ -6716,7 +6716,7 @@ void reload_history() {
 					if(inhistory_type[i + 1] == QALCULATE_HISTORY_RPN_OPERATION) expr_str = ("RPN Operation");
 					else if(inhistory_type[i + 1] == QALCULATE_HISTORY_REGISTER_MOVED) expr_str = ("RPN Register Moved");
 					else expr_str = inhistory[i + 1];
-					history_str = expr_str;
+					history_str = fix_history_string(expr_str);
 					history_str += "<span font-style=\"italic\" foreground=\"";
 					history_str += history_parse_color;
 					history_str += "\">  ";
