@@ -1786,7 +1786,7 @@ On: 2 (m/s)</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="item15">
+                      <object class="GtkMenuItem" id="menu_enabled_objects">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Enabled Objects</property>
@@ -1899,7 +1899,7 @@ On: 2 (m/s)</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="item17">
+                      <object class="GtkMenuItem" id="menu_approximation">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Approximation</property>
@@ -1916,17 +1916,6 @@ On: 1/2*pi = 0.5 pi</property>
                                 <property name="label" translatable="yes">Always Exact</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="on_menu_item_always_exact_activate" swapped="no"/>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkRadioMenuItem" id="menu_item_interval_arithmetic">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="tooltip_text" translatable="yes">Calculates an interval of possible values and keeps track of precision changes.</property>
-                                <property name="label" translatable="yes">Interval Arithmetic</property>
-                                <property name="active">True</property>
-                                <property name="group">menu_item_always_exact</property>
-                                <signal name="activate" handler="on_menu_item_interval_arithmetic_activate" swapped="no"/>
                               </object>
                             </child>
                             <child>
@@ -1947,6 +1936,76 @@ On: 1/2*pi = 0.5 pi</property>
                                 <property name="use_underline">True</property>
                                 <property name="group">menu_item_always_exact</property>
                                 <signal name="activate" handler="on_menu_item_approximate_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkSeparatorMenuItem">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkCheckMenuItem" id="menu_item_interval_arithmetic">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Interval Arithmetic</property>
+                                <property name="use_underline">True</property>
+                                <property name="active">True</property>
+                                <signal name="activate" handler="on_menu_item_interval_arithmetic_activate" swapped="no"/>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="menu_uncertainty_propagation">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Interval Calculation</property>
+                        <property name="use_underline">True</property>
+                        <child type="submenu">
+                          <object class="GtkMenu">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_ic_none">
+                                <property name="can_focus">False</property>
+                                <property name="label">None</property>
+                                <property name="use_underline">True</property>
+                                <property name="draw_as_radio">True</property>
+                                <property name="group">menu_item_ic_variance</property>
+                                <signal name="activate" handler="on_menu_item_ic_none_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_ic_variance">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Variance Formula</property>
+                                <property name="use_underline">True</property>
+                                <property name="active">True</property>
+                                <signal name="activate" handler="on_menu_item_ic_variance_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_ic_interval_arithmetic">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Interval Arithmetic</property>
+                                <property name="use_underline">True</property>
+                                <property name="group">menu_item_ic_variance</property>
+                                <signal name="activate" handler="on_menu_item_ic_interval_arithmetic_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_ic_simple">
+                                <property name="can_focus">False</property>
+                                <property name="label">Simple Interval Arithmetic</property>
+                                <property name="use_underline">True</property>
+                                <property name="draw_as_radio">True</property>
+                                <property name="group">menu_item_ic_variance</property>
+                                <signal name="activate" handler="on_menu_item_ic_simple_activate" swapped="no"/>
                               </object>
                             </child>
                           </object>
@@ -2794,8 +2853,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2819,8 +2878,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2845,8 +2904,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
                         <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -2896,18 +2955,12 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                         <property name="can_focus">False</property>
                         <property name="spacing">6</property>
                         <child>
-                          <object class="GtkComboBoxText" id="combobox_approximation">
+                          <object class="GtkToggleButton" id="button_exact">
+                            <property name="label" translatable="yes">Exact</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Approximation mode</property>
-                            <property name="active">0</property>
-                            <items>
-                              <item translatable="yes">Always exact</item>
-                              <item translatable="yes">Interval arithmetics</item>
-                              <item translatable="yes">Try exact</item>
-                              <item translatable="yes">Approximate</item>
-                            </items>
-                            <signal name="changed" handler="on_combobox_approximation_changed" swapped="no"/>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <signal name="toggled" handler="on_button_exact_toggled" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">True</property>
