@@ -290,6 +290,8 @@ bool enable_completion = true, enable_completion2 = true;
 
 bool keep_function_dialog_open = false;
 
+bool automatic_fraction = false;
+
 #define TEXT_TAGS			"<span size=\"xx-large\">"
 #define TEXT_TAGS_END			"</span>"
 #define TEXT_TAGS_SMALL			"<span size=\"large\">"
@@ -12397,10 +12399,23 @@ void on_combobox_numerical_display_changed(GtkComboBox *w, gpointer) {
 
 void on_button_exact_toggled(GtkToggleButton *w, gpointer) {
 	if(gtk_toggle_button_get_active(w)) {
+		evalops.approximation = APPROXIMATION_EXACT;
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_always_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_always_exact_activate, NULL);
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_always_exact")), TRUE);
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_always_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_always_exact_activate, NULL);
+		if(printops.number_fraction_format == FRACTION_DECIMAL) {
+			bool prev_block_result_update = block_result_update;
+			if(!rpn_mode) block_result_update = true;
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal_exact")), TRUE);
+			automatic_fraction = true;
+			if(!rpn_mode) block_result_update = prev_block_result_update;
+		}
+		expression_calculation_updated();
 	} else {
+		evalops.approximation = APPROXIMATION_TRY_EXACT;
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_try_exact")), TRUE);
 	}
+
 }
 
 void on_combobox_fraction_mode_changed(GtkComboBox *w, gpointer) {
@@ -12707,6 +12722,8 @@ void load_preferences() {
 	evalops.local_currency_conversion = true;
 	evalops.interval_calculation = INTERVAL_CALCULATION_VARIANCE_FORMULA;
 	b_decimal_comma = -1;
+	
+	automatic_fraction = false;
 	
 	keep_function_dialog_open = false;
 	
@@ -13046,6 +13063,8 @@ void load_preferences() {
 					}
 					if(mode_index == 1) printops.restrict_fraction_length = (printops.number_fraction_format == FRACTION_FRACTIONAL);
 					else modes[mode_index].po.restrict_fraction_length = (modes[mode_index].po.number_fraction_format == FRACTION_FRACTIONAL);
+				} else if(svar == "automatic_number_fraction_format") {
+					automatic_fraction = v;
 				} else if(svar == "complex_number_form") {
 					if(v >= COMPLEX_NUMBER_FORM_RECTANGULAR && v <= COMPLEX_NUMBER_FORM_POLAR) {
 						evalops.complex_number_form = (ComplexNumberForm) v;
@@ -13601,6 +13620,7 @@ void save_preferences(bool mode) {
 	if(status_warning_color_set) fprintf(file, "status_warning_color=%s\n", status_warning_color.c_str());
 	fprintf(file, "multiplication_sign=%i\n", printops.multiplication_sign);
 	fprintf(file, "division_sign=%i\n", printops.division_sign);
+	if(automatic_fraction) fprintf(file, "automatic_number_fraction_format=%i\n", automatic_fraction);
 	for(size_t i = 0; i < expression_history.size(); i++) {
 		fprintf(file, "expression_history=%s\n", expression_history[i].c_str()); 
 	}	
@@ -15021,28 +15041,6 @@ void on_button_hyp_toggled(GtkToggleButton *w, gpointer) {
 
 void on_button_inv_toggled(GtkToggleButton *w, gpointer) {
 	inv_is_on = gtk_toggle_button_get_active(w);
-	focus_keeping_selection();
-}
-
-/*
-	fraction button toggled -- enable/disable fractional display
-*/
-void on_button_fraction_toggled(GtkToggleButton *w, gpointer) {
-	if(gtk_toggle_button_get_active(w)) {
-		printops.number_fraction_format = FRACTION_FRACTIONAL;
-		GtkWidget *w_fraction = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction"));
-		g_signal_handlers_block_matched((gpointer) w_fraction, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_fraction_activate, NULL);		
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(w_fraction), TRUE);		
-		g_signal_handlers_unblock_matched((gpointer) w_fraction, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_fraction_activate, NULL);		
-	} else {
-		printops.number_fraction_format = FRACTION_DECIMAL;
-		GtkWidget *w_fraction = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal"));
-		g_signal_handlers_block_matched((gpointer) w_fraction, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_decimal_activate, NULL);
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(w_fraction), TRUE);
-		g_signal_handlers_unblock_matched((gpointer) w_fraction, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_decimal_activate, NULL);
-	}
-	printops.restrict_fraction_length = (printops.number_fraction_format = FRACTION_FRACTIONAL);
-	result_format_updated();
 	focus_keeping_selection();
 }
 
@@ -18497,7 +18495,6 @@ void on_menu_item_sort_minus_last_activate(GtkMenuItem *w, gpointer) {
 void on_menu_item_always_exact_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.approximation = APPROXIMATION_EXACT;
-	CALCULATOR->useIntervalArithmetic(false);
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_exact_toggled, NULL);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact")), TRUE);
@@ -18509,25 +18506,38 @@ void on_menu_item_interval_arithmetic_activate(GtkMenuItem *w, gpointer) {
 	CALCULATOR->useIntervalArithmetic(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
 	expression_calculation_updated();
 }
+
+void restore_automatic_fraction() {
+	if(automatic_fraction && printops.number_fraction_format == FRACTION_DECIMAL_EXACT) {
+		bool prev_block_result_update = block_result_update;
+		if(!rpn_mode) block_result_update = true;
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
+		automatic_fraction = false;
+		if(!rpn_mode) block_result_update = prev_block_result_update;
+	}
+}
+
 void on_menu_item_try_exact_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.approximation = APPROXIMATION_TRY_EXACT;
-	CALCULATOR->useIntervalArithmetic(false);
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_exact_toggled, NULL);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact")), FALSE);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_exact_toggled, NULL);
+	
+	restore_automatic_fraction();
 
 	expression_calculation_updated();
 }
 void on_menu_item_approximate_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.approximation = APPROXIMATION_APPROXIMATE;
-	CALCULATOR->useIntervalArithmetic(false);
 	
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_exact_toggled, NULL);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact")), FALSE);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_exact_toggled, NULL);
+	
+	restore_automatic_fraction();
 	
 	expression_calculation_updated();
 }
@@ -18556,6 +18566,7 @@ void on_menu_item_fraction_decimal_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.number_fraction_format = FRACTION_DECIMAL;
 	printops.restrict_fraction_length = false;
+	automatic_fraction = false;
 	
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 0);
@@ -18567,6 +18578,7 @@ void on_menu_item_fraction_decimal_exact_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.number_fraction_format = FRACTION_DECIMAL_EXACT;
 	printops.restrict_fraction_length = false;
+	automatic_fraction = false;
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 1);
@@ -18578,6 +18590,7 @@ void on_menu_item_fraction_combined_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.number_fraction_format = FRACTION_COMBINED;
 	printops.restrict_fraction_length = false;
+	automatic_fraction = false;
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 3);
@@ -18589,6 +18602,7 @@ void on_menu_item_fraction_fraction_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.number_fraction_format = FRACTION_FRACTIONAL;
 	printops.restrict_fraction_length = true;
+	automatic_fraction = false;
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 2);
