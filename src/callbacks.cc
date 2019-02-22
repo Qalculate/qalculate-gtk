@@ -539,7 +539,7 @@ void show_help(const char *file, GObject *parent) {
 	}
 	gsub("\\", "/", surl);
 	surl += file;
-	if((int) ShellExecuteA(NULL, "open", surl.c_str(), NULL, NULL, SW_SHOWNORMAL) <= 32) {
+	if(ShellExecuteA(NULL, "open", surl.c_str(), NULL, NULL, SW_SHOWNORMAL) <= (HINSTANCE) 32) {
 		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help for Qalculate!."));
 		gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(dialog);
@@ -1698,7 +1698,7 @@ void display_parse_status() {
 				parsed_expression += "UTC";
 				parsed_expression += "+01";
 			} else if((equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str2, _("base"))) && s2i(to_str2) >= 2 && (s2i(to_str2) <= 36 || s2i(to_str2) == BASE_SEXAGESIMAL)) {
-				gchar *gstr = g_strdup_printf(_("number base %i"), s2i(to_str2));
+				gchar *gstr = g_strdup_printf(_("number base %li"), s2i(to_str2));
 				parsed_expression += gstr;
 				g_free(gstr);
 			} else {
@@ -9442,7 +9442,7 @@ void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), CALCULATOR->localizeExpression(au->expression() + SIGN_PLUSMINUS + au->uncertainty()).c_str());
 				}
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")), CALCULATOR->localizeExpression(au->inverseExpression()).c_str());
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_box_reversed")), au->hasComplexExpression());
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_box_reversed")), au->hasNonlinearExpression());
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact")), !au->isApproximate());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), !u->isBuiltin());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")), !u->isBuiltin());
@@ -9521,7 +9521,7 @@ run_unit_edit_dialog:
 						}
 						au->setBaseUnit(bu);
 						au->setExpression(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation"))), evalops.parse_options));
-						au->setInverseExpression(au->hasComplexExpression() ? CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed"))), evalops.parse_options) : "");
+						au->setInverseExpression(au->hasNonlinearExpression() ? CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed"))), evalops.parse_options) : "");
 						au->setExponent(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp"))));
 						au->setApproximate(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact"))));
 						if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")))) {

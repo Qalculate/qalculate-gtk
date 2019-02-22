@@ -53,7 +53,7 @@ The interpretation of expressions is flexible and fault tolerant, and if you nev
 In addition to numbers and arithmetic operators, an expression may contain any combination of variables, units, and functions. These are immediately accessible from the user interface — the menu bar, the managers, the calculator keypad, and automatic completion.
 </para>
 <para>
-&app; also has some special tools to increase your efficiency, including a number base conversion dialog and a simple plotting interface.
+&app; also provides some specific tools to increase your efficiency, including a number base conversion dialog and a simple plotting interface.
 </para>
 <para>
 Although use of &app; for simple calculations should be natural and self-explanatory, reading the rest of the manual can help you maximize your productivity and discover some maybe unexpected features. More advanced users should read on and discover a large number of customization options and the ability to create and modify your own variables, functions and units directly from the user interface.
@@ -618,6 +618,10 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			<row valign="top">
 				<entry><para>Approximation</para></entry>
 				<entry><para>Submenu which switches between different approximation modes.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>Interval Calculation</para></entry>
+				<entry><para>Submenu for selection of algorithm för interval calculation / uncertainty propagation.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Angle Unit</para></entry>
@@ -1370,7 +1374,10 @@ Reverse Polish Notation can also be used directly in expression. This can be act
 <chapter id="qalculate-interval-arithmetic">
 <title>Propagation of Uncertainty and Interval Arithmetic</title>
 <para>
-If interval arithmetic is not activated, propagation of uncertainty is estimated using the variance formula, using partial derivatives, as shown below. This applies to numbers, defined using the <command>interval()</command> function or <quote>±</quote> notation, or with <quote>read precision</quote> enabled, and variables, including physical constants, with specified standard uncertainty. The uncertainty will be calculated separately for non-differentiable functions.
+Two different algorithms for calculation of intervals or propagation of uncertainties are supported (selectable from <menuchoice><guimenu>Mode</guimenu><guimenu>Interval Calculation</guimenu></menuchoice>). This applies to numbers, defined using the <command>interval()</command> function or <quote>±</quote> notation, or with <quote>read precision</quote> enabled, and variables, including physical constants, with specified standard uncertainty. The uncertainty will be calculated separately for non-differentiable functions.
+</para>
+<para>
+By default the variance formula is used. Intervals are with this method treated as values with measurement uncertainties (the value 5±0.01 has a standard deviation of 0.01). The final uncertainty, or error, is estimated using partial derivatives, as shown below.
 </para>
 <figure id="qalculate-FIG-variance-formula">
 	<title>Variance Formula</title>
@@ -1380,14 +1387,13 @@ If interval arithmetic is not activated, propagation of uncertainty is estimated
 		</imageobject>
 	</mediaobject>
 </figure>
+<para>Alternatively interval arithmetic can be used. Intervals are treated as an abolsute range of values and the result represents all possible values for every value within all ranges in the expression. For monotonic functions the endpoints in the result corresponds to the function values for the endpoints of the input (e.g. <quote>interval(x, y)^3=interval(x^3, y^3)</quote>).
+</para> 
 <para>
-When interval arithmetic is activated, it replaces the variance formula for interval calculations and estaimation of uncertainty propagation. Interval arithmetic is also used implicitly for all approximate calculations to keep track of precision changes, and gracefully handle for example catastrophic cancellation (in subtraction two nearly equal numbers). Interval arithmetic can be (de)activated using <menuchoice><guimenu>Mode</guimenu><guimenu>Approximation</guimenu><guimenuitem>Interval Arithmetic</guimenuitem></menuchoice> or from the corresponding menu on the keypad.
+Interval arithmetic is also used implicitly, regardless of selected interval calculation algorithm, for all approximate calculations to keep track of precision changes, and gracefully handle for example catastrophic cancellation (in subtraction two nearly equal numbers). The behaviour can be (de)activated using <menuchoice><guimenu>Mode</guimenu><guimenu>Approximation</guimenu><guimenuitem>Interval Arithmetic</guimenuitem></menuchoice>.
 </para>
 <para>
-Some non-invertible functions (including bessel and airy functions) are not properly supported and only the function values for the endpoints of the interval are calculated. Trigonometric functions should however give correct intervals for real and imaginary numbers, but will in some cases for complex numbers with both a real and imaginary part return a too wide interval.
-</para>
-<para>
-Generally, the resulting interval will be guaranteed to include the true interval, but may for non-trivial expression (especially involving complex numbers) return an interval that is too wide.
+Some non-invertible functions (including bessel and airy functions) do not properly support interval arithmetic and only the function values for the endpoints of the interval are calculated. Trigonometric functions returns correct intervals for real and imaginary numbers, but will in some cases for complex numbers with both a real and imaginary part return a too wide interval. Generally, the resulting interval will be guaranteed to include the true interval, but may for non-trivial expression (especially involving complex numbers) return an interval that is too wide.
 </para>
 <para>
 The result is by default shown as an ordinary number with the number of significant digits determined by the size of the uncertainty (<quote>2.11±0.03 = 2.1</quote>), or the width of interval, unless the interval is too wide. If the <command>interval()</command> function has been used in the expression the result is by default displayed as an interval, and if <quote>±</quote> notation has been used, it will also be used in the result. The default behaviour can be changed from<menuchoice><guimenu>Mode</guimenu><guimenu>Interval Display</guimenu></menuchoice>. The midpoint alternative displays the value halfway between the lower and upper limit of the interval (<quote>interval(2.075, 2.15) = 2.1125</quote>). Note that, for the plus/minus notation, the same midpoint (note that when interval arithmetic is enabled this does not necessarily equal the result for the midpoint of intervals in the expression) is displayed in front of the plus/minus symbol. In plus/minus notation, the uncertainty is displayed with two significant digits, with the exception that all digits before the decimal separator are always shown.
