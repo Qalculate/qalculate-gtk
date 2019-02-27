@@ -319,7 +319,7 @@ bool automatic_fraction = false;
 
 #define CALCULATE_SPACE_W		gint space_w, space_h; PangoLayout *layout_space = gtk_widget_create_pango_layout(resultview, NULL); PANGO_TTP(layout_space, " "); pango_layout_get_pixel_size(layout_space, &space_w, &space_h); g_object_unref(layout_space);
 
-AnswerFunction::AnswerFunction() : MathFunction(_("answer"), 1, 1, _("Utilities"), _("History Answer Value")) {
+AnswerFunction::AnswerFunction() : MathFunction(_("answer"), 1, 1, CALCULATOR->f_warning->category(), _("History Answer Value")) {
 	if(strcmp(_("answer"), "answer")) addName("answer");
 	VectorArgument *arg = new VectorArgument(_("History Index(es)"));
 	arg->addArgument(new IntegerArgument("", ARGUMENT_MIN_MAX_NONZERO, true, true, INTEGER_TYPE_SINT));
@@ -342,7 +342,7 @@ int AnswerFunction::calculate(MathStructure &mstruct, const MathStructure &vargs
 	}
 	return 1;
 }
-ExpressionFunction::ExpressionFunction() : MathFunction(_("expression"), 1, 1, _("Utilities"), _("History Parsed Expression")) {
+ExpressionFunction::ExpressionFunction() : MathFunction(_("expression"), 1, 1, CALCULATOR->f_warning->category(), _("History Parsed Expression")) {
 	if(strcmp(_("expression"), "expression")) addName("expression");
 	VectorArgument *arg = new VectorArgument(_("History Index(es)"));
 	arg->addArgument(new IntegerArgument("", ARGUMENT_MIN_MAX_NONZERO, true, true, INTEGER_TYPE_SINT));
@@ -976,6 +976,18 @@ void set_unicode_buttons() {
 }
 
 
+bool string_is_less(string str1, string str2) {
+	size_t i = 0;
+	bool b_uni = false;
+	while(i < str1.length() && i < str2.length()) {
+		if(str1[i] == str2[i]) i++;
+		else if(str1[i] < 0 || str2[i] < 0) {b_uni = true; break;}
+		else return str1[i] < str2[i];
+	}
+	if(b_uni) return g_utf8_collate(str1.c_str(), str2.c_str()) < 0;
+	return str1 < str2;
+}
+
 struct tree_struct {
 	string item;
 	list<tree_struct> items;
@@ -990,7 +1002,7 @@ struct tree_struct {
 		}
 	}
 	bool operator < (const tree_struct &s1) const {
-		return item < s1.item;	
+		return string_is_less(item, s1.item);
 	}	
 };
 
@@ -1876,13 +1888,13 @@ void generate_units_tree_struct() {
 			b = false;
 			for(size_t i3 = 0; i3 < ia_units.size(); i3++) {
 				u = (Unit*) ia_units[i3];
-				if(CALCULATOR->units[i]->title() < u->title()) {
+				if(string_is_less(CALCULATOR->units[i]->title(), u->title())) {
 					b = true;
 					ia_units.insert(ia_units.begin() + i3, (void*) CALCULATOR->units[i]);
 					break;
 				}
 			}
-			if(!b) ia_units.push_back((void*) CALCULATOR->units[i]);						
+			if(!b) ia_units.push_back((void*) CALCULATOR->units[i]);
 		} else {
 			tree_struct *item = &unit_cats;
 			if(!CALCULATOR->units[i]->category().empty()) {
@@ -1922,7 +1934,7 @@ void generate_units_tree_struct() {
 			b = false;
 			for(size_t i3 = 0; i3 < item->objects.size(); i3++) {
 				u = (Unit*) item->objects[i3];
-				if(CALCULATOR->units[i]->title() < u->title()) {
+				if(string_is_less(CALCULATOR->units[i]->title(), u->title())) {
 					b = true;
 					item->objects.insert(item->objects.begin() + i3, (void*) CALCULATOR->units[i]);
 					break;
@@ -1952,7 +1964,7 @@ void generate_variables_tree_struct() {
 			b = false;
 			for(size_t i3 = 0; i3 < ia_variables.size(); i3++) {
 				v = (Variable*) ia_variables[i3];
-				if(CALCULATOR->variables[i]->title() < v->title()) {
+				if(string_is_less(CALCULATOR->variables[i]->title(), v->title())) {
 					b = true;
 					ia_variables.insert(ia_variables.begin() + i3, (void*) CALCULATOR->variables[i]);
 					break;
@@ -1998,7 +2010,7 @@ void generate_variables_tree_struct() {
 			b = false;
 			for(size_t i3 = 0; i3 < item->objects.size(); i3++) {
 				v = (Variable*) item->objects[i3];
-				if(CALCULATOR->variables[i]->title() < v->title()) {
+				if(string_is_less(CALCULATOR->variables[i]->title(), v->title())) {
 					b = true;
 					item->objects.insert(item->objects.begin() + i3, (void*) CALCULATOR->variables[i]);
 					break;
@@ -2029,7 +2041,7 @@ void generate_functions_tree_struct() {
 			b = false;
 			for(size_t i3 = 0; i3 < ia_functions.size(); i3++) {
 				f = (MathFunction*) ia_functions[i3];
-				if(CALCULATOR->functions[i]->title() < f->title()) {
+				if(string_is_less(CALCULATOR->functions[i]->title(), f->title())) {
 					b = true;
 					ia_functions.insert(ia_functions.begin() + i3, (void*) CALCULATOR->functions[i]);
 					break;
@@ -2075,7 +2087,7 @@ void generate_functions_tree_struct() {
 			b = false;
 			for(size_t i3 = 0; i3 < item->objects.size(); i3++) {
 				f = (MathFunction*) item->objects[i3];
-				if(CALCULATOR->functions[i]->title() < f->title()) {
+				if(string_is_less(CALCULATOR->functions[i]->title(), f->title())) {
 					b = true;
 					item->objects.insert(item->objects.begin() + i3, (void*) CALCULATOR->functions[i]);
 					break;
@@ -5954,12 +5966,14 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				} else {
 					str += ename->name.substr(0, i);
 				}
-				TTBP_SMALL(str);
-				str += "<sub>";
-				if(b) str += ename->name.substr(ename->name.length() - i2, i2);
-				else str += ename->name.substr(i + 1, ename->name.length() - (i + 1));
-				str += "</sub>";
-				TTE(str);
+				if(b || ename->name.substr(i + 1, ename->name.length() - (i + 1)) != "unit") {
+					TTBP_SMALL(str);
+					str += "<sub>";
+					if(b) str += ename->name.substr(ename->name.length() - i2, i2);
+					else str += ename->name.substr(i + 1, ename->name.length() - (i + 1));
+					str += "</sub>";
+					TTE(str);
+				}
 			} else {
 				str += ename->name;
 			}
@@ -6004,12 +6018,14 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				} else {
 					str += ename->name.substr(0, i);
 				}
-				TTBP_SMALL(str);
-				str += "<sub>";
-				if(b) str += ename->name.substr(ename->name.length() - i2, i2);
-				else str += ename->name.substr(i + 1, ename->name.length() - (i + 1));
-				str += "</sub>";
-				TTE(str);
+				if(!b || ename->name.substr(i + 1, ename->name.length() - (i + 1)) != "constant") {
+					TTBP_SMALL(str);
+					str += "<sub>";
+					if(b) str += ename->name.substr(ename->name.length() - i2, i2);
+					else str += ename->name.substr(i + 1, ename->name.length() - (i + 1));
+					str += "</sub>";
+					TTE(str);
+				}
 			} else {
 				str += ename->name;
 			}
@@ -12825,7 +12841,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {2, 9, 0};
+	int version_numbers[] = {3, 0, 0};
 	bool old_history_format = false;
 			
 	if(file) {
@@ -17048,9 +17064,9 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 		if(b_integ) {MENU_ITEM(_("Roman"), menu_to_roman)}
 		if(!b_complex) {MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)}
 		if(!b_integ && !b_date) {MENU_ITEM(_("Fraction"), menu_to_fraction)}
-		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_RECTANGULAR) {MENU_ITEM(_("Rectangular"), menu_to_rectangular)}
-		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_EXPONENTIAL) {MENU_ITEM(_("Exponential"), menu_to_exponential)}
-		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_POLAR) {MENU_ITEM(_("Polar"), menu_to_polar)}
+		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_RECTANGULAR) {MENU_ITEM(_("Rectangular form"), menu_to_rectangular)}
+		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_EXPONENTIAL) {MENU_ITEM(_("Exponential form"), menu_to_exponential)}
+		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_POLAR) {MENU_ITEM(_("Polar form"), menu_to_polar)}
 		return;
 	}
 	string s_cat;
@@ -17075,7 +17091,7 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 						b = true;
 						break;
 					}
-					if(u->title(true) < to_us[i2]->title(true)) {
+					if(string_is_less(u->title(true), to_us[i2]->title(true))) {
 						to_us.insert(to_us.begin() + i2, u);
 						b = true;
 						break;
@@ -17140,7 +17156,7 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 				if(u->isActive() && !u->isHidden()) {
 					bool b = false;
 					for(size_t i2 = 0; i2 < to_us.size(); i2++) {
-						if(u->title(true) < to_us[i2]->title(true)) {
+						if(string_is_less(u->title(true), to_us[i2]->title(true))) {
 							to_us.insert(to_us.begin() + i2, u);
 							b = true;
 							break;
@@ -17171,7 +17187,7 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 					}
 				}
 				for(size_t i2 = 0; !b && i2 < to_us2.size(); i2++) {
-					if(u->title(true) < to_us2[i2]->title(true)) {
+					if(string_is_less(u->title(true), to_us2[i2]->title(true))) {
 						to_us2.insert(to_us2.begin() + i2, u);
 						b = true;
 						i_added++;
@@ -20204,7 +20220,7 @@ void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
 	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(dialog), authors);
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), _("Powerful and easy to use calculator"));
 	gtk_about_dialog_set_license_type(GTK_ABOUT_DIALOG(dialog), GTK_LICENSE_GPL_2_0);
-	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016-2018 Hanna Knutsson");
+	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016-2019 Hanna Knutsson");
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(dialog), "Qalculate! (GTK+)");
 	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dialog), VERSION);
 	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(dialog), "http://qalculate.github.io/");

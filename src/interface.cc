@@ -718,7 +718,7 @@ void create_button_menus(void) {
 		if(u && !u->isHidden()) {
 			bool b = false;
 			for(size_t i2 = 0; i2 < to_us.size(); i2++) {
-				if(u->title(true) < to_us[i2]->title(true)) {
+				if(string_is_less(u->title(true), to_us[i2]->title(true))) {
 					to_us.insert(to_us.begin() + i2, u);
 					b = true;
 					break;
@@ -741,7 +741,7 @@ void create_button_menus(void) {
 		if(u && !u->isHidden()) {
 			bool b = false;
 			for(size_t i2 = 0; i2 < to_us.size(); i2++) {
-				if(u->title(true) < to_us[i2]->title(true)) {
+				if(string_is_less(u->title(true), to_us[i2]->title(true))) {
 					to_us.insert(to_us.begin() + i2, u);
 					b = true;
 					break;
@@ -784,7 +784,7 @@ void create_button_menus(void) {
 					b = true;
 					break;
 				}
-				if(u->title(true) < to_us[i2]->title(true)) {
+				if(string_is_less(u->title(true), to_us[i2]->title(true))) {
 					to_us.insert(to_us.begin() + i2, u);
 					b = true;
 					break;

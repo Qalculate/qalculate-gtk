@@ -1513,7 +1513,7 @@ On: y - x</property>
                       <object class="GtkMenuItem" id="menu_item_fraction_mode">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Fractional Display</property>
+                        <property name="label" translatable="yes">Rational Number Form</property>
                         <property name="use_underline">True</property>
                         <child type="submenu">
                           <object class="GtkMenu" id="item12_menu">
@@ -1523,7 +1523,7 @@ On: y - x</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="tooltip_text" translatable="yes">1/3 ≈ 0.33333</property>
-                                <property name="label" translatable="yes">Decimal</property>
+                                <property name="label" translatable="yes">Decimal Fractions</property>
                                 <property name="use_underline">True</property>
                                 <property name="active">True</property>
                                 <signal name="activate" handler="on_menu_item_fraction_decimal_activate" swapped="no"/>
@@ -1535,7 +1535,7 @@ On: y - x</property>
                                 <property name="can_focus">False</property>
                                 <property name="tooltip_text" translatable="yes">3/9 = 1/3
 6/4 = 1.5</property>
-                                <property name="label" translatable="yes">Decimal (Try Exact)</property>
+                                <property name="label" translatable="yes">Exact Decimal Fractions</property>
                                 <property name="use_underline">True</property>
                                 <property name="group">menu_item_fraction_decimal</property>
                                 <signal name="activate" handler="on_menu_item_fraction_decimal_exact_activate" swapped="no"/>
@@ -1546,7 +1546,7 @@ On: y - x</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="tooltip_text" translatable="yes">6/4 = 3/2</property>
-                                <property name="label" translatable="yes">Fraction</property>
+                                <property name="label" translatable="yes">Simple Fractions</property>
                                 <property name="use_underline">True</property>
                                 <property name="group">menu_item_fraction_decimal</property>
                                 <signal name="activate" handler="on_menu_item_fraction_fraction_activate" swapped="no"/>
@@ -1557,7 +1557,7 @@ On: y - x</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="tooltip_text" translatable="yes">6/4 = 1+1/2</property>
-                                <property name="label" translatable="yes">Combined</property>
+                                <property name="label" translatable="yes">Mixed Fractions</property>
                                 <property name="use_underline">True</property>
                                 <property name="group">menu_item_fraction_decimal</property>
                                 <signal name="activate" handler="on_menu_item_fraction_combined_activate" swapped="no"/>
@@ -2972,13 +2972,13 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                           <object class="GtkComboBoxText" id="combobox_fraction_mode">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Fractional display</property>
+                            <property name="tooltip_text" translatable="yes">Rational Number Form</property>
                             <property name="active">0</property>
                             <items>
-                              <item id="&lt;Ange ID&gt;" translatable="yes">Decimal rationals</item>
-                              <item translatable="yes">Exact rationals</item>
-                              <item translatable="yes">Fraction</item>
-                              <item translatable="yes">Combined</item>
+                              <item id="&lt;Ange ID&gt;" translatable="yes">Decimal fractions</item>
+                              <item translatable="yes">Exact decimal fractions</item>
+                              <item translatable="yes">Simple fractions</item>
+                              <item translatable="yes">Mixed fractions</item>
                             </items>
                             <signal name="changed" handler="on_combobox_fraction_mode_changed" swapped="no"/>
                           </object>
@@ -3818,7 +3818,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="can_focus">True</property>
                                         <property name="focus_on_click">False</property>
                                         <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">Archimedes constant</property>
+                                        <property name="tooltip_text" translatable="yes">Archimedes' constant</property>
                                         <property name="use_underline">True</property>
                                         <child>
                                           <object class="GtkLabel" id="label_pi">
@@ -5913,7 +5913,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             </child>
                             <child>
                               <object class="GtkCheckButton" id="convert_button_set_missing_prefixes">
-                                <property name="label" translatable="yes">Set missing prefixes</property>
+                                <property name="label" translatable="yes">Add prefix</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -6353,7 +6353,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       <object class="GtkRadioMenuItem" id="popup_menu_item_fraction_decimal">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Fraction D_ecimal</property>
+        <property name="label" translatable="yes">Decimal Fraction</property>
         <property name="use_underline">True</property>
         <property name="active">True</property>
         <signal name="activate" handler="on_popup_menu_item_fraction_decimal_activate" swapped="no"/>
@@ -6363,7 +6363,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       <object class="GtkRadioMenuItem" id="popup_menu_item_fraction_decimal_exact">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Fraction Decimal (Try Exact)</property>
+        <property name="label" translatable="yes">Exact Decimal Fraction</property>
         <property name="use_underline">True</property>
         <property name="group">popup_menu_item_fraction_decimal</property>
         <signal name="activate" handler="on_popup_menu_item_fraction_decimal_exact_activate" swapped="no"/>
@@ -6373,7 +6373,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       <object class="GtkRadioMenuItem" id="popup_menu_item_fraction_combined">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Fraction Co_mbined</property>
+        <property name="label" translatable="yes">Mixed Fraction</property>
         <property name="use_underline">True</property>
         <property name="group">popup_menu_item_fraction_decimal</property>
         <signal name="activate" handler="on_popup_menu_item_fraction_combined_activate" swapped="no"/>
@@ -6383,7 +6383,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       <object class="GtkRadioMenuItem" id="popup_menu_item_fraction_fraction">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Fraction F_ractional</property>
+        <property name="label" translatable="yes">Simple Fraction</property>
         <property name="use_underline">True</property>
         <property name="group">popup_menu_item_fraction_decimal</property>
         <signal name="activate" handler="on_popup_menu_item_fraction_fraction_activate" swapped="no"/>
@@ -6435,7 +6435,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       <object class="GtkMenuItem" id="popup_menu_item_set_optimal_prefix">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Set Optimal Prefix</property>
+        <property name="label" translatable="yes">Use Optimal Prefix</property>
         <signal name="activate" handler="on_menu_item_set_prefix_activate" swapped="no"/>
       </object>
     </child>

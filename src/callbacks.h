@@ -72,6 +72,7 @@ protected:
 	virtual void run();
 };
 
+bool string_is_less(string str1, string str2);
 
 bool can_display_unicode_string_function(const char *str, void *w);
 bool can_display_unicode_string_function_exact(const char *str, void *w);
