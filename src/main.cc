@@ -49,6 +49,7 @@ extern vector<string> recent_units_pre;
 extern GtkWidget *expression;
 extern GtkWidget *resultview;
 extern PrintOptions printops;
+extern bool ignore_locale;
 
 MathFunction *f_answer;
 MathFunction *f_expression;
@@ -107,6 +108,10 @@ void create_application(GtkApplication *app) {
 	
 	//load application specific preferences
 	load_preferences();
+	
+	if(ignore_locale) {
+		CALCULATOR->setIgnoreLocale();
+	}
 
 	mstruct = new MathStructure();
 	displayed_mstruct = new MathStructure();
@@ -389,9 +394,9 @@ int main (int argc, char *argv[]) {
 	gint status;
 	
 #ifdef ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, getPackageLocaleDir().c_str());
-	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-	textdomain (GETTEXT_PACKAGE);
+	bindtextdomain(GETTEXT_PACKAGE, getPackageLocaleDir().c_str());
+	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
+	textdomain(GETTEXT_PACKAGE);
 #endif
 
 	setlocale(LC_ALL, "");

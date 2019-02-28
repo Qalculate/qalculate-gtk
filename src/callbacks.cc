@@ -292,6 +292,8 @@ bool keep_function_dialog_open = false;
 
 bool automatic_fraction = false;
 
+bool ignore_locale = false;
+
 #define TEXT_TAGS			"<span size=\"xx-large\">"
 #define TEXT_TAGS_END			"</span>"
 #define TEXT_TAGS_SMALL			"<span size=\"large\">"
@@ -1260,43 +1262,49 @@ void display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 	int inhistory_added = 0;
 	while(true) {
 		mtype = CALCULATOR->message()->type();
-		if(index > 0) {
-			if(index == 1) str = "• " + str;
-			str += "\n• ";
-		}
-		str += CALCULATOR->message()->message();
-		if(mtype == MESSAGE_ERROR || (mtype_highest != MESSAGE_ERROR && mtype == MESSAGE_WARNING)) {
-			mtype_highest = mtype;
-		}
-		if((mtype == MESSAGE_ERROR || mtype == MESSAGE_WARNING) && history_index_p && inhistory_index) {
-			if(mtype == MESSAGE_ERROR) {
-				inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
-				inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_ERROR);
-				string history_message = "- ";
-				history_message += CALCULATOR->message()->message();
-				add_line_breaks(history_message, false, 2);
-				string history_str = "<span foreground=\"";
-				history_str += history_error_color;
-				history_str += "\">";
-				history_str += fix_history_string(history_message);
-				history_str += "</span>";
-				(*history_index_p)++;
-				gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, 3, nr_of_new_expressions, 4, 0, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
-			} else if(mtype == MESSAGE_WARNING) {
-				inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
-				inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_WARNING);
-				string history_message = "- ";
-				history_message += CALCULATOR->message()->message();
-				add_line_breaks(history_message, false, 2);
-				string history_str = "<span foreground=\"";
-				history_str += history_warning_color;
-				history_str += "\">";
-				history_str += fix_history_string(history_message);
-				history_str += "</span>";
-				(*history_index_p)++;
-				gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, 3, nr_of_new_expressions, 4, 0, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
+		if(mtype == MESSAGE_INFORMATION && (type == 1 || type == 2) && CALCULATOR->message()->message().find("-------------------------------------\n") == 0) {
+			GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(win),GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, "%s", CALCULATOR->message()->message().c_str());
+			gtk_dialog_run(GTK_DIALOG(edialog));
+			gtk_widget_destroy(edialog);
+		} else {
+			if(index > 0) {
+				if(index == 1) str = "• " + str;
+				str += "\n• ";
 			}
-			inhistory_added++;
+			str += CALCULATOR->message()->message();
+			if(mtype == MESSAGE_ERROR || (mtype_highest != MESSAGE_ERROR && mtype == MESSAGE_WARNING)) {
+				mtype_highest = mtype;
+			}
+			if((mtype == MESSAGE_ERROR || mtype == MESSAGE_WARNING) && history_index_p && inhistory_index) {
+				if(mtype == MESSAGE_ERROR) {
+					inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
+					inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_ERROR);
+					string history_message = "- ";
+					history_message += CALCULATOR->message()->message();
+					add_line_breaks(history_message, false, 2);
+					string history_str = "<span foreground=\"";
+					history_str += history_error_color;
+					history_str += "\">";
+					history_str += fix_history_string(history_message);
+					history_str += "</span>";
+					(*history_index_p)++;
+					gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, 3, nr_of_new_expressions, 4, 0, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
+				} else if(mtype == MESSAGE_WARNING) {
+					inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
+					inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_WARNING);
+					string history_message = "- ";
+					history_message += CALCULATOR->message()->message();
+					add_line_breaks(history_message, false, 2);
+					string history_str = "<span foreground=\"";
+					history_str += history_warning_color;
+					history_str += "\">";
+					history_str += fix_history_string(history_message);
+					history_str += "</span>";
+					(*history_index_p)++;
+					gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, 3, nr_of_new_expressions, 4, 0, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
+				}
+				inhistory_added++;
+			}
 		}
 		index++;
 		if(!CALCULATOR->nextMessage()) break;
@@ -12739,6 +12747,8 @@ void load_preferences() {
 	evalops.interval_calculation = INTERVAL_CALCULATION_VARIANCE_FORMULA;
 	b_decimal_comma = -1;
 	
+	ignore_locale = false;
+	
 	automatic_fraction = false;
 	
 	keep_function_dialog_open = false;
@@ -12905,6 +12915,8 @@ void load_preferences() {
 					save_mode_on_exit = v;
 				} else if(svar == "save_definitions_on_exit") {
 					save_defs_on_exit = v;
+				} else if(svar == "ignore_locale") {
+					ignore_locale = v;
 				} else if(svar == "fetch_exchange_rates_at_startup") {
 					if(auto_update_exchange_rates < 0 && v) auto_update_exchange_rates = 1;
 					//fetch_exchange_rates_at_startup = v;
@@ -13589,6 +13601,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "error_info_shown=%i\n", !first_error);
 	fprintf(file, "save_mode_on_exit=%i\n", save_mode_on_exit);
 	fprintf(file, "save_definitions_on_exit=%i\n", save_defs_on_exit);
+	fprintf(file, "ignore_locale=%i\n", ignore_locale);
 	fprintf(file, "load_global_definitions=%i\n", load_global_defs);
 	//fprintf(file, "fetch_exchange_rates_at_startup=%i\n", fetch_exchange_rates_at_startup);
 	fprintf(file, "auto_update_exchange_rates=%i\n", auto_update_exchange_rates);
@@ -14212,6 +14225,9 @@ gboolean on_preferences_update_exchange_rates_spin_button_output(GtkSpinButton *
 void on_preferences_checkbutton_local_currency_conversion_toggled(GtkToggleButton *w, gpointer) {
 	evalops.local_currency_conversion = gtk_toggle_button_get_active(w);
 	expression_calculation_updated();
+}
+void on_preferences_checkbutton_ignore_locale_toggled(GtkToggleButton *w, gpointer) {
+	ignore_locale = gtk_toggle_button_get_active(w);
 }
 void on_preferences_checkbutton_copy_separator_toggled(GtkToggleButton *w, gpointer) {
 	copy_separator = gtk_toggle_button_get_active(w);
