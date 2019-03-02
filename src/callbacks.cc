@@ -1603,6 +1603,7 @@ void display_parse_status() {
 		po.lower_case_numbers = printops.lower_case_numbers;
 		po.base_display = printops.base_display;
 		po.twos_complement = printops.twos_complement;
+		po.hexadecimal_twos_complement = printops.hexadecimal_twos_complement;
 		po.base = evalops.parse_options.base;
 		po.abbreviate_names = false;
 		po.hide_underscore_spaces = true;
@@ -4707,11 +4708,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				if(po.lower_case_e) gsub("e", estr, str);
 				else gsub("E", estr, str);
 			}
-			if(po.base != BASE_DECIMAL && po.base != BASE_HEXADECIMAL && po.base > 0 && po.base <= 36) {
+			bool twos = (((po.base == 2 && po.twos_complement) || (po.base == 16 && po.hexadecimal_twos_complement)) && m.number().isNegative() && value_str.find(SIGN_MINUS) == string::npos && value_str.find("-") == string::npos);
+			if(po.base != BASE_DECIMAL && (twos || po.base != BASE_HEXADECIMAL) && po.base > 0 && po.base <= 36) {
 				TTBP_SMALL(str)
 				str += "<sub>";
 				str += i2s(po.base);
-				if(po.base == 2 && po.twos_complement && m.number().isNegative() && str.find(SIGN_MINUS) == string::npos && str.find("-") == string::npos) str += '-';
+				if(twos) str += '-';
 				str += "</sub>";
 				TTE(str)
 			}
@@ -6062,83 +6064,60 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 		}
 		case STRUCT_FUNCTION: {
 		
-			if((m.function() == CALCULATOR->f_interval && m.size() == 2 && m[0].isAddition() && m[0].size() == 2 && m[1].isAddition() && m[1].size() == 2) || (m.function() == CALCULATOR->f_uncertainty && m.size() == 3 && m[2].isZero())) {
-				MathStructure *mmid = NULL, *munc = NULL;
-				if(m.function() == CALCULATOR->f_uncertainty) {
-					mmid = &m[0];
-					munc = &m[1];
-				} else if(m[0][0].equals(m[1][0], true, true)) {
-					mmid = &m[0][0];
-					if(m[0][1].isNegate() && m[0][1][0].equals(m[1][1], true, true)) munc = &m[1][1];
-					if(m[1][1].isNegate() && m[1][1][0].equals(m[0][1], true, true)) munc = &m[0][1];
-				} else if(m[0][1].equals(m[1][1], true, true)) {
-					mmid = &m[0][1];
-					if(m[0][0].isNegate() && m[0][0][0].equals(m[1][0], true, true)) munc = &m[1][0];
-					if(m[1][0].isNegate() && m[1][0][0].equals(m[0][0], true, true)) munc = &m[0][0];
-				} else if(m[0][0].equals(m[1][1], true, true)) {
-					mmid = &m[0][0];
-					if(m[0][1].isNegate() && m[0][1][0].equals(m[1][0], true, true)) munc = &m[1][0];
-					if(m[1][0].isNegate() && m[1][0][0].equals(m[0][1], true, true)) munc = &m[0][1];
-				} else if(m[0][1].equals(m[1][0], true, true)) {
-					mmid = &m[0][0];
-					if(m[0][0].isNegate() && m[0][0][0].equals(m[1][1], true, true)) munc = &m[1][1];
-					if(m[1][1].isNegate() && m[1][1][0].equals(m[0][0], true, true)) munc = &m[0][0];
+			if(m.function() == CALCULATOR->f_uncertainty && m.size() == 3 && m[2].isZero()) {
+				ips_n.depth++;
+				gint unc_uh, unc_w, unc_dh, mid_w, mid_dh, mid_uh, dh = 0, uh = 0, w = 0, h = 0;
+				cairo_surface_t *mid_surface = NULL, *unc_surface = NULL;
+				ips_n.wrap = !m[0].isNumber();
+				PrintOptions po2 = po;
+				po2.show_ending_zeroes = false;
+				mid_surface = draw_structure(m[0], po2, ips_n, &mid_dh, scaledown, color);
+				if(!mid_surface) {
+					return NULL;
 				}
-				if(mmid && munc) {
-					ips_n.depth++;
-					gint unc_uh, unc_w, unc_dh, mid_w, mid_dh, mid_uh, dh = 0, uh = 0, w = 0, h = 0;
-					cairo_surface_t *mid_surface = NULL, *unc_surface = NULL;
-					ips_n.wrap = !mmid->isNumber();
-					PrintOptions po2 = po;
-					po2.show_ending_zeroes = false;
-					mid_surface = draw_structure(*mmid, po2, ips_n, &mid_dh, scaledown, color);
-					if(!mid_surface) {
-						return NULL;
-					}
-					mid_w = cairo_image_surface_get_width(mid_surface) / scalefactor;
-					h = cairo_image_surface_get_height(mid_surface) / scalefactor;
-					mid_uh = h - mid_dh;
-					ips_n.wrap = !munc->isNumber();
-					unc_surface = draw_structure(*munc, po2, ips_n, &unc_dh, scaledown, color);
-					unc_w = cairo_image_surface_get_width(unc_surface) / scalefactor;
-					h = cairo_image_surface_get_height(unc_surface) / scalefactor;
-					unc_uh = h - unc_dh;
-					h = 0;
-					gint pm_w, pm_h;
-					PangoLayout *layout_pm = gtk_widget_create_pango_layout(resultview, NULL);
-					PANGO_TTP(layout_pm, SIGN_PLUSMINUS);
-					pango_layout_get_pixel_size(layout_pm, &pm_w, &pm_h);
-					w = mid_w + unc_w + pm_w;
-					dh = mid_dh; uh = mid_uh;
-					if(unc_dh > dh) h = unc_dh;
-					if(unc_uh > uh) uh = unc_uh;
-					if(pm_h / 2 > dh) {
-						dh = pm_h / 2;
-					}
-					if(pm_h / 2 + pm_h % 2 > uh) {
-						uh = pm_h / 2 + pm_h % 2;
-					}
-					h = uh + dh;
-					central_point = dh;
-					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-					cr = cairo_create(surface);
-					gdk_cairo_set_source_rgba(cr, color);
-					w = 0;
-					cairo_set_source_surface(cr, mid_surface, w, uh - mid_uh);
-					cairo_paint(cr);
-					w += mid_w;
-					gdk_cairo_set_source_rgba(cr, color);
-					cairo_move_to(cr, w, uh - pm_h / 2 - pm_h % 2);
-					pango_cairo_show_layout(cr, layout_pm);
-					w += pm_w;
-					cairo_set_source_surface(cr, unc_surface, w, uh - unc_uh);
-					cairo_paint(cr);
-					g_object_unref(layout_pm);
-					cairo_surface_destroy(mid_surface);
-					cairo_surface_destroy(unc_surface);
-					break;
+				mid_w = cairo_image_surface_get_width(mid_surface) / scalefactor;
+				h = cairo_image_surface_get_height(mid_surface) / scalefactor;
+				mid_uh = h - mid_dh;
+				ips_n.wrap = !m[1].isNumber();
+				unc_surface = draw_structure(m[1], po2, ips_n, &unc_dh, scaledown, color);
+				unc_w = cairo_image_surface_get_width(unc_surface) / scalefactor;
+				h = cairo_image_surface_get_height(unc_surface) / scalefactor;
+				unc_uh = h - unc_dh;
+				h = 0;
+				gint pm_w, pm_h;
+				PangoLayout *layout_pm = gtk_widget_create_pango_layout(resultview, NULL);
+				PANGO_TTP(layout_pm, SIGN_PLUSMINUS);
+				pango_layout_get_pixel_size(layout_pm, &pm_w, &pm_h);
+				w = mid_w + unc_w + pm_w;
+				dh = mid_dh; uh = mid_uh;
+				if(unc_dh > dh) h = unc_dh;
+				if(unc_uh > uh) uh = unc_uh;
+				if(pm_h / 2 > dh) {
+					dh = pm_h / 2;
 				}
+				if(pm_h / 2 + pm_h % 2 > uh) {
+					uh = pm_h / 2 + pm_h % 2;
+				}
+				h = uh + dh;
+				central_point = dh;
+				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+				cr = cairo_create(surface);
+				gdk_cairo_set_source_rgba(cr, color);
+				w = 0;
+				cairo_set_source_surface(cr, mid_surface, w, uh - mid_uh);
+				cairo_paint(cr);
+				w += mid_w;
+				gdk_cairo_set_source_rgba(cr, color);
+				cairo_move_to(cr, w, uh - pm_h / 2 - pm_h % 2);
+				pango_cairo_show_layout(cr, layout_pm);
+				w += pm_w;
+				cairo_set_source_surface(cr, unc_surface, w, uh - unc_uh);
+				cairo_paint(cr);
+				g_object_unref(layout_pm);
+				cairo_surface_destroy(mid_surface);
+				cairo_surface_destroy(unc_surface);
+				break;
 			} else if(SHOW_WITH_ROOT_SIGN(m)) {
 
 				ips_n.depth++;
@@ -6566,6 +6545,7 @@ void ViewThread::run() {
 			po.lower_case_numbers = printops.lower_case_numbers;
 			po.base_display = printops.base_display;
 			po.twos_complement = printops.twos_complement;
+			po.hexadecimal_twos_complement = printops.hexadecimal_twos_complement;
 			po.base = evalops.parse_options.base;
 			po.abbreviate_names = false;
 			po.use_unicode_signs = printops.use_unicode_signs;
@@ -12718,6 +12698,7 @@ void load_preferences() {
 	printops.lower_case_e = false;
 	printops.base_display = BASE_DISPLAY_NORMAL;
 	printops.twos_complement = true;
+	printops.hexadecimal_twos_complement = false;
 	printops.limit_implicit_multiplication = false;
 	printops.can_display_unicode_string_function = &can_display_unicode_string_function;
 	printops.allow_factorization = false;
@@ -13300,6 +13281,8 @@ void load_preferences() {
 					if(v >= BASE_DISPLAY_NONE && v <= BASE_DISPLAY_ALTERNATIVE) printops.base_display = (BaseDisplay) v;
 				} else if(svar == "twos_complement") {
 					printops.twos_complement = v;
+				} else if(svar == "hexadecimal_twos_complement") {
+					printops.hexadecimal_twos_complement = v;
 				} else if(svar == "spell_out_logical_operators") {
 					printops.spell_out_logical_operators = v;
 				} else if(svar == "copy_separator") {
@@ -13633,6 +13616,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "lower_case_e=%i\n", printops.lower_case_e);
 	fprintf(file, "base_display=%i\n", printops.base_display);
 	fprintf(file, "twos_complement=%i\n", printops.twos_complement);
+	fprintf(file, "hexadecimal_twos_complement=%i\n", printops.hexadecimal_twos_complement);
 	fprintf(file, "spell_out_logical_operators=%i\n", printops.spell_out_logical_operators);
 	fprintf(file, "digit_grouping=%i\n", printops.digit_grouping);
 	fprintf(file, "copy_separator=%i\n", copy_separator);
@@ -14251,6 +14235,10 @@ void on_preferences_checkbutton_alternative_base_prefixes_toggled(GtkToggleButto
 }
 void on_preferences_checkbutton_twos_complement_toggled(GtkToggleButton *w, gpointer) {
 	printops.twos_complement = gtk_toggle_button_get_active(w);
+	result_format_updated();
+}
+void on_preferences_checkbutton_hexadecimal_twos_complement_toggled(GtkToggleButton *w, gpointer) {
+	printops.hexadecimal_twos_complement = gtk_toggle_button_get_active(w);
 	result_format_updated();
 }
 void on_preferences_checkbutton_spell_out_logical_operators_toggled(GtkToggleButton *w, gpointer) {
@@ -20020,6 +20008,7 @@ void update_nbases_entries(const MathStructure &value, int base) {
 	po.number_fraction_format = FRACTION_DECIMAL;
 	po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 	po.twos_complement = printops.twos_complement;
+	po.hexadecimal_twos_complement = printops.hexadecimal_twos_complement;
 	po.use_unicode_signs = printops.use_unicode_signs;
 	po.lower_case_e = printops.lower_case_e;
 	po.lower_case_numbers = printops.lower_case_numbers;
