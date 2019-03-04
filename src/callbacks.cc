@@ -585,6 +585,7 @@ void unfix_history_string(string &str) {
 }
 void improve_result_text(string &resstr) {
 	size_t i1 = 0, i2 = 0;
+	size_t i_equals = resstr.find(_("approx.")) + strlen(_("approx."));
 	while(i1 + 2 < resstr.length()) {
 		i1 = resstr.find_first_of("\"\'", i1);
 		if(i1 == string::npos) break;
@@ -596,27 +597,32 @@ void improve_result_text(string &resstr) {
 				continue;
 			}
 		}
-		if(i1 > 1 && resstr[i1 - 1] == ' ' && is_not_in(OPERATORS SPACES, resstr[i1 - 2])) {
+		if(i1 > 1 && resstr[i1 - 1] == ' ' && (i_equals == string::npos || i1 != i_equals + 1) && is_not_in(OPERATORS SPACES, resstr[i1 - 2])) {
 			if(resstr[i1 - 2] < 0) {
 				size_t i3 = i1 - 2;
 				while(i3 > 0 && resstr[i3] < 0 && (unsigned char) resstr[i3] < 0xC0) i3--;
 				string str = resstr.substr(i3, i1 - i3 - 1);
-				if(str != SIGN_DIVISION && str != SIGN_DIVISION_SLASH && str != SIGN_MULTIPLICATION && str != SIGN_MULTIDOT && str != SIGN_SMALLCIRCLE && str != SIGN_MULTIBULLET && str != SIGN_MINUS && str != SIGN_PLUS && str != SIGN_NOT_EQUAL && str != SIGN_GREATER_OR_EQUAL && str != SIGN_LESS_OR_EQUAL) {
+				if(str != SIGN_DIVISION && str != SIGN_DIVISION_SLASH && str != SIGN_MULTIPLICATION && str != SIGN_MULTIDOT && str != SIGN_SMALLCIRCLE && str != SIGN_MULTIBULLET && str != SIGN_MINUS && str != SIGN_PLUS && str != SIGN_NOT_EQUAL && str != SIGN_GREATER_OR_EQUAL && str != SIGN_LESS_OR_EQUAL && str != SIGN_ALMOST_EQUAL) {
 					resstr.replace(i1 - 1, 2, "<i>");
+					if(i_equals != string::npos && i1 < i_equals) i_equals += 1;
 					i2 += 1;
 				} else {
 					resstr.replace(i1, 1, "<i>");
+					if(i_equals != string::npos && i1 < i_equals) i_equals += 2;
 					i2 += 2;
 				}
 			} else {
 				resstr.replace(i1 - 1, 2, "<i>");
+				if(i_equals != string::npos && i1 < i_equals) i_equals += 1;
 				i2 += 1;
 			}
 		} else {
 			resstr.replace(i1, 1, "<i>");
+			if(i_equals != string::npos && i1 < i_equals) i_equals += 2;
 			i2 += 2;
 		}
 		resstr.replace(i2, 1, "</i>");
+		if(i_equals != string::npos && i1 < i_equals) i_equals += 3;
 		i1 = i2 + 4;
 	}
 	i1 = 1;
