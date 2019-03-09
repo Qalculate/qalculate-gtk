@@ -6077,6 +6077,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				ips_n.wrap = !m[0].isNumber();
 				PrintOptions po2 = po;
 				po2.show_ending_zeroes = false;
+				po2.number_fraction_format = FRACTION_DECIMAL;
 				mid_surface = draw_structure(m[0], po2, ips_n, &mid_dh, scaledown, color);
 				if(!mid_surface) {
 					return NULL;
@@ -7079,8 +7080,8 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 					inhistory.push_back(result_text);
 					if(adaptive_interval_display) {
 						string expression_str = get_expression_text();
-						if(parsed_mstruct && parsed_mstruct->containsFunction(CALCULATOR->f_interval)) printops.interval_display = INTERVAL_DISPLAY_INTERVAL;
-						else if(expression_str.find("+/-") != string::npos || expression_str.find("+/" SIGN_MINUS) != string::npos || expression_str.find("±") != string::npos) printops.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
+						if((parsed_mstruct && parsed_mstruct->containsFunction(CALCULATOR->f_uncertainty)) || expression_str.find("+/-") != string::npos || expression_str.find("+/" SIGN_MINUS) != string::npos || expression_str.find("±") != string::npos) printops.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
+						else if(parsed_mstruct && parsed_mstruct->containsFunction(CALCULATOR->f_interval)) printops.interval_display = INTERVAL_DISPLAY_INTERVAL;
 						else printops.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 					}
 				}
@@ -12409,20 +12410,8 @@ void on_combobox_numerical_display_changed(GtkComboBox *w, gpointer) {
 
 void on_button_exact_toggled(GtkToggleButton *w, gpointer) {
 	if(gtk_toggle_button_get_active(w)) {
-		evalops.approximation = APPROXIMATION_EXACT;
-		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_always_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_always_exact_activate, NULL);
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_always_exact")), TRUE);
-		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_always_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_always_exact_activate, NULL);
-		if(printops.number_fraction_format == FRACTION_DECIMAL) {
-			bool prev_block_result_update = block_result_update;
-			if(!rpn_mode) block_result_update = true;
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal_exact")), TRUE);
-			automatic_fraction = true;
-			if(!rpn_mode) block_result_update = prev_block_result_update;
-		}
-		expression_calculation_updated();
 	} else {
-		evalops.approximation = APPROXIMATION_TRY_EXACT;
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_try_exact")), TRUE);
 	}
 
@@ -18525,6 +18514,14 @@ void on_menu_item_always_exact_activate(GtkMenuItem *w, gpointer) {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_exact_toggled, NULL);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact")), TRUE);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_exact_toggled, NULL);
+	
+	if(printops.number_fraction_format == FRACTION_DECIMAL) {
+		bool prev_block_result_update = block_result_update;
+		if(!rpn_mode) block_result_update = true;
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal_exact")), TRUE);
+		automatic_fraction = true;
+		if(!rpn_mode) block_result_update = prev_block_result_update;
+	}
 	
 	expression_calculation_updated();
 }

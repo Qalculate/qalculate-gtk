@@ -601,7 +601,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			</row>
 			<row valign="top">
 				<entry><para>Interval Display</para></entry>
-				<entry><para>Submenu with options that determines how the result of interval arithmetic and values with associated uncertainty are shown. The adaptive option is the same as significant digits display unless an interval has been explicitely specified in the expression.</para></entry>
+				<entry><para>Submenu with options that determines how intervals and results with associated uncertainty are shown. The adaptive option is the same as significant digits display unless an interval has been explicitely specified in the expression.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Unit Display</para></entry>
@@ -847,7 +847,7 @@ In &app; mathematical entities, such as numbers and variables, are referred to a
 	<varlistentry>
 		<term>Intervals</term>
 		<listitem><para>
-		A number interval can be entered using the <command>interval()</command> function (specifies the upper and lower limit of the interval), or using <quote>±</quote> or <quote>+/-</quote>, specifying the width of the interval after the mid value (e.g. <quote>5±1 = interval(4, 6)</quote>). If the read precision option is activated, decimal numbers are interpreted as an interval between the numbers that are normally rounded to the entered number (e.g. <quote>1.1 = 1.1±0.05</quote>). If interval arithmetic is deactivated, the interval interpreted as the standard uncertainty (deviation) of the value.
+		A number interval can be entered using the <command>interval()</command> function (specifies the upper and lower limit of the interval), the <command>uncertainty()</command> function (specifies relative or absolute uncertainty), or using <quote>±</quote> or <quote>+/-</quote>, specifying the width of the interval after the mid value (e.g. <quote>5±1 = uncertainty(5, 0.2) = interval(4, 6)</quote>). If the read precision option is activated, decimal numbers are interpreted as an interval between the numbers that are normally rounded to the entered number (e.g. <quote>1.1 = 1.1±0.05</quote>). If interval calculation using variance formula is activated (default), the interval represents the standard uncertainty (deviation) of the value.
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -1284,7 +1284,7 @@ If <quote>to</quote> is not preceded by an expression, the previous result will 
 	<varlistentry>
 		<term>Rational Number Form</term>
 		<listitem><para>
-			This controls if rational numbers are displayed as fractions or not. The exact decimal fraction mode displays the number as a simple fraction, if the rational number does not have an exact decimal representation. The rational number <quote>4/3</quote> is displayed as <quote>1.3333333</quote> (or <quote>1.333…</quote> if indicate repeating decimals is activated) in decimal fractions mode, as <quote>4/3</quote> in both exact decimal fractions and simple fractions mode, and as <quote>1 + 1/3</quote> in mixed fractions mode.
+			This controls if rational numbers are displayed as fractions or not. The exact decimal fraction mode displays the number as a simple fraction, if the rational number does not have an exact decimal representation which can be displayed using the number of digits allowed by the current precision. The rational number <quote>4/3</quote> is displayed as <quote>1.3333333</quote> (or <quote>1.333…</quote> if indicate repeating decimals is activated) in decimal fractions mode, as <quote>4/3</quote> in both exact decimal fractions and simple fractions mode, and as <quote>1 + 1/3</quote> in mixed fractions mode.
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -1396,7 +1396,7 @@ Interval arithmetic is also used implicitly, regardless of selected interval cal
 Some non-invertible functions (including bessel and airy functions) do not properly support interval arithmetic and only the function values for the endpoints of the interval are calculated. Trigonometric functions returns correct intervals for real and imaginary numbers, but will in some cases for complex numbers with both a real and imaginary part return a too wide interval. Generally, the resulting interval will be guaranteed to include the true interval, but may for non-trivial expression (especially involving complex numbers) return an interval that is too wide.
 </para>
 <para>
-The result is by default shown as an ordinary number with the number of significant digits determined by the size of the uncertainty (<quote>2.11±0.03 = 2.1</quote>), or the width of interval, unless the interval is too wide. If the <command>interval()</command> function has been used in the expression the result is by default displayed as an interval, and if <quote>±</quote> notation has been used, it will also be used in the result. The default behaviour can be changed from<menuchoice><guimenu>Mode</guimenu><guimenu>Interval Display</guimenu></menuchoice>. The midpoint alternative displays the value halfway between the lower and upper limit of the interval (<quote>interval(2.075, 2.15) = 2.1125</quote>). Note that, for the plus/minus notation, the same midpoint (note that when interval arithmetic is enabled this does not necessarily equal the result for the midpoint of intervals in the expression) is displayed in front of the plus/minus symbol. In plus/minus notation, the uncertainty is displayed with two significant digits, with the exception that all digits before the decimal separator are always shown.
+The result is by default shown as an ordinary number with the number of significant digits determined by the size of the uncertainty (<quote>2.11±0.03 = 2.1</quote>), or the width of interval, unless the interval is too wide. If the <command>interval()</command> function has been used in the expression the result is by default displayed as an interval, and if <quote>±</quote> notation (or the <command>uncertainty()</command> function) has been used, it will also be used in the result. The default behaviour can be changed from<menuchoice><guimenu>Mode</guimenu><guimenu>Interval Display</guimenu></menuchoice>. The midpoint alternative displays the value halfway between the lower and upper limit of the interval (<quote>interval(2.075, 2.15) = 2.1125</quote>). Note that, for the plus/minus notation, the same midpoint (note that when interval arithmetic is enabled this does not necessarily equal the result for the midpoint of intervals in the expression) is displayed in front of the plus/minus symbol. In plus/minus notation, the uncertainty is displayed with two significant digits, with the exception that all digits before the decimal separator are always shown.
 </para>
 </chapter>
 <chapter id="qalculate-variables">
