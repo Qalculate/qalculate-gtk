@@ -153,7 +153,8 @@ int scale_n = 0;
 bool hyp_is_on, inv_is_on;
 bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes;
 bool copy_separator;
-extern bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message, allow_multiple_instances;
+extern bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message;
+extern int allow_multiple_instances;
 int b_decimal_comma;
 int auto_update_exchange_rates;
 bool first_error;
@@ -12836,8 +12837,7 @@ void load_preferences() {
 		size_t i;
 		int v;
 		while(true) {
-			if(fgets(line, 10000, file) == NULL)
-				break;
+			if(fgets(line, 10000, file) == NULL) break;
 			stmp = line;
 			remove_blank_ends(stmp);
 			if((i = stmp.find_first_of("=")) != string::npos) {
@@ -12849,6 +12849,9 @@ void load_preferences() {
 				if(svar == "version") {
 					parse_qalculate_version(svalue, version_numbers);
 					old_history_format = (version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] <= 4)));
+				} else if(svar == "allow_multiple_instances") {
+					if(v == 0 && version_numbers[0] < 3) v = -1;
+					allow_multiple_instances = v;
 				} else if(svar == "width") {
 					win_width = v;
 				/*} else if(svar == "height") {

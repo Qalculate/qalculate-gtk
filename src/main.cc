@@ -39,7 +39,8 @@ GtkWidget *units_window;
 string selected_unit_category;
 string selected_unit_selector_category;
 Unit *selected_unit, *selected_to_unit;
-bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message, allow_multiple_instances;
+bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message;
+int allow_multiple_instances = -1;
 cairo_surface_t *surface_result;
 GdkPixbuf *pixbuf_result;
 extern bool b_busy, b_busy_command, b_busy_result, b_busy_expression;
@@ -308,8 +309,9 @@ static gint qalculate_handle_local_options(GtkApplication *app, GVariantDict *op
 	g_variant_dict_lookup(options_dict, "new-instance", "b", &b);
 	if(b) {
 		g_application_set_flags(G_APPLICATION(app), G_APPLICATION_NON_UNIQUE);
+		return -1;
 	}
-	allow_multiple_instances = false;
+	allow_multiple_instances = -1;
 	FILE *file = NULL;
 	gchar *gstr_oldfile = NULL;
 	gchar *gstr_file = g_build_filename(getLocalDir().c_str(), "qalculate-gtk.cfg", NULL);
@@ -326,14 +328,13 @@ static gint qalculate_handle_local_options(GtkApplication *app, GVariantDict *op
 #ifndef _WIN32
 		}
 #endif
-	}	
+	}
 	if(file) {
 		char line[100];
 		string stmp, svar;
 		size_t i;
 		while(true) {
-			if(fgets(line, 100, file) == NULL)
-				break;
+			if(fgets(line, 100, file) == NULL) break;
 			stmp = line;
 			remove_blank_ends(stmp);
 			if((i = stmp.find_first_of("=")) != string::npos) {
@@ -355,7 +356,7 @@ static gint qalculate_handle_local_options(GtkApplication *app, GVariantDict *op
 		}
 	}
 	g_free(gstr_file);
-	if(allow_multiple_instances) g_application_set_flags(G_APPLICATION(app), G_APPLICATION_NON_UNIQUE);
+	if(allow_multiple_instances > 0) g_application_set_flags(G_APPLICATION(app), G_APPLICATION_NON_UNIQUE);
 	return -1;
 }
 
@@ -380,6 +381,11 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 		if(!calc_arg.empty()) {
 			gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_builder_get_object(main_builder, "expressionbuffer")), calc_arg.c_str(), -1);
 			execute_expression();
+		} else if(allow_multiple_instances < 0) {
+			GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, _("By default, only one instance (one main window) of %s is allowed.\n\nIf multiple instances are opened simultaneously, only the definitions (variables, functions, etc.), mode, preferences, and history of the last closed window will be saved.\n\nDo you, dispite this, want to change the default bahvior and allow multiple simultaneous instances?"), "Qalculate!");
+			allow_multiple_instances = gtk_dialog_run(GTK_DIALOG(edialog)) == GTK_RESPONSE_YES;
+			save_preferences(false);
+			gtk_widget_destroy(edialog);
 		}
 	} else {
 		create_application(app);
