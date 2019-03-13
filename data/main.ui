@@ -5747,6 +5747,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="hexpand">True</property>
                             <property name="primary_icon_activatable">False</property>
                             <signal name="activate" handler="on_convert_entry_unit_activate" swapped="no"/>
+                            <signal name="changed" handler="on_convert_entry_unit_changed" swapped="no"/>
+                            <signal name="icon-release" handler="on_convert_entry_unit_icon_release" swapped="no"/>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -5791,6 +5793,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="headers_visible">False</property>
+                                        <signal name="row-expanded" handler="on_convert_treeview_category_row_expanded" swapped="no"/>
                                         <child internal-child="selection">
                                           <object class="GtkTreeSelection"/>
                                         </child>
@@ -5838,6 +5841,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="can_focus">True</property>
                                         <property name="headers_visible">False</property>
                                         <property name="enable_search">False</property>
+                                        <signal name="button-press-event" handler="on_convert_treeview_unit_button_press_event" swapped="no"/>
+                                        <signal name="popup-menu" handler="on_convert_treeview_unit_popup_menu" swapped="no"/>
                                         <child internal-child="selection">
                                           <object class="GtkTreeSelection"/>
                                         </child>
@@ -5856,6 +5861,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="primary_icon_name">edit-find-symbolic</property>
                                     <property name="primary_icon_activatable">False</property>
                                     <property name="primary_icon_sensitive">False</property>
+                                    <signal name="changed" handler="on_convert_entry_search_changed" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">0</property>
@@ -5922,6 +5928,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
 This can be overridden by prepending the unit expression with "?" or "0".</property>
                                 <property name="halign">end</property>
                                 <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_convert_button_set_missing_prefixes_toggled" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
