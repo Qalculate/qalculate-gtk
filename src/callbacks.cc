@@ -6055,10 +6055,11 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				} else {
 					str += ename->name.substr(0, i);
 				}
-				if(b || ename->name.substr(i + 1, ename->name.length() - (i + 1)) != "unit") {
+				if(b || i != ename->name.length() - 5 || ename->name.substr(ename->name.length() - 4, 4) != "unit") {
 					TTBP_SMALL(str);
 					str += "<sub>";
 					if(b) str += ename->name.substr(ename->name.length() - i2, i2);
+					else if(i < ename->name.length() - 5 && ename->name.substr(ename->name.length() - 4, 4) == "unit") str += ename->name.substr(i + 1, str.length() - (i + 1) - 4);
 					else str += ename->name.substr(i + 1, ename->name.length() - (i + 1));
 					str += "</sub>";
 					TTE(str);
@@ -6107,10 +6108,11 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				} else {
 					str += ename->name.substr(0, i);
 				}
-				if(!b || ename->name.substr(i + 1, ename->name.length() - (i + 1)) != "constant") {
+				if(!b || i != ename->name.length() - 9 || ename->name.substr(ename->name.length() - 8, 8) != "constant") {
 					TTBP_SMALL(str);
 					str += "<sub>";
 					if(b) str += ename->name.substr(ename->name.length() - i2, i2);
+					else if(i < ename->name.length() - 9 && ename->name.substr(ename->name.length() - 8, 8) == "constant") str += ename->name.substr(i + 1, str.length() - (i + 1) - 8);
 					else str += ename->name.substr(i + 1, ename->name.length() - (i + 1));
 					str += "</sub>";
 					TTE(str);
@@ -7573,7 +7575,7 @@ void CommandThread::run() {
 				break;
 			}
 			case COMMAND_CONVERT_OPTIMAL: {
-				((MathStructure*) x)->set(CALCULATOR->convertToBestUnit(*((MathStructure*) x), evalops, true));
+				((MathStructure*) x)->set(CALCULATOR->convertToOptimalUnit(*((MathStructure*) x), evalops, true));
 				break;
 			}
 			case COMMAND_CONVERT_BASE: {
