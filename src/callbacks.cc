@@ -6055,11 +6055,11 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				} else {
 					str += ename->name.substr(0, i);
 				}
-				if(b || i != ename->name.length() - 5 || ename->name.substr(ename->name.length() - 4, 4) != "unit") {
+				if(b || i + 5 != ename->name.length() || ename->name.substr(ename->name.length() - 4, 4) != "unit") {
 					TTBP_SMALL(str);
 					str += "<sub>";
 					if(b) str += ename->name.substr(ename->name.length() - i2, i2);
-					else if(i < ename->name.length() - 5 && ename->name.substr(ename->name.length() - 4, 4) == "unit") str += ename->name.substr(i + 1, str.length() - (i + 1) - 4);
+					else if(i + 5 < ename->name.length() && ename->name.substr(ename->name.length() - 4, 4) == "unit") {str += ename->name.substr(i + 1, ename->name.length() - (i + 1) - 4);}
 					else str += ename->name.substr(i + 1, ename->name.length() - (i + 1));
 					str += "</sub>";
 					TTE(str);
@@ -6108,11 +6108,11 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				} else {
 					str += ename->name.substr(0, i);
 				}
-				if(!b || i != ename->name.length() - 9 || ename->name.substr(ename->name.length() - 8, 8) != "constant") {
+				if(!b || i + 9 != ename->name.length() || ename->name.substr(ename->name.length() - 8, 8) != "constant") {
 					TTBP_SMALL(str);
 					str += "<sub>";
 					if(b) str += ename->name.substr(ename->name.length() - i2, i2);
-					else if(i < ename->name.length() - 9 && ename->name.substr(ename->name.length() - 8, 8) == "constant") str += ename->name.substr(i + 1, str.length() - (i + 1) - 8);
+					else if(i + 9 < ename->name.length() && ename->name.substr(ename->name.length() - 8, 8) == "constant") str += ename->name.substr(i + 1, ename->name.length() - (i + 1) - 8);
 					else str += ename->name.substr(i + 1, ename->name.length() - (i + 1));
 					str += "</sub>";
 					TTE(str);
