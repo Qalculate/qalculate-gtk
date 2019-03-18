@@ -44,10 +44,26 @@
   <binary>qalculate-gtk</binary>
  </provides>
  <releases>
+  <release version="3.0.0" date="2019-03-18">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Implement 2019 redefinition of SI base units (primarily affects physical constants and will not take effect until 20 May).</li>
+      <li>Uncertainty propagation improvements/fixes.</li>
+      <li>Separate use of interval arithmetic, to keep track of precision changes with approximate calculations, from selection of interval calculation algorithm (by default both interval arithmetic and uncertainty propagation using variance formula are now activated).</li>
+      <li>uncertainty() function (can specify relative uncertainty of value).</li>
+      <li>Improved polynomial gcd.</li>
+      <li>Option to ignore system language (locale).</li>
+      <li>Option to use two's complement also for hexadecimal numbers.</li>
+      <li>Switch to exact decimal fractions (fixed) from decimal fractions mode (and vice versa) when exact mode is toggled.</li>
+      <li>Restore lost signal handlers in the conversion GUI (fixes search, popup menu, etc.).</li>
+      <li>Bug fixes and minor feature improvements.</li>
+     </ul>
+   </description>
+  </release>
   <release version="2.9.0" date="2019-02-11">
    <description>
-    <p>This version primarily includes a large number of stability and reliability improvements, thanks to automatic testing of hundreds of thousands of randomly generated mathematical expressions.</p>
-    <p>Changes (including changes from libqalculate):</p>
+    <p>Changes:</p>
      <ul>
       <li>Fix convert button</li>
       <li>Propagation of uncertainty using variance formula (if interval arithmetic is disabled)</li>
@@ -64,7 +80,6 @@
   </release>
   <release version="2.8.2" date="2018-12-03">
    <description>
-    <p>This version primarily includes a large number of stability and reliability improvements, thanks to automatic testing of hundreds of thousands of randomly generated mathematical expressions.</p>
     <p>Changes:</p>
      <ul>
       <li>Wrap lines and right align results in history</li>
@@ -76,7 +91,6 @@
   </release>
   <release version="2.8.1" date="2018-11-07">
    <description>
-    <p>This version primarily includes a large number of stability and reliability improvements, thanks to automatic testing of hundreds of thousands of randomly generated mathematical expressions.</p>
     <p>GUI Changes:</p>
      <ul>
       <li>Modified keypad layout</li>
