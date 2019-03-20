@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-18 10:57+0100\n"
+"POT-Creation-Date: 2019-03-20 09:16+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -127,69 +127,18 @@ msgstr ""
 msgid "Max"
 msgstr ""
 
-#: ../data/setbase.ui.h:1 ../data/nbases.ui.h:1
-msgid "Number Bases"
+#: ../data/calendarconversion.ui.h:1 ../data/main.ui.h:35
+msgid "Calendar Conversion"
 msgstr ""
 
-#: ../data/setbase.ui.h:2 ../data/datasets.ui.h:7 ../data/decimals.ui.h:2
-#: ../data/functionedit.ui.h:57 ../data/functions.ui.h:2
-#: ../data/namesedit.ui.h:2 ../data/nbases.ui.h:2 ../data/percentage.ui.h:5
-#: ../data/plot.ui.h:5 ../data/precision.ui.h:4 ../data/preferences.ui.h:1
-#: ../data/units.ui.h:2 ../data/variables.ui.h:2 ../src/callbacks.cc:1424
-#: ../src/callbacks.cc:8999 ../src/callbacks.cc:10894 ../src/callbacks.cc:21971
+#: ../data/calendarconversion.ui.h:2 ../data/datasets.ui.h:7
+#: ../data/decimals.ui.h:2 ../data/functionedit.ui.h:57
+#: ../data/functions.ui.h:2 ../data/namesedit.ui.h:2 ../data/nbases.ui.h:2
+#: ../data/percentage.ui.h:5 ../data/plot.ui.h:5 ../data/precision.ui.h:4
+#: ../data/preferences.ui.h:1 ../data/setbase.ui.h:2 ../data/units.ui.h:2
+#: ../data/variables.ui.h:2 ../src/callbacks.cc:1424 ../src/callbacks.cc:8999
+#: ../src/callbacks.cc:10894 ../src/callbacks.cc:21971
 msgid "_Close"
-msgstr ""
-
-#: ../data/setbase.ui.h:3 ../data/main.ui.h:61 ../data/nbases.ui.h:4
-#: ../src/callbacks.cc:17139
-msgid "Binary"
-msgstr ""
-
-#: ../data/setbase.ui.h:4 ../data/main.ui.h:62 ../data/nbases.ui.h:5
-#: ../src/callbacks.cc:17140
-msgid "Octal"
-msgstr ""
-
-#: ../data/setbase.ui.h:5 ../data/main.ui.h:63 ../data/nbases.ui.h:3
-msgid "Decimal"
-msgstr ""
-
-#: ../data/setbase.ui.h:6 ../data/main.ui.h:64 ../data/nbases.ui.h:10
-#: ../src/callbacks.cc:17141
-msgid "Duodecimal"
-msgstr ""
-
-#: ../data/setbase.ui.h:7 ../data/main.ui.h:65 ../data/nbases.ui.h:11
-#: ../src/callbacks.cc:17142
-msgid "Hexadecimal"
-msgstr ""
-
-#: ../data/setbase.ui.h:8 ../data/csvexport.ui.h:12 ../data/csvimport.ui.h:29
-msgid "Other"
-msgstr ""
-
-#: ../data/setbase.ui.h:9 ../data/plot.ui.h:42
-msgid "10"
-msgstr ""
-
-#: ../data/setbase.ui.h:10 ../data/main.ui.h:67
-msgid "Sexagesimal"
-msgstr ""
-
-#: ../data/setbase.ui.h:11 ../data/main.ui.h:208 ../src/callbacks.cc:4544
-msgid "Time format"
-msgstr ""
-
-#: ../data/setbase.ui.h:12 ../data/nbases.ui.h:9 ../src/callbacks.cc:4540
-msgid "Roman numerals"
-msgstr ""
-
-#: ../data/setbase.ui.h:13
-msgid "<b>Result Base</b>"
-msgstr ""
-
-#: ../data/setbase.ui.h:14
-msgid "<b>Expression Base</b>"
 msgstr ""
 
 #: ../data/csvexport.ui.h:1
@@ -227,6 +176,10 @@ msgstr ""
 
 #: ../data/csvexport.ui.h:11 ../data/csvimport.ui.h:28
 msgid "Space"
+msgstr ""
+
+#: ../data/csvexport.ui.h:12 ../data/csvimport.ui.h:29 ../data/setbase.ui.h:8
+msgid "Other"
 msgstr ""
 
 #: ../data/csvimport.ui.h:1
@@ -919,15 +872,11 @@ msgstr ""
 msgid "Convert Number Bases"
 msgstr ""
 
-#: ../data/main.ui.h:35
-msgid "Calendar Conversion"
-msgstr ""
-
 #: ../data/main.ui.h:36
 msgid "Percentage Calculation Tool"
 msgstr ""
 
-#: ../data/main.ui.h:37
+#: ../data/main.ui.h:37 ../data/periodictable.ui.h:1
 msgid "Periodic Table"
 msgstr ""
 
@@ -1019,8 +968,36 @@ msgstr ""
 msgid "Select Result and Expression Base"
 msgstr ""
 
+#: ../data/main.ui.h:61 ../data/nbases.ui.h:4 ../data/setbase.ui.h:3
+#: ../src/callbacks.cc:17139
+msgid "Binary"
+msgstr ""
+
+#: ../data/main.ui.h:62 ../data/nbases.ui.h:5 ../data/setbase.ui.h:4
+#: ../src/callbacks.cc:17140
+msgid "Octal"
+msgstr ""
+
+#: ../data/main.ui.h:63 ../data/nbases.ui.h:3 ../data/setbase.ui.h:5
+msgid "Decimal"
+msgstr ""
+
+#: ../data/main.ui.h:64 ../data/nbases.ui.h:10 ../data/setbase.ui.h:6
+#: ../src/callbacks.cc:17141
+msgid "Duodecimal"
+msgstr ""
+
+#: ../data/main.ui.h:65 ../data/nbases.ui.h:11 ../data/setbase.ui.h:7
+#: ../src/callbacks.cc:17142
+msgid "Hexadecimal"
+msgstr ""
+
 #: ../data/main.ui.h:66
 msgid "Other…"
+msgstr ""
+
+#: ../data/main.ui.h:67 ../data/setbase.ui.h:10
+msgid "Sexagesimal"
 msgstr ""
 
 #: ../data/main.ui.h:68
@@ -1546,6 +1523,10 @@ msgstr ""
 
 #: ../data/main.ui.h:207
 msgid "Number base"
+msgstr ""
+
+#: ../data/main.ui.h:208 ../data/setbase.ui.h:11 ../src/callbacks.cc:4544
+msgid "Time format"
 msgstr ""
 
 #: ../data/main.ui.h:209 ../src/callbacks.cc:17143
@@ -2139,6 +2120,10 @@ msgstr ""
 msgid "Completion only"
 msgstr ""
 
+#: ../data/nbases.ui.h:1 ../data/setbase.ui.h:1
+msgid "Number Bases"
+msgstr ""
+
 #: ../data/nbases.ui.h:6
 msgid "Binary value"
 msgstr ""
@@ -2149,6 +2134,10 @@ msgstr ""
 
 #: ../data/nbases.ui.h:8
 msgid "Octal value"
+msgstr ""
+
+#: ../data/nbases.ui.h:9 ../data/setbase.ui.h:12 ../src/callbacks.cc:4540
+msgid "Roman numerals"
 msgstr ""
 
 #: ../data/nbases.ui.h:12
@@ -2312,6 +2301,10 @@ msgstr ""
 
 #: ../data/plot.ui.h:41
 msgid "Maximum x value"
+msgstr ""
+
+#: ../data/plot.ui.h:42 ../data/setbase.ui.h:9
+msgid "10"
 msgstr ""
 
 #: ../data/plot.ui.h:43
@@ -2691,6 +2684,14 @@ msgstr ""
 
 #: ../data/preferences.ui.h:65
 msgid "Completion"
+msgstr ""
+
+#: ../data/setbase.ui.h:13
+msgid "<b>Result Base</b>"
+msgstr ""
+
+#: ../data/setbase.ui.h:14
+msgid "<b>Expression Base</b>"
 msgstr ""
 
 #: ../data/simplefunctionedit.ui.h:1 ../data/variableedit.ui.h:1
@@ -4159,6 +4160,10 @@ msgstr ""
 
 #: ../src/callbacks.cc:21743 ../src/callbacks.cc:21788
 msgid "Empty x variable."
+msgstr ""
+
+#: ../src/callbacks.cc:21974
+msgid "Element Data"
 msgstr ""
 
 #: ../src/callbacks.cc:22012

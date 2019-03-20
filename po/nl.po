@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qalculate-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-18 10:57+0100\n"
+"POT-Creation-Date: 2019-03-20 09:16+0100\n"
 "PO-Revision-Date: 12.11.YYYY 19:40\n"
 "Last-Translator: Jaap Woldringh <jjh.woldringh@planet.nl>\n"
 "Language-Team:  <kde-i18n-nl@kde.org.>\n"
@@ -137,70 +137,19 @@ msgstr "Ook is gelijk aan"
 msgid "Max"
 msgstr "Max"
 
-#: ../data/setbase.ui.h:1 ../data/nbases.ui.h:1
-msgid "Number Bases"
-msgstr "Grondtallen voor talstelsels"
+#: ../data/calendarconversion.ui.h:1 ../data/main.ui.h:35
+msgid "Calendar Conversion"
+msgstr "Kalenderconversie"
 
-#: ../data/setbase.ui.h:2 ../data/datasets.ui.h:7 ../data/decimals.ui.h:2
-#: ../data/functionedit.ui.h:57 ../data/functions.ui.h:2
-#: ../data/namesedit.ui.h:2 ../data/nbases.ui.h:2 ../data/percentage.ui.h:5
-#: ../data/plot.ui.h:5 ../data/precision.ui.h:4 ../data/preferences.ui.h:1
-#: ../data/units.ui.h:2 ../data/variables.ui.h:2 ../src/callbacks.cc:1424
-#: ../src/callbacks.cc:8999 ../src/callbacks.cc:10894 ../src/callbacks.cc:21971
+#: ../data/calendarconversion.ui.h:2 ../data/datasets.ui.h:7
+#: ../data/decimals.ui.h:2 ../data/functionedit.ui.h:57
+#: ../data/functions.ui.h:2 ../data/namesedit.ui.h:2 ../data/nbases.ui.h:2
+#: ../data/percentage.ui.h:5 ../data/plot.ui.h:5 ../data/precision.ui.h:4
+#: ../data/preferences.ui.h:1 ../data/setbase.ui.h:2 ../data/units.ui.h:2
+#: ../data/variables.ui.h:2 ../src/callbacks.cc:1424 ../src/callbacks.cc:8999
+#: ../src/callbacks.cc:10894 ../src/callbacks.cc:21971
 msgid "_Close"
 msgstr ""
-
-#: ../data/setbase.ui.h:3 ../data/main.ui.h:61 ../data/nbases.ui.h:4
-#: ../src/callbacks.cc:17139
-msgid "Binary"
-msgstr "Binair"
-
-#: ../data/setbase.ui.h:4 ../data/main.ui.h:62 ../data/nbases.ui.h:5
-#: ../src/callbacks.cc:17140
-msgid "Octal"
-msgstr "Octaal"
-
-#: ../data/setbase.ui.h:5 ../data/main.ui.h:63 ../data/nbases.ui.h:3
-msgid "Decimal"
-msgstr "Decimaal"
-
-#: ../data/setbase.ui.h:6 ../data/main.ui.h:64 ../data/nbases.ui.h:10
-#: ../src/callbacks.cc:17141
-msgid "Duodecimal"
-msgstr "Duodecimaal"
-
-#: ../data/setbase.ui.h:7 ../data/main.ui.h:65 ../data/nbases.ui.h:11
-#: ../src/callbacks.cc:17142
-msgid "Hexadecimal"
-msgstr "Hexadecimaal"
-
-#: ../data/setbase.ui.h:8 ../data/csvexport.ui.h:12 ../data/csvimport.ui.h:29
-msgid "Other"
-msgstr "Overig"
-
-#: ../data/setbase.ui.h:9 ../data/plot.ui.h:42
-msgid "10"
-msgstr "10"
-
-#: ../data/setbase.ui.h:10 ../data/main.ui.h:67
-msgid "Sexagesimal"
-msgstr "Sexagesimaal"
-
-#: ../data/setbase.ui.h:11 ../data/main.ui.h:208 ../src/callbacks.cc:4544
-msgid "Time format"
-msgstr "Tijdnotatie"
-
-#: ../data/setbase.ui.h:12 ../data/nbases.ui.h:9 ../src/callbacks.cc:4540
-msgid "Roman numerals"
-msgstr "Romeinse cijfers"
-
-#: ../data/setbase.ui.h:13
-msgid "<b>Result Base</b>"
-msgstr "<b>Grondtal van antwoord</b>"
-
-#: ../data/setbase.ui.h:14
-msgid "<b>Expression Base</b>"
-msgstr "<b>Grondtal van expressie</b>"
 
 #: ../data/csvexport.ui.h:1
 msgid "Export CSV File"
@@ -238,6 +187,10 @@ msgstr "Puntkomma"
 #: ../data/csvexport.ui.h:11 ../data/csvimport.ui.h:28
 msgid "Space"
 msgstr "Spatie"
+
+#: ../data/csvexport.ui.h:12 ../data/csvimport.ui.h:29 ../data/setbase.ui.h:8
+msgid "Other"
+msgstr "Overig"
 
 #: ../data/csvimport.ui.h:1
 msgid "Import CSV File"
@@ -943,15 +896,11 @@ msgstr "Functies/gegevens plotten"
 msgid "Convert Number Bases"
 msgstr "Getallen converteren naar ander grondtal"
 
-#: ../data/main.ui.h:35
-msgid "Calendar Conversion"
-msgstr "Kalenderconversie"
-
 #: ../data/main.ui.h:36
 msgid "Percentage Calculation Tool"
 msgstr "Percentage berekenen"
 
-#: ../data/main.ui.h:37
+#: ../data/main.ui.h:37 ../data/periodictable.ui.h:1
 msgid "Periodic Table"
 msgstr "Periodiek systeem"
 
@@ -1044,9 +993,37 @@ msgstr "Grondtal talstelsel"
 msgid "Select Result and Expression Base"
 msgstr "Selecteer grondtal voor antwoord en expressie"
 
+#: ../data/main.ui.h:61 ../data/nbases.ui.h:4 ../data/setbase.ui.h:3
+#: ../src/callbacks.cc:17139
+msgid "Binary"
+msgstr "Binair"
+
+#: ../data/main.ui.h:62 ../data/nbases.ui.h:5 ../data/setbase.ui.h:4
+#: ../src/callbacks.cc:17140
+msgid "Octal"
+msgstr "Octaal"
+
+#: ../data/main.ui.h:63 ../data/nbases.ui.h:3 ../data/setbase.ui.h:5
+msgid "Decimal"
+msgstr "Decimaal"
+
+#: ../data/main.ui.h:64 ../data/nbases.ui.h:10 ../data/setbase.ui.h:6
+#: ../src/callbacks.cc:17141
+msgid "Duodecimal"
+msgstr "Duodecimaal"
+
+#: ../data/main.ui.h:65 ../data/nbases.ui.h:11 ../data/setbase.ui.h:7
+#: ../src/callbacks.cc:17142
+msgid "Hexadecimal"
+msgstr "Hexadecimaal"
+
 #: ../data/main.ui.h:66
 msgid "Other…"
 msgstr "Overig…"
+
+#: ../data/main.ui.h:67 ../data/setbase.ui.h:10
+msgid "Sexagesimal"
+msgstr "Sexagesimaal"
 
 #: ../data/main.ui.h:68
 msgid "Time Format"
@@ -1587,6 +1564,10 @@ msgstr ""
 #: ../data/main.ui.h:207
 msgid "Number base"
 msgstr "Grondtallen voor talstelsels"
+
+#: ../data/main.ui.h:208 ../data/setbase.ui.h:11 ../src/callbacks.cc:4544
+msgid "Time format"
+msgstr "Tijdnotatie"
 
 #: ../data/main.ui.h:209 ../src/callbacks.cc:17143
 msgid "Roman"
@@ -2205,6 +2186,10 @@ msgstr "Hoofdlettergevoelig"
 msgid "Completion only"
 msgstr "Voltooien toestaan"
 
+#: ../data/nbases.ui.h:1 ../data/setbase.ui.h:1
+msgid "Number Bases"
+msgstr "Grondtallen voor talstelsels"
+
 #: ../data/nbases.ui.h:6
 msgid "Binary value"
 msgstr "Binaire waarde"
@@ -2216,6 +2201,10 @@ msgstr "Decimale waarde"
 #: ../data/nbases.ui.h:8
 msgid "Octal value"
 msgstr "Octale waarde"
+
+#: ../data/nbases.ui.h:9 ../data/setbase.ui.h:12 ../src/callbacks.cc:4540
+msgid "Roman numerals"
+msgstr "Romeinse cijfers"
 
 #: ../data/nbases.ui.h:12
 msgid "Hexadecimal value"
@@ -2382,6 +2371,10 @@ msgstr ""
 #: ../data/plot.ui.h:41
 msgid "Maximum x value"
 msgstr ""
+
+#: ../data/plot.ui.h:42 ../data/setbase.ui.h:9
+msgid "10"
+msgstr "10"
 
 #: ../data/plot.ui.h:43
 msgid "Sampling rate"
@@ -2792,6 +2785,14 @@ msgstr ""
 #, fuzzy
 msgid "Completion"
 msgstr "Voltooien toestaan"
+
+#: ../data/setbase.ui.h:13
+msgid "<b>Result Base</b>"
+msgstr "<b>Grondtal van antwoord</b>"
+
+#: ../data/setbase.ui.h:14
+msgid "<b>Expression Base</b>"
+msgstr "<b>Grondtal van expressie</b>"
 
 #: ../data/simplefunctionedit.ui.h:1 ../data/variableedit.ui.h:1
 #: ../src/callbacks.cc:10437
@@ -4307,6 +4308,11 @@ msgstr "Expressie niet gegeven."
 msgid "Empty x variable."
 msgstr "Variabele x niet gegeven."
 
+#: ../src/callbacks.cc:21974
+#, fuzzy
+msgid "Element Data"
+msgstr "Elementen"
+
 #: ../src/callbacks.cc:22012
 msgid "Classification"
 msgstr "Indeling"
@@ -4362,6 +4368,63 @@ msgstr "Geen onbekenden in antwoord."
 #: ../src/callbacks.cc:22125
 msgid "Set Unknowns"
 msgstr "Onbekenden een waarde geven"
+
+#~ msgid "3"
+#~ msgstr "3"
+
+#~ msgid "4"
+#~ msgstr "4"
+
+#~ msgid "5"
+#~ msgstr "5"
+
+#~ msgid "6"
+#~ msgstr "6"
+
+#~ msgid "8"
+#~ msgstr "8"
+
+#~ msgid "9"
+#~ msgstr "9"
+
+#, fuzzy
+#~ msgid "11"
+#~ msgstr "1"
+
+#, fuzzy
+#~ msgid "12"
+#~ msgstr "2"
+
+#, fuzzy
+#~ msgid "13"
+#~ msgstr "1"
+
+#, fuzzy
+#~ msgid "14"
+#~ msgstr "1"
+
+#, fuzzy
+#~ msgid "15"
+#~ msgstr "1"
+
+#, fuzzy
+#~ msgid "16"
+#~ msgstr "1"
+
+#, fuzzy
+#~ msgid "17"
+#~ msgstr "1"
+
+#, fuzzy
+#~ msgid "18"
+#~ msgstr "1"
+
+#~ msgid "*"
+#~ msgstr "*"
+
+#, fuzzy
+#~ msgid "**"
+#~ msgstr "*"
 
 #, fuzzy
 #~ msgid "Forms of Fractions"
@@ -4447,9 +4510,6 @@ msgstr "Onbekenden een waarde geven"
 
 #~ msgid "-"
 #~ msgstr "-"
-
-#~ msgid "*"
-#~ msgstr "*"
 
 #~ msgid "/"
 #~ msgstr "/"
@@ -4601,24 +4661,6 @@ msgstr "Onbekenden een waarde geven"
 
 #~ msgid "Gra"
 #~ msgstr "Gra"
-
-#~ msgid "8"
-#~ msgstr "8"
-
-#~ msgid "9"
-#~ msgstr "9"
-
-#~ msgid "4"
-#~ msgstr "4"
-
-#~ msgid "5"
-#~ msgstr "5"
-
-#~ msgid "6"
-#~ msgstr "6"
-
-#~ msgid "3"
-#~ msgstr "3"
 
 #~ msgid "Wget arguments"
 #~ msgstr "Argumenten voor wget"

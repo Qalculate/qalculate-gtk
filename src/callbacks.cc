@@ -21971,7 +21971,7 @@ void on_element_button_clicked(GtkButton*, gpointer user_data) {
 		GtkWidget *close_button = gtk_dialog_add_button(GTK_DIALOG(dialog), _("_Close"), GTK_RESPONSE_CLOSE);
 		g_signal_connect((gpointer) close_button, "clicked", G_CALLBACK(on_element_button_close_clicked), (gpointer) dialog);
 		gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(periodictable_builder, "periodic_dialog")));
-		gtk_window_set_title(GTK_WINDOW(dialog), "Element Data");
+		gtk_window_set_title(GTK_WINDOW(dialog), _("Element Data"));
 		gtk_container_set_border_width(GTK_CONTAINER(dialog), 5);
 		GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 15);
 		gtk_container_set_border_width(GTK_CONTAINER(vbox), 12);
