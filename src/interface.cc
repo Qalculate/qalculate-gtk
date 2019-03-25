@@ -845,6 +845,12 @@ void create_button_menus(void) {
 		// Show further items in a submenu
 		MENU_ITEM_WITH_POINTER_AND_FLAG(to_us2[i]->title(true).c_str(), insert_button_currency, to_us2[i])
 	}
+	
+	update_mb_fx_menu();
+	update_mb_sto_menu();
+	update_mb_units_menu();
+	update_mb_pi_menu();
+	update_mb_to_menu();
 
 }
 

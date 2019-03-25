@@ -4191,6 +4191,7 @@ void update_vmenu() {
 	recreate_recent_variables();
 	update_variables_tree();
 	update_completion();
+	update_mb_sto_menu();
 }
 
 /*
@@ -8606,6 +8607,7 @@ void recreate_recent_functions() {
 			g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(insert_function), (gpointer) recent_functions[i]);
 		}
 	}
+	update_mb_fx_menu();
 }
 void recreate_recent_variables() {
 	GtkWidget *item, *sub;
@@ -8628,6 +8630,7 @@ void recreate_recent_variables() {
 			g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(insert_variable), (gpointer) recent_variables[i]);
 		}
 	}
+	update_mb_pi_menu();
 }
 void recreate_recent_units() {
 	GtkWidget *item, *sub;
@@ -8650,6 +8653,7 @@ void recreate_recent_units() {
 			g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(insert_unit), (gpointer) recent_units[i]);
 		}
 	}
+	update_mb_units_menu();
 }
 
 void function_inserted(MathFunction *object) {
@@ -8680,6 +8684,7 @@ void function_inserted(MathFunction *object) {
 	gtk_widget_show(item); 
 	gtk_menu_shell_prepend(GTK_MENU_SHELL(sub), item);
 	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(insert_function), (gpointer) object);
+	update_mb_fx_menu();
 }
 void variable_inserted(Variable *object) {
 	if(!object) {
@@ -8709,6 +8714,7 @@ void variable_inserted(Variable *object) {
 	gtk_widget_show(item); 
 	gtk_menu_shell_prepend(GTK_MENU_SHELL(sub), item);
 	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(insert_variable), (gpointer) object);
+	update_mb_pi_menu();
 }
 void unit_inserted(Unit *object) {
 	if(!object) {
@@ -8738,6 +8744,7 @@ void unit_inserted(Unit *object) {
 	gtk_widget_show(item); 
 	gtk_menu_shell_prepend(GTK_MENU_SHELL(sub), item);
 	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(insert_unit), (gpointer) object);
+	update_mb_units_menu();
 }
 
 void apply_function(MathFunction *f, GtkWidget* = NULL) {
@@ -9313,6 +9320,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 	called from function menu
 */
 void insert_function(GtkMenuItem*, gpointer user_data) {
+	if(!CALCULATOR->stillHasFunction((MathFunction*) user_data)) return;
 	insert_function((MathFunction*) user_data, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 }
 
@@ -9334,7 +9342,6 @@ void insert_button_variable(GtkWidget*, gpointer user_data) {
 	Variable *v = (Variable*) user_data;
 	if(!CALCULATOR->stillHasVariable(v)) {
 		show_message(_("Variable does not exist anymore."), GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
-		update_vmenu();
 		return;
 	}
 	insert_text(v->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name.c_str());
@@ -9346,6 +9353,7 @@ void insert_prefix(GtkMenuItem*, gpointer user_data) {
 }
 //from unit menu
 void insert_unit(GtkMenuItem*, gpointer user_data) {
+	if(!CALCULATOR->stillHasUnit((Unit*) user_data)) return;
 	if(((Unit*) user_data)->subtype() == SUBTYPE_COMPOSITE_UNIT) {
 		insert_text(((CompositeUnit*) user_data)->print(true, printops.abbreviate_names, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext).c_str());
 	} else {
@@ -9355,6 +9363,7 @@ void insert_unit(GtkMenuItem*, gpointer user_data) {
 }
 
 void insert_button_unit(GtkMenuItem*, gpointer user_data) {
+	if(!CALCULATOR->stillHasUnit((Unit*) user_data)) return;
 	if(((Unit*) user_data)->subtype() == SUBTYPE_COMPOSITE_UNIT) {
 		insert_text(((CompositeUnit*) user_data)->print(true, printops.abbreviate_names, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext).c_str());
 	} else {
@@ -9374,6 +9383,7 @@ void insert_button_unit(GtkMenuItem*, gpointer user_data) {
 	}
 }
 void insert_button_currency(GtkMenuItem*, gpointer user_data) {
+	if(!CALCULATOR->stillHasUnit((Unit*) user_data)) return;
 	if(((Unit*) user_data)->subtype() == SUBTYPE_COMPOSITE_UNIT) {
 		insert_text(((CompositeUnit*) user_data)->print(true, printops.abbreviate_names, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext).c_str());
 	} else {
@@ -17115,8 +17125,7 @@ void menu_to_polar(GtkMenuItem*, gpointer) {
 	executeCommand(COMMAND_EVAL);
 	evalops.complex_number_form = cnf_bak;
 }
-void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
-	if(!gtk_toggle_button_get_active(w)) return;
+void update_mb_to_menu() {
 	GtkWidget *sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_to"));
 	if(expression_has_changed && !rpn_mode) execute_expression(true);
 	GtkWidget *item;
@@ -17125,29 +17134,34 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 		gtk_widget_destroy(GTK_WIDGET(l->data));
 	}
 	g_list_free(list);
-	MENU_ITEM(_("Base units"), on_menu_item_convert_to_base_units_activate);
-	MENU_ITEM(_("Optimal unit"), on_menu_item_convert_to_best_unit_activate);
-	MENU_ITEM(_("Optimal prefix"), on_menu_item_set_prefix_activate);
-	MENU_SEPARATOR
 	if(!mstruct || !displayed_mstruct || !mstruct->containsType(STRUCT_UNIT, true)) {
 		bool b_date = (mstruct && displayed_mstruct && mstruct->isDateTime());
 		bool b_integ = (mstruct && displayed_mstruct && mstruct->isInteger());
 		bool b_complex = (mstruct && displayed_mstruct && contains_imaginary_number(*mstruct));
-		if(b_date) {MENU_ITEM(_("Calendars"), on_popup_menu_item_calendarconversion_activate)}
-		if(b_date) {MENU_ITEM("UTC", menu_to_utc)}
-		if(!b_date) {MENU_ITEM(_("Number bases"), on_menu_item_convert_number_bases_activate)}
-		MENU_ITEM(_("Binary"), menu_to_bin)
-		MENU_ITEM(_("Octal"), menu_to_oct)
-		MENU_ITEM(_("Duodecimal"), menu_to_duo)
-		MENU_ITEM(_("Hexadecimal"), menu_to_hex)
-		if(b_integ) {MENU_ITEM(_("Roman"), menu_to_roman)}
-		if(!b_complex) {MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)}
+		if(b_date) {
+			MENU_ITEM(_("Calendars"), on_popup_menu_item_calendarconversion_activate)
+			MENU_ITEM("UTC", menu_to_utc)
+			return;
+		}
+		if(!b_complex) {
+			MENU_ITEM(_("Number bases"), on_menu_item_convert_number_bases_activate)
+			MENU_ITEM(_("Binary"), menu_to_bin)
+			MENU_ITEM(_("Octal"), menu_to_oct)
+			MENU_ITEM(_("Duodecimal"), menu_to_duo)
+			MENU_ITEM(_("Hexadecimal"), menu_to_hex)
+			if(b_integ) {MENU_ITEM(_("Roman"), menu_to_roman)}
+			MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)
+		}
 		if(!b_integ && !b_date) {MENU_ITEM(_("Fraction"), menu_to_fraction)}
 		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_RECTANGULAR) {MENU_ITEM(_("Rectangular form"), menu_to_rectangular)}
 		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_EXPONENTIAL) {MENU_ITEM(_("Exponential form"), menu_to_exponential)}
 		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_POLAR) {MENU_ITEM(_("Polar form"), menu_to_polar)}
 		return;
 	}
+	MENU_ITEM(_("Base units"), on_menu_item_convert_to_base_units_activate);
+	MENU_ITEM(_("Optimal unit"), on_menu_item_convert_to_best_unit_activate);
+	MENU_ITEM(_("Optimal prefix"), on_menu_item_set_prefix_activate);
+	MENU_SEPARATOR
 	string s_cat;
 	Unit *u_result = CALCULATOR->findMatchingUnit(*mstruct);
 	if(u_result) s_cat = u_result->category();
@@ -17232,7 +17246,7 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 			if(CALCULATOR->units[i]->category() == s_cat) {
 				Unit *u = CALCULATOR->units[i];
-				if(u->isActive() && !u->isHidden()) {
+				if(u != u_result && u->isActive() && !u->isHidden()) {
 					bool b = false;
 					for(size_t i2 = 0; i2 < to_us.size(); i2++) {
 						if(string_is_less(u->title(true), to_us[i2]->title(true))) {
@@ -17252,7 +17266,7 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 			// Show further items in a submenu
 		}
 	}
-	if(i_added + 3 < 10) {
+	if(!i_added) {
 		const char *si_units[] = {"m", "g", "s", "A", "K", "L", "J", "N"};
 		vector<Unit*> to_us2;
 		for(size_t i = 0; i < 8 && i_added + 3 < 10; i++) {
@@ -17284,9 +17298,13 @@ void on_mb_to_toggled(GtkToggleButton *w, gpointer) {
 		}
 	}
 }
+gboolean on_mb_to_button_release_event(GtkWidget, GdkEventButton *event, gpointer) {
+	if(b_busy) return TRUE;
+	update_mb_to_menu();
+	return FALSE;
+}
 
-void on_mb_units_toggled(GtkToggleButton *w, gpointer) {
-	if(!gtk_toggle_button_get_active(w)) return;
+void update_mb_units_menu() {
 	GtkMenu *sub = GTK_MENU(gtk_builder_get_object(main_builder, "menu_units"));
 	GtkWidget *item;
 	GList *list = gtk_container_get_children(GTK_CONTAINER(sub));
@@ -17358,8 +17376,8 @@ gboolean on_menu_fx_button_press(GtkWidget *widget, GdkEventButton *event, gpoin
 	return FALSE;
 }
 
-void on_mb_fx_toggled(GtkToggleButton *w, gpointer) {
-	if(!gtk_toggle_button_get_active(w)) return;
+
+void update_mb_fx_menu() {
 	GtkMenu *sub = GTK_MENU(gtk_builder_get_object(main_builder, "menu_fx"));
 	GtkWidget *item;
 	GList *list = gtk_container_get_children(GTK_CONTAINER(sub));
@@ -17388,10 +17406,8 @@ void on_mb_fx_toggled(GtkToggleButton *w, gpointer) {
 	MENU_ITEM(_("All functions"), on_menu_item_manage_functions_activate);
 }
 
+void update_mb_pi_menu() {
 
-void on_mb_pi_toggled(GtkToggleButton *w, gpointer) {
-	
-	if(!gtk_toggle_button_get_active(w)) return;
 	GtkMenu *sub = GTK_MENU(gtk_builder_get_object(main_builder, "menu_pi"));
 	GtkWidget *item;
 	GList *list = gtk_container_get_children(GTK_CONTAINER(sub));
@@ -17480,8 +17496,7 @@ gboolean on_menu_sto_button_press(GtkWidget *widget, GdkEventButton *event, gpoi
 	return FALSE;
 }
 
-void on_mb_sto_toggled(GtkToggleButton *w, gpointer) {
-	if(!gtk_toggle_button_get_active(w)) return;
+void update_mb_sto_menu() {
 	GtkMenu *sub = GTK_MENU(gtk_builder_get_object(main_builder, "menu_sto"));
 	GtkWidget *item;
 	GList *list = gtk_container_get_children(GTK_CONTAINER(sub));
@@ -20555,6 +20570,7 @@ gboolean on_units_convert_to_button_key_press_event(GtkWidget*, GdkEventKey *eve
 
 gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 	if(gtk_widget_has_focus(expressiontext) || b_editing_stack) return FALSE;
+	if(!b_busy && gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "mb_to"))) && !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "mb_to"))) && (event->keyval == GDK_KEY_Return || event->keyval == GDK_KEY_ISO_Enter || event->keyval == GDK_KEY_KP_Enter || event->keyval == GDK_KEY_space)) {update_mb_to_menu(); gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "mb_to")));}
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_unit")))) return FALSE;
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")))) {
 		if(event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_Page_Up || event->keyval == GDK_KEY_Page_Down || event->keyval == GDK_KEY_KP_Page_Up || event->keyval == GDK_KEY_KP_Page_Down) {

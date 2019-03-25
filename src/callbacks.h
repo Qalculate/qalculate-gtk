@@ -229,6 +229,12 @@ void reload_history();
 extern "C" {
 #endif
 
+void update_mb_fx_menu();
+void update_mb_sto_menu();
+void update_mb_units_menu();
+void update_mb_pi_menu();
+void update_mb_to_menu();
+
 void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewColumn*, gpointer);
 void on_units_convert_view_row_activated(GtkTreeView*, GtkTreePath *path, GtkTreeViewColumn*, gpointer);
 void units_convert_resize_popup();
