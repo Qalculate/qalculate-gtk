@@ -841,7 +841,7 @@ void create_button_menus(void) {
 		MENU_ITEM_WITH_POINTER_AND_FLAG(to_us[i]->title(true).c_str(), insert_button_currency, to_us[i])
 	}
 	if(to_us2.size() > 0) {SUBMENU_ITEM(_("more"), sub);}
-	for(size_t i = i_added; i < to_us2.size(); i++) {
+	for(size_t i = 0; i < to_us2.size(); i++) {
 		// Show further items in a submenu
 		MENU_ITEM_WITH_POINTER_AND_FLAG(to_us2[i]->title(true).c_str(), insert_button_currency, to_us2[i])
 	}

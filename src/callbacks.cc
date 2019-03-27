@@ -14653,6 +14653,143 @@ bool contains_imaginary_number(MathStructure &m) {
 	return false;
 }
 
+void find_match_unformat(MathStructure &m) {
+	for(size_t i = 0; i < m.size(); i++) {
+		find_match_unformat(m[i]);
+	}
+	switch(m.type()) {
+		case STRUCT_INVERSE: {
+			m.setToChild(1, true);
+			if(m.isPower() && m[1].isNumber()) m[1].number().negate();
+			else m.raise(nr_minus_one);
+			break;
+		}
+		case STRUCT_NEGATE: {
+			m.setToChild(1);
+			if(m.type() != STRUCT_MULTIPLICATION) m.transform(STRUCT_MULTIPLICATION);
+			m.insertChild(m_minus_one, 1);
+			break;
+		}
+		case STRUCT_DIVISION: {
+			m.setType(STRUCT_MULTIPLICATION);
+			if(m[1].isPower() && m[1][1].isNumber()) m[1][1].number().negate();
+			else m[1].raise(nr_minus_one);
+			find_match_unformat(m);
+			break;
+		}
+		case STRUCT_MULTIPLICATION: {
+			for(size_t i = 0; i < m.size();) {
+				if(m[i].isMultiplication()) {
+					for(size_t i2 = 0; i2 < m[i].size(); i2++) {
+						m[i][i2].ref();
+						m.insertChild_nocopy(&m[i][i2], i + i2 + 2);
+					}
+					m.delChild(i + 1);
+				} else {
+					i++;
+				}
+			}
+			break;
+		}
+		default: {}
+	}
+}
+
+Unit *find_exact_matching_unit2(const MathStructure &m) {
+	switch(m.type()) {
+		case STRUCT_POWER: {
+			if(m.base()->isUnit() && (!m.base()->prefix() || m.base()->prefix()->value().isOne()) && m.base()->unit()->subtype() != SUBTYPE_COMPOSITE_UNIT && m.exponent()->isNumber() && m.exponent()->number().isInteger() && m.exponent()->number() < 10 && m.exponent()->number() > -10) {
+				Unit *u_base = m.base()->unit();
+				int exp = m.exponent()->number().intValue();
+				for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
+					
+					if(CALCULATOR->units[i]->subtype() == SUBTYPE_ALIAS_UNIT) {
+						AliasUnit *u = (AliasUnit*) CALCULATOR->units[i];
+						if(u->firstBaseUnit() == u_base && u->firstBaseExponent() == exp) return u;
+					}
+				}
+			}
+			break;
+		}
+		case STRUCT_UNIT: {
+			if(m.prefix() && !m.prefix()->value().isOne()) {
+				for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
+					if(CALCULATOR->units[i]->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+						CompositeUnit *u = (CompositeUnit*) CALCULATOR->units[i];
+						int exp = 0;
+						Prefix *p = NULL;
+						if(u->countUnits() == 1 && u->get(1, &exp, &p) == m.unit() && exp == 1 && p == m.prefix()) return u;
+					}
+				}
+			}
+			return m.unit();
+		}
+		case STRUCT_MULTIPLICATION: {
+			if(m.size() == 2 && !m[0].containsType(STRUCT_UNIT, false)) {
+				return find_exact_matching_unit2(m[1]);
+			}
+			CompositeUnit *cu = new CompositeUnit("", "temporary_find_matching_unit");
+			for(size_t i = 1; i <= m.countChildren(); i++) {
+				if(m.getChild(i)->isUnit()) {
+					cu->add(m.getChild(i)->unit(), 1, m.getChild(i)->prefix() && !m.getChild(i)->prefix()->value().isOne() ? m.getChild(i)->prefix() : NULL);
+				} else if(m.getChild(i)->isPower() && m.getChild(i)->base()->isUnit() && m.getChild(i)->exponent()->isNumber() && m.getChild(i)->exponent()->number().isInteger() && m.getChild(i)->exponent()->number() < 10 && m.getChild(i)->exponent()->number() > -10) {
+					cu->add(m.getChild(i)->base()->unit(), m.getChild(i)->exponent()->number().intValue(), m.getChild(i)->base()->prefix() && !m.getChild(i)->base()->prefix()->value().isOne() ? m.getChild(i)->base()->prefix() : NULL);
+				} else if(m.getChild(i)->containsType(STRUCT_UNIT, false)) {
+					delete cu;
+					return NULL;
+				}
+			}
+			if(cu->countUnits() == 1) {
+				int exp = 1;
+				Prefix *p = NULL;
+				Unit *u = cu->get(1, &exp, &p);
+				MathStructure m2(u, p);
+				if(exp != 1) m2.raise(exp);
+				return find_exact_matching_unit2(m2);
+			}
+			for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
+				Unit *u = CALCULATOR->units[i];
+				if(u->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+					if(((CompositeUnit*) u)->countUnits() == cu->countUnits()) {
+						bool b = true;
+						for(size_t i2 = 1; i2 <= cu->countUnits(); i2++) {
+							int exp1 = 1, exp2 = 1;
+							Prefix *p1 = NULL, *p2 = NULL;
+							Unit *ui1 = cu->get(i2, &exp1, &p1);
+							b = false;
+							for(size_t i3 = 1; i3 <= cu->countUnits(); i3++) {
+								Unit *ui2 = ((CompositeUnit*) u)->get(i3, &exp2, &p2);
+								if(ui1 == ui2) {
+									b = (exp1 == exp2 && p1 == p2);
+									break;
+								}
+							}
+							if(!b) break;
+						}
+						if(b) {
+							delete cu;
+							return u;
+						}
+					}
+				}
+			}
+			delete cu;
+			break;
+		}
+		default: {}
+	}
+	return NULL;
+}
+
+
+Unit *find_exact_matching_unit(const MathStructure &m) {
+	MathStructure m2(m);
+	find_match_unformat(m2);
+	return find_exact_matching_unit2(m2);
+}
+
+
+
 void update_resultview_popup() {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_octal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_octal_activate, NULL);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_decimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_decimal_activate, NULL);
@@ -14702,6 +14839,95 @@ void update_resultview_popup() {
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_convert_to_base_units")), b_unit);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_convert_to_best_unit")), b_unit);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_set_optimal_prefix")), b_unit);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_convert_to")), FALSE);
+	if(b_unit) {
+		GtkWidget *sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_convert_to"));
+		GtkWidget *item;
+		if(expression_has_changed && !rpn_mode) execute_expression(true);
+		GList *list = gtk_container_get_children(GTK_CONTAINER(sub));
+		for(GList *l = list; l != NULL; l = l->next) {
+			gtk_widget_destroy(GTK_WIDGET(l->data));
+		}
+		g_list_free(list);
+		Unit *u_result = NULL;
+		if(displayed_mstruct) u_result = find_exact_matching_unit(*displayed_mstruct);
+		bool b_exact = (u_result != NULL);
+		if(!u_result) u_result = CALCULATOR->findMatchingUnit(*mstruct);
+		vector<Unit*> to_us;
+		if(u_result && u_result->isCurrency()) {
+			Unit *u_local_currency = CALCULATOR->getLocalCurrency();
+			if(latest_button_currency && latest_button_currency != u_result && latest_button_currency != u_local_currency) to_us.push_back(latest_button_currency);
+			for(size_t i = 0; i < CALCULATOR->units.size() + 2; i++) {
+				Unit * u;
+				if(i == 0) u = u_local_currency;
+				else if(i == 1) u = latest_button_currency;
+				else u = CALCULATOR->units[i - 2];
+				if(u && (!b_exact || u != u_result) && u->isActive() && u->isCurrency() && (i == 0 || (u != u_local_currency && u != latest_button_currency && !u->isHidden()))) {
+					bool b = false;
+					for(size_t i2 = 0; i2 < to_us.size(); i2++) {
+						if(string_is_less(u->title(true), to_us[i2]->title(true))) {
+							to_us.insert(to_us.begin() + i2, u);
+							b = true;
+							break;
+						}
+					}
+					if(!b) to_us.push_back(u);
+				}
+			}
+			for(size_t i = 0; i < to_us.size(); i++) {
+				MENU_ITEM_WITH_POINTER_AND_FLAG(to_us[i]->title(true).c_str(), convert_to_unit, to_us[i])
+			}
+			vector<Unit*> to_us2;
+			for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
+				if(CALCULATOR->units[i]->isCurrency()) {
+					Unit *u = CALCULATOR->units[i];
+					if(u->isActive() && (!b_exact || u != u_result) && u->isHidden() && u != u_local_currency && u != latest_button_currency) {
+						bool b = false;
+						for(int i2 = to_us2.size() - 1; i2 >= 0; i2--) {
+							if(u->title(true) > to_us2[(size_t) i2]->title(true)) {
+								if((size_t) i2 == to_us2.size() - 1) to_us2.push_back(u);
+								else to_us2.insert(to_us2.begin() + (size_t) i2 + 1, u);
+								b = true;
+								break;
+							}
+						}
+						if(!b) to_us2.insert(to_us2.begin(), u);
+					}
+				}
+			}
+			if(to_us2.size() > 0) {
+				SUBMENU_ITEM(_("more"), sub);
+				for(size_t i = 0; i < to_us2.size(); i++) {
+					// Show further items in a submenu
+					MENU_ITEM_WITH_POINTER_AND_FLAG(to_us2[i]->title(true).c_str(), convert_to_unit, to_us2[i])
+				}
+			}
+			gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_convert_to")), TRUE);
+		} else if(u_result && !u_result->category().empty()) {
+			string s_cat = u_result->category();
+			for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
+				if(CALCULATOR->units[i]->category() == s_cat) {
+					Unit *u = CALCULATOR->units[i];
+					if((!b_exact || u != u_result) && u->isActive() && !u->isHidden()) {
+						bool b = false;
+						for(size_t i2 = 0; i2 < to_us.size(); i2++) {
+							if(string_is_less(u->title(true), to_us[i2]->title(true))) {
+								to_us.insert(to_us.begin() + i2, u);
+								b = true;
+								break;
+							}
+						}
+						if(!b) to_us.push_back(u);
+					}
+				}
+			}
+			for(size_t i = 0; i < to_us.size(); i++) {
+				MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), convert_to_unit_noprefix, to_us[i])
+			}
+			gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_convert_to")), TRUE);
+		}
+	}
+
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_units")), b_unit);
 	
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_octal")), !b_unit && !b_date && !b_complex);
@@ -17163,7 +17389,10 @@ void update_mb_to_menu() {
 	MENU_ITEM(_("Optimal prefix"), on_menu_item_set_prefix_activate);
 	MENU_SEPARATOR
 	string s_cat;
-	Unit *u_result = CALCULATOR->findMatchingUnit(*mstruct);
+	Unit *u_result = NULL;
+	if(displayed_mstruct) u_result = find_exact_matching_unit(*displayed_mstruct);
+	bool b_exact = (u_result != NULL);
+	if(!u_result) u_result = CALCULATOR->findMatchingUnit(*mstruct);
 	if(u_result) s_cat = u_result->category();
 	vector<Unit*> to_us;
 	size_t i_added = 0;
@@ -17177,7 +17406,7 @@ void update_mb_to_menu() {
 			if(i == 0) u = CALCULATOR->u_euro;
 			else if(i == 1) u = u_local_currency;
 			else u = CALCULATOR->getActiveUnit(currency_units[i - 2]);
-			if(u && u != u_result && (i == 1 || !u->isHidden())) {
+			if(u && (!b_exact || u != u_result) && (i == 1 || !u->isHidden())) {
 				bool b = false;
 				for(size_t i2 = 0; i2 < to_us.size(); i2++) {
 					if(u == to_us[i2]) {
@@ -17201,9 +17430,9 @@ void update_mb_to_menu() {
 		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 			if(CALCULATOR->units[i]->isCurrency()) {
 				Unit *u = CALCULATOR->units[i];
-				if(u != u_result && u->isActive()) {
+				if(u->isActive()) {
 					bool b = false;
-					if(u->isHidden() && u != u_local_currency) {
+					if(u->isHidden() && (!b_exact || u != u_result) && u != u_local_currency) {
 						for(int i2 = to_us2.size() - 1; i2 >= 0; i2--) {
 							if(u->title(true) > to_us2[(size_t) i2]->title(true)) {
 								if((size_t) i2 == to_us2.size() - 1) to_us2.push_back(u);
@@ -17238,7 +17467,7 @@ void update_mb_to_menu() {
 			MENU_ITEM_WITH_POINTER_AND_FLAG(to_us[i]->title(true).c_str(), convert_to_unit, to_us[i])
 		}
 		if(to_us2.size() > 0) {SUBMENU_ITEM(_("more"), sub);}
-		for(size_t i = i_added; i < to_us2.size(); i++) {
+		for(size_t i = 0; i < to_us2.size(); i++) {
 			// Show further items in a submenu
 			MENU_ITEM_WITH_POINTER_AND_FLAG(to_us2[i]->title(true).c_str(), convert_to_unit, to_us2[i])
 		}
@@ -17246,7 +17475,7 @@ void update_mb_to_menu() {
 		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 			if(CALCULATOR->units[i]->category() == s_cat) {
 				Unit *u = CALCULATOR->units[i];
-				if(u != u_result && u->isActive() && !u->isHidden()) {
+				if(u->isActive() && (!b_exact || u != u_result) && !u->isHidden()) {
 					bool b = false;
 					for(size_t i2 = 0; i2 < to_us.size(); i2++) {
 						if(string_is_less(u->title(true), to_us[i2]->title(true))) {
@@ -17262,8 +17491,7 @@ void update_mb_to_menu() {
 		}
 		for(size_t i = 0; i < to_us.size(); i++) {
 			if(i + 4 == 10 && i + 1 != to_us.size()) {SUBMENU_ITEM(_("more"), sub);}
-			MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), to_us[i] == u_result ? convert_to_unit_noprefix : convert_to_unit, to_us[i])
-			// Show further items in a submenu
+			MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), convert_to_unit_noprefix, to_us[i])
 		}
 	}
 	if(!i_added) {
@@ -17271,7 +17499,7 @@ void update_mb_to_menu() {
 		vector<Unit*> to_us2;
 		for(size_t i = 0; i < 8 && i_added + 3 < 10; i++) {
 			Unit * u = CALCULATOR->getActiveUnit(si_units[i]);
-			if(!u->isHidden()) {
+			if(!u->isHidden() && (!b_exact || u != u_result)) {
 				bool b = false;
 				for(size_t i2 = 0; i2 < to_us.size(); i2++) {
 					if(u == to_us[i2]) {
@@ -17294,7 +17522,7 @@ void update_mb_to_menu() {
 			}
 		}
 		for(size_t i = 0; i < to_us2.size(); i++) {
-			MENU_ITEM_WITH_POINTER(to_us2[i]->title(true).c_str(), to_us2[i] == u_result ? convert_to_unit_noprefix : convert_to_unit, to_us2[i])
+			MENU_ITEM_WITH_POINTER(to_us2[i]->title(true).c_str(), convert_to_unit, to_us2[i])
 		}
 	}
 }
