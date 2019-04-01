@@ -6386,6 +6386,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 
 			for(size_t index = 0; index < m.size(); index++) {
 				if(index == 1 && b_one_arg) break;
+						
 				ips_n.wrap = m[index].needsParenthesis(po, ips_n, m, index + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
 				if(m.function() == CALCULATOR->f_interval) {
 					PrintOptions po2 = po;
@@ -6601,6 +6602,40 @@ void replace_interval_with_function(MathStructure &m) {
 	}
 }
 
+Unit *default_angle_unit() {
+	switch(evalops.parse_options.angle_unit) {
+		case ANGLE_UNIT_DEGREES: {return CALCULATOR->getDegUnit();}
+		case ANGLE_UNIT_GRADIANS: {return CALCULATOR->getGraUnit();}
+		case ANGLE_UNIT_RADIANS: {return CALCULATOR->getRadUnit();}
+		default: {}
+	}
+	return NULL;
+}
+
+void remove_default_angle_unit(MathStructure &m) {
+	for(size_t i = 0; i < m.size(); i++) {
+		remove_default_angle_unit(m[i]);
+		if(m.isFunction() && m.function()->getArgumentDefinition(i + 1) && m.function()->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_ANGLE) {
+			if(m[i].isMultiplication() && m[i].last().isUnit() && !m[i].last().prefix() && m[i].last().unit() == default_angle_unit()) {
+				m[i].delChild(m[i].size(), true);
+			} else if(m[i].isAddition()) {
+				bool b = true;
+				for(size_t i2 = 0; i2 < m[i].size(); i2++) {
+					if(!m[i][i2].isMultiplication() || !m[i][i2].last().isUnit() || m[i][i2].last().prefix() || m[i][i2].last().unit() != default_angle_unit()) {
+						b = false;
+						break;
+					}
+				}
+				if(b) {
+					for(size_t i2 = 0; i2 < m[i].size(); i2++) {
+						m[i][i2].delChild(m[i][i2].size(), true);
+					}
+				}
+			}
+		}
+	}
+}
+
 void ViewThread::run() {
 
 	while(true) {
@@ -6677,6 +6712,7 @@ void ViewThread::run() {
 		}
 
 		m.format(printops);
+		remove_default_angle_unit(m);
 		gint64 time1 = g_get_monotonic_time();
 		result_text = m.print(printops);
 		result_text_approximate = *printops.is_approximate;
@@ -11920,48 +11956,6 @@ void set_angle_item() {
 }
 
 /*
-	Update angle radio buttons
-*/
-void set_angle_button() {
-	GtkWidget *tb = NULL;
-	switch(evalops.parse_options.angle_unit) {
-		case ANGLE_UNIT_RADIANS: {
-			tb = GTK_WIDGET(gtk_builder_get_object(main_builder, "radiobutton_radians"));
-			g_signal_handlers_block_matched((gpointer) tb, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_radiobutton_radians_toggled, NULL);		
-			if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tb)))
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tb), TRUE);
-			g_signal_handlers_unblock_matched((gpointer) tb, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_radiobutton_radians_toggled, NULL);							
-			break;
-		}
-		case ANGLE_UNIT_GRADIANS: {
-			tb = GTK_WIDGET(gtk_builder_get_object(main_builder, "radiobutton_gradians"));
-			g_signal_handlers_block_matched((gpointer) tb, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_radiobutton_gradians_toggled, NULL);		
-			if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tb)))
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tb), TRUE);
-			g_signal_handlers_unblock_matched((gpointer) tb, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_radiobutton_gradians_toggled, NULL);							
-			break;
-		}
-		case ANGLE_UNIT_DEGREES: {
-			tb = GTK_WIDGET(gtk_builder_get_object(main_builder, "radiobutton_degrees"));
-			g_signal_handlers_block_matched((gpointer) tb, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_radiobutton_degrees_toggled, NULL);		
-			if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tb)))
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tb), TRUE);
-			g_signal_handlers_unblock_matched((gpointer) tb, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_radiobutton_degrees_toggled, NULL);
-			break;
-		}
-		default: {
-			tb = GTK_WIDGET(gtk_builder_get_object(main_builder, "radiobutton_no_default_angle_unit"));
-			g_signal_handlers_block_matched((gpointer) tb, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_radiobutton_no_default_angle_unit_toggled, NULL);
-			if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tb)))
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tb), TRUE);
-			g_signal_handlers_unblock_matched((gpointer) tb, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_radiobutton_no_default_angle_unit_toggled, NULL);
-			break;
-		}
-	}
-
-}
-
-/*
 	variables, functions and units enabled/disabled from menu
 */
 void set_clean_mode(GtkMenuItem *w, gpointer) {
@@ -14652,6 +14646,13 @@ bool contains_imaginary_number(MathStructure &m) {
 	}
 	return false;
 }
+bool contains_rational_number(MathStructure &m) {
+	if(m.isNumber() && ((m.number().realPartIsRational() && !m.number().realPart().isInteger()) || (m.number().hasImaginaryPart() && m.number().imaginaryPart().isRational() && !m.number().imaginaryPart().isInteger()))) return true;
+	for(size_t i = 0; i < m.size(); i++) {
+		if(contains_rational_number(m[i])) return true;
+	}
+	return false;
+}
 
 void find_match_unformat(MathStructure &m) {
 	for(size_t i = 0; i < m.size(); i++) {
@@ -14788,7 +14789,15 @@ Unit *find_exact_matching_unit(const MathStructure &m) {
 	return find_exact_matching_unit2(m2);
 }
 
-
+bool contains_convertable_unit(MathStructure &m) {
+	if(m.type() == STRUCT_UNIT) return true;
+	for(size_t i = 0; i < m.size(); i++) {
+		if(!m.isFunction() || !m.function()->getArgumentDefinition(i + 1) || m.function()->getArgumentDefinition(i + 1)->type() != ARGUMENT_TYPE_ANGLE) {
+			if(contains_convertable_unit(m[i])) return true;
+		}
+	}
+	return false;
+}
 
 void update_resultview_popup() {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_octal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_octal_activate, NULL);
@@ -14821,9 +14830,10 @@ void update_resultview_popup() {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_exponential"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_exponential_activate, NULL);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_polar"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_polar_activate, NULL);
 
-	bool b_unit = mstruct && mstruct->containsType(STRUCT_UNIT);
-	bool b_date = mstruct && mstruct->isDateTime();
-	bool b_complex = mstruct && contains_imaginary_number(*mstruct);
+	bool b_unit = displayed_mstruct && contains_convertable_unit(*displayed_mstruct);
+	bool b_date = displayed_mstruct && displayed_mstruct->isDateTime();
+	bool b_complex = displayed_mstruct && mstruct && contains_imaginary_number(*mstruct);
+	bool b_rational = mstruct && contains_rational_number(*mstruct);
 	
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_abbreviate_names")), !b_busy && !b_date);	
 	
@@ -14953,11 +14963,11 @@ void update_resultview_popup() {
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_non_scientific")), FALSE);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_display")), !b_unit && !b_date);
 	
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_fraction")), !b_date);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_decimal")), !b_date);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_decimal_exact")), !b_date);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_combined")), !b_date);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_fraction")), !b_date);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_fraction")), b_rational);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_decimal")), b_rational);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_decimal_exact")), b_rational);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_combined")), b_rational);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_fraction")), b_rational);
 
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_calendarconversion")), b_date);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_to_utc")), b_date);
@@ -17360,25 +17370,44 @@ void update_mb_to_menu() {
 		gtk_widget_destroy(GTK_WIDGET(l->data));
 	}
 	g_list_free(list);
-	if(!mstruct || !displayed_mstruct || !mstruct->containsType(STRUCT_UNIT, true)) {
+	if(!mstruct || !displayed_mstruct || !contains_convertable_unit(*displayed_mstruct)) {
 		bool b_date = (mstruct && displayed_mstruct && mstruct->isDateTime());
 		bool b_integ = (mstruct && displayed_mstruct && mstruct->isInteger());
 		bool b_complex = (mstruct && displayed_mstruct && contains_imaginary_number(*mstruct));
+		bool b_rational = (mstruct && displayed_mstruct && contains_rational_number(*displayed_mstruct));
 		if(b_date) {
 			MENU_ITEM(_("Calendars"), on_popup_menu_item_calendarconversion_activate)
 			MENU_ITEM("UTC", menu_to_utc)
 			return;
 		}
+		bool base_sep = false;
 		if(!b_complex) {
 			MENU_ITEM(_("Number bases"), on_menu_item_convert_number_bases_activate)
 			MENU_ITEM(_("Binary"), menu_to_bin)
 			MENU_ITEM(_("Octal"), menu_to_oct)
 			MENU_ITEM(_("Duodecimal"), menu_to_duo)
 			MENU_ITEM(_("Hexadecimal"), menu_to_hex)
-			if(b_integ) {MENU_ITEM(_("Roman"), menu_to_roman)}
-			MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)
+			if(b_integ) {
+				MENU_ITEM(_("Roman"), menu_to_roman)
+				MENU_SEPARATOR
+				base_sep = true;
+				MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)
+			} else if(displayed_mstruct && displayed_mstruct->containsType(STRUCT_ADDITION)) {
+				MENU_SEPARATOR
+				base_sep = true;
+				MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)
+			}
 		}
-		if(!b_integ && !b_date) {MENU_ITEM(_("Fraction"), menu_to_fraction)}
+		if(b_rational) {
+			if(!base_sep) {
+				MENU_SEPARATOR
+				base_sep = true;
+			}
+			MENU_ITEM(_("Fraction"), menu_to_fraction)
+			if(b_complex) {
+				MENU_SEPARATOR
+			}
+		}
 		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_RECTANGULAR) {MENU_ITEM(_("Rectangular form"), menu_to_rectangular)}
 		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_EXPONENTIAL) {MENU_ITEM(_("Exponential form"), menu_to_exponential)}
 		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_POLAR) {MENU_ITEM(_("Polar form"), menu_to_polar)}
@@ -17877,28 +17906,24 @@ void on_menu_item_edit_prefs_activate(GtkMenuItem*, gpointer) {
 void on_menu_item_degrees_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {
 		evalops.parse_options.angle_unit = ANGLE_UNIT_DEGREES;
-		set_angle_button();
 		expression_format_updated(true);
 	}
 }
 void on_menu_item_radians_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {
 		evalops.parse_options.angle_unit = ANGLE_UNIT_RADIANS;
-		set_angle_button();
 		expression_format_updated(true);
 	}
 }
 void on_menu_item_gradians_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {
 		evalops.parse_options.angle_unit = ANGLE_UNIT_GRADIANS;
-		set_angle_button();
 		expression_format_updated(true);
 	}
 }
 void on_menu_item_no_default_angle_unit_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {
 		evalops.parse_options.angle_unit = ANGLE_UNIT_NONE;
-		set_angle_button();
 		expression_format_updated(true);
 	}
 }
