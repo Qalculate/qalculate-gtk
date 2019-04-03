@@ -103,17 +103,13 @@ void create_application(GtkApplication *app) {
 	variables_builder = NULL; csvexport_builder = NULL; setbase_builder = NULL; periodictable_builder = NULL, simplefunctionedit_builder = NULL;
 
 	//create the almighty Calculator object
-	new Calculator();
+	new Calculator(ignore_locale);
 	
 	CALCULATOR->setExchangeRatesWarningEnabled(false);
 	
 	//load application specific preferences
 	load_preferences();
 	
-	if(ignore_locale) {
-		CALCULATOR->setIgnoreLocale();
-	}
-
 	mstruct = new MathStructure();
 	displayed_mstruct = new MathStructure();
 	parsed_mstruct = new MathStructure();
@@ -400,12 +396,30 @@ int main (int argc, char *argv[]) {
 	gint status;
 	
 #ifdef ENABLE_NLS
-	bindtextdomain(GETTEXT_PACKAGE, getPackageLocaleDir().c_str());
-	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
-	textdomain(GETTEXT_PACKAGE);
+	gchar *gstr_file = g_build_filename(getLocalDir().c_str(), "qalculate-gtk.cfg", NULL);
+	FILE *file = fopen(gstr_file, "r");
+	char line[10000];
+	string stmp;
+	if(file) {
+		while(true) {
+			if(fgets(line, 10000, file) == NULL) break;
+			if(strcmp(line, "ignore_locale=1\n") == 0) {
+				ignore_locale = true;
+				break;
+			} else if(strcmp(line, "ignore_locale=0\n") == 0) {
+				break;
+			}
+		}
+		fclose(file);
+	}
+	if(!ignore_locale) {
+		bindtextdomain(GETTEXT_PACKAGE, getPackageLocaleDir().c_str());
+		bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
+		textdomain(GETTEXT_PACKAGE);
+	}
 #endif
 
-	setlocale(LC_ALL, "");
+	if(!ignore_locale) setlocale(LC_ALL, "");
 
 	app = gtk_application_new("org.gtk.qalculate", G_APPLICATION_HANDLES_COMMAND_LINE);
 	g_application_add_main_option_entries(G_APPLICATION(app), options);
