@@ -6318,6 +6318,53 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				cairo_surface_destroy(surface_arg);
 				
 				break;
+			} else if(m.function() == CALCULATOR->f_diff && (m.size() == 3 || (m.size() == 4 && m[3].isUndefined())) && (m[1].isVariable() || m[1].isSymbolic()) && m[2].isInteger()) {
+				
+				MathStructure mdx("d");
+				if(!m[2].isOne()) mdx ^= m[2];
+				string s = "d";
+				if(m[1].isSymbolic()) s += m[1].symbol();
+				else s += m[1].variable()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg).name;
+				mdx.transform(STRUCT_DIVISION, s);
+				if(!m[2].isOne()) mdx[1] ^= m[2];
+				
+				ips_n.depth++;
+			
+				gint hpt1, hpt2;
+				gint wpt1, wpt2;
+				gint cpt1, cpt2;
+				gint w = 0, h = 0, dh = 0, uh = 0;
+			
+				CALCULATE_SPACE_W
+
+				ips_n.wrap = false;
+				cairo_surface_t *surface_term1 = draw_structure(mdx, po, ips_n, &cpt1, scaledown, color);
+				wpt1 = cairo_image_surface_get_width(surface_term1) / scalefactor;
+				hpt1 = cairo_image_surface_get_height(surface_term1) / scalefactor;
+				ips_n.wrap = true;
+				cairo_surface_t *surface_term2 = draw_structure(m[0], po, ips_n, &cpt2, scaledown, color);
+				wpt2 = cairo_image_surface_get_width(surface_term2) / scalefactor;
+				hpt2 = cairo_image_surface_get_height(surface_term2) / scalefactor;
+				w = wpt1 + wpt2 + space_w;
+				if(hpt1 - cpt1 > hpt2 - cpt2) uh = hpt1 - cpt1;
+				else uh = hpt2 - cpt2;
+				if(cpt1 > cpt2) dh = cpt1;
+				else dh = cpt2;
+				central_point = dh;
+				h = dh + uh;
+				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+				cr = cairo_create(surface);
+				gdk_cairo_set_source_rgba(cr, color);
+				cairo_set_source_surface(cr, surface_term1, 0, uh - (hpt1 - cpt1));
+				cairo_paint(cr);
+				gdk_cairo_set_source_rgba(cr, color);
+				cairo_set_source_surface(cr, surface_term2, wpt1 + space_w, uh - (hpt2 - cpt2));
+				cairo_paint(cr);
+				cairo_surface_destroy(surface_term1);
+				cairo_surface_destroy(surface_term2);
+
+				break;
 			}
 
 			ips_n.depth++;
@@ -6339,8 +6386,28 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			str = "";
 			TTBP(str);
 			
-			bool b_one_arg = m.function() == CALCULATOR->f_signum;
+			size_t argcount = m.size();
 			
+			if(m.function() == CALCULATOR->f_signum && argcount > 1) argcount = 1;
+			
+			if(m.function()->maxargs() > 0 && m.function()->minargs() < m.function()->maxargs() && m.size() > (size_t) m.function()->minargs()) {
+				while(true) {
+					string defstr = m.function()->getDefaultValue(argcount);
+					remove_blank_ends(defstr);
+					if(defstr.empty()) break;
+					if(m[argcount - 1].isUndefined() && defstr == "undefined") {
+						argcount--;
+					} else if(m[argcount - 1].isVariable() && defstr == m[argcount - 1].variable()->referenceName()) {
+						argcount--;
+					} else if(m[argcount - 1].isInteger() && defstr.find_first_not_of(NUMBERS) == string::npos && m[argcount - 1].number() == s2i(defstr)) {
+						argcount--;
+					} else {
+						break;
+					}
+					if(argcount == 0 || argcount == (size_t) m.function()->minargs()) break;
+				}
+			}
+						
 			const ExpressionName *ename = &m.function()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
 			if(ename->suffix && ename->name.length() > 1) {
 				
@@ -6366,7 +6433,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			} else {
 				str += ename->name;
 				if((m.function() == CALCULATOR->f_lambert_w || m.function() == CALCULATOR->f_logn) && m.size() == 2 && ((m[1].size() == 0 && (!m[1].isNumber() || (m[1].number().isInteger() && m[1].number() < 100 && m[1].number() > -100))) || (m[1].isNegate() && m[1][0].size() == 0 && (!m[1][0].isNumber() || (m[1][0].number().isInteger() && m[1][0].number() < 100 && m[1][0].number() > -100))))) {
-					b_one_arg = true;
+					argcount = 1;
 					TTBP_SMALL(str);
 					str += "<sub>";
 					str += m[1].print(po);
@@ -6384,8 +6451,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			uh = function_h / 2 + function_h % 2;
 			dh = function_h / 2;
 
-			for(size_t index = 0; index < m.size(); index++) {
-				if(index == 1 && b_one_arg) break;
+			for(size_t index = 0; index < argcount; index++) {
 						
 				ips_n.wrap = m[index].needsParenthesis(po, ips_n, m, index + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
 				if(m.function() == CALCULATOR->f_interval) {
@@ -8839,7 +8905,52 @@ unordered_map<MathFunction*, FunctionDialog*> function_dialogs;
 
 void insert_function_do(MathFunction *f, FunctionDialog *fd) {
 	string str = f->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name + "(", str2;
-	for(int i = 0; i < fd->args; i++) {
+	
+	int argcount = fd->args;
+	if(f->maxargs() > 0 && f->minargs() < f->maxargs() && argcount > f->minargs()) {
+		while(true) {
+			string defstr = f->getDefaultValue(argcount);
+			remove_blank_ends(defstr);
+			if(f->getArgumentDefinition(argcount) && f->getArgumentDefinition(argcount)->type() == ARGUMENT_TYPE_BOOLEAN) {
+				if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fd->boolean_buttons[fd->boolean_index[argcount - 1]]))) {
+					str2 = "1";
+				} else {
+					str2 = "0";
+				}
+			} else if(evalops.parse_options.base != BASE_DECIMAL && f->getArgumentDefinition(argcount) && f->getArgumentDefinition(argcount)->type() == ARGUMENT_TYPE_INTEGER) {
+				Number nr(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(fd->entry[argcount - 1])), 1);
+				PrintOptions po;
+				po.base = evalops.parse_options.base;
+				po.base_display = BASE_DISPLAY_NONE;
+				str2 = nr.print(po);
+			} else if(fd->properties_store && f->getArgumentDefinition(argcount) && f->getArgumentDefinition(argcount)->type() == ARGUMENT_TYPE_DATA_PROPERTY) {
+				GtkTreeIter iter;
+				DataProperty *dp = NULL;
+				if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(fd->entry[argcount - 1]), &iter)) {
+					gtk_tree_model_get(GTK_TREE_MODEL(fd->properties_store), &iter, 1, &dp, -1);
+				}	
+				if(dp) {
+					str2 = dp->getName();
+				} else {
+					str2 = "info";
+				}
+			} else {
+				str2 = gtk_entry_get_text(GTK_ENTRY(fd->entry[argcount - 1]));
+				remove_blank_ends(str2);
+			}
+			if(!str2.empty() && f->getArgumentDefinition(argcount) && (f->getArgumentDefinition(argcount)->suggestsQuotes() || (f->getArgumentDefinition(argcount)->type() == ARGUMENT_TYPE_TEXT && str2.find(CALCULATOR->getComma()) != string::npos))) {
+				if(str2.length() < 1 || (str2[0] != '\"' && str[0] != '\'')) { 
+					str2.insert(0, "\"");
+					str2 += "\"";
+				}
+			}
+			if(str2.empty() || str2 == defstr) argcount--;
+			else break;
+			if(argcount == 0 || argcount == f->minargs()) break;
+		}
+	}
+			
+	for(int i = 0; i < argcount; i++) {
 		if(f->getArgumentDefinition(i + 1) && f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_BOOLEAN) {
 			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fd->boolean_buttons[fd->boolean_index[i]]))) {
 				str2 = "1";
@@ -8865,10 +8976,6 @@ void insert_function_do(MathFunction *f, FunctionDialog *fd) {
 			}
 		} else {
 			str2 = gtk_entry_get_text(GTK_ENTRY(fd->entry[i]));
-		}
-
-		//if the minimum number of function arguments have been filled, do not add anymore if entry is empty
-		if(i >= f->minargs()) {
 			remove_blank_ends(str2);
 		}
 		if((i < f->minargs() || !str2.empty()) && f->getArgumentDefinition(i + 1) && (f->getArgumentDefinition(i + 1)->suggestsQuotes() || (f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_TEXT && str2.find(CALCULATOR->getComma()) != string::npos))) {
@@ -9206,24 +9313,17 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 					}
 				}
 				default: {
-					if(i >= f->minargs() && !has_vector && defstr.empty()) {
-						typestr = "(";
-						typestr += _("optional");
-					}
-					argtype = arg->print();		
-					if(typestr.empty()) {
-						typestr = "(";
-					} else if(!argtype.empty()) {
-						typestr += ", ";
-					}
+					argtype = arg->print();
+					typestr = "";
 					if(!argtype.empty()) {
+						typestr = "(";
 						typestr += argtype;
-					}
-					typestr += ")";		
-					if(typestr.length() == 2) {
-						typestr = "";
+						typestr += ")";
 					}
 					fd->entry[i] = gtk_entry_new();
+					if(i >= f->minargs() && !has_vector) {
+						gtk_entry_set_placeholder_text(GTK_ENTRY(fd->entry[i]), _("optional"));
+					}
 					gtk_entry_set_alignment(GTK_ENTRY(fd->entry[i]), 1.0);
 					g_signal_connect((gpointer) fd->entry[i], "changed", G_CALLBACK(on_insert_function_changed), (gpointer) f);
 					g_signal_connect((gpointer) fd->entry[i], "activate", G_CALLBACK(on_insert_function_entry_activated), (gpointer) f);
@@ -9231,16 +9331,14 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 			}
 		} else {
 			fd->entry[i] = gtk_entry_new();
+			if(i >= f->minargs() && !has_vector) {
+				gtk_entry_set_placeholder_text(GTK_ENTRY(fd->entry[i]), _("optional"));
+			}
 			gtk_entry_set_alignment(GTK_ENTRY(fd->entry[i]), 1.0);
 			g_signal_connect((gpointer) fd->entry[i], "changed", G_CALLBACK(on_insert_function_changed), (gpointer) f);
 			g_signal_connect((gpointer) fd->entry[i], "activate", G_CALLBACK(on_insert_function_entry_activated), (gpointer) f);
 		}
 		gtk_widget_set_hexpand(fd->entry[i], TRUE);
-		if(typestr.empty() && i >= f->minargs() && !has_vector && defstr.empty()) {
-			typestr = "(";
-			typestr += _("optional");
-			typestr += ")";			
-		}
 		if(arg) {
 			switch(arg->type()) {		
 				case ARGUMENT_TYPE_DATE: {
@@ -9273,7 +9371,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 		} else if(fd->properties_store && arg && arg->type() == ARGUMENT_TYPE_DATA_PROPERTY) {
 		} else {
 			g_signal_handlers_block_matched((gpointer) fd->entry[i], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
-			gtk_entry_set_text(GTK_ENTRY(fd->entry[i]), defstr.c_str());
+			if(i < f->minargs() || has_vector || defstr != "undefined") gtk_entry_set_text(GTK_ENTRY(fd->entry[i]), defstr.c_str());
 			//insert selection in expression entry into the first argument entry
 			if(i == 0) {
 				gtk_entry_set_text(GTK_ENTRY(fd->entry[i]), get_selected_expression_text(true).c_str());
