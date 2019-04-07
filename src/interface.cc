@@ -846,6 +846,19 @@ void create_button_menus(void) {
 		MENU_ITEM_WITH_POINTER_AND_FLAG(to_us2[i]->title(true).c_str(), insert_button_currency, to_us2[i])
 	}
 	
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_pi")), CALCULATOR->v_pi->title(true).c_str());
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sine")), CALCULATOR->f_sin->title(true).c_str());
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_cosine")), CALCULATOR->f_cos->title(true).c_str());
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_tan")), CALCULATOR->f_tan->title(true).c_str());
+	f = CALCULATOR->getActiveFunction("mean");
+	if(f) gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_mean")), f->title(true).c_str());
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sum")), CALCULATOR->f_sum->title(true).c_str());
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_mod")), CALCULATOR->f_mod->title(true).c_str());
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_fac")), CALCULATOR->f_factorial->title(true).c_str());
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_ln")), CALCULATOR->f_ln->title(true).c_str());
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sqrt")), CALCULATOR->f_sqrt->title(true).c_str());
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_i")), CALCULATOR->v_i->title(true).c_str());
+	
 	update_mb_fx_menu();
 	update_mb_sto_menu();
 	update_mb_units_menu();

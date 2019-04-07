@@ -17669,9 +17669,9 @@ void update_mb_units_menu() {
 	g_list_free(list);
 	const char *si_units[] = {"m", "g", "s", "A", "K"};
 	size_t i_added = 0;
-	for(size_t i = 0; i < recent_units.size(); i++) {
-		if(!recent_units[i]->isLocal() && CALCULATOR->stillHasUnit(recent_units[i])) {
-			MENU_ITEM_WITH_POINTER(recent_units[i]->title(true).c_str(), insert_unit, recent_units[i])
+	for(size_t i = recent_units.size(); i > 0; i--) {
+		if(!recent_units[i - 1]->isLocal() && CALCULATOR->stillHasUnit(recent_units[i - 1])) {
+			MENU_ITEM_WITH_POINTER(recent_units[i - 1]->title(true).c_str(), insert_unit, recent_units[i - 1])
 			i_added++;
 		}
 	}
@@ -17750,11 +17750,11 @@ void update_mb_fx_menu() {
 		}
 	}
 	bool b2 = false;
-	for(size_t i = 0; i < recent_functions.size(); i++) {
-		if(!recent_functions[i]->isLocal() && CALCULATOR->stillHasFunction(recent_functions[i])) {
+	for(size_t i = recent_functions.size(); i > 0; i--) {
+		if(!recent_functions[i - 1]->isLocal() && CALCULATOR->stillHasFunction(recent_functions[i - 1])) {
 			if(!b2 && b) {MENU_SEPARATOR}
 			b2 = true;
-			MENU_ITEM_WITH_POINTER(recent_functions[i]->title(true).c_str(), insert_button_function_save, recent_functions[i])
+			MENU_ITEM_WITH_POINTER(recent_functions[i - 1]->title(true).c_str(), insert_button_function_save, recent_functions[i - 1])
 		}
 	}
 	if(b2 || b) {MENU_SEPARATOR}
@@ -17779,9 +17779,9 @@ void update_mb_pi_menu() {
 	MENU_SEPARATOR
 
 	int i_added = 0;
-	for(size_t i = 0; i < recent_variables.size(); i++) {
-		if(!recent_variables[i]->isLocal() && CALCULATOR->stillHasVariable(recent_variables[i])) {
-			MENU_ITEM_WITH_POINTER(recent_variables[i]->title(true).c_str(), insert_variable, recent_variables[i])
+	for(size_t i = recent_variables.size(); i > 0; i--) {
+		if(!recent_variables[i - 1]->isLocal() && CALCULATOR->stillHasVariable(recent_variables[i - 1])) {
+			MENU_ITEM_WITH_POINTER(recent_variables[i - 1]->title(true).c_str(), insert_variable, recent_variables[i - 1])
 			i_added++;
 		}
 	}
