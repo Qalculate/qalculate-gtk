@@ -44,6 +44,25 @@
   <binary>qalculate-gtk</binary>
  </provides>
  <releases>
+  <release version="3.1.0" date="2019-04-15">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Calculation of Si(), Ci(), Shi(), and Chi().</li>
+      <li>Convert trigonometric arguments to selected angle unit, and hide angle unit in result.</li>
+      <li>Hide optional arguments, with default value, in output.</li>
+      <li>Add optional variable value argument to diff(), for calculation of derivative for a specific <i>x</i> value.</li>
+      <li>Improved sinc() support.</li>
+      <li>Improved output with show ending zeroes activated.</li>
+      <li>Fix ignore system language on Windows.</li>
+      <li>Fix atomic unit of velocity.</li>
+      <li>Fix and improve keypad menus, and add dynamic convert to menu to result popup menu (GUI).</li>
+      <li>Fix compilation errors because of erroneous limits.h inclusion.</li>
+      <li>Fix "factorized result is wrong" error.</li>
+      <li>Minor bug fixes and feature improvements.</li>
+     </ul>
+   </description>
+  </release>
   <release version="3.0.0" date="2019-03-18">
    <description>
     <p>Changes:</p>

@@ -205,7 +205,7 @@ void set_assumptions_items(AssumptionType at, AssumptionSign as) {
 	}
 }
 
-void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, AssumptionType at, AssumptionSign as, bool in_rpn_mode, int precision, bool interval, bool initial_update) {
+void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, AssumptionType at, AssumptionSign as, bool in_rpn_mode, int precision, bool interval, bool variable_units, bool initial_update) {
 
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_mode")), in_rpn_mode);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_syntax")), evalops.parse_options.rpn);
@@ -271,22 +271,18 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 	switch(eo.parse_options.angle_unit) {
 		case ANGLE_UNIT_DEGREES: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_degrees")), TRUE);
-			//if(initial_update) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gtk_builder_get_object(main_builder, "radiobutton_degrees")), TRUE);
 			break;
 		}
 		case ANGLE_UNIT_RADIANS: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_radians")), TRUE);
-			//if(initial_update) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gtk_builder_get_object(main_builder, "radiobutton_radians")), TRUE);
 			break;
 		}
 		case ANGLE_UNIT_GRADIANS: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_gradians")), TRUE);
-			//if(initial_update) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gtk_builder_get_object(main_builder, "radiobutton_gradians")), TRUE);
 			break;
 		}
 		default: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_no_default_angle_unit")), TRUE);
-			//if(initial_update) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gtk_builder_get_object(main_builder, "radiobutton_no_default_angle_unit")), TRUE);
 			break;
 		}
 	}
@@ -423,7 +419,7 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_enable_functions")), eo.parse_options.functions_enabled);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_enable_units")), eo.parse_options.units_enabled);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_enable_unknown_variables")), eo.parse_options.unknowns_enabled);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_enable_variable_units")), CALCULATOR->variableUnitsEnabled());
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_enable_variable_units")), variable_units);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_calculate_variables")), eo.calculate_variables);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_allow_complex")), eo.allow_complex);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_allow_infinite")), eo.allow_infinite);
@@ -682,7 +678,7 @@ void create_button_menus(void) {
 	f = CALCULATOR->getActiveFunction("extremum");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	MENU_SEPARATOR
-	MENU_ITEM(_("Simplify"), on_menu_item_simplify_activate)
+	MENU_ITEM(_("Expand"), on_menu_item_simplify_activate)
 	MENU_ITEM(_("Expand Partial Fractions"), on_menu_item_expand_partial_fractions_activate)
 	MENU_ITEM(_("Set unknowns"), on_menu_item_set_unknowns_activate)
 	
@@ -951,7 +947,7 @@ void create_main_window(void) {
 	gtk_style_context_add_provider(gtk_widget_get_style_context(statuslabel_l), GTK_STYLE_PROVIDER(statuslabel_l_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(statuslabel_r), GTK_STYLE_PROVIDER(statuslabel_r_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	
-	set_mode_items(printops, evalops, CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign(), rpn_mode, CALCULATOR->getPrecision(), CALCULATOR->usesIntervalArithmetic(), true);
+	set_mode_items(printops, evalops, CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign(), rpn_mode, CALCULATOR->getPrecision(), CALCULATOR->usesIntervalArithmetic(), CALCULATOR->variableUnitsEnabled(), true);
 
 	set_unicode_buttons();
 

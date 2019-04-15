@@ -1089,7 +1089,7 @@
                       <object class="GtkMenuItem" id="menu_item_simplify">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Simplify</property>
+                        <property name="label" translatable="yes">Expand</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_menu_item_simplify_activate" swapped="no"/>
                       </object>
@@ -2226,7 +2226,7 @@ On: 1/2*pi = 0.5 pi</property>
                               <object class="GtkRadioMenuItem" id="menu_item_algebraic_mode_simplify">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Simplify</property>
+                                <property name="label" translatable="yes">Expand</property>
                                 <property name="use_underline">True</property>
                                 <property name="active">True</property>
                                 <signal name="activate" handler="on_menu_item_algebraic_mode_simplify_activate" swapped="no"/>
@@ -6106,7 +6106,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       <object class="GtkMenuItem" id="popup_menu_item_simplify">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">_Simplify</property>
+        <property name="label" translatable="yes">_Expand</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_menu_item_simplify_activate" swapped="no"/>
       </object>
@@ -6363,16 +6363,6 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       </object>
     </child>
     <child>
-      <object class="GtkRadioMenuItem" id="popup_menu_item_fraction_combined">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Mixed Fraction</property>
-        <property name="use_underline">True</property>
-        <property name="group">popup_menu_item_fraction_decimal</property>
-        <signal name="activate" handler="on_popup_menu_item_fraction_combined_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
       <object class="GtkRadioMenuItem" id="popup_menu_item_fraction_fraction">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
@@ -6380,6 +6370,16 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
         <property name="use_underline">True</property>
         <property name="group">popup_menu_item_fraction_decimal</property>
         <signal name="activate" handler="on_popup_menu_item_fraction_fraction_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="popup_menu_item_fraction_combined">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Mixed Fraction</property>
+        <property name="use_underline">True</property>
+        <property name="group">popup_menu_item_fraction_decimal</property>
+        <signal name="activate" handler="on_popup_menu_item_fraction_combined_activate" swapped="no"/>
       </object>
     </child>
     <child>

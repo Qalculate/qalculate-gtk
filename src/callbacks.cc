@@ -373,7 +373,7 @@ int ExpressionFunction::calculate(MathStructure &mstruct, const MathStructure &v
 enum {
 	COMMAND_FACTORIZE,
 	COMMAND_EXPAND_PARTIAL_FRACTIONS,
-	COMMAND_SIMPLIFY,
+	COMMAND_EXPAND,
 	COMMAND_TRANSFORM,
 	COMMAND_CONVERT_UNIT,
 	COMMAND_CONVERT_STRING,
@@ -716,7 +716,7 @@ bool expression_is_empty() {
 }
 
 void set_assumptions_items(AssumptionType, AssumptionSign);
-void set_mode_items(const PrintOptions&, const EvaluationOptions&, AssumptionType, AssumptionSign, bool, int, bool, bool);
+void set_mode_items(const PrintOptions&, const EvaluationOptions&, AssumptionType, AssumptionSign, bool, int, bool, bool, bool);
 
 string sdot, saltdot, sdiv, sslash, stimes, sminus;
 string sdot_s, saltdot_s, sdiv_s, sslash_s, stimes_s, sminus_s;
@@ -6668,40 +6668,6 @@ void replace_interval_with_function(MathStructure &m) {
 	}
 }
 
-Unit *default_angle_unit() {
-	switch(evalops.parse_options.angle_unit) {
-		case ANGLE_UNIT_DEGREES: {return CALCULATOR->getDegUnit();}
-		case ANGLE_UNIT_GRADIANS: {return CALCULATOR->getGraUnit();}
-		case ANGLE_UNIT_RADIANS: {return CALCULATOR->getRadUnit();}
-		default: {}
-	}
-	return NULL;
-}
-
-void remove_default_angle_unit(MathStructure &m) {
-	for(size_t i = 0; i < m.size(); i++) {
-		remove_default_angle_unit(m[i]);
-		if(m.isFunction() && m.function()->getArgumentDefinition(i + 1) && m.function()->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_ANGLE) {
-			if(m[i].isMultiplication() && m[i].last().isUnit() && !m[i].last().prefix() && m[i].last().unit() == default_angle_unit()) {
-				m[i].delChild(m[i].size(), true);
-			} else if(m[i].isAddition()) {
-				bool b = true;
-				for(size_t i2 = 0; i2 < m[i].size(); i2++) {
-					if(!m[i][i2].isMultiplication() || !m[i][i2].last().isUnit() || m[i][i2].last().prefix() || m[i][i2].last().unit() != default_angle_unit()) {
-						b = false;
-						break;
-					}
-				}
-				if(b) {
-					for(size_t i2 = 0; i2 < m[i].size(); i2++) {
-						m[i][i2].delChild(m[i][i2].size(), true);
-					}
-				}
-			}
-		}
-	}
-}
-
 void ViewThread::run() {
 
 	while(true) {
@@ -6777,8 +6743,8 @@ void ViewThread::run() {
 			}
 		}
 
+		m.removeDefaultAngleUnit(evalops);
 		m.format(printops);
-		remove_default_angle_unit(m);
 		gint64 time1 = g_get_monotonic_time();
 		result_text = m.print(printops);
 		result_text_approximate = *printops.is_approximate;
@@ -7651,8 +7617,8 @@ void CommandThread::run() {
 				((MathStructure*) x)->expandPartialFractions(evalops);
 				break;
 			}
-			case COMMAND_SIMPLIFY: {
-				((MathStructure*) x)->simplify(evalops);
+			case COMMAND_EXPAND: {
+				((MathStructure*) x)->expand(evalops);
 				break;
 			}
 			case COMMAND_TRANSFORM: {
@@ -7755,8 +7721,8 @@ void executeCommand(int command_type, bool show_result = true, string ceu_str = 
 				progress_str = _("Expanding partial fractions…");
 				break;
 			}
-			case COMMAND_SIMPLIFY: {
-				progress_str = _("Simplifying…");
+			case COMMAND_EXPAND: {
+				progress_str = _("Expanding…");
 				break;
 			}
 			case COMMAND_EVAL: {}
@@ -7818,7 +7784,7 @@ void executeCommand(int command_type, bool show_result = true, string ceu_str = 
 				printops.allow_factorization = true;
 				break;
 			}
-			case COMMAND_SIMPLIFY: {
+			case COMMAND_EXPAND: {
 				printops.allow_factorization = false;
 				break;
 			}
@@ -7869,6 +7835,10 @@ void FetchExchangeRatesThread::run() {
 }
 
 void result_display_updated() {
+	IntervalDisplay ivdisp = printops.interval_display;
+	printops.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
+	CALCULATOR->setMessagePrintOptions(printops);
+	printops.interval_display = ivdisp;
 	gtk_widget_queue_draw(resultview);
 	update_status_text();
 }
@@ -12250,7 +12220,7 @@ void load_mode(const mode_struct &mode) {
 	block_result_update = true;
 	block_expression_execution = true;
 	block_display_parse = true;
-	set_mode_items(mode.po, mode.eo, mode.at, mode.as, mode.rpn_mode, mode.precision, mode.interval, false);
+	set_mode_items(mode.po, mode.eo, mode.at, mode.as, mode.rpn_mode, mode.precision, mode.interval, mode.variable_units_enabled, false);
 	evalops.approximation = mode.eo.approximation;
 	block_result_update = false;
 	block_expression_execution = false;
@@ -13004,7 +12974,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {3, 0, 0};
+	int version_numbers[] = {3, 1, 0};
 	bool old_history_format = false;
 			
 	if(file) {
@@ -13133,7 +13103,7 @@ void load_preferences() {
 					if(mode_index == 1) printops.min_exp = v;
 					else modes[mode_index].po.min_exp = v;
 				} else if(svar == "interval_arithmetic") {
-					if(v && version_numbers[0] >= 3) {
+					if(version_numbers[0] >= 3) {
 						if(mode_index == 1) CALCULATOR->useIntervalArithmetic(v);
 						else modes[mode_index].interval = v;
 					} else {
@@ -13371,7 +13341,6 @@ void load_preferences() {
 				} else if(svar == "always_exact") {		//obsolete
 					if(mode_index == 1) {
 						evalops.approximation = APPROXIMATION_EXACT;
-						CALCULATOR->useIntervalArithmetic(false);
 					} else {
 						modes[mode_index].eo.approximation = APPROXIMATION_EXACT;
 						modes[mode_index].interval = false;
@@ -13380,10 +13349,8 @@ void load_preferences() {
 					if(v >= APPROXIMATION_EXACT && v <= APPROXIMATION_APPROXIMATE) {
 						if(mode_index == 1) {
 							evalops.approximation = (ApproximationMode) v;
-							if(v == APPROXIMATION_EXACT && (version_numbers[0] < 2 || (version_numbers[0] == 2 && version_numbers[1] < 2))) CALCULATOR->useIntervalArithmetic(false);
 						} else {
 							modes[mode_index].eo.approximation = (ApproximationMode) v;
-							if(v == APPROXIMATION_EXACT && (version_numbers[0] < 2 || (version_numbers[0] == 2 && version_numbers[1] < 2))) modes[mode_index].interval = false;
 						}
 					}
 				} else if(svar == "interval_calculation") {
@@ -18429,7 +18396,7 @@ void on_menu_item_expand_partial_fractions_activate(GtkMenuItem*, gpointer) {
 	executeCommand(COMMAND_EXPAND_PARTIAL_FRACTIONS);
 }
 void on_menu_item_simplify_activate(GtkMenuItem*, gpointer) {
-	executeCommand(COMMAND_SIMPLIFY);
+	executeCommand(COMMAND_EXPAND);
 }
 void convert_number_bases(const gchar *initial_expression, bool b_result) {
 	changing_in_nbases_dialog = false;
