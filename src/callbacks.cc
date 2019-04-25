@@ -123,6 +123,7 @@ extern GtkListStore *tNames_store;
 extern GtkAccelGroup *accel_group;
 extern string selected_function_category;
 extern MathFunction *selected_function;
+extern GtkWidget *item_factorize, *item_simplify;
 DataObject *selected_dataobject = NULL;
 DataSet *selected_dataset = NULL;
 DataProperty *selected_dataproperty = NULL;
@@ -716,7 +717,7 @@ bool expression_is_empty() {
 }
 
 void set_assumptions_items(AssumptionType, AssumptionSign);
-void set_mode_items(const PrintOptions&, const EvaluationOptions&, AssumptionType, AssumptionSign, bool, int, bool, bool, bool);
+void set_mode_items(const PrintOptions&, const EvaluationOptions&, AssumptionType, AssumptionSign, bool, int, bool, bool, bool, bool);
 
 string sdot, saltdot, sdiv, sslash, stimes, sminus;
 string sdot_s, saltdot_s, sdiv_s, sslash_s, stimes_s, sminus_s;
@@ -7609,7 +7610,7 @@ void CommandThread::run() {
 		switch(command_type) {
 			case COMMAND_FACTORIZE: {
 				if(!((MathStructure*) x)->integerFactorize()) {
-					((MathStructure*) x)->factorize(evalops, true, 1, 0, true, 2, NULL, m_undefined, true, false, -1);
+					((MathStructure*) x)->structure(STRUCTURE_FACTORISE, evalops, true);
 				}
 				break;
 			}
@@ -12220,7 +12221,7 @@ void load_mode(const mode_struct &mode) {
 	block_result_update = true;
 	block_expression_execution = true;
 	block_display_parse = true;
-	set_mode_items(mode.po, mode.eo, mode.at, mode.as, mode.rpn_mode, mode.precision, mode.interval, mode.variable_units_enabled, false);
+	set_mode_items(mode.po, mode.eo, mode.at, mode.as, mode.rpn_mode, mode.precision, mode.interval, mode.variable_units_enabled, mode.adaptive_interval_display, false);
 	evalops.approximation = mode.eo.approximation;
 	block_result_update = false;
 	block_expression_execution = false;
@@ -16223,7 +16224,8 @@ void on_button_z_clicked(GtkButton*, gpointer) {
 	insert_text("z");
 }
 void on_button_factorize_clicked(GtkButton*, gpointer) {
-	executeCommand(COMMAND_FACTORIZE);
+	if(evalops.structuring == STRUCTURING_FACTORIZE) executeCommand(COMMAND_EXPAND);
+	else executeCommand(COMMAND_FACTORIZE);
 }
 void on_button_add_clicked(GtkButton*, gpointer) {
 	if(rpn_mode) {
@@ -17883,12 +17885,26 @@ void on_menu_item_algebraic_mode_simplify_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.structuring = STRUCTURING_SIMPLIFY;
 	printops.allow_factorization = false;
+	gtk_widget_hide(item_factorize);
+	gtk_widget_show(item_simplify);
+	PangoFontDescription *font_desc;
+	gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_factorize"))), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize")), (string("a(x)") + SUP_STRING("b")).c_str());
+	pango_font_description_free(font_desc);
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_factorize")), _("Factorize"));
 	expression_calculation_updated();
 }
 void on_menu_item_algebraic_mode_factorize_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.structuring = STRUCTURING_FACTORIZE;
 	printops.allow_factorization = true;
+	gtk_widget_show(item_factorize);
+	gtk_widget_hide(item_simplify);
+	PangoFontDescription *font_desc;
+	gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_factorize"))), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize")), (string("x+x") + SUP_STRING("b")).c_str());
+	pango_font_description_free(font_desc);
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_factorize")), _("Expand"));
 	expression_calculation_updated();
 }
 void on_menu_item_read_precision_activate(GtkMenuItem *w, gpointer) {

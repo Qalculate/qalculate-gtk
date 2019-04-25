@@ -118,6 +118,8 @@ GtkListStore *tSubfunctions_store;
 GtkWidget *tPlotFunctions;
 GtkListStore *tPlotFunctions_store;
 
+GtkWidget *item_factorize, *item_simplify;
+
 GtkWidget *tMatrixEdit, *tMatrix;
 GtkListStore *tMatrixEdit_store, *tMatrix_store;
 extern vector<GtkTreeViewColumn*> matrix_edit_columns, matrix_columns;
@@ -205,7 +207,7 @@ void set_assumptions_items(AssumptionType at, AssumptionSign as) {
 	}
 }
 
-void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, AssumptionType at, AssumptionSign as, bool in_rpn_mode, int precision, bool interval, bool variable_units, bool initial_update) {
+void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, AssumptionType at, AssumptionSign as, bool in_rpn_mode, int precision, bool interval, bool variable_units, bool id_adaptive, bool initial_update) {
 
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_mode")), in_rpn_mode);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_syntax")), evalops.parse_options.rpn);
@@ -462,7 +464,7 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 		}
 	}
 	
-	if(adaptive_interval_display) {
+	if(id_adaptive) {
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_adaptive")), TRUE);
 	} else {
 		switch(po.interval_display) {
@@ -531,7 +533,7 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 			evalops.parse_options.base = eo.parse_options.base;
 		}
 	}
-
+	
 }
 
 gboolean completion_row_separator_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer) {
@@ -571,7 +573,13 @@ void create_button_menus(void) {
 	gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_xy"))), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
 	
 	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_xy")), (string("x") + SUP_STRING("y")).c_str());
-	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize")), (string("a(x)") + SUP_STRING("b")).c_str());
+	if(evalops.structuring != STRUCTURING_FACTORIZE) {
+		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize")), (string("a(x)") + SUP_STRING("b")).c_str());
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_factorize")), _("Factorize"));
+	} else {
+		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize")), (string("x+x") + SUP_STRING("b")).c_str());
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_factorize")), _("Expand"));
+	}
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_xy"));
 	MENU_ITEM_MARKUP((string("x") + SUP_STRING("2")).c_str(), on_button_square_clicked)
@@ -679,8 +687,13 @@ void create_button_menus(void) {
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	MENU_SEPARATOR
 	MENU_ITEM(_("Expand"), on_menu_item_simplify_activate)
+	item_simplify = item;
+	MENU_ITEM(_("Factorize"), on_menu_item_factorize_activate)
+	item_factorize = item;
 	MENU_ITEM(_("Expand Partial Fractions"), on_menu_item_expand_partial_fractions_activate)
 	MENU_ITEM(_("Set unknowns"), on_menu_item_set_unknowns_activate)
+	gtk_widget_set_visible(item_factorize, evalops.structuring != STRUCTURING_SIMPLIFY);
+	gtk_widget_set_visible(item_simplify, evalops.structuring != STRUCTURING_FACTORIZE);
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_i"));
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_re->title(true).c_str(), insert_button_function, CALCULATOR->f_re)
@@ -947,7 +960,7 @@ void create_main_window(void) {
 	gtk_style_context_add_provider(gtk_widget_get_style_context(statuslabel_l), GTK_STYLE_PROVIDER(statuslabel_l_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(statuslabel_r), GTK_STYLE_PROVIDER(statuslabel_r_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	
-	set_mode_items(printops, evalops, CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign(), rpn_mode, CALCULATOR->getPrecision(), CALCULATOR->usesIntervalArithmetic(), CALCULATOR->variableUnitsEnabled(), true);
+	set_mode_items(printops, evalops, CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign(), rpn_mode, CALCULATOR->getPrecision(), CALCULATOR->usesIntervalArithmetic(), CALCULATOR->variableUnitsEnabled(), adaptive_interval_display, true);
 
 	set_unicode_buttons();
 
