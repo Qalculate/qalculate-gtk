@@ -1549,13 +1549,26 @@ void display_parse_status() {
 	gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
 	gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
 	gchar *gtext = gtk_text_buffer_get_text(expressionbuffer, &istart, &iend, FALSE);
-	string text = gtext;
+	string text = gtext, str_f;
 	g_free(gtext);
 	if(text.empty()) {
 		set_status_text("", true, false, false);
 		parsed_expression = "";
 		expression_has_changed2 = false;
 		return;
+	}
+	size_t i = text.find_first_of(SPACES LEFT_PARENTHESIS);
+	if(i != string::npos) {
+		str_f = text.substr(0, i);
+		if(str_f == "factor" || equalsIgnoreCase(str_f, "factorize") || equalsIgnoreCase(str_f, _("factorize"))) {
+			text = text.substr(i + 1);
+			str_f = _("factorize");
+		} else if(equalsIgnoreCase(str_f, "expand") || equalsIgnoreCase(str_f, _("expand"))) {
+			text = text.substr(i + 1);
+			str_f = _("expand");
+		} else {
+			str_f = "";
+		}
 	}
 	GtkTextMark *mark = gtk_text_buffer_get_insert(expressionbuffer);
 	if(mark) gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mark);
@@ -1676,7 +1689,7 @@ void display_parse_status() {
 				parsed_expression += _("mixed units");
 			} else if(equalsIgnoreCase(str_u, "fraction") || equalsIgnoreCase(str_u, _("fraction"))) {
 				parsed_expression += _("fraction");
-			} else if(equalsIgnoreCase(str_u, "factors") || equalsIgnoreCase(str_u, _("factors"))) {
+			} else if(equalsIgnoreCase(str_u, "factors") || equalsIgnoreCase(str_u, _("factors")) || equalsIgnoreCase(str_u, "factor")) {
 				parsed_expression += _("factors");
 			} else if(equalsIgnoreCase(str_u, "partial fraction") || equalsIgnoreCase(str_u, _("partial fraction"))) {
 				parsed_expression += _("expanded partial fractions");
@@ -1750,12 +1763,14 @@ void display_parse_status() {
 			}
 		}
 		parsed_had_errors = had_errors; parsed_had_warnings = had_warnings;
+		if(!str_f.empty()) {str_f += " "; parsed_expression.insert(0, str_f);}
 		gsub("&", "&amp;", parsed_expression);
 		gsub(">", "&gt;", parsed_expression);
 		gsub("<", "&lt;", parsed_expression);
 		if(!b_func) set_status_text(parsed_expression.c_str(), true, had_errors, had_warnings);
 		expression_has_changed2 = false;
 	} else if(!b_func) {
+		if(!str_f.empty()) {str_f += " "; parsed_expression.insert(0, str_f);}
 		set_status_text(parsed_expression.c_str(), true, parsed_had_errors, parsed_had_warnings);
 	}
 	evalops.parse_options.preserve_format = false;
@@ -7610,7 +7625,7 @@ void CommandThread::run() {
 		switch(command_type) {
 			case COMMAND_FACTORIZE: {
 				if(!((MathStructure*) x)->integerFactorize()) {
-					((MathStructure*) x)->structure(STRUCTURE_FACTORISE, evalops, true);
+					((MathStructure*) x)->structure(STRUCTURING_FACTORIZE, evalops, true);
 				}
 				break;
 			}
@@ -7952,7 +7967,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	b_busy = true;
 	b_busy_expression = true;
 
-	bool do_factors = false, do_fraction = false, do_pfe = false;
+	bool do_factors = false, do_fraction = false, do_pfe = false, do_expand = false;
 	if(do_stack && !rpn_mode) do_stack = false;
 
 	if(str.empty()) {
@@ -8224,7 +8239,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			}
 			do_fraction = true;
 			execute_str = from_str;
-		} else if(equalsIgnoreCase(to_str, "factors") || equalsIgnoreCase(to_str, _("factors"))) {
+		} else if(equalsIgnoreCase(to_str, "factors") || equalsIgnoreCase(to_str, _("factors")) || equalsIgnoreCase(to_str, "factor")) {
 			if(from_str.empty()) {
 				b_busy = false;
 				b_busy_expression = false;
@@ -8259,6 +8274,18 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			executeCommand(COMMAND_CONVERT_STRING, true, to_str);
 			set_previous_expression();
 			return;
+		}
+	} else if(execute_str.empty()) {
+		size_t i = str.find_first_of(SPACES LEFT_PARENTHESIS);
+		if(i != string::npos) {
+			to_str = str.substr(0, i);
+			if(to_str == "factor" || equalsIgnoreCase(to_str, "factorize") || equalsIgnoreCase(to_str, _("factorize"))) {
+				execute_str = str.substr(i + 1);
+				do_factors = true;
+			} else if(equalsIgnoreCase(to_str, "expand") || equalsIgnoreCase(to_str, _("expand"))) {
+				execute_str = str.substr(i + 1);
+				do_expand = true;
+			}
 		}
 	}
 
@@ -8474,19 +8501,19 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		mstruct->set(CALCULATOR->convert(*mstruct, parsed_tostruct->symbol(), evalops));
 	}
 	
-	if(!do_mathoperation && check_exrates && check_exchange_rates(NULL, (!do_stack || stack_index == 0) && !do_pfe && !do_factors && !do_fraction)) {
+	if(!do_mathoperation && check_exrates && check_exchange_rates(NULL, (!do_stack || stack_index == 0) && !do_pfe && !do_factors && !do_expand && !do_fraction)) {
 		execute_expression(force, do_mathoperation, op, f, rpn_mode, do_stack ? stack_index : 0, saved_execute_str, str, false);
 		return;
 	}
 	
-	if(do_factors || do_pfe) {
+	if(do_factors || do_pfe || do_expand) {
 		if(do_stack && stack_index != 0) {
 			MathStructure *save_mstruct = mstruct;
 			mstruct = CALCULATOR->getRPNRegister(stack_index + 1);
-			executeCommand(do_pfe ? COMMAND_EXPAND_PARTIAL_FRACTIONS : COMMAND_FACTORIZE, false);
+			executeCommand(do_pfe ? COMMAND_EXPAND_PARTIAL_FRACTIONS : (do_expand ? COMMAND_EXPAND : COMMAND_FACTORIZE), false);
 			mstruct = save_mstruct;
 		} else {
-			executeCommand(do_pfe ? COMMAND_EXPAND_PARTIAL_FRACTIONS : COMMAND_FACTORIZE, false);
+			executeCommand(do_pfe ? COMMAND_EXPAND_PARTIAL_FRACTIONS  : (do_expand ? COMMAND_EXPAND : COMMAND_FACTORIZE), false);
 		}
 	}
 	if(!do_stack) previous_expression = execute_str.empty() ? str : execute_str;
