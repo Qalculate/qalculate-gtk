@@ -1072,6 +1072,13 @@ The following operators are defined in &app; and may be used in expressions.
 				<entry align="right"><para>1110</para></entry>
 			</row>
 			<row valign="top">
+				<entry><para>Bitwise XOR</para></entry>
+				<entry align="center"><para>&#8891;</para></entry>
+				<entry><para>If a bit is 1 in one of the numbers and not in the other, set it to 1, otherwise 0. Can normally also be used as logical XOR. &#8891; can be input using <keycombo><keycap>Ctrl</keycap><keycap>^</keycap></keycombo> (or just <keycap>^</keycap> if selected in preferences) on the keyboard.</para></entry>
+				<entry align="center"><para>1010 &#8891; 1100</para></entry>
+				<entry align="right"><para>0110</para></entry>
+			</row>
+			<row valign="top">
 				<entry><para>Bitwise AND</para></entry>
 				<entry align="center"><para>&amp;</para></entry>
 				<entry><para>If a bit is 1 in both numbers set it to 1, otherwise 0. Also functions as elementwise logical operator on vectors.</para></entry>
@@ -1095,15 +1102,17 @@ Usually, mathematical expressions are written as normally expected. Standard ope
 	<listitem><para>Parenthesis</para></listitem>
 	<listitem><para>E (10^x)</para></listitem>
 	<listitem><para>Exponents (x^y)</para></listitem>
-	<listitem><para>Functions (e.g. <quote>sqrt(2)</quote>)</para></listitem>	
+	<listitem><para>Functions (e.g. <quote>sqrt(2)</quote>)</para></listitem>
+	<listitem><para>Bitwise NOT (~)</para></listitem>
+	<listitem><para>Logical NOT (!)</para></listitem>
 	<listitem><para>Multiplication and division (*, /)</para></listitem>
 	<listitem><para>Addition and subtraction (+, −)</para></listitem>
 	<listitem><para>Bitwise NOT (~)</para></listitem>
 	<listitem><para>&lt;&lt; and &gt;&gt;</para></listitem>
-	<listitem><para>Bitwise AND (&amp;)</para></listitem>
-	<listitem><para>Bitwise OR (|)</para></listitem>
 	<listitem><para>Comparison (&gt;, &lt;, =, &gt;=, &lt;=)</para></listitem>
-	<listitem><para>Logical NOT (!)</para></listitem>
+	<listitem><para>Bitwise AND (&amp;)</para></listitem>
+	<listitem><para>Bitwise XOR (&#8891;)</para></listitem>
+	<listitem><para>Bitwise OR (|)</para></listitem>
 	<listitem><para>Logical AND (&amp;&amp;)</para></listitem>
 	<listitem><para>Logical OR (||)</para></listitem>
 </orderedlist>

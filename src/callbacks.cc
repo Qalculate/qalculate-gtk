@@ -154,6 +154,7 @@ int scale_n = 0;
 bool hyp_is_on, inv_is_on;
 bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes;
 bool copy_separator;
+bool caret_as_xor = false;
 extern bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message;
 extern int allow_multiple_instances;
 int b_decimal_comma;
@@ -4671,7 +4672,13 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 					exp_minus = number_exp_minus_map[(void*) &m.number()];
 				}
 			} else {
-				value_str = m.number().print(po, ips_n);
+				if(po.base == BASE_HEXADECIMAL && po.base_display == BASE_DISPLAY_NORMAL) {
+					PrintOptions po2 = po;
+					po2.base_display = BASE_DISPLAY_NONE;
+					value_str = m.number().print(po2, ips_n);
+				} else {
+					value_str = m.number().print(po, ips_n);
+				}
 				number_map[(void*) &m.number()] = value_str;
 				number_exp_map[(void*) &m.number()] = exp;
 				number_exp_minus_map[(void*) &m.number()] = exp_minus;
@@ -4769,7 +4776,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				else gsub("E", estr, str);
 			}
 			bool twos = (((po.base == 2 && po.twos_complement) || (po.base == 16 && po.hexadecimal_twos_complement)) && m.number().isNegative() && value_str.find(SIGN_MINUS) == string::npos && value_str.find("-") == string::npos);
-			if(po.base != BASE_DECIMAL && (twos || po.base != BASE_HEXADECIMAL) && po.base > 0 && po.base <= 36) {
+			if(po.base != BASE_DECIMAL && (twos || po.base_display != BASE_DISPLAY_ALTERNATIVE || (po.base != BASE_HEXADECIMAL && po.base != BASE_BINARY && po.base != BASE_OCTAL)) && po.base > 0 && po.base <= 36) {
 				TTBP_SMALL(str)
 				str += "<sub>";
 				str += i2s(po.base);
@@ -5698,13 +5705,15 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				if(po.spell_out_logical_operators) str += _("or");
 				else str += "||";
 			} else if(m.type() == STRUCT_LOGICAL_XOR) {
-				str += "XOR";
+				if(!po.spell_out_logical_operators && po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) ("⊻", po.can_display_unicode_string_arg))) str += "⊻";
+				else str += "XOR";
 			} else if(m.type() == STRUCT_BITWISE_AND) {
 				str += "&amp;";
 			} else if(m.type() == STRUCT_BITWISE_OR) {
 				str += "|";
 			} else if(m.type() == STRUCT_BITWISE_XOR) {
-				str += "XOR";
+				if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) ("⊻", po.can_display_unicode_string_arg))) str += "⊻";
+				else str += "XOR";
 			}
 			
 			TTE(str);
@@ -12898,6 +12907,8 @@ void load_preferences() {
 	evalops.interval_calculation = INTERVAL_CALCULATION_VARIANCE_FORMULA;
 	b_decimal_comma = -1;
 	
+	caret_as_xor = false;
+	
 	ignore_locale = false;
 	
 	automatic_fraction = false;
@@ -13454,6 +13465,8 @@ void load_preferences() {
 					printops.hexadecimal_twos_complement = v;
 				} else if(svar == "spell_out_logical_operators") {
 					printops.spell_out_logical_operators = v;
+				} else if(svar == "caret_as_xor") {
+					caret_as_xor = v;
 				} else if(svar == "copy_separator") {
 					copy_separator = v;
 				} else if(svar == "decimal_comma") {
@@ -13787,6 +13800,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "twos_complement=%i\n", printops.twos_complement);
 	fprintf(file, "hexadecimal_twos_complement=%i\n", printops.hexadecimal_twos_complement);
 	fprintf(file, "spell_out_logical_operators=%i\n", printops.spell_out_logical_operators);
+	fprintf(file, "caret_as_xor=%i\n", caret_as_xor);
 	fprintf(file, "digit_grouping=%i\n", printops.digit_grouping);
 	fprintf(file, "copy_separator=%i\n", copy_separator);
 	fprintf(file, "decimal_comma=%i\n", b_decimal_comma);
@@ -14413,6 +14427,9 @@ void on_preferences_checkbutton_hexadecimal_twos_complement_toggled(GtkToggleBut
 void on_preferences_checkbutton_spell_out_logical_operators_toggled(GtkToggleButton *w, gpointer) {
 	printops.spell_out_logical_operators = gtk_toggle_button_get_active(w);
 	result_display_updated();
+}
+void on_preferences_checkbutton_caret_as_xor_toggled(GtkToggleButton *w, gpointer) {
+	caret_as_xor = gtk_toggle_button_get_active(w);
 }
 void on_preferences_checkbutton_unicode_signs_toggled(GtkToggleButton *w, gpointer) {
 	printops.use_unicode_signs = gtk_toggle_button_get_active(w);
@@ -20471,7 +20488,7 @@ void update_nbases_entries(const MathStructure &value, int base) {
 	po.use_unicode_signs = printops.use_unicode_signs;
 	po.lower_case_e = printops.lower_case_e;
 	po.lower_case_numbers = printops.lower_case_numbers;
-	po.base_display = printops.base_display;
+	po.base_display = BASE_DISPLAY_NONE;
 	po.abbreviate_names = printops.abbreviate_names;
 	po.digit_grouping = printops.digit_grouping;
 	po.multiplication_sign = printops.multiplication_sign;
@@ -20484,7 +20501,6 @@ void update_nbases_entries(const MathStructure &value, int base) {
 	po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 	string str;
 	if(base != 10) {po.base = 10; str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po); if(str.length() > 1000) {str = _("result is too long");} gtk_entry_set_text(GTK_ENTRY(w_dec), str.c_str());}
-	if(base != 2) {po.base = 2; str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po); if(str.length() > 1000) {str = _("result is too long");} gtk_entry_set_text(GTK_ENTRY(w_bin), str.c_str());}
 	if(base != 8) {po.base = 8; str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po); if(str.length() > 1000) {str = _("result is too long");} gtk_entry_set_text(GTK_ENTRY(w_oct), str.c_str());}
 	if(base != 12) {po.base = 12; str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po); if(str.length() > 1000) {str = _("result is too long");} gtk_entry_set_text(GTK_ENTRY(w_duo), str.c_str());}
 	if(base != 16) {po.base = 16; str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po); if(str.length() > 1000) {str = _("result is too long");} gtk_entry_set_text(GTK_ENTRY(w_hex), str.c_str());}
@@ -20499,6 +20515,7 @@ void update_nbases_entries(const MathStructure &value, int base) {
 			gtk_entry_set_text(GTK_ENTRY(w_roman), nr.print(po).c_str());
 		}
 	}
+	if(base != 2) {po.base = 2; po.base_display = BASE_DISPLAY_NORMAL; str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po); if(str.length() > 1000) {str = _("result is too long");} gtk_entry_set_text(GTK_ENTRY(w_bin), str.c_str());}
 	//if(base != 60) {po.use_unicode_signs = true; po.base = 60; gtk_entry_set_text(GTK_ENTRY(w_sexa), value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po).c_str()); po.use_unicode_signs = printops.use_unicode_signs;}
 	g_signal_handlers_unblock_matched((gpointer) w_dec, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_decimal_changed, NULL);
 	g_signal_handlers_unblock_matched((gpointer) w_bin, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_binary_changed, NULL);
@@ -21003,14 +21020,15 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 		}
 		case GDK_KEY_asciicircum: {}
 		case GDK_KEY_dead_circumflex: {
+			bool input_xor = (caret_as_xor != ((event->state & GDK_CONTROL_MASK) > 0));
 			if(rpn_mode && rpn_keys) {
-				calculateRPN(OPERATION_RAISE);
+				calculateRPN(input_xor ? OPERATION_BITWISE_XOR : OPERATION_RAISE);
 				return TRUE;
 			}
 			if(!evalops.parse_options.rpn) {
 				wrap_expression_selection();
 			}
-			overwrite_expression_selection("^");
+			overwrite_expression_selection(input_xor ? (printops.use_unicode_signs && can_display_unicode_string_function("⊻", (void*) expressiontext) ? "⊻" : " XOR ") : "^");
 			return TRUE;
 		}
 		case GDK_KEY_KP_Divide: {
