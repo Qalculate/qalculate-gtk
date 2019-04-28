@@ -197,6 +197,13 @@ void insert_button_variable(GtkWidget *w, gpointer user_data);
 void insert_button_unit(GtkMenuItem *w, gpointer user_data);
 void insert_button_currency(GtkMenuItem *w, gpointer user_data);
 
+void insert_left_shift();
+void insert_right_shift();
+void insert_bitwise_and();
+void insert_bitwise_or();
+void insert_bitwise_xor();
+void insert_bitwise_not();
+
 void new_function(GtkMenuItem *w, gpointer user_data);
 void new_unknown(GtkMenuItem *w, gpointer user_data);
 void new_variable(GtkMenuItem *w, gpointer user_data);

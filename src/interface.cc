@@ -157,6 +157,8 @@ extern bool copy_separator;
 extern bool ignore_locale;
 extern bool caret_as_xor;
 
+extern string nbases_error_color, nbases_warning_color;
+
 extern PrintOptions printops;
 extern EvaluationOptions evalops;
 
@@ -562,9 +564,12 @@ void create_button_menus(void) {
 	MathFunction *f;
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_bases"));
-	MENU_ITEM_WITH_POINTER(CALCULATOR->f_shift->title(true).c_str(), insert_button_function, CALCULATOR->f_shift)
-	MENU_ITEM_WITH_POINTER(CALCULATOR->f_xor->title(true).c_str(), insert_button_function, CALCULATOR->f_xor)
-	MENU_ITEM_WITH_POINTER(CALCULATOR->f_bitxor->title(true).c_str(), insert_button_function, CALCULATOR->f_bitxor)
+	MENU_ITEM(_("Bitwise Left Shift"), insert_left_shift)
+	MENU_ITEM(_("Bitwise Right Shift"), insert_right_shift)
+	MENU_ITEM(_("Bitwise AND"), insert_bitwise_and)
+	MENU_ITEM(_("Bitwise OR"), insert_bitwise_or)
+	MENU_ITEM(_("Bitwise Exclusive OR"), insert_bitwise_xor)
+	MENU_ITEM(_("Bitwise NOT"), insert_bitwise_not)
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_percent"));
 	MENU_ITEM(_("Percentage calculation tool"), on_menu_item_show_percentage_dialog_activate)
@@ -583,7 +588,7 @@ void create_button_menus(void) {
 	}
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_xy"));
-	MENU_ITEM_MARKUP((string("x") + SUP_STRING("2")).c_str(), on_button_square_clicked)
+	MENU_ITEM_MARKUP_WITH_POINTER((string("x") + SUP_STRING("2")).c_str(), insert_button_function, CALCULATOR->f_sq)
 	f = CALCULATOR->getActiveFunction("inv");
 	if(f) {MENU_ITEM_WITH_POINTER("1/x", insert_button_function, f);}
 	MENU_ITEM_MARKUP_WITH_POINTER((string("e") + SUP_STRING("x")).c_str(), insert_button_function, CALCULATOR->f_exp)
@@ -2337,6 +2342,99 @@ get_nbases_dialog (void)
 		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_duo")), 1.0);
 		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_roman")), 1.0);
 		//gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_sexa")), 1.0);
+		
+		if(can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_sub"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_sub")), SIGN_MINUS);
+		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_sub")), MINUS);
+		if(can_display_unicode_string_function(SIGN_PLUS, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_add"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_add")), SIGN_PLUS);
+		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_add")), PLUS);
+		if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_times"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_times")), SIGN_MULTIPLICATION);
+		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_times")), MULTIPLICATION);
+		if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_divide")), SIGN_DIVISION_SLASH);
+		else if(can_display_unicode_string_function(SIGN_DIVISION, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_divide")), SIGN_DIVISION);
+		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_divide")), DIVISION);
+		if(can_display_unicode_string_function("∧", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_and"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_and")), "∧");
+		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_and")), "AND");
+		if(can_display_unicode_string_function("∨", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_or"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_or")), "∨");
+		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_or")), "OR");
+		if(can_display_unicode_string_function("⊻", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_xor"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_xor")), "⊻");
+		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_xor")), "XOR");
+		if(can_display_unicode_string_function("¬", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_not"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_not")), "¬");
+		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_not")), "NOT");
+		
+		gchar *theme_name = NULL;
+		g_object_get(gtk_settings_get_default(), "gtk-theme-name", &theme_name, NULL);
+		string themestr;
+		if(theme_name) {
+			themestr = theme_name;
+			g_free(theme_name);
+		}
+		
+		if(themestr.substr(0, 7) == "Adwaita" || themestr.substr(0, 6) == "ooxmox" || themestr == "Breeze" || themestr == "Breeze-Dark" || themestr == "Yaru") {
+			GtkCssProvider *link_style_top = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_top, "* {border-bottom-left-radius: 0; border-bottom-right-radius: 0}", -1, NULL);
+			GtkCssProvider *link_style_bot = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_bot, "* {border-top-left-radius: 0; border-top-right-radius: 0}", -1, NULL);
+			GtkCssProvider *link_style_tl = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_tl, "* {border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-top-right-radius: 0;}", -1, NULL);
+			GtkCssProvider *link_style_tr = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_tr, "* {border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-top-left-radius: 0;}", -1, NULL);
+			GtkCssProvider *link_style_bl = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_bl, "* {border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;}", -1, NULL);
+			GtkCssProvider *link_style_br = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_br, "* {border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-left-radius: 0;}", -1, NULL);
+			GtkCssProvider *link_style_mid = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_mid, "* {border-radius: 0;}", -1, NULL);
+			
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_zero"))), GTK_STYLE_PROVIDER(link_style_bl), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_one"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_two"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_three"))), GTK_STYLE_PROVIDER(link_style_br), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_four"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_five"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_six"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_seven"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_eight"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_nine"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_a"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_b"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_c"))), GTK_STYLE_PROVIDER(link_style_tl), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_d"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_e"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_f"))), GTK_STYLE_PROVIDER(link_style_tr), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_and"))), GTK_STYLE_PROVIDER(link_style_top), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_or"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_xor"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_not"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_divide"))), GTK_STYLE_PROVIDER(link_style_top), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_times"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_sub"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_add"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_left_shift"))), GTK_STYLE_PROVIDER(link_style_top), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_right_shift"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_del"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_ac"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		}
+		
+		GdkRGBA c;
+		gtk_style_context_get_color(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_label_decimal"))), GTK_STATE_FLAG_NORMAL, &c);
+		GdkRGBA c_err = c;
+		if(c_err.red >= 0.8) {
+			c_err.green /= 1.5;
+			c_err.blue /= 1.5;
+			c_err.red = 1.0;
+		} else {
+			if(c_err.red >= 0.5) c_err.red = 1.0;
+			else c_err.red += 0.5;
+		}	
+		gchar ecs[8];
+		g_snprintf(ecs, 8, "#%02x%02x%02x", (int) (c_err.red * 255), (int) (c_err.green * 255), (int) (c_err.blue * 255));
+		nbases_error_color = ecs;
+	
+		GdkRGBA c_warn = c;
+		if(c_warn.blue >= 0.8) {
+			c_warn.green /= 1.5;
+			c_warn.red /= 1.5;
+			c_warn.blue = 1.0;
+		} else {
+			if(c_warn.blue >= 0.3) c_warn.blue = 1.0;
+			else c_warn.blue += 0.7;
+		}
+		gchar wcs[8];
+		g_snprintf(wcs, 8, "#%02x%02x%02x", (int) (c_warn.red * 255), (int) (c_warn.green * 255), (int) (c_warn.blue * 255));
+		nbases_warning_color = wcs;
 		
 		gtk_builder_connect_signals(nbases_builder, NULL);
 		
