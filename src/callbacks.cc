@@ -18264,8 +18264,7 @@ void output_base_updated_from_menu() {
 
 
 void on_menu_item_binary_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)))
-		return;
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.base = BASE_BINARY;
 	result_format_updated();
 	output_base_updated_from_menu();
@@ -18274,8 +18273,7 @@ void on_menu_item_binary_activate(GtkMenuItem *w, gpointer) {
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
 }
 void on_menu_item_octal_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)))
-		return;
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.base = BASE_OCTAL;
 	result_format_updated();
 	output_base_updated_from_menu();
@@ -18284,8 +18282,7 @@ void on_menu_item_octal_activate(GtkMenuItem *w, gpointer) {
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
 }
 void on_menu_item_decimal_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)))
-		return;
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.base = BASE_DECIMAL;
 	result_format_updated();
 	output_base_updated_from_menu();
@@ -18294,8 +18291,7 @@ void on_menu_item_decimal_activate(GtkMenuItem *w, gpointer) {
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
 }
 void on_menu_item_duodecimal_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)))
-		return;
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.base = 12;
 	result_format_updated();
 	output_base_updated_from_menu();
@@ -18304,8 +18300,7 @@ void on_menu_item_duodecimal_activate(GtkMenuItem *w, gpointer) {
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
 }
 void on_menu_item_hexadecimal_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)))
-		return;
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.base = BASE_HEXADECIMAL;
 	result_format_updated();
 	output_base_updated_from_menu();
@@ -20661,12 +20656,29 @@ void update_nbases_entries(const MathStructure &value, int base) {
 void on_nbases_button_close_clicked(GtkButton*, gpointer) {
 	gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_dialog")));
 }
+bool last_is_operator(string str, bool allow_exp = false) {
+	if(str.empty()) return false;
+	if(str[str.length() - 1] > 0) {
+		if(is_in(OPERATORS LEFT_PARENTHESIS, str[str.length() - 1])) return true;
+		if(allow_exp && is_in(EXP, str[str.length() - 1])) return true;
+	} else { 
+		if(str.length() >= 3 && str[str.length() - 2] < 0) {
+			str = str.substr(str.length() - 3);
+			if(str == "∧" || str == "∨" || str == "⊻" || str == "¬" || str == expression_times_sign() || str == expression_divide_sign() || str == expression_add_sign() || str == expression_sub_sign()) return true;
+		}
+		if(str.length() >= 2) {
+			str = str.substr(str.length() - 2);
+			if(str == "∧" || str == "∨" || str == "⊻" || str == "¬" || str == expression_times_sign() || str == expression_divide_sign() || str == expression_add_sign() || str == expression_sub_sign()) return true;
+		}
+	}
+	return false;
+}
 void on_nbases_entry_decimal_changed(GtkEditable *editable, gpointer) {	
 	if(changing_in_nbases_dialog) return;
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
 	if(str.empty()) return;
-	if(is_in(OPERATORS EXP LEFT_PARENTHESIS, str[str.length() - 1])) return;
+	if(last_is_operator(str, true)) return;
 	changing_in_nbases_dialog = true;	
 	EvaluationOptions eo;
 	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
@@ -20682,7 +20694,7 @@ void on_nbases_entry_binary_changed(GtkEditable *editable, gpointer) {
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
 	if(str.empty()) return;
-	if(is_in(OPERATORS LEFT_PARENTHESIS, str[str.length() - 1])) return;
+	if(last_is_operator(str)) return;
 	EvaluationOptions eo;
 	eo.parse_options.base = BASE_BINARY;
 	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
@@ -20699,7 +20711,7 @@ void on_nbases_entry_octal_changed(GtkEditable *editable, gpointer) {
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
 	if(str.empty()) return;	
-	if(is_in(OPERATORS LEFT_PARENTHESIS, str[str.length() - 1])) return;
+	if(last_is_operator(str)) return;
 	EvaluationOptions eo;
 	eo.parse_options.base = BASE_OCTAL;
 	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
@@ -20716,7 +20728,7 @@ void on_nbases_entry_hexadecimal_changed(GtkEditable *editable, gpointer) {
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
 	if(str.empty()) return;	
-	if(is_in(OPERATORS LEFT_PARENTHESIS, str[str.length() - 1])) return;
+	if(last_is_operator(str)) return;
 	EvaluationOptions eo;
 	eo.parse_options.base = BASE_HEXADECIMAL;
 	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
@@ -20733,7 +20745,7 @@ void on_nbases_entry_duo_changed(GtkEditable *editable, gpointer) {
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
 	if(str.empty()) return;	
-	if(is_in(OPERATORS LEFT_PARENTHESIS, str[str.length() - 1])) return;
+	if(last_is_operator(str)) return;
 	EvaluationOptions eo;
 	eo.parse_options.base = BASE_DUODECIMAL;
 	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
@@ -20750,7 +20762,7 @@ void on_nbases_entry_roman_changed(GtkEditable *editable, gpointer) {
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
 	if(str.empty()) return;	
-	if(is_in(OPERATORS LEFT_PARENTHESIS, str[str.length() - 1])) return;
+	if(last_is_operator(str)) return;
 	EvaluationOptions eo;
 	eo.parse_options.base = BASE_ROMAN_NUMERALS;
 	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
