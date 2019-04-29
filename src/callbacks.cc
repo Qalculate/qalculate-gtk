@@ -20761,8 +20761,8 @@ void on_nbases_entry_roman_changed(GtkEditable *editable, gpointer) {
 	if(changing_in_nbases_dialog) return;
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
-	if(str.empty()) return;	
-	if(last_is_operator(str)) return;
+	if(str.empty()) return;
+	if(last_is_operator(str) && (str[str.length() - 1] != '|' || str.find('|') == str.length() - 1)) return;
 	EvaluationOptions eo;
 	eo.parse_options.base = BASE_ROMAN_NUMERALS;
 	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
@@ -20783,6 +20783,8 @@ void update_nbases_keypad(int base) {
 	if(base != 16) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(nbases_builder, "nbases_button_hex")), FALSE);
 	if(base != BASE_ROMAN_NUMERALS) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(nbases_builder, "nbases_button_rom")), FALSE);
 	
+	if(base == BASE_ROMAN_NUMERALS && strcmp(gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_one"))), "1") != 0) return;
+	
 	if(base == 12) {
 		if(strcmp(gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_a"))), "A") == 0) {
 			if(can_display_unicode_string_function("↊", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_a"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_a")), "↊");
@@ -20794,15 +20796,21 @@ void update_nbases_keypad(int base) {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_a")), "A");
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_b")), "B");
 	}
+	bool uni_roman = (base == BASE_ROMAN_NUMERALS) && printops.use_unicode_signs && can_display_unicode_string_function("Ɔ", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_9"));
 	if(base == BASE_ROMAN_NUMERALS) {
-		if(strcmp(gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_one"))), "1") == 0) {
-			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_zero")), "I");
-			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_one")), "V");
-			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_two")), "X");
-			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_three")), "L");
-			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_four")), "C");
-			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_five")), "D");
-			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_six")), "M");
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_zero")), "I");
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_one")), "V");
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_two")), "X");
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_three")), "L");
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_four")), "C");
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_five")), "D");
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_six")), "M");
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_eight")), "|");
+		if(uni_roman) {
+			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_nine")), "Ɔ");
+		} else {
+			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_seven")), "(");
+			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_nine")), ")");
 		}
 	} else if(strcmp(gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_one"))), "1") != 0) {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_zero")), "0");
@@ -20812,6 +20820,9 @@ void update_nbases_keypad(int base) {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_four")), "4");
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_five")), "5");
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_six")), "6");
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_seven")), "7");
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_eight")), "8");
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_nine")), "9");
 	}
 	
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_two")), base != 2);
@@ -20819,15 +20830,21 @@ void update_nbases_keypad(int base) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_four")), base != 2);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_five")), base != 2);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_six")), base != 2);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_seven")), base >= 8);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_eight")), base >= 10);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_nine")), base >= 10);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_seven")), base != 2 && (base != BASE_ROMAN_NUMERALS || !uni_roman));
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_eight")), base != 2 && base != 8);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_nine")), base != 2 && base != 8);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_a")), base >= 12);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_b")), base >= 12);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_c")), base == 16);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_d")), base == 16);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_e")), base == 16);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_f")), base == 16);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_and")), base != BASE_ROMAN_NUMERALS);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_or")), base != BASE_ROMAN_NUMERALS);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_xor")), base != BASE_ROMAN_NUMERALS);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_not")), base != BASE_ROMAN_NUMERALS);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_left_shift")), base != BASE_ROMAN_NUMERALS);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_right_shift")), base != BASE_ROMAN_NUMERALS);
 	
 }
 
@@ -20925,7 +20942,9 @@ gboolean on_nbases_entry_roman_focus_in_event(GtkWidget*, GdkEventFocus*, gpoint
 }
 
 void nbases_insert_text(GtkWidget *w, const gchar *text) {
+	changing_in_nbases_dialog = true;
 	gtk_editable_delete_selection(GTK_EDITABLE(w));
+	changing_in_nbases_dialog = false;
 	gint pos = gtk_editable_get_position(GTK_EDITABLE(w));
 	gtk_editable_insert_text(GTK_EDITABLE(w), text, -1, &pos);
 	gtk_editable_set_position(GTK_EDITABLE(w), pos);
@@ -20955,13 +20974,13 @@ void on_nbases_button_six_clicked(GtkToggleButton*, gpointer) {
 	nbases_insert_text(nbases_get_entry(), nbases_get_base() == BASE_ROMAN_NUMERALS ? "M" : "6");
 }
 void on_nbases_button_seven_clicked(GtkToggleButton*, gpointer) {
-	nbases_insert_text(nbases_get_entry(), "7");
+	nbases_insert_text(nbases_get_entry(), nbases_get_base() == BASE_ROMAN_NUMERALS ? "(" : "7");
 }
 void on_nbases_button_eight_clicked(GtkToggleButton*, gpointer) {
-	nbases_insert_text(nbases_get_entry(), "8");
+	nbases_insert_text(nbases_get_entry(), nbases_get_base() == BASE_ROMAN_NUMERALS ? "|" : "8");
 }
 void on_nbases_button_nine_clicked(GtkToggleButton*, gpointer) {
-	nbases_insert_text(nbases_get_entry(), "9");
+	nbases_insert_text(nbases_get_entry(), nbases_get_base() == BASE_ROMAN_NUMERALS ? (can_display_unicode_string_function("Ɔ", (void*) gtk_builder_get_object(nbases_builder, "nbases_entry_roman")) ? "Ɔ" : ")") : "9");
 }
 void on_nbases_button_a_clicked(GtkToggleButton*, gpointer) {
 	nbases_insert_text(nbases_get_entry(), nbases_get_base() == 12 ? (can_display_unicode_string_function("↊", (void*) gtk_builder_get_object(nbases_builder, "nbases_entry_duo")) ? "↊" : "X") : (printops.lower_case_numbers ? "a" : "A"));
