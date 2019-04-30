@@ -37,6 +37,7 @@ struct mode_struct {
 	bool interval;
 	bool adaptive_interval_display;
 	bool variable_units_enabled;
+	bool keypad;
 };
 
 enum {
@@ -197,13 +198,6 @@ void insert_button_variable(GtkWidget *w, gpointer user_data);
 void insert_button_unit(GtkMenuItem *w, gpointer user_data);
 void insert_button_currency(GtkMenuItem *w, gpointer user_data);
 
-void insert_left_shift();
-void insert_right_shift();
-void insert_bitwise_and();
-void insert_bitwise_or();
-void insert_bitwise_xor();
-void insert_bitwise_not();
-
 void new_function(GtkMenuItem *w, gpointer user_data);
 void new_unknown(GtkMenuItem *w, gpointer user_data);
 void new_variable(GtkMenuItem *w, gpointer user_data);
@@ -235,6 +229,13 @@ void reload_history();
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+void insert_left_shift();
+void insert_right_shift();
+void insert_bitwise_and();
+void insert_bitwise_or();
+void insert_bitwise_xor();
+void insert_bitwise_not();
 
 void update_mb_fx_menu();
 void update_mb_sto_menu();
@@ -390,6 +391,8 @@ void on_menu_item_gradians_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_no_default_angle_unit_activate(GtkMenuItem *w, gpointer user_data);
 void set_output_base_from_dialog(int base);
 void output_base_updated_from_menu();
+void input_base_updated_from_menu();
+void update_keypad_bases();
 void on_menu_item_binary_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_octal_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_decimal_activate(GtkMenuItem *w, gpointer user_data);

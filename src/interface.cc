@@ -156,6 +156,7 @@ extern int auto_update_exchange_rates;
 extern bool copy_separator;
 extern bool ignore_locale;
 extern bool caret_as_xor;
+extern int visible_keypad;
 
 extern string nbases_error_color, nbases_warning_color;
 
@@ -210,7 +211,7 @@ void set_assumptions_items(AssumptionType at, AssumptionSign as) {
 	}
 }
 
-void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, AssumptionType at, AssumptionSign as, bool in_rpn_mode, int precision, bool interval, bool variable_units, bool id_adaptive, bool initial_update) {
+void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, AssumptionType at, AssumptionSign as, bool in_rpn_mode, int precision, bool interval, bool variable_units, bool id_adaptive, bool keypad, bool initial_update) {
 
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_mode")), in_rpn_mode);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_syntax")), evalops.parse_options.rpn);
@@ -536,7 +537,8 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 			evalops.parse_options.base = eo.parse_options.base;
 		}
 	}
-	
+	update_keypad_bases();
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_programmers_keypad")), keypad == 1);
 }
 
 gboolean completion_row_separator_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer) {
@@ -576,16 +578,8 @@ void create_button_menus(void) {
 
 
 	PangoFontDescription *font_desc;
-	gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_xy"))), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
 	
-	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_xy")), (string("x") + SUP_STRING("y")).c_str());
-	if(evalops.structuring != STRUCTURING_FACTORIZE) {
-		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize")), (string("a(x)") + SUP_STRING("b")).c_str());
-		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_factorize")), _("Factorize"));
-	} else {
-		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize")), (string("x+x") + SUP_STRING("b")).c_str());
-		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_factorize")), _("Expand"));
-	}
+	gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_xy"))), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_xy"));
 	MENU_ITEM_MARKUP_WITH_POINTER((string("x") + SUP_STRING("2")).c_str(), insert_button_function, CALCULATOR->f_sq)
@@ -874,6 +868,28 @@ void create_button_menus(void) {
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sqrt")), CALCULATOR->f_sqrt->title(true).c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_i")), CALCULATOR->v_i->title(true).c_str());
 	
+	
+	g_signal_connect(gtk_builder_get_object(main_builder, "button_int"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_int);
+	g_signal_connect(gtk_builder_get_object(main_builder, "button_frac"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_frac);
+	g_signal_connect(gtk_builder_get_object(main_builder, "button_ln2"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_ln);
+	g_signal_connect(gtk_builder_get_object(main_builder, "button_sqrt2"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_sqrt);
+	g_signal_connect(gtk_builder_get_object(main_builder, "button_abs"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_abs);
+	
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rem")), CALCULATOR->f_rem->title(true).c_str());
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_ln2")), CALCULATOR->f_ln->title(true).c_str());
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_int")), CALCULATOR->f_int->title(true).c_str());
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_frac")), CALCULATOR->f_frac->title(true).c_str());
+	f = CALCULATOR->getActiveFunction("log2");
+	g_signal_connect(gtk_builder_get_object(main_builder, "button_log2"), "clicked", G_CALLBACK(insert_button_function), (gpointer) f);
+	if(f) gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_log2")), f->title(true).c_str());
+	f = CALCULATOR->getActiveFunction("inv");
+	if(f) gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_reciprocal")), f->title(true).c_str());
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sqrt2")), CALCULATOR->f_sqrt->title(true).c_str());
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_abs")), CALCULATOR->f_abs->title(true).c_str());
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_fac2")), CALCULATOR->f_factorial->title(true).c_str());
+	
+	if(!caret_as_xor) gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_xor")), (string(_("Bitwise Exclusive OR")) + " (Ctrl+^)").c_str());
+	
 	update_mb_fx_menu();
 	update_mb_sto_menu();
 	update_mb_units_menu();
@@ -966,7 +982,9 @@ void create_main_window(void) {
 	gtk_style_context_add_provider(gtk_widget_get_style_context(statuslabel_l), GTK_STYLE_PROVIDER(statuslabel_l_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(statuslabel_r), GTK_STYLE_PROVIDER(statuslabel_r_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	
-	set_mode_items(printops, evalops, CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign(), rpn_mode, CALCULATOR->getPrecision(), CALCULATOR->usesIntervalArithmetic(), CALCULATOR->variableUnitsEnabled(), adaptive_interval_display, true);
+	set_mode_items(printops, evalops, CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign(), rpn_mode, CALCULATOR->getPrecision(), CALCULATOR->usesIntervalArithmetic(), CALCULATOR->variableUnitsEnabled(), adaptive_interval_display, visible_keypad, true);
+	
+	if(visible_keypad == 1) gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "programmers_keypad")));
 
 	set_unicode_buttons();
 
@@ -2341,24 +2359,23 @@ get_nbases_dialog (void)
 		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_hexadecimal")), 1.0);
 		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_duo")), 1.0);
 		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_roman")), 1.0);
-		//gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_sexa")), 1.0);
 		
-		if(can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_sub"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_sub")), SIGN_MINUS);
+		if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_sub"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_sub")), SIGN_MINUS);
 		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_sub")), MINUS);
-		if(can_display_unicode_string_function(SIGN_PLUS, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_add"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_add")), SIGN_PLUS);
+		if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_PLUS, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_add"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_add")), SIGN_PLUS);
 		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_add")), PLUS);
-		if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_times"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_times")), SIGN_MULTIPLICATION);
+		if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_times"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_times")), SIGN_MULTIPLICATION);
 		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_times")), MULTIPLICATION);
-		if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_divide")), SIGN_DIVISION_SLASH);
-		else if(can_display_unicode_string_function(SIGN_DIVISION, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_divide")), SIGN_DIVISION);
+		if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_divide")), SIGN_DIVISION_SLASH);
+		else if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_DIVISION, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_divide")), SIGN_DIVISION);
 		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_divide")), DIVISION);
-		if(can_display_unicode_string_function("∧", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_and"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_and")), "∧");
+		if(printops.use_unicode_signs && can_display_unicode_string_function("∧", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_and"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_and")), "∧");
 		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_and")), "AND");
-		if(can_display_unicode_string_function("∨", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_or"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_or")), "∨");
+		if(printops.use_unicode_signs && can_display_unicode_string_function("∨", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_or"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_or")), "∨");
 		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_or")), "OR");
-		if(can_display_unicode_string_function("⊻", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_xor"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_xor")), "⊻");
+		if(printops.use_unicode_signs && can_display_unicode_string_function("⊻", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_xor"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_xor")), "⊻");
 		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_xor")), "XOR");
-		if(can_display_unicode_string_function("¬", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_not"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_not")), "¬");
+		if(printops.use_unicode_signs && can_display_unicode_string_function("¬", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_not"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_not")), "¬");
 		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_not")), "NOT");
 		
 		gchar *theme_name = NULL;
