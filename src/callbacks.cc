@@ -186,6 +186,7 @@ vector<DataProperty*> tmp_props;
 vector<DataProperty*> tmp_props_orig;
 bool keep_unit_selection = false;
 int visible_keypad = 0;
+int programming_inbase = 0, programming_outbase = 0;
 
 string command_convert_units_string;
 Unit *command_convert_unit;
@@ -300,6 +301,8 @@ bool keep_function_dialog_open = false;
 bool automatic_fraction = false;
 
 bool ignore_locale = false;
+
+bool hexadecimal_twos_complement_in = false, twos_complement_in = false;
 
 #define TEXT_TAGS			"<span size=\"xx-large\">"
 #define TEXT_TAGS_END			"</span>"
@@ -12975,6 +12978,9 @@ void load_preferences() {
 	evalops.interval_calculation = INTERVAL_CALCULATION_VARIANCE_FORMULA;
 	b_decimal_comma = -1;
 	
+	programming_inbase = 0;
+	programming_outbase = 0;
+	
 	visible_keypad = 0;
 	
 	caret_as_xor = false;
@@ -13052,6 +13058,8 @@ void load_preferences() {
 	first_error = true;
 	expression_history.clear();
 	expression_history_index = -1;
+	hexadecimal_twos_complement_in = false;
+	twos_complement_in = false;
 	
 #ifdef _WIN32
 	last_version_check_date.setToCurrentDate();
@@ -13193,6 +13201,10 @@ void load_preferences() {
 				} else if(svar == "completion_delay") {
 					if(v < 0) v = 0;
 					completion_delay = v;
+				} else if(svar == "programming_outbase") {
+					programming_outbase = v;
+				} else if(svar == "programming_inbase") {
+					programming_inbase = v;
 				} else if(svar == "min_deci") {
 					if(mode_index == 1) printops.min_decimals = v;
 					else modes[mode_index].po.min_decimals = v;
@@ -13536,6 +13548,10 @@ void load_preferences() {
 					printops.twos_complement = v;
 				} else if(svar == "hexadecimal_twos_complement") {
 					printops.hexadecimal_twos_complement = v;
+				} else if(svar == "twos_complement_input") {
+					twos_complement_in = v;
+				} else if(svar == "hexadecimal_twos_complement_input") {
+					hexadecimal_twos_complement_in = v;
 				} else if(svar == "spell_out_logical_operators") {
 					printops.spell_out_logical_operators = v;
 				} else if(svar == "caret_as_xor") {
@@ -13872,6 +13888,12 @@ void save_preferences(bool mode) {
 	fprintf(file, "base_display=%i\n", printops.base_display);
 	fprintf(file, "twos_complement=%i\n", printops.twos_complement);
 	fprintf(file, "hexadecimal_twos_complement=%i\n", printops.hexadecimal_twos_complement);
+	fprintf(file, "twos_complement_input=%i\n", twos_complement_in);
+	fprintf(file, "hexadecimal_twos_complement_input=%i\n", hexadecimal_twos_complement_in);
+	if(programming_outbase != 0 && programming_inbase != 0) {
+		fprintf(file, "programming_outbase=%i\n", programming_outbase);
+		fprintf(file, "programming_inbase=%i\n", programming_inbase);
+	}
 	fprintf(file, "spell_out_logical_operators=%i\n", printops.spell_out_logical_operators);
 	fprintf(file, "caret_as_xor=%i\n", caret_as_xor);
 	fprintf(file, "digit_grouping=%i\n", printops.digit_grouping);
@@ -14180,14 +14202,32 @@ gchar *font_name_to_css(const char *font_name) {
 extern "C" {
 #endif
 
-void on_button_close_programmers_keypad_clicked(GtkButton*, gpointer) {
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_programmers_keypad")), FALSE);
-}
-
 void on_button_bin_toggled(GtkToggleButton *w, gpointer);
 void on_button_oct_toggled(GtkToggleButton *w, gpointer);
 void on_button_dec_toggled(GtkToggleButton *w, gpointer);
 void on_button_hex_toggled(GtkToggleButton *w, gpointer);
+
+void on_button_twos_out_toggled(GtkToggleButton *w, gpointer) {
+	if(printops.base == 16) printops.hexadecimal_twos_complement = gtk_toggle_button_get_active(w);
+	else if(printops.base == 2) printops.twos_complement = gtk_toggle_button_get_active(w);
+	result_format_updated();
+	if(!gtk_widget_is_focus(expressiontext)) {
+		gtk_widget_grab_focus(expressiontext);
+	}
+}
+void on_button_twos_in_toggled(GtkToggleButton *w, gpointer) {
+	if(evalops.parse_options.base == 16) {
+		hexadecimal_twos_complement_in = gtk_toggle_button_get_active(w);
+		evalops.parse_options.hexadecimal_twos_complement = hexadecimal_twos_complement_in;
+	} else if(evalops.parse_options.base == 2) {
+		twos_complement_in = gtk_toggle_button_get_active(w);
+		evalops.parse_options.twos_complement = twos_complement_in;
+	}
+	expression_format_updated(true);
+	if(!gtk_widget_is_focus(expressiontext)) {
+		gtk_widget_grab_focus(expressiontext);
+	}
+}
 
 void update_keypad_bases() {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_bin"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_bin_toggled, NULL);
@@ -14203,13 +14243,134 @@ void update_keypad_bases() {
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_dec"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_dec_toggled, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_hex"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_hex_toggled, NULL);
 	
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_twos_out"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_twos_out_toggled, NULL);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_twos_out")), (printops.base == 16 && printops.hexadecimal_twos_complement) || (printops.base == 2 && printops.twos_complement));
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_twos_out"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_twos_out_toggled, NULL);
+	
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_twos_in"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_twos_in_toggled, NULL);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_twos_in")), (evalops.parse_options.base == 16 && hexadecimal_twos_complement_in) || (evalops.parse_options.base == 2 && twos_complement_in));
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_twos_in"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_twos_in_toggled, NULL);
+	
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_a")), evalops.parse_options.base >= 13 || evalops.parse_options.base == 11);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_b")), evalops.parse_options.base >= 13);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c")), evalops.parse_options.base >= 13);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_d")), evalops.parse_options.base >= 14);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_e")), evalops.parse_options.base >= 15);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_f")), evalops.parse_options.base >= 16);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_twos_out")), printops.base == 2 || printops.base == 16);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_twos_in")), evalops.parse_options.base == 2 || evalops.parse_options.base == 16);
 	
+	evalops.parse_options.hexadecimal_twos_complement = hexadecimal_twos_complement_in && evalops.parse_options.base == 16;
+	evalops.parse_options.twos_complement = twos_complement_in && evalops.parse_options.base == 2;
+	
+}
+
+gboolean on_button_bin_button_release_event(GtkWidget *w, GdkEventButton *event, gpointer) {
+	if(event->type == GDK_BUTTON_RELEASE && event->button == 2) {
+		if(printops.base != 2) {
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_binary"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_binary_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_binary")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_binary"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_binary_activate, NULL);
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
+			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_base")), 0);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
+			printops.base = 2;
+			output_base_updated_from_menu();
+			update_keypad_bases();
+			result_format_updated();
+		} else {
+			bool b = (evalops.parse_options.base != 2);
+			evalops.parse_options.base = b ? 2 : 10;
+			input_base_updated_from_menu();
+			update_keypad_bases();
+			expression_format_updated(true);
+		}
+		if(!gtk_widget_is_focus(expressiontext)) {
+			gtk_widget_grab_focus(expressiontext);
+		}
+		return TRUE;
+	}
+	return FALSE;
+}
+gboolean on_button_oct_button_release_event(GtkWidget *w, GdkEventButton *event, gpointer) {
+	if(event->type == GDK_BUTTON_RELEASE && event->button == 2) {
+		if(printops.base != 8) {
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_octal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_octal_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_octal")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_octal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_octal_activate, NULL);
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
+			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_base")), 1);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
+			printops.base = 8;
+			output_base_updated_from_menu();
+			update_keypad_bases();
+			result_format_updated();
+		} else {
+			bool b = (evalops.parse_options.base != 8);
+			evalops.parse_options.base = b ? 8 : 10;
+			input_base_updated_from_menu();
+			update_keypad_bases();
+			expression_format_updated(true);
+		}
+		if(!gtk_widget_is_focus(expressiontext)) {
+			gtk_widget_grab_focus(expressiontext);
+		}
+		return TRUE;
+	}
+	return FALSE;
+}
+gboolean on_button_dec_button_release_event(GtkWidget *w, GdkEventButton *event, gpointer) {
+	if(event->type == GDK_BUTTON_RELEASE && event->button == 2) {
+		if(printops.base != 10) {
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_decimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_decimal_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_decimal")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_decimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_decimal_activate, NULL);
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
+			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_base")), 2);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
+			printops.base = 10;
+			output_base_updated_from_menu();
+			update_keypad_bases();
+			result_format_updated();
+		} else if(evalops.parse_options.base != 10) {
+			evalops.parse_options.base = 10;
+			input_base_updated_from_menu();
+			update_keypad_bases();
+			expression_format_updated(true);
+		}
+		if(!gtk_widget_is_focus(expressiontext)) {
+			gtk_widget_grab_focus(expressiontext);
+		}
+		return TRUE;
+	}
+	return FALSE;
+}
+gboolean on_button_hex_button_release_event(GtkWidget *w, GdkEventButton *event, gpointer) {
+	if(event->type == GDK_BUTTON_RELEASE && event->button == 2) {
+		if(printops.base != 16) {
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_hexadecimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_hexadecimal_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_hexadecimal")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_hexadecimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_hexadecimal_activate, NULL);
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
+			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_base")), 4);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
+			printops.base = 16;
+			output_base_updated_from_menu();
+			update_keypad_bases();
+			result_format_updated();
+		} else {
+			bool b = (evalops.parse_options.base != 16);
+			evalops.parse_options.base = b ? 16 : 10;
+			input_base_updated_from_menu();
+			update_keypad_bases();
+			expression_format_updated(true);
+		}
+		if(!gtk_widget_is_focus(expressiontext)) {
+			gtk_widget_grab_focus(expressiontext);
+		}
+		return TRUE;
+	}
+	return FALSE;
 }
 
 void on_button_bin_toggled(GtkToggleButton *w, gpointer) {
@@ -14226,14 +14387,17 @@ void on_button_bin_toggled(GtkToggleButton *w, gpointer) {
 		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
 		printops.base = 2;
 		output_base_updated_from_menu();
-		if(evalops.parse_options.base == 2) result_format_updated();
+		if(evalops.parse_options.base == 2) {update_keypad_bases(); result_format_updated();}
 	}
 	if(evalops.parse_options.base != 2) {
 		evalops.parse_options.base = 2;
 		input_base_updated_from_menu();
+		update_keypad_bases();
 		expression_format_updated(true);
 	}
-	update_keypad_bases();
+	if(!gtk_widget_is_focus(expressiontext)) {
+		gtk_widget_grab_focus(expressiontext);
+	}
 }
 void on_button_oct_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(w)) {
@@ -14249,14 +14413,17 @@ void on_button_oct_toggled(GtkToggleButton *w, gpointer) {
 		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
 		printops.base = 8;
 		output_base_updated_from_menu();
-		if(evalops.parse_options.base == 8) result_format_updated();
+		if(evalops.parse_options.base == 8) {update_keypad_bases(); result_format_updated();}
 	}
 	if(evalops.parse_options.base != 8) {
 		evalops.parse_options.base = 8;
 		input_base_updated_from_menu();
+		update_keypad_bases();
 		expression_format_updated(true);
 	}
-	update_keypad_bases();
+	if(!gtk_widget_is_focus(expressiontext)) {
+		gtk_widget_grab_focus(expressiontext);
+	}
 }
 void on_button_dec_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(w)) {
@@ -14272,14 +14439,17 @@ void on_button_dec_toggled(GtkToggleButton *w, gpointer) {
 		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
 		printops.base = 10;
 		output_base_updated_from_menu();
-		if(evalops.parse_options.base == 10) result_format_updated();
+		if(evalops.parse_options.base == 10) {update_keypad_bases(); result_format_updated();}
 	}
 	if(evalops.parse_options.base != 10) {
 		evalops.parse_options.base = 10;
 		input_base_updated_from_menu();
+		update_keypad_bases();
 		expression_format_updated(true);
 	}
-	update_keypad_bases();
+	if(!gtk_widget_is_focus(expressiontext)) {
+		gtk_widget_grab_focus(expressiontext);
+	}
 }
 void on_button_hex_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(w)) {
@@ -14295,14 +14465,17 @@ void on_button_hex_toggled(GtkToggleButton *w, gpointer) {
 		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
 		printops.base = 16;
 		output_base_updated_from_menu();
-		if(evalops.parse_options.base == 16) result_format_updated();
+		if(evalops.parse_options.base == 16) {update_keypad_bases(); result_format_updated();}
 	}
 	if(evalops.parse_options.base != 16) {
 		evalops.parse_options.base = 16;
 		input_base_updated_from_menu();
+		update_keypad_bases();
 		expression_format_updated(true);
 	}
-	update_keypad_bases();
+	if(!gtk_widget_is_focus(expressiontext)) {
+		gtk_widget_grab_focus(expressiontext);
+	}
 }
 
 void on_convert_treeview_category_row_expanded(GtkTreeView *tree_view, GtkTreeIter*, GtkTreePath *path, gpointer) {
@@ -15532,66 +15705,69 @@ gboolean on_resultview_popup_menu(GtkWidget*, gpointer) {
 
 void on_menu_item_programmers_keypad_toggled(GtkCheckMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(w)) {
-		gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "programmers_keypad")));
 		visible_keypad = 1;
+		if(programming_inbase > 0 && programming_outbase != 0 && (((programming_inbase != 10 || (programming_outbase != 10 && programming_outbase > 0 && programming_outbase <= 36)) && evalops.parse_options.base == 10 && printops.base == 10) || evalops.parse_options.base < 2 || printops.base < 2 || evalops.parse_options.base > 36 || printops.base > 16)) {
+			if(printops.base != programming_outbase) {
+				set_output_base_from_dialog(programming_outbase);
+				output_base_updated_from_menu();
+			}
+			if(evalops.parse_options.base != programming_inbase) {
+				evalops.parse_options.base = programming_inbase;
+				input_base_updated_from_menu();
+				update_keypad_bases();
+				expression_format_updated();
+			}
+		}
+		programming_inbase = 0;
+		programming_outbase = 0;
+		gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "programmers_keypad")));
 	} else {
 		gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "versatile_keypad")));
 		visible_keypad = 0;
+		programming_inbase = evalops.parse_options.base;
+		programming_outbase = printops.base;
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_dec")), TRUE);
 	}
 }
 
-void on_popup_menu_show_programmers_keypad_activate(GtkMenuItem*, gpointer) {
+void on_popup_menu_programmers_keypad_toggled(GtkCheckMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(w)) return;
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_programmers_keypad")), TRUE);
 }
-
-
-gboolean on_versatile_keypad_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
-		if(b_busy) return TRUE;
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_versatile_keypad")), (GdkEvent*) event);
-#else
-		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_versatile_keypad")), NULL, NULL, NULL, NULL, event->button, event->time);
-#endif
-		return TRUE;
-	}
-	return FALSE;
-}
-
-gboolean on_versatile_keypad_popup_menu(GtkWidget*, gpointer) {
-	if(b_busy) return TRUE;
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-	gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_versatile_keypad")), NULL);
-#else
-	gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_versatile_keypad")), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
-#endif
-	return TRUE;
-}
-
-void on_popup_menu_hide_programmers_keypad_activate(GtkMenuItem*, gpointer) {
+void on_popup_menu_general_keypad_toggled(GtkCheckMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(w)) return;
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_programmers_keypad")), FALSE);
 }
 
+void update_popup_menu_left_keypad() {
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_programmers_keypad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_programmers_keypad_toggled, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_general_keypad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_general_keypad_toggled, NULL);
+	if(visible_keypad == 1) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_programmers_keypad")), TRUE);
+	else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_general_keypad")), TRUE);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_programmers_keypad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_programmers_keypad_toggled, NULL);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_general_keypad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_general_keypad_toggled, NULL);
+}
 
-gboolean on_programmers_keypad_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
+gboolean on_stack_left_buttons_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
 	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
 		if(b_busy) return TRUE;
+		update_popup_menu_left_keypad();
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_programmers_keypad")), (GdkEvent*) event);
+		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_left_keypad")), (GdkEvent*) event);
 #else
-		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_programmers_keypad")), NULL, NULL, NULL, NULL, event->button, event->time);
+		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_left_keypad")), NULL, NULL, NULL, NULL, event->button, event->time);
 #endif
 		return TRUE;
 	}
 	return FALSE;
 }
-
-gboolean on_programmers_keypad_popup_menu(GtkWidget*, gpointer) {
+gboolean on_stack_left_buttons_popup_menu(GtkWidget*, gpointer) {
 	if(b_busy) return TRUE;
+	update_popup_menu_left_keypad();
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-	gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_programmers_keypad")), NULL);
+	gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_left_keypad")), NULL);
 #else
-	gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_programmers_keypad")), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
+	gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_left_keypad")), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
 #endif
 	return TRUE;
 }
@@ -15821,7 +15997,12 @@ void on_button_cosine_clicked(GtkButton*, gpointer) {
 }
 
 void on_button_mod_clicked(GtkButton*, gpointer) {
-	insertButtonFunction(CALCULATOR->f_mod);
+	if(rpn_mode || evalops.parse_options.rpn) {
+		insertButtonFunction(CALCULATOR->f_mod);
+	} else {
+		wrap_expression_selection();
+		insert_text(" mod ");
+	}
 }
 
 void on_button_reciprocal_clicked(GtkButton*, gpointer) {
@@ -15832,12 +16013,21 @@ void on_button_reciprocal_clicked(GtkButton*, gpointer) {
 		insert_text("^-1");
 	}
 }
-void on_button_rem_clicked(GtkButton*, gpointer) {
+void on_button_mod2_clicked(GtkButton*, gpointer) {
 	if(rpn_mode || evalops.parse_options.rpn) {
-		insertButtonFunction(CALCULATOR->getActiveFunction("rem"));
+		insertButtonFunction(CALCULATOR->f_mod);
 	} else {
 		wrap_expression_selection();
-		insert_text("%");
+		insert_text(" mod ");
+	}
+}
+
+void on_button_idiv_clicked(GtkButton*, gpointer) {
+	if(rpn_mode || evalops.parse_options.rpn) {
+		insertButtonFunction(CALCULATOR->getActiveFunction("idivide"));
+	} else {
+		wrap_expression_selection();
+		insert_text("//");
 	}
 }
 
@@ -16658,8 +16848,13 @@ void on_button_exp_clicked(GtkButton*, gpointer) {
 		calculateRPN(OPERATION_EXP10);
 		return;
 	}
-	if(printops.lower_case_e) insert_text("e");
-	else insert_text("E");	
+	if(evalops.parse_options.base != 10 && evalops.parse_options.base >= 2) {
+		wrap_expression_selection();
+		insert_text((expression_times_sign() + i2s(evalops.parse_options.base) + "^").c_str());
+	} else {
+		if(printops.lower_case_e) insert_text("e");
+		else insert_text("E");
+	}
 }
 void on_button_xy_clicked(GtkButton*, gpointer) {
 	if(rpn_mode) {
@@ -18608,52 +18803,52 @@ void input_base_updated_from_menu() {
 void on_menu_item_binary_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.base = BASE_BINARY;
-	result_format_updated();
 	output_base_updated_from_menu();
 	update_keypad_bases();
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_base")), 0);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
+	result_format_updated();
 }
 void on_menu_item_octal_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.base = BASE_OCTAL;
-	result_format_updated();
 	output_base_updated_from_menu();
 	update_keypad_bases();
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_base")), 1);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
+	result_format_updated();
 }
 void on_menu_item_decimal_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.base = BASE_DECIMAL;
-	result_format_updated();
 	output_base_updated_from_menu();
 	update_keypad_bases();
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_base")), 2);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
+	result_format_updated();
 }
 void on_menu_item_duodecimal_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.base = 12;
-	result_format_updated();
 	output_base_updated_from_menu();
 	update_keypad_bases();
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_base")), 3);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
+	result_format_updated();
 }
 void on_menu_item_hexadecimal_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.base = BASE_HEXADECIMAL;
-	result_format_updated();
 	output_base_updated_from_menu();
 	update_keypad_bases();
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_base")), 4);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
+	result_format_updated();
 }
 void on_menu_item_custom_base_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
@@ -18751,64 +18946,64 @@ void on_menu_item_set_base_activate(GtkMenuItem*, gpointer) {
 void on_set_base_radiobutton_input_binary_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
 	evalops.parse_options.base = BASE_BINARY;
-	expression_format_updated(true);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_spinbutton_input_other")), FALSE);
 	on_historyview_selection_changed(NULL, NULL);
 	update_keypad_bases();
+	expression_format_updated(true);
 }
 void on_set_base_radiobutton_input_octal_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
 	evalops.parse_options.base = BASE_OCTAL;
-	expression_format_updated(true);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_spinbutton_input_other")), FALSE);
 	on_historyview_selection_changed(NULL, NULL);
 	update_keypad_bases();
+	expression_format_updated(true);
 }
 void on_set_base_radiobutton_input_decimal_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
 	evalops.parse_options.base = BASE_DECIMAL;
-	expression_format_updated(true);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_spinbutton_input_other")), FALSE);
 	on_historyview_selection_changed(NULL, NULL);
 	update_keypad_bases();
+	expression_format_updated(true);
 }
 void on_set_base_radiobutton_input_duodecimal_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
 	evalops.parse_options.base = 12;
-	expression_format_updated(true);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_spinbutton_input_other")), FALSE);
 	on_historyview_selection_changed(NULL, NULL);
 	update_keypad_bases();
+	expression_format_updated(true);
 }
 void on_set_base_radiobutton_input_hexadecimal_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
 	evalops.parse_options.base = BASE_HEXADECIMAL;
-	expression_format_updated(true);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_spinbutton_input_other")), FALSE);
 	on_historyview_selection_changed(NULL, NULL);
 	update_keypad_bases();
+	expression_format_updated(true);
 }
 void on_set_base_radiobutton_input_other_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
 	evalops.parse_options.base = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_spinbutton_input_other")));
-	expression_format_updated(true);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_spinbutton_input_other")), TRUE);
 	on_historyview_selection_changed(NULL, NULL);
 	update_keypad_bases();
+	expression_format_updated(true);
 }
 void on_set_base_spinbutton_input_other_value_changed(GtkSpinButton *w, gpointer) {
 	evalops.parse_options.base = gtk_spin_button_get_value_as_int(w);
-	expression_format_updated(true);
 	on_historyview_selection_changed(NULL, NULL);
 	update_keypad_bases();
+	expression_format_updated(true);
 }
 void on_set_base_radiobutton_input_roman_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
 	evalops.parse_options.base = BASE_ROMAN_NUMERALS;
-	expression_format_updated(true);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_spinbutton_input_other")), FALSE);
 	on_historyview_selection_changed(NULL, NULL);
 	update_keypad_bases();
+	expression_format_updated(true);
 }
 void on_menu_item_abbreviate_names_activate(GtkMenuItem *w, gpointer) {
 	printops.abbreviate_names = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
@@ -21056,6 +21251,7 @@ void on_nbases_entry_binary_changed(GtkEditable *editable, gpointer) {
 	EvaluationOptions eo;
 	eo.parse_options.base = BASE_BINARY;
 	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
+	eo.parse_options.twos_complement = twos_complement_in;
 	changing_in_nbases_dialog = true;	
 	MathStructure value;
 	do_timeout = false;
@@ -21090,6 +21286,7 @@ void on_nbases_entry_hexadecimal_changed(GtkEditable *editable, gpointer) {
 	EvaluationOptions eo;
 	eo.parse_options.base = BASE_HEXADECIMAL;
 	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
+	eo.parse_options.hexadecimal_twos_complement = hexadecimal_twos_complement_in;
 	changing_in_nbases_dialog = true;	
 	MathStructure value;
 	do_timeout = false;
