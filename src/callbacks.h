@@ -193,6 +193,7 @@ void insert_prefix(GtkMenuItem *w, gpointer user_data);
 void insert_unit(GtkMenuItem *w, gpointer user_data);
 
 void insert_button_function(GtkMenuItem *w, gpointer user_data);
+void insert_function_operator(GtkMenuItem *w, gpointer user_data);
 void insert_button_function_norpn(GtkMenuItem *w, gpointer user_data);
 void insert_button_variable(GtkWidget *w, gpointer user_data);
 void insert_button_unit(GtkMenuItem *w, gpointer user_data);
