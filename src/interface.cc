@@ -888,7 +888,7 @@ void create_button_menus(void) {
 	
 	set_keypad_tooltip("button_percent", CALCULATOR->v_percent->title(true).c_str(), CALCULATOR->v_permille->title(true).c_str());
 	
-	set_keypad_tooltip("button_one", NULL, "1/x");
+	set_keypad_tooltip("button_one", NULL, "x<sup>1</sup>", "1/x", true);
 	set_keypad_tooltip("button_two", NULL, "x<sup>2</sup>", "1/2", true);
 	set_keypad_tooltip("button_three", NULL, "x<sup>3</sup>", "1/3", true);
 	set_keypad_tooltip("button_four", NULL, "x<sup>4</sup>", "1/4", true);
@@ -897,7 +897,7 @@ void create_button_menus(void) {
 	set_keypad_tooltip("button_seven", NULL, "x<sup>7</sup>", "1/7", true);
 	set_keypad_tooltip("button_eight", NULL, "x<sup>8</sup>", "1/8", true);
 	set_keypad_tooltip("button_nine", NULL, "x<sup>9</sup>", "1/9", true);
-	set_keypad_tooltip("button_zero", NULL, CALCULATOR->getDegUnit()->title(true).c_str());
+	set_keypad_tooltip("button_zero", NULL, "x<sup>0</sup>", CALCULATOR->getDegUnit()->title(true).c_str(), true);
 	
 	set_keypad_tooltip("button_xy", _("Raise (Ctrl+*)"), CALCULATOR->f_sqrt->title(true).c_str());
 	set_keypad_tooltip("button_divide", _("Divide"), "1/x");

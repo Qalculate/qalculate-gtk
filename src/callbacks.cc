@@ -16361,7 +16361,7 @@ void do_completion() {
 	GtkTreeIter iter;
 	int matches = 0;
 	bool show_separator1 = false, show_separator2 = false;
-	if(str.length() > 0 && is_not_in(NUMBERS NOT_IN_NAMES, str[0]) && gtk_tree_model_get_iter_first(GTK_TREE_MODEL(completion_store), &iter)) {
+	if(str.length() > 0 && is_not_in(NUMBERS NOT_IN_NAMES "%", str[0]) && gtk_tree_model_get_iter_first(GTK_TREE_MODEL(completion_store), &iter)) {
 		string str2, str3, str4;
 		Prefix *p2 = NULL, *p3 = NULL, *p4 = NULL;
 		if(str.length() > (size_t) completion_min) {
@@ -16579,30 +16579,330 @@ void on_convert_entry_unit_changed(GtkEditable *w, gpointer) {
 	if(!keep_unit_selection) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector)));
 }
 
-unordered_map<GtkWidget*, guint32> button_press_time;
-
-
-gboolean on_button_move2_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
-	bool b = (event->type == GDK_BUTTON_RELEASE && (event->button == 2 || event->button == 3));
-	if(!b && event->type == GDK_BUTTON_RELEASE && event->button == 1) {
-		unordered_map<GtkWidget*, guint32>::const_iterator it = button_press_time.find(w);
-		if(it != button_press_time.end()) {
-			b = (event->time - it->second) >= 500;
-			button_press_time.erase(it);
+gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
+	if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_divide"))) {
+		insertButtonFunction(CALCULATOR->getActiveFunction("inv"));
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_one"))) {
+		if(b2) {
+			insertButtonFunction(CALCULATOR->getActiveFunction("inv"));
+		} else {
+			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_1, (void*) expressiontext)) insert_text(SIGN_POWER_1);
+			else insert_text("^1");
 		}
-		if(event->window && (event->x < 0 || event->y < 0 || event->x > gdk_window_get_width(event->window) || event->y > gdk_window_get_height(event->window))) return FALSE;
-		if(!b) {
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_two"))) {
+		if(b2) {
+			if(printops.use_unicode_signs && can_display_unicode_string_function("½", (void*) expressiontext)) insert_text("½");
+			else insert_text("(1/2)");
+		} else {
+			bool do_exec = wrap_expression_selection();
+			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_2, (void*) expressiontext)) insert_text(SIGN_POWER_2);
+			else insert_text("^2");
+			if(do_exec) execute_expression();
+		}
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_three"))) {
+		if(b2) {
+			if(printops.use_unicode_signs && can_display_unicode_string_function("⅓", (void*) expressiontext)) insert_text("⅓");
+			else insert_text("(1/3)");
+		} else {
+			bool do_exec = wrap_expression_selection();
+			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_3, (void*) expressiontext)) insert_text(SIGN_POWER_3);
+			else insert_text("^3");
+			if(do_exec) execute_expression();
+		}
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_four"))) {
+		if(b2) {
+			if(printops.use_unicode_signs && can_display_unicode_string_function("¼", (void*) expressiontext)) insert_text("¼");
+			else insert_text("(1/4)");
+		} else {
+			bool do_exec = wrap_expression_selection();
+			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_4, (void*) expressiontext)) insert_text(SIGN_POWER_4);
+			else insert_text("^4");
+			if(do_exec) execute_expression();
+		}
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_five"))) {
+		bool do_exec = wrap_expression_selection();
+		if(b2) {
+			if(printops.use_unicode_signs && can_display_unicode_string_function("⅕", (void*) expressiontext)) insert_text("⅕");
+			else insert_text("(1/5)");
+		} else {
+			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_5, (void*) expressiontext)) insert_text(SIGN_POWER_5);
+			else insert_text("^5");
+			if(do_exec) execute_expression();
+		}
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_six"))) {
+		if(b2) {
+			if(printops.use_unicode_signs && can_display_unicode_string_function("⅙", (void*) expressiontext)) insert_text("⅙");
+			else insert_text("(1/6)");
+		} else {
+			bool do_exec = wrap_expression_selection();
+			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_6, (void*) expressiontext)) insert_text(SIGN_POWER_6);
+			else insert_text("^6");
+			if(do_exec) execute_expression();
+		}
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_seven"))) {
+		if(b2) {
+			if(printops.use_unicode_signs && can_display_unicode_string_function("⅐", (void*) expressiontext)) insert_text("⅐");
+			else insert_text("(1/7)");
+		} else {
+			bool do_exec = wrap_expression_selection();
+			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_7, (void*) expressiontext)) insert_text(SIGN_POWER_7);
+			else insert_text("^7");
+			if(do_exec) execute_expression();
+		}
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_eight"))) {
+		if(b2) {
+			if(printops.use_unicode_signs && can_display_unicode_string_function("⅛", (void*) expressiontext)) insert_text("⅛");
+			else insert_text("(1/8)");
+		} else {
+			bool do_exec = wrap_expression_selection();
+			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_8, (void*) expressiontext)) insert_text(SIGN_POWER_8);
+			else insert_text("^8");
+			if(do_exec) execute_expression();
+		}
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_nine"))) {
+		if(b2) {
+			if(printops.use_unicode_signs && can_display_unicode_string_function("⅑", (void*) expressiontext)) insert_text("⅑");
+			else insert_text("(1/9)");
+		} else {
+			bool do_exec = wrap_expression_selection();
+			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_9, (void*) expressiontext)) insert_text(SIGN_POWER_9);
+			else insert_text("^9");
+			if(do_exec) execute_expression();
+		}
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_zero"))) {
+		if(b2) {
+			insert_text(SIGN_DEGREE);
+		} else {
+			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_0, (void*) expressiontext)) insert_text(SIGN_POWER_0);
+			else insert_text("^0");
+		}
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_open"))) {
+		insert_text("[");
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_close"))) {
+		insert_text("]");
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_wrap"))) {
+		if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
+			GtkTextIter istart, iend;
+			gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
+			gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &istart, &iend, FALSE);
+			string str = "[";
+			str += gstr;
+			str += "]";
+			insert_text(str.c_str());
+			g_free(gstr);
+		} else {
+			insert_text("[]");
 			GtkTextIter iter;
 			gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iter, gtk_text_buffer_get_insert(expressionbuffer));
-			if(event->window && event->x > gdk_window_get_width(event->window) / 2) {
-				gtk_text_iter_forward_char(&iter);
-			} else {
-				gtk_text_iter_backward_char(&iter);
-			}
+			gtk_text_iter_backward_char(&iter);
 			gtk_text_buffer_place_cursor(expressionbuffer, &iter);
 		}
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_add"))) {
+		insert_bitwise_and();
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sub"))) {
+		insert_bitwise_or();
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_times"))) {
+		insert_bitwise_xor();
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_xy"))) {
+		insertButtonFunction(CALCULATOR->f_sqrt);
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_del"))) {
+		if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
+			overwrite_expression_selection(NULL);
+		} else {
+			block_completion();
+			GtkTextMark *mpos = gtk_text_buffer_get_insert(expressionbuffer);
+			GtkTextIter ipos, iend;
+			gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mpos);
+			iend = ipos;
+			if(gtk_text_iter_backward_char(&ipos)) {
+				gtk_text_buffer_delete(expressionbuffer, &ipos, &iend);
+			}
+			gtk_widget_grab_focus(expressiontext);
+			unblock_completion();
+		}
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_ans"))) {
+		if(history_answer.size() > 0) {
+			string str = f_answer->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name;
+			Number nr(history_answer.size(), 1);
+			PrintOptions po;
+			po.base = evalops.parse_options.base;
+			po.base_display = BASE_DISPLAY_NONE;
+			str += '(';
+			str += nr.print(po);
+			str += ')';
+			insert_text(str.c_str());
+		}
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_percent"))) {
+		insert_var(CALCULATOR->v_permille);
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_plusminus"))) {
+		if(b2) insertButtonFunction(CALCULATOR->f_interval);
+		else insertButtonFunction(CALCULATOR->f_uncertainty);
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_bin"))) {
+		base_button_alternative(2);
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_oct"))) {
+		base_button_alternative(8);
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_dec"))) {
+		base_button_alternative(10);
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_hex"))) {
+		base_button_alternative(16);
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_mod2"))) {
+		if(expression_is_empty() || rpn_mode || evalops.parse_options.rpn) {
+			insertButtonFunction(CALCULATOR->f_rem);
+		} else {
+			wrap_expression_selection();
+			insert_text(" rem ");
+		}
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sqrt2"))) {
+		insertButtonFunction(CALCULATOR->f_cbrt);
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_expf"))) {
+		insertButtonFunction(CALCULATOR->getActiveFunction("exp2"));
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_log2"))) {
+		insertButtonFunction(CALCULATOR->getActiveFunction("log10"));
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_and"))) {
+		if(rpn_mode) {calculateRPN(OPERATION_LOGICAL_AND); return TRUE;}
+		if(!evalops.parse_options.rpn) wrap_expression_selection();
+		insert_text("&&");
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_or"))) {
+		if(rpn_mode) {calculateRPN(OPERATION_LOGICAL_OR); return TRUE;}
+		if(!evalops.parse_options.rpn) wrap_expression_selection();
+		insert_text("||");
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_not"))) {
+		if(rpn_mode) {
+			if(expression_has_changed) {
+				if(get_expression_text().find_first_not_of(SPACES) != string::npos) {
+					execute_expression(true);
+				}
+			}
+			execute_expression(true, false, OPERATION_ADD, NULL, false, 0, "!");
+			return TRUE;
+		}
+		if(!evalops.parse_options.rpn && wrap_expression_selection("!")) return TRUE;
+		insert_text("!");
+		return TRUE;
 	}
-	if(b) {
+	return FALSE;
+}
+
+guint button_press_timeout_id = 0;
+GtkWidget *button_press_timeout_w = NULL;
+int button_press_timeout_side = 0;
+bool button_press_timeout_done = false;
+
+gboolean keypad_long_press_timeout(gpointer data) {
+	if(!button_press_timeout_w) {
+		button_press_timeout_id = 0;
+		button_press_timeout_w = NULL;
+		button_press_timeout_side = 0;
+		button_press_timeout_done = false;
+		return FALSE;
+	}
+	if(data) {
+		if(GTK_WIDGET(data) == GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_to"))) {
+			if(b_busy) return TRUE;
+			update_mb_to_menu();
+		}
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+		gtk_menu_popup_at_widget(GTK_MENU(data), button_press_timeout_w, GDK_GRAVITY_SOUTH_WEST, GDK_GRAVITY_NORTH_WEST, gtk_get_current_event());
+#else
+		gtk_menu_popup(GTK_MENU(data), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
+#endif
+	} else if(button_press_timeout_w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move2"))) {
+		GtkTextIter iter;
+		gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iter, gtk_text_buffer_get_insert(expressionbuffer));
+		if(button_press_timeout_side == 2) {
+			gtk_text_iter_forward_char(&iter);
+		} else {
+			gtk_text_iter_backward_char(&iter);
+		}
+		gtk_text_buffer_place_cursor(expressionbuffer, &iter);
+		button_press_timeout_done = true;
+		return TRUE;
+	} else if(button_press_timeout_w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move"))) {
+		if(button_press_timeout_side == 2) {
+			if(expression_history_index > -1) {
+				expression_history_index--;
+				dont_change_index = true;
+				block_completion();
+				if(expression_history_index < 0) {
+					clear_expression_text();
+				} else {
+					set_expression_text(expression_history[expression_history_index].c_str());
+				}
+				unblock_completion();
+				dont_change_index = false;
+			}
+		} else {
+			if(expression_history_index + 1 < (int) expression_history.size()) {
+				expression_history_index++;
+				dont_change_index = true;
+				block_completion();
+				set_expression_text(expression_history[expression_history_index].c_str());
+				unblock_completion();
+				dont_change_index = false;
+			}
+		}
+		button_press_timeout_done = true;
+		return TRUE;
+	} else {
+		on_keypad_button_alt(button_press_timeout_w, false);
+	}
+	button_press_timeout_done = true;
+	button_press_timeout_id = 0;
+	return FALSE;
+}
+
+gboolean on_button_move2_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
+	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
+		g_source_remove(button_press_timeout_id);
+		bool b_this = (button_press_timeout_w == w);
+		button_press_timeout_id = 0;
+		button_press_timeout_w = NULL;
+		button_press_timeout_side = 0;
+		if(button_press_timeout_done) {
+			button_press_timeout_done = false;
+			if(b_this) return TRUE;
+		}
+	}
+	if(event->type == GDK_BUTTON_PRESS && event->button == 1) {
+		button_press_timeout_w = w;
+		if(event->window && event->x > gdk_window_get_width(event->window) / 2) button_press_timeout_side = 2;
+		else button_press_timeout_side = 1;
+		button_press_timeout_id = g_timeout_add(250, keypad_long_press_timeout, NULL);
+		return FALSE;
+	}
+	if(event->type == GDK_BUTTON_RELEASE && (event->button == 2 || event->button == 3)) {
 		GtkTextIter iter;
 		if(event->window && event->x > gdk_window_get_width(event->window) / 2) {
 			gtk_text_buffer_get_end_iter(expressionbuffer, &iter);
@@ -16610,11 +16910,37 @@ gboolean on_button_move2_button_event(GtkWidget *w, GdkEventButton *event, gpoin
 			gtk_text_buffer_get_start_iter(expressionbuffer, &iter);
 		}
 		gtk_text_buffer_place_cursor(expressionbuffer, &iter);
+	} else {
+		GtkTextIter iter;
+		gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iter, gtk_text_buffer_get_insert(expressionbuffer));
+		if(event->window && event->x > gdk_window_get_width(event->window) / 2) {
+			gtk_text_iter_forward_char(&iter);
+		} else {
+			gtk_text_iter_backward_char(&iter);
+		}
+		gtk_text_buffer_place_cursor(expressionbuffer, &iter);
 	}
-	if(event->type == GDK_BUTTON_PRESS && event->button == 1) button_press_time[w] = event->time;
 	return FALSE;
 }
 gboolean on_button_move_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
+	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
+		g_source_remove(button_press_timeout_id);
+		bool b_this = (button_press_timeout_w == w);
+		button_press_timeout_id = 0;
+		button_press_timeout_w = NULL;
+		button_press_timeout_side = 0;
+		if(button_press_timeout_done) {
+			button_press_timeout_done = false;
+			if(b_this) return TRUE;
+		}
+	}
+	if(event->type == GDK_BUTTON_PRESS && event->button == 1) {
+		button_press_timeout_w = w;
+		if(event->window && event->x > gdk_window_get_width(event->window) / 2) button_press_timeout_side = 2;
+		else button_press_timeout_side = 1;
+		button_press_timeout_id = g_timeout_add(250, keypad_long_press_timeout, NULL);
+		return FALSE;
+	}
 	if(event->type == GDK_BUTTON_RELEASE && event->button == 1) {
 		if(event->window && (event->x < 0 || event->y < 0 || event->x > gdk_window_get_width(event->window) || event->y > gdk_window_get_height(event->window))) return FALSE;
 		if(event->window && event->x > gdk_window_get_width(event->window) / 2) {
@@ -16645,245 +16971,53 @@ gboolean on_button_move_button_event(GtkWidget *w, GdkEventButton *event, gpoint
 }
 
 gboolean on_keypad_button_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
-	bool b = (event->type == GDK_BUTTON_RELEASE && (event->button == 2 || event->button == 3));
-	if(!b && event->type == GDK_BUTTON_RELEASE && event->button == 1) {
-		unordered_map<GtkWidget*, guint32>::const_iterator it = button_press_time.find(w);
-		if(it != button_press_time.end()) {
-			b = (event->time - it->second) >= 500;
-			if(event->window && (event->x < 0 || event->y < 0 || event->x > gdk_window_get_width(event->window) || event->y > gdk_window_get_height(event->window))) b = false;
-			button_press_time.erase(it);
-		}
+	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
+		g_source_remove(button_press_timeout_id);
+		button_press_timeout_id = 0;
+		button_press_timeout_w = NULL;
+		button_press_timeout_side = 0;
+		button_press_timeout_done = false;
+	} else if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_done) {
+		button_press_timeout_done = false;
+		bool b_this = (button_press_timeout_w == w);
+		button_press_timeout_w = NULL;
+		button_press_timeout_side = 0;
+		if(b_this) return TRUE;
 	}
-	if(b) {
-		if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_divide"))) {
-			insertButtonFunction(CALCULATOR->getActiveFunction("inv"));
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_one"))) {
-			insertButtonFunction(CALCULATOR->getActiveFunction("inv"));
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_two"))) {
-			if(event->button == 2) {
-				if(printops.use_unicode_signs && can_display_unicode_string_function("½", (void*) expressiontext)) insert_text("½");
-				else insert_text("(1/2)");
-			} else {
-				bool do_exec = wrap_expression_selection();
-				if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_2, (void*) expressiontext)) insert_text(SIGN_POWER_2);
-				else insert_text("^2");
-				if(do_exec) execute_expression();
-			}
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_three"))) {
-			if(event->button == 2) {
-				if(printops.use_unicode_signs && can_display_unicode_string_function("⅓", (void*) expressiontext)) insert_text("⅓");
-				else insert_text("(1/3)");
-			} else {
-				bool do_exec = wrap_expression_selection();
-				if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_3, (void*) expressiontext)) insert_text(SIGN_POWER_3);
-				else insert_text("^3");
-				if(do_exec) execute_expression();
-			}
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_four"))) {
-			if(event->button == 2) {
-				if(printops.use_unicode_signs && can_display_unicode_string_function("¼", (void*) expressiontext)) insert_text("¼");
-				else insert_text("(1/4)");
-			} else {
-				bool do_exec = wrap_expression_selection();
-				if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_4, (void*) expressiontext)) insert_text(SIGN_POWER_4);
-				else insert_text("^4");
-				if(do_exec) execute_expression();
-			}
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_five"))) {
-			bool do_exec = wrap_expression_selection();
-			if(event->button == 2) {
-				if(printops.use_unicode_signs && can_display_unicode_string_function("⅕", (void*) expressiontext)) insert_text("⅕");
-				else insert_text("(1/5)");
-			} else {
-				if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_5, (void*) expressiontext)) insert_text(SIGN_POWER_5);
-				else insert_text("^5");
-				if(do_exec) execute_expression();
-			}
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_six"))) {
-			if(event->button == 2) {
-				if(printops.use_unicode_signs && can_display_unicode_string_function("⅙", (void*) expressiontext)) insert_text("⅙");
-				else insert_text("(1/6)");
-			} else {
-				bool do_exec = wrap_expression_selection();
-				if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_6, (void*) expressiontext)) insert_text(SIGN_POWER_6);
-				else insert_text("^6");
-				if(do_exec) execute_expression();
-			}
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_seven"))) {
-			if(event->button == 2) {
-				if(printops.use_unicode_signs && can_display_unicode_string_function("⅐", (void*) expressiontext)) insert_text("⅐");
-				insert_text("(1/7)");
-			} else {
-				bool do_exec = wrap_expression_selection();
-				if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_7, (void*) expressiontext)) insert_text(SIGN_POWER_7);
-				else insert_text("^7");
-				if(do_exec) execute_expression();
-			}
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_eight"))) {
-			if(event->button == 2) {
-				if(printops.use_unicode_signs && can_display_unicode_string_function("⅛", (void*) expressiontext)) insert_text("⅛");
-				else insert_text("(1/8)");
-			} else {
-				bool do_exec = wrap_expression_selection();
-				if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_8, (void*) expressiontext)) insert_text(SIGN_POWER_8);
-				else insert_text("^8");
-				if(do_exec) execute_expression();
-			}
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_nine"))) {
-			if(event->button == 2) {
-				if(printops.use_unicode_signs && can_display_unicode_string_function("⅑", (void*) expressiontext)) insert_text("⅑");
-				insert_text("(1/9)");
-			} else {
-				bool do_exec = wrap_expression_selection();
-				if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_9, (void*) expressiontext)) insert_text(SIGN_POWER_9);
-				else insert_text("^9");
-				if(do_exec) execute_expression();
-			}
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_zero"))) {
-			insert_text(SIGN_DEGREE);
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_open"))) {
-			insert_text("[");
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_close"))) {
-			insert_text("]");
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_wrap"))) {
-			if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
-				GtkTextIter istart, iend;
-				gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
-				gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &istart, &iend, FALSE);
-				string str = "[";
-				str += gstr;
-				str += "]";
-				insert_text(str.c_str());
-				g_free(gstr);
-			} else {
-				insert_text("[]");
-				GtkTextIter iter;
-				gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iter, gtk_text_buffer_get_insert(expressionbuffer));
-				gtk_text_iter_backward_char(&iter);
-				gtk_text_buffer_place_cursor(expressionbuffer, &iter);
-			}
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_add"))) {
-			insert_bitwise_and();
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sub"))) {
-			insert_bitwise_or();
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_times"))) {
-			insert_bitwise_xor();
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_xy"))) {
-			insertButtonFunction(CALCULATOR->f_sqrt);
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_del"))) {
-			if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
-				overwrite_expression_selection(NULL);
-			} else {
-				block_completion();
-				GtkTextMark *mpos = gtk_text_buffer_get_insert(expressionbuffer);
-				GtkTextIter ipos, iend;
-				gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mpos);
-				iend = ipos;
-				if(gtk_text_iter_backward_char(&ipos)) {
-					gtk_text_buffer_delete(expressionbuffer, &ipos, &iend);
-				}
-				gtk_widget_grab_focus(expressiontext);
-				unblock_completion();
-			}
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_ans"))) {
-			if(history_answer.size() > 0) {
-				string str = f_answer->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name;
-				Number nr(history_answer.size(), 1);
-				PrintOptions po;
-				po.base = evalops.parse_options.base;
-				po.base_display = BASE_DISPLAY_NONE;
-				str += '(';
-				str += nr.print(po);
-				str += ')';
-				insert_text(str.c_str());
-			}
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_percent"))) {
-			insert_var(CALCULATOR->v_permille);
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_plusminus"))) {
-			if(event->button == 2) insertButtonFunction(CALCULATOR->f_interval);
-			else insertButtonFunction(CALCULATOR->f_uncertainty);
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_bin"))) {
-			base_button_alternative(2);
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_oct"))) {
-			base_button_alternative(8);
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_dec"))) {
-			base_button_alternative(10);
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_hex"))) {
-			base_button_alternative(16);
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_mod2"))) {
-			if(expression_is_empty() || rpn_mode || evalops.parse_options.rpn) {
-				insertButtonFunction(CALCULATOR->f_rem);
-			} else {
-				wrap_expression_selection();
-				insert_text(" rem ");
-			}
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sqrt2"))) {
-			insertButtonFunction(CALCULATOR->f_cbrt);
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_expf"))) {
-			insertButtonFunction(CALCULATOR->getActiveFunction("exp2"));
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_log2"))) {
-			insertButtonFunction(CALCULATOR->getActiveFunction("log10"));
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_and"))) {
-			if(rpn_mode) {calculateRPN(OPERATION_LOGICAL_AND); return TRUE;}
-			if(!evalops.parse_options.rpn) wrap_expression_selection();
-			insert_text("&&");
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_or"))) {
-			if(rpn_mode) {calculateRPN(OPERATION_LOGICAL_OR); return TRUE;}
-			if(!evalops.parse_options.rpn) wrap_expression_selection();
-			insert_text("||");
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_not"))) {
-			if(rpn_mode) {
-				if(expression_has_changed) {
-					if(get_expression_text().find_first_not_of(SPACES) != string::npos) {
-						execute_expression(true);
-					}
-				}
-				execute_expression(true, false, OPERATION_ADD, NULL, false, 0, "!");
-				return TRUE;
-			}
-			if(!evalops.parse_options.rpn && wrap_expression_selection("!")) return TRUE;
-			insert_text("!");
-			return TRUE;
-		}
+	if(event->type == GDK_BUTTON_PRESS && event->button == 1) {
+		button_press_timeout_w = w;
+		button_press_timeout_side = 0;
+		button_press_timeout_id = g_timeout_add(500, keypad_long_press_timeout, NULL);
+		return FALSE;
 	}
-	if(event->type == GDK_BUTTON_PRESS && event->button == 1) button_press_time[w] = event->time;
+	if(event->type == GDK_BUTTON_RELEASE && (event->button == 2 || event->button == 3)) {
+		if(on_keypad_button_alt(w, event->button == 2)) return TRUE;
+	}
 	return FALSE;
 }
 
 gboolean on_keypad_menu_button_button_event(GtkWidget *w, GdkEventButton *event, gpointer data) {
-	if(event->type == GDK_BUTTON_RELEASE && (event->button == 2 || event->button == 3)) {
+	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
+		g_source_remove(button_press_timeout_id);
+		button_press_timeout_id = 0;
+		button_press_timeout_w = NULL;
+		button_press_timeout_side = 0;
+		button_press_timeout_done = false;
+	} else if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_done) {
+		button_press_timeout_done = false;
+		bool b_this = (button_press_timeout_w == w);
+		button_press_timeout_w = NULL;
+		button_press_timeout_side = 0;
+		if(b_this) return TRUE;
+	}
+	if(event->type == GDK_BUTTON_PRESS && event->button == 1) {
+		button_press_timeout_w = w;
+		button_press_timeout_side = 0;
+		button_press_timeout_id = g_timeout_add(500, keypad_long_press_timeout, data);
+		return FALSE;
+	}
+	bool b = (event->type == GDK_BUTTON_RELEASE && (event->button == 2 || event->button == 3));
+	if(b) {
 		if(GTK_WIDGET(data) == GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_to"))) {
 			if(b_busy) return TRUE;
 			update_mb_to_menu();
