@@ -995,8 +995,7 @@ void set_unicode_buttons() {
 		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_factorize")), _("Expand"));
 	}
 	pango_font_description_free(font_desc);
-	gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_xy2"))), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_xy2")), (string("x") + SUP_STRING("y")).c_str());
+	gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_reciprocal"))), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
 	if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(main_builder, "label_reciprocal"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_reciprocal")), (string("x") + SUP_STRING(SIGN_MINUS "1")).c_str());
 	else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_reciprocal")), (string("x") + SUP_STRING("-1")).c_str());
 	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_log2")), (string("log") + SUB_STRING("2")).c_str());
@@ -12023,7 +12022,7 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 	}
 	string str2;
 	int index = 2;
-	if((arg2 && (f == CALCULATOR->f_root || arg2->type() == ARGUMENT_TYPE_INTEGER)) || (arg && arg->type() == ARGUMENT_TYPE_INTEGER)) {
+	if(f->minargs() > 1 && ((arg2 && (f == CALCULATOR->f_root || arg2->type() == ARGUMENT_TYPE_INTEGER)) xor (arg && arg->type() == ARGUMENT_TYPE_INTEGER))) {
 		if(arg && arg->type() == ARGUMENT_TYPE_INTEGER) {
 			arg2 = arg;
 			index = 1;
@@ -12668,6 +12667,7 @@ void on_expressiontext_populate_popup(GtkTextView*, GtkMenu *menu, gpointer) {
 	gtk_widget_set_sensitive(item, modes.size() > 2);
 	sub = sub2;
 	MENU_SEPARATOR
+	MENU_ITEM(_("Insert Date…"), on_menu_item_insert_date_activate)
 	MENU_ITEM(_("Insert Matrix…"), on_menu_item_insert_matrix_activate)
 	MENU_ITEM(_("Insert Vector…"), on_menu_item_insert_vector_activate)
 }
@@ -16658,53 +16658,96 @@ gboolean on_keypad_button_button_event(GtkWidget *w, GdkEventButton *event, gpoi
 		if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_divide"))) {
 			insertButtonFunction(CALCULATOR->getActiveFunction("inv"));
 			return TRUE;
+		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_one"))) {
+			insertButtonFunction(CALCULATOR->getActiveFunction("inv"));
+			return TRUE;
 		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_two"))) {
-			bool do_exec = wrap_expression_selection();
-			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_2, (void*) expressiontext)) insert_text(SIGN_POWER_2);
-			else insert_text("^2");
-			if(do_exec) execute_expression();
+			if(event->button == 2) {
+				if(printops.use_unicode_signs && can_display_unicode_string_function("½", (void*) expressiontext)) insert_text("½");
+				else insert_text("(1/2)");
+			} else {
+				bool do_exec = wrap_expression_selection();
+				if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_2, (void*) expressiontext)) insert_text(SIGN_POWER_2);
+				else insert_text("^2");
+				if(do_exec) execute_expression();
+			}
 			return TRUE;
 		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_three"))) {
-			bool do_exec = wrap_expression_selection();
-			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_3, (void*) expressiontext)) insert_text(SIGN_POWER_3);
-			else insert_text("^3");
-			if(do_exec) execute_expression();
+			if(event->button == 2) {
+				if(printops.use_unicode_signs && can_display_unicode_string_function("⅓", (void*) expressiontext)) insert_text("⅓");
+				else insert_text("(1/3)");
+			} else {
+				bool do_exec = wrap_expression_selection();
+				if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_3, (void*) expressiontext)) insert_text(SIGN_POWER_3);
+				else insert_text("^3");
+				if(do_exec) execute_expression();
+			}
 			return TRUE;
 		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_four"))) {
-			bool do_exec = wrap_expression_selection();
-			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_4, (void*) expressiontext)) insert_text(SIGN_POWER_4);
-			else insert_text("^4");
-			if(do_exec) execute_expression();
+			if(event->button == 2) {
+				if(printops.use_unicode_signs && can_display_unicode_string_function("¼", (void*) expressiontext)) insert_text("¼");
+				else insert_text("(1/4)");
+			} else {
+				bool do_exec = wrap_expression_selection();
+				if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_4, (void*) expressiontext)) insert_text(SIGN_POWER_4);
+				else insert_text("^4");
+				if(do_exec) execute_expression();
+			}
 			return TRUE;
 		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_five"))) {
 			bool do_exec = wrap_expression_selection();
-			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_5, (void*) expressiontext)) insert_text(SIGN_POWER_5);
-			else insert_text("^5");
-			if(do_exec) execute_expression();
+			if(event->button == 2) {
+				if(printops.use_unicode_signs && can_display_unicode_string_function("⅕", (void*) expressiontext)) insert_text("⅕");
+				else insert_text("(1/5)");
+			} else {
+				if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_5, (void*) expressiontext)) insert_text(SIGN_POWER_5);
+				else insert_text("^5");
+				if(do_exec) execute_expression();
+			}
 			return TRUE;
 		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_six"))) {
-			bool do_exec = wrap_expression_selection();
-			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_6, (void*) expressiontext)) insert_text(SIGN_POWER_6);
-			else insert_text("^6");
-			if(do_exec) execute_expression();
+			if(event->button == 2) {
+				if(printops.use_unicode_signs && can_display_unicode_string_function("⅙", (void*) expressiontext)) insert_text("⅙");
+				else insert_text("(1/6)");
+			} else {
+				bool do_exec = wrap_expression_selection();
+				if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_6, (void*) expressiontext)) insert_text(SIGN_POWER_6);
+				else insert_text("^6");
+				if(do_exec) execute_expression();
+			}
 			return TRUE;
 		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_seven"))) {
-			bool do_exec = wrap_expression_selection();
-			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_7, (void*) expressiontext)) insert_text(SIGN_POWER_7);
-			else insert_text("^7");
-			if(do_exec) execute_expression();
+			if(event->button == 2) {
+				if(printops.use_unicode_signs && can_display_unicode_string_function("⅐", (void*) expressiontext)) insert_text("⅐");
+				insert_text("(1/7)");
+			} else {
+				bool do_exec = wrap_expression_selection();
+				if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_7, (void*) expressiontext)) insert_text(SIGN_POWER_7);
+				else insert_text("^7");
+				if(do_exec) execute_expression();
+			}
 			return TRUE;
 		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_eight"))) {
-			bool do_exec = wrap_expression_selection();
-			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_8, (void*) expressiontext)) insert_text(SIGN_POWER_8);
-			else insert_text("^8");
-			if(do_exec) execute_expression();
+			if(event->button == 2) {
+				if(printops.use_unicode_signs && can_display_unicode_string_function("⅛", (void*) expressiontext)) insert_text("⅛");
+				else insert_text("(1/8)");
+			} else {
+				bool do_exec = wrap_expression_selection();
+				if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_8, (void*) expressiontext)) insert_text(SIGN_POWER_8);
+				else insert_text("^8");
+				if(do_exec) execute_expression();
+			}
 			return TRUE;
 		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_nine"))) {
-			bool do_exec = wrap_expression_selection();
-			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_9, (void*) expressiontext)) insert_text(SIGN_POWER_9);
-			else insert_text("^9");
-			if(do_exec) execute_expression();
+			if(event->button == 2) {
+				if(printops.use_unicode_signs && can_display_unicode_string_function("⅑", (void*) expressiontext)) insert_text("⅑");
+				insert_text("(1/9)");
+			} else {
+				bool do_exec = wrap_expression_selection();
+				if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_POWER_9, (void*) expressiontext)) insert_text(SIGN_POWER_9);
+				else insert_text("^9");
+				if(do_exec) execute_expression();
+			}
 			return TRUE;
 		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_zero"))) {
 			insert_text(SIGN_DEGREE);
@@ -16715,14 +16758,51 @@ gboolean on_keypad_button_button_event(GtkWidget *w, GdkEventButton *event, gpoi
 		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_close"))) {
 			insert_text("]");
 			return TRUE;
+		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_wrap"))) {
+			if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
+				GtkTextIter istart, iend;
+				gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
+				gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &istart, &iend, FALSE);
+				string str = "[";
+				str += gstr;
+				str += "]";
+				insert_text(str.c_str());
+				g_free(gstr);
+			} else {
+				insert_text("[]");
+				GtkTextIter iter;
+				gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iter, gtk_text_buffer_get_insert(expressionbuffer));
+				gtk_text_iter_backward_char(&iter);
+				gtk_text_buffer_place_cursor(expressionbuffer, &iter);
+			}
+			return TRUE;
 		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_add"))) {
 			insert_bitwise_and();
 			return TRUE;
 		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sub"))) {
 			insert_bitwise_or();
 			return TRUE;
+		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_times"))) {
+			insert_bitwise_xor();
+			return TRUE;
+		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_xy"))) {
+			insertButtonFunction(CALCULATOR->f_sqrt);
+			return TRUE;
 		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_del"))) {
-			insert_bitwise_or();
+			if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
+				overwrite_expression_selection(NULL);
+			} else {
+				block_completion();
+				GtkTextMark *mpos = gtk_text_buffer_get_insert(expressionbuffer);
+				GtkTextIter ipos, iend;
+				gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mpos);
+				iend = ipos;
+				if(gtk_text_iter_backward_char(&ipos)) {
+					gtk_text_buffer_delete(expressionbuffer, &ipos, &iend);
+				}
+				gtk_widget_grab_focus(expressiontext);
+				unblock_completion();
+			}
 			return TRUE;
 		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_ans"))) {
 			if(history_answer.size() > 0) {
@@ -16739,6 +16819,10 @@ gboolean on_keypad_button_button_event(GtkWidget *w, GdkEventButton *event, gpoi
 			return TRUE;
 		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_percent"))) {
 			insert_var(CALCULATOR->v_permille);
+			return TRUE;
+		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_plusminus"))) {
+			if(event->button == 2) insertButtonFunction(CALCULATOR->f_interval);
+			else insertButtonFunction(CALCULATOR->f_uncertainty);
 			return TRUE;
 		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_bin"))) {
 			base_button_alternative(2);
@@ -16768,14 +16852,6 @@ gboolean on_keypad_button_button_event(GtkWidget *w, GdkEventButton *event, gpoi
 			return TRUE;
 		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_log2"))) {
 			insertButtonFunction(CALCULATOR->getActiveFunction("log10"));
-			return TRUE;
-		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_xy2"))) {
-			if(expression_is_empty() || rpn_mode || evalops.parse_options.rpn) {
-				insertButtonFunction(CALCULATOR->f_sq);
-			} else {
-				wrap_expression_selection();
-				insert_text((printops.use_unicode_signs && can_display_unicode_string_function_exact("²", (void*) expressiontext)) ? "²" : "^2");
-			}
 			return TRUE;
 		} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_and"))) {
 			if(rpn_mode) {calculateRPN(OPERATION_LOGICAL_AND); return TRUE;}
@@ -16807,16 +16883,11 @@ gboolean on_keypad_button_button_event(GtkWidget *w, GdkEventButton *event, gpoi
 }
 
 gboolean on_keypad_menu_button_button_event(GtkWidget *w, GdkEventButton *event, gpointer data) {
-	bool b = (event->type == GDK_BUTTON_RELEASE && (event->button == 2 || event->button == 3));
-	if(!b && event->type == GDK_BUTTON_RELEASE && event->button == 1) {
-		unordered_map<GtkWidget*, guint32>::const_iterator it = button_press_time.find(w);
-		if(it != button_press_time.end()) {
-			b = (event->time - it->second) >= 500;
-			if(event->window && (event->x < 0 || event->y < 0 || event->x > gdk_window_get_width(event->window) || event->y > gdk_window_get_height(event->window))) b = false;
-			button_press_time.erase(it);
+	if(event->type == GDK_BUTTON_RELEASE && (event->button == 2 || event->button == 3)) {
+		if(GTK_WIDGET(data) == GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_to"))) {
+			if(b_busy) return TRUE;
+			update_mb_to_menu();
 		}
-	}
-	if(b) {
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 		gtk_menu_popup_at_pointer(GTK_MENU(data), (GdkEvent*) event);
 #else
@@ -16824,7 +16895,6 @@ gboolean on_keypad_menu_button_button_event(GtkWidget *w, GdkEventButton *event,
 #endif
 		return TRUE;
 	}
-	if(event->type == GDK_BUTTON_PRESS && event->button == 1) button_press_time[w] = event->time;
 	return FALSE;
 }
 
@@ -17029,6 +17099,9 @@ void on_button_z_clicked(GtkButton*, gpointer) {
 }
 void on_button_xequals_clicked(GtkButton*, gpointer) {
 	insert_text("=");
+}
+void on_button_plusminus_clicked(GtkButton*, gpointer) {
+	insert_text("±");
 }
 void on_button_factorize_clicked(GtkButton*, gpointer) {
 	if(evalops.structuring == STRUCTURING_FACTORIZE) executeCommand(COMMAND_EXPAND);
@@ -17792,6 +17865,39 @@ void on_menu_item_convert_to_base_units_activate(GtkMenuItem*, gpointer) {
 void on_menu_item_set_prefix_activate(GtkMenuItem*, gpointer user_data) {
 	result_prefix_changed((Prefix*) user_data);
 	focus_keeping_selection();
+}
+
+void on_menu_item_insert_date_activate(GtkMenuItem*, gpointer) {
+	GtkWidget *d = gtk_dialog_new_with_buttons(_("Select date"), GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_OK"), GTK_RESPONSE_OK, _("_Cancel"), GTK_RESPONSE_CANCEL, NULL);
+	GtkWidget *date_w = gtk_calendar_new();
+	string str = get_selected_expression_text();
+	remove_blank_ends(str);
+	int b_quote = -1;
+	if(str.length() > 2 && ((str[0] == '\"' && str[str.length() - 1] == '\"') || (str[0] == '\'' && str[str.length() - 1] == '\''))) {
+		str = str.substr(1, str.length() - 2);
+		remove_blank_ends(str);
+		b_quote = 1;
+	}
+	if(!str.empty()) {
+		QalculateDateTime date;
+		if(date.set(str)) {
+			if(b_quote < 0) b_quote = 0;
+			gtk_calendar_select_month(GTK_CALENDAR(date_w), date.month() - 1, date.year());
+			gtk_calendar_select_day(GTK_CALENDAR(date_w), date.day());
+		}
+	}
+	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(d))), date_w);
+	gtk_widget_show_all(d);
+	if(gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_OK) {
+		guint year = 0, month = 0, day = 0;
+		gtk_calendar_get_date(GTK_CALENDAR(date_w), &year, &month, &day);
+		gchar *gstr;
+		if(b_quote == 0) gstr = g_strdup_printf("%i-%02i-%02i", year, month + 1, day);
+		else gstr = g_strdup_printf("\"%i-%02i-%02i\"", year, month + 1, day);
+		insert_text(gstr);
+		g_free(gstr);
+	}
+	gtk_widget_destroy(d);
 }
 
 void on_menu_item_insert_matrix_activate(GtkMenuItem*, gpointer) {

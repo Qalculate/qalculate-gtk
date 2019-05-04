@@ -561,6 +561,24 @@ GtkBuilder *getBuilder(const char *filename) {
 
 #define SUP_STRING(X) string("<span size=\"x-small\" rise=\"" + i2s((int) (pango_font_description_get_size(font_desc) / 1.5)) + "\">") + string(X) + "</span>"
 
+void set_keypad_tooltip(const gchar *w, const char *s1, const char *s2, const char *s3 = NULL, bool b_markup = false) {
+	string str;
+	if(s1) str += s1;
+	if(s2) {
+		if(s1) str += "\n\n";
+		str += _("Right-click/long press: %s");
+		gsub("%s", s2, str);
+	}
+	if(s3) {
+		if(s2) str += "\n";
+		else if(s1) str += "\n\n";
+		str += _("Middle-click: %s");
+		gsub("%s", s3, str);
+	}
+	if(b_markup) gtk_widget_set_tooltip_markup(GTK_WIDGET(gtk_builder_get_object(main_builder, w)), str.c_str());
+	else gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, w)), str.c_str());
+}
+
 void create_button_menus(void) {
 
 	GtkWidget *item, *sub;
@@ -573,6 +591,9 @@ void create_button_menus(void) {
 	MENU_ITEM(_("Bitwise OR"), insert_bitwise_or)
 	MENU_ITEM(_("Bitwise Exclusive OR"), insert_bitwise_xor)
 	MENU_ITEM(_("Bitwise NOT"), insert_bitwise_not)
+	MENU_SEPARATOR
+	MENU_ITEM_MARKUP_WITH_POINTER(CALCULATOR->f_ascii->title(true).c_str(), insert_button_function, CALCULATOR->f_ascii)
+	MENU_ITEM_MARKUP_WITH_POINTER(CALCULATOR->f_char->title(true).c_str(), insert_button_function, CALCULATOR->f_char)
 	
 	PangoFontDescription *font_desc;
 	
@@ -662,6 +683,8 @@ void create_button_menus(void) {
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 	f = CALCULATOR->getActiveFunction("geomean");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
+	MENU_SEPARATOR
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_rand->title(true).c_str(), insert_button_function, CALCULATOR->f_rand);
 	
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_pi"), "clicked", G_CALLBACK(insert_button_variable), (gpointer) CALCULATOR->v_pi);
 	
@@ -849,6 +872,7 @@ void create_button_menus(void) {
 		MENU_ITEM_WITH_POINTER_AND_FLAG(to_us2[i]->title(true).c_str(), insert_button_currency, to_us2[i])
 	}
 	
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_e_var")), CALCULATOR->v_e->title(true).c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_pi")), CALCULATOR->v_pi->title(true).c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sine")), CALCULATOR->f_sin->title(true).c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_cosine")), CALCULATOR->f_cos->title(true).c_str());
@@ -862,6 +886,35 @@ void create_button_menus(void) {
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sqrt")), CALCULATOR->f_sqrt->title(true).c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_i")), CALCULATOR->v_i->title(true).c_str());
 	
+	set_keypad_tooltip("button_percent", CALCULATOR->v_percent->title(true).c_str(), CALCULATOR->v_permille->title(true).c_str());
+	
+	set_keypad_tooltip("button_one", NULL, "1/x");
+	set_keypad_tooltip("button_two", NULL, "x<sup>2</sup>", "1/2", true);
+	set_keypad_tooltip("button_three", NULL, "x<sup>3</sup>", "1/3", true);
+	set_keypad_tooltip("button_four", NULL, "x<sup>4</sup>", "1/4", true);
+	set_keypad_tooltip("button_five", NULL, "x<sup>5</sup>", "1/5", true);
+	set_keypad_tooltip("button_six", NULL, "x<sup>6</sup>", "1/6", true);
+	set_keypad_tooltip("button_seven", NULL, "x<sup>7</sup>", "1/7", true);
+	set_keypad_tooltip("button_eight", NULL, "x<sup>8</sup>", "1/8", true);
+	set_keypad_tooltip("button_nine", NULL, "x<sup>9</sup>", "1/9", true);
+	set_keypad_tooltip("button_zero", NULL, CALCULATOR->getDegUnit()->title(true).c_str());
+	
+	set_keypad_tooltip("button_xy", _("Raise (Ctrl+*)"), CALCULATOR->f_sqrt->title(true).c_str());
+	set_keypad_tooltip("button_divide", _("Divide"), "1/x");
+	set_keypad_tooltip("button_times", _("Multiply"), _("Bitwise Exclusive OR"));
+	set_keypad_tooltip("button_add", _("Add"), _("Bitwise AND"));
+	set_keypad_tooltip("button_sub", _("Subtract"), _("Bitwise OR"));
+	
+	set_keypad_tooltip("button_brace_close", _("Right parenthesis"), _("Right vector bracket"));
+	set_keypad_tooltip("button_brace_open", _("Left parenthesis"), _("Left vector bracket"));
+	
+	set_keypad_tooltip("button_ans", _("Previous result"), _("Previous result (static)"));
+	
+	set_keypad_tooltip("button_move2", _("Move cursor left or right"), _("Move cursor to beginning or end"));
+	
+	set_keypad_tooltip("button_del", _("Delete"), _("Backspace"));
+	
+	set_keypad_tooltip("button_plusminus", _("Uncertainty/interval"), _("Relative error"), _("Interval"));
 	
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_int"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_int);
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_frac"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_frac);
@@ -873,23 +926,11 @@ void create_button_menus(void) {
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_code"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_ascii);
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_stamptodate"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_stamptodate);
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_datetostamp"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_timestamp);
-	
-	string str;
-	gchar *gstr;
+	g_signal_connect(gtk_builder_get_object(main_builder, "button_rnd"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_rand);
 	
 	f = CALCULATOR->getActiveFunction("exp2");
-	if(f) {
-		str = "\n\n";
-		str += _("Middle-click: %s");
-		gsub("%s", f->title(true), str);
-	}
-	str.insert(0, CALCULATOR->f_exp->title(true));
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_expf")), str.c_str());
-	str = "\n\n";
-	str += _("Middle-click: %s");
-	gsub("%s", CALCULATOR->f_rem->title(true), str);
-	str.insert(0, CALCULATOR->f_mod->title(true));
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_mod2")), str.c_str());
+	set_keypad_tooltip("button_expf", CALCULATOR->f_exp->title(true).c_str(), f ? f->title(true).c_str() : NULL);
+	set_keypad_tooltip("button_mod2", CALCULATOR->f_exp->title(true).c_str(), CALCULATOR->f_rem->title(true).c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_ln2")), CALCULATOR->f_ln->title(true).c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_int")), CALCULATOR->f_int->title(true).c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_frac")), CALCULATOR->f_frac->title(true).c_str());
@@ -897,87 +938,31 @@ void create_button_menus(void) {
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_code")), CALCULATOR->f_ascii->title(true).c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_stamptodate")), CALCULATOR->f_stamptodate->title(true).c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_datetostamp")), CALCULATOR->f_timestamp->title(true).c_str());
-	f = CALCULATOR->getActiveFunction("log10");
-	str = "";
-	if(f) {str = "\n\n"; str += _("Middle-click: %s"); gsub("%s", f->title(true), str);}
 	f = CALCULATOR->getActiveFunction("log2");
-	if(f) str.insert(0, f->title(true));
-	g_signal_connect(gtk_builder_get_object(main_builder, "button_log2"), "clicked", G_CALLBACK(insert_button_function), (gpointer) f);
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_log2")), str.c_str());
-	f = CALCULATOR->getActiveFunction("inv");
-	if(f) gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_reciprocal")), f->title(true).c_str());
+	MathFunction *f2 = CALCULATOR->getActiveFunction("log10");
+	set_keypad_tooltip("button_log2", f ? f->title(true).c_str() : NULL, f2 ? f2->title(true).c_str() : NULL);
+	if(f) g_signal_connect(gtk_builder_get_object(main_builder, "button_log2"), "clicked", G_CALLBACK(insert_button_function), (gpointer) f);
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_reciprocal")), "1/x");
 	f = CALCULATOR->getActiveFunction("idivide");
 	if(f) gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_idiv")), f->title(true).c_str());
-	str = "\n\n";
-	str += _("Middle-click: %s");
-	gsub("%s", CALCULATOR->f_cbrt->title(true), str);
-	str.insert(0, CALCULATOR->f_sqrt->title(true));
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sqrt2")), str.c_str());
+	set_keypad_tooltip("button_sqrt2", CALCULATOR->f_sqrt->title(true).c_str(), CALCULATOR->f_cbrt->title(true).c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_abs")), CALCULATOR->f_abs->title(true).c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_fac2")), CALCULATOR->f_factorial->title(true).c_str());
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rnd")), CALCULATOR->f_rand->title(true).c_str());
+
+	set_keypad_tooltip("button_and", _("Bitwise AND"), _("Logical AND"));
+	set_keypad_tooltip("button_or", _("Bitwise OR"), _("Logical OR"));
+	set_keypad_tooltip("button_not", _("Bitwise NOT"), _("Logical NOT"));
 	
-	gstr = gtk_widget_get_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_and")));
-	str = gstr;
-	g_free(gstr);
-	str += "\n\n";
-	str += _("Middle-click: %s");
-	gsub("%s", _("Logical AND"), str);
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_and")), str.c_str());
+	set_keypad_tooltip("button_bin", _("Binary"), _("Toggle Result Base"));
+	set_keypad_tooltip("button_oct", _("Octal"), _("Toggle Result Base"));
+	set_keypad_tooltip("button_dec", _("Decimal"), _("Toggle Result Base"));
+	set_keypad_tooltip("button_hex", _("Hexadecimal"), _("Toggle Result Base"));
 	
-	gstr = gtk_widget_get_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_or")));
-	str = gstr;
-	g_free(gstr);
-	str += "\n\n";
-	str += _("Middle-click: %s");
-	gsub("%s", _("Logical OR"), str);
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_or")), str.c_str());
-	
-	gstr = gtk_widget_get_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_not")));
-	str = gstr;
-	g_free(gstr);
-	str += "\n\n";
-	str += _("Middle-click: %s");
-	gsub("%s", _("Logical NOT"), str);
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_not")), str.c_str());
-	
-	gstr = gtk_widget_get_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_xy2")));
-	str = gstr;
-	g_free(gstr);
-	str += "\n\n";
-	str += _("Middle-click: %s");
-	gsub("%s", CALCULATOR->f_sq->title(true), str);
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_xy2")), str.c_str());
-	
-	gstr = gtk_widget_get_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_bin")));
-	str = gstr;
-	g_free(gstr);
-	str += "\n\n";
-	str += _("Middle-click: %s");
-	gsub("%s", _("Toggle Result Base"), str);
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_bin")), str.c_str());
-	gstr = gtk_widget_get_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_oct")));
-	str = gstr;
-	g_free(gstr);
-	str += "\n\n";
-	str += _("Middle-click: %s");
-	gsub("%s", _("Toggle Result Base"), str);
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_oct")), str.c_str());
-	gstr = gtk_widget_get_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_dec")));
-	str = gstr;
-	g_free(gstr);
-	str += "\n\n";
-	str += _("Middle-click: %s");
-	gsub("%s", _("Toggle Result Base"), str);
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_dec")), str.c_str());
-	gstr = gtk_widget_get_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_hex")));
-	str = gstr;
-	g_free(gstr);
-	str += "\n\n";
-	str += _("Middle-click: %s");
-	gsub("%s", _("Toggle Result Base"), str);
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_hex")), str.c_str());
-	
-	if(!caret_as_xor) gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_xor")), (string(_("Bitwise Exclusive OR")) + " (Ctrl+^)").c_str());
+	set_keypad_tooltip("button_store2", _("Store result as a variable"), _("Open menu with stored variables"));
+
+	if(caret_as_xor) gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_xor")), _("Bitwise Exclusive OR"));
+	else gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_xor")), (string(_("Bitwise Exclusive OR")) + " (Ctrl+^)").c_str());
 	
 	update_mb_fx_menu();
 	update_mb_sto_menu();

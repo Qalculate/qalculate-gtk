@@ -359,6 +359,7 @@ void on_menu_item_convert_to_unit_expression_activate(GtkMenuItem *w, gpointer u
 void on_menu_item_convert_to_base_units_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_convert_to_best_unit_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_set_prefix_activate(GtkMenuItem*, gpointer user_data);
+void on_menu_item_insert_date_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_insert_matrix_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_insert_vector_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_enable_variables_activate(GtkMenuItem *w, gpointer user_data);
