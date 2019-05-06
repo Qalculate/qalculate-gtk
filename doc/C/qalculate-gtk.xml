@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "3.1.0">
-  <!ENTITY manrevision "3.1.0">
-  <!ENTITY date "April 2019">
+  <!ENTITY appversion "3.2.0">
+  <!ENTITY manrevision "3.2.0">
+  <!ENTITY date "May 2019">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -81,7 +81,7 @@ Although use of &app; for simple calculations should be natural and self-explana
 <sect1 id="qalculate-expression-entry">
 <title>Expression Entry</title>
 <para>
-The expression entry is the most important part of the &app; user interface. The normal calculation procedure in &app; is to type in a mathematical expression (e.g. <quote>5+5</quote>) and press <keycap>Enter</keycap> (or click <guibutton>=</guibutton>). The result (<quote>10</quote>) is then displayed below the expression entry in the result display.
+The expression entry is the most important part of the &app; user interface. The normal calculation procedure in &app; is to type in a mathematical expression (e.g. <quote>5 + 5</quote>) and press <keycap>Enter</keycap> (or click <guibutton>=</guibutton>). The result (<quote>10</quote>) is then displayed below the expression entry in the result display.
 </para>
 <figure id="qalculate-FIG-completion">
 	<title>Completion</title>
@@ -94,10 +94,10 @@ The expression entry is the most important part of the &app; user interface. The
 	</screenshot>
 </figure>
 <para>
-&app; helps out with the expression by giving a list of possible endings to words representing functions, variables and units. The list will narrow with each letter typed. Select an item in the list and the name will be completed. If a function was selected, parenthesis will be added and the position moved for immediate entry of arguments.
+&app; helps out with the expression by giving a list of possible endings to words representing functions, variables and units. Titles, and countries for currencies, will also be searched, but any matches will be placed at the end of the list. The list will narrow with each letter typed. Select an item in the list and the name will be completed. If a function was selected, parenthesis will be added and the position moved for immediate entry of arguments. Completion can be configured from the context menu, or in more detail, from the preferences dialog.
 </para>
 <para>
-As the expression is typed in, the area directly direclty below the expression entry, to the left, will show useful information. By default the calculator's interpretation of the expression is shown (e.g. <quote>5 * meter</quote> for <quote>5m</quote>). The interpretation will be displayed in red (configurable) if there are errors in the expression or in blue for lesser errors (for example too many arguments in a function). If the last typed in text represents a function and arguments are about to be entered, the functions name and its arguments will be displayed. The first argument in the information text is highlighted and includes information about its type and restrictions and when an argument has been entered, the next will be highlighted.
+As the expression is typed in, the area directly direclty below the expression entry, to the left, will show useful information. By default the calculator's interpretation of the expression is shown (e.g. <quote>5 × meter</quote> for <quote>5m</quote>). The interpretation will be displayed in red (configurable) if there are errors in the expression or in blue for lesser errors (for example too many arguments in a function). If the last typed in text represents a function and arguments are about to be entered, the functions name and its arguments will be displayed. The first argument in the information text is highlighted and includes information about its type and restrictions and when an argument has been entered, the next will be highlighted.
 </para>
 <para>
 After execution of an expression, the whole expression will be marked. This normally means that if something new is entered, the old expression will be overwritten. If, however, an operator (+, −, *, /, ^) is entered first, the old expression will instead be the target of action. The operator will then apply to the whole expression, which is put in parenthesis. This works on all marked ranges, meaning that this way an expression can conveniently be put in parenthesis. Functions set the selection as their first argument.
@@ -111,6 +111,9 @@ Although the expression entry can display multiple lines of text, the <keycap>En
 <para>
 The font used for the expression entry can be selected in the preferences dialog (<menuchoice><guimenu>Edit</guimenu><guimenuitem>Preferences</guimenuitem></menuchoice>).
 </para>
+<para>
+Right-click in the expression entry to open a context menu, with general text editing options as well as selection of parsing modes (including number base), and menu items which open dialogs for insertion of vectors, matrices, or dates.
+</para>
 </sect1>
 <sect1 id="qalculate-result-display">
 <title>Result Display</title>
@@ -121,7 +124,7 @@ The result of calculations is displayed in the open area below the expression en
 In front of the result an equals or approximately equals sign is shown. This indicates whether &app; was able to calculate/display the result exact or only approximate, in the current mode.
 </para>
 <para>
-The result display has a context menu, which pops up when clicking with the right mouse button anywhere in the field. This menu provides a subset of the display alternatives from the mode menu (<xref linkend="qalculate-TBL-mode-menu"/>) and some actions from the edit menu (<xref linkend="qalculate-TBL-edit-menu"/>). See more info in <xref linkend="qalculate-mode"/>.
+The result display has a context menu, which pops up when clicking with the right button anywhere in the field. This menu provides a subset of the display alternatives from the mode menu (<xref linkend="qalculate-TBL-mode-menu"/>) and some actions from the edit menu (<xref linkend="qalculate-TBL-edit-menu"/>). See more info in <xref linkend="qalculate-mode"/>.
 </para>
 <para>
 If you hold the pointer over the result area a tooltip will show the text representation of the result. To make it more obvious what the result means, abbreviations and implicit multiplication are not used here, and excessive parentheses are shown.
@@ -139,94 +142,262 @@ The keypad provides access to a simple traditional number pad and as well as mor
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/calculator-buttons.png" format="PNG" width="680"/>
+				<imagedata fileref="figures/calculator-buttons.png" format="PNG" width="676"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
 </figure>
 </para>
 <para>
-The top buttons (from left to right) switches between exact and approximate calculation, changes rational number form, selects display mode and selects number base in result (see <xref linkend="qalculate-mode"/>).
+The top buttons (from left to right) switches between the general keypad and the programming keypad (affect the buttons on the left side, see <xref linked="qalculate-TBL-programming-keypad"/>), switches between exact and approximate calculation, changes rational number form, selects display mode and selects number base in result (see <xref linkend="qalculate-mode"/>).
+</para>
+<para>
+The buttons below is separated in two areas. The buttons on the right inserts basic numbers and operators, while most of the buttons to the left inserts or applies mathematical functions to the expression. All buttons on the left is paired with buttons, with downward arrows, that opens a menu with related functionality (generally more mathematical functions).
+</para>
+<para>
+Most of buttons to the right will do something different depending on which button on the pointing device (mouse) that is clicked (for details see the table below; all actions are displayed as tooltips when holding the pointer over a button). Button press and hold on a button (for approximately half a second) will generally perform the same action as right-click. Right-click or long press on the buttons to the left will open the associated menu.
+</para>
+<para>
+Selected/marked text in the expression entry is handled in different ways depending on the type of keypad button used. Numbers, variables and units will replace the selected text.
+</para>
+<para>
+Operators will be placed after any selected text (except bitwise and logical NOT which is placed in front of the selection), which is put in parentheses. This, together with the fact that recently calculated expressions are automatically selected in the entry, means that if you click 5, 9, +, 2, =, × and 2 in order, the result expression is <quote>(59 + 2) × 2</quote>. In RPN mode the operators acts on the top two registers in the stack.
+</para>
+<para>
+The mathematical functions accessed using keypad buttons (and menus) behave differently depending on the current edited expression. If the cursor is at the end of the expression and there is no operator or parenthesis immediately to left of the cursor (at the end of expression), the whole expression is used as function argument and the expression is immediately calculated using the function (If you type <quote>5 + 2</quote> and then click <guibutton>sin</guibutton>, <quote>sin(5 + 2)</quote> will be calculated). If text in the expression is selected, the selection will be used as the function argument. If the whole expression was selected the resulting expression will immediately be calculated. Functions that requires more than one argument do not follow these rules and instead opens a separate dialog for argument input. In RPN mode the function will always be applied to the register(s) at the top of stack, if the current expression is empty and there are enough registers for functions that require more one argument.
 </para>
 <para>
 The buttons on the right provides the following sets of functionality:
-<variablelist>
-<varlistentry>
-<term>Numbers (0-9)</term>
-<listitem><para>
-These buttons provides straight forward input of numbers into the expression entry, as the keys on the keyboard. Marked/selected text in the expression entry is overwritten.
-</para></listitem>
-</varlistentry>
-<varlistentry>
-<term>Decimal point (. or ,) and argument separator (, or ;)</term>
-<listitem><para>
-The character used for these varies between different locales. The argument separator is used for separation of arguments to functions that takes more than one argument, as well as to separate elements in vectors and matrices (although this is not strictly necessary). Selection is overwritten.
-</para></listitem>
-</varlistentry>
-<varlistentry>
-<term>Operators (+, -, *, /)</term>
-<listitem><para>
-Inserts the character for addition, subtraction, multiplication or division into the expression entry. Text selections are placed in parentheses. This, together with the fact that recently calculated expressions are automatically selected in the entry, means that if you click 5, 9, +, 2, =, * and 2 in order, the result expression is "(59+2)*2". In RPN mode the operators acts on the top two registers in the stack.
-</para></listitem>
-</varlistentry>
-<varlistentry>
-<term>EXP</term>
-<listitem><para>
-Inserts the shorthand notation (E or e) for ten raised to the power of x. <quote>2E6</quote> equals <quote>2 * 10^6</quote> (this only applies to digits: <quote>xEy &ne; x*10^y</quote>). Selection is overwritten.
-</para></listitem>
-</varlistentry>
-<varlistentry>
-<term>Equals sign</term>
-<listitem><para>
-Calculates the current expression (and adds it to the stack in RPN mode).
-</para></listitem>
-</varlistentry>
-<varlistentry>
-<term>AC and DEL</term>
-<listitem><para>
-AC clears the expression entry fully, while DEL deletes one character the to the right or, if the cursor is at the end of the expression, to the left of the cursor.
-</para></listitem>
-</varlistentry>
-<varlistentry>
-<term>Parentheses</term>
-<listitem><para>
-The "(x)" button places opening and closing parentheses around the selected text in the expression entry. If no text is selected either the expression to the right of the cursor (if the cursor is at the beginning of the expression or if there is an operator or left parenthesis to the left of the cursor) or to the left of the cursor is put inside parentheses. If the expression is empty, as well as in some other cases (to avoid broken expression), empty parentheses are inserted. The other two buttons insert a single opening or closing parenthesis and overwrites any selection.
-</para></listitem>
-</varlistentry>
-<varlistentry>
-<term>ANS</term>
-<listitem><para>
-Inserts the first answer variable. This variable always contains the last calculated result. Selection is overwritten.
-</para></listitem>
-</varlistentry>
-</variablelist>
+<table id="qalculate-TBL-keypad-right" frame="topbot" colsep="1">
+	<title>Right Keypad</title> 
+	<tgroup cols="2" colsep="1" rowsep="0">
+		<colspec colname="COLSPEC0" align="center" colwidth="10%"/>
+		<colspec colname="COLSPEC1"/>
+		<colspec colname="COLSPEC2"/>
+		<colspec colname="COLSPEC3"/>
+		<thead>
+			<row valign="top">
+				<entry colname="COLSPEC0"><para>Button</para></entry>
+				<entry colname="COLSPEC1"><para>Left-click (button 1)</para></entry>
+				<entry colname="COLSPEC2"><para>Right-click (button 3) or long press</para></entry>
+				<entry colname="COLSPEC3"><para>Middle-click (button 2)</para></entry>
+			</row>
+		</thead> 
+		<tbody>
+			<row valign="top">
+				<entry><para>=</para></entry>
+				<entry><para>Calculates the current expression.</para></entry>
+				<entry><para>-</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>ANS</para></entry>
+				<entry><para>Variable for last calculated value (dynamic).</para></entry>
+				<entry><para><command>answer()</command> function (fixed).</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>DEL</para></entry>
+				<entry><para>Delete</para></entry>
+				<entry><para>Backspace</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>AC</para></entry>
+				<entry><para>Clears the expression.</para></entry>
+				<entry><para>-</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>+</para></entry>
+				<entry><para>Addition operator.</para></entry>
+				<entry><para>Bitwise AND operator (∧).</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>−</para></entry>
+				<entry><para>Subtraction operator.</para></entry>
+				<entry><para>Bitwise OR operator (∨).</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>×</para></entry>
+				<entry><para>Multiplication operator.</para></entry>
+				<entry><para>Bitwise exclusive OR operator (⊻).</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>/</para></entry>
+				<entry><para>Division operator.</para></entry>
+				<entry><para>Reciprocal (inv() function)</para></entry>
+				<entry><para></para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>x<superscript>y</superscript></para></entry>
+				<entry><para>Exponentiation operator (^).</para></entry>
+				<entry><para>Square root function (√).</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>0</para></entry>
+				<entry><para>0</para></entry>
+				<entry><para>⁰ (^0)</para></entry>
+				<entry><para>° (degree)</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>1</para></entry>
+				<entry><para>1</para></entry>
+				<entry><para>¹ (^1)</para></entry>
+				<entry><para>Reciprocal (<command>inv()</command> function)</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>2</para></entry>
+				<entry><para>2</para></entry>
+				<entry><para>² (^2)</para></entry>
+				<entry><para>½ (1/2)</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>3</para></entry>
+				<entry><para>3</para></entry>
+				<entry><para>³ (^3)</para></entry>
+				<entry><para>⅓ (1/3)</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>4</para></entry>
+				<entry><para>4</para></entry>
+				<entry><para>⁴ (^4)</para></entry>
+				<entry><para>¼ (1/4)</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>5</para></entry>
+				<entry><para>5</para></entry>
+				<entry><para>⁵ (^5)</para></entry>
+				<entry><para>⅕ (1/5)</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>6</para></entry>
+				<entry><para>6</para></entry>
+				<entry><para>⁶ (^6)</para></entry>
+				<entry><para>⅙ (1/6)</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>7</para></entry>
+				<entry><para>7</para></entry>
+				<entry><para>⁷ (^7)</para></entry>
+				<entry><para>⅐ (1/7)</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>8</para></entry>
+				<entry><para>8</para></entry>
+				<entry><para>⁸ (^8)</para></entry>
+				<entry><para>⅛ (1/8)</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>9</para></entry>
+				<entry><para>9</para></entry>
+				<entry><para>⁹ (^9)</para></entry>
+				<entry><para>⅑ (1/9)</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>. or ,</para></entry>
+				<entry><para>Decimal point</para></entry>
+				<entry><para>Blank space</para></entry>
+				<entry><para>New line</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>EXP</para></entry>
+				<entry><para>E or e (shorthand for 10<superscript>x</superscript>)</para></entry>
+				<entry><para>Exponential function</para></entry>
+				<entry><para><command>exp10()</command> function</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>)</para></entry>
+				<entry><para>Right parenthesis.</para></entry>
+				<entry><para>Right bracket (]) for vectors and matrices.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>(</para></entry>
+				<entry><para>Left parenthesis.</para></entry>
+				<entry><para>Left bracket ([) for vectors and matrices.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>(x)</para></entry>
+				<entry><para>Smart parentheses.</para></entry>
+				<entry><para>[] around selection.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>, or ;</para></entry>
+				<entry><para>Argument/vector separator</para></entry>
+				<entry><para>Blank space</para></entry>
+				<entry><para>New line</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>±</para></entry>
+				<entry><para>Interval/uncertainty operator</para></entry>
+				<entry><para>Uncertainty function (relative error)</para></entry>
+				<entry><para>Interval function</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>%</para></entry>
+				<entry><para>Percent (or modulus operator)</para></entry>
+				<entry><para>Promille</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>Left and right arrows</para></entry>
+				<entry><para>Move cursor one chacacter.</para></entry>
+				<entry><para>Move cursor to beginning or end.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>Up and down arrows</para></entry>
+				<entry><para>Cycle through expression history.</para></entry>
+				<entry><para>-</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+		</tbody>
+	</tgroup>
+</table>
+<guibutton>DEL</guibutton> deletes one character the to the right or, if the cursor is at the end of the expression, to the left of the cursor (right-click always deletes the character to the left of the cursor).
 </para>
 <para>
-Most of the buttons to the left inserts or applies mathematical functions to the expression. All buttons on the left is paired with buttons, with downward arrows, that opens a menu with related functionality (generally more mathematical functions).
+<guibutton>EXP</guibutton> inserts the shorthand notation (E or e) for ten raised to the power of x. This only applies to digits (<quote>2E6</quote> equals <quote>2 × 10^6</quote>, <quote>xEy &ne; x × 10^y</quote>). If whole or part of the current expression is selected, <quote>×10^</quote> will instead be inserted after the wrapped selection. If current input base is not 10, than the selected number base will be used as base (e.g. <quote>×16^</quote> for hexadecimal input).
 </para>
 <para>
-The mathematical functions accessed using the keypad buttons (and menus) behave differently depending on the current edited expression. If the cursor is at the end of the expression and there is no operator or parenthesis immediately to left of the cursor (at the end of expression), the whole expression is used as function argument and the expression is immediately calculated using the function (If you type <quote>5+2</quote> and then click <guibutton>sin</guibutton>, <quote>sin(5+2)</quote> will be calculated). If text in the expression is selected, the selection will be used as the function argument. If the whole expression was selected the resulting expression will immediately be calculated. Functions that requires more than one argument do not follow these rules and instead opens a separate dialog for argument input. In RPN mode the function will always be applied to the register(s) at the top of stack, if the current expression is empty and there are enough registers for functions that require more one argument.
+<guibutton>ANS</guibutton> inserts the first answer variable. This variable always contains the last calculated result. This will be updated after each calculation (unlike when using the answer() function with a positive argument).
+</para>
+<para>
+The <quote>(x)</quote> button places opening and closing parentheses around the selected text in the expression entry. If no text is selected either the expression to the right of the cursor (if the cursor is at the beginning of the expression or if there is an operator or left parenthesis to the left of the cursor) or to the left of the cursor is put inside parentheses. If the expression is empty, as well as in some other cases (to avoid broken expression), empty parentheses are inserted.
+</para>
+<para>
+The arrow buttons works a bit differently than the other. The direction of the action will depend on which half of the button that is pressed (the right side of the button, with the arrow pointing to the right, will move the insert cursor when step forward). Long press on the button will continuosly move the cursor (or continuously cycle through the expression history).
+</para>
+<para>
+The characters used as decimal point and argument separator varies between different locales. The argument separator is used for separation of arguments to functions that takes more than one argument, as well as to separate elements in vectors and matrices (although this is not strictly necessary).
 </para>
 <para>
 Below follows a list of the buttons on the left side (including their menus and associated actions), from left the right, top to bottom:
 <table id="qalculate-TBL-keypad-left" frame="topbot" colsep="1">
-	<title>New Menu</title> 
+	<title>Left Keypad</title> 
 	<tgroup cols="2" colsep="1" rowsep="0">
-		<colspec colname="COLSPEC0" colwidth="50*"/>
+		<colspec colname="COLSPEC0" align="center" colwidth="10%"/>
 		<colspec colname="COLSPEC1"/>
 		<colspec colname="COLSPEC2"/>
 		<thead>
 			<row valign="top">
 				<entry colname="COLSPEC0"><para>Button</para></entry>
 				<entry colname="COLSPEC1"><para>Action</para></entry>
-				<entry colname="COLSPEC1"><para>Menu</para></entry>
+				<entry colname="COLSPEC2"><para>Menu</para></entry>
 			</row>
 		</thead> 
                 <tbody>
 			<row valign="top">
 				<entry><para>STO</para></entry>
 				<entry><para>Stores the current result in a variable. See <xref linkend="qalculate-variable-creation"/>.</para></entry>
-				<entry><para>A list of created variables. Left click to insert (overwrites selection). Right click for the option to edit or delete the variable, or store the current result in the variable.</para></entry>
+				<entry><para>A list of created variables. Left click to insert the variable. Right click for the option to edit or delete the variable, or store the current result in the variable.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>f(x)</para></entry>
@@ -239,13 +410,13 @@ Below follows a list of the buttons on the left side (including their menus and 
 				<entry><para>Bitwise operators.</para></entry>
 			</row>
 			<row valign="top">
-				<entry><para>%</para></entry>
-				<entry><para>Inserts the percent symbol (overwrites selection).</para></entry>
-				<entry><para>Open the percentage calculation tool.</para></entry>
+				<entry><para>a(x)<superscript>b</superscript></para></entry>
+				<entry><para>Factorizes the result (or the current expression).</para></entry>
+				<entry><para>Expansion of polynomials and expansion of partial fractions, integration and differentiation.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>x!</para></entry>
-				<entry><para>Factorial symbol. Puts selection in parentheses and calculates the expression immediately if the whole expression is selected.</para></entry>
+				<entry><para>Factorial (e.g. <quote>5!=factorial(5)=5×4×3×2×1=120</quote>).</para></entry>
 				<entry><para>Other factorial functions and functions related to combinatorics.</para></entry>
 			</row>
 			<row valign="top">
@@ -259,69 +430,69 @@ Below follows a list of the buttons on the left side (including their menus and 
 				<entry><para>Other root functions.</para></entry>
 			</row>
 			<row valign="top">
-				<entry><para>x<superscript>y</superscript></para></entry>
-				<entry><para>Inserts exponentiation operator. Text selections are placed in parentheses.</para></entry>
-				<entry><para>Exponential functions. x<superscript>2</superscript> works as the button x<superscript>y</superscript> but inserts <quote>^2</quote>.</para></entry>
+				<entry><para>e</para></entry>
+				<entry><para>The base of natural logarithms.</para></entry>
+				<entry><para>Exponential and complex exponential functions.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>mod</para></entry>
-				<entry><para>Modulus function.</para></entry>
-				<entry><para>rem(), abs(), gcd() and lcm() functions.</para></entry>
+				<entry><para>Modulus operator/function.</para></entry>
+				<entry><para><command>rem()</command>, <command>abs()</command>, <command>gcd()</command> and <command>lcm()</command> functions.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>x&#772;</para></entry>
 				<entry><para>Statistical mean function.</para></entry>
-				<entry><para>A selection of statistical functions.</para></entry>
+				<entry><para>A selection of statistical functions, and <command>rand()</command> for random number generation.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>&Sigma;</para></entry>
 				<entry><para>Summation function.</para></entry>
-				<entry><para>&Pi;, for() and if() functions.</para></entry>
+				<entry><para>&Pi;, <command>for()</command> and <command>if()</command> functions.</para></entry>
 			</row>
 			<row valign="top">
-				<entry><para></para></entry>
-				<entry><para>Insert the pi variable (overwrites selection).</para></entry>
-				<entry><para>e, eulers constant and golden ratio variables, and recently used variables (accessed from this menu, the menubar or the variable manager) and/or a selection of physical constants. The last item opens the variable manager.</para></entry>
+				<entry><para>π</para></entry>
+				<entry><para>Archimedes' constant (pi).</para></entry>
+				<entry><para>Pythagoras, eulers and golden ratio constants, and recently used variables/constants (accessed from this menu, the menubar or the variable manager) and/or a selection of physical constants. The last item opens the variable manager.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>sin</para></entry>
 				<entry><para>Sine function.</para></entry>
-				<entry><para>sinh(), asin() and asinh() functions.</para></entry>
+				<entry><para><command>sinh()</command>, <command>asin()</command> and <command>asinh()</command> functions.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>cos</para></entry>
 				<entry><para>Cosine function.</para></entry>
-				<entry><para>cosh(), acos() and acosh() functions.</para></entry>
+				<entry><para><command>cosh()</command>, <command>acos()</command> and <command>acosh()</command> functions.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>tan</para></entry>
 				<entry><para>Tangent function.</para></entry>
-				<entry><para>tanh(), atan() and atanh() functions.</para></entry>
+				<entry><para><command>tanh()</command>, <command>atan()</command> and <command>atanh()</command> functions.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>i</para></entry>
-				<entry><para>Inserts the imaginary unit (i<superscript>2</superscript> = −1) i (overwrites selection).</para></entry>
+				<entry><para>Imaginary unit (i<superscript>2</superscript> = −1) i.</para></entry>
 				<entry><para>Complex number functions.</para></entry>
 			</row>
 			<row valign="top">
-				<entry><para>a(x)<superscript>b</superscript></para></entry>
-				<entry><para>Factorizes the result (or the current expression).</para></entry>
-				<entry><para>Functions for derivatives, integrals and equations, and actions for simplification, expansion of partial fractions and replacement of unknowns.</para></entry>
-			</row>
-			<row valign="top">
 				<entry><para>z</para></entry>
-				<entry><para>Inserts the unknown variable <emphasis>z</emphasis> (overwrites selection).</para></entry>
+				<entry><para>Unknown variable <emphasis>z</emphasis>.</para></entry>
 				<entry><para>Assumptions for the <emphasis>z</emphasis> variable.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>y</para></entry>
-				<entry><para>Inserts the unknown variable <emphasis>y</emphasis> (overwrites selection).</para></entry>
+				<entry><para>Unknown variable <emphasis>y</emphasis>.</para></entry>
 				<entry><para>Assumptions for the <emphasis>y</emphasis> variable.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>x</para></entry>
-				<entry><para>Inserts the unknown variable <emphasis>x</emphasis> (overwrites selection).</para></entry>
+				<entry><para>Unknown variable <emphasis>x</emphasis>.</para></entry>
 				<entry><para>Assumptions for the <emphasis>x</emphasis> variable.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>x =</para></entry>
+				<entry><para>Equals operator (primarily used in equations).</para></entry>
+				<entry><para>Equation solving related functions, and replacement of unknowns in the current result.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>u</para></entry>
@@ -330,18 +501,233 @@ Below follows a list of the buttons on the left side (including their menus and 
 			</row>
 			<row valign="top">
 				<entry><para>kg</para></entry>
-				<entry><para>Inserts the most recently used unit from the associated menu, or kilogram (overwrites selection).</para></entry>
+				<entry><para>Most recently used unit from the associated menu, or kilogram.</para></entry>
 				<entry><para>All SI base units and SI derived units with special names and symbols, plus liter.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>&euro; (or local currency)</para></entry>
-				<entry><para>Inserts the most recently used unit from the associated menu, or euro/local currency (overwrites selection).</para></entry>
+				<entry><para>Most recently used unit from the associated menu, or euro/local currency.</para></entry>
 				<entry><para>All current currency units (excludes currencies replaced by euro).</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>to</para></entry>
-				<entry><para>Inserts the convert to operator (selection is unselected). The expression before <quote>to</quote> (or the previous result if the expressions begins with <quote>to</quote>) is converted to the unit expression after <quote>to</quote>. See <xref linkend="qalculate-to"/>.</para></entry>
+				<entry><para>Convert to operator (selection is unselected). The expression before <quote>to</quote> (or the previous result if the expressions begins with <quote>to</quote>) is converted to the unit expression after <quote>to</quote>. See <xref linkend="qalculate-to"/>.</para></entry>
 				<entry><para>Convert to base units, optimal unit, or optimal prefix. Below is a list of appropriate units (with common units appended) to convert the current result to. If the result does not include any units options to convert the result to different number bases, fraction and factors appear. The current expression (if modified) is calculated when the menu is opened.</para></entry>
+			</row>
+		</tbody>
+	</tgroup>
+</table>
+</para>
+<para>
+<figure id="qalculate-FIG-programming-keypad">
+	<title>Programming keypad</title>
+	<screenshot>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="figures/programming-keypad.png" format="PNG" width="468"/>
+			</imageobject>
+		</mediaobject>
+	</screenshot>
+</figure>
+The buttons on the left side can be replaced (using the top left left button or <keycombo><keycap>Ctrl</keycap><keycap>P</keycap></keycombo>) by a set of buttons for quick access to functions particularily useful for programmers. These buttons are listed below, from left to right, top to bottom.
+<table id="qalculate-TBL-programming-keypad" frame="topbot" colsep="1">
+	<title>Programming Keypad</title> 
+	<tgroup cols="2" colsep="1" rowsep="0">
+		<colspec colname="COLSPEC0" align="center" colwidth="10%"/>
+		<colspec colname="COLSPEC1"/>
+		<colspec colname="COLSPEC2"/>
+		<thead>
+			<row valign="top">
+				<entry colname="COLSPEC0"><para>Button</para></entry>
+				<entry colname="COLSPEC1"><para>Left-click</para></entry>
+				<entry colname="COLSPEC1"><para>Right-click or long press</para></entry>
+			</row>
+		</thead> 
+		<tbody>
+			<row valign="top">
+				<entry><para>BIN</para></entry>
+				<entry><para>Switches to binary number base for expressions and result display.</para></entry>
+				<entry><para>Toggles binary number base for result display on/off.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>OCT</para></entry>
+				<entry><para>Switches to octal number base for expressions and result display.</para></entry>
+				<entry><para>Toggles octal number base for result display on/off.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>DEC</para></entry>
+				<entry><para>Switches to decimal number base for expressions and result display.</para></entry>
+				<entry><para>Toggles decimal number base for result display on/off.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>HEX</para></entry>
+				<entry><para>Switches to hexadecimal number base for expressions and result display.</para></entry>
+				<entry><para>Toggles hexadecimal number base for result display on/off.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>ALL</para></entry>
+				<entry><para>Opens the number bases converter. See <xref linkend="qalculate-convert-number-bases-dialog"/>.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>2→</para></entry>
+				<entry><para>Toogles two's complement representation on/off for input of negative numbers.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>→2</para></entry>
+				<entry><para>Toogles two's complement representation on/off for display of negative numbers.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>A</para></entry>
+				<entry><para>Hexadecimal digit.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>B</para></entry>
+				<entry><para>Hexadecimal digit.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>C</para></entry>
+				<entry><para>Hexadecimal digit.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>D</para></entry>
+				<entry><para>Hexadecimal digit.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>E</para></entry>
+				<entry><para>Hexadecimal digit.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>F</para></entry>
+				<entry><para>Hexadecimal digit.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>∧</para></entry>
+				<entry><para>Bitwise AND operator (&amp;)</para></entry>
+				<entry><para>Logical AND operator (&amp;&amp;)</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>∨</para></entry>
+				<entry><para>Bitwise OR operator (|)</para></entry>
+				<entry><para>Logical OR operator (||)</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>⊻</para></entry>
+				<entry><para>Bitwise exclusive OR operator (xor)</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>¬</para></entry>
+				<entry><para>Bitwise NOT operator (~)</para></entry>
+				<entry><para>Logical NOT operator (!)</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>&lt;&lt;</para></entry>
+				<entry><para>Bitwise left shift operator.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>&gt;&gt;</para></entry>
+				<entry><para>Bitwise right shift operator.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>mod</para></entry>
+				<entry><para>Modulus operator.</para></entry>
+				<entry><para>Remainder operator.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>div</para></entry>
+				<entry><para>Integer division operator.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>x<superscript>-1</superscript></para></entry>
+				<entry><para>Reciprocal (1/x) function.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>|x|</para></entry>
+				<entry><para>Absolute value function (<quote>abs(-5) = 5</quote>).</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>√</para></entry>
+				<entry><para>Square root function.</para></entry>
+				<entry><para>Cube root function.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>ln</para></entry>
+				<entry><para>Natural logarithm function.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>int</para></entry>
+				<entry><para>Integer part function (<quote>frac(-5.2) = -5</quote>).</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>frac</para></entry>
+				<entry><para>Fractional part function (<quote>frac(-5.2) = -0.2</quote>).</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>log<subscript>2</subscript></para></entry>
+				<entry><para>Base-2 logarithm function.</para></entry>
+				<entry><para>Base-10 logarithm function.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>exp</para></entry>
+				<entry><para>Exponential function (e<superscript>x</superscript>).</para></entry>
+				<entry><para>Base-2 exponential function (2<superscript>x</superscript>).</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>x!</para></entry>
+				<entry><para>Factorial (e.g. <quote>5!=factorial(5)=5×4×3×2×1=120</quote>).</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>a×b</para></entry>
+				<entry><para>(Integer) factorizes the result (or the current expression).</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>rnd</para></entry>
+				<entry><para>Random number function (returns a pseudo random number between 0 and 1, or an integer between one and a specified number).</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>a→1</para></entry>
+				<entry><para><command>code()</command> function (returns numeric code of Unicode character).</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>1→a</para></entry>
+				<entry><para><command>char()</command> function (for conversion of numeric code to Unicode character).</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>d→u</para></entry>
+				<entry><para>Function for conversion of date and time to Unix timestamp.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>u→d</para></entry>
+				<entry><para>Function for conversion of Unix timestamp to date and time.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>STO</para></entry>
+				<entry><para>Stores the current result in a variable. See <xref linkend="qalculate-variable-creation"/>.</para></entry>
+				<entry><para>Opens a menu with a list of created variables. Left click to insert the variable. Right click for the option to edit or delete the variable, or store the current result in the variable.</para></entry>
 			</row>
 		</tbody>
 	</tgroup>
@@ -366,7 +752,7 @@ The history view provides access to previous calculation results (50 rows are re
 <para>Double click an item in the history list or use the <guibutton>Value</guibutton> or the <guibutton>Text</guibutton> button to paste the selected value or expression into the expression entry. The <guibutton>Value</guibutton> button inserts the actual value, using the answer() and expression() functions (for results and parsed expressions, respectively) with the current history index (indicated in the left column of the list), as argument, instead of the text (which might be inexact and is not guaranteed to be parsed correctly). This is not possible for the history entries of previous sessions. When an item is double clicked the the actual value is used for results, but the text for expressions, allowing editing of the expression. 
 </para>
 <para>
-The to right of the list are also buttons for mathematical operations. These acts on the selected history items (the <guibutton>+</guibutton> will calculate the sum of the selected values, while the <guibutton>-</guibutton> will calculated the difference between the first, uppermost, selected value and the rest, in order). If no value is marked the sign for the operator will be inserted into the expression entry (as the buttons on the keypad). If only one item is selected the buttons also uses the current expression (the <guibutton>+</guibutton> button will append <quote>+ [value]</quote> to the current expression). The square root button will however only act on single values.
+The to right of the list are also buttons for mathematical operations. These acts on the selected history items (the <guibutton>+</guibutton> will calculate the sum of the selected values, while the <guibutton>−</guibutton> will calculated the difference between the first, uppermost, selected value and the rest, in order). If no value is marked the sign for the operator will be inserted into the expression entry (as the buttons on the keypad). If only one item is selected the buttons also uses the current expression (the <guibutton>+</guibutton> button will append <quote>+ [value]</quote> to the current expression). The square root button will however only act on single values.
 </para>
 </sect1>
 <sect1 id="qalculate-menus">
@@ -377,7 +763,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 <table id="qalculate-TBL-file-menu" frame="topbot" colsep="1">
 	<title>File Menu</title> 
 	<tgroup cols="2" colsep="1" rowsep="0">
-		<colspec colname="COLSPEC0" colwidth="50*"/>
+		<colspec colname="COLSPEC0" colwidth="25%"/>
 		<colspec colname="COLSPEC1"/>
 		<thead>
 			<row valign="top">
@@ -420,7 +806,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			</row>
 			<row valign="top">
 				<entry><para>Convert Number Bases (<keycombo><keycap>Ctrl</keycap><keycap>B</keycap></keycombo>)</para></entry>
-				<entry><para>Opens the number bases converter. See <xref linkend="qalculate-convert-number-bases-dialog"/></para></entry>
+				<entry><para>Opens the number bases converter. See <xref linkend="qalculate-convert-number-bases-dialog"/>.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Calendar Conversion</para></entry>
@@ -444,7 +830,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 <table id="qalculate-TBL-new-menu" frame="topbot" colsep="1">
 	<title>New Menu</title> 
 	<tgroup cols="2" colsep="1" rowsep="0">
-		<colspec colname="COLSPEC0" colwidth="50*"/>
+		<colspec colname="COLSPEC0" colwidth="25%"/>
 		<colspec colname="COLSPEC1"/>
 		<thead>
 			<row valign="top">
@@ -491,7 +877,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 <table id="qalculate-TBL-edit-menu" frame="topbot" colsep="1">
 	<title>Edit Menu</title> 
 	<tgroup cols="2" colsep="1" rowsep="0">
-		<colspec colname="COLSPEC0" colwidth="50*"/>
+		<colspec colname="COLSPEC0" colwidth="25%"/>
 		<colspec colname="COLSPEC1"/>
 		<thead>
 			<row valign="top">
@@ -557,6 +943,10 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 				<entry><para>Tries to convert the units in the current result so that as few units as possible is used. Non-SI units are not kept, even if the number of units used increase, and the automatic alternative is prioritized. Currencies are converted to the local currency, unless deactivated in the preferences dialog.</para></entry>
 			</row>
 			<row valign="top">
+				<entry><para>Insert Date</para></entry>
+				<entry><para>Opens a dialog for date selection (for insertion in the current expression).</para></entry>
+			</row>
+			<row valign="top">
 				<entry><para>Insert Matrix</para></entry>
 				<entry><para>Opens a dialog where you can create a matrix in a spreadsheet-like table and insert into the expression entry. If selected expression text is a matrix, then the matrix is edited.</para></entry>
 			</row>
@@ -578,7 +968,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 <table id="qalculate-TBL-mode-menu" frame="topbot" colsep="1">
 	<title>Mode Menu</title>
 	<tgroup cols="2" colsep="1" rowsep="0">
-		<colspec colname="COLSPEC0" colwidth="50*"/>
+		<colspec colname="COLSPEC0" colwidth="25%"/>
 		<colspec colname="COLSPEC1"/>
 		<thead>
 			<row valign="top">
@@ -665,7 +1055,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 <table id="qalculate-TBL-functions-menu" frame="topbot" colsep="1">
 	<title>Functions Menu</title> 
 	<tgroup cols="2" colsep="1" rowsep="0">
-		<colspec colname="COLSPEC0" colwidth="50*"/>
+		<colspec colname="COLSPEC0" colwidth="25%"/>
 		<colspec colname="COLSPEC1"/>
 		<thead>
 			<row valign="top">
@@ -688,7 +1078,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 <table id="qalculate-TBL-variables-menu" frame="topbot" colsep="1">
 	<title>Variables Menu</title> 
 	<tgroup cols="2" colsep="1" rowsep="0">
-		<colspec colname="COLSPEC0" colwidth="50*"/>
+		<colspec colname="COLSPEC0" colwidth="25%"/>
 		<colspec colname="COLSPEC1"/>
 		<thead>
 			<row valign="top">
@@ -711,7 +1101,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 <table id="qalculate-TBL-units-menu" frame="topbot" colsep="1">
 	<title>Units Menu</title> 
 	<tgroup cols="2" colsep="1" rowsep="0">
-		<colspec colname="COLSPEC0" colwidth="50*"/>
+		<colspec colname="COLSPEC0" colwidth="25%"/>
 		<colspec colname="COLSPEC1"/>
 		<thead>
 			<row valign="top">
@@ -734,7 +1124,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 <table id="qalculate-TBL-help-menu" frame="topbot" colsep="1">
 	<title>Help Menu</title> 
 	<tgroup cols="2" colsep="1" rowsep="0">
-		<colspec colname="COLSPEC0" colwidth="50*"/>
+		<colspec colname="COLSPEC0" colwidth="25%"/>
 		<colspec colname="COLSPEC1"/>
 		<thead>
 			<row valign="top">
@@ -816,7 +1206,7 @@ The number bases dialog, accessible from the <guimenu>File Menu</guimenu>, is an
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/convert-number-bases.png" format="PNG" width="311"/>
+				<imagedata fileref="figures/convert-number-bases.png" format="PNG" width="676"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -916,11 +1306,11 @@ The following operators are defined in &app; and may be used in expressions. Wor
 <table id="qalculate-TBL-operators" frame="topbot" colsep="1">
 	<title>Operators</title> 
 	<tgroup cols="5" rowsep="1">
-		<colspec colname="COLSPEC0" colwidth="50*"/>
-		<colspec colname="COLSPEC1" align="center" colwidth="50*"/>
-		<colspec colname="COLSPEC2"/>
-		<colspec colname="COLSPEC3" align="center" colwidth="50*"/>
-		<colspec colname="COLSPEC4" align="right" colwidth="50*"/>
+		<colspec colname="COLSPEC0"/>
+		<colspec colname="COLSPEC1" align="center"/>
+		<colspec colname="COLSPEC2" colwidth="60%"/>
+		<colspec colname="COLSPEC3" align="center"/>
+		<colspec colname="COLSPEC4" align="right"/>
 		<thead>
 			<row valign="top">
 				<entry colname="COLSPEC0"><para>Operation</para></entry>
@@ -949,7 +1339,7 @@ The following operators are defined in &app; and may be used in expressions. Wor
 				<entry><para>Multiplication</para></entry>
 				<entry align="center"><para>×, ⋅, *</para></entry>
 				<entry><para>Multiplies the left value by the right value.</para></entry>
-				<entry align="center"><para>2 * 2</para></entry>
+				<entry align="center"><para>2 × 2</para></entry>
 				<entry align="right"><para>4</para></entry>
 			</row>                
 			<row valign="top">
@@ -991,7 +1381,7 @@ The following operators are defined in &app; and may be used in expressions. Wor
 				<entry><para>Parenthesis</para></entry>
 				<entry align="center"><para>( and )</para></entry>
 				<entry><para>Evaluates the expression in parenthesis first.</para></entry>
-				<entry align="center"><para>5 * (1 + 1)</para></entry>
+				<entry align="center"><para>5 × (1 + 1)</para></entry>
 				<entry align="right"><para>10</para></entry>
 			</row>
 			<row valign="top">
@@ -1060,7 +1450,7 @@ The following operators are defined in &app; and may be used in expressions. Wor
 			<row valign="top">
 				<entry><para>Bitwise NOT</para></entry>
 				<entry align="center"><para>¬, ~</para></entry>
-				<entry><para>Equivalent to -1-x.</para></entry>
+				<entry><para>Equivalent to -1 − x.</para></entry>
 				<entry align="center"><para>~(0010 | 1100)</para></entry>
 				<entry align="right"><para>-1111</para></entry>
 			</row>
@@ -1109,7 +1499,7 @@ Operator names <quote>plus</quote>, <quote>minus</quote>, <quote>times</quote>, 
 In addition to these operators there are a couple of shortcuts for certain functions, such as <quote>5!</quote> which equals <quote>factorial(5)</quote>. 
 </para>
 <para>
-The multiplication sign can generally be left out. This is not true for numbers (<quote>5(5) = 25</quote> but <quote>5  5 = 55</quote>). Expressions can also generally be written with or without spaces with the same result (<quote>2xsin(2)</quote> equals <quote>2 x sin(2)</quote> which equals <quote>2*x*sin(2)</quote>), but be careful. The vast number of functions and units means that without separating spaces, the result might not be obvious. To avoid confusion &app; can limit the use of implicit multiplication (<menuchoice><guimenu>Mode</guimenu><guimenuitem>Limit Implicit Multiplication</guimenuitem></menuchoice>), so that space, operator or parenthesis must be put between functions, units and variables (in this mode <quote>esqrt(5)</quote> does not equal <quote>e * sqrt(5)</quote>). Also note that unit prefixes must be put immediately before the unit, to be interpreted as prefixes (<quote>5 mm = 0.005 m</quote>, but <quote>5 m m = 5m^2</quote>). You can see how to expression was interpreted in the history window.
+The multiplication sign can generally be left out. This is not true for numbers (<quote>5(5) = 25</quote> but <quote>5  5 = 55</quote>). Expressions can also generally be written with or without spaces with the same result (<quote>2xsin(2)</quote> equals <quote>2 x sin(2)</quote> which equals <quote>2 × x × sin(2)</quote>), but be careful. The vast number of functions and units means that without separating spaces, the result might not be obvious. To avoid confusion &app; can limit the use of implicit multiplication (<menuchoice><guimenu>Mode</guimenu><guimenuitem>Limit Implicit Multiplication</guimenuitem></menuchoice>), so that space, operator or parenthesis must be put between functions, units and variables (in this mode <quote>esqrt(5)</quote> does not equal <quote>e × sqrt(5)</quote>). Also note that unit prefixes must be put immediately before the unit, to be interpreted as prefixes (<quote>5 mm = 0.005 m</quote>, but <quote>5 m m = 5m^2</quote>). You can see how to expression was interpreted in the history window.
 </para>
 <para>
 Usually, mathematical expressions are written as normally expected. Standard operator precedence apply. Expressions are evaluated according to the following priorities:
@@ -1136,10 +1526,10 @@ Usually, mathematical expressions are written as normally expected. Standard ope
 <sect1 id="qalculate-implicit-multiplication">
 <title>Implicit Multiplication and Parsing Modes</title>
 <para>
-The evaluation of short/implicit multiplication, without any multiplication sign (e.g. <quote>5x</quote>, <quote>5(2+3)</quote>), differs depending on the parsing mode. In the conventional mode implicit multiplication does not differ from explicit multiplication (<quote>12/2(1+2) = 12/2*3 = 18</quote>, <quote>5x/5y = 5*x/5*y = xy</quote>). In the <quote>parse implicit multiplication first</quote> mode, implicit multiplication is parsed before explicit multiplication (<quote>12/2(1+2) = 12/(2*3) = 2</quote>, <quote>5x/5y = (5*x)/(5*y) = x/y</quote>). The default adaptive mode works as the <quote>parse implicit multiplication first</quote> mode, unless spaces are found (<quote>1/5x = 1/(5*x)</quote>, but <quote>1/5 x = (1/5)*x</quote>). In the adaptive mode unit expressions are parsed separately (<quote>5 m/5 m/s = (5*m)/(5*(m/s)) = 1 s</quote>). Function arguments without parentheses are an exception, where implicit multiplication in front of variables and units is parsed first regardless of mode (<quote>sqrt 2x = sqrt(2x)</quote>).
+The evaluation of short/implicit multiplication, without any multiplication sign (e.g. <quote>5x</quote>, <quote>5(2+3)</quote>), differs depending on the parsing mode. In the conventional mode implicit multiplication does not differ from explicit multiplication (<quote>12/2(1+2) = 12/2×3 = 18</quote>, <quote>5x/5y = 5 × x/5 × y = xy</quote>). In the <quote>parse implicit multiplication first</quote> mode, implicit multiplication is parsed before explicit multiplication (<quote>12/2(1+2) = 12/(2 × 3) = 2</quote>, <quote>5x/5y = (5 × x)/(5 × y) = x/y</quote>). The default adaptive mode works as the <quote>parse implicit multiplication first</quote> mode, unless spaces are found (<quote>1/5x = 1/(5 × x)</quote>, but <quote>1/5 x = (1/5) × x</quote>). In the adaptive mode unit expressions are parsed separately (<quote>5 m/5 m/s = (5 × m)/(5 × (m/s)) = 1 s</quote>). Function arguments without parentheses are an exception, where implicit multiplication in front of variables and units is parsed first regardless of mode (<quote>sqrt 2x = sqrt(2x)</quote>).
 </para>
 <para>
-If the limit implicit multiplication option is activated, the use of implicit multiplication when parsing expressions and displaying results will be limited to avoid confusion. For example, if this mode is not activated and <quote>integrte(5x)</quote> is accidently typed instead of <quote>integrate(5x)</quote>, the expression is interpreted as <quote>int(e * e * (5 * x) * gr * t)</quote> (displayed in history window). The result will then without any error be <quote>int(2.3940139x * km^2)</quote> instead of <quote>2.5x^2</quote>. If limit implicit multiplication is activated, the mistyped expression would instead show an error telling that <quote>integrte</quote> is not a valid variable, function or unit (unless unknowns is enabled in which case the result will be <quote>5 "integrate" * x</quote>). When implicit multiplication is limited, variables, functions and units must be separated by a space, operator or parenthesis (<quote>xy</quote> does not equal <quote>x * y</quote>).
+If the limit implicit multiplication option is activated, the use of implicit multiplication when parsing expressions and displaying results will be limited to avoid confusion. For example, if this mode is not activated and <quote>integrte(5x)</quote> is accidently typed instead of <quote>integrate(5x)</quote>, the expression is interpreted as <quote>int(e × e × (5 × x) × gr × t)</quote> (displayed in history window). The result will then without any error be <quote>int(2.3940139x × km^2)</quote> instead of <quote>2.5x^2</quote>. If limit implicit multiplication is activated, the mistyped expression would instead show an error telling that <quote>integrte</quote> is not a valid variable, function or unit (unless unknowns is enabled in which case the result will be <quote>5 "integrate" × x</quote>). When implicit multiplication is limited, variables, functions and units must be separated by a space, operator or parenthesis (<quote>xy</quote> does not equal <quote>x × y</quote>).
 </para>
 </sect1>
 <sect1 id="qalculate-to">
@@ -1290,7 +1680,7 @@ If <quote>to</quote> is not preceded by an expression, the previous result will 
 	<varlistentry>
 		<term>Negative Exponents</term>
 		<listitem><para>
-			If negative exponents is activated, division is shown as a negative power (e.g. <quote>x * y^-1</quote> instead of <quote>x / y</quote>). 
+			If negative exponents is activated, division is shown as a negative power (e.g. <quote>x × y^-1</quote> instead of <quote>x / y</quote>). 
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -1302,7 +1692,7 @@ If <quote>to</quote> is not preceded by an expression, the previous result will 
 	<varlistentry>
 		<term>Complex Number Form</term>
 		<listitem><para>
-			Complex number can be displayed in rectangular/cartesian (e.g. <quote>5i + 2</quote>), exponential (e.g. <quote>5.39 * e^1.19</quote>) or polar form (e.g. <quote>5.39 * (cos(1.19) + i * sin(1.19))</quote>). 
+			Complex number can be displayed in rectangular/cartesian (e.g. <quote>5i + 2</quote>), exponential (e.g. <quote>5.39 × e^1.19</quote>) or polar form (e.g. <quote>5.39 × (cos(1.19) + i × sin(1.19))</quote>). 
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -1314,7 +1704,7 @@ If <quote>to</quote> is not preceded by an expression, the previous result will 
 	<varlistentry>
 		<term>Unit Display</term>
 		<listitem><para>
-			The automatic use of prefixes for units in results can be toggled on and off. By default prefixes are only used for a selection of units (mainly standard SI and CGS units), but this can be changed to also include currencies or all other units. By default prefixes representing a power of ten not dividable by three (centi, deci, deca and hekto) are not used and need to be enabled. If denominator prefixes are not explicitly enabled, prefixes will only be set for the numerator in a fractional unit expression (e.g. <quote>1 Mg/m</quote> or <quote>1 kg/mm</quote>), unless there is no unit in the numerator. The place units separately alternative controls the display of unit expressions in result. If it is enabled (default) units will be displayed separate from other parts of the expression at the end (compare <quote>(5x*m)/(y*s)</quote> and <quote>5x/y m/s</quote>).
+			The automatic use of prefixes for units in results can be toggled on and off. By default prefixes are only used for a selection of units (mainly standard SI and CGS units), but this can be changed to also include currencies or all other units. By default prefixes representing a power of ten not dividable by three (centi, deci, deca and hekto) are not used and need to be enabled. If denominator prefixes are not explicitly enabled, prefixes will only be set for the numerator in a fractional unit expression (e.g. <quote>1 Mg/m</quote> or <quote>1 kg/mm</quote>), unless there is no unit in the numerator. The place units separately alternative controls the display of unit expressions in result. If it is enabled (default) units will be displayed separate from other parts of the expression at the end (compare <quote>(5x × m)/(y × s)</quote> and <quote>5x/y m/s</quote>).
 		</para>
 		<para>
 			Units can be automatically converted to base units or the optimal units in results. Optimal conversion means that the number of units in the result is reduced to as few units as possible. Only SI units are used for conversion. If <guimenuitem>Convert to Optimal SI unit</guimenuitem> is activated, non-SI units are converted to SI units, even if equally or less optimal than the original unit(s). In optimal unit mode, currencies are converted to the local currency, unless deactivated in the preferences dialog. Mixed units conversion allows certain units, such as time units and many imperial/U.S. customary units, to be converted to a combination of appropriate units, e.g. <quote>60.2 minutes = 1 hour to 12 seconds</quote>.
@@ -1330,7 +1720,7 @@ If <quote>to</quote> is not preceded by an expression, the previous result will 
 	<varlistentry>
 		<term>Approximation</term>
 		<listitem><para>
-			When always exact mode is on, the calculation will not go further than what can be calculated exactly (e.g. <quote>sqrt(2+3) = sqrt(5)</quote>). The  default <quote>Try Exact</quote> mode, will calculate the result exact as far as possible and then approximately. Approximate mode will directly calculate a approximate result, thus being a bit faster but giving a less correct approximate indication (<quote>sin(pi/2)</quote> return approximately one instead of exactly one). If the interval arithmetic mode is activated the precision of the final result is guaranteed by calculating an interval for every approximate value (See <xref linkend="qalculate-interval-arithmetic"/>).
+			When always exact mode is on, the calculation will not go further than what can be calculated exactly (e.g. <quote>sqrt(2 + 3) = sqrt(5)</quote>). The  default <quote>Try Exact</quote> mode, will calculate the result exact as far as possible and then approximately. Approximate mode will directly calculate a approximate result, thus being a bit faster but giving a less correct approximate indication (<quote>sin(pi/2)</quote> return approximately one instead of exactly one). If the interval arithmetic mode is activated the precision of the final result is guaranteed by calculating an interval for every approximate value (See <xref linkend="qalculate-interval-arithmetic"/>).
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -1344,7 +1734,7 @@ If <quote>to</quote> is not preceded by an expression, the previous result will 
 		<term>Parsing Mode</term>
 		<listitem><para>
 			These options controls how expressions are interpreted. There are three main modes, which mainly controls if implicit multiplication is handled differently from explicit multiplication and if spaces are taken into account or not.  See <xref linkend="qalculate-implicit-multiplication"/>.
-			If the read precsion option is activated, decimal numbers are intrepeted as approximate with precision equal to the number of digits (e.g. <quote>1.1 * 3.20 = 1.1±0.05 * 3.20±0.005 ≈ 3.5±0.2</quote>).
+			If the read precsion option is activated, decimal numbers are intrepeted as approximate with precision equal to the number of digits (e.g. <quote>1.1 × 3.20 = 1.1±0.05 × 3.20±0.005 ≈ 3.5±0.2</quote>).
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -1369,13 +1759,13 @@ The Reverse Polish Notation mode can be activated from <menuchoice><guimenu>Mode
 Central to the RPN mode is the stack, a list of registers/values that is operated on by functions and operators. The stack has a variable number of registers which can hold an unlimited number of values. The stack size is dynamically changed when a new value is added and the first value on the stack is shown in the result display. Mathematical operators such as plus and minus then operates on the first two, last added, values on the stack. The second value is changed with input from the first value. For example, the minus operator subtracts the first value from the second.
 </para>
 <para>
-For example, <command>5 ENTER 3 + 2 /</command> adds 5 to the stack, then adds 3 to the stack and moves 5 down a step and adds 3 to 5. The first value, 3, is removed from the stack and the value left is 8. Then 2 is added to the stack and 8 is divided by 2, resulting in 4. This would in a single expression with non-RPN (infix) syntax be entered as <quote>(5+3)/2</quote>.
+For example, <command>5 ENTER 3 + 2 /</command> adds 5 to the stack, then adds 3 to the stack and moves 5 down a step and adds 3 to 5. The first value, 3, is removed from the stack and the value left is 8. Then 2 is added to the stack and 8 is divided by 2, resulting in 4. This would in a single expression with non-RPN (infix) syntax be entered as <quote>(5 + 3)/2</quote>.
 </para>
 <para>
 Functions operate on the top values of the stack. Functions which require multiply arguments, fill the arguments in reversed order from the top (e.g. <command>5 ENTER 2 ENTER rem</command> equals <quote>rem(5, 2)</quote>). Functions with a vector argument uses all stack regsters (unless the top value is a vector). This is quite useful for statistical functions (e.g. <command>5 ENTER 2 ENTER 3 ENTER 4 ENTER harmmean</command> calculates the harmonic mean of 5, 2, 3, and 4 and leaves the result, 3.1169, as the only value on the stack).
 </para>
 <para>
-When the RPN stack is enabled, full expressions can still be entered (you can add e.g. <quote>5x+3+23+sin(2)</quote> directly to the stack). The buttons on the keypad do not insert operators and functions in the expression entry, but instead applies them to the stack. This is also true for the keys on the keyboard, unless deactivated in the preferences (<menuchoice><guimenu>Edit</guimenu><guimenuitem>Preferences</guimenuitem></menuchoice>). <keycap>Enter</keycap> calculates the current expressions and adds it to the stack (calculated mathematical expressions are automatically added to the stack when the RPN stack is enabled). If the expression entry is not empty when applying an operator or function to the stack, the expression is first calculated and added to the stack. All keys on the main part of the keyboard add the corresponding characters in the expression entry, unless the <guilabel>Use only keypad keys for RPN</guilabel> option is deactivated from the preferences dialog. To apply the raise operator '^' to the stack, without clicking the keypad button with the mouse, use the <keycombo><keycap>Ctrl</keycap><keycap>* (keypad)</keycap></keycombo> shortcut. If the expression only contains an operator or a single function without arguments, the operator/function is applied to the stack.
+When the RPN stack is enabled, full expressions can still be entered (you can add e.g. <quote>5x + 3 + 23 + sin(2)</quote> directly to the stack). The buttons on the keypad do not insert operators and functions in the expression entry, but instead applies them to the stack. This is also true for the keys on the keyboard, unless deactivated in the preferences (<menuchoice><guimenu>Edit</guimenu><guimenuitem>Preferences</guimenuitem></menuchoice>). <keycap>Enter</keycap> calculates the current expressions and adds it to the stack (calculated mathematical expressions are automatically added to the stack when the RPN stack is enabled). If the expression entry is not empty when applying an operator or function to the stack, the expression is first calculated and added to the stack. All keys on the main part of the keyboard add the corresponding characters in the expression entry, unless the <guilabel>Use only keypad keys for RPN</guilabel> option is deactivated from the preferences dialog. To apply the raise operator '^' to the stack, without clicking the keypad button with the pointing device, use the <keycombo><keycap>Ctrl</keycap><keycap>* (keypad)</keycap></keycombo> shortcut. If the expression only contains an operator or a single function without arguments, the operator/function is applied to the stack.
 </para>
 <figure id="qalculate-FIG-rpn-mode">
 	<title>RPN Mode</title>
@@ -1391,7 +1781,7 @@ When the RPN stack is enabled, full expressions can still be entered (you can ad
 The RPN mode adds a third page to the main window, for display and manipulation of the values on the stack. This shows a list of values on the stack, with the last added value on the top. On the right are buttons for manipulation of the stack. The buttons move the selected value up or down, move it to the top, edit it, or removes it, in order. If no stack row is selected, the up and down buttons rotates the stack, the swap button swaps the places of the first and second value and the copy and delete buttons acts on the the top value of the stack. The last button removes all values from the stack. On the left are buttons for applying mathematical operations to the stack. These works the same as buttons on the separate keypad. Changes in the display of results only affects the first value on the stack.
 </para>
 <para>
-Reverse Polish Notation can also be used directly in expression. This can be activated or deactivated separately from the RPN stack (<menuchoice><guimenu>Mode</guimenu><guimenuitem>Parsing Mode</guimenuitem><guimenuitem>RPN Syntax</guimenuitem></menuchoice>). When using RPN syntax, a temporary stack, separate from the previously mentioned stack, is created from the contents of each mathematical expression entered. To calculate <quote>(5+3)/2</quote>, as in the example above, with RPN syntax you should enter the expression <quote>5 3 + 2 /</quote>. Instead of actually pressing enter on the keyboard, each separate value on the stack is separated by a blank space. The RPN syntax only supports functions that require exactly one argument.
+Reverse Polish Notation can also be used directly in expression. This can be activated or deactivated separately from the RPN stack (<menuchoice><guimenu>Mode</guimenu><guimenuitem>Parsing Mode</guimenuitem><guimenuitem>RPN Syntax</guimenuitem></menuchoice>). When using RPN syntax, a temporary stack, separate from the previously mentioned stack, is created from the contents of each mathematical expression entered. To calculate <quote>(5 + 3)/2</quote>, as in the example above, with RPN syntax you should enter the expression <quote>5 3 + 2 /</quote>. Instead of actually pressing enter on the keyboard, each separate value on the stack is separated by a blank space. The RPN syntax only supports functions that require exactly one argument.
 </para>
 </sect1>
 </chapter>
@@ -1578,7 +1968,7 @@ Here the main function categories and some of their members are described, to gi
 <varlistentry>
 <term>Algebra</term>
 <listitem><para>
-Contains <command>sum()</command> and <command>product()</command>, which corresponds to the sum and product signs. <command>solve()</command> solves equations (e.g. <quote>solve(x * 2 = 8)</quote> returns <quote>4</quote> meaning that x equals 4). Use <command>solve2()</command> and <command>multisolve()</command> to solve multiple equations with multiple variables.
+Contains <command>sum()</command> and <command>product()</command>, which corresponds to the sum and product signs. <command>solve()</command> solves equations (e.g. <quote>solve(x × 2 = 8)</quote> returns <quote>4</quote> meaning that x equals 4). Use <command>solve2()</command> and <command>multisolve()</command> to solve multiple equations with multiple variables.
 </para></listitem>
 </varlistentry>
 <varlistentry>
@@ -1673,7 +2063,7 @@ Includes <command>beta()</command>, <command>gamma()</command> and similar funct
 <varlistentry>
 <term>Statistics</term>
 <listitem><para>
-Contains a lot of functions for descriptive statistics and some statistical tests. Data sets are stored as vectors. Generally, functions with a vector/data set as last argument can take elements/samples as a variable number of arguments directly instead of in a vector (e.g. <quote>mean(1, 2, 3)</quote> equals <quote>mean(vector(1, 2, 3))</quote>). Also contains the <command>rand()</command> function, which returns a pseudo random number between 0 and 1, and does not take any arguments.
+Contains a lot of functions for descriptive statistics and some statistical tests. Data sets are stored as vectors. Generally, functions with a vector/data set as last argument can take elements/samples as a variable number of arguments directly instead of in a vector (e.g. <quote>mean(1, 2, 3)</quote> equals <quote>mean(vector(1, 2, 3))</quote>). Also contains the <command>rand()</command> function, which returns a pseudo random number between 0 and 1 (with no argument, or zero), or a random integer between one and the specified number.
 </para></listitem>
 </varlistentry>
 <varlistentry>
@@ -1685,7 +2075,7 @@ Trigonometric functions, including <command>sin()</command>, <command>cos()</com
 <varlistentry>
 <term>Utilities</term>
 <listitem><para>
-Various utility functions. Most are only useful in definition of other functions. The <command>save()</command> function can however be a quick way of storing a value in a variable, and <command>csum()</command> can be a powerful tool for data processing. This category also contains some functions, such as <command>char()</command> and <command>ascii()</command>, that might be useful for programmers. , <command>replace()</command> provides an easy way of replacing unknown variables by known expressions in a value (e.g. <quote>replace(5x^2+x, x, 3)</quote> equals <quote>5*3^2+3</quote>).
+Various utility functions. Most are only useful in definition of other functions. The <command>save()</command> function can however be a quick way of storing a value in a variable, and <command>csum()</command> can be a powerful tool for data processing. This category also contains some functions, such as <command>char()</command> and <command>ascii()</command>, that might be useful for programmers. , <command>replace()</command> provides an easy way of replacing unknown variables by known expressions in a value (e.g. <quote>replace(5x^2 + x, x, 3)</quote> equals <quote>5 × 3^2 + 3</quote>).
 </para></listitem>
 </varlistentry>
 </variablelist>
@@ -1713,7 +2103,7 @@ The simple function edit dialog only allows entry of a single name and an expres
 The advanced dialog, with access to all function properties, consists of two tabs/pages; the first with general descriptive information and the last for the function definition. First enter a name, used to reference the function in an expression. If an expression is entered a bit further down, then the function will already be fully working. A bit more does however need to be said about the function expression.
 </para>
 <para>
-The expression of a function is basically a normal expression with placeholders for arguments. These placeholders consists of a backslash and a letter — x, y, z for the 1st, 2nd and 3rd arguments and a to u for argument 4 to 24. They are replaced by entered arguments when a function is calculated. The placeholders naturally also decide the number of arguments that a function requires. For example the function for triangle area (<quote>base * height / 2</quote>) has the name triangle and the expression <quote>(\x*\y)/2</quote>, which gives that <quote>triangle(2, 3)</quote> equals <quote>(2*3) / 2</quote> and returns <quote>3</quote> as result. An argument can be used more than one time and all arguments must not necessarily be in order in the expression.
+The expression of a function is basically a normal expression with placeholders for arguments. These placeholders consists of a backslash and a letter — x, y, z for the 1st, 2nd and 3rd arguments and a to u for argument 4 to 24. They are replaced by entered arguments when a function is calculated. The placeholders naturally also decide the number of arguments that a function requires. For example the function for triangle area (<quote>base × height / 2</quote>) has the name triangle and the expression <quote>(\x × \y)/2</quote>, which gives that <quote>triangle(2, 3)</quote> equals <quote>(2 × 3) / 2</quote> and returns <quote>3</quote> as result. An argument can be used more than one time and all arguments must not necessarily be in order in the expression.
 <figure id="qalculate-FIG-edit-function">
 	<title>Function Edit Dialog</title>
 	<screenshot>
@@ -1791,7 +2181,7 @@ By default (controlled by <menuchoice><guimenu>Mode</guimenu><guisubmenu>Unit Di
 <sect1 id="qalculate-unit-creation">
 <title>Unit creation/editing</title>
 <para>
-There are three different unit classes in &app; — base, alias and composite units. Base units are units defined as basis for other units. Meters and seconds are typical base units. Alias units is defined in relation to another unit. For example, hour is defined as an alias unit that equals 60 minutes which in turn is defined in relation to seconds. Finally, composite units are defined by a unit expression with multiple units. Composite units often have an alias unit associated with them, as they do not have a reference name on their own. For example, a joule is defined as an alias defined in relation to a composite unit defined as <quote>Newton * meter</quote>.
+There are three different unit classes in &app; — base, alias and composite units. Base units are units defined as basis for other units. Meters and seconds are typical base units. Alias units is defined in relation to another unit. For example, hour is defined as an alias unit that equals 60 minutes which in turn is defined in relation to seconds. Finally, composite units are defined by a unit expression with multiple units. Composite units often have an alias unit associated with them, as they do not have a reference name on their own. For example, a joule is defined as an alias defined in relation to a composite unit defined as <quote>Newton × meter</quote>.
 </para>
 <para>
 Select <menuchoice><guimenu>File</guimenu><guisubmenu>New</guisubmenu><guimenuitem>Unit</guimenuitem></menuchoice>, or click <guibutton>New</guibutton> in the unit manager, and the unit edit dialog pops up. 
@@ -1811,7 +2201,7 @@ First the unit class needs to be selected. Depending on the unit class, differen
 Base and alias units normally have three different name forms defined for use in expressions — abbreviation (e.g. <quote>m</quote>), singular (<quote>meter</quote>) and plural (<quote>meters</quote>). Composite units only have an internal name, used to reference the unit in definitions of other units.
 </para>
 <para>
-For base units, the name is all that is needed. For alias units, on the other hand, a base unit, exponent and relation are necessary. The base unit must not necessarily be of the base unit class and it is recommended that an alias unit is defined in relation to the closest unit (e.g. 1ft = 3 hands, 1 hand = 4 in, and 1 in = 0.0254 m). The relation is usually just a number that tells how large quantity of the base unit is needed to get the alias unit (alias unit = base unit * relation). The check box below relation in the dialog specifies if the relation is exact or approximate. The exponent defines the exponential relation to the base unit, so that the alias unit equals the base unit raised to the exponent. For simple unit relations this gives: alias unit = relation * base unit^exponent.
+For base units, the name is all that is needed. For alias units, on the other hand, a base unit, exponent and relation are necessary. The base unit must not necessarily be of the base unit class and it is recommended that an alias unit is defined in relation to the closest unit (e.g. 1ft = 3 hands, 1 hand = 4 in, and 1 in = 0.0254 m). The relation is usually just a number that tells how large quantity of the base unit is needed to get the alias unit (alias unit = base unit × relation). The check box below relation in the dialog specifies if the relation is exact or approximate. The exponent defines the exponential relation to the base unit, so that the alias unit equals the base unit raised to the exponent. For simple unit relations this gives: alias unit = relation × base unit^exponent.
 </para>
 <para>
 It is possible to create units with non-linear relation to the base unit. Replace the factor with <quote>\x</quote> and the exponent with <quote>\y</quote> (e.g. <quote>\x + 273.15</quote> for degrees Celsius with Kelvin as base unit). For non-linear relations the reverse relation (for conversion back from the base unit) should also be specified (<quote>\x - 273.15</quote> for degrees Celsius).

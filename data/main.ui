@@ -2171,7 +2171,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                     </child>
                     <child>
                       <object class="GtkCheckMenuItem" id="menu_item_programmers_keypad">
-                        <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Show Programming Keypad</property>
                         <signal name="toggled" handler="on_menu_item_programmers_keypad_toggled" swapped="no"/>
@@ -2964,6 +2963,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkBox">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <property name="spacing">2</property>
                                         <child>
                                           <object class="GtkImage">
                                             <property name="visible">True</property>
@@ -3046,6 +3046,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkBox">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <property name="spacing">2</property>
                                         <child>
                                           <object class="GtkImage">
                                             <property name="visible">True</property>
@@ -3105,8 +3106,9 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="can_focus">True</property>
                                         <property name="focus_on_click">False</property>
                                         <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">Decimal point</property>
                                         <property name="use_underline">True</property>
+                                        <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                        <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
                                         <signal name="clicked" handler="on_button_dot_clicked" swapped="no"/>
                                         <child>
                                           <object class="GtkLabel" id="label_dot">
@@ -3368,8 +3370,9 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="can_focus">True</property>
                                         <property name="focus_on_click">False</property>
                                         <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">10^x (Ctrl+Shift+E)</property>
                                         <property name="use_underline">True</property>
+                                        <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                        <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
                                         <signal name="clicked" handler="on_button_exp_clicked" swapped="no"/>
                                         <child>
                                           <object class="GtkLabel" id="label_exp">
@@ -3597,7 +3600,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkLabel" id="label_plusminus">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">&lt;b&gt;±&lt;/b&gt;</property>
+                                        <property name="label">±</property>
                                         <property name="use_markup">True</property>
                                       </object>
                                     </child>
@@ -3637,8 +3640,9 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="can_focus">True</property>
                                     <property name="focus_on_click">False</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Argument separator</property>
                                     <property name="use_underline">True</property>
+                                    <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
                                     <signal name="clicked" handler="on_button_comma_clicked" swapped="no"/>
                                     <child>
                                       <object class="GtkLabel" id="label_comma">
@@ -5213,7 +5217,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                             <property name="use_underline">True</property>
                                             <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
                                             <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
-                                            <signal name="clicked" handler="on_button_mod2_clicked" swapped="no"/>
                                             <child>
                                               <object class="GtkLabel">
                                                 <property name="visible">True</property>

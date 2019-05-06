@@ -561,12 +561,13 @@ GtkBuilder *getBuilder(const char *filename) {
 
 #define SUP_STRING(X) string("<span size=\"x-small\" rise=\"" + i2s((int) (pango_font_description_get_size(font_desc) / 1.5)) + "\">") + string(X) + "</span>"
 
-void set_keypad_tooltip(const gchar *w, const char *s1, const char *s2, const char *s3 = NULL, bool b_markup = false) {
+void set_keypad_tooltip(const gchar *w, const char *s1, const char *s2, const char *s3 = NULL, bool b_markup = false, bool b_longpress = true) {
 	string str;
 	if(s1) str += s1;
 	if(s2) {
 		if(s1) str += "\n\n";
-		str += _("Right-click/long press: %s");
+		if(b_longpress) str += _("Right-click/long press: %s");
+		else str += _("Right-click: %s");
 		gsub("%s", s2, str);
 	}
 	if(s3) {
@@ -898,6 +899,11 @@ void create_button_menus(void) {
 	set_keypad_tooltip("button_eight", NULL, "x<sup>8</sup>", "1/8", true);
 	set_keypad_tooltip("button_nine", NULL, "x<sup>9</sup>", "1/9", true);
 	set_keypad_tooltip("button_zero", NULL, "x<sup>0</sup>", CALCULATOR->getDegUnit()->title(true).c_str(), true);
+	set_keypad_tooltip("button_dot", _("Decimal point"), _("Blank space"), _("New line"));
+	set_keypad_tooltip("button_comma", _("Argument separator"), _("Blank space"), _("New line"));
+	
+	f = CALCULATOR->getActiveFunction("exp10");
+	set_keypad_tooltip("button_exp", "10<sup>x</sup> (Ctrl+Shift+E)", CALCULATOR->f_exp->title(true).c_str(), f ? f->title(true).c_str() : NULL, true);
 	
 	set_keypad_tooltip("button_xy", _("Raise (Ctrl+*)"), CALCULATOR->f_sqrt->title(true).c_str());
 	set_keypad_tooltip("button_divide", _("Divide"), "1/x");
@@ -908,9 +914,9 @@ void create_button_menus(void) {
 	set_keypad_tooltip("button_brace_close", _("Right parenthesis"), _("Right vector bracket"));
 	set_keypad_tooltip("button_brace_open", _("Left parenthesis"), _("Left vector bracket"));
 	
-	set_keypad_tooltip("button_ans", _("Previous result"), _("Previous result (static)"));
+	set_keypad_tooltip("button_ans", _("Previous result"), _("Previous result (static)"), NULL, false, false);
 	
-	set_keypad_tooltip("button_move2", _("Move cursor left or right"), _("Move cursor to beginning or end"));
+	set_keypad_tooltip("button_move2", _("Move cursor left or right"), _("Move cursor to beginning or end"), NULL, false, false);
 	
 	set_keypad_tooltip("button_del", _("Delete"), _("Backspace"));
 	
@@ -927,10 +933,11 @@ void create_button_menus(void) {
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_stamptodate"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_stamptodate);
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_datetostamp"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_timestamp);
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_rnd"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_rand);
+	g_signal_connect(gtk_builder_get_object(main_builder, "button_mod2"), "clicked", G_CALLBACK(insert_function_operator), (gpointer) CALCULATOR->f_mod);
 	
 	f = CALCULATOR->getActiveFunction("exp2");
 	set_keypad_tooltip("button_expf", CALCULATOR->f_exp->title(true).c_str(), f ? f->title(true).c_str() : NULL);
-	set_keypad_tooltip("button_mod2", CALCULATOR->f_exp->title(true).c_str(), CALCULATOR->f_rem->title(true).c_str());
+	set_keypad_tooltip("button_mod2", CALCULATOR->f_mod->title(true).c_str(), CALCULATOR->f_rem->title(true).c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_ln2")), CALCULATOR->f_ln->title(true).c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_int")), CALCULATOR->f_int->title(true).c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_frac")), CALCULATOR->f_frac->title(true).c_str());
