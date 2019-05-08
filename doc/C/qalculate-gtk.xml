@@ -97,7 +97,7 @@ The expression entry is the most important part of the &app; user interface. The
 &app; helps out with the expression by giving a list of possible endings to words representing functions, variables and units. Titles, and countries for currencies, will also be searched, but any matches will be placed at the end of the list. The list will narrow with each letter typed. Select an item in the list and the name will be completed. If a function was selected, parenthesis will be added and the position moved for immediate entry of arguments. Completion can be configured from the context menu, or in more detail, from the preferences dialog.
 </para>
 <para>
-As the expression is typed in, the area directly direclty below the expression entry, to the left, will show useful information. By default the calculator's interpretation of the expression is shown (e.g. <quote>5 × meter</quote> for <quote>5m</quote>). The interpretation will be displayed in red (configurable) if there are errors in the expression or in blue for lesser errors (for example too many arguments in a function). If the last typed in text represents a function and arguments are about to be entered, the functions name and its arguments will be displayed. The first argument in the information text is highlighted and includes information about its type and restrictions and when an argument has been entered, the next will be highlighted.
+As the expression is typed in, the area directly directly below the expression entry, to the left, will show useful information. By default the calculator's interpretation of the expression is shown (e.g. <quote>5 × meter</quote> for <quote>5m</quote>). The interpretation will be displayed in red (configurable) if there are errors in the expression or in blue for lesser errors (for example too many arguments in a function). If the last typed in text represents a function and arguments are about to be entered, the functions name and its arguments will be displayed. The first argument in the information text is highlighted and includes information about its type and restrictions and when an argument has been entered, the next will be highlighted.
 </para>
 <para>
 After execution of an expression, the whole expression will be marked. This normally means that if something new is entered, the old expression will be overwritten. If, however, an operator (+, −, *, /, ^) is entered first, the old expression will instead be the target of action. The operator will then apply to the whole expression, which is put in parenthesis. This works on all marked ranges, meaning that this way an expression can conveniently be put in parenthesis. Functions set the selection as their first argument.
@@ -343,12 +343,12 @@ The buttons on the right provides the following sets of functionality:
 			<row valign="top">
 				<entry><para>%</para></entry>
 				<entry><para>Percent (or modulus operator)</para></entry>
-				<entry><para>Promille</para></entry>
+				<entry><para>Per mille</para></entry>
 				<entry><para>-</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Left and right arrows</para></entry>
-				<entry><para>Move cursor one chacacter.</para></entry>
+				<entry><para>Move cursor one character.</para></entry>
 				<entry><para>Move cursor to beginning or end.</para></entry>
 				<entry><para>-</para></entry>
 			</row>
@@ -373,7 +373,7 @@ The buttons on the right provides the following sets of functionality:
 The <quote>(x)</quote> button places opening and closing parentheses around the selected text in the expression entry. If no text is selected either the expression to the right of the cursor (if the cursor is at the beginning of the expression or if there is an operator or left parenthesis to the left of the cursor) or to the left of the cursor is put inside parentheses. If the expression is empty, as well as in some other cases (to avoid broken expression), empty parentheses are inserted.
 </para>
 <para>
-The arrow buttons works a bit differently than the other. The direction of the action will depend on which half of the button that is pressed (the right side of the button, with the arrow pointing to the right, will move the insert cursor when step forward). Long press on the button will continuosly move the cursor (or continuously cycle through the expression history).
+The arrow buttons works a bit differently than the other. The direction of the action will depend on which half of the button that is pressed (the right side of the button, with the arrow pointing to the right, will move the insert cursor when step forward). Long press on the button will continuously move the cursor (or continuously cycle through the expression history).
 </para>
 <para>
 The characters used as decimal point and argument separator varies between different locales. The argument separator is used for separation of arguments to functions that takes more than one argument, as well as to separate elements in vectors and matrices (although this is not strictly necessary).
@@ -502,7 +502,7 @@ Below follows a list of the buttons on the left side (including their menus and 
 			<row valign="top">
 				<entry><para>kg</para></entry>
 				<entry><para>Most recently used unit from the associated menu, or kilogram.</para></entry>
-				<entry><para>All SI base units and SI derived units with special names and symbols, plus liter.</para></entry>
+				<entry><para>All SI base units and SI derived units with special names and symbols, plus litre.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>&euro; (or local currency)</para></entry>
@@ -529,7 +529,7 @@ Below follows a list of the buttons on the left side (including their menus and 
 		</mediaobject>
 	</screenshot>
 </figure>
-The buttons on the left side can be replaced (using the top left left button or <keycombo><keycap>Ctrl</keycap><keycap>P</keycap></keycombo>) by a set of buttons for quick access to functions particularily useful for programmers. These buttons are listed below, from left to right, top to bottom.
+The buttons on the left side can be replaced (using the top left left button or <keycombo><keycap>Ctrl</keycap><keycap>P</keycap></keycombo>) by a set of buttons for quick access to functions particularly useful for programmers. These buttons are listed below, from left to right, top to bottom.
 <table id="qalculate-TBL-programming-keypad" frame="topbot" colsep="1">
 	<title>Programming Keypad</title> 
 	<tgroup cols="2" colsep="1" rowsep="0">
@@ -571,12 +571,12 @@ The buttons on the left side can be replaced (using the top left left button or 
 			</row>
 			<row valign="top">
 				<entry><para>2→</para></entry>
-				<entry><para>Toogles two's complement representation on/off for input of negative numbers.</para></entry>
+				<entry><para>Toggles two's complement representation on/off for input of negative numbers.</para></entry>
 				<entry><para>-</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>→2</para></entry>
-				<entry><para>Toogles two's complement representation on/off for display of negative numbers.</para></entry>
+				<entry><para>Toggles two's complement representation on/off for display of negative numbers.</para></entry>
 				<entry><para>-</para></entry>
 			</row>
 			<row valign="top">
@@ -640,6 +640,16 @@ The buttons on the left side can be replaced (using the top left left button or 
 				<entry><para>-</para></entry>
 			</row>
 			<row valign="top">
+				<entry><para>cmp</para></entry>
+				<entry><para>Bitwise complement (NOT) function (specify bit width and signedness).</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>rot</para></entry>
+				<entry><para>Bitwise rotation function.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
 				<entry><para>mod</para></entry>
 				<entry><para>Modulus operator.</para></entry>
 				<entry><para>Remainder operator.</para></entry>
@@ -647,6 +657,16 @@ The buttons on the left side can be replaced (using the top left left button or 
 			<row valign="top">
 				<entry><para>div</para></entry>
 				<entry><para>Integer division operator.</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>int</para></entry>
+				<entry><para>Integer part function (<quote>frac(-5.2) = -5</quote>).</para></entry>
+				<entry><para>-</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>frac</para></entry>
+				<entry><para>Fractional part function (<quote>frac(-5.2) = -0.2</quote>).</para></entry>
 				<entry><para>-</para></entry>
 			</row>
 			<row valign="top">
@@ -667,16 +687,6 @@ The buttons on the left side can be replaced (using the top left left button or 
 			<row valign="top">
 				<entry><para>ln</para></entry>
 				<entry><para>Natural logarithm function.</para></entry>
-				<entry><para>-</para></entry>
-			</row>
-			<row valign="top">
-				<entry><para>int</para></entry>
-				<entry><para>Integer part function (<quote>frac(-5.2) = -5</quote>).</para></entry>
-				<entry><para>-</para></entry>
-			</row>
-			<row valign="top">
-				<entry><para>frac</para></entry>
-				<entry><para>Fractional part function (<quote>frac(-5.2) = -0.2</quote>).</para></entry>
 				<entry><para>-</para></entry>
 			</row>
 			<row valign="top">
@@ -707,22 +717,12 @@ The buttons on the left side can be replaced (using the top left left button or 
 			<row valign="top">
 				<entry><para>a→1</para></entry>
 				<entry><para><command>code()</command> function (returns numeric code of Unicode character).</para></entry>
-				<entry><para>-</para></entry>
-			</row>
-			<row valign="top">
-				<entry><para>1→a</para></entry>
 				<entry><para><command>char()</command> function (for conversion of numeric code to Unicode character).</para></entry>
-				<entry><para>-</para></entry>
-			</row>
-			<row valign="top">
-				<entry><para>d→u</para></entry>
-				<entry><para>Function for conversion of date and time to Unix timestamp.</para></entry>
-				<entry><para>-</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>u→d</para></entry>
 				<entry><para>Function for conversion of Unix timestamp to date and time.</para></entry>
-				<entry><para>-</para></entry>
+				<entry><para>Function for conversion of date and time to Unix timestamp.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>STO</para></entry>
