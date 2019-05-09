@@ -136,7 +136,7 @@ GtkWidget *historyview;
 GtkListStore *historystore;
 GtkWidget *stackview;
 GtkListStore *stackstore;
-GtkWidget *statuslabel_l, *statuslabel_r;
+GtkWidget *statuslabel_l, *statuslabel_r, *result_bases;
 GtkWidget *f_menu ,*v_menu, *u_menu, *u_menu2, *recent_menu;
 GtkAccelGroup *accel_group;
 
@@ -1052,12 +1052,20 @@ void create_main_window(void) {
 	stackview = GTK_WIDGET(gtk_builder_get_object(main_builder, "stackview"));
 	statuslabel_l = GTK_WIDGET(gtk_builder_get_object(main_builder, "label_status_left"));
 	statuslabel_r = GTK_WIDGET(gtk_builder_get_object(main_builder, "label_status_right"));
+	result_bases = GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases"));
 
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
 	gtk_label_set_xalign(GTK_LABEL(statuslabel_l), 0.0);
 #else
 	gtk_misc_set_alignment(GTK_MISC(statuslabel_l), 0.0, 0.5);
-#endif 
+#endif
+
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
+	gtk_label_set_xalign(GTK_LABEL(result_bases), 1.0);
+	gtk_label_set_yalign(GTK_LABEL(result_bases), 0.5);
+#else
+	gtk_misc_set_alignment(GTK_MISC(result_bases), 1.0, 0.5);
+#endif
 
 	expression_provider = gtk_css_provider_new();
 	resultview_provider = gtk_css_provider_new();
@@ -1070,7 +1078,10 @@ void create_main_window(void) {
 	
 	set_mode_items(printops, evalops, CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign(), rpn_mode, CALCULATOR->getPrecision(), CALCULATOR->usesIntervalArithmetic(), CALCULATOR->variableUnitsEnabled(), adaptive_interval_display, visible_keypad, true);
 	
-	if(visible_keypad == 1) gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "programmers_keypad")));
+	if(visible_keypad == 1) {
+		gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "programmers_keypad")));
+		gtk_stack_set_visible_child_name(GTK_STACK(gtk_builder_get_object(main_builder, "stack_keypad_top")), "page1");
+	}
 
 	set_unicode_buttons();
 

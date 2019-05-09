@@ -2745,9 +2745,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
-                    <property name="spacing">12</property>
                     <child>
-                      <object class="GtkBox" id="hbox62">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="spacing">6</property>
@@ -2757,6 +2756,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="tooltip_text" translatable="yes">Show/hide programming keypad</property>
+                            <property name="margin_bottom">12</property>
                             <signal name="toggled" handler="on_button_programmers_keypad_toggled" swapped="no"/>
                             <child>
                               <object class="GtkLabel">
@@ -2773,83 +2773,122 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkToggleButton" id="button_exact">
-                            <property name="label" translatable="yes">Exact</property>
+                          <object class="GtkStack" id="stack_keypad_top">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <signal name="toggled" handler="on_button_exact_toggled" swapped="no"/>
+                            <property name="can_focus">False</property>
+                            <property name="hexpand">True</property>
+                            <child>
+                              <object class="GtkBox" id="hbox62">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="margin_bottom">12</property>
+                                <property name="spacing">6</property>
+                                <child>
+                                  <object class="GtkToggleButton" id="button_exact">
+                                    <property name="label" translatable="yes">Exact</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                    <signal name="toggled" handler="on_button_exact_toggled" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">True</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkComboBoxText" id="combobox_fraction_mode">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">Rational Number Form</property>
+                                    <property name="active">0</property>
+                                    <items>
+                                      <item id="&lt;Ange ID&gt;" translatable="yes">Decimal fractions</item>
+                                      <item translatable="yes">Exact decimal fractions</item>
+                                      <item translatable="yes">Simple fractions</item>
+                                      <item translatable="yes">Mixed fractions</item>
+                                    </items>
+                                    <signal name="changed" handler="on_combobox_fraction_mode_changed" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">True</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkComboBoxText" id="combobox_numerical_display">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">Numerical display</property>
+                                    <property name="active">0</property>
+                                    <items>
+                                      <item translatable="yes">Normal</item>
+                                      <item translatable="yes">Engineering</item>
+                                      <item translatable="yes">Scientific</item>
+                                      <item translatable="yes">Pure</item>
+                                      <item translatable="yes">Simple</item>
+                                    </items>
+                                    <signal name="changed" handler="on_combobox_numerical_display_changed" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">True</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkComboBoxText" id="combobox_base">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">Number base</property>
+                                    <property name="active">2</property>
+                                    <items>
+                                      <item translatable="yes">Binary</item>
+                                      <item translatable="yes">Octal</item>
+                                      <item translatable="yes">Decimal</item>
+                                      <item translatable="yes">Duodecimal</item>
+                                      <item translatable="yes">Hexadecimal</item>
+                                      <item translatable="yes">Sexagesimal</item>
+                                      <item translatable="yes">Time format</item>
+                                      <item translatable="yes">Roman</item>
+                                      <item translatable="yes">Other…</item>
+                                    </items>
+                                    <signal name="changed" handler="on_combobox_base_changed" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">True</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">4</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="name">page0</property>
+                                <property name="title" translatable="yes">page0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label_result_bases">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="margin_bottom">3</property>
+                                <property name="justify">right</property>
+                                <property name="selectable">True</property>
+                                <property name="ellipsize">start</property>
+                              </object>
+                              <packing>
+                                <property name="name">page1</property>
+                                <property name="title" translatable="yes">page1</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
+                            <property name="expand">False</property>
                             <property name="fill">True</property>
                             <property name="position">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkComboBoxText" id="combobox_fraction_mode">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Rational Number Form</property>
-                            <property name="active">0</property>
-                            <items>
-                              <item id="&lt;Ange ID&gt;" translatable="yes">Decimal fractions</item>
-                              <item translatable="yes">Exact decimal fractions</item>
-                              <item translatable="yes">Simple fractions</item>
-                              <item translatable="yes">Mixed fractions</item>
-                            </items>
-                            <signal name="changed" handler="on_combobox_fraction_mode_changed" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkComboBoxText" id="combobox_numerical_display">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Numerical display</property>
-                            <property name="active">0</property>
-                            <items>
-                              <item translatable="yes">Normal</item>
-                              <item translatable="yes">Engineering</item>
-                              <item translatable="yes">Scientific</item>
-                              <item translatable="yes">Pure</item>
-                              <item translatable="yes">Simple</item>
-                            </items>
-                            <signal name="changed" handler="on_combobox_numerical_display_changed" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkComboBoxText" id="combobox_base">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Number base</property>
-                            <property name="active">2</property>
-                            <items>
-                              <item translatable="yes">Binary</item>
-                              <item translatable="yes">Octal</item>
-                              <item translatable="yes">Decimal</item>
-                              <item translatable="yes">Duodecimal</item>
-                              <item translatable="yes">Hexadecimal</item>
-                              <item translatable="yes">Sexagesimal</item>
-                              <item translatable="yes">Time format</item>
-                              <item translatable="yes">Roman</item>
-                              <item translatable="yes">Other…</item>
-                            </items>
-                            <signal name="changed" handler="on_combobox_base_changed" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">4</property>
                           </packing>
                         </child>
                       </object>

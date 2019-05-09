@@ -84,7 +84,8 @@ extern GtkWidget *chinese_stem, *chinese_branch;
 
 extern GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider;
 
-extern GtkWidget *expressiontext, *statuslabel_l, *statuslabel_r;
+extern GtkWidget *expressiontext, *statuslabel_l, *statuslabel_r, *result_bases;
+int two_result_bases_rows = -1;
 extern GtkTextBuffer *expressionbuffer;
 extern GtkTextTag *expression_par_tag;
 extern GtkWidget *f_menu, *v_menu, *u_menu, *u_menu2, *recent_menu;
@@ -306,6 +307,9 @@ bool hexadecimal_twos_complement_in = false, twos_complement_in = false;
 
 int default_signed = -1;
 int default_bits = -1;
+
+string result_bin, result_oct, result_dec, result_hex;
+Number max_bases, min_bases;
 
 #define TEXT_TAGS			"<span size=\"xx-large\">"
 #define TEXT_TAGS_END			"</span>"
@@ -826,7 +830,6 @@ void expression_font_modified() {
 	set_expression_size_request();
 	set_operator_symbols();
 }
-
 
 PangoCoverageLevel get_least_coverage(const gchar *gstr, GtkWidget *widget) {
 
@@ -6736,6 +6739,9 @@ void clearresult() {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), FALSE);
 		gtk_widget_queue_draw(resultview);
 	}
+	result_bin = ""; result_oct = ""; result_dec = ""; result_hex = "";
+	gtk_label_set_text(GTK_LABEL(result_bases), "");
+	gtk_widget_set_tooltip_markup(result_bases, "");
 	gtk_widget_set_tooltip_text(resultview, "");
 }
 
@@ -6833,6 +6839,43 @@ void ViewThread::run() {
 		gint64 time1 = g_get_monotonic_time();
 		result_text = m.print(printops);
 		result_text_approximate = *printops.is_approximate;
+		
+		if(!b_stack) {
+			result_bin = ""; result_oct = "", result_dec = "", result_hex = "";
+			if(max_bases.isZero()) {max_bases = 2; max_bases ^= 64; min_bases = -max_bases;}
+			if(!CALCULATOR->aborted() && ((m.isNumber() && m.number() < max_bases && m.number() > min_bases) || (m.isNegate() && m[0].isNumber() && m[0].number() < max_bases && m[0].number() > min_bases))) {
+				Number nr;
+				if(m.isNumber()) {
+					nr = m.number();
+				} else {
+					nr = m[0].number();
+					nr.negate();
+				}
+				nr.round(printops.round_halfway_to_even);
+				PrintOptions po = printops;
+				po.min_exp = 0;
+				if(printops.base != 2) {
+					po.base = 2;
+					result_bin = nr.print(po);
+				}
+				if(printops.base != 8) {
+					po.base = 8;
+					result_oct = nr.print(po);
+					size_t i = result_oct.find_first_of(NUMBERS);
+					if(i != string::npos && result_oct.length() > i + 1 && result_oct[i] == '0' && is_in(NUMBERS, result_oct[i + 1])) result_oct.erase(i, 1);
+				}
+				if(printops.base != 10) {
+					po.base = 10;
+					result_dec = nr.print(po);
+				}
+				if(printops.base != 16) {
+					po.base = 16;
+					result_hex = nr.print(po);
+					gsub("0x", "", result_hex);
+				}
+			}
+		}
+
 		if(!b_stack && g_get_monotonic_time() - time1 < 200000) {
 			PrintOptions printops_long = printops;
 			printops_long.abbreviate_names = false; 
@@ -7465,6 +7508,88 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	}
 
 	if(stack_index == 0) {
+		if(!result_hex.empty() || !result_dec.empty() || !result_oct.empty() || !result_bin.empty()) {
+			string str1, str2;
+			bool b_almost_equal = false;
+			if(mstruct->isInteger() || (mstruct->isNegate() && mstruct->getChild(1)->isInteger())) {
+				str1 = "=";
+			} else if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_ALMOST_EQUAL, (void*) historyview)) {
+				str1 = SIGN_ALMOST_EQUAL;
+				b_almost_equal = true;
+			} else {
+				str1 = "= ";
+				str1 += _("approx.");
+			}
+			str1 += " ";
+			if(b_almost_equal) str2 = SIGN_ALMOST_EQUAL " ";
+			else str2 = "= ";
+			PangoFontDescription *font_desc;
+			gtk_style_context_get(gtk_widget_get_style_context(result_bases), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+#define SUB_STRING2(X) string("<span size=\"x-small\" rise=\"" + i2s((int) (-pango_font_description_get_size(font_desc) / 2.5)) + "\">") + string(X) + "</span>"
+			if(printops.base != 16) {
+				str1 += result_hex;
+				if(printops.hexadecimal_twos_complement && (mstruct->isNegate() || mstruct->number().isNegative())) str1 += SUB_STRING2("16-");
+				else str1 += SUB_STRING2("16");
+			}
+			if(printops.base != 10) {
+				if(printops.base != 16) {
+					if(b_almost_equal) str1 += " " SIGN_ALMOST_EQUAL " ";
+					else str1 += " = ";
+				}
+				str1 += result_dec;
+				str1 += SUB_STRING2("10");
+			}
+			if(printops.base != 8) {
+				if(printops.base == 2 && two_result_bases_rows != 0) str1 += '\n';
+				else str1 += ' ';
+				if(b_almost_equal) str1 += SIGN_ALMOST_EQUAL " ";
+				else str1 += "= ";
+				str1 += result_oct;
+				str1 += SUB_STRING2("8");
+			}
+			if(printops.base != 2) {
+				if(two_result_bases_rows != 0) str1 += '\n';
+				else str1 += ' ';
+				if(b_almost_equal) str1 += SIGN_ALMOST_EQUAL " ";
+				else str1 += "= ";
+				str1 += result_bin;
+				if(printops.twos_complement && (mstruct->isNegate() || mstruct->number().isNegative())) str1 += SUB_STRING2("2-");
+				else str1 += SUB_STRING2("2");
+			}
+			if(two_result_bases_rows < 0) {
+				PangoLayout *layout = gtk_widget_create_pango_layout(result_bases, "");
+				pango_layout_set_markup(layout, str1.c_str(), -1);
+				gint h = 0;
+				pango_layout_get_pixel_size(layout, NULL, &h);
+				if(h > gtk_widget_get_allocated_height(result_bases)) {
+					two_result_bases_rows = 0;
+					gtk_widget_set_margin_bottom(result_bases, 12);
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
+					gtk_label_set_yalign(GTK_LABEL(result_bases), 0.5);
+#else
+					gtk_misc_set_alignment(GTK_MISC(result_bases), 1.0, 0.5);
+#endif
+					gsub("\n", " ", str1);
+				} else {
+					two_result_bases_rows = 1;
+					gtk_widget_set_margin_bottom(result_bases, 3);
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
+					gtk_label_set_yalign(GTK_LABEL(result_bases), 0.0);
+#else
+					gtk_misc_set_alignment(GTK_MISC(result_bases), 1.0, 0.0);
+#endif
+				}
+				g_object_unref(layout);
+			}
+			pango_font_description_free(font_desc);
+			gtk_label_set_markup(GTK_LABEL(result_bases), str1.c_str());
+			if(b_almost_equal) gsub(" " SIGN_ALMOST_EQUAL " ", "\n" SIGN_ALMOST_EQUAL " ", str1);
+			else gsub(" = ", "\n= ", str1);
+			gtk_widget_set_tooltip_markup(result_bases, str1.c_str());
+		} else {
+			gtk_label_set_text(GTK_LABEL(result_bases), "");
+			gtk_widget_set_tooltip_markup(result_bases, "");
+		}
 		if(title_set) {
 			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultspinner")));
 			gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
@@ -14471,9 +14596,7 @@ void on_button_twos_out_toggled(GtkToggleButton *w, gpointer) {
 	if(printops.base == 16) printops.hexadecimal_twos_complement = gtk_toggle_button_get_active(w);
 	else if(printops.base == 2) printops.twos_complement = gtk_toggle_button_get_active(w);
 	result_format_updated();
-	if(!gtk_widget_is_focus(expressiontext)) {
-		gtk_widget_grab_focus(expressiontext);
-	}
+	focus_keeping_selection();
 }
 void on_button_twos_in_toggled(GtkToggleButton *w, gpointer) {
 	if(evalops.parse_options.base == 16) {
@@ -14484,9 +14607,7 @@ void on_button_twos_in_toggled(GtkToggleButton *w, gpointer) {
 		evalops.parse_options.twos_complement = twos_complement_in;
 	}
 	expression_format_updated(true);
-	if(!gtk_widget_is_focus(expressiontext)) {
-		gtk_widget_grab_focus(expressiontext);
-	}
+	focus_keeping_selection();
 }
 
 void update_keypad_bases() {
@@ -14576,9 +14697,7 @@ void base_button_alternative(int base) {
 	output_base_updated_from_menu();
 	update_keypad_bases();
 	result_format_updated();
-	if(!gtk_widget_is_focus(expressiontext)) {
-		gtk_widget_grab_focus(expressiontext);
-	}
+	focus_keeping_selection();
 }
 
 void on_button_bin_toggled(GtkToggleButton *w, gpointer) {
@@ -14598,9 +14717,7 @@ void on_button_bin_toggled(GtkToggleButton *w, gpointer) {
 		update_keypad_bases();
 		expression_format_updated(true);
 	}
-	if(!gtk_widget_is_focus(expressiontext)) {
-		gtk_widget_grab_focus(expressiontext);
-	}
+	focus_keeping_selection();
 }
 void on_button_oct_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(w)) {
@@ -14619,9 +14736,7 @@ void on_button_oct_toggled(GtkToggleButton *w, gpointer) {
 		update_keypad_bases();
 		expression_format_updated(true);
 	}
-	if(!gtk_widget_is_focus(expressiontext)) {
-		gtk_widget_grab_focus(expressiontext);
-	}
+	focus_keeping_selection();
 }
 void on_button_dec_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(w)) {
@@ -14640,9 +14755,7 @@ void on_button_dec_toggled(GtkToggleButton *w, gpointer) {
 		update_keypad_bases();
 		expression_format_updated(true);
 	}
-	if(!gtk_widget_is_focus(expressiontext)) {
-		gtk_widget_grab_focus(expressiontext);
-	}
+	focus_keeping_selection();
 }
 void on_button_hex_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(w)) {
@@ -14661,9 +14774,7 @@ void on_button_hex_toggled(GtkToggleButton *w, gpointer) {
 		update_keypad_bases();
 		expression_format_updated(true);
 	}
-	if(!gtk_widget_is_focus(expressiontext)) {
-		gtk_widget_grab_focus(expressiontext);
-	}
+	focus_keeping_selection();
 }
 
 void on_convert_treeview_category_row_expanded(GtkTreeView *tree_view, GtkTreeIter*, GtkTreePath *path, gpointer) {
@@ -15913,13 +16024,17 @@ void on_menu_item_programmers_keypad_toggled(GtkCheckMenuItem *w, gpointer) {
 		programming_inbase = 0;
 		programming_outbase = 0;
 		gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "programmers_keypad")));
+		gtk_stack_set_visible_child_name(GTK_STACK(gtk_builder_get_object(main_builder, "stack_keypad_top")), "page1");
 	} else {
 		gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "versatile_keypad")));
+		gtk_stack_set_visible_child_name(GTK_STACK(gtk_builder_get_object(main_builder, "stack_keypad_top")), "page0");
 		visible_keypad = 0;
 		programming_inbase = evalops.parse_options.base;
 		programming_outbase = printops.base;
+		if(evalops.parse_options.base != 10) clear_expression_text();
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_dec")), TRUE);
 	}
+	focus_keeping_selection();
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_programmers_keypad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_programmers_keypad_toggled, NULL);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_programmers_keypad")), gtk_check_menu_item_get_active(w));
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_programmers_keypad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_programmers_keypad_toggled, NULL);
@@ -15974,42 +16089,6 @@ gboolean on_units_entry_from_val_focus_out_event(GtkEntry*, GdkEventFocus*, gpoi
 gboolean on_units_entry_to_val_focus_out_event(GtkEntry*, GdkEventFocus*, gpointer) {
 	if(old_toValue != gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_to_val")))) convert_in_wUnits(1);
 	return FALSE;
-}
-
-/*
-	angle mode radio buttons toggled
-*/
-void on_radiobutton_radians_toggled(GtkToggleButton *togglebutton, gpointer) {
-	if(gtk_toggle_button_get_active(togglebutton)) {
-		evalops.parse_options.angle_unit = ANGLE_UNIT_RADIANS;
-		set_angle_item();
-		expression_format_updated(true);
-	}
-	focus_keeping_selection();
-}
-void on_radiobutton_degrees_toggled(GtkToggleButton *togglebutton, gpointer) {
-	if(gtk_toggle_button_get_active(togglebutton)) {
-		evalops.parse_options.angle_unit = ANGLE_UNIT_DEGREES;
-		set_angle_item();
-		expression_format_updated(true);
-	}
-	focus_keeping_selection();
-}
-void on_radiobutton_gradians_toggled(GtkToggleButton *togglebutton, gpointer) {
-	if(gtk_toggle_button_get_active(togglebutton)) {
-		evalops.parse_options.angle_unit = ANGLE_UNIT_GRADIANS;
-		set_angle_item();
-		expression_format_updated(true);
-	}
-	focus_keeping_selection();
-}
-void on_radiobutton_no_default_angle_unit_toggled(GtkToggleButton *togglebutton, gpointer) {
-	if(gtk_toggle_button_get_active(togglebutton)) {
-		evalops.parse_options.angle_unit = ANGLE_UNIT_NONE;
-		set_angle_item();
-		expression_format_updated(true);
-	}
-	focus_keeping_selection();
 }
 
 /*
@@ -16101,7 +16180,7 @@ void on_button_del_clicked(GtkButton*, gpointer) {
 		}
 		gtk_text_buffer_delete(expressionbuffer, &ipos, &iend);
 	}
-	gtk_widget_grab_focus(expressiontext);
+	focus_keeping_selection();
 	unblock_completion();
 }
 
@@ -16110,7 +16189,7 @@ void on_button_del_clicked(GtkButton*, gpointer) {
 */
 void on_button_ac_clicked(GtkButton*, gpointer) {
 	clear_expression_text();
-	gtk_widget_grab_focus(expressiontext);
+	focus_keeping_selection();
 }
 
 void on_button_reciprocal_clicked(GtkButton*, gpointer) {
@@ -16722,7 +16801,7 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 			if(gtk_text_iter_backward_char(&ipos)) {
 				gtk_text_buffer_delete(expressionbuffer, &ipos, &iend);
 			}
-			gtk_widget_grab_focus(expressiontext);
+			focus_keeping_selection();
 			unblock_completion();
 		}
 		return TRUE;
@@ -19893,7 +19972,7 @@ void on_popup_menu_item_abort_activate(GtkMenuItem*, gpointer) {
 }
 void on_popup_menu_item_clear_activate(GtkMenuItem*, gpointer) {
 	clear_expression_text();
-	gtk_widget_grab_focus(expressiontext);
+	focus_keeping_selection();
 }
 void on_popup_menu_item_display_normal_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
