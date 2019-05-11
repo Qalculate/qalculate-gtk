@@ -2777,6 +2777,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="hexpand">True</property>
+                            <property name="transition_type">slide-left-right</property>
                             <child>
                               <object class="GtkBox" id="hbox62">
                                 <property name="visible">True</property>
@@ -2866,7 +2867,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                               </object>
                               <packing>
                                 <property name="name">page0</property>
-                                <property name="title" translatable="yes">page0</property>
                               </packing>
                             </child>
                             <child>
@@ -2880,7 +2880,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                               </object>
                               <packing>
                                 <property name="name">page1</property>
-                                <property name="title" translatable="yes">page1</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
@@ -3708,6 +3707,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="can_focus">False</property>
                                 <property name="hexpand">True</property>
                                 <property name="vexpand">True</property>
+                                <property name="transition_type">slide-up-down</property>
                                 <child>
                                   <object class="GtkGrid" id="versatile_keypad">
                                     <property name="visible">True</property>
@@ -7016,6 +7016,24 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       </object>
     </child>
   </object>
+  <object class="GtkMenu" id="popup_menu_history_bookmark">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_history_bookmark_update">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Update</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_history_bookmark_delete">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Delete</property>
+      </object>
+    </child>
+  </object>
   <object class="GtkMenu" id="popup_menu_historyview">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -7049,6 +7067,44 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Copy Full Text</property>
         <signal name="activate" handler="on_popup_menu_item_history_copy_full_text_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkCheckMenuItem" id="popup_menu_item_history_protect">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Protect</property>
+        <property name="use_underline">True</property>
+        <signal name="toggled" handler="on_popup_menu_item_history_protect_toggled" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_history_bookmark">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Add Bookmark…</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_popup_menu_item_history_bookmark_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Bookmarks</property>
+        <property name="use_underline">True</property>
+        <child type="submenu">
+          <object class="GtkMenu" id="popup_menu_history_bookmarks">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+          </object>
+        </child>
       </object>
     </child>
     <child>

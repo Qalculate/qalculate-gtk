@@ -182,6 +182,7 @@ extern int completion_delay;
 gchar history_error_color[8];
 gchar history_warning_color[8];
 gchar history_parse_color[8];
+gchar history_bookmark_color[8];
 
 extern unordered_map<string, GdkPixbuf*> flag_images;
 
@@ -593,6 +594,8 @@ void create_button_menus(void) {
 	MENU_ITEM(_("Bitwise Exclusive OR"), insert_bitwise_xor)
 	MENU_ITEM(_("Bitwise NOT"), insert_bitwise_not)
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_bitcmp->title(true).c_str(), insert_button_function, CALCULATOR->f_bitcmp)
+	f = CALCULATOR->getActiveFunction("bitrot");
+	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f)}
 	MENU_SEPARATOR
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_ascii->title(true).c_str(), insert_button_function, CALCULATOR->f_ascii)
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_char->title(true).c_str(), insert_button_function, CALCULATOR->f_char)
@@ -1311,6 +1314,17 @@ void create_main_window(void) {
 		else c_blue.blue += 0.6;
 	}	
 	g_snprintf(history_warning_color, 8, "#%02x%02x%02x", (int) (c_blue.red * 255), (int) (c_blue.green * 255), (int) (c_blue.blue * 255));
+	
+	GdkRGBA c_green = c;
+	if(c_green.green >= 0.8) {
+		c_green.blue /= 1.5;
+		c_green.red /= 1.5;
+		c_green.green = 0.8;
+	} else {
+		if(c_green.green >= 0.4) c_green.green = 0.8;
+		else c_green.green += 0.4;
+	}	
+	g_snprintf(history_bookmark_color, 8, "#%02x%02x%02x", (int) (c_green.red * 255), (int) (c_green.green * 255), (int) (c_green.blue * 255));
 	
 	GdkRGBA c_gray = c;
 	if(c_gray.blue + c_gray.green + c_gray.red > 1.5) {
