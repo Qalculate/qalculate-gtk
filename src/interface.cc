@@ -2485,14 +2485,6 @@ get_nbases_dialog (void)
 		if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_divide")), SIGN_DIVISION_SLASH);
 		else if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_DIVISION, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_divide")), SIGN_DIVISION);
 		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_divide")), DIVISION);
-		if(printops.use_unicode_signs && can_display_unicode_string_function("∧", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_and"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_and")), "∧");
-		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_and")), "AND");
-		if(printops.use_unicode_signs && can_display_unicode_string_function("∨", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_or"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_or")), "∨");
-		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_or")), "OR");
-		if(printops.use_unicode_signs && can_display_unicode_string_function("⊻", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_xor"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_xor")), "⊻");
-		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_xor")), "XOR");
-		if(printops.use_unicode_signs && can_display_unicode_string_function("¬", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_not"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_not")), "¬");
-		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_not")), "NOT");
 		
 		gchar *theme_name = NULL;
 		g_object_get(gtk_settings_get_default(), "gtk-theme-name", &theme_name, NULL);
