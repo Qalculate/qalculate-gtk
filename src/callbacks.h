@@ -262,6 +262,8 @@ void on_expander_keypad_expanded(GObject *o, GParamSpec *param_spec, gpointer us
 void on_expander_history_expanded(GObject *o, GParamSpec *param_spec, gpointer user_data);
 void on_expander_stack_expanded(GObject *o, GParamSpec *param_spec, gpointer user_data);
 void on_expander_convert_expanded(GObject *o, GParamSpec *param_spec, gpointer user_data);
+gboolean on_menu_item_meta_mode_popup_menu(GtkWidget*, gpointer data);
+gboolean on_menu_item_meta_mode_button_press(GtkWidget *widget, GdkEventButton *event, gpointer data);
 void on_menu_item_meta_mode_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_meta_mode_save_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_meta_mode_delete_activate(GtkMenuItem *w, gpointer user_data);

@@ -2170,14 +2170,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckMenuItem" id="menu_item_programmers_keypad">
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Show Programming Keypad</property>
-                        <signal name="toggled" handler="on_menu_item_programmers_keypad_toggled" swapped="no"/>
-                        <accelerator key="p" signal="activate" modifiers="GDK_CONTROL_MASK"/>
-                      </object>
-                    </child>
-                    <child>
                       <object class="GtkSeparatorMenuItem" id="separator6">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -2236,7 +2228,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Delete Mode…</property>
-                                <property name="use_underline">True</property>
                                 <signal name="activate" handler="on_menu_item_meta_mode_delete_activate" swapped="no"/>
                               </object>
                             </child>
@@ -2755,7 +2746,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="tooltip_text" translatable="yes">Show/hide programming keypad</property>
+                            <property name="tooltip_text" translatable="yes">Show/hide programming keypad (Ctrl+P)</property>
                             <property name="margin_bottom">12</property>
                             <signal name="toggled" handler="on_button_programmers_keypad_toggled" swapped="no"/>
                             <child>
@@ -2765,6 +2756,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="label">{;}</property>
                               </object>
                             </child>
+                            <accelerator key="p" signal="clicked" modifiers="GDK_CONTROL_MASK"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -2802,7 +2794,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                   <object class="GtkComboBoxText" id="combobox_fraction_mode">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="tooltip_text" translatable="yes">Rational Number Form</property>
+                                    <property name="tooltip_text" translatable="yes">Rational number form</property>
                                     <property name="active">0</property>
                                     <items>
                                       <item id="&lt;Ange ID&gt;" translatable="yes">Decimal fractions</item>
@@ -2873,6 +2865,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                               <object class="GtkLabel" id="label_result_bases">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="margin_left">6</property>
+                                <property name="margin_right">6</property>
                                 <property name="margin_bottom">3</property>
                                 <property name="justify">right</property>
                                 <property name="selectable">True</property>
@@ -3439,7 +3433,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">)</property>
+                                            <property name="label">&lt;b&gt;)&lt;/b&gt;</property>
+                                            <property name="use_markup">True</property>
                                           </object>
                                         </child>
                                       </object>
@@ -3462,7 +3457,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">(</property>
+                                            <property name="label">&lt;b&gt;(&lt;/b&gt;</property>
+                                            <property name="use_markup">True</property>
                                           </object>
                                         </child>
                                       </object>
@@ -3486,7 +3482,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">(x)</property>
+                                            <property name="label">&lt;b&gt;(x)&lt;/b&gt;</property>
                                             <property name="use_markup">True</property>
                                           </object>
                                         </child>
@@ -3614,7 +3610,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkLabel" id="label_xy">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">x&lt;sup&gt;&lt;small&gt;y&lt;/small&gt;&lt;/sup&gt;</property>
+                                        <property name="label">&lt;b&gt;x&lt;sup&gt;&lt;small&gt;y&lt;/small&gt;&lt;/sup&gt;&lt;/b&gt;</property>
                                         <property name="use_markup">True</property>
                                       </object>
                                     </child>
@@ -3638,7 +3634,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkLabel" id="label_plusminus">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">±</property>
+                                        <property name="label">&lt;b&gt;±&lt;/b&gt;</property>
                                         <property name="use_markup">True</property>
                                       </object>
                                     </child>
@@ -3662,7 +3658,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkLabel" id="label_percent">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">%</property>
+                                        <property name="label">&lt;b&gt;%&lt;/b&gt;</property>
                                         <property name="use_markup">True</property>
                                       </object>
                                     </child>
@@ -3686,7 +3682,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkLabel" id="label_comma">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">,</property>
+                                        <property name="label">&lt;b&gt;,&lt;/b&gt;</property>
+                                        <property name="use_markup">True</property>
                                       </object>
                                     </child>
                                   </object>
@@ -7148,6 +7145,24 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       </object>
     </child>
   </object>
+  <object class="GtkMenu" id="popup_menu_mode">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_mode_update">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Update</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_mode_delete">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Delete</property>
+      </object>
+    </child>
+  </object>
   <object class="GtkMenu" id="popup_menu_resultview">
     <property name="can_focus">False</property>
     <child>
@@ -7662,15 +7677,6 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                 <property name="label" translatable="yes">Save Mode…</property>
                 <property name="use_underline">True</property>
                 <signal name="activate" handler="on_menu_item_meta_mode_save_activate" swapped="no"/>
-              </object>
-            </child>
-            <child>
-              <object class="GtkMenuItem" id="menu_item_result_popup_meta_mode_delete">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Delete Mode…</property>
-                <property name="use_underline">True</property>
-                <signal name="activate" handler="on_menu_item_meta_mode_delete_activate" swapped="no"/>
               </object>
             </child>
           </object>
