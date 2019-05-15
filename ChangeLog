@@ -1,3 +1,11 @@
+2019-05-15 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix line breaks placed within Unicode characters in some cases
+	* Shorten extremely long lines (> 50 000 characters) in history
+	* Take into account line length (since line breaks now is dynamic) when calculating history limit
+	* Unmark parentheses when automatically selecting whole expression
+	* Only use bold parentheses highlighting if text width does not change
+
 2019-05-14 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Fix invalid text iterators on rapid input

@@ -1166,7 +1166,13 @@ void create_main_window(void) {
 		if(c.green >= 0.5) c.green = 1.0;
 		else c.green += 0.5;
 	}
-	expression_par_tag = gtk_text_buffer_create_tag(expressionbuffer, "curpar", "foreground-rgba", &c, "weight", PANGO_WEIGHT_BOLD, NULL);
+	PangoLayout *layout_par = gtk_widget_create_pango_layout(expressiontext, "()");
+	gint w1 = 0, w2 = 0;
+	pango_layout_get_pixel_size(layout_par, &w1, NULL);
+	pango_layout_set_markup(layout_par, "<b>()</b>", -1);
+	pango_layout_get_pixel_size(layout_par, &w2, NULL);
+	if(w1 == w2) expression_par_tag = gtk_text_buffer_create_tag(expressionbuffer, "curpar", "foreground-rgba", &c, "weight", PANGO_WEIGHT_BOLD, NULL);
+	else expression_par_tag = gtk_text_buffer_create_tag(expressionbuffer, "curpar", "foreground-rgba", &c, NULL);
 	
 	gtk_widget_grab_focus(expressiontext);
 	gtk_widget_set_can_default(expressiontext, TRUE);

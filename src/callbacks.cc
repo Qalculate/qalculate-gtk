@@ -844,6 +844,13 @@ void expression_font_modified() {
 	while(gtk_events_pending()) gtk_main_iteration();
 	set_expression_size_request();
 	set_operator_symbols();
+	PangoLayout *layout_par = gtk_widget_create_pango_layout(expressiontext, "()");
+	gint w1 = 0, w2 = 0;
+	pango_layout_get_pixel_size(layout_par, &w1, NULL);
+	pango_layout_set_markup(layout_par, "<b>()</b>", -1);
+	pango_layout_get_pixel_size(layout_par, &w2, NULL);
+	if(w1 == w2) g_object_set(expression_par_tag, "weight", PANGO_WEIGHT_BOLD, NULL);
+	else g_object_set(expression_par_tag, "weight", PANGO_WEIGHT_NORMAL, NULL);
 }
 
 PangoCoverageLevel get_least_coverage(const gchar *gstr, GtkWidget *widget) {
@@ -7102,7 +7109,7 @@ void reload_history() {
 					if(i < inhistory.size() - 1) gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
 				}
 				string str = inhistory[i];
-				add_line_breaks(str, false, 2);
+				add_line_breaks(str, false);
 				fix_history_string2(str);
 				history_str = "<span foreground=\"";
 				history_str += history_bookmark_color;
@@ -7202,6 +7209,7 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 												i--;
 											} else if(str[i - 1] < 0) {
 												if(teststr.find(" ", teststr.length() - 3) == teststr.length() - 3) i -= 3;
+												else i--;
 											} else if(i > 3 && str[i] <= '9' && str[i] >= '0' && str[i - 1] <= '9' && str[i - 1] >= '0') {
 												if(str[i - 2] == ' ' && str[i - 3] <= '9' && str[i - 3] >= '0') i -= 2;
 												else if(str[i - 3] == ' ' && str[i - 4] <= '9' && str[i - 4] >= '0') i -= 3;
@@ -7276,6 +7284,7 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 											i--;
 										} else if(str[i - 1] < 0) {
 											if(teststr.find(" ", teststr.length() - 3) == teststr.length() - 3) i -= 3;
+											else i--;
 										} else if(i > 3 && str[i] <= '9' && str[i] >= '0' && str[i - 1] <= '9' && str[i - 1] >= '0') {
 											if(str[i - 2] == ' ' && str[i - 3] <= '9' && str[i - 3] >= '0') i -= 2;
 											else if(str[i - 3] == ' ' && str[i - 4] <= '9' && str[i - 4] >= '0') i -= 3;
@@ -7837,6 +7846,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
 			gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
 			gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
+			gtk_text_buffer_remove_tag(expressionbuffer, expression_par_tag, &istart, &iend);
 		}
 		insert_matrix(matrix_mstruct, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), false, true, true);
 	}
@@ -8194,6 +8204,7 @@ void set_previous_expression() {
 		gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
 		gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
 		gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
+		gtk_text_buffer_remove_tag(expressionbuffer, expression_par_tag, &istart, &iend);
 	}
 }
 
@@ -8806,28 +8817,31 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		setResult(NULL, true, (!do_stack || stack_index == 0), true, "", do_stack ? stack_index : 0);
 	}
 
-	if((!do_stack || stack_index == 0) && !block_conversion_category_switch) {
-		Unit *u = CALCULATOR->findMatchingUnit(*mstruct);
-		if(u && !u->category().empty()) {
-			string s_cat = u->category();
-			if(s_cat.empty()) s_cat = _("Uncategorized");
-			if(s_cat != selected_unit_category) {
-				GtkTreeIter iter = convert_category_map[s_cat];
-				GtkTreePath *path = gtk_tree_model_get_path(gtk_tree_view_get_model(GTK_TREE_VIEW(tUnitSelectorCategories)), &iter);
-				gtk_tree_view_expand_to_path(GTK_TREE_VIEW(tUnitSelectorCategories), path);
-				gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(tUnitSelectorCategories), path, NULL, TRUE, 0.5, 0);
-				gtk_tree_path_free(path);							
-				gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelectorCategories)), &iter);
+	if(!do_stack || stack_index == 0) {
+		if(!block_conversion_category_switch) {
+			Unit *u = CALCULATOR->findMatchingUnit(*mstruct);
+			if(u && !u->category().empty()) {
+				string s_cat = u->category();
+				if(s_cat.empty()) s_cat = _("Uncategorized");
+				if(s_cat != selected_unit_category) {
+					GtkTreeIter iter = convert_category_map[s_cat];
+					GtkTreePath *path = gtk_tree_model_get_path(gtk_tree_view_get_model(GTK_TREE_VIEW(tUnitSelectorCategories)), &iter);
+					gtk_tree_view_expand_to_path(GTK_TREE_VIEW(tUnitSelectorCategories), path);
+					gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(tUnitSelectorCategories), path, NULL, TRUE, 0.5, 0);
+					gtk_tree_path_free(path);
+					gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelectorCategories)), &iter);
+				}
 			}
-		}
-		if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")))) {
-			gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector)));
+			if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")))) {
+				gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector)));
+			}
 		}
 		gtk_widget_grab_focus(expressiontext);
 		GtkTextIter istart, iend;
 		gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
 		gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
 		gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
+		gtk_text_buffer_remove_tag(expressionbuffer, expression_par_tag, &istart, &iend);
 
 	}
 	do_timeout = true;
@@ -12237,7 +12251,7 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 	GtkTextMark *mpos = gtk_text_buffer_get_insert(expressionbuffer);
 	gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mpos);
 	// special case: the user just entered a number, then select all, so that it gets executed
-	if(!gtk_text_buffer_get_has_selection(expressionbuffer) && f != CALCULATOR->f_factorial && gtk_text_iter_is_end(&ipos) && last_is_number(expr)) {
+	if(!gtk_text_buffer_get_has_selection(expressionbuffer) && gtk_text_iter_is_end(&ipos) && last_is_number(expr)) {
 		gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
 	}
 	string str2;
@@ -12431,7 +12445,7 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 	if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
 		gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
 		// execute expression, if the whole expression was selected, no need for additional enter
-		bool do_exec = (!str2.empty() || f->minargs() < 2) && !rpn_mode && gtk_text_iter_is_start(&istart) && gtk_text_iter_is_end(&iend);
+		bool do_exec = (!str2.empty() || f->minargs() < 2) && !rpn_mode && ((gtk_text_iter_is_start(&istart) && gtk_text_iter_is_end(&iend)) || (gtk_text_iter_is_start(&iend) && gtk_text_iter_is_end(&istart)));
 		//set selection as argument
 		gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &istart, &iend, FALSE);
 		string str = gstr;
@@ -12475,12 +12489,6 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 			gtk_text_buffer_place_cursor(expressionbuffer, &iter);
 			g_free(gstr2);
 		} else {
-			//one-argument functions do not need parenthesis
-			/*if(!text_length_is_one(ename->name)) {
-				gstr2 = g_strdup_printf("%s ", text);
-			} else {
-				gstr2 = g_strdup_printf("%s", text);
-			}*/
 			gchar *gstr2;
 			gstr2 = g_strdup_printf(b_text ? "%s(\"\")" : "%s()", ename->name.c_str());
 			insert_text(gstr2);
@@ -13647,12 +13655,12 @@ void load_preferences() {
 	bool old_history_format = false;
 			
 	if(file) {
-		char line[10000];
+		char line[1000000L];
 		string stmp, svalue, svar;
 		size_t i;
 		int v;
 		while(true) {
-			if(fgets(line, 10000, file) == NULL) break;
+			if(fgets(line, 1000000L, file) == NULL) break;
 			stmp = line;
 			remove_blank_ends(stmp);
 			if((i = stmp.find_first_of("=")) != string::npos) {
@@ -14088,10 +14096,6 @@ void load_preferences() {
 				} else if(svar == "visible_keypad") {
 					if(mode_index == 1) visible_keypad = v;
 					else modes[mode_index].keypad = v;
-				/*} else if(svar == "hyp_is_on") {
-					hyp_is_on = v;
-				} else if(svar == "inv_is_on") {
-					inv_is_on = v;*/
 				} else if(svar == "use_unicode_signs" && (version_numbers[0] > 0 || version_numbers[1] > 7 || (version_numbers[1] == 7 && version_numbers[2] > 0))) {
 					printops.use_unicode_signs = v;
 				} else if(svar == "lower_case_numbers") {
@@ -14329,20 +14333,18 @@ void load_preferences() {
 					inhistory_type.push_front(QALCULATE_HISTORY_ERROR);
 					inhistory_protected.push_front(false);
 				} else if(svar == "history_bookmark") {
-					if(HISTORY_IS_EXPRESSION(inhistory.size() - 1)) {
-						inhistory.push_front(svalue);
-						inhistory_type.push_front(QALCULATE_HISTORY_BOOKMARK);
-						inhistory_protected.push_front(false);
-						bool b = false;
-						for(vector<string>::iterator it = history_bookmarks.begin(); it != history_bookmarks.end(); ++it) {
-							if(string_is_less(svalue, *it)) {
-								history_bookmarks.insert(it, svalue);
-								b = true;
-								break;
-							}
+					inhistory.push_front(svalue);
+					inhistory_type.push_front(QALCULATE_HISTORY_BOOKMARK);
+					inhistory_protected.push_front(false);
+					bool b = false;
+					for(vector<string>::iterator it = history_bookmarks.begin(); it != history_bookmarks.end(); ++it) {
+						if(string_is_less(svalue, *it)) {
+							history_bookmarks.insert(it, svalue);
+							b = true;
+							break;
 						}
-						if(!b) history_bookmarks.push_back(svalue);
 					}
+					if(!b) history_bookmarks.push_back(svalue);
 				} else if(svar == "history_continued") {
 					if(inhistory.size() > 0) {
 						inhistory[0] += "\n";
@@ -14518,8 +14520,9 @@ void save_preferences(bool mode) {
 	for(size_t i = 0; i < expression_history.size(); i++) {
 		fprintf(file, "expression_history=%s\n", expression_history[i].c_str()); 
 	}	
-	int lines = 30;
+	int lines = 300;
 	bool end_after_result = false, end_before_expression = false;
+	bool is_protected = false;
 	bool doend = false;
 	size_t hi = inhistory.size();
 	while(!doend && hi > 0) {
@@ -14531,6 +14534,7 @@ void save_preferences(bool mode) {
 				} else {
 					if(inhistory_protected[hi]) fprintf(file, "history_expression*=");
 					else fprintf(file, "history_expression=");
+					is_protected = inhistory_protected[hi];
 				}
 				break;
 			}
@@ -14573,6 +14577,7 @@ void save_preferences(bool mode) {
 				} else {
 					if(inhistory_protected[hi]) fprintf(file, "history_register_moved*=");
 					else fprintf(file, "history_register_moved=");
+					is_protected = inhistory_protected[hi];
 				}
 				break;
 			}
@@ -14582,6 +14587,7 @@ void save_preferences(bool mode) {
 				} else {
 					if(inhistory_protected[hi]) fprintf(file, "history_rpn_operation*=");
 					else fprintf(file, "history_rpn_operation=");
+					is_protected = inhistory_protected[hi];
 				}
 				break;
 			}
@@ -14614,7 +14620,17 @@ void save_preferences(bool mode) {
 		if(doend && end_before_expression) break;
 		size_t i3 = inhistory[hi].find('\n');
 		if(i3 == string::npos) {
-			fprintf(file, "%s\n", inhistory[hi].c_str());
+			if(!is_protected && inhistory[hi].length() > 50000) {
+				int index = 50;
+				while(inhistory[hi][index] < 0) index--;
+				fprintf(file, "%s …\n", inhistory[hi].substr(0, index + 1).c_str());
+			} else {
+				fprintf(file, "%s\n", inhistory[hi].c_str());
+				if(inhistory[hi].length() > 300) {
+					if(inhistory[hi].length() > 9000) lines -= 30;
+					else lines -= inhistory[hi].length() / 300;
+				}
+			}
 		} else {
 			fprintf(file, "%s\n", inhistory[hi].substr(0, i3).c_str());
 			i3++;
@@ -16373,8 +16389,10 @@ void on_button_programmers_keypad_toggled(GtkToggleButton *w, gpointer) {
 		}
 		if(programming_inbase > 0 && programming_outbase != 0 && (((programming_inbase != 10 || (programming_outbase != 10 && programming_outbase > 0 && programming_outbase <= 36)) && evalops.parse_options.base == 10 && printops.base == 10) || evalops.parse_options.base < 2 || printops.base < 2 || evalops.parse_options.base > 36 || printops.base > 16)) {
 			if(printops.base != programming_outbase) {
+				printops.base = programming_outbase;
 				set_output_base_from_dialog(programming_outbase);
 				output_base_updated_from_menu();
+				if(evalops.parse_options.base == programming_inbase) result_format_updated();
 			}
 			if(evalops.parse_options.base != programming_inbase) {
 				evalops.parse_options.base = programming_inbase;
@@ -17718,10 +17736,10 @@ void on_button_new_function_clicked(GtkButton*, gpointer) {
 void on_button_fac_clicked(GtkButton*, gpointer) {
 	if(rpn_mode || evalops.parse_options.rpn || is_at_beginning_of_expression()) {
 		insertButtonFunction(CALCULATOR->f_factorial);
-	} else {
-		wrap_expression_selection();
 	}
-	insertButtonFunction(CALCULATOR->f_factorial);
+	bool do_exec = wrap_expression_selection(NULL, true);
+	insert_text("!");
+	if(do_exec) execute_expression();
 }
 void on_button_comma_clicked(GtkButton*, gpointer) {
 	insert_text(CALCULATOR->getComma().c_str());
@@ -18384,7 +18402,7 @@ void add_history_bookmark(string history_message) {
 			}
 		}
 		if(!b) history_bookmarks.push_back(history_message);
-		add_line_breaks(history_message, false, 2);
+		add_line_breaks(history_message, false);
 		if(HISTORY_IS_PARSE(hindex)) hindex++;
 		hindex++;
 		inhistory.insert(inhistory.begin() + hindex, history_message);
