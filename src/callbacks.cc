@@ -17359,9 +17359,11 @@ gboolean keypad_long_press_timeout(gpointer data) {
 		GtkTextIter iter;
 		gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iter, gtk_text_buffer_get_insert(expressionbuffer));
 		if(button_press_timeout_side == 2) {
-			gtk_text_iter_forward_char(&iter);
+			if(gtk_text_iter_is_end(&iter)) gtk_text_buffer_get_start_iter(expressionbuffer, &iter);
+			else gtk_text_iter_forward_char(&iter);
 		} else {
-			gtk_text_iter_backward_char(&iter);
+			if(gtk_text_iter_is_start(&iter)) gtk_text_buffer_get_end_iter(expressionbuffer, &iter);
+			else gtk_text_iter_backward_char(&iter);
 		}
 		gtk_text_buffer_place_cursor(expressionbuffer, &iter);
 		button_press_timeout_done = true;
@@ -17392,6 +17394,10 @@ gboolean keypad_long_press_timeout(gpointer data) {
 		}
 		button_press_timeout_done = true;
 		return TRUE;
+	} else if(button_press_timeout_w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_del"))) {
+		on_button_del_clicked(GTK_BUTTON(button_press_timeout_w), NULL);
+		button_press_timeout_done = true;
+		return TRUE;
 	} else {
 		on_keypad_button_alt(button_press_timeout_w, false);
 	}
@@ -17399,7 +17405,29 @@ gboolean keypad_long_press_timeout(gpointer data) {
 	button_press_timeout_id = 0;
 	return FALSE;
 }
-
+gboolean on_button_del_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
+	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
+		g_source_remove(button_press_timeout_id);
+		bool b_this = (button_press_timeout_w == w);
+		button_press_timeout_id = 0;
+		button_press_timeout_w = NULL;
+		button_press_timeout_side = 0;
+		if(button_press_timeout_done) {
+			button_press_timeout_done = false;
+			if(b_this) return TRUE;
+		}
+	}
+	if(event->type == GDK_BUTTON_PRESS && event->button == 1) {
+		button_press_timeout_w = w;
+		button_press_timeout_side = 0;
+		button_press_timeout_id = g_timeout_add(250, keypad_long_press_timeout, NULL);
+		return FALSE;
+	}
+	if(event->type == GDK_BUTTON_RELEASE && (event->button == 2 || event->button == 3)) {
+		on_keypad_button_alt(w, event->button == 2);
+	}
+	return FALSE;
+}
 gboolean on_button_move2_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
 	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
 		g_source_remove(button_press_timeout_id);
@@ -17431,9 +17459,11 @@ gboolean on_button_move2_button_event(GtkWidget *w, GdkEventButton *event, gpoin
 		GtkTextIter iter;
 		gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iter, gtk_text_buffer_get_insert(expressionbuffer));
 		if(event->window && event->x > gdk_window_get_width(event->window) / 2) {
-			gtk_text_iter_forward_char(&iter);
+			if(gtk_text_iter_is_end(&iter)) gtk_text_buffer_get_start_iter(expressionbuffer, &iter);
+			else gtk_text_iter_forward_char(&iter);
 		} else {
-			gtk_text_iter_backward_char(&iter);
+			if(gtk_text_iter_is_start(&iter)) gtk_text_buffer_get_end_iter(expressionbuffer, &iter);
+			else gtk_text_iter_backward_char(&iter);
 		}
 		gtk_text_buffer_place_cursor(expressionbuffer, &iter);
 	}

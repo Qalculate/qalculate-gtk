@@ -920,7 +920,7 @@ void create_button_menus(void) {
 	
 	set_keypad_tooltip("button_move2", _("Move cursor left or right"), _("Move cursor to beginning or end"), NULL, false, false);
 	
-	set_keypad_tooltip("button_del", _("Delete"), _("Backspace"));
+	set_keypad_tooltip("button_del", _("Delete"), _("Backspace"), NULL, false, false);
 	
 	set_keypad_tooltip("button_plusminus", _("Uncertainty/interval"), _("Relative error"), _("Interval"));
 	

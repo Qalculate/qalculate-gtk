@@ -361,7 +361,7 @@ The buttons on the right provides the following sets of functionality:
 		</tbody>
 	</tgroup>
 </table>
-<guibutton>DEL</guibutton> deletes one character the to the right or, if the cursor is at the end of the expression, to the left of the cursor (right-click always deletes the character to the left of the cursor).
+<guibutton>DEL</guibutton> deletes one character the to the right or, if the cursor is at the end of the expression, to the left of the cursor (right-click always deletes the character to the left of the cursor). Long press on the button will continuously delete.
 </para>
 <para>
 <guibutton>EXP</guibutton> inserts the shorthand notation (E or e) for ten raised to the power of x. This only applies to digits (<quote>2E6</quote> equals <quote>2 × 10^6</quote>, <quote>xEy &ne; x × 10^y</quote>). If whole or part of the current expression is selected, <quote>×10^</quote> will instead be inserted after the wrapped selection. If current input base is not 10, than the selected number base will be used as base (e.g. <quote>×16^</quote> for hexadecimal input).
