@@ -785,7 +785,6 @@ void set_operator_symbols() {
 }
 
 const char *expression_add_sign() {
-	//if(printops.use_unicode_signs) return SIGN_PLUS;
 	return "+";
 }
 const char *expression_sub_sign() {
@@ -927,23 +926,19 @@ void set_expression_size_request() {
 
 void set_unicode_buttons() {
 	if(printops.use_unicode_signs) {
-		if(can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(main_builder, "label_sub"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sub")), "<b>" SIGN_MINUS "</b>");
-		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sub")), "<b>" MINUS "</b>");
-		if(can_display_unicode_string_function(SIGN_PLUS, (void*) gtk_builder_get_object(main_builder, "label_add"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_add")), "<b>" SIGN_PLUS "</b>");
-		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_add")), "<b>" PLUS "</b>");
-		if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(main_builder, "label_times"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), "<b>" SIGN_MULTIPLICATION "</b>");
-		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), "<b>" MULTIPLICATION "</b>");
-		if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(main_builder, "label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), "<b>" SIGN_DIVISION_SLASH "</b>");
-		else if(can_display_unicode_string_function(SIGN_DIVISION, (void*) gtk_builder_get_object(main_builder, "label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), "<b>" SIGN_DIVISION "</b>");
-		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), "<b>" DIVISION "</b>");
+		if(can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(main_builder, "label_sub"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sub")), SIGN_MINUS);
+		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sub")), MINUS);
+		if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(main_builder, "label_times"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), SIGN_MULTIPLICATION);
+		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), MULTIPLICATION);
+		if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(main_builder, "label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), SIGN_DIVISION_SLASH);
+		else if(can_display_unicode_string_function(SIGN_DIVISION, (void*) gtk_builder_get_object(main_builder, "label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), SIGN_DIVISION);
+		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), DIVISION);
 		
 		if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(main_builder, "label_factorize"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize2")), "a" SIGN_MULTIPLICATION "b");
 		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize2")), "a" MULTIPLICATION "b");
 		
 		if(can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(main_builder, "label_history_sub"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sub")), SIGN_MINUS);
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sub")), MINUS);
-		if(can_display_unicode_string_function(SIGN_PLUS, (void*) gtk_builder_get_object(main_builder, "label_history_add"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_add")), SIGN_PLUS);
-		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_add")), PLUS);
 		if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(main_builder, "label_history_times"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_times")), SIGN_MULTIPLICATION);
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_times")), MULTIPLICATION);
 		if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(main_builder, "label_history_divide"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_divide")), SIGN_DIVISION_SLASH);
@@ -952,8 +947,6 @@ void set_unicode_buttons() {
 		
 		if(can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(main_builder, "label_rpn_sub"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sub")), SIGN_MINUS);
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sub")), MINUS);
-		if(can_display_unicode_string_function(SIGN_PLUS, (void*) gtk_builder_get_object(main_builder, "label_rpn_add"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_add")), SIGN_PLUS);
-		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_add")), PLUS);
 		if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(main_builder, "label_rpn_times"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_times")), SIGN_MULTIPLICATION);
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_times")), MULTIPLICATION);
 		if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(main_builder, "label_rpn_divide"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), SIGN_DIVISION_SLASH);
@@ -972,10 +965,9 @@ void set_unicode_buttons() {
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_pi")), "pi");
 		
 	} else {
-		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sub")), "<b>" MINUS "</b>");
-		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_add")), "<b>" PLUS "</b>");
-		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), "<b>" MULTIPLICATION "</b>");
-		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), "<b>" DIVISION "</b>");
+		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sub")), MINUS);
+		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), MULTIPLICATION);
+		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), DIVISION);
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sqrt")), "sqrt");
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sqrt2")), "sqrt");
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_mean")), "mean");
@@ -984,17 +976,15 @@ void set_unicode_buttons() {
 		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize2")), "a" MULTIPLICATION "b");
 		
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sub")), MINUS);
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_add")), PLUS);
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_times")), MULTIPLICATION);
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_divide")), DIVISION);
 		
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sub")), MINUS);
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_add")), PLUS);
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_times")), MULTIPLICATION);
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), DIVISION);
 	}
 	
-	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_dot")), (string("<b>") + CALCULATOR->getDecimalPoint() + "</b>").c_str());
+	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_dot")), CALCULATOR->getDecimalPoint().c_str());
 
 #define SUP_STRING(X) string("<span size=\"x-small\" rise=\"" + i2s((int) (pango_font_description_get_size(font_desc) / 1.5)) + "\">") + string(X) + "</span>"
 #define SUB_STRING(X) string("<span size=\"x-small\" rise=\"" + i2s((int) (-pango_font_description_get_size(font_desc) / 1.5)) + "\">") + string(X) + "</span>"
@@ -1007,7 +997,7 @@ void set_unicode_buttons() {
 	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_xy")), (string("x") + SUP_STRING("y")).c_str());
 	pango_font_description_free(font_desc);
 	gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_xy"))), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_xy")), (string("<b>x") + SUP_STRING("y") + "</b>").c_str());
+	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_xy")), (string("x") + SUP_STRING("y")).c_str());
 	if(evalops.structuring != STRUCTURING_FACTORIZE) {
 		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize")), (string("a(x)") + SUP_STRING("b")).c_str());
 		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_factorize")), _("Factorize"));
@@ -1022,7 +1012,7 @@ void set_unicode_buttons() {
 	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_log2")), (string("log") + SUB_STRING("2")).c_str());
 	pango_font_description_free(font_desc);
 
-	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_comma")), (string("<b>") + CALCULATOR->getComma() + "</b>").c_str());
+	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_comma")), CALCULATOR->getComma().c_str());
 	if(can_display_unicode_string_function(SIGN_SQRT, (void*) gtk_builder_get_object(main_builder, "label_history_sqrt"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sqrt")), SIGN_SQRT);
 	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sqrt")), "sqrt");
 	if(can_display_unicode_string_function(SIGN_SQRT, (void*) gtk_builder_get_object(main_builder, "label_rpn_sqrt"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), SIGN_SQRT);
@@ -1720,8 +1710,10 @@ void display_parse_status() {
 		if(str_e.empty()) {
 			parsed_expression = "";
 		} else {
+			CALCULATOR->beginTemporaryStopMessages();
 			mparse.format(po);
 			parsed_expression = mparse.print(po);
+			CALCULATOR->endTemporaryStopMessages();
 		}
 		if(!str_u.empty()) {
 			if(parsed_expression.empty()) {
@@ -1837,7 +1829,9 @@ void display_parse_status() {
 					mparse = cu.generateMathStructure(!printops.negative_exponents);
 					mparse.format(po);
 				}
+				CALCULATOR->beginTemporaryStopMessages();
 				parsed_expression += mparse.print(po);
+				CALCULATOR->endTemporaryStopMessages();
 			}
 		}
 		parsed_had_errors = had_errors; parsed_had_warnings = had_warnings;
@@ -1848,7 +1842,6 @@ void display_parse_status() {
 		if(!b_func) set_status_text(parsed_expression.c_str(), true, had_errors, had_warnings);
 		expression_has_changed2 = false;
 	} else if(!b_func) {
-		if(!str_f.empty()) {str_f += " "; parsed_expression.insert(0, str_f);}
 		set_status_text(parsed_expression.c_str(), true, parsed_had_errors, parsed_had_warnings);
 	}
 	evalops.parse_options.preserve_format = false;
@@ -16583,7 +16576,7 @@ void on_button_reciprocal_clicked(GtkButton*, gpointer) {
 }
 void on_button_idiv_clicked(GtkButton*, gpointer) {
 	if(expression_is_empty() || rpn_mode || evalops.parse_options.rpn || is_at_beginning_of_expression()) {
-		insertButtonFunction(CALCULATOR->getActiveFunction("idivide"));
+		insertButtonFunction(CALCULATOR->getActiveFunction("div"));
 	} else {
 		wrap_expression_selection();
 		insert_text("//");
@@ -23768,11 +23761,16 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 		switch(event->keyval) {
 			case GDK_KEY_Z: {
 				expression_redo();
-				return true;
+				return TRUE;
 			}
 			case GDK_KEY_z: {
 				expression_undo();
-				return true;
+				return TRUE;
+			}
+			case GDK_KEY_parenleft: {}
+			case GDK_KEY_parenright: {
+				on_button_brace_wrap_clicked(NULL, NULL);
+				return TRUE;
 			}
 		}
 	}

@@ -949,7 +949,7 @@ void create_button_menus(void) {
 	set_keypad_tooltip("button_log2", f ? f->title(true).c_str() : NULL, f2 ? f2->title(true).c_str() : NULL);
 	if(f) g_signal_connect(gtk_builder_get_object(main_builder, "button_log2"), "clicked", G_CALLBACK(insert_button_function), (gpointer) f);
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_reciprocal")), "1/x");
-	f = CALCULATOR->getActiveFunction("idivide");
+	f = CALCULATOR->getActiveFunction("div");
 	if(f) gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_idiv")), f->title(true).c_str());
 	set_keypad_tooltip("button_sqrt2", CALCULATOR->f_sqrt->title(true).c_str(), CALCULATOR->f_cbrt->title(true).c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_abs")), CALCULATOR->f_abs->title(true).c_str());
@@ -972,6 +972,8 @@ void create_button_menus(void) {
 	set_keypad_tooltip("button_hex", _("Hexadecimal"), _("Toggle Result Base"));
 	
 	set_keypad_tooltip("button_store2", _("Store result as a variable"), _("Open menu with stored variables"));
+	
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_wrap")), (string(_("Smart parentheses")) + " (Ctrl + ()").c_str());
 
 	if(caret_as_xor) gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_xor")), _("Bitwise Exclusive OR"));
 	else gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_xor")), (string(_("Bitwise Exclusive OR")) + " (Ctrl+^)").c_str());
@@ -1004,6 +1006,13 @@ void create_main_window(void) {
 
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
 	gtk_scrolled_window_set_overlay_scrolling(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "scrolled_result")), false);
+#endif
+
+#ifdef _WIN32
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_down_image")), 12);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_up_image")), 12);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_left_image")), 12);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_right_image")), 12);
 #endif
 
 	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_sin")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_sin")));
@@ -2483,8 +2492,6 @@ get_nbases_dialog (void)
 		
 		if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_sub"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_sub")), SIGN_MINUS);
 		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_sub")), MINUS);
-		if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_PLUS, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_add"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_add")), SIGN_PLUS);
-		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_add")), PLUS);
 		if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_times"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_times")), SIGN_MULTIPLICATION);
 		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_times")), MULTIPLICATION);
 		if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_divide")), SIGN_DIVISION_SLASH);

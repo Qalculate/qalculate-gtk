@@ -2925,7 +2925,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkLabel" id="label_equals">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">&lt;b&gt;&lt;big&gt;=&lt;/big&gt;&lt;/b&gt;</property>
+                                        <property name="label">&lt;big&gt;=&lt;/big&gt;</property>
                                         <property name="use_markup">True</property>
                                       </object>
                                     </child>
@@ -2943,8 +2943,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="focus_on_click">False</property>
                                     <property name="receives_default">False</property>
                                     <property name="use_underline">True</property>
-                                    <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
-                                    <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="button-press-event" handler="on_button_del_button_event" swapped="no"/>
+                                    <signal name="button-release-event" handler="on_button_del_button_event" swapped="no"/>
                                     <signal name="clicked" handler="on_button_del_clicked" swapped="no"/>
                                     <child>
                                       <object class="GtkLabel">
@@ -2997,7 +2997,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="can_focus">False</property>
                                         <property name="spacing">2</property>
                                         <child>
-                                          <object class="GtkImage">
+                                          <object class="GtkImage" id="button_down_image">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="hexpand">False</property>
@@ -3021,7 +3021,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkImage">
+                                          <object class="GtkImage" id="button_up_image">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="icon_name">go-up-symbolic</property>
@@ -3080,7 +3080,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="can_focus">False</property>
                                         <property name="spacing">2</property>
                                         <child>
-                                          <object class="GtkImage">
+                                          <object class="GtkImage" id="button_left_image">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="hexpand">False</property>
@@ -3104,7 +3104,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkImage">
+                                          <object class="GtkImage" id="button_right_image">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="icon_name">go-next-symbolic</property>
@@ -3146,8 +3146,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel" id="label_dot">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">&lt;b&gt;.&lt;/b&gt;</property>
-                                            <property name="use_markup">True</property>
+                                            <property name="label">.</property>
                                           </object>
                                         </child>
                                       </object>
@@ -3170,8 +3169,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">&lt;b&gt;0&lt;/b&gt;</property>
-                                            <property name="use_markup">True</property>
+                                            <property name="label">0</property>
                                           </object>
                                         </child>
                                       </object>
@@ -3194,8 +3192,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">&lt;b&gt;1&lt;/b&gt;</property>
-                                            <property name="use_markup">True</property>
+                                            <property name="label">1</property>
                                           </object>
                                         </child>
                                       </object>
@@ -3218,8 +3215,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">&lt;b&gt;2&lt;/b&gt;</property>
-                                            <property name="use_markup">True</property>
+                                            <property name="label">2</property>
                                           </object>
                                         </child>
                                       </object>
@@ -3242,8 +3238,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">&lt;b&gt;3&lt;/b&gt;</property>
-                                            <property name="use_markup">True</property>
+                                            <property name="label">3</property>
                                           </object>
                                         </child>
                                       </object>
@@ -3266,8 +3261,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">&lt;b&gt;6&lt;/b&gt;</property>
-                                            <property name="use_markup">True</property>
+                                            <property name="label">6</property>
                                           </object>
                                         </child>
                                       </object>
@@ -3290,8 +3284,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">&lt;b&gt;5&lt;/b&gt;</property>
-                                            <property name="use_markup">True</property>
+                                            <property name="label">5</property>
                                           </object>
                                         </child>
                                       </object>
@@ -3314,8 +3307,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">&lt;b&gt;4&lt;/b&gt;</property>
-                                            <property name="use_markup">True</property>
+                                            <property name="label">4</property>
                                           </object>
                                         </child>
                                       </object>
@@ -3338,8 +3330,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">&lt;b&gt;7&lt;/b&gt;</property>
-                                            <property name="use_markup">True</property>
+                                            <property name="label">7</property>
                                           </object>
                                         </child>
                                       </object>
@@ -3362,8 +3353,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">&lt;b&gt;8&lt;/b&gt;</property>
-                                            <property name="use_markup">True</property>
+                                            <property name="label">8</property>
                                           </object>
                                         </child>
                                       </object>
@@ -3386,8 +3376,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">&lt;b&gt;9&lt;/b&gt;</property>
-                                            <property name="use_markup">True</property>
+                                            <property name="label">9</property>
                                           </object>
                                         </child>
                                       </object>
@@ -3433,8 +3422,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">&lt;b&gt;)&lt;/b&gt;</property>
-                                            <property name="use_markup">True</property>
+                                            <property name="label">)</property>
                                           </object>
                                         </child>
                                       </object>
@@ -3457,8 +3445,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">&lt;b&gt;(&lt;/b&gt;</property>
-                                            <property name="use_markup">True</property>
+                                            <property name="label">(</property>
                                           </object>
                                         </child>
                                       </object>
@@ -3473,7 +3460,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="can_focus">True</property>
                                         <property name="focus_on_click">False</property>
                                         <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">Smart parentheses</property>
                                         <property name="use_underline">True</property>
                                         <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
                                         <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
@@ -3482,8 +3468,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label">&lt;b&gt;(x)&lt;/b&gt;</property>
-                                            <property name="use_markup">True</property>
+                                            <property name="label">(x)</property>
                                           </object>
                                         </child>
                                       </object>
@@ -3514,8 +3499,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkLabel" id="label_add">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">&lt;b&gt;+&lt;/b&gt;</property>
-                                        <property name="use_markup">True</property>
+                                        <property name="label">+</property>
                                       </object>
                                     </child>
                                   </object>
@@ -3538,8 +3522,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkLabel" id="label_sub">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">&lt;b&gt;-&lt;/b&gt;</property>
-                                        <property name="use_markup">True</property>
+                                        <property name="label">-</property>
                                       </object>
                                     </child>
                                   </object>
@@ -3562,8 +3545,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkLabel" id="label_times">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">&lt;b&gt;*&lt;/b&gt;</property>
-                                        <property name="use_markup">True</property>
+                                        <property name="label">*</property>
                                       </object>
                                     </child>
                                   </object>
@@ -3586,8 +3568,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkLabel" id="label_divide">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">&lt;b&gt;/&lt;/b&gt;</property>
-                                        <property name="use_markup">True</property>
+                                        <property name="label">/</property>
                                       </object>
                                     </child>
                                   </object>
@@ -3610,7 +3591,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkLabel" id="label_xy">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">&lt;b&gt;x&lt;sup&gt;&lt;small&gt;y&lt;/small&gt;&lt;/sup&gt;&lt;/b&gt;</property>
+                                        <property name="label">x&lt;sup&gt;&lt;small&gt;y&lt;/small&gt;&lt;/sup&gt;</property>
                                         <property name="use_markup">True</property>
                                       </object>
                                     </child>
@@ -3634,8 +3615,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkLabel" id="label_plusminus">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">&lt;b&gt;±&lt;/b&gt;</property>
-                                        <property name="use_markup">True</property>
+                                        <property name="label">±</property>
                                       </object>
                                     </child>
                                   </object>
@@ -3658,8 +3638,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkLabel" id="label_percent">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">&lt;b&gt;%&lt;/b&gt;</property>
-                                        <property name="use_markup">True</property>
+                                        <property name="label">%</property>
                                       </object>
                                     </child>
                                   </object>
@@ -3682,8 +3661,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                       <object class="GtkLabel" id="label_comma">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">&lt;b&gt;,&lt;/b&gt;</property>
-                                        <property name="use_markup">True</property>
+                                        <property name="label">,</property>
                                       </object>
                                     </child>
                                   </object>

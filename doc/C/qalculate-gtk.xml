@@ -149,7 +149,7 @@ The keypad provides access to a simple traditional number pad and as well as mor
 </figure>
 </para>
 <para>
-The top buttons (from left to right) switches between the general keypad and the programming keypad (affect the buttons on the top on the left side, see <xref linked="qalculate-TBL-programming-keypad"/>), switches between exact and approximate calculation, changes rational number form, selects display mode and selects number base in result (see <xref linkend="qalculate-mode"/>).
+The top buttons (from left to right) switches between the general keypad and the programming keypad (affects the buttons on the top on the left side, see <xref linkend="qalculate-TBL-programming-keypad"/>), switches between exact and approximate calculation, changes rational number form, selects display mode and selects number base in result (see <xref linkend="qalculate-mode"/>).
 </para>
 <para>
 The buttons below is separated in two areas. The buttons on the right inserts basic numbers and operators, while most of the buttons to the left inserts or applies mathematical functions to the expression. All buttons on the left is paired with buttons, with downward arrows, that opens a menu with related functionality (generally more mathematical functions).
@@ -164,10 +164,10 @@ Selected/marked text in the expression entry is handled in different ways depend
 Operators will be placed after any selected text (except bitwise and logical NOT which is placed in front of the selection), which is put in parentheses. This, together with the fact that recently calculated expressions are automatically selected in the entry, means that if you click 5, 9, +, 2, =, × and 2 in order, the result expression is <quote>(59 + 2) × 2</quote>. In RPN mode the operators acts on the top two registers in the stack.
 </para>
 <para>
-The mathematical functions accessed using keypad buttons (and menus) behave differently depending on the current edited expression. If the cursor is at the end of the expression and there is no operator or parenthesis immediately to left of the cursor (at the end of expression), the whole expression is used as function argument and the expression is immediately calculated using the function (If you type <quote>5 + 2</quote> and then click <guibutton>sin</guibutton>, <quote>sin(5 + 2)</quote> will be calculated). If text in the expression is selected, the selection will be used as the function argument. If the whole expression was selected the resulting expression will immediately be calculated. Functions that requires more than one argument do not follow these rules and instead opens a separate dialog for argument input. In RPN mode the function will always be applied to the register(s) at the top of stack, if the current expression is empty and there are enough registers for functions that require more one argument.
+The mathematical functions accessed using keypad buttons (and menus) behave differently depending on the current edited expression. If the cursor is at the end of the expression and there is no operator or parenthesis immediately to left of the cursor (at the end of expression), the whole expression is used as function argument and the expression is immediately calculated using the function (if you type <quote>5 + 2</quote> and then click <guibutton>sin</guibutton>, <quote>sin(5 + 2)</quote> will be calculated). If text in the expression is selected, the selection will be used as the function argument. If the whole expression was selected the resulting expression will immediately be calculated. Functions that requires more than one argument do not follow these rules and in many cases opens a separate dialog for argument input. In RPN mode the function will always be applied to the register(s) at the top of stack, if the current expression is empty and there are enough registers for functions that require more one argument.
 </para>
 <para>
-The buttons on the right provides the following sets of functionality:
+The buttons on the right, with associated actions, is listed below:
 <table id="qalculate-TBL-keypad-right" frame="topbot" colsep="1">
 	<title>Right Keypad</title> 
 	<tgroup cols="2" colsep="1" rowsep="0">
@@ -230,7 +230,7 @@ The buttons on the right provides the following sets of functionality:
 				<entry><para>/</para></entry>
 				<entry><para>Division operator.</para></entry>
 				<entry><para>Reciprocal (inv() function)</para></entry>
-				<entry><para></para></entry>
+				<entry><para>-</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>x<superscript>y</superscript></para></entry>
@@ -370,7 +370,7 @@ The buttons on the right provides the following sets of functionality:
 <guibutton>ANS</guibutton> inserts the first answer variable. This variable always contains the last calculated result. This will be updated after each calculation (unlike when using the answer() function with a positive argument).
 </para>
 <para>
-The <quote>(x)</quote> button places opening and closing parentheses around the selected text in the expression entry. If no text is selected either the expression to the right of the cursor (if the cursor is at the beginning of the expression or if there is an operator or left parenthesis to the left of the cursor) or to the left of the cursor is put inside parentheses. If the expression is empty, as well as in some other cases (to avoid broken expression), empty parentheses are inserted.
+The <quote>(x)</quote> button (<keycombo><keycap>Ctrl</keycap><keycap>(</keycap></keycombo>) places opening and closing parentheses around the selected text in the expression entry. If no text is selected either the expression to the right of the cursor (if the cursor is at the beginning of the expression or if there is an operator or left parenthesis to the left of the cursor) or to the left of the cursor is put inside parentheses. If the expression is empty, as well as in some other cases (to avoid broken expression), empty parentheses are inserted.
 </para>
 <para>
 The arrow buttons works a bit differently than the other. The direction of the action will depend on which half of the button that is pressed (the right side of the button, with the arrow pointing to the right, will move the insert cursor when step forward). Long press on the button will continuously move the cursor (or continuously cycle through the expression history).
