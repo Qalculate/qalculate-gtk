@@ -4759,39 +4759,6 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 					number_approx_map[(void*) &m.number()] = FALSE;
 				}
 			}
-			/*if(po.number_fraction_format == FRACTION_DECIMAL && po.is_approximate && *po.is_approximate && m.number().isRational() && ips.depth == 0 && !ips.parent_approximate && m.number().denominatorIsLessThan(10) && m.number().numeratorIsLessThan(21)) {
-				MathStructure mprint(m.number().numerator());
-				mprint.transform(STRUCT_DIVISION, m.number().denominator());
-				mprint.transform(STRUCT_COMPARISON);
-				mprint.setComparisonType(COMPARISON_EQUALS);
-				m.ref();
-				mprint.addChild_nocopy(&m);
-				surface = draw_structure(mprint, po, ips, &central_point, scaledown, color);
-				cr = cairo_create(surface);
-				gint w, h, wle, hle, w_new, h_new;
-				w = cairo_image_surface_get_width(surface) / scalefactor;
-				h = cairo_image_surface_get_height(surface) / scalefactor;
-				cairo_surface_t *surface_old = surface;
-				PangoLayout *layout_equals = gtk_widget_create_pango_layout(resultview, NULL);
-				PANGO_TT(layout_equals, "=");
-				CALCULATE_SPACE_W
-				pango_layout_get_pixel_size(layout_equals, &wle, &hle);
-				w_new = w + wle + 1 + space_w;
-				h_new = h;
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w_new * scalefactor, h_new * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_move_to(cr, 1, h - central_point - hle / 2 - hle % 2);
-				pango_cairo_show_layout(cr, layout_equals);
-				cairo_set_source_surface(cr, surface_old, wle + 1 + space_w, 0);
-				cairo_paint(cr);
-				cairo_surface_destroy(surface_old);
-				g_object_unref(layout_equals);
-				if(cr) cairo_destroy(cr);
-				if(point_central) *point_central = central_point;
-				return surface;
-			}*/
 			if((!use_e_notation || (po.base != BASE_DECIMAL && po.base >= 2 && po.base <= 36)) && !exp.empty()) {
 				if(value_str == "1") {
 					MathStructure mnr(m_one);
@@ -4830,6 +4797,13 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 					return surface;
 				}
 			}
+			if(exp.empty() && (po.base == BASE_SEXAGESIMAL || po.base == BASE_TIME)) {
+				string estr;
+				if(po.lower_case_e) {TTP(estr, "e");}
+				else {TTP_SMALL(estr, "E");}
+				if(po.lower_case_e) gsub("e", estr, value_str);
+				else gsub("E", estr, value_str);
+			}
 			str += value_str;
 			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
 			if(!exp.empty()) {
@@ -4839,12 +4813,6 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 					str += "-";
 				}
 				str += exp;
-			} else if(po.base == BASE_SEXAGESIMAL || po.base == BASE_TIME) {
-				string estr;
-				if(po.lower_case_e) {TTP(estr, "e");}
-				else {TTP_SMALL(estr, "E");}
-				if(po.lower_case_e) gsub("e", estr, str);
-				else gsub("E", estr, str);
 			}
 			bool twos = (((po.base == 2 && po.twos_complement) || (po.base == 16 && po.hexadecimal_twos_complement)) && m.number().isNegative() && value_str.find(SIGN_MINUS) == string::npos && value_str.find("-") == string::npos);
 			if(po.base != BASE_DECIMAL && (twos || po.base_display != BASE_DISPLAY_ALTERNATIVE || (po.base != BASE_HEXADECIMAL && po.base != BASE_BINARY && po.base != BASE_OCTAL)) && po.base > 0 && po.base <= 36) {
