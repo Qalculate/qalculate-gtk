@@ -45,6 +45,32 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="3.2.0" date="2019-05-27">
+   <description>
+    <p>Changes:</p>
+     <ul>
+     <li>Updated physical constants (CODATA 2018)</li>
+     <li>Programming keypad (GUI) and programming mode (CLI)</li>
+     <li>Bookmarks and protect (from disappearing of the end of the list) option for history (GUI)</li>
+     <li>New and updated keypad buttons (GUI)</li>
+     <li>Keypad in number bases dialog (GUI)</li>
+     <li>bitrot() function for bit rotation</li>
+     <li>Bitwise XOR, mod and rem operators, % as modulo, // and \ operators for integer division</li>
+     <li>Change order of operations for logical and bitwise operators to better match C operator precedence</li>
+     <li>Improved support for functions, variables and units with input base > 10</li>
+     <li>Unicode support in char() and code()</li>
+     <li>Simplification and factorization improvements</li>
+     <li>RPN syntax improvements</li>
+     <li>Recognize "factor" and "expand" commands at the beginning expressions</li>
+     <li>For vector + scalar, add scalar to all components</li>
+     <li>uptime variable</li>
+     <li>Fix random segfault on automatic unit category selection (GUI)</li>
+     <li>Fix display of number in sexagesimal base or time format (GUI)</li>
+     <li>Fix abs(x)=a for complex x</li>
+     <li>Minor bug fixes and feature improvements</li>
+     </ul>
+   </description>
+  </release>
   <release version="3.1.0" date="2019-04-15">
    <description>
     <p>Changes:</p>
