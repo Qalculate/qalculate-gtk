@@ -12930,7 +12930,7 @@ void on_popup_menu_item_input_base(GtkMenuItem*, gpointer data) {
 	evalops.parse_options.base = GPOINTER_TO_INT(data);
 	input_base_updated_from_menu();
 	update_keypad_bases();
-	expression_format_updated(true);
+	expression_format_updated(false);
 	on_historyview_selection_changed(NULL, NULL);
 }
 void on_expressiontext_populate_popup(GtkTextView*, GtkMenu *menu, gpointer) {
@@ -15042,7 +15042,7 @@ void on_button_bin_toggled(GtkToggleButton *w, gpointer) {
 		evalops.parse_options.base = 2;
 		input_base_updated_from_menu();
 		update_keypad_bases();
-		expression_format_updated(true);
+		expression_format_updated(false);
 	}
 	focus_keeping_selection();
 }
@@ -15061,7 +15061,7 @@ void on_button_oct_toggled(GtkToggleButton *w, gpointer) {
 		evalops.parse_options.base = 8;
 		input_base_updated_from_menu();
 		update_keypad_bases();
-		expression_format_updated(true);
+		expression_format_updated(false);
 	}
 	focus_keeping_selection();
 }
@@ -15080,7 +15080,7 @@ void on_button_dec_toggled(GtkToggleButton *w, gpointer) {
 		evalops.parse_options.base = 10;
 		input_base_updated_from_menu();
 		update_keypad_bases();
-		expression_format_updated(true);
+		expression_format_updated(false);
 	}
 	focus_keeping_selection();
 }
@@ -15099,7 +15099,7 @@ void on_button_hex_toggled(GtkToggleButton *w, gpointer) {
 		evalops.parse_options.base = 16;
 		input_base_updated_from_menu();
 		update_keypad_bases();
-		expression_format_updated(true);
+		expression_format_updated(false);
 	}
 	focus_keeping_selection();
 }
