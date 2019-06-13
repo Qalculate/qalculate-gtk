@@ -722,6 +722,15 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkMenuItem" id="menu_item_import_definitions">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Import Definitions File…</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menu_item_import_definitions_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkMenuItem" id="menu_item_fetch_exchange_rates">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -2641,8 +2650,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2666,8 +2675,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2692,8 +2701,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -2750,10 +2759,35 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="margin_bottom">12</property>
                             <signal name="toggled" handler="on_button_programmers_keypad_toggled" swapped="no"/>
                             <child>
-                              <object class="GtkLabel">
+                              <object class="GtkBox">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label">{;}</property>
+                                <property name="spacing">1</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="icon_name">input-dialpad-symbolic</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label">P</property>
+                                    <property name="use_markup">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
                               </object>
                             </child>
                             <accelerator key="p" signal="clicked" modifiers="GDK_CONTROL_MASK"/>

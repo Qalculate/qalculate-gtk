@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <limits>
+#include <fstream>
 
 #include "support.h"
 #include "callbacks.h"
@@ -8829,7 +8830,7 @@ void set_rpn_mode(bool b) {
 		expression_history_index = -1;
 		clearresult();
 	} else {
-		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_equals")), _("<big><b>=</b></big>"));
+		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_equals")), "<big>=</big>");
 		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_equals")), _("Calculate expression"));
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "expression_button_equals")), _("="));
 		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), _("Calculate expression"));
@@ -19969,6 +19970,56 @@ void on_menu_item_fetch_exchange_rates_activate(GtkMenuItem*, gpointer) {
 }
 void on_menu_item_save_defs_activate(GtkMenuItem*, gpointer) {
 	save_defs();
+}
+void on_menu_item_import_definitions_activate(GtkMenuItem*, gpointer) {
+	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select definitions file"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Import"), GTK_RESPONSE_ACCEPT, NULL);
+	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(d), TRUE);
+	GtkFileFilter *filter = gtk_file_filter_new();
+	//gtk_file_filter_set_name(filter, _("XML Files"));
+	gtk_file_filter_add_mime_type(filter, "text/xml");
+	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(d), filter);
+	if(gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
+		GFile *file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(d));
+		char *str = g_file_get_basename(file);
+		char *from_file = g_file_get_path(file);
+		string homedir = buildPath(getLocalDataDir(), "definitions");
+		recursiveMakeDir(homedir);
+#ifdef _WIN32
+		if(CopyFile(from_file, buildPath(homedir, str).c_str()) == 0) {
+			CALCULATOR->loadDefinitions(buildPath(homedir, str).c_str());
+		} else {
+			GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not copy %s to %s."), from_file, buildPath(homedir, str).c_str());
+			gtk_dialog_run(GTK_DIALOG(dialog));
+			gtk_widget_destroy(dialog);
+		}
+#else
+		ifstream source(from_file);
+		if(source.fail()) {
+			source.close();
+			GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not read %s."), from_file);
+			gtk_dialog_run(GTK_DIALOG(dialog));
+			gtk_widget_destroy(dialog);
+		} else {
+			ofstream dest(buildPath(homedir, str).c_str());
+			if(dest.fail()) {
+				source.close();
+				dest.close();
+				GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not copy file to %s."), homedir.c_str());
+				gtk_dialog_run(GTK_DIALOG(dialog));
+				gtk_widget_destroy(dialog);
+			} else {
+				dest << source.rdbuf();
+				source.close();
+				dest.close();
+				CALCULATOR->loadDefinitions(buildPath(homedir, str).c_str());
+			}
+		}
+#endif
+		g_free(str);
+		g_free(from_file);
+		g_object_unref(file);
+	}
+	gtk_widget_destroy(d);
 }
 void on_menu_item_save_mode_activate(GtkMenuItem*, gpointer) {
 	save_mode();
