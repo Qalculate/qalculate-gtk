@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.1 -->
+<!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkAdjustment" id="adjustment1">
@@ -24,6 +24,9 @@
     <property name="type_hint">dialog</property>
     <signal name="delete-event" handler="gtk_widget_hide" object="set_base_dialog" swapped="yes"/>
     <signal name="destroy-event" handler="gtk_widget_hide" object="set_base_dialog" swapped="yes"/>
+    <child>
+      <placeholder/>
+    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbox62">
         <property name="visible">True</property>
@@ -166,43 +169,6 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkRadioButton" id="set_base_radiobutton_output_other">
-                        <property name="label" translatable="yes">Other</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">set_base_radiobutton_output_binary</property>
-                        <signal name="toggled" handler="on_set_base_radiobutton_output_other_toggled" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">5</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSpinButton" id="set_base_spinbutton_output_other">
-                        <property name="visible">True</property>
-                        <property name="sensitive">False</property>
-                        <property name="can_focus">True</property>
-                        <property name="text" translatable="yes">10</property>
-                        <property name="primary_icon_activatable">False</property>
-                        <property name="secondary_icon_activatable">False</property>
-                        <property name="adjustment">adjustment1</property>
-                        <property name="climb_rate">1</property>
-                        <property name="numeric">True</property>
-                        <property name="value">10</property>
-                        <signal name="value-changed" handler="on_set_base_spinbutton_output_other_value_changed" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">6</property>
-                      </packing>
-                    </child>
-                    <child>
                       <object class="GtkRadioButton" id="set_base_radiobutton_output_sexagesimal">
                         <property name="label" translatable="yes">Sexagesimal</property>
                         <property name="visible">True</property>
@@ -216,7 +182,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
-                        <property name="position">7</property>
+                        <property name="position">5</property>
                       </packing>
                     </child>
                     <child>
@@ -233,7 +199,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
-                        <property name="position">8</property>
+                        <property name="position">6</property>
                       </packing>
                     </child>
                     <child>
@@ -250,6 +216,36 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
+                        <property name="position">7</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkRadioButton" id="set_base_radiobutton_output_other">
+                        <property name="label" translatable="yes">Other:</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="use_underline">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">set_base_radiobutton_output_binary</property>
+                        <signal name="toggled" handler="on_set_base_radiobutton_output_other_toggled" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">8</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="set_base_entry_output_other">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <signal name="activate" handler="on_set_base_entry_output_other_changed" swapped="no"/>
+                        <signal name="focus-out-event" handler="on_set_base_entry_output_other_focus_out_event" after="yes" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
                         <property name="position">9</property>
                       </packing>
                     </child>
@@ -384,43 +380,6 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkRadioButton" id="set_base_radiobutton_input_other">
-                        <property name="label" translatable="yes">Other</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">set_base_radiobutton_input_binary</property>
-                        <signal name="toggled" handler="on_set_base_radiobutton_input_other_toggled" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">5</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSpinButton" id="set_base_spinbutton_input_other">
-                        <property name="visible">True</property>
-                        <property name="sensitive">False</property>
-                        <property name="can_focus">True</property>
-                        <property name="text" translatable="yes">10</property>
-                        <property name="primary_icon_activatable">False</property>
-                        <property name="secondary_icon_activatable">False</property>
-                        <property name="adjustment">adjustment2</property>
-                        <property name="climb_rate">1</property>
-                        <property name="numeric">True</property>
-                        <property name="value">10</property>
-                        <signal name="value-changed" handler="on_set_base_spinbutton_input_other_value_changed" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">6</property>
-                      </packing>
-                    </child>
-                    <child>
                       <object class="GtkRadioButton" id="set_base_radiobutton_input_roman">
                         <property name="label" translatable="yes">Roman numerals</property>
                         <property name="visible">True</property>
@@ -434,6 +393,36 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
+                        <property name="position">5</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkRadioButton" id="set_base_radiobutton_input_other">
+                        <property name="label" translatable="yes">Other:</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="use_underline">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">set_base_radiobutton_input_binary</property>
+                        <signal name="toggled" handler="on_set_base_radiobutton_input_other_toggled" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">6</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="set_base_entry_input_other">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <signal name="activate" handler="on_set_base_entry_input_other_changed" swapped="no"/>
+                        <signal name="focus-out-event" handler="on_set_base_entry_input_other_focus_out_event" after="yes" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
                         <property name="position">7</property>
                       </packing>
                     </child>
@@ -466,8 +455,5 @@
     <action-widgets>
       <action-widget response="-7">button1</action-widget>
     </action-widgets>
-    <child>
-      <placeholder/>
-    </child>
   </object>
 </interface>

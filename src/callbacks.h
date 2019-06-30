@@ -31,6 +31,8 @@ struct mode_struct {
 	EvaluationOptions eo;
 	AssumptionType at;
 	AssumptionSign as;
+	Number custom_output_base;
+	Number custom_input_base;
 	int precision;
 	string name;
 	bool rpn_mode;
@@ -418,7 +420,7 @@ void on_set_base_radiobutton_output_other_toggled(GtkToggleButton *w, gpointer u
 void on_set_base_radiobutton_output_sexagesimal_toggled(GtkToggleButton *w, gpointer user_data);
 void on_set_base_radiobutton_output_time_toggled(GtkToggleButton *w, gpointer user_data);
 void on_set_base_radiobutton_output_roman_toggled(GtkToggleButton *w, gpointer user_data);
-void on_set_base_spinbutton_output_other_value_changed(GtkSpinButton *w, gpointer user_data);
+void on_set_base_entry_output_other_changed(GtkEntry *w, gpointer user_data);
 void on_set_base_radiobutton_input_binary_toggled(GtkToggleButton *w, gpointer user_data);
 void on_set_base_radiobutton_input_octal_toggled(GtkToggleButton *w, gpointer user_data);
 void on_set_base_radiobutton_input_decimal_toggled(GtkToggleButton *w, gpointer user_data);
@@ -426,7 +428,7 @@ void on_set_base_radiobutton_input_duodecimal_toggled(GtkToggleButton *w, gpoint
 void on_set_base_radiobutton_input_hexadecimal_toggled(GtkToggleButton *w, gpointer user_data);
 void on_set_base_radiobutton_input_other_toggled(GtkToggleButton *w, gpointer user_data);
 void on_set_base_radiobutton_input_roman_toggled(GtkToggleButton *w, gpointer user_data);
-void on_set_base_spinbutton_input_other_value_changed(GtkSpinButton *w, gpointer user_data);
+void on_set_base_entry_input_other_changed(GtkEntry *w, gpointer user_data);
 void convert_number_bases(const gchar *initial_expression, bool b_result = false);
 void on_menu_item_convert_number_bases_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_periodic_table_activate(GtkMenuItem *w, gpointer user_data);
