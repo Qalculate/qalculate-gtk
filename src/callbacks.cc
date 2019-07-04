@@ -274,6 +274,7 @@ int nr_of_new_expressions = 0;
 
 unordered_map<void*, string> date_map;
 unordered_map<void*, string> number_map;
+unordered_map<void*, string> number_base_map;
 unordered_map<void*, bool> number_approx_map;
 unordered_map<void*, string> number_exp_map;
 unordered_map<void*, bool> number_exp_minus_map;
@@ -412,6 +413,16 @@ string print_with_evalops(const Number &nr) {
 	if(po.base == BASE_CUSTOM) {
 		nr_base = CALCULATOR->customOutputBase();
 		CALCULATOR->setCustomOutputBase(CALCULATOR->customInputBase());
+	}
+	if(po.base == BASE_CUSTOM && CALCULATOR->customInputBase().isInteger() && (CALCULATOR->customInputBase() > 1 || CALCULATOR->customInputBase() < -1) && CALCULATOR->customInputBase() >= -1114112L && CALCULATOR->customInputBase() <= 1114112L) {
+		nr_base = CALCULATOR->customOutputBase();
+		CALCULATOR->setCustomOutputBase(CALCULATOR->customInputBase());
+	} else if(po.base <= BASE_CUSTOM && po.base != BASE_UNICODE) {
+		po.base = 10;
+		string str = "dec(";
+		str += nr.print(po);
+		str += ")";
+		return str;
 	}
 	string str = nr.print(po);
 	if(po.base == BASE_CUSTOM) CALCULATOR->setCustomOutputBase(nr_base);
@@ -1228,7 +1239,27 @@ void update_status_text() {
 		}
 		case BASE_GOLDEN_RATIO: {
 			STATUS_SPACE
-			str += "GOLDEN";
+			str += "φ";
+			break;
+		}
+		case BASE_SUPER_GOLDEN_RATIO: {
+			STATUS_SPACE
+			str += "ψ";
+			break;
+		}
+		case BASE_PI: {
+			STATUS_SPACE
+			str += "π";
+			break;
+		}
+		case BASE_E: {
+			STATUS_SPACE
+			str += "e";
+			break;
+		}
+		case BASE_SQRT2: {
+			STATUS_SPACE
+			str += "√2";
 			break;
 		}
 		case BASE_UNICODE: {
@@ -1727,9 +1758,15 @@ void display_parse_status() {
 		po.hexadecimal_twos_complement = printops.hexadecimal_twos_complement;
 		po.base = evalops.parse_options.base;
 		Number nr_base;
-		if(po.base == BASE_CUSTOM) {
+		if(po.base == BASE_CUSTOM && (CALCULATOR->usesIntervalArithmetic() || CALCULATOR->customInputBase().isRational()) && (CALCULATOR->customInputBase().isInteger() || !CALCULATOR->customInputBase().isNegative()) && (CALCULATOR->customInputBase() > 1 || CALCULATOR->customInputBase() < -1) && CALCULATOR->customInputBase() >= -1114112L && CALCULATOR->customInputBase() <= 1114112L) {
 			nr_base = CALCULATOR->customOutputBase();
 			CALCULATOR->setCustomOutputBase(CALCULATOR->customInputBase());
+		} else if(po.base == BASE_CUSTOM || (po.base < BASE_CUSTOM && !CALCULATOR->usesIntervalArithmetic() && po.base != BASE_UNICODE)) {
+			po.base = 10;
+			po.min_exp = 6;
+			po.use_max_decimals = true;
+			po.max_decimals = 5;
+			po.preserve_format = false;
 		}
 		po.abbreviate_names = false;
 		po.hide_underscore_spaces = true;
@@ -1848,8 +1885,8 @@ void display_parse_status() {
 			} else if(str_u == "CET") {
 				parsed_expression += "UTC";
 				parsed_expression += "+01";
-			} else if((equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str2, _("base"))) && s2i(to_str2) >= 2 && (s2i(to_str2) <= 36 || s2i(to_str2) == BASE_SEXAGESIMAL)) {
-				gchar *gstr = g_strdup_printf(_("number base %li"), s2i(to_str2));
+			} else if(equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _("base"))) {
+				gchar *gstr = g_strdup_printf(_("number base %s"), to_str2.c_str());
 				parsed_expression += gstr;
 				g_free(gstr);
 			} else {
@@ -4636,7 +4673,9 @@ void update_completion() {
 	COMPLETION_CONVERT_STRING("bases")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Number bases"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("base")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Base Units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Base units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
+	COMPLETION_CONVERT_STRING("base ")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Number base"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("binary") str += " <i>"; str += "bin"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Binary number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("calendars")
@@ -4797,6 +4836,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				} else {
 					number_approx_map[(void*) &m.number()] = FALSE;
 				}
+				number_base_map[(void*) &m.number()] = "";
 			}
 			if((!use_e_notation || (po.base != BASE_DECIMAL && po.base >= 2 && po.base <= 36)) && !exp.empty()) {
 				if(value_str == "1") {
@@ -4854,11 +4894,27 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				str += exp;
 			}
 			bool twos = (((po.base == 2 && po.twos_complement) || (po.base == 16 && po.hexadecimal_twos_complement)) && m.number().isNegative() && value_str.find(SIGN_MINUS) == string::npos && value_str.find("-") == string::npos);
-			if(po.base != BASE_DECIMAL && (twos || po.base_display != BASE_DISPLAY_ALTERNATIVE || (po.base != BASE_HEXADECIMAL && po.base != BASE_BINARY && po.base != BASE_OCTAL)) && po.base > 0 && po.base <= 36) {
+			if(po.base != BASE_DECIMAL && (twos || po.base_display != BASE_DISPLAY_ALTERNATIVE || (po.base != BASE_HEXADECIMAL && po.base != BASE_BINARY && po.base != BASE_OCTAL)) && (po.base > 0 || po.base <= BASE_CUSTOM) && po.base <= 36) {
 				TTBP_SMALL(str)
 				str += "<sub>";
-				str += i2s(po.base);
-				if(twos) str += '-';
+				string str_base;
+				if(it != number_map.end()) {
+					str_base = number_base_map[(void*) &m.number()];
+				} else {
+					switch(po.base) {
+						case BASE_GOLDEN_RATIO: {str_base = "<i>φ</i>"; break;}
+						case BASE_SUPER_GOLDEN_RATIO: {str_base = "<i>ψ</i>"; break;}
+						case BASE_PI: {str_base = "<i>π</i>"; break;}
+						case BASE_E: {str_base = "<i>e</i>"; break;}
+						case BASE_SQRT2: {str_base = "√2"; break;}
+						case BASE_UNICODE: {str_base = "Unicode"; break;}
+						case BASE_CUSTOM: {str_base = CALCULATOR->customOutputBase().print(CALCULATOR->messagePrintOptions()); break;}
+						default: {str_base = i2s(po.base);}
+					}
+					if(twos) str_base += '-';
+					number_base_map[(void*) &m.number()] = str_base;
+				}
+				str += str_base;
 				str += "</sub>";
 				TTE(str)
 			}
@@ -6742,6 +6798,7 @@ void clearresult() {
 	}
 	date_map.clear();
 	number_map.clear();
+	number_base_map.clear();
 	number_exp_map.clear();
 	number_exp_minus_map.clear();
 	number_approx_map.clear();
@@ -6797,7 +6854,6 @@ void ViewThread::run() {
 			if(!read(&po.is_approximate)) break;
 			void *x_to = NULL;
 			if(!read(&x_to)) break;
-			po.preserve_format = true;
 			po.show_ending_zeroes = evalops.parse_options.read_precision != DONT_READ_PRECISION && CALCULATOR->usesIntervalArithmetic() && evalops.parse_options.base > BASE_CUSTOM;
 			po.lower_case_e = printops.lower_case_e;
 			po.lower_case_numbers = printops.lower_case_numbers;
@@ -6805,10 +6861,17 @@ void ViewThread::run() {
 			po.twos_complement = printops.twos_complement;
 			po.hexadecimal_twos_complement = printops.hexadecimal_twos_complement;
 			po.base = evalops.parse_options.base;
+			po.preserve_format = (x_to != NULL);
 			Number nr_base;
-			if(po.base == BASE_CUSTOM) {
+			if(po.base == BASE_CUSTOM && (CALCULATOR->usesIntervalArithmetic() || CALCULATOR->customInputBase().isRational()) && (CALCULATOR->customInputBase().isInteger() || !CALCULATOR->customInputBase().isNegative()) && (CALCULATOR->customInputBase() > 1 || CALCULATOR->customInputBase() < -1) && CALCULATOR->customInputBase() >= -1114112L && CALCULATOR->customInputBase() <= 1114112L) {
 				nr_base = CALCULATOR->customOutputBase();
 				CALCULATOR->setCustomOutputBase(CALCULATOR->customInputBase());
+			} else if(po.base == BASE_CUSTOM || (po.base < BASE_CUSTOM && !CALCULATOR->usesIntervalArithmetic() && po.base != BASE_UNICODE)) {
+				po.base = 10;
+				po.min_exp = 6;
+				po.use_max_decimals = true;
+				po.max_decimals = 5;
+				po.preserve_format = false;
 			}
 			po.abbreviate_names = false;
 			po.use_unicode_signs = printops.use_unicode_signs;
@@ -6825,7 +6888,6 @@ void ViewThread::run() {
 			po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
 			MathStructure mp(*((MathStructure*) x));
 			mp.format(po);
-			po.preserve_format = (x_to != NULL);
 			parsed_text = mp.print(po);
 			if(x_to && !((MathStructure*) x_to)->isUndefined()) {
 				mp.set(*((MathStructure*) x_to));
@@ -8545,20 +8607,27 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		} else if(equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _("base"))) {
 			int save_base = printops.base;
 			Number save_nr = CALCULATOR->customOutputBase();
-			EvaluationOptions eo = evalops;
-			eo.parse_options.base = 10;
-			MathStructure m;
-			eo.approximation = APPROXIMATION_TRY_EXACT;
-			CALCULATOR->beginTemporaryStopMessages();
-			CALCULATOR->calculate(&m, to_str2, 500, eo);
-			if(CALCULATOR->endTemporaryStopMessages()) {
-				printops.base = BASE_CUSTOM;
-				CALCULATOR->setCustomOutputBase(nr_zero);
-			} else if(m.isInteger() && m.number() >= 2 && m.number() <= 36) {
-				printops.base = m.number().intValue();
-			} else {
-				printops.base = BASE_CUSTOM;
-				CALCULATOR->setCustomOutputBase(m.number());
+			if(equalsIgnoreCase(to_str2, "golden") || to_str2 == "φ") printops.base = BASE_GOLDEN_RATIO;
+			else if(equalsIgnoreCase(to_str2, "supergolden") || to_str2 == "ψ") printops.base = BASE_SUPER_GOLDEN_RATIO;
+			else if(equalsIgnoreCase(to_str2, "pi") || to_str2 == "π") printops.base = BASE_PI;
+			else if(to_str2 == "e") printops.base = BASE_E;
+			else if(to_str2 == "sqrt(2)" || to_str2 == "sqrt 2" || to_str2 == "sqrt2" || to_str2 == "√2") printops.base = BASE_SQRT2;
+			else {
+				EvaluationOptions eo = evalops;
+				eo.parse_options.base = 10;
+				MathStructure m;
+				eo.approximation = APPROXIMATION_TRY_EXACT;
+				CALCULATOR->beginTemporaryStopMessages();
+				CALCULATOR->calculate(&m, CALCULATOR->unlocalizeExpression(to_str2, eo.parse_options), 500, eo);
+				if(CALCULATOR->endTemporaryStopMessages()) {
+					printops.base = BASE_CUSTOM;
+					CALCULATOR->setCustomOutputBase(nr_zero);
+				} else if(m.isInteger() && m.number() >= 2 && m.number() <= 36) {
+					printops.base = m.number().intValue();
+				} else {
+					printops.base = BASE_CUSTOM;
+					CALCULATOR->setCustomOutputBase(m.number());
+				}
 			}
 			b_busy = false;
 			b_busy_expression = false;
@@ -12797,6 +12866,8 @@ void load_mode(const mode_struct &mode) {
 		programming_inbase = 0;
 		programming_outbase = 0;
 	}
+	CALCULATOR->setCustomOutputBase(mode.custom_output_base);
+	CALCULATOR->setCustomInputBase(mode.custom_input_base);
 	set_mode_items(mode.po, mode.eo, mode.at, mode.as, mode.rpn_mode, mode.precision, mode.interval, mode.variable_units_enabled, mode.adaptive_interval_display, mode.keypad, false);
 	evalops.approximation = mode.eo.approximation;
 	block_result_update = false;
@@ -12982,13 +13053,22 @@ void expression_redo() {
 }
 
 bool block_popup_input_base = false;
-void on_popup_menu_item_input_base(GtkMenuItem*, gpointer data) {
+void on_popup_menu_item_input_base(GtkMenuItem *w, gpointer data) {
 	if(block_popup_input_base) return;
-	evalops.parse_options.base = GPOINTER_TO_INT(data);
-	input_base_updated_from_menu();
-	update_keypad_bases();
-	expression_format_updated(false);
-	on_historyview_selection_changed(NULL, NULL);
+	if(GPOINTER_TO_INT(data) == BASE_CUSTOM) {
+		GtkWidget *dialog = get_set_base_dialog();
+		gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
+		gtk_widget_show(dialog);
+		gtk_window_present(GTK_WINDOW(dialog));
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
+		gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")));
+	} else {
+		evalops.parse_options.base = GPOINTER_TO_INT(data);
+		input_base_updated_from_menu();
+		update_keypad_bases();
+		expression_format_updated(false);
+		on_historyview_selection_changed(NULL, NULL);
+	}
 }
 void on_expressiontext_populate_popup(GtkTextView*, GtkMenu *menu, gpointer) {
 	popup_menu_expressiontext = menu;
@@ -13053,6 +13133,7 @@ void on_expressiontext_populate_popup(GtkTextView*, GtkMenu *menu, gpointer) {
 	RADIO_MENU_ITEM_WITH_INT(_("Duodecimal"), on_popup_menu_item_input_base, evalops.parse_options.base == 12, 12)
 	RADIO_MENU_ITEM_WITH_INT(_("Hexadecimal"), on_popup_menu_item_input_base, evalops.parse_options.base == 16, 16)
 	RADIO_MENU_ITEM_WITH_INT(_("Roman Numerals"), on_popup_menu_item_input_base, evalops.parse_options.base == BASE_ROMAN_NUMERALS, BASE_ROMAN_NUMERALS)
+	RADIO_MENU_ITEM_WITH_INT(_("Other…"), on_popup_menu_item_input_base, evalops.parse_options.base != 2 && evalops.parse_options.base != 8 && evalops.parse_options.base != 10 && evalops.parse_options.base != 12 && evalops.parse_options.base != 16 && evalops.parse_options.base != BASE_ROMAN_NUMERALS, BASE_CUSTOM)
 	block_popup_input_base = false;
 	SUBMENU_ITEM(_("Meta Modes"), sub2)
 	popup_expression_mode_items.clear();
@@ -20185,6 +20266,9 @@ void set_output_base_from_dialog(int base) {
 			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
 			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_base")), 8);
 			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
 			break;
 		}
 	}
@@ -20198,74 +20282,108 @@ void output_base_updated_from_menu() {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_binary"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_binary_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_binary")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_binary"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_binary_toggled, NULL);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), FALSE);
 				break;
 			}
 			case BASE_OCTAL: {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_octal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_octal_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_octal")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_octal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_octal_toggled, NULL);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), FALSE);
 				break;
 			}
 			case BASE_DECIMAL: {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_decimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_decimal_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_decimal")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_decimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_decimal_toggled, NULL);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), FALSE);
 				break;
 			}
 			case 12: {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_duodecimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_duodecimal_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_duodecimal")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_duodecimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_duodecimal_toggled, NULL);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), FALSE);
 				break;
 			}
 			case BASE_HEXADECIMAL: {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_hexadecimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_hexadecimal_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_hexadecimal")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_hexadecimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_hexadecimal_toggled, NULL);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), FALSE);
 				break;
 			}
 			case BASE_SEXAGESIMAL: {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_sexagesimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_sexagesimal_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_sexagesimal")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_sexagesimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_sexagesimal_toggled, NULL);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), FALSE);
 				break;
 			}
 			case BASE_TIME: {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_time"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_time_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_time")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_time"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_time_toggled, NULL);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), FALSE);
 				break;
 			}
 			case BASE_ROMAN_NUMERALS: {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_roman"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_roman_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_roman")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_roman"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_roman_toggled, NULL);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), FALSE);
+				break;
+			}
+			case BASE_UNICODE: {
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), i2s(1114112L).c_str());
+				break;
+			}
+			case BASE_E: {
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "e");
+				break;
+			}
+			case BASE_PI: {
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "π");
+				break;
+			}
+			case BASE_GOLDEN_RATIO: {
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "φ");
+				break;
+			}
+			case BASE_SUPER_GOLDEN_RATIO: {
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "ψ");
+				break;
+			}
+			case BASE_SQRT2: {
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "sqrt(2)");
+				break;
+			}
+			case BASE_CUSTOM: {
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
+				PrintOptions po = printops;
+				po.number_fraction_format = FRACTION_DECIMAL_EXACT;
+				po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
+				po.preserve_precision = true;
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), CALCULATOR->customOutputBase().print(po).c_str());
 				break;
 			}
 			default: {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), TRUE);
-				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_entry_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_entry_output_other_changed, NULL);
-				if(printops.base == BASE_CUSTOM) {
-					PrintOptions po = printops;
-					po.number_fraction_format = FRACTION_DECIMAL_EXACT;
-					po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
-					po.preserve_precision = true;
-					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), CALCULATOR->customOutputBase().print(po).c_str());
-				} else {
-					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), i2s(printops.base).c_str());
-				}
-				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_entry_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_entry_output_other_changed, NULL);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), i2s(printops.base).c_str());
 			}
 		}
 	}
@@ -20277,53 +20395,90 @@ void input_base_updated_from_menu() {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_binary"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_binary_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_binary")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_binary"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_binary_toggled, NULL);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), FALSE);
 				break;
 			}
 			case BASE_OCTAL: {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_octal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_octal_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_octal")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_octal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_octal_toggled, NULL);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), FALSE);
 				break;
 			}
 			case BASE_DECIMAL: {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_decimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_decimal_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_decimal")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_decimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_decimal_toggled, NULL);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), FALSE);
 				break;
 			}
 			case 12: {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_duodecimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_duodecimal_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_duodecimal")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_duodecimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_duodecimal_toggled, NULL);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), FALSE);
 				break;
 			}
 			case BASE_HEXADECIMAL: {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_hexadecimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_hexadecimal_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_hexadecimal")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_hexadecimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_hexadecimal_toggled, NULL);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), FALSE);
+				break;
+			}
+			case BASE_UNICODE: {
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), i2s(1114112L).c_str());
+				break;
+			}
+			case BASE_E: {
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "e");
+				break;
+			}
+			case BASE_PI: {
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "π");
+				break;
+			}
+			case BASE_GOLDEN_RATIO: {
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "φ");
+				break;
+			}
+			case BASE_SUPER_GOLDEN_RATIO: {
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "ψ");
+				break;
+			}
+			case BASE_SQRT2: {
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "sqrt(2)");
+				break;
+			}
+			case BASE_CUSTOM: {
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
+				PrintOptions po = printops;
+				po.number_fraction_format = FRACTION_DECIMAL_EXACT;
+				po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
+				po.preserve_precision = true;
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), CALCULATOR->customInputBase().print(po).c_str());
 				break;
 			}
 			default: {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), TRUE);
-				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_entry_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_entry_input_other_changed, NULL);
-				if(evalops.parse_options.base == BASE_CUSTOM) {
-					PrintOptions po = printops;
-					po.number_fraction_format = FRACTION_DECIMAL_EXACT;
-					po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
-					po.preserve_precision = true;
-					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), CALCULATOR->customInputBase().print(po).c_str());
-				} else {
-					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), i2s(evalops.parse_options.base).c_str());
-				}
-				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_entry_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_entry_input_other_changed, NULL);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), i2s(evalops.parse_options.base).c_str());
 			}
 		}
 	}
@@ -20421,17 +20576,21 @@ void on_menu_item_time_format_activate(GtkMenuItem *w, gpointer) {
 }
 
 void on_set_base_entry_output_other_changed(GtkEntry *w, gpointer) {
-	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")))) return;
 	string str = gtk_entry_get_text(w);
 	remove_blank_ends(str);
 	if(str.empty() || str == prev_output_base) {prev_output_base = str; return;}
+	if(equalsIgnoreCase(str, "golden") || str == "φ") {set_output_base_from_dialog(BASE_GOLDEN_RATIO); return;}
+	else if(equalsIgnoreCase(str, "supergolden") || str == "ψ") {set_output_base_from_dialog(BASE_SUPER_GOLDEN_RATIO); return;}
+	else if(equalsIgnoreCase(str, "pi") || str == "π") {set_output_base_from_dialog(BASE_PI); return;}
+	else if(str == "e") {set_output_base_from_dialog(BASE_E); return;}
+	else if(str == "sqrt(2)" || str == "sqrt 2" || str == "sqrt2" || str == "√2") {set_output_base_from_dialog(BASE_SQRT2); return;}
 	EvaluationOptions eo = evalops;
 	eo.parse_options.base = 10;
 	eo.approximation = APPROXIMATION_TRY_EXACT;
 	int base;
 	MathStructure m;
 	CALCULATOR->beginTemporaryStopMessages();
-	CALCULATOR->calculate(&m, str, 500, eo);
+	CALCULATOR->calculate(&m, CALCULATOR->unlocalizeExpression(str, eo.parse_options), 500, eo);
 	if(CALCULATOR->endTemporaryStopMessages() || !m.isNumber() || (m.number().isNegative() && !m.number().isInteger()) || !(m.number() > 1 || m.number() < -1) || !(m.number() >= -1114112L) || !(m.number() <= 1114112L)) {
 		prev_output_base = str;
 		show_message(_("Unsupported base."), GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_dialog")));
@@ -20454,57 +20613,53 @@ gboolean on_set_base_entry_output_other_focus_out_event(GtkWidget *w, GdkEvent*,
 void on_set_base_radiobutton_output_binary_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
 	set_output_base_from_dialog(BASE_BINARY);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), FALSE);
 }
 void on_set_base_radiobutton_output_octal_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
 	set_output_base_from_dialog(BASE_OCTAL);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), FALSE);
 }
 void on_set_base_radiobutton_output_decimal_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
 	set_output_base_from_dialog(BASE_DECIMAL);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), FALSE);
 }
 void on_set_base_radiobutton_output_duodecimal_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
 	set_output_base_from_dialog(12);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), FALSE);
 }
 void on_set_base_radiobutton_output_hexadecimal_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
-	set_output_base_from_dialog(BASE_HEXADECIMAL);	
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), FALSE);
+	set_output_base_from_dialog(BASE_HEXADECIMAL);
 }
 void on_set_base_radiobutton_output_sexagesimal_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
-	set_output_base_from_dialog(BASE_SEXAGESIMAL);	
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), FALSE);
+	set_output_base_from_dialog(BASE_SEXAGESIMAL);
 }
 void on_set_base_radiobutton_output_time_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
 	set_output_base_from_dialog(BASE_TIME);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), FALSE);
 }
 void on_set_base_radiobutton_output_roman_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
 	set_output_base_from_dialog(BASE_ROMAN_NUMERALS);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), FALSE);
 }
 void on_set_base_radiobutton_output_other_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
-	EvaluationOptions eo = evalops;
-	eo.parse_options.base = 10;
-	eo.approximation = APPROXIMATION_TRY_EXACT;
-	int base;
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), TRUE);
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")));
 	string str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")));
 	remove_blank_ends(str);
 	if(str.empty()) {prev_output_base = str; return;}
+	if(equalsIgnoreCase(str, "golden") || str == "φ") {set_output_base_from_dialog(BASE_GOLDEN_RATIO); return;}
+	else if(equalsIgnoreCase(str, "supergolden") || str == "ψ") {set_output_base_from_dialog(BASE_SUPER_GOLDEN_RATIO); return;}
+	else if(equalsIgnoreCase(str, "pi") || str == "π") {set_output_base_from_dialog(BASE_PI); return;}
+	else if(str == "e") {set_output_base_from_dialog(BASE_E); return;}
+	else if(str == "sqrt(2)" || str == "sqrt 2" || str == "sqrt2" || str == "√2") {set_output_base_from_dialog(BASE_SQRT2); return;}
+	EvaluationOptions eo = evalops;
+	eo.parse_options.base = 10;
+	eo.approximation = APPROXIMATION_TRY_EXACT;
+	int base;
 	MathStructure m;
 	CALCULATOR->beginTemporaryStopMessages();
-	CALCULATOR->calculate(&m, str, 500, eo);
+	CALCULATOR->calculate(&m, CALCULATOR->unlocalizeExpression(str, eo.parse_options), 500, eo);
 	if(CALCULATOR->endTemporaryStopMessages() || !m.isNumber() || (m.number().isNegative() && !m.number().isInteger()) || !(m.number() > 1 || m.number() < -1) || !(m.number() >= -1114112L) || !(m.number() <= 1114112L)) {
 		prev_output_base = str;
 		show_message(_("Unsupported base."), GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_dialog")));
@@ -20529,7 +20684,6 @@ void on_menu_item_set_base_activate(GtkMenuItem*, gpointer) {
 void on_set_base_radiobutton_input_binary_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
 	evalops.parse_options.base = BASE_BINARY;
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), FALSE);
 	on_historyview_selection_changed(NULL, NULL);
 	update_keypad_bases();
 	expression_format_updated(true);
@@ -20537,7 +20691,6 @@ void on_set_base_radiobutton_input_binary_toggled(GtkToggleButton *w, gpointer) 
 void on_set_base_radiobutton_input_octal_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
 	evalops.parse_options.base = BASE_OCTAL;
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), FALSE);
 	on_historyview_selection_changed(NULL, NULL);
 	update_keypad_bases();
 	expression_format_updated(true);
@@ -20545,7 +20698,6 @@ void on_set_base_radiobutton_input_octal_toggled(GtkToggleButton *w, gpointer) {
 void on_set_base_radiobutton_input_decimal_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
 	evalops.parse_options.base = BASE_DECIMAL;
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), FALSE);
 	on_historyview_selection_changed(NULL, NULL);
 	update_keypad_bases();
 	expression_format_updated(true);
@@ -20553,7 +20705,6 @@ void on_set_base_radiobutton_input_decimal_toggled(GtkToggleButton *w, gpointer)
 void on_set_base_radiobutton_input_duodecimal_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
 	evalops.parse_options.base = 12;
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), FALSE);
 	on_historyview_selection_changed(NULL, NULL);
 	update_keypad_bases();
 	expression_format_updated(true);
@@ -20561,35 +20712,40 @@ void on_set_base_radiobutton_input_duodecimal_toggled(GtkToggleButton *w, gpoint
 void on_set_base_radiobutton_input_hexadecimal_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
 	evalops.parse_options.base = BASE_HEXADECIMAL;
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), FALSE);
 	on_historyview_selection_changed(NULL, NULL);
 	update_keypad_bases();
 	expression_format_updated(true);
 }
 void on_set_base_radiobutton_input_other_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
-	EvaluationOptions eo = evalops;
-	eo.parse_options.base = 10;
-	eo.approximation = APPROXIMATION_TRY_EXACT;
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), TRUE);
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")));
 	string str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")));
 	remove_blank_ends(str);
 	if(str.empty() || str == prev_input_base) {prev_input_base = str; return;}
-	MathStructure m;
-	CALCULATOR->beginTemporaryStopMessages();
-	CALCULATOR->calculate(&m, str, 500, eo);
-	if(CALCULATOR->endTemporaryStopMessages() || !m.isNumber()) {
-		prev_input_base = str;
-		show_message(_("Unsupported base."), GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_dialog")));
-		return;
-	}
-	if(m.isInteger() && m.number() >= 2 && m.number() <= 36) {
-		evalops.parse_options.base = m.number().intValue();
-		if(evalops.parse_options.base == 2 || evalops.parse_options.base == 8 || evalops.parse_options.base == 10 || evalops.parse_options.base == 12 || evalops.parse_options.base == 16) input_base_updated_from_menu();
-	} else {
-		evalops.parse_options.base = BASE_CUSTOM;
-		CALCULATOR->setCustomInputBase(m.number());
+	if(equalsIgnoreCase(str, "golden") || str == "φ") {evalops.parse_options.base = BASE_GOLDEN_RATIO;}
+	else if(equalsIgnoreCase(str, "supergolden") || str == "ψ") {evalops.parse_options.base = BASE_SUPER_GOLDEN_RATIO;}
+	else if(equalsIgnoreCase(str, "pi") || str == "π") {evalops.parse_options.base = BASE_PI;}
+	else if(str == "e") {evalops.parse_options.base = BASE_E;}
+	else if(str == "sqrt(2)" || str == "sqrt 2" || str == "sqrt2" || str == "√2") {evalops.parse_options.base = BASE_SQRT2;}
+	else {
+		EvaluationOptions eo = evalops;
+		eo.parse_options.base = 10;
+		eo.approximation = APPROXIMATION_TRY_EXACT;
+		MathStructure m;
+		CALCULATOR->beginTemporaryStopMessages();
+		CALCULATOR->calculate(&m, CALCULATOR->unlocalizeExpression(str, eo.parse_options), 500, eo);
+		if(CALCULATOR->endTemporaryStopMessages() || !m.isNumber()) {
+			prev_input_base = str;
+			show_message(_("Unsupported base."), GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_dialog")));
+			return;
+		}
+		if(m.isInteger() && m.number() >= 2 && m.number() <= 36) {
+			evalops.parse_options.base = m.number().intValue();
+			if(evalops.parse_options.base == 2 || evalops.parse_options.base == 8 || evalops.parse_options.base == 10 || evalops.parse_options.base == 12 || evalops.parse_options.base == 16) input_base_updated_from_menu();
+		} else {
+			evalops.parse_options.base = BASE_CUSTOM;
+			CALCULATOR->setCustomInputBase(m.number());
+		}
 	}
 	prev_input_base = str;
 	on_historyview_selection_changed(NULL, NULL);
@@ -20598,33 +20754,44 @@ void on_set_base_radiobutton_input_other_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")))) gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "");
 }
 void on_set_base_entry_input_other_changed(GtkEntry *w, gpointer) {
-	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")))) return;
 	string str = gtk_entry_get_text(w);
 	remove_blank_ends(str);
 	if(str.empty() || str == prev_input_base) {prev_input_base = str; return;}
-	EvaluationOptions eo = evalops;
-	eo.parse_options.base = 10;
-	eo.approximation = APPROXIMATION_TRY_EXACT;
-	MathStructure m;
-	CALCULATOR->beginTemporaryStopMessages();
-	CALCULATOR->calculate(&m, str, 500, eo);
-	if(CALCULATOR->endTemporaryStopMessages() || !m.isNumber()) {
-		prev_input_base = str;
-		show_message(_("Unsupported base."), GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_dialog")));
-		return;
+	if(str.empty() || str == prev_input_base) {prev_input_base = str; return;}
+	if(equalsIgnoreCase(str, "golden") || str == "φ") {evalops.parse_options.base = BASE_GOLDEN_RATIO;}
+	else if(equalsIgnoreCase(str, "supergolden") || str == "ψ") {evalops.parse_options.base = BASE_SUPER_GOLDEN_RATIO;}
+	else if(equalsIgnoreCase(str, "pi") || str == "π") {evalops.parse_options.base = BASE_PI;}
+	else if(str == "e") {evalops.parse_options.base = BASE_E;}
+	else if(str == "sqrt(2)" || str == "sqrt 2" || str == "sqrt2" || str == "√2") {evalops.parse_options.base = BASE_SQRT2;}
+	else {
+		EvaluationOptions eo = evalops;
+		eo.parse_options.base = 10;
+		eo.approximation = APPROXIMATION_TRY_EXACT;
+		MathStructure m;
+		CALCULATOR->beginTemporaryStopMessages();
+		CALCULATOR->calculate(&m, CALCULATOR->unlocalizeExpression(str, eo.parse_options), 500, eo);
+		if(CALCULATOR->endTemporaryStopMessages() || !m.isNumber()) {
+			prev_input_base = str;
+			show_message(_("Unsupported base."), GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_dialog")));
+			return;
+		}
+		if(m.isInteger() && m.number() >= 2 && m.number() <= 36) {
+			evalops.parse_options.base = m.number().intValue();
+			if(evalops.parse_options.base == 2 || evalops.parse_options.base == 8 || evalops.parse_options.base == 10 || evalops.parse_options.base == 12 || evalops.parse_options.base == 16) {input_base_updated_from_menu(); gtk_entry_set_text(w, "");}
+		} else {
+			evalops.parse_options.base = BASE_CUSTOM;
+			CALCULATOR->setCustomInputBase(m.number());
+		}
 	}
-	if(m.isInteger() && m.number() >= 2 && m.number() <= 36) {
-		evalops.parse_options.base = m.number().intValue();
-		if(evalops.parse_options.base == 2 || evalops.parse_options.base == 8 || evalops.parse_options.base == 10 || evalops.parse_options.base == 12 || evalops.parse_options.base == 16) input_base_updated_from_menu();
-	} else {
-		evalops.parse_options.base = BASE_CUSTOM;
-		CALCULATOR->setCustomInputBase(m.number());
+	if(evalops.parse_options.base != 2 && evalops.parse_options.base != 8 && evalops.parse_options.base != 10 && evalops.parse_options.base != 12 && evalops.parse_options.base != 16) {
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
 	}
 	prev_input_base = str;
 	on_historyview_selection_changed(NULL, NULL);
 	update_keypad_bases();
 	expression_format_updated(true);
-	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")))) gtk_entry_set_text(w, "");
 }
 gboolean on_set_base_entry_input_other_focus_out_event(GtkWidget *w, GdkEvent*, gpointer data) {
 	on_set_base_entry_input_other_changed(GTK_ENTRY(w), data);
@@ -20633,7 +20800,6 @@ gboolean on_set_base_entry_input_other_focus_out_event(GtkWidget *w, GdkEvent*, 
 void on_set_base_radiobutton_input_roman_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
 	evalops.parse_options.base = BASE_ROMAN_NUMERALS;
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), FALSE);
 	on_historyview_selection_changed(NULL, NULL);
 	update_keypad_bases();
 	expression_format_updated(true);
@@ -20837,7 +21003,7 @@ void on_menu_item_plot_functions_activate(GtkMenuItem*, gpointer) {
 	if(!gtk_widget_get_visible(dialog)) {
 		gtk_list_store_clear(tPlotFunctions_store);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_button_modify")), FALSE);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_button_remove")), FALSE);	
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_button_remove")), FALSE);
 
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_checkbutton_grid")), default_plot_display_grid);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_checkbutton_full_border")), default_plot_full_border);

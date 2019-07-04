@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "3.2.0">
-  <!ENTITY manrevision "3.2.0">
-  <!ENTITY date "May 2019">
+  <!ENTITY appversion "3.3.0">
+  <!ENTITY manrevision "3.3.0">
+  <!ENTITY date "July 2019">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -1234,7 +1234,7 @@ In &app; mathematical entities, such as numbers and variables, are referred to a
 		<term>Numbers</term>
 		<listitem><para>
 		These are the regular numbers composed by digits 0-9 and a decimal sign — a dot, or a comma if it is the default decimal point in the locale/language used. If comma is used as decimal sign, the dot is still kept as an alternative decimal sign, if not explicitely turned off in the preferences dialog with <guibutton>Ignore dots in number</guibutton> (to allow it to be used as thousand separator instead). Numbers include integers, real numbers, and complex numbers. The imaginary part of complex numbers are written with as regular number followed by the special variable <quote>i</quote>, which represents the square root of -1 (e.g. <quote>2 + 3i</quote>). Spaces between digits are ignored (<quote>5  5 = 55</quote>). <quote>E</quote> (or <quote>e</quote>) can be considered as a shortcut for writing many zeroes and is equivalent to multiplication by 10 raised to the power of the right-hand value (e.g. <quote>5E3 = 5000</quote>).</para>
-		<para>Sexagesimal numbers (and time) can be entered directly using colons (e.g. <quote>5:30 = 5.5</quote>). A number immediately preceeded <quote>0b</quote>, <quote>0o</quote> or <quote>0x</quote> are interpreted as a number with base 2, 8 or 16, respectively (if the default base is 10, e.g. <quote>0x3f = 63</quote>). The number base in can also be selected, either by using the <command>base()</command>, <command>bin()</command>, <command>oct()</command>, <command>hex()</command> and <command>roman()</command> functions, or by setting the base used for all numbers in the whole expression from <menuchoice><guimenu>Mode</guimenu><guisubmenu>Number Base</guisubmenu><guimenuitem>Select Result and Expression Base...</guimenuitem></menuchoice>. Note that duodecimal (base 12) numbers use 'X' and 'E' (or upside down 2 and 3), instead of 'A' and 'B', for the tenth and eleventh digit. When input bases higher than ten, excluding twelve, are used, functions, variables and units are not parsed.
+		<para>Sexagesimal numbers (and time) can be entered directly using colons (e.g. <quote>5:30 = 5.5</quote>). A number immediately preceeded <quote>0b</quote>, <quote>0o</quote> or <quote>0x</quote> are interpreted as a number with base 2, 8 or 16, respectively (if the default base is 10, e.g. <quote>0x3f = 63</quote>). The number base in can also be selected, either by using the <command>base()</command>, <command>bin()</command>, <command>oct()</command>, <command>hex()</command> and <command>roman()</command> functions, or by setting the base used for all numbers in the whole expression from <menuchoice><guimenu>Mode</guimenu><guisubmenu>Number Base</guisubmenu><guimenuitem>Select Result and Expression Base...</guimenuitem></menuchoice>. Note that duodecimal (base 12) numbers use 'X' and 'E' (or upside down 2 and 3), instead of 'A' and 'B', for the tenth and eleventh digit. Bases between 37 and 62 uses case sensitive letters (0-9, A-Z, a-z) as digits ('z' equals 61). Bases over 62 use Unicode characters as digits, with the character code as value (e.g. '0' equals 48). Escaped characters are in this case supported (e.g. '\0' = 0, '\523' = 523, '\x7f' = 127).
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -1653,7 +1653,7 @@ If <quote>to</quote> is not preceded by an expression, the previous result will 
 	<varlistentry>
 		<term>Number Bases</term>
 		<listitem><para>
-				Non-decimal bases can be selected for display of numbers in the result. This include regular number bases (binary, octal, hexadecimal, sexagesimal) as well as sexagesimal time format and roman numerals. All number bases between 2 and 36, and base for expression input, can be selected from a dialog window accessed from <menuchoice><guimenu>Mode</guimenu><guisubmenu>Number Base</guisubmenu><guimenuitem>Other...</guimenuitem></menuchoice> or <menuchoice><guimenu>Mode</guimenu><guisubmenu>Number Base</guisubmenu><guimenuitem>Select Result and Expression Base...</guimenuitem></menuchoice>. Note that duodecimal (base 12) numbers use upside down 2 and 3 (or 'X' and 'E'), instead of 'A' and 'B', for the tenth and eleventh digit. The convert number bases dialog (see <xref linkend="qalculate-convert-number-bases-dialog"/>) is efficient for simple conversion between common bases.
+				Non-decimal bases can be selected for display of numbers in the result. This include regular number bases (binary, octal, hexadecimal, sexagesimal) as well as sexagesimal time format and roman numerals. Other number bases, as well as base for expression input, can be selected from a dialog window accessed from <menuchoice><guimenu>Mode</guimenu><guisubmenu>Number Base</guisubmenu><guimenuitem>Other...</guimenuitem></menuchoice> or <menuchoice><guimenu>Mode</guimenu><guisubmenu>Number Base</guisubmenu><guimenuitem>Select Result and Expression Base...</guimenuitem></menuchoice>. Note that duodecimal (base 12) numbers use upside down 2 and 3 (or 'X' and 'E'), instead of 'A' and 'B', for the tenth and eleventh digit. The convert number bases dialog (see <xref linkend="qalculate-convert-number-bases-dialog"/>) is efficient for simple conversion between common bases.
 			</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -2054,7 +2054,7 @@ A category for functions that do not fit elsewhere.
 <varlistentry>
 <term>Number Theory</term>
 <listitem><para>
-Contains subcategories arithmetic, number bases, and rounding, in addition to functions such as <command>abs()</command>, which returns the absolute value of a number (<quote>|</quote> can also be used; e.g. <quote>|-5| = abs(-5) = 5</quote>, and <command>gcd()</command>, the greatest common divisor. <command>round()</command> is the standard rounding function (note that halfway numbers are rounded to even). The functions for number bases translates a text string, representing an expression (bases that use letters does not allow variables, functions and units) with numbers in a different base, to a decimal number. Includes <command>bin()</command> for binary numbers, <command>hex()</command> for hexadecimal numbers, <command>oct()</command> for octal numbers and <command>base()</command> for numbers in a base between 2 and 36 specified in the second argument.
+Contains subcategories arithmetic, number bases, and rounding, in addition to functions such as <command>abs()</command>, which returns the absolute value of a number (<quote>|</quote> can also be used; e.g. <quote>|-5| = abs(-5) = 5</quote>, and <command>gcd()</command>, the greatest common divisor. <command>round()</command> is the standard rounding function (note that halfway numbers are rounded to even). The functions for number bases translates a text string, representing an expression with numbers in a different base, to a decimal number. Includes <command>bin()</command> for binary numbers, <command>hex()</command> for hexadecimal numbers, <command>oct()</command> for octal numbers and <command>base()</command> for numbers in a any other base.
 </para></listitem>
 </varlistentry>
 <varlistentry>
