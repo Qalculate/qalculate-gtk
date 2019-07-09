@@ -414,15 +414,17 @@ string print_with_evalops(const Number &nr) {
 		nr_base = CALCULATOR->customOutputBase();
 		CALCULATOR->setCustomOutputBase(CALCULATOR->customInputBase());
 	}
-	if(po.base == BASE_CUSTOM && CALCULATOR->customInputBase().isInteger() && (CALCULATOR->customInputBase() > 1 || CALCULATOR->customInputBase() < -1) && CALCULATOR->customInputBase() >= -1114112L && CALCULATOR->customInputBase() <= 1114112L) {
+	if(po.base == BASE_CUSTOM && CALCULATOR->customInputBase().isInteger() && (CALCULATOR->customInputBase() > 1 || CALCULATOR->customInputBase() < -1)) {
 		nr_base = CALCULATOR->customOutputBase();
 		CALCULATOR->setCustomOutputBase(CALCULATOR->customInputBase());
-	} else if(po.base <= BASE_CUSTOM && po.base != BASE_UNICODE) {
+	} else if((po.base < BASE_CUSTOM && po.base != BASE_UNICODE) || (po.base == BASE_CUSTOM && CALCULATOR->customInputBase() <= 12 && CALCULATOR->customInputBase() >= -12)) {
 		po.base = 10;
 		string str = "dec(";
 		str += nr.print(po);
 		str += ")";
 		return str;
+	} else if(po.base == BASE_CUSTOM) {
+		po.base = 10;
 	}
 	string str = nr.print(po);
 	if(po.base == BASE_CUSTOM) CALCULATOR->setCustomOutputBase(nr_base);
@@ -1234,7 +1236,7 @@ void update_status_text() {
 		}
 		case BASE_CUSTOM: {
 			STATUS_SPACE
-			str += _("CUSTOM");
+			str += CALCULATOR->customInputBase().print(CALCULATOR->messagePrintOptions());
 			break;
 		}
 		case BASE_GOLDEN_RATIO: {
@@ -1758,7 +1760,7 @@ void display_parse_status() {
 		po.hexadecimal_twos_complement = printops.hexadecimal_twos_complement;
 		po.base = evalops.parse_options.base;
 		Number nr_base;
-		if(po.base == BASE_CUSTOM && (CALCULATOR->usesIntervalArithmetic() || CALCULATOR->customInputBase().isRational()) && (CALCULATOR->customInputBase().isInteger() || !CALCULATOR->customInputBase().isNegative()) && (CALCULATOR->customInputBase() > 1 || CALCULATOR->customInputBase() < -1) && CALCULATOR->customInputBase() >= -1114112L && CALCULATOR->customInputBase() <= 1114112L) {
+		if(po.base == BASE_CUSTOM && (CALCULATOR->usesIntervalArithmetic() || CALCULATOR->customInputBase().isRational()) && (CALCULATOR->customInputBase().isInteger() || !CALCULATOR->customInputBase().isNegative()) && (CALCULATOR->customInputBase() > 1 || CALCULATOR->customInputBase() < -1)) {
 			nr_base = CALCULATOR->customOutputBase();
 			CALCULATOR->setCustomOutputBase(CALCULATOR->customInputBase());
 		} else if(po.base == BASE_CUSTOM || (po.base < BASE_CUSTOM && !CALCULATOR->usesIntervalArithmetic() && po.base != BASE_UNICODE)) {
@@ -6863,7 +6865,7 @@ void ViewThread::run() {
 			po.base = evalops.parse_options.base;
 			po.preserve_format = (x_to != NULL);
 			Number nr_base;
-			if(po.base == BASE_CUSTOM && (CALCULATOR->usesIntervalArithmetic() || CALCULATOR->customInputBase().isRational()) && (CALCULATOR->customInputBase().isInteger() || !CALCULATOR->customInputBase().isNegative()) && (CALCULATOR->customInputBase() > 1 || CALCULATOR->customInputBase() < -1) && CALCULATOR->customInputBase() >= -1114112L && CALCULATOR->customInputBase() <= 1114112L) {
+			if(po.base == BASE_CUSTOM && (CALCULATOR->usesIntervalArithmetic() || CALCULATOR->customInputBase().isRational()) && (CALCULATOR->customInputBase().isInteger() || !CALCULATOR->customInputBase().isNegative()) && (CALCULATOR->customInputBase() > 1 || CALCULATOR->customInputBase() < -1)) {
 				nr_base = CALCULATOR->customOutputBase();
 				CALCULATOR->setCustomOutputBase(CALCULATOR->customInputBase());
 			} else if(po.base == BASE_CUSTOM || (po.base < BASE_CUSTOM && !CALCULATOR->usesIntervalArithmetic() && po.base != BASE_UNICODE)) {
@@ -8607,8 +8609,9 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		} else if(equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _("base"))) {
 			int save_base = printops.base;
 			Number save_nr = CALCULATOR->customOutputBase();
-			if(equalsIgnoreCase(to_str2, "golden") || to_str2 == "φ") printops.base = BASE_GOLDEN_RATIO;
-			else if(equalsIgnoreCase(to_str2, "supergolden") || to_str2 == "ψ") printops.base = BASE_SUPER_GOLDEN_RATIO;
+			if(equalsIgnoreCase(to_str2, "golden") || equalsIgnoreCase(to_str2, "golden ratio") || to_str2 == "φ") printops.base = BASE_GOLDEN_RATIO;
+			else if(equalsIgnoreCase(to_str2, "unicode")) printops.base = BASE_UNICODE;
+			else if(equalsIgnoreCase(to_str2, "supergolden") || equalsIgnoreCase(to_str2, "supergolden ratio") || to_str2 == "ψ") printops.base = BASE_SUPER_GOLDEN_RATIO;
 			else if(equalsIgnoreCase(to_str2, "pi") || to_str2 == "π") printops.base = BASE_PI;
 			else if(to_str2 == "e") printops.base = BASE_E;
 			else if(to_str2 == "sqrt(2)" || to_str2 == "sqrt 2" || to_str2 == "sqrt2" || to_str2 == "√2") printops.base = BASE_SQRT2;
@@ -20179,8 +20182,9 @@ void on_menu_item_no_default_angle_unit_activate(GtkMenuItem *w, gpointer) {
 }
 
 void set_output_base_from_dialog(int base) {
-	bool b = (printops.base == base);
+	bool b = (printops.base == base && base != BASE_CUSTOM);
 	printops.base = base;
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_combo_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_combo_output_other_changed, NULL);
 	switch(printops.base) {
 		case BASE_BINARY: {
 			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_binary"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_binary_activate, NULL);
@@ -20272,11 +20276,13 @@ void set_output_base_from_dialog(int base) {
 			break;
 		}
 	}
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_combo_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_combo_output_other_changed, NULL);
 	update_keypad_bases();
 	if(!b) result_format_updated();
 }
 void output_base_updated_from_menu() {
 	if(setbase_builder) {
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_combo_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_combo_output_other_changed, NULL);
 		switch(printops.base) {
 			case BASE_BINARY: {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_binary"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_binary_toggled, NULL);
@@ -20330,7 +20336,7 @@ void output_base_updated_from_menu() {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), i2s(1114112L).c_str());
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "Unicode");
 				break;
 			}
 			case BASE_E: {
@@ -20365,7 +20371,7 @@ void output_base_updated_from_menu() {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "sqrt(2)");
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "√2");
 				break;
 			}
 			case BASE_CUSTOM: {
@@ -20376,6 +20382,7 @@ void output_base_updated_from_menu() {
 				po.number_fraction_format = FRACTION_DECIMAL_EXACT;
 				po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
 				po.preserve_precision = true;
+				po.base = 10;
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), CALCULATOR->customOutputBase().print(po).c_str());
 				break;
 			}
@@ -20386,10 +20393,12 @@ void output_base_updated_from_menu() {
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), i2s(printops.base).c_str());
 			}
 		}
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_combo_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_combo_output_other_changed, NULL);
 	}
 }
 void input_base_updated_from_menu() {
 	if(setbase_builder) {
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_combo_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_combo_input_other_changed, NULL);
 		switch(evalops.parse_options.base) {
 			case BASE_BINARY: {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_binary"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_binary_toggled, NULL);
@@ -20425,7 +20434,7 @@ void input_base_updated_from_menu() {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), i2s(1114112L).c_str());
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "Unicode");
 				break;
 			}
 			case BASE_E: {
@@ -20460,7 +20469,7 @@ void input_base_updated_from_menu() {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "sqrt(2)");
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "√2");
 				break;
 			}
 			case BASE_CUSTOM: {
@@ -20471,6 +20480,7 @@ void input_base_updated_from_menu() {
 				po.number_fraction_format = FRACTION_DECIMAL_EXACT;
 				po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
 				po.preserve_precision = true;
+				po.base = 10;
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), CALCULATOR->customInputBase().print(po).c_str());
 				break;
 			}
@@ -20481,6 +20491,7 @@ void input_base_updated_from_menu() {
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), i2s(evalops.parse_options.base).c_str());
 			}
 		}
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_combo_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_combo_input_other_changed, NULL);
 	}
 }
 
@@ -20574,13 +20585,18 @@ void on_menu_item_time_format_activate(GtkMenuItem *w, gpointer) {
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_base_changed, NULL);
 	result_format_updated();
 }
-
-void on_set_base_entry_output_other_changed(GtkEntry *w, gpointer) {
+void on_set_base_combo_output_other_changed(GtkComboBox*, gpointer) {
+	string str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")));
+	remove_blank_ends(str);
+	if(str == "φ" || str == "ψ" || str == "π" || str == "√2" || str == "e" || str == "-3" || str == "-2" || str == "-10" || str == "20" || str == "36" || str == "62" || str == "Unicode") on_set_base_entry_input_other_activate(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), NULL);
+}
+void on_set_base_entry_output_other_activate(GtkEntry *w, gpointer) {
 	string str = gtk_entry_get_text(w);
 	remove_blank_ends(str);
 	if(str.empty() || str == prev_output_base) {prev_output_base = str; return;}
-	if(equalsIgnoreCase(str, "golden") || str == "φ") {set_output_base_from_dialog(BASE_GOLDEN_RATIO); return;}
-	else if(equalsIgnoreCase(str, "supergolden") || str == "ψ") {set_output_base_from_dialog(BASE_SUPER_GOLDEN_RATIO); return;}
+	if(equalsIgnoreCase(str, "golden") || equalsIgnoreCase(str, "golden ratio") || str == "φ") {set_output_base_from_dialog(BASE_GOLDEN_RATIO); return;}
+	else if(equalsIgnoreCase(str, "unicode")) {set_output_base_from_dialog(BASE_UNICODE); return;}
+	else if(equalsIgnoreCase(str, "supergolden") || equalsIgnoreCase(str, "supergolden ratio") || str == "ψ") {set_output_base_from_dialog(BASE_SUPER_GOLDEN_RATIO); return;}
 	else if(equalsIgnoreCase(str, "pi") || str == "π") {set_output_base_from_dialog(BASE_PI); return;}
 	else if(str == "e") {set_output_base_from_dialog(BASE_E); return;}
 	else if(str == "sqrt(2)" || str == "sqrt 2" || str == "sqrt2" || str == "√2") {set_output_base_from_dialog(BASE_SQRT2); return;}
@@ -20591,7 +20607,7 @@ void on_set_base_entry_output_other_changed(GtkEntry *w, gpointer) {
 	MathStructure m;
 	CALCULATOR->beginTemporaryStopMessages();
 	CALCULATOR->calculate(&m, CALCULATOR->unlocalizeExpression(str, eo.parse_options), 500, eo);
-	if(CALCULATOR->endTemporaryStopMessages() || !m.isNumber() || (m.number().isNegative() && !m.number().isInteger()) || !(m.number() > 1 || m.number() < -1) || !(m.number() >= -1114112L) || !(m.number() <= 1114112L)) {
+	if(CALCULATOR->endTemporaryStopMessages() || !m.isNumber() || !m.number().isReal() || (m.number().isNegative() && !m.number().isInteger()) || !(m.number() > 1 || m.number() < -1)) {
 		prev_output_base = str;
 		show_message(_("Unsupported base."), GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_dialog")));
 		return;
@@ -20604,10 +20620,14 @@ void on_set_base_entry_output_other_changed(GtkEntry *w, gpointer) {
 		prev_output_base = str;
 	}
 	set_output_base_from_dialog(base);
-	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")))) gtk_entry_set_text(w, "");
+	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")))) {
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_combo_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_combo_output_other_changed, NULL);
+		gtk_entry_set_text(w, "");
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_combo_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_combo_output_other_changed, NULL);
+	}
 }
 gboolean on_set_base_entry_output_other_focus_out_event(GtkWidget *w, GdkEvent*, gpointer data) {
-	on_set_base_entry_output_other_changed(GTK_ENTRY(w), data);
+	on_set_base_entry_output_other_activate(GTK_ENTRY(w), data);
 	return FALSE;
 }
 void on_set_base_radiobutton_output_binary_toggled(GtkToggleButton *w, gpointer) {
@@ -20648,8 +20668,9 @@ void on_set_base_radiobutton_output_other_toggled(GtkToggleButton *w, gpointer) 
 	string str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")));
 	remove_blank_ends(str);
 	if(str.empty()) {prev_output_base = str; return;}
-	if(equalsIgnoreCase(str, "golden") || str == "φ") {set_output_base_from_dialog(BASE_GOLDEN_RATIO); return;}
-	else if(equalsIgnoreCase(str, "supergolden") || str == "ψ") {set_output_base_from_dialog(BASE_SUPER_GOLDEN_RATIO); return;}
+	if(equalsIgnoreCase(str, "golden") || equalsIgnoreCase(str, "golden ratio") || str == "φ") {set_output_base_from_dialog(BASE_GOLDEN_RATIO); return;}
+	else if(equalsIgnoreCase(str, "unicode")) {set_output_base_from_dialog(BASE_UNICODE); return;}
+	else if(equalsIgnoreCase(str, "supergolden") || equalsIgnoreCase(str, "supergolden ratio") || str == "ψ") {set_output_base_from_dialog(BASE_SUPER_GOLDEN_RATIO); return;}
 	else if(equalsIgnoreCase(str, "pi") || str == "π") {set_output_base_from_dialog(BASE_PI); return;}
 	else if(str == "e") {set_output_base_from_dialog(BASE_E); return;}
 	else if(str == "sqrt(2)" || str == "sqrt 2" || str == "sqrt2" || str == "√2") {set_output_base_from_dialog(BASE_SQRT2); return;}
@@ -20660,7 +20681,7 @@ void on_set_base_radiobutton_output_other_toggled(GtkToggleButton *w, gpointer) 
 	MathStructure m;
 	CALCULATOR->beginTemporaryStopMessages();
 	CALCULATOR->calculate(&m, CALCULATOR->unlocalizeExpression(str, eo.parse_options), 500, eo);
-	if(CALCULATOR->endTemporaryStopMessages() || !m.isNumber() || (m.number().isNegative() && !m.number().isInteger()) || !(m.number() > 1 || m.number() < -1) || !(m.number() >= -1114112L) || !(m.number() <= 1114112L)) {
+	if(CALCULATOR->endTemporaryStopMessages() || !m.isNumber() || !m.number().isReal() || (m.number().isNegative() && !m.number().isInteger()) || !(m.number() > 1 || m.number() < -1)) {
 		prev_output_base = str;
 		show_message(_("Unsupported base."), GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_dialog")));
 		return;
@@ -20673,7 +20694,11 @@ void on_set_base_radiobutton_output_other_toggled(GtkToggleButton *w, gpointer) 
 		prev_output_base = str;
 	}
 	set_output_base_from_dialog(base);
-	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")))) gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "");
+	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")))) {
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_combo_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_combo_output_other_changed, NULL);
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "");
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_combo_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_combo_output_other_changed, NULL);
+	}
 }
 void on_menu_item_set_base_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = get_set_base_dialog();
@@ -20722,8 +20747,9 @@ void on_set_base_radiobutton_input_other_toggled(GtkToggleButton *w, gpointer) {
 	string str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")));
 	remove_blank_ends(str);
 	if(str.empty() || str == prev_input_base) {prev_input_base = str; return;}
-	if(equalsIgnoreCase(str, "golden") || str == "φ") {evalops.parse_options.base = BASE_GOLDEN_RATIO;}
-	else if(equalsIgnoreCase(str, "supergolden") || str == "ψ") {evalops.parse_options.base = BASE_SUPER_GOLDEN_RATIO;}
+	if(equalsIgnoreCase(str, "golden") || equalsIgnoreCase(str, "golden ratio") || str == "φ") {evalops.parse_options.base = BASE_GOLDEN_RATIO;}
+	else if(equalsIgnoreCase(str, "unicode")) {evalops.parse_options.base = BASE_UNICODE;}
+	else if(equalsIgnoreCase(str, "supergolden") || equalsIgnoreCase(str, "supergolden ratio") || str == "ψ") {evalops.parse_options.base = BASE_SUPER_GOLDEN_RATIO;}
 	else if(equalsIgnoreCase(str, "pi") || str == "π") {evalops.parse_options.base = BASE_PI;}
 	else if(str == "e") {evalops.parse_options.base = BASE_E;}
 	else if(str == "sqrt(2)" || str == "sqrt 2" || str == "sqrt2" || str == "√2") {evalops.parse_options.base = BASE_SQRT2;}
@@ -20751,15 +20777,25 @@ void on_set_base_radiobutton_input_other_toggled(GtkToggleButton *w, gpointer) {
 	on_historyview_selection_changed(NULL, NULL);
 	update_keypad_bases();
 	expression_format_updated(true);
-	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")))) gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "");
+	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")))) {
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_combo_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_combo_input_other_changed, NULL);
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "");
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_combo_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_combo_input_other_changed, NULL);
+	}
 }
-void on_set_base_entry_input_other_changed(GtkEntry *w, gpointer) {
+void on_set_base_combo_input_other_changed(GtkComboBox*, gpointer) {
+	string str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")));
+	remove_blank_ends(str);
+	if(str == "φ" || str == "ψ" || str == "π" || str == "√2" || str == "e" || str == "-3" || str == "-2" || str == "-10" || str == "20" || str == "36" || str == "62" || str == "Unicode") on_set_base_entry_input_other_activate(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), NULL);
+}
+void on_set_base_entry_input_other_activate(GtkEntry *w, gpointer) {
 	string str = gtk_entry_get_text(w);
 	remove_blank_ends(str);
 	if(str.empty() || str == prev_input_base) {prev_input_base = str; return;}
 	if(str.empty() || str == prev_input_base) {prev_input_base = str; return;}
-	if(equalsIgnoreCase(str, "golden") || str == "φ") {evalops.parse_options.base = BASE_GOLDEN_RATIO;}
-	else if(equalsIgnoreCase(str, "supergolden") || str == "ψ") {evalops.parse_options.base = BASE_SUPER_GOLDEN_RATIO;}
+	if(equalsIgnoreCase(str, "golden") || equalsIgnoreCase(str, "golden ratio") || str == "φ") {evalops.parse_options.base = BASE_GOLDEN_RATIO;}
+	else if(equalsIgnoreCase(str, "unicode")) {evalops.parse_options.base = BASE_UNICODE;}
+	else if(equalsIgnoreCase(str, "supergolden") || equalsIgnoreCase(str, "supergolden ratio") || str == "ψ") {evalops.parse_options.base = BASE_SUPER_GOLDEN_RATIO;}
 	else if(equalsIgnoreCase(str, "pi") || str == "π") {evalops.parse_options.base = BASE_PI;}
 	else if(str == "e") {evalops.parse_options.base = BASE_E;}
 	else if(str == "sqrt(2)" || str == "sqrt 2" || str == "sqrt2" || str == "√2") {evalops.parse_options.base = BASE_SQRT2;}
@@ -20777,7 +20813,12 @@ void on_set_base_entry_input_other_changed(GtkEntry *w, gpointer) {
 		}
 		if(m.isInteger() && m.number() >= 2 && m.number() <= 36) {
 			evalops.parse_options.base = m.number().intValue();
-			if(evalops.parse_options.base == 2 || evalops.parse_options.base == 8 || evalops.parse_options.base == 10 || evalops.parse_options.base == 12 || evalops.parse_options.base == 16) {input_base_updated_from_menu(); gtk_entry_set_text(w, "");}
+			if(evalops.parse_options.base == 2 || evalops.parse_options.base == 8 || evalops.parse_options.base == 10 || evalops.parse_options.base == 12 || evalops.parse_options.base == 16) {
+				input_base_updated_from_menu();
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_combo_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_combo_input_other_changed, NULL);
+				gtk_entry_set_text(w, "");
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_combo_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_combo_input_other_changed, NULL);
+			}
 		} else {
 			evalops.parse_options.base = BASE_CUSTOM;
 			CALCULATOR->setCustomInputBase(m.number());
@@ -20793,8 +20834,8 @@ void on_set_base_entry_input_other_changed(GtkEntry *w, gpointer) {
 	update_keypad_bases();
 	expression_format_updated(true);
 }
-gboolean on_set_base_entry_input_other_focus_out_event(GtkWidget *w, GdkEvent*, gpointer data) {
-	on_set_base_entry_input_other_changed(GTK_ENTRY(w), data);
+gboolean on_set_base_entry_input_other_focus_out_event(GtkEntry *w, GdkEvent*, gpointer data) {
+	on_set_base_entry_input_other_activate(w, data);
 	return FALSE;
 }
 void on_set_base_radiobutton_input_roman_toggled(GtkToggleButton *w, gpointer) {

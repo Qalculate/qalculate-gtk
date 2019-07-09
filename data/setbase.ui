@@ -237,14 +237,36 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry" id="set_base_entry_output_other">
+                      <object class="GtkComboBoxText" id="set_base_combo_output_other">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <signal name="activate" handler="on_set_base_entry_output_other_changed" swapped="no"/>
-                        <signal name="focus-out-event" handler="on_set_base_entry_output_other_focus_out_event" after="yes" swapped="no"/>
+                        <property name="can_focus">False</property>
+                        <property name="has_entry">True</property>
+                        <items>
+                          <item>-10</item>
+                          <item>-3</item>
+                          <item>-2</item>
+                          <item>√2</item>
+                          <item>ψ</item>
+                          <item>φ</item>
+                          <item>e</item>
+                          <item>π</item>
+                          <item>20</item>
+                          <item>36</item>
+                          <item>62</item>
+                          <item>Unicode</item>
+                        </items>
+                        <signal name="changed" handler="on_set_base_combo_output_other_changed" swapped="no"/>
+                        <child internal-child="entry">
+                          <object class="GtkEntry" id="set_base_entry_output_other">
+                            <property name="can_focus">True</property>
+                            <property name="text" translatable="yes">Unicode</property>
+                            <signal name="activate" handler="on_set_base_entry_output_other_activate" swapped="no"/>
+                            <signal name="focus-out-event" handler="on_set_base_entry_output_other_focus_out_event" swapped="no"/>
+                          </object>
+                        </child>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="expand">True</property>
                         <property name="fill">True</property>
                         <property name="position">9</property>
                       </packing>
@@ -414,14 +436,35 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry" id="set_base_entry_input_other">
+                      <object class="GtkComboBoxText" id="set_base_combo_input_other">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <signal name="activate" handler="on_set_base_entry_input_other_changed" swapped="no"/>
-                        <signal name="focus-out-event" handler="on_set_base_entry_input_other_focus_out_event" after="yes" swapped="no"/>
+                        <property name="can_focus">False</property>
+                        <property name="has_entry">True</property>
+                        <items>
+                          <item>-10</item>
+                          <item>-3</item>
+                          <item>-2</item>
+                          <item>√2</item>
+                          <item>ψ</item>
+                          <item>φ</item>
+                          <item>e</item>
+                          <item>π</item>
+                          <item>20</item>
+                          <item>36</item>
+                          <item>62</item>
+                          <item>Unicode</item>
+                        </items>
+                        <signal name="changed" handler="on_set_base_combo_input_other_changed" swapped="no"/>
+                        <child internal-child="entry">
+                          <object class="GtkEntry" id="set_base_entry_input_other">
+                            <property name="can_focus">True</property>
+                            <signal name="activate" handler="on_set_base_entry_input_other_activate" swapped="no"/>
+                            <signal name="focus-out-event" handler="on_set_base_entry_input_other_focus_out_event" swapped="no"/>
+                          </object>
+                        </child>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="expand">True</property>
                         <property name="fill">True</property>
                         <property name="position">7</property>
                       </packing>

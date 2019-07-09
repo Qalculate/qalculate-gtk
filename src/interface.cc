@@ -595,6 +595,8 @@ void create_button_menus(void) {
 	f = CALCULATOR->getActiveFunction("bitrot");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f)}
 	MENU_SEPARATOR
+	MENU_ITEM_WITH_POINTER(CALCULATOR->f_base->title(true).c_str(), insert_button_function, CALCULATOR->f_base)
+	MENU_SEPARATOR
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_ascii->title(true).c_str(), insert_button_function, CALCULATOR->f_ascii)
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_char->title(true).c_str(), insert_button_function, CALCULATOR->f_char)
 	
@@ -2408,7 +2410,7 @@ GtkWidget* get_set_base_dialog (void) {
 			}
 			case BASE_UNICODE: {
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), i2s(1114112L).c_str());
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "Unicode");
 				break;
 			}
 			case BASE_E: {
@@ -2433,7 +2435,7 @@ GtkWidget* get_set_base_dialog (void) {
 			}
 			case BASE_SQRT2: {
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "sqrt(2)");
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "√2");
 				break;
 			}
 			case BASE_CUSTOM: {
@@ -2442,6 +2444,7 @@ GtkWidget* get_set_base_dialog (void) {
 				po.number_fraction_format = FRACTION_DECIMAL_EXACT;
 				po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
 				po.preserve_precision = true;
+				po.base = 10;
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), CALCULATOR->customInputBase().print(po).c_str());
 				break;
 			}
@@ -2485,7 +2488,7 @@ GtkWidget* get_set_base_dialog (void) {
 			}
 			case BASE_UNICODE: {
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), i2s(1114112L).c_str());
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "Unicode");
 				break;
 			}
 			case BASE_E: {
@@ -2519,6 +2522,7 @@ GtkWidget* get_set_base_dialog (void) {
 				po.number_fraction_format = FRACTION_DECIMAL_EXACT;
 				po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
 				po.preserve_precision = true;
+				po.base = 10;
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), CALCULATOR->customOutputBase().print(po).c_str());
 				break;
 			}
