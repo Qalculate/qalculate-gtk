@@ -660,12 +660,12 @@ void improve_result_text(string &resstr) {
 				continue;
 			}
 		}
-		if(i1 > 1 && resstr[i1 - 1] == ' ' && (i_equals == string::npos || i1 != i_equals + 1) && is_not_in(OPERATORS SPACES, resstr[i1 - 2])) {
+		if(i1 > 1 && resstr[i1 - 1] == ' ' && (i_equals == string::npos || i1 != i_equals + 1) && is_not_in(OPERATORS SPACES, resstr[i1 - 2]) && resstr[i1 - 2] != printops.comma()[0]) {
 			if(resstr[i1 - 2] < 0) {
 				size_t i3 = i1 - 2;
 				while(i3 > 0 && resstr[i3] < 0 && (unsigned char) resstr[i3] < 0xC0) i3--;
 				string str = resstr.substr(i3, i1 - i3 - 1);
-				if(str != SIGN_DIVISION && str != SIGN_DIVISION_SLASH && str != SIGN_MULTIPLICATION && str != SIGN_MULTIDOT && str != SIGN_SMALLCIRCLE && str != SIGN_MULTIBULLET && str != SIGN_MINUS && str != SIGN_PLUS && str != SIGN_NOT_EQUAL && str != SIGN_GREATER_OR_EQUAL && str != SIGN_LESS_OR_EQUAL && str != SIGN_ALMOST_EQUAL) {
+				if(str != SIGN_DIVISION && str != SIGN_DIVISION_SLASH && str != SIGN_MULTIPLICATION && str != SIGN_MULTIDOT && str != SIGN_SMALLCIRCLE && str != SIGN_MULTIBULLET && str != SIGN_MINUS && str != SIGN_PLUS && str != SIGN_NOT_EQUAL && str != SIGN_GREATER_OR_EQUAL && str != SIGN_LESS_OR_EQUAL && str != SIGN_ALMOST_EQUAL && str != printops.comma()) {
 					resstr.replace(i1 - 1, 2, "<i>");
 					if(i_equals != string::npos && i1 < i_equals) i_equals += 1;
 					i2 += 1;
@@ -6556,13 +6556,16 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 			if(m.function()->maxargs() > 0 && m.function()->minargs() < m.function()->maxargs() && m.size() > (size_t) m.function()->minargs()) {
 				while(true) {
 					string defstr = m.function()->getDefaultValue(argcount);
+					Argument *arg = m.function()->getArgumentDefinition(argcount);
 					remove_blank_ends(defstr);
 					if(defstr.empty()) break;
 					if(m[argcount - 1].isUndefined() && defstr == "undefined") {
 						argcount--;
-					} else if(m[argcount - 1].isVariable() && defstr == m[argcount - 1].variable()->referenceName()) {
+					} else if(m[argcount - 1].isVariable() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr == m[argcount - 1].variable()->referenceName()) {
 						argcount--;
-					} else if(m[argcount - 1].isInteger() && defstr.find_first_not_of(NUMBERS) == string::npos && m[argcount - 1].number() == s2i(defstr)) {
+					} else if(m[argcount - 1].isInteger() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr.find_first_not_of(NUMBERS) == string::npos && m[argcount - 1].number() == s2i(defstr)) {
+						argcount--;
+					} else if(m[argcount - 1].isSymbolic() && arg && arg->type() == ARGUMENT_TYPE_TEXT && m[argcount - 1] == defstr) {
 						argcount--;
 					} else {
 						break;
