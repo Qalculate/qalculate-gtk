@@ -647,7 +647,7 @@ void unfix_history_string(string &str) {
 	gsub("&lt;", "<", str);
 }
 void improve_result_text(string &resstr) {
-	size_t i1 = 0, i2 = 0;
+	size_t i1 = 0, i2 = 0, i3 = 0;
 	size_t i_equals = resstr.find(_("approx.")) + strlen(_("approx."));
 	while(i1 + 2 < resstr.length()) {
 		i1 = resstr.find_first_of("\"\'", i1);
@@ -693,15 +693,23 @@ void improve_result_text(string &resstr) {
 		i1 = resstr.find('_', i1);
 		if(i1 == string::npos || i1 + 1 == resstr.length()) break;
 		if(is_not_in(NOT_IN_NAMES, resstr[i1 + 1])) {
-			size_t l = 1;
-			if(resstr[i1 + 1] < 0) {
-				while(i1 + l + 1 < resstr.length() && resstr[i1 + l + 1] < 0 && (unsigned char) resstr[i1 + l + 1] < 0xC0) l++;
-			}
-			if(i1 + l + 1 == resstr.length() || resstr[i1 + l + 1] == ' ' || resstr[i1 + l + 1] == '\n') {
-				resstr.replace(i1, 1, "<sub>");
-				i1 += 4;
-				resstr.insert(i1 + l + 1, "</sub>");
-				i1 += 6;
+			i2 = resstr.find_last_of(NOT_IN_NAMES, i1 - 1);
+			i3 = resstr.find_first_of(NOT_IN_NAMES, i1 + 1);
+			if(i2 == string::npos) i2 = 0;
+			else i2 = i2 + 1;
+			if(i3 == string::npos) i3 = resstr.length();
+			ExpressionItem *item = CALCULATOR->getActiveExpressionItem(resstr.substr(i2, i3 - i2));
+			if(item) {
+				i2 = item->hasName(resstr.substr(i2, i3 - i2), true);
+				if(i2 > 0 && item->getName(i2).suffix) {
+					i1 = resstr.rfind('_', i3 - 1);
+					resstr.replace(i1, 1, "<sub>");
+					i1 += 4;
+					resstr.insert(i3 + 4, "</sub>");
+					i1 += 6;
+				} else {
+					i1 = i3 - 1;
+				}
 			}
 		}
 		i1++;
@@ -1824,6 +1832,8 @@ void display_parse_status() {
 				parsed_expression += _("sexagesimal number");
 			} else if(equalsIgnoreCase(str_u, "time") || equalsIgnoreCase(str_u, _("time"))) {
 				parsed_expression += _("time format");
+			} else if(equalsIgnoreCase(str_u, "unicode")) {
+				parsed_expression += _("Unicode");
 			} else if(equalsIgnoreCase(str_u, "bases") || equalsIgnoreCase(str_u, _("bases"))) {
 				parsed_expression += _("number bases");
 			} else if(equalsIgnoreCase(str_u, "calendars") || equalsIgnoreCase(str_u, _("calendars"))) {
@@ -4712,6 +4722,8 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Sexagesimal number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("time")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Time format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
+	COMPLETION_CONVERT_STRING("unicode")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Unicode"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("utc")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("UTC time zone"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	gtk_list_store_append(completion_store, &completion_separator_iter); gtk_list_store_set(completion_store, &completion_separator_iter, 0, "", 1, "", 2, NULL, 3, FALSE, 4, 3, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
@@ -8415,6 +8427,15 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		} else if(equalsIgnoreCase(to_str, "time") || equalsIgnoreCase(to_str, _("time"))) {
 			int save_base = printops.base;
 			printops.base = BASE_TIME;
+			b_busy = false;
+			b_busy_expression = false;
+			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
+			else execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			printops.base = save_base;
+			return;
+		} else if(equalsIgnoreCase(to_str, "Unicode")) {
+			int save_base = printops.base;
+			printops.base = BASE_UNICODE;
 			b_busy = false;
 			b_busy_expression = false;
 			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
@@ -20118,7 +20139,7 @@ void on_menu_item_import_definitions_activate(GtkMenuItem*, gpointer) {
 		recursiveMakeDir(homedir);
 #ifdef _WIN32
 		if(CopyFile(from_file, buildPath(homedir, str).c_str()) == 0) {
-			CALCULATOR->loadDefinitions(buildPath(homedir, str).c_str());
+			CALCULATOR->loadDefinitions(buildPath(homedir, str).c_str(), false, true);
 		} else {
 			GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not copy %s to %s."), from_file, buildPath(homedir, str).c_str());
 			gtk_dialog_run(GTK_DIALOG(dialog));
@@ -20143,7 +20164,7 @@ void on_menu_item_import_definitions_activate(GtkMenuItem*, gpointer) {
 				dest << source.rdbuf();
 				source.close();
 				dest.close();
-				CALCULATOR->loadDefinitions(buildPath(homedir, str).c_str());
+				CALCULATOR->loadDefinitions(buildPath(homedir, str).c_str(), false, true);
 			}
 		}
 #endif
