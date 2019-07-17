@@ -13082,6 +13082,7 @@ void expression_redo() {
 bool block_popup_input_base = false;
 void on_popup_menu_item_input_base(GtkMenuItem *w, gpointer data) {
 	if(block_popup_input_base) return;
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	if(GPOINTER_TO_INT(data) == BASE_CUSTOM) {
 		GtkWidget *dialog = get_set_base_dialog();
 		gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
@@ -16129,9 +16130,11 @@ void update_resultview_popup() {
 	bool b_unit = displayed_mstruct && contains_convertable_unit(*displayed_mstruct);
 	bool b_date = displayed_mstruct && displayed_mstruct->isDateTime();
 	bool b_complex = displayed_mstruct && mstruct && contains_imaginary_number(*mstruct);
-	bool b_rational = mstruct && contains_rational_number(*mstruct);
+	bool b_rational = displayed_mstruct && mstruct && contains_rational_number(*mstruct);
+	bool b_object = displayed_mstruct && (displayed_mstruct->containsType(STRUCT_UNIT) || displayed_mstruct->containsType(STRUCT_FUNCTION) || displayed_mstruct->containsType(STRUCT_VARIABLE));
 	
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_abbreviate_names")), !b_busy && !b_date);	
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_abbreviate_names")), b_object);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_abbreviate_names")), b_object);
 	
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_display_prefixes")), b_unit);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_no_prefixes")), b_unit);
@@ -16244,7 +16247,7 @@ void update_resultview_popup() {
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_roman")), FALSE);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_sexagesimal")), FALSE);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_time_format")), FALSE);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_custom_base")), FALSE);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_custom_base")), !b_unit && !b_date && !b_complex);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_base")), !b_unit && !b_date && !b_complex);
 	
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_complex_rectangular")), b_complex);
@@ -16346,14 +16349,14 @@ void update_resultview_popup() {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_roman")), TRUE);
 			break;
 		}
-		case BASE_SEXAGESIMAL: {
+		/*case BASE_SEXAGESIMAL: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_sexagesimal")), TRUE);
 			break;
 		}
 		case BASE_TIME: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_time_format")), TRUE);
 			break;
-		}
+		}*/
 		default: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_custom_base")), TRUE);
 			break;
@@ -20612,7 +20615,7 @@ void on_menu_item_time_format_activate(GtkMenuItem *w, gpointer) {
 void on_set_base_combo_output_other_changed(GtkComboBox*, gpointer) {
 	string str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")));
 	remove_blank_ends(str);
-	if(str == "φ" || str == "ψ" || str == "π" || str == "√2" || str == "e" || str == "-3" || str == "-2" || str == "-10" || str == "20" || str == "36" || str == "62" || str == "Unicode") on_set_base_entry_input_other_activate(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), NULL);
+	if(str == "φ" || str == "ψ" || str == "π" || str == "√2" || str == "e" || str == "-3" || str == "-2" || str == "-10" || str == "20" || str == "36" || str == "62" || str == "Unicode") on_set_base_entry_output_other_activate(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), NULL);
 }
 void on_set_base_entry_output_other_activate(GtkEntry *w, gpointer) {
 	string str = gtk_entry_get_text(w);
@@ -21330,7 +21333,7 @@ void on_popup_menu_item_hexadecimal_activate(GtkMenuItem *w, gpointer) {
 }
 void on_popup_menu_item_custom_base_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_custom_base")), TRUE);
+	gtk_menu_item_activate(GTK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_custom_base")));
 }
 void on_popup_menu_item_abbreviate_names_activate(GtkMenuItem *w, gpointer) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_abbreviate_names")), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));

@@ -2383,6 +2383,13 @@ GtkWidget* get_set_base_dialog (void) {
 	
 		g_assert (gtk_builder_get_object(setbase_builder, "set_base_dialog") != NULL);
 
+		PrintOptions po = printops;
+		po.number_fraction_format = FRACTION_DECIMAL_EXACT;
+		po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
+		po.preserve_precision = true;
+		po.base = 10;
+		if(printops.base >= BASE_CUSTOM && !CALCULATOR->customOutputBase().isZero()) gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), CALCULATOR->customOutputBase().print(po).c_str());
+		if(evalops.parse_options.base >= BASE_CUSTOM && !CALCULATOR->customInputBase().isZero()) gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), CALCULATOR->customInputBase().print(po).c_str());
 		switch(evalops.parse_options.base) {
 			case BASE_BINARY: {
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_binary")), TRUE);
@@ -2440,12 +2447,6 @@ GtkWidget* get_set_base_dialog (void) {
 			}
 			case BASE_CUSTOM: {
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
-				PrintOptions po = printops;
-				po.number_fraction_format = FRACTION_DECIMAL_EXACT;
-				po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
-				po.preserve_precision = true;
-				po.base = 10;
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), CALCULATOR->customInputBase().print(po).c_str());
 				break;
 			}
 			default: {
@@ -2518,12 +2519,6 @@ GtkWidget* get_set_base_dialog (void) {
 			}
 			case BASE_CUSTOM: {
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
-				PrintOptions po = printops;
-				po.number_fraction_format = FRACTION_DECIMAL_EXACT;
-				po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
-				po.preserve_precision = true;
-				po.base = 10;
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), CALCULATOR->customOutputBase().print(po).c_str());
 				break;
 			}
 			default: {
