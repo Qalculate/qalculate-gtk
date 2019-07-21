@@ -13776,7 +13776,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {3, 2, 0};
+	int version_numbers[] = {3, 3, 0};
 	bool old_history_format = false;
 			
 	if(file) {
@@ -20141,7 +20141,7 @@ void on_menu_item_import_definitions_activate(GtkMenuItem*, gpointer) {
 		string homedir = buildPath(getLocalDataDir(), "definitions");
 		recursiveMakeDir(homedir);
 #ifdef _WIN32
-		if(CopyFile(from_file, buildPath(homedir, str).c_str()) == 0) {
+		if(CopyFile(from_file, buildPath(homedir, str).c_str(), false) == 0) {
 			CALCULATOR->loadDefinitions(buildPath(homedir, str).c_str(), false, true);
 		} else {
 			GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not copy %s to %s."), from_file, buildPath(homedir, str).c_str());

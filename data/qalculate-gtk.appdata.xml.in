@@ -45,6 +45,23 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="3.3.0" date="2019-07-25">
+   <description>
+    <p>Changes:</p>
+     <ul>
+     <li>Support for number bases greater than 32, as well as negative and non-integer number bases</li>
+     <li>Support for all number bases, including non-numerical, and specification of digits in base() function</li>
+     <li>dBm and dBW units</li>
+     <li>Support both micro sign and small mu as symbol for micro prefix</li>
+     <li>New programming keypad icon</li>
+     <li>Import definitions action in GUI</li>
+     <li>Fix parsing of "0x80 mod 3" and similar</li>
+     <li>Reduce length of expressions in warnings and errors (primarily when using high precision)</li>
+     <li>Improved handling of interval arithmetics for cubic equations</li>
+     <li>Minor bug fixes and feature improvements</li>
+     </ul>
+   </description>
+  </release>
   <release version="3.2.0" date="2019-05-27">
    <description>
     <p>Changes:</p>
