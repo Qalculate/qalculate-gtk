@@ -7823,7 +7823,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				str += str2;
 				str += "</span>";
 			}
-			gtk_list_store_set(historystore, &history_iter, 0, str.c_str(), 1, inhistory_index + 1, -1);
+			gtk_list_store_set(historystore, &history_iter, 0, str.c_str(), -1);
 			g_object_unref(layout);
 			g_free(expr_str);
 		}
@@ -18304,6 +18304,17 @@ void on_button_history_insert_text_clicked(GtkButton*, gpointer) {
 	if(selected_rows.empty()) return;
 	int index = selected_rows[0];
 	if(index > 0 && ((inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION && (inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT || inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT_APPROXIMATE)) || inhistory_type[index] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[index] == QALCULATE_HISTORY_REGISTER_MOVED)) index--;
+	else if((size_t) index < inhistory_type.size() - 1 && (inhistory_type[index] == QALCULATE_HISTORY_PARSE || inhistory_type[index] == QALCULATE_HISTORY_PARSE_WITHEQUALS || inhistory_type[index] == QALCULATE_HISTORY_PARSE_APPROXIMATE) && inhistory_type[index + 1] == QALCULATE_HISTORY_EXPRESSION) index++;
+	insert_text(inhistory[index].c_str());
+}
+void on_button_history_insert_parsed_text_clicked(GtkButton*, gpointer) {
+	if(b_busy) return;
+	vector<size_t> selected_rows;
+	process_history_selection(&selected_rows, NULL, NULL);
+	if(selected_rows.empty()) return;
+	int index = selected_rows[0];
+	if(index > 0 && ((inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION && (inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT || inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT_APPROXIMATE)) || inhistory_type[index] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[index] == QALCULATE_HISTORY_REGISTER_MOVED)) index--;
+	else if(index > 0 && inhistory_type[index] == QALCULATE_HISTORY_EXPRESSION && (inhistory_type[index - 1] == QALCULATE_HISTORY_PARSE || inhistory_type[index - 1] == QALCULATE_HISTORY_PARSE_WITHEQUALS || inhistory_type[index - 1] == QALCULATE_HISTORY_PARSE_APPROXIMATE)) index--;
 	insert_text(inhistory[index].c_str());
 }
 void history_copy(bool full_text) {
@@ -18313,7 +18324,8 @@ void history_copy(bool full_text) {
 	if(selected_rows.empty()) return;
 	if(!full_text && selected_rows.size() == 1) {
 		int index = selected_rows[0];
-		if(index > 0 && ((inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION && (inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT || inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT_APPROXIMATE)) || inhistory_type[index] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[index] == QALCULATE_HISTORY_REGISTER_MOVED)) index--;;
+		if(index > 0 && ((inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION && (inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT || inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT_APPROXIMATE)) || inhistory_type[index] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[index] == QALCULATE_HISTORY_REGISTER_MOVED)) index--;
+		else if((size_t) index < inhistory_type.size() - 1 && (inhistory_type[index] == QALCULATE_HISTORY_PARSE || inhistory_type[index] == QALCULATE_HISTORY_PARSE_WITHEQUALS || inhistory_type[index] == QALCULATE_HISTORY_PARSE_APPROXIMATE) && inhistory_type[index + 1] == QALCULATE_HISTORY_EXPRESSION) index++;
 		string copy_text = inhistory[index];
 		if(!copy_separator) {
 			remove_separator(copy_text);
@@ -18325,6 +18337,7 @@ void history_copy(bool full_text) {
 		for(size_t i = 0; i < selected_rows.size(); i++) {
 			if(i > 0) str += '\n';
 			hindex = selected_rows[i];
+			if((size_t) hindex < inhistory_type.size() - 1 && (inhistory_type[hindex] == QALCULATE_HISTORY_PARSE || inhistory_type[hindex] == QALCULATE_HISTORY_PARSE_WITHEQUALS || inhistory_type[hindex] == QALCULATE_HISTORY_PARSE_APPROXIMATE) && (inhistory_type[hindex + 1] == QALCULATE_HISTORY_EXPRESSION || inhistory_type[hindex + 1] == QALCULATE_HISTORY_REGISTER_MOVED || inhistory_type[hindex + 1] == QALCULATE_HISTORY_RPN_OPERATION)) hindex++;
 			on_button_history_copy_add_hindex:
 			bool add_parse = false;
 			switch(inhistory_type[hindex]) {
@@ -18461,6 +18474,9 @@ void on_popup_menu_item_history_insert_value_activate(GtkMenuItem*, gpointer) {
 }
 void on_popup_menu_item_history_insert_text_activate(GtkMenuItem*, gpointer) {
 	on_button_history_insert_text_clicked(NULL, NULL);
+}
+void on_popup_menu_item_history_insert_parsed_text_activate(GtkMenuItem*, gpointer) {
+	on_button_history_insert_parsed_text_clicked(NULL, NULL);
 }
 void on_popup_menu_item_history_copy_text_activate(GtkMenuItem*, gpointer) {
 	history_copy(false);
@@ -18790,9 +18806,20 @@ void update_historyview_popup() {
 	vector<int> selected_index_type;
 	size_t hi = 0;
 	process_history_selection(&selected_rows, &selected_indeces, &selected_index_type);
-	if(selected_rows.size() > 0) hi = selected_rows[0];
+	if(selected_rows.size() > 0) {
+		hi = selected_rows[0];
+		if(inhistory_type[hi] == QALCULATE_HISTORY_PARSE || inhistory_type[hi] == QALCULATE_HISTORY_PARSE_APPROXIMATE || inhistory_type[hi] == QALCULATE_HISTORY_PARSE_WITHEQUALS) {
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_parsed_text")), TRUE);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_text")), hi < inhistory_type.size() - 1 && inhistory_type[hi + 1] == QALCULATE_HISTORY_EXPRESSION);
+		} else {
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_text")), inhistory_type[hi] != QALCULATE_HISTORY_REGISTER_MOVED && inhistory_type[hi] != QALCULATE_HISTORY_RPN_OPERATION);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_parsed_text")), hi > 0 && (inhistory_type[hi] == QALCULATE_HISTORY_REGISTER_MOVED || inhistory_type[hi] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[hi] == QALCULATE_HISTORY_EXPRESSION) && (inhistory_type[hi - 1] == QALCULATE_HISTORY_PARSE || inhistory_type[hi - 1] == QALCULATE_HISTORY_PARSE_APPROXIMATE || inhistory_type[hi - 1] == QALCULATE_HISTORY_PARSE_WITHEQUALS));
+		}
+	} else {
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_text")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_parsed_text")), FALSE);
+	}
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_value")), selected_indeces.size() > 0 && selected_index_type[0] != INDEX_TYPE_TXT && selected_index_type.back() != INDEX_TYPE_TXT);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_text")), selected_indeces.size() == 1);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_text")), selected_indeces.size() == 1 && inhistory_type[hi] != QALCULATE_HISTORY_BOOKMARK);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_full_text")), !selected_rows.empty());
 	bool protected_by_bookmark = true, b_protected = true, b_old = false;
@@ -18989,7 +19016,9 @@ void on_historyview_row_activated(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 				break;
 			}
 			case QALCULATE_HISTORY_PARSE: {}
-			case QALCULATE_HISTORY_PARSE_APPROXIMATE: {}
+			case QALCULATE_HISTORY_PARSE_APPROXIMATE: {
+				if(column != history_index_column && (size_t) hindex < inhistory_type.size() - 1 && inhistory_type[hindex + 1] == QALCULATE_HISTORY_EXPRESSION) hindex++;
+			}
 			case QALCULATE_HISTORY_EXPRESSION: {
 				if(column == history_index_column) {
 					ename = &f_expression->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
@@ -19011,6 +19040,7 @@ void on_historyview_row_activated(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 		insert_text(str.c_str());
 	} else if(hindex >= 0) {
 		if(hindex > 0 && (inhistory_type[hindex] == QALCULATE_HISTORY_TRANSFORMATION || inhistory_type[hindex] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[hindex] == QALCULATE_HISTORY_REGISTER_MOVED)) hindex--;
+		else if((size_t) hindex < inhistory_type.size() - 1 && (inhistory_type[hindex] == QALCULATE_HISTORY_PARSE || inhistory_type[hindex] == QALCULATE_HISTORY_PARSE_WITHEQUALS || inhistory_type[hindex] == QALCULATE_HISTORY_PARSE_APPROXIMATE) && inhistory_type[hindex + 1] == QALCULATE_HISTORY_EXPRESSION) hindex++;
 		if(inhistory_type[hindex] != QALCULATE_HISTORY_WARNING && inhistory_type[hindex] != QALCULATE_HISTORY_ERROR) {
 			insert_text(inhistory[(size_t) hindex].c_str());
 		}
