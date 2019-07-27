@@ -354,8 +354,8 @@ bool versatile_exact = false;
 #define HISTORY_IS_PARSE(x) (inhistory_type[x] == QALCULATE_HISTORY_PARSE || inhistory_type[x] == QALCULATE_HISTORY_PARSE_APPROXIMATE || inhistory_type[x] == QALCULATE_HISTORY_PARSE_WITHEQUALS)
 #define HISTORY_NOT_EXPRESSION(x) (inhistory_type[x] != QALCULATE_HISTORY_EXPRESSION && inhistory_type[x] != QALCULATE_HISTORY_RPN_OPERATION && inhistory_type[x] != QALCULATE_HISTORY_REGISTER_MOVED)
 #define HISTORY_NOT_PARSE(x) (inhistory_type[x] != QALCULATE_HISTORY_PARSE && inhistory_type[x] != QALCULATE_HISTORY_PARSE_APPROXIMATE && inhistory_type[x] != QALCULATE_HISTORY_PARSE_WITHEQUALS)
-#define ITEM_IS_EXPRESSION(x) (HISTORY_IS_EXPRESSION(x) || ((size_t) x + 1 < inhistory_type.size() && HISTORY_IS_PARSE(x) && HISTORY_IS_EXPRESSION(x + 1)))
-#define ITEM_NOT_EXPRESSION(x) (HISTORY_NOT_EXPRESSION(x) && ((size_t) x + 1 >= inhistory_type.size() || HISTORY_NOT_PARSE(x) || HISTORY_NOT_EXPRESSION(x + 1)))
+#define ITEM_IS_EXPRESSION(x) (HISTORY_IS_EXPRESSION(x) || ((size_t) x < inhistory_type.size() - 1 && HISTORY_IS_PARSE(x) && HISTORY_IS_EXPRESSION(x + 1)))
+#define ITEM_NOT_EXPRESSION(x) (HISTORY_NOT_EXPRESSION(x) && ((size_t) x >= inhistory_type.size() - 1 || HISTORY_NOT_PARSE(x) || HISTORY_NOT_EXPRESSION(x + 1)))
 
 AnswerFunction::AnswerFunction() : MathFunction(_("answer"), 1, 1, CALCULATOR->f_warning->category(), _("History Answer Value")) {
 	if(strcmp(_("answer"), "answer")) addName("answer");
@@ -18304,7 +18304,7 @@ void on_button_history_insert_text_clicked(GtkButton*, gpointer) {
 	if(selected_rows.empty()) return;
 	int index = selected_rows[0];
 	if(index > 0 && ((inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION && (inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT || inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT_APPROXIMATE)) || inhistory_type[index] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[index] == QALCULATE_HISTORY_REGISTER_MOVED)) index--;
-	else if((size_t) index < inhistory_type.size() - 1 && (inhistory_type[index] == QALCULATE_HISTORY_PARSE || inhistory_type[index] == QALCULATE_HISTORY_PARSE_WITHEQUALS || inhistory_type[index] == QALCULATE_HISTORY_PARSE_APPROXIMATE) && inhistory_type[index + 1] == QALCULATE_HISTORY_EXPRESSION) index++;
+	else if((size_t) index < inhistory_type.size() - 1 && HISTORY_IS_PARSE(index) && inhistory_type[index + 1] == QALCULATE_HISTORY_EXPRESSION) index++;
 	insert_text(inhistory[index].c_str());
 }
 void on_button_history_insert_parsed_text_clicked(GtkButton*, gpointer) {
@@ -18314,7 +18314,7 @@ void on_button_history_insert_parsed_text_clicked(GtkButton*, gpointer) {
 	if(selected_rows.empty()) return;
 	int index = selected_rows[0];
 	if(index > 0 && ((inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION && (inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT || inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT_APPROXIMATE)) || inhistory_type[index] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[index] == QALCULATE_HISTORY_REGISTER_MOVED)) index--;
-	else if(index > 0 && inhistory_type[index] == QALCULATE_HISTORY_EXPRESSION && (inhistory_type[index - 1] == QALCULATE_HISTORY_PARSE || inhistory_type[index - 1] == QALCULATE_HISTORY_PARSE_WITHEQUALS || inhistory_type[index - 1] == QALCULATE_HISTORY_PARSE_APPROXIMATE)) index--;
+	else if(index > 0 && inhistory_type[index] == QALCULATE_HISTORY_EXPRESSION && HISTORY_IS_PARSE(index - 1)) index--;
 	insert_text(inhistory[index].c_str());
 }
 void history_copy(bool full_text) {
@@ -18469,6 +18469,67 @@ void on_popup_menu_item_history_clear_activate(GtkMenuItem*, gpointer) {
 	nr_of_new_expressions = history_answer.size();
 	reload_history();
 }
+void on_popup_menu_item_history_delete_activate(GtkMenuItem*, gpointer) {
+	if(b_busy) return;
+	GtkTreeModel *model;
+	GtkTreeIter iter_first, iter_last, iter;
+	GList *selected_list;
+	gint hindex_first = -1, hindex_last = -1, hindex = -1;
+	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
+	selected_list = gtk_tree_selection_get_selected_rows(select, &model);
+	if(!selected_list) return;
+	gtk_tree_model_get_iter(model, &iter_first, (GtkTreePath*) selected_list->data);
+	while(true) {
+		gtk_tree_model_get(model, &iter_first, 1, &hindex_first, -1);
+		if(hindex_first >= 0 && ((size_t) hindex_first < inhistory_type.size() - 1 && HISTORY_IS_PARSE(hindex_first) && HISTORY_IS_EXPRESSION(hindex_first + 1))) hindex_first++;
+		if(hindex_first >= 0 && (((HISTORY_IS_EXPRESSION(hindex_first) || inhistory_type[hindex_first] == QALCULATE_HISTORY_OLD) && ((size_t) hindex_first == inhistory_type.size() - 1 || inhistory_type[hindex_first + 1] != QALCULATE_HISTORY_BOOKMARK)) || inhistory_type[hindex_first] == QALCULATE_HISTORY_BOOKMARK)) break;
+		if(!gtk_tree_model_iter_previous(model, &iter_first)) {
+			gtk_tree_model_get_iter_first(model, &iter_first);
+			gtk_tree_model_get(model, &iter_first, 1, &hindex_first, -1);
+			break;
+		}
+	}
+	if(hindex_first >= 0) {
+		gtk_tree_model_get_iter(model, &iter, (GtkTreePath*) g_list_last(selected_list)->data);
+		gtk_tree_model_get(model, &iter, 1, &hindex, -1);
+		while(true) {
+			iter_last = iter;
+			if(hindex >= 0) hindex_last = hindex;
+			if(!gtk_tree_model_iter_next(model, &iter)) break;
+			gtk_tree_model_get(model, &iter, 1, &hindex, -1);
+			if(hindex >= 0 && ((size_t) hindex < inhistory_type.size() - 1 && HISTORY_IS_PARSE(hindex) && HISTORY_IS_EXPRESSION(hindex + 1))) hindex++;
+			if(hindex >= 0 && (((HISTORY_IS_EXPRESSION(hindex) || inhistory_type[hindex] == QALCULATE_HISTORY_OLD) && ((size_t) hindex == inhistory_type.size() - 1 || inhistory_type[hindex + 1] != QALCULATE_HISTORY_BOOKMARK)) || inhistory_type[hindex] == QALCULATE_HISTORY_BOOKMARK)) break;
+		}
+	}
+	if(hindex_last >= 0) {
+		gint c = -1;
+		while(true) {
+			gtk_list_store_remove(historystore, &iter_first);
+			if(c == 0) break;
+			GtkTreePath *p1 = gtk_tree_model_get_path(model, &iter_first);
+			if(!p1) break;
+			GtkTreePath *p2 = gtk_tree_model_get_path(model, &iter_last);
+			if(!p2) {gtk_tree_path_free(p1); break;}
+			c = gtk_tree_path_compare(p1, p2);
+			gtk_tree_path_free(p1); gtk_tree_path_free(p2);
+			if(c > 0) break;
+		}
+		if(gtk_tree_model_get_iter_first(model, &iter_first)) {
+			gint hi_diff = hindex_first - hindex_last + 1;
+			do {
+				gtk_tree_model_get(GTK_TREE_MODEL(historystore), &iter_first, 1, &hindex, -1);
+				if(hindex >= 0) {
+					if(hindex < hindex_last) break;
+					gtk_list_store_set(historystore, &iter_first, 1, hindex - hi_diff, -1);
+				}
+			} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(historystore), &iter_first));
+		}
+		inhistory.erase(inhistory.begin() + hindex_last, inhistory.begin() + hindex_first + 1);
+		inhistory_protected.erase(inhistory_protected.begin() + hindex_last, inhistory_protected.begin() + hindex_first + 1);
+		inhistory_type.erase(inhistory_type.begin() + hindex_last, inhistory_type.begin() + hindex_first + 1);
+	}
+	g_list_free_full(selected_list, (GDestroyNotify) gtk_tree_path_free);
+}
 void on_popup_menu_item_history_insert_value_activate(GtkMenuItem*, gpointer) {
 	on_button_history_insert_value_clicked(NULL, NULL);
 }
@@ -18559,7 +18620,6 @@ void add_history_bookmark(string history_message) {
 			break;
 		}
 	}
-	gtk_tree_model_get(model, &iter, 1, &hindex, -1);
 	if(hindex >= 0) {
 		bool b = false;
 		for(vector<string>::iterator it = history_bookmarks.begin(); it != history_bookmarks.end(); ++it) {
@@ -18808,12 +18868,12 @@ void update_historyview_popup() {
 	process_history_selection(&selected_rows, &selected_indeces, &selected_index_type);
 	if(selected_rows.size() > 0) {
 		hi = selected_rows[0];
-		if(inhistory_type[hi] == QALCULATE_HISTORY_PARSE || inhistory_type[hi] == QALCULATE_HISTORY_PARSE_APPROXIMATE || inhistory_type[hi] == QALCULATE_HISTORY_PARSE_WITHEQUALS) {
+		if(HISTORY_IS_PARSE(hi)) {
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_parsed_text")), TRUE);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_text")), hi < inhistory_type.size() - 1 && inhistory_type[hi + 1] == QALCULATE_HISTORY_EXPRESSION);
 		} else {
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_text")), inhistory_type[hi] != QALCULATE_HISTORY_REGISTER_MOVED && inhistory_type[hi] != QALCULATE_HISTORY_RPN_OPERATION);
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_parsed_text")), hi > 0 && (inhistory_type[hi] == QALCULATE_HISTORY_REGISTER_MOVED || inhistory_type[hi] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[hi] == QALCULATE_HISTORY_EXPRESSION) && (inhistory_type[hi - 1] == QALCULATE_HISTORY_PARSE || inhistory_type[hi - 1] == QALCULATE_HISTORY_PARSE_APPROXIMATE || inhistory_type[hi - 1] == QALCULATE_HISTORY_PARSE_WITHEQUALS));
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_parsed_text")), hi > 0 && HISTORY_IS_EXPRESSION(hi) && HISTORY_IS_PARSE(hi - 1));
 		}
 	} else {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_text")), FALSE);
@@ -18822,6 +18882,7 @@ void update_historyview_popup() {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_value")), selected_indeces.size() > 0 && selected_index_type[0] != INDEX_TYPE_TXT && selected_index_type.back() != INDEX_TYPE_TXT);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_text")), selected_indeces.size() == 1 && inhistory_type[hi] != QALCULATE_HISTORY_BOOKMARK);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_full_text")), !selected_rows.empty());
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_delete")), !selected_rows.empty());
 	bool protected_by_bookmark = true, b_protected = true, b_old = false;
 	for(size_t i = 0; i < selected_rows.size(); i++) {
 		if(!b_old && inhistory_type[selected_rows[i]] == QALCULATE_HISTORY_OLD) {b_old = true; b_protected = false; break;}
