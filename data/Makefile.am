@@ -18,7 +18,7 @@ desktopdir = $(datadir)/applications
 
 appdata_IN_FILES = qalculate-gtk.appdata.xml.in
 appdata_DATA = $(appdata_IN_FILES:.xml.in=.xml)
-appdatadir = $(datadir)/appdata
+appdatadir = $(datadir)/metainfo
 @INTLTOOL_XML_RULE@
 
 pixmapsdir = $(datadir)/pixmaps
