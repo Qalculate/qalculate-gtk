@@ -24,6 +24,8 @@ appdatadir = $(datadir)/metainfo
 pixmapsdir = $(datadir)/pixmaps
 pixmaps_DATA = qalculate.png
 
+dist_man_MANS = qalculate-gtk.1
+
 EXTRA_DIST = \
 	$(desktop_IN_FILES)	\
 	$(appdata_IN_FILES)	\
