@@ -547,6 +547,8 @@ void on_stackview_selection_changed(GtkTreeSelection *treeselection, gpointer us
 void on_stackview_item_edited(GtkCellRendererText *renderer, gchar *path, gchar *new_text, gpointer user_data);
 void on_stackview_item_editing_started(GtkCellRenderer *renderer, GtkCellEditable *editable, gchar *path, gpointer user_data);
 void on_stackview_item_editing_canceled(GtkCellRenderer *renderer, gpointer user_data);
+void on_stackstore_row_inserted(GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer user_data);
+void on_stackstore_row_deleted(GtkTreeModel *model, GtkTreePath *path, gpointer user_data);
 
 void on_historyview_selection_changed(GtkTreeSelection *select, gpointer);
 

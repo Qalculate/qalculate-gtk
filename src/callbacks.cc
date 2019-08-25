@@ -1715,7 +1715,7 @@ void display_parse_status() {
 	else ipos = iend;
 	MathStructure mparse, mfunc;
 	bool full_parsed = false;
-	string str_e, str_u;
+	string str_e, str_u, str_w;
 	bool had_errors = false, had_warnings = false;
 	evalops.parse_options.preserve_format = true;
 	if(!gtk_text_iter_is_start(&ipos)) {
@@ -1724,13 +1724,17 @@ void display_parse_status() {
 		if(!gtk_text_iter_is_end(&ipos)) {
 			gtext = gtk_text_buffer_get_text(expressionbuffer, &istart, &ipos, FALSE);
 			str_e = CALCULATOR->unlocalizeExpression(gtext, evalops.parse_options);
-			if(!CALCULATOR->separateToExpression(str_e, str_u, evalops, false, true)) {
+			bool b = CALCULATOR->separateWhereExpression(str_e, str_w, evalops);
+			b = CALCULATOR->separateToExpression(str_e, str_u, evalops, false, true) || b;
+			if(!b) {
 				CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
 			}
 			g_free(gtext);
 		} else {
 			str_e = CALCULATOR->unlocalizeExpression(text, evalops.parse_options);
-			if(!CALCULATOR->separateToExpression(str_e, str_u, evalops, false, true)) {
+			bool b = CALCULATOR->separateWhereExpression(str_e, str_w, evalops);
+			b = CALCULATOR->separateToExpression(str_e, str_u, evalops, false, true) || b;
+			if(!b) {
 				CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
 				full_parsed = true;
 			}
@@ -1752,6 +1756,7 @@ void display_parse_status() {
 		if(!full_parsed) {
 			CALCULATOR->beginTemporaryStopMessages();
 			str_e = CALCULATOR->unlocalizeExpression(text, evalops.parse_options);
+			CALCULATOR->separateWhereExpression(str_e, str_w, evalops);
 			CALCULATOR->separateToExpression(str_e, str_u, evalops, false, true);
 			if(!str_e.empty()) CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
 			int warnings_count;
@@ -1798,6 +1803,18 @@ void display_parse_status() {
 			CALCULATOR->beginTemporaryStopMessages();
 			mparse.format(po);
 			parsed_expression = mparse.print(po);
+			CALCULATOR->endTemporaryStopMessages();
+		}
+		if(!str_w.empty()) {
+			CALCULATOR->beginTemporaryStopMessages();
+			CALCULATOR->parse(&mparse, str_w, evalops.parse_options);
+			int warnings_count;
+			had_errors = CALCULATOR->endTemporaryStopMessages(NULL, &warnings_count) > 0 || had_errors;
+			had_warnings = warnings_count > 0 || had_warnings || (!mparse.isLogicalAnd() && !mparse.isComparison());
+			parsed_expression += CALCULATOR->localWhereString();
+			CALCULATOR->beginTemporaryStopMessages();
+			mparse.format(po);
+			parsed_expression += mparse.print(po);
 			CALCULATOR->endTemporaryStopMessages();
 		}
 		if(!str_u.empty()) {
@@ -8325,7 +8342,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 
 	if(str.empty()) {
 		if(do_stack) {
-	  		GtkTreeIter iter;
+			GtkTreeIter iter;
 			gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(stackstore), &iter, NULL, stack_index);
 			gchar *gstr;
 			gtk_tree_model_get(GTK_TREE_MODEL(stackstore), &iter, 1, &gstr, -1);
@@ -9007,7 +9024,9 @@ void set_rpn_mode(bool b) {
 			else gtk_expander_set_expanded(GTK_EXPANDER(expander_stack), FALSE);
 		}
 		CALCULATOR->clearRPNStack();
+		g_signal_handlers_block_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_deleted, NULL);
 		gtk_list_store_clear(stackstore);
+		g_signal_handlers_unblock_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_deleted, NULL);
 		clearresult();
 	}
 }
@@ -9039,7 +9058,9 @@ void calculateRPN(MathFunction *f) {
 }
 void RPNRegisterAdded(string text, gint index) {
 	GtkTreeIter iter;
+	g_signal_handlers_block_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_inserted, NULL);
 	gtk_list_store_insert(stackstore, &iter, index);
+	g_signal_handlers_unblock_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_inserted, NULL);
 	gtk_list_store_set(stackstore, &iter, 0, i2s(index + 1).c_str(), 1, text.c_str(), -1);
 	updateRPNIndexes();
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), TRUE);
@@ -9060,9 +9081,11 @@ void RPNRegisterAdded(string text, gint index) {
 	on_stackview_selection_changed(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), NULL);
 }
 void RPNRegisterRemoved(gint index) {
-  	GtkTreeIter iter;
+	GtkTreeIter iter;
 	gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(stackstore), &iter, NULL, index);
+	g_signal_handlers_block_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_deleted, NULL);
 	gtk_list_store_remove(stackstore, &iter);
+	g_signal_handlers_unblock_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_deleted, NULL);
 	updateRPNIndexes();
 	if(CALCULATOR->RPNStackSize() == 0) {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), FALSE);
@@ -9084,7 +9107,7 @@ void RPNRegisterRemoved(gint index) {
 	on_stackview_selection_changed(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), NULL);
 }
 void RPNRegisterChanged(string text, gint index) {
-  	GtkTreeIter iter;
+	GtkTreeIter iter;
 	gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(stackstore), &iter, NULL, index);
 	gtk_list_store_set(stackstore, &iter, 1, text.c_str(), -1);
 }
@@ -15327,7 +15350,7 @@ void set_current_object() {
 	gtk_text_buffer_get_iter_at_offset(expressionbuffer, &ipos, pos);
 	gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &istart, &ipos, FALSE);
 	gchar *p = gstr + strlen(gstr);
-	editing_to_expression = CALCULATOR->hasToExpression(gstr, true);
+	editing_to_expression = CALCULATOR->hasToExpression(gstr, true, evalops);
 	bool non_number_before = false;
 	while(pos2 > 0) {
 		pos2--;
@@ -18478,6 +18501,7 @@ void on_popup_menu_item_history_delete_activate(GtkMenuItem*, gpointer) {
 	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
 	selected_list = gtk_tree_selection_get_selected_rows(select, &model);
 	if(!selected_list) return;
+	vector<int> indexes;
 	gtk_tree_model_get_iter(model, &iter_first, (GtkTreePath*) selected_list->data);
 	while(true) {
 		gtk_tree_model_get(model, &iter_first, 1, &hindex_first, -1);
@@ -21802,6 +21826,8 @@ void on_button_registerup_clicked(GtkButton*, gpointer) {
 	path = gtk_tree_model_get_path(model, &iter);
 	index = gtk_tree_path_get_indices(path)[0];
 	gtk_tree_path_free(path);
+	g_signal_handlers_block_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_inserted, NULL);
+	g_signal_handlers_block_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_deleted, NULL);
 	if(index == 0) {
 		CALCULATOR->moveRPNRegister(1, CALCULATOR->RPNStackSize());
 		gtk_tree_model_iter_nth_child(model, &iter2, NULL, CALCULATOR->RPNStackSize() - 1);
@@ -21810,7 +21836,9 @@ void on_button_registerup_clicked(GtkButton*, gpointer) {
 		CALCULATOR->moveRPNRegisterUp(index + 1);
 		gtk_tree_model_iter_nth_child(model, &iter2, NULL, index - 1);
 		gtk_list_store_swap(stackstore, &iter, &iter2);
-	}	
+	}
+	g_signal_handlers_unblock_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_inserted, NULL);
+	g_signal_handlers_unblock_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_deleted, NULL);
 	if(index <= 1) {
 		mstruct->unref();
 		mstruct = CALCULATOR->getRPNRegister(1);
@@ -21832,6 +21860,8 @@ void on_button_registerdown_clicked(GtkButton*, gpointer) {
 	path = gtk_tree_model_get_path(model, &iter);
 	index = gtk_tree_path_get_indices(path)[0];
 	gtk_tree_path_free(path);
+	g_signal_handlers_block_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_inserted, NULL);
+	g_signal_handlers_block_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_deleted, NULL);
 	if(index + 1 == (int) CALCULATOR->RPNStackSize()) {
 		CALCULATOR->moveRPNRegister(CALCULATOR->RPNStackSize(), 1);
 		gtk_tree_model_get_iter_first(model, &iter2);
@@ -21840,7 +21870,9 @@ void on_button_registerdown_clicked(GtkButton*, gpointer) {
 		CALCULATOR->moveRPNRegisterDown(index + 1);
 		gtk_tree_model_iter_nth_child(model, &iter2, NULL, index + 1);
 		gtk_list_store_swap(stackstore, &iter, &iter2);
-	}			
+	}
+	g_signal_handlers_unblock_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_inserted, NULL);
+	g_signal_handlers_unblock_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_deleted, NULL);
 	if(index == 0 || index == (int) CALCULATOR->RPNStackSize() - 1) {
 		mstruct->unref();
 		mstruct = CALCULATOR->getRPNRegister(1);
@@ -21861,7 +21893,9 @@ void on_button_registerswap_clicked(GtkButton*, gpointer) {
 	path = gtk_tree_model_get_path(model, &iter);
 	index = gtk_tree_path_get_indices(path)[0];
 	gtk_tree_path_free(path);
-	if(index == 0) {		
+	g_signal_handlers_block_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_inserted, NULL);
+	g_signal_handlers_block_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_deleted, NULL);
+	if(index == 0) {
 		if(!gtk_tree_model_iter_nth_child(model, &iter2, NULL, 1)) return;
 		CALCULATOR->moveRPNRegister(1, 2);
 		gtk_list_store_swap(stackstore, &iter, &iter2);
@@ -21869,7 +21903,9 @@ void on_button_registerswap_clicked(GtkButton*, gpointer) {
 		CALCULATOR->moveRPNRegister(index + 1, 1);
 		gtk_tree_model_get_iter_first(model, &iter2);
 		gtk_list_store_move_before(stackstore, &iter, &iter2);
-	}			
+	}
+	g_signal_handlers_unblock_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_inserted, NULL);
+	g_signal_handlers_unblock_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_deleted, NULL);
 	mstruct->unref();
 	mstruct = CALCULATOR->getRPNRegister(1);
 	mstruct->ref();
@@ -21934,7 +21970,9 @@ void on_button_deleteregister_clicked(GtkButton*, gpointer) {
 }
 void on_button_clearstack_clicked(GtkButton*, gpointer) {
 	CALCULATOR->clearRPNStack();
+	g_signal_handlers_block_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_deleted, NULL);
 	gtk_list_store_clear(stackstore);
+	g_signal_handlers_unblock_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_deleted, NULL);
 	clearresult();
 	mstruct->clear();
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), FALSE);
@@ -21973,6 +22011,17 @@ void on_stackview_item_editing_started(GtkCellRenderer*, GtkCellEditable*, gchar
 }
 void on_stackview_item_editing_canceled(GtkCellRenderer*, gpointer) {
 	b_editing_stack = false;
+}
+int inserted_stack_index = -1;
+void on_stackstore_row_inserted(GtkTreeModel*, GtkTreePath *path, GtkTreeIter*, gpointer) {
+	inserted_stack_index = gtk_tree_path_get_indices(path)[0];
+}
+void on_stackstore_row_deleted(GtkTreeModel*, GtkTreePath *path, gpointer) {
+	if(inserted_stack_index >= 0) {
+		CALCULATOR->moveRPNRegister(gtk_tree_path_get_indices(path)[0] + 1, inserted_stack_index + 1);
+		inserted_stack_index = -1;
+		updateRPNIndexes();
+	}
 }
 
 void on_unit_edit_entry_relation_changed(GtkEditable *w, gpointer) {

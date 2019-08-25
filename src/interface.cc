@@ -1422,6 +1422,9 @@ void create_main_window(void) {
 	register_column = gtk_tree_view_column_new_with_attributes(_("Value"), register_renderer, "text", 1, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(stackview), register_column);
 	g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_stackview_selection_changed), NULL);
+	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(stackview), TRUE);
+	g_signal_connect((gpointer) stackstore, "row-deleted", G_CALLBACK(on_stackstore_row_deleted), NULL);
+	g_signal_connect((gpointer) stackstore, "row-inserted", G_CALLBACK(on_stackstore_row_inserted), NULL);
 
 	if(rpn_mode) {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_equals")), _("Ent"));

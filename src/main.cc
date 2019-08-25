@@ -71,7 +71,7 @@ QalculateDateTime last_version_check_date;
 static GOptionEntry options[] = {
 	{"new-instance", 'n', 0, G_OPTION_ARG_NONE, NULL, N_("Start a new instance of the application"), NULL},
 	{"version", 'v', 0, G_OPTION_ARG_NONE, NULL, N_("Display the application version"), NULL},
-	{G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_STRING_ARRAY, NULL, N_("Expression to calculate"), N_("EXPRESSION")},
+	{G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_STRING_ARRAY, NULL, N_("Expression to calculate"), N_("[EXPRESSION]")},
 	{NULL}
 };
 
