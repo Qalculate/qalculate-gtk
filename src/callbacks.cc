@@ -407,6 +407,8 @@ int ExpressionFunction::calculate(MathStructure &mstruct, const MathStructure &v
 	return 1;
 }
 
+void executeCommand(int command_type, bool show_result = true, string ceu_str = "", Unit *u = NULL, int run = 1);
+
 string print_with_evalops(const Number &nr) {
 	PrintOptions po;
 	po.base = evalops.parse_options.base;
@@ -1693,7 +1695,7 @@ bool last_is_operator(string str, bool allow_exp = false) {
 	remove_blank_ends(str);
 	if(str.empty()) return false;
 	if(str[str.length() - 1] > 0) {
-		if(is_in(OPERATORS LEFT_PARENTHESIS, str[str.length() - 1])) return true;
+		if(is_in(OPERATORS LEFT_PARENTHESIS, str[str.length() - 1]) && (str[str.length() - 1] != '!' || str.length() == 1)) return true;
 		if(allow_exp && is_in(EXP, str[str.length() - 1])) return true;
 		if(str.length() >= 3 && str[str.length() - 1] == 'r' && str[str.length() - 2] == 'o' && str[str.length() - 3] == 'x') return true;
 	} else { 
@@ -1710,15 +1712,254 @@ bool last_is_operator(string str, bool allow_exp = false) {
 	}
 	return false;
 }
-void do_auto_calc(bool recalculate = true) {
+void do_auto_calc(bool recalculate = true, string str = string()) {
 	MathStructure mauto;
+	bool do_factors = false, do_fraction = false, do_pfe = false, do_expand = false;
 	if(recalculate) {
-		string str = get_expression_text();
+		bool origstr = str.empty();
+		if(origstr) str = get_expression_text();
 		remove_blank_ends(str);
 		if(str.empty()) {clearresult(); return;}
 		if(evalops.parse_options.base != BASE_UNICODE && (evalops.parse_options.base != BASE_CUSTOM || (CALCULATOR->customInputBase() <= 62 && CALCULATOR->customInputBase() >= -62)) && last_is_operator(str, evalops.parse_options.base == 10) && (evalops.parse_options.base != BASE_ROMAN_NUMERALS || str[str.length() - 1] != '|' || str.find('|') == str.length() - 1)) return;
 		CALCULATOR->beginTemporaryStopMessages();
-		CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), 100, evalops);
+		string from_str = str, to_str;
+		if(origstr && CALCULATOR->separateToExpression(from_str, to_str, evalops, true, true)) {
+			if(from_str.empty()) {clearresult(); return;}
+			remove_duplicate_blanks(to_str);
+			string to_str1, to_str2;
+			size_t ispace = to_str.find_first_of(SPACES);
+			if(ispace != string::npos) {
+				to_str1 = to_str.substr(0, ispace);
+				remove_blank_ends(to_str1);
+				to_str2 = to_str.substr(ispace + 1);
+				remove_blank_ends(to_str2);
+			}
+			if(equalsIgnoreCase(to_str, "hex") || equalsIgnoreCase(to_str, "hexadecimal") || equalsIgnoreCase(to_str, _("hexadecimal"))) {
+				int save_base = printops.base;
+				printops.base = BASE_HEXADECIMAL;
+				do_auto_calc(true, from_str);
+				printops.base = save_base;
+				return;
+			} else if(equalsIgnoreCase(to_str, "oct") || equalsIgnoreCase(to_str, "octal") || equalsIgnoreCase(to_str, _("octal"))) {
+				int save_base = printops.base;
+				printops.base = BASE_OCTAL;
+				do_auto_calc(true, from_str);
+				printops.base = save_base;
+				return;
+			} else if(equalsIgnoreCase(to_str, "dec") || equalsIgnoreCase(to_str, "decimal") || equalsIgnoreCase(to_str, _("decimal"))) {
+				int save_base = printops.base;
+				printops.base = BASE_DECIMAL;
+				do_auto_calc(true, from_str);
+				printops.base = save_base;
+				return;
+			} else if(equalsIgnoreCase(to_str, "duo") || equalsIgnoreCase(to_str, "duodecimal") || equalsIgnoreCase(to_str, _("duodecimal"))) {
+				int save_base = printops.base;
+				printops.base = 12;
+				do_auto_calc(true, from_str);
+				printops.base = save_base;
+				return;
+			} else if(equalsIgnoreCase(to_str, "bin") || equalsIgnoreCase(to_str, "binary") || equalsIgnoreCase(to_str, _("binary"))) {
+				int save_base = printops.base;
+				printops.base = BASE_BINARY;
+				do_auto_calc(true, from_str);
+				printops.base = save_base;
+				return;
+			} else if(equalsIgnoreCase(to_str, "roman") || equalsIgnoreCase(to_str, _("roman"))) {
+				int save_base = printops.base;
+				printops.base = BASE_ROMAN_NUMERALS;
+				do_auto_calc(true, from_str);
+				printops.base = save_base;
+				return;
+			} else if(equalsIgnoreCase(to_str, "sexa") || equalsIgnoreCase(to_str, "sexagesimal") || equalsIgnoreCase(to_str, _("sexagesimal"))) {
+				int save_base = printops.base;
+				printops.base = BASE_SEXAGESIMAL;
+				do_auto_calc(true, from_str);
+				printops.base = save_base;
+				return;
+			} else if(equalsIgnoreCase(to_str, "time") || equalsIgnoreCase(to_str, _("time"))) {
+				int save_base = printops.base;
+				printops.base = BASE_TIME;
+				do_auto_calc(true, from_str);
+				printops.base = save_base;
+				return;
+			} else if(equalsIgnoreCase(to_str, "Unicode")) {
+				int save_base = printops.base;
+				printops.base = BASE_UNICODE;
+				do_auto_calc(true, from_str);
+				printops.base = save_base;
+				return;
+			} else if(equalsIgnoreCase(to_str, "utc") || equalsIgnoreCase(to_str, "gmt")) {
+				printops.time_zone = TIME_ZONE_UTC;
+				do_auto_calc(true, from_str);
+				printops.time_zone = TIME_ZONE_LOCAL;
+				return;
+			} else if(to_str.length() > 3 && (equalsIgnoreCase(to_str.substr(0, 3), "utc") || equalsIgnoreCase(to_str.substr(0, 3), "gmt"))) {
+				to_str = to_str.substr(3);
+				remove_blanks(to_str);
+				bool b_minus = false;
+				if(to_str[0] == '+') {
+					to_str.erase(0, 1);
+				} else if(to_str[0] == '-') {
+					b_minus = true;
+					to_str.erase(0, 1);
+				} else if(to_str.find(SIGN_MINUS) == 0) {
+					b_minus = true;
+					to_str.erase(0, strlen(SIGN_MINUS));
+				}
+				unsigned int tzh = 0, tzm = 0;
+				int itz = 0;
+				if(!to_str.empty() && sscanf(to_str.c_str(), "%2u:%2u", &tzh, &tzm) > 0) {
+					itz = tzh * 60 + tzm;
+					if(b_minus) itz = -itz;
+				} else {
+					CALCULATOR->error(true, _("Time zone parsing failed."), NULL);
+				}
+				printops.time_zone = TIME_ZONE_CUSTOM;
+				printops.custom_time_zone = itz;
+				do_auto_calc(true, from_str);
+				printops.custom_time_zone = 0;
+				printops.time_zone = TIME_ZONE_LOCAL;
+				return;
+			} else if(to_str == "CET") {
+				printops.time_zone = TIME_ZONE_CUSTOM;
+				printops.custom_time_zone = 60;
+				do_auto_calc(true, from_str);
+				printops.custom_time_zone = 0;
+				printops.time_zone = TIME_ZONE_LOCAL;
+				return;
+			} else if(equalsIgnoreCase(to_str, "bases") || equalsIgnoreCase(to_str, _("bases"))) {
+			} else if(equalsIgnoreCase(to_str, "calendars") || equalsIgnoreCase(to_str, _("calendars"))) {
+			} else if(equalsIgnoreCase(to_str, "rectangular") || equalsIgnoreCase(to_str, "cartesian") || equalsIgnoreCase(to_str, _("rectangular")) || equalsIgnoreCase(to_str, _("cartesian"))) {
+				ComplexNumberForm cnf_bak = evalops.complex_number_form;
+				evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
+				do_auto_calc(true, from_str);
+				evalops.complex_number_form = cnf_bak;
+				return;
+			} else if(equalsIgnoreCase(to_str, "exponential") || equalsIgnoreCase(to_str, _("exponential"))) {
+				ComplexNumberForm cnf_bak = evalops.complex_number_form;
+				evalops.complex_number_form = COMPLEX_NUMBER_FORM_EXPONENTIAL;
+				do_auto_calc(true, from_str);
+				evalops.complex_number_form = cnf_bak;
+				return;
+			} else if(equalsIgnoreCase(to_str, "polar") || equalsIgnoreCase(to_str, _("polar"))) {
+				ComplexNumberForm cnf_bak = evalops.complex_number_form;
+				evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
+				do_auto_calc(true, from_str);
+				evalops.complex_number_form = cnf_bak;
+				return;
+			} else if(equalsIgnoreCase(to_str, "optimal") || equalsIgnoreCase(to_str, _("optimal"))) {
+				bool b_units_saved = evalops.parse_options.units_enabled;
+				evalops.parse_options.units_enabled = true;
+				AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
+				evalops.auto_post_conversion = POST_CONVERSION_OPTIMAL_SI;
+				do_auto_calc(true, from_str);
+				evalops.auto_post_conversion = save_auto_post_conversion;
+				evalops.parse_options.units_enabled = b_units_saved;
+				return;
+			} else if(equalsIgnoreCase(to_str, "base") || equalsIgnoreCase(to_str, _("base"))) {
+				bool b_units_saved = evalops.parse_options.units_enabled;
+				evalops.parse_options.units_enabled = true;
+				AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
+				evalops.auto_post_conversion = POST_CONVERSION_BASE;
+				do_auto_calc(true, from_str);
+				evalops.auto_post_conversion = save_auto_post_conversion;
+				evalops.parse_options.units_enabled = b_units_saved;
+				return;
+			} else if(equalsIgnoreCase(to_str, "mixed") || equalsIgnoreCase(to_str, _("mixed"))) {
+				bool b_units_saved = evalops.parse_options.units_enabled;
+				evalops.parse_options.units_enabled = true;
+				AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
+				MixedUnitsConversion save_mixed_units_conversion = evalops.mixed_units_conversion;
+				evalops.auto_post_conversion = POST_CONVERSION_NONE;
+				evalops.mixed_units_conversion = MIXED_UNITS_CONVERSION_FORCE_INTEGER;
+				do_auto_calc(true, from_str);
+				evalops.auto_post_conversion = save_auto_post_conversion;
+				evalops.mixed_units_conversion = save_mixed_units_conversion;
+				evalops.parse_options.units_enabled = b_units_saved;
+				return;
+			} else if(equalsIgnoreCase(to_str, "fraction") || equalsIgnoreCase(to_str, _("fraction"))) {
+				do_fraction = true;
+				str = from_str;
+			} else if(equalsIgnoreCase(to_str, "factors") || equalsIgnoreCase(to_str, _("factors")) || equalsIgnoreCase(to_str, "factor")) {
+				do_factors = true;
+				str = from_str;
+			} else if(equalsIgnoreCase(to_str, "partial fraction") || equalsIgnoreCase(to_str, _("partial fraction"))) {
+				do_pfe = true;
+				str = from_str;
+			} else if(equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _("base"))) {
+				int save_base = printops.base;
+				Number save_nr = CALCULATOR->customOutputBase();
+				if(equalsIgnoreCase(to_str2, "golden") || equalsIgnoreCase(to_str2, "golden ratio") || to_str2 == "φ") printops.base = BASE_GOLDEN_RATIO;
+				else if(equalsIgnoreCase(to_str2, "unicode")) printops.base = BASE_UNICODE;
+				else if(equalsIgnoreCase(to_str2, "supergolden") || equalsIgnoreCase(to_str2, "supergolden ratio") || to_str2 == "ψ") printops.base = BASE_SUPER_GOLDEN_RATIO;
+				else if(equalsIgnoreCase(to_str2, "pi") || to_str2 == "π") printops.base = BASE_PI;
+				else if(to_str2 == "e") printops.base = BASE_E;
+				else if(to_str2 == "sqrt(2)" || to_str2 == "sqrt 2" || to_str2 == "sqrt2" || to_str2 == "√2") printops.base = BASE_SQRT2;
+				else {
+					EvaluationOptions eo = evalops;
+					eo.parse_options.base = 10;
+					MathStructure m;
+					eo.approximation = APPROXIMATION_TRY_EXACT;
+					CALCULATOR->beginTemporaryStopMessages();
+					CALCULATOR->calculate(&m, CALCULATOR->unlocalizeExpression(to_str2, eo.parse_options), 500, eo);
+					if(CALCULATOR->endTemporaryStopMessages()) {
+						printops.base = BASE_CUSTOM;
+						CALCULATOR->setCustomOutputBase(nr_zero);
+					} else if(m.isInteger() && m.number() >= 2 && m.number() <= 36) {
+						printops.base = m.number().intValue();
+					} else {
+						printops.base = BASE_CUSTOM;
+						CALCULATOR->setCustomOutputBase(m.number());
+					}
+				}
+				do_auto_calc(true, from_str);
+				CALCULATOR->setCustomOutputBase(save_nr);
+				printops.base = save_base;
+				return;
+			}
+		} else if(origstr) {
+			size_t i = str.find_first_of(SPACES LEFT_PARENTHESIS);
+			if(i != string::npos) {
+				to_str = str.substr(0, i);
+				if(to_str == "factor" || equalsIgnoreCase(to_str, "factorize") || equalsIgnoreCase(to_str, _("factorize"))) {
+					str = str.substr(i + 1);
+					do_factors = true;
+				} else if(equalsIgnoreCase(to_str, "expand") || equalsIgnoreCase(to_str, _("expand"))) {
+					str = str.substr(i + 1);
+					do_expand = true;
+				}
+			}
+		}
+
+		if(origstr && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")))) {
+			string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), evalops.parse_options);
+			remove_blank_ends(ceu_str);
+			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {			
+				if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-') {
+					ceu_str = "?" + ceu_str;
+				}
+			}
+			if(ceu_str.empty()) parsed_tostruct->setUndefined();
+			else parsed_tostruct->set(ceu_str);
+		} else {
+			parsed_tostruct->setUndefined();
+		}
+		if(!CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), 100, evalops, NULL, parsed_tostruct)) {
+			mauto.setAborted();
+		} else if(do_factors || do_pfe || do_expand) {
+			CALCULATOR->startControl(100);
+			if(do_factors) {
+				if(!mauto.integerFactorize()) {
+					mstruct->structure(STRUCTURING_FACTORIZE, evalops, true);
+				}
+			} else if(do_pfe) {
+				mauto.expandPartialFractions(evalops);
+			} else if(do_expand) {
+				mauto.expand(evalops);
+			}
+			if(CALCULATOR->aborted()) mauto.setAborted();
+			CALCULATOR->stopControl();
+		}
 	}
 	if(!recalculate || !mauto.isAborted()) {
 	
@@ -1726,7 +1967,14 @@ void do_auto_calc(bool recalculate = true) {
 	
 		printops.allow_non_usable = true;
 		printops.can_display_unicode_string_arg = (void*) resultview;
-
+		
+		NumberFractionFormat save_format = printops.number_fraction_format;
+		bool save_restrict_fraction_length = printops.restrict_fraction_length;
+		if(do_fraction) {
+			printops.restrict_fraction_length = false;
+			if(mstruct->isNumber()) printops.number_fraction_format = FRACTION_COMBINED;
+			else printops.number_fraction_format = FRACTION_FRACTIONAL;
+		}
 		if(printops.interval_display == INTERVAL_DISPLAY_INTERVAL) replace_interval_with_function(mauto);
 		MathStructure mautop;
 		if(recalculate) mautop = mauto;
@@ -1828,10 +2076,16 @@ void do_auto_calc(bool recalculate = true) {
 			clearresult();
 		}
 	
+		if(do_fraction) {
+			printops.number_fraction_format = save_format;
+			printops.restrict_fraction_length = save_restrict_fraction_length;
+		}
 		printops.can_display_unicode_string_arg = NULL;
 		printops.allow_non_usable = false;
 		
 		CALCULATOR->stopControl();
+	} else {
+		clearresult();
 	}
 	CALCULATOR->endTemporaryStopMessages();
 }
@@ -8207,7 +8461,7 @@ void CommandThread::run() {
 	}
 }
 
-void executeCommand(int command_type, bool show_result = true, string ceu_str = "", Unit *u = NULL, int run = 1) {
+void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u, int run) {
 
 	if(exit_in_progress) return;
 
