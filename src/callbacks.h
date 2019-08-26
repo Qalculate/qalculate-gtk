@@ -40,6 +40,7 @@ struct mode_struct {
 	bool adaptive_interval_display;
 	bool variable_units_enabled;
 	bool keypad;
+	bool autocalc;
 };
 
 enum {

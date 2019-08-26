@@ -1033,16 +1033,20 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 				<entry><para>Submenu with options to control how expressions are parsed (read/interpreted). There are three different modes to choose from. In addition the <quote>read precision</quote> option enables/disables interpretation of input numbers with decimals as approximate with a precision equal to the number of digits (after preceding zeroes), and <quote>limit implicit multiplication</quote> limits the use of implicit multiplication for parsing and display of expressions. For more information see <xref linkend="qalculate-implicit-multiplication"/>. In this menu you also find the option to switch to RPN syntax for expression parsing.</para></entry>
 			</row>
 			<row valign="top">
-				<entry><para>RPN Mode (<keycombo><keycap>Ctrl</keycap><keycap>R</keycap></keycombo>)</para></entry>
-				<entry><para>(De)activates the Reverse Polish Notation stack (not RPN syntax). For details see <xref linkend="qalculate-rpn"/></para></entry>
-			</row>
-			<row valign="top">
 				<entry><para>Precision</para></entry>
 				<entry><para>Opens a dialog to change precision in calculations.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Decimals</para></entry>
 				<entry><para>Opens a dialog to change displayed number of decimals.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>RPN Mode (<keycombo><keycap>Ctrl</keycap><keycap>R</keycap></keycombo>)</para></entry>
+				<entry><para>(De)activates the Reverse Polish Notation stack (not RPN syntax). For details see <xref linkend="qalculate-rpn"/></para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>Calculate As You Type</para></entry>
+				<entry><para>When activated the current expression will be continuosly calculated on each single change. Pressing <keycap>Enter</keycap> or the equals button will still be required for saviny the expression and result to the history.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Meta Modes</para></entry>
@@ -1536,7 +1540,7 @@ If the limit implicit multiplication option is activated, the use of implicit mu
 </para>
 </sect1>
 <sect1 id="qalculate-to">
-<title>The <quote>to</quote> operator</title>
+<title>The <quote>to</quote> and <quote>where</quote> operators</title>
 <para>
 Putting <quote> to </quote> followed by an expression at the end of the mathematical expression is mainly used for unit conversion (see <xref linkend="qalculate-unit-conversion"/>). There are however also some convenient commands that can be typed after <quote> to </quote>. Here is a list of possible <quote>to</quote> values:
 <variablelist>
@@ -1644,6 +1648,9 @@ Putting <quote> to </quote> followed by an expression at the end of the mathemat
 </para>
 <para>
 If <quote>to</quote> is not preceded by an expression, the previous result will be converted.
+</para>
+<para>
+Similarily <quote>where</quote> (or alternatively <quote>/.</quote> can be used at the end (but before <quote>to</quote>), for variable assignments, function replacements, etc. (e.g. <quote>x+y where x=1 and y=2</quote>, <quote>x^2=4 where x>0</quote>, and <quote>sin(5) where sin()=cos()</quote>).
 </para>
 </sect1>
 </chapter>
