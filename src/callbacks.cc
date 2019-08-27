@@ -18926,62 +18926,121 @@ void on_popup_menu_item_history_clear_activate(GtkMenuItem*, gpointer) {
 void on_popup_menu_item_history_delete_activate(GtkMenuItem*, gpointer) {
 	if(b_busy) return;
 	GtkTreeModel *model;
-	GtkTreeIter iter_first, iter_last, iter;
+	GtkTreeIter iter, iter2, iter3;
 	GList *selected_list;
-	gint hindex_first = -1, hindex_last = -1, hindex = -1;
+	gint hindex = -1, hindex2 = -1;
+	bool del_prev = false;
 	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
 	selected_list = gtk_tree_selection_get_selected_rows(select, &model);
 	if(!selected_list) return;
+	GList *list_i = g_list_last(selected_list);
 	vector<int> indexes;
-	gtk_tree_model_get_iter(model, &iter_first, (GtkTreePath*) selected_list->data);
-	while(true) {
-		gtk_tree_model_get(model, &iter_first, 1, &hindex_first, -1);
-		if(hindex_first >= 0 && ((size_t) hindex_first < inhistory_type.size() - 1 && HISTORY_IS_PARSE(hindex_first) && HISTORY_IS_EXPRESSION(hindex_first + 1))) hindex_first++;
-		if(hindex_first >= 0 && (((HISTORY_IS_EXPRESSION(hindex_first) || inhistory_type[hindex_first] == QALCULATE_HISTORY_OLD) && ((size_t) hindex_first == inhistory_type.size() - 1 || inhistory_type[hindex_first + 1] != QALCULATE_HISTORY_BOOKMARK)) || inhistory_type[hindex_first] == QALCULATE_HISTORY_BOOKMARK)) break;
-		if(!gtk_tree_model_iter_previous(model, &iter_first)) {
-			gtk_tree_model_get_iter_first(model, &iter_first);
-			gtk_tree_model_get(model, &iter_first, 1, &hindex_first, -1);
-			break;
-		}
-	}
-	if(hindex_first >= 0) {
-		gtk_tree_model_get_iter(model, &iter, (GtkTreePath*) g_list_last(selected_list)->data);
-		gtk_tree_model_get(model, &iter, 1, &hindex, -1);
-		while(true) {
-			iter_last = iter;
-			if(hindex >= 0) hindex_last = hindex;
-			if(!gtk_tree_model_iter_next(model, &iter)) break;
+	while(list_i || del_prev) {
+		if(list_i) {
+			gtk_tree_model_get_iter(model, &iter, (GtkTreePath*) list_i->data);
 			gtk_tree_model_get(model, &iter, 1, &hindex, -1);
-			if(hindex >= 0 && ((size_t) hindex < inhistory_type.size() - 1 && HISTORY_IS_PARSE(hindex) && HISTORY_IS_EXPRESSION(hindex + 1))) hindex++;
-			if(hindex >= 0 && (((HISTORY_IS_EXPRESSION(hindex) || inhistory_type[hindex] == QALCULATE_HISTORY_OLD) && ((size_t) hindex == inhistory_type.size() - 1 || inhistory_type[hindex + 1] != QALCULATE_HISTORY_BOOKMARK)) || inhistory_type[hindex] == QALCULATE_HISTORY_BOOKMARK)) break;
+		}
+		if(del_prev && (!list_i || hindex != hindex2)) {
+			gtk_list_store_remove(GTK_LIST_STORE(model), &iter2);
+			if(HISTORY_IS_EXPRESSION(hindex2)) indexes.push_back(hindex2 - 1);
+			indexes.push_back(hindex2);
+			if(HISTORY_IS_PARSE(hindex2)) {indexes.push_back(hindex2 + 1); hindex2++;}
+			if(hindex2 + 1 != hindex && (size_t) hindex2 + 1 < inhistory.size() && inhistory_type[hindex2 + 1] == QALCULATE_HISTORY_BOOKMARK) {
+				if(gtk_tree_model_iter_previous(model, &iter2)) {
+					indexes.push_back(hindex2);
+					gtk_list_store_remove(GTK_LIST_STORE(model), &iter2);
+				}
+			}
+		}
+		if(!list_i) break;
+		del_prev = false;
+		if(hindex >= 0 && ITEM_IS_EXPRESSION(hindex)) {
+			iter3 = iter;
+			bool b = false;
+			while(gtk_tree_model_iter_next(model, &iter3)) {
+				gtk_tree_model_get(model, &iter3, 1, &hindex2, -1);
+				if(hindex2 >= 0 && (ITEM_IS_EXPRESSION(hindex2) || inhistory_type[hindex2] == QALCULATE_HISTORY_OLD)) break;
+				b = true;
+				iter2 = iter3;
+			}
+			if(b) {
+				while(true) {
+					gtk_tree_model_get(model, &iter2, 1, &hindex2, -1);
+					if(hindex2 == hindex) break;
+					if(hindex2 >= 0) {
+						if(inhistory_type[hindex2] == QALCULATE_HISTORY_TRANSFORMATION) indexes.push_back(hindex2 - 1);
+						indexes.push_back(hindex2);
+					}
+					iter3 = iter2;
+					gtk_tree_model_iter_previous(model, &iter2);
+					gtk_list_store_remove(GTK_LIST_STORE(model), &iter3);
+				}
+			}
+			if(HISTORY_IS_EXPRESSION(hindex)) indexes.push_back(hindex - 1);
+		} else if(hindex >= 0 && inhistory_type[hindex] != QALCULATE_HISTORY_OLD) {
+			iter2 = iter;
+			if(gtk_tree_model_iter_next(model, &iter2)) {
+				gtk_tree_model_get(model, &iter2, 1, &hindex2, -1);
+				if(hindex2 < 0 || ITEM_IS_EXPRESSION(hindex2) || inhistory_type[hindex2] == QALCULATE_HISTORY_OLD) {
+					iter2 = iter;
+					if(gtk_tree_model_iter_previous(model, &iter2)) {
+						gtk_tree_model_get(model, &iter2, 1, &hindex2, -1);
+						if(hindex2 >= 0 && (ITEM_IS_EXPRESSION(hindex2) || inhistory_type[hindex2] == QALCULATE_HISTORY_OLD)) {
+							del_prev = true;
+						}
+					}
+				}
+			}
+		}
+		gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+		if(hindex >= 0) {
+			if(inhistory_type[hindex] == QALCULATE_HISTORY_TRANSFORMATION) indexes.push_back(hindex - 1);
+			indexes.push_back(hindex);
+			if(HISTORY_IS_PARSE(hindex)) {indexes.push_back(hindex + 1); hindex++;}
+			if(!del_prev && (size_t) hindex + 1 < inhistory.size() && inhistory_type[hindex + 1] == QALCULATE_HISTORY_BOOKMARK) {
+				iter2 = iter;
+				if(gtk_tree_model_iter_previous(model, &iter2)) {
+					hindex2 = hindex + 1;
+					del_prev = true;
+				}
+			}
+		}
+		list_i = list_i->prev;
+	}
+	unordered_map<int, int> new_indexes;
+	hindex2 = -1;
+	int n = 0;
+	for(size_t i = 0; i < indexes.size(); i++) {
+		hindex = indexes[i];
+		if(hindex >= 0) {
+			while(hindex2 >= 0 && hindex2 < hindex) {
+				new_indexes[hindex2] = hindex2 - n;
+				hindex2++;
+			}
+			n++;
+			hindex2 = hindex + 1;
 		}
 	}
-	if(hindex_last >= 0) {
-		gint c = -1;
-		while(true) {
-			gtk_list_store_remove(historystore, &iter_first);
-			if(c == 0) break;
-			GtkTreePath *p1 = gtk_tree_model_get_path(model, &iter_first);
-			if(!p1) break;
-			GtkTreePath *p2 = gtk_tree_model_get_path(model, &iter_last);
-			if(!p2) {gtk_tree_path_free(p1); break;}
-			c = gtk_tree_path_compare(p1, p2);
-			gtk_tree_path_free(p1); gtk_tree_path_free(p2);
-			if(c > 0) break;
-		}
-		if(gtk_tree_model_get_iter_first(model, &iter_first)) {
-			gint hi_diff = hindex_first - hindex_last + 1;
-			do {
-				gtk_tree_model_get(GTK_TREE_MODEL(historystore), &iter_first, 1, &hindex, -1);
-				if(hindex >= 0) {
-					if(hindex < hindex_last) break;
-					gtk_list_store_set(historystore, &iter_first, 1, hindex - hi_diff, -1);
-				}
-			} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(historystore), &iter_first));
-		}
-		inhistory.erase(inhistory.begin() + hindex_last, inhistory.begin() + hindex_first + 1);
-		inhistory_protected.erase(inhistory_protected.begin() + hindex_last, inhistory_protected.begin() + hindex_first + 1);
-		inhistory_type.erase(inhistory_type.begin() + hindex_last, inhistory_type.begin() + hindex_first + 1);
+	while(hindex2 >= 0 && hindex2 < (gint) inhistory.size()) {
+		new_indexes[hindex2] = hindex2 - n;
+		hindex2++;
+	}
+	hindex2 = indexes[0];
+	if(gtk_tree_model_get_iter_first(model, &iter)) {
+		do {
+			gtk_tree_model_get(model, &iter, 1, &hindex, -1);
+			if(hindex >= 0) {
+				if(hindex < hindex2) break;
+				gtk_list_store_set(GTK_LIST_STORE(model), &iter, 1, new_indexes[hindex], -1);
+			}
+		} while(gtk_tree_model_iter_next(model, &iter));
+	}
+	for(size_t i = indexes.size() - 1; ; i--) {
+		hindex = indexes[i];
+		inhistory.erase(inhistory.begin() + hindex);
+		inhistory_protected.erase(inhistory_protected.begin() + hindex);
+		inhistory_type.erase(inhistory_type.begin() + hindex);
+		if(i == 0) break;
 	}
 	g_list_free_full(selected_list, (GDestroyNotify) gtk_tree_path_free);
 }
