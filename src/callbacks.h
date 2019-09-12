@@ -229,7 +229,7 @@ void edit_names(ExpressionItem *item = NULL, const gchar *namestr = NULL, GtkWid
 
 gchar *font_name_to_css(const char *font_name);
 
-void reload_history();
+void reload_history(gint from_index = -1);
 
 #ifdef __cplusplus
 extern "C" {

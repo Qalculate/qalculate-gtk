@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "3.3.0">
-  <!ENTITY manrevision "3.3.0">
-  <!ENTITY date "July 2019">
+  <!ENTITY appversion "3.4.0">
+  <!ENTITY manrevision "3.4.0">
+  <!ENTITY date "September 2019">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -755,7 +755,7 @@ The history view provides access to previous calculation results (50 rows are re
 The to right of the list are also buttons for mathematical operations. These acts on the selected history items (the <guibutton>+</guibutton> will calculate the sum of the selected values, while the <guibutton>−</guibutton> will calculated the difference between the first, uppermost, selected value and the rest, in order). If no value is marked the sign for the operator will be inserted into the expression entry (as the buttons on the keypad). If only one item is selected the buttons also uses the current expression (the <guibutton>+</guibutton> button will append <quote>+ [value]</quote> to the current expression). The square root button will however only act on single values.
 </para>
 <para>
-Additional actions are available in the context menu of the history list. This includes options to copy the full text of one or multiple entries, to clear the whole list, and to bookmark and/or protect entries from deletion when the list becomes too long or is cleared.
+Additional actions are available in the context menu of the history list. This includes options to copy the full text of one or multiple entries, delete or move entries, to clear the whole list, and to bookmark and/or protect entries from deletion when the list becomes too long or is cleared.
 </para>
 </sect1>
 <sect1 id="qalculate-menus">

@@ -260,6 +260,7 @@ GtkMenu *popup_menu_expressiontext;
 deque<string> inhistory;
 deque<bool> inhistory_protected;
 deque<int> inhistory_type;
+deque<int> inhistory_value;
 vector<MathStructure*> history_parsed;
 vector<MathStructure*> history_answer;
 
@@ -1426,6 +1427,7 @@ void display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 					inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
 					inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_ERROR);
 					inhistory_protected.insert(inhistory_protected.begin() + *inhistory_index, false);
+					inhistory_value.insert(inhistory_value.begin() + *inhistory_index, nr_of_new_expressions);
 					string history_message = "- ";
 					history_message += CALCULATOR->message()->message();
 					add_line_breaks(history_message, false, 2);
@@ -1440,6 +1442,7 @@ void display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 					inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
 					inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_WARNING);
 					inhistory_protected.insert(inhistory_protected.begin() + *inhistory_index, false);
+					inhistory_value.insert(inhistory_value.begin() + *inhistory_index, nr_of_new_expressions);
 					string history_message = "- ";
 					history_message += CALCULATOR->message()->message();
 					add_line_breaks(history_message, false, 2);
@@ -1718,7 +1721,6 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 	if(recalculate) {
 		bool origstr = str.empty();
 		if(origstr) str = get_expression_text();
-		remove_blank_ends(str);
 		if(str.empty()) {clearresult(); return;}
 		if(evalops.parse_options.base != BASE_UNICODE && (evalops.parse_options.base != BASE_CUSTOM || (CALCULATOR->customInputBase() <= 62 && CALCULATOR->customInputBase() >= -62)) && last_is_operator(str, evalops.parse_options.base == 10) && (evalops.parse_options.base != BASE_ROMAN_NUMERALS || str[str.length() - 1] != '|' || str.find('|') == str.length() - 1)) return;
 		CALCULATOR->beginTemporaryStopMessages();
@@ -2108,6 +2110,7 @@ void display_parse_status() {
 		expression_has_changed2 = false;
 		return;
 	}
+	remove_duplicate_blanks(text);
 	size_t i = text.find_first_of(SPACES LEFT_PARENTHESIS);
 	if(i != string::npos) {
 		str_f = text.substr(0, i);
@@ -2135,16 +2138,16 @@ void display_parse_status() {
 		if(!gtk_text_iter_is_end(&ipos)) {
 			gtext = gtk_text_buffer_get_text(expressionbuffer, &istart, &ipos, FALSE);
 			str_e = CALCULATOR->unlocalizeExpression(gtext, evalops.parse_options);
-			bool b = CALCULATOR->separateWhereExpression(str_e, str_w, evalops);
-			b = CALCULATOR->separateToExpression(str_e, str_u, evalops, false, true) || b;
+			bool b = CALCULATOR->separateToExpression(str_e, str_u, evalops, false, true);
+			b = CALCULATOR->separateWhereExpression(str_e, str_w, evalops) || b;
 			if(!b) {
 				CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
 			}
 			g_free(gtext);
 		} else {
 			str_e = CALCULATOR->unlocalizeExpression(text, evalops.parse_options);
-			bool b = CALCULATOR->separateWhereExpression(str_e, str_w, evalops);
-			b = CALCULATOR->separateToExpression(str_e, str_u, evalops, false, true) || b;
+			bool b = CALCULATOR->separateToExpression(str_e, str_u, evalops, false, true);
+			b = CALCULATOR->separateWhereExpression(str_e, str_w, evalops) || b;
 			if(!b) {
 				CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
 				full_parsed = true;
@@ -2167,8 +2170,8 @@ void display_parse_status() {
 		if(!full_parsed) {
 			CALCULATOR->beginTemporaryStopMessages();
 			str_e = CALCULATOR->unlocalizeExpression(text, evalops.parse_options);
-			CALCULATOR->separateWhereExpression(str_e, str_w, evalops);
 			CALCULATOR->separateToExpression(str_e, str_u, evalops, false, true);
+			CALCULATOR->separateWhereExpression(str_e, str_w, evalops);
 			if(!str_e.empty()) CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
 			int warnings_count;
 			had_errors = CALCULATOR->endTemporaryStopMessages(NULL, &warnings_count) > 0;
@@ -7499,14 +7502,13 @@ gboolean on_event(GtkWidget*, GdkEvent *e, gpointer) {
 	return TRUE;
 }
 
-void reload_history() {
-	gtk_list_store_clear(historystore);
+void reload_history(gint from_index) {
+	if(from_index < 0) gtk_list_store_clear(historystore);
 	string history_str;
 	GtkTreeIter history_iter;
-	size_t hp_i = history_parsed.size();
-	size_t ap_i = 0;
 	size_t i = inhistory.size();
-	while(i > 0) {
+	gint pos = 0;
+	while(i > 0 && (from_index < 0 || (i >= (size_t) from_index))) {
 		i--;
 		switch(inhistory_type[i]) {
 			case QALCULATE_HISTORY_RESULT_APPROXIMATE: {}
@@ -7542,14 +7544,15 @@ void reload_history() {
 						history_str.insert(0, "<span font-style=\"italic\">");
 					}
 				}
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 3, ap_i, 4, 0, 5, history_scroll_width, 6, 1.0, 7, PANGO_ALIGN_RIGHT, -1);
+				gtk_list_store_insert_with_values(historystore, &history_iter, from_index < 0 ? -1 : pos, 0, history_str.c_str(), 1, i, 3, inhistory_value[i], 4, 0, 5, history_scroll_width, 6, 1.0, 7, PANGO_ALIGN_RIGHT, -1);
+				pos++;
 				break;
 			}
 			case QALCULATE_HISTORY_PARSE_APPROXIMATE: {}
 			case QALCULATE_HISTORY_PARSE: {
 				if(i + 1 < inhistory.size() && (inhistory_type[i + 1] == QALCULATE_HISTORY_EXPRESSION || inhistory_type[i + 1] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[i + 1] == QALCULATE_HISTORY_REGISTER_MOVED)) {
 					if(i + 2 >= inhistory.size() || inhistory_type[i + 2] != QALCULATE_HISTORY_BOOKMARK) {
-						if(i < inhistory.size() - 2) gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
+						if(i < inhistory.size() - 2) {gtk_list_store_insert_with_values(historystore, &history_iter, from_index < 0 ? -1 : pos, 1, -1, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1); pos++;}
 					}
 					string expr_str;
 					if(inhistory_type[i + 1] == QALCULATE_HISTORY_RPN_OPERATION) expr_str = ("RPN Operation");
@@ -7597,9 +7600,8 @@ void reload_history() {
 						if(can_display_unicode_string_function_exact("🔒", historyview)) history_str += "<span size=\"small\"><sup> 🔒</sup></span>";
 						else history_str += "<span size=\"x-small\"><sup> P</sup></span>";
 					}
-					gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 2, hp_i > 0 ? i2s(hp_i).c_str() : "   ", 3, hp_i, 4, EXPRESSION_YPAD, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
-					ap_i = hp_i;
-					if(hp_i > 0) hp_i--;
+					gtk_list_store_insert_with_values(historystore, &history_iter, from_index < 0 ? -1 : pos, 0, history_str.c_str(), 1, i, 2, inhistory_value[i] > 0 ? i2s(inhistory_value[i]).c_str() : "   ", 3, inhistory_value[i], 4, EXPRESSION_YPAD, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
+					pos++;
 					g_object_unref(layout);
 				}
 				break;
@@ -7616,12 +7618,13 @@ void reload_history() {
 				history_str += "\">";
 				history_str += str;
 				history_str += "</span>";
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 3, ap_i, 4, 0, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
+				gtk_list_store_insert_with_values(historystore, &history_iter, from_index < 0 ? -1 : pos, 0, history_str.c_str(), 1, i, 3, inhistory_value[i], 4, 0, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
+				pos++;
 				break;
 			}
 			case QALCULATE_HISTORY_BOOKMARK: {
 				if(i > 0 && (inhistory_type[i - 1] == QALCULATE_HISTORY_EXPRESSION || inhistory_type[i - 1] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[i - 1] == QALCULATE_HISTORY_REGISTER_MOVED)) {
-					if(i < inhistory.size() - 1) gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
+					if(i < inhistory.size() - 1) {gtk_list_store_insert_with_values(historystore, &history_iter, from_index < 0 ? -1 : pos, 1, -1, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1); pos++;}
 				}
 				string str = inhistory[i];
 				add_line_breaks(str, false);
@@ -7632,13 +7635,14 @@ void reload_history() {
 				history_str += str;
 				history_str += ":";
 				history_str += "</span>";
-				gtk_list_store_insert_with_values(historystore, &history_iter, -1, 0, history_str.c_str(), 1, i, 3, ap_i, 4, 0, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
+				gtk_list_store_insert_with_values(historystore, &history_iter, from_index < 0 ? -1 : pos, 0, history_str.c_str(), 1, i, 3, inhistory_value[i], 4, 0, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
+				pos++;
 				break;
 			}
 			default: {}
 		}
 	}
-	if(inhistory.size() != 0) gtk_list_store_insert_with_values(historystore, &history_iter, -1, 1, -1, 2, "   ", 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
+	if(inhistory.size() != 0) {gtk_list_store_insert_with_values(historystore, &history_iter, from_index < 0 ? -1 : pos, 1, -1, 2, "   ", 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1); pos++;}
 }
 
 void add_line_breaks(string &str, int expr, size_t first_i) {
@@ -7724,7 +7728,6 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 												i--;
 											} else if(str[i - 1] < 0) {
 												if(teststr.find(" ", teststr.length() - 3) == teststr.length() - 3) i -= 3;
-												else i--;
 											} else if(i > 3 && str[i] <= '9' && str[i] >= '0' && str[i - 1] <= '9' && str[i - 1] >= '0') {
 												if(str[i - 2] == ' ' && str[i - 3] <= '9' && str[i - 3] >= '0') i -= 2;
 												else if(str[i - 3] == ' ' && str[i - 4] <= '9' && str[i - 4] >= '0') i -= 3;
@@ -7799,7 +7802,6 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 											i--;
 										} else if(str[i - 1] < 0) {
 											if(teststr.find(" ", teststr.length() - 3) == teststr.length() - 3) i -= 3;
-											else i--;
 										} else if(i > 3 && str[i] <= '9' && str[i] >= '0' && str[i - 1] <= '9' && str[i - 1] >= '0') {
 											if(str[i - 2] == ' ' && str[i - 3] <= '9' && str[i - 3] >= '0') i -= 2;
 											else if(str[i - 3] == ' ' && str[i - 4] <= '9' && str[i - 4] >= '0') i -= 3;
@@ -7997,6 +7999,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				inhistory_type.push_back(QALCULATE_HISTORY_REGISTER_MOVED);
 				inhistory_protected.push_back(false);
 				inhistory.push_back("");
+				inhistory_value.push_back(nr_of_new_expressions);
 			} else {
 				remove_blank_ends(result_text);
 				gsub("\n", " ", result_text);
@@ -8005,10 +8008,12 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 					inhistory_type.push_back(QALCULATE_HISTORY_RPN_OPERATION);
 					inhistory_protected.push_back(false);
 					inhistory.push_back("");
+					inhistory_value.push_back(nr_of_new_expressions);
 				} else {
 					inhistory_type.push_back(QALCULATE_HISTORY_EXPRESSION);
 					inhistory_protected.push_back(false);
 					inhistory.push_back(result_text);
+					inhistory_value.push_back(nr_of_new_expressions);
 					if(adaptive_interval_display) {
 						string expression_str = get_expression_text();
 						if((parsed_mstruct && parsed_mstruct->containsFunction(CALCULATOR->f_uncertainty)) || expression_str.find("+/-") != string::npos || expression_str.find("+/" SIGN_MINUS) != string::npos || expression_str.find("±") != string::npos) printops.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
@@ -8047,6 +8052,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				inhistory.insert(inhistory.begin() + inhistory_index, transformation);
 				inhistory_type.insert(inhistory_type.begin() + inhistory_index, QALCULATE_HISTORY_TRANSFORMATION);
 				inhistory_protected.insert(inhistory_protected.begin() + inhistory_index, false);
+				inhistory_value.insert(inhistory_value.begin() + inhistory_index, nr_of_new_expressions);
 			}
 		} else {
 			b_busy = false;
@@ -8219,6 +8225,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				str2 = "=";
 				inhistory_type.insert(inhistory_type.begin() + inhistory_index, QALCULATE_HISTORY_PARSE);
 				inhistory_protected.insert(inhistory_protected.begin() + inhistory_index, false);
+				inhistory_value.insert(inhistory_value.begin() + inhistory_index, nr_of_new_expressions);
 			} else {
 				if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_ALMOST_EQUAL, (void*) historyview)) {
 					str2 = SIGN_ALMOST_EQUAL;
@@ -8227,6 +8234,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				}
 				inhistory_type.insert(inhistory_type.begin() + inhistory_index, QALCULATE_HISTORY_PARSE_APPROXIMATE);
 				inhistory_protected.insert(inhistory_protected.begin() + inhistory_index, false);
+				inhistory_value.insert(inhistory_value.begin() + inhistory_index, nr_of_new_expressions);
 			}
 			str += str2;
 			str += " ";
@@ -8316,6 +8324,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			inhistory_type.insert(inhistory_type.begin() + inhistory_index, QALCULATE_HISTORY_RESULT);
 		}
 		inhistory_protected.insert(inhistory_protected.begin() + inhistory_index, false);
+		inhistory_value.insert(inhistory_value.begin() + inhistory_index, nr_of_new_expressions);
 		if(nr_of_new_expressions > 0 && mstruct && nr_of_new_expressions <= (int) history_answer.size()) {
 			if(!history_answer[nr_of_new_expressions - 1]) history_answer[nr_of_new_expressions - 1] = new MathStructure(*mstruct);
 			else history_answer[nr_of_new_expressions - 1]->set(*mstruct);
@@ -8684,7 +8693,10 @@ void result_prefix_changed(Prefix *prefix) {
 void expression_calculation_updated() {
 	expression_has_changed2 = true;
 	display_parse_status();
-	if(!rpn_mode) execute_expression(false);
+	if(!rpn_mode) {
+		if(auto_calculate) do_auto_calc();
+		else execute_expression(false);
+	}
 	update_status_text();
 }
 void expression_format_updated(bool recalculate) {
@@ -8695,8 +8707,10 @@ void expression_format_updated(bool recalculate) {
 	if(!expression_has_changed && !recalculate && !rpn_mode && !auto_calculate) {
 		clearresult();
 	}
-	if(recalculate) execute_expression(false);
-	else if(!rpn_mode && auto_calculate) do_auto_calc();
+	if(!rpn_mode) {
+		if(auto_calculate) do_auto_calc();
+		else if(recalculate) execute_expression(false);
+	}
 	update_status_text();
 }
 
@@ -14225,7 +14239,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {3, 3, 0};
+	int version_numbers[] = {3, 4, 0};
 	bool old_history_format = false;
 			
 	if(file) {
@@ -14862,71 +14876,88 @@ void load_preferences() {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_OLD);
 					inhistory_protected.push_front(false);
+					inhistory_value.push_front(0);
 				} else if(svar == "history_old") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_OLD);
 					inhistory_protected.push_front(false);
+					inhistory_value.push_front(0);
 				} else if(svar == "history_expression") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_EXPRESSION);
 					inhistory_protected.push_front(false);
+					inhistory_value.push_front(0);
 				} else if(svar == "history_expression*") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_EXPRESSION);
 					inhistory_protected.push_front(true);
+					inhistory_value.push_front(0);
 				} else if(svar == "history_transformation") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_TRANSFORMATION);
 					inhistory_protected.push_front(false);
+					inhistory_value.push_front(0);
 				} else if(svar == "history_result") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_RESULT);
 					inhistory_protected.push_front(false);
+					inhistory_value.push_front(0);
 				} else if(svar == "history_result_approximate") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_RESULT_APPROXIMATE);
 					inhistory_protected.push_front(false);
+					inhistory_value.push_front(0);
 				} else if(svar == "history_parse") {
 					inhistory.push_front(svalue);
 					if(old_history_format) inhistory_type.push_front(QALCULATE_HISTORY_PARSE_WITHEQUALS);
 					else inhistory_type.push_front(QALCULATE_HISTORY_PARSE);
 					inhistory_protected.push_front(false);
+					inhistory_value.push_front(0);
 				} else if(svar == "history_parse_withequals") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_PARSE_WITHEQUALS);
 					inhistory_protected.push_front(false);
+					inhistory_value.push_front(0);
 				} else if(svar == "history_parse_approximate") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_PARSE_APPROXIMATE);
 					inhistory_protected.push_front(false);
+					inhistory_value.push_front(0);
 				} else if(svar == "history_register_moved") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_REGISTER_MOVED);
 					inhistory_protected.push_front(false);
+					inhistory_value.push_front(0);
 				} else if(svar == "history_rpn_operation") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_RPN_OPERATION);
 					inhistory_protected.push_front(false);
+					inhistory_value.push_front(0);
 				} else if(svar == "history_register_moved*") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_REGISTER_MOVED);
 					inhistory_protected.push_front(true);
+					inhistory_value.push_front(0);
 				} else if(svar == "history_rpn_operation*") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_RPN_OPERATION);
 					inhistory_protected.push_front(true);
+					inhistory_value.push_front(0);
 				} else if(svar == "history_warning") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_WARNING);
 					inhistory_protected.push_front(false);
+					inhistory_value.push_front(0);
 				} else if(svar == "history_error") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_ERROR);
 					inhistory_protected.push_front(false);
+					inhistory_value.push_front(0);
 				} else if(svar == "history_bookmark") {
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_BOOKMARK);
 					inhistory_protected.push_front(false);
+					inhistory_value.push_front(0);
 					bool b = false;
 					for(vector<string>::iterator it = history_bookmarks.begin(); it != history_bookmarks.end(); ++it) {
 						if(string_is_less(svalue, *it)) {
@@ -18871,20 +18902,6 @@ bool history_protected_by_bookmark(size_t hi);
 bool history_protected(size_t hi);
 void on_popup_menu_item_history_clear_activate(GtkMenuItem*, gpointer) {
 	if(b_busy) return;
-	vector<MathStructure*> history_parsed_new;
-	vector<MathStructure*> history_answer_new;
-	vector<gint> inhistory_m;
-	for(size_t i = 0; i < inhistory.size(); i++) inhistory_m.push_back(0);
-	GtkTreeIter iter;
-	if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(historystore), &iter)) {
-		gint ei = -1, hi = -1;
-		do {
-			gtk_tree_model_get(GTK_TREE_MODEL(historystore), &iter, 1, &hi, 3, &ei, -1);
-			if(ei > 0 && hi >= 0) {
-				inhistory_m[hi] = ei;
-			}
-		} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(historystore), &iter));
-	}
 	gtk_list_store_clear(historystore);
 	bool b_protected = false;
 	for(size_t i = inhistory.size(); i > 0;) {
@@ -18896,32 +18913,126 @@ void on_popup_menu_item_history_clear_activate(GtkMenuItem*, gpointer) {
 			inhistory.erase(inhistory.begin() + i);
 			inhistory_type.erase(inhistory_type.begin() + i);
 			inhistory_protected.erase(inhistory_protected.begin() + i);
-			inhistory_m.erase(inhistory_m.begin() + i);
+			inhistory_value.erase(inhistory_value.begin() + i);
 		}
 	}
-	for(size_t i = 0; i < inhistory_m.size(); i++) {
-		if(inhistory_m[i] > 0) {
-			gint ei = inhistory_m[i];
-			if(history_parsed[ei - 1]->refcount() == 1) {
-				history_parsed[ei - 1]->ref();
-				history_answer[ei - 1]->ref();
-				history_parsed_new.push_back(history_parsed[ei - 1]);
-				history_answer_new.push_back(history_answer[ei - 1]);
-			}
-			inhistory_m[i] = history_parsed_new.size();
-		}
-	}
-	for(size_t i = 0; i < history_parsed.size(); i++) {
-		if(history_parsed[i]) history_parsed[i]->unref();
-		if(history_answer[i]) history_answer[i]->unref();
-	}
-	history_parsed = history_parsed_new;
-	history_answer = history_answer_new;
 	current_inhistory_index = inhistory.size() - 1;
 	history_index = inhistory.size() - 1;
 	initial_inhistory_index = inhistory.size() - 1;
-	nr_of_new_expressions = history_answer.size();
+	on_expressionbuffer_changed(expressionbuffer, NULL);
 	reload_history();
+}
+void on_popup_menu_item_history_movetotop_activate(GtkMenuItem*, gpointer) {
+	if(b_busy) return;
+	GtkTreeModel *model;
+	GtkTreeIter iter, iter_first;
+	GList *selected_list;
+	gint hindex = -1, hindex2 = -1;
+	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
+	selected_list = gtk_tree_selection_get_selected_rows(select, &model);
+	if(!selected_list) return;
+	GList *list_i = g_list_last(selected_list);
+	vector<int> indexes;
+	while(list_i) {
+		gtk_tree_model_get_iter(model, &iter, (GtkTreePath*) list_i->data);
+		gtk_tree_model_get(model, &iter, 1, &hindex, -1);
+		list_i = list_i->prev;
+		if(hindex > 0) {
+			if(inhistory_type[hindex] == QALCULATE_HISTORY_OLD) {
+				indexes.push_back(hindex);
+				gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+			} else {
+				iter_first = iter;
+				while(gtk_tree_model_iter_next(model, &iter)) {
+					gtk_tree_model_get(model, &iter, 1, &hindex, -1);
+					if(hindex < 0 || ITEM_IS_EXPRESSION(hindex) || inhistory_type[hindex] == QALCULATE_HISTORY_OLD || inhistory_type[hindex] == QALCULATE_HISTORY_BOOKMARK) {
+						if(hindex < 0) {
+							gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+						}
+						break;
+					}
+					iter_first = iter;
+				}
+				iter = iter_first;
+				do {
+					if(list_i) {
+						GtkTreePath *path = gtk_tree_model_get_path(model, &iter);
+						if(gtk_tree_path_compare(path, (GtkTreePath*) list_i->data) == 0) list_i = list_i->prev;
+						gtk_tree_path_free(path);
+					}
+					gtk_tree_model_get(model, &iter, 1, &hindex, -1);
+					if(inhistory_type[hindex] == QALCULATE_HISTORY_TRANSFORMATION) indexes.push_back(hindex - 1);
+					indexes.push_back(hindex);
+					if(HISTORY_IS_PARSE(hindex)) {indexes.push_back(hindex + 1); hindex++;}
+					gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+					if(hindex < 0 || ITEM_IS_EXPRESSION(hindex) || inhistory_type[hindex] == QALCULATE_HISTORY_OLD || inhistory_type[hindex] == QALCULATE_HISTORY_BOOKMARK) {
+						if(hindex >= 0 && inhistory_type[hindex] != QALCULATE_HISTORY_BOOKMARK && gtk_tree_model_iter_previous(model, &iter)) {
+							gtk_tree_model_get(model, &iter, 1, &hindex, -1);
+							if(hindex >= 0 && inhistory_type[hindex] == QALCULATE_HISTORY_BOOKMARK) {
+								gtk_tree_model_iter_next(model, &iter);
+							} else {
+								break;
+							}
+						} else {
+							break;
+						}
+					}
+				} while(gtk_tree_model_iter_previous(model, &iter));
+			}
+		} else {
+			gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+		}
+	}
+	unordered_map<int, int> new_indexes;
+	hindex2 = -1;
+	int n = 0;
+	for(size_t i = 0; i < indexes.size(); i++) {
+		hindex = indexes[i];
+		if(hindex >= 0) {
+			while(hindex2 >= 0 && hindex2 < hindex) {
+				new_indexes[hindex2] = hindex2 - n;
+				hindex2++;
+			}
+			n++;
+			hindex2 = hindex + 1;
+		}
+	}
+	while(hindex2 >= 0 && hindex2 < (gint) inhistory.size()) {
+		new_indexes[hindex2] = hindex2 - n;
+		hindex2++;
+	}
+	hindex2 = indexes[0];
+	if(gtk_tree_model_get_iter_first(model, &iter)) {
+		do {
+			gtk_tree_model_get(model, &iter, 1, &hindex, -1);
+			if(hindex >= 0) {
+				if(hindex < hindex2) break;
+				gtk_list_store_set(GTK_LIST_STORE(model), &iter, 1, new_indexes[hindex], -1);
+			}
+		} while(gtk_tree_model_iter_next(model, &iter));
+	}
+	hindex2 = (gint) inhistory.size() - indexes.size() + 1;
+	for(size_t i = 0; i < indexes.size(); i++) {
+		hindex = indexes[i];
+		inhistory.push_back(inhistory[hindex]);
+		inhistory_protected.push_back(inhistory_protected[hindex]);
+		inhistory_type.push_back(inhistory_type[hindex]);
+		inhistory_value.push_back(inhistory_value[hindex]);
+	}
+	for(size_t i = indexes.size() - 1; ; i--) {
+		hindex = indexes[i];
+		inhistory.erase(inhistory.begin() + hindex);
+		inhistory_protected.erase(inhistory_protected.begin() + hindex);
+		inhistory_type.erase(inhistory_type.begin() + hindex);
+		inhistory_value.erase(inhistory_value.begin() + hindex);
+		if(i == 0) break;
+	}
+	current_inhistory_index = inhistory.size() - 1;
+	history_index = inhistory.size() - 1;
+	initial_inhistory_index = inhistory.size() - 1;
+	on_expressionbuffer_changed(expressionbuffer, NULL);
+	reload_history(hindex2);
+	g_list_free_full(selected_list, (GDestroyNotify) gtk_tree_path_free);
 }
 void on_popup_menu_item_history_delete_activate(GtkMenuItem*, gpointer) {
 	if(b_busy) return;
@@ -18954,8 +19065,9 @@ void on_popup_menu_item_history_delete_activate(GtkMenuItem*, gpointer) {
 		}
 		if(!list_i) break;
 		del_prev = false;
-		if(hindex >= 0 && ITEM_IS_EXPRESSION(hindex)) {
+		if(hindex >= 0 && (ITEM_IS_EXPRESSION(hindex) || inhistory_type[hindex] == QALCULATE_HISTORY_BOOKMARK)) {
 			iter3 = iter;
+			if(inhistory_type[hindex] == QALCULATE_HISTORY_BOOKMARK) gtk_tree_model_iter_next(model, &iter3);
 			bool b = false;
 			while(gtk_tree_model_iter_next(model, &iter3)) {
 				gtk_tree_model_get(model, &iter3, 1, &hindex2, -1);
@@ -19040,8 +19152,13 @@ void on_popup_menu_item_history_delete_activate(GtkMenuItem*, gpointer) {
 		inhistory.erase(inhistory.begin() + hindex);
 		inhistory_protected.erase(inhistory_protected.begin() + hindex);
 		inhistory_type.erase(inhistory_type.begin() + hindex);
+		inhistory_value.erase(inhistory_value.begin() + hindex);
 		if(i == 0) break;
 	}
+	current_inhistory_index = inhistory.size() - 1;
+	history_index = inhistory.size() - 1;
+	initial_inhistory_index = inhistory.size() - 1;
+	on_expressionbuffer_changed(expressionbuffer, NULL);
 	g_list_free_full(selected_list, (GDestroyNotify) gtk_tree_path_free);
 }
 void on_popup_menu_item_history_insert_value_activate(GtkMenuItem*, gpointer) {
@@ -19096,6 +19213,7 @@ void remove_history_bookmark(string str) {
 	inhistory.erase(inhistory.begin() + hindex);
 	inhistory_protected.erase(inhistory_protected.begin() + hindex);
 	inhistory_type.erase(inhistory_type.begin() + hindex);
+	inhistory_value.erase(inhistory_value.begin() + hindex);
 	GtkTreeIter history_iter = iter;
 	if(gtk_tree_model_iter_next(GTK_TREE_MODEL(historystore), &history_iter)) {
 		gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 1, &hindex, -1);
@@ -19150,6 +19268,7 @@ void add_history_bookmark(string history_message) {
 		inhistory.insert(inhistory.begin() + hindex, history_message);
 		inhistory_type.insert(inhistory_type.begin() + hindex, QALCULATE_HISTORY_BOOKMARK);
 		inhistory_protected.insert(inhistory_protected.begin() + hindex, false);
+		inhistory_value.insert(inhistory_value.begin() + hindex, 0);
 		string history_str = "<span foreground=\"";
 		history_str += history_bookmark_color;
 		history_str += "\">";
@@ -19172,6 +19291,7 @@ void add_history_bookmark(string history_message) {
 			if(hindex >= 0) gtk_list_store_set(historystore, &iter, 1, hindex + 1, -1);
 		}
 	}
+	on_expressionbuffer_changed(expressionbuffer, NULL);
 	g_list_free_full(selected_list, (GDestroyNotify) gtk_tree_path_free);
 }
 void on_popup_menu_item_history_bookmark_activate(GtkMenuItem *w, gpointer) {
@@ -19203,6 +19323,7 @@ void on_popup_menu_item_history_bookmark_activate(GtkMenuItem *w, gpointer) {
 			inhistory.erase(inhistory.begin() + hindex);
 			inhistory_protected.erase(inhistory_protected.begin() + hindex);
 			inhistory_type.erase(inhistory_type.begin() + hindex);
+			inhistory_value.erase(inhistory_value.begin() + hindex);
 			GtkTreeIter history_iter = iter;
 			if(gtk_tree_model_iter_next(GTK_TREE_MODEL(historystore), &history_iter)) {
 				gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 1, &hindex, -1);
@@ -19223,6 +19344,7 @@ void on_popup_menu_item_history_bookmark_activate(GtkMenuItem *w, gpointer) {
 				if(hindex >= 0) gtk_list_store_set(historystore, &history_iter, 1, hindex - 1, -1);
 			}
 			gtk_list_store_remove(historystore, &iter);
+			on_expressionbuffer_changed(expressionbuffer, NULL);
 		}
 		g_list_free_full(selected_list, (GDestroyNotify) gtk_tree_path_free);
 	} else {
@@ -19396,6 +19518,7 @@ void update_historyview_popup() {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_value")), selected_indeces.size() > 0 && selected_index_type[0] != INDEX_TYPE_TXT && selected_index_type.back() != INDEX_TYPE_TXT);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_text")), selected_indeces.size() == 1 && inhistory_type[hi] != QALCULATE_HISTORY_BOOKMARK);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_full_text")), !selected_rows.empty());
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_movetotop")), !selected_rows.empty());
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_delete")), !selected_rows.empty());
 	bool protected_by_bookmark = true, b_protected = true, b_old = false;
 	for(size_t i = 0; i < selected_rows.size(); i++) {
