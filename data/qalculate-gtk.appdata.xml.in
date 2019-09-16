@@ -45,6 +45,24 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="3.4.0" date="2019-09-16">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>"where"-syntax (e.g. "x+y where x=1 and y=2", or alternatively "x+y/.x=1,y=2", and "x^2=4 where x≥0")</li>
+      <li>Improvements to replace() function (now supports replacement functions and parts of polynomials)</li>
+      <li>Fix local thousands separator on Windows when localeconv()->thousands_sep is a non-Unicode character > 127 (e.g. non-breaking space, 0xA0)</li>
+      <li>Smarter comma interpretation (when defined as decimal separator, but used differently)</li>
+      <li>Show warning when multiple decimal separators are used in a single number</li>
+      <li>Man pages (documentation for Unix-like operating systems)</li>
+      <li>Option to automatically calculate the current expression on each change, as you type (GUI)</li>
+      <li>Fix segfault with command line expression (GUI)</li>
+      <li>Option to delete selected history items (GUI)</li>
+      <li>RPN stack drag and drop (GUI)</li>
+      <li>Minor bug fixes and feature improvements</li>
+     </ul>
+   </description>
+  </release>
   <release version="3.3.0" date="2019-07-25">
    <description>
     <p>Changes:</p>
