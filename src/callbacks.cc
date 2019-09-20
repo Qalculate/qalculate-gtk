@@ -1716,11 +1716,64 @@ bool last_is_operator(string str, bool allow_exp = false) {
 	}
 	return false;
 }
+
+void add_to_expression_history(string str);
+gint autocalc_history_timeout_id = 0;
+bool autocalc_fraction = false;
+vector<CalculatorMessage> autocalc_messages;
+gboolean do_autocalc_history_timeout(gpointer) {
+	autocalc_history_timeout_id = 0;
+	if(!do_timeout || !result_autocalculated || rpn_mode) return false;
+	if(check_exchange_rates(NULL, !autocalc_fraction)) {
+		execute_expression(true, false, OPERATION_ADD, NULL, false, 0, "", "", false);
+		return false;
+	}
+	CALCULATOR->addMessages(&autocalc_messages);
+	add_to_expression_history(get_expression_text());
+	expression_has_changed = false;
+	if(autocalc_fraction) {
+		NumberFractionFormat save_format = printops.number_fraction_format;
+		bool save_restrict_fraction_length = printops.restrict_fraction_length;
+		printops.restrict_fraction_length = false;
+		if(mstruct->isNumber()) printops.number_fraction_format = FRACTION_COMBINED;
+		else printops.number_fraction_format = FRACTION_FRACTIONAL;
+		setResult(NULL, true, true, true, "", 0);
+		printops.number_fraction_format = save_format;
+		printops.restrict_fraction_length = save_restrict_fraction_length;
+	} else {
+		setResult(NULL, true, true, true, "", 0);
+	}
+	if(!block_conversion_category_switch) {
+		Unit *u = CALCULATOR->findMatchingUnit(*mstruct);
+		if(u && !u->category().empty()) {
+			string s_cat = u->category();
+			if(s_cat.empty()) s_cat = _("Uncategorized");
+			if(s_cat != selected_unit_category) {
+				GtkTreeIter iter = convert_category_map[s_cat];
+				GtkTreePath *path = gtk_tree_model_get_path(gtk_tree_view_get_model(GTK_TREE_VIEW(tUnitSelectorCategories)), &iter);
+				gtk_tree_view_expand_to_path(GTK_TREE_VIEW(tUnitSelectorCategories), path);
+				gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(tUnitSelectorCategories), path, NULL, TRUE, 0.5, 0);
+				gtk_tree_path_free(path);
+				gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelectorCategories)), &iter);
+			}
+		}
+		if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")))) {
+			gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector)));
+		}
+	}
+	result_autocalculated = false;
+	return false;
+}
+
 void do_auto_calc(bool recalculate = true, string str = string()) {
 	MathStructure mauto;
 	bool do_factors = false, do_fraction = false, do_pfe = false, do_expand = false;
 	bool do_timeout_bak = do_timeout;
 	if(recalculate) {
+		if(autocalc_history_timeout_id != 0) {
+			g_source_remove(autocalc_history_timeout_id);
+			autocalc_history_timeout_id = 0;
+		}
 		bool origstr = str.empty();
 		if(origstr) str = get_expression_text();
 		if(str.empty()) {clearresult(); return;}
@@ -1947,7 +2000,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			parsed_tostruct->setUndefined();
 		}
 		CALCULATOR->beginTemporaryStopMessages();
-		if(!CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), 100, evalops, NULL, parsed_tostruct)) {
+		if(!CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), 100, evalops, parsed_mstruct, parsed_tostruct)) {
 			mauto.setAborted();
 		} else if(do_factors || do_pfe || do_expand) {
 			CALCULATOR->startControl(100);
@@ -1963,7 +2016,11 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			if(CALCULATOR->aborted()) mauto.setAborted();
 			CALCULATOR->stopControl();
 		}
-		CALCULATOR->endTemporaryStopMessages(!mauto.isAborted());
+		CALCULATOR->endTemporaryStopMessages(!mauto.isAborted(), &autocalc_messages);
+		if(!mauto.isAborted()) {
+			autocalc_fraction = do_fraction;
+			autocalc_history_timeout_id = g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 1500, do_autocalc_history_timeout, NULL, NULL);
+		}
 	} else {
 		do_timeout_bak = do_timeout;
 		do_timeout = false;
