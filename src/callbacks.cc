@@ -1729,7 +1729,8 @@ gboolean do_autocalc_history_timeout(gpointer) {
 		return false;
 	}
 	CALCULATOR->addMessages(&autocalc_messages);
-	add_to_expression_history(get_expression_text());
+	result_text = get_expression_text();
+	add_to_expression_history(result_text);
 	expression_has_changed = false;
 	if(autocalc_fraction) {
 		NumberFractionFormat save_format = printops.number_fraction_format;
