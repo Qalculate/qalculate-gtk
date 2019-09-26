@@ -15334,7 +15334,7 @@ void save_preferences(bool mode) {
 			lines--;
 		}
 	}
-	while(hi >= 0) {
+	while(hi >= 0 && inhistory.size() > 0) {
 		if(inhistory_protected[hi] || (inhistory_type[hi] == QALCULATE_HISTORY_BOOKMARK && hi != 0 && inhistory_type[hi - 1] != QALCULATE_HISTORY_OLD)) {
 			bool b_first = true;
 			while(hi >= 0) {
