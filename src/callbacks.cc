@@ -91,6 +91,7 @@ extern GtkTextBuffer *expressionbuffer;
 extern GtkTextTag *expression_par_tag;
 extern GtkWidget *f_menu, *v_menu, *u_menu, *u_menu2, *recent_menu;
 extern KnownVariable *vans[5];
+MathStructure lastx;
 extern GtkWidget *tPlotFunctions;
 extern GtkListStore *tPlotFunctions_store;
 extern GtkWidget *tFunctionArguments;
@@ -997,7 +998,9 @@ void set_unicode_buttons() {
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_times")), MULTIPLICATION);
 		if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(main_builder, "label_rpn_divide"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), SIGN_DIVISION_SLASH);
 		else if(can_display_unicode_string_function(SIGN_DIVISION, (void*) gtk_builder_get_object(main_builder, "label_rpn_divide"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), SIGN_DIVISION);
-		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), DIVISION);	
+		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), DIVISION);
+		if(can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(main_builder, "label_rpn_negate"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_negate")), SIGN_MINUS "x");
+		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_negate")), MINUS "x");
 		
 		if(can_display_unicode_string_function(SIGN_SQRT, (void*) gtk_builder_get_object(main_builder, "label_sqrt"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sqrt")), SIGN_SQRT);
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sqrt")), "sqrt");
@@ -1028,6 +1031,7 @@ void set_unicode_buttons() {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sub")), MINUS);
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_times")), MULTIPLICATION);
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), DIVISION);
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), MINUS "x");
 	}
 	
 	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_dot")), CALCULATOR->getDecimalPoint().c_str());
@@ -9228,12 +9232,16 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	} else if(rpn_mode) {
 		stack_size = CALCULATOR->RPNStackSize();
 		if(do_mathoperation) {
+			if(mstruct) lastx = *mstruct;
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_lastx")), TRUE);
 			if(f) CALCULATOR->calculateRPN(f, 0, evalops, parsed_mstruct);
 			else CALCULATOR->calculateRPN(op, 0, evalops, parsed_mstruct);
 		} else {
 			string str2 = CALCULATOR->unlocalizeExpression(execute_str.empty() ? str : execute_str, evalops.parse_options);
 			CALCULATOR->parseSigns(str2);
 			remove_blank_ends(str2);
+			MathStructure lastx_bak(lastx);
+			if(mstruct) lastx = *mstruct;
 			if(str2.length() == 1) {
 				do_mathoperation = true;
 				switch(str2[0]) {
@@ -9337,7 +9345,9 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				} else {
 					CALCULATOR->RPNStackEnter(str2, 0, evalops, parsed_mstruct, parsed_tostruct);
 				}
-			}			
+				if(do_mathoperation) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_lastx")), TRUE);
+				else lastx = lastx_bak;
+			}
 		}
 	} else {
 		CALCULATOR->calculate(mstruct, CALCULATOR->unlocalizeExpression(execute_str.empty() ? str : execute_str, evalops.parse_options), 0, evalops, parsed_mstruct, parsed_tostruct);
@@ -9571,6 +9581,7 @@ void RPNRegisterAdded(string text, gint index) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_deleteregister")), TRUE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sqrt")), TRUE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_reciprocal")), TRUE);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_negate")), TRUE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_add")), TRUE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sub")), TRUE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_times")), TRUE);
@@ -9596,6 +9607,7 @@ void RPNRegisterRemoved(gint index) {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_deleteregister")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sqrt")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_reciprocal")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_negate")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_add")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sub")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_times")), FALSE);
@@ -17859,7 +17871,8 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 		insert_bitwise_and();
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sub"))) {
-		insert_bitwise_or();
+		if(b2) insert_bitwise_or();
+		else insertButtonFunction(CALCULATOR->getActiveFunction("neg"));
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_times"))) {
 		insert_bitwise_xor();
@@ -18644,6 +18657,9 @@ void on_button_rpn_sqrt_clicked(GtkButton*, gpointer) {
 }
 void on_button_rpn_reciprocal_clicked(GtkButton*, gpointer) {
 	insertButtonFunction(CALCULATOR->getActiveFunction("inv"));
+}
+void on_button_rpn_negate_clicked(GtkButton*, gpointer) {
+	insertButtonFunction(CALCULATOR->getActiveFunction("neg"));
 }
 #define INDEX_TYPE_ANS 0
 #define INDEX_TYPE_XPR 1
@@ -22604,6 +22620,19 @@ void on_button_registerswap_clicked(GtkButton*, gpointer) {
 	setResult(NULL, true, false, false, "", 0, true);
 	updateRPNIndexes();
 }
+void on_button_lastx_clicked(GtkButton*, gpointer) {
+	if(expression_has_changed) {
+		if(get_expression_text().find_first_not_of(SPACES) != string::npos) {
+			execute_expression(true);
+		}
+	}
+	CALCULATOR->RPNStackEnter(new MathStructure(lastx));
+	RPNRegisterAdded("", 0);
+	mstruct->unref();
+	mstruct = CALCULATOR->getRPNRegister(1);
+	mstruct->ref();
+	setResult(NULL, true, true, false, "", 0, false);
+}
 void on_button_copyregister_clicked(GtkButton*, gpointer) {
 	GtkTreeModel *model;
 	GtkTreeIter iter;
@@ -22675,6 +22704,7 @@ void on_button_clearstack_clicked(GtkButton*, gpointer) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), FALSE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sqrt")), FALSE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_reciprocal")), FALSE);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_negate")), FALSE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_add")), FALSE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sub")), FALSE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_times")), FALSE);
@@ -24796,6 +24826,10 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 			break;
 		}
 		case GDK_KEY_KP_Subtract: {
+			if(rpn_mode && event->state & GDK_CONTROL_MASK) {
+				insertButtonFunction(CALCULATOR->getActiveFunction("neg"));
+				return TRUE;
+			}
 			if(rpn_mode && rpn_keys) {
 				calculateRPN(OPERATION_SUBTRACT);
 				return TRUE;
@@ -24835,6 +24869,10 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 			}
 		}
 		case GDK_KEY_minus: {
+			if(rpn_mode && event->state & GDK_CONTROL_MASK) {
+				insertButtonFunction(CALCULATOR->getActiveFunction("neg"));
+				return TRUE;
+			}
 			if(rpn_mode && rpn_keys) {
 				calculateRPN(OPERATION_SUBTRACT);
 				return TRUE;

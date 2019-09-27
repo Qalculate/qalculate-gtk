@@ -6420,27 +6420,28 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="orientation">vertical</property>
                                 <property name="homogeneous">True</property>
                                 <child>
-                                  <object class="GtkButton" id="button_rpn_sqrt">
+                                  <object class="GtkButton" id="button_rpn_negate">
                                     <property name="visible">True</property>
                                     <property name="sensitive">False</property>
                                     <property name="can_focus">True</property>
                                     <property name="focus_on_click">False</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Calculate the square root of the top value</property>
+                                    <property name="tooltip_text" translatable="yes">Negate the top value (Ctrl+-)</property>
                                     <property name="use_underline">True</property>
-                                    <signal name="clicked" handler="on_button_rpn_sqrt_clicked" swapped="no"/>
+                                    <signal name="clicked" handler="on_button_rpn_negate_clicked" swapped="no"/>
                                     <child>
-                                      <object class="GtkLabel" id="label_rpn_sqrt">
+                                      <object class="GtkLabel" id="label_rpn_negate">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label">√</property>
+                                        <property name="label">-x</property>
+                                        <property name="use_markup">True</property>
                                       </object>
                                     </child>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
-                                    <property name="position">1</property>
+                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -6459,6 +6460,30 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="can_focus">False</property>
                                         <property name="label">1/x</property>
                                         <property name="use_markup">True</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="button_rpn_sqrt">
+                                    <property name="visible">True</property>
+                                    <property name="sensitive">False</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="focus_on_click">False</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="tooltip_text" translatable="yes">Calculate the square root of the top value</property>
+                                    <property name="use_underline">True</property>
+                                    <signal name="clicked" handler="on_button_rpn_sqrt_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkLabel" id="label_rpn_sqrt">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="label">√</property>
                                       </object>
                                     </child>
                                   </object>
@@ -6631,6 +6656,29 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                   </packing>
                                 </child>
                                 <child>
+                                  <object class="GtkButton" id="button_lastx">
+                                    <property name="visible">True</property>
+                                    <property name="sensitive">False</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="focus_on_click">False</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="tooltip_text" translatable="yes">Enter the top value from before the last numeric operation.</property>
+                                    <signal name="clicked" handler="on_button_lastx_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkImage">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="icon_name">edit-undo-symbolic</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                                <child>
                                   <object class="GtkButton" id="button_deleteregister">
                                     <property name="visible">True</property>
                                     <property name="sensitive">False</property>
@@ -6650,7 +6698,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
-                                    <property name="position">1</property>
+                                    <property name="position">2</property>
                                   </packing>
                                 </child>
                                 <style>
