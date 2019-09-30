@@ -6503,6 +6503,30 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
+                            <child>
+                              <object class="GtkButton" id="button_rpn_sum">
+                                <property name="visible">True</property>
+                                <property name="sensitive">False</property>
+                                <property name="can_focus">True</property>
+                                <property name="focus_on_click">False</property>
+                                <property name="receives_default">False</property>
+                                <property name="tooltip_text" translatable="yes">Calculate the sum of all values</property>
+                                <property name="use_underline">True</property>
+                                <signal name="clicked" handler="on_button_rpn_sum_clicked" swapped="no"/>
+                                <child>
+                                  <object class="GtkLabel" id="label_rpn_sum">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label">∑</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -6521,6 +6545,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="can_focus">True</property>
                                 <property name="reorderable">True</property>
                                 <property name="enable_search">False</property>
+                                <signal name="button-press-event" handler="on_stackview_button_press_event" swapped="no"/>
+                                <signal name="popup-menu" handler="on_stackview_popup_menu" swapped="no"/>
                                 <child internal-child="selection">
                                   <object class="GtkTreeSelection"/>
                                 </child>
@@ -6553,7 +6579,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="can_focus">True</property>
                                     <property name="focus_on_click">False</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Rotate the stack or move selected register up.</property>
+                                    <property name="tooltip_text" translatable="yes">Rotate the stack or move selected register up (Ctrl+Up)</property>
                                     <signal name="clicked" handler="on_button_registerup_clicked" swapped="no"/>
                                     <child>
                                       <object class="GtkImage" id="image_up">
@@ -6577,7 +6603,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="can_focus">True</property>
                                     <property name="focus_on_click">False</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Rotate the stack or move selected register down.</property>
+                                    <property name="tooltip_text" translatable="yes">Rotate the stack or move selected register down (Ctrl+Down)</property>
                                     <signal name="clicked" handler="on_button_registerdown_clicked" swapped="no"/>
                                     <child>
                                       <object class="GtkImage">
@@ -6600,7 +6626,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="can_focus">True</property>
                                     <property name="focus_on_click">False</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Swap the to top values or move the selected value to the top of the stack.</property>
+                                    <property name="tooltip_text" translatable="yes">Swap the to top values or move the selected value to the top of the stack (Ctrl+Right)</property>
                                     <signal name="clicked" handler="on_button_registerswap_clicked" swapped="no"/>
                                     <child>
                                       <object class="GtkImage" id="image_swap">
@@ -6639,7 +6665,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="can_focus">True</property>
                                     <property name="focus_on_click">False</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Copy the the selected or top value to the top of the stack.</property>
+                                    <property name="tooltip_text" translatable="yes">Copy the the selected or top value to the top of the stack (Ctrl+Shift+C)</property>
                                     <signal name="clicked" handler="on_button_copyregister_clicked" swapped="no"/>
                                     <child>
                                       <object class="GtkImage">
@@ -6662,7 +6688,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="can_focus">True</property>
                                     <property name="focus_on_click">False</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Enter the top value from before the last numeric operation.</property>
+                                    <property name="tooltip_text" translatable="yes">Enter the top value from before the last numeric operation (Ctrl+Left)</property>
                                     <signal name="clicked" handler="on_button_lastx_clicked" swapped="no"/>
                                     <child>
                                       <object class="GtkImage">
@@ -6685,7 +6711,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="can_focus">True</property>
                                     <property name="focus_on_click">False</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Delete the top or selected value.</property>
+                                    <property name="tooltip_text" translatable="yes">Delete the top or selected value (Ctrl+Delete)</property>
                                     <signal name="clicked" handler="on_button_deleteregister_clicked" swapped="no"/>
                                     <child>
                                       <object class="GtkImage">
@@ -6718,7 +6744,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="can_focus">True</property>
                                 <property name="focus_on_click">False</property>
                                 <property name="receives_default">False</property>
-                                <property name="tooltip_text" translatable="yes">Edit the selected value.</property>
+                                <property name="tooltip_text" translatable="yes">Edit the selected value</property>
                                 <signal name="clicked" handler="on_button_editregister_clicked" swapped="no"/>
                                 <child>
                                   <object class="GtkImage">
@@ -6741,7 +6767,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="can_focus">True</property>
                                 <property name="focus_on_click">False</property>
                                 <property name="receives_default">False</property>
-                                <property name="tooltip_text" translatable="yes">Clear the RPN stack.</property>
+                                <property name="tooltip_text" translatable="yes">Clear the RPN stack (Ctrl+Shift+Delete)</property>
                                 <signal name="clicked" handler="on_button_clearstack_clicked" swapped="no"/>
                                 <child>
                                   <object class="GtkImage">
@@ -7807,6 +7833,148 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
         <property name="label" translatable="yes">View/Edit Vector</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_popup_menu_item_view_vector_activate" swapped="no"/>
+      </object>
+    </child>
+  </object>
+  <object class="GtkMenu" id="popup_menu_stackview">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_stack_inserttext">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Insert Text</property>
+        <signal name="activate" handler="on_popup_menu_item_stack_inserttext_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_stack_copytext">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Copy Text</property>
+        <signal name="activate" handler="on_popup_menu_item_stack_copytext_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_stack_copy">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Copy</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_popup_menu_item_stack_copy_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_stack_movetotop">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">To Top</property>
+        <signal name="activate" handler="on_popup_menu_item_stack_movetotop_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_stack_swap">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Swap</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_popup_menu_item_stack_swap_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_stack_moveup">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Up</property>
+        <property name="use_underline">True</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_stack_movedown">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Down</property>
+        <property name="use_underline">True</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_stack_edit">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Edit</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_popup_menu_item_stack_edit_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_stack_negate">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Negate</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_popup_menu_item_stack_negate_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_stack_invert">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Invert</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_popup_menu_item_stack_invert_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_stack_square">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Square</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_popup_menu_item_stack_square_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_stack_sqrt">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Square Root</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_popup_menu_item_stack_sqrt_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_stack_delete">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Delete</property>
+        <signal name="activate" handler="on_popup_menu_item_stack_delete_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_stack_clear">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Clear Stack</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_popup_menu_item_stack_clear_activate" swapped="no"/>
       </object>
     </child>
   </object>

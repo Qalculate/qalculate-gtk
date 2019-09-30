@@ -1067,6 +1067,8 @@ void set_unicode_buttons() {
 	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sqrt")), "sqrt");
 	if(can_display_unicode_string_function(SIGN_SQRT, (void*) gtk_builder_get_object(main_builder, "label_rpn_sqrt"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), SIGN_SQRT);
 	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), "sqrt");
+	if(can_display_unicode_string_function("∑", (void*) gtk_builder_get_object(main_builder, "label_rpn_sum"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sum")), "∑");
+	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), "sum");
 
 	GtkRequisition a;
 	gint w, h;
@@ -1078,6 +1080,9 @@ void set_unicode_buttons() {
 	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sqrt")), &a, NULL);
 	if(a.width > w) w = a.width;
 	if(a.height > h) h = a.height;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sum")), &a, NULL);
+	if(a.width > w) w = a.width;
+	if(a.height > h) h = a.height;
 	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), &a, NULL);
 	if(a.width > w) w = a.width;
 	if(a.height > h) h = a.height;
@@ -1087,6 +1092,7 @@ void set_unicode_buttons() {
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), w, h);
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_add")), w, h);
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sqrt")), w, h);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sum")), w, h);
 
 }
 
@@ -8845,8 +8851,9 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 
 	bool do_factors = false, do_fraction = false, do_pfe = false, do_expand = false;
 	if(do_stack && !rpn_mode) do_stack = false;
+	if(do_stack && do_mathoperation && f && stack_index == 0) do_stack = false;
 
-	if(str.empty()) {
+	if(str.empty() && !do_mathoperation) {
 		if(do_stack) {
 			GtkTreeIter iter;
 			gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(stackstore), &iter, NULL, stack_index);
@@ -9228,7 +9235,13 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	CALCULATOR->resetExchangeRatesUsed();
 	if(do_stack) {
 		stack_size = CALCULATOR->RPNStackSize();
-		CALCULATOR->setRPNRegister(stack_index + 1, CALCULATOR->unlocalizeExpression(execute_str.empty() ? str : execute_str, evalops.parse_options), 0, evalops, parsed_mstruct, parsed_tostruct);
+		if(do_mathoperation && f) {
+			CALCULATOR->getRPNRegister(stack_index + 1)->transform(f);
+			parsed_mstruct->set(*CALCULATOR->getRPNRegister(stack_index + 1));
+			CALCULATOR->calculateRPNRegister(stack_index + 1, 0, evalops);
+		} else {
+			CALCULATOR->setRPNRegister(stack_index + 1, CALCULATOR->unlocalizeExpression(execute_str.empty() ? str : execute_str, evalops.parse_options), 0, evalops, parsed_mstruct, parsed_tostruct);
+		}
 	} else if(rpn_mode) {
 		stack_size = CALCULATOR->RPNStackSize();
 		if(do_mathoperation) {
@@ -9591,6 +9604,7 @@ void RPNRegisterAdded(string text, gint index) {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerdown")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), TRUE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sum")), TRUE);
 	}
 	on_stackview_selection_changed(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), NULL);
 }
@@ -9618,6 +9632,7 @@ void RPNRegisterRemoved(gint index) {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerdown")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sum")), FALSE);
 	}
 	on_stackview_selection_changed(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), NULL);
 }
@@ -9849,7 +9864,7 @@ struct FunctionDialog {
 	vector<GtkWidget*> boolean_buttons;
 	vector<int> boolean_index;
 	GtkListStore *properties_store;
-	bool add_to_menu, keep_open;
+	bool add_to_menu, keep_open, rpn;
 	int args;
 };
 
@@ -9999,6 +10014,20 @@ void on_insert_function_insert(GtkWidget*, gpointer p) {
 		function_dialogs.erase(f);
 	}
 }
+void on_insert_function_rpn(GtkWidget *w, gpointer p) {
+	MathFunction *f = (MathFunction*) p;
+	FunctionDialog *fd = function_dialogs[f];
+	if(!fd->keep_open) gtk_widget_hide(fd->dialog);
+	calculateRPN(f);
+	if(fd->add_to_menu) function_inserted(f);
+	if(fd->keep_open) {
+		gtk_widget_grab_focus(fd->entry[0]);
+	} else {
+		gtk_widget_destroy(fd->dialog);
+		delete fd;
+		function_dialogs.erase(f);
+	}
+}
 void on_insert_function_keepopen(GtkToggleButton *w, gpointer p) {
 	MathFunction *f = (MathFunction*) p;
 	FunctionDialog *fd = function_dialogs[f];
@@ -10016,7 +10045,8 @@ void on_insert_function_entry_activated(GtkWidget *w, gpointer p) {
 	for(int i = 0; i < fd->args; i++) {
 		if(fd->entry[i] == w) {
 			if(i == fd->args - 1) {
-				if(fd->keep_open) on_insert_function_exec(w, p);
+				if(fd->rpn) on_insert_function_rpn(w, p);
+				else if(fd->keep_open || rpn_mode) on_insert_function_exec(w, p);
 				else on_insert_function_insert(w, p);
 			} else {
 				if(f->getArgumentDefinition(i + 2) && f->getArgumentDefinition(i + 2)->type() == ARGUMENT_TYPE_BOOLEAN) {
@@ -10079,6 +10109,20 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 	
 	function_dialogs[f] = fd;
 	
+	int args = 0;
+	bool has_vector = false;
+	if(f->args() > 0) {
+		args = f->args();
+	} else if(f->minargs() > 0) {
+		args = f->minargs() + 1;
+		has_vector = true;
+	} else {
+		args = 1;
+		has_vector = true;
+	}
+	fd->args = args;
+	
+	fd->rpn = rpn_mode && CALCULATOR->RPNStackSize() >= (f->minargs() <= 0 ? 1 : (size_t) f->minargs());
 	fd->add_to_menu = add_to_menu;
 	
 	string f_title = f->title(true);
@@ -10095,10 +10139,11 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 	fd->b_cancel = gtk_button_new_with_mnemonic(_("_Close"));
 	gtk_dialog_add_action_widget(GTK_DIALOG(fd->dialog), fd->b_cancel, GTK_RESPONSE_REJECT);
 
-	fd->b_exec = gtk_button_new_with_mnemonic(_("C_alculate"));
+	fd->b_exec = gtk_button_new_with_mnemonic(rpn_mode ? _("Enter") : _("C_alculate"));
 	gtk_dialog_add_action_widget(GTK_DIALOG(fd->dialog), fd->b_exec, GTK_RESPONSE_APPLY);
 
-	fd->b_insert = gtk_button_new_with_mnemonic(_("_Insert"));
+	fd->b_insert = gtk_button_new_with_mnemonic(rpn_mode ? _("Apply to Stack") : _("_Insert"));
+	if(rpn_mode && !fd->rpn) gtk_widget_set_sensitive(fd->b_insert, FALSE);
 	gtk_dialog_add_action_widget(GTK_DIALOG(fd->dialog), fd->b_insert, GTK_RESPONSE_ACCEPT);
 
 	gtk_container_set_border_width(GTK_CONTAINER(fd->dialog), 6);
@@ -10113,18 +10158,6 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 	gtk_widget_set_halign(title_label, GTK_ALIGN_START);
 
 	gtk_container_add(GTK_CONTAINER(vbox_pre), title_label);
-	int args = 0;
-	bool has_vector = false;
-	if(f->args() > 0) {
-		args = f->args();
-	} else if(f->minargs() > 0) {
-		args = f->minargs() + 1;
-		has_vector = true;
-	} else {
-		args = 1;
-		has_vector = true;
-	}
-	fd->args = args;
 
 	GtkWidget *table = gtk_grid_new();
 	gtk_grid_set_row_spacing(GTK_GRID(table), 6);
@@ -10148,12 +10181,11 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 	gtk_misc_set_alignment(GTK_MISC(fd->w_result), 1.0, 0.5);
 #endif 
 
-
 	int bindex = 0;
 	string argstr, typestr, defstr; 
 	string argtype;
-	//create argument entries
 	Argument *arg;
+	//create argument entries
 	fd->properties_store = NULL;
 	for(int i = 0; i < args; i++) {
 		arg = f->getArgumentDefinition(i + 1);
@@ -10238,6 +10270,15 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 						DataProperty *dp = ds->getFirstProperty(&it);
 						GtkTreeIter iter;
 						bool active_set = false;
+						if(fd->rpn && (size_t) i < CALCULATOR->RPNStackSize()) {
+							GtkTreeIter iter;
+							if(gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(stackstore), &iter, NULL, i)) {
+								gchar *gstr;
+								gtk_tree_model_get(GTK_TREE_MODEL(stackstore), &iter, 1, &gstr, -1);
+								defstr = gstr;
+								g_free(gstr);
+							}
+						}
 						while(dp) {
 							if(!dp->isHidden()) {
 								gtk_list_store_append(fd->properties_store, &iter);
@@ -10308,7 +10349,41 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 		} else {
 			fd->type_label[i] = NULL;
 		}
-		if(arg && arg->type() == ARGUMENT_TYPE_BOOLEAN) {
+		if(fd->rpn && (size_t) i < CALCULATOR->RPNStackSize()) {
+			GtkTreeIter iter;
+			if(gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(stackstore), &iter, NULL, i)) {
+				gchar *gstr;
+				gtk_tree_model_get(GTK_TREE_MODEL(stackstore), &iter, 1, &gstr, -1);
+				if(arg && arg->type() == ARGUMENT_TYPE_BOOLEAN) {
+					if(g_strcmp0(gstr, "1") == 0) {
+						g_signal_handlers_block_matched((gpointer) fd->boolean_buttons[fd->boolean_buttons.size() - 2], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
+						gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fd->boolean_buttons[fd->boolean_buttons.size() - 2]), TRUE);
+						g_signal_handlers_unblock_matched((gpointer) fd->boolean_buttons[fd->boolean_buttons.size() - 2], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
+					}
+				} else if(fd->properties_store && arg && arg->type() == ARGUMENT_TYPE_DATA_PROPERTY) {
+				} else {
+					g_signal_handlers_block_matched((gpointer) fd->entry[i], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
+					if(i == 0 && args == 1 && (has_vector || arg->type() == ARGUMENT_TYPE_VECTOR)) {
+						string rpn_vector = gstr;
+						while(gtk_tree_model_iter_next(GTK_TREE_MODEL(stackstore), &iter)) {
+							g_free(gstr);
+							gtk_tree_model_get(GTK_TREE_MODEL(stackstore), &iter, 1, &gstr, -1);
+							rpn_vector += CALCULATOR->getComma();
+							rpn_vector += " ";
+							rpn_vector += gstr;
+						}
+						gtk_entry_set_text(GTK_ENTRY(fd->entry[i]), rpn_vector.c_str());
+					} else {
+						gtk_entry_set_text(GTK_ENTRY(fd->entry[i]), gstr);
+						if(arg && arg->type() == ARGUMENT_TYPE_INTEGER) {
+							gtk_spin_button_update(GTK_SPIN_BUTTON(fd->entry[i]));
+						}
+					}
+					g_signal_handlers_unblock_matched((gpointer) fd->entry[i], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
+				}
+				g_free(gstr);
+			}
+		} else if(arg && arg->type() == ARGUMENT_TYPE_BOOLEAN) {
 			if(defstr == "1") {
 				g_signal_handlers_block_matched((gpointer) fd->boolean_buttons[fd->boolean_buttons.size() - 2], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fd->boolean_buttons[fd->boolean_buttons.size() - 2]), TRUE);
@@ -10383,6 +10458,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 	}
 	
 	g_signal_connect((gpointer) fd->b_exec, "clicked", G_CALLBACK(on_insert_function_exec), (gpointer) f);
+	g_signal_connect((gpointer) fd->b_insert, "clicked", G_CALLBACK(on_insert_function_rpn), (gpointer) f);
 	g_signal_connect((gpointer) fd->b_insert, "clicked", G_CALLBACK(on_insert_function_insert), (gpointer) f);
 	g_signal_connect((gpointer) fd->b_cancel, "clicked", G_CALLBACK(on_insert_function_close), (gpointer) f);
 	g_signal_connect((gpointer) fd->b_keepopen, "toggled", G_CALLBACK(on_insert_function_keepopen), (gpointer) f);
@@ -15323,7 +15399,7 @@ void save_preferences(bool mode) {
 		if(i3 == string::npos) {
 			if(!is_protected && inhistory[hi].length() > 50000) {
 				int index = 50;
-				while(inhistory[hi][index] < 0) index--;
+				while(index >= 0 && inhistory[hi][index] < 0) index--;
 				fprintf(file, "%s …\n", inhistory[hi].substr(0, index + 1).c_str());
 			} else {
 				fprintf(file, "%s\n", inhistory[hi].c_str());
@@ -15474,8 +15550,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "\n"); 
 	if(latest_button_unit) fprintf(file, "latest_button_unit=%s\n", latest_button_unit->referenceName().c_str());
 	if(latest_button_currency) fprintf(file, "latest_button_currency=%s\n", latest_button_currency->referenceName().c_str());
-	if(mode)
-		set_saved_mode();
+	if(mode) set_saved_mode();
 	for(size_t i = 1; i < modes.size(); i++) {
 		if(i == 1) {
 			fprintf(file, "\n[Mode]\n");
@@ -18660,6 +18735,9 @@ void on_button_rpn_reciprocal_clicked(GtkButton*, gpointer) {
 }
 void on_button_rpn_negate_clicked(GtkButton*, gpointer) {
 	insertButtonFunction(CALCULATOR->getActiveFunction("neg"));
+}
+void on_button_rpn_sum_clicked(GtkButton*, gpointer) {
+	insertButtonFunction(CALCULATOR->f_total);
 }
 #define INDEX_TYPE_ANS 0
 #define INDEX_TYPE_XPR 1
@@ -22705,6 +22783,7 @@ void on_button_clearstack_clicked(GtkButton*, gpointer) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sqrt")), FALSE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_reciprocal")), FALSE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_negate")), FALSE);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sum")), FALSE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_add")), FALSE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sub")), FALSE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_times")), FALSE);
@@ -22744,6 +22823,147 @@ void on_stackstore_row_deleted(GtkTreeModel*, GtkTreePath *path, gpointer) {
 		inserted_stack_index = -1;
 		updateRPNIndexes();
 	}
+}
+
+void selected_register_function(MathFunction *f) {
+	if(!f) return;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), &model, &iter)) return;
+	GtkTreePath *path = gtk_tree_model_get_path(model, &iter);
+	gint index = gtk_tree_path_get_indices(path)[0];
+	gtk_tree_path_free(path);
+	execute_expression(true, true, OPERATION_ADD, f, true, index);
+}
+void on_popup_menu_item_stack_copytext_activate(GtkMenuItem*, gpointer) {
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), &model, &iter)) return;
+	gchar *gstr;
+	gtk_tree_model_get(model, &iter, 1, &gstr, -1);
+	gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), gstr, -1);
+	g_free(gstr);
+}
+void on_popup_menu_item_stack_inserttext_activate(GtkMenuItem*, gpointer) {
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), &model, &iter)) return;
+	gchar *gstr;
+	gtk_tree_model_get(model, &iter, 1, &gstr, -1);
+	insert_text(gstr);
+	g_free(gstr);
+}
+void on_popup_menu_item_stack_negate_activate(GtkMenuItem*, gpointer) {
+	selected_register_function(CALCULATOR->getActiveFunction("neg"));
+}
+void on_popup_menu_item_stack_invert_activate(GtkMenuItem*, gpointer) {
+	selected_register_function(CALCULATOR->getActiveFunction("inv"));
+}
+void on_popup_menu_item_stack_square_activate(GtkMenuItem*, gpointer) {
+	selected_register_function(CALCULATOR->f_sq);
+}
+void on_popup_menu_item_stack_sqrt_activate(GtkMenuItem*, gpointer) {
+	selected_register_function(CALCULATOR->f_sqrt);
+}
+void on_popup_menu_item_stack_copy_activate(GtkMenuItem*, gpointer) {
+	on_button_copyregister_clicked(NULL, NULL);
+}
+void on_popup_menu_item_stack_movetotop_activate(GtkMenuItem*, gpointer) {
+	GtkTreeModel *model;
+	GtkTreeIter iter, iter2;
+	GtkTreePath *path;
+	gint index;
+	if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), &model, &iter)) return;
+	path = gtk_tree_model_get_path(model, &iter);
+	index = gtk_tree_path_get_indices(path)[0];
+	gtk_tree_path_free(path);
+	g_signal_handlers_block_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_inserted, NULL);
+	g_signal_handlers_block_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_deleted, NULL);
+	CALCULATOR->moveRPNRegister(index + 1, 1);
+	gtk_tree_model_get_iter_first(model, &iter2);
+	gtk_list_store_move_before(stackstore, &iter, &iter2);
+	g_signal_handlers_unblock_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_inserted, NULL);
+	g_signal_handlers_unblock_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_deleted, NULL);
+	mstruct->unref();
+	mstruct = CALCULATOR->getRPNRegister(1);
+	mstruct->ref();
+	setResult(NULL, true, false, false, "", 0, true);
+	updateRPNIndexes();
+}
+void on_popup_menu_item_stack_up_activate(GtkMenuItem*, gpointer) {
+	on_button_registerup_clicked(NULL, NULL);
+}
+void on_popup_menu_item_stack_down_activate(GtkMenuItem*, gpointer) {
+	on_button_registerdown_clicked(NULL, NULL);
+}
+void on_popup_menu_item_stack_swap_activate(GtkMenuItem*, gpointer) {
+	on_button_registerswap_clicked(NULL, NULL);
+}
+void on_popup_menu_item_stack_edit_activate(GtkMenuItem*, gpointer) {
+	on_button_editregister_clicked(NULL, NULL);
+}
+void on_popup_menu_item_stack_delete_activate(GtkMenuItem*, gpointer) {
+	on_button_deleteregister_clicked(NULL, NULL);
+}
+void on_popup_menu_item_stack_clear_activate(GtkMenuItem*, gpointer) {
+	on_button_clearstack_clicked(NULL, NULL);
+}
+void update_stackview_popup() {
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	bool b_sel = gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), &model, &iter);
+	gint index = -1;
+	if(b_sel) {
+		GtkTreePath *path = gtk_tree_model_get_path(model, &iter);
+		index = gtk_tree_path_get_indices(path)[0];
+		gtk_tree_path_free(path);
+	}
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_stack_inserttext")), b_sel);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_stack_copytext")), b_sel);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_stack_copy")), b_sel);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_stack_movetotop")), b_sel && index != 0);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_stack_moveup")), b_sel);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_stack_movedown")), b_sel);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_stack_swap")), b_sel);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_stack_edit")), b_sel);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_stack_negate")), b_sel);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_stack_invert")), b_sel);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_stack_square")), b_sel);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_stack_sqrt")), b_sel);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_stack_delete")), b_sel);
+}
+gboolean on_stackview_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
+	GtkTreePath *path = NULL;
+	GtkTreeSelection *select = NULL;
+	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
+		if(b_busy) return TRUE;
+		if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(stackview), event->x, event->y, &path, NULL, NULL, NULL)) {
+			select = gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview));
+			if(!gtk_tree_selection_path_is_selected(select, path)) {
+				gtk_tree_selection_unselect_all(select);
+				gtk_tree_selection_select_path(select, path);
+			}
+			gtk_tree_path_free(path);
+		}
+		update_stackview_popup();
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_stackview")), (GdkEvent*) event);
+#else
+		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_stackview")), NULL, NULL, NULL, NULL, event->button, event->time);
+#endif
+		return TRUE;
+	}
+	return FALSE;
+}
+gboolean on_stackview_popup_menu(GtkWidget*, gpointer) {
+	if(b_busy) return TRUE;
+	update_stackview_popup();
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+	gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_stackview")), NULL);
+#else
+	gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_stackview")), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
+#endif
+	return TRUE;
 }
 
 void on_unit_edit_entry_relation_changed(GtkEditable *w, gpointer) {
@@ -24747,6 +24967,57 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 			else if(b_busy_command) on_abort_command(NULL, 0, NULL);
 		}
 		return TRUE;
+	}
+	if(rpn_mode && event->state & GDK_CONTROL_MASK) {
+		switch(event->keyval) {
+			case GDK_KEY_Up: {
+				on_button_registerup_clicked(NULL, NULL);
+				return TRUE;
+			}
+			case GDK_KEY_Down: {
+				on_button_registerdown_clicked(NULL, NULL);
+				return TRUE;
+			}
+			case GDK_KEY_Right: {
+				on_button_registerswap_clicked(NULL, NULL);
+				return TRUE;
+			}
+			case GDK_KEY_Left: {
+				on_button_lastx_clicked(NULL, NULL);
+				return TRUE;
+			}
+			case GDK_KEY_Delete: {}
+			case GDK_KEY_KP_Delete: {
+				if(event->state & GDK_SHIFT_MASK) {
+					on_button_clearstack_clicked(NULL, NULL);
+				} else {
+					on_button_deleteregister_clicked(NULL, NULL);
+				}
+				return TRUE;
+			}
+			case GDK_KEY_C: {
+				if(event->state & GDK_SHIFT_MASK) {
+					on_button_copyregister_clicked(NULL, NULL);
+					return TRUE;
+				}
+				break;
+			}
+			case GDK_KEY_S: {
+				if(event->state & GDK_SHIFT_MASK) {
+					on_button_registerswap_clicked(NULL, NULL);
+					return TRUE;
+				}
+				break;
+			}
+			case GDK_KEY_L: {
+				if(event->state & GDK_SHIFT_MASK) {
+					on_button_lastx_clicked(NULL, NULL);
+					return TRUE;
+				}
+				break;
+			}
+			default: {}
+		}
 	}
 	switch(event->keyval) {
 		case GDK_KEY_Escape: {
