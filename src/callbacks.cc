@@ -62,6 +62,8 @@
 #	define unordered_map Sgi::hash_map
 #endif
 
+#define AUTOCALC_HISTORY_TIMEOUT 2000
+
 extern bool do_timeout, check_expression_position;
 extern gint expression_position;
 
@@ -410,6 +412,8 @@ int ExpressionFunction::calculate(MathStructure &mstruct, const MathStructure &v
 }
 
 void executeCommand(int command_type, bool show_result = true, string ceu_str = "", Unit *u = NULL, int run = 1);
+
+extern int has_information_unit(const MathStructure &m, bool top = true);
 
 string print_with_evalops(const Number &nr) {
 	PrintOptions po;
@@ -1729,7 +1733,7 @@ bool last_is_operator(string str, bool allow_exp = false) {
 
 void add_to_expression_history(string str);
 gint autocalc_history_timeout_id = 0;
-bool autocalc_fraction = false;
+bool autocalc_fraction = false, autocalc_binary_prefixes = false;
 vector<CalculatorMessage> autocalc_messages;
 gboolean do_autocalc_history_timeout(gpointer) {
 	autocalc_history_timeout_id = 0;
@@ -1751,6 +1755,28 @@ gboolean do_autocalc_history_timeout(gpointer) {
 		setResult(NULL, true, true, true, "", 0);
 		printops.number_fraction_format = save_format;
 		printops.restrict_fraction_length = save_restrict_fraction_length;
+	} else if(autocalc_binary_prefixes) {
+		bool save_pre = printops.use_unit_prefixes;
+		bool save_cur = printops.use_prefixes_for_currencies;
+		bool save_allu = printops.use_prefixes_for_all_units;
+		bool save_den = printops.use_denominator_prefix;
+		int save_bin = CALCULATOR->usesBinaryPrefixes();
+		int i = has_information_unit(*mstruct);
+		CALCULATOR->useBinaryPrefixes(i > 0 ? 1 : 2);
+		if(i == 1) {
+			printops.use_denominator_prefix = false;
+		} else if(i > 1) {
+			printops.use_denominator_prefix = true;
+		} else {
+			printops.use_prefixes_for_currencies = true;
+			printops.use_prefixes_for_all_units = true;
+		}
+		setResult(NULL, true, true, true, "", 0);
+		printops.use_unit_prefixes = save_pre;
+		printops.use_prefixes_for_currencies = save_cur;
+		printops.use_prefixes_for_all_units = save_allu;
+		printops.use_denominator_prefix = save_den;
+		CALCULATOR->useBinaryPrefixes(save_bin);
 	} else {
 		setResult(NULL, true, true, true, "", 0);
 	}
@@ -1779,7 +1805,7 @@ gboolean do_autocalc_history_timeout(gpointer) {
 void do_auto_calc(bool recalculate = true, string str = string()) {
 	if(block_result_update || block_expression_execution) return;
 	MathStructure mauto;
-	bool do_factors = false, do_fraction = false, do_pfe = false, do_expand = false;
+	bool do_factors = false, do_fraction = false, do_pfe = false, do_expand = false, do_binary_prefixes = false, do_conv = false;
 	bool do_timeout_bak = do_timeout;
 	if(recalculate) {
 		if(autocalc_history_timeout_id != 0) {
@@ -1982,6 +2008,29 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 				CALCULATOR->setCustomOutputBase(save_nr);
 				printops.base = save_base;
 				return;
+			} else {
+				if((to_str[0] == '?' && (!printops.use_unit_prefixes || !printops.use_prefixes_for_currencies || !printops.use_prefixes_for_all_units)) || (to_str.length() > 1 && to_str[1] == '?' && to_str[0] == 'a' && (!printops.use_unit_prefixes || !printops.use_prefixes_for_currencies || !printops.use_all_prefixes || !printops.use_prefixes_for_all_units)) || (to_str.length() > 1 && to_str[1] == '?' && to_str[0] == 'd' && (!printops.use_unit_prefixes || !printops.use_prefixes_for_currencies || !printops.use_prefixes_for_all_units || CALCULATOR->usesBinaryPrefixes() > 0))) {
+					bool save_pre = printops.use_unit_prefixes;
+					bool save_all = printops.use_all_prefixes;
+					bool save_cur = printops.use_prefixes_for_currencies;
+					bool save_allu = printops.use_prefixes_for_all_units;
+					int save_bin = CALCULATOR->usesBinaryPrefixes();
+					printops.use_unit_prefixes = true;
+					printops.use_prefixes_for_currencies = true;
+					printops.use_prefixes_for_all_units = true;
+					if(to_str[0] == 'a') printops.use_all_prefixes = true;
+					else if(to_str[0] == 'd') CALCULATOR->useBinaryPrefixes(0);
+					do_auto_calc(true);
+					printops.use_unit_prefixes = save_pre;
+					printops.use_all_prefixes = save_all;
+					printops.use_prefixes_for_currencies = save_cur;
+					printops.use_prefixes_for_all_units = save_allu;
+					CALCULATOR->useBinaryPrefixes(save_bin);
+					return;
+				} else if(to_str.length() > 1 && to_str[1] == '?' && to_str[0] == 'b') {
+					do_binary_prefixes = true;
+				}
+				do_conv = true;
 			}
 		} else if(origstr) {
 			size_t i = str.find_first_of(SPACES LEFT_PARENTHESIS);
@@ -1996,21 +2045,47 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 				}
 			}
 		}
-		do_timeout_bak = do_timeout;
-		do_timeout = false;
-		if(origstr && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")))) {
+		if(origstr && !do_conv && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")))) {
 			string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), evalops.parse_options);
 			remove_blank_ends(ceu_str);
-			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {			
-				if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-') {
+			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {
+				if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-' && (ceu_str.length() == 1 || ceu_str[1] != '?')) {
 					ceu_str = "?" + ceu_str;
 				}
 			}
-			if(ceu_str.empty()) parsed_tostruct->setUndefined();
-			else parsed_tostruct->set(ceu_str);
+			if(ceu_str.empty()) {
+				parsed_tostruct->setUndefined();
+			} else {
+				if((ceu_str[0] == '?' && (!printops.use_unit_prefixes || !printops.use_prefixes_for_currencies || !printops.use_prefixes_for_all_units)) || (ceu_str.length() > 1 && ceu_str[1] == '?' && ceu_str[0] == 'a' && (!printops.use_unit_prefixes || !printops.use_prefixes_for_currencies || !printops.use_all_prefixes || !printops.use_prefixes_for_all_units)) || (ceu_str.length() > 1 && ceu_str[1] == '?' && ceu_str[0] == 'd' && (!printops.use_unit_prefixes || !printops.use_prefixes_for_currencies || !printops.use_prefixes_for_all_units || CALCULATOR->usesBinaryPrefixes() > 0))) {
+					bool save_pre = printops.use_unit_prefixes;
+					bool save_all = printops.use_all_prefixes;
+					bool save_cur = printops.use_prefixes_for_currencies;
+					bool save_allu = printops.use_prefixes_for_all_units;
+					int save_bin = CALCULATOR->usesBinaryPrefixes();
+					printops.use_unit_prefixes = true;
+					printops.use_prefixes_for_currencies = true;
+					printops.use_prefixes_for_all_units = true;
+					if(ceu_str[0] == 'a') printops.use_all_prefixes = true;
+					else if(ceu_str[0] == 'd') CALCULATOR->useBinaryPrefixes(0);
+					do_auto_calc(true);
+					printops.use_unit_prefixes = save_pre;
+					printops.use_all_prefixes = save_all;
+					printops.use_prefixes_for_currencies = save_cur;
+					printops.use_prefixes_for_all_units = save_allu;
+					CALCULATOR->useBinaryPrefixes(save_bin);
+					return;
+				} else if(ceu_str.length() > 1 && ceu_str[1] == '?' && ceu_str[0] == 'b') {
+					do_binary_prefixes = true;
+				}
+				parsed_tostruct->set(ceu_str);
+			}
 		} else {
 			parsed_tostruct->setUndefined();
 		}
+
+		do_timeout_bak = do_timeout;
+		do_timeout = false;
+
 		CALCULATOR->beginTemporaryStopMessages();
 		if(!CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), 100, evalops, parsed_mstruct, parsed_tostruct)) {
 			mauto.setAborted();
@@ -2031,7 +2106,8 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		CALCULATOR->endTemporaryStopMessages(!mauto.isAborted(), &autocalc_messages);
 		if(!mauto.isAborted()) {
 			autocalc_fraction = do_fraction;
-			autocalc_history_timeout_id = g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 1500, do_autocalc_history_timeout, NULL, NULL);
+			autocalc_binary_prefixes = do_binary_prefixes;
+			autocalc_history_timeout_id = g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, AUTOCALC_HISTORY_TIMEOUT, do_autocalc_history_timeout, NULL, NULL);
 		}
 	} else {
 		do_timeout_bak = do_timeout;
@@ -2043,20 +2119,39 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 	
 		CALCULATOR->startControl(100);
 	
+		if(printops.interval_display == INTERVAL_DISPLAY_INTERVAL) replace_interval_with_function(mauto);
+		MathStructure mautop;
+		if(recalculate) mautop = mauto;
+		else mautop = *mstruct;
+	
 		printops.allow_non_usable = true;
 		printops.can_display_unicode_string_arg = (void*) resultview;
 		
 		NumberFractionFormat save_format = printops.number_fraction_format;
 		bool save_restrict_fraction_length = printops.restrict_fraction_length;
+		bool save_pre = printops.use_unit_prefixes;
+		bool save_cur = printops.use_prefixes_for_currencies;
+		bool save_allu = printops.use_prefixes_for_all_units;
+		bool save_den = printops.use_denominator_prefix;
+		int save_bin = CALCULATOR->usesBinaryPrefixes();
 		if(do_fraction) {
 			printops.restrict_fraction_length = false;
 			if(mstruct->isNumber()) printops.number_fraction_format = FRACTION_COMBINED;
 			else printops.number_fraction_format = FRACTION_FRACTIONAL;
 		}
-		if(printops.interval_display == INTERVAL_DISPLAY_INTERVAL) replace_interval_with_function(mauto);
-		MathStructure mautop;
-		if(recalculate) mautop = mauto;
-		else mautop = *mstruct;
+		if(do_binary_prefixes) {
+			printops.use_unit_prefixes = true;
+			int i = has_information_unit(mautop);
+			CALCULATOR->useBinaryPrefixes(i > 0 ? 1 : 2);
+			if(i == 1) {
+				printops.use_denominator_prefix = false;
+			} else if(i > 1) {
+				printops.use_denominator_prefix = true;
+			} else {
+				printops.use_prefixes_for_currencies = true;
+				printops.use_prefixes_for_all_units = true;
+			}
+		}
 		mautop.removeDefaultAngleUnit(evalops);
 		mautop.format(printops);
 		tmp_surface = draw_structure(mautop, printops, top_ips, NULL, 0);
@@ -2162,6 +2257,13 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		if(do_fraction) {
 			printops.number_fraction_format = save_format;
 			printops.restrict_fraction_length = save_restrict_fraction_length;
+		}
+		if(do_binary_prefixes) {
+			printops.use_unit_prefixes = save_pre;
+			printops.use_prefixes_for_currencies = save_cur;
+			printops.use_prefixes_for_all_units = save_allu;
+			printops.use_denominator_prefix = save_den;
+			CALCULATOR->useBinaryPrefixes(save_bin);
 		}
 		printops.can_display_unicode_string_arg = NULL;
 		printops.allow_non_usable = false;
@@ -8510,7 +8612,7 @@ void CommandThread::run() {
 					ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), evalops.parse_options);
 					remove_blank_ends(ceu_str);
 					if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {			
-						if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-') {
+						if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-' && (ceu_str.length() == 1 || ceu_str[1] != '?')) {
 							ceu_str = "?" + ceu_str;
 						}
 					}
@@ -8675,7 +8777,51 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 				printops.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
 			}
 		}
-		if(show_result) setResult(NULL, true, false, true, command_type == COMMAND_TRANSFORM ? ceu_str : "");
+		if(show_result) {
+			if(command_type == COMMAND_CONVERT_STRING || (command_type == COMMAND_TRANSFORM && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion"))))) {
+				string to_str;
+				if(command_type == COMMAND_TRANSFORM) {
+					to_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), evalops.parse_options);
+					remove_blank_ends(to_str);
+				} else {
+					to_str = ceu_str;
+				}
+				bool save_pre = printops.use_unit_prefixes;
+				bool save_all = printops.use_all_prefixes;
+				bool save_cur = printops.use_prefixes_for_currencies;
+				bool save_allu = printops.use_prefixes_for_all_units;
+				int save_bin = CALCULATOR->usesBinaryPrefixes();
+				bool save_den = printops.use_denominator_prefix;
+				if(to_str[0] == '?' || (to_str.length() > 1 && to_str[1] == '?' && (to_str[0] == 'a' || to_str[0] == 'd'))) {
+					printops.use_unit_prefixes = true;
+					printops.use_prefixes_for_currencies = true;
+					printops.use_prefixes_for_all_units = true;
+					if(to_str[0] == 'a') printops.use_all_prefixes = true;
+					else if(to_str[0] == 'd') CALCULATOR->useBinaryPrefixes(0);
+				} else if(to_str.length() > 1 && to_str[1] == '?' && to_str[0] == 'b') {
+					printops.use_unit_prefixes = true;
+					int i = has_information_unit(*mstruct);
+					CALCULATOR->useBinaryPrefixes(i > 0 ? 1 : 2);
+					if(i == 1) {
+						printops.use_denominator_prefix = false;
+					} else if(i > 1) {
+						printops.use_denominator_prefix = true;
+					} else {
+						printops.use_prefixes_for_currencies = true;
+						printops.use_prefixes_for_all_units = true;
+					}
+				}
+				setResult(NULL, true, false, true, command_type == COMMAND_TRANSFORM ? ceu_str : "");
+				printops.use_unit_prefixes = save_pre;
+				printops.use_all_prefixes = save_all;
+				printops.use_prefixes_for_currencies = save_cur;
+				printops.use_prefixes_for_all_units = save_allu;
+				printops.use_denominator_prefix = save_den;
+				CALCULATOR->useBinaryPrefixes(save_bin);
+			} else {
+				setResult(NULL, true, false, true, command_type == COMMAND_TRANSFORM ? ceu_str : "");
+			}
+		}
 	}
 		
 	do_timeout = true;
@@ -8850,7 +8996,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	b_busy = true;
 	b_busy_expression = true;
 
-	bool do_factors = false, do_fraction = false, do_pfe = false, do_expand = false;
+	bool do_factors = false, do_fraction = false, do_pfe = false, do_expand = false, do_binary_prefixes = false, do_conv = false;
 	if(do_stack && !rpn_mode) do_stack = false;
 	if(do_stack && do_mathoperation && f && stack_index == 0) do_stack = false;
 
@@ -9200,6 +9346,31 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			executeCommand(COMMAND_CONVERT_STRING, true, to_str);
 			set_previous_expression();
 			return;
+		} else {
+			if((to_str[0] == '?' && (!printops.use_unit_prefixes || !printops.use_prefixes_for_currencies || !printops.use_prefixes_for_all_units)) || (to_str.length() > 1 && to_str[1] == '?' && to_str[0] == 'a' && (!printops.use_unit_prefixes || !printops.use_prefixes_for_currencies || !printops.use_all_prefixes || !printops.use_prefixes_for_all_units)) || (to_str.length() > 1 && to_str[1] == '?' && to_str[0] == 'd' && (!printops.use_unit_prefixes || !printops.use_prefixes_for_currencies || !printops.use_prefixes_for_all_units || CALCULATOR->usesBinaryPrefixes() > 0))) {
+				bool save_pre = printops.use_unit_prefixes;
+				bool save_all = printops.use_all_prefixes;
+				bool save_cur = printops.use_prefixes_for_currencies;
+				bool save_allu = printops.use_prefixes_for_all_units;
+				int save_bin = CALCULATOR->usesBinaryPrefixes();
+				printops.use_unit_prefixes = true;
+				printops.use_prefixes_for_currencies = true;
+				printops.use_prefixes_for_all_units = true;
+				if(to_str[0] == 'a') printops.use_all_prefixes = true;
+				else if(to_str[0] == 'd') CALCULATOR->useBinaryPrefixes(0);
+				b_busy = false;
+				b_busy_expression = false;
+				execute_expression(force, do_mathoperation, op, f, do_stack, stack_index);
+				printops.use_unit_prefixes = save_pre;
+				printops.use_all_prefixes = save_all;
+				printops.use_prefixes_for_currencies = save_cur;
+				printops.use_prefixes_for_all_units = save_allu;
+				CALCULATOR->useBinaryPrefixes(save_bin);
+				return;
+			} else if(to_str.length() > 1 && to_str[1] == '?' && to_str[0] == 'b') {
+				do_binary_prefixes = true;
+			}
+			do_conv = true;
 		}
 	} else if(execute_str.empty()) {
 		size_t i = str.find_first_of(SPACES LEFT_PARENTHESIS);
@@ -9220,16 +9391,42 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	
 	update_expression_icons(EXPRESSION_STOP);
 
-	if(execute_str.empty() && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")))) {
+	if(execute_str.empty() && !do_conv && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")))) {
 		string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), evalops.parse_options);
 		remove_blank_ends(ceu_str);
-		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {			
-			if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-') {
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {
+			if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-' && (ceu_str.length() == 1 || ceu_str[1] != '?')) {
 				ceu_str = "?" + ceu_str;
 			}
 		}
-		if(ceu_str.empty()) parsed_tostruct->setUndefined();
-		else parsed_tostruct->set(ceu_str);
+		if(ceu_str.empty()) {
+			parsed_tostruct->setUndefined();
+		} else {
+			if((ceu_str[0] == '?' && (!printops.use_unit_prefixes || !printops.use_prefixes_for_currencies || !printops.use_prefixes_for_all_units)) || (ceu_str.length() > 1 && ceu_str[1] == '?' && ceu_str[0] == 'a' && (!printops.use_unit_prefixes || !printops.use_prefixes_for_currencies || !printops.use_all_prefixes || !printops.use_prefixes_for_all_units)) || (ceu_str.length() > 1 && ceu_str[1] == '?' && ceu_str[0] == 'd' && (!printops.use_unit_prefixes || !printops.use_prefixes_for_currencies || !printops.use_prefixes_for_all_units || CALCULATOR->usesBinaryPrefixes() > 0))) {
+				bool save_pre = printops.use_unit_prefixes;
+				bool save_all = printops.use_all_prefixes;
+				bool save_cur = printops.use_prefixes_for_currencies;
+				bool save_allu = printops.use_prefixes_for_all_units;
+				int save_bin = CALCULATOR->usesBinaryPrefixes();
+				printops.use_unit_prefixes = true;
+				printops.use_prefixes_for_currencies = true;
+				printops.use_prefixes_for_all_units = true;
+				if(ceu_str[0] == 'a') printops.use_all_prefixes = true;
+				else if(ceu_str[0] == 'd') CALCULATOR->useBinaryPrefixes(0);
+				b_busy = false;
+				b_busy_expression = false;
+				execute_expression(force, do_mathoperation, op, f, do_stack, stack_index);
+				printops.use_unit_prefixes = save_pre;
+				printops.use_all_prefixes = save_all;
+				printops.use_prefixes_for_currencies = save_cur;
+				printops.use_prefixes_for_all_units = save_allu;
+				CALCULATOR->useBinaryPrefixes(save_bin);
+				return;
+			} else if(ceu_str.length() > 1 && ceu_str[1] == '?' && ceu_str[0] == 'b') {
+				do_binary_prefixes = true;
+			}
+			parsed_tostruct->set(ceu_str);
+		}
 	} else {
 		parsed_tostruct->setUndefined();
 	}
@@ -9483,6 +9680,29 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		setResult(NULL, true, !do_stack || stack_index == 0, true, "", do_stack ? stack_index : 0);
 		printops.number_fraction_format = save_format;
 		printops.restrict_fraction_length = save_restrict_fraction_length;
+	} else if(do_binary_prefixes) {
+		bool save_pre = printops.use_unit_prefixes;
+		bool save_cur = printops.use_prefixes_for_currencies;
+		bool save_allu = printops.use_prefixes_for_all_units;
+		bool save_den = printops.use_denominator_prefix;
+		int save_bin = CALCULATOR->usesBinaryPrefixes();
+		int i = 0;
+		if(!do_stack || stack_index == 0) i = has_information_unit(*mstruct);
+		CALCULATOR->useBinaryPrefixes(i > 0 ? 1 : 2);
+		if(i == 1) {
+			printops.use_denominator_prefix = false;
+		} else if(i > 1) {
+			printops.use_denominator_prefix = true;
+		} else {
+			printops.use_prefixes_for_currencies = true;
+			printops.use_prefixes_for_all_units = true;
+		}
+		setResult(NULL, true, !do_stack || stack_index == 0, true, "", do_stack ? stack_index : 0);
+		printops.use_unit_prefixes = save_pre;
+		printops.use_prefixes_for_currencies = save_cur;
+		printops.use_prefixes_for_all_units = save_allu;
+		printops.use_denominator_prefix = save_den;
+		CALCULATOR->useBinaryPrefixes(save_bin);
 	} else {
 		setResult(NULL, true, !do_stack || stack_index == 0, true, "", do_stack ? stack_index : 0);
 	}
@@ -14316,6 +14536,8 @@ void load_preferences() {
 	
 	CALCULATOR->useIntervalArithmetic(true);
 	
+	CALCULATOR->useBinaryPrefixes(0);
+	
 	rpn_mode = false;
 	rpn_keys = true;
 	
@@ -14779,6 +15001,8 @@ void load_preferences() {
 					}
 				} else if(svar == "local_currency_conversion") {
 					evalops.local_currency_conversion = v;
+				} else if(svar == "use_binary_prefixes") {
+					CALCULATOR->useBinaryPrefixes(v);
 				} else if(svar == "indicate_infinite_series") {
 					if(mode_index == 1) printops.indicate_infinite_series = v;
 					else modes[mode_index].po.indicate_infinite_series = v;
@@ -15246,6 +15470,7 @@ void save_preferences(bool mode) {
 	//fprintf(file, "fetch_exchange_rates_at_startup=%i\n", fetch_exchange_rates_at_startup);
 	fprintf(file, "auto_update_exchange_rates=%i\n", auto_update_exchange_rates);
 	fprintf(file, "local_currency_conversion=%i\n", evalops.local_currency_conversion);
+	fprintf(file, "use_binary_prefixes=%i\n", CALCULATOR->usesBinaryPrefixes());
 #ifdef _WIN32
 	fprintf(file, "last_version_check=%s\n", last_version_check_date.toISOString().c_str());
 	if(!last_found_version.empty()) fprintf(file, "last_found_version=%s\n", last_found_version.c_str());
@@ -16227,6 +16452,10 @@ gboolean on_preferences_update_exchange_rates_spin_button_output(GtkSpinButton *
 void on_preferences_checkbutton_local_currency_conversion_toggled(GtkToggleButton *w, gpointer) {
 	evalops.local_currency_conversion = gtk_toggle_button_get_active(w);
 	expression_calculation_updated();
+}
+void on_preferences_checkbutton_binary_prefixes_toggled(GtkToggleButton *w, gpointer) {
+	CALCULATOR->useBinaryPrefixes(gtk_toggle_button_get_active(w) ? 1 : 0);
+	result_format_updated();
 }
 void on_preferences_checkbutton_ignore_locale_toggled(GtkToggleButton *w, gpointer) {
 	ignore_locale = gtk_toggle_button_get_active(w);
@@ -26372,7 +26601,7 @@ void convert_from_convert_entry_unit() {
 	string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), evalops.parse_options);
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {
 		remove_blank_ends(ceu_str);
-		if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-') {
+		if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-' && (ceu_str.length() == 1 || ceu_str[1] != '?')) {
 			ceu_str = "?" + ceu_str;
 		}
 	}
