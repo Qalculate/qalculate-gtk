@@ -15436,7 +15436,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "lower_case_numbers=%i\n", printops.lower_case_numbers);
 	fprintf(file, "lower_case_e=%i\n", printops.lower_case_e);
 	fprintf(file, "e_notation=%i\n", use_e_notation);
-	fprintf(file, "imaginary_j=%i\n", (CALCULATOR->v_i->getName(1).name == "j"));
+	fprintf(file, "imaginary_j=%i\n", CALCULATOR->v_i->hasName("j") > 0);
 	fprintf(file, "base_display=%i\n", printops.base_display);
 	fprintf(file, "twos_complement=%i\n", printops.twos_complement);
 	fprintf(file, "hexadecimal_twos_complement=%i\n", printops.hexadecimal_twos_complement);
@@ -16418,7 +16418,7 @@ void on_preferences_checkbutton_lower_case_e_toggled(GtkToggleButton *w, gpointe
 	result_format_updated();
 }
 void on_preferences_checkbutton_imaginary_j_toggled(GtkToggleButton *w, gpointer) {
-	if(gtk_toggle_button_get_active(w) != (CALCULATOR->v_i->getName(1).name == "j")) {
+	if(gtk_toggle_button_get_active(w) != (CALCULATOR->v_i->hasName("j") > 0)) {
 		if(gtk_toggle_button_get_active(w)) {
 			ExpressionName ename = CALCULATOR->v_i->getName(1);
 			ename.name = "j";

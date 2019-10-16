@@ -469,7 +469,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">Use 'j' (instead of 'i') as default symbol for the imaginary unit.</property>
+                    <property name="tooltip_text" translatable="yes">Use 'j' (instead of 'i') as default symbol for the imaginary unit, and place it in front the imaginary part.</property>
                     <property name="use_underline">True</property>
                     <property name="draw_indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_imaginary_j_toggled" swapped="no"/>

@@ -184,7 +184,7 @@ void create_application(GtkApplication *app) {
 	//load local definitions
 	CALCULATOR->loadLocalDefinitions();
 	
-	if(do_imaginary_j && CALCULATOR->v_i->getName(1).name != "j") {
+	if(do_imaginary_j && CALCULATOR->v_i->hasName("j") == 0) {
 		ExpressionName ename = CALCULATOR->v_i->getName(1);
 		ename.name = "j";
 		ename.reference = false;
