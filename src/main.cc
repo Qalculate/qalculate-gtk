@@ -65,6 +65,7 @@ string calc_arg;
 
 bool do_timeout, check_expression_position;
 gint expression_position;
+bool do_imaginary_j = false;
 
 QalculateDateTime last_version_check_date;
 
@@ -182,6 +183,14 @@ void create_application(GtkApplication *app) {
 
 	//load local definitions
 	CALCULATOR->loadLocalDefinitions();
+	
+	if(do_imaginary_j && CALCULATOR->v_i->getName(1).name != "j") {
+		ExpressionName ename = CALCULATOR->v_i->getName(1);
+		ename.name = "j";
+		ename.reference = false;
+		CALCULATOR->v_i->addName(ename, 1, true);
+		CALCULATOR->v_i->setChanged(false);
+	}
 
 	//reset
 	functions_window = NULL;

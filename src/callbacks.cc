@@ -335,6 +335,8 @@ char to_prefix = 0;
 int to_base = 0;
 Number to_nbase;
 
+extern bool do_imaginary_j;
+
 #define TEXT_TAGS			"<span size=\"xx-large\">"
 #define TEXT_TAGS_END			"</span>"
 #define TEXT_TAGS_SMALL			"<span size=\"large\">"
@@ -1040,7 +1042,7 @@ void set_unicode_buttons() {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sub")), MINUS);
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_times")), MULTIPLICATION);
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), DIVISION);
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), MINUS "x");
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_negate")), MINUS "x");
 	}
 	
 	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_dot")), CALCULATOR->getDecimalPoint().c_str());
@@ -1077,7 +1079,7 @@ void set_unicode_buttons() {
 	if(can_display_unicode_string_function(SIGN_SQRT, (void*) gtk_builder_get_object(main_builder, "label_rpn_sqrt"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), SIGN_SQRT);
 	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), "sqrt");
 	if(can_display_unicode_string_function("∑", (void*) gtk_builder_get_object(main_builder, "label_rpn_sum"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sum")), "∑");
-	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), "sum");
+	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sum")), "sum");
 
 	GtkRequisition a;
 	gint w, h;
@@ -1723,13 +1725,13 @@ bool last_is_operator(string str, bool allow_exp = false) {
 	remove_blank_ends(str);
 	if(str.empty()) return false;
 	if(str[str.length() - 1] > 0) {
-		if(is_in(OPERATORS LEFT_PARENTHESIS, str[str.length() - 1]) && (str[str.length() - 1] != '!' || str.length() == 1)) return true;
+		if(is_in(OPERATORS LEFT_PARENTHESIS LEFT_VECTOR_WRAP, str[str.length() - 1]) && (str[str.length() - 1] != '!' || str.length() == 1)) return true;
 		if(allow_exp && is_in(EXP, str[str.length() - 1])) return true;
 		if(str.length() >= 3 && str[str.length() - 1] == 'r' && str[str.length() - 2] == 'o' && str[str.length() - 3] == 'x') return true;
 	} else { 
 		if(str.length() >= 3 && str[str.length() - 2] < 0) {
 			str = str.substr(str.length() - 3);
-			if(str == "∧" || str == "∨" || str == "⊻" || str == expression_times_sign() || str == expression_divide_sign() || str == expression_add_sign() || str == expression_sub_sign()) {
+			if(str == "∧" || str == "∨" || str == "⊻" || str == "≤" || str == "≥" || str == "≠" || str == expression_times_sign() || str == expression_divide_sign() || str == expression_add_sign() || str == expression_sub_sign()) {
 				return true;
 			}
 		}
@@ -1778,12 +1780,15 @@ gboolean do_autocalc_history_timeout(gpointer) {
 	return false;
 }
 
+bool auto_calc_stopped_at_operator = false;
+
 void do_auto_calc(bool recalculate = true, string str = string()) {
 	if(block_result_update || block_expression_execution) return;
 	MathStructure mauto;
 	bool do_factors = false, do_pfe = false, do_expand = false, do_conv = false;
 	bool do_timeout_bak = do_timeout;
 	if(recalculate) {
+		auto_calc_stopped_at_operator = false;
 		if(autocalc_history_timeout_id != 0) {
 			g_source_remove(autocalc_history_timeout_id);
 			autocalc_history_timeout_id = 0;
@@ -1791,7 +1796,37 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		bool origstr = str.empty();
 		if(origstr) str = get_expression_text();
 		if(str.empty()) {clearresult(); return;}
-		if(evalops.parse_options.base != BASE_UNICODE && (evalops.parse_options.base != BASE_CUSTOM || (CALCULATOR->customInputBase() <= 62 && CALCULATOR->customInputBase() >= -62)) && last_is_operator(str, evalops.parse_options.base == 10) && (evalops.parse_options.base != BASE_ROMAN_NUMERALS || str[str.length() - 1] != '|' || str.find('|') == str.length() - 1)) return;
+		
+		if(evalops.parse_options.base != BASE_UNICODE && (evalops.parse_options.base != BASE_CUSTOM || (CALCULATOR->customInputBase() <= 62 && CALCULATOR->customInputBase() >= -62))) {
+			if(last_is_operator(str, evalops.parse_options.base == 10) && (evalops.parse_options.base != BASE_ROMAN_NUMERALS || str[str.length() - 1] != '|' || str.find('|') == str.length() - 1)) return;
+			GtkTextMark *mark = gtk_text_buffer_get_insert(expressionbuffer);
+			if(mark) {
+				GtkTextIter ipos;
+				gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mark);
+				if(!gtk_text_iter_is_end(&ipos)) {
+					GtkTextIter iter = ipos;
+					gtk_text_iter_forward_char(&iter);
+					gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &ipos, &iter, FALSE);
+					string c2 = gstr;
+					g_free(gstr);
+					string c1;
+					if(!gtk_text_iter_is_start(&ipos)) {
+						iter = ipos;
+						gtk_text_iter_backward_char(&iter);
+						gstr = gtk_text_buffer_get_text(expressionbuffer, &iter, &ipos, FALSE);
+						c1 = gstr;
+						g_free(gstr);
+					}
+					if((c2.length() == 1 && is_in("*/^|&<>=)]", c2[0]) && (c2[0] != '|' || evalops.parse_options.base != BASE_ROMAN_NUMERALS)) || (c2.length() > 1 && (c2 == "∧" || c2 == "∨" || c2 == "⊻" || c2 == expression_times_sign() || c2 == expression_divide_sign() || c2 == SIGN_NOT_EQUAL || c2 == SIGN_GREATER_OR_EQUAL || c2 == SIGN_LESS_OR_EQUAL))) {
+						if(c1.empty() || (c1.length() == 1 && is_in(OPERATORS LEFT_PARENTHESIS, c1[0]) && c1[0] != '!' && (c1[0] != '|' || (evalops.parse_options.base != BASE_ROMAN_NUMERALS && c1 != "|")) && (c1[0] != '&' || c2 != "&") && (c1[0] != '/' || (c2 != "/" && c2 != expression_divide_sign())) && (c1[0] != '*' || (c2 != "*" && c2 != expression_times_sign())) && ((c1[0] != '>' && c1[0] != '<') || (c2 != "=" && c2 != c1)) && ((c2 != ">" && c2 == "<") || (c1[0] != '=' && c1 != c2))) || (c1.length() > 1 && (c1 == "∧" || c1 == "∨" || c1 == "⊻" || c1 == SIGN_NOT_EQUAL || c1 == SIGN_GREATER_OR_EQUAL || c1 == SIGN_LESS_OR_EQUAL || (c1 == expression_times_sign() && c2 != "*" && c2 != expression_times_sign()) || (c1 == expression_divide_sign() && c2 != "/" && c2 != expression_divide_sign()) || c1 == expression_add_sign() || c1 == expression_sub_sign()))) {
+							auto_calc_stopped_at_operator = true;
+							return;
+						}
+					}
+				}
+			}
+			
+		}
 		if(origstr) {
 			to_fraction = false; to_prefix = 0; to_base = 0; to_nbase.clear();
 		}
@@ -1962,12 +1997,9 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 				do_to = true;
 			} else {
 				if(to_str[0] == '?') {
-					do_to = true;
 					to_prefix = 1;
 				} else if(to_str.length() > 1 && to_str[1] == '?' && (to_str[0] == 'b' || to_str[0] == 'a' || to_str[0] == 'd')) {
 					to_prefix = to_str[0];
-					do_to = true;
-					
 				}
 				do_conv = true;
 			}
@@ -2019,7 +2051,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			CALCULATOR->startControl(100);
 			if(do_factors) {
 				if(!mauto.integerFactorize()) {
-					mstruct->structure(STRUCTURING_FACTORIZE, evalops, true);
+					mauto.structure(STRUCTURING_FACTORIZE, evalops, true);
 				}
 			} else if(do_pfe) {
 				mauto.expandPartialFractions(evalops);
@@ -2031,6 +2063,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		}
 		CALCULATOR->endTemporaryStopMessages(!mauto.isAborted(), &autocalc_messages);
 		if(!mauto.isAborted()) {
+			mstruct->set(mauto);
 			autocalc_history_timeout_id = g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, AUTOCALC_HISTORY_TIMEOUT, do_autocalc_history_timeout, NULL, NULL);
 		}
 	} else {
@@ -2054,7 +2087,6 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		NumberFractionFormat save_format = printops.number_fraction_format;
 		bool save_restrict_fraction_length = printops.restrict_fraction_length;
 		bool do_to = false;
-		
 		if(to_base != 0 || to_fraction || to_prefix != 0) {
 			if(to_base != 0 && (to_base != printops.base || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()))) {
 				printops.base = to_base;
@@ -2104,14 +2136,13 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			}
 		}
 	
-		if(printops.interval_display == INTERVAL_DISPLAY_INTERVAL) replace_interval_with_function(mauto);
 		MathStructure *displayed_mstruct_pre = new MathStructure();
-		if(recalculate) displayed_mstruct_pre->set(mauto);
-		else displayed_mstruct_pre->set(*mstruct);
+		displayed_mstruct_pre->set(*mstruct);
+		if(printops.interval_display == INTERVAL_DISPLAY_INTERVAL) replace_interval_with_function(*displayed_mstruct_pre);
 	
 		printops.allow_non_usable = true;
 		printops.can_display_unicode_string_arg = (void*) resultview;
-		
+
 		date_map.clear();
 		number_map.clear();
 		number_base_map.clear();
@@ -2134,7 +2165,6 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			showing_first_time_message = FALSE;
 			if(surface_result) cairo_surface_destroy(surface_result);
 			if(displayed_mstruct) displayed_mstruct->unref();
-			if(recalculate) mstruct->set(mauto);
 			displayed_mstruct = displayed_mstruct_pre;
 			displayed_printops = printops;
 			result_autocalculated = true;
@@ -2216,7 +2246,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			CALCULATOR->endTemporaryStopMessages();
 			clearresult();
 		}
-	
+
 		printops.can_display_unicode_string_arg = NULL;
 		printops.allow_non_usable = false;
 		
@@ -2232,7 +2262,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			printops.number_fraction_format = save_format;
 			printops.restrict_fraction_length = save_restrict_fraction_length;
 		}
-		
+
 		CALCULATOR->stopControl();
 	} else {
 		clearresult();
@@ -2407,6 +2437,8 @@ void display_parse_status() {
 				parsed_expression += _("binary number");
 			} else if(equalsIgnoreCase(str_u, "roman") || equalsIgnoreCase(str_u, _("roman"))) {
 				parsed_expression += _("roman numerals");
+			} else if(equalsIgnoreCase(str_u, "bijective") || equalsIgnoreCase(str_u, _("bijective"))) {
+				parsed_expression += _("bijective base-26");
 			} else if(equalsIgnoreCase(str_u, "sexa") || equalsIgnoreCase(str_u, "sexagesimal") || equalsIgnoreCase(str_u, _("sexagesimal"))) {
 				parsed_expression += _("sexagesimal number");
 			} else if(equalsIgnoreCase(str_u, "time") || equalsIgnoreCase(str_u, _("time"))) {
@@ -2586,6 +2618,7 @@ void on_expressionbuffer_cursor_position_notify() {
 	if(!check_expression_position) return;
 	highlight_parentheses();
 	display_parse_status();
+	if(auto_calc_stopped_at_operator) do_auto_calc();
 }
 
 /*
@@ -5297,6 +5330,8 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex rectangular form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("roman")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Roman numerals"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
+	COMPLETION_CONVERT_STRING("bijective")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Bijective base-26"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("sexagesimal") str += " <i>"; str += "sexa"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Sexagesimal number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("time")
@@ -8894,12 +8929,16 @@ void result_display_updated() {
 	gtk_widget_queue_draw(resultview);
 	update_message_print_options();
 	update_status_text();
+	expression_has_changed2 = true;
+	display_parse_status();
 }
 void result_format_updated() {
 	update_message_print_options();
 	if(result_autocalculated) print_auto_calc();
 	else setResult(NULL, true, false, false);
 	update_status_text();
+	expression_has_changed2 = true;
+	display_parse_status();
 }
 void result_action_executed() {
 	printops.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
@@ -9302,6 +9341,14 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				do_to = true;
 				
 			}
+			if(do_to && from_str.empty()) {
+				b_busy = false;
+				b_busy_expression = false;
+				setResult(NULL, true, false, false);
+				set_previous_expression();
+				return;
+			}
+			do_to = false;
 			do_conv = true;
 		}
 		if(do_to) {
@@ -14519,7 +14566,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {3, 4, 0};
+	int version_numbers[] = {3, 5, 0};
 	bool old_history_format = false;
 			
 	if(file) {
@@ -14991,6 +15038,8 @@ void load_preferences() {
 					printops.lower_case_e = v;	
 				} else if(svar == "e_notation") {
 					use_e_notation = v;
+				} else if(svar == "imaginary_j") {
+					do_imaginary_j = v;
 				} else if(svar == "base_display") {
 					if(v >= BASE_DISPLAY_NONE && v <= BASE_DISPLAY_ALTERNATIVE) printops.base_display = (BaseDisplay) v;
 				} else if(svar == "twos_complement") {
@@ -15385,8 +15434,9 @@ void save_preferences(bool mode) {
 	fprintf(file, "completion_delay=%i\n", completion_delay);
 	fprintf(file, "use_unicode_signs=%i\n", printops.use_unicode_signs);
 	fprintf(file, "lower_case_numbers=%i\n", printops.lower_case_numbers);
-	fprintf(file, "e_notation=%i\n", use_e_notation);
 	fprintf(file, "lower_case_e=%i\n", printops.lower_case_e);
+	fprintf(file, "e_notation=%i\n", use_e_notation);
+	fprintf(file, "imaginary_j=%i\n", (CALCULATOR->v_i->getName(1).name == "j"));
 	fprintf(file, "base_display=%i\n", printops.base_display);
 	fprintf(file, "twos_complement=%i\n", printops.twos_complement);
 	fprintf(file, "hexadecimal_twos_complement=%i\n", printops.hexadecimal_twos_complement);
@@ -16366,6 +16416,22 @@ void on_preferences_checkbutton_lower_case_numbers_toggled(GtkToggleButton *w, g
 void on_preferences_checkbutton_lower_case_e_toggled(GtkToggleButton *w, gpointer) {
 	printops.lower_case_e = gtk_toggle_button_get_active(w);
 	result_format_updated();
+}
+void on_preferences_checkbutton_imaginary_j_toggled(GtkToggleButton *w, gpointer) {
+	if(gtk_toggle_button_get_active(w) != (CALCULATOR->v_i->getName(1).name == "j")) {
+		if(gtk_toggle_button_get_active(w)) {
+			ExpressionName ename = CALCULATOR->v_i->getName(1);
+			ename.name = "j";
+			ename.reference = false;
+			CALCULATOR->v_i->addName(ename, 1, true);
+			CALCULATOR->v_i->setChanged(false);
+		} else {
+			CALCULATOR->v_i->clearNonReferenceNames();
+			CALCULATOR->v_i->setChanged(false);
+		}
+		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_i")), (string("<i>") + CALCULATOR->v_i->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(main_builder, "label_i")).name + "</i>").c_str());
+		expression_format_updated();
+	}
 }
 void on_preferences_checkbutton_e_notation_toggled(GtkToggleButton *w, gpointer) {
 	use_e_notation = gtk_toggle_button_get_active(w);
@@ -18635,7 +18701,7 @@ void on_button_brace_wrap_clicked(GtkButton*, gpointer) {
 	gtk_text_buffer_place_cursor(expressionbuffer, goto_start ? &istart : &iend);
 }
 void on_button_i_clicked(GtkButton*, gpointer) {
-	insert_text("i");
+	insert_var(CALCULATOR->v_i);
 }
 void on_button_percent_clicked(GtkButton*, gpointer) {
 	insert_text("%");

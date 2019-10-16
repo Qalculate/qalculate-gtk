@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "3.4.0">
-  <!ENTITY manrevision "3.4.0">
-  <!ENTITY date "September 2019">
+  <!ENTITY appversion "3.5.0">
+  <!ENTITY manrevision "3.5.0">
+  <!ENTITY date "October 2019">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -1237,7 +1237,7 @@ In &app; mathematical entities, such as numbers and variables, are referred to a
 	<varlistentry>
 		<term>Numbers</term>
 		<listitem><para>
-		These are the regular numbers composed by digits 0-9 and a decimal sign — a dot, or a comma if it is the default decimal point in the locale/language used. If comma is used as decimal sign, the dot is still kept as an alternative decimal sign, if not explicitely turned off in the preferences dialog with <guibutton>Ignore dots in number</guibutton> (to allow it to be used as thousand separator instead). Numbers include integers, real numbers, and complex numbers. The imaginary part of complex numbers are written with as regular number followed by the special variable <quote>i</quote>, which represents the square root of -1 (e.g. <quote>2 + 3i</quote>). Spaces between digits are ignored (<quote>5  5 = 55</quote>). <quote>E</quote> (or <quote>e</quote>) can be considered as a shortcut for writing many zeroes and is equivalent to multiplication by 10 raised to the power of the right-hand value (e.g. <quote>5E3 = 5000</quote>).</para>
+		These are the regular numbers composed by digits 0-9 and a decimal sign — a dot, or a comma if it is the default decimal point in the locale/language used. If comma is used as decimal sign, the dot is still kept as an alternative decimal sign, if not explicitely turned off in the preferences dialog with <guibutton>Ignore dots in number</guibutton> (to allow it to be used as thousand separator instead). Numbers include integers, real numbers, and complex numbers. The imaginary part of complex numbers are written with as regular number followed by the special variable <quote>i</quote> (can be changed to <quote>j</quote> in the preferences dialog), which represents the square root of -1 (e.g. <quote>2 + 3i</quote>). Spaces between digits are ignored (<quote>5  5 = 55</quote>). <quote>E</quote> (or <quote>e</quote>) can be considered as a shortcut for writing many zeroes and is equivalent to multiplication by 10 raised to the power of the right-hand value (e.g. <quote>5E3 = 5000</quote>).</para>
 		<para>Sexagesimal numbers (and time) can be entered directly using colons (e.g. <quote>5:30 = 5.5</quote>). A number immediately preceeded <quote>0b</quote>, <quote>0o</quote> or <quote>0x</quote> are interpreted as a number with base 2, 8 or 16, respectively (if the default base is 10, e.g. <quote>0x3f = 63</quote>). The number base in can also be selected, either by using the <command>base()</command>, <command>bin()</command>, <command>oct()</command>, <command>hex()</command> and <command>roman()</command> functions, or by setting the base used for all numbers in the whole expression from <menuchoice><guimenu>Mode</guimenu><guisubmenu>Number Base</guisubmenu><guimenuitem>Select Result and Expression Base...</guimenuitem></menuchoice>. For details about supported number bases see <xref linked="qalculate-TBL-number-bases"/>.
 		</para></listitem>
 	</varlistentry>
@@ -1545,69 +1545,64 @@ If the limit implicit multiplication option is activated, the use of implicit mu
 Putting <quote> to </quote> followed by an expression at the end of the mathematical expression is mainly used for unit conversion (see <xref linkend="qalculate-unit-conversion"/>). There are however also some convenient commands that can be typed after <quote> to </quote>. Here is a list of possible <quote>to</quote> values:
 <variablelist>
 <varlistentry>
-<term>A unit</term>
-<listitem><para>Convert to unit (e.g. meter). Prepend with ? to request the optimal prefix, or b? for binary prefix (e.g. b?byte).</para></listitem>
+<term>A unit or unit expression</term>
+<listitem><para>Convert to a unit or a unit expression (e.g. <quote>5 ft + 2 in to meter = 1.5748 m</quote> or <quote>50 mph to km/h ≈ 80 km/h</quote>). Prepend with a question mark (?) to request the optimal prefix. Modifiers in front of the question mark selects the type of prefixes used — 'b' for binary prefixes, 'd' for decimal prefixes, and 'a' for all decimal prefixes incluing centi, deci, etc. (e.g. <quote>8 × 1024 bits to b?bytes = 1 kibibyte</quote>). Prepend with + or - to force/disable use of mixed units (e.g. <quote>5 m to + ft ≈ 5 yd + 1 ft + 4.9 in</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
-<term>A unit expression</term>
-<listitem><para>Convert to units (e.g. km/h).</para></listitem>
-</varlistentry>
-<varlistentry>
-<term>A physical constant</term>
-<listitem><para>Convert to variable as unit (e.g. c).</para></listitem>
+<term>A physical constant or a variable</term>
+<listitem><para>Convert to variable as unit (e.g. <quote>500 km/ms to c ≈ 1.7 c</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>base</term>
-<listitem><para>Convert to base units.</para></listitem>
+<listitem><para>Convert to base units (e.g. <quote>1 lux to base = 1 cd/m²</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>optimal</term>
-<listitem><para>Convert to optimal unit.</para></listitem>
+<listitem><para>Convert to optimal unit (e.g. <quote>(10 J)/(2 s) to optimal = 5 W</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>mixed</term>
-<listitem><para>Convert to mixed units (e.g. 5 ft + 8 in).</para></listitem>
+<listitem><para>Convert to mixed units (e.g. <quote>90 s to mixed = 1 min + 30 s</quote>.</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>bin / binary</term>
-<listitem><para>Show as binary number.</para></listitem>
+<listitem><para>Show as binary number (e.g. <quote>sqrt(900) to bin = 0001 1110</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>oct / octal</term>
-<listitem><para>Show as octal number.</para></listitem>
+<listitem><para>Show as octal number (e.g. <quote>52 to octal = 64</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>duo / duodecimal</term>
-<listitem><para>Show as duodecimal number.</para></listitem>
+<listitem><para>Show as duodecimal number (e.g. <quote>152 to duo = 108</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>hex / hexadecimal</term>
-<listitem><para>Show as hexadecimal number.</para></listitem> 
+<listitem><para>Show as hexadecimal number (e.g. <quote>623 to hex = 026F</quote>).</para></listitem> 
 </varlistentry>
 <varlistentry>
 <term>sexa / sexagesimal</term>
-<listitem><para>Show as sexagesimal number.</para></listitem>
+<listitem><para>Show as sexagesimal number (e.g. <quote>7.33 to sexagesimal = 7°19′48″</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>bijective</term>
-<listitem><para>Show as bijective base-26 number (e.g. 731 = ABC).</para></listitem>
+<listitem><para>Show as bijective base-26 number (e.g. <quote>731 to bijective = ABC</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
-<varlistentry>
 <term>time</term>
-<listitem><para>Show in time format.</para></listitem>
+<listitem><para>Show in time format (e.g. <quote>7.25 to time = 7:15</quote>.</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>roman</term>
-<listitem><para>Show as Roman numerals.</para></listitem>
+<listitem><para>Show as Roman numerals (e.g. <quote>1984 to roman = MCMLXXXIV</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>Unicode</term>
-<listitem><para>Show as unicode character(s) (using the Unicode base, 1114112).</para></listitem>
+<listitem><para>Show as unicode character(s) (using the Unicode base, 1114112, e.g. <quote>0x178 to unicode = Ÿ</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>base #</term>
-<listitem><para>Show using the specified base (e.g. base 20 or base pi).</para></listitem>
+<listitem><para>Show using the specified base (e.g. <quote>523 to base 20 = 163</quote> or <quote>circumference(1) to base pi = 20</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>bases</term>
@@ -1615,27 +1610,27 @@ Putting <quote> to </quote> followed by an expression at the end of the mathemat
 </varlistentry>
 <varlistentry>
 <term>rectangular / cartesian</term>
-<listitem><para>Show complex number in rectangular form.</para></listitem>
+<listitem><para>Show complex number in rectangular form (e.g. <quote>0.28i − 2 to complex = 0.28i − 2</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>exponential</term>
-<listitem><para>Show complex number in exponential form.</para></listitem>
+<listitem><para>Show complex number in exponential form (e.g. <quote>0.28i − 2 to exponential ≈ 2e^(3i)</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>polar</term>
-<listitem><para>Show complex number in polar form.</para></listitem>
+<listitem><para>Show complex number in polar form (e.g. <quote>0.28i − 2 to exponential ≈ 2(cos(3) + i × sin(3))</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>fraction</term>
-<listitem><para>Show as number in combined fractional format.</para></listitem>
+<listitem><para>Show as number in combined fractional format <quote>1.25 to fraction = 1 + 1/4</quote>.</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>partial fraction</term>
-<listitem><para>Show expanded partial fractions.</para></listitem>
+<listitem><para>Show expanded partial fractions (e.g. <quote>1 / (x² + 2x − 3) to partial fraction = 1 ∕ (4x − 4) − 1 ∕ (4x + 12)</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>factors</term>
-<listitem><para>Show factorized (algebraic or integer factorization).</para></listitem>
+<listitem><para>Show factorized (algebraic or integer factorization, e.g. <quote>3 645 678 to factors = 857 × 709 × 3 × 2</quote> or <quote>x² + 4x + 4 to factors = (x + 2)²</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>calendars</term>
@@ -1655,7 +1650,7 @@ Putting <quote> to </quote> followed by an expression at the end of the mathemat
 If <quote>to</quote> is not preceded by an expression, the previous result will be converted.
 </para>
 <para>
-Similarily <quote>where</quote> (or alternatively <quote>/.</quote> can be used at the end (but before <quote>to</quote>), for variable assignments, function replacements, etc. (e.g. <quote>x+y where x=1 and y=2</quote>, <quote>x^2=4 where x>0</quote>, and <quote>sin(5) where sin()=cos()</quote>).
+Similarily <quote>where</quote> (or alternatively <quote>/.</quote>) can be used at the end (but before <quote>to</quote>), for variable assignments, function replacements, etc. (e.g. <quote>x+y where x=1 and y=2</quote>, <quote>x^2=4 where x>0</quote>, and <quote>sin(5) where sin()=cos()</quote>).
 </para>
 </sect1>
 </chapter>
@@ -1776,10 +1771,12 @@ Similarily <quote>where</quote> (or alternatively <quote>/.</quote> can be used 
 	<varlistentry>
 		<term>Unit Display</term>
 		<listitem><para>
-			The automatic use of prefixes for units in results can be toggled on and off. By default prefixes are only used for a selection of units (mainly standard SI and CGS units), but this can be changed to also include currencies or all other units. By default prefixes representing a power of ten not dividable by three (centi, deci, deca and hekto) are not used and need to be enabled. If denominator prefixes are not explicitly enabled, prefixes will only be set for the numerator in a fractional unit expression (e.g. <quote>1 Mg/m</quote> or <quote>1 kg/mm</quote>), unless there is no unit in the numerator. The place units separately alternative controls the display of unit expressions in result. If it is enabled (default) units will be displayed separate from other parts of the expression at the end (compare <quote>(5x × m)/(y × s)</quote> and <quote>5x/y m/s</quote>).
+			The automatic use of prefixes for units in results can be toggled on and off. By default prefixes are only used for a selection of units (mainly standard SI and CGS units), but this can be changed to also include currencies or all other units. By default prefixes representing a power of ten not dividable by three (centi, deci, deca and hekto) are not used and need to be enabled. If denominator prefixes are not explicitly enabled, prefixes will only be set for the numerator in a fractional unit expression (e.g. <quote>1 Mg/m</quote> or <quote>1 kg/mm</quote>), unless there is no unit in the numerator. Binary prefixes are never used automatically, unless activated for information units (bits, bytes, etc.) in the preferences dialog.
 		</para>
 		<para>
 			Units can be automatically converted to base units or the optimal units in results. Optimal conversion means that the number of units in the result is reduced to as few units as possible. Only SI units are used for conversion. If <guimenuitem>Convert to Optimal SI unit</guimenuitem> is activated, non-SI units are converted to SI units, even if equally or less optimal than the original unit(s). In optimal unit mode, currencies are converted to the local currency, unless deactivated in the preferences dialog. Mixed units conversion allows certain units, such as time units and many imperial/U.S. customary units, to be converted to a combination of appropriate units, e.g. <quote>60.2 minutes = 1 hour to 12 seconds</quote>.
+		</para>
+		<para>The place units separately alternative controls the display of unit expressions in result. If it is enabled (default) units will be displayed separate from other parts of the expression at the end (compare <quote>(5x × m)/(y × s)</quote> and <quote>5x/y m/s</quote>).
 		</para>
 		</listitem>
 	</varlistentry>
