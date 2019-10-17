@@ -41,6 +41,7 @@ struct mode_struct {
 	bool variable_units_enabled;
 	bool keypad;
 	bool autocalc;
+	bool complex_angle_form;
 };
 
 enum {
@@ -84,7 +85,7 @@ bool can_display_unicode_string_function_exact(const char *str, void *w);
 void set_unicode_buttons();
 void set_operator_symbols();
 
-cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po = default_print_options, InternalPrintStruct ips = top_ips, gint *point_central = NULL, int scaledown = 0, GdkRGBA *color = NULL);
+cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po = default_print_options, bool caf = false, InternalPrintStruct ips = top_ips, gint *point_central = NULL, int scaledown = 0, GdkRGBA *color = NULL);
 
 void update_status_text();
 
@@ -482,9 +483,11 @@ void on_popup_menu_item_view_vector_activate(GtkMenuItem *w, gpointer user_data)
 void on_popup_menu_item_complex_rectangular_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_complex_exponential_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_complex_polar_activate(GtkMenuItem *w, gpointer user_data);
+void on_popup_menu_item_complex_angle_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_complex_rectangular_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_complex_exponential_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_complex_polar_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_complex_angle_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_display_normal_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_display_engineering_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_display_scientific_activate(GtkMenuItem *w, gpointer user_data);

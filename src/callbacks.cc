@@ -245,6 +245,7 @@ bool editing_to_expression = false;
 bool stop_timeouts = false;
 
 PrintOptions printops, parse_printops, displayed_printops;
+bool displayed_caf = false;
 EvaluationOptions evalops;
 
 bool rpn_mode, rpn_keys;
@@ -336,6 +337,7 @@ int to_base = 0;
 Number to_nbase;
 
 extern bool do_imaginary_j;
+bool complex_angle_form = false;
 
 #define TEXT_TAGS			"<span size=\"xx-large\">"
 #define TEXT_TAGS_END			"</span>"
@@ -810,7 +812,7 @@ bool is_at_beginning_of_expression(bool allow_selection = false) {
 }
 
 void set_assumptions_items(AssumptionType, AssumptionSign);
-void set_mode_items(const PrintOptions&, const EvaluationOptions&, AssumptionType, AssumptionSign, bool, int, bool, bool, bool, bool, bool, bool);
+void set_mode_items(const PrintOptions&, const EvaluationOptions&, AssumptionType, AssumptionSign, bool, int, bool, bool, bool, bool, bool, bool, bool);
 
 string sdot, saltdot, sdiv, sslash, stimes, sminus;
 string sdot_s, saltdot_s, sdiv_s, sslash_s, stimes_s, sminus_s;
@@ -1914,21 +1916,39 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			} else if(equalsIgnoreCase(to_str, "calendars") || equalsIgnoreCase(to_str, _("calendars"))) {
 			} else if(equalsIgnoreCase(to_str, "rectangular") || equalsIgnoreCase(to_str, "cartesian") || equalsIgnoreCase(to_str, _("rectangular")) || equalsIgnoreCase(to_str, _("cartesian"))) {
 				ComplexNumberForm cnf_bak = evalops.complex_number_form;
+				bool caf_bak = complex_angle_form;
+				complex_angle_form = false;
 				evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
 				do_auto_calc(true, from_str);
 				evalops.complex_number_form = cnf_bak;
+				complex_angle_form = caf_bak;
 				return;
 			} else if(equalsIgnoreCase(to_str, "exponential") || equalsIgnoreCase(to_str, _("exponential"))) {
 				ComplexNumberForm cnf_bak = evalops.complex_number_form;
+				bool caf_bak = complex_angle_form;
+				complex_angle_form = false;
 				evalops.complex_number_form = COMPLEX_NUMBER_FORM_EXPONENTIAL;
 				do_auto_calc(true, from_str);
 				evalops.complex_number_form = cnf_bak;
+				complex_angle_form = caf_bak;
 				return;
 			} else if(equalsIgnoreCase(to_str, "polar") || equalsIgnoreCase(to_str, _("polar"))) {
 				ComplexNumberForm cnf_bak = evalops.complex_number_form;
+				bool caf_bak = complex_angle_form;
+				complex_angle_form = false;
 				evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
 				do_auto_calc(true, from_str);
 				evalops.complex_number_form = cnf_bak;
+				complex_angle_form = caf_bak;
+				return;
+			} else if(equalsIgnoreCase(to_str, "angle") || equalsIgnoreCase(to_str, _("angle")) || equalsIgnoreCase(to_str, "phasor") || equalsIgnoreCase(to_str, _("phasor"))) {
+				ComplexNumberForm cnf_bak = evalops.complex_number_form;
+				bool caf_bak = complex_angle_form;
+				complex_angle_form = true;
+				evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
+				do_auto_calc(true, from_str);
+				evalops.complex_number_form = cnf_bak;
+				complex_angle_form = caf_bak;
 				return;
 			} else if(equalsIgnoreCase(to_str, "optimal") || equalsIgnoreCase(to_str, _("optimal"))) {
 				bool b_units_saved = evalops.parse_options.units_enabled;
@@ -2152,7 +2172,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		
 		displayed_mstruct_pre->removeDefaultAngleUnit(evalops);
 		displayed_mstruct_pre->format(printops);
-		tmp_surface = draw_structure(*displayed_mstruct_pre, printops, top_ips, NULL, 0);
+		tmp_surface = draw_structure(*displayed_mstruct_pre, printops, complex_angle_form, top_ips, NULL, 0);
 		if(tmp_surface && CALCULATOR->aborted()) {
 			CALCULATOR->endTemporaryStopMessages();
 			cairo_surface_destroy(tmp_surface);
@@ -2167,6 +2187,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			if(displayed_mstruct) displayed_mstruct->unref();
 			displayed_mstruct = displayed_mstruct_pre;
 			displayed_printops = printops;
+			displayed_caf = complex_angle_form;
 			result_autocalculated = true;
 			display_aborted = false;
 			surface_result = tmp_surface;
@@ -2467,6 +2488,10 @@ void display_parse_status() {
 				parsed_expression += _("complex exponential form");
 			} else if(equalsIgnoreCase(str_u, "polar") || equalsIgnoreCase(str_u, _("polar"))) {
 				parsed_expression += _("complex polar form");
+			} else if(equalsIgnoreCase(str_u, "angle") || equalsIgnoreCase(str_u, _("angle"))) {
+				parsed_expression += _("complex angle notation");
+			} else if(equalsIgnoreCase(str_u, "phasor") || equalsIgnoreCase(str_u, _("phasor"))) {
+				parsed_expression += _("complex phasor notation");
 			} else if(equalsIgnoreCase(str_u, "utc") || equalsIgnoreCase(str_u, "gmt")) {
 				parsed_expression += _("UTC time zone");
 			} else if(str_u.length() > 3 && (equalsIgnoreCase(str_u.substr(0, 3), "utc") || equalsIgnoreCase(str_u.substr(0, 3), "gmt"))) {
@@ -5293,13 +5318,17 @@ void update_completion() {
 	pango_font_description_free(font_desc);
 	string str2;
 #define COMPLETION_CONVERT_STRING(x) str = _(x); if(str != x) {str += " <i>"; str += x; str += "</i>";}
-#define COMPLETION_CONVERT_STRING2(x, y) str = _(x); str += " <i>"; if(str != x) {str += x;} str2 = _(y); if(str2 != y) {str += " "; str += y;} str += " "; str += str2; str += "</i>";
+#define COMPLETION_CONVERT_STRING2(x, y) str = _(x); if(str != x) {str += " <i>"; str += x; str += "</i>";} str2 = _(y);  str += " <i>"; str += str2; str += "</i>"; if(str2 != y) {str += " <i>"; str += y; str += "</i>";}
+	COMPLETION_CONVERT_STRING2("angle", "phasor") 
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex angle/phasor notation"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("bases")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Number bases"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("base")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Base units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("base ")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Number base"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
+	COMPLETION_CONVERT_STRING("bijective")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Bijective base-26"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("binary") str += " <i>"; str += "bin"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Binary number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("calendars")
@@ -5330,8 +5359,6 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex rectangular form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("roman")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Roman numerals"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
-	COMPLETION_CONVERT_STRING("bijective")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Bijective base-26"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("sexagesimal") str += " <i>"; str += "sexa"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Sexagesimal number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("time")
@@ -5408,7 +5435,7 @@ cairo_surface_t *get_right_parenthesis(gint arc_w, gint arc_h, int, GdkRGBA *col
 
 #define SHOW_WITH_ROOT_SIGN(x) (x.isFunction() && ((x.function() == CALCULATOR->f_sqrt && x.size() == 1) || (x.function() == CALCULATOR->f_cbrt && x.size() == 1) || (x.function() == CALCULATOR->f_root && x.size() == 2 && x[1].isNumber() && x[1].number().isInteger() && x[1].number().isPositive() && x[1].number().isLessThan(10))))
 
-cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrintStruct ips, gint *point_central, int scaledown, GdkRGBA *color) {
+cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, InternalPrintStruct ips, gint *point_central, int scaledown, GdkRGBA *color) {
 
 	if(CALCULATOR->aborted()) return NULL;
 	
@@ -5429,866 +5456,1141 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 	InternalPrintStruct ips_n = ips;
 	if(m.isApproximate()) ips_n.parent_approximate = true;
 	if(m.precision() > 0 && (ips_n.parent_precision < 1 || m.precision() < ips_n.parent_precision)) ips_n.parent_precision = m.precision();
+	
+	// angle/phasor notation: x+y*i=a(cos(b)+i*sin(b))=a cis b
+	if(caf && ((m.isMultiplication() && m.size() == 2 && m[0].isNumber() && m[1].isAddition() && m[1].size() == 2 && m[1][0].isFunction() && m[1][0].function() == CALCULATOR->f_cos && m[1][0].size() == 1 && m[1][1].isMultiplication() && m[1][1].size() == 2 && m[1][1][0].isVariable() && m[1][1][0].variable() == CALCULATOR->v_i && m[1][1][1].isFunction() && m[1][1][1].function() == CALCULATOR->f_sin && m[1][1][1].size() == 1 && m[1][1][1][0].equals(m[1][0][0], true, true)) || (m.isAddition() && m.size() == 2 && m[0].isFunction() && m[0].function() == CALCULATOR->f_cos && m[0].size() == 1 && m[1].isMultiplication() && m[1].size() == 2 && m[1][0].isVariable() && m[1][0].variable() == CALCULATOR->v_i && m[1][1].isFunction() && m[1][1].function() == CALCULATOR->f_sin && m[1][1].size() == 1 && m[1][1][0].equals(m[0][0], true, true)))) {
 
-	switch(m.type()) {
-		case STRUCT_NUMBER: {
-			string str;
-			string exp = "";
-			bool exp_minus = false;
-			ips_n.exp = &exp;
-			ips_n.exp_minus = &exp_minus;
-			TTBP(str)
-			unordered_map<void*, string>::iterator it = number_map.find((void*) &m.number());
-			string value_str;
-			if(it != number_map.end()) {
-				value_str += it->second;
-				if(number_approx_map.find((void*) &m.number()) != number_approx_map.end()) {
-					if(po.is_approximate && !(*po.is_approximate) && number_approx_map[(void*) &m.number()]) *po.is_approximate = true;
-				}
-				if(number_exp_map.find((void*) &m.number()) != number_exp_map.end()) {
-					exp = number_exp_map[(void*) &m.number()];
-					exp_minus = number_exp_minus_map[(void*) &m.number()];
-				}
-			} else {
-				value_str = m.number().print(po, ips_n);
-				if(po.base == BASE_HEXADECIMAL && po.base_display == BASE_DISPLAY_NORMAL) {
-					gsub("0x", "", value_str);
-				} else if(po.base == BASE_OCTAL && po.base_display == BASE_DISPLAY_NORMAL) {
-					if(str.length() > 1 && value_str[0] == '0' && is_in(NUMBERS, value_str[1])) value_str.erase(0, 1);
-				}
-				number_map[(void*) &m.number()] = value_str;
-				number_exp_map[(void*) &m.number()] = exp;
-				number_exp_minus_map[(void*) &m.number()] = exp_minus;
-				if(po.is_approximate) {
-					number_approx_map[(void*) &m.number()] = *po.is_approximate;
-				} else {
-					number_approx_map[(void*) &m.number()] = FALSE;
-				}
-				number_base_map[(void*) &m.number()] = "";
-			}
-			if((!use_e_notation || (po.base != BASE_DECIMAL && po.base >= 2 && po.base <= 36)) && !exp.empty()) {
-				if(value_str == "1") {
-					MathStructure mnr(m_one);
-					mnr.raise(m_one);
-					number_map[(void*) &mnr[0].number()] = (po.base != BASE_DECIMAL && po.base >= 2 && po.base <= 36) ? i2s(po.base) : "10";
-					if(exp_minus) {
-						mnr[1].transform(STRUCT_NEGATE);
-						number_map[(void*) &mnr[1][0].number()] = exp;
-					} else {
-						number_map[(void*) &mnr[1].number()] = exp;
-					}
-					surface = draw_structure(mnr, po, ips, point_central, scaledown, color);
-					if(exp_minus) number_map.erase(&mnr[1][0].number());
-					else number_map.erase(&mnr[1].number());
-					number_map.erase(&mnr[0].number());
-					return surface;
-				} else {
-					MathStructure mnr(m_one);
-					mnr.multiply(m_one);
-					number_map[(void*) &mnr[0].number()] = value_str;
-					number_approx_map[(void*) &mnr[0].number()] = number_approx_map[(void*) &m.number()];
-					mnr[1].raise(m_one);
-					number_map[(void*) &mnr[1][0].number()] = (po.base != BASE_DECIMAL && po.base >= 2 && po.base <= 36) ? i2s(po.base) : "10";
-					if(exp_minus) {
-						mnr[1][1].transform(STRUCT_NEGATE);
-						number_map[(void*) &mnr[1][1][0].number()] = exp;
-					} else {
-						number_map[(void*) &mnr[1][1].number()] = exp;
-					}
-					surface = draw_structure(mnr, po, ips, point_central, scaledown, color);
-					if(exp_minus) number_map.erase(&mnr[1][1][0].number());
-					else number_map.erase(&mnr[1][1].number());
-					number_map.erase(&mnr[1][0].number());
-					number_map.erase(&mnr[0].number());
-					number_approx_map.erase(&mnr[0].number());
-					return surface;
-				}
-			}
-			if(exp.empty() && (po.base == BASE_SEXAGESIMAL || po.base == BASE_TIME)) {
-				string estr;
-				if(po.lower_case_e) {TTP(estr, "e");}
-				else {TTP_SMALL(estr, "E");}
-				if(po.lower_case_e) gsub("e", estr, value_str);
-				else gsub("E", estr, value_str);
-			}
-			str += value_str;
-			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-			if(!exp.empty()) {
-				if(po.lower_case_e) {TTP(str, "e");}
-				else {TTP_SMALL(str, "E");}
-				if(exp_minus) {
-					str += "-";
-				}
-				str += exp;
-			}
-			bool twos = (((po.base == 2 && po.twos_complement) || (po.base == 16 && po.hexadecimal_twos_complement)) && m.number().isNegative() && value_str.find(SIGN_MINUS) == string::npos && value_str.find("-") == string::npos);
-			if(po.base != BASE_DECIMAL && (twos || po.base_display != BASE_DISPLAY_ALTERNATIVE || (po.base != BASE_HEXADECIMAL && po.base != BASE_BINARY && po.base != BASE_OCTAL)) && (po.base > 0 || po.base <= BASE_CUSTOM) && po.base <= 36) {
-				TTBP_SMALL(str)
-				str += "<sub>";
-				string str_base;
-				if(it != number_map.end()) {
-					str_base = number_base_map[(void*) &m.number()];
-				} else {
-					switch(po.base) {
-						case BASE_GOLDEN_RATIO: {str_base = "<i>φ</i>"; break;}
-						case BASE_SUPER_GOLDEN_RATIO: {str_base = "<i>ψ</i>"; break;}
-						case BASE_PI: {str_base = "<i>π</i>"; break;}
-						case BASE_E: {str_base = "<i>e</i>"; break;}
-						case BASE_SQRT2: {str_base = "√2"; break;}
-						case BASE_UNICODE: {str_base = "Unicode"; break;}
-						case BASE_BIJECTIVE_26: {str_base = "b26"; break;}
-						case BASE_CUSTOM: {str_base = CALCULATOR->customOutputBase().print(CALCULATOR->messagePrintOptions()); break;}
-						default: {str_base = i2s(po.base);}
-					}
-					if(twos) str_base += '-';
-					number_base_map[(void*) &m.number()] = str_base;
-				}
-				str += str_base;
-				str += "</sub>";
-				TTE(str)
-			}
-			TTE(str)
-			pango_layout_set_markup(layout, str.c_str(), -1);
-			PangoRectangle rect;
-			pango_layout_get_pixel_size(layout, &w, &h);
-			pango_layout_get_pixel_extents(layout, &rect, NULL);
-			w = rect.width + rect.x;
-			w += 1;
-			central_point = h / 2;
-			surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-			cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-			cr = cairo_create(surface);
-			gdk_cairo_set_source_rgba(cr, color);
-			cairo_move_to(cr, 1, 0);
-			pango_cairo_show_layout(cr, layout);
-			g_object_unref(layout);
-			break;
+		MathStructure m_angle;
+		m_angle.setType(STRUCT_MULTIPLICATION);
+		if(m.isAddition()) {
+			m_one.ref();
+			m_angle.addChild_nocopy(&m_one);
+			m[0][0].ref();
+			m_angle.addChild_nocopy(&m[0][0]);
+		} else {
+			m[0].ref();
+			m_angle.addChild_nocopy(&m[0]);
+			m[1][0][0].ref();
+			m_angle.addChild_nocopy(&m[1][0][0]);
 		}
-		case STRUCT_ABORTED: {}
-		case STRUCT_SYMBOLIC: {
-			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-			string str;
-			str = "<i>";
-			TTBP(str)
-			str += m.symbol();
-			TTE(str)
-			str += "</i>";
-			pango_layout_set_markup(layout, str.c_str(), -1);
-			PangoRectangle rect;
-			pango_layout_get_pixel_size(layout, &w, &h);
-			pango_layout_get_pixel_extents(layout, &rect, NULL);
-			w = rect.width + rect.x;
-			w += 1;
-			central_point = h / 2;
-			surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-			cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-			cr = cairo_create(surface);
-			gdk_cairo_set_source_rgba(cr, color);
-			cairo_move_to(cr, 1, 0);
-			pango_cairo_show_layout(cr, layout);
-			g_object_unref(layout);
-			break;
-		}
-		case STRUCT_DATETIME: {
-			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-			string str;
-			TTBP(str)
-			unordered_map<void*, string>::iterator it = date_map.find((void*) m.datetime());
-			if(it != date_map.end()) {
-				str += it->second;
-			} else {
-				string value_str = m.datetime()->print(po);
-				date_map[(void*) m.datetime()] = value_str;
-				str += value_str;
-			}
-			TTE(str)
-			pango_layout_set_markup(layout, str.c_str(), -1);
-			PangoRectangle rect;
-			pango_layout_get_pixel_size(layout, &w, &h);
-			pango_layout_get_pixel_extents(layout, &rect, NULL);
-			w = rect.width + rect.x;
-			w += 1;
-			central_point = h / 2;
-			surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-			cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-			cr = cairo_create(surface);
-			gdk_cairo_set_source_rgba(cr, color);
-			cairo_move_to(cr, 1, 0);
-			pango_cairo_show_layout(cr, layout);
-			g_object_unref(layout);
-			break;
-		}
-		case STRUCT_ADDITION: {
-			ips_n.depth++;
-			
-			vector<cairo_surface_t*> surface_terms;
-			vector<gint> hpt;
-			vector<gint> wpt;
-			vector<gint> cpt;
-			gint plus_w, plus_h, minus_w, minus_h, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0;
-			
-			CALCULATE_SPACE_W
-			PangoLayout *layout_plus = gtk_widget_create_pango_layout(resultview, NULL);
-			PANGO_TTP(layout_plus, "+");
-			pango_layout_get_pixel_size(layout_plus, &plus_w, &plus_h);
-			PangoLayout *layout_minus = gtk_widget_create_pango_layout(resultview, NULL);
-			if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MINUS, po.can_display_unicode_string_arg))) {
-				PANGO_TTP(layout_minus, SIGN_MINUS);
-			} else {
-				PANGO_TTP(layout_minus, "-");
-			}
-			pango_layout_get_pixel_size(layout_minus, &minus_w, &minus_h);
-			for(size_t i = 0; i < m.size(); i++) {
-				hetmp = 0;		
-				if(m[i].type() == STRUCT_NEGATE && i > 0) {
-					ips_n.wrap = m[i][0].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-					surface_terms.push_back(draw_structure(m[i][0], po, ips_n, &hetmp, scaledown, color));
-				} else {
-					ips_n.wrap = m[i].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-					surface_terms.push_back(draw_structure(m[i], po, ips_n, &hetmp, scaledown, color));
-				}
-				if(CALCULATOR->aborted()) {
-					for(size_t i = 0; i < surface_terms.size(); i++) {
-						if(surface_terms[i]) cairo_surface_destroy(surface_terms[i]);
-					}
-					g_object_unref(layout_minus);
-					g_object_unref(layout_plus);
-					return NULL;
-				}
-				wtmp = cairo_image_surface_get_width(surface_terms[i]) / scalefactor;
-				htmp = cairo_image_surface_get_height(surface_terms[i]) / scalefactor;
-				hpt.push_back(htmp);
-				cpt.push_back(hetmp);
-				wpt.push_back(wtmp);
-				w += wtmp;
-				if(m[i].type() == STRUCT_NEGATE && i > 0) {
-					w += minus_w;
-					if(minus_h / 2 > dh) {
-						dh = minus_h / 2;
-					}
-					if(minus_h / 2 + minus_h % 2 > uh) {
-						uh = minus_h / 2 + minus_h % 2;
-					}						
-				} else if(i > 0) {
-					w += plus_w;
-					if(plus_h / 2 > dh) {
-						dh = plus_h / 2;
-					}
-					if(plus_h / 2 + plus_h % 2 > uh) {
-						uh = plus_h / 2 + plus_h % 2;
-					}					
-				}
-				if(htmp - hetmp > uh) {
-					uh = htmp - hetmp;
-				}
-				if(hetmp > dh) {
-					dh = hetmp;
-				}				
-			}
-			w += space_w * (surface_terms.size() - 1) * 2;
-			central_point = dh;
-			h = dh + uh;
-			surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-			cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-			cr = cairo_create(surface);
-			w = 0;
-			for(size_t i = 0; i < surface_terms.size(); i++) {
-				if(!CALCULATOR->aborted()) {
-					gdk_cairo_set_source_rgba(cr, color);
-					if(i > 0) {
-						w += space_w;
-						if(m[i].type() == STRUCT_NEGATE) {
-							cairo_move_to(cr, w, uh - minus_h / 2 - minus_h % 2);
-							pango_cairo_show_layout(cr, layout_minus);
-							w += minus_w;
-						} else {
-							cairo_move_to(cr, w, uh - plus_h / 2 - plus_h % 2);
-							pango_cairo_show_layout(cr, layout_plus);
-							w += plus_w;
-						}
-						w += space_w;
-					}
-					cairo_set_source_surface(cr, surface_terms[i], w, uh - (hpt[i] - cpt[i]));
-					cairo_paint(cr);
-					w += wpt[i];
-				}
-				cairo_surface_destroy(surface_terms[i]);
-			}
-			g_object_unref(layout_minus);
-			g_object_unref(layout_plus);
-			break;
-		}
-		case STRUCT_NEGATE: {
-			ips_n.depth++;
 
-			gint minus_w, minus_h, uh, dh, h, w, ctmp, htmp, wtmp, hpa, cpa;
-			//gint wpa;
-			
-			PangoLayout *layout_minus = gtk_widget_create_pango_layout(resultview, NULL);
-			
-			if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MINUS, po.can_display_unicode_string_arg))) {
-				PANGO_TTP(layout_minus, SIGN_MINUS);
-			} else {
-				PANGO_TTP(layout_minus, "-");
-			}
-			pango_layout_get_pixel_size(layout_minus, &minus_w, &minus_h);
-
-			w = minus_w + 1;
-			uh = minus_h / 2 + minus_h % 2;
-			dh = minus_h / 2;
-			
-			ips_n.wrap = m[0].needsParenthesis(po, ips_n, m, 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-			cairo_surface_t *surface_arg = draw_structure(m[0], po, ips_n, &ctmp, scaledown, color);
-			if(!surface_arg) {
-				g_object_unref(layout_minus);
+		ips_n.depth++;
+	
+		vector<cairo_surface_t*> surface_terms;
+		vector<gint> hpt;
+		vector<gint> wpt;
+		vector<gint> cpt;
+		gint sign_w, sign_h, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0;
+		gint space_w = 5;
+		
+		for(size_t i = 0; i < m_angle.size(); i++) {
+			hetmp = 0;		
+			ips_n.wrap = m_angle[i].needsParenthesis(po, ips_n, m_angle, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+			surface_terms.push_back(draw_structure(m_angle[i], po, caf, ips_n, &hetmp, scaledown, color));
+			if(CALCULATOR->aborted()) {
+				for(size_t i = 0; i < surface_terms.size(); i++) {
+					if(surface_terms[i]) cairo_surface_destroy(surface_terms[i]);
+				}
 				return NULL;
 			}
-			/*if(ips.depth == 0 && !ips.parent_approximate && !m[0].isApproximate() && m[0].isNumber() && po.number_fraction_format == FRACTION_DECIMAL && po.is_approximate && *po.is_approximate && m[0].number().isRational() && ips.depth == 0 && m[0].number().denominatorIsLessThan(10) && m[0].number().numeratorIsLessThan(21)) {
-				cairo_surface_destroy(surface_arg);
-				g_object_unref(layout_minus);
-				MathStructure mprint(m[0].number().numerator());
-				mprint.transform(STRUCT_DIVISION, m[0].number().denominator());
-				mprint.transform(STRUCT_NEGATE);
-				mprint.transform(STRUCT_COMPARISON);
-				mprint.setComparisonType(COMPARISON_EQUALS);
-				m.ref();
-				mprint.addChild_nocopy(&m);
-				surface = draw_structure(mprint, po, ips, &central_point, scaledown, color);
-				cr = cairo_create(surface);
-				gint w, h, wle, hle, w_new, h_new;
-				w = cairo_image_surface_get_width(surface) / scalefactor;
-				h = cairo_image_surface_get_height(surface) / scalefactor;
-				cairo_surface_t *surface_old = surface;
-				PangoLayout *layout_equals = gtk_widget_create_pango_layout(resultview, NULL);
-				PANGO_TT(layout_equals, "=");
-				CALCULATE_SPACE_W
-				pango_layout_get_pixel_size(layout_equals, &wle, &hle);
-				w_new = w + wle + 1 + space_w;
-				h_new = h;
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w_new * scalefactor, h_new * scalefactor);
+			wtmp = cairo_image_surface_get_width(surface_terms[i]) / scalefactor;
+			htmp = cairo_image_surface_get_height(surface_terms[i]) / scalefactor;
+			hpt.push_back(htmp);
+			cpt.push_back(hetmp);
+			wpt.push_back(wtmp);
+			w += wtmp;
+			if(htmp - hetmp > uh) {
+				uh = htmp - hetmp;
+			}
+			if(hetmp > dh) {
+				dh = hetmp;
+			}				
+		}
+
+		central_point = dh;
+		h = dh + uh;
+		
+		sign_h = h - 10;
+		sign_w = sign_h;
+		w += sign_w * (m.size() - 1);
+		
+		w += space_w * (surface_terms.size() - 1) * 2;
+		
+		double divider = 1.0;
+		if(ips.power_depth >= 1) divider = 1.5;
+		
+		surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+		cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+		cr = cairo_create(surface);
+		w = 0;
+		for(size_t i = 0; i < surface_terms.size(); i++) {
+			if(!CALCULATOR->aborted()) {
+				gdk_cairo_set_source_rgba(cr, color);
+				if(i > 0) {
+					w += space_w;
+					cairo_move_to(cr, w, h - 2 / divider - (h - sign_h) / 2);
+					cairo_line_to(cr, w + sign_w, (h - sign_h) / 2);
+					cairo_move_to(cr, w, h - 2 / divider - (h - sign_h) / 2);
+					cairo_line_to(cr, w + sign_w, h - 2 / divider - (h - sign_h) / 2);
+					cairo_set_line_width(cr, 2 / divider);
+					cairo_stroke(cr);
+					w += sign_w;
+					w += space_w;
+				}
+				cairo_set_source_surface(cr, surface_terms[i], w, uh - (hpt[i] - cpt[i]));
+				cairo_paint(cr);
+				w += wpt[i];
+			}
+			cairo_surface_destroy(surface_terms[i]);
+		}
+	} else {
+		switch(m.type()) {
+			case STRUCT_NUMBER: {
+				string str;
+				string exp = "";
+				bool exp_minus = false;
+				ips_n.exp = &exp;
+				ips_n.exp_minus = &exp_minus;
+				TTBP(str)
+				unordered_map<void*, string>::iterator it = number_map.find((void*) &m.number());
+				string value_str;
+				if(it != number_map.end()) {
+					value_str += it->second;
+					if(number_approx_map.find((void*) &m.number()) != number_approx_map.end()) {
+						if(po.is_approximate && !(*po.is_approximate) && number_approx_map[(void*) &m.number()]) *po.is_approximate = true;
+					}
+					if(number_exp_map.find((void*) &m.number()) != number_exp_map.end()) {
+						exp = number_exp_map[(void*) &m.number()];
+						exp_minus = number_exp_minus_map[(void*) &m.number()];
+					}
+				} else {
+					value_str = m.number().print(po, ips_n);
+					if(po.base == BASE_HEXADECIMAL && po.base_display == BASE_DISPLAY_NORMAL) {
+						gsub("0x", "", value_str);
+					} else if(po.base == BASE_OCTAL && po.base_display == BASE_DISPLAY_NORMAL) {
+						if(str.length() > 1 && value_str[0] == '0' && is_in(NUMBERS, value_str[1])) value_str.erase(0, 1);
+					}
+					number_map[(void*) &m.number()] = value_str;
+					number_exp_map[(void*) &m.number()] = exp;
+					number_exp_minus_map[(void*) &m.number()] = exp_minus;
+					if(po.is_approximate) {
+						number_approx_map[(void*) &m.number()] = *po.is_approximate;
+					} else {
+						number_approx_map[(void*) &m.number()] = FALSE;
+					}
+					number_base_map[(void*) &m.number()] = "";
+				}
+				if((!use_e_notation || (po.base != BASE_DECIMAL && po.base >= 2 && po.base <= 36)) && !exp.empty()) {
+					if(value_str == "1") {
+						MathStructure mnr(m_one);
+						mnr.raise(m_one);
+						number_map[(void*) &mnr[0].number()] = (po.base != BASE_DECIMAL && po.base >= 2 && po.base <= 36) ? i2s(po.base) : "10";
+						if(exp_minus) {
+							mnr[1].transform(STRUCT_NEGATE);
+							number_map[(void*) &mnr[1][0].number()] = exp;
+						} else {
+							number_map[(void*) &mnr[1].number()] = exp;
+						}
+						surface = draw_structure(mnr, po, caf, ips, point_central, scaledown, color);
+						if(exp_minus) number_map.erase(&mnr[1][0].number());
+						else number_map.erase(&mnr[1].number());
+						number_map.erase(&mnr[0].number());
+						return surface;
+					} else {
+						MathStructure mnr(m_one);
+						mnr.multiply(m_one);
+						number_map[(void*) &mnr[0].number()] = value_str;
+						number_approx_map[(void*) &mnr[0].number()] = number_approx_map[(void*) &m.number()];
+						mnr[1].raise(m_one);
+						number_map[(void*) &mnr[1][0].number()] = (po.base != BASE_DECIMAL && po.base >= 2 && po.base <= 36) ? i2s(po.base) : "10";
+						if(exp_minus) {
+							mnr[1][1].transform(STRUCT_NEGATE);
+							number_map[(void*) &mnr[1][1][0].number()] = exp;
+						} else {
+							number_map[(void*) &mnr[1][1].number()] = exp;
+						}
+						surface = draw_structure(mnr, po, caf, ips, point_central, scaledown, color);
+						if(exp_minus) number_map.erase(&mnr[1][1][0].number());
+						else number_map.erase(&mnr[1][1].number());
+						number_map.erase(&mnr[1][0].number());
+						number_map.erase(&mnr[0].number());
+						number_approx_map.erase(&mnr[0].number());
+						return surface;
+					}
+				}
+				if(exp.empty() && (po.base == BASE_SEXAGESIMAL || po.base == BASE_TIME)) {
+					string estr;
+					if(po.lower_case_e) {TTP(estr, "e");}
+					else {TTP_SMALL(estr, "E");}
+					if(po.lower_case_e) gsub("e", estr, value_str);
+					else gsub("E", estr, value_str);
+				}
+				str += value_str;
+				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
+				if(!exp.empty()) {
+					if(po.lower_case_e) {TTP(str, "e");}
+					else {TTP_SMALL(str, "E");}
+					if(exp_minus) {
+						str += "-";
+					}
+					str += exp;
+				}
+				bool twos = (((po.base == 2 && po.twos_complement) || (po.base == 16 && po.hexadecimal_twos_complement)) && m.number().isNegative() && value_str.find(SIGN_MINUS) == string::npos && value_str.find("-") == string::npos);
+				if(po.base != BASE_DECIMAL && (twos || po.base_display != BASE_DISPLAY_ALTERNATIVE || (po.base != BASE_HEXADECIMAL && po.base != BASE_BINARY && po.base != BASE_OCTAL)) && (po.base > 0 || po.base <= BASE_CUSTOM) && po.base <= 36) {
+					TTBP_SMALL(str)
+					str += "<sub>";
+					string str_base;
+					if(it != number_map.end()) {
+						str_base = number_base_map[(void*) &m.number()];
+					} else {
+						switch(po.base) {
+							case BASE_GOLDEN_RATIO: {str_base = "<i>φ</i>"; break;}
+							case BASE_SUPER_GOLDEN_RATIO: {str_base = "<i>ψ</i>"; break;}
+							case BASE_PI: {str_base = "<i>π</i>"; break;}
+							case BASE_E: {str_base = "<i>e</i>"; break;}
+							case BASE_SQRT2: {str_base = "√2"; break;}
+							case BASE_UNICODE: {str_base = "Unicode"; break;}
+							case BASE_BIJECTIVE_26: {str_base = "b26"; break;}
+							case BASE_CUSTOM: {str_base = CALCULATOR->customOutputBase().print(CALCULATOR->messagePrintOptions()); break;}
+							default: {str_base = i2s(po.base);}
+						}
+						if(twos) str_base += '-';
+						number_base_map[(void*) &m.number()] = str_base;
+					}
+					str += str_base;
+					str += "</sub>";
+					TTE(str)
+				}
+				TTE(str)
+				pango_layout_set_markup(layout, str.c_str(), -1);
+				PangoRectangle rect;
+				pango_layout_get_pixel_size(layout, &w, &h);
+				pango_layout_get_pixel_extents(layout, &rect, NULL);
+				w = rect.width + rect.x;
+				w += 1;
+				central_point = h / 2;
+				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
 				cr = cairo_create(surface);
 				gdk_cairo_set_source_rgba(cr, color);
-				cairo_move_to(cr, 1, h - central_point - hle / 2 - hle % 2);
-				pango_cairo_show_layout(cr, layout_equals);
-				cairo_set_source_surface(cr, surface_old, wle + 1 + space_w, 0);
-				cairo_paint(cr);
-				cairo_surface_destroy(surface_old);
-				g_object_unref(layout_equals);
-				if(cr) cairo_destroy(cr);
-				if(point_central) *point_central = central_point;
-				return surface;
-			}*/
-			wtmp = cairo_image_surface_get_width(surface_arg) / scalefactor;
-			htmp = cairo_image_surface_get_height(surface_arg) / scalefactor;
-			hpa = htmp;
-			cpa = ctmp;
-			//wpa = wtmp;
-			w += wtmp;
-			if(ctmp > dh) {
-				dh = ctmp;
+				cairo_move_to(cr, 1, 0);
+				pango_cairo_show_layout(cr, layout);
+				g_object_unref(layout);
+				break;
 			}
-			if(htmp - ctmp > uh) {
-				uh = htmp - ctmp;
-			}				
-			
-			h = uh + dh;
-			central_point = dh;
-
-			surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-			cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-			cr = cairo_create(surface);
-			
-			w = 0;
-			gdk_cairo_set_source_rgba(cr, color);
-			cairo_move_to(cr, w, uh - minus_h / 2 - minus_h % 2);
-			pango_cairo_show_layout(cr, layout_minus);
-			w += minus_w + 1;
-			cairo_set_source_surface(cr, surface_arg, w, uh - (hpa - cpa));
-			cairo_paint(cr);
-			cairo_surface_destroy(surface_arg);
-
-			g_object_unref(layout_minus);
-			break;
-		}
-		case STRUCT_MULTIPLICATION: {
-		
-			ips_n.depth++;
-			
-			vector<cairo_surface_t*> surface_terms;
-			vector<gint> hpt;
-			vector<gint> wpt;
-			vector<gint> cpt;
-			gint mul_w, mul_h, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0;
-			
-			CALCULATE_SPACE_W
-			PangoLayout *layout_mul = gtk_widget_create_pango_layout(resultview, NULL);
-			string str;
-			if(po.use_unicode_signs && po.multiplication_sign == MULTIPLICATION_SIGN_DOT && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MULTIDOT, po.can_display_unicode_string_arg))) {
-				TTP_SMALL(str, SIGN_MULTIDOT);
-			} else if(po.use_unicode_signs && (po.multiplication_sign == MULTIPLICATION_SIGN_DOT || po.multiplication_sign == MULTIPLICATION_SIGN_ALTDOT) && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MIDDLEDOT, po.can_display_unicode_string_arg))) {
-				TTP_SMALL(str, SIGN_MIDDLEDOT);
-			} else if(po.use_unicode_signs && po.multiplication_sign == MULTIPLICATION_SIGN_X && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MULTIPLICATION, po.can_display_unicode_string_arg))) {
-				TTP_SMALL(str, SIGN_MULTIPLICATION);
-			} else {
-				TTP(str, "*");
+			case STRUCT_ABORTED: {}
+			case STRUCT_SYMBOLIC: {
+				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
+				string str;
+				str = "<i>";
+				TTBP(str)
+				str += m.symbol();
+				TTE(str)
+				str += "</i>";
+				pango_layout_set_markup(layout, str.c_str(), -1);
+				PangoRectangle rect;
+				pango_layout_get_pixel_size(layout, &w, &h);
+				pango_layout_get_pixel_extents(layout, &rect, NULL);
+				w = rect.width + rect.x;
+				w += 1;
+				central_point = h / 2;
+				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+				cr = cairo_create(surface);
+				gdk_cairo_set_source_rgba(cr, color);
+				cairo_move_to(cr, 1, 0);
+				pango_cairo_show_layout(cr, layout);
+				g_object_unref(layout);
+				break;
 			}
-			pango_layout_set_markup(layout_mul, str.c_str(), -1);
-			pango_layout_get_pixel_size(layout_mul, &mul_w, &mul_h);
-			bool par_prev = false;
-			vector<int> nm;
-			for(size_t i = 0; i < m.size(); i++) {
-				hetmp = 0;		
-				ips_n.wrap = m[i].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-				surface_terms.push_back(draw_structure(m[i], po, ips_n, &hetmp, scaledown, color));
-				if(CALCULATOR->aborted()) {
-					for(size_t i = 0; i < surface_terms.size(); i++) {
-						if(surface_terms[i]) cairo_surface_destroy(surface_terms[i]);
+			case STRUCT_DATETIME: {
+				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
+				string str;
+				TTBP(str)
+				unordered_map<void*, string>::iterator it = date_map.find((void*) m.datetime());
+				if(it != date_map.end()) {
+					str += it->second;
+				} else {
+					string value_str = m.datetime()->print(po);
+					date_map[(void*) m.datetime()] = value_str;
+					str += value_str;
+				}
+				TTE(str)
+				pango_layout_set_markup(layout, str.c_str(), -1);
+				PangoRectangle rect;
+				pango_layout_get_pixel_size(layout, &w, &h);
+				pango_layout_get_pixel_extents(layout, &rect, NULL);
+				w = rect.width + rect.x;
+				w += 1;
+				central_point = h / 2;
+				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+				cr = cairo_create(surface);
+				gdk_cairo_set_source_rgba(cr, color);
+				cairo_move_to(cr, 1, 0);
+				pango_cairo_show_layout(cr, layout);
+				g_object_unref(layout);
+				break;
+			}
+			case STRUCT_ADDITION: {
+				ips_n.depth++;
+				
+				vector<cairo_surface_t*> surface_terms;
+				vector<gint> hpt;
+				vector<gint> wpt;
+				vector<gint> cpt;
+				gint plus_w, plus_h, minus_w, minus_h, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0;
+				
+				CALCULATE_SPACE_W
+				PangoLayout *layout_plus = gtk_widget_create_pango_layout(resultview, NULL);
+				PANGO_TTP(layout_plus, "+");
+				pango_layout_get_pixel_size(layout_plus, &plus_w, &plus_h);
+				PangoLayout *layout_minus = gtk_widget_create_pango_layout(resultview, NULL);
+				if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MINUS, po.can_display_unicode_string_arg))) {
+					PANGO_TTP(layout_minus, SIGN_MINUS);
+				} else {
+					PANGO_TTP(layout_minus, "-");
+				}
+				pango_layout_get_pixel_size(layout_minus, &minus_w, &minus_h);
+				for(size_t i = 0; i < m.size(); i++) {
+					hetmp = 0;		
+					if(m[i].type() == STRUCT_NEGATE && i > 0) {
+						ips_n.wrap = m[i][0].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+						surface_terms.push_back(draw_structure(m[i][0], po, caf, ips_n, &hetmp, scaledown, color));
+					} else {
+						ips_n.wrap = m[i].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+						surface_terms.push_back(draw_structure(m[i], po, caf, ips_n, &hetmp, scaledown, color));
 					}
-					g_object_unref(layout_mul);
+					if(CALCULATOR->aborted()) {
+						for(size_t i = 0; i < surface_terms.size(); i++) {
+							if(surface_terms[i]) cairo_surface_destroy(surface_terms[i]);
+						}
+						g_object_unref(layout_minus);
+						g_object_unref(layout_plus);
+						return NULL;
+					}
+					wtmp = cairo_image_surface_get_width(surface_terms[i]) / scalefactor;
+					htmp = cairo_image_surface_get_height(surface_terms[i]) / scalefactor;
+					hpt.push_back(htmp);
+					cpt.push_back(hetmp);
+					wpt.push_back(wtmp);
+					w += wtmp;
+					if(m[i].type() == STRUCT_NEGATE && i > 0) {
+						w += minus_w;
+						if(minus_h / 2 > dh) {
+							dh = minus_h / 2;
+						}
+						if(minus_h / 2 + minus_h % 2 > uh) {
+							uh = minus_h / 2 + minus_h % 2;
+						}						
+					} else if(i > 0) {
+						w += plus_w;
+						if(plus_h / 2 > dh) {
+							dh = plus_h / 2;
+						}
+						if(plus_h / 2 + plus_h % 2 > uh) {
+							uh = plus_h / 2 + plus_h % 2;
+						}					
+					}
+					if(htmp - hetmp > uh) {
+						uh = htmp - hetmp;
+					}
+					if(hetmp > dh) {
+						dh = hetmp;
+					}				
+				}
+				w += space_w * (surface_terms.size() - 1) * 2;
+				central_point = dh;
+				h = dh + uh;
+				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+				cr = cairo_create(surface);
+				w = 0;
+				for(size_t i = 0; i < surface_terms.size(); i++) {
+					if(!CALCULATOR->aborted()) {
+						gdk_cairo_set_source_rgba(cr, color);
+						if(i > 0) {
+							w += space_w;
+							if(m[i].type() == STRUCT_NEGATE) {
+								cairo_move_to(cr, w, uh - minus_h / 2 - minus_h % 2);
+								pango_cairo_show_layout(cr, layout_minus);
+								w += minus_w;
+							} else {
+								cairo_move_to(cr, w, uh - plus_h / 2 - plus_h % 2);
+								pango_cairo_show_layout(cr, layout_plus);
+								w += plus_w;
+							}
+							w += space_w;
+						}
+						cairo_set_source_surface(cr, surface_terms[i], w, uh - (hpt[i] - cpt[i]));
+						cairo_paint(cr);
+						w += wpt[i];
+					}
+					cairo_surface_destroy(surface_terms[i]);
+				}
+				g_object_unref(layout_minus);
+				g_object_unref(layout_plus);
+				break;
+			}
+			case STRUCT_NEGATE: {
+				ips_n.depth++;
+
+				gint minus_w, minus_h, uh, dh, h, w, ctmp, htmp, wtmp, hpa, cpa;
+				//gint wpa;
+				
+				PangoLayout *layout_minus = gtk_widget_create_pango_layout(resultview, NULL);
+				
+				if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MINUS, po.can_display_unicode_string_arg))) {
+					PANGO_TTP(layout_minus, SIGN_MINUS);
+				} else {
+					PANGO_TTP(layout_minus, "-");
+				}
+				pango_layout_get_pixel_size(layout_minus, &minus_w, &minus_h);
+
+				w = minus_w + 1;
+				uh = minus_h / 2 + minus_h % 2;
+				dh = minus_h / 2;
+				
+				ips_n.wrap = m[0].needsParenthesis(po, ips_n, m, 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+				cairo_surface_t *surface_arg = draw_structure(m[0], po, caf, ips_n, &ctmp, scaledown, color);
+				if(!surface_arg) {
+					g_object_unref(layout_minus);
 					return NULL;
 				}
-				wtmp = cairo_image_surface_get_width(surface_terms[i]) / scalefactor;
-				htmp = cairo_image_surface_get_height(surface_terms[i]) / scalefactor;
-				hpt.push_back(htmp);
-				cpt.push_back(hetmp);
-				wpt.push_back(wtmp);
-				w += wtmp;
-				if(!po.short_multiplication && i > 0) {
-					w += mul_w + space_w * 2;
-					if(mul_h / 2 > dh) {
-						dh = mul_h / 2;
-					}
-					if(mul_h / 2 + mul_h % 2 > uh) {
-						uh = mul_h / 2 + mul_h % 2;
-					}
-					nm.push_back(-1);
-				} else if(i > 0) {
-					nm.push_back(m[i].neededMultiplicationSign(po, ips_n, m, i + 1, ips_n.wrap || (m[i].isPower() && m[i][0].needsParenthesis(po, ips_n, m[i], 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0)), par_prev, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0));
-					switch(nm[i]) {
-						case MULTIPLICATION_SIGN_SPACE: {
-							w += space_w;
-							break;
-						}
-						case MULTIPLICATION_SIGN_OPERATOR: {
-							w += mul_w + space_w * 2;
-							if(mul_h / 2 > dh) {
-								dh = mul_h / 2;
-							}
-							if(mul_h / 2 + mul_h % 2 > uh) {
-								uh = mul_h / 2 + mul_h % 2;
-							}
-							break;
-						}
-						case MULTIPLICATION_SIGN_OPERATOR_SHORT: {
-							w += mul_w;
-							if(mul_h / 2 > dh) {
-								dh = mul_h / 2;
-							}
-							if(mul_h / 2 + mul_h % 2 > uh) {
-								uh = mul_h / 2 + mul_h % 2;
-							}
-							break;
-						}
-						default: {
-							if(m[i - 1].isNumber()) w++;
-						}
-					}
-				} else {
-					nm.push_back(-1);
-				}
-				if(htmp - hetmp > uh) {
-					uh = htmp - hetmp;
-				}
-				if(hetmp > dh) {
-					dh = hetmp;
-				}
-				par_prev = ips_n.wrap;
-			}
-			cairo_surface_t *flag_s = NULL;
-			gint flag_width = 0;
-			size_t flag_i = 0;
-			if(m.size() == 2 && ((m[0].isUnit() && m[0].unit()->isCurrency() && m[1].isNumber()) || (m[1].isUnit() && m[1].unit()->isCurrency() && m[0].isNumber()))) {
-				size_t i_unit = 0;
-				if(m[1].isUnit()) {
-					i_unit = 1;
-					flag_i = 1;
-				} else if(nm[1] == MULTIPLICATION_SIGN_NONE) {
-					flag_i = 1;
-				}
-				string imagefile = "/qalculate-gtk/flags/"; imagefile += m[i_unit].unit()->referenceName(); imagefile += ".png";
-				GdkPixbuf *pixbuf = NULL;
-				h = hpt[flag_i];
-				if(h < 48) pixbuf = gdk_pixbuf_new_from_resource_at_scale(imagefile.c_str(), -1, h / 3, TRUE, NULL);
-				else pixbuf = gdk_pixbuf_new_from_resource(imagefile.c_str(), NULL);
-				if(pixbuf) {
-					flag_s = gdk_cairo_surface_create_from_pixbuf(pixbuf, 1, NULL);
-					flag_width = cairo_image_surface_get_width(flag_s);
-					w += flag_width + 2;
-					g_object_unref(pixbuf);
-				}
-			}
-			central_point = dh;
-			h = dh + uh;
-			surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-			cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-			cr = cairo_create(surface);
-			w = 0;
-			for(size_t i = 0; i < surface_terms.size(); i++) {
-				if(!CALCULATOR->aborted()) {
+				/*if(ips.depth == 0 && !ips.parent_approximate && !m[0].isApproximate() && m[0].isNumber() && po.number_fraction_format == FRACTION_DECIMAL && po.is_approximate && *po.is_approximate && m[0].number().isRational() && ips.depth == 0 && m[0].number().denominatorIsLessThan(10) && m[0].number().numeratorIsLessThan(21)) {
+					cairo_surface_destroy(surface_arg);
+					g_object_unref(layout_minus);
+					MathStructure mprint(m[0].number().numerator());
+					mprint.transform(STRUCT_DIVISION, m[0].number().denominator());
+					mprint.transform(STRUCT_NEGATE);
+					mprint.transform(STRUCT_COMPARISON);
+					mprint.setComparisonType(COMPARISON_EQUALS);
+					m.ref();
+					mprint.addChild_nocopy(&m);
+					surface = draw_structure(mprint, po, caf, ips, &central_point, scaledown, color);
+					cr = cairo_create(surface);
+					gint w, h, wle, hle, w_new, h_new;
+					w = cairo_image_surface_get_width(surface) / scalefactor;
+					h = cairo_image_surface_get_height(surface) / scalefactor;
+					cairo_surface_t *surface_old = surface;
+					PangoLayout *layout_equals = gtk_widget_create_pango_layout(resultview, NULL);
+					PANGO_TT(layout_equals, "=");
+					CALCULATE_SPACE_W
+					pango_layout_get_pixel_size(layout_equals, &wle, &hle);
+					w_new = w + wle + 1 + space_w;
+					h_new = h;
+					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w_new * scalefactor, h_new * scalefactor);
+					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+					cr = cairo_create(surface);
 					gdk_cairo_set_source_rgba(cr, color);
+					cairo_move_to(cr, 1, h - central_point - hle / 2 - hle % 2);
+					pango_cairo_show_layout(cr, layout_equals);
+					cairo_set_source_surface(cr, surface_old, wle + 1 + space_w, 0);
+					cairo_paint(cr);
+					cairo_surface_destroy(surface_old);
+					g_object_unref(layout_equals);
+					if(cr) cairo_destroy(cr);
+					if(point_central) *point_central = central_point;
+					return surface;
+				}*/
+				wtmp = cairo_image_surface_get_width(surface_arg) / scalefactor;
+				htmp = cairo_image_surface_get_height(surface_arg) / scalefactor;
+				hpa = htmp;
+				cpa = ctmp;
+				//wpa = wtmp;
+				w += wtmp;
+				if(ctmp > dh) {
+					dh = ctmp;
+				}
+				if(htmp - ctmp > uh) {
+					uh = htmp - ctmp;
+				}				
+				
+				h = uh + dh;
+				central_point = dh;
+
+				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+				cr = cairo_create(surface);
+				
+				w = 0;
+				gdk_cairo_set_source_rgba(cr, color);
+				cairo_move_to(cr, w, uh - minus_h / 2 - minus_h % 2);
+				pango_cairo_show_layout(cr, layout_minus);
+				w += minus_w + 1;
+				cairo_set_source_surface(cr, surface_arg, w, uh - (hpa - cpa));
+				cairo_paint(cr);
+				cairo_surface_destroy(surface_arg);
+
+				g_object_unref(layout_minus);
+				break;
+			}
+			case STRUCT_MULTIPLICATION: {
+				
+				ips_n.depth++;
+				
+				vector<cairo_surface_t*> surface_terms;
+				vector<gint> hpt;
+				vector<gint> wpt;
+				vector<gint> cpt;
+				gint mul_w, mul_h, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0;
+				
+				CALCULATE_SPACE_W
+				PangoLayout *layout_mul = gtk_widget_create_pango_layout(resultview, NULL);
+				string str;
+				if(po.use_unicode_signs && po.multiplication_sign == MULTIPLICATION_SIGN_DOT && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MULTIDOT, po.can_display_unicode_string_arg))) {
+					TTP_SMALL(str, SIGN_MULTIDOT);
+				} else if(po.use_unicode_signs && (po.multiplication_sign == MULTIPLICATION_SIGN_DOT || po.multiplication_sign == MULTIPLICATION_SIGN_ALTDOT) && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MIDDLEDOT, po.can_display_unicode_string_arg))) {
+					TTP_SMALL(str, SIGN_MIDDLEDOT);
+				} else if(po.use_unicode_signs && po.multiplication_sign == MULTIPLICATION_SIGN_X && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MULTIPLICATION, po.can_display_unicode_string_arg))) {
+					TTP_SMALL(str, SIGN_MULTIPLICATION);
+				} else {
+					TTP(str, "*");
+				}
+				pango_layout_set_markup(layout_mul, str.c_str(), -1);
+				pango_layout_get_pixel_size(layout_mul, &mul_w, &mul_h);
+				bool par_prev = false;
+				vector<int> nm;
+				for(size_t i = 0; i < m.size(); i++) {
+					hetmp = 0;		
+					ips_n.wrap = m[i].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+					surface_terms.push_back(draw_structure(m[i], po, caf, ips_n, &hetmp, scaledown, color));
+					if(CALCULATOR->aborted()) {
+						for(size_t i = 0; i < surface_terms.size(); i++) {
+							if(surface_terms[i]) cairo_surface_destroy(surface_terms[i]);
+						}
+						g_object_unref(layout_mul);
+						return NULL;
+					}
+					wtmp = cairo_image_surface_get_width(surface_terms[i]) / scalefactor;
+					htmp = cairo_image_surface_get_height(surface_terms[i]) / scalefactor;
+					hpt.push_back(htmp);
+					cpt.push_back(hetmp);
+					wpt.push_back(wtmp);
+					w += wtmp;
 					if(!po.short_multiplication && i > 0) {
-						w += space_w;
-						cairo_move_to(cr, w, uh - mul_h / 2 - mul_h % 2);
-						pango_cairo_show_layout(cr, layout_mul);
-						w += mul_w;
-						w += space_w;
+						w += mul_w + space_w * 2;
+						if(mul_h / 2 > dh) {
+							dh = mul_h / 2;
+						}
+						if(mul_h / 2 + mul_h % 2 > uh) {
+							uh = mul_h / 2 + mul_h % 2;
+						}
+						nm.push_back(-1);
 					} else if(i > 0) {
+						nm.push_back(m[i].neededMultiplicationSign(po, ips_n, m, i + 1, ips_n.wrap || (m[i].isPower() && m[i][0].needsParenthesis(po, ips_n, m[i], 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0)), par_prev, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0));
 						switch(nm[i]) {
 							case MULTIPLICATION_SIGN_SPACE: {
 								w += space_w;
 								break;
 							}
 							case MULTIPLICATION_SIGN_OPERATOR: {
-								w += space_w;
-								cairo_move_to(cr, w, uh - mul_h / 2 - mul_h % 2);
-								pango_cairo_show_layout(cr, layout_mul);
-								w += mul_w;
-								w += space_w;
+								w += mul_w + space_w * 2;
+								if(mul_h / 2 > dh) {
+									dh = mul_h / 2;
+								}
+								if(mul_h / 2 + mul_h % 2 > uh) {
+									uh = mul_h / 2 + mul_h % 2;
+								}
 								break;
 							}
 							case MULTIPLICATION_SIGN_OPERATOR_SHORT: {
-								cairo_move_to(cr, w, uh - mul_h / 2 - mul_h % 2);
-								pango_cairo_show_layout(cr, layout_mul);
 								w += mul_w;
+								if(mul_h / 2 > dh) {
+									dh = mul_h / 2;
+								}
+								if(mul_h / 2 + mul_h % 2 > uh) {
+									uh = mul_h / 2 + mul_h % 2;
+								}
 								break;
 							}
 							default: {
 								if(m[i - 1].isNumber()) w++;
 							}
 						}
+					} else {
+						nm.push_back(-1);
 					}
-					cairo_set_source_surface(cr, surface_terms[i], w, uh - (hpt[i] - cpt[i]));
-					cairo_paint(cr);
-					w += wpt[i];
-					if(flag_s && i == 0 && flag_i == 0) {
-						gdk_cairo_set_source_rgba(cr, color);
-						cairo_set_source_surface(cr, flag_s, w + 2, uh - (hpt[i] - cpt[i]) + hpt[i] / 8);
-						cairo_paint(cr);
-						cairo_surface_destroy(flag_s);
-						flag_s = NULL;
+					if(htmp - hetmp > uh) {
+						uh = htmp - hetmp;
+					}
+					if(hetmp > dh) {
+						dh = hetmp;
+					}
+					par_prev = ips_n.wrap;
+				}
+				cairo_surface_t *flag_s = NULL;
+				gint flag_width = 0;
+				size_t flag_i = 0;
+				if(m.size() == 2 && ((m[0].isUnit() && m[0].unit()->isCurrency() && m[1].isNumber()) || (m[1].isUnit() && m[1].unit()->isCurrency() && m[0].isNumber()))) {
+					size_t i_unit = 0;
+					if(m[1].isUnit()) {
+						i_unit = 1;
+						flag_i = 1;
+					} else if(nm[1] == MULTIPLICATION_SIGN_NONE) {
+						flag_i = 1;
+					}
+					string imagefile = "/qalculate-gtk/flags/"; imagefile += m[i_unit].unit()->referenceName(); imagefile += ".png";
+					GdkPixbuf *pixbuf = NULL;
+					h = hpt[flag_i];
+					if(h < 48) pixbuf = gdk_pixbuf_new_from_resource_at_scale(imagefile.c_str(), -1, h / 3, TRUE, NULL);
+					else pixbuf = gdk_pixbuf_new_from_resource(imagefile.c_str(), NULL);
+					if(pixbuf) {
+						flag_s = gdk_cairo_surface_create_from_pixbuf(pixbuf, 1, NULL);
+						flag_width = cairo_image_surface_get_width(flag_s);
 						w += flag_width + 2;
+						g_object_unref(pixbuf);
 					}
 				}
-				cairo_surface_destroy(surface_terms[i]);
-			}
-			if(flag_s) {
-				if(!CALCULATOR->aborted()) {
-					gdk_cairo_set_source_rgba(cr, color);
-					cairo_set_source_surface(cr, flag_s, w + 2, uh - (hpt.back() - cpt.back()) + hpt.back() / 8);
-					cairo_paint(cr);
-				}
-				cairo_surface_destroy(flag_s);
-			}
-			g_object_unref(layout_mul);
-			break;
-		}
-		case STRUCT_INVERSE: {}
-		case STRUCT_DIVISION: {
-
-			ips_n.depth++;
-			ips_n.division_depth++;
-			
-			gint den_uh, den_w, den_dh, num_w, num_dh, num_uh, dh = 0, uh = 0, w = 0, h = 0, one_w = 0, one_h = 0;
-			
-			bool flat = ips.division_depth > 0 || ips.power_depth > 0;
-			if(!flat && po.place_units_separately) {
-				flat = true;
-				size_t i = 0;
-				if(m.isDivision()) {
-					i = 1;
-				}
-				if(m[i].isMultiplication()) {
-					for(size_t i2 = 0; i2 < m[i].size(); i2++) {
-						if(!m[i][i2].isUnit_exp()) {
-							flat = false;
-							break;
+				central_point = dh;
+				h = dh + uh;
+				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+				cr = cairo_create(surface);
+				w = 0;
+				for(size_t i = 0; i < surface_terms.size(); i++) {
+					if(!CALCULATOR->aborted()) {
+						gdk_cairo_set_source_rgba(cr, color);
+						if(!po.short_multiplication && i > 0) {
+							w += space_w;
+							cairo_move_to(cr, w, uh - mul_h / 2 - mul_h % 2);
+							pango_cairo_show_layout(cr, layout_mul);
+							w += mul_w;
+							w += space_w;
+						} else if(i > 0) {
+							switch(nm[i]) {
+								case MULTIPLICATION_SIGN_SPACE: {
+									w += space_w;
+									break;
+								}
+								case MULTIPLICATION_SIGN_OPERATOR: {
+									w += space_w;
+									cairo_move_to(cr, w, uh - mul_h / 2 - mul_h % 2);
+									pango_cairo_show_layout(cr, layout_mul);
+									w += mul_w;
+									w += space_w;
+									break;
+								}
+								case MULTIPLICATION_SIGN_OPERATOR_SHORT: {
+									cairo_move_to(cr, w, uh - mul_h / 2 - mul_h % 2);
+									pango_cairo_show_layout(cr, layout_mul);
+									w += mul_w;
+									break;
+								}
+								default: {
+									if(m[i - 1].isNumber()) w++;
+								}
+							}
+						}
+						cairo_set_source_surface(cr, surface_terms[i], w, uh - (hpt[i] - cpt[i]));
+						cairo_paint(cr);
+						w += wpt[i];
+						if(flag_s && i == 0 && flag_i == 0) {
+							gdk_cairo_set_source_rgba(cr, color);
+							cairo_set_source_surface(cr, flag_s, w + 2, uh - (hpt[i] - cpt[i]) + hpt[i] / 8);
+							cairo_paint(cr);
+							cairo_surface_destroy(flag_s);
+							flag_s = NULL;
+							w += flag_width + 2;
 						}
 					}
-				} else if(!m[i].isUnit_exp()) {
-					flat = false;
+					cairo_surface_destroy(surface_terms[i]);
 				}
-				if(flat) {
-					ips_n.division_depth--;
+				if(flag_s) {
+					if(!CALCULATOR->aborted()) {
+						gdk_cairo_set_source_rgba(cr, color);
+						cairo_set_source_surface(cr, flag_s, w + 2, uh - (hpt.back() - cpt.back()) + hpt.back() / 8);
+						cairo_paint(cr);
+					}
+					cairo_surface_destroy(flag_s);
 				}
+				g_object_unref(layout_mul);
+				break;
 			}
-			cairo_surface_t *num_surface = NULL, *den_surface = NULL, *surface_one = NULL;
-			if(m.type() == STRUCT_DIVISION) {
-				ips_n.wrap = (!m[0].isDivision() || !flat || ips.division_depth > 0 || ips.power_depth > 0) && m[0].needsParenthesis(po, ips_n, m, 1, flat, ips.power_depth > 0);
-				num_surface = draw_structure(m[0], po, ips_n, &num_dh, scaledown, color);
-				if(!num_surface) {
-					return NULL;
-				}
-				num_w = cairo_image_surface_get_width(num_surface) / scalefactor;
-				h = cairo_image_surface_get_height(num_surface) / scalefactor;
-				num_uh = h - num_dh;
-			} else {
-				MathStructure onestruct(1, 1);
-				ips_n.wrap = false;
-				surface_one = draw_structure(onestruct, po, ips_n, NULL, scaledown, color);
-				if(!surface_one) {
-					return NULL;
-				}
-				one_w = cairo_image_surface_get_width(surface_one) / scalefactor;
-				one_h = cairo_image_surface_get_height(surface_one) / scalefactor;
-				num_w = one_w; num_dh = one_h / 2; num_uh = one_h - num_dh;
-			}
-			if(m.type() == STRUCT_DIVISION) {
-				ips_n.wrap = m[1].needsParenthesis(po, ips_n, m, 2, flat, ips.power_depth > 0);
-				den_surface = draw_structure(m[1], po, ips_n, &den_dh, scaledown, color);
-			} else {
-				ips_n.wrap = m[0].needsParenthesis(po, ips_n, m, 2, flat, ips.power_depth > 0);
-				den_surface = draw_structure(m[0], po, ips_n, &den_dh, scaledown, color);
-			}
-			if(!den_surface) {
-				if(num_surface) cairo_surface_destroy(num_surface);
-				if(surface_one) cairo_surface_destroy(surface_one);
-				return NULL;
-			}
-			den_w = cairo_image_surface_get_width(den_surface) / scalefactor;
-			h = cairo_image_surface_get_height(den_surface) / scalefactor;
-			den_uh = h - den_dh;
-			h = 0;
-			if(flat) {
-				gint div_w, div_h;
-				PangoLayout *layout_div = gtk_widget_create_pango_layout(resultview, NULL);
-				CALCULATE_SPACE_W
-				if(po.use_unicode_signs && po.division_sign == DIVISION_SIGN_DIVISION && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_DIVISION, po.can_display_unicode_string_arg))) {
-					PANGO_TTP(layout_div, SIGN_DIVISION);
-				} else if(po.use_unicode_signs && po.division_sign == DIVISION_SIGN_DIVISION_SLASH && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_DIVISION_SLASH, po.can_display_unicode_string_arg))) {
-					PANGO_TTP(layout_div, SIGN_DIVISION_SLASH);
-				} else {
-					PANGO_TTP(layout_div, "/");
-				}
-				pango_layout_get_pixel_size(layout_div, &div_w, &div_h);
-				w = num_w + den_w + space_w + space_w + div_w;
-				dh = num_dh; uh = num_uh;
-				if(den_dh > dh) h = den_dh;
-				if(den_uh > uh) uh = den_uh;
-				if(div_h / 2 > dh) {
-					dh = div_h / 2;
-				}
-				if(div_h / 2 + div_h % 2 > uh) {
-					uh = div_h / 2 + div_h % 2;
-				}
-				h = uh + dh;
-				central_point = dh;
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
-				gdk_cairo_set_source_rgba(cr, color);
-				w = 0;
-				if(m.type() == STRUCT_DIVISION) {
-					cairo_set_source_surface(cr, num_surface, w, uh - num_uh);
-					cairo_paint(cr);
-				} else {
-					cairo_set_source_surface(cr, surface_one, w, uh - one_h / 2 - one_h % 2);
-					cairo_paint(cr);
-				}
-				w += num_w;
-				w += space_w;
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_move_to(cr, w, uh - div_h / 2 - div_h % 2);
-				pango_cairo_show_layout(cr, layout_div);
-				w += div_w;
-				w += space_w;
-				cairo_set_source_surface(cr, den_surface, w, uh - den_uh);
-				cairo_paint(cr);
-				g_object_unref(layout_div);
-			} else {
-				gint wfr;
-				dh = den_dh + den_uh + 3;
-				uh = num_dh + num_uh + 3;
-				wfr = den_w;
-				if(num_w > wfr) wfr = num_w;
-				wfr += 2;
-				w = wfr;
-				h = uh + dh;
-				central_point = dh;
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
-				gdk_cairo_set_source_rgba(cr, color);
-				w = 0;
-				if(m.type() == STRUCT_DIVISION) {
-					cairo_set_source_surface(cr, num_surface, w + (wfr - num_w) / 2, uh - 3 - num_uh - num_dh);
-					cairo_paint(cr);
-				} else {
-					cairo_set_source_surface(cr, surface_one, w + (wfr - one_w) / 2, uh - 3 - one_h);
-					cairo_paint(cr);
-				}
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_move_to (cr, w, uh - 1);
-				cairo_line_to (cr, w + wfr, uh - 1);
-				cairo_set_line_width(cr, 2);
-				cairo_stroke(cr);
-				cairo_set_source_surface(cr, den_surface, w + (wfr - den_w) / 2, uh + 3);
-				cairo_paint(cr);
-			}
-			if(num_surface) cairo_surface_destroy(num_surface);
-			if(den_surface) cairo_surface_destroy(den_surface);
-			if(surface_one) cairo_surface_destroy(surface_one);
-			break;
-		}
-		case STRUCT_POWER: {
+			case STRUCT_INVERSE: {}
+			case STRUCT_DIVISION: {
 
-			ips_n.depth++;
-			
-			gint base_w, base_h, exp_w, exp_h, w = 0, h = 0, ctmp = 0;
-			CALCULATE_SPACE_W
-			ips_n.wrap = m[0].needsParenthesis(po, ips_n, m, 1, ips.division_depth > 0, false);
-			cairo_surface_t *surface_base = draw_structure(m[0], po, ips_n, &central_point, scaledown, color);
-			if(!surface_base) {
-				return NULL;
-			}
-			base_w = cairo_image_surface_get_width(surface_base) / scalefactor;
-			base_h = cairo_image_surface_get_height(surface_base) / scalefactor;
-			
-			ips_n.power_depth++;
-			ips_n.wrap = false;
-			PrintOptions po2 = po;
-			po2.show_ending_zeroes = false;
-			cairo_surface_t *surface_exp = draw_structure(m[1], po2, ips_n, &ctmp, scaledown, color);
-			if(!surface_exp) {
-				cairo_surface_destroy(surface_base);
-				return NULL;
-			}
-			exp_w = cairo_image_surface_get_width(surface_exp) / scalefactor;
-			exp_h = cairo_image_surface_get_height(surface_exp) / scalefactor;
-			h = base_h;
-			w = base_w;
-			if(exp_h < h) {
-				h += exp_h / 3;
-			} else {
-				h += exp_h - base_h / 2;
-			}
-			w += exp_w;
-			
-			surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-			cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-			cr = cairo_create(surface);
-			gdk_cairo_set_source_rgba(cr, color);
-			w = 0;
-			cairo_set_source_surface(cr, surface_base, w, h - base_h);
-			cairo_paint(cr);
-			cairo_surface_destroy(surface_base);
-			w += base_w;
-			gdk_cairo_set_source_rgba(cr, color);
-			cairo_set_source_surface(cr, surface_exp, w, 0);
-			cairo_paint(cr);
-			cairo_surface_destroy(surface_exp);
-
-			break;
-		}
-		case STRUCT_LOGICAL_AND: {
-			if(!po.preserve_format && m.size() == 2 && m[0].isComparison() && m[1].isComparison() && m[0].comparisonType() != COMPARISON_EQUALS && m[0].comparisonType() != COMPARISON_NOT_EQUALS && m[1].comparisonType() != COMPARISON_EQUALS && m[1].comparisonType() != COMPARISON_NOT_EQUALS && m[0][0] == m[1][0]) {
 				ips_n.depth++;
-			
+				ips_n.division_depth++;
+				
+				gint den_uh, den_w, den_dh, num_w, num_dh, num_uh, dh = 0, uh = 0, w = 0, h = 0, one_w = 0, one_h = 0;
+				
+				bool flat = ips.division_depth > 0 || ips.power_depth > 0;
+				if(!flat && po.place_units_separately) {
+					flat = true;
+					size_t i = 0;
+					if(m.isDivision()) {
+						i = 1;
+					}
+					if(m[i].isMultiplication()) {
+						for(size_t i2 = 0; i2 < m[i].size(); i2++) {
+							if(!m[i][i2].isUnit_exp()) {
+								flat = false;
+								break;
+							}
+						}
+					} else if(!m[i].isUnit_exp()) {
+						flat = false;
+					}
+					if(flat) {
+						ips_n.division_depth--;
+					}
+				}
+				cairo_surface_t *num_surface = NULL, *den_surface = NULL, *surface_one = NULL;
+				if(m.type() == STRUCT_DIVISION) {
+					ips_n.wrap = (!m[0].isDivision() || !flat || ips.division_depth > 0 || ips.power_depth > 0) && m[0].needsParenthesis(po, ips_n, m, 1, flat, ips.power_depth > 0);
+					num_surface = draw_structure(m[0], po, caf, ips_n, &num_dh, scaledown, color);
+					if(!num_surface) {
+						return NULL;
+					}
+					num_w = cairo_image_surface_get_width(num_surface) / scalefactor;
+					h = cairo_image_surface_get_height(num_surface) / scalefactor;
+					num_uh = h - num_dh;
+				} else {
+					MathStructure onestruct(1, 1);
+					ips_n.wrap = false;
+					surface_one = draw_structure(onestruct, po, caf, ips_n, NULL, scaledown, color);
+					if(!surface_one) {
+						return NULL;
+					}
+					one_w = cairo_image_surface_get_width(surface_one) / scalefactor;
+					one_h = cairo_image_surface_get_height(surface_one) / scalefactor;
+					num_w = one_w; num_dh = one_h / 2; num_uh = one_h - num_dh;
+				}
+				if(m.type() == STRUCT_DIVISION) {
+					ips_n.wrap = m[1].needsParenthesis(po, ips_n, m, 2, flat, ips.power_depth > 0);
+					den_surface = draw_structure(m[1], po, caf, ips_n, &den_dh, scaledown, color);
+				} else {
+					ips_n.wrap = m[0].needsParenthesis(po, ips_n, m, 2, flat, ips.power_depth > 0);
+					den_surface = draw_structure(m[0], po, caf, ips_n, &den_dh, scaledown, color);
+				}
+				if(!den_surface) {
+					if(num_surface) cairo_surface_destroy(num_surface);
+					if(surface_one) cairo_surface_destroy(surface_one);
+					return NULL;
+				}
+				den_w = cairo_image_surface_get_width(den_surface) / scalefactor;
+				h = cairo_image_surface_get_height(den_surface) / scalefactor;
+				den_uh = h - den_dh;
+				h = 0;
+				if(flat) {
+					gint div_w, div_h;
+					PangoLayout *layout_div = gtk_widget_create_pango_layout(resultview, NULL);
+					CALCULATE_SPACE_W
+					if(po.use_unicode_signs && po.division_sign == DIVISION_SIGN_DIVISION && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_DIVISION, po.can_display_unicode_string_arg))) {
+						PANGO_TTP(layout_div, SIGN_DIVISION);
+					} else if(po.use_unicode_signs && po.division_sign == DIVISION_SIGN_DIVISION_SLASH && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_DIVISION_SLASH, po.can_display_unicode_string_arg))) {
+						PANGO_TTP(layout_div, SIGN_DIVISION_SLASH);
+					} else {
+						PANGO_TTP(layout_div, "/");
+					}
+					pango_layout_get_pixel_size(layout_div, &div_w, &div_h);
+					w = num_w + den_w + space_w + space_w + div_w;
+					dh = num_dh; uh = num_uh;
+					if(den_dh > dh) h = den_dh;
+					if(den_uh > uh) uh = den_uh;
+					if(div_h / 2 > dh) {
+						dh = div_h / 2;
+					}
+					if(div_h / 2 + div_h % 2 > uh) {
+						uh = div_h / 2 + div_h % 2;
+					}
+					h = uh + dh;
+					central_point = dh;
+					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+					cr = cairo_create(surface);
+					gdk_cairo_set_source_rgba(cr, color);
+					w = 0;
+					if(m.type() == STRUCT_DIVISION) {
+						cairo_set_source_surface(cr, num_surface, w, uh - num_uh);
+						cairo_paint(cr);
+					} else {
+						cairo_set_source_surface(cr, surface_one, w, uh - one_h / 2 - one_h % 2);
+						cairo_paint(cr);
+					}
+					w += num_w;
+					w += space_w;
+					gdk_cairo_set_source_rgba(cr, color);
+					cairo_move_to(cr, w, uh - div_h / 2 - div_h % 2);
+					pango_cairo_show_layout(cr, layout_div);
+					w += div_w;
+					w += space_w;
+					cairo_set_source_surface(cr, den_surface, w, uh - den_uh);
+					cairo_paint(cr);
+					g_object_unref(layout_div);
+				} else {
+					gint wfr;
+					dh = den_dh + den_uh + 3;
+					uh = num_dh + num_uh + 3;
+					wfr = den_w;
+					if(num_w > wfr) wfr = num_w;
+					wfr += 2;
+					w = wfr;
+					h = uh + dh;
+					central_point = dh;
+					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+					cr = cairo_create(surface);
+					gdk_cairo_set_source_rgba(cr, color);
+					w = 0;
+					if(m.type() == STRUCT_DIVISION) {
+						cairo_set_source_surface(cr, num_surface, w + (wfr - num_w) / 2, uh - 3 - num_uh - num_dh);
+						cairo_paint(cr);
+					} else {
+						cairo_set_source_surface(cr, surface_one, w + (wfr - one_w) / 2, uh - 3 - one_h);
+						cairo_paint(cr);
+					}
+					gdk_cairo_set_source_rgba(cr, color);
+					cairo_move_to (cr, w, uh - 1);
+					cairo_line_to (cr, w + wfr, uh - 1);
+					cairo_set_line_width(cr, 2);
+					cairo_stroke(cr);
+					cairo_set_source_surface(cr, den_surface, w + (wfr - den_w) / 2, uh + 3);
+					cairo_paint(cr);
+				}
+				if(num_surface) cairo_surface_destroy(num_surface);
+				if(den_surface) cairo_surface_destroy(den_surface);
+				if(surface_one) cairo_surface_destroy(surface_one);
+				break;
+			}
+			case STRUCT_POWER: {
+
+				ips_n.depth++;
+				
+				gint base_w, base_h, exp_w, exp_h, w = 0, h = 0, ctmp = 0;
+				CALCULATE_SPACE_W
+				ips_n.wrap = m[0].needsParenthesis(po, ips_n, m, 1, ips.division_depth > 0, false);
+				cairo_surface_t *surface_base = draw_structure(m[0], po, caf, ips_n, &central_point, scaledown, color);
+				if(!surface_base) {
+					return NULL;
+				}
+				base_w = cairo_image_surface_get_width(surface_base) / scalefactor;
+				base_h = cairo_image_surface_get_height(surface_base) / scalefactor;
+				
+				ips_n.power_depth++;
+				ips_n.wrap = false;
+				PrintOptions po2 = po;
+				po2.show_ending_zeroes = false;
+				cairo_surface_t *surface_exp = draw_structure(m[1], po2, caf, ips_n, &ctmp, scaledown, color);
+				if(!surface_exp) {
+					cairo_surface_destroy(surface_base);
+					return NULL;
+				}
+				exp_w = cairo_image_surface_get_width(surface_exp) / scalefactor;
+				exp_h = cairo_image_surface_get_height(surface_exp) / scalefactor;
+				h = base_h;
+				w = base_w;
+				if(exp_h < h) {
+					h += exp_h / 3;
+				} else {
+					h += exp_h - base_h / 2;
+				}
+				w += exp_w;
+				
+				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+				cr = cairo_create(surface);
+				gdk_cairo_set_source_rgba(cr, color);
+				w = 0;
+				cairo_set_source_surface(cr, surface_base, w, h - base_h);
+				cairo_paint(cr);
+				cairo_surface_destroy(surface_base);
+				w += base_w;
+				gdk_cairo_set_source_rgba(cr, color);
+				cairo_set_source_surface(cr, surface_exp, w, 0);
+				cairo_paint(cr);
+				cairo_surface_destroy(surface_exp);
+
+				break;
+			}
+			case STRUCT_LOGICAL_AND: {
+				if(!po.preserve_format && m.size() == 2 && m[0].isComparison() && m[1].isComparison() && m[0].comparisonType() != COMPARISON_EQUALS && m[0].comparisonType() != COMPARISON_NOT_EQUALS && m[1].comparisonType() != COMPARISON_EQUALS && m[1].comparisonType() != COMPARISON_NOT_EQUALS && m[0][0] == m[1][0]) {
+					ips_n.depth++;
+				
+					vector<cairo_surface_t*> surface_terms;
+					vector<gint> hpt;
+					vector<gint> wpt;
+					vector<gint> cpt;
+					gint sign_w, sign_h, sign2_w, sign2_h, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0;
+					CALCULATE_SPACE_W
+				
+					hetmp = 0;		
+					ips_n.wrap = m[0][1].needsParenthesis(po, ips_n, m[0], 2, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+					surface_terms.push_back(draw_structure(m[0][1], po, caf, ips_n, &hetmp, scaledown, color));
+					if(CALCULATOR->aborted()) {
+						return NULL;
+					}
+					wtmp = cairo_image_surface_get_width(surface_terms[0]) / scalefactor;
+					htmp = cairo_image_surface_get_height(surface_terms[0]) / scalefactor;
+					hpt.push_back(htmp);
+					cpt.push_back(hetmp);
+					wpt.push_back(wtmp);
+					w += wtmp;
+					if(htmp - hetmp > uh) {
+						uh = htmp - hetmp;
+					}
+					if(hetmp > dh) {
+						dh = hetmp;
+					}
+					hetmp = 0;		
+					ips_n.wrap = m[0][0].needsParenthesis(po, ips_n, m[0], 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+					surface_terms.push_back(draw_structure(m[0][0], po, caf, ips_n, &hetmp, scaledown, color));
+					if(CALCULATOR->aborted()) {
+						cairo_surface_destroy(surface_terms[0]);
+						return NULL;
+					}
+					wtmp = cairo_image_surface_get_width(surface_terms[1]) / scalefactor;
+					htmp = cairo_image_surface_get_height(surface_terms[1]) / scalefactor;
+					hpt.push_back(htmp);
+					cpt.push_back(hetmp);
+					wpt.push_back(wtmp);
+					w += wtmp;
+					if(htmp - hetmp > uh) {
+						uh = htmp - hetmp;
+					}
+					if(hetmp > dh) {
+						dh = hetmp;
+					}
+					hetmp = 0;		
+					ips_n.wrap = m[1][1].needsParenthesis(po, ips_n, m[1], 2, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+					surface_terms.push_back(draw_structure(m[1][1], po, caf, ips_n, &hetmp, scaledown, color));
+					if(CALCULATOR->aborted()) {
+						cairo_surface_destroy(surface_terms[0]);
+						cairo_surface_destroy(surface_terms[1]);
+						return NULL;
+					}
+					wtmp = cairo_image_surface_get_width(surface_terms[2]) / scalefactor;
+					htmp = cairo_image_surface_get_height(surface_terms[2]) / scalefactor;
+					hpt.push_back(htmp);
+					cpt.push_back(hetmp);
+					wpt.push_back(wtmp);
+					w += wtmp;
+					if(htmp - hetmp > uh) {
+						uh = htmp - hetmp;
+					}
+					if(hetmp > dh) {
+						dh = hetmp;
+					}
+				
+					PangoLayout *layout_sign = gtk_widget_create_pango_layout(resultview, NULL);
+					string str;
+					TTBP(str);
+					switch(m[0].comparisonType()) {
+						case COMPARISON_LESS: {
+							str += "&gt;";
+							break;
+						}
+						case COMPARISON_GREATER: {
+							str += "&lt;";
+							break;
+						}
+						case COMPARISON_EQUALS_LESS: {
+							if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_GREATER_OR_EQUAL, po.can_display_unicode_string_arg))) {
+								str += SIGN_GREATER_OR_EQUAL;
+							} else {
+								str += "&gt;=";
+							}
+							break;
+						}
+						case COMPARISON_EQUALS_GREATER: {
+							if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_LESS_OR_EQUAL, po.can_display_unicode_string_arg))) {
+								str += SIGN_LESS_OR_EQUAL;
+							} else {
+								str += "&lt;=";
+							}
+							break;
+						}
+						default: {}
+					}
+					TTE(str);
+					pango_layout_set_markup(layout_sign, str.c_str(), -1);
+					pango_layout_get_pixel_size(layout_sign, &sign_w, &sign_h);
+					if(sign_h / 2 > dh) {
+						dh = sign_h / 2;
+					}
+					if(sign_h / 2 + sign_h % 2 > uh) {
+						uh = sign_h / 2 + sign_h % 2;
+					}
+					w += sign_w;
+					
+					PangoLayout *layout_sign2 = gtk_widget_create_pango_layout(resultview, NULL);
+					str = "";
+					TTBP(str);
+					switch(m[1].comparisonType()) {
+						case COMPARISON_GREATER: {
+							str += "&gt;";
+							break;
+						}
+						case COMPARISON_LESS: {
+							str += "&lt;";
+							break;
+						}
+						case COMPARISON_EQUALS_GREATER: {
+							if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_GREATER_OR_EQUAL, po.can_display_unicode_string_arg))) {
+								str += SIGN_GREATER_OR_EQUAL;
+							} else {
+								str += "&gt;=";
+							}
+							break;
+						}
+						case COMPARISON_EQUALS_LESS: {
+							if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_LESS_OR_EQUAL, po.can_display_unicode_string_arg))) {
+								str += SIGN_LESS_OR_EQUAL;
+							} else {
+								str += "&lt;=";
+							}
+							break;
+						}
+						default: {}
+					}
+					TTE(str);
+					pango_layout_set_markup(layout_sign2, str.c_str(), -1);
+					pango_layout_get_pixel_size(layout_sign2, &sign2_w, &sign2_h);
+					if(sign2_h / 2 > dh) {
+						dh = sign2_h / 2;
+					}
+					if(sign2_h / 2 + sign2_h % 2 > uh) {
+						uh = sign2_h / 2 + sign2_h % 2;
+					}
+					w += sign2_w;
+					
+				
+					w += space_w * (surface_terms.size() - 1) * 2;
+				
+					central_point = dh;
+					h = dh + uh;
+					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+					cr = cairo_create(surface);
+					w = 0;
+					for(size_t i = 0; i < surface_terms.size(); i++) {
+						gdk_cairo_set_source_rgba(cr, color);
+						if(i > 0) {
+							w += space_w;
+							if(i == 1) {
+								cairo_move_to(cr, w, uh - sign_h / 2 - sign_h % 2);
+								pango_cairo_show_layout(cr, layout_sign);
+								w += sign_w;
+							} else {
+								cairo_move_to(cr, w, uh - sign2_h / 2 - sign2_h % 2);
+								pango_cairo_show_layout(cr, layout_sign2);
+								w += sign2_w;
+							}
+							w += space_w;			
+						}
+						cairo_set_source_surface(cr, surface_terms[i], w, uh - (hpt[i] - cpt[i]));
+						cairo_paint(cr);
+						w += wpt[i];
+						cairo_surface_destroy(surface_terms[i]);
+					}
+					g_object_unref(layout_sign);
+					g_object_unref(layout_sign2);
+					break;
+				}
+			}
+			case STRUCT_COMPARISON: {}		
+			case STRUCT_LOGICAL_XOR: {}
+			case STRUCT_LOGICAL_OR: {}
+			case STRUCT_BITWISE_AND: {}
+			case STRUCT_BITWISE_XOR: {}
+			case STRUCT_BITWISE_OR: {
+
+				ips_n.depth++;
+				
 				vector<cairo_surface_t*> surface_terms;
 				vector<gint> hpt;
 				vector<gint> wpt;
 				vector<gint> cpt;
-				gint sign_w, sign_h, sign2_w, sign2_h, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0;
+				gint sign_w, sign_h, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0;
 				CALCULATE_SPACE_W
-			
-				hetmp = 0;		
-				ips_n.wrap = m[0][1].needsParenthesis(po, ips_n, m[0], 2, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-				surface_terms.push_back(draw_structure(m[0][1], po, ips_n, &hetmp, scaledown, color));
-				if(CALCULATOR->aborted()) {
-					return NULL;
+				
+				for(size_t i = 0; i < m.size(); i++) {
+					hetmp = 0;		
+					ips_n.wrap = m[i].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+					surface_terms.push_back(draw_structure(m[i], po, caf, ips_n, &hetmp, scaledown, color));
+					if(CALCULATOR->aborted()) {
+						for(size_t i = 0; i < surface_terms.size(); i++) {
+							if(surface_terms[i]) cairo_surface_destroy(surface_terms[i]);
+						}
+						return NULL;
+					}
+					wtmp = cairo_image_surface_get_width(surface_terms[i]) / scalefactor;
+					htmp = cairo_image_surface_get_height(surface_terms[i]) / scalefactor;
+					hpt.push_back(htmp);
+					cpt.push_back(hetmp);
+					wpt.push_back(wtmp);
+					w += wtmp;
+					if(htmp - hetmp > uh) {
+						uh = htmp - hetmp;
+					}
+					if(hetmp > dh) {
+						dh = hetmp;
+					}				
 				}
-				wtmp = cairo_image_surface_get_width(surface_terms[0]) / scalefactor;
-				htmp = cairo_image_surface_get_height(surface_terms[0]) / scalefactor;
-				hpt.push_back(htmp);
-				cpt.push_back(hetmp);
-				wpt.push_back(wtmp);
-				w += wtmp;
-				if(htmp - hetmp > uh) {
-					uh = htmp - hetmp;
-				}
-				if(hetmp > dh) {
-					dh = hetmp;
-				}
-				hetmp = 0;		
-				ips_n.wrap = m[0][0].needsParenthesis(po, ips_n, m[0], 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-				surface_terms.push_back(draw_structure(m[0][0], po, ips_n, &hetmp, scaledown, color));
-				if(CALCULATOR->aborted()) {
-					cairo_surface_destroy(surface_terms[0]);
-					return NULL;
-				}
-				wtmp = cairo_image_surface_get_width(surface_terms[1]) / scalefactor;
-				htmp = cairo_image_surface_get_height(surface_terms[1]) / scalefactor;
-				hpt.push_back(htmp);
-				cpt.push_back(hetmp);
-				wpt.push_back(wtmp);
-				w += wtmp;
-				if(htmp - hetmp > uh) {
-					uh = htmp - hetmp;
-				}
-				if(hetmp > dh) {
-					dh = hetmp;
-				}
-				hetmp = 0;		
-				ips_n.wrap = m[1][1].needsParenthesis(po, ips_n, m[1], 2, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-				surface_terms.push_back(draw_structure(m[1][1], po, ips_n, &hetmp, scaledown, color));
-				if(CALCULATOR->aborted()) {
-					cairo_surface_destroy(surface_terms[0]);
-					cairo_surface_destroy(surface_terms[1]);
-					return NULL;
-				}
-				wtmp = cairo_image_surface_get_width(surface_terms[2]) / scalefactor;
-				htmp = cairo_image_surface_get_height(surface_terms[2]) / scalefactor;
-				hpt.push_back(htmp);
-				cpt.push_back(hetmp);
-				wpt.push_back(wtmp);
-				w += wtmp;
-				if(htmp - hetmp > uh) {
-					uh = htmp - hetmp;
-				}
-				if(hetmp > dh) {
-					dh = hetmp;
-				}
-			
+				
 				PangoLayout *layout_sign = gtk_widget_create_pango_layout(resultview, NULL);
 				string str;
 				TTBP(str);
-				switch(m[0].comparisonType()) {
-					case COMPARISON_LESS: {
-						str += "&gt;";
-						break;
-					}
-					case COMPARISON_GREATER: {
-						str += "&lt;";
-						break;
-					}
-					case COMPARISON_EQUALS_LESS: {
-						if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_GREATER_OR_EQUAL, po.can_display_unicode_string_arg))) {
-							str += SIGN_GREATER_OR_EQUAL;
-						} else {
-							str += "&gt;=";
+				if(m.type() == STRUCT_COMPARISON) {
+					switch(m.comparisonType()) {
+						case COMPARISON_EQUALS: {
+							if((ips.depth == 0 || (po.interval_display != INTERVAL_DISPLAY_INTERVAL && m.containsInterval())) && po.use_unicode_signs && ((po.is_approximate && *po.is_approximate) || m.isApproximate()) && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, po.can_display_unicode_string_arg))) {
+								str += SIGN_ALMOST_EQUAL;
+							} else {
+								str += "=";
+							}
+							break;
 						}
-						break;
-					}
-					case COMPARISON_EQUALS_GREATER: {
-						if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_LESS_OR_EQUAL, po.can_display_unicode_string_arg))) {
-							str += SIGN_LESS_OR_EQUAL;
-						} else {
-							str += "&lt;=";
+						case COMPARISON_NOT_EQUALS: {
+							if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_NOT_EQUAL, po.can_display_unicode_string_arg))) {
+								str += SIGN_NOT_EQUAL;
+							} else {
+								str += "!=";
+							}
+							break;
 						}
-						break;
+						case COMPARISON_GREATER: {
+							str += "&gt;";
+							break;
+						}
+						case COMPARISON_LESS: {
+							str += "&lt;";
+							break;
+						}
+						case COMPARISON_EQUALS_GREATER: {
+							if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_GREATER_OR_EQUAL, po.can_display_unicode_string_arg))) {
+								str += SIGN_GREATER_OR_EQUAL;
+							} else {
+								str += "&gt;=";
+							}
+							break;
+						}
+						case COMPARISON_EQUALS_LESS: {
+							if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_LESS_OR_EQUAL, po.can_display_unicode_string_arg))) {
+								str += SIGN_LESS_OR_EQUAL;
+							} else {
+								str += "&lt;=";
+							}
+							break;
+						}
 					}
-					default: {}
+				} else if(m.type() == STRUCT_LOGICAL_AND) {
+					if(po.spell_out_logical_operators) str += _("and");
+					else str += "&amp;&amp;";
+				} else if(m.type() == STRUCT_LOGICAL_OR) {
+					if(po.spell_out_logical_operators) str += _("or");
+					else str += "||";
+				} else if(m.type() == STRUCT_LOGICAL_XOR) {
+					str += "xor";
+				} else if(m.type() == STRUCT_BITWISE_AND) {
+					str += "&amp;";
+				} else if(m.type() == STRUCT_BITWISE_OR) {
+					str += "|";
+				} else if(m.type() == STRUCT_BITWISE_XOR) {
+					str += "xor";
 				}
+				
 				TTE(str);
 				pango_layout_set_markup(layout_sign, str.c_str(), -1);
 				pango_layout_get_pixel_size(layout_sign, &sign_w, &sign_h);
@@ -6298,52 +6600,10 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				if(sign_h / 2 + sign_h % 2 > uh) {
 					uh = sign_h / 2 + sign_h % 2;
 				}
-				w += sign_w;
+				w += sign_w * (m.size() - 1);
 				
-				PangoLayout *layout_sign2 = gtk_widget_create_pango_layout(resultview, NULL);
-				str = "";
-				TTBP(str);
-				switch(m[1].comparisonType()) {
-					case COMPARISON_GREATER: {
-						str += "&gt;";
-						break;
-					}
-					case COMPARISON_LESS: {
-						str += "&lt;";
-						break;
-					}
-					case COMPARISON_EQUALS_GREATER: {
-						if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_GREATER_OR_EQUAL, po.can_display_unicode_string_arg))) {
-							str += SIGN_GREATER_OR_EQUAL;
-						} else {
-							str += "&gt;=";
-						}
-						break;
-					}
-					case COMPARISON_EQUALS_LESS: {
-						if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_LESS_OR_EQUAL, po.can_display_unicode_string_arg))) {
-							str += SIGN_LESS_OR_EQUAL;
-						} else {
-							str += "&lt;=";
-						}
-						break;
-					}
-					default: {}
-				}
-				TTE(str);
-				pango_layout_set_markup(layout_sign2, str.c_str(), -1);
-				pango_layout_get_pixel_size(layout_sign2, &sign2_w, &sign2_h);
-				if(sign2_h / 2 > dh) {
-					dh = sign2_h / 2;
-				}
-				if(sign2_h / 2 + sign2_h % 2 > uh) {
-					uh = sign2_h / 2 + sign2_h % 2;
-				}
-				w += sign2_w;
-				
-			
 				w += space_w * (surface_terms.size() - 1) * 2;
-			
+				
 				central_point = dh;
 				h = dh + uh;
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
@@ -6351,1003 +6611,858 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, InternalPrint
 				cr = cairo_create(surface);
 				w = 0;
 				for(size_t i = 0; i < surface_terms.size(); i++) {
-					gdk_cairo_set_source_rgba(cr, color);
-					if(i > 0) {
-						w += space_w;
-						if(i == 1) {
+					if(!CALCULATOR->aborted()) {
+						gdk_cairo_set_source_rgba(cr, color);
+						if(i > 0) {
+							w += space_w;
 							cairo_move_to(cr, w, uh - sign_h / 2 - sign_h % 2);
 							pango_cairo_show_layout(cr, layout_sign);
-							w += sign_w;
-						} else {
-							cairo_move_to(cr, w, uh - sign2_h / 2 - sign2_h % 2);
-							pango_cairo_show_layout(cr, layout_sign2);
-							w += sign2_w;
+							w += sign_w;	
+							w += space_w;			
 						}
-						w += space_w;			
+						cairo_set_source_surface(cr, surface_terms[i], w, uh - (hpt[i] - cpt[i]));
+						cairo_paint(cr);
+						w += wpt[i];
 					}
-					cairo_set_source_surface(cr, surface_terms[i], w, uh - (hpt[i] - cpt[i]));
-					cairo_paint(cr);
-					w += wpt[i];
 					cairo_surface_destroy(surface_terms[i]);
 				}
 				g_object_unref(layout_sign);
-				g_object_unref(layout_sign2);
 				break;
 			}
-		}
-		case STRUCT_COMPARISON: {}		
-		case STRUCT_LOGICAL_XOR: {}
-		case STRUCT_LOGICAL_OR: {}
-		case STRUCT_BITWISE_AND: {}
-		case STRUCT_BITWISE_XOR: {}
-		case STRUCT_BITWISE_OR: {
+			case STRUCT_LOGICAL_NOT: {}
+			case STRUCT_BITWISE_NOT: {
 
-			ips_n.depth++;
-			
-			vector<cairo_surface_t*> surface_terms;
-			vector<gint> hpt;
-			vector<gint> wpt;
-			vector<gint> cpt;
-			gint sign_w, sign_h, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0;
-			CALCULATE_SPACE_W
-			
-			for(size_t i = 0; i < m.size(); i++) {
-				hetmp = 0;		
-				ips_n.wrap = m[i].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-				surface_terms.push_back(draw_structure(m[i], po, ips_n, &hetmp, scaledown, color));
-				if(CALCULATOR->aborted()) {
-					for(size_t i = 0; i < surface_terms.size(); i++) {
-						if(surface_terms[i]) cairo_surface_destroy(surface_terms[i]);
+				ips_n.depth++;
+
+				gint not_w, not_h, uh, dh, h, w, ctmp, htmp, wtmp, hpa, cpa;
+				//gint wpa;
+				
+				PangoLayout *layout_not = gtk_widget_create_pango_layout(resultview, NULL);
+				
+				if(m.type() == STRUCT_LOGICAL_NOT) {
+					PANGO_TTP(layout_not, "!");
+				} else {
+					if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) ("¬", po.can_display_unicode_string_arg))) {
+						PANGO_TTP(layout_not, "¬");
+					} else {
+						PANGO_TTP(layout_not, "~");
 					}
+				}
+				pango_layout_get_pixel_size(layout_not, &not_w, &not_h);
+
+				w = not_w + 1;
+				uh = not_h / 2 + not_h % 2;
+				dh = not_h / 2;
+				
+				ips_n.wrap = m[0].needsParenthesis(po, ips_n, m, 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+				cairo_surface_t *surface_arg = draw_structure(m[0], po, caf, ips_n, &ctmp, scaledown, color);
+				if(!surface_arg) {
+					g_object_unref(layout_not);
 					return NULL;
 				}
-				wtmp = cairo_image_surface_get_width(surface_terms[i]) / scalefactor;
-				htmp = cairo_image_surface_get_height(surface_terms[i]) / scalefactor;
-				hpt.push_back(htmp);
-				cpt.push_back(hetmp);
-				wpt.push_back(wtmp);
+				wtmp = cairo_image_surface_get_width(surface_arg) / scalefactor;
+				htmp = cairo_image_surface_get_height(surface_arg) / scalefactor;
+				hpa = htmp;
+				cpa = ctmp;
+				//wpa = wtmp;
 				w += wtmp;
-				if(htmp - hetmp > uh) {
-					uh = htmp - hetmp;
+				if(ctmp > dh) {
+					dh = ctmp;
 				}
-				if(hetmp > dh) {
-					dh = hetmp;
+				if(htmp - ctmp > uh) {
+					uh = htmp - ctmp;
 				}				
-			}
-			
-			PangoLayout *layout_sign = gtk_widget_create_pango_layout(resultview, NULL);
-			string str;
-			TTBP(str);
-			if(m.type() == STRUCT_COMPARISON) {
-				switch(m.comparisonType()) {
-					case COMPARISON_EQUALS: {
-						if((ips.depth == 0 || (po.interval_display != INTERVAL_DISPLAY_INTERVAL && m.containsInterval())) && po.use_unicode_signs && ((po.is_approximate && *po.is_approximate) || m.isApproximate()) && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, po.can_display_unicode_string_arg))) {
-							str += SIGN_ALMOST_EQUAL;
-						} else {
-							str += "=";
-						}
-						break;
-					}
-					case COMPARISON_NOT_EQUALS: {
-						if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_NOT_EQUAL, po.can_display_unicode_string_arg))) {
-							str += SIGN_NOT_EQUAL;
-						} else {
-							str += "!=";
-						}
-						break;
-					}
-					case COMPARISON_GREATER: {
-						str += "&gt;";
-						break;
-					}
-					case COMPARISON_LESS: {
-						str += "&lt;";
-						break;
-					}
-					case COMPARISON_EQUALS_GREATER: {
-						if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_GREATER_OR_EQUAL, po.can_display_unicode_string_arg))) {
-							str += SIGN_GREATER_OR_EQUAL;
-						} else {
-							str += "&gt;=";
-						}
-						break;
-					}
-					case COMPARISON_EQUALS_LESS: {
-						if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_LESS_OR_EQUAL, po.can_display_unicode_string_arg))) {
-							str += SIGN_LESS_OR_EQUAL;
-						} else {
-							str += "&lt;=";
-						}
-						break;
-					}
-				}
-			} else if(m.type() == STRUCT_LOGICAL_AND) {
-				if(po.spell_out_logical_operators) str += _("and");
-				else str += "&amp;&amp;";
-			} else if(m.type() == STRUCT_LOGICAL_OR) {
-				if(po.spell_out_logical_operators) str += _("or");
-				else str += "||";
-			} else if(m.type() == STRUCT_LOGICAL_XOR) {
-				str += "xor";
-			} else if(m.type() == STRUCT_BITWISE_AND) {
-				str += "&amp;";
-			} else if(m.type() == STRUCT_BITWISE_OR) {
-				str += "|";
-			} else if(m.type() == STRUCT_BITWISE_XOR) {
-				str += "xor";
-			}
-			
-			TTE(str);
-			pango_layout_set_markup(layout_sign, str.c_str(), -1);
-			pango_layout_get_pixel_size(layout_sign, &sign_w, &sign_h);
-			if(sign_h / 2 > dh) {
-				dh = sign_h / 2;
-			}
-			if(sign_h / 2 + sign_h % 2 > uh) {
-				uh = sign_h / 2 + sign_h % 2;
-			}
-			w += sign_w * (m.size() - 1);
-			
-			w += space_w * (surface_terms.size() - 1) * 2;
-			
-			central_point = dh;
-			h = dh + uh;
-			surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-			cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-			cr = cairo_create(surface);
-			w = 0;
-			for(size_t i = 0; i < surface_terms.size(); i++) {
-				if(!CALCULATOR->aborted()) {
-					gdk_cairo_set_source_rgba(cr, color);
-					if(i > 0) {
-						w += space_w;
-						cairo_move_to(cr, w, uh - sign_h / 2 - sign_h % 2);
-						pango_cairo_show_layout(cr, layout_sign);
-						w += sign_w;	
-						w += space_w;			
-					}
-					cairo_set_source_surface(cr, surface_terms[i], w, uh - (hpt[i] - cpt[i]));
-					cairo_paint(cr);
-					w += wpt[i];
-				}
-				cairo_surface_destroy(surface_terms[i]);
-			}
-			g_object_unref(layout_sign);
-			break;
-		}
-		case STRUCT_LOGICAL_NOT: {}
-		case STRUCT_BITWISE_NOT: {
+				
+				h = uh + dh;
+				central_point = dh;
 
-			ips_n.depth++;
-
-			gint not_w, not_h, uh, dh, h, w, ctmp, htmp, wtmp, hpa, cpa;
-			//gint wpa;
-			
-			PangoLayout *layout_not = gtk_widget_create_pango_layout(resultview, NULL);
-			
-			if(m.type() == STRUCT_LOGICAL_NOT) {
-				PANGO_TTP(layout_not, "!");
-			} else {
-				if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) ("¬", po.can_display_unicode_string_arg))) {
-					PANGO_TTP(layout_not, "¬");
-				} else {
-					PANGO_TTP(layout_not, "~");
-				}
-			}
-			pango_layout_get_pixel_size(layout_not, &not_w, &not_h);
-
-			w = not_w + 1;
-			uh = not_h / 2 + not_h % 2;
-			dh = not_h / 2;
-			
-			ips_n.wrap = m[0].needsParenthesis(po, ips_n, m, 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-			cairo_surface_t *surface_arg = draw_structure(m[0], po, ips_n, &ctmp, scaledown, color);
-			if(!surface_arg) {
+				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+				cr = cairo_create(surface);
+				
+				w = 0;
+				gdk_cairo_set_source_rgba(cr, color);
+				cairo_move_to(cr, w, uh - not_h / 2 - not_h % 2);
+				pango_cairo_show_layout(cr, layout_not);
+				w += not_w + 1;
+				cairo_set_source_surface(cr, surface_arg, w, uh - (hpa - cpa));
+				cairo_paint(cr);
+				cairo_surface_destroy(surface_arg);
+				
 				g_object_unref(layout_not);
-				return NULL;
+				break;
 			}
-			wtmp = cairo_image_surface_get_width(surface_arg) / scalefactor;
-			htmp = cairo_image_surface_get_height(surface_arg) / scalefactor;
-			hpa = htmp;
-			cpa = ctmp;
-			//wpa = wtmp;
-			w += wtmp;
-			if(ctmp > dh) {
-				dh = ctmp;
-			}
-			if(htmp - ctmp > uh) {
-				uh = htmp - ctmp;
-			}				
-			
-			h = uh + dh;
-			central_point = dh;
+			case STRUCT_VECTOR: {
 
-			surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-			cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-			cr = cairo_create(surface);
-			
-			w = 0;
-			gdk_cairo_set_source_rgba(cr, color);
-			cairo_move_to(cr, w, uh - not_h / 2 - not_h % 2);
-			pango_cairo_show_layout(cr, layout_not);
-			w += not_w + 1;
-			cairo_set_source_surface(cr, surface_arg, w, uh - (hpa - cpa));
-			cairo_paint(cr);
-			cairo_surface_destroy(surface_arg);
-			
-			g_object_unref(layout_not);
-			break;
-		}
-		case STRUCT_VECTOR: {
-
-			ips_n.depth++;
-			
-			if(m.isMatrix()) {
-				if(m[0].size() == 0) {
-					PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
+				ips_n.depth++;
+				
+				if(m.isMatrix()) {
+					if(m[0].size() == 0) {
+						PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
+						string str;
+						TTBP(str)
+						str += "[ ]";
+						TTE(str)
+						pango_layout_set_markup(layout, str.c_str(), -1);
+						PangoRectangle rect;
+						pango_layout_get_pixel_size(layout, &w, &h);
+						pango_layout_get_pixel_extents(layout, &rect, NULL);
+						w = rect.width + rect.x;
+						w += 1;
+						central_point = h / 2;
+						surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+						cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+						cr = cairo_create(surface);
+						gdk_cairo_set_source_rgba(cr, color);
+						cairo_move_to(cr, 1, 0);
+						pango_cairo_show_layout(cr, layout);
+						g_object_unref(layout);
+						break;
+					}
+					gint wtmp, htmp, ctmp = 0, w = 0, h = 0;
+					CALCULATE_SPACE_W
+					vector<gint> col_w;
+					vector<gint> row_h;
+					vector<gint> row_uh;
+					vector<gint> row_dh;									
+					vector<vector<gint> > element_w;
+					vector<vector<gint> > element_h;
+					vector<vector<gint> > element_c;			
+					vector<vector<cairo_surface_t*> > surface_elements;
+					element_w.resize(m.size());
+					element_h.resize(m.size());
+					element_c.resize(m.size());						
+					surface_elements.resize(m.size());
+					PangoLayout *layout_comma = gtk_widget_create_pango_layout(resultview, NULL);
 					string str;
-					TTBP(str)
-					str += "[ ]";
-					TTE(str)
-					pango_layout_set_markup(layout, str.c_str(), -1);
-					PangoRectangle rect;
-					pango_layout_get_pixel_size(layout, &w, &h);
-					pango_layout_get_pixel_extents(layout, &rect, NULL);
-					w = rect.width + rect.x;
-					w += 1;
+					gint comma_w = 0, comma_h = 0;
+					TTP(str, po.comma())
+					pango_layout_set_markup(layout_comma, str.c_str(), -1);		
+					pango_layout_get_pixel_size(layout_comma, &comma_w, &comma_h);
+					for(size_t index_r = 0; index_r < m.size(); index_r++) {
+						for(size_t index_c = 0; index_c < m[index_r].size(); index_c++) {
+							ctmp = 0;
+							ips_n.wrap = m[index_r][index_c].needsParenthesis(po, ips_n, m, index_r + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+							surface_elements[index_r].push_back(draw_structure(m[index_r][index_c], po, caf, ips_n, &ctmp, scaledown, color));
+							if(CALCULATOR->aborted()) {
+								break;
+							}
+							wtmp = cairo_image_surface_get_width(surface_elements[index_r][index_c]) / scalefactor;
+							htmp = cairo_image_surface_get_height(surface_elements[index_r][index_c]) / scalefactor;
+							element_w[index_r].push_back(wtmp);
+							element_h[index_r].push_back(htmp);
+							element_c[index_r].push_back(ctmp);					
+							if(index_r == 0) {
+								col_w.push_back(wtmp);
+							} else if(wtmp > col_w[index_c]) {
+								col_w[index_c] = wtmp;
+							}
+							if(index_c == 0) {
+								row_uh.push_back(htmp - ctmp);
+								row_dh.push_back(ctmp);
+							} else {
+								if(ctmp > row_dh[index_r]) {
+									row_dh[index_r] = ctmp;
+								}
+								if(htmp - ctmp > row_uh[index_r]) {
+									row_uh[index_r] = htmp - ctmp;
+								}						
+							}
+						}
+						if(CALCULATOR->aborted()) {
+							break;
+						}
+						row_h.push_back(row_uh[index_r] + row_dh[index_r]);
+						h += row_h[index_r];
+						if(index_r != 0) {
+							h += 4;
+						}
+					}	
+					h += 4;
+					for(size_t i = 0; i < col_w.size(); i++) {
+						w += col_w[i];
+						if(i != 0) {
+							w += space_w * 2;
+						}
+					}
+		
+					gint wlr, wll;
+					wll = 10;
+					wlr = 10;
+				
+					w += wlr + 1;
+					w += wll + 3;
 					central_point = h / 2;
 					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
 					cr = cairo_create(surface);
 					gdk_cairo_set_source_rgba(cr, color);
-					cairo_move_to(cr, 1, 0);
-					pango_cairo_show_layout(cr, layout);
-					g_object_unref(layout);
+					w = 1;
+					cairo_move_to(cr, w, 1);
+					cairo_line_to(cr, w, h - 1);
+					cairo_move_to(cr, w, 1);
+					cairo_line_to(cr, w + 7, 1);
+					cairo_move_to(cr, w, h - 1);
+					cairo_line_to(cr, w + 7, h - 1);
+					cairo_set_line_width(cr, 2);
+					cairo_stroke(cr);
+					h = 2;
+					for(size_t index_r = 0; index_r < surface_elements.size(); index_r++) {
+						if(!CALCULATOR->aborted()) {
+							gdk_cairo_set_source_rgba(cr, color);
+							w = wll + 1;
+						}
+						for(size_t index_c = 0; index_c < surface_elements[index_r].size(); index_c++) {
+							if(!CALCULATOR->aborted()) {
+								cairo_set_source_surface(cr, surface_elements[index_r][index_c], w + (col_w[index_c] - element_w[index_r][index_c]), h + row_uh[index_r] - (element_h[index_r][index_c] - element_c[index_r][index_c]));
+								cairo_paint(cr);
+								w += col_w[index_c];
+								if(index_c != m[index_r].size() - 1) {
+									w += space_w * 2;
+								}
+							}
+							if(surface_elements[index_r][index_c]) {
+								cairo_surface_destroy(surface_elements[index_r][index_c]);
+							}
+						}
+						if(!CALCULATOR->aborted()) {
+							h += row_h[index_r];
+							h += 4;
+						}
+					}
+					h -= 4;
+					h += 2;
+					w += wll - 7;
+					gdk_cairo_set_source_rgba(cr, color);
+					cairo_move_to(cr, w + 7, 1);
+					cairo_line_to(cr, w + 7, h - 1);
+					cairo_move_to(cr, w, 1);
+					cairo_line_to(cr, w + 7, 1);
+					cairo_move_to(cr, w, h - 1);
+					cairo_line_to(cr, w + 7, h - 1);
+					cairo_set_line_width(cr, 2);
+					cairo_stroke(cr);
+					g_object_unref(layout_comma);
 					break;
 				}
-				gint wtmp, htmp, ctmp = 0, w = 0, h = 0;
+				
+				gint comma_w, comma_h, uh = 0, dh = 0, h = 0, w = 0, ctmp, htmp, wtmp, arc_w, arc_h;
+				vector<cairo_surface_t*> surface_args;
+				vector<gint> hpa;
+				vector<gint> cpa;			
+				vector<gint> wpa;
+				
 				CALCULATE_SPACE_W
-				vector<gint> col_w;
-				vector<gint> row_h;
-				vector<gint> row_uh;
-				vector<gint> row_dh;									
-				vector<vector<gint> > element_w;
-				vector<vector<gint> > element_h;
-				vector<vector<gint> > element_c;			
-				vector<vector<cairo_surface_t*> > surface_elements;
-				element_w.resize(m.size());
-				element_h.resize(m.size());
-				element_c.resize(m.size());						
-				surface_elements.resize(m.size());
 				PangoLayout *layout_comma = gtk_widget_create_pango_layout(resultview, NULL);
-				string str;
-				gint comma_w = 0, comma_h = 0;
-				TTP(str, po.comma())
+				string str, func_str;
+				TTP(str, CALCULATOR->getComma())
 				pango_layout_set_markup(layout_comma, str.c_str(), -1);		
 				pango_layout_get_pixel_size(layout_comma, &comma_w, &comma_h);
-				for(size_t index_r = 0; index_r < m.size(); index_r++) {
-					for(size_t index_c = 0; index_c < m[index_r].size(); index_c++) {
-						ctmp = 0;
-						ips_n.wrap = m[index_r][index_c].needsParenthesis(po, ips_n, m, index_r + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-						surface_elements[index_r].push_back(draw_structure(m[index_r][index_c], po, ips_n, &ctmp, scaledown, color));
-						if(CALCULATOR->aborted()) {
-							break;
-						}
-						wtmp = cairo_image_surface_get_width(surface_elements[index_r][index_c]) / scalefactor;
-						htmp = cairo_image_surface_get_height(surface_elements[index_r][index_c]) / scalefactor;
-						element_w[index_r].push_back(wtmp);
-						element_h[index_r].push_back(htmp);
-						element_c[index_r].push_back(ctmp);					
-						if(index_r == 0) {
-							col_w.push_back(wtmp);
-						} else if(wtmp > col_w[index_c]) {
-							col_w[index_c] = wtmp;
-						}
-						if(index_c == 0) {
-							row_uh.push_back(htmp - ctmp);
-							row_dh.push_back(ctmp);
-						} else {
-							if(ctmp > row_dh[index_r]) {
-								row_dh[index_r] = ctmp;
-							}
-							if(htmp - ctmp > row_uh[index_r]) {
-								row_uh[index_r] = htmp - ctmp;
-							}						
-						}
-					}
-					if(CALCULATOR->aborted()) {
-						break;
-					}
-					row_h.push_back(row_uh[index_r] + row_dh[index_r]);
-					h += row_h[index_r];
-					if(index_r != 0) {
-						h += 4;
-					}
-				}	
-				h += 4;
-				for(size_t i = 0; i < col_w.size(); i++) {
-					w += col_w[i];
-					if(i != 0) {
-						w += space_w * 2;
-					}
+
+				if(m.size() == 0) {
+					PangoLayout *layout_one = gtk_widget_create_pango_layout(resultview, NULL);
+					TTP(str, "1")
+					pango_layout_set_markup(layout_one, str.c_str(), -1);
+					pango_layout_get_pixel_size(layout_one, &w, &h);
+					uh = h / 2 + h % 2;
+					dh = h / 2;
+					w = 2;
+					g_object_unref(layout_one);
 				}
-	
-				gint wlr, wll;
-				wll = 10;
-				wlr = 10;
+				for(size_t index = 0; index < m.size(); index++) {
+					ips_n.wrap = m[index].needsParenthesis(po, ips_n, m, index + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+					surface_args.push_back(draw_structure(m[index], po, caf, ips_n, &ctmp, scaledown, color));
+					if(CALCULATOR->aborted()) {
+						for(size_t i = 0; i < surface_args.size(); i++) {
+							if(surface_args[i]) cairo_surface_destroy(surface_args[i]);
+						}
+						g_object_unref(layout_comma);
+						return NULL;
+					}
+					wtmp = cairo_image_surface_get_width(surface_args[index]) / scalefactor;
+					htmp = cairo_image_surface_get_height(surface_args[index]) / scalefactor;
+					hpa.push_back(htmp);
+					cpa.push_back(ctmp);				
+					wpa.push_back(wtmp);
+					if(index > 0) {
+						w += comma_w;
+						w += space_w;
+					}				
+					w += wtmp;
+					if(ctmp > dh) {
+						dh = ctmp;
+					}
+					if(htmp - ctmp > uh) {
+						uh = htmp - ctmp;
+					}				
+				}
 			
-				w += wlr + 1;
-				w += wll + 3;
+				if(dh > uh) uh = dh;
+				h = uh + dh;
+				central_point = dh;
+				arc_h = dh * 2;
+				arc_w = (int) ::sqrt((double) arc_h * 3);
+				w += arc_w * 2;
+				w += 1;
+
+				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+				cr = cairo_create(surface);
+
+				w = 0;
+				cairo_set_source_surface(cr, get_left_parenthesis(arc_w, arc_h, scaledown, color), w, uh - arc_h / 2 - arc_h % 2);
+				cairo_paint(cr);
+				w += arc_w;
+				if(m.size() == 0) w += 2;
+				for(size_t index = 0; index < surface_args.size(); index++) {
+					if(!CALCULATOR->aborted()) {
+						gdk_cairo_set_source_rgba(cr, color);
+						if(index > 0) {
+							cairo_move_to(cr, w, uh - comma_h / 2 - comma_h % 2);
+							pango_cairo_show_layout(cr, layout_comma);
+							w += comma_w;
+							w += space_w;
+						}
+						cairo_set_source_surface(cr, surface_args[index], w, uh - (hpa[index] - cpa[index]));
+						cairo_paint(cr);
+						w += wpa[index];
+					}
+					cairo_surface_destroy(surface_args[index]);
+				}
+				cairo_set_source_surface(cr, get_right_parenthesis(arc_w, arc_h, scaledown, color), w, uh - arc_h / 2 - arc_h % 2);
+				cairo_paint(cr);
+				
+				g_object_unref(layout_comma);
+
+				break;
+			}
+			case STRUCT_UNIT: {
+
+				string str, str2;
+				TTBP(str);
+				
+				const ExpressionName *ename = &m.unit()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, m.isPlural(), po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
+
+				if(m.prefix()) {
+					str += m.prefix()->name(po.abbreviate_names && ename->abbreviation && (ename->suffix || ename->name.find("_") == string::npos), po.use_unicode_signs, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
+				}
+				if(ename->suffix && ename->name.length() > 1) {
+					size_t i = ename->name.rfind('_');
+					bool b = i == string::npos || i == ename->name.length() - 1 || i == 0;
+					size_t i2 = 1;
+					if(b) {
+						if(is_in(NUMBERS, ename->name[ename->name.length() - 1])) {
+							while(ename->name.length() > i2 + 1 && is_in(NUMBERS, ename->name[ename->name.length() - 1 - i2])) {
+								i2++;
+							}
+						}
+						str += ename->name.substr(0, ename->name.length() - i2);
+					} else {
+						str += ename->name.substr(0, i);
+					}
+					if(b || i + 5 != ename->name.length() || ename->name.substr(ename->name.length() - 4, 4) != "unit") {
+						TTBP_SMALL(str);
+						str += "<sub>";
+						if(b) str += ename->name.substr(ename->name.length() - i2, i2);
+						else if(i + 5 < ename->name.length() && ename->name.substr(ename->name.length() - 4, 4) == "unit") {str += ename->name.substr(i + 1, ename->name.length() - (i + 1) - 4);}
+						else str += ename->name.substr(i + 1, ename->name.length() - (i + 1));
+						str += "</sub>";
+						TTE(str);
+					}
+				} else {
+					str += ename->name;
+				}
+				gsub("_", " ", str);
+
+				TTE(str);
+				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
+				pango_layout_set_markup(layout, str.c_str(), -1);
+				pango_layout_get_pixel_size(layout, &w, &h);
 				central_point = h / 2;
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
 				cr = cairo_create(surface);
 				gdk_cairo_set_source_rgba(cr, color);
-				w = 1;
-				cairo_move_to(cr, w, 1);
-				cairo_line_to(cr, w, h - 1);
-				cairo_move_to(cr, w, 1);
-				cairo_line_to(cr, w + 7, 1);
-				cairo_move_to(cr, w, h - 1);
-				cairo_line_to(cr, w + 7, h - 1);
-				cairo_set_line_width(cr, 2);
-				cairo_stroke(cr);
-				h = 2;
-				for(size_t index_r = 0; index_r < surface_elements.size(); index_r++) {
-					if(!CALCULATOR->aborted()) {
-						gdk_cairo_set_source_rgba(cr, color);
-						w = wll + 1;
-					}
-					for(size_t index_c = 0; index_c < surface_elements[index_r].size(); index_c++) {
-						if(!CALCULATOR->aborted()) {
-							cairo_set_source_surface(cr, surface_elements[index_r][index_c], w + (col_w[index_c] - element_w[index_r][index_c]), h + row_uh[index_r] - (element_h[index_r][index_c] - element_c[index_r][index_c]));
-							cairo_paint(cr);
-							w += col_w[index_c];
-							if(index_c != m[index_r].size() - 1) {
-								w += space_w * 2;
+				cairo_move_to(cr, 0, 0);
+				pango_cairo_show_layout(cr, layout);
+				g_object_unref(layout);
+				break;
+			}
+			case STRUCT_VARIABLE: {
+
+				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
+				string str;
+				
+				if(m.variable() != CALCULATOR->v_i) {
+					str = "<i>";
+				}
+				TTBP(str);
+				
+				const ExpressionName *ename = &m.variable()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
+				if(ename->suffix && ename->name.length() > 1) {
+					size_t i = ename->name.rfind('_');
+					bool b = i == string::npos || i == ename->name.length() - 1 || i == 0;
+					size_t i2 = 1;
+					if(b) {
+						if(is_in(NUMBERS, ename->name[ename->name.length() - 1])) {
+							while(ename->name.length() > i2 + 1 && is_in(NUMBERS, ename->name[ename->name.length() - 1 - i2])) {
+								i2++;
 							}
 						}
-						if(surface_elements[index_r][index_c]) {
-							cairo_surface_destroy(surface_elements[index_r][index_c]);
-						}
-					}
-					if(!CALCULATOR->aborted()) {
-						h += row_h[index_r];
-						h += 4;
-					}
-				}
-				h -= 4;
-				h += 2;
-				w += wll - 7;
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_move_to(cr, w + 7, 1);
-				cairo_line_to(cr, w + 7, h - 1);
-				cairo_move_to(cr, w, 1);
-				cairo_line_to(cr, w + 7, 1);
-				cairo_move_to(cr, w, h - 1);
-				cairo_line_to(cr, w + 7, h - 1);
-				cairo_set_line_width(cr, 2);
-				cairo_stroke(cr);
-				g_object_unref(layout_comma);
-				break;
-			}
-			
-			gint comma_w, comma_h, uh = 0, dh = 0, h = 0, w = 0, ctmp, htmp, wtmp, arc_w, arc_h;
-			vector<cairo_surface_t*> surface_args;
-			vector<gint> hpa;
-			vector<gint> cpa;			
-			vector<gint> wpa;
-			
-			CALCULATE_SPACE_W
-			PangoLayout *layout_comma = gtk_widget_create_pango_layout(resultview, NULL);
-			string str, func_str;
-			TTP(str, CALCULATOR->getComma())
-			pango_layout_set_markup(layout_comma, str.c_str(), -1);		
-			pango_layout_get_pixel_size(layout_comma, &comma_w, &comma_h);
-
-			if(m.size() == 0) {
-				PangoLayout *layout_one = gtk_widget_create_pango_layout(resultview, NULL);
-				TTP(str, "1")
-				pango_layout_set_markup(layout_one, str.c_str(), -1);
-				pango_layout_get_pixel_size(layout_one, &w, &h);
-				uh = h / 2 + h % 2;
-				dh = h / 2;
-				w = 2;
-				g_object_unref(layout_one);
-			}
-			for(size_t index = 0; index < m.size(); index++) {
-				ips_n.wrap = m[index].needsParenthesis(po, ips_n, m, index + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-				surface_args.push_back(draw_structure(m[index], po, ips_n, &ctmp, scaledown, color));
-				if(CALCULATOR->aborted()) {
-					for(size_t i = 0; i < surface_args.size(); i++) {
-						if(surface_args[i]) cairo_surface_destroy(surface_args[i]);
-					}
-					g_object_unref(layout_comma);
-					return NULL;
-				}
-				wtmp = cairo_image_surface_get_width(surface_args[index]) / scalefactor;
-				htmp = cairo_image_surface_get_height(surface_args[index]) / scalefactor;
-				hpa.push_back(htmp);
-				cpa.push_back(ctmp);				
-				wpa.push_back(wtmp);
-				if(index > 0) {
-					w += comma_w;
-					w += space_w;
-				}				
-				w += wtmp;
-				if(ctmp > dh) {
-					dh = ctmp;
-				}
-				if(htmp - ctmp > uh) {
-					uh = htmp - ctmp;
-				}				
-			}
-		
-			if(dh > uh) uh = dh;
-			h = uh + dh;
-			central_point = dh;
-			arc_h = dh * 2;
-			arc_w = (int) ::sqrt((double) arc_h * 3);
-			w += arc_w * 2;
-			w += 1;
-
-			surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-			cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-			cr = cairo_create(surface);
-
-			w = 0;
-			cairo_set_source_surface(cr, get_left_parenthesis(arc_w, arc_h, scaledown, color), w, uh - arc_h / 2 - arc_h % 2);
-			cairo_paint(cr);
-			w += arc_w;
-			if(m.size() == 0) w += 2;
-			for(size_t index = 0; index < surface_args.size(); index++) {
-				if(!CALCULATOR->aborted()) {
-					gdk_cairo_set_source_rgba(cr, color);
-					if(index > 0) {
-						cairo_move_to(cr, w, uh - comma_h / 2 - comma_h % 2);
-						pango_cairo_show_layout(cr, layout_comma);
-						w += comma_w;
-						w += space_w;
-					}
-					cairo_set_source_surface(cr, surface_args[index], w, uh - (hpa[index] - cpa[index]));
-					cairo_paint(cr);
-					w += wpa[index];
-				}
-				cairo_surface_destroy(surface_args[index]);
-			}
-			cairo_set_source_surface(cr, get_right_parenthesis(arc_w, arc_h, scaledown, color), w, uh - arc_h / 2 - arc_h % 2);
-			cairo_paint(cr);
-			
-			g_object_unref(layout_comma);
-
-			break;
-		}
-		case STRUCT_UNIT: {
-
-			string str, str2;
-			TTBP(str);
-			
-			const ExpressionName *ename = &m.unit()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, m.isPlural(), po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
-
-			if(m.prefix()) {
-				str += m.prefix()->name(po.abbreviate_names && ename->abbreviation && (ename->suffix || ename->name.find("_") == string::npos), po.use_unicode_signs, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
-			}
-			if(ename->suffix && ename->name.length() > 1) {
-				size_t i = ename->name.rfind('_');
-				bool b = i == string::npos || i == ename->name.length() - 1 || i == 0;
-				size_t i2 = 1;
-				if(b) {
-					if(is_in(NUMBERS, ename->name[ename->name.length() - 1])) {
-						while(ename->name.length() > i2 + 1 && is_in(NUMBERS, ename->name[ename->name.length() - 1 - i2])) {
-							i2++;
-						}
-					}
-					str += ename->name.substr(0, ename->name.length() - i2);
-				} else {
-					str += ename->name.substr(0, i);
-				}
-				if(b || i + 5 != ename->name.length() || ename->name.substr(ename->name.length() - 4, 4) != "unit") {
-					TTBP_SMALL(str);
-					str += "<sub>";
-					if(b) str += ename->name.substr(ename->name.length() - i2, i2);
-					else if(i + 5 < ename->name.length() && ename->name.substr(ename->name.length() - 4, 4) == "unit") {str += ename->name.substr(i + 1, ename->name.length() - (i + 1) - 4);}
-					else str += ename->name.substr(i + 1, ename->name.length() - (i + 1));
-					str += "</sub>";
-					TTE(str);
-				}
-			} else {
-				str += ename->name;
-			}
-			gsub("_", " ", str);
-
-			TTE(str);
-			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-			pango_layout_set_markup(layout, str.c_str(), -1);
-			pango_layout_get_pixel_size(layout, &w, &h);
-			central_point = h / 2;
-			surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-			cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-			cr = cairo_create(surface);
-			gdk_cairo_set_source_rgba(cr, color);
-			cairo_move_to(cr, 0, 0);
-			pango_cairo_show_layout(cr, layout);
-			g_object_unref(layout);
-			break;
-		}
-		case STRUCT_VARIABLE: {
-
-			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-			string str;
-			
-			if(m.variable() != CALCULATOR->v_i) {
-				str = "<i>";
-			}
-			TTBP(str);
-			
-			const ExpressionName *ename = &m.variable()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
-			if(ename->suffix && ename->name.length() > 1) {
-				size_t i = ename->name.rfind('_');
-				bool b = i == string::npos || i == ename->name.length() - 1 || i == 0;
-				size_t i2 = 1;
-				if(b) {
-					if(is_in(NUMBERS, ename->name[ename->name.length() - 1])) {
-						while(ename->name.length() > i2 + 1 && is_in(NUMBERS, ename->name[ename->name.length() - 1 - i2])) {
-							i2++;
-						}
-					}
-					str += ename->name.substr(0, ename->name.length() - i2);
-				} else {
-					str += ename->name.substr(0, i);
-				}
-				if(!b || i + 9 != ename->name.length() || ename->name.substr(ename->name.length() - 8, 8) != "constant") {
-					TTBP_SMALL(str);
-					str += "<sub>";
-					if(b) str += ename->name.substr(ename->name.length() - i2, i2);
-					else if(i + 9 < ename->name.length() && ename->name.substr(ename->name.length() - 8, 8) == "constant") str += ename->name.substr(i + 1, ename->name.length() - (i + 1) - 8);
-					else str += ename->name.substr(i + 1, ename->name.length() - (i + 1));
-					str += "</sub>";
-					TTE(str);
-				}
-			} else {
-				str += ename->name;
-			}
-			gsub("_", " ", str);
-			
-			TTE(str);
-			if(m.variable() != CALCULATOR->v_i) {
-				str += "</i>";
-			} 
-			pango_layout_set_markup(layout, str.c_str(), -1);
-			PangoRectangle rect;
-			pango_layout_get_pixel_size(layout, &w, &h);
-			pango_layout_get_pixel_extents(layout, &rect, NULL);
-			w = rect.width + rect.x;
-			w += 1;
-			if(m.variable() == CALCULATOR->v_i) w += 1;
-			central_point = h / 2;
-			surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-			cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-			cr = cairo_create(surface);
-			gdk_cairo_set_source_rgba(cr, color);
-			cairo_move_to(cr, 1, 0);
-			pango_cairo_show_layout(cr, layout);
-			g_object_unref(layout);
-			break;
-		}
-		case STRUCT_FUNCTION: {
-		
-			if(m.function() == CALCULATOR->f_uncertainty && m.size() == 3 && m[2].isZero()) {
-				ips_n.depth++;
-				gint unc_uh, unc_w, unc_dh, mid_w, mid_dh, mid_uh, dh = 0, uh = 0, w = 0, h = 0;
-				cairo_surface_t *mid_surface = NULL, *unc_surface = NULL;
-				ips_n.wrap = !m[0].isNumber();
-				PrintOptions po2 = po;
-				po2.show_ending_zeroes = false;
-				po2.number_fraction_format = FRACTION_DECIMAL;
-				mid_surface = draw_structure(m[0], po2, ips_n, &mid_dh, scaledown, color);
-				if(!mid_surface) {
-					return NULL;
-				}
-				mid_w = cairo_image_surface_get_width(mid_surface) / scalefactor;
-				h = cairo_image_surface_get_height(mid_surface) / scalefactor;
-				mid_uh = h - mid_dh;
-				ips_n.wrap = !m[1].isNumber();
-				unc_surface = draw_structure(m[1], po2, ips_n, &unc_dh, scaledown, color);
-				unc_w = cairo_image_surface_get_width(unc_surface) / scalefactor;
-				h = cairo_image_surface_get_height(unc_surface) / scalefactor;
-				unc_uh = h - unc_dh;
-				h = 0;
-				gint pm_w, pm_h;
-				PangoLayout *layout_pm = gtk_widget_create_pango_layout(resultview, NULL);
-				PANGO_TTP(layout_pm, SIGN_PLUSMINUS);
-				pango_layout_get_pixel_size(layout_pm, &pm_w, &pm_h);
-				w = mid_w + unc_w + pm_w;
-				dh = mid_dh; uh = mid_uh;
-				if(unc_dh > dh) h = unc_dh;
-				if(unc_uh > uh) uh = unc_uh;
-				if(pm_h / 2 > dh) {
-					dh = pm_h / 2;
-				}
-				if(pm_h / 2 + pm_h % 2 > uh) {
-					uh = pm_h / 2 + pm_h % 2;
-				}
-				h = uh + dh;
-				central_point = dh;
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
-				gdk_cairo_set_source_rgba(cr, color);
-				w = 0;
-				cairo_set_source_surface(cr, mid_surface, w, uh - mid_uh);
-				cairo_paint(cr);
-				w += mid_w;
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_move_to(cr, w, uh - pm_h / 2 - pm_h % 2);
-				pango_cairo_show_layout(cr, layout_pm);
-				w += pm_w;
-				cairo_set_source_surface(cr, unc_surface, w, uh - unc_uh);
-				cairo_paint(cr);
-				g_object_unref(layout_pm);
-				cairo_surface_destroy(mid_surface);
-				cairo_surface_destroy(unc_surface);
-				break;
-			} else if(SHOW_WITH_ROOT_SIGN(m)) {
-
-				ips_n.depth++;
-				gint arg_w, arg_h, root_w, root_h, sign_w, sign_h, h, w, ctmp;
-				
-				int i_root = 2;
-				if(m.function() == CALCULATOR->f_root) i_root = m[1].number().intValue();
-				else if(m.function() == CALCULATOR->f_cbrt) i_root = 3;
-				string root_str;
-				TT_XSMALL(root_str, i2s(i_root));
-				PangoLayout *layout_root = gtk_widget_create_pango_layout(resultview, NULL);
-				pango_layout_set_markup(layout_root, root_str.c_str(), -1);		
-				pango_layout_get_pixel_size(layout_root, &root_w, &root_h);
-
-				ips_n.wrap = false;
-				cairo_surface_t *surface_arg = draw_structure(m[0], po, ips_n, &ctmp, scaledown, color);
-				if(!surface_arg) return NULL;
-
-				arg_w = cairo_image_surface_get_width(surface_arg) / scalefactor;
-				arg_h = cairo_image_surface_get_height(surface_arg) / scalefactor;
-				
-				double divider = 1.0;
-				if(ips.power_depth >= 1) divider = 1.5;
-				
-				gint extra_space = 5;
-				if(scaledown == 1) extra_space = 3;
-				else if(scaledown > 1) extra_space = 1;
-				
-				central_point = ctmp + extra_space / divider;
-				
-				root_w = root_w / divider;
-				root_h = root_h / divider;
-				sign_w = root_w * 2.6;
-				
-				if(i_root == 2) {
-					sign_h = arg_h + extra_space / divider;
-				} else {
-					sign_h = root_h * 2.0;
-					if(sign_h < arg_h + extra_space / divider) sign_h = arg_h + extra_space / divider;
-				}
-				
-				h = sign_h + extra_space * 2.0 / divider;
-				w = arg_w + sign_w * 1.25;
-				
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
-				gdk_cairo_set_source_rgba(cr, color);
-
-				cairo_move_to(cr, 0, h / 2.0 + h / 15.0);
-				cairo_line_to(cr, sign_w / 6.0, h / 2.0);
-				cairo_line_to(cr, sign_w / 2.2, h - extra_space / divider);
-				cairo_line_to(cr, sign_w,  extra_space / divider);
-				cairo_line_to(cr, w,  extra_space / divider);
-				cairo_set_line_width(cr, 2 / divider);
-				cairo_stroke(cr);
-				
-				if(i_root != 2) {
-					cairo_move_to(cr, (sign_w - root_w) / 3.0, ((h / 2.0) - root_h) / 2.0);
-					cairo_surface_set_device_scale(surface, scalefactor / divider, scalefactor / divider);
-					pango_cairo_show_layout(cr, layout_root);
-					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				}
-				
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_move_to(cr, 0, 0);
-				cairo_set_source_surface(cr, surface_arg, sign_w + 1, h - arg_h - extra_space / divider);
-				cairo_paint(cr);
-				
-				cairo_surface_destroy(surface_arg);
-				g_object_unref(layout_root);
-				
-				break;
-				
-			} else if(m.function() == CALCULATOR->f_abs && m.size() == 1) {
-			
-				ips_n.depth++;
-				gint arg_w, arg_h, h, w, ctmp;
-				
-				ips_n.wrap = false;
-				cairo_surface_t *surface_arg = draw_structure(m[0], po, ips_n, &ctmp, scaledown, color);
-				if(!surface_arg) return NULL;
-
-				arg_w = cairo_image_surface_get_width(surface_arg) / scalefactor;
-				arg_h = cairo_image_surface_get_height(surface_arg) / scalefactor;
-				
-				double divider = 1.0;
-				if(ips.power_depth >= 1) divider = 1.5;
-				
-				gint extra_space = 5;
-				if(scaledown == 1) extra_space = 3;
-				else if(scaledown > 1) extra_space = 1;
-				
-				central_point = ctmp + extra_space / divider;
-				h = arg_h + extra_space * 2 / divider;
-				w = arg_w + extra_space * 2 + extra_space * 2 / divider;
-				
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
-				gdk_cairo_set_source_rgba(cr, color);
-
-				cairo_move_to(cr, (extra_space / divider), extra_space / divider);
-				cairo_line_to(cr, (extra_space / divider), h - extra_space / divider);
-				cairo_move_to(cr, w - (extra_space / divider), extra_space / divider);
-				cairo_line_to(cr, w - (extra_space / divider), h - extra_space / divider);
-				cairo_set_line_width(cr, 2 / divider);
-				cairo_stroke(cr);
-				
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_move_to(cr, 0, 0);
-				cairo_set_source_surface(cr, surface_arg, (w - arg_w) / 2.0, (h - arg_h) / 2.0);
-				cairo_paint(cr);
-				
-				cairo_surface_destroy(surface_arg);
-				
-				break;
-			} else if(m.function() == CALCULATOR->f_diff && (m.size() == 3 || (m.size() == 4 && m[3].isUndefined())) && (m[1].isVariable() || m[1].isSymbolic()) && m[2].isInteger()) {
-				
-				MathStructure mdx("d");
-				if(!m[2].isOne()) mdx ^= m[2];
-				string s = "d";
-				if(m[1].isSymbolic()) s += m[1].symbol();
-				else s += m[1].variable()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg).name;
-				mdx.transform(STRUCT_DIVISION, s);
-				if(!m[2].isOne()) mdx[1] ^= m[2];
-				
-				ips_n.depth++;
-			
-				gint hpt1, hpt2;
-				gint wpt1, wpt2;
-				gint cpt1, cpt2;
-				gint w = 0, h = 0, dh = 0, uh = 0;
-			
-				CALCULATE_SPACE_W
-
-				ips_n.wrap = false;
-				cairo_surface_t *surface_term1 = draw_structure(mdx, po, ips_n, &cpt1, scaledown, color);
-				wpt1 = cairo_image_surface_get_width(surface_term1) / scalefactor;
-				hpt1 = cairo_image_surface_get_height(surface_term1) / scalefactor;
-				ips_n.wrap = true;
-				cairo_surface_t *surface_term2 = draw_structure(m[0], po, ips_n, &cpt2, scaledown, color);
-				wpt2 = cairo_image_surface_get_width(surface_term2) / scalefactor;
-				hpt2 = cairo_image_surface_get_height(surface_term2) / scalefactor;
-				w = wpt1 + wpt2 + space_w;
-				if(hpt1 - cpt1 > hpt2 - cpt2) uh = hpt1 - cpt1;
-				else uh = hpt2 - cpt2;
-				if(cpt1 > cpt2) dh = cpt1;
-				else dh = cpt2;
-				central_point = dh;
-				h = dh + uh;
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_set_source_surface(cr, surface_term1, 0, uh - (hpt1 - cpt1));
-				cairo_paint(cr);
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_set_source_surface(cr, surface_term2, wpt1 + space_w, uh - (hpt2 - cpt2));
-				cairo_paint(cr);
-				cairo_surface_destroy(surface_term1);
-				cairo_surface_destroy(surface_term2);
-
-				break;
-			}
-
-			ips_n.depth++;
-			
-			gint comma_w, comma_h, function_w, function_h, uh, dh, h, w, ctmp, htmp, wtmp, arc_w, arc_h;
-			vector<cairo_surface_t*> surface_args;
-			vector<gint> hpa;
-			vector<gint> cpa;			
-			vector<gint> wpa;
-			
-			CALCULATE_SPACE_W
-			PangoLayout *layout_comma = gtk_widget_create_pango_layout(resultview, NULL);
-			string str;
-			TTP(str, po.comma())
-			pango_layout_set_markup(layout_comma, str.c_str(), -1);		
-			pango_layout_get_pixel_size(layout_comma, &comma_w, &comma_h);
-			PangoLayout *layout_function = gtk_widget_create_pango_layout(resultview, NULL);
-		
-			str = "";
-			TTBP(str);
-			
-			size_t argcount = m.size();
-			
-			if(m.function() == CALCULATOR->f_signum && argcount > 1) argcount = 1;
-			
-			if(m.function()->maxargs() > 0 && m.function()->minargs() < m.function()->maxargs() && m.size() > (size_t) m.function()->minargs()) {
-				while(true) {
-					string defstr = m.function()->getDefaultValue(argcount);
-					Argument *arg = m.function()->getArgumentDefinition(argcount);
-					remove_blank_ends(defstr);
-					if(defstr.empty()) break;
-					if(m[argcount - 1].isUndefined() && defstr == "undefined") {
-						argcount--;
-					} else if(m[argcount - 1].isVariable() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr == m[argcount - 1].variable()->referenceName()) {
-						argcount--;
-					} else if(m[argcount - 1].isInteger() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr.find_first_not_of(NUMBERS) == string::npos && m[argcount - 1].number() == s2i(defstr)) {
-						argcount--;
-					} else if(m[argcount - 1].isSymbolic() && arg && arg->type() == ARGUMENT_TYPE_TEXT && m[argcount - 1] == defstr) {
-						argcount--;
+						str += ename->name.substr(0, ename->name.length() - i2);
 					} else {
-						break;
+						str += ename->name.substr(0, i);
 					}
-					if(argcount == 0 || argcount == (size_t) m.function()->minargs()) break;
-				}
-			}
-						
-			const ExpressionName *ename = &m.function()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
-			if(ename->suffix && ename->name.length() > 1) {
-				
-				size_t i = ename->name.rfind('_');
-				bool b = i == string::npos || i == ename->name.length() - 1 || i == 0;
-				size_t i2 = 1;
-				if(b) {
-					if(is_in(NUMBERS, ename->name[ename->name.length() - 1])) {
-						while(ename->name.length() > i2 + 1 && is_in(NUMBERS, ename->name[ename->name.length() - 1 - i2])) {
-							i2++;
-						}
+					if(!b || i + 9 != ename->name.length() || ename->name.substr(ename->name.length() - 8, 8) != "constant") {
+						TTBP_SMALL(str);
+						str += "<sub>";
+						if(b) str += ename->name.substr(ename->name.length() - i2, i2);
+						else if(i + 9 < ename->name.length() && ename->name.substr(ename->name.length() - 8, 8) == "constant") str += ename->name.substr(i + 1, ename->name.length() - (i + 1) - 8);
+						else str += ename->name.substr(i + 1, ename->name.length() - (i + 1));
+						str += "</sub>";
+						TTE(str);
 					}
-					str += ename->name.substr(0, ename->name.length() - i2);
 				} else {
-					str += ename->name.substr(0, i);
+					str += ename->name;
 				}
-				TTBP_SMALL(str);
-				str += "<sub>";
-				if(b) str += ename->name.substr(ename->name.length() - i2, i2);
-				else str += ename->name.substr(i + 1, ename->name.length() - (i + 1));
-				str += "</sub>";
+				gsub("_", " ", str);
+				
 				TTE(str);
-			} else {
-				str += ename->name;
-				if((m.function() == CALCULATOR->f_lambert_w || m.function() == CALCULATOR->f_logn) && m.size() == 2 && ((m[1].size() == 0 && (!m[1].isNumber() || (m[1].number().isInteger() && m[1].number() < 100 && m[1].number() > -100))) || (m[1].isNegate() && m[1][0].size() == 0 && (!m[1][0].isNumber() || (m[1][0].number().isInteger() && m[1][0].number() < 100 && m[1][0].number() > -100))))) {
-					argcount = 1;
-					TTBP_SMALL(str);
-					str += "<sub>";
-					str += m[1].print(po);
-					str += "</sub>";
-					TTE(str);
-				}
+				if(m.variable() != CALCULATOR->v_i) {
+					str += "</i>";
+				} 
+				pango_layout_set_markup(layout, str.c_str(), -1);
+				PangoRectangle rect;
+				pango_layout_get_pixel_size(layout, &w, &h);
+				pango_layout_get_pixel_extents(layout, &rect, NULL);
+				w = rect.width + rect.x;
+				w += 1;
+				if(m.variable() == CALCULATOR->v_i) w += 1;
+				central_point = h / 2;
+				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+				cr = cairo_create(surface);
+				gdk_cairo_set_source_rgba(cr, color);
+				cairo_move_to(cr, 1, 0);
+				pango_cairo_show_layout(cr, layout);
+				g_object_unref(layout);
+				break;
 			}
-			gsub("_", " ", str);
+			case STRUCT_FUNCTION: {
 			
-			TTE(str);
-			
-			pango_layout_set_markup(layout_function, str.c_str(), -1);			
-			pango_layout_get_pixel_size(layout_function, &function_w, &function_h);
-			w = function_w + 1;
-			uh = function_h / 2 + function_h % 2;
-			dh = function_h / 2;
-
-			for(size_t index = 0; index < argcount; index++) {
-						
-				ips_n.wrap = m[index].needsParenthesis(po, ips_n, m, index + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-				if(m.function() == CALCULATOR->f_interval) {
+				if(m.function() == CALCULATOR->f_uncertainty && m.size() == 3 && m[2].isZero()) {
+					ips_n.depth++;
+					gint unc_uh, unc_w, unc_dh, mid_w, mid_dh, mid_uh, dh = 0, uh = 0, w = 0, h = 0;
+					cairo_surface_t *mid_surface = NULL, *unc_surface = NULL;
+					ips_n.wrap = !m[0].isNumber();
 					PrintOptions po2 = po;
 					po2.show_ending_zeroes = false;
-					if(m[index].isNumber()) {
-						if(index == 0) po2.interval_display = INTERVAL_DISPLAY_LOWER;
-						else if(index == 1) po2.interval_display = INTERVAL_DISPLAY_UPPER;
+					po2.number_fraction_format = FRACTION_DECIMAL;
+					mid_surface = draw_structure(m[0], po2, caf, ips_n, &mid_dh, scaledown, color);
+					if(!mid_surface) {
+						return NULL;
 					}
-					surface_args.push_back(draw_structure(m[index], po2, ips_n, &ctmp, scaledown, color));
-				} else {
-					surface_args.push_back(draw_structure(m[index], po, ips_n, &ctmp, scaledown, color));
-				}
-				if(CALCULATOR->aborted()) {
-					for(size_t i = 0; i < surface_args.size(); i++) {
-						if(surface_args[i]) cairo_surface_destroy(surface_args[i]);
+					mid_w = cairo_image_surface_get_width(mid_surface) / scalefactor;
+					h = cairo_image_surface_get_height(mid_surface) / scalefactor;
+					mid_uh = h - mid_dh;
+					ips_n.wrap = !m[1].isNumber();
+					unc_surface = draw_structure(m[1], po2, caf, ips_n, &unc_dh, scaledown, color);
+					unc_w = cairo_image_surface_get_width(unc_surface) / scalefactor;
+					h = cairo_image_surface_get_height(unc_surface) / scalefactor;
+					unc_uh = h - unc_dh;
+					h = 0;
+					gint pm_w, pm_h;
+					PangoLayout *layout_pm = gtk_widget_create_pango_layout(resultview, NULL);
+					PANGO_TTP(layout_pm, SIGN_PLUSMINUS);
+					pango_layout_get_pixel_size(layout_pm, &pm_w, &pm_h);
+					w = mid_w + unc_w + pm_w;
+					dh = mid_dh; uh = mid_uh;
+					if(unc_dh > dh) h = unc_dh;
+					if(unc_uh > uh) uh = unc_uh;
+					if(pm_h / 2 > dh) {
+						dh = pm_h / 2;
 					}
-					g_object_unref(layout_function);
-					g_object_unref(layout_comma);
-					return NULL;
-				}
-				wtmp = cairo_image_surface_get_width(surface_args[index]) / scalefactor;
-				htmp = cairo_image_surface_get_height(surface_args[index]) / scalefactor;
-				hpa.push_back(htmp);
-				cpa.push_back(ctmp);				
-				wpa.push_back(wtmp);
-				if(index > 0) {
-					w += comma_w;
-					w += space_w;
-				}				
-				w += wtmp;
-				if(ctmp > dh) {
-					dh = ctmp;
-				}
-				if(htmp - ctmp > uh) {
-					uh = htmp - ctmp;
-				}				
-			}
-			
-			if(dh > uh) uh = dh;
-			h = uh + dh;
-			central_point = dh;
-			arc_h = dh * 2;
-			arc_w = (int) ::sqrt((double) arc_h * 3);
-			w += arc_w * 2;
-			w += 1;
-
-			surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-			cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-			cr = cairo_create(surface);
-			
-			w = 0;
-			gdk_cairo_set_source_rgba(cr, color);
-			cairo_move_to(cr, w, uh - function_h / 2 - function_h % 2);
-			pango_cairo_show_layout(cr, layout_function);
-			w += function_w;
-			cairo_set_source_surface(cr, get_left_parenthesis(arc_w, arc_h, scaledown, color), w, uh - arc_h / 2 - arc_h % 2);
-			cairo_paint(cr);
-			w += arc_w;
-			for(size_t index = 0; index < surface_args.size(); index++) {
-				if(!CALCULATOR->aborted()) {
+					if(pm_h / 2 + pm_h % 2 > uh) {
+						uh = pm_h / 2 + pm_h % 2;
+					}
+					h = uh + dh;
+					central_point = dh;
+					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+					cr = cairo_create(surface);
 					gdk_cairo_set_source_rgba(cr, color);
+					w = 0;
+					cairo_set_source_surface(cr, mid_surface, w, uh - mid_uh);
+					cairo_paint(cr);
+					w += mid_w;
+					gdk_cairo_set_source_rgba(cr, color);
+					cairo_move_to(cr, w, uh - pm_h / 2 - pm_h % 2);
+					pango_cairo_show_layout(cr, layout_pm);
+					w += pm_w;
+					cairo_set_source_surface(cr, unc_surface, w, uh - unc_uh);
+					cairo_paint(cr);
+					g_object_unref(layout_pm);
+					cairo_surface_destroy(mid_surface);
+					cairo_surface_destroy(unc_surface);
+					break;
+				} else if(SHOW_WITH_ROOT_SIGN(m)) {
+
+					ips_n.depth++;
+					gint arg_w, arg_h, root_w, root_h, sign_w, sign_h, h, w, ctmp;
+					
+					int i_root = 2;
+					if(m.function() == CALCULATOR->f_root) i_root = m[1].number().intValue();
+					else if(m.function() == CALCULATOR->f_cbrt) i_root = 3;
+					string root_str;
+					TT_XSMALL(root_str, i2s(i_root));
+					PangoLayout *layout_root = gtk_widget_create_pango_layout(resultview, NULL);
+					pango_layout_set_markup(layout_root, root_str.c_str(), -1);		
+					pango_layout_get_pixel_size(layout_root, &root_w, &root_h);
+
+					ips_n.wrap = false;
+					cairo_surface_t *surface_arg = draw_structure(m[0], po, caf, ips_n, &ctmp, scaledown, color);
+					if(!surface_arg) return NULL;
+
+					arg_w = cairo_image_surface_get_width(surface_arg) / scalefactor;
+					arg_h = cairo_image_surface_get_height(surface_arg) / scalefactor;
+					
+					double divider = 1.0;
+					if(ips.power_depth >= 1) divider = 1.5;
+					
+					gint extra_space = 5;
+					if(scaledown == 1) extra_space = 3;
+					else if(scaledown > 1) extra_space = 1;
+					
+					central_point = ctmp + extra_space / divider;
+					
+					root_w = root_w / divider;
+					root_h = root_h / divider;
+					sign_w = root_w * 2.6;
+					
+					if(i_root == 2) {
+						sign_h = arg_h + extra_space / divider;
+					} else {
+						sign_h = root_h * 2.0;
+						if(sign_h < arg_h + extra_space / divider) sign_h = arg_h + extra_space / divider;
+					}
+					
+					h = sign_h + extra_space * 2.0 / divider;
+					w = arg_w + sign_w * 1.25;
+					
+					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+					cr = cairo_create(surface);
+					gdk_cairo_set_source_rgba(cr, color);
+
+					cairo_move_to(cr, 0, h / 2.0 + h / 15.0);
+					cairo_line_to(cr, sign_w / 6.0, h / 2.0);
+					cairo_line_to(cr, sign_w / 2.2, h - extra_space / divider);
+					cairo_line_to(cr, sign_w,  extra_space / divider);
+					cairo_line_to(cr, w,  extra_space / divider);
+					cairo_set_line_width(cr, 2 / divider);
+					cairo_stroke(cr);
+					
+					if(i_root != 2) {
+						cairo_move_to(cr, (sign_w - root_w) / 3.0, ((h / 2.0) - root_h) / 2.0);
+						cairo_surface_set_device_scale(surface, scalefactor / divider, scalefactor / divider);
+						pango_cairo_show_layout(cr, layout_root);
+						cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+					}
+					
+					gdk_cairo_set_source_rgba(cr, color);
+					cairo_move_to(cr, 0, 0);
+					cairo_set_source_surface(cr, surface_arg, sign_w + 1, h - arg_h - extra_space / divider);
+					cairo_paint(cr);
+					
+					cairo_surface_destroy(surface_arg);
+					g_object_unref(layout_root);
+					
+					break;
+					
+				} else if(m.function() == CALCULATOR->f_abs && m.size() == 1) {
+				
+					ips_n.depth++;
+					gint arg_w, arg_h, h, w, ctmp;
+					
+					ips_n.wrap = false;
+					cairo_surface_t *surface_arg = draw_structure(m[0], po, caf, ips_n, &ctmp, scaledown, color);
+					if(!surface_arg) return NULL;
+
+					arg_w = cairo_image_surface_get_width(surface_arg) / scalefactor;
+					arg_h = cairo_image_surface_get_height(surface_arg) / scalefactor;
+					
+					double divider = 1.0;
+					if(ips.power_depth >= 1) divider = 1.5;
+					
+					gint extra_space = 5;
+					if(scaledown == 1) extra_space = 3;
+					else if(scaledown > 1) extra_space = 1;
+					
+					central_point = ctmp + extra_space / divider;
+					h = arg_h + extra_space * 2 / divider;
+					w = arg_w + extra_space * 2 + extra_space * 2 / divider;
+					
+					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+					cr = cairo_create(surface);
+					gdk_cairo_set_source_rgba(cr, color);
+
+					cairo_move_to(cr, (extra_space / divider), extra_space / divider);
+					cairo_line_to(cr, (extra_space / divider), h - extra_space / divider);
+					cairo_move_to(cr, w - (extra_space / divider), extra_space / divider);
+					cairo_line_to(cr, w - (extra_space / divider), h - extra_space / divider);
+					cairo_set_line_width(cr, 2 / divider);
+					cairo_stroke(cr);
+					
+					gdk_cairo_set_source_rgba(cr, color);
+					cairo_move_to(cr, 0, 0);
+					cairo_set_source_surface(cr, surface_arg, (w - arg_w) / 2.0, (h - arg_h) / 2.0);
+					cairo_paint(cr);
+					
+					cairo_surface_destroy(surface_arg);
+					
+					break;
+				} else if(m.function() == CALCULATOR->f_diff && (m.size() == 3 || (m.size() == 4 && m[3].isUndefined())) && (m[1].isVariable() || m[1].isSymbolic()) && m[2].isInteger()) {
+					
+					MathStructure mdx("d");
+					if(!m[2].isOne()) mdx ^= m[2];
+					string s = "d";
+					if(m[1].isSymbolic()) s += m[1].symbol();
+					else s += m[1].variable()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg).name;
+					mdx.transform(STRUCT_DIVISION, s);
+					if(!m[2].isOne()) mdx[1] ^= m[2];
+					
+					ips_n.depth++;
+				
+					gint hpt1, hpt2;
+					gint wpt1, wpt2;
+					gint cpt1, cpt2;
+					gint w = 0, h = 0, dh = 0, uh = 0;
+				
+					CALCULATE_SPACE_W
+
+					ips_n.wrap = false;
+					cairo_surface_t *surface_term1 = draw_structure(mdx, po, caf, ips_n, &cpt1, scaledown, color);
+					wpt1 = cairo_image_surface_get_width(surface_term1) / scalefactor;
+					hpt1 = cairo_image_surface_get_height(surface_term1) / scalefactor;
+					ips_n.wrap = true;
+					cairo_surface_t *surface_term2 = draw_structure(m[0], po, caf, ips_n, &cpt2, scaledown, color);
+					wpt2 = cairo_image_surface_get_width(surface_term2) / scalefactor;
+					hpt2 = cairo_image_surface_get_height(surface_term2) / scalefactor;
+					w = wpt1 + wpt2 + space_w;
+					if(hpt1 - cpt1 > hpt2 - cpt2) uh = hpt1 - cpt1;
+					else uh = hpt2 - cpt2;
+					if(cpt1 > cpt2) dh = cpt1;
+					else dh = cpt2;
+					central_point = dh;
+					h = dh + uh;
+					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+					cr = cairo_create(surface);
+					gdk_cairo_set_source_rgba(cr, color);
+					cairo_set_source_surface(cr, surface_term1, 0, uh - (hpt1 - cpt1));
+					cairo_paint(cr);
+					gdk_cairo_set_source_rgba(cr, color);
+					cairo_set_source_surface(cr, surface_term2, wpt1 + space_w, uh - (hpt2 - cpt2));
+					cairo_paint(cr);
+					cairo_surface_destroy(surface_term1);
+					cairo_surface_destroy(surface_term2);
+
+					break;
+				}
+
+				ips_n.depth++;
+				
+				gint comma_w, comma_h, function_w, function_h, uh, dh, h, w, ctmp, htmp, wtmp, arc_w, arc_h;
+				vector<cairo_surface_t*> surface_args;
+				vector<gint> hpa;
+				vector<gint> cpa;			
+				vector<gint> wpa;
+				
+				CALCULATE_SPACE_W
+				PangoLayout *layout_comma = gtk_widget_create_pango_layout(resultview, NULL);
+				string str;
+				TTP(str, po.comma())
+				pango_layout_set_markup(layout_comma, str.c_str(), -1);		
+				pango_layout_get_pixel_size(layout_comma, &comma_w, &comma_h);
+				PangoLayout *layout_function = gtk_widget_create_pango_layout(resultview, NULL);
+			
+				str = "";
+				TTBP(str);
+				
+				size_t argcount = m.size();
+				
+				if(m.function() == CALCULATOR->f_signum && argcount > 1) argcount = 1;
+				
+				if(m.function()->maxargs() > 0 && m.function()->minargs() < m.function()->maxargs() && m.size() > (size_t) m.function()->minargs()) {
+					while(true) {
+						string defstr = m.function()->getDefaultValue(argcount);
+						Argument *arg = m.function()->getArgumentDefinition(argcount);
+						remove_blank_ends(defstr);
+						if(defstr.empty()) break;
+						if(m[argcount - 1].isUndefined() && defstr == "undefined") {
+							argcount--;
+						} else if(m[argcount - 1].isVariable() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr == m[argcount - 1].variable()->referenceName()) {
+							argcount--;
+						} else if(m[argcount - 1].isInteger() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr.find_first_not_of(NUMBERS) == string::npos && m[argcount - 1].number() == s2i(defstr)) {
+							argcount--;
+						} else if(m[argcount - 1].isSymbolic() && arg && arg->type() == ARGUMENT_TYPE_TEXT && m[argcount - 1] == defstr) {
+							argcount--;
+						} else {
+							break;
+						}
+						if(argcount == 0 || argcount == (size_t) m.function()->minargs()) break;
+					}
+				}
+							
+				const ExpressionName *ename = &m.function()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
+				if(ename->suffix && ename->name.length() > 1) {
+					
+					size_t i = ename->name.rfind('_');
+					bool b = i == string::npos || i == ename->name.length() - 1 || i == 0;
+					size_t i2 = 1;
+					if(b) {
+						if(is_in(NUMBERS, ename->name[ename->name.length() - 1])) {
+							while(ename->name.length() > i2 + 1 && is_in(NUMBERS, ename->name[ename->name.length() - 1 - i2])) {
+								i2++;
+							}
+						}
+						str += ename->name.substr(0, ename->name.length() - i2);
+					} else {
+						str += ename->name.substr(0, i);
+					}
+					TTBP_SMALL(str);
+					str += "<sub>";
+					if(b) str += ename->name.substr(ename->name.length() - i2, i2);
+					else str += ename->name.substr(i + 1, ename->name.length() - (i + 1));
+					str += "</sub>";
+					TTE(str);
+				} else {
+					str += ename->name;
+					if((m.function() == CALCULATOR->f_lambert_w || m.function() == CALCULATOR->f_logn) && m.size() == 2 && ((m[1].size() == 0 && (!m[1].isNumber() || (m[1].number().isInteger() && m[1].number() < 100 && m[1].number() > -100))) || (m[1].isNegate() && m[1][0].size() == 0 && (!m[1][0].isNumber() || (m[1][0].number().isInteger() && m[1][0].number() < 100 && m[1][0].number() > -100))))) {
+						argcount = 1;
+						TTBP_SMALL(str);
+						str += "<sub>";
+						str += m[1].print(po);
+						str += "</sub>";
+						TTE(str);
+					}
+				}
+				gsub("_", " ", str);
+				
+				TTE(str);
+				
+				pango_layout_set_markup(layout_function, str.c_str(), -1);			
+				pango_layout_get_pixel_size(layout_function, &function_w, &function_h);
+				w = function_w + 1;
+				uh = function_h / 2 + function_h % 2;
+				dh = function_h / 2;
+
+				for(size_t index = 0; index < argcount; index++) {
+							
+					ips_n.wrap = m[index].needsParenthesis(po, ips_n, m, index + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+					if(m.function() == CALCULATOR->f_interval) {
+						PrintOptions po2 = po;
+						po2.show_ending_zeroes = false;
+						if(m[index].isNumber()) {
+							if(index == 0) po2.interval_display = INTERVAL_DISPLAY_LOWER;
+							else if(index == 1) po2.interval_display = INTERVAL_DISPLAY_UPPER;
+						}
+						surface_args.push_back(draw_structure(m[index], po2, caf, ips_n, &ctmp, scaledown, color));
+					} else {
+						surface_args.push_back(draw_structure(m[index], po, caf, ips_n, &ctmp, scaledown, color));
+					}
+					if(CALCULATOR->aborted()) {
+						for(size_t i = 0; i < surface_args.size(); i++) {
+							if(surface_args[i]) cairo_surface_destroy(surface_args[i]);
+						}
+						g_object_unref(layout_function);
+						g_object_unref(layout_comma);
+						return NULL;
+					}
+					wtmp = cairo_image_surface_get_width(surface_args[index]) / scalefactor;
+					htmp = cairo_image_surface_get_height(surface_args[index]) / scalefactor;
+					hpa.push_back(htmp);
+					cpa.push_back(ctmp);				
+					wpa.push_back(wtmp);
 					if(index > 0) {
-						cairo_move_to(cr, w, uh - comma_h / 2 - comma_h % 2);
-						pango_cairo_show_layout(cr, layout_comma);
 						w += comma_w;
 						w += space_w;
+					}				
+					w += wtmp;
+					if(ctmp > dh) {
+						dh = ctmp;
 					}
-					cairo_set_source_surface(cr, surface_args[index], w, uh - (hpa[index] - cpa[index]));
-					cairo_paint(cr);
-					w += wpa[index];
+					if(htmp - ctmp > uh) {
+						uh = htmp - ctmp;
+					}				
 				}
-				cairo_surface_destroy(surface_args[index]);
-			}
-			cairo_set_source_surface(cr, get_right_parenthesis(arc_w, arc_h, scaledown, color), w, uh - arc_h / 2 - arc_h % 2);
-			cairo_paint(cr);
-						
-			g_object_unref(layout_comma);
-			g_object_unref(layout_function);
+				
+				if(dh > uh) uh = dh;
+				h = uh + dh;
+				central_point = dh;
+				arc_h = dh * 2;
+				arc_w = (int) ::sqrt((double) arc_h * 3);
+				w += arc_w * 2;
+				w += 1;
 
-			break;
+				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+				cr = cairo_create(surface);
+				
+				w = 0;
+				gdk_cairo_set_source_rgba(cr, color);
+				cairo_move_to(cr, w, uh - function_h / 2 - function_h % 2);
+				pango_cairo_show_layout(cr, layout_function);
+				w += function_w;
+				cairo_set_source_surface(cr, get_left_parenthesis(arc_w, arc_h, scaledown, color), w, uh - arc_h / 2 - arc_h % 2);
+				cairo_paint(cr);
+				w += arc_w;
+				for(size_t index = 0; index < surface_args.size(); index++) {
+					if(!CALCULATOR->aborted()) {
+						gdk_cairo_set_source_rgba(cr, color);
+						if(index > 0) {
+							cairo_move_to(cr, w, uh - comma_h / 2 - comma_h % 2);
+							pango_cairo_show_layout(cr, layout_comma);
+							w += comma_w;
+							w += space_w;
+						}
+						cairo_set_source_surface(cr, surface_args[index], w, uh - (hpa[index] - cpa[index]));
+						cairo_paint(cr);
+						w += wpa[index];
+					}
+					cairo_surface_destroy(surface_args[index]);
+				}
+				cairo_set_source_surface(cr, get_right_parenthesis(arc_w, arc_h, scaledown, color), w, uh - arc_h / 2 - arc_h % 2);
+				cairo_paint(cr);
+							
+				g_object_unref(layout_comma);
+				g_object_unref(layout_function);
+
+				break;
+			}
+			case STRUCT_UNDEFINED: {
+				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
+				string str;
+				TTP(str, _("undefined"));
+				pango_layout_set_markup(layout, str.c_str(), -1);
+				PangoRectangle rect;
+				pango_layout_get_pixel_size(layout, &w, &h);
+				pango_layout_get_pixel_extents(layout, &rect, NULL);
+				w = rect.width + rect.x;
+				w += 1;
+				central_point = h / 2;
+				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
+				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+				cr = cairo_create(surface);
+				gdk_cairo_set_source_rgba(cr, color);
+				cairo_move_to(cr, 1, 0);
+				pango_cairo_show_layout(cr, layout);
+				g_object_unref(layout);
+				break;
+			}
+			default: {}
 		}
-		case STRUCT_UNDEFINED: {
-			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-			string str;
-			TTP(str, _("undefined"));
-			pango_layout_set_markup(layout, str.c_str(), -1);
-			PangoRectangle rect;
-			pango_layout_get_pixel_size(layout, &w, &h);
-			pango_layout_get_pixel_extents(layout, &rect, NULL);
-			w = rect.width + rect.x;
-			w += 1;
-			central_point = h / 2;
-			surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-			cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-			cr = cairo_create(surface);
-			gdk_cairo_set_source_rgba(cr, color);
-			cairo_move_to(cr, 1, 0);
-			pango_cairo_show_layout(cr, layout);
-			g_object_unref(layout);
-			break;
-		}
-		default: {}
 	}
 	if(ips.wrap && surface) {
 		gint w, h, base_h, base_w;
@@ -7647,6 +7762,7 @@ void ViewThread::run() {
 			if(displayed_mstruct) displayed_mstruct->unref();
 			displayed_mstruct = new MathStructure(m);
 			displayed_printops = printops;
+			displayed_caf = complex_angle_form;
 		} else if(!b_stack) {
 			if(!CALCULATOR->aborted()) {
 				printops.allow_non_usable = true;
@@ -7654,7 +7770,7 @@ void ViewThread::run() {
 
 				MathStructure *displayed_mstruct_pre = new MathStructure(m);
 				if(printops.interval_display == INTERVAL_DISPLAY_INTERVAL) replace_interval_with_function(*displayed_mstruct_pre);
-				tmp_surface = draw_structure(*displayed_mstruct_pre, printops, top_ips, NULL, scale_tmp);
+				tmp_surface = draw_structure(*displayed_mstruct_pre, printops, complex_angle_form, top_ips, NULL, scale_tmp);
 				if(displayed_mstruct) displayed_mstruct->unref();
 				displayed_mstruct = displayed_mstruct_pre;
 				if(tmp_surface && CALCULATOR->aborted()) {
@@ -7670,6 +7786,7 @@ void ViewThread::run() {
 				displayed_mstruct = NULL;
 			} else {
 				displayed_printops = printops;
+				displayed_caf = complex_angle_form;
 			}
 		}
 		result_autocalculated = false;
@@ -9196,39 +9313,64 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			b_busy = false;
 			b_busy_expression = false;
 			ComplexNumberForm cnf_bak = evalops.complex_number_form;
+			bool caf_bak = complex_angle_form;
 			evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
+			complex_angle_form = false;
 			if(from_str.empty()) {
 				executeCommand(COMMAND_EVAL);
 				set_previous_expression();
 			} else {
 				execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			}
+			complex_angle_form = caf_bak;
 			evalops.complex_number_form = cnf_bak;
 			return;
 		} else if(equalsIgnoreCase(to_str, "exponential") || equalsIgnoreCase(to_str, _("exponential"))) {
 			b_busy = false;
 			b_busy_expression = false;
 			ComplexNumberForm cnf_bak = evalops.complex_number_form;
+			bool caf_bak = complex_angle_form;
 			evalops.complex_number_form = COMPLEX_NUMBER_FORM_EXPONENTIAL;
+			complex_angle_form = false;
 			if(from_str.empty()) {
 				executeCommand(COMMAND_EVAL);
 				set_previous_expression();
 			} else {
 				execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			}
+			complex_angle_form = caf_bak;
 			evalops.complex_number_form = cnf_bak;
 			return;
 		} else if(equalsIgnoreCase(to_str, "polar") || equalsIgnoreCase(to_str, _("polar"))) {
 			b_busy = false;
 			b_busy_expression = false;
 			ComplexNumberForm cnf_bak = evalops.complex_number_form;
+			bool caf_bak = complex_angle_form;
 			evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
+			complex_angle_form = false;
 			if(from_str.empty()) {
 				executeCommand(COMMAND_EVAL);
 				set_previous_expression();
 			} else {
 				execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
 			}
+			complex_angle_form = caf_bak;
+			evalops.complex_number_form = cnf_bak;
+			return;
+		} else if(equalsIgnoreCase(to_str, "phasor") || equalsIgnoreCase(to_str, _("phasor")) || equalsIgnoreCase(to_str, "angle") || equalsIgnoreCase(to_str, _("angle"))) {
+			b_busy = false;
+			b_busy_expression = false;
+			ComplexNumberForm cnf_bak = evalops.complex_number_form;
+			bool caf_bak = complex_angle_form;
+			evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
+			complex_angle_form = true;
+			if(from_str.empty()) {
+				executeCommand(COMMAND_EVAL);
+				set_previous_expression();
+			} else {
+				execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			}
+			complex_angle_form = caf_bak;
 			evalops.complex_number_form = cnf_bak;
 			return;
 		} else if(equalsIgnoreCase(to_str, "optimal") || equalsIgnoreCase(to_str, _("optimal"))) {
@@ -13634,6 +13776,7 @@ void set_saved_mode() {
 	modes[1].keypad = visible_keypad;
 	modes[1].custom_output_base = CALCULATOR->customOutputBase();
 	modes[1].custom_input_base = CALCULATOR->customInputBase();
+	modes[1].complex_angle_form = complex_angle_form;
 }
 
 size_t save_mode_as(string name, bool *new_mode = NULL) {
@@ -13665,6 +13808,7 @@ size_t save_mode_as(string name, bool *new_mode = NULL) {
 	modes[index].keypad = visible_keypad;
 	modes[index].custom_output_base = CALCULATOR->customOutputBase();
 	modes[index].custom_input_base = CALCULATOR->customInputBase();
+	modes[index].complex_angle_form = complex_angle_form;
 	return index;
 }
 
@@ -13678,13 +13822,14 @@ void load_mode(const mode_struct &mode) {
 	}
 	CALCULATOR->setCustomOutputBase(mode.custom_output_base);
 	CALCULATOR->setCustomInputBase(mode.custom_input_base);
-	set_mode_items(mode.po, mode.eo, mode.at, mode.as, mode.rpn_mode, mode.precision, mode.interval, mode.variable_units_enabled, mode.adaptive_interval_display, mode.keypad, mode.autocalc, false);
+	set_mode_items(mode.po, mode.eo, mode.at, mode.as, mode.rpn_mode, mode.precision, mode.interval, mode.variable_units_enabled, mode.adaptive_interval_display, mode.keypad, mode.autocalc, mode.complex_angle_form, false);
 	evalops.approximation = mode.eo.approximation;
 	block_result_update = false;
 	block_expression_execution = false;
 	block_display_parse = false;
 	printops.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
 	auto_calculate = mode.autocalc;
+	complex_angle_form = mode.complex_angle_form;
 	set_rpn_mode(mode.rpn_mode);
 	GtkTextIter istart, iend;
 	gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
@@ -14444,6 +14589,7 @@ void load_preferences() {
 	evalops.parse_options.comma_as_separator = false;
 	evalops.mixed_units_conversion = MIXED_UNITS_CONVERSION_DEFAULT;
 	evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
+	complex_angle_form = false;
 	evalops.local_currency_conversion = true;
 	evalops.interval_calculation = INTERVAL_CALCULATION_VARIANCE_FORMULA;
 	b_decimal_comma = -1;
@@ -14560,6 +14706,7 @@ void load_preferences() {
 			first_time = true;
 			update_message_print_options();
 			displayed_printops = printops;
+			displayed_caf = complex_angle_form;
 			return;
 #ifndef _WIN32
 		}
@@ -14821,8 +14968,22 @@ void load_preferences() {
 				} else if(svar == "automatic_number_fraction_format") {
 					automatic_fraction = v;
 				} else if(svar == "complex_number_form") {
-					if(v >= COMPLEX_NUMBER_FORM_RECTANGULAR && v <= COMPLEX_NUMBER_FORM_POLAR) {
-						evalops.complex_number_form = (ComplexNumberForm) v;
+					if(v == COMPLEX_NUMBER_FORM_POLAR + 1) {
+						if(mode_index == 1) {
+							evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
+							complex_angle_form = true;
+						} else {
+							modes[mode_index].eo.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
+							modes[mode_index].complex_angle_form = true;
+						}
+					} else if(v >= COMPLEX_NUMBER_FORM_RECTANGULAR && v <= COMPLEX_NUMBER_FORM_POLAR) {
+						if(mode_index == 1) {
+							evalops.complex_number_form = (ComplexNumberForm) v;
+							complex_angle_form = false;
+						} else {
+							modes[mode_index].eo.complex_number_form = (ComplexNumberForm) v;
+							modes[mode_index].complex_angle_form = false;
+						}
 					}
 				} else if(svar == "number_base") {
 					if(mode_index == 1) printops.base = v;
@@ -15325,6 +15486,7 @@ void load_preferences() {
 	}
 	update_message_print_options();
 	displayed_printops = printops;
+	displayed_caf = complex_angle_form;
 	initial_inhistory_index = inhistory.size() - 1;
 	g_free(gstr_file);
 	show_history = show_history && !show_keypad;
@@ -15743,7 +15905,7 @@ void save_preferences(bool mode) {
 		fprintf(file, "negative_exponents=%i\n", modes[i].po.negative_exponents);
 		fprintf(file, "sort_minus_last=%i\n", modes[i].po.sort_options.minus_last);
 		fprintf(file, "number_fraction_format=%i\n", modes[i].po.number_fraction_format);
-		fprintf(file, "complex_number_form=%i\n", modes[i].eo.complex_number_form);
+		fprintf(file, "complex_number_form=%i\n", modes[i].complex_angle_form && modes[i].eo.complex_number_form == COMPLEX_NUMBER_FORM_POLAR ? modes[i].eo.complex_number_form + 1 : modes[i].eo.complex_number_form);
 		fprintf(file, "use_prefixes=%i\n", modes[i].po.use_unit_prefixes);
 		fprintf(file, "use_prefixes_for_all_units=%i\n", modes[i].po.use_prefixes_for_all_units);
 		fprintf(file, "use_prefixes_for_currencies=%i\n", modes[i].po.use_prefixes_for_currencies);
@@ -16967,6 +17129,7 @@ void update_resultview_popup() {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_rectangular"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_rectangular_activate, NULL);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_exponential"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_exponential_activate, NULL);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_polar"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_polar_activate, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_angle"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_angle_activate, NULL);
 
 	bool b_unit = displayed_mstruct && contains_convertable_unit(*displayed_mstruct);
 	bool b_date = displayed_mstruct && displayed_mstruct->isDateTime();
@@ -17094,6 +17257,7 @@ void update_resultview_popup() {
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_complex_rectangular")), b_complex);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_complex_exponential")), b_complex);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_complex_polar")), b_complex);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_complex_angle")), b_complex);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_complex")), b_complex);
 	
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_normal")), !b_unit && !b_date);
@@ -17266,7 +17430,8 @@ void update_resultview_popup() {
 			break;
 		}
 		case COMPLEX_NUMBER_FORM_POLAR: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_complex_polar")), TRUE);
+			if(complex_angle_form) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_complex_angle")), TRUE);
+			else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_complex_polar")), TRUE);
 			break;
 		}
 	}
@@ -17299,6 +17464,7 @@ void update_resultview_popup() {
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_rectangular"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_rectangular_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_exponential"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_exponential_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_polar"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_polar_activate, NULL);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_angle"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_angle_activate, NULL);
 }
 void on_expression_button_clicked(GtkButton*, gpointer) {
 	GtkWidget *w = gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack")));
@@ -20684,20 +20850,38 @@ void menu_to_fraction(GtkMenuItem*, gpointer) {
 }
 void menu_to_rectangular(GtkMenuItem*, gpointer) {
 	ComplexNumberForm cnf_bak = evalops.complex_number_form;
+	bool caf_bak = complex_angle_form;
+	complex_angle_form = false;
 	evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
 	executeCommand(COMMAND_EVAL);
+	complex_angle_form = caf_bak;
 	evalops.complex_number_form = cnf_bak;
 }
 void menu_to_exponential(GtkMenuItem*, gpointer) {
 	ComplexNumberForm cnf_bak = evalops.complex_number_form;
+	bool caf_bak = complex_angle_form;
+	complex_angle_form = false;
 	evalops.complex_number_form = COMPLEX_NUMBER_FORM_EXPONENTIAL;
 	executeCommand(COMMAND_EVAL);
+	complex_angle_form = caf_bak;
 	evalops.complex_number_form = cnf_bak;
 }
 void menu_to_polar(GtkMenuItem*, gpointer) {
 	ComplexNumberForm cnf_bak = evalops.complex_number_form;
+	bool caf_bak = complex_angle_form;
+	complex_angle_form = false;
 	evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
 	executeCommand(COMMAND_EVAL);
+	complex_angle_form = caf_bak;
+	evalops.complex_number_form = cnf_bak;
+}
+void menu_to_angle(GtkMenuItem*, gpointer) {
+	ComplexNumberForm cnf_bak = evalops.complex_number_form;
+	bool caf_bak = complex_angle_form;
+	complex_angle_form = true;
+	evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
+	executeCommand(COMMAND_EVAL);
+	complex_angle_form = caf_bak;
 	evalops.complex_number_form = cnf_bak;
 }
 void update_mb_to_menu() {
@@ -20749,7 +20933,8 @@ void update_mb_to_menu() {
 		}
 		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_RECTANGULAR) {MENU_ITEM(_("Rectangular form"), menu_to_rectangular)}
 		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_EXPONENTIAL) {MENU_ITEM(_("Exponential form"), menu_to_exponential)}
-		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_POLAR) {MENU_ITEM(_("Polar form"), menu_to_polar)}
+		if(b_complex && (evalops.complex_number_form != COMPLEX_NUMBER_FORM_POLAR || complex_angle_form)) {MENU_ITEM(_("Polar form"), menu_to_polar)}
+		if(b_complex && (evalops.complex_number_form != COMPLEX_NUMBER_FORM_POLAR || !complex_angle_form)) {MENU_ITEM(_("Angle/phasor notation"), menu_to_angle)}
 		return;
 	}
 	MENU_ITEM(_("Base units"), on_menu_item_convert_to_base_units_activate);
@@ -22442,6 +22627,10 @@ void on_popup_menu_item_complex_polar_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_complex_polar")), TRUE);
 }
+void on_popup_menu_item_complex_angle_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_complex_angle")), TRUE);
+}
 void on_popup_menu_item_display_no_prefixes_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_no_prefixes")), TRUE);
@@ -22787,16 +22976,25 @@ void on_menu_item_interval_midpoint_activate(GtkMenuItem *w, gpointer) {
 void on_menu_item_complex_rectangular_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
+	complex_angle_form = false;
 	expression_calculation_updated();
 }
 void on_menu_item_complex_exponential_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.complex_number_form = COMPLEX_NUMBER_FORM_EXPONENTIAL;
+	complex_angle_form = false;
 	expression_calculation_updated();
 }
 void on_menu_item_complex_polar_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
+	complex_angle_form = false;
+	expression_calculation_updated();
+}
+void on_menu_item_complex_angle_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
+	complex_angle_form = true;
 	expression_calculation_updated();
 }
 
@@ -22822,7 +23020,7 @@ void on_menu_item_save_image_activate(GtkMenuItem*, gpointer) {
 		color.green = 0.0;
 		color.blue = 0.0;
 		color.alpha = 1.0;
-		cairo_surface_t *s = draw_structure(*displayed_mstruct, displayed_printops, top_ips, NULL, 1, &color);
+		cairo_surface_t *s = draw_structure(*displayed_mstruct, displayed_printops, displayed_caf, top_ips, NULL, 1, &color);
 		if(s) {
 			cairo_surface_flush(s);
 			cairo_surface_write_to_png(s, gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(d)));
@@ -25661,7 +25859,7 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 					cairo_destroy(cr2);
 					g_object_unref(layout);
 				} else {
-					tmp_surface = draw_structure(*displayed_mstruct, displayed_printops, top_ips, NULL, scale_n);
+					tmp_surface = draw_structure(*displayed_mstruct, displayed_printops, displayed_caf, top_ips, NULL, scale_n);
 				}
 				surface_result = tmp_surface;
 			}
@@ -25685,7 +25883,7 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 					scale_n++;
 				}
 				cairo_surface_destroy(surface_result);
-				surface_result = draw_structure(*displayed_mstruct, displayed_printops, top_ips, NULL, scale_n);
+				surface_result = draw_structure(*displayed_mstruct, displayed_printops, displayed_caf, top_ips, NULL, scale_n);
 				w = cairo_image_surface_get_width(surface_result) / scalefactor;
 				h = cairo_image_surface_get_height(surface_result) / scalefactor;
 			}
