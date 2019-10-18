@@ -468,6 +468,10 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 			break;
 		}
 		case COMPLEX_NUMBER_FORM_POLAR: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_complex_polar")), TRUE);
+			break;
+		}
+		case COMPLEX_NUMBER_FORM_CIS: {
 			if(caf) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_complex_angle")), TRUE);
 			else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_complex_polar")), TRUE);
 			break;
@@ -724,6 +728,7 @@ void create_button_menus(void) {
 	gtk_widget_set_visible(item_simplify, evalops.structuring != STRUCTURING_FACTORIZE);
 	
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_i"));
+	MENU_ITEM("∠ (Ctrl+Shift+A)", insert_angle_symbol)
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_re->title(true).c_str(), insert_button_function, CALCULATOR->f_re)
 	MENU_ITEM_WITH_POINTER(CALCULATOR->f_im->title(true).c_str(), insert_button_function, CALCULATOR->f_im)
 	f = CALCULATOR->getActiveFunction("arg");

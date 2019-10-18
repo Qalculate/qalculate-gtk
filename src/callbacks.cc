@@ -666,6 +666,9 @@ void unfix_history_string(string &str) {
 	gsub("&gt;", ">", str);
 	gsub("&lt;", "<", str);
 }
+void replace_result_cis(string &resstr) {
+	if(can_display_unicode_string_function_exact("∠", (void*) resultview)) gsub(" cis ", "∠", resstr);
+}
 void improve_result_text(string &resstr) {
 	size_t i1 = 0, i2 = 0, i3 = 0, i_prev = 0;
 	size_t i_equals = resstr.find(_("approx.")) + strlen(_("approx."));
@@ -1644,7 +1647,7 @@ bool display_function_hint(MathFunction *f, int arg_index = 1) {
 	str += "(";
 	int i_reduced = 0;
 	if(iargs != 0) {
-		for(int i2 = 1; i2 <= iargs; i2++) {			
+		for(int i2 = 1; i2 <= iargs; i2++) {
 			if(i2 > f->minargs() && arg_index < i2) {
 				str += "[";
 			}
@@ -1941,11 +1944,20 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 				evalops.complex_number_form = cnf_bak;
 				complex_angle_form = caf_bak;
 				return;
+			} else if(to_str == "cis") {
+				ComplexNumberForm cnf_bak = evalops.complex_number_form;
+				bool caf_bak = complex_angle_form;
+				complex_angle_form = false;
+				evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
+				do_auto_calc(true, from_str);
+				evalops.complex_number_form = cnf_bak;
+				complex_angle_form = caf_bak;
+				return;
 			} else if(equalsIgnoreCase(to_str, "angle") || equalsIgnoreCase(to_str, _("angle")) || equalsIgnoreCase(to_str, "phasor") || equalsIgnoreCase(to_str, _("phasor"))) {
 				ComplexNumberForm cnf_bak = evalops.complex_number_form;
 				bool caf_bak = complex_angle_form;
 				complex_angle_form = true;
-				evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
+				evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
 				do_auto_calc(true, from_str);
 				evalops.complex_number_form = cnf_bak;
 				complex_angle_form = caf_bak;
@@ -2196,6 +2208,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), true);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), true);
 			result_text = displayed_mstruct->print();
+			if(complex_angle_form) replace_result_cis(result_text);
 			PrintOptions printops_long = printops;
 			printops_long.abbreviate_names = false; 
 			printops_long.short_multiplication = false;
@@ -2207,6 +2220,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 				result_text = "";
 			} else {
 				result_text_long = displayed_mstruct->print(printops_long);
+				if(complex_angle_form) replace_result_cis(result_text_long);
 			}
 			if(CALCULATOR->aborted()) {
 				result_text_long = "";
@@ -2488,6 +2502,8 @@ void display_parse_status() {
 				parsed_expression += _("complex exponential form");
 			} else if(equalsIgnoreCase(str_u, "polar") || equalsIgnoreCase(str_u, _("polar"))) {
 				parsed_expression += _("complex polar form");
+			} else if(str_u == "cis") {
+				parsed_expression += _("complex cis form");
 			} else if(equalsIgnoreCase(str_u, "angle") || equalsIgnoreCase(str_u, _("angle"))) {
 				parsed_expression += _("complex angle notation");
 			} else if(equalsIgnoreCase(str_u, "phasor") || equalsIgnoreCase(str_u, _("phasor"))) {
@@ -5333,6 +5349,8 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Binary number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("calendars")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Calendars"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
+	COMPLETION_CONVERT_STRING("cis")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex cis form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("duodecimal") str += " <i>"; str += "duo"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Duodecimal number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("exponential")
@@ -5457,22 +5475,8 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 	if(m.isApproximate()) ips_n.parent_approximate = true;
 	if(m.precision() > 0 && (ips_n.parent_precision < 1 || m.precision() < ips_n.parent_precision)) ips_n.parent_precision = m.precision();
 	
-	// angle/phasor notation: x+y*i=a(cos(b)+i*sin(b))=a cis b
-	if(caf && ((m.isMultiplication() && m.size() == 2 && m[0].isNumber() && m[1].isAddition() && m[1].size() == 2 && m[1][0].isFunction() && m[1][0].function() == CALCULATOR->f_cos && m[1][0].size() == 1 && m[1][1].isMultiplication() && m[1][1].size() == 2 && m[1][1][0].isVariable() && m[1][1][0].variable() == CALCULATOR->v_i && m[1][1][1].isFunction() && m[1][1][1].function() == CALCULATOR->f_sin && m[1][1][1].size() == 1 && m[1][1][1][0].equals(m[1][0][0], true, true)) || (m.isAddition() && m.size() == 2 && m[0].isFunction() && m[0].function() == CALCULATOR->f_cos && m[0].size() == 1 && m[1].isMultiplication() && m[1].size() == 2 && m[1][0].isVariable() && m[1][0].variable() == CALCULATOR->v_i && m[1][1].isFunction() && m[1][1].function() == CALCULATOR->f_sin && m[1][1].size() == 1 && m[1][1][0].equals(m[0][0], true, true)))) {
-
-		MathStructure m_angle;
-		m_angle.setType(STRUCT_MULTIPLICATION);
-		if(m.isAddition()) {
-			m_one.ref();
-			m_angle.addChild_nocopy(&m_one);
-			m[0][0].ref();
-			m_angle.addChild_nocopy(&m[0][0]);
-		} else {
-			m[0].ref();
-			m_angle.addChild_nocopy(&m[0]);
-			m[1][0][0].ref();
-			m_angle.addChild_nocopy(&m[1][0][0]);
-		}
+	// angle/phasor notation: x+y*i=a*cis(b)=a∠b
+	if(caf && m.isMultiplication() && m.size() == 2 && m[0].isNumber() && m[1].isFunction() && m[1].function()->referenceName() == "cis" && m[1].size() == 1 && (m[1][0].isNumber() || (m[1][0].isMultiplication() && m[1][0].size() == 2 && m[1][0][0].isNumber() && m[1][0][1].isUnit()))) {
 
 		ips_n.depth++;
 	
@@ -5483,10 +5487,10 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 		gint sign_w, sign_h, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0;
 		gint space_w = 5;
 		
-		for(size_t i = 0; i < m_angle.size(); i++) {
+		for(size_t i = 0; i < 2; i++) {
 			hetmp = 0;		
-			ips_n.wrap = m_angle[i].needsParenthesis(po, ips_n, m_angle, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-			surface_terms.push_back(draw_structure(m_angle[i], po, caf, ips_n, &hetmp, scaledown, color));
+			ips_n.wrap = false;
+			surface_terms.push_back(draw_structure(i == 0 ? m[0] : m[1][0], po, caf, ips_n, &hetmp, scaledown, color));
 			if(CALCULATOR->aborted()) {
 				for(size_t i = 0; i < surface_terms.size(); i++) {
 					if(surface_terms[i]) cairo_surface_destroy(surface_terms[i]);
@@ -5504,7 +5508,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 			}
 			if(hetmp > dh) {
 				dh = hetmp;
-			}				
+			}
 		}
 
 		central_point = dh;
@@ -5512,13 +5516,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 		
 		sign_h = h - 10;
 		sign_w = sign_h;
-		w += sign_w * (m.size() - 1);
+		w += sign_w * (surface_terms.size() - 1);
 		
 		w += space_w * (surface_terms.size() - 1) * 2;
 		
 		double divider = 1.0;
 		if(ips.power_depth >= 1) divider = 1.5;
-		
 		surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 		cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
 		cr = cairo_create(surface);
@@ -5935,10 +5938,14 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				vector<gint> cpt;
 				gint mul_w, mul_h, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0;
 				
+				bool b_cis = (!caf && m.size() == 2 && m[0].isNumber() && m[1].isFunction() && m[1].size() == 1 && m[1].function()->referenceName() == "cis" && (m[1][0].isNumber() || (m[1][0].isMultiplication() && m[1][0].size() == 2 && m[1][0][0].isNumber() && m[1][0][1].isUnit())));
+				
 				CALCULATE_SPACE_W
 				PangoLayout *layout_mul = gtk_widget_create_pango_layout(resultview, NULL);
 				string str;
-				if(po.use_unicode_signs && po.multiplication_sign == MULTIPLICATION_SIGN_DOT && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MULTIDOT, po.can_display_unicode_string_arg))) {
+				if(b_cis) {
+					TTP(str, "cis");
+				} else if(po.use_unicode_signs && po.multiplication_sign == MULTIPLICATION_SIGN_DOT && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MULTIDOT, po.can_display_unicode_string_arg))) {
 					TTP_SMALL(str, SIGN_MULTIDOT);
 				} else if(po.use_unicode_signs && (po.multiplication_sign == MULTIPLICATION_SIGN_DOT || po.multiplication_sign == MULTIPLICATION_SIGN_ALTDOT) && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MIDDLEDOT, po.can_display_unicode_string_arg))) {
 					TTP_SMALL(str, SIGN_MIDDLEDOT);
@@ -5952,9 +5959,9 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				bool par_prev = false;
 				vector<int> nm;
 				for(size_t i = 0; i < m.size(); i++) {
-					hetmp = 0;		
-					ips_n.wrap = m[i].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-					surface_terms.push_back(draw_structure(m[i], po, caf, ips_n, &hetmp, scaledown, color));
+					hetmp = 0;
+					ips_n.wrap = b_cis ? false : m[i].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+					surface_terms.push_back(draw_structure((b_cis && i == 1) ? m[i][0] : m[i], po, caf, ips_n, &hetmp, scaledown, color));
 					if(CALCULATOR->aborted()) {
 						for(size_t i = 0; i < surface_terms.size(); i++) {
 							if(surface_terms[i]) cairo_surface_destroy(surface_terms[i]);
@@ -5968,17 +5975,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					cpt.push_back(hetmp);
 					wpt.push_back(wtmp);
 					w += wtmp;
-					if(!po.short_multiplication && i > 0) {
-						w += mul_w + space_w * 2;
-						if(mul_h / 2 > dh) {
-							dh = mul_h / 2;
+					if(i > 0) {
+						if(b_cis || !po.short_multiplication) {
+							nm.push_back(MULTIPLICATION_SIGN_OPERATOR);
+						} else {
+							nm.push_back(m[i].neededMultiplicationSign(po, ips_n, m, i + 1, ips_n.wrap || (m[i].isPower() && m[i][0].needsParenthesis(po, ips_n, m[i], 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0)), par_prev, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0));
 						}
-						if(mul_h / 2 + mul_h % 2 > uh) {
-							uh = mul_h / 2 + mul_h % 2;
-						}
-						nm.push_back(-1);
-					} else if(i > 0) {
-						nm.push_back(m[i].neededMultiplicationSign(po, ips_n, m, i + 1, ips_n.wrap || (m[i].isPower() && m[i][0].needsParenthesis(po, ips_n, m[i], 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0)), par_prev, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0));
 						switch(nm[i]) {
 							case MULTIPLICATION_SIGN_SPACE: {
 								w += space_w;
@@ -6051,13 +6053,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				for(size_t i = 0; i < surface_terms.size(); i++) {
 					if(!CALCULATOR->aborted()) {
 						gdk_cairo_set_source_rgba(cr, color);
-						if(!po.short_multiplication && i > 0) {
-							w += space_w;
-							cairo_move_to(cr, w, uh - mul_h / 2 - mul_h % 2);
-							pango_cairo_show_layout(cr, layout_mul);
-							w += mul_w;
-							w += space_w;
-						} else if(i > 0) {
+						if(i > 0) {
 							switch(nm[i]) {
 								case MULTIPLICATION_SIGN_SPACE: {
 									w += space_w;
@@ -6477,7 +6473,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 								pango_cairo_show_layout(cr, layout_sign2);
 								w += sign2_w;
 							}
-							w += space_w;			
+							w += space_w;
 						}
 						cairo_set_source_surface(cr, surface_terms[i], w, uh - (hpt[i] - cpt[i]));
 						cairo_paint(cr);
@@ -6489,7 +6485,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					break;
 				}
 			}
-			case STRUCT_COMPARISON: {}		
+			case STRUCT_COMPARISON: {}
 			case STRUCT_LOGICAL_XOR: {}
 			case STRUCT_LOGICAL_OR: {}
 			case STRUCT_BITWISE_AND: {}
@@ -7671,6 +7667,7 @@ void ViewThread::run() {
 		m.format(printops);
 		gint64 time1 = g_get_monotonic_time();
 		result_text = m.print(printops);
+		if(complex_angle_form) replace_result_cis(result_text);
 		result_text_approximate = *printops.is_approximate;
 		
 		if(!b_stack) {
@@ -7717,6 +7714,7 @@ void ViewThread::run() {
 			printops_long.excessive_parenthesis = true;
 			printops_long.is_approximate = NULL;
 			result_text_long = m.print(printops_long);
+			if(complex_angle_form) replace_result_cis(result_text_long);
 		} else if(!b_stack) {
 			result_text_long = "";
 		}
@@ -9357,12 +9355,28 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			complex_angle_form = caf_bak;
 			evalops.complex_number_form = cnf_bak;
 			return;
+		} else if(to_str == "cis") {
+			b_busy = false;
+			b_busy_expression = false;
+			ComplexNumberForm cnf_bak = evalops.complex_number_form;
+			bool caf_bak = complex_angle_form;
+			evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
+			complex_angle_form = false;
+			if(from_str.empty()) {
+				executeCommand(COMMAND_EVAL);
+				set_previous_expression();
+			} else {
+				execute_expression(force, do_mathoperation, op, f, do_stack, stack_index, from_str);
+			}
+			complex_angle_form = caf_bak;
+			evalops.complex_number_form = cnf_bak;
+			return;
 		} else if(equalsIgnoreCase(to_str, "phasor") || equalsIgnoreCase(to_str, _("phasor")) || equalsIgnoreCase(to_str, "angle") || equalsIgnoreCase(to_str, _("angle"))) {
 			b_busy = false;
 			b_busy_expression = false;
 			ComplexNumberForm cnf_bak = evalops.complex_number_form;
 			bool caf_bak = complex_angle_form;
-			evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
+			evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
 			complex_angle_form = true;
 			if(from_str.empty()) {
 				executeCommand(COMMAND_EVAL);
@@ -14968,15 +14982,15 @@ void load_preferences() {
 				} else if(svar == "automatic_number_fraction_format") {
 					automatic_fraction = v;
 				} else if(svar == "complex_number_form") {
-					if(v == COMPLEX_NUMBER_FORM_POLAR + 1) {
+					if(v == COMPLEX_NUMBER_FORM_CIS + 1) {
 						if(mode_index == 1) {
-							evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
+							evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
 							complex_angle_form = true;
 						} else {
-							modes[mode_index].eo.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
+							modes[mode_index].eo.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
 							modes[mode_index].complex_angle_form = true;
 						}
-					} else if(v >= COMPLEX_NUMBER_FORM_RECTANGULAR && v <= COMPLEX_NUMBER_FORM_POLAR) {
+					} else if(v >= COMPLEX_NUMBER_FORM_RECTANGULAR && v <= COMPLEX_NUMBER_FORM_CIS) {
 						if(mode_index == 1) {
 							evalops.complex_number_form = (ComplexNumberForm) v;
 							complex_angle_form = false;
@@ -15905,7 +15919,7 @@ void save_preferences(bool mode) {
 		fprintf(file, "negative_exponents=%i\n", modes[i].po.negative_exponents);
 		fprintf(file, "sort_minus_last=%i\n", modes[i].po.sort_options.minus_last);
 		fprintf(file, "number_fraction_format=%i\n", modes[i].po.number_fraction_format);
-		fprintf(file, "complex_number_form=%i\n", modes[i].complex_angle_form && modes[i].eo.complex_number_form == COMPLEX_NUMBER_FORM_POLAR ? modes[i].eo.complex_number_form + 1 : modes[i].eo.complex_number_form);
+		fprintf(file, "complex_number_form=%i\n", (modes[i].complex_angle_form && modes[i].eo.complex_number_form == COMPLEX_NUMBER_FORM_CIS) ? modes[i].eo.complex_number_form + 1 : modes[i].eo.complex_number_form);
 		fprintf(file, "use_prefixes=%i\n", modes[i].po.use_unit_prefixes);
 		fprintf(file, "use_prefixes_for_all_units=%i\n", modes[i].po.use_prefixes_for_all_units);
 		fprintf(file, "use_prefixes_for_currencies=%i\n", modes[i].po.use_prefixes_for_currencies);
@@ -17430,6 +17444,10 @@ void update_resultview_popup() {
 			break;
 		}
 		case COMPLEX_NUMBER_FORM_POLAR: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_complex_polar")), TRUE);
+			break;
+		}
+		case COMPLEX_NUMBER_FORM_CIS: {
 			if(complex_angle_form) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_complex_angle")), TRUE);
 			else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_complex_polar")), TRUE);
 			break;
@@ -18939,6 +18957,9 @@ void on_button_factorize_clicked(GtkButton*, gpointer) {
 }
 void on_button_factorize2_clicked(GtkButton*, gpointer) {
 	executeCommand(COMMAND_FACTORIZE);
+}
+void insert_angle_symbol() {
+	insert_text("∠");
 }
 void insert_left_shift() {
 	if(!evalops.parse_options.rpn) wrap_expression_selection();
@@ -20879,7 +20900,7 @@ void menu_to_angle(GtkMenuItem*, gpointer) {
 	ComplexNumberForm cnf_bak = evalops.complex_number_form;
 	bool caf_bak = complex_angle_form;
 	complex_angle_form = true;
-	evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
+	evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
 	executeCommand(COMMAND_EVAL);
 	complex_angle_form = caf_bak;
 	evalops.complex_number_form = cnf_bak;
@@ -20933,8 +20954,8 @@ void update_mb_to_menu() {
 		}
 		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_RECTANGULAR) {MENU_ITEM(_("Rectangular form"), menu_to_rectangular)}
 		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_EXPONENTIAL) {MENU_ITEM(_("Exponential form"), menu_to_exponential)}
-		if(b_complex && (evalops.complex_number_form != COMPLEX_NUMBER_FORM_POLAR || complex_angle_form)) {MENU_ITEM(_("Polar form"), menu_to_polar)}
-		if(b_complex && (evalops.complex_number_form != COMPLEX_NUMBER_FORM_POLAR || !complex_angle_form)) {MENU_ITEM(_("Angle/phasor notation"), menu_to_angle)}
+		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_POLAR) {MENU_ITEM(_("Polar form"), menu_to_polar)}
+		if(b_complex && (evalops.complex_number_form != COMPLEX_NUMBER_FORM_CIS || !complex_angle_form)) {MENU_ITEM(_("Angle/phasor notation"), menu_to_angle)}
 		return;
 	}
 	MENU_ITEM(_("Base units"), on_menu_item_convert_to_base_units_activate);
@@ -22993,7 +23014,7 @@ void on_menu_item_complex_polar_activate(GtkMenuItem *w, gpointer) {
 }
 void on_menu_item_complex_angle_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
+	evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
 	complex_angle_form = true;
 	expression_calculation_updated();
 }
@@ -25635,6 +25656,13 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 					if(printops.lower_case_e) insert_text("e");
 					else insert_text("E");
 				}
+				return TRUE;
+			}
+			break;
+		}
+		case GDK_KEY_A: {
+			if(event->state & GDK_CONTROL_MASK) {
+				insert_angle_symbol();
 				return TRUE;
 			}
 			break;

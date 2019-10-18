@@ -242,6 +242,7 @@ void insert_bitwise_and();
 void insert_bitwise_or();
 void insert_bitwise_xor();
 void insert_bitwise_not();
+void insert_angle_symbol();
 
 void update_mb_fx_menu();
 void update_mb_sto_menu();
