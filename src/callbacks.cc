@@ -667,7 +667,7 @@ void unfix_history_string(string &str) {
 	gsub("&lt;", "<", str);
 }
 void replace_result_cis(string &resstr) {
-	if(can_display_unicode_string_function_exact("∠", (void*) resultview)) gsub(" cis ", "∠", resstr);
+	if(can_display_unicode_string_function_exact("∠", (void*) historyview)) gsub(" cis ", "∠", resstr);
 }
 void improve_result_text(string &resstr) {
 	size_t i1 = 0, i2 = 0, i3 = 0, i_prev = 0;
@@ -1736,7 +1736,7 @@ bool last_is_operator(string str, bool allow_exp = false) {
 	} else { 
 		if(str.length() >= 3 && str[str.length() - 2] < 0) {
 			str = str.substr(str.length() - 3);
-			if(str == "∧" || str == "∨" || str == "⊻" || str == "≤" || str == "≥" || str == "≠" || str == expression_times_sign() || str == expression_divide_sign() || str == expression_add_sign() || str == expression_sub_sign()) {
+			if(str == "∧" || str == "∨" || str == "⊻" || str == "≤" || str == "≥" || str == "≠" || str == "∠" || str == expression_times_sign() || str == expression_divide_sign() || str == expression_add_sign() || str == expression_sub_sign()) {
 				return true;
 			}
 		}
@@ -5476,19 +5476,29 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 	if(m.precision() > 0 && (ips_n.parent_precision < 1 || m.precision() < ips_n.parent_precision)) ips_n.parent_precision = m.precision();
 	
 	// angle/phasor notation: x+y*i=a*cis(b)=a∠b
-	if(caf && m.isMultiplication() && m.size() == 2 && m[0].isNumber() && m[1].isFunction() && m[1].function()->referenceName() == "cis" && m[1].size() == 1 && (m[1][0].isNumber() || (m[1][0].isMultiplication() && m[1][0].size() == 2 && m[1][0][0].isNumber() && m[1][0][1].isUnit()))) {
+	if(caf && m.isMultiplication() && m.size() == 2 && (m[0].isNumber() || (m[0].isNegate() && m[0][0].isNumber())) && m[1].isFunction() && m[1].size() == 1 && m[1].function()->referenceName() == "cis" && (((m[1][0].isNumber() || (m[1][0].isNegate() && m[1][0][0].isNumber())) || (m[1][0].isMultiplication() && m[1][0].size() == 2 && (m[1][0][0].isNumber() || (m[1][0].isNegate() && m[1][0][0][0].isNumber())) && m[1][0][1].isUnit())) || (m[1][0].isNegate() && m[1][0][0].isMultiplication() && m[1][0][0].size() == 2 && m[1][0][0][0].isNumber() && m[1][0][0][1].isUnit()))) {
 
 		ips_n.depth++;
-	
+		
 		vector<cairo_surface_t*> surface_terms;
+		
 		vector<gint> hpt;
 		vector<gint> wpt;
 		vector<gint> cpt;
-		gint sign_w, sign_h, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0;
-		gint space_w = 5;
+		gint sign_w, sign_h, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0, space_w = 0;
 		
+		PangoLayout *layout_sign = NULL;
+
+		if(can_display_unicode_string_function_exact("∠", (void*) resultview)) {
+			layout_sign = gtk_widget_create_pango_layout(resultview, NULL);
+			PANGO_TTP(layout_sign, "∠");
+			pango_layout_get_pixel_size(layout_sign, &sign_w, &sign_h);
+			w = sign_w;
+			uh = sign_h / 2 + sign_h % 2;
+			dh = sign_h / 2;
+		}
 		for(size_t i = 0; i < 2; i++) {
-			hetmp = 0;		
+			hetmp = 0;
 			ips_n.wrap = false;
 			surface_terms.push_back(draw_structure(i == 0 ? m[0] : m[1][0], po, caf, ips_n, &hetmp, scaledown, color));
 			if(CALCULATOR->aborted()) {
@@ -5514,11 +5524,14 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 		central_point = dh;
 		h = dh + uh;
 		
-		sign_h = h - 10;
-		sign_w = sign_h;
-		w += sign_w * (surface_terms.size() - 1);
+		if(!layout_sign) {
+			space_w = 5;
+			sign_h = (h * 6) / 10;
+			sign_w = sign_h;
+			w += sign_w;
+		}
 		
-		w += space_w * (surface_terms.size() - 1) * 2;
+		w += space_w * 2;
 		
 		double divider = 1.0;
 		if(ips.power_depth >= 1) divider = 1.5;
@@ -5531,12 +5544,17 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				gdk_cairo_set_source_rgba(cr, color);
 				if(i > 0) {
 					w += space_w;
-					cairo_move_to(cr, w, h - 2 / divider - (h - sign_h) / 2);
-					cairo_line_to(cr, w + sign_w, (h - sign_h) / 2);
-					cairo_move_to(cr, w, h - 2 / divider - (h - sign_h) / 2);
-					cairo_line_to(cr, w + sign_w, h - 2 / divider - (h - sign_h) / 2);
-					cairo_set_line_width(cr, 2 / divider);
-					cairo_stroke(cr);
+					if(layout_sign) {
+						cairo_move_to(cr, w, uh - sign_h / 2 - sign_h % 2);
+						pango_cairo_show_layout(cr, layout_sign);
+					} else {
+						cairo_move_to(cr, w, h - 2 / divider - (h - sign_h) / 2);
+						cairo_line_to(cr, w + (sign_w * 3) / 4, (h - sign_h) / 2);
+						cairo_move_to(cr, w, h - 2 / divider - (h - sign_h) / 2);
+						cairo_line_to(cr, w + sign_w, h - 2 / divider - (h - sign_h) / 2);
+						cairo_set_line_width(cr, 2 / divider);
+						cairo_stroke(cr);
+					}
 					w += sign_w;
 					w += space_w;
 				}
@@ -5546,6 +5564,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 			}
 			cairo_surface_destroy(surface_terms[i]);
 		}
+		if(layout_sign) g_object_unref(layout_sign);
 	} else {
 		switch(m.type()) {
 			case STRUCT_NUMBER: {
@@ -5938,7 +5957,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				vector<gint> cpt;
 				gint mul_w, mul_h, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0;
 				
-				bool b_cis = (!caf && m.size() == 2 && m[0].isNumber() && m[1].isFunction() && m[1].size() == 1 && m[1].function()->referenceName() == "cis" && (m[1][0].isNumber() || (m[1][0].isMultiplication() && m[1][0].size() == 2 && m[1][0][0].isNumber() && m[1][0][1].isUnit())));
+				bool b_cis = (!caf && m.size() == 2 && (m[0].isNumber() || (m[0].isNegate() && m[0][0].isNumber())) && m[1].isFunction() && m[1].size() == 1 && m[1].function()->referenceName() == "cis" && (((m[1][0].isNumber() || (m[1][0].isNegate() && m[1][0][0].isNumber())) || (m[1][0].isMultiplication() && m[1][0].size() == 2 && (m[1][0][0].isNumber() || (m[1][0].isNegate() && m[1][0][0][0].isNumber())) && m[1][0][1].isUnit())) || (m[1][0].isNegate() && m[1][0][0].isMultiplication() && m[1][0][0].size() == 2 && m[1][0][0][0].isNumber() && m[1][0][0][1].isUnit())));
 				
 				CALCULATE_SPACE_W
 				PangoLayout *layout_mul = gtk_widget_create_pango_layout(resultview, NULL);
@@ -5960,7 +5979,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				vector<int> nm;
 				for(size_t i = 0; i < m.size(); i++) {
 					hetmp = 0;
-					ips_n.wrap = b_cis ? false : m[i].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+					ips_n.wrap = b_cis ? (i == 1 && ((m[1][0].isMultiplication() && m[1][0][1].neededMultiplicationSign(po, ips_n, m[1][0], 2, false, false, false, false) != MULTIPLICATION_SIGN_NONE) || (m[1][0].isNegate() && m[1][0][0].isMultiplication() && m[1][0][0][1].neededMultiplicationSign(po, ips_n, m[1][0][0], 2, false, false, false, false) != MULTIPLICATION_SIGN_NONE))) : m[i].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
 					surface_terms.push_back(draw_structure((b_cis && i == 1) ? m[i][0] : m[i], po, caf, ips_n, &hetmp, scaledown, color));
 					if(CALCULATOR->aborted()) {
 						for(size_t i = 0; i < surface_terms.size(); i++) {
