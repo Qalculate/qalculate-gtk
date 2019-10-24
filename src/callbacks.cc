@@ -422,7 +422,27 @@ int ExpressionFunction::calculate(MathStructure &mstruct, const MathStructure &v
 
 void executeCommand(int command_type, bool show_result = true, string ceu_str = "", Unit *u = NULL, int run = 1);
 
-extern int has_information_unit(const MathStructure &m, bool top = true);
+int has_information_unit(const MathStructure &m, bool top = true) {
+	if(m.isUnit_exp()) {
+		if(m.isUnit()) {
+			if(m.unit()->baseUnit()->referenceName() == "bit") return 1;
+		} else {
+			if(m[0].unit()->baseUnit()->referenceName() == "bit") {
+				if(m[1].isInteger() && m[1].number().isPositive()) return 1;
+				return 2;
+			}
+		}
+		return 0;
+	}
+	for(size_t i = 0; i < m.size(); i++) {
+		int ret = has_information_unit(m[i], false);
+		if(ret > 0) {
+			if(ret == 1 && top && m.isMultiplication() && m[0].isNumber() && m[0].number().isFraction()) return 2;
+			return ret;
+		}
+	}
+	return 0;
+}
 
 string print_with_evalops(const Number &nr) {
 	PrintOptions po;
@@ -2659,6 +2679,10 @@ void on_expressionbuffer_cursor_position_notify() {
 	if(!check_expression_position) return;
 	highlight_parentheses();
 	display_parse_status();
+	if(autocalc_history_timeout_id) {
+		g_source_remove(autocalc_history_timeout_id);
+		autocalc_history_timeout_id = g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, AUTOCALC_HISTORY_TIMEOUT, do_autocalc_history_timeout, NULL, NULL);
+	}
 	if(auto_calc_stopped_at_operator) do_auto_calc();
 }
 
@@ -7194,7 +7218,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					
 					break;
 					
-				} else if(m.function() == CALCULATOR->f_abs && m.size() == 1) {
+				} else if((m.function() == CALCULATOR->f_abs || m.function() == CALCULATOR->f_floor || m.function() == CALCULATOR->f_ceil) && m.size() == 1) {
 				
 					ips_n.depth++;
 					gint arg_w, arg_h, h, w, ctmp;
@@ -7209,13 +7233,14 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					double divider = 1.0;
 					if(ips.power_depth >= 1) divider = 1.5;
 					
-					gint extra_space = 5;
+					gint extra_space = (m.function() == CALCULATOR->f_abs ? 5 : 2);
+					gint bracket_length = (m.function() == CALCULATOR->f_abs ? 0 : 7);
 					if(scaledown == 1) extra_space = 3;
 					else if(scaledown > 1) extra_space = 1;
 					
 					central_point = ctmp + extra_space / divider;
 					h = arg_h + extra_space * 2 / divider;
-					w = arg_w + extra_space * 2 + extra_space * 2 / divider;
+					w = arg_w + extra_space * 2 + extra_space * 2 / divider + bracket_length * 2;
 					
 					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
@@ -7226,6 +7251,17 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					cairo_line_to(cr, (extra_space / divider), h - extra_space / divider);
 					cairo_move_to(cr, w - (extra_space / divider), extra_space / divider);
 					cairo_line_to(cr, w - (extra_space / divider), h - extra_space / divider);
+					if(m.function() == CALCULATOR->f_floor) {
+						cairo_move_to(cr, extra_space / divider, h - extra_space / divider);
+						cairo_line_to(cr, extra_space / divider + bracket_length, h - extra_space / divider);
+						cairo_move_to(cr, w - (extra_space / divider) - bracket_length, h - extra_space / divider);
+						cairo_line_to(cr, w - (extra_space / divider), h - extra_space / divider);
+					} else if(m.function() == CALCULATOR->f_ceil) {
+						cairo_move_to(cr, extra_space / divider, extra_space / divider);
+						cairo_line_to(cr, extra_space / divider + bracket_length, extra_space / divider);
+						cairo_move_to(cr, w - (extra_space / divider) - bracket_length, extra_space / divider);
+						cairo_line_to(cr, w - (extra_space / divider), extra_space / divider);
+					}
 					cairo_set_line_width(cr, 2 / divider);
 					cairo_stroke(cr);
 					
