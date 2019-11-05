@@ -841,7 +841,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
-                    <property name="top_attach">7</property>
+                    <property name="top_attach">9</property>
                   </packing>
                 </child>
                 <child>
@@ -854,7 +854,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
-                    <property name="top_attach">7</property>
+                    <property name="top_attach">9</property>
                   </packing>
                 </child>
                 <child>
@@ -866,7 +866,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
-                    <property name="top_attach">6</property>
+                    <property name="top_attach">8</property>
                   </packing>
                 </child>
                 <child>
@@ -879,7 +879,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
-                    <property name="top_attach">6</property>
+                    <property name="top_attach">8</property>
                   </packing>
                 </child>
                 <child>
@@ -981,6 +981,40 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="left_attach">0</property>
                     <property name="top_attach">1</property>
+                    <property name="width">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_custom_keypad_font">
+                    <property name="label" translatable="yes">Custom keypad font</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="tooltip_text" translatable="yes">If you want to use a font other than the default in the keypad</property>
+                    <property name="use_underline">True</property>
+                    <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_custom_keypad_font_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">6</property>
+                    <property name="width">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkFontButton" id="preferences_button_keypad_font">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="font">Sans 12</property>
+                    <property name="preview_text">1+2−3×4/√(π)²</property>
+                    <property name="use_font">True</property>
+                    <property name="use_size">True</property>
+                    <signal name="font-set" handler="on_preferences_button_keypad_font_font_set" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">7</property>
                     <property name="width">2</property>
                   </packing>
                 </child>
