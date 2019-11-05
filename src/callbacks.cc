@@ -10280,7 +10280,7 @@ void insert_function_do(MathFunction *f, FunctionDialog *fd) {
 				str2 = gtk_entry_get_text(GTK_ENTRY(fd->entry[argcount - 1]));
 				remove_blank_ends(str2);
 			}
-			if(!str2.empty() && f->getArgumentDefinition(argcount) && (f->getArgumentDefinition(argcount)->suggestsQuotes() || (f->getArgumentDefinition(argcount)->type() == ARGUMENT_TYPE_TEXT && str2.find(CALCULATOR->getComma()) != string::npos))) {
+			if(!str2.empty() && f->getArgumentDefinition(argcount) && (f->getArgumentDefinition(argcount)->suggestsQuotes() || (f->getArgumentDefinition(argcount)->type() == ARGUMENT_TYPE_TEXT && str2.find(CALCULATOR->getComma()) == string::npos))) {
 				if(str2.length() < 1 || (str2[0] != '\"' && str[0] != '\'')) { 
 					str2.insert(0, "\"");
 					str2 += "\"";
@@ -10317,7 +10317,7 @@ void insert_function_do(MathFunction *f, FunctionDialog *fd) {
 			str2 = gtk_entry_get_text(GTK_ENTRY(fd->entry[i]));
 			remove_blank_ends(str2);
 		}
-		if((i < f->minargs() || !str2.empty()) && f->getArgumentDefinition(i + 1) && (f->getArgumentDefinition(i + 1)->suggestsQuotes() || (f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_TEXT && str2.find(CALCULATOR->getComma()) != string::npos))) {
+		if((i < f->minargs() || !str2.empty()) && f->getArgumentDefinition(i + 1) && (f->getArgumentDefinition(i + 1)->suggestsQuotes() || (f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_TEXT && str2.find(CALCULATOR->getComma()) == string::npos))) {
 			if(str2.length() < 1 || (str2[0] != '\"' && str[0] != '\'')) { 
 				str2.insert(0, "\"");
 				str2 += "\"";
