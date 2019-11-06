@@ -141,14 +141,14 @@ GtkAccelGroup *accel_group;
 
 gint history_scroll_width = 16;
 
-GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider;
+GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider;
 
 extern bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes;
 extern bool save_mode_on_exit, save_defs_on_exit, load_global_defs, hyp_is_on, inv_is_on, fetch_exchange_rates_at_startup;
 extern int allow_multiple_instances;
 extern bool display_expression_status;
-extern bool use_custom_result_font, use_custom_expression_font, use_custom_status_font, use_custom_keypad_font;
-extern string custom_result_font, custom_expression_font, custom_status_font, custom_keypad_font;
+extern bool use_custom_result_font, use_custom_expression_font, use_custom_status_font, use_custom_keypad_font, use_custom_app_font;
+extern string custom_result_font, custom_expression_font, custom_status_font, custom_keypad_font, custom_app_font;
 extern string status_error_color, status_warning_color;
 extern bool status_error_color_set, status_warning_color_set;
 extern int auto_update_exchange_rates;
@@ -1096,11 +1096,15 @@ void create_main_window(void) {
 	statuslabel_l_provider = gtk_css_provider_new();
 	statuslabel_r_provider = gtk_css_provider_new();
 	keypad_provider = gtk_css_provider_new();
+	box_rpnl_provider = gtk_css_provider_new();
+	app_provider = gtk_css_provider_new();
 	gtk_style_context_add_provider(gtk_widget_get_style_context(expressiontext), GTK_STYLE_PROVIDER(expression_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(resultview), GTK_STYLE_PROVIDER(resultview_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(statuslabel_l), GTK_STYLE_PROVIDER(statuslabel_l_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(statuslabel_r), GTK_STYLE_PROVIDER(statuslabel_r_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(keypad), GTK_STYLE_PROVIDER(keypad_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnl"))), GTK_STYLE_PROVIDER(box_rpnl_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(app_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	
 	set_mode_items(printops, evalops, CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign(), rpn_mode, CALCULATOR->getPrecision(), CALCULATOR->usesIntervalArithmetic(), CALCULATOR->variableUnitsEnabled(), adaptive_interval_display, visible_keypad, auto_calculate, complex_angle_form, true);
 	
@@ -1109,8 +1113,18 @@ void create_main_window(void) {
 		gtk_stack_set_visible_child_name(GTK_STACK(gtk_builder_get_object(main_builder, "stack_keypad_top")), "page1");
 	}
 
-	set_unicode_buttons();
-
+	if(use_custom_app_font) {
+		gchar *gstr = font_name_to_css(custom_app_font.c_str());
+		gtk_css_provider_load_from_data(app_provider, gstr, -1, NULL);
+		g_free(gstr);
+	} else {
+		if(custom_app_font.empty()) {
+			PangoFontDescription *font_desc;
+			gtk_style_context_get(gtk_widget_get_style_context(mainwindow), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+			custom_app_font = pango_font_description_to_string(font_desc);
+			pango_font_description_free(font_desc);
+		}
+	}
 	if(use_custom_result_font) {
 		gchar *gstr = font_name_to_css(custom_result_font.c_str());
 		gtk_css_provider_load_from_data(resultview_provider, gstr, -1, NULL);
@@ -1154,6 +1168,7 @@ void create_main_window(void) {
 	if(use_custom_keypad_font) {
 		gchar *gstr = font_name_to_css(custom_keypad_font.c_str());
 		gtk_css_provider_load_from_data(keypad_provider, gstr, -1, NULL);
+		gtk_css_provider_load_from_data(box_rpnl_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
 		if(custom_keypad_font.empty()) {
@@ -1163,6 +1178,8 @@ void create_main_window(void) {
 			pango_font_description_free(font_desc);
 		}
 	}
+	
+	set_unicode_buttons();
 	
 	set_operator_symbols();
 	GdkRGBA c;
@@ -1881,6 +1898,7 @@ get_preferences_dialog (void)
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_expression_font")), use_custom_expression_font);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_status_font")), use_custom_status_font);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_keypad_font")), use_custom_keypad_font);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_app_font")), use_custom_app_font);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_result_font")), use_custom_result_font);	
 		gtk_font_chooser_set_font(GTK_FONT_CHOOSER(gtk_builder_get_object(preferences_builder, "preferences_button_result_font")), custom_result_font.c_str());
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_expression_font")), use_custom_expression_font);	
@@ -1889,6 +1907,7 @@ get_preferences_dialog (void)
 		gtk_font_chooser_set_font(GTK_FONT_CHOOSER(gtk_builder_get_object(preferences_builder, "preferences_button_status_font")), custom_status_font.c_str());
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_keypad_font")), use_custom_keypad_font);	
 		gtk_font_chooser_set_font(GTK_FONT_CHOOSER(gtk_builder_get_object(preferences_builder, "preferences_button_keypad_font")), custom_keypad_font.c_str());
+		gtk_font_chooser_set_font(GTK_FONT_CHOOSER(gtk_builder_get_object(preferences_builder, "preferences_button_app_font")), custom_app_font.c_str());
 		GdkRGBA c;
 		gdk_rgba_parse(&c, status_error_color.c_str());
 		gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(gtk_builder_get_object(preferences_builder, "colorbutton_status_error_color")), &c);

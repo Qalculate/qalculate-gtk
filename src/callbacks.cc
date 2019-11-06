@@ -85,7 +85,7 @@ extern GtkTreeModel *completion_filter, *completion_sort;
 extern unordered_map<size_t, GtkWidget*> cal_year, cal_month, cal_day, cal_label;
 extern GtkWidget *chinese_stem, *chinese_branch;
 
-extern GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider;
+extern GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider;
 
 extern GtkWidget *expressiontext, *statuslabel_l, *statuslabel_r, *result_bases, *keypad;
 int two_result_bases_rows = -1;
@@ -152,9 +152,9 @@ extern Unit *selected_unit;
 extern Unit *selected_to_unit;
 bool save_mode_on_exit;
 bool save_defs_on_exit;
-bool use_custom_result_font, use_custom_expression_font, use_custom_status_font, use_custom_keypad_font;
-bool save_custom_result_font = false, save_custom_expression_font = false, save_custom_status_font = false, save_custom_keypad_font = false;
-string custom_result_font, custom_expression_font, custom_status_font, custom_keypad_font;
+bool use_custom_result_font, use_custom_expression_font, use_custom_status_font, use_custom_keypad_font, use_custom_app_font;
+bool save_custom_result_font = false, save_custom_expression_font = false, save_custom_status_font = false, save_custom_keypad_font = false, save_custom_app_font = false;
+string custom_result_font, custom_expression_font, custom_status_font, custom_keypad_font, custom_app_font;
 int scale_n = 0;
 bool hyp_is_on, inv_is_on;
 bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes;
@@ -1122,6 +1122,7 @@ void set_unicode_buttons() {
 	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), &a, NULL);
 	if(a.width > w) w = a.width;
 	if(a.height > h) h = a.height;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), &a, NULL);
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), w, h);
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_copyregister")), w, h);
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_editregister")), w, h);
@@ -1129,6 +1130,15 @@ void set_unicode_buttons() {
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_add")), w, h);
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sqrt")), w, h);
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sum")), w, h);
+	h = 16 + (h - a.height); h /= 8; h *= 8; if(h < 16) h = 16;
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_up")), h);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_down")), h);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_swap")), h);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_copy")), h);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_lastx")), h);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_delete")), h);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_edit")), h);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_clear")), h);
 
 }
 
@@ -14725,10 +14735,12 @@ void load_preferences() {
 	use_custom_expression_font = false;
 	use_custom_status_font = false;
 	use_custom_keypad_font = false;
+	use_custom_app_font = false;
 	custom_result_font = "";
 	custom_expression_font = "";
 	custom_status_font = "";
 	custom_keypad_font = "";
+	custom_app_font = "";
 	status_error_color = "#FF0000";
 	status_warning_color = "#0000FF";
 	status_error_color_set = false;
@@ -15307,6 +15319,8 @@ void load_preferences() {
 					use_custom_status_font = v;
 				} else if(svar == "use_custom_keypad_font") {
 					use_custom_keypad_font = v;
+				} else if(svar == "use_custom_application_font") {
+					use_custom_app_font = v;
 				} else if(svar == "custom_result_font") {
 					custom_result_font = svalue;
 					save_custom_result_font = true;
@@ -15319,6 +15333,9 @@ void load_preferences() {
 				} else if(svar == "custom_keypad_font") {
 					custom_keypad_font = svalue;
 					save_custom_keypad_font = true;
+				} else if(svar == "custom_application_font") {
+					custom_app_font = svalue;
+					save_custom_app_font = true;
 				} else if(svar == "status_error_color") {
 					status_error_color = svalue;
 					status_error_color_set = true;
@@ -15700,10 +15717,12 @@ void save_preferences(bool mode) {
 	fprintf(file, "use_custom_expression_font=%i\n", use_custom_expression_font);
 	fprintf(file, "use_custom_status_font=%i\n", use_custom_status_font);
 	fprintf(file, "use_custom_keypad_font=%i\n", use_custom_keypad_font);
+	fprintf(file, "use_custom_application_font=%i\n", use_custom_app_font);
 	if(use_custom_result_font || save_custom_result_font) fprintf(file, "custom_result_font=%s\n", custom_result_font.c_str());	
 	if(use_custom_expression_font || save_custom_expression_font) fprintf(file, "custom_expression_font=%s\n", custom_expression_font.c_str());
 	if(use_custom_status_font || save_custom_status_font) fprintf(file, "custom_status_font=%s\n", custom_status_font.c_str());
 	if(use_custom_keypad_font || save_custom_keypad_font) fprintf(file, "custom_keypad_font=%s\n", custom_keypad_font.c_str());
+	if(use_custom_app_font || save_custom_app_font) fprintf(file, "custom_application_font=%s\n", custom_app_font.c_str());
 	if(status_error_color_set) fprintf(file, "status_error_color=%s\n", status_error_color.c_str());
 	if(status_warning_color_set) fprintf(file, "status_warning_color=%s\n", status_warning_color.c_str());
 	fprintf(file, "multiplication_sign=%i\n", printops.multiplication_sign);
@@ -16828,21 +16847,30 @@ void on_preferences_checkbutton_custom_status_font_toggled(GtkToggleButton *w, g
 void on_preferences_checkbutton_custom_keypad_font_toggled(GtkToggleButton *w, gpointer) {
 	use_custom_keypad_font = gtk_toggle_button_get_active(w);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_keypad_font")), use_custom_keypad_font);
-	//gint h_old, h_new;
-	//gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), NULL, &h_old);
 	if(use_custom_keypad_font) {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_app_font")), FALSE);
 		gchar *gstr = font_name_to_css(custom_keypad_font.c_str());
 		gtk_css_provider_load_from_data(keypad_provider, gstr, -1, NULL);
+		gtk_css_provider_load_from_data(box_rpnl_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
 		gtk_css_provider_load_from_data(keypad_provider, "", -1, NULL);
+		gtk_css_provider_load_from_data(box_rpnl_provider, "", -1, NULL);
 	}
-	result_font_modified();
-	/*gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), NULL, &h_new);
-	gint winh, winw;
-	gtk_window_get_size(GTK_WINDOW(mainwindow), &winw, &winh);
-	winh += (h_new - h_old);
-	gtk_window_resize(GTK_WINDOW(mainwindow), winw, winh);*/
+	set_unicode_buttons();
+}
+void on_preferences_checkbutton_custom_app_font_toggled(GtkToggleButton *w, gpointer) {
+	use_custom_app_font = gtk_toggle_button_get_active(w);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_app_font")), use_custom_app_font);
+	if(use_custom_app_font) {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_keypad_font")), FALSE);
+		gchar *gstr = font_name_to_css(custom_app_font.c_str());
+		gtk_css_provider_load_from_data(app_provider, gstr, -1, NULL);
+		g_free(gstr);
+	} else {
+		gtk_css_provider_load_from_data(app_provider, "", -1, NULL);
+	}
+	set_unicode_buttons();
 }
 void on_preferences_radiobutton_dot_toggled(GtkToggleButton *w, gpointer) {
 	if(gtk_toggle_button_get_active(w)) {
@@ -16987,16 +17015,21 @@ void on_preferences_button_status_font_font_set(GtkFontButton *w, gpointer) {
 void on_preferences_button_keypad_font_font_set(GtkFontButton *w, gpointer) {
 	save_custom_keypad_font = true;
 	custom_keypad_font = gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w));
-	//gint h_old = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")));
 	gchar *gstr = font_name_to_css(custom_keypad_font.c_str());
 	gtk_css_provider_load_from_data(keypad_provider, gstr, -1, NULL);
+	gtk_css_provider_load_from_data(box_rpnl_provider, gstr, -1, NULL);
+	set_unicode_buttons();
 	g_free(gstr);
 	while(gtk_events_pending()) gtk_main_iteration();
-	/*gint h_new = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")));
-	gint winh, winw;
-	gtk_window_get_size(GTK_WINDOW(mainwindow), &winw, &winh);
-	winh += (h_new - h_old);
-	gtk_window_resize(GTK_WINDOW(mainwindow), winw, winh);*/
+}
+void on_preferences_button_app_font_font_set(GtkFontButton *w, gpointer) {
+	save_custom_app_font = true;
+	custom_app_font = gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w));
+	gchar *gstr = font_name_to_css(custom_app_font.c_str());
+	gtk_css_provider_load_from_data(app_provider, gstr, -1, NULL);
+	set_unicode_buttons();
+	g_free(gstr);
+	while(gtk_events_pending()) gtk_main_iteration();
 }
 
 /*

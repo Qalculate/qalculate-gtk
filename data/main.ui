@@ -2642,7 +2642,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="vbox62">
+              <object class="GtkBox" id="box_tabs">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
@@ -2670,8 +2670,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2695,8 +2695,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2721,8 +2721,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -6281,7 +6281,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                         <property name="can_focus">False</property>
                         <property name="spacing">6</property>
                         <child>
-                          <object class="GtkBox">
+                          <object class="GtkBox" id="box_rpnl">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="orientation">vertical</property>
@@ -6617,7 +6617,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="tooltip_text" translatable="yes">Rotate the stack or move selected register down (Ctrl+Down)</property>
                                     <signal name="clicked" handler="on_button_registerdown_clicked" swapped="no"/>
                                     <child>
-                                      <object class="GtkImage">
+                                      <object class="GtkImage" id="image_down">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="icon_name">go-down-symbolic</property>
@@ -6679,7 +6679,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="tooltip_text" translatable="yes">Copy the the selected or top value to the top of the stack (Ctrl+Shift+C)</property>
                                     <signal name="clicked" handler="on_button_copyregister_clicked" swapped="no"/>
                                     <child>
-                                      <object class="GtkImage">
+                                      <object class="GtkImage" id="image_copy">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="icon_name">edit-copy-symbolic</property>
@@ -6702,7 +6702,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="tooltip_text" translatable="yes">Enter the top value from before the last numeric operation (Ctrl+Left)</property>
                                     <signal name="clicked" handler="on_button_lastx_clicked" swapped="no"/>
                                     <child>
-                                      <object class="GtkImage">
+                                      <object class="GtkImage" id="image_lastx">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="icon_name">edit-undo-symbolic</property>
@@ -6725,7 +6725,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="tooltip_text" translatable="yes">Delete the top or selected value (Ctrl+Delete)</property>
                                     <signal name="clicked" handler="on_button_deleteregister_clicked" swapped="no"/>
                                     <child>
-                                      <object class="GtkImage">
+                                      <object class="GtkImage" id="image_delete">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="icon_name">edit-delete-symbolic</property>
@@ -6758,7 +6758,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="tooltip_text" translatable="yes">Edit the selected value</property>
                                 <signal name="clicked" handler="on_button_editregister_clicked" swapped="no"/>
                                 <child>
-                                  <object class="GtkImage">
+                                  <object class="GtkImage" id="image_edit">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="icon_name">document-edit-symbolic</property>
@@ -6781,7 +6781,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="tooltip_text" translatable="yes">Clear the RPN stack (Ctrl+Shift+Delete)</property>
                                 <signal name="clicked" handler="on_button_clearstack_clicked" swapped="no"/>
                                 <child>
-                                  <object class="GtkImage">
+                                  <object class="GtkImage" id="image_clear">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="icon_name">edit-clear-all-symbolic</property>
