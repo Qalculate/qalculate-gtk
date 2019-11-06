@@ -51,6 +51,8 @@ extern GtkWidget *expression;
 extern GtkWidget *resultview;
 extern PrintOptions printops;
 extern bool ignore_locale;
+extern bool title_modified;
+string custom_title;
 
 MathFunction *f_answer;
 MathFunction *f_expression;
@@ -72,6 +74,7 @@ QalculateDateTime last_version_check_date;
 static GOptionEntry options[] = {
 	{"new-instance", 'n', 0, G_OPTION_ARG_NONE, NULL, N_("Start a new instance of the application"), NULL},
 	{"version", 'v', 0, G_OPTION_ARG_NONE, NULL, N_("Display the application version"), NULL},
+	{"title", 0, 0, G_OPTION_ARG_STRING, NULL, N_("Specify the window title"), N_("TITLE")},
 	{G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_STRING_ARRAY, NULL, N_("Expression to calculate"), N_("[EXPRESSION]")},
 	{NULL}
 };
@@ -125,8 +128,12 @@ void create_application(GtkApplication *app) {
 	//create main window
 	create_main_window();
 
+	if(!custom_title.empty()) {
+		gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), custom_title.c_str());
+		title_modified = true;
+	}
 	g_application_set_default(G_APPLICATION(app));
-	gtk_window_set_application(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), app);	
+	gtk_window_set_application(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), app);
 
 	while(gtk_events_pending()) gtk_main_iteration();
 
@@ -180,6 +187,7 @@ void create_application(GtkApplication *app) {
 	
 	f_answer = CALCULATOR->addFunction(new AnswerFunction());
 	f_expression = CALCULATOR->addFunction(new ExpressionFunction());
+	CALCULATOR->addFunction(new SetTitleFunction());
 
 	//load local definitions
 	CALCULATOR->loadLocalDefinitions();
@@ -308,6 +316,12 @@ static gint qalculate_handle_local_options(GtkApplication *app, GVariantDict *op
 		g_printf(VERSION "\n");
 		return 0;
 	}
+	gchar *str = NULL;
+	g_variant_dict_lookup(options_dict, "title", "s", &str);
+	if(str) {
+		custom_title = str;
+		g_free(str);
+	}
 	g_variant_dict_lookup(options_dict, "new-instance", "b", &b);
 	if(b) {
 		g_application_set_flags(G_APPLICATION(app), G_APPLICATION_NON_UNIQUE);
@@ -379,6 +393,13 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 		}
 	}
 	if(main_builder) {
+		gchar *str = NULL;
+		g_variant_dict_lookup(options_dict, "title", "s", &str);
+		if(str) {
+			gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), str);
+			title_modified = true;
+			g_free(str);
+		}
 		gtk_window_present(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 		if(!calc_arg.empty()) {
 			gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_builder_get_object(main_builder, "expressionbuffer")), calc_arg.c_str(), -1);

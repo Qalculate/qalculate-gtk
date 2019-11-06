@@ -192,6 +192,8 @@ vector<DataProperty*> tmp_props_orig;
 bool keep_unit_selection = false;
 int visible_keypad = 0;
 int programming_inbase = 0, programming_outbase = 0;
+bool title_modified = false;
+string current_mode;
 
 string prev_output_base, prev_input_base;
 
@@ -373,6 +375,15 @@ bool complex_angle_form = false;
 #define ITEM_IS_EXPRESSION(x) (HISTORY_IS_EXPRESSION(x) || ((size_t) x < inhistory_type.size() - 1 && HISTORY_IS_PARSE(x) && HISTORY_IS_EXPRESSION(x + 1)))
 #define ITEM_NOT_EXPRESSION(x) (HISTORY_NOT_EXPRESSION(x) && ((size_t) x >= inhistory_type.size() - 1 || HISTORY_NOT_PARSE(x) || HISTORY_NOT_EXPRESSION(x + 1)))
 
+enum {
+	TITLE_APP,
+	TITLE_RESULT,
+	TITLE_APP_RESULT,
+	TITLE_MODE,
+	TITLE_APP_MODE
+};
+int title_type = TITLE_APP;
+
 AnswerFunction::AnswerFunction() : MathFunction(_("answer"), 1, 1, CALCULATOR->f_warning->category(), _("History Answer Value")) {
 	if(strcmp(_("answer"), "answer")) addName("answer");
 	VectorArgument *arg = new VectorArgument(_("History Index(es)"));
@@ -417,6 +428,14 @@ int ExpressionFunction::calculate(MathStructure &mstruct, const MathStructure &v
 			else mstruct.addChild(*history_parsed[(size_t) index - 1]);
 		}
 	}
+	return 1;
+}
+SetTitleFunction::SetTitleFunction() : MathFunction(_("settitle"), 1, 1, CALCULATOR->f_warning->category(), _("Set Window Title")) {
+	setArgumentDefinition(1, new TextArgument());
+}
+int SetTitleFunction::calculate(MathStructure &mstruct, const MathStructure &vargs, const EvaluationOptions&) {
+	gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), vargs[0].symbol().c_str());
+	title_modified = true;
 	return 1;
 }
 
@@ -1130,16 +1149,17 @@ void set_unicode_buttons() {
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_add")), w, h);
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sqrt")), w, h);
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sum")), w, h);
-	h = 16 + (h - a.height); h /= 8; h *= 8; if(h < 16) h = 16;
-	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_up")), h);
-	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_down")), h);
-	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_swap")), h);
-	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_copy")), h);
-	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_lastx")), h);
-	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_delete")), h);
-	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_edit")), h);
-	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_clear")), h);
-
+	if(use_custom_keypad_font || use_custom_app_font) {
+		h = 16 + (h - a.height); if(h < 16) h = 16;
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_up")), h);
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_down")), h);
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_swap")), h);
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_copy")), h);
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_lastx")), h);
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_delete")), h);
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_edit")), h);
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_clear")), h);
+	}
 }
 
 
@@ -8308,6 +8328,42 @@ void update_result_bases() {
 	}
 }
 
+bool update_window_title(const char *str = NULL, bool is_result = false) {
+	if(title_modified || !main_builder) return false;
+	switch(title_type) {
+		case TITLE_MODE: {
+			if(is_result) return false;
+			if(str && !current_mode.empty()) gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (current_mode + string(": ") + str).c_str());
+			else if(!current_mode.empty()) gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), current_mode.c_str());
+			else if(str) gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (string("Qalculate! ") + str).c_str());
+			else gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), _("Qalculate!"));
+			break;
+		}
+		case TITLE_APP_MODE: {
+			if(is_result || (!current_mode.empty() && str)) return false;
+			if(!current_mode.empty()) gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (string("Qalculate! ") + current_mode).c_str());
+			else if(str) gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (string("Qalculate! ") + str).c_str());
+			else gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), _("Qalculate!"));
+			break;
+		}
+		case TITLE_RESULT: {
+			if(!str) return false;
+			if(str) gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), str);
+			break;
+		}
+		case TITLE_APP_RESULT: {
+			if(str) gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (string("Qalculate! (") + string(str) + ")").c_str());
+			break;
+		}
+		default: {
+			if(is_result) return false;
+			if(str) gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (string("Qalculate! ") + str).c_str());
+			else gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), _("Qalculate!"));
+		}
+	}
+	return true;
+}
+
 /*
 	set result in result widget and add to history widget
 */
@@ -8442,7 +8498,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 
 	gint w = 0, h = 0;
 	bool parsed_approx = false;
-	bool title_set = FALSE;
+	bool title_set = false, was_busy = false;
 	
 	Number save_nbase(CALCULATOR->customOutputBase());
 	int save_base = printops.base;
@@ -8551,14 +8607,14 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		g_application_mark_busy(g_application_get_default());
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultspinner")));
 		gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
-		gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), _("Processing…"));
+		if(update_window_title(_("Processing…"))) title_set = true;
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyview")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyactions")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "rpntab")), FALSE);
-		title_set = TRUE;
+		was_busy = true;
 	}
 	while(b_busy && view_thread->running) {
 		while(gtk_events_pending()) gtk_main_iteration();
@@ -8588,14 +8644,14 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	}
 	
 	update_expression_icons();
-	if(title_set) {
+	if(was_busy) {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyview")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyactions")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "rpntab")), TRUE);
-		gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), _("Qalculate!"));
+		if(title_set && stack_index != 0) update_window_title();
 	}
 
 	if(stack_index == 0) {
@@ -8615,6 +8671,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), displayed_mstruct && !display_aborted);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), displayed_mstruct && !display_aborted);
 		}
+		if(!update_window_title(result_text.c_str(), true) && title_set) update_window_title();
 	}
 	if(register_moved) {
 		update_parse = true;
@@ -8938,7 +8995,7 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 		}
 	}
 	
-	bool title_set = FALSE;
+	bool title_set = false, was_busy = false;
 	update_expression_icons(EXPRESSION_STOP);
 	int i = 0;
 	
@@ -8982,7 +9039,7 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 				break;
 			}
 		}
-		gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), progress_str.c_str());
+		if(update_window_title(progress_str.c_str())) title_set = true;
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert")), FALSE);
@@ -8992,7 +9049,7 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 		update_expression_icons(EXPRESSION_SPINNER);
 		gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
 		g_application_mark_busy(g_application_get_default());
-		title_set = TRUE;
+		was_busy = true;
 	}
 	while(b_busy && command_thread->running) {
 		while(gtk_events_pending()) gtk_main_iteration();
@@ -9011,14 +9068,14 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 	b_busy_command = false;
 
 	update_expression_icons();
-	if(title_set) {
+	if(was_busy) {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyview")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyactions")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "rpntab")), TRUE);
-		gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), _("Qalculate!"));
+		if(title_set) update_window_title();
 		gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
 		g_application_unmark_busy(g_application_get_default());
 	}
@@ -9765,10 +9822,10 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	}
 	i = 0;
 	//GtkWidget *dialog = NULL;
-	bool title_set = FALSE;
+	bool title_set = false, was_busy = false;
 	//bool progress_set = FALSE;
 	if(CALCULATOR->busy()) {
-		gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), _("Calculating…"));
+		if(update_window_title(_("Calculating…"))) title_set = true;
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert")), FALSE);
@@ -9778,21 +9835,21 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		update_expression_icons(EXPRESSION_SPINNER);
 		gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
 		g_application_mark_busy(g_application_get_default());
-		title_set = TRUE;
+		was_busy = true;
 	}
 	while(CALCULATOR->busy()) {
 		while(gtk_events_pending()) gtk_main_iteration();
 		sleep_ms(100);
 	}
 	update_expression_icons();
-	if(title_set) {
+	if(was_busy) {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyview")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyactions")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "rpntab")), TRUE);
-		gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), _("Qalculate!"));
+		if(title_set) update_window_title();
 		gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
 		g_application_unmark_busy(g_application_get_default());
 	}
@@ -13899,6 +13956,9 @@ void load_mode(const mode_struct &mode) {
 		programming_inbase = 0;
 		programming_outbase = 0;
 	}
+	if(mode.name == _("Preset") || mode.name == _("Default")) current_mode = "";
+	else current_mode = mode.name;
+	update_window_title();
 	CALCULATOR->setCustomOutputBase(mode.custom_output_base);
 	CALCULATOR->setCustomInputBase(mode.custom_input_base);
 	set_mode_items(mode.po, mode.eo, mode.at, mode.as, mode.rpn_mode, mode.precision, mode.interval, mode.variable_units_enabled, mode.adaptive_interval_display, mode.keypad, mode.autocalc, mode.complex_angle_form, false);
@@ -14416,7 +14476,9 @@ void on_expander_convert_expanded(GObject *o, GParamSpec*, gpointer) {
 int mode_menu_i = 0;
 
 void on_popup_menu_mode_update_activate(GtkMenuItem*, gpointer data) {
-	save_mode_as((const char*) data);
+	size_t index = save_mode_as((const char*) data);
+	current_mode = modes[index].name;
+	update_window_title();
 	if(mode_menu_i == 1) {
 		gtk_menu_popdown(GTK_MENU(gtk_builder_get_object(main_builder, "mode_menu_menu")));
 		gtk_menu_shell_deselect(GTK_MENU_SHELL(gtk_builder_get_object(main_builder, "menubar")));
@@ -14534,6 +14596,8 @@ run_meta_mode_save_dialog:
 			goto run_meta_mode_save_dialog;
 		}
 		size_t index = save_mode_as(name, &new_mode);
+		current_mode = modes[index].name;
+		update_window_title();
 		if(new_mode) {
 			GtkWidget *item = gtk_menu_item_new_with_label(modes[index].name.c_str()); 
 			gtk_widget_show(item); 
@@ -14672,6 +14736,8 @@ void load_preferences() {
 	evalops.local_currency_conversion = true;
 	evalops.interval_calculation = INTERVAL_CALCULATION_VARIANCE_FORMULA;
 	b_decimal_comma = -1;
+	
+	title_type = TITLE_APP;
 	
 	auto_calculate = false;
 	
@@ -14864,6 +14930,8 @@ void load_preferences() {
 					save_defs_on_exit = v;
 				} else if(svar == "ignore_locale") {
 					ignore_locale = v;
+				} else if(svar == "window_title_mode") {
+					if(v >= 0 && v <= 4) title_type = v;
 				} else if(svar == "fetch_exchange_rates_at_startup") {
 					if(auto_update_exchange_rates < 0 && v) auto_update_exchange_rates = 1;
 					//fetch_exchange_rates_at_startup = v;
@@ -15638,6 +15706,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "\n[General]\n");
 	fprintf(file, "version=%s\n", VERSION);
 	fprintf(file, "allow_multiple_instances=%i\n", allow_multiple_instances);
+	if(title_type != TITLE_APP) fprintf(file, "window_title_mode=%i\n", title_type);
 	gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
 	fprintf(file, "width=%i\n", w);
 	//fprintf(file, "height=%i\n", h);
@@ -16664,6 +16733,11 @@ void on_preferences_checkbutton_binary_prefixes_toggled(GtkToggleButton *w, gpoi
 }
 void on_preferences_checkbutton_ignore_locale_toggled(GtkToggleButton *w, gpointer) {
 	ignore_locale = gtk_toggle_button_get_active(w);
+}
+void on_preferences_combo_title_changed(GtkComboBox *w, gpointer) {
+	title_type = gtk_combo_box_get_active(w);
+	title_modified = false;
+	update_window_title();
 }
 void on_preferences_checkbutton_copy_separator_toggled(GtkToggleButton *w, gpointer) {
 	copy_separator = gtk_toggle_button_get_active(w);

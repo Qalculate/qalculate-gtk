@@ -62,6 +62,7 @@ enum {
 
 DECLARE_BUILTIN_FUNCTION(AnswerFunction)
 DECLARE_BUILTIN_FUNCTION(ExpressionFunction)
+DECLARE_BUILTIN_FUNCTION(SetTitleFunction)
 
 class ViewThread : public Thread {
 protected:
