@@ -30,9 +30,9 @@
 #define MENU_TEAROFF				item = gtk_tearoff_menu_item_new(); gtk_widget_show (item); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
 #define MENU_SEPARATOR				item = gtk_separator_menu_item_new(); gtk_widget_show (item); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
 #define MENU_SEPARATOR_PREPEND			item = gtk_separator_menu_item_new(); gtk_widget_show (item); gtk_menu_shell_prepend(GTK_MENU_SHELL(sub), item);
-#define SUBMENU_ITEM(x,y)			item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); gtk_menu_shell_append(GTK_MENU_SHELL(y), item); sub = gtk_menu_new(); gtk_widget_show (sub); gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), sub);   
-#define SUBMENU_ITEM_PREPEND(x,y)		item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); gtk_menu_shell_prepend(GTK_MENU_SHELL(y), item); sub = gtk_menu_new(); gtk_widget_show (sub); gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), sub);   
-#define SUBMENU_ITEM_INSERT(x,y,i)		item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); gtk_menu_shell_insert(GTK_MENU_SHELL(y), item, i); sub = gtk_menu_new(); gtk_widget_show (sub); gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), sub);   
+#define SUBMENU_ITEM(x,y)			item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); gtk_menu_shell_append(GTK_MENU_SHELL(y), item); sub = gtk_menu_new(); gtk_widget_show (sub); gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), sub);
+#define SUBMENU_ITEM_PREPEND(x,y)		item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); gtk_menu_shell_prepend(GTK_MENU_SHELL(y), item); sub = gtk_menu_new(); gtk_widget_show (sub); gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), sub);
+#define SUBMENU_ITEM_INSERT(x,y,i)		item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); gtk_menu_shell_insert(GTK_MENU_SHELL(y), item, i); sub = gtk_menu_new(); gtk_widget_show (sub); gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), sub);
 
 #define EXPRESSION_YPAD 3
 
@@ -71,7 +71,7 @@ enum {
 
 enum {
 	DELIMITER_COMMA,
-	DELIMITER_TABULATOR,	
+	DELIMITER_TABULATOR,
 	DELIMITER_SEMICOLON,
 	DELIMITER_SPACE,
 	DELIMITER_OTHER
@@ -79,22 +79,22 @@ enum {
 
 enum {
 	MENU_ARGUMENT_TYPE_FREE,
-	MENU_ARGUMENT_TYPE_NUMBER,	
+	MENU_ARGUMENT_TYPE_NUMBER,
 	MENU_ARGUMENT_TYPE_INTEGER,
 	MENU_ARGUMENT_TYPE_SYMBOLIC,
 	MENU_ARGUMENT_TYPE_TEXT,
-	MENU_ARGUMENT_TYPE_DATE,	
-	MENU_ARGUMENT_TYPE_VECTOR,	
-	MENU_ARGUMENT_TYPE_MATRIX,	
+	MENU_ARGUMENT_TYPE_DATE,
+	MENU_ARGUMENT_TYPE_VECTOR,
+	MENU_ARGUMENT_TYPE_MATRIX,
 	MENU_ARGUMENT_TYPE_POSITIVE,
-	MENU_ARGUMENT_TYPE_NONZERO,			
+	MENU_ARGUMENT_TYPE_NONZERO,
 	MENU_ARGUMENT_TYPE_NONNEGATIVE,
 	MENU_ARGUMENT_TYPE_POSITIVE_INTEGER,
-	MENU_ARGUMENT_TYPE_NONZERO_INTEGER,			
-	MENU_ARGUMENT_TYPE_NONNEGATIVE_INTEGER,	
-	MENU_ARGUMENT_TYPE_BOOLEAN,	
-	MENU_ARGUMENT_TYPE_EXPRESSION_ITEM,	
-	MENU_ARGUMENT_TYPE_FUNCTION,	
+	MENU_ARGUMENT_TYPE_NONZERO_INTEGER,
+	MENU_ARGUMENT_TYPE_NONNEGATIVE_INTEGER,
+	MENU_ARGUMENT_TYPE_BOOLEAN,
+	MENU_ARGUMENT_TYPE_EXPRESSION_ITEM,
+	MENU_ARGUMENT_TYPE_FUNCTION,
 	MENU_ARGUMENT_TYPE_UNIT,
 	MENU_ARGUMENT_TYPE_VARIABLE,
 	MENU_ARGUMENT_TYPE_FILE,

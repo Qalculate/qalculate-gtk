@@ -19,10 +19,10 @@
 							gtk_tree_path_free(path);
 #define SCROLL_TO_ITER(model, view, iter)		GtkTreePath *path2 = gtk_tree_model_get_path(model, &iter); \
 							gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(view), path2, NULL, FALSE, 0, 0); \
-							gtk_tree_path_free(path2);							
+							gtk_tree_path_free(path2);
 #define EXPAND_ITER(model, view, iter)			GtkTreePath *path = gtk_tree_model_get_path(model, &iter); \
 							gtk_tree_view_expand_row(GTK_TREE_VIEW(view), path, FALSE); \
-							gtk_tree_path_free(path);							
+							gtk_tree_path_free(path);
 
 #include "main.h"
 
@@ -34,7 +34,7 @@ struct mode_struct {
 	Number custom_output_base;
 	Number custom_input_base;
 	int precision;
-	string name;
+	std::string name;
 	bool rpn_mode;
 	bool interval;
 	bool adaptive_interval_display;
@@ -79,7 +79,7 @@ protected:
 	virtual void run();
 };
 
-bool string_is_less(string str1, string str2);
+bool string_is_less(std::string str1, std::string str2);
 
 bool can_display_unicode_string_function(const char *str, void *w);
 bool can_display_unicode_string_function_exact(const char *str, void *w);
@@ -130,15 +130,15 @@ void on_tDataProperties_selection_changed(GtkTreeSelection *treeselection, gpoin
 void on_tUnitSelector_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 
-void execute_expression(bool force = true, bool do_mathoperation = false, MathOperation op = OPERATION_ADD, MathFunction *f = NULL, bool do_stack = false, size_t stack_index = 0, string execute_str = string(), string str = string(), bool check_exrates = true);
-void setResult(Prefix *prefix = NULL, bool update_history = true, bool update_parse = false, bool force = false, string transformation = "", size_t stack_index = 0, bool register_moved = false);
+void execute_expression(bool force = true, bool do_mathoperation = false, MathOperation op = OPERATION_ADD, MathFunction *f = NULL, bool do_stack = false, size_t stack_index = 0, std::string execute_str = std::string(), std::string str = std::string(), bool check_exrates = true);
+void setResult(Prefix *prefix = NULL, bool update_history = true, bool update_parse = false, bool force = false, std::string transformation = "", size_t stack_index = 0, bool register_moved = false);
 
 void set_rpn_mode(bool b);
 void calculateRPN(int op);
 void calculateRPN(MathFunction *f);
-void RPNRegisterAdded(string text, gint index = 0);
+void RPNRegisterAdded(std::string text, gint index = 0);
 void RPNRegisterRemoved(gint index);
-void RPNRegisterChanged(string text, gint index);
+void RPNRegisterChanged(std::string text, gint index);
 
 void result_display_updated();
 void result_format_updated();

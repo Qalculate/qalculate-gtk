@@ -25,6 +25,11 @@
 #include "callbacks.h"
 #include "main.h"
 
+using std::string;
+using std::cout;
+using std::vector;
+using std::endl;
+
 MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct, *displayed_mstruct;
 string *parsed_to_str;
 KnownVariable *vans[5];
@@ -93,27 +98,27 @@ void create_application(GtkApplication *app) {
 #endif
 	gtk_window_set_default_icon_from_file(icon_path, NULL);
 	g_free(icon_path);
-	
-	b_busy = false; 
+
+	b_busy = false;
 	b_busy_result = false;
 	b_busy_expression = false;
 	b_busy_command = false;
 
-	main_builder = NULL; argumentrules_builder = NULL; 
-	csvimport_builder = NULL; datasetedit_builder = NULL; datasets_builder = NULL; decimals_builder = NULL; functionedit_builder = NULL; 
-	functions_builder = NULL; matrixedit_builder = NULL; matrix_builder = NULL; namesedit_builder = NULL; nbases_builder = NULL; plot_builder = NULL; 
-	precision_builder = NULL; preferences_builder = NULL; unit_builder = NULL; percentage_builder = NULL; 
-	unitedit_builder = NULL; units_builder = NULL; unknownedit_builder = NULL; variableedit_builder = NULL; 
+	main_builder = NULL; argumentrules_builder = NULL;
+	csvimport_builder = NULL; datasetedit_builder = NULL; datasets_builder = NULL; decimals_builder = NULL; functionedit_builder = NULL;
+	functions_builder = NULL; matrixedit_builder = NULL; matrix_builder = NULL; namesedit_builder = NULL; nbases_builder = NULL; plot_builder = NULL;
+	precision_builder = NULL; preferences_builder = NULL; unit_builder = NULL; percentage_builder = NULL;
+	unitedit_builder = NULL; units_builder = NULL; unknownedit_builder = NULL; variableedit_builder = NULL;
 	variables_builder = NULL; csvexport_builder = NULL; setbase_builder = NULL; periodictable_builder = NULL, simplefunctionedit_builder = NULL;
 
 	//create the almighty Calculator object
 	new Calculator(ignore_locale);
-	
+
 	CALCULATOR->setExchangeRatesWarningEnabled(false);
-	
+
 	//load application specific preferences
 	load_preferences();
-	
+
 	mstruct = new MathStructure();
 	displayed_mstruct = new MathStructure();
 	parsed_mstruct = new MathStructure();
@@ -161,10 +166,10 @@ void create_application(GtkApplication *app) {
 #endif
 	}
 
-	while(gtk_events_pending()) gtk_main_iteration();	
+	while(gtk_events_pending()) gtk_main_iteration();
 
 	//exchange rates
-	
+
 	if(fetch_exchange_rates_at_startup && canfetch) {
 		fetch_exchange_rates(5);
 		while(gtk_events_pending()) gtk_main_iteration();
@@ -184,14 +189,14 @@ void create_application(GtkApplication *app) {
 	if(load_global_defs && !CALCULATOR->loadGlobalDefinitions()) {
 		g_print(_("Failed to load global definitions!\n"));
 	}
-	
+
 	f_answer = CALCULATOR->addFunction(new AnswerFunction());
 	f_expression = CALCULATOR->addFunction(new ExpressionFunction());
 	CALCULATOR->addFunction(new SetTitleFunction());
 
 	//load local definitions
 	CALCULATOR->loadLocalDefinitions();
-	
+
 	if(do_imaginary_j && CALCULATOR->v_i->hasName("j") == 0) {
 		ExpressionName ename = CALCULATOR->v_i->getName(1);
 		ename.name = "j";
@@ -219,10 +224,10 @@ void create_application(GtkApplication *app) {
 	//check for calculation errros regularly
 	do_timeout = true;
 	g_timeout_add_seconds(1, on_display_errors_timeout, NULL);
-	
+
 	check_expression_position = true;
 	expression_position = 1;
-	
+
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object (main_builder, "menu_item_plot_functions")), canplot);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object (main_builder, "menu_item_fetch_exchange_rates")), canfetch);
 
@@ -255,11 +260,11 @@ void create_application(GtkApplication *app) {
 	}
 
 	update_completion();
-	
+
 	view_thread = new ViewThread;
 	view_thread->start();
 	command_thread = new CommandThread;
-	
+
 	if(!calc_arg.empty()) {
 		gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_builder_get_object(main_builder, "expressionbuffer")), calc_arg.c_str(), -1);
 		execute_expression();
@@ -285,13 +290,13 @@ void create_application(GtkApplication *app) {
 #endif
 	gtk_accel_map_load(gstr);
 	g_free(gstr);
-	
+
 #ifdef _WIN32
 	QalculateDateTime next_version_check_date(last_version_check_date);
 	next_version_check_date.addDays(14);
 	if(!next_version_check_date.isFutureDate()) g_idle_add(on_check_version_idle, NULL);
 #endif
-	
+
 }
 
 static void qalculate_activate(GtkApplication *app) {
@@ -299,7 +304,7 @@ static void qalculate_activate(GtkApplication *app) {
 	GList *list;
 
 	list = gtk_application_get_windows (app);
-	
+
 	if(list) {
 		gtk_window_present(GTK_WINDOW(list->data));
 		return;
@@ -418,10 +423,10 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 
 
 int main (int argc, char *argv[]) {
-	
+
 	GtkApplication *app;
 	gint status;
-	
+
 #ifdef ENABLE_NLS
 	gchar *gstr_file = g_build_filename(getLocalDir().c_str(), "qalculate-gtk.cfg", NULL);
 	FILE *file = fopen(gstr_file, "r");
@@ -459,7 +464,7 @@ int main (int argc, char *argv[]) {
 	g_object_unref(app);
 
 	return status;
-	
+
 }
 
 

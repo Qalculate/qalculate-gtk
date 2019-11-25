@@ -48,6 +48,23 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="3.6.0" date="2019-11-25">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Major improvements and fixes for integrals (note that the variable of integration argument has moved to 4th position, e.g. integrate(x^2, 1, 5) instead of integrate(x^2, x, 1, 5))</li>
+      <li>Automatic detection of variables for undefined symbolic arguments (e.g. for diff(y^2), the derivative is calculated with respect to y instead of defaulting to x)</li>
+      <li>Fix uncertainty propagation involving complex numbers (calculate imaginary and real uncertainty separately when using variance formula)</li>
+      <li>Fix incorrect solutions to equations not removed</li>
+      <li>New functions: dof() for photography depth of field calculation; awg() and awgd() for American Wire Gauge conversion; romberg() for numerical integration; randnorm(), randpoisson(), randrayleigh(), randexp(), and randuniform() for random numbers with different distributions; normdist(), expondist(), and binomdist() for distribution probability calculations</li>
+      <li>New units: cmil and kcmil</li>
+      <li>rand() (and related functions) now accepts an additional argument for specifying the number of random values to generate</li>
+      <li>Option to select custom keypad or application font (GUI)</li>
+      <li>Options to customize the window title: different modes selectable in preferences, command line option, and settitle() function (GUI)</li>
+      <li>Minor bug fixes and feature improvements</li>
+     </ul>
+   </description>
+  </release>
   <release version="3.5.0" date="2019-10-23">
    <description>
     <p>Changes:</p>
