@@ -5542,7 +5542,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 	if(m.precision() > 0 && (ips_n.parent_precision < 1 || m.precision() < ips_n.parent_precision)) ips_n.parent_precision = m.precision();
 
 	// angle/phasor notation: x+y*i=a*cis(b)=a∠b
-	if(caf && m.isMultiplication() && m.size() == 2 && (m[0].isNumber() || (m[0].isNegate() && m[0][0].isNumber())) && m[1].isFunction() && m[1].size() == 1 && m[1].function()->referenceName() == "cis" && (((m[1][0].isNumber() || (m[1][0].isNegate() && m[1][0][0].isNumber())) || (m[1][0].isMultiplication() && m[1][0].size() == 2 && (m[1][0][0].isNumber() || (m[1][0].isNegate() && m[1][0][0][0].isNumber())) && m[1][0][1].isUnit())) || (m[1][0].isNegate() && m[1][0][0].isMultiplication() && m[1][0][0].size() == 2 && m[1][0][0][0].isNumber() && m[1][0][0][1].isUnit()))) {
+	if(caf && m.isMultiplication() && m.size() == 2 && m[1].isFunction() && m[1].size() == 1 && m[1].function()->referenceName() == "cis") {
 
 		ips_n.depth++;
 
@@ -6217,6 +6217,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						ips_n.division_depth--;
 					}
 				}
+
 				cairo_surface_t *num_surface = NULL, *den_surface = NULL, *surface_one = NULL;
 				if(m.type() == STRUCT_DIVISION) {
 					ips_n.wrap = (!m[0].isDivision() || !flat || ips.division_depth > 0 || ips.power_depth > 0) && m[0].needsParenthesis(po, ips_n, m, 1, flat, ips.power_depth > 0);
@@ -25744,6 +25745,9 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 		case GDK_KEY_Escape: {
 			if(gtk_widget_get_visible(completion_window)) {
 				gtk_widget_hide(completion_window);
+				return TRUE;
+			} else {
+				clear_expression_text();
 				return TRUE;
 			}
 			break;

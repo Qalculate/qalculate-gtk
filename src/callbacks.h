@@ -60,9 +60,9 @@ enum {
 	QALCULATE_HISTORY_BOOKMARK
 };
 
-DECLARE_BUILTIN_FUNCTION(AnswerFunction)
-DECLARE_BUILTIN_FUNCTION(ExpressionFunction)
-DECLARE_BUILTIN_FUNCTION(SetTitleFunction)
+DECLARE_BUILTIN_FUNCTION(AnswerFunction, 0)
+DECLARE_BUILTIN_FUNCTION(ExpressionFunction, 0)
+DECLARE_BUILTIN_FUNCTION(SetTitleFunction, 0)
 
 class ViewThread : public Thread {
 protected:
