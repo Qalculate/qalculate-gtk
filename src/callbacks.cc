@@ -1787,6 +1787,7 @@ bool display_function_hint(MathFunction *f, int arg_index = 1) {
 void replace_interval_with_function(MathStructure &m);
 void clearresult();
 void update_result_bases();
+void fix_to_struct(MathStructure &m);
 
 bool last_is_operator(string str, bool allow_exp = false) {
 	remove_blank_ends(str);
@@ -2154,6 +2155,19 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			}
 			if(CALCULATOR->aborted()) mauto.setAborted();
 			CALCULATOR->stopControl();
+		} else if(do_conv && parsed_tostruct->containsType(STRUCT_UNIT, true) && !mauto.containsType(STRUCT_UNIT, false, true, true) && !parsed_mstruct->containsType(STRUCT_UNIT, false, true, true)) {
+			MathStructure to_struct(CALCULATOR->convertToBaseUnits(*parsed_tostruct));
+			fix_to_struct(to_struct);
+			if(!to_struct.isZero()) {
+				mauto.multiply(to_struct);
+				to_struct.format(printops);
+				if(to_struct.isMultiplication() && to_struct.size() >= 2) {
+					if(to_struct[0].isOne()) to_struct.delChild(1, true);
+					else if(to_struct[1].isOne()) to_struct.delChild(2, true);
+				}
+				parsed_mstruct->multiply(to_struct);
+				CALCULATOR->calculate(&mauto, 100, evalops, CALCULATOR->unlocalizeExpression(to_str, evalops.parse_options));
+			}
 		}
 		CALCULATOR->endTemporaryStopMessages(!mauto.isAborted(), &autocalc_messages);
 		if(!mauto.isAborted()) {
@@ -2627,8 +2641,28 @@ void display_parse_status() {
 					int warnings_count;
 					had_errors = CALCULATOR->endTemporaryStopMessages(NULL, &warnings_count) > 0 || had_errors;
 					had_warnings = had_warnings || warnings_count > 0;
+					bool b_unit = mparse.containsType(STRUCT_UNIT, false, true, true);
 					mparse = cu.generateMathStructure(!printops.negative_exponents);
 					mparse.format(po);
+					if(!mparse.isZero() && !b_unit && !str_e.empty() && str_w.empty()) {
+						CALCULATOR->beginTemporaryStopMessages();
+						MathStructure to_struct(CALCULATOR->convertToBaseUnits(mparse));
+						fix_to_struct(to_struct);
+						if(!to_struct.isZero()) {
+							MathStructure mparse2;
+							CALCULATOR->parse(&mparse2, str_e, evalops.parse_options);
+							to_struct.format(printops);
+							if(to_struct.isMultiplication() && to_struct.size() >= 2) {
+								if(to_struct[0].isOne()) to_struct.delChild(1, true);
+								else if(to_struct[1].isOne()) to_struct.delChild(2, true);
+							}
+							mparse2.multiply(to_struct);
+							mparse2.format(po);
+							parsed_expression = mparse2.print(po);
+							parsed_expression += CALCULATOR->localToString();
+						}
+						CALCULATOR->endTemporaryStopMessages();
+					}
 				}
 				CALCULATOR->beginTemporaryStopMessages();
 				parsed_expression += mparse.print(po);
@@ -9294,6 +9328,48 @@ void set_previous_expression() {
 	}
 }
 
+void fix_to_struct(MathStructure &m) {
+	if(m.isPower() && m[0].isUnit()) {
+		if(m[0].prefix() == NULL && m[0].unit()->referenceName() == "g") {
+			m[0].setPrefix(CALCULATOR->getOptimalDecimalPrefix(3));
+		} else if(m[0].unit() == CALCULATOR->u_euro) {
+			Unit *u = CALCULATOR->getLocalCurrency();
+			if(u) m[0].setUnit(u);
+		}
+	} else if(m.isUnit()) {
+		if(m.prefix() == NULL && m.unit()->referenceName() == "g") {
+			m.setPrefix(CALCULATOR->getOptimalDecimalPrefix(3));
+		} else if(m.unit() == CALCULATOR->u_euro) {
+			Unit *u = CALCULATOR->getLocalCurrency();
+			if(u) m.setUnit(u);
+		}
+	} else {
+		for(size_t i = 0; i < m.size();) {
+			if(m[i].isUnit()) {
+				if(m[i].prefix() == NULL && m[i].unit()->referenceName() == "g") {
+					m[i].setPrefix(CALCULATOR->getOptimalDecimalPrefix(3));
+				} else if(m[i].unit() == CALCULATOR->u_euro) {
+					Unit *u = CALCULATOR->getLocalCurrency();
+					if(u) m[i].setUnit(u);
+				}
+				i++;
+			} else if(m[i].isPower() && m[i][0].isUnit()) {
+				if(m[i][0].prefix() == NULL && m[i][0].unit()->referenceName() == "g") {
+					m[i][0].setPrefix(CALCULATOR->getOptimalDecimalPrefix(3));
+				} else if(m[i][0].unit() == CALCULATOR->u_euro) {
+					Unit *u = CALCULATOR->getLocalCurrency();
+					if(u) m[i][0].setUnit(u);
+				}
+				i++;
+			} else {
+				m.delChild(i + 1);
+			}
+		}
+		if(m.size() == 0) m.clear();
+		if(m.size() == 1) m.setToChild(1);
+	}
+}
+
 /*
 	calculate entered expression and display result
 */
@@ -9867,6 +9943,24 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	while(CALCULATOR->busy()) {
 		while(gtk_events_pending()) gtk_main_iteration();
 		sleep_ms(100);
+	}
+	if(!do_mathoperation && do_conv && parsed_tostruct->containsType(STRUCT_UNIT, true) && !mstruct->containsType(STRUCT_UNIT, false, true, true) && !parsed_mstruct->containsType(STRUCT_UNIT, false, true, true)) {
+		MathStructure to_struct(CALCULATOR->convertToBaseUnits(*parsed_tostruct));
+		fix_to_struct(to_struct);
+		if(!to_struct.isZero()) {
+			mstruct->multiply(to_struct);
+			to_struct.format(printops);
+			if(to_struct.isMultiplication() && to_struct.size() >= 2) {
+				if(to_struct[0].isOne()) to_struct.delChild(1, true);
+				else if(to_struct[1].isOne()) to_struct.delChild(2, true);
+			}
+			parsed_mstruct->multiply(to_struct);
+			CALCULATOR->calculate(mstruct, 0, evalops, CALCULATOR->unlocalizeExpression(to_str, evalops.parse_options));
+			while(CALCULATOR->busy()) {
+				while(gtk_events_pending()) gtk_main_iteration();
+				sleep_ms(100);
+			}
+		}
 	}
 	update_expression_icons();
 	if(was_busy) {
