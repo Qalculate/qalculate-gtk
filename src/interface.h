@@ -161,6 +161,7 @@ GtkWidget* get_decimals_dialog (void);
 GtkWidget* get_plot_dialog (void);
 GtkWidget* get_precision_dialog (void);
 GtkWidget* get_periodic_dialog (void);
+GtkWidget* get_shortcuts_dialog (void);
 GtkWidget* create_InfoWidget(const gchar *text);
 
 #endif /* INTERFACE_H */

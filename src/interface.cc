@@ -1,7 +1,7 @@
 /*
     Qalculate (GTK+ UI)
 
-    Copyright (C) 2003-2007, 2008, 2016  Hanna Knutsson (hanna.knutsson@protonmail.com)
+    Copyright (C) 2003-2007, 2008, 2016-2020  Hanna Knutsson (hanna.knutsson@protonmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ using std::deque;
 
 extern GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *datasetedit_builder, *datasets_builder, *setbase_builder, *decimals_builder;
 extern GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
-extern GtkBuilder *preferences_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder;
+extern GtkBuilder *shortcuts_builder, *preferences_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder;
 extern GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_builder, *calendarconversion_builder;
 extern vector<mode_struct> modes;
 
@@ -112,6 +112,9 @@ GtkListStore *tDataProperties_store;
 
 GtkWidget *tNames;
 GtkListStore *tNames_store;
+
+GtkWidget *tShortcuts;
+GtkListStore *tShortcuts_store;
 
 GtkWidget *tabs, *expander_keypad, *expander_history, *expander_stack, *expander_convert;
 GtkEntryCompletion *completion;
@@ -196,6 +199,8 @@ gchar history_parse_color[8];
 gchar history_bookmark_color[8];
 
 extern unordered_map<string, GdkPixbuf*> flag_images;
+
+extern unordered_map<guint64, keyboard_shortcut> keyboard_shortcuts;
 
 extern string fix_history_string(const string &str);
 
@@ -3061,3 +3066,52 @@ GtkWidget* get_periodic_dialog (void) {
 
 	return GTK_WIDGET(gtk_builder_get_object(periodictable_builder, "periodic_dialog"));
 }
+
+GtkWidget*
+get_shortcuts_dialog (void)
+{
+	if(!shortcuts_builder) {
+
+		shortcuts_builder = getBuilder("shortcuts.ui");
+		g_assert(shortcuts_builder != NULL);
+
+		g_assert(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog") != NULL);
+
+		tShortcuts = GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_treeview"));
+
+		tShortcuts_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_UINT64);
+		gtk_tree_view_set_model(GTK_TREE_VIEW(tShortcuts), GTK_TREE_MODEL(tShortcuts_store));
+		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcuts));
+		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
+		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Action"), renderer, "text", 0, NULL);
+		gtk_tree_view_column_set_sort_column_id(column, 0);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(tShortcuts), column);
+		renderer = gtk_cell_renderer_text_new();
+		column = gtk_tree_view_column_new_with_attributes(_("Value"), renderer, "text", 1, NULL);
+		gtk_tree_view_column_set_sort_column_id(column, 1);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(tShortcuts), column);
+		renderer = gtk_cell_renderer_text_new();
+		column = gtk_tree_view_column_new_with_attributes(_("Key combination"), renderer, "text", 2, NULL);
+		gtk_tree_view_column_set_sort_column_id(column, 2);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(tShortcuts), column);
+		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tShortcuts_selection_changed), NULL);
+
+		for(int i = 0; i <= SHORTCUT_TYPE_UPDATE_EXRATES; i++) {
+			gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(shortcuts_builder, "shortcuts_combobox_type")), shortcut_type_text(i));
+		}		
+		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(shortcuts_builder, "shortcuts_combobox_type")), 0);
+
+		for(unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.begin(); it != keyboard_shortcuts.end(); ++it) {
+			GtkTreeIter iter;
+			gtk_list_store_insert(tShortcuts_store, &iter, 0);
+			gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_type_text(it->second.type), 1, it->second.value.c_str(), 2, shortcut_to_text(it->second.key, it->second.modifier).c_str(), 3, (guint64) it->second.key + (guint64) G_MAXUINT32 * (guint64) it->second.modifier, -1);
+		}
+
+		gtk_builder_connect_signals(shortcuts_builder, NULL);
+
+	}
+
+	return GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog"));
+}
+

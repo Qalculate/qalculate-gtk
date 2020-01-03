@@ -60,6 +60,44 @@ enum {
 	QALCULATE_HISTORY_BOOKMARK
 };
 
+enum {
+	SHORTCUT_TYPE_FUNCTION,
+	SHORTCUT_TYPE_FUNCTION_WITH_DIALOG,
+	SHORTCUT_TYPE_VARIABLE,
+	SHORTCUT_TYPE_UNIT,
+	SHORTCUT_TYPE_TEXT,
+	SHORTCUT_TYPE_DATE,
+	SHORTCUT_TYPE_VECTOR,
+	SHORTCUT_TYPE_MATRIX,
+	SHORTCUT_TYPE_SMART_PARENTHESES,
+	SHORTCUT_TYPE_CONVERT,
+	SHORTCUT_TYPE_OPTIMAL_UNIT,
+	SHORTCUT_TYPE_BASE_UNITS,
+	SHORTCUT_TYPE_OPTIMAL_PREFIX,
+	SHORTCUT_TYPE_TO_NUMBER_BASE,
+	SHORTCUT_TYPE_FACTORIZE,
+	SHORTCUT_TYPE_EXPAND,
+	SHORTCUT_TYPE_PARTIAL_FRACTIONS,
+	SHORTCUT_TYPE_SET_UNKNOWNS,
+	SHORTCUT_TYPE_META_MODE,
+	SHORTCUT_TYPE_OUTPUT_BASE,
+	SHORTCUT_TYPE_INPUT_BASE,
+	SHORTCUT_TYPE_PLOT,
+	SHORTCUT_TYPE_PERIODIC_TABLE,
+	SHORTCUT_TYPE_CALENDARS,
+	SHORTCUT_TYPE_UPDATE_EXRATES
+};
+
+struct keyboard_shortcut {
+	guint key;
+	guint modifier;
+	int type;
+	std::string value;
+};
+
+std::string shortcut_to_text(guint key, guint state);
+const gchar *shortcut_type_text(int type);
+
 DECLARE_BUILTIN_FUNCTION(AnswerFunction, 0)
 DECLARE_BUILTIN_FUNCTION(ExpressionFunction, 0)
 DECLARE_BUILTIN_FUNCTION(SetTitleFunction, 0)
@@ -164,6 +202,8 @@ void on_tFunctionArguments_selection_changed(GtkTreeSelection *treeselection, gp
 void update_function_arguments_list(MathFunction *f);
 
 void on_tNames_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
+
+void on_tShortcuts_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 
 void convert_in_wUnits(int toFrom = -1);
 
