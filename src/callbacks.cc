@@ -357,6 +357,8 @@ bool complex_angle_form = false;
 
 unordered_map<guint64, keyboard_shortcut> keyboard_shortcuts;
 
+bool default_shortcuts;
+
 guint32 current_shortcut_key = 0;
 guint32 current_shortcut_modifier = 0;
 
@@ -4796,18 +4798,27 @@ void on_tNames_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 
 string shortcut_to_text(guint key, guint state) {
 	string str;
-	if(state & GDK_SHIFT_MASK) {if(!str.empty()) str += "+"; str += "Shift";}
 	if(state & GDK_LOCK_MASK) {if(!str.empty()) str += "+"; str += "Lock";}
-	if(state & GDK_CONTROL_MASK) {if(!str.empty()) str += "+"; str += "Control";}
+	if(state & GDK_CONTROL_MASK) {if(!str.empty()) str += "+"; str += "Ctrl";}
+	if(state & GDK_SUPER_MASK) {if(!str.empty()) str += "+"; str += "Super";}
+	if(state & GDK_HYPER_MASK) {if(!str.empty()) str += "+"; str += "Hyper";}
+	if(state & GDK_META_MASK) {if(!str.empty()) str += "+"; str += "Meta";}
 	if(state & GDK_MOD1_MASK) {if(!str.empty()) str += "+"; str += "Alt";}
+	if(state & GDK_SHIFT_MASK) {if(!str.empty()) str += "+"; str += "Shift";}
 	if(state & GDK_MOD2_MASK) {if(!str.empty()) str += "+"; str += "Mod2";}
 	if(state & GDK_MOD3_MASK) {if(!str.empty()) str += "+"; str += "Mod3";}
 	if(state & GDK_MOD4_MASK) {if(!str.empty()) str += "+"; str += "Mod4";}
 	if(state & GDK_MOD5_MASK) {if(!str.empty()) str += "+"; str += "Mod5";}
-	if(state & GDK_SUPER_MASK) {if(!str.empty()) str += "+"; str += "Super";}
-	if(state & GDK_HYPER_MASK) {if(!str.empty()) str += "+"; str += "Hyper";}
-	if(state & GDK_META_MASK) {if(!str.empty()) str += "+"; str += "Meta";}
-	if(!str.empty()) str += "+"; str += gdk_keyval_name(key);
+	if(!str.empty()) str += "+";
+	gunichar uni = gdk_keyval_to_unicode(key);
+	if(uni == 0 || !g_unichar_isprint(uni)) {
+		str += gdk_keyval_name(key);
+	} else {
+		uni = g_unichar_toupper(uni);
+		char s[7];
+		s[g_unichar_to_utf8(uni, s)] = '\0';
+		str += s;
+	}
 	return str;
 }
 const gchar *shortcut_type_text(int type) {
@@ -4822,6 +4833,7 @@ const gchar *shortcut_type_text(int type) {
 		case SHORTCUT_TYPE_MATRIX: {return _("Insert matrix"); break;}
 		case SHORTCUT_TYPE_SMART_PARENTHESES: {return _("Insert smart parentheses"); break;}
 		case SHORTCUT_TYPE_CONVERT: {return _("Convert to unit"); break;}
+		case SHORTCUT_TYPE_CONVERT_ENTRY: {return _("Convert to unit (entry)"); break;}
 		case SHORTCUT_TYPE_OPTIMAL_UNIT: {return _("Convert to optimal unit"); break;}
 		case SHORTCUT_TYPE_BASE_UNITS: {return _("Convert to base units"); break;}
 		case SHORTCUT_TYPE_OPTIMAL_PREFIX: {return _("Convert to optimal prefix"); break;}
@@ -4830,15 +4842,217 @@ const gchar *shortcut_type_text(int type) {
 		case SHORTCUT_TYPE_EXPAND: {return _("Expand result"); break;}
 		case SHORTCUT_TYPE_PARTIAL_FRACTIONS: {return _("Expand partial fractions"); break;}
 		case SHORTCUT_TYPE_SET_UNKNOWNS: {return _("Set unknowns"); break;}
+		case SHORTCUT_TYPE_RPN_DOWN: {return _("RPN: down"); break;}
+		case SHORTCUT_TYPE_RPN_UP: {return _("RPN: up"); break;}
+		case SHORTCUT_TYPE_RPN_SWAP: {return _("RPN: swap"); break;}
+		case SHORTCUT_TYPE_RPN_COPY: {return _("RPN: copy"); break;}
+		case SHORTCUT_TYPE_RPN_LASTX: {return _("RPN: lastx"); break;}
+		case SHORTCUT_TYPE_RPN_DELETE: {return _("RPN: delete register"); break;}
+		case SHORTCUT_TYPE_RPN_CLEAR: {return _("RPN: clear stack"); break;}
 		case SHORTCUT_TYPE_META_MODE: {return _("Load meta mode"); break;}
 		case SHORTCUT_TYPE_INPUT_BASE: {return _("Set expression base"); break;}
 		case SHORTCUT_TYPE_OUTPUT_BASE: {return _("Set result base"); break;}
+		case SHORTCUT_TYPE_EXACT_MODE: {return _("Toggle exact mode"); break;}
+		case SHORTCUT_TYPE_RPN_MODE: {return _("Toggle RPN mode"); break;}
+		case SHORTCUT_TYPE_AUTOCALC: {return _("Toggle calculate as you type"); break;}
+		case SHORTCUT_TYPE_PROGRAMMING: {return _("Toggle programming keypad"); break;}
+		case SHORTCUT_TYPE_KEYPAD: {return _("Show keypad"); break;}
+		case SHORTCUT_TYPE_HISTORY: {return _("Show history"); break;}
+		case SHORTCUT_TYPE_CONVERSION: {return _("Show conversion"); break;}
+		case SHORTCUT_TYPE_STACK: {return _("Show RPN stack"); break;}
+		case SHORTCUT_TYPE_MANAGE_VARIABLES: {return _("Manage variables"); break;}
+		case SHORTCUT_TYPE_MANAGE_FUNCTIONS: {return _("Manage functions"); break;}
+		case SHORTCUT_TYPE_MANAGE_UNITS: {return _("Manage units"); break;}
+		case SHORTCUT_TYPE_MANAGE_DATA_SETS: {return _("Manage data sets"); break;}
+		case SHORTCUT_TYPE_STORE: {return _("Store result"); break;}
+		case SHORTCUT_TYPE_NEW_VARIABLE: {return _("New variable"); break;}
+		case SHORTCUT_TYPE_NEW_FUNCTION: {return _("New function"); break;}
 		case SHORTCUT_TYPE_PLOT: {return _("Open plot functions/data"); break;}
-		case SHORTCUT_TYPE_PERIODIC_TABLE: {return _("Open periodic table"); break;}
+		case SHORTCUT_TYPE_NUMBER_BASES: {return _("Open convert number bases"); break;}
 		case SHORTCUT_TYPE_CALENDARS: {return _("Open calender conversion"); break;}
+		case SHORTCUT_TYPE_PERCENTAGE_TOOL: {return _("Open percentage calculation tool"); break;}
+		case SHORTCUT_TYPE_PERIODIC_TABLE: {return _("Open periodic table"); break;}
 		case SHORTCUT_TYPE_UPDATE_EXRATES: {return _("Update exchange rates"); break;}
 	}
 	return "";
+}
+void update_accels() {
+	for(unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.begin(); it != keyboard_shortcuts.end(); ++it) {
+		switch(it->second.type) {
+			case SHORTCUT_TYPE_DATE: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_insert_date")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_VECTOR: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_insert_vector")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_MATRIX: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_insert_matrix")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_SMART_PARENTHESES: {
+				string str = _("Smart parentheses");
+				str += " (";
+				str += shortcut_to_text(it->second.key, it->second.modifier);
+				str += ")";
+				gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_wrap")), str.c_str());
+				break;
+			}
+			case SHORTCUT_TYPE_CONVERT_ENTRY: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_convert_to_custom_unit")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_OPTIMAL_UNIT: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_convert_to_best_unit")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_BASE_UNITS: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_convert_to_base_units")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_FACTORIZE: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_factorize")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_EXPAND: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_simplify")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_PARTIAL_FRACTIONS: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_expand_partial_fractions")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_SET_UNKNOWNS: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_set_unknowns")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_RPN_UP: {
+				string str = _("Rotate the stack or move selected register up");
+				str += " (";
+				str += shortcut_to_text(it->second.key, it->second.modifier);
+				str += ")";
+				gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), str.c_str());
+				break;
+			}
+			case SHORTCUT_TYPE_RPN_DOWN: {
+				string str = _("Rotate the stack or move selected register down");
+				str += " (";
+				str += shortcut_to_text(it->second.key, it->second.modifier);
+				str += ")";
+				gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerdown")), str.c_str());
+				break;
+			}
+			case SHORTCUT_TYPE_RPN_SWAP: {
+				string str = _("Swap the to top values or move the selected value to the top of the stack");
+				str += " (";
+				str += shortcut_to_text(it->second.key, it->second.modifier);
+				str += ")";
+				gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), str.c_str());
+				break;
+			}
+			case SHORTCUT_TYPE_RPN_COPY: {
+				string str = _("Copy the the selected or top value to the top of the stack");
+				str += " (";
+				str += shortcut_to_text(it->second.key, it->second.modifier);
+				str += ")";
+				gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_copyregister")), str.c_str());
+				break;
+			}
+			case SHORTCUT_TYPE_RPN_LASTX: {
+				string str = _("Enter the top value from before the last numeric operation");
+				str += " (";
+				str += shortcut_to_text(it->second.key, it->second.modifier);
+				str += ")";
+				gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_lastx")), str.c_str());
+				break;
+			}
+			case SHORTCUT_TYPE_RPN_DELETE: {
+				string str = _("Delete the top or selected value");
+				str += " (";
+				str += shortcut_to_text(it->second.key, it->second.modifier);
+				str += ")";
+				gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_deleteregister")), str.c_str());
+				break;
+			}
+			case SHORTCUT_TYPE_RPN_CLEAR: {
+				string str = _("Clear the RPN stack");
+				str += " (";
+				str += shortcut_to_text(it->second.key, it->second.modifier);
+				str += ")";
+				gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), str.c_str());
+				break;
+			}
+			case SHORTCUT_TYPE_RPN_MODE: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_rpn_mode")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_AUTOCALC: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_autocalc")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_PROGRAMMING: {
+				string str = _("Show/hide programming keypad");
+				str += " (";
+				str += shortcut_to_text(it->second.key, it->second.modifier);
+				str += ")";
+				gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_programmers_keypad")), str.c_str());
+				break;
+			}
+			case SHORTCUT_TYPE_MANAGE_VARIABLES: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_manage_variables")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_MANAGE_FUNCTIONS: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_manage_functions")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_MANAGE_UNITS: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_manage_units")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_MANAGE_DATA_SETS: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_datasets")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_STORE: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_save")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_NEW_VARIABLE: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_new_variable")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_NEW_FUNCTION: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_new_function_simple")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_PLOT: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_plot_functions")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_NUMBER_BASES: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_convert_number_bases")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_CALENDARS: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_show_calendarconversion_dialog")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_PERCENTAGE_TOOL: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_show_percentage_dialog")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_PERIODIC_TABLE: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_periodic_table")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_UPDATE_EXRATES: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_fetch_exchange_rates")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+		}
+	}
 }
 
 void on_tShortcuts_selection_changed(GtkTreeSelection *treeselection, gpointer) {
@@ -15019,6 +15233,9 @@ void load_preferences() {
 	expression_history_index = -1;
 	hexadecimal_twos_complement_in = false;
 	twos_complement_in = false;
+	
+	default_shortcuts = true;
+	keyboard_shortcuts.clear();
 
 #ifdef _WIN32
 	last_version_check_date.setToCurrentDate();
@@ -15711,6 +15928,7 @@ void load_preferences() {
 				} else if(svar == "plot_linewidth") {
 					default_plot_linewidth = v;
 				} else if(svar == "keyboard_shortcut") {
+					default_shortcuts = false;
 					char str[svalue.length()];
 					keyboard_shortcut ks;
 					int n = sscanf(svalue.c_str(), "%u:%u:%i:%s", &ks.key, &ks.modifier, &ks.type, str);
@@ -15839,6 +16057,33 @@ void load_preferences() {
 		}
 	} else {
 		first_time = true;
+	}
+	if(default_shortcuts) {
+		keyboard_shortcut ks;
+#define ADD_SHORTCUT(k, m, t, v) ks.key = k; ks.modifier = m; ks.type = t; ks.value = v; keyboard_shortcuts[(guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier] = ks;
+		ADD_SHORTCUT(GDK_KEY_b, GDK_CONTROL_MASK, SHORTCUT_TYPE_NUMBER_BASES, "")
+		ADD_SHORTCUT(GDK_KEY_s, GDK_CONTROL_MASK, SHORTCUT_TYPE_STORE, "")
+		ADD_SHORTCUT(GDK_KEY_m, GDK_CONTROL_MASK, SHORTCUT_TYPE_MANAGE_VARIABLES, "")
+		ADD_SHORTCUT(GDK_KEY_f, GDK_CONTROL_MASK, SHORTCUT_TYPE_MANAGE_FUNCTIONS, "")
+		ADD_SHORTCUT(GDK_KEY_u, GDK_CONTROL_MASK, SHORTCUT_TYPE_MANAGE_UNITS, "")
+		ADD_SHORTCUT(GDK_KEY_k, GDK_CONTROL_MASK, SHORTCUT_TYPE_KEYPAD, "")
+		ADD_SHORTCUT(GDK_KEY_k, GDK_MOD1_MASK, SHORTCUT_TYPE_KEYPAD, "")
+		ADD_SHORTCUT(GDK_KEY_h, GDK_CONTROL_MASK, SHORTCUT_TYPE_HISTORY, "")
+		ADD_SHORTCUT(GDK_KEY_h, GDK_MOD1_MASK, SHORTCUT_TYPE_HISTORY, "")
+		ADD_SHORTCUT(GDK_KEY_o, GDK_CONTROL_MASK, SHORTCUT_TYPE_CONVERSION, "")
+		ADD_SHORTCUT(GDK_KEY_o, GDK_MOD1_MASK, SHORTCUT_TYPE_CONVERSION, "")
+		ADD_SHORTCUT(GDK_KEY_t, GDK_CONTROL_MASK, SHORTCUT_TYPE_CONVERT_ENTRY, "")
+		ADD_SHORTCUT(GDK_KEY_p, GDK_CONTROL_MASK, SHORTCUT_TYPE_PROGRAMMING, "")
+		ADD_SHORTCUT(GDK_KEY_r, GDK_CONTROL_MASK, SHORTCUT_TYPE_RPN_MODE, "")
+		ADD_SHORTCUT(GDK_KEY_parenright, GDK_CONTROL_MASK, SHORTCUT_TYPE_SMART_PARENTHESES, "")
+		ADD_SHORTCUT(GDK_KEY_parenleft, GDK_CONTROL_MASK, SHORTCUT_TYPE_SMART_PARENTHESES, "")
+		ADD_SHORTCUT(GDK_KEY_Up, GDK_CONTROL_MASK, SHORTCUT_TYPE_RPN_UP, "")
+		ADD_SHORTCUT(GDK_KEY_Down, GDK_CONTROL_MASK, SHORTCUT_TYPE_RPN_DOWN, "")
+		ADD_SHORTCUT(GDK_KEY_Right, GDK_CONTROL_MASK, SHORTCUT_TYPE_RPN_SWAP, "")
+		ADD_SHORTCUT(GDK_KEY_Left, GDK_CONTROL_MASK, SHORTCUT_TYPE_RPN_LASTX, "")
+		ADD_SHORTCUT(GDK_KEY_c, GDK_CONTROL_MASK | GDK_SHIFT_MASK, SHORTCUT_TYPE_RPN_COPY, "")
+		ADD_SHORTCUT(GDK_KEY_Delete, GDK_CONTROL_MASK, SHORTCUT_TYPE_RPN_DELETE, "")
+		ADD_SHORTCUT(GDK_KEY_Delete, GDK_CONTROL_MASK | GDK_SHIFT_MASK, SHORTCUT_TYPE_RPN_CLEAR, "")
 	}
 	update_message_print_options();
 	displayed_printops = printops;
@@ -15992,9 +16237,11 @@ void save_preferences(bool mode) {
 	fprintf(file, "multiplication_sign=%i\n", printops.multiplication_sign);
 	fprintf(file, "division_sign=%i\n", printops.division_sign);
 	if(automatic_fraction) fprintf(file, "automatic_number_fraction_format=%i\n", automatic_fraction);
-	for(unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.begin(); it != keyboard_shortcuts.end(); ++it) {
-		if(it->second.value.empty()) fprintf(file, "keyboard_shortcut=%u:%u:%i\n", it->second.key, it->second.modifier, it->second.type);
-		else fprintf(file, "keyboard_shortcut=%u:%u:%i:%s\n", it->second.key, it->second.modifier, it->second.type, it->second.value.c_str());
+	if(!default_shortcuts) {
+		for(unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.begin(); it != keyboard_shortcuts.end(); ++it) {
+			if(it->second.value.empty()) fprintf(file, "keyboard_shortcut=%u:%u:%i\n", it->second.key, it->second.modifier, it->second.type);
+			else fprintf(file, "keyboard_shortcut=%u:%u:%i:%s\n", it->second.key, it->second.modifier, it->second.type, it->second.value.c_str());
+		}
 	}
 	for(size_t i = 0; i < expression_history.size(); i++) {
 		fprintf(file, "expression_history=%s\n", expression_history[i].c_str());
@@ -25818,10 +26065,12 @@ gboolean on_units_convert_to_button_key_press_event(GtkWidget*, GdkEventKey *eve
 bool do_keyboard_shortcut(GdkEventKey *event) {
 	guint state = event->state;
 	state = state & ~GDK_MOD2_MASK;
+	state = state & ~GDK_MOD3_MASK;
+	state = state & ~GDK_MOD4_MASK;
 	state = state & ~GDK_MOD5_MASK;
 	state = state & ~GDK_LOCK_MASK;
-
 	unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find((guint64) event->keyval + (guint64) G_MAXUINT32 * (guint64) state);
+	if(it == keyboard_shortcuts.end() && event->keyval == GDK_KEY_KP_Delete) it = keyboard_shortcuts.find((guint64) GDK_KEY_Delete + (guint64) G_MAXUINT32 * (guint64) state);
 	if(it != keyboard_shortcuts.end()) {
 		switch(it->second.type) {
 			case SHORTCUT_TYPE_FUNCTION: {
@@ -25871,6 +26120,10 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 				executeCommand(COMMAND_CONVERT_STRING, true, it->second.value);
 				return true;
 			}
+			case SHORTCUT_TYPE_CONVERT_ENTRY: {
+				on_menu_item_convert_to_unit_expression_activate(NULL, NULL);
+				return true;
+			}
 			case SHORTCUT_TYPE_OPTIMAL_UNIT: {
 				executeCommand(COMMAND_CONVERT_OPTIMAL);
 				return true;
@@ -25911,6 +26164,41 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 				on_menu_item_set_unknowns_activate(NULL, NULL);
 				return true;
 			}
+			case SHORTCUT_TYPE_RPN_UP: {
+				if(!rpn_mode) return false;
+				on_button_registerup_clicked(NULL, NULL);
+				return true;
+			}
+			case SHORTCUT_TYPE_RPN_DOWN: {
+				if(!rpn_mode) return false;
+				on_button_registerdown_clicked(NULL, NULL);
+				return true;
+			}
+			case SHORTCUT_TYPE_RPN_SWAP: {
+				if(!rpn_mode) return false;
+				on_button_registerswap_clicked(NULL, NULL);
+				return true;
+			}
+			case SHORTCUT_TYPE_RPN_COPY: {
+				if(!rpn_mode) return false;
+				on_button_copyregister_clicked(NULL, NULL);
+				return true;
+			}
+			case SHORTCUT_TYPE_RPN_LASTX: {
+				if(!rpn_mode) return false;
+				on_button_lastx_clicked(NULL, NULL);
+				return true;
+			}
+			case SHORTCUT_TYPE_RPN_DELETE: {
+				if(!rpn_mode) return false;
+				on_button_deleteregister_clicked(NULL, NULL);
+				return true;
+			}
+			case SHORTCUT_TYPE_RPN_CLEAR: {
+				if(!rpn_mode) return false;
+				on_button_clearstack_clicked(NULL, NULL);
+				return true;
+			}
 			case SHORTCUT_TYPE_META_MODE: {
 				for(size_t i = 0; i < modes.size(); i++) {
 					if(equalsIgnoreCase(modes[i].name, it->second.value)) {
@@ -25939,16 +26227,81 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 				output_base_updated_from_menu();
 				return true;
 			}
+			case SHORTCUT_TYPE_RPN_MODE: {
+				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_mode")), !rpn_mode);
+				return true;
+			}
+			case SHORTCUT_TYPE_AUTOCALC: {
+				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_autocalc")), !auto_calculate);
+				return true;
+			}
+			case SHORTCUT_TYPE_PROGRAMMING: {
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_programmers_keypad")), visible_keypad != 1);
+				return true;
+			}
+			case SHORTCUT_TYPE_KEYPAD: {
+				//void on_expander_history_expanded(GObject *o, GParamSpec*, gpointer)
+				gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad")), !gtk_expander_get_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad"))));
+				return true;
+			}
+			case SHORTCUT_TYPE_HISTORY: {
+				gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_history")), !gtk_expander_get_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_history"))));
+				return true;
+			}
+			case SHORTCUT_TYPE_CONVERSION: {
+				gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_convert")), !gtk_expander_get_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_convert"))));
+				return true;
+			}
+			case SHORTCUT_TYPE_STACK: {
+				gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_stack")), !gtk_expander_get_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_stack"))));
+				return true;
+			}
+			case SHORTCUT_TYPE_MANAGE_VARIABLES: {
+				on_menu_item_manage_variables_activate(NULL, NULL);
+				return true;
+			}
+			case SHORTCUT_TYPE_MANAGE_FUNCTIONS: {
+				on_menu_item_manage_functions_activate(NULL, NULL);
+				return true;
+			}
+			case SHORTCUT_TYPE_MANAGE_UNITS: {
+				on_menu_item_manage_units_activate(NULL, NULL);
+				return true;
+			}
+			case SHORTCUT_TYPE_MANAGE_DATA_SETS: {
+				on_menu_item_datasets_activate(NULL, NULL);
+				return true;
+			}
+			case SHORTCUT_TYPE_STORE: {
+				on_menu_item_save_activate(NULL, NULL);
+				return true;
+			}
+			case SHORTCUT_TYPE_NEW_VARIABLE: {
+				on_menu_item_new_variable_activate(NULL, NULL);
+				return true;
+			}
+			case SHORTCUT_TYPE_NEW_FUNCTION: {
+				on_menu_item_new_function_simple_activate(NULL, NULL);
+				return true;
+			}
 			case SHORTCUT_TYPE_PLOT: {
 				on_menu_item_plot_functions_activate(NULL, NULL);
 				return true;
 			}
-			case SHORTCUT_TYPE_PERIODIC_TABLE: {
-				on_menu_item_periodic_table_activate(NULL, NULL);
+			case SHORTCUT_TYPE_NUMBER_BASES: {
+				on_menu_item_convert_number_bases_activate(NULL, NULL);
 				return true;
 			}
 			case SHORTCUT_TYPE_CALENDARS: {
 				on_menu_item_show_calendarconversion_dialog_activate(NULL, NULL);
+				return true;
+			}
+			case SHORTCUT_TYPE_PERCENTAGE_TOOL: {
+				on_menu_item_show_percentage_dialog_activate(NULL, NULL);
+				return true;
+			}
+			case SHORTCUT_TYPE_PERIODIC_TABLE: {
+				on_menu_item_periodic_table_activate(NULL, NULL);
 				return true;
 			}
 			case SHORTCUT_TYPE_UPDATE_EXRATES: {
@@ -26367,11 +26720,6 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 			}
 			case GDK_KEY_z: {
 				expression_undo();
-				return TRUE;
-			}
-			case GDK_KEY_parenleft: {}
-			case GDK_KEY_parenright: {
-				on_button_brace_wrap_clicked(NULL, NULL);
 				return TRUE;
 			}
 		}
@@ -26974,18 +27322,26 @@ GtkWidget *shortcut_label = NULL;
 gboolean on_shortcut_key_released(GtkWidget *w, GdkEventKey *event, gpointer) {
 	guint state = event->state;
 	state = state & ~GDK_MOD2_MASK;
+	state = state & ~GDK_MOD3_MASK;
+	state = state & ~GDK_MOD4_MASK;
 	state = state & ~GDK_MOD5_MASK;
 	state = state & ~GDK_LOCK_MASK;
-	if(event->keyval == 0) return FALSE;
-	if(state == 0 && ((event->keyval >= GDK_KEY_A && event->keyval <= GDK_KEY_Z) || (event->keyval >= GDK_KEY_a && event->keyval <= GDK_KEY_z) || (event->keyval >= GDK_KEY_0 && event->keyval <= GDK_KEY_9))) return FALSE;
+	if(event->keyval == 0 || (event->keyval >= GDK_KEY_Shift_L && event->keyval <= GDK_KEY_Hyper_R)) return FALSE;
+	if(state == 0 && event->keyval == GDK_KEY_Escape) {
+		gtk_dialog_response(GTK_DIALOG(w), GTK_RESPONSE_CANCEL);
+		return TRUE;
+	}
+	if(state == 0 && event->keyval >= GDK_KEY_ampersand && event->keyval <= GDK_KEY_z) return FALSE;
 	current_shortcut_key = event->keyval;
 	current_shortcut_modifier = state;
-	gtk_widget_destroy(w);
+	gtk_dialog_response(GTK_DIALOG(w), GTK_RESPONSE_OK);
 	return TRUE;
 }
 gboolean on_shortcut_key_pressed(GtkWidget *w, GdkEventKey *event, gpointer) {
 	guint state = event->state;
 	state = state & ~GDK_MOD2_MASK;
+	state = state & ~GDK_MOD3_MASK;
+	state = state & ~GDK_MOD4_MASK;
 	state = state & ~GDK_MOD5_MASK;
 	state = state & ~GDK_LOCK_MASK;
 	string str = "<span size=\"large\">";
@@ -27006,16 +27362,18 @@ void on_shortcuts_button_shortcut_clicked(GtkButton, gpointer) {
 	g_signal_connect(dialog, "key-release-event", G_CALLBACK(on_shortcut_key_released), dialog);
 	gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), shortcut_label, TRUE, TRUE, 24);
 	gtk_widget_show(shortcut_label);
-	gtk_dialog_run(GTK_DIALOG(dialog));
-	if(current_shortcut_key == 0 && current_shortcut_modifier == 0) {
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(shortcuts_builder, "shortcuts_label_shortcut")), _("Set key combination"));
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_add")), FALSE);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_modify")), FALSE);
-	} else {
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(shortcuts_builder, "shortcuts_label_shortcut")), shortcut_to_text(current_shortcut_key, current_shortcut_modifier).c_str());
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_add")), TRUE);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_modify")), gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcuts)), NULL, NULL));
+	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
+		if(current_shortcut_key == 0 && current_shortcut_modifier == 0) {
+			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(shortcuts_builder, "shortcuts_label_shortcut")), _("Set key combination"));
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_add")), FALSE);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_modify")), FALSE);
+		} else {
+			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(shortcuts_builder, "shortcuts_label_shortcut")), shortcut_to_text(current_shortcut_key, current_shortcut_modifier).c_str());
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_add")), TRUE);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_modify")), gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcuts)), NULL, NULL));
+		}
 	}
+	gtk_widget_destroy(dialog);
 }
 void on_shortcuts_combobox_type_changed(GtkComboBox *w, gpointer) {
 	switch(gtk_combo_box_get_active(w)) {
@@ -27121,6 +27479,7 @@ void on_shortcuts_button_add_clicked(GtkButton*, gpointer) {
 			break;
 		}
 	}
+	default_shortcuts = false;
 	GtkTreeIter iter;
 	gtk_list_store_append(tShortcuts_store, &iter);
 	gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_type_text(ks.type), 1, ks.value.c_str(), 2, shortcut_to_text(ks.key, ks.modifier).c_str(), 3, id, -1);
@@ -27182,6 +27541,7 @@ void on_shortcuts_button_remove_clicked(GtkButton*, gpointer) {
 		gtk_tree_model_get(GTK_TREE_MODEL(tShortcuts_store), &iter, 3, &id, -1);
 		keyboard_shortcuts.erase(id);
 		gtk_list_store_remove(tShortcuts_store, &iter);
+		default_shortcuts = false;
 	}
 }
 

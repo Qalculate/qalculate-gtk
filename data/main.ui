@@ -693,7 +693,6 @@
                         <property name="label" translatable="yes">_Store Result…</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_menu_item_save_activate" swapped="no"/>
-                        <accelerator key="S" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                     <child>
@@ -762,7 +761,6 @@
                         <property name="label" translatable="yes">Convert Number Bases</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_menu_item_convert_number_bases_activate" swapped="no"/>
-                        <accelerator key="b" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                     <child>
@@ -827,7 +825,6 @@
                         <property name="label" translatable="yes">Manage Variables</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_menu_item_manage_variables_activate" swapped="no"/>
-                        <accelerator key="M" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                     <child>
@@ -837,7 +834,6 @@
                         <property name="label" translatable="yes">Manage Functions</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_menu_item_manage_functions_activate" swapped="no"/>
-                        <accelerator key="F" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                     <child>
@@ -847,7 +843,6 @@
                         <property name="label" translatable="yes">Manage Units</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_menu_item_manage_units_activate" swapped="no"/>
-                        <accelerator key="U" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                     <child>
@@ -925,7 +920,6 @@
                         <property name="label" translatable="yes">Convert to Unit Expression…</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_menu_item_convert_to_unit_expression_activate" swapped="no"/>
-                        <accelerator key="T" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                     <child>
@@ -2219,7 +2213,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                         <property name="tooltip_text" translatable="yes">Activate the RPN stack.</property>
                         <property name="label" translatable="yes">RPN Mode</property>
                         <signal name="activate" handler="on_menu_item_rpn_mode_activate" swapped="no"/>
-                        <accelerator key="r" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                     <child>
@@ -2679,8 +2672,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="K" signal="activate" modifiers="GDK_CONTROL_MASK"/>
-                        <accelerator key="k" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2704,8 +2695,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
-                        <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2730,8 +2719,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="use_underline">True</property>
                           </object>
                         </child>
-                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
-                        <accelerator key="o" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -2784,7 +2771,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="tooltip_text" translatable="yes">Show/hide programming keypad (Ctrl+P)</property>
+                            <property name="tooltip_text" translatable="yes">Show/hide programming keypad</property>
                             <property name="margin_bottom">12</property>
                             <signal name="toggled" handler="on_button_programmers_keypad_toggled" swapped="no"/>
                             <child>
@@ -2819,7 +2806,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 </child>
                               </object>
                             </child>
-                            <accelerator key="p" signal="clicked" modifiers="GDK_CONTROL_MASK"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -3523,6 +3509,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                         <property name="can_focus">True</property>
                                         <property name="focus_on_click">False</property>
                                         <property name="receives_default">False</property>
+                                        <property name="tooltip_text" translatable="yes">Smart parentheses</property>
                                         <property name="use_underline">True</property>
                                         <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
                                         <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
@@ -6599,7 +6586,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="can_focus">True</property>
                                     <property name="focus_on_click">False</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Rotate the stack or move selected register up (Ctrl+Up)</property>
+                                    <property name="tooltip_text" translatable="yes">Rotate the stack or move selected register up</property>
                                     <signal name="clicked" handler="on_button_registerup_clicked" swapped="no"/>
                                     <child>
                                       <object class="GtkImage" id="image_up">
@@ -6623,7 +6610,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="can_focus">True</property>
                                     <property name="focus_on_click">False</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Rotate the stack or move selected register down (Ctrl+Down)</property>
+                                    <property name="tooltip_text" translatable="yes">Rotate the stack or move selected register down</property>
                                     <signal name="clicked" handler="on_button_registerdown_clicked" swapped="no"/>
                                     <child>
                                       <object class="GtkImage" id="image_down">
@@ -6646,7 +6633,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="can_focus">True</property>
                                     <property name="focus_on_click">False</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Swap the to top values or move the selected value to the top of the stack (Ctrl+Right)</property>
+                                    <property name="tooltip_text" translatable="yes">Swap the to top values or move the selected value to the top of the stack</property>
                                     <signal name="clicked" handler="on_button_registerswap_clicked" swapped="no"/>
                                     <child>
                                       <object class="GtkImage" id="image_swap">
@@ -6685,7 +6672,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="can_focus">True</property>
                                     <property name="focus_on_click">False</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Copy the the selected or top value to the top of the stack (Ctrl+Shift+C)</property>
+                                    <property name="tooltip_text" translatable="yes">Copy the the selected or top value to the top of the stack</property>
                                     <signal name="clicked" handler="on_button_copyregister_clicked" swapped="no"/>
                                     <child>
                                       <object class="GtkImage" id="image_copy">
@@ -6708,7 +6695,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="can_focus">True</property>
                                     <property name="focus_on_click">False</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Enter the top value from before the last numeric operation (Ctrl+Left)</property>
+                                    <property name="tooltip_text" translatable="yes">Enter the top value from before the last numeric operation</property>
                                     <signal name="clicked" handler="on_button_lastx_clicked" swapped="no"/>
                                     <child>
                                       <object class="GtkImage" id="image_lastx">
@@ -6731,7 +6718,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="can_focus">True</property>
                                     <property name="focus_on_click">False</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Delete the top or selected value (Ctrl+Delete)</property>
+                                    <property name="tooltip_text" translatable="yes">Delete the top or selected value</property>
                                     <signal name="clicked" handler="on_button_deleteregister_clicked" swapped="no"/>
                                     <child>
                                       <object class="GtkImage" id="image_delete">
@@ -6787,7 +6774,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="can_focus">True</property>
                                 <property name="focus_on_click">False</property>
                                 <property name="receives_default">False</property>
-                                <property name="tooltip_text" translatable="yes">Clear the RPN stack (Ctrl+Shift+Delete)</property>
+                                <property name="tooltip_text" translatable="yes">Clear the RPN stack</property>
                                 <signal name="clicked" handler="on_button_clearstack_clicked" swapped="no"/>
                                 <child>
                                   <object class="GtkImage" id="image_clear">

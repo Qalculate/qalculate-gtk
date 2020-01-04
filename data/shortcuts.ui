@@ -7,6 +7,7 @@
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Edit Keyboard Shortcuts</property>
     <property name="type_hint">dialog</property>
+    <signal name="delete-event" handler="gtk_widget_hide" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -28,7 +29,6 @@
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
-                <property name="tooltip_text" translatable="yes">Accept the creation/modification of this function</property>
                 <property name="use_underline">True</property>
                 <signal name="clicked" handler="gtk_widget_hide" object="shortcuts_dialog" swapped="yes"/>
               </object>
@@ -129,7 +129,6 @@
                     <property name="can_focus">True</property>
                     <property name="can_default">True</property>
                     <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">Add entered argument definition</property>
                     <property name="use_underline">True</property>
                     <signal name="clicked" handler="on_shortcuts_button_add_clicked" swapped="no"/>
                   </object>
@@ -147,7 +146,6 @@
                     <property name="can_focus">True</property>
                     <property name="can_default">True</property>
                     <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">Modify selected argument</property>
                     <property name="use_underline">True</property>
                     <signal name="clicked" handler="on_shortcuts_button_modify_clicked" swapped="no"/>
                   </object>
@@ -165,7 +163,6 @@
                     <property name="can_focus">True</property>
                     <property name="can_default">True</property>
                     <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">Remove selected argument</property>
                     <property name="use_underline">True</property>
                     <signal name="clicked" handler="on_shortcuts_button_remove_clicked" swapped="no"/>
                   </object>

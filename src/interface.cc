@@ -1003,8 +1003,6 @@ void create_button_menus(void) {
 
 	set_keypad_tooltip("button_store2", _("Store result as a variable"), _("Open menu with stored variables"));
 
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_wrap")), (string(_("Smart parentheses")) + " (Ctrl + ()").c_str());
-
 	if(caret_as_xor) gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_xor")), _("Bitwise Exclusive OR"));
 	else gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_xor")), (string(_("Bitwise Exclusive OR")) + " (Ctrl+^)").c_str());
 
@@ -1193,6 +1191,8 @@ void create_main_window(void) {
 			pango_font_description_free(font_desc);
 		}
 	}
+	
+	update_accels();
 
 	set_unicode_buttons();
 
@@ -1600,9 +1600,7 @@ void create_main_window(void) {
 
 }
 
-GtkWidget*
-get_functions_dialog (void)
-{
+GtkWidget* get_functions_dialog(void) {
 
 	if(!functions_builder) {
 
@@ -1659,9 +1657,7 @@ get_functions_dialog (void)
 	return GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_dialog"));
 }
 
-GtkWidget*
-get_variables_dialog (void)
-{
+GtkWidget* get_variables_dialog(void) {
 	if(!variables_builder) {
 
 		variables_builder = getBuilder("variables.ui");
@@ -1718,9 +1714,7 @@ get_variables_dialog (void)
 	return GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_dialog"));
 }
 
-GtkWidget*
-get_units_dialog (void)
-{
+GtkWidget* get_units_dialog(void) {
 
 	if(!units_builder) {
 
@@ -1811,9 +1805,7 @@ get_units_dialog (void)
 	return GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog"));
 }
 
-GtkWidget*
-get_datasets_dialog (void)
-{
+GtkWidget* get_datasets_dialog(void) {
 
 	if(!datasets_builder) {
 
@@ -1875,9 +1867,7 @@ get_datasets_dialog (void)
 	return GTK_WIDGET(gtk_builder_get_object(datasets_builder, "datasets_dialog"));
 }
 
-GtkWidget*
-get_preferences_dialog (void)
-{
+GtkWidget* get_preferences_dialog(void) {
 	if(!preferences_builder) {
 
 		preferences_builder = getBuilder("preferences.ui");
@@ -2007,9 +1997,7 @@ get_preferences_dialog (void)
 	return GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_dialog"));
 }
 
-GtkWidget*
-get_unit_edit_dialog (void)
-{
+GtkWidget* get_unit_edit_dialog(void) {
 
 	if(!unitedit_builder) {
 
@@ -2047,9 +2035,7 @@ get_unit_edit_dialog (void)
 	return GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_dialog"));
 }
 
-GtkWidget*
-get_function_edit_dialog (void)
-{
+GtkWidget* get_function_edit_dialog(void) {
 
 	if(!functionedit_builder) {
 
@@ -2119,9 +2105,7 @@ get_function_edit_dialog (void)
 	return GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_dialog"));
 }
 
-GtkWidget*
-get_simple_function_edit_dialog (void)
-{
+GtkWidget* get_simple_function_edit_dialog(void) {
 
 	if(!simplefunctionedit_builder) {
 
@@ -2139,9 +2123,7 @@ get_simple_function_edit_dialog (void)
 	return GTK_WIDGET(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_dialog"));
 }
 
-GtkWidget*
-get_variable_edit_dialog (void)
-{
+GtkWidget* get_variable_edit_dialog(void) {
 
 	if(!variableedit_builder) {
 
@@ -2176,9 +2158,7 @@ get_variable_edit_dialog (void)
 	return GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog"));
 }
 
-GtkWidget*
-get_unknown_edit_dialog (void)
-{
+GtkWidget* get_unknown_edit_dialog(void) {
 
 	if(!unknownedit_builder) {
 
@@ -2217,9 +2197,7 @@ get_unknown_edit_dialog (void)
 	return GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog"));
 }
 
-GtkWidget*
-get_matrix_edit_dialog (void)
-{
+GtkWidget* get_matrix_edit_dialog(void) {
 	if(!matrixedit_builder) {
 
 		matrixedit_builder = getBuilder("matrixedit.ui");
@@ -2266,9 +2244,7 @@ get_matrix_edit_dialog (void)
 
 	return GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_dialog"));
 }
-GtkWidget*
-get_matrix_dialog (void)
-{
+GtkWidget* get_matrix_dialog(void) {
 	if(!matrix_builder) {
 
 		matrix_builder = getBuilder("matrix.ui");
@@ -2294,16 +2270,12 @@ get_matrix_dialog (void)
 
 }
 
-GtkWidget*
-get_dataobject_edit_dialog (void)
-{
+GtkWidget* get_dataobject_edit_dialog(void) {
 
 	return GTK_WIDGET(gtk_builder_get_object(datasets_builder, "dataobject_edit_dialog"));
 }
 
-GtkWidget*
-get_dataset_edit_dialog (void)
-{
+GtkWidget* get_dataset_edit_dialog(void) {
 
 	if(!datasetedit_builder) {
 
@@ -2339,17 +2311,13 @@ get_dataset_edit_dialog (void)
 	return GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_dialog"));
 }
 
-GtkWidget*
-get_dataproperty_edit_dialog (void)
-{
+GtkWidget* get_dataproperty_edit_dialog(void) {
 
 	return GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_dialog"));
 }
 
 
-GtkWidget*
-get_names_edit_dialog (void)
-{
+GtkWidget* get_names_edit_dialog(void) {
 	if(!namesedit_builder) {
 
 		namesedit_builder = getBuilder("namesedit.ui");
@@ -2389,9 +2357,7 @@ get_names_edit_dialog (void)
 	return GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_dialog"));
 }
 
-GtkWidget*
-get_csv_import_dialog (void)
-{
+GtkWidget* get_csv_import_dialog(void) {
 
 	if(!csvimport_builder) {
 
@@ -2428,9 +2394,7 @@ get_csv_import_dialog (void)
 	return GTK_WIDGET(gtk_builder_get_object(csvimport_builder, "csv_import_dialog"));
 }
 
-GtkWidget*
-get_csv_export_dialog (void)
-{
+GtkWidget* get_csv_export_dialog(void) {
 
 	if(!csvexport_builder) {
 
@@ -2449,7 +2413,7 @@ get_csv_export_dialog (void)
 
 }
 extern string prev_output_base, prev_input_base;
-GtkWidget* get_set_base_dialog (void) {
+GtkWidget* get_set_base_dialog(void) {
 	if(!setbase_builder) {
 
 		setbase_builder = getBuilder("setbase.ui");
@@ -2618,9 +2582,7 @@ GtkWidget* get_set_base_dialog (void) {
 	return GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_dialog"));
 }
 
-GtkWidget*
-get_nbases_dialog (void)
-{
+GtkWidget* get_nbases_dialog(void) {
 	if(!nbases_builder) {
 
 		nbases_builder = getBuilder("nbases.ui");
@@ -2724,9 +2686,7 @@ get_nbases_dialog (void)
 
 	return GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_dialog"));
 }
-GtkWidget*
-get_percentage_dialog (void)
-{
+GtkWidget* get_percentage_dialog(void) {
 	if(!percentage_builder) {
 
 		percentage_builder = getBuilder("percentage.ui");
@@ -2911,7 +2871,7 @@ GtkWidget *create_InfoWidget(const gchar *text) {
 	return hbox;
 }
 
-GtkWidget* get_argument_rules_dialog (void) {
+GtkWidget* get_argument_rules_dialog(void) {
 
 	if(!argumentrules_builder) {
 
@@ -2926,7 +2886,7 @@ GtkWidget* get_argument_rules_dialog (void) {
 
 	return GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_dialog"));
 }
-GtkWidget* get_decimals_dialog (void) {
+GtkWidget* get_decimals_dialog(void) {
 	if(!decimals_builder) {
 
 		decimals_builder = getBuilder("decimals.ui");
@@ -2940,7 +2900,7 @@ GtkWidget* get_decimals_dialog (void) {
 
 	return GTK_WIDGET(gtk_builder_get_object(decimals_builder, "decimals_dialog"));
 }
-GtkWidget* get_plot_dialog (void) {
+GtkWidget* get_plot_dialog(void) {
 	if(!plot_builder) {
 
 		plot_builder = getBuilder("plot.ui");
@@ -2973,7 +2933,7 @@ GtkWidget* get_plot_dialog (void) {
 
 	return GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog"));
 }
-GtkWidget* get_precision_dialog (void) {
+GtkWidget* get_precision_dialog(void) {
 	if(!precision_builder) {
 
 		precision_builder = getBuilder("precision.ui");
@@ -2987,7 +2947,7 @@ GtkWidget* get_precision_dialog (void) {
 
 	return GTK_WIDGET(gtk_builder_get_object(precision_builder, "precision_dialog"));
 }
-GtkWidget* get_periodic_dialog (void) {
+GtkWidget* get_periodic_dialog(void) {
 	if(!periodictable_builder) {
 
 		periodictable_builder = getBuilder("periodictable.ui");
@@ -3067,9 +3027,7 @@ GtkWidget* get_periodic_dialog (void) {
 	return GTK_WIDGET(gtk_builder_get_object(periodictable_builder, "periodic_dialog"));
 }
 
-GtkWidget*
-get_shortcuts_dialog (void)
-{
+GtkWidget* get_shortcuts_dialog(void) {
 	if(!shortcuts_builder) {
 
 		shortcuts_builder = getBuilder("shortcuts.ui");
@@ -3096,6 +3054,8 @@ get_shortcuts_dialog (void)
 		gtk_tree_view_column_set_sort_column_id(column, 2);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tShortcuts), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tShortcuts_selection_changed), NULL);
+		
+		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tShortcuts_store), 0, GTK_SORT_ASCENDING);
 
 		for(int i = 0; i <= SHORTCUT_TYPE_UPDATE_EXRATES; i++) {
 			gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(shortcuts_builder, "shortcuts_combobox_type")), shortcut_type_text(i));
