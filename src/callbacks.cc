@@ -4853,6 +4853,7 @@ const gchar *shortcut_type_text(int type) {
 		case SHORTCUT_TYPE_INPUT_BASE: {return _("Set expression base"); break;}
 		case SHORTCUT_TYPE_OUTPUT_BASE: {return _("Set result base"); break;}
 		case SHORTCUT_TYPE_EXACT_MODE: {return _("Toggle exact mode"); break;}
+		case SHORTCUT_TYPE_FRACTIONS: {return _("Toggle simple fractions"); break;}
 		case SHORTCUT_TYPE_RPN_MODE: {return _("Toggle RPN mode"); break;}
 		case SHORTCUT_TYPE_AUTOCALC: {return _("Toggle calculate as you type"); break;}
 		case SHORTCUT_TYPE_PROGRAMMING: {return _("Toggle programming keypad"); break;}
@@ -26227,6 +26228,15 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 				output_base_updated_from_menu();
 				return true;
 			}
+			case SHORTCUT_TYPE_EXACT_MODE: {
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact")), !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact"))));
+				return true;
+			}
+			case SHORTCUT_TYPE_FRACTIONS: {
+				if(printops.number_fraction_format >= FRACTION_FRACTIONAL) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
+				else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
+				return true;
+			}
 			case SHORTCUT_TYPE_RPN_MODE: {
 				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_mode")), !rpn_mode);
 				return true;
@@ -27399,24 +27409,6 @@ void on_shortcuts_button_add_clicked(GtkButton*, gpointer) {
 	ks.modifier = current_shortcut_modifier;
 	guint64 id = (guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier;
 	if(id == 0) return;
-	unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find(id);
-	if(it != keyboard_shortcuts.end()) {
-		if(!ask_question(_("The keyboard shortcut is already in use.\nDo you wish to replace the current action?"), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")))) {
-			return;
-		}
-		GtkTreeIter iter;
-		if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tShortcuts_store), &iter)) {
-			do {
-				guint64 id2 = 0;
-				gtk_tree_model_get(GTK_TREE_MODEL(tShortcuts_store), &iter, 3, &id2, -1);
-				if(id2 == id) {
-					gtk_list_store_remove(tShortcuts_store, &iter);
-					break;
-				}
-			} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tShortcuts_store), &iter));
-		}
-		keyboard_shortcuts.erase(id);
-	}
 	ks.type = gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(shortcuts_builder, "shortcuts_combobox_type")));
 	if(gtk_widget_is_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")))) {
 		ks.value = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
@@ -27460,12 +27452,15 @@ void on_shortcuts_button_add_clicked(GtkButton*, gpointer) {
 		case SHORTCUT_TYPE_META_MODE: {
 			bool b = false;
 			for(size_t i = 0; i < modes.size(); i++) {
-				if(equalsIgnoreCase(modes[i].name, it->second.value)) {
+				if(equalsIgnoreCase(modes[i].name, ks.value)) {
 					b = true;
 					break;
 				}
 			}
-			if(!b) show_message(_("Mode not found."), mainwindow);
+			if(!b) {
+				show_message(_("Mode not found."), mainwindow);
+				return;
+			}
 			break;
 		}
 		case SHORTCUT_TYPE_TO_NUMBER_BASE: {}
@@ -27475,9 +27470,28 @@ void on_shortcuts_button_add_clicked(GtkButton*, gpointer) {
 			base_from_string(ks.value, base, nbase, ks.type == SHORTCUT_TYPE_INPUT_BASE);
 			if(base == BASE_CUSTOM && nbase.isZero()) {
 				show_message(_("Unsupported base."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
+				return;
 			}
 			break;
 		}
+	}
+	unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find(id);
+	if(it != keyboard_shortcuts.end()) {
+		if(!ask_question(_("The keyboard shortcut is already in use.\nDo you wish to replace the current action?"), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")))) {
+			return;
+		}
+		GtkTreeIter iter;
+		if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tShortcuts_store), &iter)) {
+			do {
+				guint64 id2 = 0;
+				gtk_tree_model_get(GTK_TREE_MODEL(tShortcuts_store), &iter, 3, &id2, -1);
+				if(id2 == id) {
+					gtk_list_store_remove(tShortcuts_store, &iter);
+					break;
+				}
+			} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tShortcuts_store), &iter));
+		}
+		keyboard_shortcuts.erase(id);
 	}
 	default_shortcuts = false;
 	GtkTreeIter iter;
