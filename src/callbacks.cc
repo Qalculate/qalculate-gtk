@@ -1796,7 +1796,7 @@ bool display_function_hint(MathFunction *f, int arg_index = 1) {
 void replace_interval_with_function(MathStructure &m);
 void clearresult();
 void update_result_bases();
-void fix_to_struct(MathStructure &m);
+void fix_to_struct_gtk(MathStructure &m);
 
 bool last_is_operator(string str, bool allow_exp = false) {
 	remove_blank_ends(str);
@@ -2172,7 +2172,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			CALCULATOR->stopControl();
 		} else if(do_conv && parsed_tostruct->containsType(STRUCT_UNIT, true) && !mauto.containsType(STRUCT_UNIT, false, true, true) && !parsed_mstruct->containsType(STRUCT_UNIT, false, true, true)) {
 			MathStructure to_struct(CALCULATOR->convertToBaseUnits(*parsed_tostruct));
-			fix_to_struct(to_struct);
+			fix_to_struct_gtk(to_struct);
 			if(!to_struct.isZero()) {
 				mauto.multiply(to_struct);
 				to_struct.format(printops);
@@ -2662,7 +2662,7 @@ void display_parse_status() {
 					if(!mparse.isZero() && !b_unit && !str_e.empty() && str_w.empty()) {
 						CALCULATOR->beginTemporaryStopMessages();
 						MathStructure to_struct(CALCULATOR->convertToBaseUnits(mparse));
-						fix_to_struct(to_struct);
+						fix_to_struct_gtk(to_struct);
 						if(!to_struct.isZero()) {
 							MathStructure mparse2;
 							CALCULATOR->parse(&mparse2, str_e, evalops.parse_options);
@@ -4798,6 +4798,19 @@ void on_tNames_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 
 string shortcut_to_text(guint key, guint state) {
 	string str;
+#ifdef GDK_WINDOWING_QUARTZ
+	if(state & GDK_LOCK_MASK) {str += "Lock";}
+	if(state & GDK_CONTROL_MASK) {str += "\xe2\x8c\x83";}
+	if(state & GDK_SUPER_MASK) {str += "Super";}
+	if(state & GDK_HYPER_MASK) {str += "Hyper";}
+	if(state & GDK_META_MASK) {str += "\xe2\x8c\x98";}
+	if(state & GDK_MOD1_MASK) {str += "\xe2\x8c\xa5";}
+	if(state & GDK_SHIFT_MASK) {str += "\xe2\x87\xa7";}
+	if(state & GDK_MOD2_MASK) {str += "Mod2";}
+	if(state & GDK_MOD3_MASK) {str += "Mod3";}
+	if(state & GDK_MOD4_MASK) {str += "Mod4";}
+	if(state & GDK_MOD5_MASK) {str += "Mod5";}
+#else
 	if(state & GDK_LOCK_MASK) {if(!str.empty()) str += "+"; str += "Lock";}
 	if(state & GDK_CONTROL_MASK) {if(!str.empty()) str += "+"; str += "Ctrl";}
 	if(state & GDK_SUPER_MASK) {if(!str.empty()) str += "+"; str += "Super";}
@@ -4810,8 +4823,9 @@ string shortcut_to_text(guint key, guint state) {
 	if(state & GDK_MOD4_MASK) {if(!str.empty()) str += "+"; str += "Mod4";}
 	if(state & GDK_MOD5_MASK) {if(!str.empty()) str += "+"; str += "Mod5";}
 	if(!str.empty()) str += "+";
+#endif
 	gunichar uni = gdk_keyval_to_unicode(key);
-	if(uni == 0 || !g_unichar_isprint(uni)) {
+	if(uni == 0 || !g_unichar_isprint(uni) || g_unichar_isspace(uni)) {
 		str += gdk_keyval_name(key);
 	} else {
 		uni = g_unichar_toupper(uni);
@@ -4854,6 +4868,7 @@ const gchar *shortcut_type_text(int type) {
 		case SHORTCUT_TYPE_OUTPUT_BASE: {return _("Set result base"); break;}
 		case SHORTCUT_TYPE_EXACT_MODE: {return _("Toggle exact mode"); break;}
 		case SHORTCUT_TYPE_FRACTIONS: {return _("Toggle simple fractions"); break;}
+		case SHORTCUT_TYPE_MIXED_FRACTIONS: {return _("Toggle mixed fractions"); break;}
 		case SHORTCUT_TYPE_RPN_MODE: {return _("Toggle RPN mode"); break;}
 		case SHORTCUT_TYPE_AUTOCALC: {return _("Toggle calculate as you type"); break;}
 		case SHORTCUT_TYPE_PROGRAMMING: {return _("Toggle programming keypad"); break;}
@@ -5071,6 +5086,8 @@ void on_tShortcuts_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_add")), TRUE);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_modify")), TRUE);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_remove")), TRUE);
+			current_shortcut_key = it->second.key;
+			current_shortcut_modifier = it->second.modifier;
 		}
 	} else {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_modify")), FALSE);
@@ -9632,7 +9649,7 @@ void set_previous_expression() {
 	}
 }
 
-void fix_to_struct(MathStructure &m) {
+void fix_to_struct_gtk(MathStructure &m) {
 	if(m.isPower() && m[0].isUnit()) {
 		if(m[0].prefix() == NULL && m[0].unit()->referenceName() == "g") {
 			m[0].setPrefix(CALCULATOR->getOptimalDecimalPrefix(3));
@@ -10227,7 +10244,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	}
 	if(!do_mathoperation && do_conv && parsed_tostruct->containsType(STRUCT_UNIT, true) && !mstruct->containsType(STRUCT_UNIT, false, true, true) && !parsed_mstruct->containsType(STRUCT_UNIT, false, true, true)) {
 		MathStructure to_struct(CALCULATOR->convertToBaseUnits(*parsed_tostruct));
-		fix_to_struct(to_struct);
+		fix_to_struct_gtk(to_struct);
 		if(!to_struct.isZero()) {
 			mstruct->multiply(to_struct);
 			to_struct.format(printops);
@@ -14577,6 +14594,7 @@ void on_expressiontext_populate_popup(GtkTextView*, GtkMenu *menu, gpointer) {
 	gchar *gstr;
 	sub = GTK_WIDGET(menu);
 	MENU_ITEM(_("Clear"), on_popup_menu_item_clear_activate)
+	gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(item))), GDK_KEY_Escape, (GdkModifierType) 0);
 	if(expression_is_empty()) gtk_widget_set_sensitive(item, FALSE);
 	MENU_SEPARATOR
 	if(b_busy) {
@@ -14584,8 +14602,10 @@ void on_expressiontext_populate_popup(GtkTextView*, GtkMenu *menu, gpointer) {
 		return;
 	}
 	MENU_ITEM(_("Undo"), expression_undo)
+	gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(item))), GDK_KEY_z, (GdkModifierType) GDK_CONTROL_MASK);
 	if(undo_index == 0) gtk_widget_set_sensitive(item, FALSE);
 	MENU_ITEM(_("Redo"), expression_redo)
+	gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(item))), GDK_KEY_z, (GdkModifierType) (GDK_SHIFT_MASK | GDK_CONTROL_MASK));
 	if(undo_index >= expression_undo_buffer.size() - 1) gtk_widget_set_sensitive(item, FALSE);
 	MENU_SEPARATOR
 	sub2 = sub;
@@ -15267,7 +15287,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {3, 6, 0};
+	int version_numbers[] = {3, 7, 0};
 	bool old_history_format = false;
 
 	if(file) {
@@ -26064,12 +26084,7 @@ gboolean on_units_convert_to_button_key_press_event(GtkWidget*, GdkEventKey *eve
 }
 
 bool do_keyboard_shortcut(GdkEventKey *event) {
-	guint state = event->state;
-	state = state & ~GDK_MOD2_MASK;
-	state = state & ~GDK_MOD3_MASK;
-	state = state & ~GDK_MOD4_MASK;
-	state = state & ~GDK_MOD5_MASK;
-	state = state & ~GDK_LOCK_MASK;
+	guint state = event->state & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK);
 	unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find((guint64) event->keyval + (guint64) G_MAXUINT32 * (guint64) state);
 	if(it == keyboard_shortcuts.end() && event->keyval == GDK_KEY_KP_Delete) it = keyboard_shortcuts.find((guint64) GDK_KEY_Delete + (guint64) G_MAXUINT32 * (guint64) state);
 	if(it != keyboard_shortcuts.end()) {
@@ -26235,6 +26250,11 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 			case SHORTCUT_TYPE_FRACTIONS: {
 				if(printops.number_fraction_format >= FRACTION_FRACTIONAL) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
 				else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
+				return true;
+			}
+			case SHORTCUT_TYPE_MIXED_FRACTIONS: {
+				if(printops.number_fraction_format == FRACTION_COMBINED) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
+				else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
 				return true;
 			}
 			case SHORTCUT_TYPE_RPN_MODE: {
@@ -26722,17 +26742,10 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 			return TRUE;
 		}
 	}
-	if(event->state & GDK_CONTROL_MASK) {
-		switch(event->keyval) {
-			case GDK_KEY_Z: {
-				expression_redo();
-				return TRUE;
-			}
-			case GDK_KEY_z: {
-				expression_undo();
-				return TRUE;
-			}
-		}
+	if(event->state & GDK_CONTROL_MASK && (event->keyval == GDK_KEY_z || event->keyval == GDK_KEY_Z)) {
+		if(event->state & GDK_SHIFT_MASK || event->keyval == GDK_KEY_Z) expression_redo();
+		else expression_undo();
+		return TRUE;
 	}
 	switch(event->keyval) {
 		case GDK_KEY_KP_Multiply: {}
@@ -27330,12 +27343,7 @@ void on_menu_item_edit_shortcuts_activate(GtkMenuItem*, gpointer) {
 }
 GtkWidget *shortcut_label = NULL;
 gboolean on_shortcut_key_released(GtkWidget *w, GdkEventKey *event, gpointer) {
-	guint state = event->state;
-	state = state & ~GDK_MOD2_MASK;
-	state = state & ~GDK_MOD3_MASK;
-	state = state & ~GDK_MOD4_MASK;
-	state = state & ~GDK_MOD5_MASK;
-	state = state & ~GDK_LOCK_MASK;
+	guint state = event->state & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK);
 	if(event->keyval == 0 || (event->keyval >= GDK_KEY_Shift_L && event->keyval <= GDK_KEY_Hyper_R)) return FALSE;
 	if(state == 0 && event->keyval == GDK_KEY_Escape) {
 		gtk_dialog_response(GTK_DIALOG(w), GTK_RESPONSE_CANCEL);
@@ -27348,12 +27356,7 @@ gboolean on_shortcut_key_released(GtkWidget *w, GdkEventKey *event, gpointer) {
 	return TRUE;
 }
 gboolean on_shortcut_key_pressed(GtkWidget *w, GdkEventKey *event, gpointer) {
-	guint state = event->state;
-	state = state & ~GDK_MOD2_MASK;
-	state = state & ~GDK_MOD3_MASK;
-	state = state & ~GDK_MOD4_MASK;
-	state = state & ~GDK_MOD5_MASK;
-	state = state & ~GDK_LOCK_MASK;
+	guint state = event->state & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK);
 	string str = "<span size=\"large\">";
 	str += shortcut_to_text(event->keyval, state);
 	str += "</span>";
