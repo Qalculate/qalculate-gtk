@@ -26,8 +26,9 @@ qalculate_gtk_SOURCES = \
 	main.cc		main.h		\
 	interface.cc	interface.h	\
 	callbacks.cc	callbacks.h	\
-	support.h \
-	ui.c flags.c
+	support.h
+
+nodist_qalculate_gtk_SOURCES = ui.c flags.c
 
 qalculate_gtk_LDADD = \
 	@GLIB_LIBS@ \
