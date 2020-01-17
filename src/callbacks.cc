@@ -4869,6 +4869,8 @@ const gchar *shortcut_type_text(int type) {
 		case SHORTCUT_TYPE_EXACT_MODE: {return _("Toggle exact mode"); break;}
 		case SHORTCUT_TYPE_FRACTIONS: {return _("Toggle simple fractions"); break;}
 		case SHORTCUT_TYPE_MIXED_FRACTIONS: {return _("Toggle mixed fractions"); break;}
+		case SHORTCUT_TYPE_SCIENTIFIC_NOTATION: {return _("Toggle scientific notation"); break;}
+		case SHORTCUT_TYPE_SIMPLE_NOTATION: {return _("Toggle simple notation"); break;}
 		case SHORTCUT_TYPE_RPN_MODE: {return _("Toggle RPN mode"); break;}
 		case SHORTCUT_TYPE_AUTOCALC: {return _("Toggle calculate as you type"); break;}
 		case SHORTCUT_TYPE_PROGRAMMING: {return _("Toggle programming keypad"); break;}
@@ -4889,6 +4891,10 @@ const gchar *shortcut_type_text(int type) {
 		case SHORTCUT_TYPE_PERCENTAGE_TOOL: {return _("Open percentage calculation tool"); break;}
 		case SHORTCUT_TYPE_PERIODIC_TABLE: {return _("Open periodic table"); break;}
 		case SHORTCUT_TYPE_UPDATE_EXRATES: {return _("Update exchange rates"); break;}
+		case SHORTCUT_TYPE_COPY_RESULT: {return _("Copy result"); break;}
+		case SHORTCUT_TYPE_SAVE_IMAGE: {return _("Save result image"); break;}
+		case SHORTCUT_TYPE_HELP: {return _("Help"); break;}
+		case SHORTCUT_TYPE_QUIT: {return _("Quit"); break;}
 	}
 	return "";
 }
@@ -5065,6 +5071,22 @@ void update_accels() {
 			}
 			case SHORTCUT_TYPE_UPDATE_EXRATES: {
 				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_fetch_exchange_rates")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_COPY_RESULT: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_copy")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_SAVE_IMAGE: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_save_image")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_HELP: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_help")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_QUIT: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_quit")))), it->second.key, (GdkModifierType) it->second.modifier);
 				break;
 			}
 		}
@@ -15953,7 +15975,7 @@ void load_preferences() {
 					char str[svalue.length()];
 					keyboard_shortcut ks;
 					int n = sscanf(svalue.c_str(), "%u:%u:%i:%s", &ks.key, &ks.modifier, &ks.type, str);
-					if(n >= 3 && ks.type >= SHORTCUT_TYPE_FUNCTION && ks.type <= SHORTCUT_TYPE_UPDATE_EXRATES) {
+					if(n >= 3 && ks.type >= SHORTCUT_TYPE_FUNCTION && ks.type <= SHORTCUT_TYPE_QUIT) {
 						if(n == 4) ks.value = str;
 						keyboard_shortcuts[(guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier] = ks;
 					}
@@ -16083,6 +16105,9 @@ void load_preferences() {
 		keyboard_shortcut ks;
 #define ADD_SHORTCUT(k, m, t, v) ks.key = k; ks.modifier = m; ks.type = t; ks.value = v; keyboard_shortcuts[(guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier] = ks;
 		ADD_SHORTCUT(GDK_KEY_b, GDK_CONTROL_MASK, SHORTCUT_TYPE_NUMBER_BASES, "")
+		ADD_SHORTCUT(GDK_KEY_q, GDK_CONTROL_MASK, SHORTCUT_TYPE_QUIT, "")
+		ADD_SHORTCUT(GDK_KEY_F1, 0, SHORTCUT_TYPE_HELP, "")
+		ADD_SHORTCUT(GDK_KEY_c, GDK_CONTROL_MASK | GDK_MOD1_MASK, SHORTCUT_TYPE_COPY_RESULT, "")
 		ADD_SHORTCUT(GDK_KEY_s, GDK_CONTROL_MASK, SHORTCUT_TYPE_STORE, "")
 		ADD_SHORTCUT(GDK_KEY_m, GDK_CONTROL_MASK, SHORTCUT_TYPE_MANAGE_VARIABLES, "")
 		ADD_SHORTCUT(GDK_KEY_f, GDK_CONTROL_MASK, SHORTCUT_TYPE_MANAGE_FUNCTIONS, "")
@@ -26257,6 +26282,16 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 				else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
 				return true;
 			}
+			case SHORTCUT_TYPE_SCIENTIFIC_NOTATION: {
+				if(printops.min_exp == EXP_SCIENTIFIC) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 0);
+				else gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 2);
+				return true;
+			}
+			case SHORTCUT_TYPE_SIMPLE_NOTATION: {
+				if(printops.min_exp == EXP_NONE) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 0);
+				else gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 4);
+				return true;
+			}
 			case SHORTCUT_TYPE_RPN_MODE: {
 				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_mode")), !rpn_mode);
 				return true;
@@ -26336,6 +26371,22 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 			}
 			case SHORTCUT_TYPE_UPDATE_EXRATES: {
 				on_menu_item_fetch_exchange_rates_activate(NULL, NULL);
+				return true;
+			}
+			case SHORTCUT_TYPE_COPY_RESULT: {
+				on_menu_item_copy_activate(NULL, NULL);
+				return true;
+			}
+			case SHORTCUT_TYPE_SAVE_IMAGE: {
+				on_menu_item_save_image_activate(NULL, NULL);
+				return true;
+			}
+			case SHORTCUT_TYPE_HELP: {
+				on_menu_item_help_activate(NULL, NULL);
+				return true;
+			}
+			case SHORTCUT_TYPE_QUIT: {
+				on_menu_item_quit_activate(NULL, NULL);
 				return true;
 			}
 		}

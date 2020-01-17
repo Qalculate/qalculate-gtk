@@ -802,7 +802,6 @@
                         <property name="label" translatable="yes">_Quit</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_menu_item_quit_activate" swapped="no"/>
-                        <accelerator key="Q" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                   </object>
@@ -986,7 +985,6 @@
                         <property name="label" translatable="yes">_Copy Result</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_menu_item_copy_activate" swapped="no"/>
-                        <accelerator key="C" signal="activate" modifiers="GDK_CONTROL_MASK | GDK_MOD1_MASK"/>
                       </object>
                     </child>
                     <child>
@@ -2319,7 +2317,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                         <property name="label" translatable="yes">_Contents</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_menu_item_help_activate" swapped="no"/>
-                        <accelerator key="F1" signal="activate"/>
                       </object>
                     </child>
                     <child>

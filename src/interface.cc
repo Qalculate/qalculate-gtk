@@ -3057,7 +3057,7 @@ GtkWidget* get_shortcuts_dialog(void) {
 		
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tShortcuts_store), 0, GTK_SORT_ASCENDING);
 
-		for(int i = 0; i <= SHORTCUT_TYPE_UPDATE_EXRATES; i++) {
+		for(int i = 0; i <= SHORTCUT_TYPE_QUIT; i++) {
 			gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(shortcuts_builder, "shortcuts_combobox_type")), shortcut_type_text(i));
 		}		
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(shortcuts_builder, "shortcuts_combobox_type")), 0);
