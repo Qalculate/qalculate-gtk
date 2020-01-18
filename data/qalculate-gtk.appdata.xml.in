@@ -48,6 +48,24 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="3.7.0" date="2020-01-20">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Configurable keyboard shortcuts (GUI)</li>
+      <li>New functions: bernoulli(), erfi(), fresnels(), fresnelc()</li>
+      <li>Improved zeta(), with exact values for negative and even integers, support for all real values, and optional second argument for calculation of Hurwitz zeta</li>
+      <li>Support for complex numbers in Ei(), li(), Si(), Ci(), Shi(), and Chi()</li>
+      <li>Support for all branches and complex numbers in lambertw()</li>
+      <li>Extended argument support in Li()</li>
+      <li>Add base units (or local currency) for unit conversion when units are missing in original expression (e.g. 5 to ft = 5 m to ft)</li>
+      <li>Belarusian ruble (BYN)</li>
+      <li>Improvements and fixes for integrals</li>
+      <li>Fix crash when used in Cantor (caused by conflict with Poppler library)</li>
+      <li>Minor bug fixes and feature improvements</li>
+     </ul>
+   </description>
+  </release>
   <release version="3.6.0" date="2019-11-25">
    <description>
     <p>Changes:</p>
