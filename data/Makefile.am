@@ -22,10 +22,14 @@ appdata_DATA = $(appdata_IN_FILES:.xml.in=.xml)
 appdatadir = $(datadir)/metainfo
 @INTLTOOL_XML_RULE@
 
+pixmapsdir = $(datadir)/pixmaps
+pixmaps_DATA = icons/64x64/qalculate.png
+
 dist_man_MANS = qalculate-gtk.1
 
 EXTRA_DIST = \
 	$(desktop_IN_FILES)	\
 	$(appdata_IN_FILES)	\
+	$(pixmaps_DATA) \
 	$(noinst_DATA)
 
