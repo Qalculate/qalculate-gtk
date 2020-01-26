@@ -141,6 +141,7 @@ AC_OUTPUT([
   data/icons/32x32/Makefile
   data/icons/48x48/Makefile
   data/icons/64x64/Makefile
+  data/icons/128x128/Makefile
   data/icons/256x256/Makefile
   data/icons/scalable/Makefile
   doc/Makefile
