@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "3.7.0">
-  <!ENTITY manrevision "3.7.0">
-  <!ENTITY date "January 2020">
+  <!ENTITY appversion "3.7.1">
+  <!ENTITY manrevision "3.7.1">
+  <!ENTITY date "February 2020">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -1570,7 +1570,7 @@ Putting <quote> to </quote> followed by an expression at the end of the mathemat
 </varlistentry>
 <varlistentry>
 <term>bin / binary</term>
-<listitem><para>Show as binary number (e.g. <quote>sqrt(900) to bin = 0001 1110</quote>).</para></listitem>
+<listitem><para>Show as binary number (e.g. <quote>sqrt(900) to bin = 0001 1110</quote>). Append an integer to specify the number of bits (e.g. <quote> 4 to bin16 = 0000 0000 0000 0100</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>oct / octal</term>
@@ -1591,6 +1591,10 @@ Putting <quote> to </quote> followed by an expression at the end of the mathemat
 <varlistentry>
 <term>bijective</term>
 <listitem><para>Show as bijective base-26 number (e.g. <quote>731 to bijective = ABC</quote>).</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>float16, float32 / float, float64 / double, float128</term>
+<listitem><para>Show as binary representation of IEEE 754 16-bit, 32-bit, 64-bit, or 128-bit floating-point number.</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>time</term>
