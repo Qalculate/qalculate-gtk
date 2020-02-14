@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-13 17:58+0100\n"
+"POT-Creation-Date: 2020-02-14 11:35+0100\n"
 "PO-Revision-Date: 2006-05-04 12:29+0200\n"
 "Last-Translator: Hanna Knutsson <hanna.knutsson@protonmail.com>\n"
 "Language-Team: Swedish\n"
@@ -3901,6 +3901,22 @@ msgstr "bijektiv talbas 26"
 msgid "sexagesimal number"
 msgstr "sexagesimalt tal"
 
+#: ../src/callbacks.cc:2591
+msgid "32-bit floating point"
+msgstr "32-bit flyttal"
+
+#: ../src/callbacks.cc:2593
+msgid "64-bit floating point"
+msgstr "64-bit flyttal"
+
+#: ../src/callbacks.cc:2595
+msgid "16-bit floating point"
+msgstr "16-bit flyttal"
+
+#: ../src/callbacks.cc:2597
+msgid "128-bit floating point"
+msgstr "128-bit flyttal"
+
 #: ../src/callbacks.cc:2599
 msgid "time format"
 msgstr "tidsformat"
@@ -4366,20 +4382,20 @@ msgid "Factors"
 msgstr "Faktorer"
 
 #: ../src/callbacks.cc:5834
-msgid "float16 binary number"
-msgstr "float16 binärt tal"
+msgid "16-bit floating point binary format"
+msgstr "16-bit binärt flyttal"
 
 #: ../src/callbacks.cc:5836
-msgid "float32 binary number"
-msgstr "float32 binärt tal"
+msgid "32-bit floating point binary format"
+msgstr "32-bit binärt flyttal"
 
 #: ../src/callbacks.cc:5838
-msgid "float64 binary number"
-msgstr "float64 binärt tal"
+msgid "64-bit floating point binary format"
+msgstr "64-bit binärt flyttal"
 
 #: ../src/callbacks.cc:5840
-msgid "float128 binary number"
-msgstr "float128 binärt tal"
+msgid "128-bit floating point binary format"
+msgstr "128-bit binärt flyttal"
 
 #: ../src/callbacks.cc:5842 ../src/callbacks.cc:21709
 msgid "Fraction"
@@ -5065,6 +5081,18 @@ msgstr "Inga okända värden i resultatet."
 #: ../src/callbacks.cc:28366
 msgid "Set Unknowns"
 msgstr "Ange okända värden"
+
+#~ msgid "float16 binary number"
+#~ msgstr "float16 binärt tal"
+
+#~ msgid "float32 binary number"
+#~ msgstr "float32 binärt tal"
+
+#~ msgid "float64 binary number"
+#~ msgstr "float64 binärt tal"
+
+#~ msgid "float128 binary number"
+#~ msgstr "float128 binärt tal"
 
 #~ msgid "Clear the RPN stack (Ctrl+Shift+Delete)"
 #~ msgstr "Töm RPN-stacken (Ctrl+Shift+Delete)"

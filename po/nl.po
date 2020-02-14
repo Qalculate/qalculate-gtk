@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qalculate-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-13 17:58+0100\n"
+"POT-Creation-Date: 2020-02-14 11:35+0100\n"
 "PO-Revision-Date: 12.11.YYYY 19:40\n"
 "Last-Translator: Jaap Woldringh <jjh.woldringh@planet.nl>\n"
 "Language-Team:  <kde-i18n-nl@kde.org.>\n"
@@ -3934,6 +3934,22 @@ msgstr "Object"
 msgid "sexagesimal number"
 msgstr "sexagesimaal getal"
 
+#: ../src/callbacks.cc:2591
+msgid "32-bit floating point"
+msgstr ""
+
+#: ../src/callbacks.cc:2593
+msgid "64-bit floating point"
+msgstr ""
+
+#: ../src/callbacks.cc:2595
+msgid "16-bit floating point"
+msgstr ""
+
+#: ../src/callbacks.cc:2597
+msgid "128-bit floating point"
+msgstr ""
+
 #: ../src/callbacks.cc:2599
 msgid "time format"
 msgstr "tijdnotatie"
@@ -4448,24 +4464,20 @@ msgid "Factors"
 msgstr "Factoren"
 
 #: ../src/callbacks.cc:5834
-#, fuzzy
-msgid "float16 binary number"
-msgstr "binair getal"
+msgid "16-bit floating point binary format"
+msgstr ""
 
 #: ../src/callbacks.cc:5836
-#, fuzzy
-msgid "float32 binary number"
-msgstr "binair getal"
+msgid "32-bit floating point binary format"
+msgstr ""
 
 #: ../src/callbacks.cc:5838
-#, fuzzy
-msgid "float64 binary number"
-msgstr "binair getal"
+msgid "64-bit floating point binary format"
+msgstr ""
 
 #: ../src/callbacks.cc:5840
-#, fuzzy
-msgid "float128 binary number"
-msgstr "binair getal"
+msgid "128-bit floating point binary format"
+msgstr ""
 
 #: ../src/callbacks.cc:5842 ../src/callbacks.cc:21709
 msgid "Fraction"
@@ -5170,6 +5182,22 @@ msgstr "Geen onbekenden in antwoord."
 #: ../src/callbacks.cc:28366
 msgid "Set Unknowns"
 msgstr "Onbekenden een waarde geven"
+
+#, fuzzy
+#~ msgid "float16 binary number"
+#~ msgstr "binair getal"
+
+#, fuzzy
+#~ msgid "float32 binary number"
+#~ msgstr "binair getal"
+
+#, fuzzy
+#~ msgid "float64 binary number"
+#~ msgstr "binair getal"
+
+#, fuzzy
+#~ msgid "float128 binary number"
+#~ msgstr "binair getal"
 
 #, fuzzy
 #~ msgid "Clear the RPN stack (Ctrl+Shift+Delete)"
