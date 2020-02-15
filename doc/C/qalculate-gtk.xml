@@ -1242,7 +1242,7 @@ In &app; mathematical entities, such as numbers and variables, are referred to a
 		<term>Numbers</term>
 		<listitem><para>
 		These are the regular numbers composed by digits 0-9 and a decimal sign — a dot, or a comma if it is the default decimal point in the locale/language used. If comma is used as decimal sign, the dot is still kept as an alternative decimal sign, if not explicitely turned off in the preferences dialog with <guibutton>Ignore dots in number</guibutton> (to allow it to be used as thousand separator instead). Numbers include integers, real numbers, and complex numbers. The imaginary part of complex numbers are written with as regular number followed by the special variable <quote>i</quote> (can be changed to a <quote>j</quote>, placed in front of the imaginary part, in the preferences dialog), which represents the square root of -1 (e.g. <quote>2 + 3i</quote>). Spaces between digits are ignored (<quote>5  5 = 55</quote>). <quote>E</quote> (or <quote>e</quote>) can be considered as a shortcut for writing many zeroes and is equivalent to multiplication by 10 raised to the power of the right-hand value (e.g. <quote>5E3 = 5000</quote>).</para>
-		<para>Sexagesimal numbers (and time) can be entered directly using colons (e.g. <quote>5:30 = 5.5</quote>). A number immediately preceeded <quote>0b</quote>, <quote>0o</quote> or <quote>0x</quote> are interpreted as a number with base 2, 8 or 16, respectively (if the default base is 10, e.g. <quote>0x3f = 63</quote>). The number base in can also be selected, either by using the <command>base()</command>, <command>bin()</command>, <command>oct()</command>, <command>hex()</command> and <command>roman()</command> functions, or by setting the base used for all numbers in the whole expression from <menuchoice><guimenu>Mode</guimenu><guisubmenu>Number Base</guisubmenu><guimenuitem>Select Result and Expression Base...</guimenuitem></menuchoice>. For details about supported number bases see <xref linked="qalculate-TBL-number-bases"/>.
+		<para>Sexagesimal numbers (and time) can be entered directly using colons (e.g. <quote>5:30 = 5.5</quote>). A number immediately preceeded <quote>0b</quote>, <quote>0o</quote>, <quote>0d</quote> or <quote>0x</quote> are interpreted as a number with base 2, 8, 12 or 16, respectively (if the default base is 10, e.g. <quote>0x3f = 63</quote>). The number base in can also be selected, either by using the <command>base()</command>, <command>bin()</command>, <command>oct()</command>, <command>hex()</command> and <command>roman()</command> functions, or by setting the base used for all numbers in the whole expression from <menuchoice><guimenu>Mode</guimenu><guisubmenu>Number Base</guisubmenu><guimenuitem>Select Result and Expression Base...</guimenuitem></menuchoice>. For details about supported number bases see <xref linkend="qalculate-TBL-number-bases"/>.
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -1702,7 +1702,7 @@ Similarily <quote>where</quote> (or alternatively <quote>/.</quote>) can be used
 						</row>
 						<row valign="top">
 							<entry><para>12</para></entry>
-							<entry><para>1-10, ↊ or X, ↋ or E (case insensitive)</para></entry>
+							<entry><para>1-10, ↊/X/A/a, ↋/E/B/b</para></entry>
 							<entry><para>Support all functions, variables and units that does not conflict with digits.</para></entry>
 						</row>
 						<row valign="top">
@@ -1733,7 +1733,7 @@ Similarily <quote>where</quote> (or alternatively <quote>/.</quote>) can be used
 					</tbody>
 				</tgroup>
 			</table>
-			The convert number bases dialog (see <xref linkend="qalculate-convert-number-bases-dialog"/>) and the programming keypad (see <xref linkend="qalculate-TBL-programming-keypad"/>) provides efficient conversion between common bases. For output of a single value to a specific number base use of the <quote>to</quote>-operator is recommended (see <xref linkend="qalculate-to"/>). For input of single number in a specific base, the <command>base()</command> function, which in addition supports non-numerical bases, or base prefixes (<quote>0b</quote>, <quote>0o</quote> and <quote>0x</quote> for base 2, 8 and 16, respectively) can be used.
+			The convert number bases dialog (see <xref linkend="qalculate-convert-number-bases-dialog"/>) and the programming keypad (see <xref linkend="qalculate-TBL-programming-keypad"/>) provides efficient conversion between common bases. For output of a single value to a specific number base use of the <quote>to</quote>-operator is recommended (see <xref linkend="qalculate-to"/>). For input of single number in a specific base, the <command>base()</command> function, which in addition supports non-numerical bases, or base prefixes (<quote>0b</quote>, <quote>0o</quote>, <quote>0d</quote>, and <quote>0x</quote> for base 2, 8, 12, and 16, respectively) can be used.
 			</para></listitem>
 	</varlistentry>
 	<varlistentry>

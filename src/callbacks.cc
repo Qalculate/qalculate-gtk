@@ -5832,7 +5832,7 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Factors"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("fp16") str += " <i>"; str += "binary16"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("16-bit floating point binary format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
-	COMPLETION_CONVERT_STRING("fp32") str += " <i>"; str += "binary32"; str += "</i>"; str += " <i>"; str += "float"; str += "</i>"; str += " <i>";
+	COMPLETION_CONVERT_STRING("fp32") str += " <i>"; str += "binary32"; str += "</i>"; str += " <i>"; str += "float"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("32-bit floating point binary format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("fp64") str += " <i>"; str += "binary64"; str += "</i>"; str += " <i>"; str += "double"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("64-bit floating point binary format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
