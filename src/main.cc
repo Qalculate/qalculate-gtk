@@ -57,6 +57,7 @@ extern GtkWidget *resultview;
 extern PrintOptions printops;
 extern bool ignore_locale;
 extern bool title_modified;
+bool check_version = false;
 string custom_title;
 
 MathFunction *f_answer;
@@ -283,11 +284,11 @@ void create_application(GtkApplication *app) {
 	gtk_accel_map_load(gstr);
 	g_free(gstr);
 
-#ifdef _WIN32
-	QalculateDateTime next_version_check_date(last_version_check_date);
-	next_version_check_date.addDays(14);
-	if(!next_version_check_date.isFutureDate()) g_idle_add(on_check_version_idle, NULL);
-#endif
+	if(check_version) {
+		QalculateDateTime next_version_check_date(last_version_check_date);
+		next_version_check_date.addDays(14);
+		if(!next_version_check_date.isFutureDate()) g_idle_add(on_check_version_idle, NULL);
+	}
 
 }
 

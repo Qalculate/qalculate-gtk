@@ -359,6 +359,8 @@ unordered_map<guint64, keyboard_shortcut> keyboard_shortcuts;
 
 bool default_shortcuts;
 
+extern bool check_version;
+
 guint32 current_shortcut_key = 0;
 guint32 current_shortcut_modifier = 0;
 
@@ -15244,6 +15246,12 @@ void load_preferences() {
 	evalops.interval_calculation = INTERVAL_CALCULATION_VARIANCE_FORMULA;
 	b_decimal_comma = -1;
 
+#ifdef _WIN32
+	check_version = true;
+#else
+	check_version = false;
+#endif
+
 	title_type = TITLE_APP;
 
 	auto_calculate = false;
@@ -15447,12 +15455,12 @@ void load_preferences() {
 					//fetch_exchange_rates_at_startup = v;
 				} else if(svar == "auto_update_exchange_rates") {
 					auto_update_exchange_rates = v;
-#ifdef _WIN32
+				} else if(svar == "check_version") {
+					check_version = v;
 				} else if(svar == "last_version_check") {
 					last_version_check_date.set(svalue);
 				} else if(svar == "last_found_version") {
 					last_found_version = svalue;
-#endif
 				} else if(svar == "show_keypad") {
 					show_keypad = v;
 				/*} else if(svar == "keypad_height") {
@@ -16284,10 +16292,11 @@ void save_preferences(bool mode) {
 	fprintf(file, "auto_update_exchange_rates=%i\n", auto_update_exchange_rates);
 	fprintf(file, "local_currency_conversion=%i\n", evalops.local_currency_conversion);
 	fprintf(file, "use_binary_prefixes=%i\n", CALCULATOR->usesBinaryPrefixes());
-#ifdef _WIN32
+	fprintf(file, "check_version=%i\n", check_version);
+if(check_version) {
 	fprintf(file, "last_version_check=%s\n", last_version_check_date.toISOString().c_str());
 	if(!last_found_version.empty()) fprintf(file, "last_found_version=%s\n", last_found_version.c_str());
-#endif
+}
 	fprintf(file, "show_keypad=%i\n", (rpn_mode && show_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad)));
 	//h = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
 	//fprintf(file, "keypad_height=%i\n", h > 10 ? h : keypad_height);
@@ -17277,6 +17286,10 @@ gboolean on_preferences_update_exchange_rates_spin_button_output(GtkSpinButton *
 		gtk_entry_set_text(GTK_ENTRY(spin), _("ask"));
 	}
 	return TRUE;
+}
+void on_preferences_checkbutton_check_version_toggled(GtkToggleButton *w, gpointer) {
+	check_version = gtk_toggle_button_get_active(w);
+	if(check_version) on_check_version_idle(NULL);
 }
 void on_preferences_checkbutton_local_currency_conversion_toggled(GtkToggleButton *w, gpointer) {
 	evalops.local_currency_conversion = gtk_toggle_button_get_active(w);
