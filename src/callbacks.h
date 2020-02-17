@@ -696,6 +696,10 @@ void on_nbases_entry_duo_changed(GtkEditable *editable, gpointer user_data);
 void on_nbases_entry_roman_changed(GtkEditable *editable, gpointer user_data);
 void on_nbases_entry_sexa_changed(GtkEditable *editable, gpointer user_data);
 
+void on_fp_entry_dec_changed(GtkEditable *editable, gpointer user_data);
+void on_fp_buffer_bin_changed(GtkTextBuffer *w, gpointer user_data);
+void on_fp_entry_hex_changed(GtkEditable *editable, gpointer user_data);
+
 void on_percentage_button_clear_clicked(GtkWidget*, gpointer);
 
 void on_menu_item_show_percentage_dialog_activate(GtkMenuItem *w, gpointer user_data);

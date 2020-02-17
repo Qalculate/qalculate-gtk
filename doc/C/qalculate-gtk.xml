@@ -2,8 +2,8 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "3.7.1">
-  <!ENTITY manrevision "3.7.1">
+  <!ENTITY appversion "3.8.0">
+  <!ENTITY manrevision "3.8.0">
   <!ENTITY date "February 2020">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
@@ -812,6 +812,10 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 				<entry><para>Opens the number bases converter. See <xref linkend="qalculate-convert-number-bases-dialog"/>.</para></entry>
 			</row>
 			<row valign="top">
+				<entry><para>Floating Point Conversion (IEEE 754)</para></entry>
+				<entry><para>Opens a window for conversion between decimal values and floating point formats.</para></entry>
+			</row>
+			<row valign="top">
 				<entry><para>Calendar Conversion</para></entry>
 				<entry><para>Opens a window for conversion of dates between different calendars.</para></entry>
 			</row>
@@ -1593,8 +1597,8 @@ Putting <quote> to </quote> followed by an expression at the end of the mathemat
 <listitem><para>Show as bijective base-26 number (e.g. <quote>731 to bijective = ABC</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
-<term>binary16 / fp16, binary32 / float / fp32, binary64 / double / fp64, binary128 / fp128</term>
-<listitem><para>Show as binary representation of IEEE 754 16-bit, 32-bit, 64-bit, or 128-bit floating-point number.</para></listitem>
+<term>binary16 / fp16, binary32 / float / fp32, binary64 / double / fp64, fp80, binary128 / fp128</term>
+<listitem><para>Show as binary representation of IEEE 754 16-bit (half precision), 32-bit (single precision), 64-bit (double precision), 80-bit (x86 extended format), or 128-bit (quadruple precision) floating-point number.</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>time</term>

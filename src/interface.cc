@@ -71,7 +71,7 @@ using std::deque;
 extern GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *datasetedit_builder, *datasets_builder, *setbase_builder, *decimals_builder;
 extern GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
 extern GtkBuilder *shortcuts_builder, *preferences_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder;
-extern GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_builder, *calendarconversion_builder;
+extern GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_builder, *calendarconversion_builder, *floatingpoint_builder;
 extern vector<mode_struct> modes;
 
 GtkWidget *mainwindow;
@@ -2579,6 +2579,11 @@ GtkWidget* get_set_base_dialog(void) {
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "double");
 				break;
 			}
+			case BASE_FP80: {
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "fp80");
+				break;
+			}
 			case BASE_FP128: {
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "fp128");
@@ -3092,5 +3097,25 @@ GtkWidget* get_shortcuts_dialog(void) {
 	}
 
 	return GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog"));
+}
+GtkWidget* get_floatingpoint_dialog(void) {
+	if(!floatingpoint_builder) {
+
+		floatingpoint_builder = getBuilder("floatingpoint.ui");
+		g_assert(floatingpoint_builder != NULL);
+
+		g_assert (gtk_builder_get_object(floatingpoint_builder, "floatingpoint_dialog") != NULL);
+		
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
+		gtk_text_view_set_top_margin(GTK_TEXT_VIEW(gtk_builder_get_object(floatingpoint_builder, "fp_textedit_bin")), 6);
+		gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(gtk_builder_get_object(floatingpoint_builder, "fp_textedit_bin")), 6);
+#endif
+
+
+		gtk_builder_connect_signals(floatingpoint_builder, NULL);
+
+	}
+
+	return GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "floatingpoint_dialog"));
 }
 

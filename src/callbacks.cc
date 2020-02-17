@@ -82,11 +82,11 @@ extern gint expression_position;
 extern GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *setbase_builder, *datasetedit_builder, *datasets_builder, *decimals_builder;
 extern GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
 extern GtkBuilder *shortcuts_builder, *preferences_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder;
-extern GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_builder, *calendarconversion_builder;
+extern GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_builder, *calendarconversion_builder, *floatingpoint_builder;
 
 extern GtkWidget *mainwindow;
 
-bool changing_in_nbases_dialog;
+bool changing_in_nbases_dialog, changing_in_fp_dialog;
 
 extern GtkWidget *tabs, *expander_keypad, *expander_history, *expander_stack, *expander_convert;
 extern GtkEntryCompletion *completion;
@@ -1984,6 +1984,9 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			} else if(equalsIgnoreCase(to_str, "fp16") || equalsIgnoreCase(to_str, "binary16")) {
 				to_base = BASE_FP16;
 				do_to = true;
+			} else if(equalsIgnoreCase(to_str, "fp80")) {
+				to_base = BASE_FP80;
+				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "fp128") || equalsIgnoreCase(to_str, "binary128")) {
 				to_base = BASE_FP128;
 				do_to = true;
@@ -2595,6 +2598,8 @@ void display_parse_status() {
 				parsed_expression += _("64-bit floating point");
 			} else if(equalsIgnoreCase(str_u, "fp16") || equalsIgnoreCase(str_u, "binary16")) {
 				parsed_expression += _("16-bit floating point");
+			} else if(equalsIgnoreCase(str_u, "fp80")) {
+				parsed_expression += _("80-bit (x86) floating point");
 			} else if(equalsIgnoreCase(str_u, "fp128") || equalsIgnoreCase(str_u, "binary128")) {
 				parsed_expression += _("128-bit floating point");
 			} else if(equalsIgnoreCase(str_u, "time") || equalsIgnoreCase(str_u, _("time"))) {
@@ -5838,6 +5843,8 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("32-bit floating point binary format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("fp64") str += " <i>"; str += "binary64"; str += "</i>"; str += " <i>"; str += "double"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("64-bit floating point binary format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
+	COMPLETION_CONVERT_STRING("fp80");
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("80-bit (x86) floating point binary format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("fp128") str += " <i>"; str += "binary128"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("128-bit floating point binary format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, NULL, -1);
 	COMPLETION_CONVERT_STRING("fraction")
@@ -6158,6 +6165,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 							case BASE_FP16: {}
 							case BASE_FP32: {}
 							case BASE_FP64: {}
+							case BASE_FP80: {}
 							case BASE_FP128: {str_base = "2"; break;}
 							default: {str_base = i2s(po.base);}
 						}
@@ -9853,6 +9861,9 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			do_to = true;
 		} else if(equalsIgnoreCase(to_str, "fp16") || equalsIgnoreCase(to_str, "binary16")) {
 			to_base = BASE_FP16;
+			do_to = true;
+		} else if(equalsIgnoreCase(to_str, "fp80")) {
+			to_base = BASE_FP80;
 			do_to = true;
 		} else if(equalsIgnoreCase(to_str, "fp128") || equalsIgnoreCase(to_str, "binary128")) {
 			to_base = BASE_FP128;
@@ -15380,7 +15391,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {3, 7, 0};
+	int version_numbers[] = {3, 8, 0};
 	bool old_history_format = false;
 
 	if(file) {
@@ -22556,6 +22567,13 @@ void output_base_updated_from_menu() {
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "double");
 				break;
 			}
+			case BASE_FP80: {
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "fp80");
+				break;
+			}
 			case BASE_FP128: {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
@@ -22792,7 +22810,7 @@ void on_menu_item_time_format_activate(GtkMenuItem *w, gpointer) {
 void on_set_base_combo_output_other_changed(GtkComboBox*, gpointer) {
 	string str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")));
 	remove_blank_ends(str);
-	if(str == "φ" || str == "ψ" || str == "π" || str == "√2" || str == "e" || str == "-3" || str == "-2" || str == "-10" || str == "20" || str == "36" || str == "62" || str == "Unicode" || str == _("Bijective base-26") || str == "fp16" || str == "float" || str == "double" || str == "fp128") on_set_base_entry_output_other_activate(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), NULL);
+	if(str == "φ" || str == "ψ" || str == "π" || str == "√2" || str == "e" || str == "-3" || str == "-2" || str == "-10" || str == "20" || str == "36" || str == "62" || str == "Unicode" || str == _("Bijective base-26") || str == "fp16" || str == "float" || str == "double" || str == "fp80" || str == "fp128") on_set_base_entry_output_other_activate(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), NULL);
 }
 void on_set_base_entry_output_other_activate(GtkEntry *w, gpointer) {
 	string str = gtk_entry_get_text(w);
@@ -22804,6 +22822,7 @@ void on_set_base_entry_output_other_activate(GtkEntry *w, gpointer) {
 	else if(equalsIgnoreCase(str, "fp16") || equalsIgnoreCase(str, "binary16")) {set_output_base_from_dialog(BASE_FP16); return;}
 	else if(equalsIgnoreCase(str, "fp32") || equalsIgnoreCase(str, "binary32") || equalsIgnoreCase(str, "float")) {set_output_base_from_dialog(BASE_FP32); return;}
 	else if(equalsIgnoreCase(str, "fp64") || equalsIgnoreCase(str, "binary64") || equalsIgnoreCase(str, "double")) {set_output_base_from_dialog(BASE_FP64); return;}
+	else if(equalsIgnoreCase(str, "fp80")) {set_output_base_from_dialog(BASE_FP80); return;}
 	else if(equalsIgnoreCase(str, "fp128") || equalsIgnoreCase(str, "binary128")) {set_output_base_from_dialog(BASE_FP128); return;}
 	else if(equalsIgnoreCase(str, "supergolden") || equalsIgnoreCase(str, "supergolden ratio") || str == "ψ") {set_output_base_from_dialog(BASE_SUPER_GOLDEN_RATIO); return;}
 	else if(equalsIgnoreCase(str, "pi") || str == "π") {set_output_base_from_dialog(BASE_PI); return;}
@@ -22883,6 +22902,7 @@ void on_set_base_radiobutton_output_other_toggled(GtkToggleButton *w, gpointer) 
 	else if(equalsIgnoreCase(str, "fp16") || equalsIgnoreCase(str, "binary16")) {set_output_base_from_dialog(BASE_FP16); return;}
 	else if(equalsIgnoreCase(str, "fp32") || equalsIgnoreCase(str, "binary32") || equalsIgnoreCase(str, "float")) {set_output_base_from_dialog(BASE_FP32); return;}
 	else if(equalsIgnoreCase(str, "fp64") || equalsIgnoreCase(str, "binary64") || equalsIgnoreCase(str, "double")) {set_output_base_from_dialog(BASE_FP64); return;}
+	else if(equalsIgnoreCase(str, "fp80")) {set_output_base_from_dialog(BASE_FP80); return;}
 	else if(equalsIgnoreCase(str, "fp128") || equalsIgnoreCase(str, "binary128")) {set_output_base_from_dialog(BASE_FP128); return;}
 	else if(equalsIgnoreCase(str, "supergolden") || equalsIgnoreCase(str, "supergolden ratio") || str == "ψ") {set_output_base_from_dialog(BASE_SUPER_GOLDEN_RATIO); return;}
 	else if(equalsIgnoreCase(str, "pi") || str == "π") {set_output_base_from_dialog(BASE_PI); return;}
@@ -23156,6 +23176,35 @@ void on_menu_item_convert_number_bases_activate(GtkMenuItem*, gpointer) {
 	string str = get_selected_expression_text(true), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	convert_number_bases(str.c_str(), false);
+}
+void convert_floatingpoint(const gchar *initial_expression, bool b_result) {
+	changing_in_fp_dialog = false;
+	GtkWidget *dialog = get_floatingpoint_dialog();
+	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
+	switch(b_result ? displayed_printops.base : evalops.parse_options.base) {
+		case BASE_BINARY: {
+			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(floatingpoint_builder, "fp_entry_bin")), initial_expression);
+			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "fp_entry_bin")));
+			break;
+		}
+		case BASE_HEXADECIMAL: {
+			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(floatingpoint_builder, "fp_entry_hex")), initial_expression);
+			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "fp_entry_hex")));
+			break;
+		}
+		default: {
+			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(floatingpoint_builder, "fp_entry_dec")), initial_expression);
+			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "fp_entry_dec")));
+		}
+	}
+	gtk_widget_show(dialog);
+	gtk_window_present(GTK_WINDOW(dialog));
+}
+void on_menu_item_convert_floatingpoint_activate(GtkMenuItem*, gpointer) {
+	if(!result_text.empty()) return convert_floatingpoint(result_text.c_str(), true);
+	string str = get_selected_expression_text(true), str2;
+	CALCULATOR->separateToExpression(str, str2, evalops, true);
+	convert_floatingpoint(str.c_str(), false);
 }
 void show_percentage_dialog(const gchar *initial_expression) {
 	GtkWidget *dialog = get_percentage_dialog();
@@ -25942,6 +25991,269 @@ gboolean on_nbases_dialog_key_press_event(GtkWidget *o, GdkEventKey *event, gpoi
 	return FALSE;
 }
 
+unsigned int get_fp_bits() {
+	switch(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(floatingpoint_builder, "fp_combo_bits")))) {
+		case 0: return 16;
+		case 1: return 32;
+		case 2: return 64;
+		case 3: return 80;
+		case 4: return 128;
+	}
+	return 32;
+}
+
+void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
+	unsigned int bits = get_fp_bits();
+	unsigned int expbits = standard_expbits(bits);
+	GtkWidget *w_dec, *w_hex, *w_float, *w_value, *w_error;
+	GtkTextBuffer *w_bin;
+	w_dec = GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "fp_entry_dec"));
+	w_bin = GTK_TEXT_BUFFER(gtk_builder_get_object(floatingpoint_builder, "fp_buffer_bin"));
+	w_hex = GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "fp_entry_hex"));
+	w_float = GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "fp_entry_float"));
+	w_value = GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "fp_entry_value"));
+	w_error = GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "fp_entry_error"));
+	g_signal_handlers_block_matched((gpointer) w_dec, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_fp_entry_dec_changed, NULL);
+	g_signal_handlers_block_matched((gpointer) w_bin, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_fp_buffer_bin_changed, NULL);
+	g_signal_handlers_block_matched((gpointer) w_hex, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_fp_entry_hex_changed, NULL);
+	PrintOptions po;
+	po.number_fraction_format = FRACTION_DECIMAL;
+	po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
+	po.use_unicode_signs = printops.use_unicode_signs;
+	po.lower_case_e = printops.lower_case_e;
+	po.lower_case_numbers = printops.lower_case_numbers;
+	po.base_display = BASE_DISPLAY_NONE;
+	po.abbreviate_names = printops.abbreviate_names;
+	po.digit_grouping = printops.digit_grouping;
+	po.multiplication_sign = printops.multiplication_sign;
+	po.division_sign = printops.division_sign;
+	po.short_multiplication = printops.short_multiplication;
+	po.excessive_parenthesis = printops.excessive_parenthesis;
+	po.can_display_unicode_string_function = &can_display_unicode_string_function;
+	po.can_display_unicode_string_arg = (void*) w_dec;
+	po.spell_out_logical_operators = printops.spell_out_logical_operators;
+	po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
+	po.binary_bits = bits;
+	po.show_ending_zeroes = false;
+	if(sbin.empty()) {
+		if(base != 10) gtk_entry_set_text(GTK_ENTRY(w_dec), "");
+		if(base != 16) gtk_entry_set_text(GTK_ENTRY(w_hex), "");
+		if(base != 2) gtk_text_buffer_set_text(w_bin, "", -1);
+		gtk_entry_set_text(GTK_ENTRY(w_float), "");
+		gtk_entry_set_text(GTK_ENTRY(w_value), "");
+		gtk_entry_set_text(GTK_ENTRY(w_error), "");
+	} else {
+		int prec_bak = CALCULATOR->getPrecision();
+		if(bits == 128 && prec_bak < 35) CALCULATOR->setPrecision(35);
+		else if(bits == 80 && prec_bak < 20) CALCULATOR->setPrecision(20);
+		else if(bits == 64 && prec_bak < 16) CALCULATOR->setPrecision(16);
+		else if(bits == 32 && prec_bak < 8) CALCULATOR->setPrecision(8);
+		else if(bits == 16 && prec_bak < 4) CALCULATOR->setPrecision(4);
+		ParseOptions pa;
+		pa.base = BASE_BINARY;
+		Number nr(sbin, pa);
+		if(base != 16) {po.base = 16; gtk_entry_set_text(GTK_ENTRY(w_hex), nr.print(po).c_str());}
+		if(base != 2) {
+			string str = sbin;
+			if(bits > 32) {
+				for(size_t i = expbits + 5; i < str.length() - 1; i += 4) {
+					if((bits == 64 && str.length() - i == 24) || (bits == 80 && str.length() - i == 32) || (bits == 128 && (str.length() - i == 40 || str.length() - i == 76))) str.insert(i, "\n");
+					else str.insert(i, " ");
+					i++;
+				}
+			}
+			str.insert(expbits + 1, bits > 32 ? "\n" : " ");
+			str.insert(1, " ");
+			gtk_text_buffer_set_text(w_bin, str.c_str(), -1);
+		}
+		po.base = 10;
+		Number exponent, significand;
+		exponent.set(sbin.substr(1, expbits), pa);
+		Number expbias(2);
+		expbias ^= (expbits - 1);
+		expbias--;
+		bool subnormal = exponent.isZero();
+		exponent -= expbias;
+		string sfloat;
+		if(exponent > expbias) {
+			if(sbin.find("1", 1 + expbits) != string::npos) sfloat = "NaN";
+			else if(sbin[0] != '0') sfloat = nr_minus_inf.print(po);
+			else sfloat = nr_plus_inf.print(po);
+		} else {
+			if(subnormal) exponent++;
+			if(subnormal) significand.set(string("0.") + sbin.substr(1 + expbits), pa);
+			else significand.set(string("1.") + sbin.substr(1 + expbits), pa);
+			if(sbin[0] != '0') significand.negate();
+			sfloat = significand.print(po);
+			if(!subnormal || !significand.isZero()) {
+				sfloat += " ";
+				sfloat += expression_times_sign();
+				sfloat += " ";
+				sfloat += "2^";
+				sfloat += exponent.print(po);
+			}
+		}
+		gtk_entry_set_text(GTK_ENTRY(w_float), sfloat.c_str());
+		Number value;
+		int ret = from_float(value, sbin, bits, expbits);
+		if(ret <= 0) {
+			gtk_entry_set_text(GTK_ENTRY(w_value), "");
+			gtk_entry_set_text(GTK_ENTRY(w_error), "");
+		} else {
+			gtk_entry_set_text(GTK_ENTRY(w_value), value.print(po).c_str());
+			Number nr_error;
+			if(decnum && (!decnum->isInfinite() || !value.isInfinite())) {
+				nr_error = value;
+				nr_error -= *decnum;
+				nr_error.abs();
+			}
+			gtk_entry_set_text(GTK_ENTRY(w_error), nr_error.print(po).c_str());
+		}
+		if(base != 10) gtk_entry_set_text(GTK_ENTRY(w_dec), value.print(po).c_str());
+		CALCULATOR->setPrecision(prec_bak);
+	}
+	g_signal_handlers_unblock_matched((gpointer) w_dec, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_fp_entry_dec_changed, NULL);
+	g_signal_handlers_unblock_matched((gpointer) w_bin, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_fp_buffer_bin_changed, NULL);
+	g_signal_handlers_unblock_matched((gpointer) w_hex, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_fp_entry_hex_changed, NULL);
+}
+void on_fp_entry_dec_changed(GtkEditable *editable, gpointer) {
+	if(changing_in_fp_dialog) return;
+	string str = gtk_entry_get_text(GTK_ENTRY(editable));
+	remove_blank_ends(str);
+	if(str.empty()) return;
+	if(last_is_operator(str, true)) return;
+	unsigned int bits = get_fp_bits();
+	unsigned int expbits = standard_expbits(bits);
+	changing_in_fp_dialog = true;
+	EvaluationOptions eo;
+	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
+	eo.parse_options.unknowns_enabled = evalops.parse_options.unknowns_enabled;
+	MathStructure value;
+	do_timeout = false;
+	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), evalops.parse_options), 1500, eo);
+	if(value.isNumber()) {
+		string sbin = to_float(value.number(), bits, expbits);
+		update_fp_entries(sbin, 10, &value.number());
+	} else if(value.isUndefined()) {
+		string sbin = to_float(nr_one_i, bits, expbits);
+		update_fp_entries(sbin, 10);
+	} else {
+		update_fp_entries("", 10);
+	}
+	changing_in_fp_dialog = false;
+	CALCULATOR->clearMessages();
+	do_timeout = true;
+}
+void on_fp_combo_bits_changed(GtkComboBox*, gpointer) {
+	on_fp_entry_dec_changed(GTK_EDITABLE(gtk_builder_get_object(floatingpoint_builder, "fp_entry_dec")), NULL);
+}
+void on_fp_buffer_bin_changed(GtkTextBuffer *w, gpointer) {
+	if(changing_in_fp_dialog) return;
+	GtkTextIter istart, iend;
+	gtk_text_buffer_get_start_iter(w, &istart);
+	gtk_text_buffer_get_end_iter(w, &iend);
+	gchar *gtext = gtk_text_buffer_get_text(w, &istart, &iend, FALSE);
+	string str = gtext;
+	g_free(gtext);
+	remove_blanks(str);
+	if(str.empty()) return;
+	changing_in_fp_dialog = true;
+	do_timeout = false;
+	unsigned int bits = get_fp_bits();
+	if(str.find_first_not_of("01") == string::npos && str.length() <= bits) {
+		update_fp_entries(str, 2);
+	} else {
+		update_fp_entries("", 2);
+	}
+	changing_in_fp_dialog = false;
+	CALCULATOR->clearMessages();
+	do_timeout = true;
+}
+void on_fp_entry_hex_changed(GtkEditable *editable, gpointer) {
+	if(changing_in_fp_dialog) return;
+	string str = gtk_entry_get_text(GTK_ENTRY(editable));
+	remove_blanks(str);
+	if(str.empty()) return;
+	changing_in_fp_dialog = true;
+	unsigned int bits = get_fp_bits();
+	do_timeout = false;
+	ParseOptions pa;
+	pa.base = BASE_HEXADECIMAL;
+	Number nr(str, pa);
+	PrintOptions po;
+	po.base = BASE_BINARY;
+	po.binary_bits = bits;
+	po.max_decimals = 0;
+	po.use_max_decimals = true;
+	po.base_display = BASE_DISPLAY_NONE;
+	string sbin = nr.print(po);
+	if(sbin.length() < bits) sbin.insert(0, bits - sbin.length(), '0');
+	if(sbin.length() <= bits) {
+		update_fp_entries(sbin, 16);
+	} else {
+		update_fp_entries("", 16);
+	}
+	changing_in_fp_dialog = false;
+	CALCULATOR->clearMessages();
+	do_timeout = true;
+}
+void fp_insert_text(GtkWidget *w, const gchar *text) {
+	changing_in_fp_dialog = true;
+	gtk_editable_delete_selection(GTK_EDITABLE(w));
+	changing_in_fp_dialog = false;
+	gint pos = gtk_editable_get_position(GTK_EDITABLE(w));
+	gtk_editable_insert_text(GTK_EDITABLE(w), text, -1, &pos);
+	gtk_editable_set_position(GTK_EDITABLE(w), pos);
+	gtk_widget_grab_focus(w);
+	gtk_editable_select_region(GTK_EDITABLE(w), pos, pos);
+}
+
+gboolean on_floatingpoint_dialog_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
+	if(b_busy) {
+		if(event->keyval == GDK_KEY_Escape) {
+			if(b_busy_expression) on_abort_calculation(NULL, 0, NULL);
+			else if(b_busy_result) on_abort_display(NULL, 0, NULL);
+			else if(b_busy_command) on_abort_command(NULL, 0, NULL);
+		}
+		return TRUE;
+	}
+	return FALSE;
+}
+gboolean on_fp_entry_dec_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
+	switch(event->keyval) {
+		case GDK_KEY_asciicircum: {}
+		case GDK_KEY_dead_circumflex: {
+			bool input_xor = (caret_as_xor != ((event->state & GDK_CONTROL_MASK) > 0));
+			fp_insert_text(o, input_xor ? " xor " : "^");
+			return TRUE;
+		}
+		case GDK_KEY_KP_Multiply: {}
+		case GDK_KEY_asterisk: {
+			fp_insert_text(o, expression_times_sign());
+			return TRUE;
+		}
+		case GDK_KEY_KP_Divide: {}
+		case GDK_KEY_slash: {
+			fp_insert_text(o, expression_divide_sign());
+			return TRUE;
+		}
+		case GDK_KEY_KP_Subtract: {}
+		case GDK_KEY_minus: {
+			fp_insert_text(o, expression_sub_sign());
+			return TRUE;
+		}
+		case GDK_KEY_KP_Add: {}
+		case GDK_KEY_plus: {
+			fp_insert_text(o, expression_add_sign());
+			return TRUE;
+		}
+		case GDK_KEY_braceleft: {}
+		case GDK_KEY_braceright: {
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
 
 void on_button_functions_clicked(GtkButton*, gpointer) {
 	manage_functions();
