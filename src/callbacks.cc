@@ -4922,6 +4922,7 @@ const gchar *shortcut_type_text(int type) {
 		case SHORTCUT_TYPE_NEW_FUNCTION: {return _("New function"); break;}
 		case SHORTCUT_TYPE_PLOT: {return _("Open plot functions/data"); break;}
 		case SHORTCUT_TYPE_NUMBER_BASES: {return _("Open convert number bases"); break;}
+		case SHORTCUT_TYPE_FLOATING_POINT: {return _("Open floating point conversion"); break;}
 		case SHORTCUT_TYPE_CALENDARS: {return _("Open calender conversion"); break;}
 		case SHORTCUT_TYPE_PERCENTAGE_TOOL: {return _("Open percentage calculation tool"); break;}
 		case SHORTCUT_TYPE_PERIODIC_TABLE: {return _("Open periodic table"); break;}
@@ -5090,6 +5091,10 @@ void update_accels() {
 			}
 			case SHORTCUT_TYPE_NUMBER_BASES: {
 				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_convert_number_bases")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_FLOATING_POINT: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_convert_floatingpoint")))), it->second.key, (GdkModifierType) it->second.modifier);
 				break;
 			}
 			case SHORTCUT_TYPE_CALENDARS: {
@@ -16057,6 +16062,9 @@ void load_preferences() {
 					char str[svalue.length()];
 					keyboard_shortcut ks;
 					int n = sscanf(svalue.c_str(), "%u:%u:%i:%s", &ks.key, &ks.modifier, &ks.type, str);
+					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 8)) {
+						if(ks.type >= SHORTCUT_TYPE_FLOATING_POINT) ks.type++;
+					}
 					if(n >= 3 && ks.type >= SHORTCUT_TYPE_FUNCTION && ks.type <= SHORTCUT_TYPE_QUIT) {
 						if(n == 4) ks.value = str;
 						keyboard_shortcuts[(guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier] = ks;
@@ -26780,6 +26788,10 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 			}
 			case SHORTCUT_TYPE_NUMBER_BASES: {
 				on_menu_item_convert_number_bases_activate(NULL, NULL);
+				return true;
+			}
+			case SHORTCUT_TYPE_FLOATING_POINT: {
+				on_menu_item_convert_floatingpoint_activate(NULL, NULL);
 				return true;
 			}
 			case SHORTCUT_TYPE_CALENDARS: {
