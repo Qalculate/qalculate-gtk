@@ -5890,17 +5890,19 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkButton" id="button_rnd">
+                                          <object class="GtkButton" id="button_fp">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="focus_on_click">False</property>
                                             <property name="receives_default">False</property>
+                                            <property name="tooltip_text" translatable="yes">Floating point conversion</property>
                                             <property name="use_underline">True</property>
+                                            <signal name="clicked" handler="on_button_fp_clicked" swapped="no"/>
                                             <child>
-                                              <object class="GtkLabel" id="label_rnd">
+                                              <object class="GtkLabel" id="label_fp">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">False</property>
-                                                <property name="label">rnd</property>
+                                                <property name="label">fp</property>
                                                 <property name="use_markup">True</property>
                                               </object>
                                             </child>

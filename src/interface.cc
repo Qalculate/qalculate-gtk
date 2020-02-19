@@ -964,7 +964,7 @@ void create_button_menus(void) {
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_expf"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_exp);
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_stamptodate"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_stamptodate);
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_code"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_ascii);
-	g_signal_connect(gtk_builder_get_object(main_builder, "button_rnd"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_rand);
+	//g_signal_connect(gtk_builder_get_object(main_builder, "button_rnd"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_rand);
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_mod2"), "clicked", G_CALLBACK(insert_function_operator), (gpointer) CALCULATOR->f_mod);
 
 	f = CALCULATOR->getActiveFunction("exp2");
@@ -985,7 +985,7 @@ void create_button_menus(void) {
 	set_keypad_tooltip("button_sqrt2", CALCULATOR->f_sqrt->title(true).c_str(), CALCULATOR->f_cbrt->title(true).c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_abs")), CALCULATOR->f_abs->title(true).c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_fac2")), CALCULATOR->f_factorial->title(true).c_str());
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rnd")), CALCULATOR->f_rand->title(true).c_str());
+	//gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rnd")), CALCULATOR->f_rand->title(true).c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_cmp")), CALCULATOR->f_bitcmp->title(true).c_str());
 	f = CALCULATOR->getActiveFunction("bitrot");
 	if(f) {

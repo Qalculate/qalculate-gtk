@@ -23180,7 +23180,7 @@ void convert_number_bases(const gchar *initial_expression, bool b_result) {
 	gtk_window_present(GTK_WINDOW(dialog));
 }
 void on_menu_item_convert_number_bases_activate(GtkMenuItem*, gpointer) {
-	if(!result_text.empty()) return convert_number_bases(result_text.c_str(), true);
+	if(displayed_mstruct && !result_text.empty()) return convert_number_bases(((mstruct->isNumber() && !mstruct->number().hasImaginaryPart()) || mstruct->isUndefined()) ? result_text.c_str() : "", true);
 	string str = get_selected_expression_text(true), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	convert_number_bases(str.c_str(), false);
@@ -23209,10 +23209,13 @@ void convert_floatingpoint(const gchar *initial_expression, bool b_result) {
 	gtk_window_present(GTK_WINDOW(dialog));
 }
 void on_menu_item_convert_floatingpoint_activate(GtkMenuItem*, gpointer) {
-	if(!result_text.empty()) return convert_floatingpoint(result_text.c_str(), true);
+	if(displayed_mstruct && !result_text.empty()) return convert_floatingpoint(((mstruct->isNumber() && !mstruct->number().hasImaginaryPart()) || mstruct->isUndefined()) ? result_text.c_str() : "", true);
 	string str = get_selected_expression_text(true), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	convert_floatingpoint(str.c_str(), false);
+}
+void on_button_fp_clicked(GtkWidget*, gpointer) {
+	on_menu_item_convert_floatingpoint_activate(NULL, NULL);
 }
 void show_percentage_dialog(const gchar *initial_expression) {
 	GtkWidget *dialog = get_percentage_dialog();
@@ -26043,6 +26046,7 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 	po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 	po.binary_bits = bits;
 	po.show_ending_zeroes = false;
+	po.min_exp = printops.min_exp;
 	if(sbin.empty()) {
 		if(base != 10) gtk_entry_set_text(GTK_ENTRY(w_dec), "");
 		if(base != 16) gtk_entry_set_text(GTK_ENTRY(w_hex), "");
@@ -26057,6 +26061,9 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 		else if(bits == 64 && prec_bak < 16) CALCULATOR->setPrecision(16);
 		else if(bits == 32 && prec_bak < 8) CALCULATOR->setPrecision(8);
 		else if(bits == 16 && prec_bak < 4) CALCULATOR->setPrecision(4);
+		if((prec_bak != CALCULATOR->getPrecision() || prec_bak > 40) && (po.min_exp == -1 || po.min_exp == 0)) po.min_exp = prec_bak;
+		po.max_decimals = 40;
+		po.use_max_decimals = true;
 		ParseOptions pa;
 		pa.base = BASE_BINARY;
 		Number nr(sbin, pa);
@@ -26075,39 +26082,40 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 			gtk_text_buffer_set_text(w_bin, str.c_str(), -1);
 		}
 		po.base = 10;
-		Number exponent, significand;
-		exponent.set(sbin.substr(1, expbits), pa);
-		Number expbias(2);
-		expbias ^= (expbits - 1);
-		expbias--;
-		bool subnormal = exponent.isZero();
-		exponent -= expbias;
-		string sfloat;
-		if(exponent > expbias) {
-			if(sbin.find("1", 1 + expbits) != string::npos) sfloat = "NaN";
-			else if(sbin[0] != '0') sfloat = nr_minus_inf.print(po);
-			else sfloat = nr_plus_inf.print(po);
-		} else {
-			if(subnormal) exponent++;
-			if(subnormal) significand.set(string("0.") + sbin.substr(1 + expbits), pa);
-			else significand.set(string("1.") + sbin.substr(1 + expbits), pa);
-			if(sbin[0] != '0') significand.negate();
-			sfloat = significand.print(po);
-			if(!subnormal || !significand.isZero()) {
-				sfloat += " ";
-				sfloat += expression_times_sign();
-				sfloat += " ";
-				sfloat += "2^";
-				sfloat += exponent.print(po);
-			}
-		}
-		gtk_entry_set_text(GTK_ENTRY(w_float), sfloat.c_str());
 		Number value;
 		int ret = from_float(value, sbin, bits, expbits);
 		if(ret <= 0) {
-			gtk_entry_set_text(GTK_ENTRY(w_value), "");
+			gtk_entry_set_text(GTK_ENTRY(w_float), ret < 0 ? "NaN" : "");
+			gtk_entry_set_text(GTK_ENTRY(w_value), ret < 0 ? "NaN" : "");
 			gtk_entry_set_text(GTK_ENTRY(w_error), "");
+			if(base != 10) gtk_entry_set_text(GTK_ENTRY(w_dec), m_undefined.print(po).c_str());
 		} else {
+			Number exponent, significand;
+			exponent.set(sbin.substr(1, expbits), pa);
+			Number expbias(2);
+			expbias ^= (expbits - 1);
+			expbias--;
+			bool subnormal = exponent.isZero();
+			exponent -= expbias;
+			string sfloat;
+			if(exponent > expbias) {
+				if(sbin[0] != '0') sfloat = nr_minus_inf.print(po);
+				else sfloat = nr_plus_inf.print(po);
+			} else {
+				if(subnormal) exponent++;
+				if(subnormal) significand.set(string("0.") + sbin.substr(1 + expbits), pa);
+				else significand.set(string("1.") + sbin.substr(1 + expbits), pa);
+				if(sbin[0] != '0') significand.negate();
+				sfloat = significand.print(po);
+				if(!subnormal || !significand.isZero()) {
+					sfloat += " ";
+					sfloat += expression_times_sign();
+					sfloat += " ";
+					sfloat += "2^";
+					sfloat += exponent.print(po);
+				}
+			}
+			gtk_entry_set_text(GTK_ENTRY(w_float), sfloat.c_str());
 			gtk_entry_set_text(GTK_ENTRY(w_value), value.print(po).c_str());
 			Number nr_error;
 			if(decnum && (!decnum->isInfinite() || !value.isInfinite())) {
@@ -26116,8 +26124,8 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 				nr_error.abs();
 			}
 			gtk_entry_set_text(GTK_ENTRY(w_error), nr_error.print(po).c_str());
+			if(base != 10) gtk_entry_set_text(GTK_ENTRY(w_dec), value.print(po).c_str());
 		}
-		if(base != 10) gtk_entry_set_text(GTK_ENTRY(w_dec), value.print(po).c_str());
 		CALCULATOR->setPrecision(prec_bak);
 	}
 	g_signal_handlers_unblock_matched((gpointer) w_dec, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_fp_entry_dec_changed, NULL);
@@ -26735,6 +26743,7 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 			}
 			case SHORTCUT_TYPE_PROGRAMMING: {
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_programmers_keypad")), visible_keypad != 1);
+				if(visible_keypad == 1) gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad")), true);
 				return true;
 			}
 			case SHORTCUT_TYPE_KEYPAD: {
