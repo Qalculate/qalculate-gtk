@@ -129,6 +129,9 @@ void create_application(GtkApplication *app) {
 	if(!custom_title.empty()) {
 		gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), custom_title.c_str());
 		title_modified = true;
+	} else {
+		update_window_title();
+		title_modified = false;
 	}
 	g_application_set_default(G_APPLICATION(app));
 	gtk_window_set_application(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), app);

@@ -524,7 +524,7 @@ Below follows a list of the buttons on the left side (including their menus and 
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/programming-keypad.png" format="PNG" width="468"/>
+				<imagedata fileref="figures/programming-keypad.png" format="PNG" width="443"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -710,8 +710,8 @@ The buttons on the left side can be replaced (using the top left button or <keyc
 				<entry><para>-</para></entry>
 			</row>
 			<row valign="top">
-				<entry><para>rnd</para></entry>
-				<entry><para>Random number function (returns a pseudo random number between 0 and 1, or an integer between one and a specified number)</para></entry>
+				<entry><para>fp</para></entry>
+				<entry><para>Opens a window for conversion between decimal values and floating point formats.</para></entry>
 				<entry><para>-</para></entry>
 			</row>
 			<row valign="top">
@@ -1854,20 +1854,25 @@ For example, <command>5 ENTER 3 + 2 /</command> adds 5 to the stack, then adds 3
 Functions operate on the top values of the stack. Functions which require multiply arguments, fill the arguments in reversed order from the top (e.g. <command>5 ENTER 2 ENTER rem</command> equals <quote>rem(5, 2)</quote>). Functions with a vector argument uses all stack regsters (unless the top value is a vector). This is quite useful for statistical functions (e.g. <command>5 ENTER 2 ENTER 3 ENTER 4 ENTER harmmean</command> calculates the harmonic mean of 5, 2, 3, and 4 and leaves the result, 3.1169, as the only value on the stack).
 </para>
 <para>
-When the RPN stack is enabled, full expressions can still be entered (you can add e.g. <quote>5x + 3 + 23 + sin(2)</quote> directly to the stack). The buttons on the keypad do not insert operators and functions in the expression entry, but instead applies them to the stack. This is also true for the keys on the keyboard, unless deactivated in the preferences (<menuchoice><guimenu>Edit</guimenu><guimenuitem>Preferences</guimenuitem></menuchoice>). <keycap>Enter</keycap> calculates the current expressions and adds it to the stack (calculated mathematical expressions are automatically added to the stack when the RPN stack is enabled). If the expression entry is not empty when applying an operator or function to the stack, the expression is first calculated and added to the stack. All keys on the main part of the keyboard add the corresponding characters in the expression entry, unless the <guilabel>Use only keypad keys for RPN</guilabel> option is deactivated from the preferences dialog. To apply the raise operator <quote>^</quote> to the stack, without clicking the keypad button with the pointing device, use the <keycombo><keycap>Ctrl</keycap><keycap>* (keypad)</keycap></keycombo> shortcut. If the expression only contains an operator or a single function without arguments, the operator/function is applied to the stack.
+When the RPN stack is enabled, full expressions can still be entered (you can add e.g. <quote>5x + 3 + 23 + sin(2)</quote> directly to the stack). The buttons on the keypad do not insert operators and functions in the expression entry, but instead applies them to the stack. This is also true for the keys on the keyboard, unless deactivated in the preferences (<menuchoice><guimenu>Edit</guimenu><guimenuitem>Preferences</guimenuitem></menuchoice>, <guilabel>Use only keypad keys for RPN</guilabel>). <keycap>Enter</keycap> calculates the current expressions and adds it to the stack (calculated mathematical expressions are automatically added to the stack when the RPN stack is enabled). If the expression entry is not empty when applying an operator or function to the stack, the expression is first calculated and added to the stack. If the expression only contains an operator or a single function without arguments, the operator/function is applied to the stack.
 </para>
 <figure id="qalculate-FIG-rpn-mode">
 	<title>RPN Mode</title>
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/rpn-mode.png" format="PNG" width="409"/>
+				<imagedata fileref="figures/rpn-mode.png" format="PNG" width="414"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
 </figure>
 <para>
-The RPN mode adds a third page to the main window, for display and manipulation of the values on the stack. This shows a list of values on the stack, with the last added value on the top. On the right are buttons for manipulation of the stack. The buttons move the selected value up or down, move it to the top, edit it, or removes it, in order. If no stack row is selected, the up and down buttons rotates the stack, the swap button swaps the places of the first and second value and the copy and delete buttons acts on the the top value of the stack. The button between copy and delete enters the top value from before the last numeric operation. The last button removes all values from the stack. On the left are buttons for applying mathematical operations to the stack. These works the same as buttons on the separate keypad. Changes in the display of results only affects the first value on the stack.
+The RPN mode adds a third page to the main window, for display and manipulation of the values on the stack. This shows a list of values on the stack, with the last added value on the top.</para>
+<para>
+On the right are buttons for manipulation of the stack. The buttons move the selected value up (<keycombo><keycap>Ctrl</keycap><keycap>Up</keycap></keycombo>) or down (<keycombo><keycap>Ctrl</keycap><keycap>Down</keycap></keycombo>), move it to the top (<keycombo><keycap>Ctrl</keycap><keycap>Right</keycap></keycombo>), copy it (<keycombo><keycap>Ctrl</keycap><keycap>Shift</keycap><keycap>C</keycap></keycombo>), edit it, or removes it (<keycombo><keycap>Ctrl</keycap><keycap>Delete</keycap></keycombo>), in order. If no stack row is selected, the up and down buttons rotates the stack, the swap button swaps the places of the first and second value and the copy and delete buttons acts on the the top value of the stack. The button between copy and delete enters the top value from before the last numeric operation (<keycombo><keycap>Ctrl</keycap><keycap>Left</keycap></keycombo>). The last button removes all values from the stack (<keycombo><keycap>Ctrl</keycap><keycap>Shift</keycap><keycap>Delete</keycap></keycombo>).
+</para>
+<para>
+On the left are buttons for applying mathematical operations to the stack. The top left buttons applies addition, subtraction, multiplication, division, and exponentiation to the top two values. If only one value is available addition, multiplication, and exponentiation uses this value twice, while the subtraction button negates the value and the division button calculates the reciprocal. The buttons below negates the top value, calculates the reciprocal, and calculates the square root of the the top value. The last button calculates the sum of all values on the stack. Changes in the display of results only affects the first value on the stack.
 </para>
 <para>
 Reverse Polish Notation can also be used directly in expression. This can be activated or deactivated separately from the RPN stack (<menuchoice><guimenu>Mode</guimenu><guimenuitem>Parsing Mode</guimenuitem><guimenuitem>RPN Syntax</guimenuitem></menuchoice>). When using RPN syntax, a temporary stack, separate from the previously mentioned stack, is created from the contents of each mathematical expression entered. To calculate <quote>(5 + 3)/2</quote>, as in the example above, with RPN syntax you should enter the expression <quote>5 3 + 2 /</quote>. Instead of actually pressing enter on the keyboard, each separate value on the stack is separated by a blank space. The RPN syntax only supports functions that require exactly one argument.

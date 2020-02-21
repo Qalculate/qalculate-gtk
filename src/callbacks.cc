@@ -8778,7 +8778,7 @@ void update_result_bases() {
 	}
 }
 
-bool update_window_title(const char *str = NULL, bool is_result = false) {
+bool update_window_title(const char *str, bool is_result) {
 	if(title_modified || !main_builder) return false;
 	switch(title_type) {
 		case TITLE_MODE: {
@@ -27005,7 +27005,7 @@ gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpoin
 				overwrite_expression_selection("^");
 				return TRUE;
 			}
-			if(rpn_mode) {
+			if(rpn_mode && rpn_keys) {
 				calculateRPN(OPERATION_MULTIPLY);
 				return TRUE;
 			}

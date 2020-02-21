@@ -159,6 +159,8 @@ bool can_display_unicode_string_function_exact(const char *str, void *w);
 void set_unicode_buttons();
 void set_operator_symbols();
 
+bool update_window_title(const char *str = NULL, bool is_result = false);
+
 cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po = default_print_options, bool caf = false, InternalPrintStruct ips = top_ips, gint *point_central = NULL, int scaledown = 0, GdkRGBA *color = NULL);
 
 void update_status_text();
