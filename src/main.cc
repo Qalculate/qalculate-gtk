@@ -87,8 +87,9 @@ static GOptionEntry options[] = {
 
 void create_application(GtkApplication *app) {
 
-	GtkIconTheme *theme = gtk_icon_theme_get_default();
-	gtk_icon_theme_add_resource_path(theme, "/qalculate-gtk/icons");
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 14
+	gtk_icon_theme_add_resource_path(gtk_icon_theme_get_default(), "/qalculate-gtk/icons");
+#endif
 
 	gtk_window_set_default_icon_name("qalculate");
 

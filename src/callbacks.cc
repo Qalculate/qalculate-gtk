@@ -15382,17 +15382,7 @@ void load_preferences() {
 #ifndef _WIN32
 		gstr_oldfile = g_build_filename(getOldLocalDir().c_str(), "qalculate-gtk.cfg", NULL);
 		file = fopen(gstr_oldfile, "r");
-		if(!file) {
-			g_free(gstr_oldfile);
-#endif
-			g_free(gstr_file);
-			first_time = true;
-			update_message_print_options();
-			displayed_printops = printops;
-			displayed_caf = complex_angle_form;
-			return;
-#ifndef _WIN32
-		}
+		if(!file) g_free(gstr_oldfile);
 #endif
 	}
 
@@ -16312,10 +16302,10 @@ void save_preferences(bool mode) {
 	fprintf(file, "local_currency_conversion=%i\n", evalops.local_currency_conversion);
 	fprintf(file, "use_binary_prefixes=%i\n", CALCULATOR->usesBinaryPrefixes());
 	fprintf(file, "check_version=%i\n", check_version);
-if(check_version) {
-	fprintf(file, "last_version_check=%s\n", last_version_check_date.toISOString().c_str());
-	if(!last_found_version.empty()) fprintf(file, "last_found_version=%s\n", last_found_version.c_str());
-}
+	if(check_version) {
+		fprintf(file, "last_version_check=%s\n", last_version_check_date.toISOString().c_str());
+		if(!last_found_version.empty()) fprintf(file, "last_found_version=%s\n", last_found_version.c_str());
+	}
 	fprintf(file, "show_keypad=%i\n", (rpn_mode && show_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad)));
 	//h = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
 	//fprintf(file, "keypad_height=%i\n", h > 10 ? h : keypad_height);
@@ -26303,7 +26293,7 @@ void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
 	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(dialog), authors);
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), _("Powerful and easy to use calculator"));
 	gtk_about_dialog_set_license_type(GTK_ABOUT_DIALOG(dialog), GTK_LICENSE_GPL_2_0);
-	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016-2019 Hanna Knutsson");
+	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016-2020 Hanna Knutsson");
 	gtk_about_dialog_set_logo_icon_name(GTK_ABOUT_DIALOG(dialog), "qalculate");
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(dialog), "Qalculate! (GTK+)");
 	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dialog), VERSION);
