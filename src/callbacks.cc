@@ -26017,26 +26017,6 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 	g_signal_handlers_block_matched((gpointer) w_dec, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_fp_entry_dec_changed, NULL);
 	g_signal_handlers_block_matched((gpointer) w_bin, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_fp_buffer_bin_changed, NULL);
 	g_signal_handlers_block_matched((gpointer) w_hex, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_fp_entry_hex_changed, NULL);
-	PrintOptions po;
-	po.number_fraction_format = FRACTION_DECIMAL;
-	po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
-	po.use_unicode_signs = printops.use_unicode_signs;
-	po.lower_case_e = printops.lower_case_e;
-	po.lower_case_numbers = printops.lower_case_numbers;
-	po.base_display = BASE_DISPLAY_NONE;
-	po.abbreviate_names = printops.abbreviate_names;
-	po.digit_grouping = printops.digit_grouping;
-	po.multiplication_sign = printops.multiplication_sign;
-	po.division_sign = printops.division_sign;
-	po.short_multiplication = printops.short_multiplication;
-	po.excessive_parenthesis = printops.excessive_parenthesis;
-	po.can_display_unicode_string_function = &can_display_unicode_string_function;
-	po.can_display_unicode_string_arg = (void*) w_dec;
-	po.spell_out_logical_operators = printops.spell_out_logical_operators;
-	po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
-	po.binary_bits = bits;
-	po.show_ending_zeroes = false;
-	po.min_exp = printops.min_exp;
 	if(sbin.empty()) {
 		if(base != 10) gtk_entry_set_text(GTK_ENTRY(w_dec), "");
 		if(base != 16) gtk_entry_set_text(GTK_ENTRY(w_hex), "");
@@ -26045,15 +26025,27 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 		gtk_entry_set_text(GTK_ENTRY(w_value), "");
 		gtk_entry_set_text(GTK_ENTRY(w_error), "");
 	} else {
+		PrintOptions po;
+		po.number_fraction_format = FRACTION_DECIMAL;
+		po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
+		po.use_unicode_signs = printops.use_unicode_signs;
+		po.lower_case_e = printops.lower_case_e;
+		po.lower_case_numbers = printops.lower_case_numbers;
+		po.base_display = BASE_DISPLAY_NONE;
+		po.abbreviate_names = printops.abbreviate_names;
+		po.digit_grouping = printops.digit_grouping;
+		po.multiplication_sign = printops.multiplication_sign;
+		po.division_sign = printops.division_sign;
+		po.short_multiplication = printops.short_multiplication;
+		po.excessive_parenthesis = printops.excessive_parenthesis;
+		po.can_display_unicode_string_function = &can_display_unicode_string_function;
+		po.can_display_unicode_string_arg = (void*) w_dec;
+		po.spell_out_logical_operators = printops.spell_out_logical_operators;
+		po.binary_bits = bits;
+		po.show_ending_zeroes = false;
+		po.min_exp = 0;
 		int prec_bak = CALCULATOR->getPrecision();
-		if(bits == 128 && prec_bak < 35) CALCULATOR->setPrecision(35);
-		else if(bits == 80 && prec_bak < 20) CALCULATOR->setPrecision(20);
-		else if(bits == 64 && prec_bak < 16) CALCULATOR->setPrecision(16);
-		else if(bits == 32 && prec_bak < 8) CALCULATOR->setPrecision(8);
-		else if(bits == 16 && prec_bak < 4) CALCULATOR->setPrecision(4);
-		if((prec_bak != CALCULATOR->getPrecision() || prec_bak > 40) && (po.min_exp == -1 || po.min_exp == 0)) po.min_exp = prec_bak;
-		po.max_decimals = 40;
-		po.use_max_decimals = true;
+		CALCULATOR->setPrecision(100);
 		ParseOptions pa;
 		pa.base = BASE_BINARY;
 		Number nr(sbin, pa);
@@ -26062,7 +26054,7 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 			string str = sbin;
 			if(bits > 32) {
 				for(size_t i = expbits + 5; i < str.length() - 1; i += 4) {
-					if((bits == 64 && str.length() - i == 24) || (bits == 80 && str.length() - i == 32) || (bits == 128 && (str.length() - i == 40 || str.length() - i == 76))) str.insert(i, "\n");
+					if((bits == 80 && str.length() - i == 32) || (bits == 128 && (str.length() - i == 56))) str.insert(i, "\n");
 					else str.insert(i, " ");
 					i++;
 				}
@@ -26071,7 +26063,11 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 			str.insert(1, " ");
 			gtk_text_buffer_set_text(w_bin, str.c_str(), -1);
 		}
+		if(printops.min_exp == -1 || printops.min_exp == 0) po.min_exp = 8;
+		else po.min_exp = printops.min_exp;
 		po.base = 10;
+		po.max_decimals = 50;
+		po.use_max_decimals = true;
 		Number value;
 		int ret = from_float(value, sbin, bits, expbits);
 		if(ret <= 0) {
@@ -26088,6 +26084,8 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 			bool subnormal = exponent.isZero();
 			exponent -= expbias;
 			string sfloat;
+			bool b_approx = false;
+			po.is_approximate = &b_approx;
 			if(exponent > expbias) {
 				if(sbin[0] != '0') sfloat = nr_minus_inf.print(po);
 				else sfloat = nr_plus_inf.print(po);
@@ -26096,6 +26094,8 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 				if(subnormal) significand.set(string("0.") + sbin.substr(1 + expbits), pa);
 				else significand.set(string("1.") + sbin.substr(1 + expbits), pa);
 				if(sbin[0] != '0') significand.negate();
+				int exp_bak = po.min_exp;
+				po.min_exp = 0;
 				sfloat = significand.print(po);
 				if(!subnormal || !significand.isZero()) {
 					sfloat += " ";
@@ -26104,17 +26104,26 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 					sfloat += "2^";
 					sfloat += exponent.print(po);
 				}
+				po.min_exp = exp_bak;
+				if(b_approx) sfloat.insert(0, SIGN_ALMOST_EQUAL " ");
 			}
 			gtk_entry_set_text(GTK_ENTRY(w_float), sfloat.c_str());
-			gtk_entry_set_text(GTK_ENTRY(w_value), value.print(po).c_str());
+			b_approx = false;
+			string svalue = value.print(po);
+			if(base != 10) gtk_entry_set_text(GTK_ENTRY(w_dec), svalue.c_str());
+			if(b_approx) svalue.insert(0, SIGN_ALMOST_EQUAL " ");
+			gtk_entry_set_text(GTK_ENTRY(w_value), svalue.c_str());
 			Number nr_error;
 			if(decnum && (!decnum->isInfinite() || !value.isInfinite())) {
 				nr_error = value;
 				nr_error -= *decnum;
 				nr_error.abs();
+				if(decnum->isApproximate() && prec_bak < CALCULATOR->getPrecision()) CALCULATOR->setPrecision(prec_bak);
 			}
-			gtk_entry_set_text(GTK_ENTRY(w_error), nr_error.print(po).c_str());
-			if(base != 10) gtk_entry_set_text(GTK_ENTRY(w_dec), value.print(po).c_str());
+			b_approx = false;
+			string serror = nr_error.print(po);
+			if(b_approx) serror.insert(0, SIGN_ALMOST_EQUAL " ");
+			gtk_entry_set_text(GTK_ENTRY(w_error), serror.c_str());
 		}
 		CALCULATOR->setPrecision(prec_bak);
 	}

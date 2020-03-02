@@ -3125,7 +3125,6 @@ GtkWidget* get_floatingpoint_dialog(void) {
 		gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(gtk_builder_get_object(floatingpoint_builder, "fp_textedit_bin")), 6);
 #endif
 
-
 		gtk_builder_connect_signals(floatingpoint_builder, NULL);
 
 	}
