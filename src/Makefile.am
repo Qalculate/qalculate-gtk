@@ -7,6 +7,7 @@ AM_CPPFLAGS = \
 	-DPACKAGE_DOC_DIR=\""$(docdir)"\" \
 	@GTK_CFLAGS@ \
 	@GLIB_CFLAGS@ \
+	@WEBKITGTK_CFLAGS@ \
 	@QALCULATE_CFLAGS@
 
 bin_PROGRAMS = @QALCULATE_GTK@
@@ -33,5 +34,7 @@ nodist_qalculate_gtk_SOURCES = ui.c flags.c
 qalculate_gtk_LDADD = \
 	@GLIB_LIBS@ \
 	@GTK_LIBS@ \
+	@WEBKITGTK_LIBS@ \
 	@QALCULATE_LIBS@
+
 

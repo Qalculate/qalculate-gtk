@@ -10,7 +10,7 @@
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
 #include <gdk/gdkkeysyms.h>
@@ -18,6 +18,9 @@
 #include <gdk/gdk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <glib/gstdio.h>
+#ifdef USE_WEBKITGTK
+#	include <webkit2/webkit2.h>
+#endif
 #include <sys/stat.h>
 #include <unistd.h>
 #include <time.h>
@@ -664,6 +667,81 @@ void remove_separator(string &copy_text) {
 	}
 }
 
+#ifdef USE_WEBKITGTK
+gboolean on_help_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer) {
+	switch(event->keyval) {
+		case GDK_KEY_BackSpace: {
+			webkit_web_view_go_back(WEBKIT_WEB_VIEW(w));
+			return TRUE;
+		}
+		case GDK_KEY_Left: {
+			if(event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) {
+				webkit_web_view_go_back(WEBKIT_WEB_VIEW(w));
+				return TRUE;
+			}
+			break;
+		}
+		case GDK_KEY_Right: {
+			if(event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) {
+				webkit_web_view_go_forward(WEBKIT_WEB_VIEW(w));
+				return TRUE;
+			}
+			break;
+		}
+		case GDK_KEY_KP_Add: {}
+		case GDK_KEY_plus: {
+			if(event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) {
+				webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) + 0.1);
+				return TRUE;
+			}
+			break;
+		}
+		case GDK_KEY_KP_Subtract: {}
+		case GDK_KEY_minus: {
+			if(event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) {
+				webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) - 0.1);
+				return TRUE;
+			}
+			break;
+		}
+		case GDK_KEY_Home: {
+			if(event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) {
+				string surl = "file://";
+				surl += getPackageDataDir();
+				surl += "/doc/qalculate-gtk/html/index.html";
+				webkit_web_view_load_uri(WEBKIT_WEB_VIEW(w), surl.c_str());
+				return TRUE;
+			}
+			break;
+		}
+	}
+	return FALSE;
+}
+void on_help_button_home_clicked(GtkButton*, gpointer w) {
+	string surl = "file://";
+	surl += getPackageDataDir();
+	surl += "/doc/qalculate-gtk/html/index.html";
+	webkit_web_view_load_uri(WEBKIT_WEB_VIEW(w), surl.c_str());
+}
+void on_help_button_zoomin_clicked(GtkButton*, gpointer w) {
+	webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) + 0.1);
+}
+void on_help_button_zoomout_clicked(GtkButton*, gpointer w) {
+	webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) - 0.1);
+}
+gboolean on_help_context_menu(WebKitWebView*, WebKitContextMenu*, GdkEvent*, WebKitHitTestResult *hit_test_result, gpointer) {
+	return webkit_hit_test_result_context_is_image(hit_test_result) || webkit_hit_test_result_context_is_link(hit_test_result) || webkit_hit_test_result_context_is_media(hit_test_result);
+}
+
+GtkWidget *button_back, *button_forward;
+void on_help_load_changed(WebKitWebView *w, WebKitLoadEvent load_event, gpointer) {
+	if(load_event == WEBKIT_LOAD_FINISHED) {
+		gtk_widget_set_sensitive(button_back, webkit_web_view_can_go_back(w));
+		gtk_widget_set_sensitive(button_forward, webkit_web_view_can_go_forward(w));
+	}
+}
+#endif
+
 void show_help(const char *file, GObject *parent) {
 	string surl;
 #ifdef _WIN32
@@ -691,6 +769,59 @@ void show_help(const char *file, GObject *parent) {
 		gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(dialog);
 	}
+#elif USE_WEBKITGTK
+	surl = "file://" PACKAGE_DOC_DIR "/html/";
+	surl += file;
+	GtkWidget *dialog = gtk_dialog_new();
+	gtk_window_set_title(GTK_WINDOW(dialog), "Qalculate! Manual");
+	if(parent) {
+		gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(parent));
+		gtk_window_set_modal(GTK_WINDOW(dialog), gtk_window_get_modal(GTK_WINDOW(parent)));
+	}
+	GtkWidget *close_button = gtk_dialog_add_button(GTK_DIALOG(dialog), _("_Close"), GTK_RESPONSE_CLOSE);
+	g_signal_connect_swapped((gpointer) close_button, "clicked", G_CALLBACK(gtk_widget_destroy), (gpointer) dialog);
+	gtk_window_set_default_size(GTK_WINDOW(dialog), 800, 600);
+	gtk_container_set_border_width(GTK_CONTAINER(dialog), 5);
+	GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+	GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
+	GtkWidget *hbox_l = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	GtkWidget *hbox_r = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	button_back = gtk_button_new_from_icon_name("go-previous-symbolic", GTK_ICON_SIZE_BUTTON);
+	GtkWidget *button_home = gtk_button_new_from_icon_name("go-home-symbolic", GTK_ICON_SIZE_BUTTON);
+	button_forward = gtk_button_new_from_icon_name("go-next-symbolic", GTK_ICON_SIZE_BUTTON);
+	GtkWidget *button_zoomin = gtk_button_new_from_icon_name("zoom-in-symbolic", GTK_ICON_SIZE_BUTTON);
+	GtkWidget *button_zoomout = gtk_button_new_from_icon_name("zoom-out-symbolic", GTK_ICON_SIZE_BUTTON);
+	gtk_widget_set_sensitive(button_back, FALSE);
+	gtk_widget_set_sensitive(button_forward, FALSE);
+	gtk_container_add(GTK_CONTAINER(hbox_l), button_back);
+	gtk_container_add(GTK_CONTAINER(hbox_l), button_home);
+	gtk_container_add(GTK_CONTAINER(hbox_l), button_forward);
+	gtk_container_add(GTK_CONTAINER(hbox_r), button_zoomout);
+	gtk_container_add(GTK_CONTAINER(hbox_r), button_zoomin);
+	gtk_box_pack_start(GTK_BOX(hbox), hbox_l, FALSE, FALSE, 0);
+	gtk_box_pack_end(GTK_BOX(hbox), hbox_r, FALSE, FALSE, 0);
+	gtk_style_context_add_class(gtk_widget_get_style_context(hbox_l), "linked");
+	gtk_style_context_add_class(gtk_widget_get_style_context(hbox_r), "linked");
+	gtk_container_add(GTK_CONTAINER(vbox), hbox);
+	gtk_container_set_border_width(GTK_CONTAINER(vbox), 12);
+	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), vbox);
+	GtkWidget *scrolledWeb = gtk_scrolled_window_new(NULL, NULL);
+	gtk_widget_set_hexpand(scrolledWeb, true);
+	gtk_widget_set_vexpand(scrolledWeb, true);
+	gtk_container_add(GTK_CONTAINER(vbox), scrolledWeb);
+	WebKitWebView *webView = WEBKIT_WEB_VIEW(webkit_web_view_new());
+	g_signal_connect(G_OBJECT(webView), "key-press-event", G_CALLBACK(on_help_key_press_event), NULL);
+	g_signal_connect(G_OBJECT(webView), "context-menu", G_CALLBACK(on_help_context_menu), NULL);
+	g_signal_connect(G_OBJECT(webView), "load-changed", G_CALLBACK(on_help_load_changed), NULL);
+	g_signal_connect_swapped(G_OBJECT(button_back), "clicked", G_CALLBACK(webkit_web_view_go_back), (gpointer) webView);
+	g_signal_connect_swapped(G_OBJECT(button_forward), "clicked", G_CALLBACK(webkit_web_view_go_forward), (gpointer) webView);
+	g_signal_connect(G_OBJECT(button_home), "clicked", G_CALLBACK(on_help_button_home_clicked), (gpointer) webView);
+	g_signal_connect(G_OBJECT(button_zoomin), "clicked", G_CALLBACK(on_help_button_zoomin_clicked), (gpointer) webView);
+	g_signal_connect(G_OBJECT(button_zoomout), "clicked", G_CALLBACK(on_help_button_zoomout_clicked), (gpointer) webView);
+	gtk_container_add(GTK_CONTAINER(scrolledWeb), GTK_WIDGET(webView));
+	webkit_web_view_load_uri(webView, surl.c_str());
+	gtk_widget_grab_focus(GTK_WIDGET(webView));
+	gtk_widget_show_all(dialog);
 #else
 	GError *error = NULL;
 	surl = "file://" PACKAGE_DOC_DIR "/html/";

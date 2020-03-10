@@ -90,6 +90,14 @@ AC_SUBST(GTK_LIBS)
 
 GTK_LIBS="-export-dynamic $GTK_LIBS"
 
+AC_ARG_WITH([webkitgtk], AS_HELP_STRING([--with-webkitgtk], [use WebKitGTK for display of the user manual]), [with_webkitgtk=yes], [with_webkitgtk=no])
+AS_IF([test "x$with_webkitgtk" = "xyes"], [
+	PKG_CHECK_MODULES([WEBKITGTK], [webkit2gtk-4.0])
+	AC_DEFINE([USE_WEBKITGTK], [1], [Use WebKitGTK])
+	AC_SUBST(WEBKITGTK_CFLAGS)
+	AC_SUBST(WEBKITGTK_LIBS)
+])
+
 PKG_CHECK_MODULES(QALCULATE, [
 	libqalculate >= 3.8.0
 	])
