@@ -667,7 +667,17 @@ void remove_separator(string &copy_text) {
 	}
 }
 
+gint help_width = -1, help_height = -1;
+gdouble help_zoom = -1.0;
+
 #ifdef USE_WEBKITGTK
+gboolean on_help_configure_event(GtkWidget*, GdkEventConfigure *event, gpointer) {
+	if(help_width != -1 || event->width != 800 || event->height != 600) {
+		help_width = event->width;
+		help_height = event->height;
+	}
+	return FALSE;
+}
 gboolean on_help_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer) {
 	switch(event->keyval) {
 		case GDK_KEY_BackSpace: {
@@ -691,15 +701,17 @@ gboolean on_help_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer) {
 		case GDK_KEY_KP_Add: {}
 		case GDK_KEY_plus: {
 			if(event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) {
-				webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) + 0.1);
+				help_zoom = webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) + 0.1;
+				webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), help_zoom);
 				return TRUE;
 			}
 			break;
 		}
 		case GDK_KEY_KP_Subtract: {}
 		case GDK_KEY_minus: {
-			if(event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) {
-				webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) - 0.1);
+			if((event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) && webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) > 0.1) {
+				help_zoom = webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) - 0.1;
+				webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), help_zoom);
 				return TRUE;
 			}
 			break;
@@ -724,21 +736,24 @@ void on_help_button_home_clicked(GtkButton*, gpointer w) {
 	webkit_web_view_load_uri(WEBKIT_WEB_VIEW(w), surl.c_str());
 }
 void on_help_button_zoomin_clicked(GtkButton*, gpointer w) {
-	webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) + 0.1);
+	help_zoom = webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) + 0.1;
+	webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), help_zoom);
 }
 void on_help_button_zoomout_clicked(GtkButton*, gpointer w) {
-	webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) - 0.1);
+	if(webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) > 0.1) {
+		help_zoom = webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) - 0.1;
+		webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), help_zoom);
+	}
 }
 gboolean on_help_context_menu(WebKitWebView*, WebKitContextMenu*, GdkEvent*, WebKitHitTestResult *hit_test_result, gpointer) {
 	return webkit_hit_test_result_context_is_image(hit_test_result) || webkit_hit_test_result_context_is_link(hit_test_result) || webkit_hit_test_result_context_is_media(hit_test_result);
 }
 
-GtkWidget *button_back, *button_forward;
-void on_help_load_changed(WebKitWebView *w, WebKitLoadEvent load_event, gpointer) {
-	if(load_event == WEBKIT_LOAD_FINISHED) {
-		gtk_widget_set_sensitive(button_back, webkit_web_view_can_go_back(w));
-		gtk_widget_set_sensitive(button_forward, webkit_web_view_can_go_forward(w));
-	}
+void on_help_load_changed_b(WebKitWebView *w, WebKitLoadEvent load_event, gpointer button) {
+	if(load_event == WEBKIT_LOAD_FINISHED) gtk_widget_set_sensitive(GTK_WIDGET(button), webkit_web_view_can_go_back(w));
+}
+void on_help_load_changed_f(WebKitWebView *w, WebKitLoadEvent load_event, gpointer button) {
+	if(load_event == WEBKIT_LOAD_FINISHED) gtk_widget_set_sensitive(GTK_WIDGET(button), webkit_web_view_can_go_forward(w));
 }
 #endif
 
@@ -780,15 +795,15 @@ void show_help(const char *file, GObject *parent) {
 	}
 	GtkWidget *close_button = gtk_dialog_add_button(GTK_DIALOG(dialog), _("_Close"), GTK_RESPONSE_CLOSE);
 	g_signal_connect_swapped((gpointer) close_button, "clicked", G_CALLBACK(gtk_widget_destroy), (gpointer) dialog);
-	gtk_window_set_default_size(GTK_WINDOW(dialog), 800, 600);
+	gtk_window_set_default_size(GTK_WINDOW(dialog), help_width > 0 ? help_width : 800, help_height > 0 ? help_height : 600);
 	gtk_container_set_border_width(GTK_CONTAINER(dialog), 5);
 	GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
 	GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
 	GtkWidget *hbox_l = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 	GtkWidget *hbox_r = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-	button_back = gtk_button_new_from_icon_name("go-previous-symbolic", GTK_ICON_SIZE_BUTTON);
+	GtkWidget *button_back = gtk_button_new_from_icon_name("go-previous-symbolic", GTK_ICON_SIZE_BUTTON);
 	GtkWidget *button_home = gtk_button_new_from_icon_name("go-home-symbolic", GTK_ICON_SIZE_BUTTON);
-	button_forward = gtk_button_new_from_icon_name("go-next-symbolic", GTK_ICON_SIZE_BUTTON);
+	GtkWidget *button_forward = gtk_button_new_from_icon_name("go-next-symbolic", GTK_ICON_SIZE_BUTTON);
 	GtkWidget *button_zoomin = gtk_button_new_from_icon_name("zoom-in-symbolic", GTK_ICON_SIZE_BUTTON);
 	GtkWidget *button_zoomout = gtk_button_new_from_icon_name("zoom-out-symbolic", GTK_ICON_SIZE_BUTTON);
 	gtk_widget_set_sensitive(button_back, FALSE);
@@ -810,9 +825,11 @@ void show_help(const char *file, GObject *parent) {
 	gtk_widget_set_vexpand(scrolledWeb, true);
 	gtk_container_add(GTK_CONTAINER(vbox), scrolledWeb);
 	WebKitWebView *webView = WEBKIT_WEB_VIEW(webkit_web_view_new());
+	if(help_zoom > 0.0) webkit_web_view_set_zoom_level(webView, help_zoom);
 	g_signal_connect(G_OBJECT(webView), "key-press-event", G_CALLBACK(on_help_key_press_event), NULL);
 	g_signal_connect(G_OBJECT(webView), "context-menu", G_CALLBACK(on_help_context_menu), NULL);
-	g_signal_connect(G_OBJECT(webView), "load-changed", G_CALLBACK(on_help_load_changed), NULL);
+	g_signal_connect(G_OBJECT(webView), "load-changed", G_CALLBACK(on_help_load_changed_b), (gpointer) button_back);
+	g_signal_connect(G_OBJECT(webView), "load-changed", G_CALLBACK(on_help_load_changed_f), (gpointer) button_forward);
 	g_signal_connect_swapped(G_OBJECT(button_back), "clicked", G_CALLBACK(webkit_web_view_go_back), (gpointer) webView);
 	g_signal_connect_swapped(G_OBJECT(button_forward), "clicked", G_CALLBACK(webkit_web_view_go_forward), (gpointer) webView);
 	g_signal_connect(G_OBJECT(button_home), "clicked", G_CALLBACK(on_help_button_home_clicked), (gpointer) webView);
@@ -820,6 +837,7 @@ void show_help(const char *file, GObject *parent) {
 	g_signal_connect(G_OBJECT(button_zoomout), "clicked", G_CALLBACK(on_help_button_zoomout_clicked), (gpointer) webView);
 	gtk_container_add(GTK_CONTAINER(scrolledWeb), GTK_WIDGET(webView));
 	webkit_web_view_load_uri(webView, surl.c_str());
+	g_signal_connect(G_OBJECT(dialog), "configure-event", G_CALLBACK(on_help_configure_event), NULL);
 	gtk_widget_grab_focus(GTK_WIDGET(webView));
 	gtk_widget_show_all(dialog);
 #else
@@ -15453,6 +15471,9 @@ void load_preferences() {
 	datasets_hposition = -1;
 	datasets_vposition1 = -1;
 	datasets_vposition2 = -1;
+	help_width = -1;
+	help_height = -1;
+	help_zoom = -1.0;
 	keypad_height = 0;
 	history_height = 0;
 	save_mode_on_exit = true;
@@ -15575,6 +15596,12 @@ void load_preferences() {
 					datasets_vposition1 = v;
 				} else if(svar == "datasets_vpanel2_position") {
 					datasets_vposition2 = v;
+				} else if(svar == "help_width") {
+					help_width = v;
+				} else if(svar == "help_height") {
+					help_height = v;
+				} else if(svar == "help_zoom") {
+					help_zoom = strtod(svalue.c_str(), NULL);
 				} else if(svar == "keep_function_dialog_open") {
 					keep_function_dialog_open = v;
 				} else if(svar == "error_info_shown") {
@@ -16422,6 +16449,9 @@ void save_preferences(bool mode) {
 	if(datasets_hposition > -1) fprintf(file, "datasets_hpanel_position=%i\n", datasets_hposition);
 	if(datasets_vposition1 > -1) fprintf(file, "datasets_vpanel1_position=%i\n", datasets_vposition1);
 	if(datasets_vposition2 > -1) fprintf(file, "datasets_vpanel2_position=%i\n", datasets_vposition2);
+	if(help_width != -1) fprintf(file, "help_width=%i\n", help_width);
+	if(help_height != -1) fprintf(file, "help_height=%i\n", help_height);
+	if(help_zoom >= 0.0) fprintf(file, "help_zoom=%f\n", help_zoom);
 	fprintf(file, "keep_function_dialog_open=%i\n", keep_function_dialog_open);
 	fprintf(file, "error_info_shown=%i\n", !first_error);
 	fprintf(file, "save_mode_on_exit=%i\n", save_mode_on_exit);
