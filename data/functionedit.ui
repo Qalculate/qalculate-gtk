@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkDialog" id="function_edit_dialog">
     <property name="can_focus">False</property>
-    <property name="border_width">5</property>
+    <property name="border_width">6</property>
     <property name="title" translatable="yes">Edit Function</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -16,7 +16,6 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="hbuttonbox3">
             <property name="visible">True</property>
@@ -81,11 +80,12 @@
           <object class="GtkNotebook" id="function_edit_tabs">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="border_width">6</property>
             <child>
               <object class="GtkBox" id="vbox28">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="border_width">6</property>
+                <property name="border_width">12</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <child>
@@ -338,7 +338,7 @@
               <object class="GtkBox" id="vbox57">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="border_width">6</property>
+                <property name="border_width">12</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <child>
@@ -690,11 +690,11 @@
   </object>
   <object class="GtkDialog" id="function_edit_dialog_subfunctions">
     <property name="can_focus">False</property>
-    <property name="border_width">5</property>
+    <property name="border_width">6</property>
     <property name="title" translatable="yes">Sub-Functions</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -702,7 +702,6 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="dialog-action_area1">
             <property name="visible">True</property>
@@ -737,7 +736,7 @@
           <object class="GtkBox" id="vbox56">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="border_width">7</property>
+            <property name="border_width">6</property>
             <property name="orientation">vertical</property>
             <property name="spacing">6</property>
             <child>

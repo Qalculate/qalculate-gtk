@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.2 -->
+<!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkTextBuffer" id="textbuffer1">
@@ -12,12 +12,14 @@
     <property name="type_hint">normal</property>
     <signal name="delete-event" handler="gtk_widget_hide" object="percentage_dialog" swapped="yes"/>
     <signal name="destroy-event" handler="gtk_widget_hide" object="percentage_dialog" swapped="yes"/>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox5">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">6</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="dialog-action_area5">
             <property name="visible">True</property>
@@ -80,13 +82,14 @@
           <object class="GtkBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="border_width">6</property>
             <property name="orientation">vertical</property>
             <property name="spacing">6</property>
             <child>
               <object class="GtkGrid">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="border_width">12</property>
+                <property name="border_width">6</property>
                 <property name="row_spacing">6</property>
                 <property name="column_spacing">12</property>
                 <property name="row_homogeneous">True</property>
@@ -400,9 +403,6 @@
           </packing>
         </child>
       </object>
-    </child>
-    <child>
-      <placeholder/>
     </child>
   </object>
 </interface>

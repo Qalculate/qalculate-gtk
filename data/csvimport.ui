@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkAdjustment" id="adjustment1">
@@ -11,17 +11,19 @@
   </object>
   <object class="GtkDialog" id="csv_import_dialog">
     <property name="can_focus">False</property>
-    <property name="border_width">5</property>
+    <property name="border_width">6</property>
     <property name="title" translatable="yes">Import CSV File</property>
     <property name="resizable">False</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbox52">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="hbuttonbox9">
             <property name="visible">True</property>
@@ -71,7 +73,7 @@
           <object class="GtkBox" id="vbox53">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="border_width">12</property>
+            <property name="border_width">6</property>
             <property name="orientation">vertical</property>
             <property name="spacing">6</property>
             <child>

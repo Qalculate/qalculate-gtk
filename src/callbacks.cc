@@ -26,6 +26,7 @@
 #include <time.h>
 #include <limits>
 #include <fstream>
+#include <sstream>
 
 #include "support.h"
 #include "callbacks.h"
@@ -670,21 +671,155 @@ void remove_separator(string &copy_text) {
 gint help_width = -1, help_height = -1;
 gdouble help_zoom = -1.0;
 
+string get_doc_uri(string file, bool with_proto = true) {
+	string surl;
+	if(with_proto) surl += "file://";
+#ifdef _WIN32
+	char exepath[MAX_PATH];
+	GetModuleFileName(NULL, exepath, MAX_PATH);
+	surl += exepath;
+	surl.resize(surl.find_last_of('\\'));
+	if(surl.substr(surl.length() - 4) == "\\bin") {
+		surl.resize(surl.find_last_of('\\'));
+		surl += "\\share\\doc\\";
+		surl += PACKAGE;
+		surl += "\\html\\";
+	} else if(surl.substr(surl.length() - 6) == "\\.libs") {
+		surl.resize(surl.find_last_of('\\'));
+		surl.resize(surl.find_last_of('\\'));
+		surl += "\\doc\\html\\";
+	} else {
+		surl += "\\doc\\";
+	}
+	gsub("\\", "/", surl);
+	surl += file;
+#else
+	surl += PACKAGE_DOC_DIR "/html/";
+	surl += file;
+#endif
+	return surl;
+}
+
 #ifdef USE_WEBKITGTK
 unordered_map<GtkWidget*, GtkWidget*> help_find_entries;
-unordered_map<GtkWidget*, GtkWidget*> help_find_boxes;
+bool backwards_search;
 void on_help_stop_search(GtkSearchEntry *w, gpointer view) {
 	webkit_find_controller_search_finish(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)));
-	gtk_widget_hide(help_find_boxes[GTK_WIDGET(w)]);
 	gtk_entry_set_text(GTK_ENTRY(w), "");
 }
+void on_help_search_found(WebKitFindController*, guint, gpointer) {
+	backwards_search = false;
+}
+vector<string> help_files;
+vector<string> help_contents;
+void on_help_search_failed(WebKitFindController *f, gpointer w) {
+	g_signal_handlers_disconnect_matched((gpointer) f, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_help_search_failed, NULL);
+	string str = gtk_entry_get_text(GTK_ENTRY(help_find_entries[GTK_WIDGET(w)]));
+	remove_blank_ends(str);
+	remove_duplicate_blanks(str);
+	if(str.empty()) return;
+	string strl = utf8_strdown(str.c_str());
+	gsub("&", "&amp;", strl);
+	gsub(">", "&gt;", strl);
+	gsub("<", "&lt;", strl);
+	if(!webkit_web_view_get_uri(WEBKIT_WEB_VIEW(w))) return;
+	string file = webkit_web_view_get_uri(WEBKIT_WEB_VIEW(w));
+	size_t i = file.rfind("/");
+	if(i != string::npos) file = file.substr(i + 1);
+	i = file.find("#");
+	if(i != string::npos) file = file.substr(0, i);
+	size_t help_i = 0;
+	if(help_files.empty()) {
+		ifstream ifile(get_doc_uri("index.html", false).c_str());
+		if(!ifile.is_open()) return;
+		std::stringstream ssbuffer;
+		ssbuffer << ifile.rdbuf();
+		string sbuffer = utf8_strdown(ssbuffer.str().c_str());
+		ifile.close();
+		help_files.push_back("index.html");
+		help_contents.push_back(sbuffer);
+		i = sbuffer.find(".html\"");
+		while(i != string::npos) {
+			size_t i2 = sbuffer.rfind("\"", i);
+			if(i2 != string::npos) {
+				string sfile = sbuffer.substr(i2 + 1, (i + 5) - (i2 + 1));
+				if(sfile.find("/") == string::npos) {
+					for(i2 = 0; i2 < help_files.size(); i2++) {
+						if(help_files[i2] == sfile) break;
+					}
+					if(i2 == help_files.size()) {
+						help_files.push_back(sfile);
+						ifstream ifile_i(get_doc_uri(sfile, false).c_str());
+						string sbuffer_i;
+						if(ifile_i.is_open()) {
+							std::stringstream ssbuffer_i;
+							ssbuffer_i << ifile_i.rdbuf();
+							sbuffer_i = utf8_strdown(ssbuffer_i.str().c_str());
+							ifile_i.close();
+						}
+						help_contents.push_back(sbuffer_i);
+					}
+				}
+			}
+			i = sbuffer.find(".html\"", i + 1);
+		}
+	}
+	for(i = 0; i < help_files.size(); i++) {
+		if(file == help_files[i]) {
+			help_i = i;
+			break;
+		}
+	}
+	size_t help_cur = help_i;
+	while(true) {
+		if(backwards_search) {
+			if(help_i == 0) help_i = help_files.size() - 1;
+			else help_i--;
+		} else {
+			help_i++;
+			if(help_i == help_files.size()) help_i = 0;
+		}
+		if(help_i == help_cur) {
+			webkit_find_controller_search(f, str.c_str(), backwards_search ? WEBKIT_FIND_OPTIONS_BACKWARDS | WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE : WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE, 10000);
+			backwards_search = false;
+			break;
+		}
+		string sbuffer = help_contents[help_i];
+		i = sbuffer.find("<body");
+		while(i != string::npos) {
+			i = sbuffer.find(strl, i + 1);
+			if(i == string::npos) break;
+			size_t i2 = sbuffer.find_last_of("<>", i);
+			if(i2 != string::npos && sbuffer[i2] == '>') {
+				webkit_web_view_load_uri(WEBKIT_WEB_VIEW(w), get_doc_uri(help_files[help_i]).c_str());
+				break;
+			}
+			i = sbuffer.find(">", i);
+		}
+		if(i != string::npos) break;
+	}
+}
 void on_help_search_changed(GtkSearchEntry *w, gpointer view) {
-	webkit_find_controller_search(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)), gtk_entry_get_text(GTK_ENTRY(w)), WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE | WEBKIT_FIND_OPTIONS_WRAP_AROUND, 1000);
+	string str = gtk_entry_get_text(GTK_ENTRY(w));
+	remove_blank_ends(str);
+	remove_duplicate_blanks(str);
+	if(str.empty()) {
+		webkit_find_controller_search_finish(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)));
+	} else {
+		g_signal_handlers_disconnect_matched((gpointer) webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_help_search_failed, NULL);
+		webkit_find_controller_search(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)), str.c_str(), WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE, 10000);
+	}
 }
 void on_help_next_match(GtkWidget*, gpointer view) {
+	backwards_search = false;
+	g_signal_handlers_disconnect_matched((gpointer) webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_help_search_failed, NULL);
+	g_signal_connect(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)), "failed-to-find-text", G_CALLBACK(on_help_search_failed), view);
 	webkit_find_controller_search_next(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)));
 }
 void on_help_previous_match(GtkWidget*, gpointer view) {
+	backwards_search = true;
+	g_signal_handlers_disconnect_matched((gpointer) webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_help_search_failed, NULL);
+	g_signal_connect(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)), "failed-to-find-text", G_CALLBACK(on_help_search_failed), view);
 	webkit_find_controller_search_previous(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)));
 }
 gboolean on_help_configure_event(GtkWidget*, GdkEventConfigure *event, gpointer) {
@@ -695,14 +830,19 @@ gboolean on_help_configure_event(GtkWidget*, GdkEventConfigure *event, gpointer)
 	return FALSE;
 }
 gboolean on_help_key_press_event(GtkWidget *d, GdkEventKey *event, gpointer w) {
-	GtkWidget *entry_find = help_find_entries[d];
+	GtkWidget *entry_find = help_find_entries[GTK_WIDGET(w)];
 	switch(event->keyval) {
 		case GDK_KEY_Escape: {
-			if(gtk_widget_get_visible(GTK_WIDGET(help_find_boxes[entry_find]))) {
+			string str = gtk_entry_get_text(GTK_ENTRY(entry_find));
+			remove_blank_ends(str);
+			remove_duplicate_blanks(str);
+			if(str.empty()) {
+				gtk_widget_destroy(d);
+			} else {
 				on_help_stop_search(GTK_SEARCH_ENTRY(entry_find), w);
 				return TRUE;
 			}
-			return FALSE;
+			return TRUE;
 		}
 		case GDK_KEY_BackSpace: {
 			if(gtk_widget_has_focus(entry_find)) return FALSE;
@@ -743,22 +883,14 @@ gboolean on_help_key_press_event(GtkWidget *d, GdkEventKey *event, gpointer w) {
 		}
 		case GDK_KEY_Home: {
 			if(event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) {
-				string surl = "file://";
-				surl += getPackageDataDir();
-				surl += "/doc/qalculate-gtk/html/index.html";
-				webkit_web_view_load_uri(WEBKIT_WEB_VIEW(w), surl.c_str());
+				webkit_web_view_load_uri(WEBKIT_WEB_VIEW(w), get_doc_uri("index.html").c_str());
 				return TRUE;
 			}
 			break;
 		}
 		case GDK_KEY_f: {
-			if(event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) {
-				if(gtk_widget_get_visible(GTK_WIDGET(help_find_boxes[entry_find])) && gtk_widget_has_focus(GTK_WIDGET(entry_find))) {
-					on_help_stop_search(GTK_SEARCH_ENTRY(entry_find), w);
-				} else {
-					gtk_widget_show(GTK_WIDGET(help_find_boxes[entry_find]));
-					gtk_widget_grab_focus(GTK_WIDGET(entry_find));
-				}
+			if(event->state & GDK_CONTROL_MASK) {
+				gtk_widget_grab_focus(GTK_WIDGET(entry_find));
 				return TRUE;
 			}
 			break;
@@ -767,10 +899,7 @@ gboolean on_help_key_press_event(GtkWidget *d, GdkEventKey *event, gpointer w) {
 	return FALSE;
 }
 void on_help_button_home_clicked(GtkButton*, gpointer w) {
-	string surl = "file://";
-	surl += getPackageDataDir();
-	surl += "/doc/qalculate-gtk/html/index.html";
-	webkit_web_view_load_uri(WEBKIT_WEB_VIEW(w), surl.c_str());
+	webkit_web_view_load_uri(WEBKIT_WEB_VIEW(w), get_doc_uri("index.html").c_str());
 }
 void on_help_button_zoomin_clicked(GtkButton*, gpointer w) {
 	help_zoom = webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) + 0.1;
@@ -793,7 +922,13 @@ void on_help_load_changed_f(WebKitWebView *w, WebKitLoadEvent load_event, gpoint
 	if(load_event == WEBKIT_LOAD_FINISHED) gtk_widget_set_sensitive(GTK_WIDGET(button), webkit_web_view_can_go_forward(w));
 }
 void on_help_load_changed(WebKitWebView *w, WebKitLoadEvent load_event, gpointer) {
-	if(load_event == WEBKIT_LOAD_STARTED) cout << webkit_web_view_get_uri(w) << endl;
+	if(load_event == WEBKIT_LOAD_FINISHED) {
+		string str = gtk_entry_get_text(GTK_ENTRY(help_find_entries[GTK_WIDGET(w)]));
+		remove_blank_ends(str);
+		remove_duplicate_blanks(str);
+		if(!str.empty()) webkit_find_controller_search(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(w)), str.c_str(), backwards_search ? WEBKIT_FIND_OPTIONS_BACKWARDS | WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE : WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE, 10000);
+		backwards_search = false;
+	}
 }
 gboolean on_help_decide_policy(WebKitWebView *w, WebKitPolicyDecision *d, WebKitPolicyDecisionType t, gpointer window) {
 	if(t == WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION) {
@@ -822,47 +957,20 @@ gboolean on_help_decide_policy(WebKitWebView *w, WebKitPolicyDecision *d, WebKit
 #endif
 
 void show_help(const char *file, GObject *parent) {
-	string surl;
 #ifdef _WIN32
-	char exepath[MAX_PATH];
-	GetModuleFileName(NULL, exepath, MAX_PATH);
-	surl = "file://";
-	surl += exepath;
-	surl.resize(surl.find_last_of('\\'));
-	if(surl.substr(surl.length() - 4) == "\\bin") {
-		surl.resize(surl.find_last_of('\\'));
-		surl += "\\share\\doc\\";
-		surl += PACKAGE;
-		surl += "\\html\\";
-	} else if(surl.substr(surl.length() - 6) == "\\.libs") {
-		surl.resize(surl.find_last_of('\\'));
-		surl.resize(surl.find_last_of('\\'));
-		surl += "\\doc\\html\\";
-	} else {
-		surl += "\\doc\\";
-	}
-	gsub("\\", "/", surl);
-	surl += file;
-	if(ShellExecuteA(NULL, "open", surl.c_str(), NULL, NULL, SW_SHOWNORMAL) <= (HINSTANCE) 32) {
+	if(ShellExecuteA(NULL, "open", get_doc_uri("index.html").c_str(), NULL, NULL, SW_SHOWNORMAL) <= (HINSTANCE) 32) {
 		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help for Qalculate!."));
 		gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(dialog);
 	}
 #elif USE_WEBKITGTK
-	surl = "file://";
-	surl += getPackageDataDir();
-	surl += "/doc/qalculate-gtk/html/";
-	surl += file;
-	GtkWidget *dialog = gtk_dialog_new();
+	GtkWidget *dialog = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title(GTK_WINDOW(dialog), "Qalculate! Manual");
 	if(parent) {
 		gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(parent));
 		gtk_window_set_modal(GTK_WINDOW(dialog), gtk_window_get_modal(GTK_WINDOW(parent)));
 	}
-	GtkWidget *close_button = gtk_dialog_add_button(GTK_DIALOG(dialog), _("_Close"), GTK_RESPONSE_CLOSE);
-	g_signal_connect_swapped((gpointer) close_button, "clicked", G_CALLBACK(gtk_widget_destroy), (gpointer) dialog);
 	gtk_window_set_default_size(GTK_WINDOW(dialog), help_width > 0 ? help_width : 800, help_height > 0 ? help_height : 600);
-	gtk_container_set_border_width(GTK_CONTAINER(dialog), 5);
 	GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
 	GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
 	GtkWidget *hbox_l = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
@@ -874,7 +982,7 @@ void show_help(const char *file, GObject *parent) {
 	GtkWidget *entry_find = gtk_search_entry_new();
 	GtkWidget *button_previous_match = gtk_button_new_from_icon_name("go-up-symbolic", GTK_ICON_SIZE_BUTTON);
 	GtkWidget *button_next_match = gtk_button_new_from_icon_name("go-down-symbolic", GTK_ICON_SIZE_BUTTON);
-	gtk_entry_set_width_chars(GTK_ENTRY(entry_find), 20);
+	gtk_entry_set_width_chars(GTK_ENTRY(entry_find), 25);
 	GtkWidget *button_zoomin = gtk_button_new_from_icon_name("zoom-in-symbolic", GTK_ICON_SIZE_BUTTON);
 	GtkWidget *button_zoomout = gtk_button_new_from_icon_name("zoom-out-symbolic", GTK_ICON_SIZE_BUTTON);
 	gtk_widget_set_sensitive(button_back, FALSE);
@@ -893,20 +1001,19 @@ void show_help(const char *file, GObject *parent) {
 	gtk_style_context_add_class(gtk_widget_get_style_context(hbox_l), "linked");
 	gtk_style_context_add_class(gtk_widget_get_style_context(hbox_c), "linked");
 	gtk_style_context_add_class(gtk_widget_get_style_context(hbox_r), "linked");
-	help_find_entries[dialog] = entry_find;
-	help_find_boxes[entry_find] = hbox_c;
 	gtk_container_add(GTK_CONTAINER(vbox), hbox);
-	gtk_container_set_border_width(GTK_CONTAINER(vbox), 12);
-	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), vbox);
+	gtk_container_set_border_width(GTK_CONTAINER(hbox), 9);
+	gtk_container_add(GTK_CONTAINER(dialog), vbox);
 	GtkWidget *scrolledWeb = gtk_scrolled_window_new(NULL, NULL);
 	gtk_widget_set_hexpand(scrolledWeb, TRUE);
 	gtk_widget_set_vexpand(scrolledWeb, TRUE);
 	gtk_container_add(GTK_CONTAINER(vbox), scrolledWeb);
-	WebKitWebView *webView = WEBKIT_WEB_VIEW(webkit_web_view_new());
-	WebKitSettings *settings = webkit_web_view_get_settings(webView);
+	GtkWidget *webView = webkit_web_view_new();
+	help_find_entries[webView] = entry_find;
+	WebKitSettings *settings = webkit_web_view_get_settings(WEBKIT_WEB_VIEW(webView));
 	webkit_settings_set_enable_plugins(settings, FALSE);
 	webkit_settings_set_zoom_text_only(settings, FALSE);
-	if(help_zoom > 0.0) webkit_web_view_set_zoom_level(webView, help_zoom);
+	if(help_zoom > 0.0) webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(webView), help_zoom);
 	PangoFontDescription *font_desc;
 	gtk_style_context_get(gtk_widget_get_style_context(mainwindow), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
 	webkit_settings_set_default_font_family(settings, pango_font_description_get_family(font_desc));
@@ -916,6 +1023,7 @@ void show_help(const char *file, GObject *parent) {
 	g_signal_connect(G_OBJECT(webView), "context-menu", G_CALLBACK(on_help_context_menu), NULL);
 	g_signal_connect(G_OBJECT(webView), "load-changed", G_CALLBACK(on_help_load_changed_b), (gpointer) button_back);
 	g_signal_connect(G_OBJECT(webView), "load-changed", G_CALLBACK(on_help_load_changed_f), (gpointer) button_forward);
+	g_signal_connect(G_OBJECT(webView), "load-changed", G_CALLBACK(on_help_load_changed), NULL);
 	g_signal_connect(G_OBJECT(webView), "decide-policy", G_CALLBACK(on_help_decide_policy), dialog);
 	g_signal_connect_swapped(G_OBJECT(button_back), "clicked", G_CALLBACK(webkit_web_view_go_back), (gpointer) webView);
 	g_signal_connect_swapped(G_OBJECT(button_forward), "clicked", G_CALLBACK(webkit_web_view_go_forward), (gpointer) webView);
@@ -928,20 +1036,19 @@ void show_help(const char *file, GObject *parent) {
 	g_signal_connect(G_OBJECT(button_next_match), "clicked", G_CALLBACK(on_help_next_match), (gpointer) webView);
 	g_signal_connect(G_OBJECT(button_previous_match), "clicked", G_CALLBACK(on_help_previous_match), (gpointer) webView);
 	g_signal_connect(G_OBJECT(entry_find), "stop-search", G_CALLBACK(on_help_stop_search), (gpointer) webView);
+	g_signal_connect(G_OBJECT(entry_find), "activate", G_CALLBACK(on_help_next_match), (gpointer) webView);
+	g_signal_connect(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(webView)), "found-text", G_CALLBACK(on_help_search_found), NULL);
 	gtk_container_add(GTK_CONTAINER(scrolledWeb), GTK_WIDGET(webView));
-	webkit_web_view_load_uri(webView, surl.c_str());
+	webkit_web_view_load_uri(WEBKIT_WEB_VIEW(webView), get_doc_uri(file).c_str());
 	g_signal_connect(G_OBJECT(dialog), "configure-event", G_CALLBACK(on_help_configure_event), NULL);
 	gtk_widget_grab_focus(GTK_WIDGET(webView));
 	gtk_widget_show_all(dialog);
-	gtk_widget_hide(hbox_c);
 #else
 	GError *error = NULL;
-	surl = "file://" PACKAGE_DOC_DIR "/html/";
-	surl += file;
 #	if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-	gtk_show_uri_on_window(GTK_WINDOW(parent), surl.c_str(), gtk_get_current_event_time(), &error);
+	gtk_show_uri_on_window(GTK_WINDOW(parent), get_doc_uri(file).c_str(), gtk_get_current_event_time(), &error);
 #	else
-	gtk_show_uri(NULL, surl.c_str(), gtk_get_current_event_time(), &error);
+	gtk_show_uri(NULL, get_doc_uri(file).c_str(), gtk_get_current_event_time(), &error);
 #	endif
 	if(error) {
 		gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
@@ -1919,9 +2026,9 @@ gboolean on_check_version_idle(gpointer) {
 	if(ret > 0 && new_version != last_found_version) {
 		last_found_version = new_version;
 		GtkWidget *dialog = gtk_dialog_new_with_buttons(NULL, GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Close"), GTK_RESPONSE_REJECT, NULL);
-		gtk_container_set_border_width(GTK_CONTAINER(dialog), 5);
+		gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 		GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
-		gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
+		gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
 		gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox);
 		GtkWidget *label = gtk_label_new(NULL);
 		gchar *gstr = g_strdup_printf(_("A new version of %s is available.\n\nYou can get version %s at %s."), "Qalculate!", new_version.c_str(), "<a href=\"http://qalculate.github.io/downloads.html\">qalculate.github.io</a>");
@@ -11359,7 +11466,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 	gtk_container_set_border_width(GTK_CONTAINER(fd->dialog), 6);
 	gtk_window_set_resizable(GTK_WINDOW(fd->dialog), FALSE);
 	GtkWidget *vbox_pre = gtk_box_new(GTK_ORIENTATION_VERTICAL, 12);
-	gtk_container_set_border_width(GTK_CONTAINER(vbox_pre), 12);
+	gtk_container_set_border_width(GTK_CONTAINER(vbox_pre), 6);
 	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(fd->dialog))), vbox_pre);
 	f_title.insert(0, "<b>");
 	f_title += "</b>";
@@ -11536,24 +11643,14 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 			g_signal_connect((gpointer) fd->entry[i], "activate", G_CALLBACK(on_insert_function_entry_activated), (gpointer) f);
 		}
 		gtk_widget_set_hexpand(fd->entry[i], TRUE);
-		if(arg) {
-			switch(arg->type()) {
-				case ARGUMENT_TYPE_DATE: {
-					typestr = typestr.substr(1, typestr.length() - 2);
-					fd->type_label[i] = gtk_button_new_with_label(typestr.c_str());
-					g_signal_connect((gpointer) fd->type_label[i], "clicked", G_CALLBACK(on_type_label_date_clicked), (gpointer) fd->entry[i]);
-					break;
-				}
-				case ARGUMENT_TYPE_FILE: {
-					typestr = typestr.substr(1, typestr.length() - 2);
-					fd->type_label[i] = gtk_button_new_with_label(typestr.c_str());
-					g_signal_connect((gpointer) fd->type_label[i], "clicked", G_CALLBACK(on_type_label_file_clicked), (gpointer) fd->entry[i]);
-					break;
-				}
-				default: {
-					fd->type_label[i] = gtk_label_new(typestr.c_str());
-				}
-			}
+		if(arg && arg->type() == ARGUMENT_TYPE_DATE) {
+			typestr = typestr.substr(1, typestr.length() - 2);
+			fd->type_label[i] = gtk_button_new_with_label(typestr.c_str());
+			g_signal_connect((gpointer) fd->type_label[i], "clicked", G_CALLBACK(on_type_label_date_clicked), (gpointer) fd->entry[i]);
+		} else if(arg && arg->type() == ARGUMENT_TYPE_FILE) {
+			typestr = typestr.substr(1, typestr.length() - 2);
+			fd->type_label[i] = gtk_button_new_with_label(typestr.c_str());
+			g_signal_connect((gpointer) fd->type_label[i], "clicked", G_CALLBACK(on_type_label_file_clicked), (gpointer) fd->entry[i]);
 		} else if(!typestr.empty()) {
 			fd->type_label[i] = gtk_label_new(typestr.c_str());
 		} else {
@@ -14209,11 +14306,11 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 		if(!arg2 || !arg3 || (b_bitrot && !arg4)) return;
 		gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
 		GtkWidget *dialog = gtk_dialog_new_with_buttons(f->title(true).c_str(), GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_OK"), GTK_RESPONSE_OK, _("_Cancel"), GTK_RESPONSE_CANCEL, NULL);
-		gtk_container_set_border_width(GTK_CONTAINER(dialog), 5);
+		gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 		GtkWidget *grid = gtk_grid_new();
 		gtk_grid_set_row_homogeneous(GTK_GRID(grid), TRUE);
 		gtk_grid_set_column_spacing(GTK_GRID(grid), 12);
-		gtk_container_set_border_width(GTK_CONTAINER(grid), 12);
+		gtk_container_set_border_width(GTK_CONTAINER(grid), 6);
 		gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), grid);
 		GtkWidget *w3 = NULL;
 		if(b_bitrot) {
@@ -14326,10 +14423,10 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 		}
 		gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
 		GtkWidget *dialog = gtk_dialog_new_with_buttons(f->title(true).c_str(), GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_OK"), GTK_RESPONSE_OK, _("_Cancel"), GTK_RESPONSE_CANCEL, NULL);
-		gtk_container_set_border_width(GTK_CONTAINER(dialog), 5);
+		gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 		GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
 		gtk_box_set_homogeneous(GTK_BOX(hbox), TRUE);
-		gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
+		gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
 		gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox);
 		GtkWidget *label = gtk_label_new(arg2->name().c_str());
 		gtk_widget_set_halign(label, GTK_ALIGN_START);
@@ -15333,10 +15430,10 @@ void on_menu_item_meta_mode_activate(GtkMenuItem*, gpointer user_data) {
 }
 void on_menu_item_meta_mode_save_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Save Mode"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Save"), GTK_RESPONSE_ACCEPT, _("_Cancel"), GTK_RESPONSE_REJECT, NULL);
-	gtk_container_set_border_width(GTK_CONTAINER(dialog), 5);
+	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 	GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
 	gtk_box_set_homogeneous(GTK_BOX(hbox), TRUE);
-	gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
+	gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
 	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox);
 	gtk_widget_show(hbox);
 	GtkWidget *label = gtk_label_new(_("Name"));
@@ -15389,10 +15486,10 @@ run_meta_mode_save_dialog:
 
 void on_menu_item_meta_mode_delete_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Delete Mode"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Delete"), GTK_RESPONSE_ACCEPT, _("_Cancel"), GTK_RESPONSE_REJECT, NULL);
-	gtk_container_set_border_width(GTK_CONTAINER(dialog), 5);
+	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 	GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
 	gtk_box_set_homogeneous(GTK_BOX(hbox), TRUE);
-	gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
+	gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
 	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox);
 	gtk_widget_show(hbox);
 	GtkWidget *label = gtk_label_new(_("Mode"));
@@ -20960,10 +21057,10 @@ void on_popup_menu_item_history_bookmark_activate(GtkMenuItem *w, gpointer) {
 	} else {
 		string history_message;
 		GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Add Bookmark"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_OK"), GTK_RESPONSE_ACCEPT, _("_Cancel"), GTK_RESPONSE_REJECT, NULL);
-		gtk_container_set_border_width(GTK_CONTAINER(dialog), 5);
+		gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 		GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
 		gtk_box_set_homogeneous(GTK_BOX(hbox), TRUE);
-		gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
+		gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
 		gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox);
 		gtk_widget_show(hbox);
 		GtkWidget *label = gtk_label_new(_("Name"));
@@ -28826,9 +28923,9 @@ void on_element_button_clicked(GtkButton*, gpointer user_data) {
 		g_signal_connect((gpointer) close_button, "clicked", G_CALLBACK(on_element_button_close_clicked), (gpointer) dialog);
 		gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(periodictable_builder, "periodic_dialog")));
 		gtk_window_set_title(GTK_WINDOW(dialog), _("Element Data"));
-		gtk_container_set_border_width(GTK_CONTAINER(dialog), 5);
-		GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 15);
-		gtk_container_set_border_width(GTK_CONTAINER(vbox), 12);
+		gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
+		GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 12);
+		gtk_container_set_border_width(GTK_CONTAINER(vbox), 6);
 		gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), vbox);
 
 		GtkWidget *vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -28982,9 +29079,9 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 
 	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Set Unknowns"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_OK"), GTK_RESPONSE_ACCEPT, _("_Apply"), GTK_RESPONSE_APPLY, _("_Cancel"), GTK_RESPONSE_REJECT, NULL);
 	gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_MOUSE);
-	gtk_container_set_border_width(GTK_CONTAINER(dialog), 5);
-	GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 15);
-	gtk_container_set_border_width(GTK_CONTAINER(vbox), 12);
+	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
+	GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+	gtk_container_set_border_width(GTK_CONTAINER(vbox), 6);
 	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), vbox);
 	GtkWidget *label;
 	vector<GtkWidget*> entry;

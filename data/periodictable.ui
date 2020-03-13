@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkDialog" id="periodic_dialog">
@@ -10,7 +10,7 @@
     <property name="type_hint">normal</property>
     <signal name="delete-event" handler="gtk_widget_hide" object="periodic_dialog" swapped="yes"/>
     <signal name="destroy-event" handler="gtk_widget_hide" object="periodic_dialog" swapped="yes"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -38,7 +38,7 @@
           <object class="GtkGrid" id="periodic_table">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="border_width">12</property>
+            <property name="border_width">6</property>
             <property name="row_spacing">3</property>
             <property name="column_spacing">3</property>
             <property name="row_homogeneous">True</property>

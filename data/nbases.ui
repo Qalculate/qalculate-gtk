@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkDialog" id="nbases_dialog">
@@ -10,7 +10,7 @@
     <signal name="delete-event" handler="gtk_widget_hide" object="nbases_dialog" swapped="yes"/>
     <signal name="destroy-event" handler="gtk_widget_hide" object="nbases_dialog" swapped="yes"/>
     <signal name="key-press-event" handler="on_nbases_dialog_key_press_event" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -18,7 +18,6 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">6</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="dialog-action_area5">
             <property name="visible">True</property>
@@ -51,7 +50,7 @@
           <object class="GtkBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="border_width">12</property>
+            <property name="border_width">6</property>
             <property name="spacing">18</property>
             <child>
               <object class="GtkGrid">

@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkDialog" id="functions_dialog">
     <property name="can_focus">False</property>
-    <property name="border_width">5</property>
+    <property name="border_width">6</property>
     <property name="title" translatable="yes">Functions</property>
     <property name="default_width">1000</property>
     <property name="default_height">700</property>
     <property name="type_hint">dialog</property>
     <signal name="delete-event" handler="gtk_widget_hide" swapped="no"/>
     <signal name="key-press-event" handler="on_functions_dialog_key_press_event" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
       <object class="GtkBox">
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">6</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox">
             <property name="can_focus">False</property>

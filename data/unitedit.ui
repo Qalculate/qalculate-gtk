@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkAdjustment" id="adjustment1">
@@ -25,11 +25,11 @@
   </object>
   <object class="GtkDialog" id="unit_edit_dialog">
     <property name="can_focus">False</property>
-    <property name="border_width">5</property>
+    <property name="border_width">6</property>
     <property name="title" translatable="yes">Edit Unit</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -37,7 +37,6 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="dialog-action_area5">
             <property name="visible">True</property>
@@ -102,7 +101,7 @@
           <object class="GtkBox" id="vbox8">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="border_width">5</property>
+            <property name="border_width">6</property>
             <property name="orientation">vertical</property>
             <property name="spacing">12</property>
             <child>
@@ -115,8 +114,9 @@
                   <object class="GtkBox" id="vbox9">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_left">6</property>
-                    <property name="border_width">6</property>
+                    <property name="margin_left">12</property>
+                    <property name="margin_top">6</property>
+                    <property name="margin_bottom">6</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">6</property>
                     <property name="homogeneous">True</property>
@@ -288,8 +288,9 @@
                   <object class="GtkBox" id="vbox12">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_left">6</property>
-                    <property name="border_width">6</property>
+                    <property name="margin_left">12</property>
+                    <property name="margin_top">6</property>
+                    <property name="margin_bottom">6</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">6</property>
                     <property name="homogeneous">True</property>
@@ -478,8 +479,9 @@
                   <object class="GtkBox" id="unit_edit_vbox_alias">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_left">6</property>
-                    <property name="border_width">6</property>
+                    <property name="margin_left">12</property>
+                    <property name="margin_top">6</property>
+                    <property name="margin_bottom">6</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">6</property>
                     <child>
@@ -726,7 +728,9 @@ For non-linear relations use \x for the factor and \y for the exponent (e.g. "\x
                   <object class="GtkBox" id="unit_edit_vbox_alias1">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="border_width">6</property>
+                    <property name="margin_left">6</property>
+                    <property name="margin_top">6</property>
+                    <property name="margin_bottom">6</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">6</property>
                     <child>
