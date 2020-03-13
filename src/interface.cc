@@ -1926,6 +1926,7 @@ GtkWidget* get_preferences_dialog(void) {
 		gtk_font_chooser_set_font(GTK_FONT_CHOOSER(gtk_builder_get_object(preferences_builder, "preferences_button_status_font")), custom_status_font.c_str());
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_keypad_font")), use_custom_keypad_font);
 		gtk_font_chooser_set_font(GTK_FONT_CHOOSER(gtk_builder_get_object(preferences_builder, "preferences_button_keypad_font")), custom_keypad_font.c_str());
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_app_font")), use_custom_app_font);
 		gtk_font_chooser_set_font(GTK_FONT_CHOOSER(gtk_builder_get_object(preferences_builder, "preferences_button_app_font")), custom_app_font.c_str());
 		GdkRGBA c;
 		gdk_rgba_parse(&c, status_error_color.c_str());
