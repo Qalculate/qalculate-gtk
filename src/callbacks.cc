@@ -971,7 +971,7 @@ void show_help(const char *file, GObject *parent) {
 		gtk_window_set_modal(GTK_WINDOW(dialog), gtk_window_get_modal(GTK_WINDOW(parent)));
 	}
 	gtk_window_set_default_size(GTK_WINDOW(dialog), help_width > 0 ? help_width : 800, help_height > 0 ? help_height : 600);
-	GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+	GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 	GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
 	GtkWidget *hbox_l = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 	GtkWidget *hbox_c = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
@@ -1002,7 +1002,7 @@ void show_help(const char *file, GObject *parent) {
 	gtk_style_context_add_class(gtk_widget_get_style_context(hbox_c), "linked");
 	gtk_style_context_add_class(gtk_widget_get_style_context(hbox_r), "linked");
 	gtk_container_add(GTK_CONTAINER(vbox), hbox);
-	gtk_container_set_border_width(GTK_CONTAINER(hbox), 9);
+	gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
 	gtk_container_add(GTK_CONTAINER(dialog), vbox);
 	GtkWidget *scrolledWeb = gtk_scrolled_window_new(NULL, NULL);
 	gtk_widget_set_hexpand(scrolledWeb, TRUE);
