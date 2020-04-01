@@ -155,7 +155,7 @@ gint history_scroll_width = 16;
 
 GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider;
 
-extern bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes;
+extern bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad;
 extern bool save_mode_on_exit, save_defs_on_exit, load_global_defs, hyp_is_on, inv_is_on, fetch_exchange_rates_at_startup;
 extern int allow_multiple_instances;
 extern int title_type;
@@ -185,7 +185,7 @@ extern vector<GtkWidget*> popup_result_mode_items;
 
 extern deque<string> expression_undo_buffer;
 
-gint win_height, win_width, history_height, keypad_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
+gint win_height, win_width, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
 
 extern Unit *latest_button_unit, *latest_button_currency;
 extern string latest_button_unit_pre, latest_button_currency_pre;
@@ -1253,14 +1253,14 @@ void create_main_window(void) {
 	expander_stack = GTK_WIDGET(gtk_builder_get_object(main_builder, "expander_stack"));
 	expander_convert = GTK_WIDGET(gtk_builder_get_object(main_builder, "expander_convert"));
 	tabs = GTK_WIDGET(gtk_builder_get_object(main_builder, "tabs"));
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_ho")), !persistent_keypad);
 	if(history_height > 0) gtk_widget_set_size_request(tabs, -1, history_height);
-	if(keypad_height > 0) gtk_widget_set_size_request(tabs, -1, keypad_height);
 	if(show_stack && rpn_mode) {
 		gtk_expander_set_expanded(GTK_EXPANDER(expander_stack), TRUE);
 		gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 1);
 		gtk_widget_show(tabs);
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
-	} else if(show_keypad) {
+	} else if(show_keypad && !persistent_keypad) {
 		gtk_expander_set_expanded(GTK_EXPANDER(expander_keypad), TRUE);
 		gtk_widget_hide(tabs);
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
@@ -1279,6 +1279,11 @@ void create_main_window(void) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
 		gtk_widget_set_vexpand(resultview, TRUE);
 	}
+	if(persistent_keypad) {
+		gtk_widget_hide(expander_keypad);
+		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
+	}
+	gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), !persistent_keypad || !gtk_widget_get_visible(tabs));
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")), continuous_conversion);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes")), set_missing_prefixes);
@@ -1608,7 +1613,6 @@ void create_main_window(void) {
 	gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 
 	if(history_height > 0) gtk_widget_set_size_request(tabs, -1, -1);
-	if(keypad_height > 0) gtk_widget_set_size_request(tabs, -1, -1);
 
 	update_status_text();
 
@@ -1895,6 +1899,7 @@ GtkWidget* get_preferences_dialog(void) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_allow_multiple_instances")), allow_multiple_instances > 0);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_ignore_locale")), ignore_locale);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_check_version")), check_version);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_persistent_keypad")), persistent_keypad);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_title")), title_type);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_unicode_signs")), printops.use_unicode_signs);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_copy_separator")), copy_separator);

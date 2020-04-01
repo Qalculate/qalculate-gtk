@@ -175,7 +175,7 @@ bool save_custom_result_font = false, save_custom_expression_font = false, save_
 string custom_result_font, custom_expression_font, custom_status_font, custom_keypad_font, custom_app_font;
 int scale_n = 0;
 bool hyp_is_on, inv_is_on;
-bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes;
+bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad;
 bool copy_separator;
 bool caret_as_xor = false;
 extern bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message;
@@ -226,7 +226,7 @@ vector<GtkTreeViewColumn*> matrix_edit_columns, matrix_columns;
 
 extern GtkAccelGroup *accel_group;
 
-extern gint win_height, win_width, history_height, keypad_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
+extern gint win_height, win_width, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
 
 vector<string> expression_history;
 int expression_history_index = -1;
@@ -10836,7 +10836,7 @@ void set_rpn_mode(bool b) {
 		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), _("Calculate expression and add to stack"));
 		gtk_widget_show(expander_stack);
 		show_history = gtk_expander_get_expanded(GTK_EXPANDER(expander_history));
-		show_keypad = gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad));
+		show_keypad = !persistent_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad));
 		show_convert = gtk_expander_get_expanded(GTK_EXPANDER(expander_convert));
 		if(show_stack) {
 			gtk_expander_set_expanded(GTK_EXPANDER(expander_stack), TRUE);
@@ -10860,7 +10860,7 @@ void set_rpn_mode(bool b) {
 		show_stack = gtk_expander_get_expanded(GTK_EXPANDER(expander_stack));
 		if(show_stack) {
 			if(show_history) gtk_expander_set_expanded(GTK_EXPANDER(expander_history), TRUE);
-			else if(show_keypad) gtk_expander_set_expanded(GTK_EXPANDER(expander_keypad), TRUE);
+			else if(show_keypad && !persistent_keypad) gtk_expander_set_expanded(GTK_EXPANDER(expander_keypad), TRUE);
 			else if(show_convert) gtk_expander_set_expanded(GTK_EXPANDER(expander_convert), TRUE);
 			else gtk_expander_set_expanded(GTK_EXPANDER(expander_stack), FALSE);
 		}
@@ -15231,13 +15231,13 @@ void show_tabs(bool do_show) {
 	if(do_show == gtk_widget_get_visible(tabs)) return;
 	gint w, h;
 	gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
-	if(gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")))) h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons"))) + 6;
+	if(!persistent_keypad && gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")))) h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons"))) + 6;
 	if(do_show) {
 		gtk_widget_show(tabs);
 		gint a_h = gtk_widget_get_allocated_height(tabs);
 		if(a_h > 10) h += a_h + 6;
 		else h += history_height + 6;
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
+		if(!persistent_keypad) gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
 		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), w, h);
 	} else {
 		h -= gtk_widget_get_allocated_height(tabs) + 6;
@@ -15247,6 +15247,7 @@ void show_tabs(bool do_show) {
 		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), w, h);
 	}
 	gtk_widget_set_vexpand(resultview, !gtk_widget_get_visible(tabs) && !gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons"))));
+	gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), !persistent_keypad || !gtk_widget_get_visible(tabs));
 }
 void show_keypad_widget(bool do_show) {
 	if(do_show == gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")))) return;
@@ -15257,7 +15258,7 @@ void show_keypad_widget(bool do_show) {
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
 		gint a_h = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
 		if(a_h > 10) h += a_h + 6;
-		else h += keypad_height + 6;
+		else h += 6;
 		gtk_widget_hide(tabs);
 		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), w, h);
 	} else {
@@ -15268,6 +15269,7 @@ void show_keypad_widget(bool do_show) {
 		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), w, h);
 	}
 	gtk_widget_set_vexpand(resultview, !gtk_widget_get_visible(tabs) && !gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons"))));
+	gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), !persistent_keypad || !gtk_widget_get_visible(tabs));
 }
 
 void on_expander_keypad_expanded(GObject *o, GParamSpec*, gpointer) {
@@ -15665,7 +15667,6 @@ void load_preferences() {
 	help_width = -1;
 	help_height = -1;
 	help_zoom = -1.0;
-	keypad_height = 0;
 	history_height = 0;
 	save_mode_on_exit = true;
 	save_defs_on_exit = true;
@@ -15689,6 +15690,7 @@ void load_preferences() {
 	show_history = false;
 	show_stack = true;
 	show_convert = false;
+	persistent_keypad = false;
 	continuous_conversion = true;
 	set_missing_prefixes = false;
 	load_global_defs = true;
@@ -15818,8 +15820,6 @@ void load_preferences() {
 					last_found_version = svalue;
 				} else if(svar == "show_keypad") {
 					show_keypad = v;
-				/*} else if(svar == "keypad_height") {
-					keypad_height = v;*/
 				} else if(svar == "show_history") {
 					show_history = v;
 				} else if(svar == "history_height") {
@@ -15828,6 +15828,8 @@ void load_preferences() {
 					show_stack = v;
 				} else if(svar == "show_convert") {
 					show_convert = v;
+				} else if(svar == "persistent_keypad") {
+					persistent_keypad = v;
 				} else if(svar == "continuous_conversion") {
 					continuous_conversion = v;
 				} else if(svar == "set_missing_prefixes") {
@@ -16565,6 +16567,7 @@ void load_preferences() {
 	displayed_caf = complex_angle_form;
 	initial_inhistory_index = inhistory.size() - 1;
 	g_free(gstr_file);
+	if(persistent_keypad) show_keypad = false;
 	show_history = show_history && !show_keypad;
 	show_convert = show_convert && !show_history && !show_keypad;
 	set_saved_mode();
@@ -16658,14 +16661,13 @@ void save_preferences(bool mode) {
 		fprintf(file, "last_version_check=%s\n", last_version_check_date.toISOString().c_str());
 		if(!last_found_version.empty()) fprintf(file, "last_found_version=%s\n", last_found_version.c_str());
 	}
-	fprintf(file, "show_keypad=%i\n", (rpn_mode && show_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad)));
-	//h = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
-	//fprintf(file, "keypad_height=%i\n", h > 10 ? h : keypad_height);
+	if(!persistent_keypad) fprintf(file, "show_keypad=%i\n", (rpn_mode && show_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad)));
 	fprintf(file, "show_history=%i\n", (rpn_mode && show_history && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_history)));
 	h = gtk_widget_get_allocated_height(tabs);
 	fprintf(file, "history_height=%i\n", h > 10 ? h : history_height);
 	fprintf(file, "show_stack=%i\n", rpn_mode ? gtk_expander_get_expanded(GTK_EXPANDER(expander_stack)) : show_stack);
 	fprintf(file, "show_convert=%i\n", (rpn_mode && show_convert && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)));
+	fprintf(file, "persistent_keypad=%i\n", persistent_keypad);
 	fprintf(file, "continuous_conversion=%i\n", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion"))));
 	fprintf(file, "set_missing_prefixes=%i\n", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))));
 	fprintf(file, "rpn_keys=%i\n", rpn_keys);
@@ -17647,6 +17649,18 @@ gboolean on_preferences_update_exchange_rates_spin_button_output(GtkSpinButton *
 		gtk_entry_set_text(GTK_ENTRY(spin), _("ask"));
 	}
 	return TRUE;
+}
+void on_preferences_checkbutton_persistent_keypad_toggled(GtkToggleButton *w, gpointer) {
+	persistent_keypad = gtk_toggle_button_get_active(w);
+	gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), !persistent_keypad || !gtk_widget_get_visible(tabs));
+	gtk_widget_set_visible(expander_keypad, !persistent_keypad);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_ho")), !persistent_keypad);
+	show_keypad = false;
+	g_signal_handlers_block_matched((gpointer) expander_keypad, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_expander_keypad_expanded, NULL);
+	gtk_expander_set_expanded(GTK_EXPANDER(expander_keypad), FALSE);
+	g_signal_handlers_unblock_matched((gpointer) expander_keypad, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_expander_keypad_expanded, NULL);
+	if(persistent_keypad) gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
+	else show_keypad_widget(false);
 }
 void on_preferences_checkbutton_check_version_toggled(GtkToggleButton *w, gpointer) {
 	check_version = gtk_toggle_button_get_active(w);
@@ -27111,12 +27125,12 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 			}
 			case SHORTCUT_TYPE_PROGRAMMING: {
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_programmers_keypad")), visible_keypad != 1);
-				if(visible_keypad == 1) gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad")), true);
+				if(visible_keypad == 1 && !persistent_keypad) gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad")), true);
 				return true;
 			}
 			case SHORTCUT_TYPE_KEYPAD: {
 				//void on_expander_history_expanded(GObject *o, GParamSpec*, gpointer)
-				gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad")), !gtk_expander_get_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad"))));
+				if(!persistent_keypad) gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad")), !gtk_expander_get_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad"))));
 				return true;
 			}
 			case SHORTCUT_TYPE_HISTORY: {
