@@ -2670,20 +2670,53 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                     <property name="valign">center</property>
                     <property name="spacing">12</property>
                     <child>
-                      <object class="GtkExpander" id="expander_keypad">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <signal name="notify::expanded" handler="on_expander_keypad_expanded" swapped="no"/>
+                        <property name="can_focus">False</property>
+                        <property name="spacing">6</property>
                         <child>
-                          <placeholder/>
+                          <object class="GtkExpander" id="expander_keypad">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <signal name="notify::expanded" handler="on_expander_keypad_expanded" swapped="no"/>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child type="label">
+                              <object class="GtkLabel" id="label3">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">_Keypad</property>
+                                <property name="use_underline">True</property>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
                         </child>
-                        <child type="label">
-                          <object class="GtkLabel" id="label3">
+                        <child>
+                          <object class="GtkEventBox">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">_Keypad</property>
-                            <property name="use_underline">True</property>
+                            <property name="visible_window">False</property>
+                            <signal name="button-release-event" handler="on_image_keypad_lock_button_release_event" swapped="no"/>
+                            <child>
+                              <object class="GtkImage" id="image_keypad_lock">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Toogles persistent keypad (makes it possible to show keypad and history simultaneously)</property>
+                                <property name="icon_name">changes-allow-symbolic</property>
+                              </object>
+                            </child>
                           </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
                         </child>
                       </object>
                       <packing>
@@ -3376,7 +3409,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkBox">
+                          <object class="GtkBox" id="box_rpnr">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="orientation">vertical</property>

@@ -15272,8 +15272,34 @@ void show_keypad_widget(bool do_show) {
 	gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), !persistent_keypad || !gtk_widget_get_visible(tabs));
 }
 
+void update_persistent_keypad() {
+	gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), !persistent_keypad || !gtk_widget_get_visible(tabs));
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_ho")), !persistent_keypad);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnl")), !persistent_keypad || (rpn_mode && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))));
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnr")), !persistent_keypad || (rpn_mode && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))));
+	if(persistent_keypad || gtk_widget_is_visible(tabs)) {
+		show_keypad = false;
+		g_signal_handlers_block_matched((gpointer) expander_keypad, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_expander_keypad_expanded, NULL);
+		gtk_expander_set_expanded(GTK_EXPANDER(expander_keypad), persistent_keypad);
+		g_signal_handlers_unblock_matched((gpointer) expander_keypad, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_expander_keypad_expanded, NULL);
+		if(persistent_keypad) gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
+		else show_keypad_widget(false);
+	}
+	if(preferences_builder && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_persistent_keypad"))) != persistent_keypad) {
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_persistent_keypad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_persistent_keypad_toggled, NULL);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_persistent_keypad")), persistent_keypad);
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_persistent_keypad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_persistent_keypad_toggled, NULL);
+	}
+	if(persistent_keypad) gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_keypad_lock")), "changes-prevent-symbolic", GTK_ICON_SIZE_BUTTON);
+	else gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_keypad_lock")), "changes-allow-symbolic", GTK_ICON_SIZE_BUTTON);
+}
 void on_expander_keypad_expanded(GObject *o, GParamSpec*, gpointer) {
-	if(gtk_expander_get_expanded(GTK_EXPANDER(o))) {
+	if(persistent_keypad) {
+		if(!gtk_expander_get_expanded(GTK_EXPANDER(o))) {
+			persistent_keypad = false;
+			update_persistent_keypad();
+		}
+	} else if(gtk_expander_get_expanded(GTK_EXPANDER(o))) {
 		show_keypad_widget(true);
 		if(gtk_expander_get_expanded(GTK_EXPANDER(expander_history))) {
 			gtk_expander_set_expanded(GTK_EXPANDER(expander_history), FALSE);
@@ -15298,7 +15324,7 @@ void on_expander_history_expanded(GObject *o, GParamSpec*, gpointer) {
 			gtk_tree_view_scroll_to_point(GTK_TREE_VIEW(historyview), 0, 0);
 			gtk_tree_path_free(path);
 		}
-		if(gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad))) {
+		if(!persistent_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad))) {
 			gtk_expander_set_expanded(GTK_EXPANDER(expander_keypad), FALSE);
 		} else if(gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) {
 			gtk_expander_set_expanded(GTK_EXPANDER(expander_stack), FALSE);
@@ -15313,7 +15339,7 @@ void on_expander_stack_expanded(GObject *o, GParamSpec*, gpointer) {
 	if(gtk_expander_get_expanded(GTK_EXPANDER(o))) {
 		gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 1);
 		show_tabs(true);
-		if(gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad))) {
+		if(!persistent_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad))) {
 			gtk_expander_set_expanded(GTK_EXPANDER(expander_keypad), FALSE);
 		} else if(gtk_expander_get_expanded(GTK_EXPANDER(expander_history))) {
 			gtk_expander_set_expanded(GTK_EXPANDER(expander_history), FALSE);
@@ -15323,12 +15349,14 @@ void on_expander_stack_expanded(GObject *o, GParamSpec*, gpointer) {
 	} else if(!gtk_expander_get_expanded(GTK_EXPANDER(expander_history)) && !gtk_expander_get_expanded(GTK_EXPANDER(expander_convert))) {
 		show_tabs(false);
 	}
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnl")), !persistent_keypad || gtk_expander_get_expanded(GTK_EXPANDER(o)));
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnr")), !persistent_keypad || gtk_expander_get_expanded(GTK_EXPANDER(o)));
 }
 void on_expander_convert_expanded(GObject *o, GParamSpec*, gpointer) {
 	if(gtk_expander_get_expanded(GTK_EXPANDER(o))) {
 		gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 2);
 		show_tabs(true);
-		if(gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad))) {
+		if(!persistent_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad))) {
 			gtk_expander_set_expanded(GTK_EXPANDER(expander_keypad), FALSE);
 		} else if(gtk_expander_get_expanded(GTK_EXPANDER(expander_history))) {
 			gtk_expander_set_expanded(GTK_EXPANDER(expander_history), FALSE);
@@ -17652,15 +17680,12 @@ gboolean on_preferences_update_exchange_rates_spin_button_output(GtkSpinButton *
 }
 void on_preferences_checkbutton_persistent_keypad_toggled(GtkToggleButton *w, gpointer) {
 	persistent_keypad = gtk_toggle_button_get_active(w);
-	gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), !persistent_keypad || !gtk_widget_get_visible(tabs));
-	gtk_widget_set_visible(expander_keypad, !persistent_keypad);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_ho")), !persistent_keypad);
-	show_keypad = false;
-	g_signal_handlers_block_matched((gpointer) expander_keypad, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_expander_keypad_expanded, NULL);
-	gtk_expander_set_expanded(GTK_EXPANDER(expander_keypad), FALSE);
-	g_signal_handlers_unblock_matched((gpointer) expander_keypad, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_expander_keypad_expanded, NULL);
-	if(persistent_keypad) gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
-	else show_keypad_widget(false);
+	update_persistent_keypad();
+}
+gboolean on_image_keypad_lock_button_release_event(GtkWidget*, GdkEvent*, gpointer) {
+	persistent_keypad = !persistent_keypad;
+	update_persistent_keypad();
+	return TRUE;
 }
 void on_preferences_checkbutton_check_version_toggled(GtkToggleButton *w, gpointer) {
 	check_version = gtk_toggle_button_get_active(w);
@@ -27125,12 +27150,12 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 			}
 			case SHORTCUT_TYPE_PROGRAMMING: {
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_programmers_keypad")), visible_keypad != 1);
-				if(visible_keypad == 1 && !persistent_keypad) gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad")), true);
+				if(visible_keypad == 1) gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad")), true);
 				return true;
 			}
 			case SHORTCUT_TYPE_KEYPAD: {
 				//void on_expander_history_expanded(GObject *o, GParamSpec*, gpointer)
-				if(!persistent_keypad) gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad")), !gtk_expander_get_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad"))));
+				gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad")), !gtk_expander_get_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad"))));
 				return true;
 			}
 			case SHORTCUT_TYPE_HISTORY: {

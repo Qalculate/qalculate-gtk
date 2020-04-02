@@ -1254,6 +1254,8 @@ void create_main_window(void) {
 	expander_convert = GTK_WIDGET(gtk_builder_get_object(main_builder, "expander_convert"));
 	tabs = GTK_WIDGET(gtk_builder_get_object(main_builder, "tabs"));
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_ho")), !persistent_keypad);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnl")), !persistent_keypad || (show_stack && rpn_mode));
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnr")), !persistent_keypad || (show_stack && rpn_mode));
 	if(history_height > 0) gtk_widget_set_size_request(tabs, -1, history_height);
 	if(show_stack && rpn_mode) {
 		gtk_expander_set_expanded(GTK_EXPANDER(expander_stack), TRUE);
@@ -1280,8 +1282,9 @@ void create_main_window(void) {
 		gtk_widget_set_vexpand(resultview, TRUE);
 	}
 	if(persistent_keypad) {
-		gtk_widget_hide(expander_keypad);
+		gtk_expander_set_expanded(GTK_EXPANDER(expander_keypad), TRUE);
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
+		gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_keypad_lock")), "changes-prevent-symbolic", GTK_ICON_SIZE_BUTTON);
 	}
 	gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), !persistent_keypad || !gtk_widget_get_visible(tabs));
 
