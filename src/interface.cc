@@ -155,7 +155,7 @@ gint history_scroll_width = 16;
 
 GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider;
 
-extern bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad;
+extern bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad, minimal_mode;
 extern bool save_mode_on_exit, save_defs_on_exit, load_global_defs, hyp_is_on, inv_is_on, fetch_exchange_rates_at_startup;
 extern int allow_multiple_instances;
 extern int title_type;
@@ -1282,11 +1282,22 @@ void create_main_window(void) {
 		gtk_widget_set_vexpand(resultview, TRUE);
 	}
 	if(persistent_keypad) {
-		gtk_expander_set_expanded(GTK_EXPANDER(expander_keypad), TRUE);
-		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
+		if(show_keypad) {
+			gtk_expander_set_expanded(GTK_EXPANDER(expander_keypad), TRUE);
+			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
+			gtk_widget_set_vexpand(resultview, FALSE);
+		}
 		gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_keypad_lock")), "changes-prevent-symbolic", GTK_ICON_SIZE_BUTTON);
 	}
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_persistent_keypad")), persistent_keypad);
 	gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), !persistent_keypad || !gtk_widget_get_visible(tabs));
+	
+	if(minimal_mode) {
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "grid_result")));
+	}
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")), minimal_mode);
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")), continuous_conversion);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes")), set_missing_prefixes);

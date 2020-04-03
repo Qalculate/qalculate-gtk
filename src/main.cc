@@ -57,6 +57,7 @@ extern GtkWidget *resultview;
 extern PrintOptions printops;
 extern bool ignore_locale;
 extern bool title_modified;
+extern bool minimal_mode;
 bool check_version = false;
 string custom_title;
 
@@ -272,6 +273,9 @@ void create_application(GtkApplication *app) {
 		printops.base = base;
 	}
 	gtk_widget_queue_draw(resultview);
+	if(minimal_mode && calc_arg.empty()) {
+		clearresult();
+	}
 
 	gchar *gstr = g_build_filename(getLocalDir().c_str(), "accelmap", NULL);
 #ifndef _WIN32

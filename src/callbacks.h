@@ -102,6 +102,7 @@ enum {
 	SHORTCUT_TYPE_HISTORY,
 	SHORTCUT_TYPE_CONVERSION,
 	SHORTCUT_TYPE_STACK,
+	SHORTCUT_TYPE_MINIMAL,
 	SHORTCUT_TYPE_MANAGE_VARIABLES,
 	SHORTCUT_TYPE_MANAGE_FUNCTIONS,
 	SHORTCUT_TYPE_MANAGE_UNITS,
@@ -164,6 +165,8 @@ bool update_window_title(const char *str = NULL, bool is_result = false);
 cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po = default_print_options, bool caf = false, InternalPrintStruct ips = top_ips, gint *point_central = NULL, int scaledown = 0, GdkRGBA *color = NULL);
 
 void update_status_text();
+
+void clearresult();
 
 void set_result_size_request();
 void set_expression_size_request();
@@ -564,6 +567,7 @@ void on_popup_menu_item_complex_rectangular_activate(GtkMenuItem *w, gpointer us
 void on_popup_menu_item_complex_exponential_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_complex_polar_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_complex_angle_activate(GtkMenuItem *w, gpointer user_data);
+void on_popup_menu_item_persistent_keypad_toggled(GtkCheckMenuItem *w, gpointer user_data);
 void on_menu_item_complex_rectangular_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_complex_exponential_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_complex_polar_activate(GtkMenuItem *w, gpointer user_data);

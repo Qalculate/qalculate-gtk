@@ -804,6 +804,21 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkMenuItem" id="menu_item_minimal_mode">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Minimal Window</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menu_item_minimal_mode_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkMenuItem" id="menu_item_quit">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -2581,7 +2596,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkGrid">
+                  <object class="GtkGrid" id="grid_result">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="hexpand">True</property>
@@ -2644,6 +2659,33 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkButton" id="button_minimal_mode">
+                    <property name="can_focus">True</property>
+                    <property name="focus_on_click">False</property>
+                    <property name="receives_default">False</property>
+                    <property name="valign">start</property>
+                    <property name="use_underline">True</property>
+                    <signal name="clicked" handler="on_button_minimal_mode_clicked" swapped="no"/>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="icon_name">view-restore</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left_attach">2</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
                   <placeholder/>
                 </child>
                 <child>
@@ -2678,6 +2720,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                           <object class="GtkExpander" id="expander_keypad">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <signal name="button-press-event" handler="on_expander_keypad_button_press_event" swapped="no"/>
                             <signal name="notify::expanded" handler="on_expander_keypad_expanded" swapped="no"/>
                             <child>
                               <placeholder/>
@@ -2702,6 +2745,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="visible_window">False</property>
+                            <signal name="button-press-event" handler="on_image_keypad_lock_button_press_event" swapped="no"/>
                             <signal name="button-release-event" handler="on_image_keypad_lock_button_release_event" swapped="no"/>
                             <child>
                               <object class="GtkImage" id="image_keypad_lock">
@@ -7143,6 +7187,18 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Convert to Unit</property>
         <signal name="activate" handler="on_popup_menu_convert_convert_activate" swapped="no"/>
+      </object>
+    </child>
+  </object>
+  <object class="GtkMenu" id="popup_menu_expander_keypad">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkCheckMenuItem" id="popup_menu_item_persistent_keypad">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Persistent Keypad</property>
+        <signal name="toggled" handler="on_popup_menu_item_persistent_keypad_toggled" swapped="no"/>
       </object>
     </child>
   </object>

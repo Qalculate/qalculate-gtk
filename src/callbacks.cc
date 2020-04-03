@@ -175,7 +175,7 @@ bool save_custom_result_font = false, save_custom_expression_font = false, save_
 string custom_result_font, custom_expression_font, custom_status_font, custom_keypad_font, custom_app_font;
 int scale_n = 0;
 bool hyp_is_on, inv_is_on;
-bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad;
+bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad, minimal_mode;
 bool copy_separator;
 bool caret_as_xor = false;
 extern bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message;
@@ -2146,7 +2146,6 @@ bool display_function_hint(MathFunction *f, int arg_index = 1) {
 }
 
 void replace_interval_with_function(MathStructure &m);
-void clearresult();
 void update_result_bases();
 void fix_to_struct_gtk(MathStructure &m);
 
@@ -2670,6 +2669,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			display_aborted = false;
 			surface_result = tmp_surface;
 			first_draw_of_result = TRUE;
+			if(minimal_mode) gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "grid_result")));
 			gtk_widget_queue_draw(resultview);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), true);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), true);
@@ -5263,6 +5263,7 @@ const gchar *shortcut_type_text(int type) {
 		case SHORTCUT_TYPE_HISTORY: {return _("Show history"); break;}
 		case SHORTCUT_TYPE_CONVERSION: {return _("Show conversion"); break;}
 		case SHORTCUT_TYPE_STACK: {return _("Show RPN stack"); break;}
+		case SHORTCUT_TYPE_MINIMAL: {return _("Toggle minimal window"); break;}
 		case SHORTCUT_TYPE_MANAGE_VARIABLES: {return _("Manage variables"); break;}
 		case SHORTCUT_TYPE_MANAGE_FUNCTIONS: {return _("Manage functions"); break;}
 		case SHORTCUT_TYPE_MANAGE_UNITS: {return _("Manage units"); break;}
@@ -5405,6 +5406,10 @@ void update_accels() {
 				str += shortcut_to_text(it->second.key, it->second.modifier);
 				str += ")";
 				gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_programmers_keypad")), str.c_str());
+				break;
+			}
+			case SHORTCUT_TYPE_MINIMAL: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_minimal_mode")))), it->second.key, (GdkModifierType) it->second.modifier);
 				break;
 			}
 			case SHORTCUT_TYPE_MANAGE_VARIABLES: {
@@ -8418,6 +8423,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 }
 
 void clearresult() {
+	if(minimal_mode) {
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "grid_result")));
+		gint w;
+		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, NULL);
+		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), w, 10);
+	}
 	showing_first_time_message = false;
 	if(displayed_mstruct) {
 		displayed_mstruct->unref();
@@ -9467,6 +9478,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			showing_first_time_message = FALSE;
 			first_draw_of_result = TRUE;
 			surface_result = tmp_surface;
+			if(minimal_mode) gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "grid_result")));
 			gtk_widget_queue_draw(resultview);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), displayed_mstruct && !display_aborted);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), displayed_mstruct && !display_aborted);
@@ -15253,13 +15265,13 @@ void show_keypad_widget(bool do_show) {
 	if(do_show == gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")))) return;
 	gint w, h;
 	gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
-	if(gtk_widget_get_visible(tabs)) h -= gtk_widget_get_allocated_height(tabs) + 6;
+	if(!persistent_keypad && gtk_widget_get_visible(tabs)) h -= gtk_widget_get_allocated_height(tabs) + 6;
 	if(do_show) {
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
 		gint a_h = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
 		if(a_h > 10) h += a_h + 6;
 		else h += 6;
-		gtk_widget_hide(tabs);
+		if(!persistent_keypad) gtk_widget_hide(tabs);
 		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), w, h);
 	} else {
 		h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons"))) + 6;
@@ -15272,12 +15284,12 @@ void show_keypad_widget(bool do_show) {
 	gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), !persistent_keypad || !gtk_widget_get_visible(tabs));
 }
 
-void update_persistent_keypad() {
+void update_persistent_keypad(bool showhide_buttons = false) {
+	if(!persistent_keypad && gtk_widget_is_visible(tabs)) showhide_buttons = true;
 	gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), !persistent_keypad || !gtk_widget_get_visible(tabs));
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_ho")), !persistent_keypad);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnl")), !persistent_keypad || (rpn_mode && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))));
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnr")), !persistent_keypad || (rpn_mode && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))));
-	if(persistent_keypad || gtk_widget_is_visible(tabs)) {
+	if(showhide_buttons && (persistent_keypad || gtk_widget_is_visible(tabs))) {
 		show_keypad = false;
 		g_signal_handlers_block_matched((gpointer) expander_keypad, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_expander_keypad_expanded, NULL);
 		gtk_expander_set_expanded(GTK_EXPANDER(expander_keypad), persistent_keypad);
@@ -15285,28 +15297,30 @@ void update_persistent_keypad() {
 		if(persistent_keypad) gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
 		else show_keypad_widget(false);
 	}
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_ho")), !persistent_keypad);
 	if(preferences_builder && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_persistent_keypad"))) != persistent_keypad) {
 		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_persistent_keypad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_persistent_keypad_toggled, NULL);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_persistent_keypad")), persistent_keypad);
 		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_persistent_keypad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_persistent_keypad_toggled, NULL);
 	}
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_persistent_keypad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_persistent_keypad_toggled, NULL);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_persistent_keypad")), persistent_keypad);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_persistent_keypad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_persistent_keypad_toggled, NULL);
 	if(persistent_keypad) gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_keypad_lock")), "changes-prevent-symbolic", GTK_ICON_SIZE_BUTTON);
 	else gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_keypad_lock")), "changes-allow-symbolic", GTK_ICON_SIZE_BUTTON);
+	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)));
 }
 void on_expander_keypad_expanded(GObject *o, GParamSpec*, gpointer) {
-	if(persistent_keypad) {
-		if(!gtk_expander_get_expanded(GTK_EXPANDER(o))) {
-			persistent_keypad = false;
-			update_persistent_keypad();
-		}
-	} else if(gtk_expander_get_expanded(GTK_EXPANDER(o))) {
+	if(gtk_expander_get_expanded(GTK_EXPANDER(o))) {
 		show_keypad_widget(true);
-		if(gtk_expander_get_expanded(GTK_EXPANDER(expander_history))) {
-			gtk_expander_set_expanded(GTK_EXPANDER(expander_history), FALSE);
-		} else if(gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) {
-			gtk_expander_set_expanded(GTK_EXPANDER(expander_stack), FALSE);
-		} else if(gtk_expander_get_expanded(GTK_EXPANDER(expander_convert))) {
-			gtk_expander_set_expanded(GTK_EXPANDER(expander_convert), FALSE);
+		if(!persistent_keypad) {
+			if(gtk_expander_get_expanded(GTK_EXPANDER(expander_history))) {
+				gtk_expander_set_expanded(GTK_EXPANDER(expander_history), FALSE);
+			} else if(gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) {
+				gtk_expander_set_expanded(GTK_EXPANDER(expander_stack), FALSE);
+			} else if(gtk_expander_get_expanded(GTK_EXPANDER(expander_convert))) {
+				gtk_expander_set_expanded(GTK_EXPANDER(expander_convert), FALSE);
+			}
 		}
 	} else {
 		show_keypad_widget(false);
@@ -15365,6 +15379,42 @@ void on_expander_convert_expanded(GObject *o, GParamSpec*, gpointer) {
 		}
 	} else if(!gtk_expander_get_expanded(GTK_EXPANDER(expander_history)) && !gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) {
 		show_tabs(false);
+	}
+}
+
+gboolean do_minimal_mode_timeout(gpointer) {
+	gtk_widget_set_size_request(tabs, -1, -1);
+	return FALSE;
+}
+void set_minimal_mode(bool b) {
+	minimal_mode = b;
+	if(minimal_mode) {
+		if(gtk_expander_get_expanded(GTK_EXPANDER(expander_history)) || gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) || gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) {
+			gint h = gtk_widget_get_allocated_height(tabs);
+			if(h > 10) history_height = h;
+		}
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
+		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")));
+		if(expression_is_empty() || !displayed_mstruct) {
+			clearresult();
+		} else {
+			gint w = 0;
+			gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, NULL);
+			gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), w, 1);
+		}
+	} else {
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")));
+		if(history_height > 0 && (gtk_expander_get_expanded(GTK_EXPANDER(expander_history)) || gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) || gtk_expander_get_expanded(GTK_EXPANDER(expander_stack)))) {
+			gtk_widget_set_size_request(tabs, -1, history_height);
+		}
+		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
+		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
+		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "grid_result")));
+		if(history_height > 0 && (gtk_expander_get_expanded(GTK_EXPANDER(expander_history)) || gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) || gtk_expander_get_expanded(GTK_EXPANDER(expander_stack)))) {
+			gdk_threads_add_timeout(500, do_minimal_mode_timeout, NULL);
+
+		}
 	}
 }
 
@@ -15719,6 +15769,7 @@ void load_preferences() {
 	show_stack = true;
 	show_convert = false;
 	persistent_keypad = false;
+	minimal_mode = false;
 	continuous_conversion = true;
 	set_missing_prefixes = false;
 	load_global_defs = true;
@@ -15759,7 +15810,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {3, 8, 0};
+	int version_numbers[] = {3, 9, 0};
 	bool old_history_format = false;
 
 	if(file) {
@@ -15858,6 +15909,8 @@ void load_preferences() {
 					show_convert = v;
 				} else if(svar == "persistent_keypad") {
 					persistent_keypad = v;
+				} else if(svar == "minimal_mode") {
+					minimal_mode = v;
 				} else if(svar == "continuous_conversion") {
 					continuous_conversion = v;
 				} else if(svar == "set_missing_prefixes") {
@@ -16431,6 +16484,9 @@ void load_preferences() {
 					char str[svalue.length()];
 					keyboard_shortcut ks;
 					int n = sscanf(svalue.c_str(), "%u:%u:%i:%s", &ks.key, &ks.modifier, &ks.type, str);
+					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 9)) {
+						if(ks.type >= SHORTCUT_TYPE_MINIMAL) ks.type++;
+					}
 					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 8)) {
 						if(ks.type >= SHORTCUT_TYPE_FLOATING_POINT) ks.type++;
 					}
@@ -16575,6 +16631,7 @@ void load_preferences() {
 		ADD_SHORTCUT(GDK_KEY_k, GDK_MOD1_MASK, SHORTCUT_TYPE_KEYPAD, "")
 		ADD_SHORTCUT(GDK_KEY_h, GDK_CONTROL_MASK, SHORTCUT_TYPE_HISTORY, "")
 		ADD_SHORTCUT(GDK_KEY_h, GDK_MOD1_MASK, SHORTCUT_TYPE_HISTORY, "")
+		ADD_SHORTCUT(GDK_KEY_Escape, GDK_CONTROL_MASK, SHORTCUT_TYPE_MINIMAL, "")
 		ADD_SHORTCUT(GDK_KEY_o, GDK_CONTROL_MASK, SHORTCUT_TYPE_CONVERSION, "")
 		ADD_SHORTCUT(GDK_KEY_o, GDK_MOD1_MASK, SHORTCUT_TYPE_CONVERSION, "")
 		ADD_SHORTCUT(GDK_KEY_t, GDK_CONTROL_MASK, SHORTCUT_TYPE_CONVERT_ENTRY, "")
@@ -16589,15 +16646,20 @@ void load_preferences() {
 		ADD_SHORTCUT(GDK_KEY_c, GDK_CONTROL_MASK | GDK_SHIFT_MASK, SHORTCUT_TYPE_RPN_COPY, "")
 		ADD_SHORTCUT(GDK_KEY_Delete, GDK_CONTROL_MASK, SHORTCUT_TYPE_RPN_DELETE, "")
 		ADD_SHORTCUT(GDK_KEY_Delete, GDK_CONTROL_MASK | GDK_SHIFT_MASK, SHORTCUT_TYPE_RPN_CLEAR, "")
+	} else if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 9)) {
+		keyboard_shortcut ks;
+		ks.key = GDK_KEY_Escape; ks.modifier = GDK_CONTROL_MASK; ks.type = SHORTCUT_TYPE_MINIMAL; ks.value = "";
+		if(keyboard_shortcuts.find((guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier) == keyboard_shortcuts.end()) {
+			keyboard_shortcuts[(guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier] = ks;
+		}
 	}
 	update_message_print_options();
 	displayed_printops = printops;
 	displayed_caf = complex_angle_form;
 	initial_inhistory_index = inhistory.size() - 1;
 	g_free(gstr_file);
-	if(persistent_keypad) show_keypad = false;
-	show_history = show_history && !show_keypad;
-	show_convert = show_convert && !show_history && !show_keypad;
+	show_history = show_history && (persistent_keypad || !show_keypad);
+	show_convert = show_convert && !show_history && (persistent_keypad || !show_keypad);
 	set_saved_mode();
 
 }
@@ -16689,13 +16751,14 @@ void save_preferences(bool mode) {
 		fprintf(file, "last_version_check=%s\n", last_version_check_date.toISOString().c_str());
 		if(!last_found_version.empty()) fprintf(file, "last_found_version=%s\n", last_found_version.c_str());
 	}
-	if(!persistent_keypad) fprintf(file, "show_keypad=%i\n", (rpn_mode && show_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad)));
+	fprintf(file, "show_keypad=%i\n", (rpn_mode && show_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad)));
 	fprintf(file, "show_history=%i\n", (rpn_mode && show_history && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_history)));
 	h = gtk_widget_get_allocated_height(tabs);
 	fprintf(file, "history_height=%i\n", h > 10 ? h : history_height);
 	fprintf(file, "show_stack=%i\n", rpn_mode ? gtk_expander_get_expanded(GTK_EXPANDER(expander_stack)) : show_stack);
 	fprintf(file, "show_convert=%i\n", (rpn_mode && show_convert && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)));
 	fprintf(file, "persistent_keypad=%i\n", persistent_keypad);
+	fprintf(file, "minimal_mode=%i\n", minimal_mode);
 	fprintf(file, "continuous_conversion=%i\n", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion"))));
 	fprintf(file, "set_missing_prefixes=%i\n", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))));
 	fprintf(file, "rpn_keys=%i\n", rpn_keys);
@@ -17190,6 +17253,13 @@ gchar *font_name_to_css(const char *font_name) {
 extern "C" {
 #endif
 
+void on_button_minimal_mode_clicked(GtkButton*, gpointer) {
+	set_minimal_mode(false);
+}
+void on_menu_item_minimal_mode_activate(GtkMenuItem*, gpointer) {
+	set_minimal_mode(true);
+}
+
 void on_button_bin_toggled(GtkToggleButton *w, gpointer);
 void on_button_oct_toggled(GtkToggleButton *w, gpointer);
 void on_button_dec_toggled(GtkToggleButton *w, gpointer);
@@ -17680,12 +17750,38 @@ gboolean on_preferences_update_exchange_rates_spin_button_output(GtkSpinButton *
 }
 void on_preferences_checkbutton_persistent_keypad_toggled(GtkToggleButton *w, gpointer) {
 	persistent_keypad = gtk_toggle_button_get_active(w);
-	update_persistent_keypad();
+	update_persistent_keypad(true);
 }
 gboolean on_image_keypad_lock_button_release_event(GtkWidget*, GdkEvent*, gpointer) {
 	persistent_keypad = !persistent_keypad;
-	update_persistent_keypad();
+	update_persistent_keypad(false);
 	return TRUE;
+}
+void on_popup_menu_item_persistent_keypad_toggled(GtkCheckMenuItem *w, gpointer) {
+	persistent_keypad = gtk_check_menu_item_get_active(w);
+	update_persistent_keypad(true);
+}
+gboolean on_image_keypad_lock_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
+	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS && event->button != 1) {
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_expander_keypad")), (GdkEvent*) event);
+#else
+		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_expander_keypad")), NULL, NULL, NULL, NULL, event->button, event->time);
+#endif
+		return TRUE;
+	}
+	return FALSE;
+}
+gboolean on_expander_keypad_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
+	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_expander_keypad")), (GdkEvent*) event);
+#else
+		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_expander_keypad")), NULL, NULL, NULL, NULL, event->button, event->time);
+#endif
+		return TRUE;
+	}
+	return FALSE;
 }
 void on_preferences_checkbutton_check_version_toggled(GtkToggleButton *w, gpointer) {
 	check_version = gtk_toggle_button_get_active(w);
@@ -19422,7 +19518,7 @@ void do_completion() {
 gboolean do_completion_timeout(gpointer) {
 	if(!completion_blocked) do_completion();
 	completion_timeout_id = 0;
-	return false;
+	return FALSE;
 }
 void on_expressionbuffer_changed(GtkTextBuffer*, gpointer) {
 	if(completion_timeout_id != 0) {
@@ -20170,7 +20266,12 @@ void insert_bitwise_not() {
 	insert_text("~");
 }
 
+void history_operator(string str_sign);
 void on_button_add_clicked(GtkButton*, gpointer) {
+	if(persistent_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_history)) && gtk_tree_selection_count_selected_rows(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview))) > 0) {
+		history_operator(expression_add_sign());
+		return;
+	}
 	if(rpn_mode) {
 		calculateRPN(OPERATION_ADD);
 		return;
@@ -20182,6 +20283,10 @@ void on_button_add_clicked(GtkButton*, gpointer) {
 }
 
 void on_button_sub_clicked(GtkButton*, gpointer) {
+	if(persistent_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_history)) && gtk_tree_selection_count_selected_rows(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview))) > 0) {
+		history_operator(expression_sub_sign());
+		return;
+	}
 	if(rpn_mode) {
 		calculateRPN(OPERATION_SUBTRACT);
 		return;
@@ -20192,6 +20297,10 @@ void on_button_sub_clicked(GtkButton*, gpointer) {
 	insert_text(expression_sub_sign());
 }
 void on_button_times_clicked(GtkButton*, gpointer) {
+	if(persistent_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_history)) && gtk_tree_selection_count_selected_rows(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview))) > 0) {
+		history_operator(expression_times_sign());
+		return;
+	}
 	if(rpn_mode) {
 		calculateRPN(OPERATION_MULTIPLY);
 		return;
@@ -20202,6 +20311,10 @@ void on_button_times_clicked(GtkButton*, gpointer) {
 	insert_text(expression_times_sign());
 }
 void on_button_divide_clicked(GtkButton*, gpointer) {
+	if(persistent_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_history)) && gtk_tree_selection_count_selected_rows(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview))) > 0) {
+		history_operator(expression_divide_sign());
+		return;
+	}
 	if(rpn_mode) {
 		calculateRPN(OPERATION_DIVIDE);
 		return;
@@ -20227,6 +20340,10 @@ void on_button_exp_clicked(GtkButton*, gpointer) {
 	}
 }
 void on_button_xy_clicked(GtkButton*, gpointer) {
+	if(persistent_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_history)) && gtk_tree_selection_count_selected_rows(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview))) > 0) {
+		history_operator("^");
+		return;
+	}
 	if(rpn_mode) {
 		calculateRPN(OPERATION_RAISE);
 		return;
@@ -20440,6 +20557,8 @@ void history_operator(string str_sign) {
 		add_to_undo = true;
 		execute_expression();
 	}
+	
+	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)));
 
 }
 
@@ -20523,6 +20642,7 @@ void on_button_history_insert_value_clicked(GtkButton*, gpointer) {
 	} else {
 		insert_text(str.c_str());
 	}
+	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)));
 }
 void on_button_history_insert_text_clicked(GtkButton*, gpointer) {
 	if(b_busy) return;
@@ -20533,6 +20653,7 @@ void on_button_history_insert_text_clicked(GtkButton*, gpointer) {
 	if(index > 0 && ((inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION && (inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT || inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT_APPROXIMATE)) || inhistory_type[index] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[index] == QALCULATE_HISTORY_REGISTER_MOVED)) index--;
 	else if((size_t) index < inhistory_type.size() - 1 && HISTORY_IS_PARSE(index) && inhistory_type[index + 1] == QALCULATE_HISTORY_EXPRESSION) index++;
 	insert_text(inhistory[index].c_str());
+	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)));
 }
 void on_button_history_insert_parsed_text_clicked(GtkButton*, gpointer) {
 	if(b_busy) return;
@@ -20543,6 +20664,7 @@ void on_button_history_insert_parsed_text_clicked(GtkButton*, gpointer) {
 	if(index > 0 && ((inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION && (inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT || inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT_APPROXIMATE)) || inhistory_type[index] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[index] == QALCULATE_HISTORY_REGISTER_MOVED)) index--;
 	else if(index > 0 && inhistory_type[index] == QALCULATE_HISTORY_EXPRESSION && HISTORY_IS_PARSE(index - 1)) index--;
 	insert_text(inhistory[index].c_str());
+	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)));
 }
 void history_copy(bool full_text) {
 	if(b_busy) return;
@@ -20636,6 +20758,7 @@ void history_copy(bool full_text) {
 		}
 		gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), str.c_str(), -1);
 	}
+	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)));
 }
 void on_button_history_copy_clicked(GtkButton*, gpointer) {
 	history_copy(false);
@@ -20775,6 +20898,7 @@ void on_popup_menu_item_history_movetotop_activate(GtkMenuItem*, gpointer) {
 	on_expressionbuffer_changed(expressionbuffer, NULL);
 	reload_history(hindex2);
 	g_list_free_full(selected_list, (GDestroyNotify) gtk_tree_path_free);
+	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)));
 }
 void on_popup_menu_item_history_delete_activate(GtkMenuItem*, gpointer) {
 	if(b_busy) return;
@@ -21091,6 +21215,7 @@ void on_popup_menu_item_history_bookmark_activate(GtkMenuItem *w, gpointer) {
 			}
 			gtk_list_store_remove(historystore, &iter);
 			on_expressionbuffer_changed(expressionbuffer, NULL);
+			if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)));
 		}
 		g_list_free_full(selected_list, (GDestroyNotify) gtk_tree_path_free);
 	} else {
@@ -21128,6 +21253,7 @@ void on_popup_menu_item_history_bookmark_activate(GtkMenuItem *w, gpointer) {
 			}
 			if(!history_message.empty()) {
 				add_history_bookmark(history_message);
+				if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)));
 			}
 		}
 		gtk_widget_destroy(dialog);
@@ -21202,15 +21328,18 @@ void on_popup_menu_item_history_protect_toggled(GtkCheckMenuItem *w, gpointer) {
 		current_selected_list = current_selected_list->next;
 	}
 	g_list_free_full(selected_list, (GDestroyNotify) gtk_tree_path_free);
+	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)));
 }
 void on_popup_menu_history_bookmark_update_activate(GtkMenuItem*, gpointer data) {
 	remove_history_bookmark(gtk_menu_item_get_label(GTK_MENU_ITEM(data)));
 	add_history_bookmark(gtk_menu_item_get_label(GTK_MENU_ITEM(data)));
 	gtk_menu_popdown(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_historyview")));
+	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)));
 }
 void on_popup_menu_history_bookmark_delete_activate(GtkMenuItem*, gpointer data) {
 	remove_history_bookmark(gtk_menu_item_get_label(GTK_MENU_ITEM(data)));
 	gtk_menu_popdown(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_historyview")));
+	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)));
 }
 
 gulong on_popup_menu_history_bookmark_update_activate_handler = 0, on_popup_menu_history_bookmark_delete_activate_handler = 0;
@@ -21503,6 +21632,7 @@ void on_historyview_row_activated(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 			}
 		}
 	}
+	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)));
 }
 
 void on_menu_item_manage_variables_activate(GtkMenuItem*, gpointer) {
@@ -27168,6 +27298,10 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 			}
 			case SHORTCUT_TYPE_STACK: {
 				gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_stack")), !gtk_expander_get_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_stack"))));
+				return true;
+			}
+			case SHORTCUT_TYPE_MINIMAL: {
+				set_minimal_mode(!minimal_mode);
 				return true;
 			}
 			case SHORTCUT_TYPE_MANAGE_VARIABLES: {
