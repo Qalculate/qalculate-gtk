@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "3.8.0">
-  <!ENTITY manrevision "3.8.0">
-  <!ENTITY date "Mars 2020">
+  <!ENTITY appversion "3.9.0">
+  <!ENTITY manrevision "3.9.0">
+  <!ENTITY date "April 2020">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -75,7 +75,7 @@ Although use of &app; for simple calculations should be natural and self-explana
 	</screenshot>
 </figure>
 <para>
-	The main window provides a menu bar, the expression entry, the result display and a calculator keypad, history and conversion view (see <xref linkend="qalculate-unit-conversion"/>) which can be shown/hidden by clicking on <guilabel>Keypad</guilabel>, <guilabel>History</guilabel> and <guilabel>Conversion</guilabel>, respectively. When non-default options for the interpretion of expressions have been selected, the choice will be indicated in a small status area below the expression entry, to the right.
+The main window provides a menu bar, the expression entry, the result display and a calculator keypad, history and conversion view (see <xref linkend="qalculate-unit-conversion"/>) which can be shown/hidden by clicking on <guilabel>Keypad</guilabel>, <guilabel>History</guilabel> and <guilabel>Conversion</guilabel>, respectively. When non-default options for the interpretion of expressions have been selected, the choice will be indicated in a small status area below the expression entry, to the right.
 </para>
 </sect1>
 <sect1 id="qalculate-expression-entry">
@@ -142,11 +142,14 @@ The keypad provides access to a simple traditional number pad and as well as mor
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/calculator-buttons.png" format="PNG" width="676"/>
+				<imagedata fileref="figures/calculator-buttons.png" format="PNG" width="665"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
 </figure>
+</para>
+<para>
+Click on the padlock icon to enable/disable persistent keypad, which makes it possible to display the keypad and the history simultaneously (the keypad view will be independent of the other views).
 </para>
 <para>
 The top buttons (from left to right) switches between the general keypad and the programming keypad (affects the buttons on the top on the left side, see <xref linkend="qalculate-TBL-programming-keypad"/>), switches between exact and approximate calculation, changes rational number form, selects display mode and selects number base in result (see <xref linkend="qalculate-mode"/>).
@@ -758,6 +761,20 @@ The to right of the list are also buttons for mathematical operations. These act
 Additional actions are available in the context menu of the history list. This includes options to copy the full text of one or multiple entries, delete or move entries, to clear the whole list, and to bookmark and/or protect entries from deletion when the list becomes too long or is cleared.
 </para>
 </sect1>
+<sect1 id="minimal-window">
+<title>Minimal Window</title>
+<para>It is possible to minimize the footprint of the calculator window using <menuchoice><guimenu>File</guimenu><guimenuitem>Minimal Window</guimenuitem></menuchoice> or <keycombo><keycap>Ctrl</keycap><keycap>Space</keycap></keycombo>. This will hide everything but the expression entry and the equals button. The window is expanded to reveal to result, but the result display stays hidden while empty. Restore the window using the keyboard shortcut or the lower right button.</para>
+<figure id="qalculate-FIG-minimal-window">
+	<title>Minimal Window</title>
+	<screenshot>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="figures/minimal-window.png" format="PNG" width="336"/>
+			</imageobject>
+		</mediaobject>
+	</screenshot>
+</figure>
+</sect1>
 <sect1 id="qalculate-menus">
 <title>Menu Bar</title>
 <para>
@@ -774,7 +791,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 				<entry colname="COLSPEC1"><para>Description</para></entry>
 			</row>
 		</thead> 
-                <tbody>
+		<tbody>
 			<row valign="top">
 				<entry><para>New</para></entry>
 				<entry><para>Submenu for creation of new objects. See <xref linkend="qalculate-TBL-new-menu"/>.</para></entry>
@@ -826,6 +843,10 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			<row valign="top">
 				<entry><para>Periodic Table</para></entry>
 				<entry><para>Shows a periodic table, with property values which can be inserted in the expression, in a new window.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>Minimal Window (<keycombo><keycap>Ctrl</keycap><keycap>Space</keycap></keycombo>)</para></entry>
+				<entry><para>Hides everything but the expression entry, the result (when not empty), and the equals button.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Quit (<keycombo><keycap>Ctrl</keycap><keycap>Q</keycap></keycombo>)</para></entry>

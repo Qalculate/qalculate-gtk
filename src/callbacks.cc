@@ -228,6 +228,9 @@ extern GtkAccelGroup *accel_group;
 
 extern gint win_height, win_width, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
 
+gint minimal_width;
+bool minimal_width_set;
+
 vector<string> expression_history;
 int expression_history_index = -1;
 bool dont_change_index = false;
@@ -15393,16 +15396,21 @@ void set_minimal_mode(bool b) {
 			gint h = gtk_widget_get_allocated_height(tabs);
 			if(h > 10) history_height = h;
 		}
+		gint w = 0, h = 1;
+		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
+		if(!minimal_width_set) {
+			minimal_width = w;
+		}
+		h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
+		h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")));
 		if(expression_is_empty() || !displayed_mstruct) {
+			h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "grid_result")));
 			clearresult();
-		} else {
-			gint w = 0;
-			gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, NULL);
-			gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), w, 1);
 		}
+		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), minimal_width, h);
 	} else {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")));
 		if(history_height > 0 && (gtk_expander_get_expanded(GTK_EXPANDER(expander_history)) || gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) || gtk_expander_get_expanded(GTK_EXPANDER(expander_stack)))) {
@@ -15745,6 +15753,8 @@ void load_preferences() {
 	help_width = -1;
 	help_height = -1;
 	help_zoom = -1.0;
+	minimal_width_set = false;
+	minimal_width = 0;
 	history_height = 0;
 	save_mode_on_exit = true;
 	save_defs_on_exit = true;
@@ -15903,6 +15913,9 @@ void load_preferences() {
 					show_history = v;
 				} else if(svar == "history_height") {
 					history_height = v;
+				} else if(svar == "minimal_width") {
+					minimal_width = v;
+					minimal_width_set = true;
 				} else if(svar == "show_stack") {
 					show_stack = v;
 				} else if(svar == "show_convert") {
@@ -16631,7 +16644,7 @@ void load_preferences() {
 		ADD_SHORTCUT(GDK_KEY_k, GDK_MOD1_MASK, SHORTCUT_TYPE_KEYPAD, "")
 		ADD_SHORTCUT(GDK_KEY_h, GDK_CONTROL_MASK, SHORTCUT_TYPE_HISTORY, "")
 		ADD_SHORTCUT(GDK_KEY_h, GDK_MOD1_MASK, SHORTCUT_TYPE_HISTORY, "")
-		ADD_SHORTCUT(GDK_KEY_Escape, GDK_CONTROL_MASK, SHORTCUT_TYPE_MINIMAL, "")
+		ADD_SHORTCUT(GDK_KEY_space, GDK_CONTROL_MASK, SHORTCUT_TYPE_MINIMAL, "")
 		ADD_SHORTCUT(GDK_KEY_o, GDK_CONTROL_MASK, SHORTCUT_TYPE_CONVERSION, "")
 		ADD_SHORTCUT(GDK_KEY_o, GDK_MOD1_MASK, SHORTCUT_TYPE_CONVERSION, "")
 		ADD_SHORTCUT(GDK_KEY_t, GDK_CONTROL_MASK, SHORTCUT_TYPE_CONVERT_ENTRY, "")
@@ -16648,7 +16661,7 @@ void load_preferences() {
 		ADD_SHORTCUT(GDK_KEY_Delete, GDK_CONTROL_MASK | GDK_SHIFT_MASK, SHORTCUT_TYPE_RPN_CLEAR, "")
 	} else if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 9)) {
 		keyboard_shortcut ks;
-		ks.key = GDK_KEY_Escape; ks.modifier = GDK_CONTROL_MASK; ks.type = SHORTCUT_TYPE_MINIMAL; ks.value = "";
+		ks.key = GDK_KEY_space; ks.modifier = GDK_CONTROL_MASK; ks.type = SHORTCUT_TYPE_MINIMAL; ks.value = "";
 		if(keyboard_shortcuts.find((guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier) == keyboard_shortcuts.end()) {
 			keyboard_shortcuts[(guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier] = ks;
 		}
@@ -16755,6 +16768,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "show_history=%i\n", (rpn_mode && show_history && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_history)));
 	h = gtk_widget_get_allocated_height(tabs);
 	fprintf(file, "history_height=%i\n", h > 10 ? h : history_height);
+	if(minimal_width_set) fprintf(file, "minimal_width=%i\n", minimal_width);
 	fprintf(file, "show_stack=%i\n", rpn_mode ? gtk_expander_get_expanded(GTK_EXPANDER(expander_stack)) : show_stack);
 	fprintf(file, "show_convert=%i\n", (rpn_mode && show_convert && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)));
 	fprintf(file, "persistent_keypad=%i\n", persistent_keypad);
@@ -27379,6 +27393,14 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 		}
 	}
 	return false;
+}
+
+gboolean on_configure_event(GtkWidget*, GdkEventConfigure *event, gpointer) {
+	if(minimal_mode && event->width != minimal_width) {
+		minimal_width = event->width;
+		minimal_width_set = true;
+	}
+	return FALSE;
 }
 
 gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
