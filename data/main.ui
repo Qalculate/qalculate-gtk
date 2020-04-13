@@ -2676,10 +2676,10 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                         <property name="use_underline">True</property>
                         <signal name="clicked" handler="on_button_minimal_mode_clicked" swapped="no"/>
                         <child>
-                          <object class="GtkImage">
+                          <object class="GtkImage" id="image_minimal_mode">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="icon_name">view-restore</property>
+                            <property name="icon_name">view-fullscreen-symbolic</property>
                           </object>
                         </child>
                       </object>
@@ -2734,7 +2734,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                               <placeholder/>
                             </child>
                             <child type="label">
-                              <object class="GtkLabel" id="label3">
+                              <object class="GtkLabel" id="label_keypad">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">_Keypad</property>
@@ -3711,7 +3711,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                       <object class="GtkGrid" id="convert">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="border_width">6</property>
                         <property name="row_spacing">12</property>
                         <property name="column_spacing">6</property>
                         <child>
@@ -3888,7 +3887,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="can_focus">False</property>
                             <property name="halign">end</property>
                             <property name="row_spacing">6</property>
-                            <property name="column_spacing">6</property>
+                            <property name="column_spacing">12</property>
                             <child>
                               <object class="GtkCheckButton" id="convert_button_continuous_conversion">
                                 <property name="label" translatable="yes">Continuous conversion</property>

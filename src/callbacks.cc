@@ -229,7 +229,6 @@ extern GtkAccelGroup *accel_group;
 extern gint win_height, win_width, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
 
 gint minimal_width;
-bool minimal_width_set;
 
 vector<string> expression_history;
 int expression_history_index = -1;
@@ -15269,6 +15268,10 @@ void show_keypad_widget(bool do_show) {
 	gint w, h;
 	gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
 	if(!persistent_keypad && gtk_widget_get_visible(tabs)) h -= gtk_widget_get_allocated_height(tabs) + 6;
+	if(persistent_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_convert))) {
+		if(do_show) h += 6;
+		else h -= 6;
+	}
 	if(do_show) {
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
 		gint a_h = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
@@ -15309,8 +15312,11 @@ void update_persistent_keypad(bool showhide_buttons = false) {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_persistent_keypad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_persistent_keypad_toggled, NULL);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_persistent_keypad")), persistent_keypad);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_persistent_keypad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_persistent_keypad_toggled, NULL);
-	if(persistent_keypad) gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_keypad_lock")), "changes-prevent-symbolic", GTK_ICON_SIZE_BUTTON);
-	else gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_keypad_lock")), "changes-allow-symbolic", GTK_ICON_SIZE_BUTTON);
+	GtkRequisition req;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_keypad")), &req, NULL);
+	gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_keypad_lock")), persistent_keypad ? "changes-prevent-symbolic" : "changes-allow-symbolic", GTK_ICON_SIZE_BUTTON);
+	if(req.height < 20) gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_keypad_lock")), req.height * 0.8);
+	if(showhide_buttons) gtk_widget_set_margin_bottom(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert")), persistent_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) ? 6 : 0);
 	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)));
 }
 void on_expander_keypad_expanded(GObject *o, GParamSpec*, gpointer) {
@@ -15328,6 +15334,7 @@ void on_expander_keypad_expanded(GObject *o, GParamSpec*, gpointer) {
 	} else {
 		show_keypad_widget(false);
 	}
+	if(persistent_keypad) gtk_widget_set_margin_bottom(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert")), gtk_expander_get_expanded(GTK_EXPANDER(o)) ? 6 : 0);
 }
 void on_expander_history_expanded(GObject *o, GParamSpec*, gpointer) {
 	if(gtk_expander_get_expanded(GTK_EXPANDER(o))) {
@@ -15398,9 +15405,7 @@ void set_minimal_mode(bool b) {
 		}
 		gint w = 0, h = 1;
 		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
-		if(!minimal_width_set) {
-			minimal_width = w;
-		}
+		win_width = w;
 		h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
 		h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
@@ -15410,12 +15415,16 @@ void set_minimal_mode(bool b) {
 			h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "grid_result")));
 			clearresult();
 		}
-		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), minimal_width, h);
+		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), minimal_width > 0 ? minimal_width : win_width, h);
+		gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), TRUE);
+		gtk_widget_set_vexpand(resultview, FALSE);
 	} else {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")));
 		if(history_height > 0 && (gtk_expander_get_expanded(GTK_EXPANDER(expander_history)) || gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) || gtk_expander_get_expanded(GTK_EXPANDER(expander_stack)))) {
 			gtk_widget_set_size_request(tabs, -1, history_height);
 		}
+		gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), FALSE);
+		gtk_widget_set_vexpand(resultview, !gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons"))) && !gtk_widget_get_visible(tabs));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "grid_result")));
@@ -15423,6 +15432,9 @@ void set_minimal_mode(bool b) {
 			gdk_threads_add_timeout(500, do_minimal_mode_timeout, NULL);
 
 		}
+		gint h = 1;
+		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), NULL, &h);
+		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width, h);
 	}
 }
 
@@ -15753,7 +15765,6 @@ void load_preferences() {
 	help_width = -1;
 	help_height = -1;
 	help_zoom = -1.0;
-	minimal_width_set = false;
 	minimal_width = 0;
 	history_height = 0;
 	save_mode_on_exit = true;
@@ -15915,7 +15926,6 @@ void load_preferences() {
 					history_height = v;
 				} else if(svar == "minimal_width") {
 					minimal_width = v;
-					minimal_width_set = true;
 				} else if(svar == "show_stack") {
 					show_stack = v;
 				} else if(svar == "show_convert") {
@@ -16728,8 +16738,12 @@ void save_preferences(bool mode) {
 	fprintf(file, "version=%s\n", VERSION);
 	fprintf(file, "allow_multiple_instances=%i\n", allow_multiple_instances);
 	if(title_type != TITLE_APP) fprintf(file, "window_title_mode=%i\n", title_type);
-	gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
-	fprintf(file, "width=%i\n", w);
+	if(minimal_width > 0 && minimal_mode) {
+		fprintf(file, "width=%i\n", win_width);
+	} else {
+		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
+		fprintf(file, "width=%i\n", w);
+	}
 	//fprintf(file, "height=%i\n", h);
 	if(variables_width > -1) fprintf(file, "variables_width=%i\n", variables_width);
 	if(variables_height > -1) fprintf(file, "variables_height=%i\n", variables_height);
@@ -16768,7 +16782,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "show_history=%i\n", (rpn_mode && show_history && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_history)));
 	h = gtk_widget_get_allocated_height(tabs);
 	fprintf(file, "history_height=%i\n", h > 10 ? h : history_height);
-	if(minimal_width_set) fprintf(file, "minimal_width=%i\n", minimal_width);
+	if(minimal_width > 0) fprintf(file, "minimal_width=%i\n", minimal_width);
 	fprintf(file, "show_stack=%i\n", rpn_mode ? gtk_expander_get_expanded(GTK_EXPANDER(expander_stack)) : show_stack);
 	fprintf(file, "show_convert=%i\n", (rpn_mode && show_convert && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)));
 	fprintf(file, "persistent_keypad=%i\n", persistent_keypad);
@@ -27396,9 +27410,8 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 }
 
 gboolean on_configure_event(GtkWidget*, GdkEventConfigure *event, gpointer) {
-	if(minimal_mode && event->width != minimal_width) {
+	if(minimal_mode && event->width != win_width) {
 		minimal_width = event->width;
-		minimal_width_set = true;
 	}
 	return FALSE;
 }

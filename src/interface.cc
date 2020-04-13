@@ -186,6 +186,7 @@ extern vector<GtkWidget*> popup_result_mode_items;
 extern deque<string> expression_undo_buffer;
 
 gint win_height, win_width, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
+extern gint minimal_width;
 
 extern Unit *latest_button_unit, *latest_button_currency;
 extern string latest_button_unit_pre, latest_button_currency_pre;
@@ -1288,7 +1289,11 @@ void create_main_window(void) {
 			gtk_widget_set_vexpand(resultview, FALSE);
 		}
 		gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_keypad_lock")), "changes-prevent-symbolic", GTK_ICON_SIZE_BUTTON);
+		if(show_convert) gtk_widget_set_margin_bottom(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert")), 6);
 	}
+	GtkRequisition req;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_keypad")), &req, NULL);
+	if(req.height < 20) gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_keypad_lock")), req.height * 0.8);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_persistent_keypad")), persistent_keypad);
 	gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), !persistent_keypad || !gtk_widget_get_visible(tabs));
 	
@@ -1296,6 +1301,8 @@ void create_main_window(void) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "grid_result")));
+		gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), TRUE);
+		gtk_widget_set_vexpand(resultview, FALSE);
 	}
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")), minimal_mode);
 
@@ -1622,7 +1629,8 @@ void create_main_window(void) {
 	set_expression_size_request();
 
 	if(win_height <= 0) gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), NULL, &win_height);
-	if(win_width > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width, win_height);
+	if(minimal_mode && minimal_width > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), minimal_width, win_height);
+	else if(win_width > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width, win_height);
 
 	gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 

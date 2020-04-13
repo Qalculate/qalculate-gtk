@@ -48,6 +48,20 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="3.9.0" date="2020-04-13">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Persistent keypad option, which makes it possible to show the keypad and the history simultaneously (GUI)</li>
+      <li>Minimal window mode, which hides everything but the expression entry and, when not empty, the result (GUI)</li>
+      <li>Optional (disabled by default at compile time) internal help viewer using WebKitGTK (GUI)</li>
+      <li>Fix segfault during calculation of atan(acos(x)), atan(asin(x)), and asin(atan(x)) when angle unit is degrees or gradians</li>
+      <li>Fix order of prime factors</li>
+      <li>Fix immediate closing of plot window if qalc is started in non-interactive mode (persistent parameter added to plot() function)</li>
+      <li>Minor bug fixes and feature improvements</li>
+     </ul>
+   </description>
+  </release>
   <release version="3.8.0" date="2020-03-02">
    <description>
     <p>Changes:</p>

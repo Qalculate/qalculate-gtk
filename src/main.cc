@@ -266,16 +266,13 @@ void create_application(GtkApplication *app) {
 	if(!calc_arg.empty()) {
 		gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_builder_get_object(main_builder, "expressionbuffer")), calc_arg.c_str(), -1);
 		execute_expression();
-	} else if(!first_time) {
+	} else if(!first_time && !minimal_mode) {
 		int base = printops.base;
 		printops.base = 10;
 		setResult(NULL, false, false, false);
 		printops.base = base;
 	}
 	gtk_widget_queue_draw(resultview);
-	if(minimal_mode && calc_arg.empty()) {
-		clearresult();
-	}
 
 	gchar *gstr = g_build_filename(getLocalDir().c_str(), "accelmap", NULL);
 #ifndef _WIN32
