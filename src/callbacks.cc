@@ -6270,33 +6270,44 @@ void draw_background(cairo_t *cr, gint w, gint h) {
 	cairo_fill(cr);*/
 }
 
+#define PAR_SPACE 1
+#define PAR_WIDTH 6 + (PAR_SPACE * 2)
+
 cairo_surface_t *get_left_parenthesis(gint arc_w, gint arc_h, int, GdkRGBA *color) {
 	gint scalefactor = gtk_widget_get_scale_factor(expressiontext);
-	gint par_h = 0, par_w = 0;
-	PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-	pango_layout_set_markup(layout, "<span font=\"100\">(</span>", -1);
-	pango_layout_get_pixel_size(layout, &par_w, &par_h);
 	cairo_surface_t *s = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, arc_w * scalefactor, arc_h * scalefactor);
 	cairo_surface_set_device_scale(s, scalefactor, scalefactor);
 	cairo_t *cr = cairo_create(s);
-	cairo_scale(cr, (double) arc_w / (double) par_w, (double) arc_h / (double) par_h);
 	gdk_cairo_set_source_rgba(cr, color);
-	pango_cairo_show_layout(cr, layout);
+	cairo_save(cr);
+	double hscale = 2;
+	double radius = arc_w - PAR_SPACE * 2;
+	if(radius * 2 * hscale > arc_h - 4) hscale = (arc_h - 4) / (radius * 2.0);
+	cairo_scale(cr, 1, hscale);
+	cairo_arc(cr, radius + PAR_SPACE, (arc_h - 2) / hscale - radius, radius, 1.5708, 3.14159);
+	cairo_arc(cr, radius + PAR_SPACE, radius + 2, radius, 3.14159, 4.71239);
+	cairo_restore(cr);
+	cairo_set_line_width(cr, 2);
+	cairo_stroke(cr);
 	cairo_destroy(cr);
 	return s;
 }
 cairo_surface_t *get_right_parenthesis(gint arc_w, gint arc_h, int, GdkRGBA *color) {
 	gint scalefactor = gtk_widget_get_scale_factor(expressiontext);
-	gint par_h = 0, par_w = 0;
-	PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-	pango_layout_set_markup(layout, "<span font=\"100\">)</span>", -1);
-	pango_layout_get_pixel_size(layout, &par_w, &par_h);
 	cairo_surface_t *s = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, arc_w * scalefactor, arc_h * scalefactor);
 	cairo_surface_set_device_scale(s, scalefactor, scalefactor);
 	cairo_t *cr = cairo_create(s);
-	cairo_scale(cr, (double) arc_w / (double) par_w, (double) arc_h / (double) par_h);
 	gdk_cairo_set_source_rgba(cr, color);
-	pango_cairo_show_layout(cr, layout);
+	cairo_save(cr);
+	double hscale = 2;
+	double radius = arc_w - PAR_SPACE * 2;
+	if(radius * 2 * hscale > arc_h - 4) hscale = (arc_h - 4) / (radius * 2.0);
+	cairo_scale(cr, 1, hscale);
+	cairo_arc(cr, PAR_SPACE, radius + 2, radius, -1.5708, 0);
+	cairo_arc(cr, PAR_SPACE, (arc_h - 2) / hscale - radius, radius, 0, 1.5708);
+	cairo_restore(cr);
+	cairo_set_line_width(cr, 2);
+	cairo_stroke(cr);
 	cairo_destroy(cr);
 	return s;
 }
@@ -7769,10 +7780,11 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				}
 
 				if(dh > uh) uh = dh;
+				if(uh > dh) dh = uh;
 				h = uh + dh;
 				central_point = dh;
 				arc_h = dh * 2;
-				arc_w = (int) ::sqrt((double) arc_h * 3);
+				arc_w = PAR_WIDTH;
 				w += arc_w * 2;
 				w += 1;
 
@@ -8287,12 +8299,13 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				}
 
 				if(dh > uh) uh = dh;
+				if(uh > dh) dh = uh;
 				h = uh + dh;
 				central_point = dh;
 				arc_h = dh * 2;
-				arc_w = (int) ::sqrt((double) arc_h * 3);
+				arc_w = PAR_WIDTH;
 				w += arc_w * 2;
-				w += 1;
+				w += 2;
 
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
@@ -8303,6 +8316,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				cairo_move_to(cr, w, uh - function_h / 2 - function_h % 2);
 				pango_cairo_show_layout(cr, layout_function);
 				w += function_w;
+				w += 1;
 				cairo_set_source_surface(cr, get_left_parenthesis(arc_w, arc_h, scaledown, color), w, uh - arc_h / 2 - arc_h % 2);
 				cairo_paint(cr);
 				w += arc_w;
@@ -8360,7 +8374,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 		w = base_w;
 		gint arc_base_h = central_point * 2;
 		if(h < arc_base_h) h = arc_base_h;
-		gint arc_base_w = (int) ::sqrt((double) arc_base_h * 3);
+		gint arc_base_w = PAR_WIDTH;
 		//base_h += 4;
 		//central_point += 2;
 		w += arc_base_w * 2;
