@@ -380,19 +380,19 @@ guint32 current_shortcut_modifier = 0;
 #define TTB(str)			if(scaledown <= 0) {str += "<span size=\"xx-large\">";} else if(scaledown == 1) {str += "<span size=\"x-large\">";} else if(scaledown == 2) {str += "<span size=\"large\">";} else {str += "<span size=\"medium\">";}
 #define TTB_SMALL(str)			if(scaledown <= 0) {str += "<span size=\"large\">";} else if(scaledown == 1) {str += "<span size=\"medium\">";} else if(scaledown == 2) {str += "<span size=\"small\">";} else {str += "<span size=\"x-small\">";}
 #define TTB_XSMALL(str)			if(scaledown <= 0) {str += "<span size=\"medium\">";} else if(scaledown == 1) {str += "<span size=\"small\">";} else {str += "<span size=\"x-small\">";}
-#define TTBP(str)			if(ips.power_depth > 0) {TTB_SMALL(str);} else {TTB(str);}
+#define TTBP(str)			if(ips.power_depth > 1) {TTB_XSMALL(str);} else if(ips.power_depth > 0) {TTB_SMALL(str);} else {TTB(str);}
 #define TTBP_SMALL(str)			if(ips.power_depth > 0) {TTB_XSMALL(str);} else {TTB_SMALL(str);}
 #define TTE(str)			str += "</span>";
 #define TT(str, x)			{if(scaledown <= 0) {str += "<span size=\"xx-large\">";} else if(scaledown == 1) {str += "<span size=\"x-large\">";} else if(scaledown == 2) {str += "<span size=\"large\">";} else {str += "<span size=\"medium\">";} str += x; str += "</span>";}
 #define TT_SMALL(str, x)		{if(scaledown <= 0) {str += "<span size=\"large\">";} else if(scaledown == 1) {str += "<span size=\"medium\">";} else if(scaledown == 2) {str += "<span size=\"small\">";} else {str += "<span size=\"x-small\">";} str += x; str += "</span>";}
 #define TT_XSMALL(str, x)		{if(scaledown <= 0) {str += "<span size=\"medium\">";} else if(scaledown == 1) {str += "<span size=\"small\">";} else {str += "<span size=\"x-small\">";} str += x; str += "</span>";}
-#define TTP(str, x)			if(ips.power_depth > 0) {TT_SMALL(str, x);} else {TT(str, x);}
+#define TTP(str, x)			if(ips.power_depth > 1) {TT_XSMALL(str, x);} else if(ips.power_depth > 0) {TT_SMALL(str, x);} else {TT(str, x);}
 #define TTP_SMALL(str, x)		if(ips.power_depth > 0) {TT_XSMALL(str, x);} else {TT_SMALL(str, x);}
 
 #define PANGO_TT(layout, x)		if(scaledown <= 0) {pango_layout_set_markup(layout, "<span size=\"xx-large\">" x "</span>", -1);} else if(scaledown == 1) {pango_layout_set_markup(layout, "<span size=\"x-large\">" x "</span>", -1);} else if(scaledown == 2) {pango_layout_set_markup(layout, "<span size=\"large\">" x "</span>", -1);} else {pango_layout_set_markup(layout, "<span size=\"medium\">" x "</span>", -1);}
 #define PANGO_TT_SMALL(layout, x)	if(scaledown <= 0) {pango_layout_set_markup(layout, "<span size=\"large\">" x "</span>", -1);} else if(scaledown == 1) {pango_layout_set_markup(layout, "<span size=\"medium\">" x "</span>", -1);} else if(scaledown == 1) {pango_layout_set_markup(layout, "<span size=\"medium\">" x "</span>", -1);} else {pango_layout_set_markup(layout, "<span size=\"x-small\">" x "</span>", -1);}
 #define PANGO_TT_XSMALL(layout, x)	if(scaledown <= 0) {pango_layout_set_markup(layout, "<span size=\"medium\">" x "</span>", -1);} else if(scaledown == 1) {pango_layout_set_markup(layout, "<span size=\"small\">" x "</span>", -1);} else {pango_layout_set_markup(layout, "<span size=\"x-small\">" x "</span>", -1);}
-#define PANGO_TTP(layout, x)		if(ips.power_depth > 0) {PANGO_TT_SMALL(layout, x);} else {PANGO_TT(layout, x);}
+#define PANGO_TTP(layout, x)		if(ips.power_depth > 1) {PANGO_TT_XSMALL(layout, x);} else if(ips.power_depth > 0) {PANGO_TT_SMALL(layout, x);} else {PANGO_TT(layout, x);}
 #define PANGO_TTP_SMALL(layout, x)	if(ips.power_depth > 0) {PANGO_TT_XSMALL(layout, x);} else {PANGO_TT_SMALL(layout, x);}
 
 #define CALCULATE_SPACE_W		gint space_w, space_h; PangoLayout *layout_space = gtk_widget_create_pango_layout(resultview, NULL); PANGO_TTP(layout_space, " "); pango_layout_get_pixel_size(layout_space, &space_w, &space_h); g_object_unref(layout_space);
@@ -1392,10 +1392,10 @@ void set_result_size_request() {
 		cairo_surface_destroy(tmp_surface2);
 		gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), -1, h);
 	}
-	PangoLayout *layout_test = gtk_widget_create_pango_layout(expressiontext, "x");
+	PangoLayout *layout_test = gtk_widget_create_pango_layout(resultview, "x");
 	gint h;
 	pango_layout_get_pixel_size(layout_test, NULL, &h);
-	par_width = h / 2.5;
+	par_width = h / 2.2;
 }
 
 void set_expression_size_request() {
@@ -6275,7 +6275,7 @@ void draw_background(cairo_t *cr, gint w, gint h) {
 }
 
 #define PAR_SPACE 1
-#define PAR_WIDTH (scaledown > 1 ? par_width / 1.7 : (scaledown > 0 ? par_width / 1.4 : par_width)) + (PAR_SPACE * 2)
+#define PAR_WIDTH (scaledown + ips.power_depth > 1 ? par_width / 1.7 : (scaledown + ips.power_depth > 0 ? par_width / 1.4 : par_width)) + (PAR_SPACE * 2)
 
 cairo_surface_t *get_left_parenthesis(gint arc_w, gint arc_h, int, GdkRGBA *color) {
 	gint scalefactor = gtk_widget_get_scale_factor(expressiontext);
@@ -6291,7 +6291,7 @@ cairo_surface_t *get_left_parenthesis(gint arc_w, gint arc_h, int, GdkRGBA *colo
 	cairo_arc(cr, radius + PAR_SPACE, (arc_h - 2) / hscale - radius, radius, 1.8708, 3.14159);
 	cairo_arc(cr, radius + PAR_SPACE, radius + 2, radius, 3.14159, 4.41239);
 	cairo_restore(cr);
-	cairo_set_line_width(cr, 2);
+	cairo_set_line_width(cr, arc_w > 7 ? 2 : 1);
 	cairo_stroke(cr);
 	cairo_destroy(cr);
 	return s;
@@ -6310,7 +6310,7 @@ cairo_surface_t *get_right_parenthesis(gint arc_w, gint arc_h, int, GdkRGBA *col
 	cairo_arc(cr, PAR_SPACE, radius + 2, radius, -1.2708, 0);
 	cairo_arc(cr, PAR_SPACE, (arc_h - 2) / hscale - radius, radius, 0, 1.2708);
 	cairo_restore(cr);
-	cairo_set_line_width(cr, 2);
+	cairo_set_line_width(cr, arc_w > 7 ? 2 : 1);
 	cairo_stroke(cr);
 	cairo_destroy(cr);
 	return s;
@@ -7200,10 +7200,10 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				exp_h = cairo_image_surface_get_height(surface_exp) / scalefactor;
 				h = base_h;
 				w = base_w;
-				if(exp_h < h) {
-					h += exp_h / 3;
+				if(exp_h <= h) {
+					h += exp_h / 5;
 				} else {
-					h += exp_h - base_h / 2;
+					h += exp_h - base_h / 1.5;
 				}
 				w += exp_w;
 
@@ -7817,19 +7817,19 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				}
 
 				if(dh > uh) uh = dh;
-				if(uh > dh) dh = uh;
+				else if(uh > dh) dh = uh;
 				h = uh + dh;
 				central_point = dh;
-				arc_h = dh * 2;
+				arc_h = h;
 				arc_w = PAR_WIDTH;
 				w += arc_w * 2;
 				w += 1;
-				
+
 				int x1 = 0, x2 = 0;
 				if(surface_args.size() == 1) {
 					get_image_blank_width(surface_args[0], cairo_image_surface_get_width(surface_args[0]), cairo_image_surface_get_height(surface_args[0]), &x1, &x2);
 					x1 /= scalefactor;
-					x2 /= scalefactor;
+					x2 = ::ceil(x2 / scalefactor);
 					w -= wpa[0];
 					wpa[0] = x2 - x1;
 					w += wpa[0];
@@ -7838,12 +7838,11 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					x1 /= scalefactor;
 					w -= x1;
 					wpa[0] -= x1;
-					w += wpa[0];
 					int i_last = surface_args.size() - 1;
 					get_image_blank_width(surface_args[i_last], cairo_image_surface_get_width(surface_args[i_last]), cairo_image_surface_get_height(surface_args[i_last]), NULL, &x2);
-					x2 /= scalefactor;
-					wpa[i_last] -= wpa[i_last] - x2;
+					x2 = ::ceil(x2 / scalefactor);
 					w -= wpa[i_last] - x2;
+					wpa[i_last] -= wpa[i_last] - x2;
 				}
 
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
@@ -7851,7 +7850,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				cr = cairo_create(surface);
 
 				w = 0;
-				cairo_set_source_surface(cr, get_left_parenthesis(arc_w, arc_h, scaledown, color), w, 0);
+				cairo_set_source_surface(cr, get_left_parenthesis(arc_w, arc_h, scaledown, color), w, (h - arc_h) / 2);
 				cairo_paint(cr);
 				w += arc_w;
 				if(m.size() == 0) w += 2;
@@ -7870,7 +7869,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					}
 					cairo_surface_destroy(surface_args[index]);
 				}
-				cairo_set_source_surface(cr, get_right_parenthesis(arc_w, arc_h, scaledown, color), w, 0);
+				cairo_set_source_surface(cr, get_right_parenthesis(arc_w, arc_h, scaledown, color), w, (h - arc_h) / 2);
 				cairo_paint(cr);
 
 				g_object_unref(layout_comma);
@@ -8137,13 +8136,13 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 					gint extra_space = 5;
 					gint bracket_length = (m.function() == CALCULATOR->f_abs ? 0 : 7);
-					if(scaledown == 1) extra_space = 3;
-					else if(scaledown > 1) extra_space = 1;
+					if(scaledown > 0 || m.function() != CALCULATOR->f_abs) extra_space = 3;
 
 					if(arg_h > ctmp * 2) ctmp = arg_h - ctmp;
 					arg_h = ctmp * 2;
 					central_point = ctmp + extra_space / divider;
 					h = arg_h + extra_space * 2 / divider;
+					gint line_space = extra_space / divider + (arg_h * 0.1);
 					w = arg_w + (m.function() != CALCULATOR->f_abs && extra_space > 2 ? 4 : extra_space * 2) + extra_space * 2 / divider + bracket_length * 2;
 					double linewidth = 2 / divider;
 
@@ -8152,20 +8151,20 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					cr = cairo_create(surface);
 					gdk_cairo_set_source_rgba(cr, color);
 
-					cairo_move_to(cr, (extra_space / divider), extra_space / divider);
-					cairo_line_to(cr, (extra_space / divider), h - extra_space / divider);
-					cairo_move_to(cr, w - (extra_space / divider), extra_space / divider);
-					cairo_line_to(cr, w - (extra_space / divider), h - extra_space / divider);
+					cairo_move_to(cr, (extra_space / divider), line_space);
+					cairo_line_to(cr, (extra_space / divider), h - line_space);
+					cairo_move_to(cr, w - (extra_space / divider), line_space);
+					cairo_line_to(cr, w - (extra_space / divider), h - line_space);
 					if(m.function() == CALCULATOR->f_floor) {
-						cairo_move_to(cr, extra_space / divider, h - extra_space / divider - linewidth / 2);
-						cairo_line_to(cr, extra_space / divider + bracket_length, h - extra_space / divider - linewidth / 2);
-						cairo_move_to(cr, w - (extra_space / divider) - bracket_length, h - extra_space / divider - linewidth / 2);
-						cairo_line_to(cr, w - (extra_space / divider), h - extra_space / divider - linewidth / 2);
+						cairo_move_to(cr, extra_space / divider, h - line_space - linewidth / 2);
+						cairo_line_to(cr, extra_space / divider + bracket_length, h - line_space - linewidth / 2);
+						cairo_move_to(cr, w - (extra_space / divider) - bracket_length, h - line_space - linewidth / 2);
+						cairo_line_to(cr, w - (extra_space / divider), h - line_space - linewidth / 2);
 					} else if(m.function() == CALCULATOR->f_ceil) {
-						cairo_move_to(cr, extra_space / divider, extra_space / divider + linewidth / 2);
-						cairo_line_to(cr, extra_space / divider + bracket_length, extra_space / divider + linewidth / 2);
-						cairo_move_to(cr, w - (extra_space / divider) - bracket_length, extra_space / divider + linewidth / 2);
-						cairo_line_to(cr, w - (extra_space / divider), extra_space / divider + linewidth / 2);
+						cairo_move_to(cr, extra_space / divider, line_space + linewidth / 2);
+						cairo_line_to(cr, extra_space / divider + bracket_length, line_space + linewidth / 2);
+						cairo_move_to(cr, w - (extra_space / divider) - bracket_length, line_space + linewidth / 2);
+						cairo_line_to(cr, w - (extra_space / divider), line_space + linewidth / 2);
 					}
 					cairo_set_line_width(cr, linewidth);
 					cairo_stroke(cr);
@@ -8360,19 +8359,19 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				}
 
 				if(dh > uh) uh = dh;
-				if(uh > dh) dh = uh;
+				else if(uh > dh) dh = uh;
 				h = uh + dh;
 				central_point = dh;
-				arc_h = dh * 2;
+				arc_h = h;
 				arc_w = PAR_WIDTH;
 				w += arc_w * 2;
-				w += 3;
+				w += ips.power_depth > 0 ? 3 : 4;
 				
 				int x1 = 0, x2 = 0;
 				if(surface_args.size() == 1) {
 					get_image_blank_width(surface_args[0], cairo_image_surface_get_width(surface_args[0]), cairo_image_surface_get_height(surface_args[0]), &x1, &x2);
 					x1 /= scalefactor;
-					x2 /= scalefactor;
+					x2 = ::ceil(x2 / scalefactor);
 					w -= wpa[0];
 					wpa[0] = x2 - x1;
 					w += wpa[0];
@@ -8381,12 +8380,11 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					x1 /= scalefactor;
 					w -= x1;
 					wpa[0] -= x1;
-					w += wpa[0];
 					int i_last = surface_args.size() - 1;
 					get_image_blank_width(surface_args[i_last], cairo_image_surface_get_width(surface_args[i_last]), cairo_image_surface_get_height(surface_args[i_last]), NULL, &x2);
-					x2 /= scalefactor;
-					wpa[i_last] -= wpa[i_last] - x2;
+					x2 = ::ceil(x2 / scalefactor);
 					w -= wpa[i_last] - x2;
+					wpa[i_last] -= wpa[i_last] - x2;
 				}
 
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
@@ -8398,8 +8396,8 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				cairo_move_to(cr, w, uh - function_h / 2 - function_h % 2);
 				pango_cairo_show_layout(cr, layout_function);
 				w += function_w;
-				w += 2;
-				cairo_set_source_surface(cr, get_left_parenthesis(arc_w, arc_h, scaledown, color), w, uh - arc_h / 2 - arc_h % 2);
+				w += ips.power_depth > 0 ? 2 : 3;
+				cairo_set_source_surface(cr, get_left_parenthesis(arc_w, arc_h, scaledown, color), w, (h - arc_h) / 2);
 				cairo_paint(cr);
 				w += arc_w;
 				for(size_t index = 0; index < surface_args.size(); index++) {
@@ -8417,7 +8415,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					}
 					cairo_surface_destroy(surface_args[index]);
 				}
-				cairo_set_source_surface(cr, get_right_parenthesis(arc_w, arc_h, scaledown, color), w, uh - arc_h / 2 - arc_h % 2);
+				cairo_set_source_surface(cr, get_right_parenthesis(arc_w, arc_h, scaledown, color), w, (h - arc_h) / 2);
 				cairo_paint(cr);
 
 				g_object_unref(layout_comma);
@@ -8463,8 +8461,6 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 		gint arc_base_h = central_point * 2;
 		if(h < arc_base_h) h = arc_base_h;
 		gint arc_base_w = PAR_WIDTH;
-		//base_h += 4;
-		//central_point += 2;
 		w += arc_base_w * 2;
 		cairo_surface_t *surface_old = surface;
 		cairo_destroy(cr);
@@ -8473,14 +8469,14 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 		cr = cairo_create(surface);
 		gdk_cairo_set_source_rgba(cr, color);
 		w = 0;
-		cairo_set_source_surface(cr, get_left_parenthesis(arc_base_w, arc_base_h, scaledown, color), w, h - arc_base_h);
+		cairo_set_source_surface(cr, get_left_parenthesis(arc_base_w, arc_base_h, scaledown, color), w, (h - arc_base_h) / 2);
 		cairo_paint(cr);
 		w += arc_base_w;
 		cairo_set_source_surface(cr, surface_old, w - x1, (h - base_h) / 2);
 		cairo_paint(cr);
 		cairo_surface_destroy(surface_old);
 		w += base_w;
-		cairo_set_source_surface(cr, get_right_parenthesis(arc_base_w, arc_base_h, scaledown, color), w, h - arc_base_h);
+		cairo_set_source_surface(cr, get_right_parenthesis(arc_base_w, arc_base_h, scaledown, color), w, (h - arc_base_h) / 2);
 		cairo_paint(cr);
 	}
 	if(ips.depth == 0 && !(m.isComparison() && (!((po.is_approximate && *po.is_approximate) || m.isApproximate()) || (m.comparisonType() == COMPARISON_EQUALS && po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, po.can_display_unicode_string_arg))))) && surface) {
