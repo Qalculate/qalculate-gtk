@@ -1947,7 +1947,7 @@ void display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 				gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "message_tooltip_icon")), "dialog-information", GTK_ICON_SIZE_BUTTON);
 			}
 			update_expression_icons(EXPRESSION_INFO);
-			if(first_error) {
+			if(first_error && !minimal_mode) {
 				gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "message_label")), _("When errors, warnings and other information are generated during calculation the button to the right of the expression entry changes to reflect this. If you hold the pointer over or click the button, the message will be shown."));
 				gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "message_icon")));
 				gtk_info_bar_set_message_type(GTK_INFO_BAR(gtk_builder_get_object(main_builder, "message_bar")), GTK_MESSAGE_INFO);
@@ -2675,7 +2675,14 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			display_aborted = false;
 			surface_result = tmp_surface;
 			first_draw_of_result = TRUE;
-			if(minimal_mode) gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "grid_result")));
+			if(minimal_mode && !gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "grid_result")))) {
+				gint h = -1;
+				gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h);
+				gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), -1, gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled"))));
+				gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "grid_result")));
+				while(gtk_events_pending()) gtk_main_iteration();
+				gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), -1, h);
+			}
 			gtk_widget_queue_draw(resultview);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), true);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), true);
@@ -6056,7 +6063,8 @@ void update_completion() {
 				} else if(v->isKnown()) {
 					if(((KnownVariable*) v)->isExpression()) {
 						title = CALCULATOR->localizeExpression(((KnownVariable*) v)->expression());
-						if(!((KnownVariable*) v)->unit().empty()) {title += " "; title += ((KnownVariable*) v)->unit();}
+						if(title.length() > 30) {title = title.substr(0, 30); title += "…";}
+						else if(!((KnownVariable*) v)->unit().empty()) {title += " "; title += ((KnownVariable*) v)->unit();}
 					} else {
 						if(((KnownVariable*) v)->get().isMatrix()) {
 							title = _("matrix");
@@ -6066,6 +6074,7 @@ void update_completion() {
 							PrintOptions po;
 							po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 							title = CALCULATOR->print(((KnownVariable*) v)->get(), 30, po);
+							if(title.length() > 30) {title = title.substr(0, 30); title += "…";}
 						}
 					}
 				} else {
@@ -8523,11 +8532,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 }
 
 void clearresult() {
-	if(minimal_mode) {
+	if(minimal_mode && gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "grid_result")))) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "grid_result")));
-		gint w;
-		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, NULL);
-		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), w, 10);
+		gint w, h;
+		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
+		h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "grid_result")));
+		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), w, h);
 	}
 	showing_first_time_message = false;
 	if(displayed_mstruct) {
@@ -9578,7 +9588,14 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			showing_first_time_message = FALSE;
 			first_draw_of_result = TRUE;
 			surface_result = tmp_surface;
-			if(minimal_mode) gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "grid_result")));
+			if(minimal_mode && !gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "grid_result")))) {
+				gint h = -1;
+				gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h);
+				gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), -1, gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled"))));
+				gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "grid_result")));
+				while(gtk_events_pending()) gtk_main_iteration();
+				gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), -1, h);
+			}
 			gtk_widget_queue_draw(resultview);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), displayed_mstruct && !display_aborted);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), displayed_mstruct && !display_aborted);
@@ -15531,7 +15548,9 @@ void set_minimal_mode(bool b) {
 
 		}
 		gint h = 1;
-		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), NULL, &h);
+		if(gtk_widget_is_visible(tabs) || gtk_widget_is_visible(keypad)) {
+			gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), NULL, &h);
+		}
 		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width, h);
 	}
 }
@@ -19357,7 +19376,7 @@ void completion_resize_popup(int matches) {
 	gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iter, miter);
 	gtk_text_view_get_iter_location(GTK_TEXT_VIEW(expressiontext), &iter, &bufloc);
 	gtk_text_view_buffer_to_window_coords(GTK_TEXT_VIEW(expressiontext), GTK_TEXT_WINDOW_WIDGET, bufloc.x, bufloc.y, &bufloc.x, &bufloc.y);
-	window = gtk_text_view_get_window (GTK_TEXT_VIEW(expressiontext), GTK_TEXT_WINDOW_WIDGET);
+	window = gtk_text_view_get_window(GTK_TEXT_VIEW(expressiontext), GTK_TEXT_WINDOW_WIDGET);
 	gdk_window_get_origin(window, &x, &y);
 
 	x += bufloc.x;
