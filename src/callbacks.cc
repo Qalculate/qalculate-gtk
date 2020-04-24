@@ -5265,6 +5265,9 @@ const gchar *shortcut_type_text(int type) {
 		case SHORTCUT_TYPE_INPUT_BASE: {return _("Set expression base"); break;}
 		case SHORTCUT_TYPE_OUTPUT_BASE: {return _("Set result base"); break;}
 		case SHORTCUT_TYPE_EXACT_MODE: {return _("Toggle exact mode"); break;}
+		case SHORTCUT_TYPE_DEGREES: {return _("Set angle unit to degrees"); break;}
+		case SHORTCUT_TYPE_RADIANS: {return _("Set angle unit to radians"); break;}
+		case SHORTCUT_TYPE_GRADIANS: {return _("Set angle unit to gradians"); break;}
 		case SHORTCUT_TYPE_FRACTIONS: {return _("Toggle simple fractions"); break;}
 		case SHORTCUT_TYPE_MIXED_FRACTIONS: {return _("Toggle mixed fractions"); break;}
 		case SHORTCUT_TYPE_SCIENTIFIC_NOTATION: {return _("Toggle scientific notation"); break;}
@@ -5403,6 +5406,18 @@ void update_accels() {
 				str += shortcut_to_text(it->second.key, it->second.modifier);
 				str += ")";
 				gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), str.c_str());
+				break;
+			}
+			case SHORTCUT_TYPE_DEGREES: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_degrees")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_RADIANS: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_radians")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_GRADIANS: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_gradians")))), it->second.key, (GdkModifierType) it->second.modifier);
 				break;
 			}
 			case SHORTCUT_TYPE_RPN_MODE: {
@@ -10824,7 +10839,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		while(gtk_events_pending()) gtk_main_iteration();
 		sleep_ms(100);
 	}
-	if(!do_mathoperation && do_conv && parsed_tostruct->containsType(STRUCT_UNIT, true) && !mstruct->containsType(STRUCT_UNIT, false, true, true) && !parsed_mstruct->containsType(STRUCT_UNIT, false, true, true)) {
+	if(!do_mathoperation && do_conv && parsed_tostruct->containsType(STRUCT_UNIT, true) && !mstruct->containsType(STRUCT_UNIT) && !parsed_mstruct->containsType(STRUCT_UNIT, false, true, true)) {
 		MathStructure to_struct(CALCULATOR->convertToBaseUnits(*parsed_tostruct));
 		fix_to_struct_gtk(to_struct);
 		if(!to_struct.isZero()) {
@@ -14695,47 +14710,6 @@ void button_pressed(GtkButton*, gpointer user_data) {
 	insert_text((gchar*) user_data);
 }
 
-
-/*
-	Update angle menu
-*/
-void set_angle_item() {
-	GtkWidget *mi = NULL;
-	switch(evalops.parse_options.angle_unit) {
-		case ANGLE_UNIT_RADIANS: {
-			mi = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_radians"));
-			g_signal_handlers_block_matched((gpointer) mi, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_radians_activate, NULL);
-			if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(mi)))
-				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mi), TRUE);
-			g_signal_handlers_unblock_matched((gpointer) mi, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_radians_activate, NULL);
-			break;
-		}
-		case ANGLE_UNIT_GRADIANS: {
-			mi = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_gradians"));
-			g_signal_handlers_block_matched((gpointer) mi, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_gradians_activate, NULL);
-			if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(mi)))
-				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mi), TRUE);
-			g_signal_handlers_unblock_matched((gpointer) mi, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_gradians_activate, NULL);
-			break;
-		}
-		case ANGLE_UNIT_DEGREES: {
-			mi = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_degrees"));
-			g_signal_handlers_block_matched((gpointer) mi, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_degrees_activate, NULL);
-			if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(mi)))
-				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mi), TRUE);
-			g_signal_handlers_unblock_matched((gpointer) mi, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_degrees_activate, NULL);
-			break;
-		}
-		default: {
-			mi = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_no_default_angle_unit"));
-			g_signal_handlers_block_matched((gpointer) mi, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_no_default_angle_unit_activate, NULL);
-			if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(mi)))
-				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mi), TRUE);
-			g_signal_handlers_unblock_matched((gpointer) mi, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_no_default_angle_unit_activate, NULL);
-		}
-	}
-}
-
 /*
 	variables, functions and units enabled/disabled from menu
 */
@@ -15948,7 +15922,7 @@ void load_preferences() {
 #endif
 	}
 
-	int version_numbers[] = {3, 9, 0};
+	int version_numbers[] = {3, 9, 1};
 	bool old_history_format = false;
 
 	if(file) {
@@ -16624,6 +16598,9 @@ void load_preferences() {
 					char str[svalue.length()];
 					keyboard_shortcut ks;
 					int n = sscanf(svalue.c_str(), "%u:%u:%i:%s", &ks.key, &ks.modifier, &ks.type, str);
+					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 9) || (version_numbers[0] == 3 && version_numbers[1] == 9 && version_numbers[2] < 1)) {
+						if(ks.type >= SHORTCUT_TYPE_DEGREES) ks.type += 3;
+					}
 					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 9)) {
 						if(ks.type >= SHORTCUT_TYPE_MINIMAL) ks.type++;
 					}
@@ -17896,6 +17873,28 @@ gboolean on_preferences_update_exchange_rates_spin_button_output(GtkSpinButton *
 void on_preferences_checkbutton_persistent_keypad_toggled(GtkToggleButton *w, gpointer) {
 	persistent_keypad = gtk_toggle_button_get_active(w);
 	update_persistent_keypad(true);
+}
+gboolean on_status_right_button_release_event(GtkWidget*, GdkEventButton *event, gpointer) {
+	if(event->type == GDK_BUTTON_RELEASE && event->button == 1) {
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_status_right")), (GdkEvent*) event);
+#else
+		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_status_right")), NULL, NULL, NULL, NULL, event->button, event->time);
+#endif
+		return TRUE;
+	}
+	return FALSE;
+}
+gboolean on_status_right_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
+	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS && event->button != 1) {
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_status_right")), (GdkEvent*) event);
+#else
+		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_status_right")), NULL, NULL, NULL, NULL, event->button, event->time);
+#endif
+		return TRUE;
+	}
+	return FALSE;
 }
 gboolean on_image_keypad_lock_button_release_event(GtkWidget*, GdkEvent*, gpointer) {
 	persistent_keypad = !persistent_keypad;
@@ -22625,7 +22624,6 @@ gboolean on_menu_fx_button_press(GtkWidget *widget, GdkEventButton *event, gpoin
 	return FALSE;
 }
 
-
 void update_mb_fx_menu() {
 	GtkMenu *sub = GTK_MENU(gtk_builder_get_object(main_builder, "menu_fx"));
 	GtkWidget *item;
@@ -22986,25 +22984,76 @@ void on_menu_item_degrees_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {
 		evalops.parse_options.angle_unit = ANGLE_UNIT_DEGREES;
 		expression_format_updated(true);
+		update_mb_angles(evalops.parse_options.angle_unit);
 	}
 }
 void on_menu_item_radians_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {
 		evalops.parse_options.angle_unit = ANGLE_UNIT_RADIANS;
 		expression_format_updated(true);
+		update_mb_angles(evalops.parse_options.angle_unit);
 	}
 }
 void on_menu_item_gradians_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {
 		evalops.parse_options.angle_unit = ANGLE_UNIT_GRADIANS;
 		expression_format_updated(true);
+		update_mb_angles(evalops.parse_options.angle_unit);
 	}
 }
 void on_menu_item_no_default_angle_unit_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {
 		evalops.parse_options.angle_unit = ANGLE_UNIT_NONE;
 		expression_format_updated(true);
+		update_mb_angles(evalops.parse_options.angle_unit);
 	}
+}
+void on_menu_item_mb_degrees_activate(GtkMenuItem *w, gpointer) {
+	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_degrees")), TRUE);
+}
+void on_menu_item_mb_radians_activate(GtkMenuItem *w, gpointer) {
+	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_radians")), TRUE);
+}
+void on_menu_item_mb_gradians_activate(GtkMenuItem *w, gpointer) {
+	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_gradians")), TRUE);
+}
+void update_mb_angles(AngleUnit angle_unit) {
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sin_degrees")), angle_unit == ANGLE_UNIT_DEGREES);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sin_gradians")), angle_unit == ANGLE_UNIT_GRADIANS);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sin_radians")), angle_unit == ANGLE_UNIT_RADIANS);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_cos_degrees")), angle_unit == ANGLE_UNIT_DEGREES);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_cos_gradians")), angle_unit == ANGLE_UNIT_GRADIANS);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_cos_radians")), angle_unit == ANGLE_UNIT_RADIANS);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_tan_degrees")), angle_unit == ANGLE_UNIT_DEGREES);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_tan_gradians")), angle_unit == ANGLE_UNIT_GRADIANS);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_tan_radians")), angle_unit == ANGLE_UNIT_RADIANS);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_degrees")), angle_unit == ANGLE_UNIT_DEGREES);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_gradians")), angle_unit == ANGLE_UNIT_GRADIANS);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_radians")), angle_unit == ANGLE_UNIT_RADIANS);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
 }
 
 void set_output_base_from_dialog(int base) {
@@ -27393,6 +27442,18 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 			}
 			case SHORTCUT_TYPE_EXACT_MODE: {
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact")), !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact"))));
+				return true;
+			}
+			case SHORTCUT_TYPE_DEGREES: {
+				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_degrees")), TRUE);
+				return true;
+			}
+			case SHORTCUT_TYPE_RADIANS: {
+				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_radians")), TRUE);
+				return true;
+			}
+			case SHORTCUT_TYPE_GRADIANS: {
+				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_gradians")), TRUE);
 				return true;
 			}
 			case SHORTCUT_TYPE_FRACTIONS: {

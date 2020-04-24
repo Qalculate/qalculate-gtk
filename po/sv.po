@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-07 09:56+0200\n"
+"POT-Creation-Date: 2020-04-24 10:38+0200\n"
 "PO-Revision-Date: 2006-05-04 12:29+0200\n"
 "Last-Translator: Hanna Knutsson <hanna.knutsson@protonmail.com>\n"
 "Language-Team: Swedish\n"
@@ -16,8 +16,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../data/qalculate-gtk.desktop.in.h:1 ../src/callbacks.cc:9152
-#: ../src/callbacks.cc:9159 ../src/callbacks.cc:9174
+#: ../data/qalculate-gtk.desktop.in.h:1 ../src/callbacks.cc:9275
+#: ../src/callbacks.cc:9282 ../src/callbacks.cc:9297
 msgid "Qalculate!"
 msgstr "Qalculate!"
 
@@ -26,7 +26,7 @@ msgid "Calculator"
 msgstr "Kalkylator"
 
 #: ../data/qalculate-gtk.desktop.in.h:3
-#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/callbacks.cc:26844
+#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/callbacks.cc:27018
 msgid "Powerful and easy to use calculator"
 msgstr "Kraftfull och användarvänlig miniräknare"
 
@@ -63,14 +63,14 @@ msgstr "Parameterregler"
 #: ../data/functionedit.ui.h:3 ../data/matrix.ui.h:2 ../data/matrixedit.ui.h:3
 #: ../data/simplefunctionedit.ui.h:3 ../data/unitedit.ui.h:3
 #: ../data/unknownedit.ui.h:3 ../data/variableedit.ui.h:3
-#: ../src/callbacks.cc:13391 ../src/callbacks.cc:14322
-#: ../src/callbacks.cc:14439 ../src/callbacks.cc:15524
-#: ../src/callbacks.cc:15580 ../src/callbacks.cc:21243
-#: ../src/callbacks.cc:21703 ../src/callbacks.cc:22799
-#: ../src/callbacks.cc:24428 ../src/callbacks.cc:27976
-#: ../src/callbacks.cc:28001 ../src/callbacks.cc:28018
-#: ../src/callbacks.cc:28032 ../src/callbacks.cc:28767
-#: ../src/callbacks.cc:29280
+#: ../src/callbacks.cc:13521 ../src/callbacks.cc:14452
+#: ../src/callbacks.cc:14569 ../src/callbacks.cc:15623
+#: ../src/callbacks.cc:15679 ../src/callbacks.cc:21367
+#: ../src/callbacks.cc:21827 ../src/callbacks.cc:22922
+#: ../src/callbacks.cc:24602 ../src/callbacks.cc:28162
+#: ../src/callbacks.cc:28187 ../src/callbacks.cc:28204
+#: ../src/callbacks.cc:28218 ../src/callbacks.cc:28953
+#: ../src/callbacks.cc:29466
 msgid "_Cancel"
 msgstr "_Avbryt"
 
@@ -83,9 +83,9 @@ msgstr "Spara inte modifikationerna"
 #: ../data/functionedit.ui.h:5 ../data/matrixedit.ui.h:5
 #: ../data/simplefunctionedit.ui.h:5 ../data/unitedit.ui.h:5
 #: ../data/unknownedit.ui.h:5 ../data/variableedit.ui.h:5
-#: ../src/callbacks.cc:14322 ../src/callbacks.cc:14439
-#: ../src/callbacks.cc:21243 ../src/callbacks.cc:21703
-#: ../src/callbacks.cc:28018 ../src/callbacks.cc:29280
+#: ../src/callbacks.cc:14452 ../src/callbacks.cc:14569
+#: ../src/callbacks.cc:21367 ../src/callbacks.cc:21827
+#: ../src/callbacks.cc:28204 ../src/callbacks.cc:29466
 msgid "_OK"
 msgstr "_OK"
 
@@ -137,7 +137,7 @@ msgstr "Inkludera lika med"
 msgid "Max"
 msgstr "Max"
 
-#: ../data/calendarconversion.ui.h:1 ../data/main.ui.h:36
+#: ../data/calendarconversion.ui.h:1 ../data/main.ui.h:39
 msgid "Calendar Conversion"
 msgstr "Kalenderomvandling"
 
@@ -147,8 +147,8 @@ msgstr "Kalenderomvandling"
 #: ../data/namesedit.ui.h:2 ../data/nbases.ui.h:2 ../data/percentage.ui.h:5
 #: ../data/plot.ui.h:5 ../data/precision.ui.h:4 ../data/preferences.ui.h:1
 #: ../data/setbase.ui.h:2 ../data/units.ui.h:2 ../data/variables.ui.h:2
-#: ../src/callbacks.cc:2030 ../src/callbacks.cc:11470 ../src/callbacks.cc:13383
-#: ../src/callbacks.cc:29122
+#: ../src/callbacks.cc:2034 ../src/callbacks.cc:11600 ../src/callbacks.cc:13513
+#: ../src/callbacks.cc:29308
 msgid "_Close"
 msgstr "_Stäng"
 
@@ -217,8 +217,8 @@ msgstr "Välj en fil"
 msgid "Import as"
 msgstr "Importera som"
 
-#: ../data/csvimport.ui.h:10 ../data/functionedit.ui.h:33 ../data/main.ui.h:17
-#: ../data/matrix.ui.h:1 ../data/matrixedit.ui.h:18 ../src/callbacks.cc:13396
+#: ../data/csvimport.ui.h:10 ../data/functionedit.ui.h:33 ../data/main.ui.h:20
+#: ../data/matrix.ui.h:1 ../data/matrixedit.ui.h:18 ../src/callbacks.cc:13526
 msgid "Matrix"
 msgstr "Matris"
 
@@ -227,8 +227,8 @@ msgid ""
 "If a matrix or vectors shall be generated from the contents of the file "
 msgstr "Huruvida en matris eller vektor skall genereras från filinnehållet"
 
-#: ../data/csvimport.ui.h:12 ../src/callbacks.cc:14262
-#: ../src/callbacks.cc:22737
+#: ../data/csvimport.ui.h:12 ../src/callbacks.cc:14392
+#: ../src/callbacks.cc:22860
 msgid "Vectors"
 msgstr "Vektorer"
 
@@ -240,9 +240,9 @@ msgstr "Huruvida en matris eller vektor ska genereras från filinnehållet"
 #: ../data/functionedit.ui.h:7 ../data/matrixedit.ui.h:8
 #: ../data/namesedit.ui.h:3 ../data/simplefunctionedit.ui.h:6
 #: ../data/unitedit.ui.h:7 ../data/unknownedit.ui.h:7
-#: ../data/variableedit.ui.h:6 ../src/interface.cc:1606
-#: ../src/interface.cc:1776 ../src/interface.cc:2092 ../src/interface.cc:2335
-#: ../src/interface.cc:2374 ../src/callbacks.cc:15531 ../src/callbacks.cc:21250
+#: ../data/variableedit.ui.h:6 ../src/interface.cc:1614
+#: ../src/interface.cc:1784 ../src/interface.cc:2100 ../src/interface.cc:2343
+#: ../src/interface.cc:2382 ../src/callbacks.cc:15630 ../src/callbacks.cc:21374
 msgid "Name"
 msgstr "Namn"
 
@@ -267,8 +267,8 @@ msgstr "Rubrik som skall visas i menyer och variabelhanteraren"
 #: ../data/csvimport.ui.h:18 ../data/functionedit.ui.h:10 ../data/main.ui.h:241
 #: ../data/matrixedit.ui.h:11 ../data/unitedit.ui.h:20
 #: ../data/unknownedit.ui.h:23 ../data/variableedit.ui.h:13
-#: ../src/interface.cc:1617 ../src/interface.cc:1672 ../src/interface.cc:1734
-#: ../src/interface.cc:1800
+#: ../src/interface.cc:1625 ../src/interface.cc:1680 ../src/interface.cc:1742
+#: ../src/interface.cc:1808
 msgid "Category"
 msgstr "Kategori"
 
@@ -339,14 +339,14 @@ msgstr "Värdetyp"
 msgid "Text"
 msgstr "Text"
 
-#: ../data/datasetedit.ui.h:15 ../data/functionedit.ui.h:27 ../data/main.ui.h:4
+#: ../data/datasetedit.ui.h:15 ../data/functionedit.ui.h:27 ../data/main.ui.h:7
 #: ../data/unknownedit.ui.h:12
 msgid "Number"
 msgstr "Nummer"
 
 #: ../data/datasetedit.ui.h:16 ../data/functionedit.ui.h:18 ../data/plot.ui.h:8
-#: ../data/simplefunctionedit.ui.h:8 ../src/interface.cc:2108
-#: ../src/interface.cc:2984
+#: ../data/simplefunctionedit.ui.h:8 ../src/interface.cc:2116
+#: ../src/interface.cc:2992
 msgid "Expression"
 msgstr "Uttryck"
 
@@ -374,12 +374,12 @@ msgstr "Värdet använder klammrar"
 msgid "Unit expression"
 msgstr "Enhetsuttryck"
 
-#: ../data/datasetedit.ui.h:23 ../src/callbacks.cc:13811
+#: ../data/datasetedit.ui.h:23 ../src/callbacks.cc:13941
 msgid "Edit Data Set"
 msgstr "Redigera dataset"
 
-#: ../data/datasetedit.ui.h:24 ../data/plot.ui.h:7 ../src/interface.cc:2332
-#: ../src/interface.cc:2981
+#: ../data/datasetedit.ui.h:24 ../data/plot.ui.h:7 ../src/interface.cc:2340
+#: ../src/interface.cc:2989
 msgid "Title"
 msgstr "Titel"
 
@@ -408,24 +408,24 @@ msgstr "Egenskaper:"
 msgid "Definition of the properties of this data set"
 msgstr "Definiering av detta datasets egenskaper"
 
-#: ../data/datasetedit.ui.h:31 ../data/functions.ui.h:3 ../data/main.ui.h:15
+#: ../data/datasetedit.ui.h:31 ../data/functions.ui.h:3 ../data/main.ui.h:18
 #: ../data/units.ui.h:3 ../data/variables.ui.h:3
 msgid "_New"
 msgstr "_Ny"
 
-#: ../data/datasetedit.ui.h:32 ../data/functions.ui.h:5 ../data/main.ui.h:41
+#: ../data/datasetedit.ui.h:32 ../data/functions.ui.h:5 ../data/main.ui.h:44
 #: ../data/units.ui.h:5 ../data/variables.ui.h:5
 msgid "_Edit"
 msgstr "_Redigera"
 
 #: ../data/datasetedit.ui.h:33 ../data/functionedit.ui.h:53
 #: ../data/functions.ui.h:9 ../data/units.ui.h:11 ../data/variables.ui.h:9
-#: ../src/callbacks.cc:15580
+#: ../src/callbacks.cc:15679
 msgid "_Delete"
 msgstr "_Ta bort"
 
-#: ../data/datasetedit.ui.h:34 ../src/callbacks.cc:3739
-#: ../src/callbacks.cc:4774
+#: ../data/datasetedit.ui.h:34 ../src/callbacks.cc:3750
+#: ../src/callbacks.cc:4785
 msgid "Properties"
 msgstr "Egenskaper"
 
@@ -446,11 +446,11 @@ msgid "Default property"
 msgstr "Förvald egenskap"
 
 #: ../data/datasetedit.ui.h:39 ../data/functionedit.ui.h:42
-#: ../data/main.ui.h:20 ../data/plot.ui.h:9 ../src/interface.cc:1658
+#: ../data/main.ui.h:23 ../data/plot.ui.h:9 ../src/interface.cc:1666
 msgid "Function"
 msgstr "Funktion"
 
-#: ../data/datasets.ui.h:1 ../src/callbacks.cc:13537
+#: ../data/datasets.ui.h:1 ../src/callbacks.cc:13667
 msgid "Edit Data Object"
 msgstr "Redigera dataobjekt"
 
@@ -463,11 +463,11 @@ msgid "Accept the creation/modification of this data object"
 msgstr "Godkänn skapande/modifiering av dataobjektet"
 
 #. new dataset
-#: ../data/datasets.ui.h:6 ../src/callbacks.cc:13907
+#: ../data/datasets.ui.h:6 ../src/callbacks.cc:14037
 msgid "Data Sets"
 msgstr "Dataset"
 
-#: ../data/datasets.ui.h:8 ../data/main.ui.h:22 ../src/interface.cc:1881
+#: ../data/datasets.ui.h:8 ../data/main.ui.h:25 ../src/interface.cc:1889
 msgid "Data Set"
 msgstr "Dataset"
 
@@ -600,8 +600,8 @@ msgstr ""
 msgid "Hexadecimal value"
 msgstr "Hexadecimalt värde"
 
-#: ../data/functionedit.ui.h:1 ../src/callbacks.cc:12389
-#: ../src/callbacks.cc:12592
+#: ../data/functionedit.ui.h:1 ../src/callbacks.cc:12519
+#: ../src/callbacks.cc:12722
 msgid "Edit Function"
 msgstr "Redigera funktion"
 
@@ -679,7 +679,8 @@ msgstr "Parameternamn"
 msgid "Free"
 msgstr "Valfri"
 
-#: ../data/functionedit.ui.h:28 ../data/main.ui.h:8 ../data/unknownedit.ui.h:15
+#: ../data/functionedit.ui.h:28 ../data/main.ui.h:11
+#: ../data/unknownedit.ui.h:15
 msgid "Integer"
 msgstr "Heltal"
 
@@ -691,8 +692,8 @@ msgstr "Symbol"
 msgid "Date"
 msgstr "Datum"
 
-#: ../data/functionedit.ui.h:32 ../data/main.ui.h:18 ../data/matrix.ui.h:11
-#: ../data/matrixedit.ui.h:20 ../src/callbacks.cc:13394
+#: ../data/functionedit.ui.h:32 ../data/main.ui.h:21 ../data/matrix.ui.h:11
+#: ../data/matrixedit.ui.h:20 ../src/callbacks.cc:13524
 msgid "Vector"
 msgstr "Vektor"
 
@@ -724,16 +725,16 @@ msgstr "Icke-negativt nummer"
 msgid "Boolean"
 msgstr "Boolskt värde"
 
-#: ../data/functionedit.ui.h:41 ../src/callbacks.cc:13915
+#: ../data/functionedit.ui.h:41 ../src/callbacks.cc:14045
 msgid "Object"
 msgstr "Objekt"
 
-#: ../data/functionedit.ui.h:43 ../data/main.ui.h:23 ../src/interface.cc:1780
-#: ../src/interface.cc:1784
+#: ../data/functionedit.ui.h:43 ../data/main.ui.h:26 ../src/interface.cc:1788
+#: ../src/interface.cc:1792
 msgid "Unit"
 msgstr "Enhet"
 
-#: ../data/functionedit.ui.h:44 ../data/main.ui.h:16 ../src/interface.cc:1714
+#: ../data/functionedit.ui.h:44 ../data/main.ui.h:19 ../src/interface.cc:1722
 msgid "Variable"
 msgstr "Variabel"
 
@@ -758,7 +759,7 @@ msgid "Add entered argument definition"
 msgstr "Lägg till parameterdefinitionen"
 
 #: ../data/functionedit.ui.h:51 ../data/functions.ui.h:13 ../data/plot.ui.h:36
-#: ../src/callbacks.cc:29280
+#: ../src/callbacks.cc:29466
 msgid "_Apply"
 msgstr "_Applicera"
 
@@ -782,7 +783,7 @@ msgstr "Modifiera villkor vald parameter"
 msgid "Close this dialog"
 msgstr "Stäng dialogfönstret"
 
-#: ../data/functionedit.ui.h:59 ../src/interface.cc:2111
+#: ../data/functionedit.ui.h:59 ../src/interface.cc:2119
 msgid "Precalculate"
 msgstr "Förberäkna"
 
@@ -802,7 +803,7 @@ msgstr "Verkställ ändringar av vald subfunktion"
 msgid "Remove the selected subfunction"
 msgstr "Ta bort vald subfunktion"
 
-#: ../data/functions.ui.h:1 ../data/main.ui.h:138
+#: ../data/functions.ui.h:1 ../data/main.ui.h:141
 msgid "Functions"
 msgstr "Funktioner"
 
@@ -815,7 +816,7 @@ msgid "Edit the selected function"
 msgstr "Redigera vald funktion"
 
 #: ../data/functions.ui.h:7 ../data/matrix.ui.h:4 ../data/units.ui.h:7
-#: ../data/variables.ui.h:7 ../src/callbacks.cc:11476
+#: ../data/variables.ui.h:7 ../src/callbacks.cc:11606
 msgid "_Insert"
 msgstr "_Infoga"
 
@@ -832,7 +833,7 @@ msgid "(De)activate the selected function"
 msgstr "(Av)aktivera vald funktion"
 
 #: ../data/functions.ui.h:12 ../data/units.ui.h:14 ../data/variables.ui.h:12
-#: ../src/callbacks.cc:3777 ../src/callbacks.cc:4030 ../src/callbacks.cc:4272
+#: ../src/callbacks.cc:3788 ../src/callbacks.cc:4041 ../src/callbacks.cc:4283
 msgid "Deacti_vate"
 msgstr "Avakti_vera"
 
@@ -853,290 +854,302 @@ msgid "Descri_ption"
 msgstr "Beskri_vning"
 
 #: ../data/main.ui.h:1
+msgid "Degrees"
+msgstr "Grader"
+
+#: ../data/main.ui.h:2
+msgid "Radians"
+msgstr "Radianer"
+
+#: ../data/main.ui.h:3
+msgid "Gradians"
+msgstr "Gradienter"
+
+#: ../data/main.ui.h:4
 msgid "Default assumptions"
 msgstr "Förvalda antaganden"
 
-#: ../data/main.ui.h:2 ../data/unknownedit.ui.h:17 ../src/callbacks.cc:29179
+#: ../data/main.ui.h:5 ../data/unknownedit.ui.h:17 ../src/callbacks.cc:29365
 msgid "Unknown"
 msgstr "Okänd"
 
-#: ../data/main.ui.h:3
+#: ../data/main.ui.h:6
 msgid "Not Matrix"
 msgstr "Inte matris"
 
-#: ../data/main.ui.h:5
+#: ../data/main.ui.h:8
 msgid "Complex"
 msgstr "Komplex"
 
-#: ../data/main.ui.h:6
+#: ../data/main.ui.h:9
 msgid "Real"
 msgstr "Reell"
 
-#: ../data/main.ui.h:7
+#: ../data/main.ui.h:10
 msgid "Rational"
 msgstr "Rationell"
 
-#: ../data/main.ui.h:9 ../data/unknownedit.ui.h:22
+#: ../data/main.ui.h:12 ../data/unknownedit.ui.h:22
 msgid "Non-Zero"
 msgstr "Ej noll"
 
-#: ../data/main.ui.h:10 ../data/unknownedit.ui.h:18
+#: ../data/main.ui.h:13 ../data/unknownedit.ui.h:18
 msgid "Positive"
 msgstr "Positiv"
 
-#: ../data/main.ui.h:11 ../data/unknownedit.ui.h:19
+#: ../data/main.ui.h:14 ../data/unknownedit.ui.h:19
 msgid "Non-Negative"
 msgstr "Ej negativ"
 
-#: ../data/main.ui.h:12 ../data/unknownedit.ui.h:20
+#: ../data/main.ui.h:15 ../data/unknownedit.ui.h:20
 msgid "Negative"
 msgstr "Negativ"
 
-#: ../data/main.ui.h:13 ../data/unknownedit.ui.h:21
+#: ../data/main.ui.h:16 ../data/unknownedit.ui.h:21
 msgid "Non-Positive"
 msgstr "Ej positiv"
 
-#: ../data/main.ui.h:14
+#: ../data/main.ui.h:17
 msgid "_File"
 msgstr "_Arkiv"
 
-#: ../data/main.ui.h:19
+#: ../data/main.ui.h:22
 msgid "Unknown Variable"
 msgstr "Okänd variabel"
 
-#: ../data/main.ui.h:21
+#: ../data/main.ui.h:24
 msgid "Function (simplified)"
 msgstr "Funktion (förenklad)"
 
-#: ../data/main.ui.h:24
+#: ../data/main.ui.h:27
 msgid "Import CSV File…"
 msgstr "Importera CSV-fil…"
 
-#: ../data/main.ui.h:25
+#: ../data/main.ui.h:28
 msgid "Export CSV File…"
 msgstr "Exportera CSV-fil…"
 
-#: ../data/main.ui.h:26
+#: ../data/main.ui.h:29
 msgid "_Store Result…"
 msgstr "_Spara resultatet…"
 
-#: ../data/main.ui.h:27
+#: ../data/main.ui.h:30
 msgid "Save Result Image…"
 msgstr "Spara resulatbild…"
 
-#: ../data/main.ui.h:28
+#: ../data/main.ui.h:31
 msgid "Save local functions, variables and units"
 msgstr "Spara lokala funktioner, variabler och enheter"
 
-#: ../data/main.ui.h:29
+#: ../data/main.ui.h:32
 msgid "Save Definitions"
 msgstr "Spara definitioner"
 
-#: ../data/main.ui.h:30
+#: ../data/main.ui.h:33
 msgid "Import Definitions File…"
 msgstr "Importera definitionsfil…"
 
-#: ../data/main.ui.h:31
+#: ../data/main.ui.h:34
 msgid "Fetch current exchange rates from the Internet"
 msgstr "Hämta nuvarande växelkurser från internet"
 
-#: ../data/main.ui.h:32
+#: ../data/main.ui.h:35
 msgid "Update Exchange Rates"
 msgstr "Uppdatera växelkurser"
 
-#: ../data/main.ui.h:33
+#: ../data/main.ui.h:36
 msgid "Plot Functions/Data"
 msgstr "Rita funktions-/datadiagram"
 
-#: ../data/main.ui.h:34
+#: ../data/main.ui.h:37
 msgid "Convert Number Bases"
 msgstr "Omvandla mellan talbaser"
 
-#: ../data/main.ui.h:35
+#: ../data/main.ui.h:38
 msgid "Floating Point Conversion (IEEE 754)"
 msgstr "Flyttalsomvandling (IEEE 754)"
 
-#: ../data/main.ui.h:37
+#: ../data/main.ui.h:40
 msgid "Percentage Calculation Tool"
 msgstr "Procentberäkningsverktyg"
 
-#: ../data/main.ui.h:38 ../data/periodictable.ui.h:1
+#: ../data/main.ui.h:41 ../data/periodictable.ui.h:1
 msgid "Periodic Table"
 msgstr "Periodiska systemet"
 
-#: ../data/main.ui.h:39
+#: ../data/main.ui.h:42
 msgid "Minimal Window"
 msgstr "Minimalt fönster"
 
-#: ../data/main.ui.h:40
+#: ../data/main.ui.h:43
 msgid "_Quit"
 msgstr "_Avsluta"
 
-#: ../data/main.ui.h:42
+#: ../data/main.ui.h:45
 msgid "Manage Variables"
 msgstr "Hantera variabler"
 
-#: ../data/main.ui.h:43
+#: ../data/main.ui.h:46
 msgid "Manage Functions"
 msgstr "Hantera funktioner"
 
-#: ../data/main.ui.h:44
+#: ../data/main.ui.h:47
 msgid "Manage Units"
 msgstr "Hantera enheter"
 
-#: ../data/main.ui.h:45
+#: ../data/main.ui.h:48
 msgid "Manage Data Sets"
 msgstr "Hantera dataset"
 
-#: ../data/main.ui.h:46 ../src/interface.cc:738 ../src/callbacks.cc:1483
-#: ../src/callbacks.cc:22706
+#: ../data/main.ui.h:49 ../src/interface.cc:742 ../src/callbacks.cc:1487
+#: ../src/callbacks.cc:22829
 msgid "Factorize"
 msgstr "Faktorisera"
 
-#: ../data/main.ui.h:47 ../src/interface.cc:736 ../src/callbacks.cc:1486
-#: ../src/callbacks.cc:22719
+#: ../data/main.ui.h:50 ../src/interface.cc:740 ../src/callbacks.cc:1490
+#: ../src/callbacks.cc:22842
 msgid "Expand"
 msgstr "Expandera"
 
-#: ../data/main.ui.h:48
+#: ../data/main.ui.h:51
 msgid "Apply partial fraction decomposition to the current result."
 msgstr "Tillämpa partialbråksuppdelning på nuvarande resultat."
 
-#: ../data/main.ui.h:49 ../src/interface.cc:740
+#: ../data/main.ui.h:52 ../src/interface.cc:744
 msgid "Expand Partial Fractions"
 msgstr "Expandera partialbråk"
 
-#: ../data/main.ui.h:50
+#: ../data/main.ui.h:53
 msgid "Set Unknowns…"
 msgstr "Ange okända värden…"
 
-#: ../data/main.ui.h:51
+#: ../data/main.ui.h:54
 msgid "Convert to Unit"
 msgstr "Omvandla till enhet"
 
-#: ../data/main.ui.h:52
+#: ../data/main.ui.h:55
 msgid "Set Prefix"
 msgstr "Sätt prefix"
 
-#: ../data/main.ui.h:53
+#: ../data/main.ui.h:56
 msgid "Convert to Unit Expression…"
 msgstr "Omvandla till enhetsuttryck…"
 
-#: ../data/main.ui.h:54
+#: ../data/main.ui.h:57
 msgid "Convert to Base Units"
 msgstr "Omvandla till basenheter"
 
-#: ../data/main.ui.h:55
+#: ../data/main.ui.h:58
 msgid "Convert to Optimal Unit"
 msgstr "Omvandla till optimal enhet"
 
-#: ../data/main.ui.h:56 ../src/callbacks.cc:15130
+#: ../data/main.ui.h:59 ../src/callbacks.cc:15219
 msgid "Insert Date…"
 msgstr "Infoga datum…"
 
-#: ../data/main.ui.h:57 ../src/callbacks.cc:15131
+#: ../data/main.ui.h:60 ../src/callbacks.cc:15220
 msgid "Insert Matrix…"
 msgstr "Infoga matris…"
 
-#: ../data/main.ui.h:58 ../src/callbacks.cc:15132
+#: ../data/main.ui.h:61 ../src/callbacks.cc:15221
 msgid "Insert Vector…"
 msgstr "Infoga vektor…"
 
-#: ../data/main.ui.h:59
+#: ../data/main.ui.h:62
 msgid "_Copy Result"
 msgstr "_Kopiera resultatet"
 
-#: ../data/main.ui.h:60
+#: ../data/main.ui.h:63
 msgid "Keyboard Shortcuts"
 msgstr "Kortkommandon"
 
-#: ../data/main.ui.h:61
+#: ../data/main.ui.h:64
 msgid "_Preferences"
 msgstr "_Inställningar"
 
-#: ../data/main.ui.h:62
+#: ../data/main.ui.h:65
 msgid "_Mode"
 msgstr "_Läge"
 
-#: ../data/main.ui.h:63 ../src/callbacks.cc:15104
+#: ../data/main.ui.h:66 ../src/callbacks.cc:15193
 msgid "Number Base"
 msgstr "Talbas"
 
-#: ../data/main.ui.h:64
+#: ../data/main.ui.h:67
 msgid "Select Result and Expression Base"
 msgstr "Välj bas i resultat och uttryck"
 
-#: ../data/main.ui.h:65 ../data/nbases.ui.h:4 ../data/setbase.ui.h:3
-#: ../src/interface.cc:1001 ../src/callbacks.cc:15107 ../src/callbacks.cc:22252
-#: ../src/callbacks.cc:26000 ../src/callbacks.cc:26040
+#: ../data/main.ui.h:68 ../data/nbases.ui.h:4 ../data/setbase.ui.h:3
+#: ../src/interface.cc:1005 ../src/callbacks.cc:15196 ../src/callbacks.cc:22376
+#: ../src/callbacks.cc:26174 ../src/callbacks.cc:26214
 msgid "Binary"
 msgstr "Binär"
 
-#: ../data/main.ui.h:66 ../data/nbases.ui.h:5 ../data/setbase.ui.h:4
-#: ../src/interface.cc:1002 ../src/callbacks.cc:15108 ../src/callbacks.cc:22253
-#: ../src/callbacks.cc:26001 ../src/callbacks.cc:26041
+#: ../data/main.ui.h:69 ../data/nbases.ui.h:5 ../data/setbase.ui.h:4
+#: ../src/interface.cc:1006 ../src/callbacks.cc:15197 ../src/callbacks.cc:22377
+#: ../src/callbacks.cc:26175 ../src/callbacks.cc:26215
 msgid "Octal"
 msgstr "Oktal"
 
-#: ../data/main.ui.h:67 ../data/nbases.ui.h:3 ../data/setbase.ui.h:5
-#: ../src/interface.cc:1003 ../src/callbacks.cc:15109 ../src/callbacks.cc:26002
-#: ../src/callbacks.cc:26042
+#: ../data/main.ui.h:70 ../data/nbases.ui.h:3 ../data/setbase.ui.h:5
+#: ../src/interface.cc:1007 ../src/callbacks.cc:15198 ../src/callbacks.cc:26176
+#: ../src/callbacks.cc:26216
 msgid "Decimal"
 msgstr "Decimal"
 
-#: ../data/main.ui.h:68 ../data/nbases.ui.h:10 ../data/setbase.ui.h:6
-#: ../src/callbacks.cc:15110 ../src/callbacks.cc:22254
-#: ../src/callbacks.cc:26003 ../src/callbacks.cc:26043
+#: ../data/main.ui.h:71 ../data/nbases.ui.h:10 ../data/setbase.ui.h:6
+#: ../src/callbacks.cc:15199 ../src/callbacks.cc:22378
+#: ../src/callbacks.cc:26177 ../src/callbacks.cc:26217
 msgid "Duodecimal"
 msgstr "Duodecimal"
 
-#: ../data/main.ui.h:69 ../data/nbases.ui.h:11 ../data/setbase.ui.h:7
-#: ../src/interface.cc:1004 ../src/callbacks.cc:15111 ../src/callbacks.cc:22255
-#: ../src/callbacks.cc:26004 ../src/callbacks.cc:26044
+#: ../data/main.ui.h:72 ../data/nbases.ui.h:11 ../data/setbase.ui.h:7
+#: ../src/interface.cc:1008 ../src/callbacks.cc:15200 ../src/callbacks.cc:22379
+#: ../src/callbacks.cc:26178 ../src/callbacks.cc:26218
 msgid "Hexadecimal"
 msgstr "Hexadecimal"
 
-#: ../data/main.ui.h:70 ../src/callbacks.cc:15113
+#: ../data/main.ui.h:73 ../src/callbacks.cc:15202
 msgid "Other…"
 msgstr "Annan…"
 
-#: ../data/main.ui.h:71 ../data/setbase.ui.h:8
+#: ../data/main.ui.h:74 ../data/setbase.ui.h:8
 msgid "Sexagesimal"
 msgstr "Sexagesimal"
 
-#: ../data/main.ui.h:72
+#: ../data/main.ui.h:75
 msgid "Time Format"
 msgstr "Tidsformat"
 
-#: ../data/main.ui.h:73 ../src/callbacks.cc:15112
+#: ../data/main.ui.h:76 ../src/callbacks.cc:15201
 msgid "Roman Numerals"
 msgstr "Romerska siffror"
 
-#: ../data/main.ui.h:74
+#: ../data/main.ui.h:77
 msgid "Numerical Display"
 msgstr "Numerisk visning"
 
-#: ../data/main.ui.h:75
+#: ../data/main.ui.h:78
 msgid "Normal"
 msgstr "Normal"
 
-#: ../data/main.ui.h:76
+#: ../data/main.ui.h:79
 msgid "Engineering"
 msgstr "Teknisk"
 
-#: ../data/main.ui.h:77
+#: ../data/main.ui.h:80
 msgid "Scientific"
 msgstr "Vetenskaplig"
 
-#: ../data/main.ui.h:78
+#: ../data/main.ui.h:81
 msgid "Purely Scientific"
 msgstr "Fullt vetenskaplig"
 
-#: ../data/main.ui.h:79
+#: ../data/main.ui.h:82
 msgid "Simple"
 msgstr "Enkel"
 
-#: ../data/main.ui.h:80
+#: ../data/main.ui.h:83
 msgid ""
 "Off: 1/7 ≈ 0.14285714\n"
 "On: 1/7 = 0.142857 142857..."
@@ -1144,15 +1157,15 @@ msgstr ""
 "Av: 1/7 ≈ 0,14285714\n"
 "På: 1/7 = 0,142857 142857..."
 
-#: ../data/main.ui.h:82
+#: ../data/main.ui.h:85
 msgid "Indicate Repeating Decimals"
 msgstr "Indikera upprepande decimaler"
 
-#: ../data/main.ui.h:83
+#: ../data/main.ui.h:86
 msgid "Show Ending Zeroes"
 msgstr "Visa avslutande nollor"
 
-#: ../data/main.ui.h:84
+#: ../data/main.ui.h:87
 msgid ""
 "Off: 2.5 ≈ 3,  1.5 ≈ 2\n"
 "On: 2.5 ≈ 2, 1.5 ≈ 2"
@@ -1160,11 +1173,11 @@ msgstr ""
 "Av: 2,5 ≈ 3;  1,5 ≈ 2\n"
 "På: 2,5 ≈ 2; 1,5 ≈ 2"
 
-#: ../data/main.ui.h:86
+#: ../data/main.ui.h:89
 msgid "Round Halfway Numbers to Even"
 msgstr "Avrunda mittemellan-tal till jämn siffra"
 
-#: ../data/main.ui.h:87
+#: ../data/main.ui.h:90
 msgid ""
 "Off: 1/x\n"
 "On: x^(-1)"
@@ -1172,11 +1185,11 @@ msgstr ""
 "Av: 1/x\n"
 "På: x^(-1)"
 
-#: ../data/main.ui.h:89
+#: ../data/main.ui.h:92
 msgid "Negative Exponents"
 msgstr "Negativa exponenter"
 
-#: ../data/main.ui.h:90
+#: ../data/main.ui.h:93
 msgid ""
 "Off: -x + y\n"
 "On: y - x"
@@ -1184,39 +1197,39 @@ msgstr ""
 "Av: -x + y\n"
 "På: y - x"
 
-#: ../data/main.ui.h:92
+#: ../data/main.ui.h:95
 msgid "Sort Minus Last"
 msgstr "Sortera minus sist"
 
-#: ../data/main.ui.h:93
+#: ../data/main.ui.h:96
 msgid "Complex Rectangular Form"
 msgstr "Komplex rektangulär form"
 
-#: ../data/main.ui.h:94
+#: ../data/main.ui.h:97
 msgid "Complex Exponential Form"
 msgstr "Komplex exponentiell form"
 
-#: ../data/main.ui.h:95
+#: ../data/main.ui.h:98
 msgid "Complex Polar Form"
 msgstr "Komplex polär form"
 
-#: ../data/main.ui.h:96
+#: ../data/main.ui.h:99
 msgid "Complex Angle/Phasor Notation"
 msgstr "Komplex vinkelnotation"
 
-#: ../data/main.ui.h:97
+#: ../data/main.ui.h:100
 msgid "Rational Number Form"
 msgstr "Form för rationella tal"
 
-#: ../data/main.ui.h:98
+#: ../data/main.ui.h:101
 msgid "1/3 ≈ 0.33333"
 msgstr "1/3 ≈ 0,33333"
 
-#: ../data/main.ui.h:99
+#: ../data/main.ui.h:102
 msgid "Decimal Fractions"
 msgstr "Decimalform"
 
-#: ../data/main.ui.h:100
+#: ../data/main.ui.h:103
 msgid ""
 "3/9 = 1/3\n"
 "6/4 = 1.5"
@@ -1224,31 +1237,31 @@ msgstr ""
 "3/9 = 1/3\n"
 "6/4 = 1,5"
 
-#: ../data/main.ui.h:102
+#: ../data/main.ui.h:105
 msgid "Exact Decimal Fractions"
 msgstr "Exakt decimalform"
 
-#: ../data/main.ui.h:103
+#: ../data/main.ui.h:106
 msgid "6/4 = 3/2"
 msgstr "6/4 = 3/2"
 
-#: ../data/main.ui.h:104
+#: ../data/main.ui.h:107
 msgid "Simple Fractions"
 msgstr "Bråkform"
 
-#: ../data/main.ui.h:105
+#: ../data/main.ui.h:108
 msgid "6/4 = 1+1/2"
 msgstr "6/4 = 1+1/2"
 
-#: ../data/main.ui.h:106
+#: ../data/main.ui.h:109
 msgid "Mixed Fractions"
 msgstr "Blandad form"
 
-#: ../data/main.ui.h:107
+#: ../data/main.ui.h:110
 msgid "Interval Display"
 msgstr "Intervallvisning"
 
-#: ../data/main.ui.h:108
+#: ../data/main.ui.h:111
 msgid ""
 "Off: 1/2*pi ≈ 1.5707963\n"
 "On: 1/2*pi = 0.5 pi"
@@ -1256,11 +1269,11 @@ msgstr ""
 "Av: 1/2*pi ≈ 1,5707963\n"
 "På: 1/2*pi = 0,5 pi"
 
-#: ../data/main.ui.h:110
+#: ../data/main.ui.h:113
 msgid "Adaptive"
 msgstr "Adaptiv"
 
-#: ../data/main.ui.h:111
+#: ../data/main.ui.h:114
 msgid ""
 "Calculates an interval of possible values and keeps track of precision "
 "changes. "
@@ -1268,69 +1281,69 @@ msgstr ""
 "Beräknar ett intervall av möjliga värden och håller read på förändringar i "
 "precision. "
 
-#: ../data/main.ui.h:112
+#: ../data/main.ui.h:115
 msgid "Significant Digits"
 msgstr "Signifikanta siffror"
 
-#: ../data/main.ui.h:113 ../src/interface.cc:957
+#: ../data/main.ui.h:116 ../src/interface.cc:961
 msgid "Interval"
 msgstr "Intervall"
 
-#: ../data/main.ui.h:114
+#: ../data/main.ui.h:117
 msgid "Plus/Minus"
 msgstr "Plus/minus"
 
-#: ../data/main.ui.h:115
+#: ../data/main.ui.h:118
 msgid "Midpoint"
 msgstr "Medelpunkt"
 
-#: ../data/main.ui.h:116
+#: ../data/main.ui.h:119
 msgid "Unit Display"
 msgstr "Enehetsvisning"
 
-#: ../data/main.ui.h:117
+#: ../data/main.ui.h:120
 msgid "Do not use any prefixes in result"
 msgstr "Använd inga prefix i resultatet"
 
-#: ../data/main.ui.h:118
+#: ../data/main.ui.h:121
 msgid "Show prefixes for primarily SI and CGS units."
 msgstr "Visa prefix för huvudsakligen SI och CGS enheter."
 
-#: ../data/main.ui.h:119
+#: ../data/main.ui.h:122
 msgid "Use prefixes for selected units"
 msgstr "Använd prefix för vissa enheter"
 
-#: ../data/main.ui.h:120
+#: ../data/main.ui.h:123
 msgid "Use prefixes also for currencies"
 msgstr "Använd prefix även för valutor"
 
-#: ../data/main.ui.h:121
+#: ../data/main.ui.h:124
 msgid "Use prefixs for all units"
 msgstr "Använd prefix med alla enheter"
 
-#: ../data/main.ui.h:122
+#: ../data/main.ui.h:125
 msgid ""
 "Enables automatic use of hekto, deka, deci and centi when prefixes is enabled"
 msgstr ""
 "Aktiverar automatisk användning av hekto, deka, deci och centi när prefix är "
 "aktiverade"
 
-#: ../data/main.ui.h:123
+#: ../data/main.ui.h:126
 msgid "Enable All SI Prefixes"
 msgstr "Använd alla SI-prefix"
 
-#: ../data/main.ui.h:124
+#: ../data/main.ui.h:127
 msgid ""
 "Enables automatic setting of prefix for denominator in addition to the "
 "numerator"
 msgstr ""
 "Aktiverar automatisk användande av prefix för nämnaren utöver i täljaren"
 
-#: ../data/main.ui.h:125
+#: ../data/main.ui.h:128
 msgid "Enable Denominator Prefixes"
 msgstr "Aktivera prefix i nämnaren"
 
-#: ../data/main.ui.h:126
+#: ../data/main.ui.h:129
 msgid ""
 "Off: (2 m)/s\n"
 "On: 2 (m/s)"
@@ -1338,19 +1351,19 @@ msgstr ""
 "Av: (2 m)/s\n"
 "På: 2 (m/s)"
 
-#: ../data/main.ui.h:128
+#: ../data/main.ui.h:131
 msgid "Place Units Separately"
 msgstr "Placera enheter separat"
 
-#: ../data/main.ui.h:129
+#: ../data/main.ui.h:132
 msgid "No Additional Conversion"
 msgstr "Ingen ytterligare omvandling"
 
-#: ../data/main.ui.h:130
+#: ../data/main.ui.h:133
 msgid "Convert to Optimal SI Unit"
 msgstr "Omvandla till optimal SI-enhet"
 
-#: ../data/main.ui.h:131
+#: ../data/main.ui.h:134
 msgid ""
 "If enabled:\n"
 "15 in = 1 ft + 3 in\n"
@@ -1360,105 +1373,93 @@ msgstr ""
 "15 in = 1 ft + 3 in\n"
 "3,2 h = 3 h + 12 min"
 
-#: ../data/main.ui.h:134
+#: ../data/main.ui.h:137
 msgid "Convert to Mixed Units"
 msgstr "Omvandla till blandade enheter"
 
-#: ../data/main.ui.h:135
+#: ../data/main.ui.h:138
 msgid "Abbreviate Names"
 msgstr "Förkorta namn"
 
-#: ../data/main.ui.h:136
+#: ../data/main.ui.h:139
 msgid "Enabled Objects"
 msgstr "Aktiverade objekt"
 
-#: ../data/main.ui.h:137 ../data/variables.ui.h:1
+#: ../data/main.ui.h:140 ../data/variables.ui.h:1
 msgid "Variables"
 msgstr "Variabler"
 
-#: ../data/main.ui.h:139 ../data/units.ui.h:1
+#: ../data/main.ui.h:142 ../data/units.ui.h:1
 msgid "Units"
 msgstr "Enheter"
 
-#: ../data/main.ui.h:140
+#: ../data/main.ui.h:143
 msgid "Unknowns"
 msgstr "Okända"
 
-#: ../data/main.ui.h:141
+#: ../data/main.ui.h:144
 msgid "Units in Physical Constants"
 msgstr "Enheter i fysiska konstanter"
 
-#: ../data/main.ui.h:142
+#: ../data/main.ui.h:145
 msgid "If not enabled, treats all variables as unknown"
 msgstr "Om avaktiverad behandlas alla variabler som okända"
 
-#: ../data/main.ui.h:143
+#: ../data/main.ui.h:146
 msgid "Calculate Variables"
 msgstr "Beräkna variabler"
 
-#: ../data/main.ui.h:144
+#: ../data/main.ui.h:147
 msgid "Disables/enables complex numbers in result"
 msgstr "(Av)aktiverar komplexa tal i resultat"
 
-#: ../data/main.ui.h:145
+#: ../data/main.ui.h:148
 msgid "Allow Complex Result"
 msgstr "Tillåt complext resultat"
 
-#: ../data/main.ui.h:146
+#: ../data/main.ui.h:149
 msgid "Disables/enables infinite numbers in result"
 msgstr "(Av)aktiverar oändliga tal i resultat"
 
-#: ../data/main.ui.h:147
+#: ../data/main.ui.h:150
 msgid "Allow Infinite Result"
 msgstr "Tillåt oändligt resultat"
 
-#: ../data/main.ui.h:148
+#: ../data/main.ui.h:151
 msgid "Approximation"
 msgstr "Approximering"
 
-#: ../data/main.ui.h:149
+#: ../data/main.ui.h:152
 msgid "Always Exact"
 msgstr "Alltid exakt"
 
-#: ../data/main.ui.h:150
+#: ../data/main.ui.h:153
 msgid "Try Exact"
 msgstr "Försök exakt"
 
-#: ../data/main.ui.h:151 ../src/callbacks.cc:13581
+#: ../data/main.ui.h:154 ../src/callbacks.cc:13711
 msgid "Approximate"
 msgstr "Approximera"
 
-#: ../data/main.ui.h:152
+#: ../data/main.ui.h:155
 msgid "Interval Arithmetic"
 msgstr "Intervallaritmetik"
 
-#: ../data/main.ui.h:153
+#: ../data/main.ui.h:156
 msgid "Interval Calculation"
 msgstr "Intervallberäkning"
 
-#: ../data/main.ui.h:154
+#: ../data/main.ui.h:157
 msgid "Variance Formula"
 msgstr "Variansformel"
 
-#: ../data/main.ui.h:155
+#: ../data/main.ui.h:158
 msgid "Change angle unit used in trigonometric functions"
 msgstr "Ändra vinkelenhet för trigonometriska funktioner"
 
-#: ../data/main.ui.h:156
+#: ../data/main.ui.h:159
 msgid "Angle Unit"
 msgstr "Vinkelenhet"
-
-#: ../data/main.ui.h:157
-msgid "Degrees"
-msgstr "Grader"
-
-#: ../data/main.ui.h:158
-msgid "Radians"
-msgstr "Radianer"
-
-#: ../data/main.ui.h:159
-msgid "Gradians"
-msgstr "Gradienter"
 
 #: ../data/main.ui.h:160 ../data/plot.ui.h:27
 msgid "None"
@@ -1488,7 +1489,7 @@ msgstr "Varna när okända nämnare är antagna som ej noll"
 msgid "Warn About Denominators Assumed Non-Zero"
 msgstr "Varna om nämnare antagna som ej noll"
 
-#: ../data/main.ui.h:167 ../src/callbacks.cc:15095
+#: ../data/main.ui.h:167 ../src/callbacks.cc:15184
 msgid "Parsing Mode"
 msgstr "Tolkningsläge"
 
@@ -1576,11 +1577,11 @@ msgstr "RPN-läge"
 msgid "Calculate As You Type"
 msgstr "Fortgående beräkningar"
 
-#: ../data/main.ui.h:190 ../src/callbacks.cc:15115
+#: ../data/main.ui.h:190 ../src/callbacks.cc:15204
 msgid "Meta Modes"
 msgstr "Metalägen"
 
-#: ../data/main.ui.h:191 ../src/callbacks.cc:15127
+#: ../data/main.ui.h:191 ../src/callbacks.cc:15216
 msgid "Save Mode…"
 msgstr "Spara läge…"
 
@@ -1620,7 +1621,7 @@ msgstr "_Om"
 msgid "Calculation result"
 msgstr "Beräkningsresultat"
 
-#: ../data/main.ui.h:202 ../data/units.ui.h:18 ../src/callbacks.cc:10871
+#: ../data/main.ui.h:202 ../data/units.ui.h:18 ../src/callbacks.cc:11001
 msgid "="
 msgstr "="
 
@@ -1656,8 +1657,8 @@ msgstr "RPN-stack"
 msgid "Insert the selected value"
 msgstr "Infoga valt värde"
 
-#: ../data/main.ui.h:210 ../data/variableedit.ui.h:9 ../src/interface.cc:1521
-#: ../src/interface.cc:1718 ../src/interface.cc:3113 ../src/callbacks.cc:11525
+#: ../data/main.ui.h:210 ../data/variableedit.ui.h:9 ../src/interface.cc:1529
+#: ../src/interface.cc:1726 ../src/interface.cc:3121 ../src/callbacks.cc:11655
 msgid "Value"
 msgstr "Värde"
 
@@ -1697,7 +1698,7 @@ msgstr "Höj med det valda värdet"
 msgid "Calculate the square root of the selected value"
 msgstr "Beräkna kvadratroten av det valda värdet"
 
-#: ../data/main.ui.h:221 ../src/interface.cc:1470
+#: ../data/main.ui.h:221 ../src/interface.cc:1478
 msgid "History"
 msgstr "Historik"
 
@@ -1738,31 +1739,31 @@ msgstr "Beräkna kvadratroten av det översta värdet"
 msgid "Calculate the sum of all values"
 msgstr "Beräkna summa av alla värden"
 
-#: ../data/main.ui.h:231 ../src/callbacks.cc:5342
+#: ../data/main.ui.h:231 ../src/callbacks.cc:5356
 msgid "Rotate the stack or move selected register up"
 msgstr "Rotera stacken eller flytta markerat register uppåt"
 
-#: ../data/main.ui.h:232 ../src/callbacks.cc:5350
+#: ../data/main.ui.h:232 ../src/callbacks.cc:5364
 msgid "Rotate the stack or move selected register down"
 msgstr "Rotera stacken eller flytta markerat register nedåt"
 
-#: ../data/main.ui.h:233 ../src/callbacks.cc:5358
+#: ../data/main.ui.h:233 ../src/callbacks.cc:5372
 msgid ""
 "Swap the to top values or move the selected value to the top of the stack"
 msgstr ""
 "Byt plats på de två översta värdena eller flytta markerat värdet till toppen "
 "av stacken"
 
-#: ../data/main.ui.h:234 ../src/callbacks.cc:5366
+#: ../data/main.ui.h:234 ../src/callbacks.cc:5380
 msgid "Copy the the selected or top value to the top of the stack"
 msgstr "Kopiera det valda eller det översta värdet till toppen av stacken"
 
-#: ../data/main.ui.h:235 ../src/callbacks.cc:5374
+#: ../data/main.ui.h:235 ../src/callbacks.cc:5388
 msgid "Enter the top value from before the last numeric operation"
 msgstr ""
 "Lägg till det översta värdet från innan den senaste numeriska operationen"
 
-#: ../data/main.ui.h:236 ../src/callbacks.cc:5382
+#: ../data/main.ui.h:236 ../src/callbacks.cc:5396
 msgid "Delete the top or selected value"
 msgstr "Ta bort det översta eller det markerade värdet"
 
@@ -1770,7 +1771,7 @@ msgstr "Ta bort det översta eller det markerade värdet"
 msgid "Edit the selected value"
 msgstr "Redigera valt värde"
 
-#: ../data/main.ui.h:238 ../src/callbacks.cc:5390
+#: ../data/main.ui.h:238 ../src/callbacks.cc:5404
 msgid "Clear the RPN stack"
 msgstr "Töm RPN-stacken."
 
@@ -1812,11 +1813,11 @@ msgstr ""
 msgid "Conversion"
 msgstr "Omvandling"
 
-#: ../data/main.ui.h:250 ../src/callbacks.cc:5406
+#: ../data/main.ui.h:250 ../src/callbacks.cc:5432
 msgid "Show/hide programming keypad"
 msgstr "Visa/dölj programmeringsknappsats"
 
-#: ../data/main.ui.h:251 ../src/callbacks.cc:13582
+#: ../data/main.ui.h:251 ../src/callbacks.cc:13712
 msgid "Exact"
 msgstr "Exakt"
 
@@ -1848,20 +1849,20 @@ msgstr "Numerisk visning"
 msgid "Pure"
 msgstr "Strikt"
 
-#: ../data/main.ui.h:259 ../src/callbacks.cc:6185
+#: ../data/main.ui.h:259 ../src/callbacks.cc:6213
 msgid "Number base"
 msgstr "Talbas"
 
-#: ../data/main.ui.h:260 ../data/setbase.ui.h:9 ../src/callbacks.cc:6233
+#: ../data/main.ui.h:260 ../data/setbase.ui.h:9 ../src/callbacks.cc:6261
 msgid "Time format"
 msgstr "Tidsformat"
 
-#: ../data/main.ui.h:261 ../src/callbacks.cc:22257
+#: ../data/main.ui.h:261 ../src/callbacks.cc:22381
 msgid "Roman"
 msgstr "Romersk"
 
-#: ../data/main.ui.h:262 ../src/callbacks.cc:1306 ../src/callbacks.cc:10870
-#: ../src/callbacks.cc:10872
+#: ../data/main.ui.h:262 ../src/callbacks.cc:1306 ../src/callbacks.cc:11000
+#: ../src/callbacks.cc:11002
 msgid "Calculate expression"
 msgstr "Beräkna uttrycket"
 
@@ -1870,7 +1871,7 @@ msgid "DEL"
 msgstr "DEL"
 
 #: ../data/main.ui.h:264 ../data/nbases.ui.h:30 ../data/percentage.ui.h:4
-#: ../src/callbacks.cc:15053
+#: ../src/callbacks.cc:15142
 msgid "Clear"
 msgstr "Rensa"
 
@@ -1882,7 +1883,7 @@ msgstr "AC"
 msgid "Cycle through previous expression"
 msgstr "Bläddra genom tidigare uttryck"
 
-#: ../data/main.ui.h:267 ../src/interface.cc:951
+#: ../data/main.ui.h:267 ../src/interface.cc:955
 msgid "Previous result"
 msgstr "Föregående resultat"
 
@@ -1894,7 +1895,7 @@ msgstr "ANS"
 msgid "EXP"
 msgstr "EXP"
 
-#: ../data/main.ui.h:270 ../src/callbacks.cc:5306
+#: ../data/main.ui.h:270 ../src/callbacks.cc:5320
 msgid "Smart parentheses"
 msgstr "Smarta parenteser"
 
@@ -1938,7 +1939,7 @@ msgstr "mod"
 msgid "mean"
 msgstr "medel"
 
-#: ../data/main.ui.h:282 ../src/interface.cc:1006
+#: ../data/main.ui.h:282 ../src/interface.cc:1010
 msgid "Store result as a variable"
 msgstr "Spara resultatet som en variabel"
 
@@ -1954,7 +1955,7 @@ msgstr "Omvandla mellan talbaser"
 msgid "Imaginary unit i (√-1)"
 msgstr "Imaginär enhet i (√-1)"
 
-#: ../data/main.ui.h:286 ../src/callbacks.cc:5271
+#: ../data/main.ui.h:286 ../src/callbacks.cc:5285
 msgid "Manage units"
 msgstr "Hantera enheter"
 
@@ -1984,17 +1985,17 @@ msgstr "Tvåkomplementsform för indata"
 msgid "Two's complement output"
 msgstr "Tvåkomplementsform för utdata"
 
-#: ../data/main.ui.h:293 ../data/nbases.ui.h:26 ../src/interface.cc:619
-#: ../src/interface.cc:943 ../src/interface.cc:1008 ../src/interface.cc:1009
-#: ../src/callbacks.cc:17876 ../src/callbacks.cc:17877
+#: ../data/main.ui.h:293 ../data/nbases.ui.h:26 ../src/interface.cc:620
+#: ../src/interface.cc:947 ../src/interface.cc:1012 ../src/interface.cc:1013
+#: ../src/callbacks.cc:18000 ../src/callbacks.cc:18001
 msgid "Bitwise Exclusive OR"
 msgstr "Bitvist exklusivt OR"
 
-#: ../data/main.ui.h:294 ../data/nbases.ui.h:32 ../src/interface.cc:615
+#: ../data/main.ui.h:294 ../data/nbases.ui.h:32 ../src/interface.cc:616
 msgid "Bitwise Left Shift"
 msgstr "Bitvist högerskift"
 
-#: ../data/main.ui.h:295 ../data/nbases.ui.h:33 ../src/interface.cc:616
+#: ../data/main.ui.h:295 ../data/nbases.ui.h:33 ../src/interface.cc:617
 msgid "Bitwise Right Shift"
 msgstr "Bitvist vänsterskift"
 
@@ -2014,7 +2015,7 @@ msgstr "Beständig knappsats"
 msgid "Edit"
 msgstr "Redigera"
 
-#: ../data/main.ui.h:300 ../data/nbases.ui.h:28 ../src/interface.cc:955
+#: ../data/main.ui.h:300 ../data/nbases.ui.h:28 ../src/interface.cc:959
 msgid "Delete"
 msgstr "Ta bort"
 
@@ -2038,7 +2039,7 @@ msgstr "Infoga tolkad text"
 msgid "Copy Full Text"
 msgstr "Kopiera hel text"
 
-#: ../data/main.ui.h:306 ../src/callbacks.cc:21436
+#: ../data/main.ui.h:306 ../src/callbacks.cc:21560
 msgid "Add Bookmark…"
 msgstr "Lägg till bokmärke…"
 
@@ -2226,7 +2227,7 @@ msgstr "Kvadratrot"
 msgid "Clear Stack"
 msgstr "Töm stacken"
 
-#: ../data/main.ui.h:353 ../src/callbacks.cc:5273
+#: ../data/main.ui.h:353 ../src/callbacks.cc:5287
 msgid "Store result"
 msgstr "Spara resultatet"
 
@@ -2254,9 +2255,9 @@ msgstr "Antal kolumner i matrisen (visade kolumner för vektorer)"
 msgid "If this is a matrix or vector"
 msgstr "Huruvida det är en matris eller vektor"
 
-#: ../data/matrix.ui.h:12 ../data/matrixedit.ui.h:21 ../src/callbacks.cc:27937
-#: ../src/callbacks.cc:27945 ../src/callbacks.cc:27953
-#: ../src/callbacks.cc:27961
+#: ../data/matrix.ui.h:12 ../data/matrixedit.ui.h:21 ../src/callbacks.cc:28123
+#: ../src/callbacks.cc:28131 ../src/callbacks.cc:28139
+#: ../src/callbacks.cc:28147
 msgid "Elements"
 msgstr "Element"
 
@@ -2264,7 +2265,7 @@ msgstr "Element"
 msgid "Current element:"
 msgstr "Nuvarande element:"
 
-#: ../data/matrixedit.ui.h:1 ../src/callbacks.cc:13127
+#: ../data/matrixedit.ui.h:1 ../src/callbacks.cc:13257
 msgid "Edit Matrix"
 msgstr "Redigera matris"
 
@@ -2301,15 +2302,15 @@ msgstr "Verkställ modifikationer av valt namn"
 msgid "Remove the selected name"
 msgstr "Ta bort valt namn"
 
-#: ../data/namesedit.ui.h:7 ../src/interface.cc:2379
+#: ../data/namesedit.ui.h:7 ../src/interface.cc:2387
 msgid "Abbreviation"
 msgstr "Förkortning"
 
-#: ../data/namesedit.ui.h:8 ../src/callbacks.cc:2960 ../src/callbacks.cc:6235
+#: ../data/namesedit.ui.h:8 ../src/callbacks.cc:2971 ../src/callbacks.cc:6263
 msgid "Unicode"
 msgstr "Unicode"
 
-#: ../data/namesedit.ui.h:9 ../src/interface.cc:2383
+#: ../data/namesedit.ui.h:9 ../src/interface.cc:2391
 msgid "Plural"
 msgstr "Pluralform"
 
@@ -2317,7 +2318,7 @@ msgstr "Pluralform"
 msgid "Suffix"
 msgstr "Suffix"
 
-#: ../data/namesedit.ui.h:11 ../src/interface.cc:2105 ../src/interface.cc:2387
+#: ../data/namesedit.ui.h:11 ../src/interface.cc:2113 ../src/interface.cc:2395
 msgid "Reference"
 msgstr "Referens"
 
@@ -2337,16 +2338,16 @@ msgstr "Enbart komplettering"
 msgid "Number Bases"
 msgstr "Talbaser"
 
-#: ../data/nbases.ui.h:9 ../data/setbase.ui.h:10 ../src/callbacks.cc:6229
-#: ../src/callbacks.cc:26005 ../src/callbacks.cc:26045
+#: ../data/nbases.ui.h:9 ../data/setbase.ui.h:10 ../src/callbacks.cc:6257
+#: ../src/callbacks.cc:26179 ../src/callbacks.cc:26219
 msgid "Roman numerals"
 msgstr "Romerska siffror"
 
-#: ../data/nbases.ui.h:13 ../src/callbacks.cc:1680
+#: ../data/nbases.ui.h:13 ../src/callbacks.cc:1684
 msgid "BIN"
 msgstr "BIN"
 
-#: ../data/nbases.ui.h:14 ../src/callbacks.cc:1685
+#: ../data/nbases.ui.h:14 ../src/callbacks.cc:1689
 msgid "OCT"
 msgstr "OKT"
 
@@ -2354,11 +2355,11 @@ msgstr "OKT"
 msgid "DEC"
 msgstr "DEC"
 
-#: ../data/nbases.ui.h:16 ../src/callbacks.cc:1690
+#: ../data/nbases.ui.h:16 ../src/callbacks.cc:1694
 msgid "DUO"
 msgstr "DUO"
 
-#: ../data/nbases.ui.h:17 ../src/callbacks.cc:1695
+#: ../data/nbases.ui.h:17 ../src/callbacks.cc:1699
 msgid "HEX"
 msgstr "HEX"
 
@@ -2375,29 +2376,29 @@ msgctxt "Keypad"
 msgid "Add"
 msgstr "Addera"
 
-#: ../data/nbases.ui.h:21 ../src/interface.cc:946
+#: ../data/nbases.ui.h:21 ../src/interface.cc:950
 msgid "Subtract"
 msgstr "Subtrahera"
 
-#: ../data/nbases.ui.h:22 ../src/interface.cc:943
+#: ../data/nbases.ui.h:22 ../src/interface.cc:947
 msgid "Multiply"
 msgstr "Multiplicera"
 
-#: ../data/nbases.ui.h:23 ../src/interface.cc:942
+#: ../data/nbases.ui.h:23 ../src/interface.cc:946
 msgid "Divide"
 msgstr "Dela"
 
-#: ../data/nbases.ui.h:24 ../src/interface.cc:617 ../src/interface.cc:944
-#: ../src/interface.cc:997
+#: ../data/nbases.ui.h:24 ../src/interface.cc:618 ../src/interface.cc:948
+#: ../src/interface.cc:1001
 msgid "Bitwise AND"
 msgstr "Bitvist AND"
 
-#: ../data/nbases.ui.h:25 ../src/interface.cc:618 ../src/interface.cc:946
-#: ../src/interface.cc:998
+#: ../data/nbases.ui.h:25 ../src/interface.cc:619 ../src/interface.cc:950
+#: ../src/interface.cc:1002
 msgid "Bitwise OR"
 msgstr "Bitvist OR"
 
-#: ../data/nbases.ui.h:27 ../src/interface.cc:620 ../src/interface.cc:999
+#: ../data/nbases.ui.h:27 ../src/interface.cc:621 ../src/interface.cc:1003
 msgid "Bitwise NOT"
 msgstr "Bitvist NOT"
 
@@ -2445,8 +2446,8 @@ msgstr "Förändring från 2 till 1"
 msgid "Plot"
 msgstr "Diagram"
 
-#: ../data/plot.ui.h:3 ../src/callbacks.cc:15524 ../src/callbacks.cc:24428
-#: ../src/callbacks.cc:28767
+#: ../data/plot.ui.h:3 ../src/callbacks.cc:15623 ../src/callbacks.cc:24602
+#: ../src/callbacks.cc:28953
 msgid "_Save"
 msgstr "_Spara"
 
@@ -2740,7 +2741,7 @@ msgstr "Resultat"
 msgid "Application name + result"
 msgstr "Programnamn + resultat"
 
-#: ../data/preferences.ui.h:15 ../src/callbacks.cc:15587
+#: ../data/preferences.ui.h:15 ../src/callbacks.cc:15686
 msgid "Mode"
 msgstr "Läge"
 
@@ -3064,11 +3065,11 @@ msgstr "Komplettering"
 msgid "Other:"
 msgstr "Annan:"
 
-#: ../data/setbase.ui.h:12 ../src/interface.cc:2527 ../src/interface.cc:2604
-#: ../src/callbacks.cc:6187 ../src/callbacks.cc:23085 ../src/callbacks.cc:23225
-#: ../src/callbacks.cc:23352 ../src/callbacks.cc:23359
-#: ../src/callbacks.cc:23439 ../src/callbacks.cc:23524
-#: ../src/callbacks.cc:23563 ../src/callbacks.cc:23571
+#: ../data/setbase.ui.h:12 ../src/interface.cc:2535 ../src/interface.cc:2612
+#: ../src/callbacks.cc:6215 ../src/callbacks.cc:23259 ../src/callbacks.cc:23399
+#: ../src/callbacks.cc:23526 ../src/callbacks.cc:23533
+#: ../src/callbacks.cc:23613 ../src/callbacks.cc:23698
+#: ../src/callbacks.cc:23737 ../src/callbacks.cc:23745
 msgid "Bijective base-26"
 msgstr "Bijektiv talbas 26"
 
@@ -3081,7 +3082,7 @@ msgid "<b>Expression Base</b>"
 msgstr "<b>Uttrycksbas</b>"
 
 #: ../data/simplefunctionedit.ui.h:1 ../data/variableedit.ui.h:1
-#: ../src/callbacks.cc:12926
+#: ../src/callbacks.cc:13056
 msgid "Edit Variable"
 msgstr "Redigera variabel"
 
@@ -3114,7 +3115,7 @@ msgstr ""
 "Använd x, y och z för 1:a, 2:a, respektive 3:e funktionsparametern.Detta "
 "undviker potentiella konflikter med variabler, funktioner och enheter."
 
-#: ../data/unitedit.ui.h:1 ../src/callbacks.cc:11946
+#: ../data/unitedit.ui.h:1 ../src/callbacks.cc:12076
 msgid "Edit Unit"
 msgstr "Redigera enhet"
 
@@ -3326,7 +3327,7 @@ msgstr "Värde att omvandla från"
 msgid "Type anywhere"
 msgstr "Skriv varsomhelst"
 
-#: ../data/unknownedit.ui.h:1 ../src/callbacks.cc:12750
+#: ../data/unknownedit.ui.h:1 ../src/callbacks.cc:12880
 msgid "Edit Unknown Variable"
 msgstr "Modifiera okänd variabel"
 
@@ -3346,8 +3347,8 @@ msgstr "Namn för att referera till den okända variabeln i uttryck"
 msgid "Use custom assumptions"
 msgstr "Använd anpassade antaganden"
 
-#: ../data/unknownedit.ui.h:11 ../src/interface.cc:2095
-#: ../src/interface.cc:2338
+#: ../data/unknownedit.ui.h:11 ../src/interface.cc:2103
+#: ../src/interface.cc:2346
 msgid "Type"
 msgstr "Typ"
 
@@ -3435,7 +3436,7 @@ msgstr "Uttryck att beräkna"
 msgid "[EXPRESSION]"
 msgstr "[UTTRYCK]"
 
-#: ../src/main.cc:154 ../src/callbacks.cc:27926
+#: ../src/main.cc:154 ../src/callbacks.cc:28112
 msgid ""
 "<span font=\"10\">Type a mathematical expression above, e.g. \"5 + 2 / 3\",\n"
 "and press the enter key.</span>"
@@ -3479,10 +3480,10 @@ msgstr "Fel vid inhämtande av systemvida definitioner!\n"
 
 #. if no category has been selected (previously selected has been renamed/deleted), select "All"
 #: ../src/main.cc:208 ../src/main.cc:211 ../src/main.cc:214
-#: ../src/callbacks.cc:3463 ../src/callbacks.cc:3524 ../src/callbacks.cc:3563
-#: ../src/callbacks.cc:3809 ../src/callbacks.cc:3872 ../src/callbacks.cc:3970
-#: ../src/callbacks.cc:4061 ../src/callbacks.cc:4121 ../src/callbacks.cc:4203
-#: ../src/callbacks.cc:4298 ../src/callbacks.cc:4353 ../src/callbacks.cc:4603
+#: ../src/callbacks.cc:3474 ../src/callbacks.cc:3535 ../src/callbacks.cc:3574
+#: ../src/callbacks.cc:3820 ../src/callbacks.cc:3883 ../src/callbacks.cc:3981
+#: ../src/callbacks.cc:4072 ../src/callbacks.cc:4132 ../src/callbacks.cc:4214
+#: ../src/callbacks.cc:4309 ../src/callbacks.cc:4364 ../src/callbacks.cc:4614
 msgid "All"
 msgstr "Alla"
 
@@ -3507,185 +3508,185 @@ msgstr ""
 "Vill du trots det ändra förinställt beteende och tillåta flera samtidiga "
 "instanser?"
 
-#: ../src/interface.cc:595
+#: ../src/interface.cc:596
 #, c-format
 msgid "Right-click/long press: %s"
 msgstr "Högerklick/långtryck: %s"
 
-#: ../src/interface.cc:596
+#: ../src/interface.cc:597
 #, c-format
 msgid "Right-click: %s"
 msgstr "Högerklick: %s"
 
-#: ../src/interface.cc:602
+#: ../src/interface.cc:603
 #, c-format
 msgid "Middle-click: %s"
 msgstr "Mittenklick: %s"
 
-#: ../src/interface.cc:733 ../src/callbacks.cc:5245
+#: ../src/interface.cc:737 ../src/callbacks.cc:5256
 msgid "Set unknowns"
 msgstr "Ange okända värden"
 
 #. Show further items in a submenu
-#: ../src/interface.cc:797 ../src/interface.cc:899 ../src/interface.cc:902
-#: ../src/callbacks.cc:5571 ../src/callbacks.cc:5658 ../src/callbacks.cc:18514
-#: ../src/callbacks.cc:22362 ../src/callbacks.cc:22365
-#: ../src/callbacks.cc:22389
+#: ../src/interface.cc:801 ../src/interface.cc:903 ../src/interface.cc:906
+#: ../src/callbacks.cc:5597 ../src/callbacks.cc:5684 ../src/callbacks.cc:18638
+#: ../src/callbacks.cc:22486 ../src/callbacks.cc:22489
+#: ../src/callbacks.cc:22513
 msgid "more"
 msgstr "fler"
 
-#: ../src/interface.cc:935
+#: ../src/interface.cc:939
 msgid "Decimal point"
 msgstr "Decimalkomma"
 
-#: ../src/interface.cc:935 ../src/interface.cc:936
+#: ../src/interface.cc:939 ../src/interface.cc:940
 msgid "Blank space"
 msgstr "Blanksteg"
 
-#: ../src/interface.cc:935 ../src/interface.cc:936
+#: ../src/interface.cc:939 ../src/interface.cc:940
 msgid "New line"
 msgstr "Ny rad"
 
-#: ../src/interface.cc:936
+#: ../src/interface.cc:940
 msgid "Argument separator"
 msgstr "Parameteravgränsare"
 
-#: ../src/interface.cc:941
+#: ../src/interface.cc:945
 msgid "Raise (Ctrl+*)"
 msgstr "Upphöj (Ctrl+*)"
 
-#: ../src/interface.cc:944
+#: ../src/interface.cc:948
 msgid "Add"
 msgstr "Addera"
 
-#: ../src/interface.cc:948
+#: ../src/interface.cc:952
 msgid "Right parenthesis"
 msgstr "Högerparentes"
 
-#: ../src/interface.cc:948
+#: ../src/interface.cc:952
 msgid "Right vector bracket"
 msgstr "Höger hakparentes för vektorer"
 
-#: ../src/interface.cc:949
+#: ../src/interface.cc:953
 msgid "Left parenthesis"
 msgstr "Vänsterparentes"
 
-#: ../src/interface.cc:949
+#: ../src/interface.cc:953
 msgid "Left vector bracket"
 msgstr "Vänster hakparentes för vektorer"
 
-#: ../src/interface.cc:951
+#: ../src/interface.cc:955
 msgid "Previous result (static)"
 msgstr "Föregående resultat (statiskt)"
 
-#: ../src/interface.cc:953
+#: ../src/interface.cc:957
 msgid "Move cursor left or right"
 msgstr "Flytta markören åt vänster eller höger"
 
-#: ../src/interface.cc:953
+#: ../src/interface.cc:957
 msgid "Move cursor to beginning or end"
 msgstr "Flytta markören till början eller slutet"
 
-#: ../src/interface.cc:955
+#: ../src/interface.cc:959
 msgid "Backspace"
 msgstr "Backsteg"
 
-#: ../src/interface.cc:957
+#: ../src/interface.cc:961
 msgid "Uncertainty/interval"
 msgstr "Osäkerhet/intervall"
 
-#: ../src/interface.cc:957
+#: ../src/interface.cc:961
 msgid "Relative error"
 msgstr "Relativt fel"
 
-#: ../src/interface.cc:997
+#: ../src/interface.cc:1001
 msgid "Logical AND"
 msgstr "Logiskt AND"
 
-#: ../src/interface.cc:998
+#: ../src/interface.cc:1002
 msgid "Logical OR"
 msgstr "Logiskt OR"
 
-#: ../src/interface.cc:999
+#: ../src/interface.cc:1003
 msgid "Logical NOT"
 msgstr "Logiskt NOT"
 
-#: ../src/interface.cc:1001 ../src/interface.cc:1002 ../src/interface.cc:1003
-#: ../src/interface.cc:1004
+#: ../src/interface.cc:1005 ../src/interface.cc:1006 ../src/interface.cc:1007
+#: ../src/interface.cc:1008
 msgid "Toggle Result Base"
 msgstr "Växla resultatbas"
 
-#: ../src/interface.cc:1006
+#: ../src/interface.cc:1010
 msgid "Open menu with stored variables"
 msgstr "Öppna meny med lagrade variabler"
 
-#: ../src/interface.cc:1464 ../src/interface.cc:1514
+#: ../src/interface.cc:1472 ../src/interface.cc:1522
 msgid "Index"
 msgstr "Index"
 
-#: ../src/interface.cc:1529 ../src/interface.cc:1530 ../src/callbacks.cc:10847
-#: ../src/callbacks.cc:10849
+#: ../src/interface.cc:1537 ../src/interface.cc:1538 ../src/callbacks.cc:10977
+#: ../src/callbacks.cc:10979
 msgid "Ent"
 msgstr "Ent"
 
-#: ../src/interface.cc:1531 ../src/interface.cc:1532 ../src/callbacks.cc:1306
-#: ../src/callbacks.cc:10848 ../src/callbacks.cc:10850
+#: ../src/interface.cc:1539 ../src/interface.cc:1540 ../src/callbacks.cc:1306
+#: ../src/callbacks.cc:10978 ../src/callbacks.cc:10980
 msgid "Calculate expression and add to stack"
 msgstr "Beräkna uttrycket och lägg till i stacken"
 
-#: ../src/interface.cc:1603 ../src/interface.cc:1773
+#: ../src/interface.cc:1611 ../src/interface.cc:1781
 msgid "Flag"
 msgstr "Flagga"
 
-#: ../src/interface.cc:2257 ../src/callbacks.cc:14255 ../src/callbacks.cc:22734
+#: ../src/interface.cc:2265 ../src/callbacks.cc:14385 ../src/callbacks.cc:22857
 msgid "Matrices"
 msgstr "Matriser"
 
-#: ../src/interface.cc:2794
+#: ../src/interface.cc:2802
 msgid "Gregorian"
 msgstr "Gregoriansk"
 
-#: ../src/interface.cc:2795
+#: ../src/interface.cc:2803
 msgid "Revised Julian (Milanković)"
 msgstr "Reviderad juliansk"
 
-#: ../src/interface.cc:2796
+#: ../src/interface.cc:2804
 msgid "Julian"
 msgstr "Juliansk"
 
-#: ../src/interface.cc:2797
+#: ../src/interface.cc:2805
 msgid "Islamic (Hijri)"
 msgstr "Muslimsk"
 
-#: ../src/interface.cc:2798
+#: ../src/interface.cc:2806
 msgid "Hebrew"
 msgstr "Hebreisk"
 
-#: ../src/interface.cc:2799
+#: ../src/interface.cc:2807
 msgid "Chinese"
 msgstr "Kinesisk"
 
-#: ../src/interface.cc:2800
+#: ../src/interface.cc:2808
 msgid "Persian (Solar Hijri)"
 msgstr "Persisk"
 
-#: ../src/interface.cc:2801
+#: ../src/interface.cc:2809
 msgid "Coptic"
 msgstr "Koptisk"
 
-#: ../src/interface.cc:2802
+#: ../src/interface.cc:2810
 msgid "Ethiopian"
 msgstr "Etiopisk"
 
-#: ../src/interface.cc:2803
+#: ../src/interface.cc:2811
 msgid "Indian (National)"
 msgstr "Indisk (nationell)"
 
-#: ../src/interface.cc:3109
+#: ../src/interface.cc:3117
 msgid "Action"
 msgstr "Åtgärd"
 
-#: ../src/interface.cc:3117
+#: ../src/interface.cc:3125
 msgid "Key combination"
 msgstr "Tangentkombination"
 
@@ -3702,7 +3703,7 @@ msgstr "Index i historiken"
 msgid "History index %s does not exist."
 msgstr "Index %s finns inte i historiken."
 
-#: ../src/callbacks.cc:439 ../src/callbacks.cc:440 ../src/callbacks.cc:13656
+#: ../src/callbacks.cc:439 ../src/callbacks.cc:440 ../src/callbacks.cc:13786
 msgid "expression"
 msgstr "uttryck"
 
@@ -3718,7 +3719,7 @@ msgstr ""
 msgid "Set Window Title"
 msgstr "Angle fönstertitel"
 
-#: ../src/callbacks.cc:947 ../src/callbacks.cc:26866
+#: ../src/callbacks.cc:947 ../src/callbacks.cc:27040
 #, c-format
 msgid ""
 "Failed to open %s.\n"
@@ -3740,10 +3741,10 @@ msgstr ""
 "Kunde inte visa hjälp för Qalculate!.\n"
 "%s"
 
-#: ../src/callbacks.cc:1088 ../src/callbacks.cc:2705 ../src/callbacks.cc:8396
-#: ../src/callbacks.cc:8725 ../src/callbacks.cc:8769 ../src/callbacks.cc:9056
-#: ../src/callbacks.cc:9529 ../src/callbacks.cc:9584 ../src/callbacks.cc:11321
-#: ../src/callbacks.cc:20752
+#: ../src/callbacks.cc:1088 ../src/callbacks.cc:2716 ../src/callbacks.cc:8518
+#: ../src/callbacks.cc:8848 ../src/callbacks.cc:8892 ../src/callbacks.cc:9179
+#: ../src/callbacks.cc:9659 ../src/callbacks.cc:9714 ../src/callbacks.cc:11451
+#: ../src/callbacks.cc:20876
 msgid "approx."
 msgstr "ca"
 
@@ -3751,72 +3752,72 @@ msgstr "ca"
 msgid "Stop process"
 msgstr "Stoppa förloppet"
 
-#: ../src/callbacks.cc:1665
+#: ../src/callbacks.cc:1669
 msgid "EXACT"
 msgstr "EXAKT"
 
-#: ../src/callbacks.cc:1668
+#: ../src/callbacks.cc:1672
 msgid "APPROX"
 msgstr "APPROX"
 
-#: ../src/callbacks.cc:1672
+#: ../src/callbacks.cc:1676
 msgid "RPN"
 msgstr "RPN"
 
-#: ../src/callbacks.cc:1700
+#: ../src/callbacks.cc:1704
 msgid "ROMAN"
 msgstr "ROMAN"
 
-#: ../src/callbacks.cc:1752
+#: ../src/callbacks.cc:1756
 msgid "DEG"
 msgstr "DEG"
 
-#: ../src/callbacks.cc:1757
+#: ../src/callbacks.cc:1761
 msgid "RAD"
 msgstr "RAD"
 
-#: ../src/callbacks.cc:1762
+#: ../src/callbacks.cc:1766
 msgid "GRA"
 msgstr "GRA"
 
-#: ../src/callbacks.cc:1769
+#: ../src/callbacks.cc:1773
 msgid "PREC"
 msgstr "PREC"
 
-#: ../src/callbacks.cc:1774
+#: ../src/callbacks.cc:1778
 msgid "FUNC"
 msgstr "FUNK"
 
-#: ../src/callbacks.cc:1780
+#: ../src/callbacks.cc:1784
 msgid "UNIT"
 msgstr "ENHET"
 
-#: ../src/callbacks.cc:1786
+#: ../src/callbacks.cc:1790
 msgid "VAR"
 msgstr "VAR"
 
-#: ../src/callbacks.cc:1792
+#: ../src/callbacks.cc:1796
 msgid "INF"
 msgstr "INF"
 
-#: ../src/callbacks.cc:1798
+#: ../src/callbacks.cc:1802
 msgid "CPLX"
 msgstr "CPLX"
 
-#: ../src/callbacks.cc:1823
+#: ../src/callbacks.cc:1827
 msgid "Do you wish to update the exchange rates now?"
 msgstr "Vill du uppdatera växelkurserna nu?"
 
-#: ../src/callbacks.cc:1824
+#: ../src/callbacks.cc:1828
 #, c-format
 msgid "It has been %s day(s) since the exchange rates last were updated."
 msgstr "Det var %s dag(ar) sedan växelkurserna senast uppdaterades."
 
-#: ../src/callbacks.cc:1825
+#: ../src/callbacks.cc:1829
 msgid "Do not ask again"
 msgstr "Fråga inte igen"
 
-#: ../src/callbacks.cc:1947
+#: ../src/callbacks.cc:1951
 msgid ""
 "When errors, warnings and other information are generated during calculation "
 "the button to the right of the expression entry changes to reflect this. If "
@@ -3826,7 +3827,7 @@ msgstr ""
 "knappen till höger om uttrycksfältet för att reflektera detta. Om du håller "
 "pekaren över eller klickar på knappen, så kommer meddelandet att visas."
 
-#: ../src/callbacks.cc:2036
+#: ../src/callbacks.cc:2040
 #, c-format
 msgid ""
 "A new version of %s is available.\n"
@@ -3837,251 +3838,251 @@ msgstr ""
 "\n"
 "Du kan hämta version %s på %s."
 
-#: ../src/callbacks.cc:2061
+#: ../src/callbacks.cc:2065
 #, c-format
 msgid "Too many arguments for %s()."
 msgstr "För många parametrar för %s()."
 
-#: ../src/callbacks.cc:2088 ../src/callbacks.cc:3638 ../src/callbacks.cc:4837
+#: ../src/callbacks.cc:2092 ../src/callbacks.cc:3649 ../src/callbacks.cc:4848
 msgid "argument"
 msgstr "parameter"
 
-#: ../src/callbacks.cc:2224 ../src/callbacks.cc:3508 ../src/callbacks.cc:3509
-#: ../src/callbacks.cc:3565 ../src/callbacks.cc:3856 ../src/callbacks.cc:3857
-#: ../src/callbacks.cc:3972 ../src/callbacks.cc:4105 ../src/callbacks.cc:4106
-#: ../src/callbacks.cc:4205 ../src/callbacks.cc:4344 ../src/callbacks.cc:4345
-#: ../src/callbacks.cc:4346 ../src/callbacks.cc:4605 ../src/callbacks.cc:10817
-#: ../src/callbacks.cc:12184 ../src/callbacks.cc:12554
-#: ../src/callbacks.cc:12859 ../src/callbacks.cc:13065
-#: ../src/callbacks.cc:13346
+#: ../src/callbacks.cc:2228 ../src/callbacks.cc:3519 ../src/callbacks.cc:3520
+#: ../src/callbacks.cc:3576 ../src/callbacks.cc:3867 ../src/callbacks.cc:3868
+#: ../src/callbacks.cc:3983 ../src/callbacks.cc:4116 ../src/callbacks.cc:4117
+#: ../src/callbacks.cc:4216 ../src/callbacks.cc:4355 ../src/callbacks.cc:4356
+#: ../src/callbacks.cc:4357 ../src/callbacks.cc:4616 ../src/callbacks.cc:10947
+#: ../src/callbacks.cc:12314 ../src/callbacks.cc:12684
+#: ../src/callbacks.cc:12989 ../src/callbacks.cc:13195
+#: ../src/callbacks.cc:13476
 msgid "Uncategorized"
 msgstr "Okategoriserad"
 
-#: ../src/callbacks.cc:2305 ../src/callbacks.cc:2931 ../src/callbacks.cc:10201
+#: ../src/callbacks.cc:2309 ../src/callbacks.cc:2942 ../src/callbacks.cc:10331
 msgid "hexadecimal"
 msgstr "hexadecimal"
 
-#: ../src/callbacks.cc:2308 ../src/callbacks.cc:2933 ../src/callbacks.cc:10204
+#: ../src/callbacks.cc:2312 ../src/callbacks.cc:2944 ../src/callbacks.cc:10334
 msgid "octal"
 msgstr "oktal"
 
-#: ../src/callbacks.cc:2311 ../src/callbacks.cc:2935 ../src/callbacks.cc:10207
+#: ../src/callbacks.cc:2315 ../src/callbacks.cc:2946 ../src/callbacks.cc:10337
 msgid "decimal"
 msgstr "decimal"
 
-#: ../src/callbacks.cc:2314 ../src/callbacks.cc:2937 ../src/callbacks.cc:10210
+#: ../src/callbacks.cc:2318 ../src/callbacks.cc:2948 ../src/callbacks.cc:10340
 msgid "duodecimal"
 msgstr "duodecimal"
 
-#: ../src/callbacks.cc:2317 ../src/callbacks.cc:2939 ../src/callbacks.cc:10213
+#: ../src/callbacks.cc:2321 ../src/callbacks.cc:2950 ../src/callbacks.cc:10343
 msgid "binary"
 msgstr "binär"
 
-#: ../src/callbacks.cc:2320 ../src/callbacks.cc:2941 ../src/callbacks.cc:10216
+#: ../src/callbacks.cc:2324 ../src/callbacks.cc:2952 ../src/callbacks.cc:10346
 msgid "roman"
 msgstr "romersk"
 
-#: ../src/callbacks.cc:2323 ../src/callbacks.cc:2943 ../src/callbacks.cc:10219
+#: ../src/callbacks.cc:2327 ../src/callbacks.cc:2954 ../src/callbacks.cc:10349
 msgid "bijective"
 msgstr "bijektiv"
 
-#: ../src/callbacks.cc:2326 ../src/callbacks.cc:2945 ../src/callbacks.cc:10222
+#: ../src/callbacks.cc:2330 ../src/callbacks.cc:2956 ../src/callbacks.cc:10352
 msgid "sexagesimal"
 msgstr "sexagesimal"
 
-#: ../src/callbacks.cc:2344 ../src/callbacks.cc:2957 ../src/callbacks.cc:10240
+#: ../src/callbacks.cc:2348 ../src/callbacks.cc:2968 ../src/callbacks.cc:10370
 msgid "time"
 msgstr "tid"
 
-#: ../src/callbacks.cc:2395 ../src/callbacks.cc:2961 ../src/callbacks.cc:10305
+#: ../src/callbacks.cc:2399 ../src/callbacks.cc:2972 ../src/callbacks.cc:10435
 msgid "bases"
 msgstr "baser"
 
-#: ../src/callbacks.cc:2396 ../src/callbacks.cc:2963 ../src/callbacks.cc:2964
-#: ../src/callbacks.cc:10316
+#: ../src/callbacks.cc:2400 ../src/callbacks.cc:2974 ../src/callbacks.cc:2975
+#: ../src/callbacks.cc:10446
 msgid "calendars"
 msgstr "kalendrar"
 
-#: ../src/callbacks.cc:2397 ../src/callbacks.cc:2977 ../src/callbacks.cc:10323
+#: ../src/callbacks.cc:2401 ../src/callbacks.cc:2988 ../src/callbacks.cc:10453
 msgid "rectangular"
 msgstr "rektangulär"
 
-#: ../src/callbacks.cc:2397 ../src/callbacks.cc:2977 ../src/callbacks.cc:10323
+#: ../src/callbacks.cc:2401 ../src/callbacks.cc:2988 ../src/callbacks.cc:10453
 msgid "cartesian"
 msgstr "kartesisk"
 
-#: ../src/callbacks.cc:2406 ../src/callbacks.cc:2979 ../src/callbacks.cc:10339
+#: ../src/callbacks.cc:2410 ../src/callbacks.cc:2990 ../src/callbacks.cc:10469
 msgid "exponential"
 msgstr "exponentiell"
 
-#: ../src/callbacks.cc:2415 ../src/callbacks.cc:2981 ../src/callbacks.cc:10355
+#: ../src/callbacks.cc:2419 ../src/callbacks.cc:2992 ../src/callbacks.cc:10485
 msgid "polar"
 msgstr "polär"
 
-#: ../src/callbacks.cc:2433 ../src/callbacks.cc:2985 ../src/callbacks.cc:10387
+#: ../src/callbacks.cc:2437 ../src/callbacks.cc:2996 ../src/callbacks.cc:10517
 msgid "angle"
 msgstr "vinkel"
 
-#: ../src/callbacks.cc:2433 ../src/callbacks.cc:2987 ../src/callbacks.cc:10387
+#: ../src/callbacks.cc:2437 ../src/callbacks.cc:2998 ../src/callbacks.cc:10517
 msgid "phasor"
 msgstr "fasvektor"
 
-#: ../src/callbacks.cc:2442 ../src/callbacks.cc:2965 ../src/callbacks.cc:10403
+#: ../src/callbacks.cc:2446 ../src/callbacks.cc:2976 ../src/callbacks.cc:10533
 msgid "optimal"
 msgstr "optimal"
 
-#: ../src/callbacks.cc:2451 ../src/callbacks.cc:2481 ../src/callbacks.cc:2967
-#: ../src/callbacks.cc:3030 ../src/callbacks.cc:10419 ../src/callbacks.cc:10472
+#: ../src/callbacks.cc:2455 ../src/callbacks.cc:2485 ../src/callbacks.cc:2978
+#: ../src/callbacks.cc:3041 ../src/callbacks.cc:10549 ../src/callbacks.cc:10602
 msgid "base"
 msgstr "bas"
 
-#: ../src/callbacks.cc:2460 ../src/callbacks.cc:2969 ../src/callbacks.cc:10435
+#: ../src/callbacks.cc:2464 ../src/callbacks.cc:2980 ../src/callbacks.cc:10565
 msgid "mixed"
 msgstr "blandade"
 
-#: ../src/callbacks.cc:2472 ../src/callbacks.cc:2971 ../src/callbacks.cc:2972
-#: ../src/callbacks.cc:10449
+#: ../src/callbacks.cc:2476 ../src/callbacks.cc:2982 ../src/callbacks.cc:2983
+#: ../src/callbacks.cc:10579
 msgid "fraction"
 msgstr "bråktal"
 
-#: ../src/callbacks.cc:2475 ../src/callbacks.cc:2973 ../src/callbacks.cc:2974
-#: ../src/callbacks.cc:10452
+#: ../src/callbacks.cc:2479 ../src/callbacks.cc:2984 ../src/callbacks.cc:2985
+#: ../src/callbacks.cc:10582
 msgid "factors"
 msgstr "faktorer"
 
-#: ../src/callbacks.cc:2478 ../src/callbacks.cc:2975 ../src/callbacks.cc:10462
+#: ../src/callbacks.cc:2482 ../src/callbacks.cc:2986 ../src/callbacks.cc:10592
 msgid "partial fraction"
 msgstr "partialbråk"
 
-#: ../src/callbacks.cc:2499 ../src/callbacks.cc:2798 ../src/callbacks.cc:2800
-#: ../src/callbacks.cc:10515
+#: ../src/callbacks.cc:2503 ../src/callbacks.cc:2809 ../src/callbacks.cc:2811
+#: ../src/callbacks.cc:10645
 msgid "factorize"
 msgstr "faktorisera"
 
-#: ../src/callbacks.cc:2502 ../src/callbacks.cc:2801 ../src/callbacks.cc:2803
-#: ../src/callbacks.cc:10518
+#: ../src/callbacks.cc:2506 ../src/callbacks.cc:2812 ../src/callbacks.cc:2814
+#: ../src/callbacks.cc:10648
 msgid "expand"
 msgstr "expandera"
 
-#: ../src/callbacks.cc:2932
+#: ../src/callbacks.cc:2943
 msgid "hexadecimal number"
 msgstr "hexadecimalt tal"
 
-#: ../src/callbacks.cc:2934
+#: ../src/callbacks.cc:2945
 msgid "octal number"
 msgstr "oktalt tal"
 
-#: ../src/callbacks.cc:2936
+#: ../src/callbacks.cc:2947
 msgid "decimal number"
 msgstr "decimalt tal"
 
-#: ../src/callbacks.cc:2938
+#: ../src/callbacks.cc:2949
 msgid "duodecimal number"
 msgstr "duodecimalt tal"
 
-#: ../src/callbacks.cc:2940
+#: ../src/callbacks.cc:2951
 msgid "binary number"
 msgstr "binärt tal"
 
-#: ../src/callbacks.cc:2942
+#: ../src/callbacks.cc:2953
 msgid "roman numerals"
 msgstr "romerska siffror"
 
-#: ../src/callbacks.cc:2944
+#: ../src/callbacks.cc:2955
 msgid "bijective base-26"
 msgstr "bijektiv talbas 26"
 
-#: ../src/callbacks.cc:2946
+#: ../src/callbacks.cc:2957
 msgid "sexagesimal number"
 msgstr "sexagesimalt tal"
 
-#: ../src/callbacks.cc:2948
+#: ../src/callbacks.cc:2959
 msgid "32-bit floating point"
 msgstr "32-bit flyttal"
 
-#: ../src/callbacks.cc:2950
+#: ../src/callbacks.cc:2961
 msgid "64-bit floating point"
 msgstr "64-bit flyttal"
 
-#: ../src/callbacks.cc:2952
+#: ../src/callbacks.cc:2963
 msgid "16-bit floating point"
 msgstr "16-bit flyttal"
 
-#: ../src/callbacks.cc:2954
+#: ../src/callbacks.cc:2965
 msgid "80-bit (x86) floating point"
 msgstr "80-bit (x86) flyttal"
 
-#: ../src/callbacks.cc:2956
+#: ../src/callbacks.cc:2967
 msgid "128-bit floating point"
 msgstr "128-bit flyttal"
 
-#: ../src/callbacks.cc:2958
+#: ../src/callbacks.cc:2969
 msgid "time format"
 msgstr "tidsformat"
 
-#: ../src/callbacks.cc:2962
+#: ../src/callbacks.cc:2973
 msgid "number bases"
 msgstr "talbaser"
 
-#: ../src/callbacks.cc:2966
+#: ../src/callbacks.cc:2977
 msgid "optimal unit"
 msgstr "optimal enhet"
 
-#: ../src/callbacks.cc:2968
+#: ../src/callbacks.cc:2979
 msgid "base units"
 msgstr "basenheter"
 
-#: ../src/callbacks.cc:2970
+#: ../src/callbacks.cc:2981
 msgid "mixed units"
 msgstr "blandade enheter"
 
-#: ../src/callbacks.cc:2976
+#: ../src/callbacks.cc:2987
 msgid "expanded partial fractions"
 msgstr "expanderade partialbråk"
 
-#: ../src/callbacks.cc:2978
+#: ../src/callbacks.cc:2989
 msgid "complex rectangular form"
 msgstr "komplex rektangulär form"
 
-#: ../src/callbacks.cc:2980
+#: ../src/callbacks.cc:2991
 msgid "complex exponential form"
 msgstr "komplex exponentiell form"
 
-#: ../src/callbacks.cc:2982
+#: ../src/callbacks.cc:2993
 msgid "complex polar form"
 msgstr "komplex polär form"
 
-#: ../src/callbacks.cc:2984
+#: ../src/callbacks.cc:2995
 msgid "complex cis form"
 msgstr "komplex cis-form"
 
-#: ../src/callbacks.cc:2986
+#: ../src/callbacks.cc:2997
 msgid "complex angle notation"
 msgstr "komplex vinkelnotation"
 
-#: ../src/callbacks.cc:2988
+#: ../src/callbacks.cc:2999
 msgid "complex phasor notation"
 msgstr "komplex fasvektornotation"
 
-#: ../src/callbacks.cc:2990 ../src/callbacks.cc:6237
+#: ../src/callbacks.cc:3001 ../src/callbacks.cc:6265
 msgid "UTC time zone"
 msgstr "UTC-tidszon"
 
-#: ../src/callbacks.cc:3031
+#: ../src/callbacks.cc:3042
 #, c-format
 msgid "number base %s"
 msgstr "talbas %s"
 
-#: ../src/callbacks.cc:3517 ../src/callbacks.cc:3518 ../src/callbacks.cc:3567
-#: ../src/callbacks.cc:3865 ../src/callbacks.cc:3866 ../src/callbacks.cc:3974
-#: ../src/callbacks.cc:4113 ../src/callbacks.cc:4114 ../src/callbacks.cc:4207
-#: ../src/callbacks.cc:12182 ../src/callbacks.cc:12552
-#: ../src/callbacks.cc:12857 ../src/callbacks.cc:13063
-#: ../src/callbacks.cc:13344
+#: ../src/callbacks.cc:3528 ../src/callbacks.cc:3529 ../src/callbacks.cc:3578
+#: ../src/callbacks.cc:3876 ../src/callbacks.cc:3877 ../src/callbacks.cc:3985
+#: ../src/callbacks.cc:4124 ../src/callbacks.cc:4125 ../src/callbacks.cc:4218
+#: ../src/callbacks.cc:12312 ../src/callbacks.cc:12682
+#: ../src/callbacks.cc:12987 ../src/callbacks.cc:13193
+#: ../src/callbacks.cc:13474
 msgid "Inactive"
 msgstr "Inaktiva"
 
-#: ../src/callbacks.cc:3665
+#: ../src/callbacks.cc:3676
 #, c-format
 msgid ""
 "Retrieves data from the %s data set for a given object and property. If "
@@ -4092,471 +4093,483 @@ msgstr ""
 "är angivet som egenskap, ett dialogfönster öppnas med alla objektets "
 "egenskaper."
 
-#: ../src/callbacks.cc:3677 ../src/callbacks.cc:11748
+#: ../src/callbacks.cc:3688 ../src/callbacks.cc:11878
 msgid "Example:"
 msgstr "Exempel:"
 
-#: ../src/callbacks.cc:3691
+#: ../src/callbacks.cc:3702
 msgid "Arguments"
 msgstr "Parametrar"
 
 #. optional argument
-#: ../src/callbacks.cc:3711 ../src/callbacks.cc:11643 ../src/callbacks.cc:11653
+#: ../src/callbacks.cc:3722 ../src/callbacks.cc:11773 ../src/callbacks.cc:11783
 msgid "optional"
 msgstr "frivillig"
 
 #. argument default, in description
-#: ../src/callbacks.cc:3715
+#: ../src/callbacks.cc:3726
 msgid "default: "
 msgstr "förval:"
 
-#: ../src/callbacks.cc:3729
+#: ../src/callbacks.cc:3740
 msgid "Requirement"
 msgstr "Krav"
 
 #. indicating that the property is a data set key
-#: ../src/callbacks.cc:3758 ../src/callbacks.cc:4792 ../src/callbacks.cc:13662
+#: ../src/callbacks.cc:3769 ../src/callbacks.cc:4803 ../src/callbacks.cc:13792
 msgid "key"
 msgstr "nyckel"
 
-#: ../src/callbacks.cc:3779 ../src/callbacks.cc:4032 ../src/callbacks.cc:4274
+#: ../src/callbacks.cc:3790 ../src/callbacks.cc:4043 ../src/callbacks.cc:4285
 msgid "Acti_vate"
 msgstr "Akti_vera"
 
-#: ../src/callbacks.cc:3883 ../src/callbacks.cc:6051
+#: ../src/callbacks.cc:3894 ../src/callbacks.cc:6077
 msgid "a previous result"
 msgstr "ett föregående resultat"
 
-#: ../src/callbacks.cc:3905 ../src/callbacks.cc:6058
+#: ../src/callbacks.cc:3916 ../src/callbacks.cc:6085
 msgid "matrix"
 msgstr "matris"
 
-#: ../src/callbacks.cc:3907 ../src/callbacks.cc:6060
+#: ../src/callbacks.cc:3918 ../src/callbacks.cc:6087
 msgid "vector"
 msgstr "vektor"
 
-#: ../src/callbacks.cc:3917 ../src/callbacks.cc:6070
+#: ../src/callbacks.cc:3928 ../src/callbacks.cc:6098
 msgid "positive"
 msgstr "positiv"
 
-#: ../src/callbacks.cc:3918 ../src/callbacks.cc:6071
+#: ../src/callbacks.cc:3929 ../src/callbacks.cc:6099
 msgid "non-positive"
 msgstr "ej positiv"
 
-#: ../src/callbacks.cc:3919 ../src/callbacks.cc:6072
+#: ../src/callbacks.cc:3930 ../src/callbacks.cc:6100
 msgid "negative"
 msgstr "negativ"
 
-#: ../src/callbacks.cc:3920 ../src/callbacks.cc:6073
+#: ../src/callbacks.cc:3931 ../src/callbacks.cc:6101
 msgid "non-negative"
 msgstr "ej negativ"
 
-#: ../src/callbacks.cc:3921 ../src/callbacks.cc:6074
+#: ../src/callbacks.cc:3932 ../src/callbacks.cc:6102
 msgid "non-zero"
 msgstr "ej noll"
 
-#: ../src/callbacks.cc:3926 ../src/callbacks.cc:6079
+#: ../src/callbacks.cc:3937 ../src/callbacks.cc:6107
 msgid "integer"
 msgstr "heltal"
 
-#: ../src/callbacks.cc:3927 ../src/callbacks.cc:6080
+#: ../src/callbacks.cc:3938 ../src/callbacks.cc:6108
 msgid "rational"
 msgstr "rationell"
 
-#: ../src/callbacks.cc:3928 ../src/callbacks.cc:6081
+#: ../src/callbacks.cc:3939 ../src/callbacks.cc:6109
 msgid "real"
 msgstr "reell"
 
-#: ../src/callbacks.cc:3929 ../src/callbacks.cc:6082
+#: ../src/callbacks.cc:3940 ../src/callbacks.cc:6110
 msgid "complex"
 msgstr "komplex"
 
-#: ../src/callbacks.cc:3930 ../src/callbacks.cc:6083 ../src/callbacks.cc:13648
+#: ../src/callbacks.cc:3941 ../src/callbacks.cc:6111 ../src/callbacks.cc:13778
 msgid "number"
 msgstr "nummer"
 
-#: ../src/callbacks.cc:3931 ../src/callbacks.cc:6084
+#: ../src/callbacks.cc:3942 ../src/callbacks.cc:6112
 msgid "(not matrix)"
 msgstr "(inte matris)"
 
-#: ../src/callbacks.cc:3934 ../src/callbacks.cc:6087
+#: ../src/callbacks.cc:3945 ../src/callbacks.cc:6115
 msgid "unknown"
 msgstr "okänd"
 
-#: ../src/callbacks.cc:3936 ../src/callbacks.cc:6089
+#: ../src/callbacks.cc:3947 ../src/callbacks.cc:6117
 msgid "default assumptions"
 msgstr "förvalda antaganden"
 
-#: ../src/callbacks.cc:4016 ../src/callbacks.cc:11811 ../src/callbacks.cc:11820
-#: ../src/callbacks.cc:12879 ../src/callbacks.cc:25058
-#: ../src/callbacks.cc:25073 ../src/callbacks.cc:25091
-#: ../src/callbacks.cc:25124
+#: ../src/callbacks.cc:4027 ../src/callbacks.cc:11941 ../src/callbacks.cc:11950
+#: ../src/callbacks.cc:13009 ../src/callbacks.cc:25232
+#: ../src/callbacks.cc:25247 ../src/callbacks.cc:25265
+#: ../src/callbacks.cc:25298
 msgid "Variable does not exist anymore."
 msgstr "Variabel existerar inte längre."
 
-#: ../src/callbacks.cc:4808
+#: ../src/callbacks.cc:4819
 msgid "Data Retrieval Function"
 msgstr "Dataåtkomstfunktion"
 
-#: ../src/callbacks.cc:5227
+#: ../src/callbacks.cc:5238
 msgid "Insert function"
 msgstr "Infoga funktion"
 
-#: ../src/callbacks.cc:5228
+#: ../src/callbacks.cc:5239
 msgid "Insert function (dialog)"
 msgstr "Infoga funktion (dialog)"
 
-#: ../src/callbacks.cc:5229
+#: ../src/callbacks.cc:5240
 msgid "Insert variable"
 msgstr "Infoga variabel"
 
-#: ../src/callbacks.cc:5230
+#: ../src/callbacks.cc:5241
 msgid "Insert unit"
 msgstr "Infoga enhet"
 
-#: ../src/callbacks.cc:5231
+#: ../src/callbacks.cc:5242
 msgid "Insert text"
 msgstr "Infoga text"
 
-#: ../src/callbacks.cc:5232
+#: ../src/callbacks.cc:5243
 msgid "Insert date"
 msgstr "Infoga datum"
 
-#: ../src/callbacks.cc:5233
+#: ../src/callbacks.cc:5244
 msgid "Insert vector"
 msgstr "Infoga vektor"
 
-#: ../src/callbacks.cc:5234
+#: ../src/callbacks.cc:5245
 msgid "Insert matrix"
 msgstr "Infoga matris"
 
-#: ../src/callbacks.cc:5235
+#: ../src/callbacks.cc:5246
 msgid "Insert smart parentheses"
 msgstr "Infoga smarta parenteser"
 
-#: ../src/callbacks.cc:5236
+#: ../src/callbacks.cc:5247
 msgid "Convert to unit"
 msgstr "Omvandla till enhet"
 
-#: ../src/callbacks.cc:5237
+#: ../src/callbacks.cc:5248
 msgid "Convert to unit (entry)"
 msgstr "Omvandla till enhet (inmatning)"
 
-#: ../src/callbacks.cc:5238
+#: ../src/callbacks.cc:5249
 msgid "Convert to optimal unit"
 msgstr "Omvandla till optimal enhet"
 
-#: ../src/callbacks.cc:5239
+#: ../src/callbacks.cc:5250
 msgid "Convert to base units"
 msgstr "Omvandla till basenheter"
 
-#: ../src/callbacks.cc:5240
+#: ../src/callbacks.cc:5251
 msgid "Convert to optimal prefix"
 msgstr "Omvandla till optimalt prefix"
 
-#: ../src/callbacks.cc:5241
+#: ../src/callbacks.cc:5252
 msgid "Convert to number base"
 msgstr "Omvandla till talbas"
 
-#: ../src/callbacks.cc:5242
+#: ../src/callbacks.cc:5253
 msgid "Factorize result"
 msgstr "Faktorisera resultatet"
 
-#: ../src/callbacks.cc:5243
+#: ../src/callbacks.cc:5254
 msgid "Expand result"
 msgstr "Expandera resultatet"
 
-#: ../src/callbacks.cc:5244
+#: ../src/callbacks.cc:5255
 msgid "Expand partial fractions"
 msgstr "Expandera partialbråk"
 
-#: ../src/callbacks.cc:5246
+#: ../src/callbacks.cc:5257
 msgid "RPN: down"
 msgstr "RPN: ner"
 
-#: ../src/callbacks.cc:5247
+#: ../src/callbacks.cc:5258
 msgid "RPN: up"
 msgstr "RPN: upp"
 
-#: ../src/callbacks.cc:5248
+#: ../src/callbacks.cc:5259
 msgid "RPN: swap"
 msgstr "RPN: byt plats"
 
-#: ../src/callbacks.cc:5249
+#: ../src/callbacks.cc:5260
 msgid "RPN: copy"
 msgstr "RPN: kopiera"
 
-#: ../src/callbacks.cc:5250
+#: ../src/callbacks.cc:5261
 msgid "RPN: lastx"
 msgstr "RPN: lastx"
 
-#: ../src/callbacks.cc:5251
+#: ../src/callbacks.cc:5262
 msgid "RPN: delete register"
 msgstr "RPN: ta bort register"
 
-#: ../src/callbacks.cc:5252
+#: ../src/callbacks.cc:5263
 msgid "RPN: clear stack"
 msgstr "RPN: töm stacken"
 
-#: ../src/callbacks.cc:5253
+#: ../src/callbacks.cc:5264
 msgid "Load meta mode"
 msgstr "Aktivera metaläge"
 
-#: ../src/callbacks.cc:5254
+#: ../src/callbacks.cc:5265
 msgid "Set expression base"
 msgstr "Ange talbas i uttryck"
 
-#: ../src/callbacks.cc:5255
+#: ../src/callbacks.cc:5266
 msgid "Set result base"
 msgstr "Ange talbas i resultat"
 
-#: ../src/callbacks.cc:5256
+#: ../src/callbacks.cc:5267
 msgid "Toggle exact mode"
 msgstr "(Av)aktivera exakt läge"
 
-#: ../src/callbacks.cc:5257
+#: ../src/callbacks.cc:5268
+msgid "Set angle unit to degrees"
+msgstr "Ange vinkelenhet till grader"
+
+#: ../src/callbacks.cc:5269
+msgid "Set angle unit to radians"
+msgstr "Ange vinkelenhet till radianer"
+
+#: ../src/callbacks.cc:5270
+msgid "Set angle unit to gradians"
+msgstr "Ange vinkelenhet till gradienter"
+
+#: ../src/callbacks.cc:5271
 msgid "Toggle simple fractions"
 msgstr "(Av)aktivera bråkform"
 
-#: ../src/callbacks.cc:5258
+#: ../src/callbacks.cc:5272
 msgid "Toggle mixed fractions"
 msgstr "(Av)aktivera blandad form"
 
-#: ../src/callbacks.cc:5259
+#: ../src/callbacks.cc:5273
 msgid "Toggle scientific notation"
 msgstr "(Av)aktivera vetenskaplig form"
 
-#: ../src/callbacks.cc:5260
+#: ../src/callbacks.cc:5274
 msgid "Toggle simple notation"
 msgstr "(Av)aktivera enkel form"
 
-#: ../src/callbacks.cc:5261
+#: ../src/callbacks.cc:5275
 msgid "Toggle RPN mode"
 msgstr "(Av)aktivera RPN-läge"
 
-#: ../src/callbacks.cc:5262
+#: ../src/callbacks.cc:5276
 msgid "Toggle calculate as you type"
 msgstr "(Av)aktivera fortgående beräkningar"
 
-#: ../src/callbacks.cc:5263
+#: ../src/callbacks.cc:5277
 msgid "Toggle programming keypad"
 msgstr "Visa/dölj programmeringsknappsatsen"
 
-#: ../src/callbacks.cc:5264
+#: ../src/callbacks.cc:5278
 msgid "Show keypad"
 msgstr "Visa knappsatsen"
 
-#: ../src/callbacks.cc:5265
+#: ../src/callbacks.cc:5279
 msgid "Show history"
 msgstr "Visa historik"
 
-#: ../src/callbacks.cc:5266
+#: ../src/callbacks.cc:5280
 msgid "Show conversion"
 msgstr "Visa omvandling"
 
-#: ../src/callbacks.cc:5267
+#: ../src/callbacks.cc:5281
 msgid "Show RPN stack"
 msgstr "Visa RPN-stack"
 
-#: ../src/callbacks.cc:5268
+#: ../src/callbacks.cc:5282
 msgid "Toggle minimal window"
 msgstr "(Av)aktivera minimalt fönster"
 
-#: ../src/callbacks.cc:5269
+#: ../src/callbacks.cc:5283
 msgid "Manage variables"
 msgstr "Hantera variabler"
 
-#: ../src/callbacks.cc:5270
+#: ../src/callbacks.cc:5284
 msgid "Manage functions"
 msgstr "Hantera funktioner"
 
-#: ../src/callbacks.cc:5272
+#: ../src/callbacks.cc:5286
 msgid "Manage data sets"
 msgstr "Hantera dataset"
 
-#: ../src/callbacks.cc:5274
+#: ../src/callbacks.cc:5288
 msgid "New variable"
 msgstr "Ny variabel"
 
-#: ../src/callbacks.cc:5275
+#: ../src/callbacks.cc:5289
 msgid "New function"
 msgstr "Ny funktion"
 
-#: ../src/callbacks.cc:5276
+#: ../src/callbacks.cc:5290
 msgid "Open plot functions/data"
 msgstr "Öppna rita funktions-/datadiagram"
 
-#: ../src/callbacks.cc:5277
+#: ../src/callbacks.cc:5291
 msgid "Open convert number bases"
 msgstr "Öppna omvandla mellan talbaser"
 
-#: ../src/callbacks.cc:5278
+#: ../src/callbacks.cc:5292
 msgid "Open floating point conversion"
 msgstr "Öppna flyttalsomvandling"
 
-#: ../src/callbacks.cc:5279
+#: ../src/callbacks.cc:5293
 msgid "Open calender conversion"
 msgstr "Öppna kalenderomvandling"
 
-#: ../src/callbacks.cc:5280
+#: ../src/callbacks.cc:5294
 msgid "Open percentage calculation tool"
 msgstr "Öppna procentberäkningsverktyg"
 
-#: ../src/callbacks.cc:5281
+#: ../src/callbacks.cc:5295
 msgid "Open periodic table"
 msgstr "Öppna periodiska systemet"
 
-#: ../src/callbacks.cc:5282
+#: ../src/callbacks.cc:5296
 msgid "Update exchange rates"
 msgstr "Uppdatera växelkurser"
 
-#: ../src/callbacks.cc:5283
+#: ../src/callbacks.cc:5297
 msgid "Copy result"
 msgstr "Kopiera resultatet"
 
-#: ../src/callbacks.cc:5284
+#: ../src/callbacks.cc:5298
 msgid "Save result image"
 msgstr "Spara resulatbild"
 
-#: ../src/callbacks.cc:5285
+#: ../src/callbacks.cc:5299
 msgid "Help"
 msgstr "Hjälp"
 
-#: ../src/callbacks.cc:5286
+#: ../src/callbacks.cc:5300
 msgid "Quit"
 msgstr "Avsluta"
 
-#: ../src/callbacks.cc:5516 ../src/callbacks.cc:28434 ../src/callbacks.cc:28445
-#: ../src/callbacks.cc:28570
+#: ../src/callbacks.cc:5542 ../src/callbacks.cc:28620 ../src/callbacks.cc:28631
+#: ../src/callbacks.cc:28756
 msgid "Set key combination"
 msgstr "Ange tangentkombination"
 
-#: ../src/callbacks.cc:5603
+#: ../src/callbacks.cc:5629
 msgid "Prefixes"
 msgstr "Prefix"
 
-#: ../src/callbacks.cc:5825
+#: ../src/callbacks.cc:5851
 msgid "No Prefix"
 msgstr "Inget prefix"
 
-#: ../src/callbacks.cc:5826
+#: ../src/callbacks.cc:5852
 msgid "Optimal Prefix"
 msgstr "Optimalt prefix"
 
-#: ../src/callbacks.cc:6159 ../src/callbacks.cc:6163 ../src/callbacks.cc:6167
+#: ../src/callbacks.cc:6187 ../src/callbacks.cc:6191 ../src/callbacks.cc:6195
 msgid "Prefix"
 msgstr "Prefix"
 
-#: ../src/callbacks.cc:6179
+#: ../src/callbacks.cc:6207
 msgid "Complex angle/phasor notation"
 msgstr "Komplex vinkelnotation"
 
-#: ../src/callbacks.cc:6181 ../src/callbacks.cc:22251
+#: ../src/callbacks.cc:6209 ../src/callbacks.cc:22375
 msgid "Number bases"
 msgstr "Talbaser"
 
-#: ../src/callbacks.cc:6183 ../src/callbacks.cc:22283
+#: ../src/callbacks.cc:6211 ../src/callbacks.cc:22407
 msgid "Base units"
 msgstr "Grundenheter"
 
-#: ../src/callbacks.cc:6189
+#: ../src/callbacks.cc:6217
 msgid "Binary number"
 msgstr "Binärt tal"
 
-#: ../src/callbacks.cc:6191 ../src/callbacks.cc:22245
+#: ../src/callbacks.cc:6219 ../src/callbacks.cc:22369
 msgid "Calendars"
 msgstr "Kalendrar"
 
-#: ../src/callbacks.cc:6193
+#: ../src/callbacks.cc:6221
 msgid "Complex cis form"
 msgstr "Komplex cis-form"
 
-#: ../src/callbacks.cc:6195
+#: ../src/callbacks.cc:6223
 msgid "Decimal number"
 msgstr "Decimalt tal"
 
-#: ../src/callbacks.cc:6197
+#: ../src/callbacks.cc:6225
 msgid "Duodecimal number"
 msgstr "Duodecimalt tal"
 
-#: ../src/callbacks.cc:6199
+#: ../src/callbacks.cc:6227
 msgid "Complex exponential form"
 msgstr "Komplex exponentiell form"
 
-#: ../src/callbacks.cc:6201 ../src/callbacks.cc:22260 ../src/callbacks.cc:22264
+#: ../src/callbacks.cc:6229 ../src/callbacks.cc:22384 ../src/callbacks.cc:22388
 msgid "Factors"
 msgstr "Faktorer"
 
-#: ../src/callbacks.cc:6203
+#: ../src/callbacks.cc:6231
 msgid "16-bit floating point binary format"
 msgstr "16-bit binärt flyttal"
 
-#: ../src/callbacks.cc:6205
+#: ../src/callbacks.cc:6233
 msgid "32-bit floating point binary format"
 msgstr "32-bit binärt flyttal"
 
-#: ../src/callbacks.cc:6207
+#: ../src/callbacks.cc:6235
 msgid "64-bit floating point binary format"
 msgstr "64-bit binärt flyttal"
 
-#: ../src/callbacks.cc:6209
+#: ../src/callbacks.cc:6237
 msgid "80-bit (x86) floating point binary format"
 msgstr "80-bit (x86) binärt flyttal"
 
-#: ../src/callbacks.cc:6211
+#: ../src/callbacks.cc:6239
 msgid "128-bit floating point binary format"
 msgstr "128-bit binärt flyttal"
 
-#: ../src/callbacks.cc:6213 ../src/callbacks.cc:22272
+#: ../src/callbacks.cc:6241 ../src/callbacks.cc:22396
 msgid "Fraction"
 msgstr "Bråktal"
 
-#: ../src/callbacks.cc:6215
+#: ../src/callbacks.cc:6243
 msgid "Hexadecimal number"
 msgstr "Hexadecimalt tal"
 
-#: ../src/callbacks.cc:6217
+#: ../src/callbacks.cc:6245
 msgid "Mixed units"
 msgstr "Blandade enheter"
 
-#: ../src/callbacks.cc:6219
+#: ../src/callbacks.cc:6247
 msgid "Octal number"
 msgstr "Oktalt tal"
 
-#: ../src/callbacks.cc:6221
+#: ../src/callbacks.cc:6249
 msgid "Optimal units"
 msgstr "Optimala enheter"
 
-#: ../src/callbacks.cc:6223
+#: ../src/callbacks.cc:6251
 msgid "Expanded partial fractions"
 msgstr "Expanderade partialbråk"
 
-#: ../src/callbacks.cc:6225
+#: ../src/callbacks.cc:6253
 msgid "Complex polar form"
 msgstr "Komplex polär form"
 
-#: ../src/callbacks.cc:6227
+#: ../src/callbacks.cc:6255
 msgid "Complex rectangular form"
 msgstr "Komplex rektangulär form"
 
-#: ../src/callbacks.cc:6231
+#: ../src/callbacks.cc:6259
 msgid "Sexagesimal number"
 msgstr "Sexagesimalt tal"
 
-#: ../src/callbacks.cc:7450
+#: ../src/callbacks.cc:7522
 msgid "and"
 msgstr "och"
 
-#: ../src/callbacks.cc:7453 ../src/callbacks.cc:8861 ../src/callbacks.cc:8884
-#: ../src/callbacks.cc:8885
+#: ../src/callbacks.cc:7525 ../src/callbacks.cc:8984 ../src/callbacks.cc:9007
+#: ../src/callbacks.cc:9008
 msgid "or"
 msgstr "eller"
 
-#: ../src/callbacks.cc:8335
+#: ../src/callbacks.cc:8453
 msgid "undefined"
 msgstr "odefinierad"
 
-#: ../src/callbacks.cc:8625 ../src/callbacks.cc:27854
+#: ../src/callbacks.cc:8748 ../src/callbacks.cc:28040
 msgid ""
 "result is too long\n"
 "see history"
@@ -4564,105 +4577,105 @@ msgstr ""
 "resultet är för långt\n"
 "se historiken"
 
-#: ../src/callbacks.cc:8645 ../src/callbacks.cc:27870
+#: ../src/callbacks.cc:8768 ../src/callbacks.cc:28056
 msgid "calculation was aborted"
 msgstr "beräkningarna avbröts"
 
-#: ../src/callbacks.cc:9232 ../src/callbacks.cc:20721
+#: ../src/callbacks.cc:9355 ../src/callbacks.cc:20845
 msgid "RPN Register Moved"
 msgstr "RPN-register flyttades"
 
-#: ../src/callbacks.cc:9240 ../src/callbacks.cc:10773 ../src/callbacks.cc:20727
+#: ../src/callbacks.cc:9363 ../src/callbacks.cc:10903 ../src/callbacks.cc:20851
 msgid "RPN Operation"
 msgstr "RPN operation"
 
-#: ../src/callbacks.cc:9423
+#: ../src/callbacks.cc:9546
 msgid "Processing…"
 msgstr "Behandlar…"
 
-#: ../src/callbacks.cc:9443 ../src/callbacks.cc:27854
+#: ../src/callbacks.cc:9566 ../src/callbacks.cc:28040
 msgid "result processing was aborted"
 msgstr "resultatbehandlingen avbröts"
 
-#: ../src/callbacks.cc:9835
+#: ../src/callbacks.cc:9965
 msgid "Factorizing…"
 msgstr "Faktoriserar…"
 
-#: ../src/callbacks.cc:9839
+#: ../src/callbacks.cc:9969
 msgid "Expanding partial fractions…"
 msgstr "Expanderar partialbråk…"
 
-#: ../src/callbacks.cc:9843
+#: ../src/callbacks.cc:9973
 msgid "Expanding…"
 msgstr "Expanderar…"
 
-#: ../src/callbacks.cc:9848 ../src/callbacks.cc:10696
+#: ../src/callbacks.cc:9978 ../src/callbacks.cc:10826
 msgid "Calculating…"
 msgstr "Beräknar…"
 
-#: ../src/callbacks.cc:9852
+#: ../src/callbacks.cc:9982
 msgid "Converting…"
 msgstr "Omvandlar…"
 
-#: ../src/callbacks.cc:9944
+#: ../src/callbacks.cc:10074
 msgid "Fetching exchange rates."
 msgstr "Hämtar växelkurser."
 
-#: ../src/callbacks.cc:10284
+#: ../src/callbacks.cc:10414
 msgid "Time zone parsing failed."
 msgstr "Läsning av tidszon misslyckades."
 
-#: ../src/callbacks.cc:11465
+#: ../src/callbacks.cc:11595
 msgid "Keep open"
 msgstr "Håll öppen"
 
-#: ../src/callbacks.cc:11473
+#: ../src/callbacks.cc:11603
 msgid "Enter"
 msgstr "Enter"
 
-#: ../src/callbacks.cc:11473
+#: ../src/callbacks.cc:11603
 msgid "C_alculate"
 msgstr "_Beräkna"
 
-#: ../src/callbacks.cc:11476
+#: ../src/callbacks.cc:11606
 msgid "Apply to Stack"
 msgstr "Applicera på stacken"
 
-#: ../src/callbacks.cc:11527
+#: ../src/callbacks.cc:11657
 msgid "Argument"
 msgstr "Parameter"
 
-#: ../src/callbacks.cc:11581
+#: ../src/callbacks.cc:11711
 msgid "True"
 msgstr "Sant"
 
-#: ../src/callbacks.cc:11583
+#: ../src/callbacks.cc:11713
 msgid "False"
 msgstr "Falskt"
 
-#: ../src/callbacks.cc:11628
+#: ../src/callbacks.cc:11758
 msgid "Info"
 msgstr "Info"
 
-#: ../src/callbacks.cc:11948
+#: ../src/callbacks.cc:12078
 msgid "Edit Unit (global)"
 msgstr "Redigera enhet (systemvid)"
 
-#: ../src/callbacks.cc:11950
+#: ../src/callbacks.cc:12080
 msgid "New Unit"
 msgstr "Ny enhet"
 
-#: ../src/callbacks.cc:12067 ../src/callbacks.cc:12472
-#: ../src/callbacks.cc:12626 ../src/callbacks.cc:12815
-#: ../src/callbacks.cc:13011 ../src/callbacks.cc:13261
-#: ../src/callbacks.cc:13733 ../src/callbacks.cc:13883
-#: ../src/callbacks.cc:13997 ../src/callbacks.cc:15548
-#: ../src/callbacks.cc:28316
+#: ../src/callbacks.cc:12197 ../src/callbacks.cc:12602
+#: ../src/callbacks.cc:12756 ../src/callbacks.cc:12945
+#: ../src/callbacks.cc:13141 ../src/callbacks.cc:13391
+#: ../src/callbacks.cc:13863 ../src/callbacks.cc:14013
+#: ../src/callbacks.cc:14127 ../src/callbacks.cc:15647
+#: ../src/callbacks.cc:28502
 msgid "Empty name field."
 msgstr "Tomt namnfält"
 
 #. unit with the same name exists -- overwrite or open the dialog again
-#: ../src/callbacks.cc:12072
+#: ../src/callbacks.cc:12202
 msgid ""
 "A variable or unit with the same name already exists.\n"
 "Do you want to overwrite it?"
@@ -4670,36 +4683,36 @@ msgstr ""
 "En variabel eller enhet med samma namn finns redan.\n"
 "Vill du ersätta den?"
 
-#: ../src/callbacks.cc:12094 ../src/callbacks.cc:12144
+#: ../src/callbacks.cc:12224 ../src/callbacks.cc:12274
 msgid "Base unit does not exist."
 msgstr "Angiven grundenhet finns inte."
 
-#: ../src/callbacks.cc:12391
+#: ../src/callbacks.cc:12521
 msgid "Edit Function (global)"
 msgstr "Redigera funktion (systemvid)"
 
-#: ../src/callbacks.cc:12393 ../src/callbacks.cc:12596
+#: ../src/callbacks.cc:12523 ../src/callbacks.cc:12726
 msgid "New Function"
 msgstr "Ny funktion"
 
-#: ../src/callbacks.cc:12443 ../src/callbacks.cc:28077
-#: ../src/callbacks.cc:28089
+#: ../src/callbacks.cc:12573 ../src/callbacks.cc:28263
+#: ../src/callbacks.cc:28275
 msgid "Yes"
 msgstr "Ja"
 
-#: ../src/callbacks.cc:12445 ../src/callbacks.cc:28079
-#: ../src/callbacks.cc:28091
+#: ../src/callbacks.cc:12575 ../src/callbacks.cc:28265
+#: ../src/callbacks.cc:28277
 msgid "No"
 msgstr "Nej"
 
-#: ../src/callbacks.cc:12487 ../src/callbacks.cc:12645
+#: ../src/callbacks.cc:12617 ../src/callbacks.cc:12775
 msgid "Empty expression field."
 msgstr "Tom uttrycksfält."
 
 #. function with the same name exists -- overwrite or open the dialog again
 #. dataset with the same name exists -- overwrite or open the dialog again
-#: ../src/callbacks.cc:12495 ../src/callbacks.cc:12649
-#: ../src/callbacks.cc:13893
+#: ../src/callbacks.cc:12625 ../src/callbacks.cc:12779
+#: ../src/callbacks.cc:14023
 msgid ""
 "A function with the same name already exists.\n"
 "Do you want to overwrite the function?"
@@ -4707,22 +4720,22 @@ msgstr ""
 "En funktion med samma namn finns redan.\n"
 "Vill du ersätta den?"
 
-#: ../src/callbacks.cc:12709 ../src/callbacks.cc:12723
+#: ../src/callbacks.cc:12839 ../src/callbacks.cc:12853
 msgid "Unit does not exist"
 msgstr "Enheten finns inte"
 
-#: ../src/callbacks.cc:12752
+#: ../src/callbacks.cc:12882
 msgid "Edit Unknown Variable (global)"
 msgstr "Redigera okänd variabel (systemvid)"
 
-#: ../src/callbacks.cc:12754
+#: ../src/callbacks.cc:12884
 msgid "New Unknown Variable"
 msgstr "Ny okänd variabel"
 
 #. unknown with the same name exists -- overwrite or open dialog again
 #. variable with the same name exists -- overwrite or open dialog again
-#: ../src/callbacks.cc:12820 ../src/callbacks.cc:13021
-#: ../src/callbacks.cc:13266 ../src/callbacks.cc:14001
+#: ../src/callbacks.cc:12950 ../src/callbacks.cc:13151
+#: ../src/callbacks.cc:13396 ../src/callbacks.cc:14131
 msgid ""
 "An unit or variable with the same name already exists.\n"
 "Do you want to overwrite it?"
@@ -4730,88 +4743,88 @@ msgstr ""
 "En enhet eller variabel med samma namn finns redan.\n"
 "Vill du ersätta den?"
 
-#: ../src/callbacks.cc:12928
+#: ../src/callbacks.cc:13058
 msgid "Edit Variable (global)"
 msgstr "Redigera variabel (systemvid)"
 
-#: ../src/callbacks.cc:12930
+#: ../src/callbacks.cc:13060
 msgid "New Variable"
 msgstr "Ny variabel"
 
-#: ../src/callbacks.cc:13017
+#: ../src/callbacks.cc:13147
 msgid "Empty value field."
 msgstr "Tomt värdefält."
 
-#: ../src/callbacks.cc:13118
+#: ../src/callbacks.cc:13248
 msgid "Edit Vector"
 msgstr "Redigera vektor"
 
-#: ../src/callbacks.cc:13120
+#: ../src/callbacks.cc:13250
 msgid "Edit Vector (global)"
 msgstr "Redigera vektor (systemvid)"
 
-#: ../src/callbacks.cc:13122
+#: ../src/callbacks.cc:13252
 msgid "New Vector"
 msgstr "Ny vektor"
 
-#: ../src/callbacks.cc:13129
+#: ../src/callbacks.cc:13259
 msgid "Edit Matrix (global)"
 msgstr "Redigera matris (systemvid)"
 
-#: ../src/callbacks.cc:13131
+#: ../src/callbacks.cc:13261
 msgid "New Matrix"
 msgstr "Ny matris"
 
-#: ../src/callbacks.cc:13386
+#: ../src/callbacks.cc:13516
 msgid "Vector Result"
 msgstr "Vektorresultat"
 
-#: ../src/callbacks.cc:13388
+#: ../src/callbacks.cc:13518
 msgid "Matrix Result"
 msgstr "Matrisresultat"
 
-#: ../src/callbacks.cc:13539
+#: ../src/callbacks.cc:13669
 msgid "New Data Object"
 msgstr "Nytt dataobjekt"
 
-#: ../src/callbacks.cc:13580 ../src/callbacks.cc:14835
-#: ../src/callbacks.cc:15737
+#: ../src/callbacks.cc:13710 ../src/callbacks.cc:14924
+#: ../src/callbacks.cc:15836
 msgid "Default"
 msgstr "Förval"
 
-#: ../src/callbacks.cc:13640
+#: ../src/callbacks.cc:13770
 msgid "text"
 msgstr "text"
 
-#: ../src/callbacks.cc:13645 ../src/callbacks.cc:13653
+#: ../src/callbacks.cc:13775 ../src/callbacks.cc:13783
 msgid "approximate"
 msgstr "approximerat"
 
-#: ../src/callbacks.cc:13813
+#: ../src/callbacks.cc:13943
 msgid "Edit Data Set (global)"
 msgstr "Redigera dataset (systemvitt)"
 
-#: ../src/callbacks.cc:13815
+#: ../src/callbacks.cc:13945
 msgid "New Data Set"
 msgstr "Nytt dataset"
 
-#: ../src/callbacks.cc:13832
+#: ../src/callbacks.cc:13962
 msgid "info"
 msgstr "info"
 
-#: ../src/callbacks.cc:13922
+#: ../src/callbacks.cc:14052
 msgid "Property"
 msgstr "Egenskap"
 
-#: ../src/callbacks.cc:13989 ../src/callbacks.cc:14075
+#: ../src/callbacks.cc:14119 ../src/callbacks.cc:14205
 msgid "No file name entered."
 msgstr "Filnamn måste anges"
 
-#: ../src/callbacks.cc:14031 ../src/callbacks.cc:14104
+#: ../src/callbacks.cc:14161 ../src/callbacks.cc:14234
 msgid "No delimiter selected."
 msgstr "En avgränsare måste anges"
 
-#: ../src/callbacks.cc:14036
+#: ../src/callbacks.cc:14166
 #, c-format
 msgid ""
 "Could not import from file \n"
@@ -4820,15 +4833,15 @@ msgstr ""
 "Kunde inte importera fil: \n"
 "%s"
 
-#: ../src/callbacks.cc:14117
+#: ../src/callbacks.cc:14247
 msgid "No variable name entered."
 msgstr "Inget variabelnamn angivet."
 
-#: ../src/callbacks.cc:14129
+#: ../src/callbacks.cc:14259
 msgid "No known variable with entered name found."
 msgstr "Fann ingen känd variabel med angivet namn."
 
-#: ../src/callbacks.cc:14143
+#: ../src/callbacks.cc:14273
 #, c-format
 msgid ""
 "Could not export to file \n"
@@ -4837,69 +4850,69 @@ msgstr ""
 "Kunde inte exportera till fil: \n"
 "%s"
 
-#: ../src/callbacks.cc:14239 ../src/callbacks.cc:14247
-#: ../src/callbacks.cc:19051 ../src/callbacks.cc:22728
-#: ../src/callbacks.cc:22731
+#: ../src/callbacks.cc:14369 ../src/callbacks.cc:14377
+#: ../src/callbacks.cc:19175 ../src/callbacks.cc:22851
+#: ../src/callbacks.cc:22854
 msgid "My Variables"
 msgstr "Mina variabler"
 
-#: ../src/callbacks.cc:14760
+#: ../src/callbacks.cc:14849
 msgid "Couldn't write definitions"
 msgstr "Kunde inte spara definitioner"
 
-#: ../src/callbacks.cc:14835 ../src/callbacks.cc:15736
+#: ../src/callbacks.cc:14924 ../src/callbacks.cc:15835
 msgid "Preset"
 msgstr "Förinställt"
 
-#: ../src/callbacks.cc:15058
+#: ../src/callbacks.cc:15147
 msgid "Abort"
 msgstr "Avbryt"
 
-#: ../src/callbacks.cc:15061
+#: ../src/callbacks.cc:15150
 msgid "Undo"
 msgstr "Ångra"
 
-#: ../src/callbacks.cc:15064
+#: ../src/callbacks.cc:15153
 msgid "Redo"
 msgstr "Gör om"
 
-#: ../src/callbacks.cc:15069
+#: ../src/callbacks.cc:15158
 msgid "Completion Mode"
 msgstr "Kompletteringsläge"
 
-#: ../src/callbacks.cc:15082
+#: ../src/callbacks.cc:15171
 msgid "Limited strict completion"
 msgstr "Begränsad strikt komplettering"
 
-#: ../src/callbacks.cc:15083
+#: ../src/callbacks.cc:15172
 msgid "Strict completion"
 msgstr "Strikt komplettering"
 
-#: ../src/callbacks.cc:15084
+#: ../src/callbacks.cc:15173
 msgid "Limited full completion"
 msgstr "Begränsad fullständig komplettering"
 
-#: ../src/callbacks.cc:15085
+#: ../src/callbacks.cc:15174
 msgid "Full completion"
 msgstr "Fullständig komplettering"
 
-#: ../src/callbacks.cc:15086
+#: ../src/callbacks.cc:15175
 msgid "No completion"
 msgstr "Ingen komplettering"
 
-#: ../src/callbacks.cc:15524
+#: ../src/callbacks.cc:15623
 msgid "Save Mode"
 msgstr "Spara läge"
 
-#: ../src/callbacks.cc:15552
+#: ../src/callbacks.cc:15651
 msgid "Preset mode cannot be overwritten."
 msgstr "Förinställt läge kan inte skrivas över."
 
-#: ../src/callbacks.cc:15580
+#: ../src/callbacks.cc:15679
 msgid "Delete Mode"
 msgstr "Radera läge"
 
-#: ../src/callbacks.cc:16694
+#: ../src/callbacks.cc:16796
 #, c-format
 msgid ""
 "Couldn't write preferences to\n"
@@ -4908,36 +4921,36 @@ msgstr ""
 "Kunde inte spara inställningar till\n"
 "%s"
 
-#: ../src/callbacks.cc:17752 ../src/callbacks.cc:17765
+#: ../src/callbacks.cc:17854 ../src/callbacks.cc:17867
 msgid "never"
 msgstr "aldrig"
 
-#: ../src/callbacks.cc:17753 ../src/callbacks.cc:17767
+#: ../src/callbacks.cc:17855 ../src/callbacks.cc:17869
 msgid "ask"
 msgstr "fråga"
 
-#: ../src/callbacks.cc:17761
+#: ../src/callbacks.cc:17863
 #, c-format
 msgid "%i days"
 msgstr "%i dagar"
 
-#: ../src/callbacks.cc:19571
+#: ../src/callbacks.cc:19695
 msgid "Clear expression"
 msgstr "Töm uttrycket"
 
-#: ../src/callbacks.cc:20401
+#: ../src/callbacks.cc:20525
 msgid "log10 function not found."
 msgstr "Kunde inte finna log10 funktionen."
 
-#: ../src/callbacks.cc:21189 ../src/callbacks.cc:21435
+#: ../src/callbacks.cc:21313 ../src/callbacks.cc:21559
 msgid "Remove Bookmark"
 msgstr "Ta bort bokmärkde"
 
-#: ../src/callbacks.cc:21243
+#: ../src/callbacks.cc:21367
 msgid "Add Bookmark"
 msgstr "Lägg till bokmärke"
 
-#: ../src/callbacks.cc:21268
+#: ../src/callbacks.cc:21392
 msgid ""
 "A bookmark with the selected name already exists.\n"
 "Do you want to overwrite it?"
@@ -4945,138 +4958,138 @@ msgstr ""
 "Ett bokmärke med samma namn finns redan.\n"
 "Vill du ersätta den?"
 
-#: ../src/callbacks.cc:21446 ../src/callbacks.cc:22652
+#: ../src/callbacks.cc:21570 ../src/callbacks.cc:22775
 msgid "No items found"
 msgstr "Inga objekt funna"
 
-#: ../src/callbacks.cc:21703 ../src/callbacks.cc:28018
+#: ../src/callbacks.cc:21827 ../src/callbacks.cc:28204
 msgid "Select date"
 msgstr "Välj datum"
 
-#: ../src/callbacks.cc:22277
+#: ../src/callbacks.cc:22401
 msgid "Rectangular form"
 msgstr "Rektangulär form"
 
-#: ../src/callbacks.cc:22278
+#: ../src/callbacks.cc:22402
 msgid "Exponential form"
 msgstr "Exponentiell form"
 
-#: ../src/callbacks.cc:22279
+#: ../src/callbacks.cc:22403
 msgid "Polar form"
 msgstr "Polär form"
 
-#: ../src/callbacks.cc:22280
+#: ../src/callbacks.cc:22404
 msgid "Angle/phasor notation"
 msgstr "Vinkelnotation"
 
-#: ../src/callbacks.cc:22284
+#: ../src/callbacks.cc:22408
 msgid "Optimal unit"
 msgstr "Optimal enhet"
 
-#: ../src/callbacks.cc:22285
+#: ../src/callbacks.cc:22409
 msgid "Optimal prefix"
 msgstr "Optimalt prefix"
 
-#: ../src/callbacks.cc:22530
+#: ../src/callbacks.cc:22653
 msgid "All functions"
 msgstr "Alla funktioner"
 
-#: ../src/callbacks.cc:22582
+#: ../src/callbacks.cc:22705
 msgid "All variables"
 msgstr "Alla variabler"
 
-#: ../src/callbacks.cc:22799
+#: ../src/callbacks.cc:22922
 msgid "Select definitions file"
 msgstr "Välj definitionsfil"
 
-#: ../src/callbacks.cc:22799
+#: ../src/callbacks.cc:22922
 msgid "_Import"
 msgstr "_Importera"
 
-#: ../src/callbacks.cc:22818
+#: ../src/callbacks.cc:22941
 #, c-format
 msgid "Could not copy %s to %s."
 msgstr "Kunde inte kopiera %s till %s.%s"
 
-#: ../src/callbacks.cc:22826
+#: ../src/callbacks.cc:22949
 #, c-format
 msgid "Could not read %s."
 msgstr "Kunde inte läsa %s."
 
-#: ../src/callbacks.cc:22834
+#: ../src/callbacks.cc:22957
 #, c-format
 msgid "Could not copy file to %s."
 msgstr "Kunde inte kopiera fil till %s."
 
-#: ../src/callbacks.cc:23379 ../src/callbacks.cc:23459
-#: ../src/callbacks.cc:23539 ../src/callbacks.cc:23586
-#: ../src/callbacks.cc:28540
+#: ../src/callbacks.cc:23553 ../src/callbacks.cc:23633
+#: ../src/callbacks.cc:23713 ../src/callbacks.cc:23760
+#: ../src/callbacks.cc:28726
 msgid "Unsupported base."
 msgstr "Basen stöds ej."
 
-#: ../src/callbacks.cc:23780
+#: ../src/callbacks.cc:23954
 msgid "The selected Chinese year does not exist."
 msgstr "Det valda kinesiska året finns inte."
 
-#: ../src/callbacks.cc:23792
+#: ../src/callbacks.cc:23966
 msgid "Conversion to Gregorian calendar failed."
 msgstr "Omvandling to gregoriansk kalender misslyckades"
 
-#: ../src/callbacks.cc:23817
+#: ../src/callbacks.cc:23991
 #, c-format
 msgid "Calendar conversion failed for: %s."
 msgstr "Kalenderomvandling misslyckades för: ."
 
-#: ../src/callbacks.cc:24428
+#: ../src/callbacks.cc:24602
 msgid "Select file to save PNG image to"
 msgstr "Välj fil att att spara PNG bild till"
 
-#: ../src/callbacks.cc:24431 ../src/callbacks.cc:28770
+#: ../src/callbacks.cc:24605 ../src/callbacks.cc:28956
 msgid "Allowed File Types"
 msgstr "Tillåtna filtyper"
 
-#: ../src/callbacks.cc:24436 ../src/callbacks.cc:28781
+#: ../src/callbacks.cc:24610 ../src/callbacks.cc:28967
 msgid "All Files"
 msgstr "Alla filer"
 
 #. do not delete units that are used by other units
-#: ../src/callbacks.cc:25012
+#: ../src/callbacks.cc:25186
 msgid "Cannot delete unit as it is needed by other units."
 msgstr "Kan inte ta bort enheten eftersom den används av andra enheter."
 
-#: ../src/callbacks.cc:25467 ../src/callbacks.cc:25696
+#: ../src/callbacks.cc:25641 ../src/callbacks.cc:25870
 msgid "none"
 msgstr "ingen"
 
-#: ../src/callbacks.cc:25966 ../src/callbacks.cc:25967
-#: ../src/callbacks.cc:25968 ../src/callbacks.cc:25969
-#: ../src/callbacks.cc:25981
+#: ../src/callbacks.cc:26140 ../src/callbacks.cc:26141
+#: ../src/callbacks.cc:26142 ../src/callbacks.cc:26143
+#: ../src/callbacks.cc:26155
 msgid "result is too long"
 msgstr "resultet är för långt"
 
-#: ../src/callbacks.cc:27248 ../src/callbacks.cc:28529
+#: ../src/callbacks.cc:27422 ../src/callbacks.cc:28715
 msgid "Mode not found."
 msgstr "Läge hittades ej."
 
-#: ../src/callbacks.cc:27939 ../src/callbacks.cc:27947
-#: ../src/callbacks.cc:27955 ../src/callbacks.cc:27963
+#: ../src/callbacks.cc:28125 ../src/callbacks.cc:28133
+#: ../src/callbacks.cc:28141 ../src/callbacks.cc:28149
 msgid "Elements (in horizontal order)"
 msgstr "Element (radvis)"
 
-#: ../src/callbacks.cc:27976 ../src/callbacks.cc:28032
+#: ../src/callbacks.cc:28162 ../src/callbacks.cc:28218
 msgid "Select file to import"
 msgstr "Välj fil att importera"
 
-#: ../src/callbacks.cc:27976 ../src/callbacks.cc:28001
-#: ../src/callbacks.cc:28032
+#: ../src/callbacks.cc:28162 ../src/callbacks.cc:28187
+#: ../src/callbacks.cc:28218
 msgid "_Open"
 msgstr "_Öppna"
 
-#: ../src/callbacks.cc:28001
+#: ../src/callbacks.cc:28187
 msgid "Select file to export to"
 msgstr "Välj fil att exportera till"
 
-#: ../src/callbacks.cc:28327 ../src/callbacks.cc:28357
+#: ../src/callbacks.cc:28513 ../src/callbacks.cc:28543
 msgid ""
 "A conflicting object with the same name exists. If you proceed and save "
 "changes, the conflicting object will be overwritten or deactivated.\n"
@@ -5087,27 +5100,27 @@ msgstr ""
 "deaktiveras.\n"
 "Vill du fortsätta?"
 
-#: ../src/callbacks.cc:28435
+#: ../src/callbacks.cc:28621
 msgid "No keys"
 msgstr "Inga tangenter"
 
-#: ../src/callbacks.cc:28486
+#: ../src/callbacks.cc:28672
 msgid "Empty value."
 msgstr "Tomt värde."
 
-#: ../src/callbacks.cc:28499
+#: ../src/callbacks.cc:28685
 msgid "Function not found."
 msgstr "Funktionen hittades ej."
 
-#: ../src/callbacks.cc:28507
+#: ../src/callbacks.cc:28693
 msgid "Variable not found."
 msgstr "Variabeln hittades ej."
 
-#: ../src/callbacks.cc:28515
+#: ../src/callbacks.cc:28701
 msgid "Unit not found."
 msgstr "Enheten hittades ej."
 
-#: ../src/callbacks.cc:28548 ../src/callbacks.cc:28591
+#: ../src/callbacks.cc:28734 ../src/callbacks.cc:28777
 msgid ""
 "The keyboard shortcut is already in use.\n"
 "Do you wish to replace the current action?"
@@ -5115,80 +5128,80 @@ msgstr ""
 "Kortkommandot används redan.\n"
 "Vill du ersätta den nuvarande åtgärden?"
 
-#: ../src/callbacks.cc:28767
+#: ../src/callbacks.cc:28953
 msgid "Select file to export"
 msgstr "Välj fil att exportera till"
 
-#: ../src/callbacks.cc:28839 ../src/callbacks.cc:28849
-#: ../src/callbacks.cc:28858
+#: ../src/callbacks.cc:29025 ../src/callbacks.cc:29035
+#: ../src/callbacks.cc:29044
 msgid "It took too long to generate the plot data."
 msgstr "Det tog för lång tid att generera data till diagrammet."
 
-#: ../src/callbacks.cc:28879 ../src/callbacks.cc:28924
+#: ../src/callbacks.cc:29065 ../src/callbacks.cc:29110
 msgid "Empty expression."
 msgstr "Tomt uttryck."
 
-#: ../src/callbacks.cc:28893 ../src/callbacks.cc:28938
+#: ../src/callbacks.cc:29079 ../src/callbacks.cc:29124
 msgid "Empty x variable."
 msgstr "Tom x-variabel"
 
-#: ../src/callbacks.cc:29125
+#: ../src/callbacks.cc:29311
 msgid "Element Data"
 msgstr "Grundämnesdata"
 
-#: ../src/callbacks.cc:29163
+#: ../src/callbacks.cc:29349
 msgid "Classification"
 msgstr "Klassificering"
 
-#: ../src/callbacks.cc:29168
+#: ../src/callbacks.cc:29354
 msgid "Alkali Metal"
 msgstr "Alkalimetall"
 
-#: ../src/callbacks.cc:29169
+#: ../src/callbacks.cc:29355
 msgid "Alkaline-Earth Metal"
 msgstr "Alkalisk jordartsmetall"
 
-#: ../src/callbacks.cc:29170
+#: ../src/callbacks.cc:29356
 msgid "Lanthanide"
 msgstr "Lantanid"
 
-#: ../src/callbacks.cc:29171
+#: ../src/callbacks.cc:29357
 msgid "Actinide"
 msgstr "Aktinid"
 
-#: ../src/callbacks.cc:29172
+#: ../src/callbacks.cc:29358
 msgid "Transition Metal"
 msgstr "Övergångsmetall"
 
-#: ../src/callbacks.cc:29173
+#: ../src/callbacks.cc:29359
 msgid "Metal"
 msgstr "Metall"
 
-#: ../src/callbacks.cc:29174
+#: ../src/callbacks.cc:29360
 msgid "Metalloid"
 msgstr "Halvmetall"
 
-#: ../src/callbacks.cc:29175
+#: ../src/callbacks.cc:29361
 msgid "Polyatomic Non-Metal"
 msgstr "Polyatomisk icke-metall"
 
-#: ../src/callbacks.cc:29176
+#: ../src/callbacks.cc:29362
 msgid "Diatomic Non-Metal"
 msgstr "Diatomisk icke-metall"
 
-#: ../src/callbacks.cc:29177
+#: ../src/callbacks.cc:29363
 msgid "Noble Gas"
 msgstr "Ädelgas"
 
-#: ../src/callbacks.cc:29178
+#: ../src/callbacks.cc:29364
 msgid "Unknown chemical properties"
 msgstr "Okända kemiska egenskaper"
 
-#: ../src/callbacks.cc:29274
+#: ../src/callbacks.cc:29460
 msgid "No unknowns in result."
 msgstr "Inga okända värden i resultatet."
 
-#: ../src/callbacks.cc:29280
+#: ../src/callbacks.cc:29466
 msgid "Set Unknowns"
 msgstr "Ange okända värden"
 

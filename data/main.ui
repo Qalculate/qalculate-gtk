@@ -64,6 +64,33 @@
   <object class="GtkMenu" id="menu_cos">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_cos_degrees">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Degrees</property>
+        <property name="active">True</property>
+        <signal name="activate" handler="on_menu_item_mb_degrees_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_cos_radians">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Radians</property>
+        <property name="group">menu_item_cos_degrees</property>
+        <signal name="activate" handler="on_menu_item_mb_radians_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_cos_gradians">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Gradians</property>
+        <property name="group">menu_item_cos_degrees</property>
+        <signal name="activate" handler="on_menu_item_mb_gradians_activate" swapped="no"/>
+      </object>
+    </child>
   </object>
   <object class="GtkMenu" id="menu_e">
     <property name="visible">True</property>
@@ -112,6 +139,33 @@
   <object class="GtkMenu" id="menu_sin">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_sin_degrees">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Degrees</property>
+        <property name="active">True</property>
+        <signal name="activate" handler="on_menu_item_mb_degrees_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_sin_radians">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Radians</property>
+        <property name="group">menu_item_sin_degrees</property>
+        <signal name="activate" handler="on_menu_item_mb_radians_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_sin_gradians">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Gradians</property>
+        <property name="group">menu_item_sin_degrees</property>
+        <signal name="activate" handler="on_menu_item_mb_gradians_activate" swapped="no"/>
+      </object>
+    </child>
   </object>
   <object class="GtkMenu" id="menu_sqrt">
     <property name="visible">True</property>
@@ -128,6 +182,33 @@
   <object class="GtkMenu" id="menu_tan">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_tan_degrees">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Degrees</property>
+        <property name="active">True</property>
+        <signal name="activate" handler="on_menu_item_mb_degrees_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_tan_radians">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Radians</property>
+        <property name="group">menu_item_tan_degrees</property>
+        <signal name="activate" handler="on_menu_item_mb_radians_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_tan_gradians">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Gradians</property>
+        <property name="group">menu_item_tan_degrees</property>
+        <signal name="activate" handler="on_menu_item_mb_gradians_activate" swapped="no"/>
+      </object>
+    </child>
   </object>
   <object class="GtkMenu" id="menu_to">
     <property name="visible">True</property>
@@ -2476,17 +2557,24 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="label_status_right">
+                      <object class="GtkEventBox" id="status_right_eventbox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label">&lt;span size="small"&gt;STATUS&lt;/span&gt;</property>
-                        <property name="use_markup">True</property>
-                        <property name="justify">right</property>
+                        <signal name="button-press-event" handler="on_status_right_button_press_event" swapped="no"/>
+                        <signal name="button-release-event" handler="on_status_right_button_release_event" swapped="no"/>
+                        <child>
+                          <object class="GtkLabel" id="label_status_right">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label">&lt;span size="small"&gt;STATUS&lt;/span&gt;</property>
+                            <property name="use_markup">True</property>
+                            <property name="justify">right</property>
+                          </object>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="padding">4</property>
                         <property name="pack_type">end</property>
                         <property name="position">1</property>
                       </packing>
@@ -8106,6 +8194,37 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
         <property name="label" translatable="yes">Clear Stack</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_popup_menu_item_stack_clear_activate" swapped="no"/>
+      </object>
+    </child>
+  </object>
+  <object class="GtkMenu" id="popup_menu_status_right">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_status_degrees">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Degrees</property>
+        <property name="active">True</property>
+        <signal name="activate" handler="on_menu_item_mb_degrees_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_status_radians">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Radians</property>
+        <property name="group">menu_item_status_degrees</property>
+        <signal name="activate" handler="on_menu_item_mb_radians_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_status_gradians">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Gradians</property>
+        <property name="group">menu_item_status_degrees</property>
+        <signal name="activate" handler="on_menu_item_mb_gradians_activate" swapped="no"/>
       </object>
     </child>
   </object>

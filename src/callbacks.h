@@ -91,6 +91,9 @@ enum {
 	SHORTCUT_TYPE_OUTPUT_BASE,
 	SHORTCUT_TYPE_INPUT_BASE,
 	SHORTCUT_TYPE_EXACT_MODE,
+	SHORTCUT_TYPE_DEGREES,
+	SHORTCUT_TYPE_RADIANS,
+	SHORTCUT_TYPE_GRADIANS,
 	SHORTCUT_TYPE_FRACTIONS,
 	SHORTCUT_TYPE_MIXED_FRACTIONS,
 	SHORTCUT_TYPE_SCIENTIFIC_NOTATION,
@@ -330,6 +333,7 @@ void update_mb_sto_menu();
 void update_mb_units_menu();
 void update_mb_pi_menu();
 void update_mb_to_menu();
+void update_mb_angles(AngleUnit angle_unit);
 
 void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewColumn*, gpointer);
 void on_units_convert_view_row_activated(GtkTreeView*, GtkTreePath *path, GtkTreeViewColumn*, gpointer);

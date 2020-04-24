@@ -314,6 +314,7 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 			break;
 		}
 	}
+	update_mb_angles(eo.parse_options.angle_unit);
 
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_read_precision")), eo.parse_options.read_precision != DONT_READ_PRECISION);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_limit_implicit_multiplication")), eo.parse_options.limit_implicit_multiplication);
@@ -678,21 +679,24 @@ void create_button_menus(void) {
 
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_sine"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_sin);
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_sin"));
-	MENU_ITEM_WITH_POINTER(CALCULATOR->f_sinh->title(true).c_str(), insert_button_function, CALCULATOR->f_sinh)
-	MENU_ITEM_WITH_POINTER(CALCULATOR->f_asin->title(true).c_str(), insert_button_function, CALCULATOR->f_asin)
-	MENU_ITEM_WITH_POINTER(CALCULATOR->f_asinh->title(true).c_str(), insert_button_function, CALCULATOR->f_asinh)
+	MENU_SEPARATOR_PREPEND
+	MENU_ITEM_WITH_POINTER_PREPEND(CALCULATOR->f_asinh->title(true).c_str(), insert_button_function, CALCULATOR->f_asinh)
+	MENU_ITEM_WITH_POINTER_PREPEND(CALCULATOR->f_asin->title(true).c_str(), insert_button_function, CALCULATOR->f_asin)
+	MENU_ITEM_WITH_POINTER_PREPEND(CALCULATOR->f_sinh->title(true).c_str(), insert_button_function, CALCULATOR->f_sinh)
 
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_cosine"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_cos);
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_cos"));
-	MENU_ITEM_WITH_POINTER(CALCULATOR->f_cosh->title(true).c_str(), insert_button_function, CALCULATOR->f_cosh)
-	MENU_ITEM_WITH_POINTER(CALCULATOR->f_acos->title(true).c_str(), insert_button_function, CALCULATOR->f_acos)
-	MENU_ITEM_WITH_POINTER(CALCULATOR->f_acosh->title(true).c_str(), insert_button_function, CALCULATOR->f_acosh)
+	MENU_SEPARATOR_PREPEND
+	MENU_ITEM_WITH_POINTER_PREPEND(CALCULATOR->f_acosh->title(true).c_str(), insert_button_function, CALCULATOR->f_acosh)
+	MENU_ITEM_WITH_POINTER_PREPEND(CALCULATOR->f_acos->title(true).c_str(), insert_button_function, CALCULATOR->f_acos)
+	MENU_ITEM_WITH_POINTER_PREPEND(CALCULATOR->f_cosh->title(true).c_str(), insert_button_function, CALCULATOR->f_cosh)
 
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_tan"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_tan);
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_tan"));
-	MENU_ITEM_WITH_POINTER(CALCULATOR->f_tanh->title(true).c_str(), insert_button_function, CALCULATOR->f_tanh)
-	MENU_ITEM_WITH_POINTER(CALCULATOR->f_atan->title(true).c_str(), insert_button_function, CALCULATOR->f_atan)
-	MENU_ITEM_WITH_POINTER(CALCULATOR->f_atanh->title(true).c_str(), insert_button_function, CALCULATOR->f_atanh)
+	MENU_SEPARATOR_PREPEND
+	MENU_ITEM_WITH_POINTER_PREPEND(CALCULATOR->f_atanh->title(true).c_str(), insert_button_function, CALCULATOR->f_atanh)
+	MENU_ITEM_WITH_POINTER_PREPEND(CALCULATOR->f_atan->title(true).c_str(), insert_button_function, CALCULATOR->f_atan)
+	MENU_ITEM_WITH_POINTER_PREPEND(CALCULATOR->f_tanh->title(true).c_str(), insert_button_function, CALCULATOR->f_tanh)
 
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_sum"), "clicked", G_CALLBACK(insert_button_function_norpn), (gpointer) CALCULATOR->f_sum);
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_sum"));
