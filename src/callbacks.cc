@@ -141,8 +141,8 @@ extern GtkWidget *tDataProperties;
 extern GtkListStore *tDataProperties_store;
 extern GtkWidget *tNames;
 extern GtkListStore *tNames_store;
-extern GtkWidget *tShortcuts;
-extern GtkListStore *tShortcuts_store;
+extern GtkWidget *tShortcuts, *tShortcutsType;
+extern GtkListStore *tShortcuts_store, *tShortcutsType_store;
 extern GtkAccelGroup *accel_group;
 extern string selected_function_category;
 extern MathFunction *selected_function;
@@ -5513,35 +5513,6 @@ void update_accels() {
 				break;
 			}
 		}
-	}
-}
-
-void on_tShortcuts_selection_changed(GtkTreeSelection *treeselection, gpointer) {
-	GtkTreeModel *model;
-	GtkTreeIter iter;
-	selected_subfunction = 0;
-	if(gtk_tree_selection_get_selected(treeselection, &model, &iter)) {
-		guint64 val = 0;
-		gtk_tree_model_get(model, &iter, 3, &val, -1);
-		unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find(val);
-		if(it != keyboard_shortcuts.end()) {
-			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(shortcuts_builder, "shortcuts_combobox_type")), it->second.type);
-			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")), it->second.value.c_str());
-			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(shortcuts_builder, "shortcuts_label_shortcut")), shortcut_to_text(it->second.key, it->second.modifier).c_str());
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_add")), TRUE);
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_modify")), TRUE);
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_remove")), TRUE);
-			current_shortcut_key = it->second.key;
-			current_shortcut_modifier = it->second.modifier;
-		}
-	} else {
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_modify")), FALSE);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_remove")), FALSE);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_add")), FALSE);
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")), "");
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(shortcuts_builder, "shortcuts_label_shortcut")), _("Set key combination"));
-		current_shortcut_key = 0;
-		current_shortcut_modifier = 0;
 	}
 }
 
@@ -28592,6 +28563,57 @@ void on_menu_item_edit_shortcuts_activate(GtkMenuItem*, gpointer) {
 	gtk_widget_show(dialog);
 	gtk_window_present(GTK_WINDOW(dialog));
 }
+
+void on_tShortcuts_selection_changed(GtkTreeSelection *treeselection, gpointer) {
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	selected_subfunction = 0;
+	if(gtk_tree_selection_get_selected(treeselection, &model, &iter)) {
+		guint64 val = 0;
+		gtk_tree_model_get(model, &iter, 3, &val, -1);
+		unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find(val);
+		if(it != keyboard_shortcuts.end()) {
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_remove")), TRUE);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_edit")), TRUE);
+		}
+	} else {
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_remove")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_edit")), FALSE);
+	}
+}
+void on_tShortcutsType_selection_changed(GtkTreeSelection *treeselection, gpointer) {
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	selected_subfunction = 0;
+	if(gtk_tree_selection_get_selected(treeselection, &model, &iter)) {
+		int type = 0;
+		gtk_tree_model_get(model, &iter, 1, &type, -1);
+		switch(type) {
+			case SHORTCUT_TYPE_FUNCTION: {}
+			case SHORTCUT_TYPE_FUNCTION_WITH_DIALOG: {}
+			case SHORTCUT_TYPE_VARIABLE: {}
+			case SHORTCUT_TYPE_UNIT: {}
+			case SHORTCUT_TYPE_TEXT: {}
+			case SHORTCUT_TYPE_CONVERT: {}
+			case SHORTCUT_TYPE_TO_NUMBER_BASE: {}
+			case SHORTCUT_TYPE_META_MODE: {}
+			case SHORTCUT_TYPE_INPUT_BASE: {}
+			case SHORTCUT_TYPE_OUTPUT_BASE: {
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")), TRUE);
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_label_value")), TRUE);
+				break;
+			}
+			default: {
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")), FALSE);
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_label_value")), FALSE);
+			}
+		}
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_ok")), TRUE);
+	} else {
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_ok")), FALSE);
+	}
+}
+
 GtkWidget *shortcut_label = NULL;
 gboolean on_shortcut_key_released(GtkWidget *w, GdkEventKey *event, gpointer) {
 	guint state = event->state & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK);
@@ -28614,9 +28636,9 @@ gboolean on_shortcut_key_pressed(GtkWidget *w, GdkEventKey *event, gpointer) {
 	gtk_label_set_markup(GTK_LABEL(shortcut_label), str.c_str());
 	return FALSE;
 }
-void on_shortcuts_button_shortcut_clicked(GtkButton, gpointer) {
+bool get_keyboard_shortcut(GtkWindow *parent) {
 	GtkWidget *dialog = gtk_dialog_new();
-	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
+	gtk_window_set_transient_for(GTK_WINDOW(dialog), parent);
 	gtk_window_set_title(GTK_WINDOW(dialog), _("Set key combination"));
 	string str = "<span size=\"large\">"; str += _("No keys"); str += "</span>";
 	shortcut_label = gtk_label_new(str.c_str());
@@ -28627,178 +28649,122 @@ void on_shortcuts_button_shortcut_clicked(GtkButton, gpointer) {
 	gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), shortcut_label, TRUE, TRUE, 24);
 	gtk_widget_show(shortcut_label);
 	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
-		if(current_shortcut_key == 0 && current_shortcut_modifier == 0) {
-			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(shortcuts_builder, "shortcuts_label_shortcut")), _("Set key combination"));
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_add")), FALSE);
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_modify")), FALSE);
-		} else {
-			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(shortcuts_builder, "shortcuts_label_shortcut")), shortcut_to_text(current_shortcut_key, current_shortcut_modifier).c_str());
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_add")), TRUE);
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_modify")), gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcuts)), NULL, NULL));
-		}
+		gtk_widget_destroy(dialog);
+		return current_shortcut_key != 0 && current_shortcut_modifier != 0;
 	}
 	gtk_widget_destroy(dialog);
+	return false;
 }
-void on_shortcuts_combobox_type_changed(GtkComboBox *w, gpointer) {
-	switch(gtk_combo_box_get_active(w)) {
-		case SHORTCUT_TYPE_FUNCTION: {}
-		case SHORTCUT_TYPE_FUNCTION_WITH_DIALOG: {}
-		case SHORTCUT_TYPE_VARIABLE: {}
-		case SHORTCUT_TYPE_UNIT: {}
-		case SHORTCUT_TYPE_TEXT: {}
-		case SHORTCUT_TYPE_CONVERT: {}
-		case SHORTCUT_TYPE_TO_NUMBER_BASE: {}
-		case SHORTCUT_TYPE_META_MODE: {}
-		case SHORTCUT_TYPE_INPUT_BASE: {}
-		case SHORTCUT_TYPE_OUTPUT_BASE: {
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")), TRUE);
-			break;
-		}
-		default: {gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")), FALSE);}
-	}
-}
-void on_shortcuts_button_add_clicked(GtkButton*, gpointer) {
-	keyboard_shortcut ks;
-	ks.key = current_shortcut_key;
-	ks.modifier = current_shortcut_modifier;
-	guint64 id = (guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier;
-	if(id == 0) return;
-	ks.type = gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(shortcuts_builder, "shortcuts_combobox_type")));
-	if(gtk_widget_is_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")))) {
-		ks.value = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
-		remove_blank_ends(ks.value);
-		if(ks.value.empty()) {
-			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
-			show_message(_("Empty value."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
-			return;
-		}
-	} else {
-		ks.value = "";
-	}
-	switch(ks.type) {
-		case SHORTCUT_TYPE_FUNCTION: {}
-		case SHORTCUT_TYPE_FUNCTION_WITH_DIALOG: {
-			remove_blanks(ks.value);
-			if(ks.value.length() > 2 && ks.value.substr(ks.value.length() - 2, 2) == "()") ks.value = ks.value.substr(0, ks.value.length() - 2);
-			if(!CALCULATOR->getActiveFunction(ks.value)) {
-				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
-				show_message(_("Function not found."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
-				return;
-			}
-			break;
-		}
-		case SHORTCUT_TYPE_VARIABLE: {
-			if(!CALCULATOR->getActiveVariable(ks.value)) {
-				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
-				show_message(_("Variable not found."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
-				return;
-			}
-			break;
-		}
-		case SHORTCUT_TYPE_UNIT: {
-			if(!CALCULATOR->getActiveUnit(ks.value)) {
-				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
-				show_message(_("Unit not found."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
-				return;
-			}
-			break;
-		}
-		case SHORTCUT_TYPE_META_MODE: {
-			bool b = false;
-			for(size_t i = 0; i < modes.size(); i++) {
-				if(equalsIgnoreCase(modes[i].name, ks.value)) {
-					b = true;
-					break;
-				}
-			}
-			if(!b) {
-				show_message(_("Mode not found."), mainwindow);
-				return;
-			}
-			break;
-		}
-		case SHORTCUT_TYPE_TO_NUMBER_BASE: {}
-		case SHORTCUT_TYPE_INPUT_BASE: {}
-		case SHORTCUT_TYPE_OUTPUT_BASE: {
-			Number nbase; int base;
-			base_from_string(ks.value, base, nbase, ks.type == SHORTCUT_TYPE_INPUT_BASE);
-			if(base == BASE_CUSTOM && nbase.isZero()) {
-				show_message(_("Unsupported base."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
-				return;
-			}
-			break;
-		}
-	}
-	unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find(id);
-	if(it != keyboard_shortcuts.end()) {
-		if(!ask_question(_("The keyboard shortcut is already in use.\nDo you wish to replace the current action?"), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")))) {
-			return;
-		}
+void on_shortcuts_button_new_clicked(GtkButton*, gpointer) {
+	GtkWidget *d = GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog"));
+	run_shortcuts_dialog:
+	if(gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
+		GtkTreeModel *model;
 		GtkTreeIter iter;
-		if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tShortcuts_store), &iter)) {
-			do {
-				guint64 id2 = 0;
-				gtk_tree_model_get(GTK_TREE_MODEL(tShortcuts_store), &iter, 3, &id2, -1);
-				if(id2 == id) {
-					gtk_list_store_remove(tShortcuts_store, &iter);
+		GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcutsType));
+		keyboard_shortcut ks;
+		if(gtk_tree_selection_get_selected(select, &model, &iter)) gtk_tree_model_get(GTK_TREE_MODEL(tShortcutsType_store), &iter, 1, &ks.type, -1);
+		else goto run_shortcuts_dialog;
+		if(gtk_widget_is_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")))) {
+			ks.value = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
+			remove_blank_ends(ks.value);
+			if(ks.value.empty()) {
+				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
+				show_message(_("Empty value."), d);
+				goto run_shortcuts_dialog;
+			}
+			switch(ks.type) {
+				case SHORTCUT_TYPE_FUNCTION: {}
+				case SHORTCUT_TYPE_FUNCTION_WITH_DIALOG: {
+					remove_blanks(ks.value);
+					if(ks.value.length() > 2 && ks.value.substr(ks.value.length() - 2, 2) == "()") ks.value = ks.value.substr(0, ks.value.length() - 2);
+					if(!CALCULATOR->getActiveFunction(ks.value)) {
+						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
+						show_message(_("Function not found."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
+						goto run_shortcuts_dialog;
+					}
 					break;
 				}
-			} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tShortcuts_store), &iter));
+				case SHORTCUT_TYPE_VARIABLE: {
+					if(!CALCULATOR->getActiveVariable(ks.value)) {
+						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
+						show_message(_("Variable not found."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
+						goto run_shortcuts_dialog;
+					}
+					break;
+				}
+				case SHORTCUT_TYPE_UNIT: {
+					if(!CALCULATOR->getActiveUnit(ks.value)) {
+						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
+						show_message(_("Unit not found."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
+						goto run_shortcuts_dialog;
+					}
+					break;
+				}
+				case SHORTCUT_TYPE_META_MODE: {
+					bool b = false;
+					for(size_t i = 0; i < modes.size(); i++) {
+						if(equalsIgnoreCase(modes[i].name, ks.value)) {
+							b = true;
+							break;
+						}
+					}
+					if(!b) {
+						show_message(_("Mode not found."), mainwindow);
+						goto run_shortcuts_dialog;
+					}
+					break;
+				}
+				case SHORTCUT_TYPE_TO_NUMBER_BASE: {}
+				case SHORTCUT_TYPE_INPUT_BASE: {}
+				case SHORTCUT_TYPE_OUTPUT_BASE: {
+					Number nbase; int base;
+					base_from_string(ks.value, base, nbase, ks.type == SHORTCUT_TYPE_INPUT_BASE);
+					if(base == BASE_CUSTOM && nbase.isZero()) {
+						show_message(_("Unsupported base."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
+						goto run_shortcuts_dialog;
+					}
+					break;
+				}
+			}
+		} else {
+			ks.value = "";
 		}
-		keyboard_shortcuts.erase(id);
-	}
-	default_shortcuts = false;
-	GtkTreeIter iter;
-	gtk_list_store_append(tShortcuts_store, &iter);
-	gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_type_text(ks.type), 1, ks.value.c_str(), 2, shortcut_to_text(ks.key, ks.modifier).c_str(), 3, id, -1);
-	keyboard_shortcuts[id] = ks;
-	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")), "");
-	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(shortcuts_builder, "shortcuts_label_shortcut")), _("Set key combination"));
-	current_shortcut_key = 0;
-	current_shortcut_modifier = 0;
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_add")), FALSE);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_modify")), FALSE);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_remove")), FALSE);
-	gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcuts)));
-}
-void on_shortcuts_button_modify_clicked(GtkButton*, gpointer) {
-	GtkTreeModel *model;
-	GtkTreeIter iter;
-	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcuts));
-	guint64 idnew = (guint64) current_shortcut_key + (guint64) G_MAXUINT32 * (guint64) current_shortcut_modifier;
-	if(idnew == 0) return;
-	if(gtk_tree_selection_get_selected(select, &model, &iter)) {
-		guint64 id = 0;
-		gtk_tree_model_get(GTK_TREE_MODEL(tShortcuts_store), &iter, 3, &id, -1);
-		bool b2 = false;
-		if(id != idnew) {
-			unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find(idnew);
+		if(get_keyboard_shortcut(GTK_WINDOW(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog")))) {
+			ks.key = current_shortcut_key;
+			ks.modifier = current_shortcut_modifier;
+			guint64 id = (guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier;
+			unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find(id);
 			if(it != keyboard_shortcuts.end()) {
 				if(!ask_question(_("The keyboard shortcut is already in use.\nDo you wish to replace the current action?"), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")))) {
+					gtk_widget_hide(d);
 					return;
 				}
-				b2 = true;
+				GtkTreeIter iter;
+				if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tShortcuts_store), &iter)) {
+					do {
+						guint64 id2 = 0;
+						gtk_tree_model_get(GTK_TREE_MODEL(tShortcuts_store), &iter, 3, &id2, -1);
+						if(id2 == id) {
+							gtk_list_store_remove(tShortcuts_store, &iter);
+							break;
+						}
+					} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tShortcuts_store), &iter));
+				}
+				keyboard_shortcuts.erase(id);
 			}
-		}
-		keyboard_shortcuts.erase(id);
-		g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tShortcuts_selection_changed, NULL);
-		gtk_list_store_remove(tShortcuts_store, &iter);
-		g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tShortcuts_selection_changed, NULL);
-		on_shortcuts_button_add_clicked(NULL, NULL);
-		if(b2) {
-			GtkTreeIter iter2;
-			if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tShortcuts_store), &iter2)) {
-				do {
-					guint64 id2 = 0;
-					gtk_tree_model_get(GTK_TREE_MODEL(tShortcuts_store), &iter2, 3, &id2, -1);
-					if(id2 == idnew && iter.stamp != iter2.stamp) {
-						gtk_list_store_remove(tShortcuts_store, &iter2);
-						break;
-					}
-				} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tShortcuts_store), &iter2));
-			}
+			default_shortcuts = false;
+			GtkTreeIter iter;
+			gtk_list_store_append(tShortcuts_store, &iter);
+			gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_type_text(ks.type), 1, ks.value.c_str(), 2, shortcut_to_text(ks.key, ks.modifier).c_str(), 3, id, -1);
+			keyboard_shortcuts[id] = ks;
+			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")), "");
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_remove")), FALSE);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_edit")), FALSE);
+			gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcuts)));
 		}
 	}
+	gtk_widget_hide(d);
 }
 void on_shortcuts_button_remove_clicked(GtkButton*, gpointer) {
 	GtkTreeModel *model;
@@ -28809,6 +28775,55 @@ void on_shortcuts_button_remove_clicked(GtkButton*, gpointer) {
 		gtk_tree_model_get(GTK_TREE_MODEL(tShortcuts_store), &iter, 3, &id, -1);
 		keyboard_shortcuts.erase(id);
 		gtk_list_store_remove(tShortcuts_store, &iter);
+		default_shortcuts = false;
+	}
+}
+void on_shortcuts_button_edit_clicked(GtkButton*, gpointer) {
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcuts));
+	if(gtk_tree_selection_get_selected(select, &model, &iter)) {
+		guint64 id;
+		gtk_tree_model_get(GTK_TREE_MODEL(tShortcuts_store), &iter, 3, &id, -1);
+		unordered_map<guint64, keyboard_shortcut>::iterator it_old = keyboard_shortcuts.find(id);
+		if(it_old != keyboard_shortcuts.end() && get_keyboard_shortcut(GTK_WINDOW(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")))) {
+			keyboard_shortcut ks;
+			ks.type = it_old->second.type;
+			ks.key = current_shortcut_key;
+			ks.modifier = current_shortcut_modifier;
+			id = (guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier;
+			unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find(id);
+			bool b_replace = false;
+			if(it != keyboard_shortcuts.end()) {
+				if(it == it_old || !ask_question(_("The keyboard shortcut is already in use.\nDo you wish to replace the current action?"), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")))) {
+					return;
+				}
+				b_replace = true;
+			}
+			keyboard_shortcuts.erase(it_old);
+			g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tShortcuts_selection_changed
+, NULL);
+			gtk_list_store_remove(tShortcuts_store, &iter);
+			g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tShortcuts_selection_changed, NULL);
+			default_shortcuts = false;
+			if(b_replace) {
+				if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tShortcuts_store), &iter)) {
+					do {
+						guint64 id2 = 0;
+						gtk_tree_model_get(GTK_TREE_MODEL(tShortcuts_store), &iter, 3, &id2, -1);
+						if(id2 == id) {
+							gtk_list_store_remove(tShortcuts_store, &iter);
+							break;
+						}
+					} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tShortcuts_store), &iter));
+				}
+				keyboard_shortcuts.erase(id);
+			}
+			keyboard_shortcuts[id] = ks;
+			gtk_list_store_append(tShortcuts_store, &iter);
+			gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_type_text(ks.type), 1, ks.value.c_str(), 2, shortcut_to_text(ks.key, ks.modifier).c_str(), 3, id, -1);
+			gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcuts)), &iter);
+		}
 		default_shortcuts = false;
 	}
 }

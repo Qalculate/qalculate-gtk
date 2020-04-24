@@ -246,8 +246,6 @@ void update_function_arguments_list(MathFunction *f);
 
 void on_tNames_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 
-void on_tShortcuts_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
-
 void convert_in_wUnits(int toFrom = -1);
 
 void convert_to_unit(GtkMenuItem *w, gpointer user_data);
@@ -319,6 +317,9 @@ void reload_history(gint from_index = -1);
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+void on_tShortcuts_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
+void on_tShortcutsType_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 
 void insert_left_shift();
 void insert_right_shift();

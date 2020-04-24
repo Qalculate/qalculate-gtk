@@ -113,8 +113,8 @@ GtkListStore *tDataProperties_store;
 GtkWidget *tNames;
 GtkListStore *tNames_store;
 
-GtkWidget *tShortcuts;
-GtkListStore *tShortcuts_store;
+GtkWidget *tShortcuts, *tShortcutsType;
+GtkListStore *tShortcuts_store, *tShortcutsType_store;
 
 GtkWidget *tabs, *expander_keypad, *expander_history, *expander_stack, *expander_convert;
 GtkEntryCompletion *completion;
@@ -3128,11 +3128,25 @@ GtkWidget* get_shortcuts_dialog(void) {
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tShortcuts_selection_changed), NULL);
 		
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tShortcuts_store), 0, GTK_SORT_ASCENDING);
+		
+		tShortcutsType = GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_treeview"));
+
+		tShortcutsType_store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_INT);
+		gtk_tree_view_set_model(GTK_TREE_VIEW(tShortcutsType), GTK_TREE_MODEL(tShortcutsType_store));
+		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcutsType));
+		gtk_tree_selection_set_mode(selection, GTK_SELECTION_BROWSE);
+		renderer = gtk_cell_renderer_text_new();
+		column = gtk_tree_view_column_new_with_attributes(_("Action"), renderer, "text", 0, NULL);
+		gtk_tree_view_column_set_sort_column_id(column, 0);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(tShortcutsType), column);
+		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tShortcutsType_selection_changed), NULL);
 
 		for(int i = 0; i <= SHORTCUT_TYPE_QUIT; i++) {
-			gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(shortcuts_builder, "shortcuts_combobox_type")), shortcut_type_text(i));
-		}		
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(shortcuts_builder, "shortcuts_combobox_type")), 0);
+			GtkTreeIter iter;
+			gtk_list_store_append(tShortcutsType_store, &iter);
+			gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(i), 1, i, -1);
+			if(i == 0) gtk_tree_selection_select_iter(selection, &iter);
+		}
 
 		for(unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.begin(); it != keyboard_shortcuts.end(); ++it) {
 			GtkTreeIter iter;
