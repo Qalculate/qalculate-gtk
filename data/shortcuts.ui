@@ -64,6 +64,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="tooltip_text" translatable="yes">Definition of this function's arguments</property>
+                    <signal name="row-activated" handler="on_shortcuts_treeview_row_activated" swapped="no"/>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection"/>
                     </child>
@@ -156,6 +157,7 @@
     </action-widgets>
   </object>
   <object class="GtkDialog" id="shortcuts_type_dialog">
+    <property name="height_request">600</property>
     <property name="can_focus">False</property>
     <property name="border_width">6</property>
     <property name="title" translatable="yes">New Keyboard Shortcut</property>

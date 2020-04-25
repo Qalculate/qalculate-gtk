@@ -487,6 +487,8 @@ void on_menu_item_degrees_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_radians_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_gradians_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_no_default_angle_unit_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_read_precision_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_rpn_syntax_activate(GtkMenuItem *w, gpointer user_data);
 void set_output_base_from_dialog(int base);
 void output_base_updated_from_menu();
 void input_base_updated_from_menu();
