@@ -27,6 +27,13 @@
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkAdjustment" id="preferences_update_exchange_rates_adjustment">
+    <property name="lower">-1</property>
+    <property name="upper">100</property>
+    <property name="value">-1</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">7</property>
+  </object>
   <object class="GtkDialog" id="preferences_dialog">
     <property name="can_focus">False</property>
     <property name="border_width">6</property>
@@ -117,22 +124,6 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="preferences_checkbutton_check_version">
-                    <property name="label" translatable="yes">Notify when a new version is available</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
-                    <signal name="toggled" handler="on_preferences_checkbutton_check_version_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_ignore_locale">
                     <property name="label" translatable="yes">Ignore system language (requires restart)</property>
                     <property name="visible">True</property>
@@ -145,7 +136,40 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_unicode_signs">
+                    <property name="label" translatable="yes">Enable Unicode symbols</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="tooltip_text" translatable="yes">Disable this if you have problems with some fancy characters</property>
+                    <property name="use_underline">True</property>
+                    <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_unicode_signs_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
                     <property name="position">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_check_version">
+                    <property name="label" translatable="yes">Notify when a new version is available</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="use_underline">True</property>
+                    <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_check_version_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">4</property>
                   </packing>
                 </child>
                 <child>
@@ -164,7 +188,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">4</property>
+                    <property name="position">5</property>
                   </packing>
                 </child>
                 <child>
@@ -208,7 +232,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">5</property>
+                    <property name="position">6</property>
                   </packing>
                 </child>
                 <child>
@@ -233,10 +257,10 @@ Note that only the mode, history and definitions of the last closed instance wil
                       <object class="GtkSpinButton" id="preferences_expression_lines_spin_button">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="text" translatable="yes">7</property>
                         <property name="adjustment">adjustment_expression_lines</property>
+                        <property name="snap_to_ticks">True</property>
                         <property name="numeric">True</property>
-                        <property name="value">7</property>
+                        <property name="value">3</property>
                         <signal name="value-changed" handler="on_preferences_expression_lines_spin_button_value_changed" swapped="no"/>
                       </object>
                       <packing>
@@ -249,7 +273,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">6</property>
+                    <property name="position">7</property>
                   </packing>
                 </child>
                 <child>
@@ -267,7 +291,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">7</property>
+                    <property name="position">8</property>
                   </packing>
                 </child>
                 <child>
@@ -283,7 +307,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">8</property>
+                    <property name="position">9</property>
                   </packing>
                 </child>
                 <child>
@@ -301,7 +325,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">9</property>
+                    <property name="position">10</property>
                   </packing>
                 </child>
                 <child>
@@ -319,7 +343,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">10</property>
+                    <property name="position">11</property>
                   </packing>
                 </child>
               </object>
@@ -343,41 +367,6 @@ Note that only the mode, history and definitions of the last closed instance wil
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <child>
-                  <object class="GtkCheckButton" id="preferences_checkbutton_unicode_signs">
-                    <property name="label" translatable="yes">Enable Unicode signs</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">Disable this if you have problems with some fancy characters</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
-                    <signal name="toggled" handler="on_preferences_checkbutton_unicode_signs_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="preferences_checkbutton_alternative_base_prefixes">
-                    <property name="label" translatable="yes">Alternative base prefixes</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If hexadecimal numbers shall be displayed with "0x0" and binary numbers with "0b00" as prefixes</property>
-                    <property name="margin_top">12</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
-                    <signal name="toggled" handler="on_preferences_checkbutton_alternative_base_prefixes_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_twos_complement">
                     <property name="label" translatable="yes">Binary two's complement representation</property>
                     <property name="visible">True</property>
@@ -391,7 +380,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">2</property>
+                    <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
@@ -408,7 +397,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">3</property>
+                    <property name="position">1</property>
                   </packing>
                 </child>
                 <child>
@@ -421,6 +410,23 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="use_underline">True</property>
                     <property name="draw_indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_lower_case_numbers_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_alternative_base_prefixes">
+                    <property name="label" translatable="yes">Alternative base prefixes</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="tooltip_text" translatable="yes">If hexadecimal numbers shall be displayed with "0x0" and binary numbers with "0b00" as prefixes</property>
+                    <property name="use_underline">True</property>
+                    <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_alternative_base_prefixes_toggled" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -935,7 +941,6 @@ Note that only the mode, history and definitions of the last closed instance wil
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="width_chars">15</property>
-                        <property name="text" translatable="yes">7</property>
                         <property name="adjustment">preferences_update_exchange_rates_adjustment</property>
                         <property name="value">7</property>
                         <signal name="input" handler="on_preferences_update_exchange_rates_spin_button_input" swapped="no"/>
@@ -1365,12 +1370,5 @@ Note that only the mode, history and definitions of the last closed instance wil
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkAdjustment" id="preferences_update_exchange_rates_adjustment">
-    <property name="lower">-1</property>
-    <property name="upper">100</property>
-    <property name="value">-1</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">7</property>
   </object>
 </interface>

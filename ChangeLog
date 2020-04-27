@@ -1,3 +1,15 @@
+2019-04-27 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Improved handling of long history bookmarks
+	* Only add message to history when expression consists of error(), warning(), or message() function
+	* If expression begins with "#", interpret as message
+	* Add message from message() function to history (if parsed expression only contains this function)
+
+2019-04-25 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Configurable number of lines in expression entry
+	* Add "Units & Currencies" tab to preferences dialog
+
 2019-04-24 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Add angle unit selection to sin, cos, and tan button menus

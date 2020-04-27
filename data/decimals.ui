@@ -3,12 +3,12 @@
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkAdjustment" id="adjustment1">
-    <property name="upper">100</property>
+    <property name="upper">100000</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment2">
-    <property name="upper">100</property>
+    <property name="upper">100000</property>
     <property name="value">2</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
@@ -65,6 +65,7 @@
             <property name="can_focus">False</property>
             <property name="border_width">6</property>
             <property name="row_spacing">6</property>
+            <property name="column_spacing">12</property>
             <property name="row_homogeneous">True</property>
             <child>
               <object class="GtkCheckButton" id="decimals_dialog_checkbutton_min">
@@ -72,7 +73,6 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
-                <property name="margin_right">12</property>
                 <property name="use_underline">True</property>
                 <property name="draw_indicator">True</property>
                 <signal name="toggled" handler="on_decimals_dialog_checkbutton_min_toggled" swapped="no"/>
@@ -88,7 +88,6 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
-                <property name="margin_right">12</property>
                 <property name="use_underline">True</property>
                 <property name="draw_indicator">True</property>
                 <signal name="toggled" handler="on_decimals_dialog_checkbutton_max_toggled" swapped="no"/>
@@ -105,11 +104,7 @@
                 <property name="can_focus">True</property>
                 <property name="tooltip_text" translatable="yes">Minimal number of displayed decimals</property>
                 <property name="hexpand">True</property>
-                <property name="text" translatable="yes">0</property>
-                <property name="primary_icon_activatable">False</property>
-                <property name="secondary_icon_activatable">False</property>
                 <property name="adjustment">adjustment1</property>
-                <property name="climb_rate">1</property>
                 <property name="snap_to_ticks">True</property>
                 <property name="numeric">True</property>
                 <signal name="value-changed" handler="on_decimals_dialog_spinbutton_min_value_changed" swapped="no"/>
@@ -126,9 +121,6 @@
                 <property name="can_focus">True</property>
                 <property name="tooltip_text" translatable="yes">Maximal number of decimals to display (and round to)</property>
                 <property name="hexpand">True</property>
-                <property name="text" translatable="yes">2</property>
-                <property name="primary_icon_activatable">False</property>
-                <property name="secondary_icon_activatable">False</property>
                 <property name="adjustment">adjustment2</property>
                 <property name="climb_rate">1</property>
                 <property name="snap_to_ticks">True</property>
