@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "3.9.0">
-  <!ENTITY manrevision "3.9.0">
-  <!ENTITY date "April 2020">
+  <!ENTITY appversion "3.10.0">
+  <!ENTITY manrevision "3.10.0">
+  <!ENTITY date "May 2020">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -75,7 +75,7 @@ Although use of &app; for simple calculations should be natural and self-explana
 	</screenshot>
 </figure>
 <para>
-The main window provides a menu bar, the expression entry, the result display and a calculator keypad, history and conversion view (see <xref linkend="qalculate-unit-conversion"/>) which can be shown/hidden by clicking on <guilabel>Keypad</guilabel>, <guilabel>History</guilabel> and <guilabel>Conversion</guilabel>, respectively. When non-default options for the interpretion of expressions have been selected, the choice will be indicated in a small status area below the expression entry, to the right.
+The main window provides a menu bar, the expression entry, the result display and a calculator keypad, history and conversion view (see <xref linkend="qalculate-unit-conversion"/>) which can be shown/hidden by clicking on <guilabel>Keypad</guilabel>, <guilabel>History</guilabel> and <guilabel>Conversion</guilabel>, respectively. When non-default options for the interpretion of expressions have been selected, the choice will be indicated in a small status area below the expression entry, to the right (click to change these choices).
 </para>
 </sect1>
 <sect1 id="qalculate-expression-entry">
@@ -460,17 +460,17 @@ Below follows a list of the buttons on the left side (including their menus and 
 			<row valign="top">
 				<entry><para>sin</para></entry>
 				<entry><para>Sine function</para></entry>
-				<entry><para><command>sinh()</command>, <command>asin()</command> and <command>asinh()</command> functions</para></entry>
+				<entry><para><command>sinh()</command>, <command>asin()</command> and <command>asinh()</command> functions</para>, and angle unit selection</entry>
 			</row>
 			<row valign="top">
 				<entry><para>cos</para></entry>
 				<entry><para>Cosine function</para></entry>
-				<entry><para><command>cosh()</command>, <command>acos()</command> and <command>acosh()</command> functions</para></entry>
+				<entry><para><command>cosh()</command>, <command>acos()</command> and <command>acosh()</command> functions, and angle unit selection</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>tan</para></entry>
 				<entry><para>Tangent function</para></entry>
-				<entry><para><command>tanh()</command>, <command>atan()</command> and <command>atanh()</command> functions</para></entry>
+				<entry><para><command>tanh()</command>, <command>atan()</command> and <command>atanh()</command> functions, and angle unit selection</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>i</para></entry>
@@ -758,7 +758,7 @@ The history view provides access to previous calculation results (50 rows are re
 The to right of the list are also buttons for mathematical operations. These acts on the selected history items (the <guibutton>+</guibutton> will calculate the sum of the selected values, while the <guibutton>−</guibutton> will calculated the difference between the first, uppermost, selected value and the rest, in order). If no value is marked the sign for the operator will be inserted into the expression entry (as the buttons on the keypad). If only one item is selected the buttons also uses the current expression (the <guibutton>+</guibutton> button will append <quote>+ [value]</quote> to the current expression). The square root button will however only act on single values. When persistent keypad are active, the corresponding buttons on the right side of the keypad provide the same functionality.
 </para>
 <para>
-Additional actions are available in the context menu of the history list. This includes options to copy the full text of one or multiple entries, delete or move entries, to clear the whole list, and to bookmark and/or protect entries from deletion when the list becomes too long or is cleared.
+Additional actions are available in the context menu of the history list. This includes options to copy the full text of one or multiple entries, search the history, delete or move entries, to clear the whole list, and to bookmark and/or protect entries from deletion when the list becomes too long or is cleared.
 </para>
 </sect1>
 <sect1 id="minimal-window">
@@ -1317,7 +1317,13 @@ In &app; mathematical entities, such as numbers and variables, are referred to a
 		<listitem><para>
 		This category represent a number of different function argument types, such as regular text and file names. They can, but do not need to be put in quotes except when containing the argument separator (<quote>,</quote> or <quote>;</quote>).
 		</para></listitem>
-	</varlistentry>		
+	</varlistentry>
+	<varlistentry>
+		<term>Comments</term>
+		<listitem><para>
+		All text after a hashtag (e.g. <quote>(5×2)/2 #calculating triangle area</quote>) is treated as a comment, which are added to the history. Use double hashtags (<quote>##</quote>) at the beginning of the expression to add a comment as a separate history item at the top.
+		</para></listitem>
+	</varlistentry>
 </variablelist>
 </para>
 <para>

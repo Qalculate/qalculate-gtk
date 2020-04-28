@@ -1,9 +1,14 @@
+2019-04-28 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* History search
+	* Fix button order in some dialogs
+
 2019-04-27 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Improved handling of long history bookmarks
 	* Only add message to history when expression consists of error(), warning(), or message() function
-	* If expression begins with "#", interpret as message
-	* Add message from message() function to history (if parsed expression only contains this function)
+	* Interpret text after hashtag (#), in expression, as comments (add as separate history item if expression begins with double hashtags)
+	* Fix move to top for last history item
 
 2019-04-25 Hanna Knutsson <hanna.knutsson@protonmail.com>
 

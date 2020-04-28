@@ -7385,6 +7385,21 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       </object>
     </child>
     <child>
+      <object class="GtkMenuItem" id="popup_menu_item_history_search">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Search…</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_popup_menu_item_history_search_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
       <object class="GtkMenuItem" id="popup_menu_item_history_bookmark">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
