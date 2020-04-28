@@ -2822,32 +2822,14 @@ void display_parse_status() {
 		expression_has_changed2 = false;
 		return;
 	}
-	remove_duplicate_blanks(text);
-	if(text[0] == '#') {
-		size_t i = text.find_first_of(NOT_IN_NAMES NUMBERS);
-		if(text.length() == 1 || i == 0 || !CALCULATOR->getActiveExpressionItem(i == string::npos ? text : text.substr(0, i))) {
-			i = text.find_first_of(NOT_IN_NAMES);
-			if(text.length() == 1 || i == 0 || !CALCULATOR->getActiveExpressionItem(i == string::npos ? text : text.substr(0, i))) {
-				string message = text.substr((text.length() > 1 && text[1] == '#') ? 2 : 1);
-				remove_blank_ends(message);
-				text = CALCULATOR->f_message->referenceName();
-				text += "(";
-				text += message;
-				text += ")";
-			}
-		}
-	} else {
-		size_t i = text.find("#");
-		if(i != string::npos) {
-			size_t i2 = text.find_first_of(NOT_IN_NAMES NUMBERS, i);
-			if(i2 == i || !CALCULATOR->getActiveExpressionItem(i == string::npos ? text : text.substr(i, i - i2))) {
-				i2 = text.find_first_of(NOT_IN_NAMES, i);
-				if(i2 == i || !CALCULATOR->getActiveExpressionItem(i == string::npos ? text : text.substr(i, i - i2))) {
-					text = text.substr(0, i);
-				}
-			}
-		}
+	string to_str = CALCULATOR->parseComments(text, evalops.parse_options);
+	if(!to_str.empty() && text.empty()) {
+		text = CALCULATOR->f_message->referenceName();
+		text += "(";
+		text += to_str;
+		text += ")";
 	}
+	remove_duplicate_blanks(text);
 	size_t i = text.find_first_of(SPACES LEFT_PARENTHESIS);
 	if(i != string::npos) {
 		str_f = text.substr(0, i);
@@ -10372,51 +10354,33 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		}
 	}
 	
-	string from_str = str, to_str;
-	if(!str.empty() && str[0] == '#') {
-		size_t i = str.find_first_of(NOT_IN_NAMES NUMBERS);
-		if(str.length() == 1 || i == 0 || !CALCULATOR->getActiveExpressionItem(i == string::npos ? str : str.substr(0, i))) {
-			i = str.find_first_of(NOT_IN_NAMES);
-			if(str.length() == 1 || i == 0 || !CALCULATOR->getActiveExpressionItem(i == string::npos ? str : str.substr(0, i))) {
-				if(str.length() > 2 && str[1] == '#') {
-					to_str = str.substr(2);
-				} else {
-					to_str = str.substr(1);
-					if(current_inhistory_index > 0) {
-						remove_blank_ends(to_str);
-						clear_expression_text();
-						CALCULATOR->message(MESSAGE_INFORMATION, to_str.c_str(), NULL);
-						display_errors(&history_index, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &current_inhistory_index, 3);
-						do_timeout = true;
-						b_busy = false;
-						b_busy_expression = false;
-						return;
-					}
+	string to_str;
+	
+	if(execute_str.empty()) {
+		bool double_tag = false;
+		to_str = CALCULATOR->parseComments(str, evalops.parse_options, &double_tag);
+		if(!to_str.empty()) {
+			if(str.empty()) {
+				if(!double_tag && current_inhistory_index > 0) {
+					clear_expression_text();
+					CALCULATOR->message(MESSAGE_INFORMATION, to_str.c_str(), NULL);
+					display_errors(&history_index, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &current_inhistory_index, 3);
+					do_timeout = true;
+					b_busy = false;
+					b_busy_expression = false;
+					return;
 				}
-				remove_blank_ends(to_str);
 				execute_str = CALCULATOR->f_message->referenceName();
 				execute_str += "(";
 				execute_str += to_str;
 				execute_str += ")";
-			}
-		}
-	} else {
-		size_t i = str.find("#");
-		if(i != string::npos && i < str.length() - 1) {
-			size_t i2 = str.find_first_of(NOT_IN_NAMES NUMBERS, i);
-			if(i2 == i || !CALCULATOR->getActiveExpressionItem(i == string::npos ? str : str.substr(i, i - i2))) {
-				i2 = str.find_first_of(NOT_IN_NAMES, i);
-				if(i2 == i || !CALCULATOR->getActiveExpressionItem(i == string::npos ? str : str.substr(i, i - i2))) {
-					execute_str = str.substr(0, i);
-					to_str = str.substr(i + 1);
-					str = execute_str;
-					if(to_str.length() > 1 && to_str[1] == '#') to_str = to_str.substr(1);
-					remove_blank_ends(to_str);
-					CALCULATOR->message(MESSAGE_INFORMATION, to_str.c_str(), NULL);
-				}
+			} else {
+				CALCULATOR->message(MESSAGE_INFORMATION, to_str.c_str(), NULL);
 			}
 		}
 	}
+
+	string from_str = str;
 	if(execute_str.empty() && CALCULATOR->separateToExpression(from_str, to_str, evalops, true, !do_stack)) {
 		remove_duplicate_blanks(to_str);
 		string to_str1, to_str2;
@@ -21081,7 +21045,6 @@ void on_popup_menu_item_history_movetotop_activate(GtkMenuItem*, gpointer) {
 		gtk_tree_model_get_iter(model, &iter, (GtkTreePath*) list_i->data);
 		gtk_tree_model_get(model, &iter, 1, &hindex, -1);
 		list_i = list_i->prev;
-		cout << hindex << endl;
 		if(hindex >= 0) {
 			if(inhistory_type[hindex] == QALCULATE_HISTORY_OLD) {
 				indexes.push_back(hindex);
