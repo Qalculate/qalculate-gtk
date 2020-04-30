@@ -3063,6 +3063,12 @@ void display_parse_status() {
 						parsed_expression += i2s(itz % 60);
 					}
 				}
+			} else if(str_u.length() > 3 && equalsIgnoreCase(str_u.substr(0, 3), "bin") && is_in(NUMBERS, str_u[3])) {
+				unsigned int bits = s2i(str_u.substr(3));
+				if(bits > 4096) bits = 4096;
+				parsed_expression += i2s(bits);
+				parsed_expression += "-bit ";
+				parsed_expression += _("binary number");
 			} else if(str_u == "CET") {
 				parsed_expression += "UTC";
 				parsed_expression += "+01";
