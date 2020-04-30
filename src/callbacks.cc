@@ -2380,6 +2380,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 				int base_bak = printops.base;
 				printops.base = BASE_BINARY;
 				printops.binary_bits = s2i(to_str.substr(3));
+				if(printops.binary_bits > 4096) printops.binary_bits = 4096;
 				do_auto_calc(true, from_str);
 				printops.base = base_bak;
 				printops.binary_bits = 0;
@@ -10355,7 +10356,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	}
 	
 	string to_str;
-	
+
 	if(execute_str.empty()) {
 		bool double_tag = false;
 		to_str = CALCULATOR->parseComments(str, evalops.parse_options, &double_tag);
@@ -10449,6 +10450,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			int base_bak = printops.base;
 			printops.base = BASE_BINARY;
 			printops.binary_bits = s2i(to_str.substr(3));
+			if(printops.binary_bits > 4096) printops.binary_bits = 4096;
 			b_busy = false;
 			b_busy_expression = false;
 			if(from_str.empty()) {setResult(NULL, true, false, false); set_previous_expression();}
@@ -21415,12 +21417,12 @@ void add_history_bookmark(string history_message) {
 	on_expressionbuffer_changed(expressionbuffer, NULL);
 	g_list_free_full(selected_list, (GDestroyNotify) gtk_tree_path_free);
 }
-GtkWidget *search_dialog = NULL;
-GtkWidget *search_entry = NULL;
+GtkWidget *history_search_dialog = NULL;
+GtkWidget *history_search_entry = NULL;
 void on_history_search_response(GtkDialog *w, gint reponse_id, gpointer) {
 	if(reponse_id == GTK_RESPONSE_ACCEPT) {
 		if(inhistory.empty()) return;
-		string str = gtk_entry_get_text(GTK_ENTRY(search_entry));
+		string str = gtk_entry_get_text(GTK_ENTRY(history_search_entry));
 		GtkTreeIter iter;
 		GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
 		GList *selected_list = gtk_tree_selection_get_selected_rows(select, NULL);
@@ -21474,35 +21476,36 @@ void on_history_search_response(GtkDialog *w, gint reponse_id, gpointer) {
 		}
 		g_list_free_full(selected_list, (GDestroyNotify) gtk_tree_path_free);
 	} else {
-		search_dialog = NULL;
+		history_search_dialog = NULL;
 		gtk_widget_destroy(GTK_WIDGET(w));
 	}
 }
 void on_history_search_changed(GtkEditable*, gpointer) {
-	gtk_widget_set_sensitive(gtk_dialog_get_widget_for_response(GTK_DIALOG(search_dialog), GTK_RESPONSE_ACCEPT), strlen(gtk_entry_get_text(GTK_ENTRY(search_entry))) > 0);
+	gtk_widget_set_sensitive(gtk_dialog_get_widget_for_response(GTK_DIALOG(history_search_dialog), GTK_RESPONSE_ACCEPT), strlen(gtk_entry_get_text(GTK_ENTRY(history_search_entry))) > 0);
 }
 void on_popup_menu_item_history_search_activate(GtkMenuItem *w, gpointer) {
-	if(search_dialog) {
-		gtk_widget_show(search_dialog);
-		gtk_window_present(GTK_WINDOW(search_dialog));
-		gtk_widget_grab_focus(search_entry);
+	if(history_search_dialog) {
+		gtk_widget_show(history_search_dialog);
+		gtk_window_present(GTK_WINDOW(history_search_dialog));
+		gtk_widget_grab_focus(history_search_entry);
 		return;
 	}
-	search_dialog = gtk_dialog_new_with_buttons(_("Search"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) GTK_DIALOG_DESTROY_WITH_PARENT, _("_Close"), GTK_RESPONSE_REJECT, _("_Search"), GTK_RESPONSE_ACCEPT, NULL);
-	gtk_container_set_border_width(GTK_CONTAINER(search_dialog), 6);
+	history_search_dialog = gtk_dialog_new_with_buttons(_("Search"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) GTK_DIALOG_DESTROY_WITH_PARENT, _("_Close"), GTK_RESPONSE_REJECT, _("_Search"), GTK_RESPONSE_ACCEPT, NULL);
+	gtk_container_set_border_width(GTK_CONTAINER(history_search_dialog), 6);
 	GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
 	gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
-	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(search_dialog))), hbox);
+	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(history_search_dialog))), hbox);
 	GtkWidget *label = gtk_label_new(_("Text"));
 	gtk_widget_set_halign(label, GTK_ALIGN_START);
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, TRUE, 0);
-	search_entry = gtk_entry_new();
-	gtk_entry_set_width_chars(GTK_ENTRY(search_entry), 35);
-	gtk_box_pack_end(GTK_BOX(hbox), search_entry, TRUE, TRUE, 0);
-	gtk_widget_set_sensitive(gtk_dialog_get_widget_for_response(GTK_DIALOG(search_dialog), GTK_RESPONSE_ACCEPT), FALSE);
-	g_signal_connect(G_OBJECT(search_dialog), "response", G_CALLBACK(on_history_search_response), NULL);
-	g_signal_connect(G_OBJECT(search_entry), "changed", G_CALLBACK(on_history_search_changed), NULL);
-	gtk_widget_show_all(search_dialog);
+	history_search_entry = gtk_entry_new();
+	gtk_entry_set_width_chars(GTK_ENTRY(history_search_entry), 35);
+	gtk_box_pack_end(GTK_BOX(hbox), history_search_entry, TRUE, TRUE, 0);
+	gtk_widget_set_sensitive(gtk_dialog_get_widget_for_response(GTK_DIALOG(history_search_dialog), GTK_RESPONSE_ACCEPT), FALSE);
+	g_signal_connect(G_OBJECT(history_search_dialog), "response", G_CALLBACK(on_history_search_response), NULL);
+	g_signal_connect(G_OBJECT(history_search_entry), "changed", G_CALLBACK(on_history_search_changed), NULL);
+	gtk_widget_show_all(history_search_dialog);
+	gtk_widget_grab_focus(history_search_entry);
 }
 void on_popup_menu_item_history_bookmark_activate(GtkMenuItem *w, gpointer) {
 	if(b_busy) return;
@@ -28905,13 +28908,25 @@ bool get_keyboard_shortcut(GtkWindow *parent) {
 	GtkWidget *dialog = gtk_dialog_new();
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), parent);
 	gtk_window_set_title(GTK_WINDOW(dialog), _("Set key combination"));
-	string str = "<span size=\"large\">"; str += _("No keys"); str += "</span>";
+	gtk_window_set_resizable(GTK_WINDOW(dialog), FALSE);
+	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
+	// Make the line reasonably long, but not to short (at least around 40 characters)
+	string str = "<i>"; str += _("Press the key combination you wish to use for the action\n(press Escape to cancel)."); str += "</i>";
+	GtkWidget *label = gtk_label_new(str.c_str());
+	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
+	gtk_label_set_xalign(GTK_LABEL(label), 0.0);
+#else
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+#endif
+	gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), label, FALSE, TRUE, 6);
+	gtk_widget_show(label);
+	str = "<span size=\"large\">"; str += _("No keys"); str += "</span>";
 	shortcut_label = gtk_label_new(str.c_str());
 	gtk_label_set_use_markup(GTK_LABEL(shortcut_label), TRUE);
-	gtk_label_set_width_chars(GTK_LABEL(shortcut_label), 50);
 	g_signal_connect(dialog, "key-press-event", G_CALLBACK(on_shortcut_key_pressed), dialog);
 	g_signal_connect(dialog, "key-release-event", G_CALLBACK(on_shortcut_key_released), dialog);
-	gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), shortcut_label, TRUE, TRUE, 24);
+	gtk_box_pack_end(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), shortcut_label, TRUE, TRUE, 18);
 	gtk_widget_show(shortcut_label);
 	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
 		gtk_widget_destroy(dialog);
@@ -28997,15 +29012,15 @@ void on_shortcuts_button_new_clicked(GtkButton*, gpointer) {
 		} else {
 			ks.value = "";
 		}
+		ask_keyboard_shortcut:
 		if(get_keyboard_shortcut(GTK_WINDOW(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog")))) {
 			ks.key = current_shortcut_key;
 			ks.modifier = current_shortcut_modifier;
 			guint64 id = (guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier;
 			unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find(id);
 			if(it != keyboard_shortcuts.end()) {
-				if(!ask_question(_("The keyboard shortcut is already in use.\nDo you wish to replace the current action?"), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")))) {
-					gtk_widget_hide(d);
-					return;
+				if(!ask_question(_("The key combination is already in use.\nDo you wish to replace the current action?"), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog")))) {
+					goto ask_keyboard_shortcut;
 				}
 				GtkTreeIter iter;
 				if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tShortcuts_store), &iter)) {
@@ -29063,7 +29078,7 @@ void on_shortcuts_button_edit_clicked(GtkButton*, gpointer) {
 			unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find(id);
 			bool b_replace = false;
 			if(it != keyboard_shortcuts.end()) {
-				if(it == it_old || !ask_question(_("The keyboard shortcut is already in use.\nDo you wish to replace the current action?"), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")))) {
+				if(it == it_old || !ask_question(_("The key combination is already in use.\nDo you wish to replace the current action?"), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")))) {
 					return;
 				}
 				b_replace = true;

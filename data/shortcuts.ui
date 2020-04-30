@@ -3,7 +3,7 @@
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkDialog" id="shortcuts_dialog">
-    <property name="width_request">800</property>
+    <property name="width_request">900</property>
     <property name="height_request">600</property>
     <property name="can_focus">False</property>
     <property name="border_width">6</property>
@@ -52,7 +52,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="border_width">6</property>
-            <property name="spacing">6</property>
+            <property name="spacing">12</property>
             <child>
               <object class="GtkScrolledWindow" id="shortcuts_scrolled">
                 <property name="visible">True</property>
@@ -88,7 +88,7 @@
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkButton" id="shortcuts_button_new">
-                    <property name="label" translatable="yes">_New</property>
+                    <property name="label" translatable="yes">_Add</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="can_default">True</property>
@@ -121,7 +121,7 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="shortcuts_button_remove">
-                    <property name="label" translatable="yes">_Delete</property>
+                    <property name="label" translatable="yes">_Remove</property>
                     <property name="visible">True</property>
                     <property name="sensitive">False</property>
                     <property name="can_focus">True</property>
