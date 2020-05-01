@@ -101,7 +101,7 @@ extern GtkTreeModel *completion_filter, *completion_sort;
 extern unordered_map<size_t, GtkWidget*> cal_year, cal_month, cal_day, cal_label;
 extern GtkWidget *chinese_stem, *chinese_branch;
 
-extern GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider;
+extern GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider, *app_provider_theme;
 
 extern GtkWidget *expressiontext, *statuslabel_l, *statuslabel_r, *result_bases, *keypad;
 int two_result_bases_rows = -1;
@@ -170,6 +170,7 @@ extern Unit *selected_unit;
 extern Unit *selected_to_unit;
 bool save_mode_on_exit;
 bool save_defs_on_exit;
+int use_dark_theme = -1;
 bool use_custom_result_font, use_custom_expression_font, use_custom_status_font, use_custom_keypad_font, use_custom_app_font;
 bool save_custom_result_font = false, save_custom_expression_font = false, save_custom_status_font = false, save_custom_keypad_font = false, save_custom_app_font = false;
 string custom_result_font, custom_expression_font, custom_status_font, custom_keypad_font, custom_app_font;
@@ -15999,6 +16000,7 @@ void load_preferences() {
 	hexadecimal_twos_complement_in = false;
 	twos_complement_in = false;
 	expression_lines = -1;
+	use_dark_theme = -1;
 	
 	default_shortcuts = true;
 	keyboard_shortcuts.clear();
@@ -16553,6 +16555,8 @@ void load_preferences() {
 					if(CALCULATOR->getDecimalPoint() != COMMA) {
 						CALCULATOR->useDecimalPoint(evalops.parse_options.comma_as_separator);
 					}
+				} else if(svar == "use_dark_theme") {
+					use_dark_theme = v;
 				} else if(svar == "use_custom_result_font") {
 					use_custom_result_font = v;
 				} else if(svar == "use_custom_expression_font") {
@@ -17035,6 +17039,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "decimal_comma=%i\n", b_decimal_comma);
 	fprintf(file, "dot_as_separator=%i\n", evalops.parse_options.dot_as_separator);
 	fprintf(file, "comma_as_separator=%i\n", evalops.parse_options.comma_as_separator);
+	if(use_dark_theme >= 0) fprintf(file, "use_dark_theme=%i\n", use_dark_theme);
 	fprintf(file, "use_custom_result_font=%i\n", use_custom_result_font);
 	fprintf(file, "use_custom_expression_font=%i\n", use_custom_expression_font);
 	fprintf(file, "use_custom_status_font=%i\n", use_custom_status_font);
@@ -18205,6 +18210,11 @@ void on_preferences_checkbutton_display_expression_status_toggled(GtkToggleButto
 		display_expression_status = false;
 		set_status_text("");
 	}
+}
+void on_preferences_checkbutton_dark_theme_toggled(GtkToggleButton *w, gpointer) {
+	use_dark_theme = gtk_toggle_button_get_active(w);
+	if(use_dark_theme) gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/Adwaita/gtk-contained-dark.css");
+	else gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/Adwaita/gtk-contained.css");
 }
 void on_preferences_checkbutton_custom_result_font_toggled(GtkToggleButton *w, gpointer) {
 	use_custom_result_font = gtk_toggle_button_get_active(w);

@@ -153,7 +153,7 @@ GtkAccelGroup *accel_group;
 
 gint history_scroll_width = 16;
 
-GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider;
+GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider, *app_provider_theme;
 
 extern bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad, minimal_mode;
 extern bool save_mode_on_exit, save_defs_on_exit, load_global_defs, hyp_is_on, inv_is_on, fetch_exchange_rates_at_startup;
@@ -161,6 +161,7 @@ extern int allow_multiple_instances;
 extern int title_type;
 extern bool display_expression_status;
 extern int expression_lines;
+extern int use_dark_theme;
 extern bool use_custom_result_font, use_custom_expression_font, use_custom_status_font, use_custom_keypad_font, use_custom_app_font;
 extern string custom_result_font, custom_expression_font, custom_status_font, custom_keypad_font, custom_app_font;
 extern string status_error_color, status_warning_color;
@@ -1133,6 +1134,12 @@ void create_main_window(void) {
 	gtk_style_context_add_provider(gtk_widget_get_style_context(keypad), GTK_STYLE_PROVIDER(keypad_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnl"))), GTK_STYLE_PROVIDER(box_rpnl_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(app_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+#ifdef _WIN32
+	app_provider_theme = gtk_css_provider_new();
+	gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(app_provider_theme), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	if(use_dark_theme > 0) gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/Adwaita/gtk-contained-dark.css");
+	else if(use_dark_theme == 0) gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/Adwaita/gtk-contained.css");
+#endif
 
 	set_mode_items(printops, evalops, CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign(), rpn_mode, CALCULATOR->getPrecision(), CALCULATOR->usesIntervalArithmetic(), CALCULATOR->variableUnitsEnabled(), adaptive_interval_display, visible_keypad, auto_calculate, complex_angle_form, true);
 
@@ -2036,6 +2043,10 @@ GtkWidget* get_preferences_dialog(void) {
 				break;
 			}
 		}
+#ifdef _WIN32
+		if(use_dark_theme >= 0) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_digit_grouping_none")), use_dark_theme);
+		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_dark_theme")));
+#endif
 		gtk_builder_connect_signals(preferences_builder, NULL);
 
 	}
