@@ -232,6 +232,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="tooltip_text" translatable="yes">Definition of this function's arguments</property>
+                    <signal name="row-activated" handler="on_shortcuts_type_treeview_row_activated" swapped="no"/>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection"/>
                     </child>
@@ -270,6 +271,7 @@
                     <property name="width_chars">30</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
+                    <signal name="activate" handler="on_shortcuts_entry_value_activate" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>

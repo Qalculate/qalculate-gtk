@@ -2231,14 +2231,21 @@ gint autocalc_history_timeout_id = 0;
 vector<CalculatorMessage> autocalc_messages;
 gboolean do_autocalc_history_timeout(gpointer) {
 	autocalc_history_timeout_id = 0;
-	if(!do_timeout || !result_autocalculated || rpn_mode) return false;
+	if(!do_timeout || !result_autocalculated || rpn_mode) return FALSE;
 	if(check_exchange_rates(NULL, true)) {
 		execute_expression(true, false, OPERATION_ADD, NULL, false, 0, "", "", false);
-		return false;
+		return FALSE;
 	}
 	CALCULATOR->addMessages(&autocalc_messages);
 	result_text = get_expression_text();
 	add_to_expression_history(result_text);
+#if QALCULATE_MAJOR_VERSION > 3 || QALCULATE_MINOR_VERSION >= 10
+	string to_str = CALCULATOR->parseComments(result_text, evalops.parse_options);
+	if(!to_str.empty()) {
+		if(result_text.empty()) return FALSE;
+		else CALCULATOR->message(MESSAGE_INFORMATION, to_str.c_str(), NULL);
+	}
+#endif
 	expression_has_changed = false;
 	setResult(NULL, true, true, true, "", 0);
 	if(!block_conversion_category_switch) {
@@ -2260,7 +2267,7 @@ gboolean do_autocalc_history_timeout(gpointer) {
 		}
 	}
 	result_autocalculated = false;
-	return false;
+	return FALSE;
 }
 
 bool auto_calc_stopped_at_operator = false;
@@ -2278,6 +2285,9 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		}
 		bool origstr = str.empty();
 		if(origstr) str = get_expression_text();
+#if QALCULATE_MAJOR_VERSION > 3 || QALCULATE_MINOR_VERSION >= 10
+		if(origstr) CALCULATOR->parseComments(str, evalops.parse_options);
+#endif
 		if(str.empty()) {clearresult(); return;}
 
 		if(evalops.parse_options.base != BASE_UNICODE && (evalops.parse_options.base != BASE_CUSTOM || (CALCULATOR->customInputBase() <= 62 && CALCULATOR->customInputBase() >= -62))) {
@@ -2308,7 +2318,6 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 					}
 				}
 			}
-
 		}
 		if(origstr) {
 			to_fraction = false; to_prefix = 0; to_base = 0; to_nbase.clear();
@@ -2823,6 +2832,7 @@ void display_parse_status() {
 		expression_has_changed2 = false;
 		return;
 	}
+#if QALCULATE_MAJOR_VERSION > 3 || QALCULATE_MINOR_VERSION >= 10
 	string to_str = CALCULATOR->parseComments(text, evalops.parse_options);
 	if(!to_str.empty() && text.empty()) {
 		text = CALCULATOR->f_message->referenceName();
@@ -2830,6 +2840,7 @@ void display_parse_status() {
 		text += to_str;
 		text += ")";
 	}
+#endif
 	remove_duplicate_blanks(text);
 	size_t i = text.find_first_of(SPACES LEFT_PARENTHESIS);
 	if(i != string::npos) {
@@ -5311,6 +5322,7 @@ const gchar *shortcut_type_text(int type) {
 		case SHORTCUT_TYPE_PROGRAMMING: {return _("Toggle programming keypad"); break;}
 		case SHORTCUT_TYPE_KEYPAD: {return _("Show keypad"); break;}
 		case SHORTCUT_TYPE_HISTORY: {return _("Show history"); break;}
+		case SHORTCUT_TYPE_HISTORY_SEARCH: {return _("Search history"); break;}
 		case SHORTCUT_TYPE_CONVERSION: {return _("Show conversion"); break;}
 		case SHORTCUT_TYPE_STACK: {return _("Show RPN stack"); break;}
 		case SHORTCUT_TYPE_MINIMAL: {return _("Toggle minimal window"); break;}
@@ -5460,6 +5472,10 @@ void update_accels() {
 			}
 			case SHORTCUT_TYPE_AUTOCALC: {
 				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_autocalc")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_HISTORY_SEARCH: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_search")))), it->second.key, (GdkModifierType) it->second.modifier);
 				break;
 			}
 			case SHORTCUT_TYPE_PROGRAMMING: {
@@ -6971,6 +6987,10 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						dh = hetmp;
 					}
 					par_prev = ips_n.wrap;
+					if(par_prev && i > 0 && nm[i] != MULTIPLICATION_SIGN_NONE) {
+						wpt[i - 1] -= ips.power_depth > 0 ? 2 : 3;
+						w -= ips.power_depth > 0 ? 2 : 3;
+					}
 				}
 				cairo_surface_t *flag_s = NULL;
 				gint flag_width = 0;
@@ -7853,11 +7873,13 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				arc_w = PAR_WIDTH;
 				w += arc_w * 2;
 				w += 1;
+				if(ips.depth > 0) w += ips.power_depth > 0 ? 2 : 3;
 
 				int x1 = 0, x2 = 0;
 				if(surface_args.size() == 1) {
 					get_image_blank_width(surface_args[0], cairo_image_surface_get_width(surface_args[0]), cairo_image_surface_get_height(surface_args[0]), &x1, &x2);
 					x1 /= scalefactor;
+					x1++;
 					x2 = ::ceil(x2 / scalefactor);
 					w -= wpa[0];
 					wpa[0] = x2 - x1;
@@ -7865,6 +7887,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				} else if(surface_args.size() > 1) {
 					get_image_blank_width(surface_args[0], cairo_image_surface_get_width(surface_args[0]), cairo_image_surface_get_height(surface_args[0]), &x1, NULL);
 					x1 /= scalefactor;
+					x1++;
 					w -= x1;
 					wpa[0] -= x1;
 					int i_last = surface_args.size() - 1;
@@ -7878,7 +7901,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
 				cr = cairo_create(surface);
 
-				w = 0;
+				if(ips.depth > 0) w = ips.power_depth > 0 ? 2 : 3;
 				cairo_set_source_surface(cr, get_left_parenthesis(arc_w, arc_h, scaledown, color), w, (h - arc_h) / 2);
 				cairo_paint(cr);
 				w += arc_w;
@@ -8400,6 +8423,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				if(surface_args.size() == 1) {
 					get_image_blank_width(surface_args[0], cairo_image_surface_get_width(surface_args[0]), cairo_image_surface_get_height(surface_args[0]), &x1, &x2);
 					x1 /= scalefactor;
+					x1++;
 					x2 = ::ceil(x2 / scalefactor);
 					w -= wpa[0];
 					wpa[0] = x2 - x1;
@@ -8407,6 +8431,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				} else if(surface_args.size() > 1) {
 					get_image_blank_width(surface_args[0], cairo_image_surface_get_width(surface_args[0]), cairo_image_surface_get_height(surface_args[0]), &x1, NULL);
 					x1 /= scalefactor;
+					x1++;
 					w -= x1;
 					wpa[0] -= x1;
 					int i_last = surface_args.size() - 1;
@@ -8482,7 +8507,8 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 		int x1 = 0, x2 = 0;
 		get_image_blank_width(surface, cairo_image_surface_get_width(surface), cairo_image_surface_get_height(surface), &x1, &x2);
 		x1 /= scalefactor;
-		x2 /= scalefactor;
+		x1++;
+		x2 = ::ceil(x2 / scalefactor);
 		base_w = x2 - x1;
 		h = base_h;
 		w = base_w;
@@ -8491,13 +8517,14 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 		if(h < arc_base_h) h = arc_base_h;
 		gint arc_base_w = PAR_WIDTH;
 		w += arc_base_w * 2;
+		w += ips.power_depth > 0 ? 2 : 3;
 		cairo_surface_t *surface_old = surface;
 		cairo_destroy(cr);
 		surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 		cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
 		cr = cairo_create(surface);
 		gdk_cairo_set_source_rgba(cr, color);
-		w = 0;
+		w = ips.power_depth > 0 ? 2 : 3;
 		cairo_set_source_surface(cr, get_left_parenthesis(arc_base_w, arc_base_h, scaledown, color), w, (h - arc_base_h) / 2);
 		cairo_paint(cr);
 		w += arc_base_w;
@@ -10363,6 +10390,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	
 	string to_str;
 
+#if QALCULATE_MAJOR_VERSION > 3 || QALCULATE_MINOR_VERSION >= 10
 	if(execute_str.empty()) {
 		bool double_tag = false;
 		to_str = CALCULATOR->parseComments(str, evalops.parse_options, &double_tag);
@@ -10372,6 +10400,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					clear_expression_text();
 					CALCULATOR->message(MESSAGE_INFORMATION, to_str.c_str(), NULL);
 					display_errors(&history_index, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &current_inhistory_index, 3);
+					update_expression_icons();
 					do_timeout = true;
 					b_busy = false;
 					b_busy_expression = false;
@@ -10386,6 +10415,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			}
 		}
 	}
+#endif
 
 	string from_str = str;
 	if(execute_str.empty() && CALCULATOR->separateToExpression(from_str, to_str, evalops, true, !do_stack)) {
@@ -15994,7 +16024,7 @@ void load_preferences() {
 	
 	size_t bookmark_index = 0;
 
-	int version_numbers[] = {3, 9, 1};
+	int version_numbers[] = {3, 9, 2};
 	bool old_history_format = false;
 
 	if(file) {
@@ -16674,6 +16704,9 @@ void load_preferences() {
 					int n = sscanf(svalue.c_str(), "%u:%u:%i:%s", &ks.key, &ks.modifier, &ks.type, str);
 					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 9) || (version_numbers[0] == 3 && version_numbers[1] == 9 && version_numbers[2] < 1)) {
 						if(ks.type >= SHORTCUT_TYPE_DEGREES) ks.type += 3;
+					}
+					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 9) || (version_numbers[0] == 3 && version_numbers[1] == 9 && version_numbers[2] < 2)) {
+						if(ks.type >= SHORTCUT_TYPE_HISTORY_SEARCH) ks.type++;
 					}
 					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 9)) {
 						if(ks.type >= SHORTCUT_TYPE_MINIMAL) ks.type++;
@@ -21448,7 +21481,7 @@ void on_history_search_response(GtkDialog *w, gint reponse_id, gpointer) {
 			if(hi_first < 0) hi_first = inhistory.size() - 1;
 		}
 		if(!selected) {
-			if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(historystore), &iter)) {
+			if(!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(historystore), &iter)) {
 				g_list_free_full(selected_list, (GDestroyNotify) gtk_tree_path_free);
 				return;
 			}
@@ -21462,7 +21495,7 @@ void on_history_search_response(GtkDialog *w, gint reponse_id, gpointer) {
 					gtk_tree_model_get(GTK_TREE_MODEL(historystore), &iter, 1, &hi, -1);
 					if(hi >= 0 && hi <= i) {
 						GtkTreePath *path = gtk_tree_model_get_path(GTK_TREE_MODEL(historystore), &iter);
-						gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(historyview), path, history_index_column, TRUE, 0.0, 0.0);
+						gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(historyview), path, history_index_column, FALSE, 0.0, 0.0);
 						gtk_tree_selection_unselect_all(select);
 						gtk_tree_selection_select_iter(select, &iter);
 						gtk_tree_path_free(path);
@@ -21486,10 +21519,15 @@ void on_history_search_response(GtkDialog *w, gint reponse_id, gpointer) {
 		gtk_widget_destroy(GTK_WIDGET(w));
 	}
 }
+void on_history_search_activate(GtkEntry*, gpointer) {
+	on_history_search_response(GTK_DIALOG(history_search_dialog), GTK_RESPONSE_ACCEPT, NULL);
+}
 void on_history_search_changed(GtkEditable*, gpointer) {
 	gtk_widget_set_sensitive(gtk_dialog_get_widget_for_response(GTK_DIALOG(history_search_dialog), GTK_RESPONSE_ACCEPT), strlen(gtk_entry_get_text(GTK_ENTRY(history_search_entry))) > 0);
 }
-void on_popup_menu_item_history_search_activate(GtkMenuItem *w, gpointer) {
+void on_popup_menu_item_history_search_activate(GtkMenuItem*, gpointer) {
+	set_minimal_mode(false);
+	gtk_expander_set_expanded(GTK_EXPANDER(expander_history), TRUE);
 	if(history_search_dialog) {
 		gtk_widget_show(history_search_dialog);
 		gtk_window_present(GTK_WINDOW(history_search_dialog));
@@ -21508,6 +21546,7 @@ void on_popup_menu_item_history_search_activate(GtkMenuItem *w, gpointer) {
 	gtk_entry_set_width_chars(GTK_ENTRY(history_search_entry), 35);
 	gtk_box_pack_end(GTK_BOX(hbox), history_search_entry, TRUE, TRUE, 0);
 	gtk_widget_set_sensitive(gtk_dialog_get_widget_for_response(GTK_DIALOG(history_search_dialog), GTK_RESPONSE_ACCEPT), FALSE);
+	g_signal_connect(G_OBJECT(history_search_entry), "activate", G_CALLBACK(on_history_search_activate), NULL);
 	g_signal_connect(G_OBJECT(history_search_dialog), "response", G_CALLBACK(on_history_search_response), NULL);
 	g_signal_connect(G_OBJECT(history_search_entry), "changed", G_CALLBACK(on_history_search_changed), NULL);
 	gtk_widget_show_all(history_search_dialog);
@@ -27743,6 +27782,10 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 				gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_history")), !gtk_expander_get_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_history"))));
 				return true;
 			}
+			case SHORTCUT_TYPE_HISTORY_SEARCH: {
+				on_popup_menu_item_history_search_activate(NULL, NULL);
+				return true;
+			}
 			case SHORTCUT_TYPE_CONVERSION: {
 				gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_convert")), !gtk_expander_get_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_convert"))));
 				return true;
@@ -28940,6 +28983,12 @@ bool get_keyboard_shortcut(GtkWindow *parent) {
 	}
 	gtk_widget_destroy(dialog);
 	return false;
+}
+void on_shortcuts_entry_value_activate(GtkEntry*, gpointer) {
+	gtk_dialog_response(GTK_DIALOG(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog")), GTK_RESPONSE_ACCEPT);
+}
+void on_shortcuts_type_treeview_row_activated(GtkTreeView*, GtkTreePath*, GtkTreeViewColumn*, gpointer) {
+	if(!gtk_widget_get_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")))) gtk_dialog_response(GTK_DIALOG(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog")), GTK_RESPONSE_ACCEPT);
 }
 void on_shortcuts_button_new_clicked(GtkButton*, gpointer) {
 	GtkWidget *d = GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog"));
