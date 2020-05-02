@@ -451,7 +451,7 @@ int main (int argc, char *argv[]) {
 
 	if(!ignore_locale) setlocale(LC_ALL, "");
 
-	app = gtk_application_new("org.gtk.qalculate", G_APPLICATION_HANDLES_COMMAND_LINE);
+	app = gtk_application_new("org.github.Qalculate", G_APPLICATION_HANDLES_COMMAND_LINE);
 	g_application_add_main_option_entries(G_APPLICATION(app), options);
 	g_signal_connect(app, "activate", G_CALLBACK(qalculate_activate), NULL);
 	g_signal_connect(app, "handle_local_options", G_CALLBACK(qalculate_handle_local_options), NULL);

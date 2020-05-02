@@ -22,6 +22,11 @@ appdata_DATA = $(appdata_IN_FILES:.xml.in=.xml)
 appdatadir = $(datadir)/metainfo
 @INTLTOOL_XML_RULE@
 
+if !PLATFORM_WIN32
+searchproviderdata_DATA = org.github.Qalculate.search-provider.ini
+searchproviderdatadir = $(datadir)/gnome-shell/search-providers
+endif
+
 dist_man_MANS = qalculate-gtk.1
 
 EXTRA_DIST = \
