@@ -27,6 +27,38 @@
 
 #include "gnome-search-provider2.h"
 
+#if HAVE_UNORDERED_MAP
+#	include <unordered_map>
+	using std::unordered_map;
+#elif 	defined(__GNUC__)
+
+#	ifndef __has_include
+#	define __has_include(x) 0
+#	endif
+
+#	if (defined(__clang__) && __has_include(<tr1/unordered_map>)) || (__GNUC__ >= 4 && __GNUC_MINOR__ >= 3)
+#		include <tr1/unordered_map>
+		namespace Sgi = std;
+#		define unordered_map std::tr1::unordered_map
+#	else
+#		if __GNUC__ < 3
+#			include <hash_map.h>
+			namespace Sgi { using ::hash_map; }; // inherit globals
+#		else
+#			include <ext/hash_map>
+#			if __GNUC__ == 3 && __GNUC_MINOR__ == 0
+				namespace Sgi = std;		// GCC 3.0
+#			else
+				namespace Sgi = ::__gnu_cxx;	// GCC 3.1 and later
+#			endif
+#		endif
+#		define unordered_map Sgi::hash_map
+#	endif
+#else      // ...  there are other compilers, right?
+	namespace Sgi = std;
+#	define unordered_map Sgi::hash_map
+#endif
+
 using std::string;
 using std::cout;
 using std::vector;
@@ -34,6 +66,9 @@ using std::endl;
 
 #define QALCULATE_TYPE_SEARCH_PROVIDER qalculate_search_provider_get_type()
 #define QALCULATE_SEARCH_PROVIDER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), QALCULATE_TYPE_SEARCH_PROVIDER, QalculateSearchProvider))
+
+unordered_map<string, string> expressions;
+unordered_map<string, string> results;
 
 EvaluationOptions search_eo;
 PrintOptions search_po;
@@ -67,66 +102,152 @@ static void qalculate_search_provider_activate_result(ShellSearchProvider2 *obje
 	g_dbus_method_invocation_return_value(invocation, NULL);
 }
 static void qalculate_search_provider_get_initial_result_set(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **terms, gpointer user_data) {
+	gchar *joined_terms = g_strjoinv(" ", terms);
+	string expression = joined_terms;
+	g_free(joined_terms);
 	GVariantBuilder builder;
 	g_variant_builder_init(&builder, G_VARIANT_TYPE("as"));
-	gchar *joined_terms = g_strjoinv(" ", terms);
-	string expression = CALCULATOR->unlocalizeExpression(joined_terms, search_eo.parse_options);
-	g_free(joined_terms);
 	remove_blank_ends(expression);
-	if(!expression.empty()) {
+	unordered_map<string, string>::const_iterator it = expressions.find(expression);
+	if(it != expressions.end()) {
+		string parsed = it->second;
+		if(parsed.empty()) {
+			g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
+			return;
+		}
+		it = results.find(parsed);
+		if(it == results.end() || it->second.empty()) {
+			g_variant_builder_add(&builder, "s", parsed.c_str());
+		} else {
+			g_variant_builder_add(&builder, "s", it->second.c_str());
+		}
+	} else {
+		remove_blank_ends(expression);
+		expressions[expression] = "";
+		if(expression.empty()) {
+			g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
+			return;
+		}
+		if(CALCULATOR->busy()) CALCULATOR->abort();
+		string parsed;
 #if QALCULATE_MAJOR_VERSION > 3 || QALCULATE_MINOR_VERSION >= 10
-		string result = CALCULATOR->calculateAndPrint(expression, 100, search_eo, search_po, true);
+		string result = CALCULATOR->calculateAndPrint(CALCULATOR->unlocalizeExpression(expression, search_eo.parse_options), 100, search_eo, search_po, &parsed);
 #else
-		string result = CALCULATOR->calculateAndPrint(expression, 100, search_eo, search_po);
+		string result = CALCULATOR->calculateAndPrint(CALCULATOR->unlocalizeExpression(expression, search_eo.parse_options), 100, search_eo, search_po);
 #endif
-		bool b = false;
+		if(result.empty() || result.find(CALCULATOR->abortedMessage()) != string::npos || result.find(CALCULATOR->timedOutString()) != string::npos) {
+			g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
+			return;
+		}
 		while(CALCULATOR->message()) {
 			if(CALCULATOR->message()->type() == MESSAGE_ERROR) {
 				CALCULATOR->clearMessages();
-				b = true;
-				break;
+				g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
+				return;
 			}
 			CALCULATOR->nextMessage();
 		}
-		if(!b) g_variant_builder_add(&builder, "s", result.c_str());
+		expressions[expression] = parsed;
+		if(parsed.empty() || result == parsed) {
+			results[result] = "";
+			g_variant_builder_add(&builder, "s", result.c_str());
+		} else {
+			if(*search_po.is_approximate) {
+				if(search_po.use_unicode_signs) {
+					result.insert(0, SIGN_ALMOST_EQUAL " ");
+				} else {
+					result.insert(0, " ");
+					result.insert(0, _("approx."));
+				}
+			} else {
+				result.insert(0, "= ");
+			}
+			results[parsed] = result;
+			g_variant_builder_add(&builder, "s", parsed.c_str());
+		}
 	}
 	g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
 }
-static void qalculate_search_provider_get_result_metas(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **results, gpointer user_data) {
+static void qalculate_search_provider_get_result_metas(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **eqs, gpointer user_data) {
 	gint idx;
 	GVariantBuilder meta, metas;
 	g_variant_builder_init (&metas, G_VARIANT_TYPE ("aa{sv}"));
-	for(idx = 0; results[idx] != NULL; idx++) {
+	for(idx = 0; eqs[idx] != NULL; idx++) {
 		g_variant_builder_init(&meta, G_VARIANT_TYPE ("a{sv}"));
-		g_variant_builder_add (&meta, "{sv}", "id", g_variant_new_string(results[idx]));
-		g_variant_builder_add (&meta, "{sv}", "name", g_variant_new_string(results[idx]));
+		g_variant_builder_add (&meta, "{sv}", "id", g_variant_new_string(eqs[idx]));
+		g_variant_builder_add (&meta, "{sv}", "name", g_variant_new_string(eqs[idx]));
+		unordered_map<string, string>::const_iterator it = results.find(eqs[idx]);
+		if(it != results.end() && !it->second.empty()) {
+			g_variant_builder_add (&meta, "{sv}", "description", g_variant_new_string(it->second.c_str()));
+		}
 		g_variant_builder_add_value (&metas, g_variant_builder_end (&meta));
 	}
 	g_dbus_method_invocation_return_value(invocation, g_variant_new("(aa{sv})", &metas));
 }
 static void qalculate_search_provider_get_subsearch_result_set(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **arg_previous_results, gchar **terms, gpointer user_data) {
+	gchar *joined_terms = g_strjoinv(" ", terms);
+	string expression = joined_terms;
+	g_free(joined_terms);
 	GVariantBuilder builder;
 	g_variant_builder_init(&builder, G_VARIANT_TYPE("as"));
-	gchar *joined_terms = g_strjoinv(" ", terms);
-	string expression = CALCULATOR->unlocalizeExpression(joined_terms, search_eo.parse_options);
-	g_free(joined_terms);
 	remove_blank_ends(expression);
-	if(!expression.empty()) {
+	unordered_map<string, string>::const_iterator it = expressions.find(expression);
+	if(it != expressions.end()) {
+		string parsed = it->second;
+		if(parsed.empty()) {
+			g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
+			return;
+		}
+		it = results.find(parsed);
+		if(it == results.end() || it->second.empty()) {
+			g_variant_builder_add(&builder, "s", parsed.c_str());
+		} else {
+			g_variant_builder_add(&builder, "s", it->second.c_str());
+		}
+	} else {
+		remove_blank_ends(expression);
+		expressions[expression] = "";
+		if(expression.empty()) {
+			g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
+			return;
+		}
+		if(CALCULATOR->busy()) CALCULATOR->abort();
+		string parsed;
 #if QALCULATE_MAJOR_VERSION > 3 || QALCULATE_MINOR_VERSION >= 10
-		string result = CALCULATOR->calculateAndPrint(expression, 100, search_eo, search_po, true);
+		string result = CALCULATOR->calculateAndPrint(CALCULATOR->unlocalizeExpression(expression, search_eo.parse_options), 100, search_eo, search_po, &parsed);
 #else
-		string result = CALCULATOR->calculateAndPrint(expression, 100, search_eo, search_po);
+		string result = CALCULATOR->calculateAndPrint(CALCULATOR->unlocalizeExpression(expression, search_eo.parse_options), 100, search_eo, search_po);
 #endif
-		bool b = false;
+		if(result.empty() || result.find(CALCULATOR->abortedMessage()) != string::npos || result.find(CALCULATOR->timedOutString()) != string::npos) {
+			g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
+			return;
+		}
 		while(CALCULATOR->message()) {
 			if(CALCULATOR->message()->type() == MESSAGE_ERROR) {
 				CALCULATOR->clearMessages();
-				b = true;
-				break;
+				g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
+				return;
 			}
 			CALCULATOR->nextMessage();
 		}
-		if(!b) g_variant_builder_add(&builder, "s", result.c_str());
+		expressions[expression] = parsed;
+		if(parsed.empty() || result == parsed) {
+			results[result] = "";
+			g_variant_builder_add(&builder, "s", result.c_str());
+		} else {
+			if(*search_po.is_approximate) {
+				if(search_po.use_unicode_signs) {
+					result.insert(0, SIGN_ALMOST_EQUAL " ");
+				} else {
+					result.insert(0, " ");
+					result.insert(0, _("approx."));
+				}
+			} else {
+				result.insert(0, "= ");
+			}
+			results[parsed] = result;
+			g_variant_builder_add(&builder, "s", parsed.c_str());
+		}
 	}
 	g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
 }
@@ -536,6 +657,8 @@ int main (int argc, char *argv[]) {
 	status = g_application_run(G_APPLICATION(app), argc, argv);
 
 	g_object_unref(app);
+
+	CALCULATOR->terminateThreads();
 
 	return status;
 

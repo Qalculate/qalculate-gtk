@@ -10,13 +10,16 @@ AM_CPPFLAGS = \
 	@WEBKITGTK_CFLAGS@ \
 	@QALCULATE_CFLAGS@
 
-if PLATFORM_WIN32
-qalculate_gtk_LDFLAGS = -mwindows
-bin_PROGRAMS = @QALCULATE_GTK@
-EXTRA_PROGRAMS = qalculate-gtk
-else
+if ENABLE_SEARCH_PROVIDER
 bin_PROGRAMS = @QALCULATE_GTK@ qalculate-search-provider
 EXTRA_PROGRAMS = qalculate-gtk qalculate-search-provider
+else
+bin_PROGRAMS = @QALCULATE_GTK@
+EXTRA_PROGRAMS = qalculate-gtk
+endif
+
+if PLATFORM_WIN32
+qalculate_gtk_LDFLAGS = -mwindows
 endif
 
 ui.c : $(top_srcdir)/data/ui.gresource.xml $(top_srcdir)/data/*.ui
@@ -39,16 +42,13 @@ qalculate_gtk_LDADD = \
 	@WEBKITGTK_LIBS@ \
 	@QALCULATE_LIBS@
 
-if PLATFORM_WIN32
-else
-gnome-search-provider2.h gnome-search-provider2.c: org.gnome.ShellSearchProvider2.xml
+if ENABLE_SEARCH_PROVIDER
+gnome-search-provider2.h gnome-search-provider2.c: $(top_srcdir)/data/org.gnome.ShellSearchProvider2.xml
 	$(AM_V_GEN)gdbus-codegen \
 		--c-namespace Shell \
 		--generate-c-code gnome-search-provider2 \
 		--interface-prefix org.gnome.Shell. \
 		$<
-
-EXTRA_DIST = org.gnome.ShellSearchProvider2.xml
 
 qalculate_search_provider_SOURCES = \
 	searchprovider.cc	\

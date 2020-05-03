@@ -58,8 +58,20 @@ changequote([,])dnl
 
 AC_CANONICAL_HOST
 
-AM_CONDITIONAL(PLATFORM_LINUX, test "$host_os" = "linux")
-AM_CONDITIONAL(PLATFORM_WIN32, test "$host_os" = "mingw32")
+case "${host_os}" in
+    linux*)
+        build_linux=yes
+        ;;
+    cygwin*|mingw*)
+        build_windows=yes
+        ;;
+    darwin*)
+        build_mac=yes
+        ;;
+esac
+
+AM_CONDITIONAL(PLATFORM_LINUX, test "$build_linux" = "yes")
+AM_CONDITIONAL(PLATFORM_WIN32, test "$build_windows" = "yes")
 
 
 dnl  --------------------------------
@@ -97,6 +109,12 @@ AS_IF([test "x$with_webkitgtk" = "xyes"], [
 	AC_SUBST(WEBKITGTK_CFLAGS)
 	AC_SUBST(WEBKITGTK_LIBS)
 ])
+
+if test "$build_linux" != "yes"; then
+	enable_gnome_search=no;
+fi
+AC_ARG_ENABLE([gnome_search], AS_HELP_STRING([--disable-gnome-search], [disable Gnome shell search provider]))
+AM_CONDITIONAL(ENABLE_SEARCH_PROVIDER, [test "x$enable_gnome_search" != "xno"])
 
 PKG_CHECK_MODULES(QALCULATE, [
 	libqalculate >= 3.8.0

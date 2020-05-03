@@ -8,7 +8,8 @@ noinst_DATA = argumentrules.ui calendarconversion.ui csvexport.ui csvimport.ui d
 	floatingpoint.ui functionedit.ui functions.ui main.ui matrix.ui matrixedit.ui namesedit.ui nbases.ui \
 	shortcuts.ui setbase.ui percentage.ui periodictable.ui plot.ui precision.ui preferences.ui \
 	simplefunctionedit.ui unitedit.ui units.ui unknownedit.ui variableedit.ui variables.ui \
-	flags.gresource.xml ui.gresource.xml flags/*.png
+	flags.gresource.xml ui.gresource.xml flags/*.png \
+	org.gnome.ShellSearchProvider2.xml org.github.Qalculate.search-provider.ini
 
 # this is for gnome
 
@@ -22,7 +23,7 @@ appdata_DATA = $(appdata_IN_FILES:.xml.in=.xml)
 appdatadir = $(datadir)/metainfo
 @INTLTOOL_XML_RULE@
 
-if !PLATFORM_WIN32
+if ENABLE_SEARCH_PROVIDER
 searchproviderdata_DATA = org.github.Qalculate.search-provider.ini
 searchproviderdatadir = $(datadir)/gnome-shell/search-providers
 endif
