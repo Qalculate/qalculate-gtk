@@ -27,6 +27,13 @@
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkAdjustment" id="adjustment_plot_time">
+    <property name="lower">1</property>
+    <property name="upper">10000</property>
+    <property name="value">5</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
   <object class="GtkAdjustment" id="preferences_update_exchange_rates_adjustment">
     <property name="lower">-1</property>
     <property name="upper">100</property>
@@ -359,6 +366,50 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="expand">False</property>
                     <property name="fill">False</property>
                     <property name="position">12</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="box_expression_lines1">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="spacing">12</property>
+                    <child>
+                      <object class="GtkLabel" id="label_plot_time">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Time limit for plot</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSpinButton" id="preferences_plot_time_spin_button">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="width_chars">15</property>
+                        <property name="text" translatable="yes">3</property>
+                        <property name="adjustment">adjustment_plot_time</property>
+                        <property name="snap_to_ticks">True</property>
+                        <property name="value">5</property>
+                        <signal name="input" handler="on_preferences_plot_time_spin_button_input" swapped="no"/>
+                        <signal name="output" handler="on_preferences_plot_time_spin_button_output" swapped="no"/>
+                        <signal name="value-changed" handler="on_preferences_plot_time_spin_button_value_changed" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">13</property>
                   </packing>
                 </child>
               </object>

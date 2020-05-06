@@ -252,6 +252,7 @@ PlotStyle default_plot_style = PLOT_STYLE_LINES;
 PlotSmoothing default_plot_smoothing = PLOT_SMOOTHING_NONE;
 string default_plot_variable = "x";
 bool default_plot_color = true;
+int max_plot_time = 5;
 
 bool b_editing_stack = false;
 
@@ -1892,7 +1893,8 @@ void display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 				if(index == 1) str = "• " + str;
 				str += "\n• ";
 			}
-			str += CALCULATOR->message()->message();
+			if(win != NULL && plot_builder && win == GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")) && CALCULATOR->message()->message() == _("It took too long to generate the plot data.")) str += _("It took too long to generate the plot data. Please decrease the sampling rate or increase the time limit in preferences.");
+			else str += CALCULATOR->message()->message();
 			if(mtype == MESSAGE_ERROR || (mtype_highest != MESSAGE_ERROR && mtype == MESSAGE_WARNING)) {
 				mtype_highest = mtype;
 			}
@@ -15848,6 +15850,7 @@ void load_preferences() {
 	default_plot_variable = "x";
 	default_plot_color = true;
 	default_plot_use_sampling_rate = true;
+	max_plot_time = 5;
 
 	printops.multiplication_sign = MULTIPLICATION_SIGN_X;
 	printops.division_sign = DIVISION_SIGN_DIVISION_SLASH;
@@ -16722,6 +16725,8 @@ void load_preferences() {
 					}
 				} else if(svar == "plot_linewidth") {
 					default_plot_linewidth = v;
+				} else if(svar == "max_plot_time") {
+					max_plot_time = v;
 				} else if(svar == "keyboard_shortcut") {
 					default_shortcuts = false;
 					char str[svalue.length()];
@@ -17427,6 +17432,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "plot_type=%i\n", default_plot_type);
 	fprintf(file, "plot_color=%i\n", default_plot_color);
 	fprintf(file, "plot_linewidth=%i\n", default_plot_linewidth);
+	if(max_plot_time != 5) fprintf(file, "max_plot_time=%i\n", max_plot_time);
 
 	fclose(file);
 
@@ -18033,6 +18039,22 @@ gboolean on_preferences_update_exchange_rates_spin_button_output(GtkSpinButton *
 	} else {
 		gtk_entry_set_text(GTK_ENTRY(spin), _("ask"));
 	}
+	return TRUE;
+}
+void on_preferences_plot_time_spin_button_value_changed(GtkSpinButton *spin, gpointer) {
+	max_plot_time = gtk_spin_button_get_value_as_int(spin);
+}
+gboolean on_preferences_plot_time_spin_button_output(GtkSpinButton *spin, gpointer) {
+	int value = gtk_spin_button_get_value_as_int(spin);
+	gchar *text;
+	text = g_strdup_printf(_("%i seconds"), value);
+	gtk_entry_set_text(GTK_ENTRY(spin), text);
+	g_free(text);
+	return TRUE;
+}
+gint on_preferences_plot_time_spin_button_input(GtkSpinButton *spin, gdouble *new_value, gpointer) {
+	const gchar *text = gtk_entry_get_text(GTK_ENTRY(spin));
+	*new_value = g_strtod(text, NULL);
 	return TRUE;
 }
 void on_preferences_checkbutton_persistent_keypad_toggled(GtkToggleButton *w, gpointer) {
@@ -29484,7 +29506,7 @@ void on_plot_button_save_clicked(GtkButton*, gpointer) {
 			pp.filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(d));
 			pp.filetype = PLOT_FILETYPE_AUTO;
 			do_timeout = false;
-			CALCULATOR->plotVectors(&pp, y_vectors, x_vectors, pdps);
+			CALCULATOR->plotVectors(&pp, y_vectors, x_vectors, pdps, false, max_plot_time * 1000);
 			display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
 			do_timeout = true;
 			for(size_t i = 0; i < pdps.size(); i++) {
@@ -29505,7 +29527,7 @@ void update_plot() {
 		return;
 	}
 	do_timeout = false;
-	CALCULATOR->plotVectors(&pp, y_vectors, x_vectors, pdps);
+	CALCULATOR->plotVectors(&pp, y_vectors, x_vectors, pdps, false, max_plot_time * 1000);
 	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
 	do_timeout = true;
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_button_save")), true);
@@ -29523,7 +29545,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 	do_timeout = false;
 	if(type == 1 || type == 2) {
 		*y_vector = new MathStructure();
-		if(!CALCULATOR->calculate(*y_vector, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), 5000, eo)) {
+		if(!CALCULATOR->calculate(*y_vector, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), max_plot_time * 1000, eo)) {
 			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("It took too long to generate the plot data."));
 			gtk_dialog_run(GTK_DIALOG(d));
 			gtk_widget_destroy(d);
@@ -29551,9 +29573,9 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 			return;
 		}
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_radiobutton_step")))) {
-			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(str, min, max, CALCULATOR->calculate(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_step"))), evalops.parse_options), eo), *x_vector, str_x, evalops.parse_options, 5000));
+			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(str, min, max, CALCULATOR->calculate(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_step"))), evalops.parse_options), eo), *x_vector, str_x, evalops.parse_options, max_plot_time * 1000));
 		} else {
-			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(str, min, max, gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_steps"))), *x_vector, str_x, evalops.parse_options, 5000));
+			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(str, min, max, gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_steps"))), *x_vector, str_x, evalops.parse_options, max_plot_time * 1000));
 		}
 	}
 	CALCULATOR->endTemporaryStopIntervalArithmetic();

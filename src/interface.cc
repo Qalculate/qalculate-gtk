@@ -174,6 +174,7 @@ extern int visible_keypad;
 extern bool auto_calculate;
 extern bool complex_angle_form;
 extern bool check_version;
+extern int max_plot_time;
 
 extern string nbases_error_color, nbases_warning_color;
 
@@ -2073,6 +2074,8 @@ GtkWidget* get_preferences_dialog(void) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_delay")), enable_completion);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay")), enable_completion);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay")), (double) completion_delay);
+	
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_plot_time_spin_button")), (double) max_plot_time);
 
 	return GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_dialog"));
 }
