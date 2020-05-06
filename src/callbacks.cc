@@ -681,8 +681,12 @@ gdouble help_zoom = -1.0;
 
 string get_doc_uri(string file, bool with_proto = true) {
 	string surl;
+#ifndef LOCAL_HELP
+	surl = "https://qalculate.github.io/manual/";
+	surl += file;
+#else
 	if(with_proto) surl += "file://";
-#ifdef _WIN32
+#	ifdef _WIN32
 	char exepath[MAX_PATH];
 	GetModuleFileName(NULL, exepath, MAX_PATH);
 	surl += exepath;
@@ -701,9 +705,10 @@ string get_doc_uri(string file, bool with_proto = true) {
 	}
 	gsub("\\", "/", surl);
 	surl += file;
-#else
+#	else
 	surl += PACKAGE_DOC_DIR "/html/";
 	surl += file;
+#	endif
 #endif
 	return surl;
 }
@@ -16026,7 +16031,7 @@ void load_preferences() {
 	
 	size_t bookmark_index = 0;
 
-	int version_numbers[] = {3, 9, 2};
+	int version_numbers[] = {3, 10, 0};
 	bool old_history_format = false;
 
 	if(file) {
@@ -18212,9 +18217,11 @@ void on_preferences_checkbutton_display_expression_status_toggled(GtkToggleButto
 	}
 }
 void on_preferences_checkbutton_dark_theme_toggled(GtkToggleButton *w, gpointer) {
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
 	use_dark_theme = gtk_toggle_button_get_active(w);
 	if(use_dark_theme) gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/Adwaita/gtk-contained-dark.css");
 	else gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/Adwaita/gtk-contained.css");
+#endif
 }
 void on_preferences_checkbutton_custom_result_font_toggled(GtkToggleButton *w, gpointer) {
 	use_custom_result_font = gtk_toggle_button_get_active(w);
@@ -19153,39 +19160,6 @@ void on_popup_menu_programmers_keypad_toggled(GtkCheckMenuItem *w, gpointer) {
 void on_popup_menu_general_keypad_toggled(GtkCheckMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(w)) return;
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_programmers_keypad")), FALSE);
-}
-
-void update_popup_menu_left_keypad() {
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_programmers_keypad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_programmers_keypad_toggled, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_general_keypad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_general_keypad_toggled, NULL);
-	if(visible_keypad == 1) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_programmers_keypad")), TRUE);
-	else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_general_keypad")), TRUE);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_programmers_keypad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_programmers_keypad_toggled, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_general_keypad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_general_keypad_toggled, NULL);
-}
-
-gboolean on_stack_left_buttons_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
-		if(b_busy) return TRUE;
-		update_popup_menu_left_keypad();
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_left_keypad")), (GdkEvent*) event);
-#else
-		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_left_keypad")), NULL, NULL, NULL, NULL, event->button, event->time);
-#endif
-		return TRUE;
-	}
-	return FALSE;
-}
-gboolean on_stack_left_buttons_popup_menu(GtkWidget*, gpointer) {
-	if(b_busy) return TRUE;
-	update_popup_menu_left_keypad();
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-	gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_left_keypad")), NULL);
-#else
-	gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_left_keypad")), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
-#endif
-	return TRUE;
 }
 
 gboolean on_units_entry_from_val_focus_out_event(GtkEntry*, GdkEventFocus*, gpointer) {
@@ -27575,7 +27549,11 @@ gboolean on_units_convert_to_button_key_press_event(GtkWidget*, GdkEventKey *eve
 }
 
 bool do_keyboard_shortcut(GdkEventKey *event) {
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
 	guint state = event->state & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK);
+#else
+	guint state = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SUPER_MASK | GDK_HYPER_MASK | GDK_META_MASK);
+#endif
 	unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find((guint64) event->keyval + (guint64) G_MAXUINT32 * (guint64) state);
 	if(it == keyboard_shortcuts.end() && event->keyval == GDK_KEY_KP_Delete) it = keyboard_shortcuts.find((guint64) GDK_KEY_Delete + (guint64) G_MAXUINT32 * (guint64) state);
 	if(it != keyboard_shortcuts.end()) {
@@ -28943,7 +28921,11 @@ void on_tShortcutsType_selection_changed(GtkTreeSelection *treeselection, gpoint
 
 GtkWidget *shortcut_label = NULL;
 gboolean on_shortcut_key_released(GtkWidget *w, GdkEventKey *event, gpointer) {
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
 	guint state = event->state & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK);
+#else
+	guint state = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SUPER_MASK | GDK_HYPER_MASK | GDK_META_MASK);
+#endif
 	if(event->keyval == 0 || (event->keyval >= GDK_KEY_Shift_L && event->keyval <= GDK_KEY_Hyper_R)) return FALSE;
 	if(state == 0 && event->keyval == GDK_KEY_Escape) {
 		gtk_dialog_response(GTK_DIALOG(w), GTK_RESPONSE_CANCEL);
@@ -28956,7 +28938,11 @@ gboolean on_shortcut_key_released(GtkWidget *w, GdkEventKey *event, gpointer) {
 	return TRUE;
 }
 gboolean on_shortcut_key_pressed(GtkWidget *w, GdkEventKey *event, gpointer) {
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
 	guint state = event->state & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK);
+#else
+	guint state = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SUPER_MASK | GDK_HYPER_MASK | GDK_META_MASK);
+#endif
 	string str = "<span size=\"large\">";
 	str += shortcut_to_text(event->keyval, state);
 	str += "</span>";

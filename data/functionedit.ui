@@ -195,7 +195,7 @@
                         <property name="can_focus">False</property>
                         <property name="has_entry">True</property>
                         <child internal-child="entry">
-                          <object class="GtkEntry">
+                          <object class="GtkEntry" id="entry_category">
                             <property name="can_focus">True</property>
                             <signal name="changed" handler="on_function_changed" swapped="no"/>
                           </object>
@@ -479,7 +479,7 @@
                             <property name="can_focus">True</property>
                             <property name="tooltip_text" translatable="yes">Definition of this function's arguments</property>
                             <child internal-child="selection">
-                              <object class="GtkTreeSelection"/>
+                              <object class="GtkTreeSelection" id="arguments_selection"/>
                             </child>
                           </object>
                         </child>
@@ -555,7 +555,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox">
+                      <object class="GtkBox" id="box91b">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="hexpand">True</property>
@@ -749,7 +749,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <child internal-child="selection">
-                      <object class="GtkTreeSelection"/>
+                      <object class="GtkTreeSelection" id="subfunctions_selection"/>
                     </child>
                   </object>
                 </child>

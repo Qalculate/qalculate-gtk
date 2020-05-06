@@ -82,7 +82,7 @@
             <property name="can_focus">True</property>
             <property name="border_width">6</property>
             <child>
-              <object class="GtkBox" id="vbox44">
+              <object class="GtkBox" id="box_general">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="valign">start</property>
@@ -208,12 +208,12 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox">
+                  <object class="GtkBox" id="box_window_title">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="spacing">12</property>
                     <child>
-                      <object class="GtkLabel">
+                      <object class="GtkLabel" id="label_window_title">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="halign">start</property>
@@ -252,12 +252,12 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox">
+                  <object class="GtkBox" id="box_expression_lines">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="spacing">12</property>
                     <child>
-                      <object class="GtkLabel">
+                      <object class="GtkLabel" id="label_expression_lines">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="halign">start</property>
@@ -365,7 +365,7 @@ Note that only the mode, history and definitions of the last closed instance wil
               </object>
             </child>
             <child type="tab">
-              <object class="GtkLabel" id="label3">
+              <object class="GtkLabel" id="label_general">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">General</property>
@@ -375,7 +375,7 @@ Note that only the mode, history and definitions of the last closed instance wil
               </packing>
             </child>
             <child>
-              <object class="GtkBox">
+              <object class="GtkBox" id="box_numbers">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="valign">start</property>
@@ -479,7 +479,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="draw_indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_e_notation_toggled" swapped="no"/>
                     <child>
-                      <object class="GtkLabel">
+                      <object class="GtkLabel" id="label_e_notation">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Use E-notation instead of 10&lt;sup&gt;&lt;i&gt;n&lt;/i&gt;&lt;/sup&gt;</property>
@@ -582,7 +582,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkGrid">
+                  <object class="GtkGrid" id="grid_groupsign">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="margin_top">12</property>
@@ -864,7 +864,7 @@ Note that only the mode, history and definitions of the last closed instance wil
               </packing>
             </child>
             <child type="tab">
-              <object class="GtkLabel">
+              <object class="GtkLabel" id="label_numbers">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Numbers &amp; Operators</property>
@@ -875,7 +875,7 @@ Note that only the mode, history and definitions of the last closed instance wil
               </packing>
             </child>
             <child>
-              <object class="GtkBox">
+              <object class="GtkBox" id="box_units">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="valign">start</property>
@@ -935,12 +935,12 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox">
+                  <object class="GtkBox" id="box_exrates">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="spacing">12</property>
                     <child>
-                      <object class="GtkLabel">
+                      <object class="GtkLabel" id="label_xrates">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="halign">start</property>
@@ -982,7 +982,7 @@ Note that only the mode, history and definitions of the last closed instance wil
               </packing>
             </child>
             <child type="tab">
-              <object class="GtkLabel">
+              <object class="GtkLabel" id="label_units">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Units &amp; Currencies</property>
@@ -993,7 +993,7 @@ Note that only the mode, history and definitions of the last closed instance wil
               </packing>
             </child>
             <child>
-              <object class="GtkGrid">
+              <object class="GtkGrid" id="grid_completion">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="valign">start</property>
@@ -1121,7 +1121,7 @@ Note that only the mode, history and definitions of the last closed instance wil
               </packing>
             </child>
             <child type="tab">
-              <object class="GtkLabel">
+              <object class="GtkLabel" id="label_completion">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Completion</property>
@@ -1132,7 +1132,7 @@ Note that only the mode, history and definitions of the last closed instance wil
               </packing>
             </child>
             <child>
-              <object class="GtkGrid">
+              <object class="GtkGrid" id="grid_fonts">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="halign">start</property>
@@ -1367,7 +1367,7 @@ Note that only the mode, history and definitions of the last closed instance wil
               </packing>
             </child>
             <child type="tab">
-              <object class="GtkLabel" id="label4">
+              <object class="GtkLabel" id="label_fonts">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Fonts</property>

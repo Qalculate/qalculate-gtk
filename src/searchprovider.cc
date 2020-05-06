@@ -92,6 +92,17 @@ static QalculateSearchProvider *qalculate_search_provider_new(void) {
 	return QALCULATE_SEARCH_PROVIDER(g_object_new(qalculate_search_provider_get_type(), NULL));
 }
 
+bool has_error() {
+	while(CALCULATOR->message()) {
+		if(CALCULATOR->message()->type() == MESSAGE_ERROR) {
+			CALCULATOR->clearMessages();
+			return true;
+		}
+		CALCULATOR->nextMessage();
+	}
+	return false;
+}
+
 static void qalculate_search_provider_activate_result(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar *result, gchar **terms, guint timestamp, gpointer user_data) {
 	gchar *joined_terms = g_strjoinv(" ", terms);
 	string str = "qalculate-gtk \"";
@@ -101,33 +112,40 @@ static void qalculate_search_provider_activate_result(ShellSearchProvider2 *obje
 	g_spawn_command_line_async(str.c_str(), NULL);
 	g_dbus_method_invocation_return_value(invocation, NULL);
 }
-static void qalculate_search_provider_get_initial_result_set(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **terms, gpointer user_data) {
-	gchar *joined_terms = g_strjoinv(" ", terms);
+void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 	string expression = joined_terms;
-	g_free(joined_terms);
-	GVariantBuilder builder;
 	g_variant_builder_init(&builder, G_VARIANT_TYPE("as"));
 	remove_blank_ends(expression);
 	unordered_map<string, string>::const_iterator it = expressions.find(expression);
 	if(it != expressions.end()) {
 		string parsed = it->second;
-		if(parsed.empty()) {
-			g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
-			return;
-		}
-		it = results.find(parsed);
-		if(it == results.end() || it->second.empty()) {
-			g_variant_builder_add(&builder, "s", parsed.c_str());
-		} else {
-			g_variant_builder_add(&builder, "s", it->second.c_str());
-		}
+		if(parsed.empty()) return;
+		g_variant_builder_add(&builder, "s", parsed.c_str());
 	} else {
 		remove_blank_ends(expression);
 		expressions[expression] = "";
-		if(expression.empty()) {
-			g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
-			return;
+		bool b_valid = false;
+		if(expression.empty()) return;
+		if(!b_valid) b_valid = (expression.find_first_of(OPERATORS NUMBERS PARENTHESISS) != string::npos);
+		if(!b_valid) b_valid = CALCULATOR->hasToExpression(expression, false, search_eo);
+		if(!b_valid) {
+			string str = expression;
+			CALCULATOR->parseSigns(str);
+			b_valid = (str.find_first_of(OPERATORS NUMBERS PARENTHESISS) != string::npos);
+			if(!b_valid) {
+				size_t i = str.find_first_of(SPACES);
+				MathStructure m;
+				if(i != string::npos) {
+					str = str.substr(0, i);
+					b_valid = (str == "factor" || equalsIgnoreCase(str, "factorize") || equalsIgnoreCase(str, _("factorize")) || equalsIgnoreCase(str, "expand") || equalsIgnoreCase(str, _("expand")));
+				}
+				if(!b_valid) {
+					CALCULATOR->parse(&m, str, search_eo.parse_options);
+					if(!has_error() && (m.isUnit() || m.isFunction() || (m.isVariable() && (i != string::npos || m.variable()->isKnown())))) b_valid = true;
+				}
+			}
 		}
+		if(!b_valid) return;
 		if(CALCULATOR->busy()) CALCULATOR->abort();
 		string parsed;
 #if QALCULATE_MAJOR_VERSION > 3 || QALCULATE_MINOR_VERSION >= 10
@@ -135,37 +153,40 @@ static void qalculate_search_provider_get_initial_result_set(ShellSearchProvider
 #else
 		string result = CALCULATOR->calculateAndPrint(CALCULATOR->unlocalizeExpression(expression, search_eo.parse_options), 100, search_eo, search_po);
 #endif
-		if(result.empty() || result.find(CALCULATOR->abortedMessage()) != string::npos || result.find(CALCULATOR->timedOutString()) != string::npos) {
-			g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
+		if(has_error() || result.empty() || parsed.find(CALCULATOR->abortedMessage()) != string::npos || parsed.find(CALCULATOR->timedOutString()) != string::npos) {
 			return;
 		}
-		while(CALCULATOR->message()) {
-			if(CALCULATOR->message()->type() == MESSAGE_ERROR) {
-				CALCULATOR->clearMessages();
-				g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
-				return;
-			}
-			CALCULATOR->nextMessage();
+		if(result.find(CALCULATOR->abortedMessage()) != string::npos || result.find(CALCULATOR->timedOutString()) != string::npos) {
+			if(parsed.empty()) return;
+			result = "";
 		}
 		expressions[expression] = parsed;
 		if(parsed.empty() || result == parsed) {
 			results[result] = "";
 			g_variant_builder_add(&builder, "s", result.c_str());
 		} else {
-			if(*search_po.is_approximate) {
-				if(search_po.use_unicode_signs) {
-					result.insert(0, SIGN_ALMOST_EQUAL " ");
+			if(!result.empty()) {
+				if(*search_po.is_approximate) {
+					if(search_po.use_unicode_signs) {
+						result.insert(0, SIGN_ALMOST_EQUAL " ");
+					} else {
+						result.insert(0, " ");
+						result.insert(0, _("approx."));
+					}
 				} else {
-					result.insert(0, " ");
-					result.insert(0, _("approx."));
+					result.insert(0, "= ");
 				}
-			} else {
-				result.insert(0, "= ");
 			}
 			results[parsed] = result;
 			g_variant_builder_add(&builder, "s", parsed.c_str());
 		}
 	}
+}
+static void qalculate_search_provider_get_initial_result_set(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **terms, gpointer user_data) {
+	gchar *joined_terms = g_strjoinv(" ", terms);
+	GVariantBuilder builder;
+	handle_terms(joined_terms, builder);
+	g_free(joined_terms);
 	g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
 }
 static void qalculate_search_provider_get_result_metas(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **eqs, gpointer user_data) {
@@ -186,69 +207,9 @@ static void qalculate_search_provider_get_result_metas(ShellSearchProvider2 *obj
 }
 static void qalculate_search_provider_get_subsearch_result_set(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **arg_previous_results, gchar **terms, gpointer user_data) {
 	gchar *joined_terms = g_strjoinv(" ", terms);
-	string expression = joined_terms;
-	g_free(joined_terms);
 	GVariantBuilder builder;
-	g_variant_builder_init(&builder, G_VARIANT_TYPE("as"));
-	remove_blank_ends(expression);
-	unordered_map<string, string>::const_iterator it = expressions.find(expression);
-	if(it != expressions.end()) {
-		string parsed = it->second;
-		if(parsed.empty()) {
-			g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
-			return;
-		}
-		it = results.find(parsed);
-		if(it == results.end() || it->second.empty()) {
-			g_variant_builder_add(&builder, "s", parsed.c_str());
-		} else {
-			g_variant_builder_add(&builder, "s", it->second.c_str());
-		}
-	} else {
-		remove_blank_ends(expression);
-		expressions[expression] = "";
-		if(expression.empty()) {
-			g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
-			return;
-		}
-		if(CALCULATOR->busy()) CALCULATOR->abort();
-		string parsed;
-#if QALCULATE_MAJOR_VERSION > 3 || QALCULATE_MINOR_VERSION >= 10
-		string result = CALCULATOR->calculateAndPrint(CALCULATOR->unlocalizeExpression(expression, search_eo.parse_options), 100, search_eo, search_po, &parsed);
-#else
-		string result = CALCULATOR->calculateAndPrint(CALCULATOR->unlocalizeExpression(expression, search_eo.parse_options), 100, search_eo, search_po);
-#endif
-		if(result.empty() || result.find(CALCULATOR->abortedMessage()) != string::npos || result.find(CALCULATOR->timedOutString()) != string::npos) {
-			g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
-			return;
-		}
-		while(CALCULATOR->message()) {
-			if(CALCULATOR->message()->type() == MESSAGE_ERROR) {
-				CALCULATOR->clearMessages();
-				g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
-				return;
-			}
-			CALCULATOR->nextMessage();
-		}
-		expressions[expression] = parsed;
-		if(parsed.empty() || result == parsed) {
-			results[result] = "";
-			g_variant_builder_add(&builder, "s", result.c_str());
-		} else {
-			if(*search_po.is_approximate) {
-				if(search_po.use_unicode_signs) {
-					result.insert(0, SIGN_ALMOST_EQUAL " ");
-				} else {
-					result.insert(0, " ");
-					result.insert(0, _("approx."));
-				}
-			} else {
-				result.insert(0, "= ");
-			}
-			results[parsed] = result;
-			g_variant_builder_add(&builder, "s", parsed.c_str());
-		}
-	}
+	handle_terms(joined_terms, builder);
+	g_free(joined_terms);
 	g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
 }
 static void qalculate_search_provider_launch_search(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **terms, guint timestamp, gpointer user_data) {
@@ -375,7 +336,7 @@ void load_preferences_search() {
 	search_eo.parse_options.base = BASE_DECIMAL;
 	search_eo.allow_complex = true;
 	search_eo.allow_infinite = true;
-	search_eo.auto_post_conversion = POST_CONVERSION_OPTIMAL;
+	search_eo.auto_post_conversion = POST_CONVERSION_OPTIMAL_SI;
 	search_eo.assume_denominators_nonzero = true;
 	search_eo.warn_about_denominators_assumed_nonzero = true;
 	search_eo.parse_options.limit_implicit_multiplication = false;
@@ -501,7 +462,7 @@ void load_preferences_search() {
 					if(v >= ANGLE_UNIT_NONE && v <= ANGLE_UNIT_GRADIANS) {
 						search_eo.parse_options.angle_unit = (AngleUnit) v;
 					}
-				} else if(svar == "functions_enabled") {
+				/*} else if(svar == "functions_enabled") {
 					search_eo.parse_options.functions_enabled = v;
 				} else if(svar == "variables_enabled") {
 					search_eo.parse_options.variables_enabled = v;
@@ -510,11 +471,11 @@ void load_preferences_search() {
 				} else if(svar == "calculate_functions") {
 					search_eo.calculate_functions = v;
 				} else if(svar == "sync_units") {
-					search_eo.sync_units = v;
+					search_eo.sync_units = v;*/
 				} else if(svar == "unknownvariables_enabled") {
 					search_eo.parse_options.unknowns_enabled = v;
-				} else if(svar == "units_enabled") {
-					search_eo.parse_options.units_enabled = v;
+				/*} else if(svar == "units_enabled") {
+					search_eo.parse_options.units_enabled = v;*/
 				} else if(svar == "allow_complex") {
 					search_eo.allow_complex = v;
 				} else if(svar == "allow_infinite") {
@@ -529,10 +490,10 @@ void load_preferences_search() {
 					search_po.use_denominator_prefix = v;
 				} else if(svar == "use_binary_prefixes") {
 					CALCULATOR->useBinaryPrefixes(v);
-				} else if(svar == "auto_post_conversion") {
+				/*} else if(svar == "auto_post_conversion") {
 					if(v >= POST_CONVERSION_NONE && v <= POST_CONVERSION_OPTIMAL) {
 						search_eo.auto_post_conversion = (AutoPostConversion) v;
-					}
+					}*/
 				} else if(svar == "mixed_units_conversion") {
 					if(v >= MIXED_UNITS_CONVERSION_NONE && v <= MIXED_UNITS_CONVERSION_FORCE_ALL) {
 						search_eo.mixed_units_conversion = (MixedUnitsConversion) v;
@@ -579,10 +540,10 @@ void load_preferences_search() {
 					}
 				} else if(svar == "round_halfway_to_even") {
 					search_po.round_halfway_to_even = v;
-				} else if(svar == "approximation") {
+				/*} else if(svar == "approximation") {
 					if(v >= APPROXIMATION_EXACT && v <= APPROXIMATION_APPROXIMATE) {
 						search_eo.approximation = (ApproximationMode) v;
-					}
+					}*/
 				} else if(svar == "interval_calculation") {
 					if(v >= INTERVAL_CALCULATION_NONE && v <= INTERVAL_CALCULATION_SIMPLE_INTERVAL_ARITHMETIC) {
 						search_eo.interval_calculation = (IntervalCalculation) v;
@@ -590,13 +551,13 @@ void load_preferences_search() {
 				} else if(svar == "rpn_syntax") {
 					search_eo.parse_options.rpn = v;
 				} else if(svar == "default_assumption_type") {
-					if(v >= ASSUMPTION_TYPE_NONE && v <= ASSUMPTION_TYPE_INTEGER) {
+					if(v >= ASSUMPTION_TYPE_NONE && v <= ASSUMPTION_TYPE_REAL) {
 						CALCULATOR->defaultAssumptions()->setType((AssumptionType) v);
 					}
-				} else if(svar == "default_assumption_sign") {
+				/*} else if(svar == "default_assumption_sign") {
 					if(v >= ASSUMPTION_SIGN_UNKNOWN && v <= ASSUMPTION_SIGN_NONZERO) {
 						CALCULATOR->defaultAssumptions()->setSign((AssumptionSign) v);
-					}
+					}*/
 				}
 			}
 		}

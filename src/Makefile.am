@@ -51,10 +51,10 @@ gnome-search-provider2.h gnome-search-provider2.c: $(top_srcdir)/data/org.gnome.
 		$<
 
 qalculate_search_provider_SOURCES = \
-	searchprovider.cc	\
+	gnome-search-provider2.h \
+	gnome-search-provider2.c \
+	searchprovider.cc \
 	support.h
-
-nodist_qalculate_search_provider_SOURCES = gnome-search-provider2.h gnome-search-provider2.c
 
 qalculate_search_provider_LDADD = \
 	@GLIB_LIBS@ \

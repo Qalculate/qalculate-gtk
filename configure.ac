@@ -6,7 +6,7 @@ dnl  ----------------------
 dnl | initialize autotools |---------------------------------------------------
 dnl  ----------------------
 
-AC_INIT([Qalculate! (GTK+ UI)], [3.9.2],[],[qalculate-gtk])
+AC_INIT([Qalculate! (GTK+ UI)], [3.10.0],[],[qalculate-gtk])
 AC_CONFIG_SRCDIR([src/callbacks.cc])
 AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4])
@@ -49,25 +49,25 @@ fi
 dnl Use -Wall if we have gcc.
 changequote(,)dnl
 if test "x$GCC" = "xyes"; then
-  case " $CFLAGS " in
-    *[\ \	]-Wall[\ \	]*) ;;
-    *) CFLAGS="$CFLAGS -Wall" ;;
-  esac
+	case " $CFLAGS " in
+		*[\ \	]-Wall[\ \	]*) ;;
+		*) CFLAGS="$CFLAGS -Wall" ;;
+	esac
 fi
 changequote([,])dnl
 
 AC_CANONICAL_HOST
 
 case "${host_os}" in
-    linux*)
-        build_linux=yes
-        ;;
-    cygwin*|mingw*)
-        build_windows=yes
-        ;;
-    darwin*)
-        build_mac=yes
-        ;;
+	linux*)
+		build_linux=yes
+		;;
+	mingw*)
+		build_windows=yes
+		;;
+	darwin*)
+		build_mac=yes
+		;;
 esac
 
 AM_CONDITIONAL(PLATFORM_LINUX, test "$build_linux" = "yes")
@@ -94,7 +94,7 @@ AC_SUBST(GLIB_LIBS)
 QALCULATE_GTK="qalculate-gtk${EXEEXT}"
 
 PKG_CHECK_MODULES(GTK, [
-	gtk+-3.0 >= 3.12
+	gtk+-3.0 >= 3.10
 	gdk-pixbuf-2.0
 	])
 AC_SUBST(GTK_CFLAGS)
@@ -110,11 +110,17 @@ AS_IF([test "x$with_webkitgtk" = "xyes"], [
 	AC_SUBST(WEBKITGTK_LIBS)
 ])
 
-if test "$build_linux" != "yes"; then
-	enable_gnome_search=no;
-fi
 AC_ARG_ENABLE([gnome_search], AS_HELP_STRING([--disable-gnome-search], [disable Gnome shell search provider]))
+if test -z $enable_gnome_search && (test "$build_windows" = "yes" || test "$build_mac" = "yes"); then
+	enable_gnome_search=no
+fi
 AM_CONDITIONAL(ENABLE_SEARCH_PROVIDER, [test "x$enable_gnome_search" != "xno"])
+
+AC_ARG_ENABLE([local_help], AS_HELP_STRING([--disable-local-help], [use online manual instead of local help files]))
+AS_IF([test "x$enable_local_help" != "xno"], [
+	AC_DEFINE([LOCAL_HELP], [1], [Use local help files])
+])
+AM_CONDITIONAL(ENABLE_LOCAL_HELP, [test "x$enable_local_help" != "xno"])
 
 PKG_CHECK_MODULES(QALCULATE, [
 	libqalculate >= 3.8.0
@@ -139,39 +145,35 @@ AM_GLIB_GNU_GETTEXT
 dnl AM_GLIB_GNU_GETTEXT sets $DATADIRNAME
 AC_MSG_CHECKING(locale directory)
 if test "x$prefix" = "xNONE"; then
-  PACKAGE_LOCALE_DIR=$ac_default_prefix/share/locale
+	PACKAGE_LOCALE_DIR=$ac_default_prefix/share/locale
 else
-  PACKAGE_LOCALE_DIR=$prefix/share/locale
+	PACKAGE_LOCALE_DIR=$prefix/share/locale
 fi
 
 AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "$PACKAGE_LOCALE_DIR",
 	[The directory in which qalculate's locale data will be stored])
-	 AC_MSG_RESULT("$PACKAGE_LOCALE_DIR")
+	AC_MSG_RESULT("$PACKAGE_LOCALE_DIR")
 
-
-	 
-INTLTOOL_QALCULATE_DEFINITIONS_RULE='%.xml:       %.xml.in       $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po-defs/*.po) ; LC_ALL=C $(INTLTOOL_MERGE) -x -u -c $(top_builddir)/po-defs/.intltool-merge-cache $(top_srcdir)/po-defs $< [$]@' 
-AC_SUBST(INTLTOOL_QALCULATE_DEFINITIONS_RULE)	 
 
 dnl  --------
 dnl | output |-----------------------------------------------------------------
 dnl  --------
 
 AC_OUTPUT([
-  Makefile
-  data/Makefile
-  data/icons/Makefile
-  data/icons/16x16/Makefile
-  data/icons/22x22/Makefile
-  data/icons/24x24/Makefile
-  data/icons/32x32/Makefile
-  data/icons/48x48/Makefile
-  data/icons/64x64/Makefile
-  data/icons/128x128/Makefile
-  data/icons/256x256/Makefile
-  data/icons/scalable/Makefile
-  doc/Makefile
-  src/Makefile
-  po/Makefile.in
+	Makefile
+	data/Makefile
+	data/icons/Makefile
+	data/icons/16x16/Makefile
+	data/icons/22x22/Makefile
+	data/icons/24x24/Makefile
+	data/icons/32x32/Makefile
+	data/icons/48x48/Makefile
+	data/icons/64x64/Makefile
+	data/icons/128x128/Makefile
+	data/icons/256x256/Makefile
+	data/icons/scalable/Makefile
+	doc/Makefile
+	src/Makefile
+	po/Makefile.in
 ])
 

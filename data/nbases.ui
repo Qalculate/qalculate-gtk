@@ -47,13 +47,13 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox">
+          <object class="GtkBox" id="grid_nbases">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="border_width">6</property>
             <property name="spacing">18</property>
             <child>
-              <object class="GtkGrid">
+              <object class="GtkGrid" id="grid_values">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="row_spacing">6</property>
@@ -242,13 +242,13 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox">
+              <object class="GtkBox" id="box_keypad">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <child>
-                  <object class="GtkBox">
+                  <object class="GtkBox" id="box_base">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="homogeneous">True</property>
@@ -357,7 +357,7 @@
                     <property name="row_homogeneous">True</property>
                     <property name="column_homogeneous">True</property>
                     <child>
-                      <object class="GtkGrid">
+                      <object class="GtkGrid" id="grid_buttons">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="row_spacing">2</property>
@@ -898,7 +898,7 @@
                         <property name="use_underline">True</property>
                         <signal name="clicked" handler="on_nbases_button_del_clicked" swapped="no"/>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkLabel" id="label_del">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="label" translatable="yes">DEL</property>
@@ -920,7 +920,7 @@
                         <property name="use_underline">True</property>
                         <signal name="clicked" handler="on_nbases_button_ac_clicked" swapped="no"/>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkLabel" id="label_ac">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="label" translatable="yes">AC</property>
@@ -942,7 +942,7 @@
                         <property name="use_underline">True</property>
                         <signal name="clicked" handler="on_nbases_button_left_shift_clicked" swapped="no"/>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkLabel" id="label_left_shift">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="label">&lt;&lt;</property>
@@ -964,7 +964,7 @@
                         <property name="use_underline">True</property>
                         <signal name="clicked" handler="on_nbases_button_right_shift_clicked" swapped="no"/>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkLabel" id="label_right_shift">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="label">&gt;&gt;</property>

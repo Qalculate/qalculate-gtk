@@ -758,7 +758,7 @@
                         <property name="can_focus">True</property>
                         <property name="tooltip_text" translatable="yes">Definition of the properties of this data set</property>
                         <child internal-child="selection">
-                          <object class="GtkTreeSelection"/>
+                          <object class="GtkTreeSelection" id="properties_selection"/>
                         </child>
                       </object>
                     </child>

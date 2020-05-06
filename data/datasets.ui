@@ -172,15 +172,15 @@
       <placeholder/>
     </child>
     <child internal-child="vbox">
-      <object class="GtkBox">
+      <object class="GtkBox" id="vbox101">
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child internal-child="action_area">
-          <object class="GtkButtonBox">
+          <object class="GtkButtonBox" id="box_102">
             <property name="can_focus">False</property>
             <property name="layout_style">end</property>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="button_close">
                 <property name="label" translatable="yes">_Close</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -247,7 +247,7 @@
                             <property name="can_focus">True</property>
                             <property name="headers_visible">False</property>
                             <child internal-child="selection">
-                              <object class="GtkTreeSelection"/>
+                              <object class="GtkTreeSelection" id="datasets_selection"/>
                             </child>
                           </object>
                         </child>
@@ -376,7 +376,7 @@
                             <property name="can_focus">True</property>
                             <property name="headers_visible">False</property>
                             <child internal-child="selection">
-                              <object class="GtkTreeSelection"/>
+                              <object class="GtkTreeSelection" id="objects_selection"/>
                             </child>
                           </object>
                         </child>
@@ -488,7 +488,7 @@
                 <property name="position">250</property>
                 <property name="position_set">True</property>
                 <child>
-                  <object class="GtkGrid">
+                  <object class="GtkGrid" id="grid101">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="margin_left">6</property>
@@ -539,7 +539,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkGrid">
+                  <object class="GtkGrid" id="grid102">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="margin_left">6</property>
