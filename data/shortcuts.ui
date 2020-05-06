@@ -161,7 +161,9 @@
     <property name="can_focus">False</property>
     <property name="border_width">6</property>
     <property name="title" translatable="yes">New Keyboard Shortcut</property>
+    <property name="modal">True</property>
     <property name="type_hint">dialog</property>
+    <property name="transient_for">shortcuts_dialog</property>
     <child type="titlebar">
       <placeholder/>
     </child>

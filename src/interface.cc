@@ -1057,6 +1057,11 @@ void create_main_window(void) {
 	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_up_image")), 12);
 	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_left_image")), 12);
 	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_right_image")), 12);
+#else
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_down_image")), 14);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_up_image")), 14);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_left_image")), 14);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_right_image")), 14);
 #endif
 
 	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_sin")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_sin")));
@@ -2047,7 +2052,7 @@ GtkWidget* get_preferences_dialog(void) {
 		}
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
 #	ifdef _WIN32
-		if(use_dark_theme >= 0) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_digit_grouping_none")), use_dark_theme);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_dark_theme")), use_dark_theme > 0);
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_dark_theme")));
 #	endif
 #endif

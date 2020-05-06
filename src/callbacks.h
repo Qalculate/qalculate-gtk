@@ -303,7 +303,7 @@ bool edit_argument(Argument *arg = NULL);
 void edit_unknown(const char *category = "", Variable *v = NULL, GtkWidget *win = NULL);
 void edit_variable(const char *category = "", Variable *v = NULL, MathStructure *mstruct_ = NULL, GtkWidget *win = NULL);
 void edit_matrix(const char *category = "", Variable *v = NULL, MathStructure *mstruct_ = NULL, GtkWidget *win = NULL, gboolean create_vector = FALSE);
-void insert_matrix(const MathStructure *initial_value = NULL, GtkWidget *win = NULL, gboolean create_vector = FALSE, bool is_text_struct = false, bool is_result = false);
+void insert_matrix(const MathStructure *initial_value = NULL, GtkWidget *win = NULL, gboolean create_vector = FALSE, bool is_text_struct = false, bool is_result = false, GtkEntry *entry = NULL);
 void import_csv_file(GtkWidget *win = NULL);
 void export_csv_file(KnownVariable *v = NULL, GtkWidget *win = NULL);
 
@@ -785,6 +785,8 @@ void on_csv_export_radiobutton_matrix_toggled(GtkToggleButton *w, gpointer user_
 
 void on_type_label_date_clicked(GtkButton *w, gpointer user_data);
 void on_type_label_file_clicked(GtkButton *w, gpointer user_data);
+void on_type_label_vector_clicked(GtkButton *w, gpointer user_data);
+void on_type_label_matrix_clicked(GtkButton *w, gpointer user_data);
 
 void on_functions_button_deactivate_clicked(GtkButton *w, gpointer user_data);
 void on_variables_button_deactivate_clicked(GtkButton *w, gpointer user_data);

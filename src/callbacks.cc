@@ -11490,6 +11490,13 @@ void insert_function_do(MathFunction *f, FunctionDialog *fd) {
 			} else {
 				str2 = "0";
 			}
+		} else if(i != argcount - 1 && f->getArgumentDefinition(i + 1) && f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_VECTOR) {
+			str2 = gtk_entry_get_text(GTK_ENTRY(fd->entry[i]));
+			remove_blank_ends(str2);
+			if(str2.length() < 2 || ((str2[0] != '(' || str2[str2.length() - 1] != ')') && (str2[0] != '[' || str2[str2.length() - 1] != ']'))) {
+				str2.insert(0, 1, '[');
+				str2 += ']';
+			}
 		} else if(evalops.parse_options.base != BASE_DECIMAL && f->getArgumentDefinition(i + 1) && f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_INTEGER) {
 			Number nr(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(fd->entry[i])), 1);
 			str2 = print_with_evalops(nr);
@@ -11903,6 +11910,11 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 			typestr = typestr.substr(1, typestr.length() - 2);
 			fd->type_label[i] = gtk_button_new_with_label(typestr.c_str());
 			g_signal_connect((gpointer) fd->type_label[i], "clicked", G_CALLBACK(on_type_label_file_clicked), (gpointer) fd->entry[i]);
+		} else if(arg && (arg->type() == ARGUMENT_TYPE_VECTOR || arg->type() == ARGUMENT_TYPE_MATRIX)) {
+			typestr = typestr.substr(1, typestr.length() - 2);
+			fd->type_label[i] = gtk_button_new_with_label(typestr.c_str());
+			if(arg->type() == ARGUMENT_TYPE_VECTOR) g_signal_connect((gpointer) fd->type_label[i], "clicked", G_CALLBACK(on_type_label_vector_clicked), (gpointer) fd->entry[i]);
+			else g_signal_connect((gpointer) fd->type_label[i], "clicked", G_CALLBACK(on_type_label_matrix_clicked), (gpointer) fd->entry[i]);
 		} else if(!typestr.empty()) {
 			fd->type_label[i] = gtk_label_new(typestr.c_str());
 		} else {
@@ -13599,7 +13611,7 @@ run_matrix_edit_dialog:
 	gtk_widget_hide(dialog);
 }
 
-void insert_matrix(const MathStructure *initial_value, GtkWidget *win, gboolean create_vector, bool is_text_struct, bool is_result) {
+void insert_matrix(const MathStructure *initial_value, GtkWidget *win, gboolean create_vector, bool is_text_struct, bool is_result, GtkEntry *entry) {
 
 	GtkWidget *dialog = get_matrix_dialog();
 	if(win) gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(win));
@@ -13609,7 +13621,7 @@ void insert_matrix(const MathStructure *initial_value, GtkWidget *win, gboolean 
 	}
 
 	GtkTextIter istart, iend;
-	gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
+	if(!entry) gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
 
 	if(initial_value) {
 		create_vector = !initial_value->isMatrix();
@@ -13761,8 +13773,12 @@ void insert_matrix(const MathStructure *initial_value, GtkWidget *win, gboolean 
 			}
 			matrixstr += "]";
 		}
-		gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
-		insert_text(matrixstr.c_str());
+		if(entry) {
+			gtk_entry_set_text(entry, matrixstr.c_str());
+		} else {
+			gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
+			insert_text(matrixstr.c_str());
+		}
 	}
 	gtk_widget_hide(dialog);
 }
@@ -28489,6 +28505,36 @@ void on_type_label_date_clicked(GtkButton *w, gpointer user_data) {
 		g_free(gstr);
 	}
 	gtk_widget_destroy(d);
+}
+void on_type_label_vector_clicked(GtkButton *w, gpointer user_data) {
+	MathStructure mstruct;
+	GtkEntry *entry = GTK_ENTRY(user_data);
+	string str = gtk_entry_get_text(entry);
+	remove_blank_ends(str);
+	if(!str.empty()) {
+		if(str[0] != '(' && str[0] != '[') {
+			str.insert(0, 1, '[');
+			str += ']';
+		}
+		cout << str << endl;
+		CALCULATOR->beginTemporaryStopMessages();
+		CALCULATOR->parse(&mstruct, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), evalops.parse_options);
+		CALCULATOR->endTemporaryStopMessages();
+	}
+	insert_matrix(str.empty() ? NULL : &mstruct, gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW), TRUE, false, false, entry);
+}
+void on_type_label_matrix_clicked(GtkButton *w, gpointer user_data) {
+	MathStructure mstruct;
+	GtkEntry *entry = GTK_ENTRY(user_data);
+	string str = gtk_entry_get_text(entry);
+	remove_blank_ends(str);
+	if(!str.empty()) {
+		CALCULATOR->beginTemporaryStopMessages();
+		CALCULATOR->parse(&mstruct, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), evalops.parse_options);
+		CALCULATOR->endTemporaryStopMessages();
+		if(!mstruct.isMatrix()) str = "";
+	}
+	insert_matrix(str.empty() ? NULL : &mstruct, gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW), FALSE, false, false, entry);
 }
 void on_type_label_file_clicked(GtkButton*, gpointer user_data) {
 	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file to import"), GTK_WINDOW(gtk_builder_get_object(csvimport_builder, "csv_import_dialog")), GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT, NULL);

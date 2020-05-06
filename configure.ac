@@ -102,7 +102,7 @@ AC_SUBST(GTK_LIBS)
 
 GTK_LIBS="-export-dynamic $GTK_LIBS"
 
-AC_ARG_WITH([webkitgtk], AS_HELP_STRING([--with-webkitgtk], [use WebKitGTK for display of the user manual]), [with_webkitgtk=yes], [with_webkitgtk=no])
+AC_ARG_WITH([webkitgtk], AS_HELP_STRING([--with-webkitgtk], [use WebKitGTK for display of the user manual]))
 AS_IF([test "x$with_webkitgtk" = "xyes"], [
 	PKG_CHECK_MODULES([WEBKITGTK], [webkit2gtk-4.0])
 	AC_DEFINE([USE_WEBKITGTK], [1], [Use WebKitGTK])
@@ -116,11 +116,11 @@ if test -z $enable_gnome_search && (test "$build_windows" = "yes" || test "$buil
 fi
 AM_CONDITIONAL(ENABLE_SEARCH_PROVIDER, [test "x$enable_gnome_search" != "xno"])
 
-AC_ARG_ENABLE([local_help], AS_HELP_STRING([--disable-local-help], [use online manual instead of local help files]))
-AS_IF([test "x$enable_local_help" != "xno"], [
+AC_ARG_WITH([local_help], AS_HELP_STRING([--without-local-help], [use online manual instead of local help files]))
+AS_IF([test "x$with_local_help" != "xno"], [
 	AC_DEFINE([LOCAL_HELP], [1], [Use local help files])
 ])
-AM_CONDITIONAL(ENABLE_LOCAL_HELP, [test "x$enable_local_help" != "xno"])
+AM_CONDITIONAL(ENABLE_LOCAL_HELP, [test "x$with_local_help" != "xno"])
 
 PKG_CHECK_MODULES(QALCULATE, [
 	libqalculate >= 3.8.0
