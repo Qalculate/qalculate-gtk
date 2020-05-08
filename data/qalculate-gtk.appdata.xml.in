@@ -48,6 +48,30 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="3.10.0" date="2020-05-11">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Support for comments in expressions, using # (number sign)</li>
+      <li>Gnome shell search provider</li>
+      <li>History search (GUI)</li>
+      <li>Configurable number of lines in expression entry (GUI)</li>
+      <li>Add angle unit selection to sin, cos, and tan button menus and an new status popup menu, and make it possible to set keyboard shortcut for angle units (GUI)</li>
+      <li>Improved keyboard shortcuts dialog (GUI)</li>
+      <li>New parentheses and other improvements in display of result (GUI)</li>
+      <li>Improved handling of vectors and matrices in insert function dialog (GUI)</li>
+      <li>Configurable time limit for plot (GUI)</li>
+      <li>Ellipsize long variable values used as title in completion popup (fixes segfault, GUI)</li>
+      <li>Tau (2pi) constant</li>
+      <li>Allow angle as argument in nextlunarphase()</li>
+      <li>Fix automatic conversion to Newton</li>
+      <li>Fix x^2=25m^2 when x is assumed positive (was evaluated as false), and similar in exact mode</li>
+      <li>Fix display of repeating decimals</li>
+      <li>Fix segfault with empty sin() or sinh() in equation</li>
+      <li>Minor bug fixes and feature improvements</li>
+     </ul>
+   </description>
+  </release>
   <release version="3.9.0" date="2020-04-13">
    <description>
     <p>Changes:</p>

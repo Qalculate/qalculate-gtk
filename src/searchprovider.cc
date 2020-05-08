@@ -269,7 +269,7 @@ static void qalculate_search_application_class_init(QalculateSearchApplicationCl
 static void qalculate_search_application_init(QalculateSearchApplication *self) {}
 
 static GtkApplication *qalculate_search_application_new(void) {
-	return GTK_APPLICATION(g_object_new(qalculate_search_application_get_type(), "application-id", "org.github.Qalculate.SearchProvider", "flags", G_APPLICATION_IS_SERVICE, "inactivity-timeout", 20000, NULL));
+	return GTK_APPLICATION(g_object_new(qalculate_search_application_get_type(), "application-id", "io.github.Qalculate.SearchProvider", "flags", G_APPLICATION_IS_SERVICE, "inactivity-timeout", 20000, NULL));
 }
 
 static gboolean qalculate_search_application_dbus_register(GApplication *application, GDBusConnection *connection, const gchar *object_path, GError **error) {

@@ -11,12 +11,11 @@ AM_CPPFLAGS = \
 	@QALCULATE_CFLAGS@
 
 if ENABLE_SEARCH_PROVIDER
-bin_PROGRAMS = @QALCULATE_GTK@ qalculate-search-provider
-EXTRA_PROGRAMS = qalculate-gtk qalculate-search-provider
-else
+searchproviderdir=@libdir@
+searchprovider_PROGRAMS = qalculate-search-provider
+endif
 bin_PROGRAMS = @QALCULATE_GTK@
 EXTRA_PROGRAMS = qalculate-gtk
-endif
 
 if PLATFORM_WIN32
 qalculate_gtk_LDFLAGS = -mwindows
@@ -62,12 +61,12 @@ qalculate_search_provider_LDADD = \
 	@QALCULATE_LIBS@
 
 dbusservicedir = $(datadir)/dbus-1/services
-dbusservice_DATA = org.github.Qalculate.SearchProvider.service
+dbusservice_DATA = io.github.Qalculate.SearchProvider.service
 
-org.github.Qalculate.SearchProvider.service: Makefile
+io.github.Qalculate.SearchProvider.service: Makefile
 	$(AM_V_GEN) (echo '[D-BUS Service]'; \
-		echo 'Name=org.github.Qalculate.SearchProvider'; \
-		echo 'Exec=${bindir}/qalculate-search-provider') > $@.tmp && \
+		echo 'Name=io.github.Qalculate.SearchProvider'; \
+		echo 'Exec=@libdir@/qalculate-search-provider') > $@.tmp && \
 		mv $@.tmp $@
 
 endif

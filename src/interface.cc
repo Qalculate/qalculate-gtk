@@ -1096,11 +1096,13 @@ void create_main_window(void) {
 
 	expression_undo_buffer.push_back("");
 
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
 	gtk_text_view_set_left_margin(GTK_TEXT_VIEW(expressiontext), 6);
 	gtk_text_view_set_right_margin(GTK_TEXT_VIEW(expressiontext), 6);
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
 	gtk_text_view_set_top_margin(GTK_TEXT_VIEW(expressiontext), 6);
 	gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(expressiontext), 6);
+#else
+	gtk_text_view_set_pixels_above_lines(GTK_TEXT_VIEW(expressiontext), 6);
 #endif
 
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION > 22 || (GTK_MINOR_VERSION == 22 && GTK_MICRO_VERSION >= 20)
@@ -2810,11 +2812,13 @@ GtkWidget* get_percentage_dialog(void) {
 		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_6")), 1.0);
 		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_7")), 1.0);
 
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
 		gtk_text_view_set_left_margin(GTK_TEXT_VIEW(gtk_builder_get_object(percentage_builder, "percentage_description")), 12);
 		gtk_text_view_set_right_margin(GTK_TEXT_VIEW(gtk_builder_get_object(percentage_builder, "percentage_description")), 12);
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
 		gtk_text_view_set_top_margin(GTK_TEXT_VIEW(gtk_builder_get_object(percentage_builder, "percentage_description")), 12);
 		gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(gtk_builder_get_object(percentage_builder, "percentage_description")), 12);
+#else
+		gtk_text_view_set_pixels_above_lines(GTK_TEXT_VIEW(gtk_builder_get_object(percentage_builder, "percentage_description")), 12);
 #endif
 
 		gtk_builder_connect_signals(percentage_builder, NULL);
@@ -3207,6 +3211,8 @@ GtkWidget* get_floatingpoint_dialog(void) {
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
 		gtk_text_view_set_top_margin(GTK_TEXT_VIEW(gtk_builder_get_object(floatingpoint_builder, "fp_textedit_bin")), 6);
 		gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(gtk_builder_get_object(floatingpoint_builder, "fp_textedit_bin")), 6);
+#else
+		gtk_text_view_set_pixels_above_lines(GTK_TEXT_VIEW(gtk_builder_get_object(floatingpoint_builder, "fp_textedit_bin")), 6);
 #endif
 
 		gtk_builder_connect_signals(floatingpoint_builder, NULL);

@@ -2589,7 +2589,9 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			if(CALCULATOR->aborted()) mauto.setAborted();
 			CALCULATOR->stopControl();
 		} else if(do_conv && parsed_tostruct->containsType(STRUCT_UNIT, true) && !mauto.containsType(STRUCT_UNIT, false, true, true) && !parsed_mstruct->containsType(STRUCT_UNIT, false, true, true)) {
-			MathStructure to_struct(CALCULATOR->convertToBaseUnits(*parsed_tostruct));
+			MathStructure to_struct(*parsed_tostruct);
+			to_struct.unformat();
+			to_struct = CALCULATOR->convertToOptimalUnit(to_struct, evalops, true);
 			fix_to_struct_gtk(to_struct);
 			if(!to_struct.isZero()) {
 				mauto.multiply(to_struct);
@@ -3112,7 +3114,9 @@ void display_parse_status() {
 					mparse.format(po);
 					if(!mparse.isZero() && !b_unit && !str_e.empty() && str_w.empty()) {
 						CALCULATOR->beginTemporaryStopMessages();
-						MathStructure to_struct(CALCULATOR->convertToBaseUnits(mparse));
+						MathStructure to_struct(mparse);
+						to_struct.unformat();
+						to_struct = CALCULATOR->convertToOptimalUnit(to_struct, evalops, true);
 						fix_to_struct_gtk(to_struct);
 						if(!to_struct.isZero()) {
 							MathStructure mparse2;
@@ -7910,6 +7914,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				cr = cairo_create(surface);
 
 				if(ips.depth > 0) w = ips.power_depth > 0 ? 2 : 3;
+				else w = 0;
 				cairo_set_source_surface(cr, get_left_parenthesis(arc_w, arc_h, scaledown, color), w, (h - arc_h) / 2);
 				cairo_paint(cr);
 				w += arc_w;
@@ -10922,16 +10927,17 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		CALCULATOR->calculate(mstruct, CALCULATOR->unlocalizeExpression(execute_str.empty() ? str : execute_str, evalops.parse_options), 0, evalops, parsed_mstruct, parsed_tostruct);
 		result_autocalculated = false;
 	}
+	
+	bool title_set = false, was_busy = false;
 
+	do_progress:
 	int i = 0;
 	while(CALCULATOR->busy() && i < 50) {
 		sleep_ms(10);
 		i++;
 	}
 	i = 0;
-	//GtkWidget *dialog = NULL;
-	bool title_set = false, was_busy = false;
-	//bool progress_set = FALSE;
+
 	if(CALCULATOR->busy()) {
 		if(update_window_title(_("Calculating…"))) title_set = true;
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), FALSE);
@@ -10950,7 +10956,9 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		sleep_ms(100);
 	}
 	if(!do_mathoperation && do_conv && parsed_tostruct->containsType(STRUCT_UNIT, true) && !mstruct->containsType(STRUCT_UNIT) && !parsed_mstruct->containsType(STRUCT_UNIT, false, true, true)) {
-		MathStructure to_struct(CALCULATOR->convertToBaseUnits(*parsed_tostruct));
+		MathStructure to_struct(*parsed_tostruct);
+		to_struct.unformat();
+		to_struct = CALCULATOR->convertToOptimalUnit(to_struct, evalops, true);
 		fix_to_struct_gtk(to_struct);
 		if(!to_struct.isZero()) {
 			mstruct->multiply(to_struct);
@@ -10961,10 +10969,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			}
 			parsed_mstruct->multiply(to_struct);
 			CALCULATOR->calculate(mstruct, 0, evalops, CALCULATOR->unlocalizeExpression(to_str, evalops.parse_options));
-			while(CALCULATOR->busy()) {
-				while(gtk_events_pending()) gtk_main_iteration();
-				sleep_ms(100);
-			}
+			do_conv = false;
+			goto do_progress;
 		}
 	}
 	update_expression_icons();
@@ -12011,6 +12017,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 #else
 		gtk_text_view_set_left_margin(GTK_TEXT_VIEW(descr), 6);
 		gtk_text_view_set_right_margin(GTK_TEXT_VIEW(descr), 6);
+		gtk_text_view_set_pixels_above_lines(GTK_TEXT_VIEW(descr), 6);
 #endif
 		gtk_widget_show_all(vbox_pre);
 		gint nw, mw, nh, mh;
