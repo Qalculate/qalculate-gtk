@@ -27342,6 +27342,9 @@ void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
 }
 
 void on_menu_item_reportbug_activate(GtkMenuItem*, gpointer) {
+#ifdef _WIN32
+	ShellExecuteA(NULL, "open", "https://github.com/Qalculate/qalculate-gtk/issues", NULL, NULL, SW_SHOWNORMAL);
+#else
 	GError *error = NULL;
 #	if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 	gtk_show_uri_on_window(GTK_WINDOW(mainwindow), "https://github.com/Qalculate/qalculate-gtk/issues", gtk_get_current_event_time(), &error);
@@ -27356,6 +27359,7 @@ void on_menu_item_reportbug_activate(GtkMenuItem*, gpointer) {
 		g_free(error_str);
 		g_error_free(error);
 	}
+#endif
 }
 
 void on_menu_item_help_activate(GtkMenuItem*, gpointer) {
