@@ -2431,6 +2431,15 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                       </object>
                     </child>
                     <child>
+                      <object class="GtkMenuItem" id="menu_item_check_updates">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Check for Updates</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menu_item_check_updates_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkMenuItem" id="menu_item_about">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>

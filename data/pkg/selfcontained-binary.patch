@@ -2,6 +2,15 @@ diff --git a/src/callbacks.cc b/src/callbacks.cc
 index f61afc2..d4a3155 100644
 --- a/src/callbacks.cc
 +++ b/src/callbacks.cc
+@@ -2050,6 +2050,8 @@ gboolean on_activate_link(GtkLabel*, gchar *uri, gpointer) {
+ #endif
+ }
+ 
++#define AUTO_UPDATE 1
++
+ #ifdef AUTO_UPDATE
+ void auto_update(string new_version) {
+ 	char selfpath[1000];
 @@ -15923,11 +15923,7 @@ void load_preferences() {
  	evalops.interval_calculation = INTERVAL_CALCULATION_VARIANCE_FORMULA;
  	b_decimal_comma = -1;
@@ -90,3 +99,17 @@ index c2f44a3..9bf143b 100644
  
  qalculate_gtk_LDADD = \
  	@GLIB_LIBS@ \
+diff --git a/data/main.ui b/data/main.ui
+index 7ee1a93..91bc067 100644
+--- a/data/main.ui
++++ b/data/main.ui
+@@ -3630,7 +3630,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
+                                       <object class="GtkImage" id="image_swap">
+                                         <property name="visible">True</property>
+                                         <property name="can_focus">False</property>
+-                                        <property name="icon_name">rpn-swap-symbolic</property>
++                                        <property name="icon_name">object-flip-vertical-symbolic</property>
+                                       </object>
+                                     </child>
+                                   </object>
+

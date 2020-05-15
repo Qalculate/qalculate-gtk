@@ -2050,31 +2050,147 @@ gboolean on_activate_link(GtkLabel*, gchar *uri, gpointer) {
 #endif
 }
 
-gboolean on_check_version_idle(gpointer) {
+#ifdef AUTO_UPDATE
+void auto_update(string new_version) {
+	char selfpath[1000];
+	ssize_t n = readlink("/proc/self/exe", selfpath, 999);
+	if(n < 0 || n >= 999) {
+		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Path of executable not found."));
+		gtk_dialog_run(GTK_DIALOG(dialog));
+		gtk_widget_destroy(dialog);
+		return;
+	}
+	selfpath[n] = '\0';
+	gchar *selfdir = g_path_get_dirname(selfpath);
+	FILE *pipe = popen("curl --version 2>/dev/null", "w");
+	if(!pipe) {
+		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("curl not found."));
+		gtk_dialog_run(GTK_DIALOG(dialog));
+		gtk_widget_destroy(dialog);
+		return;
+	}
+	pclose(pipe);
+	string tmpdir = getLocalTmpDir();
+	recursiveMakeDir(tmpdir);
+	string script = "#!/bin/sh\n\n";
+	script += "echo \"Updating Qalculate!...\";\n";
+	script += "sleep 1;\n";
+	script += "if `cd \""; script += tmpdir; script += "\"`; then\n";
+	script += "\tif `curl -L -o \"qalculate-$1-x86_64.tar.xz\" https://github.com/Qalculate/qalculate-gtk/releases/download/v$1/qalculate-$1-x86_64.tar.xz`; then\n";
+	script += "\t\techo \"Extracting files...\";\n";
+	script += "\t\tif `tar -xJf qalculate-$1-x86_64.tar.xz`; then\n";
+	script += "\t\t\tcd  qalculate-$1;\n";
+	script += "\t\t\tif `cp -f qalculate-gtk \""; script += selfpath; script += "\"`; then\n";
+	script += "\t\t\t\tcp -f qalc \""; script += selfdir; script += "/\";\n";
+	script += "\t\t\t\tcd ..;\n\t\t\trm -r qalculate-$1;\n\t\t\trm qalculate-$1-x86_64.tar.xz;\n";
+	script += "\t\t\t\texit 0;\n";
+	script += "\t\t\tfi\n";
+	script += "\t\t\tcd ..;\n\t\trm -r qalculate-$1;\n";
+	script += "\t\tfi\n";
+	script += "\t\trm qalculate-$1-x86_64.tar.xz;\n";
+	script += "\tfi\n";
+	script += "fi\n";
+	script += "echo \"Update failed\";\n";
+	script += "echo \"Press any key to continue\";\n";
+	script += "read _;\n";
+	script += "exit 1\n";
+	g_free(selfdir);
+	std::ofstream ofs;
+	string scriptpath = tmpdir; scriptpath += "/update.sh";
+	ofs.open(scriptpath.c_str(), std::ofstream::out | std::ofstream::trunc);
+	ofs << script;
+	ofs.close();
+	chmod(scriptpath.c_str(), S_IRWXU);
+	string termcom;
+	pipe = popen("gnome-terminal --version 2>/dev/null", "w");
+	if(pipe) {
+		termcom = "gnome-terminal --disable-factory -- ";
+		pclose(pipe);
+	} else {
+		pipe = popen("konsole -v 2>/dev/null", "w");
+		if(pipe) {
+			termcom = "konsole -e ";
+			pclose(pipe);
+		} else {
+			pipe = popen("xterm -version 2>/dev/null", "w");
+			if(pipe) {
+				termcom = "xterm -e ";
+				pclose(pipe);
+			}
+		}
+	}
+	termcom += scriptpath; termcom += " "; termcom += new_version; termcom += ";\n";
+	termcom += "exec "; termcom += selfpath; termcom += "\n";
+	std::ofstream ofs2;
+	string scriptpath2 = tmpdir; scriptpath2 += "/terminal.sh";
+	ofs2.open(scriptpath2.c_str(), std::ofstream::out | std::ofstream::trunc);
+	ofs2 << termcom;
+	ofs2.close();
+	chmod(scriptpath2.c_str(), S_IRWXU);
+	GError *error = NULL;
+	g_spawn_command_line_async(scriptpath2.c_str(), &error);
+	if(error) {
+		gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
+		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Failed to run update script.\n%s"), error_str);
+		gtk_dialog_run(GTK_DIALOG(dialog));
+		gtk_widget_destroy(dialog);
+		g_free(error_str);
+		g_error_free(error);
+		return;
+	}
+	on_gcalc_exit(NULL, NULL, NULL);
+}
+#endif
+
+void check_for_new_version(bool do_not_show_again) {
 	string new_version;
 #ifdef _WIN32
-	int ret = checkAvailableVersion("windows", VERSION, &new_version, 5);
+	int ret = checkAvailableVersion("windows", VERSION, &new_version, do_not_show_again ? 5 : 10);
 #else
-	int ret = checkAvailableVersion("qalculate-gtk", VERSION, &new_version, 5);
+	int ret = checkAvailableVersion("qalculate-gtk", VERSION, &new_version, do_not_show_again ? 5 : 10);
 #endif
-	if(ret > 0 && new_version != last_found_version) {
+	if(!do_not_show_again && ret <= 0) {
+		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), (GtkDialogFlags) 0, ret < 0 ? GTK_MESSAGE_ERROR : GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, ret < 0 ? _("Failed to check for updates.") : _("No updates found."));
+		gtk_dialog_run(GTK_DIALOG(dialog));
+		gtk_widget_destroy(dialog);
+		if(ret < 0) return;
+	}
+	if(ret > 0 && (!do_not_show_again || new_version != last_found_version)) {
 		last_found_version = new_version;
+#ifdef AUTO_UPDATE
+		GtkWidget *dialog = gtk_dialog_new_with_buttons(NULL, GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_OK"), GTK_RESPONSE_ACCEPT, _("_Cancel"), GTK_RESPONSE_REJECT, NULL);
+#else
 		GtkWidget *dialog = gtk_dialog_new_with_buttons(NULL, GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Close"), GTK_RESPONSE_REJECT, NULL);
+#endif
 		gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 		GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
 		gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
 		gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox);
 		GtkWidget *label = gtk_label_new(NULL);
+#ifdef AUTO_UPDATE
+		gchar *gstr = g_strdup_printf(_("A new version of %s is available at %s.\n\nDo you wish to update to version %s."), "Qalculate!", "<a href=\"http://qalculate.github.io/downloads.html\">qalculate.github.io</a>", new_version.c_str());
+#else
 		gchar *gstr = g_strdup_printf(_("A new version of %s is available.\n\nYou can get version %s at %s."), "Qalculate!", new_version.c_str(), "<a href=\"http://qalculate.github.io/downloads.html\">qalculate.github.io</a>");
+#endif
 		gtk_label_set_markup(GTK_LABEL(label), gstr);
 		g_free(gstr);
 		gtk_container_add(GTK_CONTAINER(hbox), label);
 		g_signal_connect(G_OBJECT(label), "activate-link", G_CALLBACK(on_activate_link), NULL);
 		gtk_widget_show_all(dialog);
+#ifdef AUTO_UPDATE
+		if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
+			auto_update(new_version);
+		}
+#else
 		gtk_dialog_run(GTK_DIALOG(dialog));
+#endif
 		gtk_widget_destroy(dialog);
 	}
 	last_version_check_date.setToCurrentDate();
+}
+
+gboolean on_check_version_idle(gpointer) {
+	check_for_new_version(true);
 	return FALSE;
 }
 
@@ -27324,6 +27440,11 @@ gboolean on_about_activate_link(GtkAboutDialog*, gchar *uri, gpointer) {
 #endif
 }
 
+
+void on_menu_item_check_updates_activate(GtkMenuItem*, gpointer) {
+	check_for_new_version(false);
+}
+
 void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
 	const gchar *authors[] = {"Hanna Knutsson", NULL};
 	GtkWidget *dialog = gtk_about_dialog_new();
@@ -28549,7 +28670,6 @@ void on_type_label_vector_clicked(GtkButton *w, gpointer user_data) {
 			str.insert(0, 1, '[');
 			str += ']';
 		}
-		cout << str << endl;
 		CALCULATOR->beginTemporaryStopMessages();
 		CALCULATOR->parse(&mstruct, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), evalops.parse_options);
 		CALCULATOR->endTemporaryStopMessages();

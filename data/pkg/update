@@ -1,0 +1,55 @@
+#!/bin/sh
+
+echo "Checking for updates...";
+tmpdir=$HOME/.cache/qalculate;
+bindir=$PWD;
+if [ ! -w "$bindir/qalc" ]; then
+	bindir="$HOME/.local/bin";
+	if [ ! -w "$bindir/qalc" ]; then
+		bindir="$HOME/bin";
+		if [ ! -w "$bindir/qalc" ]; then
+			bindir=`which qalc`;
+			if [ -w "$bindir" ]; then
+				bindir=`dirname "$bindir"`;
+			else
+				bindir="";
+			fi
+		fi
+	fi
+fi
+if [ -z "$bindir" ]; then
+	echo "Writable Qalculate! binaries not found";
+	exit 1;
+fi
+oldversion=`"$bindir/qalc" -v`;
+mkdir -p $tmpdir;
+if `cd "$tmpdir"`; then
+	if `curl -L -o "CURRENT_VERSIONS" https://qalculate.github.io/CURRENT_VERSIONS`; then
+		version=`grep libqalculate CURRENT_VERSIONS`;
+		version=${version##*:}
+		rm CURRENT_VERSIONS;
+	fi
+fi
+if [ -z $version ] || [ $version = $oldversion ]; then
+	echo "No updates found";
+	exit 0;
+fi
+echo "Updating Qalculate!...";
+if `curl -L -o "qalculate-$version-x86_64.tar.xz" https://github.com/Qalculate/qalculate-gtk/releases/download/v$version/qalculate-$version-x86_64.tar.xz`; then
+	echo "Extracting files...";
+	if `tar -xJf qalculate-$version-x86_64.tar.xz`; then
+		cd  qalculate-$version;
+		if `cp -f qalc "$bindir/"`; then
+			cp -f qalculate-gtk "$bindir/";
+			cd ..;
+			rm -r qalculate-$version;
+			rm qalculate-$version-x86_64.tar.xz;
+			exit 0;
+		fi
+		cd ..;
+		rm -r qalculate-$version;
+	fi
+	rm qalculate-$version-x86_64.tar.xz;
+fi
+echo "Update failed";
+exit 1
