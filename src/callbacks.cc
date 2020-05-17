@@ -1383,25 +1383,34 @@ bool can_display_unicode_string_function_exact(const char *str, void *w) {
 	if(!w) w = (void*) historyview;
 	return get_least_coverage(str, (GtkWidget*) w) >= PANGO_COVERAGE_EXACT;
 }
+
 double par_width = 6.0;
+
 void set_result_size_request() {
-	MathStructure mtest, mtest2;
-	mtest.setType(STRUCT_DIVISION);
-	mtest.addChild(1);
-	mtest2.setType(STRUCT_POWER);
-	mtest2.addChild(1);
-	mtest2.addChild(1);
-	mtest.addChild(mtest2);
+	MathStructure mtest;
+	CALCULATOR->parse(&mtest, "[abs(ln(\\Ü^(\\Ü^\\Ü)/\\y^(\\Ü^\\Ü)))]");
 	mtest.format();
 	PrintOptions po;
 	po.can_display_unicode_string_function = &can_display_unicode_string_function;
 	po.can_display_unicode_string_arg = (void*) resultview;
-	cairo_surface_t *tmp_surface2 = draw_structure(mtest, po);
+	cairo_surface_t *tmp_surface2 = draw_structure(mtest, po, false, top_ips, NULL, 3);
 	if(tmp_surface2) {
 		cairo_surface_flush(tmp_surface2);
-		int h = cairo_image_surface_get_height(tmp_surface2) / gtk_widget_get_scale_factor(resultview);
-		h += 8;
+		gint h = cairo_image_surface_get_height(tmp_surface2) / gtk_widget_get_scale_factor(resultview);
+		gint sbh = 0;
+		gtk_widget_get_preferred_height(gtk_scrolled_window_get_hscrollbar(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "scrolled_result"))), NULL, &sbh);
+		h += sbh;
+		h += 3;
 		cairo_surface_destroy(tmp_surface2);
+		mtest.set(9);
+		mtest.transform(STRUCT_DIVISION, 9);
+		tmp_surface2 = draw_structure(mtest, po);
+		if(tmp_surface2) {
+			cairo_surface_flush(tmp_surface2);
+			gint h2 = cairo_image_surface_get_height(tmp_surface2) / gtk_widget_get_scale_factor(resultview) + 3;
+			if(h2 > h) h = h2;
+			cairo_surface_destroy(tmp_surface2);
+		}
 		gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), -1, h);
 	}
 	PangoLayout *layout_test = gtk_widget_create_pango_layout(resultview, "x");
