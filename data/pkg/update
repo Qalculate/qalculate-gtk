@@ -23,33 +23,33 @@ if [ -z "$bindir" ]; then
 fi
 oldversion=`"$bindir/qalc" -v`;
 mkdir -p $tmpdir;
-if `cd "$tmpdir"`; then
-	if `curl -L -o "CURRENT_VERSIONS" https://qalculate.github.io/CURRENT_VERSIONS`; then
-		version=`grep libqalculate CURRENT_VERSIONS`;
-		version=${version##*:}
+if cd "$tmpdir"; then
+	if curl -L -o "CURRENT_VERSIONS" https://qalculate.github.io/CURRENT_VERSIONS; then
+		newversion=`grep libqalculate CURRENT_VERSIONS`;
+		newversion=${newversion##*:}
 		rm CURRENT_VERSIONS;
 	fi
 fi
-if [ -z $version ] || [ $version = $oldversion ]; then
+if [ -z $newversion ] || [ $newversion = $oldversion ]; then
 	echo "No updates found";
 	exit 0;
 fi
 echo "Updating Qalculate!...";
-if `curl -L -o "qalculate-$version-x86_64.tar.xz" https://github.com/Qalculate/qalculate-gtk/releases/download/v$version/qalculate-$version-x86_64.tar.xz`; then
+if curl -L -o "qalculate-${newversion}-x86_64.tar.xz" https://github.com/Qalculate/qalculate-gtk/releases/download/v${newversion}/qalculate-${newversion}-x86_64.tar.xz; then
 	echo "Extracting files...";
-	if `tar -xJf qalculate-$version-x86_64.tar.xz`; then
-		cd  qalculate-$version;
-		if `cp -f qalc "$bindir/"`; then
-			cp -f qalculate-gtk "$bindir/";
+	if tar -xJf qalculate-${newversion}-x86_64.tar.xz; then
+		cd  qalculate-${newversion};
+		if cp -f qalc "$bindir/"; then
+			cp -f qalculate "$bindir/";
 			cd ..;
-			rm -r qalculate-$version;
-			rm qalculate-$version-x86_64.tar.xz;
+			rm -r qalculate-${newversion};
+			rm qalculate-${newversion}-x86_64.tar.xz;
 			exit 0;
 		fi
 		cd ..;
-		rm -r qalculate-$version;
+		rm -r qalculate-${newversion};
 	fi
-	rm qalculate-$version-x86_64.tar.xz;
+	rm qalculate-${newversion}-x86_64.tar.xz;
 fi
 echo "Update failed";
 exit 1

@@ -1508,6 +1508,7 @@ void create_main_window(void) {
 	gtk_tree_view_column_set_expand(history_column, TRUE);
 	GtkWidget *scrollbar = gtk_scrolled_window_get_vscrollbar(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "historyscrolled")));
 	if(scrollbar) gtk_widget_get_preferred_width(scrollbar, NULL, &history_scroll_width);
+	if(history_scroll_width == 0) history_scroll_width = 3;
 	history_scroll_width += 1;
 	gtk_tree_view_append_column(GTK_TREE_VIEW(historyview), history_column);
 	g_signal_connect_after(gtk_builder_get_object(main_builder, "historyscrolled"), "size-allocate", G_CALLBACK(on_history_resize), NULL);

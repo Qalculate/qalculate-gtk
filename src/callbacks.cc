@@ -1388,8 +1388,11 @@ double par_width = 6.0;
 
 void set_result_size_request() {
 	MathStructure mtest;
-	CALCULATOR->parse(&mtest, "[abs(ln(\\Ü^(\\Ü^\\Ü)/\\y^(\\Ü^\\Ü)))]");
-	mtest.format();
+	MathStructure m1("Ü");
+	MathStructure mden("y"); mden ^= m1;
+	mtest = m1; mtest ^= m1; mtest.transform(STRUCT_DIVISION, mden);
+	mtest.transform(CALCULATOR->f_sqrt);
+	mtest.transform(CALCULATOR->f_abs);
 	PrintOptions po;
 	po.can_display_unicode_string_function = &can_display_unicode_string_function;
 	po.can_display_unicode_string_arg = (void*) resultview;
@@ -2071,7 +2074,7 @@ void auto_update(string new_version) {
 	}
 	selfpath[n] = '\0';
 	gchar *selfdir = g_path_get_dirname(selfpath);
-	FILE *pipe = popen("curl --version 2>/dev/null", "w");
+	FILE *pipe = popen("curl --version 1>/dev/null", "w");
 	if(!pipe) {
 		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("curl not found."));
 		gtk_dialog_run(GTK_DIALOG(dialog));
@@ -2084,23 +2087,24 @@ void auto_update(string new_version) {
 	string script = "#!/bin/sh\n\n";
 	script += "echo \"Updating Qalculate!...\";\n";
 	script += "sleep 1;\n";
-	script += "if `cd \""; script += tmpdir; script += "\"`; then\n";
-	script += "\tif `curl -L -o \"qalculate-$1-x86_64.tar.xz\" https://github.com/Qalculate/qalculate-gtk/releases/download/v$1/qalculate-$1-x86_64.tar.xz`; then\n";
+	script += "new_version="; script += new_version; script += ";\n";
+	script += "if cd \""; script += tmpdir; script += "\"; then\n";
+	script += "\tif curl -L -o qalculate-${new_version}-x86_64.tar.xz https://github.com/Qalculate/qalculate-gtk/releases/download/v${new_version}/qalculate-${new_version}-x86_64.tar.xz; then\n";
 	script += "\t\techo \"Extracting files...\";\n";
-	script += "\t\tif `tar -xJf qalculate-$1-x86_64.tar.xz`; then\n";
-	script += "\t\t\tcd  qalculate-$1;\n";
-	script += "\t\t\tif `cp -f qalculate-gtk \""; script += selfpath; script += "\"`; then\n";
+	script += "\t\tif tar -xJf qalculate-${new_version}-x86_64.tar.xz; then\n";
+	script += "\t\t\tcd  qalculate-${new_version};\n";
+	script += "\t\t\tif cp -f qalculate-gtk \""; script += selfpath; script += "\"; then\n";
 	script += "\t\t\t\tcp -f qalc \""; script += selfdir; script += "/\";\n";
-	script += "\t\t\t\tcd ..;\n\t\t\trm -r qalculate-$1;\n\t\t\trm qalculate-$1-x86_64.tar.xz;\n";
+	script += "\t\t\t\tcd ..;\n\t\t\trm -r qalculate-${new_version};\n\t\t\trm qalculate-${new_version}-x86_64.tar.xz;\n";
 	script += "\t\t\t\texit 0;\n";
 	script += "\t\t\tfi\n";
-	script += "\t\t\tcd ..;\n\t\trm -r qalculate-$1;\n";
+	script += "\t\t\tcd ..;\n\t\trm -r qalculate-${new_version};\n";
 	script += "\t\tfi\n";
-	script += "\t\trm qalculate-$1-x86_64.tar.xz;\n";
+	script += "\t\trm qalculate-${new_version}-x86_64.tar.xz;\n";
 	script += "\tfi\n";
 	script += "fi\n";
 	script += "echo \"Update failed\";\n";
-	script += "echo \"Press any key to continue\";\n";
+	script += "echo \"Press Enter to continue\";\n";
 	script += "read _;\n";
 	script += "exit 1\n";
 	g_free(selfdir);
@@ -2110,25 +2114,14 @@ void auto_update(string new_version) {
 	ofs << script;
 	ofs.close();
 	chmod(scriptpath.c_str(), S_IRWXU);
-	string termcom;
-	pipe = popen("gnome-terminal --version 2>/dev/null", "w");
-	if(pipe) {
-		termcom = "gnome-terminal --disable-factory -- ";
-		pclose(pipe);
-	} else {
-		pipe = popen("konsole -v 2>/dev/null", "w");
-		if(pipe) {
-			termcom = "konsole -e ";
-			pclose(pipe);
-		} else {
-			pipe = popen("xterm -version 2>/dev/null", "w");
-			if(pipe) {
-				termcom = "xterm -e ";
-				pclose(pipe);
-			}
-		}
-	}
-	termcom += scriptpath; termcom += " "; termcom += new_version; termcom += ";\n";
+	string termcom = "#!/bin/sh\n\n";
+	termcom += "if [ $(command -v gnome-terminal) ]; then\n";
+	termcom += "\tif gnome-terminal --wait --version; then\n\t\tdetected_term=\"gnome-terminal --wait -- \";\n";
+	termcom += "\telse\n\t\tdetected_term=\"gnome-terminal --disable-factory -- \";\n\tfi\n";
+	termcom += "elif [ $(command -v xfce4-terminal) ]; then\n\tdetected_term=\"xfce4-terminal --disable-server -e \";\n";
+	termcom += "else\n";
+	termcom += "\tfor t in x-terminal-emulator konsole alacritty qterminal xterm urxvt rxvt kitty sakura terminology termite tilix; do\n\t\tif [ $(command -v $t) ]; then\n\t\t\tdetected_term=\"$t -e \";\n\t\t\tbreak\n\t\tfi\n\tdone\nfi\n";
+	termcom += "$detected_term "; termcom += scriptpath; termcom += ";\n";
 	termcom += "exec "; termcom += selfpath; termcom += "\n";
 	std::ofstream ofs2;
 	string scriptpath2 = tmpdir; scriptpath2 += "/terminal.sh";
@@ -2835,6 +2828,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			if(displayed_mstruct) displayed_mstruct->unref();
 			displayed_mstruct = displayed_mstruct_pre;
 			displayed_printops = printops;
+			displayed_printops.allow_non_usable = true;
 			displayed_caf = complex_angle_form;
 			result_autocalculated = true;
 			display_aborted = false;
@@ -8951,6 +8945,7 @@ void ViewThread::run() {
 			if(displayed_mstruct) displayed_mstruct->unref();
 			displayed_mstruct = new MathStructure(m);
 			displayed_printops = printops;
+			displayed_printops.allow_non_usable = true;
 			displayed_caf = complex_angle_form;
 		} else if(!b_stack) {
 			if(!CALCULATOR->aborted()) {
@@ -8975,6 +8970,7 @@ void ViewThread::run() {
 				displayed_mstruct = NULL;
 			} else {
 				displayed_printops = printops;
+				displayed_printops.allow_non_usable = true;
 				displayed_caf = complex_angle_form;
 			}
 		}
@@ -16161,9 +16157,7 @@ void load_preferences() {
 	default_shortcuts = true;
 	keyboard_shortcuts.clear();
 
-#ifdef _WIN32
 	last_version_check_date.setToCurrentDate();
-#endif
 
 	latest_button_unit = NULL;
 	latest_button_currency = NULL;
@@ -17052,6 +17046,7 @@ void load_preferences() {
 	}
 	update_message_print_options();
 	displayed_printops = printops;
+	displayed_printops.allow_non_usable = true;
 	displayed_caf = complex_angle_form;
 	initial_inhistory_index = inhistory.size() - 1;
 	g_free(gstr_file);
