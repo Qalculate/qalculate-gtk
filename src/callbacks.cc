@@ -21215,9 +21215,12 @@ void on_popup_menu_item_history_clear_activate(GtkMenuItem*, gpointer) {
 		}
 	}
 	current_inhistory_index = inhistory.size() - 1;
-	history_index = inhistory.size() - 1;
+	history_index = -1;
 	initial_inhistory_index = inhistory.size() - 1;
+	bool was_autocalc = auto_calculate;
+	auto_calculate = false;
 	on_expressionbuffer_changed(expressionbuffer, NULL);
+	auto_calculate = was_autocalc;
 	reload_history();
 }
 void on_popup_menu_item_history_movetotop_activate(GtkMenuItem*, gpointer) {
@@ -21329,9 +21332,12 @@ void on_popup_menu_item_history_movetotop_activate(GtkMenuItem*, gpointer) {
 		if(i == 0) break;
 	}
 	current_inhistory_index = inhistory.size() - 1;
-	history_index = inhistory.size() - 1;
+	history_index = -1;
 	initial_inhistory_index = inhistory.size() - 1;
+	bool was_autocalc = auto_calculate;
+	auto_calculate = false;
 	on_expressionbuffer_changed(expressionbuffer, NULL);
+	auto_calculate = was_autocalc;
 	reload_history(hindex2);
 	g_list_free_full(selected_list, (GDestroyNotify) gtk_tree_path_free);
 	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)));
@@ -21461,10 +21467,17 @@ void on_popup_menu_item_history_delete_activate(GtkMenuItem*, gpointer) {
 		inhistory_value.erase(inhistory_value.begin() + hindex);
 		if(i == 0) break;
 	}
-	current_inhistory_index = inhistory.size() - 1;
-	history_index = inhistory.size() - 1;
 	initial_inhistory_index = inhistory.size() - 1;
-	on_expressionbuffer_changed(expressionbuffer, NULL);
+	if(new_indexes.count(current_inhistory_index) > 0) {
+		current_inhistory_index = new_indexes[current_inhistory_index];
+	} else {
+		current_inhistory_index = inhistory.size() - 1;
+		history_index = -1;
+		bool was_autocalc = auto_calculate;
+		auto_calculate = false;
+		on_expressionbuffer_changed(expressionbuffer, NULL);
+		auto_calculate = was_autocalc;
+	}
 	g_list_free_full(selected_list, (GDestroyNotify) gtk_tree_path_free);
 }
 void on_popup_menu_item_history_insert_value_activate(GtkMenuItem*, gpointer) {
