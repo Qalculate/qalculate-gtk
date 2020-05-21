@@ -2352,6 +2352,23 @@ void base_from_string(string str, int &base, Number &nbase, bool input_base = fa
 	}
 }
 
+bool is_time(const MathStructure &m) {
+	bool b = false;
+	if(m.isUnit() && m.unit()->baseUnit()->referenceName() == "s") {
+		b = true;
+	} else if(m.isMultiplication() && m.size() == 2 && m[0].isNumber() && m[1].isUnit() && m[1].unit()->baseUnit()->referenceName() == "s") {
+		b = true;
+	} else if(m.isAddition() && m.size() > 0) {
+		b = true;
+		for(size_t i = 0; i < m.size(); i++) {
+			if(m[i].isUnit() && m[i].unit()->baseUnit()->referenceName() == "s") {}
+			else if(m[i].isMultiplication() && m[i].size() == 2 && m[i][0].isNumber() && m[i][1].isUnit() && m[i][1].unit()->baseUnit()->referenceName() == "s") {}
+			else {b = false; break;}
+		}
+	}
+	return b;
+}
+
 void add_to_expression_history(string str);
 gint autocalc_history_timeout_id = 0;
 vector<CalculatorMessage> autocalc_messages;
@@ -2810,6 +2827,16 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		number_exp_map.clear();
 		number_exp_minus_map.clear();
 		number_approx_map.clear();
+
+
+		// convert time units to hours when using time format
+		if(printops.base == BASE_TIME && is_time(*displayed_mstruct_pre)) {
+			Unit *u = CALCULATOR->getActiveUnit("h");
+			if(u) {
+				displayed_mstruct_pre->divide(u);
+				displayed_mstruct_pre->eval(evalops);
+			}
+		}
 
 		displayed_mstruct_pre->removeDefaultAngleUnit(evalops);
 		displayed_mstruct_pre->format(printops);
@@ -8845,6 +8872,15 @@ void ViewThread::run() {
 					mstr = mm2.getElement(index_r + 1, index_c + 1)->print(printops);
 					mm->getElement(index_r + 1, index_c + 1)->set(mstr);
 				}
+			}
+		}
+
+		// convert time units to hours when using time format
+		if(printops.base == BASE_TIME && is_time(m)) {
+			Unit *u = CALCULATOR->getActiveUnit("h");
+			if(u) {
+				m.divide(u);
+				m.eval(evalops);
 			}
 		}
 
