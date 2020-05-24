@@ -170,6 +170,7 @@ extern Unit *selected_unit;
 extern Unit *selected_to_unit;
 bool save_mode_on_exit;
 bool save_defs_on_exit;
+bool clear_history_on_exit = false;
 int use_dark_theme = -1;
 bool use_custom_result_font, use_custom_expression_font, use_custom_status_font, use_custom_keypad_font, use_custom_app_font;
 bool save_custom_result_font = false, save_custom_expression_font = false, save_custom_status_font = false, save_custom_keypad_font = false, save_custom_app_font = false;
@@ -16178,6 +16179,7 @@ void load_preferences() {
 	history_height = 0;
 	save_mode_on_exit = true;
 	save_defs_on_exit = true;
+	clear_history_on_exit = false;
 	hyp_is_on = false;
 	inv_is_on = false;
 	use_custom_result_font = false;
@@ -16314,6 +16316,8 @@ void load_preferences() {
 					save_mode_on_exit = v;
 				} else if(svar == "save_definitions_on_exit") {
 					save_defs_on_exit = v;
+				} else if(svar == "clear_history_on_exit") {
+					clear_history_on_exit = v;
 				} else if(svar == "ignore_locale") {
 					ignore_locale = v;
 				} else if(svar == "window_title_mode") {
@@ -17202,6 +17206,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "error_info_shown=%i\n", !first_error);
 	fprintf(file, "save_mode_on_exit=%i\n", save_mode_on_exit);
 	fprintf(file, "save_definitions_on_exit=%i\n", save_defs_on_exit);
+	fprintf(file, "clear_history_on_exit=%i\n", clear_history_on_exit);
 	fprintf(file, "ignore_locale=%i\n", ignore_locale);
 	fprintf(file, "load_global_definitions=%i\n", load_global_defs);
 	//fprintf(file, "fetch_exchange_rates_at_startup=%i\n", fetch_exchange_rates_at_startup);
@@ -17283,9 +17288,11 @@ void save_preferences(bool mode) {
 	for(size_t i = 0; i < expression_history.size(); i++) {
 		fprintf(file, "expression_history=%s\n", expression_history[i].c_str());
 	}
+
 	int lines = 300;
 	bool end_after_result = false, end_before_expression = false;
 	bool is_protected = false;
+	bool is_bookmarked = false;
 	bool doend = false;
 	size_t hi = inhistory.size();
 	while(!doend && hi > 0) {
@@ -17296,30 +17303,35 @@ void save_preferences(bool mode) {
 					doend = true;
 				} else {
 					if(inhistory_protected[hi]) fprintf(file, "history_expression*=");
-					else fprintf(file, "history_expression=");
-					is_protected = inhistory_protected[hi];
+					else if(!clear_history_on_exit || is_bookmarked) fprintf(file, "history_expression=");
+					is_protected = inhistory_protected[hi] || is_bookmarked;
+					is_bookmarked = false;
 				}
 				break;
 			}
 			case QALCULATE_HISTORY_TRANSFORMATION: {
+				if(clear_history_on_exit && !is_protected) break;
 				fprintf(file, "history_transformation=");
 				break;
 			}
 			case QALCULATE_HISTORY_RESULT: {
+				if(end_after_result) doend = true;
+				if(clear_history_on_exit && !is_protected) break;
 				fprintf(file, "history_result=");
 				lines--;
-				if(end_after_result) doend = true;
 				break;
 			}
 			case QALCULATE_HISTORY_RESULT_APPROXIMATE: {
-				fprintf(file, "history_result_approximate=");
-				lines--;
 				if(end_after_result) doend = true;
+				if(clear_history_on_exit && !is_protected) break;
+				fprintf(file, "history_result_approximate=");
+				lines--;				
 				break;
 			}
 			case QALCULATE_HISTORY_PARSE: {}
 			case QALCULATE_HISTORY_PARSE_WITHEQUALS: {}
 			case QALCULATE_HISTORY_PARSE_APPROXIMATE: {
+				if(clear_history_on_exit && !is_protected) break;
 				if(inhistory_type[hi] == QALCULATE_HISTORY_PARSE) fprintf(file, "history_parse=");
 				else if(inhistory_type[hi] == QALCULATE_HISTORY_PARSE_WITHEQUALS) fprintf(file, "history_parse_withequals=");
 				else fprintf(file, "history_parse_approximate=");
@@ -17339,8 +17351,9 @@ void save_preferences(bool mode) {
 					doend = true;
 				} else {
 					if(inhistory_protected[hi]) fprintf(file, "history_register_moved*=");
-					else fprintf(file, "history_register_moved=");
-					is_protected = inhistory_protected[hi];
+					else if(!clear_history_on_exit || is_bookmarked) fprintf(file, "history_register_moved=");
+					is_protected = inhistory_protected[hi] || is_bookmarked;
+					is_bookmarked = false;
 				}
 				break;
 			}
@@ -17349,22 +17362,26 @@ void save_preferences(bool mode) {
 					doend = true;
 				} else {
 					if(inhistory_protected[hi]) fprintf(file, "history_rpn_operation*=");
-					else fprintf(file, "history_rpn_operation=");
-					is_protected = inhistory_protected[hi];
+					else if(!clear_history_on_exit || is_bookmarked) fprintf(file, "history_rpn_operation=");
+					is_protected = inhistory_protected[hi] || is_bookmarked;
+					is_bookmarked = false;
 				}
 				break;
 			}
 			case QALCULATE_HISTORY_WARNING: {
+				if(clear_history_on_exit && !is_protected) break;
 				fprintf(file, "history_warning=");
 				lines--;
 				break;
 			}
 			case QALCULATE_HISTORY_MESSAGE: {
+				if(clear_history_on_exit && !is_protected) break;
 				fprintf(file, "history_message=");
 				lines--;
 				break;
 			}
 			case QALCULATE_HISTORY_ERROR: {
+				if(clear_history_on_exit && !is_protected) break;
 				fprintf(file, "history_error=");
 				lines--;
 				break;
@@ -17374,11 +17391,14 @@ void save_preferences(bool mode) {
 					doend = true;
 				} else {
 					fprintf(file, "history_bookmark=");
+					is_bookmarked = true;
+					is_protected = true;
 					lines--;
 					break;
 				}
 			}
 			case QALCULATE_HISTORY_OLD: {
+				if(clear_history_on_exit && !is_protected) break;
 				fprintf(file, "history_old=");
 				lines--;
 				if(lines < 0) doend = true;
@@ -17386,31 +17406,33 @@ void save_preferences(bool mode) {
 			}
 		}
 		if(doend && end_before_expression) break;
-		size_t i3 = inhistory[hi].find('\n');
-		if(i3 == string::npos) {
-			if(!is_protected && inhistory[hi].length() > 50000) {
-				int index = 50;
-				while(index >= 0 && inhistory[hi][index] < 0) index--;
-				fprintf(file, "%s …\n", inhistory[hi].substr(0, index + 1).c_str());
-			} else {
-				fprintf(file, "%s\n", inhistory[hi].c_str());
-				if(inhistory[hi].length() > 300) {
-					if(inhistory[hi].length() > 9000) lines -= 30;
-					else lines -= inhistory[hi].length() / 300;
+		if(!clear_history_on_exit || is_protected) {
+			size_t i3 = inhistory[hi].find('\n');
+			if(i3 == string::npos) {
+				if(!is_protected && inhistory[hi].length() > 50000) {
+					int index = 50;
+					while(index >= 0 && inhistory[hi][index] < 0) index--;
+					fprintf(file, "%s …\n", inhistory[hi].substr(0, index + 1).c_str());
+				} else {
+					fprintf(file, "%s\n", inhistory[hi].c_str());
+					if(inhistory[hi].length() > 300) {
+						if(inhistory[hi].length() > 9000) lines -= 30;
+						else lines -= inhistory[hi].length() / 300;
+					}
 				}
-			}
-		} else {
-			fprintf(file, "%s\n", inhistory[hi].substr(0, i3).c_str());
-			i3++;
-			size_t i2 = inhistory[hi].find('\n', i3);
-			while(i2 != string::npos) {
-				fprintf(file, "history_continued=%s\n", inhistory[hi].substr(i3, i2 - i3).c_str());
+			} else {
+				fprintf(file, "%s\n", inhistory[hi].substr(0, i3).c_str());
+				i3++;
+				size_t i2 = inhistory[hi].find('\n', i3);
+				while(i2 != string::npos) {
+					fprintf(file, "history_continued=%s\n", inhistory[hi].substr(i3, i2 - i3).c_str());
+					lines--;
+					i3 = i2 + 1;
+					i2 = inhistory[hi].find('\n', i3);
+				}
+				fprintf(file, "history_continued=%s\n", inhistory[hi].substr(i3, inhistory[hi].length() - i3).c_str());
 				lines--;
-				i3 = i2 + 1;
-				i2 = inhistory[hi].find('\n', i3);
 			}
-			fprintf(file, "history_continued=%s\n", inhistory[hi].substr(i3, inhistory[hi].length() - i3).c_str());
-			lines--;
 		}
 	}
 	while(hi >= 0 && inhistory.size() > 0) {
@@ -18258,6 +18280,9 @@ gint on_preferences_plot_time_spin_button_input(GtkSpinButton *spin, gdouble *ne
 void on_preferences_checkbutton_persistent_keypad_toggled(GtkToggleButton *w, gpointer) {
 	persistent_keypad = gtk_toggle_button_get_active(w);
 	update_persistent_keypad(true);
+}
+void on_preferences_checkbutton_clear_history_toggled(GtkToggleButton *w, gpointer) {
+	clear_history_on_exit = gtk_toggle_button_get_active(w);
 }
 gboolean on_status_right_button_release_event(GtkWidget*, GdkEventButton *event, gpointer) {
 	if(event->type == GDK_BUTTON_RELEASE && event->button == 1) {
