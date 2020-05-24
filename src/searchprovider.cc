@@ -351,7 +351,7 @@ void load_preferences_search() {
 	search_complex_angle_form = false;
 	search_ignore_locale = false;
 	search_adaptive_interval_display = true;
-	
+
 	CALCULATOR->useIntervalArithmetic(true);
 	CALCULATOR->useBinaryPrefixes(0);
 
@@ -602,11 +602,11 @@ int main (int argc, char *argv[]) {
 	new Calculator(search_ignore_locale);
 	CALCULATOR->setExchangeRatesWarningEnabled(false);
 	load_preferences_search();
-	
+
 	CALCULATOR->loadExchangeRates();
 	if(!CALCULATOR->loadGlobalDefinitions()) g_print(_("Failed to load global definitions!\n"));
 	CALCULATOR->loadLocalDefinitions();
-	
+
 	if(search_do_imaginary_j && CALCULATOR->v_i->hasName("j") == 0) {
 		ExpressionName ename = CALCULATOR->v_i->getName(1);
 		ename.name = "j";

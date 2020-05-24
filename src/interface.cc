@@ -1223,7 +1223,7 @@ void create_main_window(void) {
 			pango_font_description_free(font_desc);
 		}
 	}
-	
+
 	update_accels();
 
 	set_unicode_buttons();
@@ -1329,7 +1329,7 @@ void create_main_window(void) {
 	if(req.height < 20) gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_keypad_lock")), req.height * 0.8);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_persistent_keypad")), persistent_keypad);
 	gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), !persistent_keypad || !gtk_widget_get_visible(tabs));
-	
+
 	if(minimal_mode) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
@@ -1421,7 +1421,7 @@ void create_main_window(void) {
 			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_deleteregister"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		}
 	}
-	
+
 	if(!gtk_icon_theme_has_icon(gtk_icon_theme_get_default(), "document-edit-symbolic")) {
 		gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_edit")), "gtk-edit", GTK_ICON_SIZE_BUTTON);
 #if GTK_MAJOR_VERSION <= 3 && GTK_MINOR_VERSION <= 18
@@ -2077,7 +2077,7 @@ GtkWidget* get_preferences_dialog(void) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_delay")), enable_completion);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay")), enable_completion);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay")), (double) completion_delay);
-	
+
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_plot_time_spin_button")), (double) max_plot_time);
 
 	return GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_dialog"));
@@ -3167,9 +3167,9 @@ GtkWidget* get_shortcuts_dialog(void) {
 		gtk_tree_view_column_set_sort_column_id(column, 2);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tShortcuts), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tShortcuts_selection_changed), NULL);
-		
+
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tShortcuts_store), 0, GTK_SORT_ASCENDING);
-		
+
 		tShortcutsType = GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_treeview"));
 
 		tShortcutsType_store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_INT);
@@ -3208,7 +3208,7 @@ GtkWidget* get_floatingpoint_dialog(void) {
 		g_assert(floatingpoint_builder != NULL);
 
 		g_assert (gtk_builder_get_object(floatingpoint_builder, "floatingpoint_dialog") != NULL);
-		
+
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
 		gtk_text_view_set_top_margin(GTK_TEXT_VIEW(gtk_builder_get_object(floatingpoint_builder, "fp_textedit_bin")), 6);
 		gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(gtk_builder_get_object(floatingpoint_builder, "fp_textedit_bin")), 6);
