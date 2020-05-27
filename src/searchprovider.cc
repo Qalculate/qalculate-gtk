@@ -116,16 +116,14 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 	string expression = joined_terms;
 	g_variant_builder_init(&builder, G_VARIANT_TYPE("as"));
 	remove_blank_ends(expression);
+	if(expression.empty()) return;
 	unordered_map<string, string>::const_iterator it = expressions.find(expression);
 	if(it != expressions.end()) {
-		string parsed = it->second;
-		if(parsed.empty()) return;
-		g_variant_builder_add(&builder, "s", parsed.c_str());
+		if(it->second.empty()) return;
+		g_variant_builder_add(&builder, "s", expression.c_str());
 	} else {
-		remove_blank_ends(expression);
-		expressions[expression] = "";
 		bool b_valid = false;
-		if(expression.empty()) return;
+		expressions[expression] = "";
 		if(!b_valid) b_valid = (expression.find_first_of(OPERATORS NUMBERS PARENTHESISS) != string::npos);
 		if(!b_valid) b_valid = CALCULATOR->hasToExpression(expression, false, search_eo);
 		if(!b_valid) {
@@ -163,7 +161,6 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 		expressions[expression] = parsed;
 		if(parsed.empty() || result == parsed) {
 			results[result] = "";
-			g_variant_builder_add(&builder, "s", result.c_str());
 		} else {
 			if(!result.empty()) {
 				if(*search_po.is_approximate) {
@@ -178,8 +175,8 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 				}
 			}
 			results[parsed] = result;
-			g_variant_builder_add(&builder, "s", parsed.c_str());
 		}
+		g_variant_builder_add(&builder, "s", expression.c_str());
 	}
 }
 static void qalculate_search_provider_get_initial_result_set(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **terms, gpointer user_data) {
@@ -194,14 +191,17 @@ static void qalculate_search_provider_get_result_metas(ShellSearchProvider2 *obj
 	GVariantBuilder meta, metas;
 	g_variant_builder_init (&metas, G_VARIANT_TYPE ("aa{sv}"));
 	for(idx = 0; eqs[idx] != NULL; idx++) {
-		g_variant_builder_init(&meta, G_VARIANT_TYPE ("a{sv}"));
-		g_variant_builder_add (&meta, "{sv}", "id", g_variant_new_string(eqs[idx]));
-		g_variant_builder_add (&meta, "{sv}", "name", g_variant_new_string(eqs[idx]));
-		unordered_map<string, string>::const_iterator it = results.find(eqs[idx]);
-		if(it != results.end() && !it->second.empty()) {
-			g_variant_builder_add (&meta, "{sv}", "description", g_variant_new_string(it->second.c_str()));
+		unordered_map<string, string>::const_iterator it = expressions.find(eqs[idx]);
+		if(it != expressions.end()) {
+			g_variant_builder_init(&meta, G_VARIANT_TYPE ("a{sv}"));
+			g_variant_builder_add(&meta, "{sv}", "id", g_variant_new_string(eqs[idx]));
+			g_variant_builder_add(&meta, "{sv}", "name", g_variant_new_string(it->second.c_str()));
+			it = results.find(it->second);
+			if(it != results.end() && !it->second.empty()) {
+				g_variant_builder_add(&meta, "{sv}", "description", g_variant_new_string(it->second.c_str()));
+			}
+			g_variant_builder_add_value(&metas, g_variant_builder_end(&meta));
 		}
-		g_variant_builder_add_value (&metas, g_variant_builder_end (&meta));
 	}
 	g_dbus_method_invocation_return_value(invocation, g_variant_new("(aa{sv})", &metas));
 }

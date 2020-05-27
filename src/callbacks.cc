@@ -2420,7 +2420,7 @@ bool auto_calc_stopped_at_operator = false;
 void do_auto_calc(bool recalculate = true, string str = string()) {
 	if(block_result_update || block_expression_execution) return;
 	MathStructure mauto;
-	bool do_factors = false, do_pfe = false, do_expand = false, do_conv = false;
+	bool do_factors = false, do_pfe = false, do_expand = false;
 	bool do_timeout_bak = do_timeout;
 
 	ComplexNumberForm cnf_bak = evalops.complex_number_form;
@@ -2487,7 +2487,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		if(origstr) {
 			to_fraction = false; to_prefix = 0; to_base = 0; to_bits = 0; to_nbase.clear();
 		}
-		string from_str = str, to_str;
+		string from_str = str, to_str, str_conv;
 		
 		if(origstr && CALCULATOR->separateToExpression(from_str, to_str, evalops, true, true)) {
 			if(from_str.empty()) {
@@ -2502,7 +2502,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 				return;
 			}
 			remove_duplicate_blanks(to_str);
-			string str_left, str_conv;
+			string str_left;
 			string to_str1, to_str2;
 			while(true) {
 				CALCULATOR->separateToExpression(to_str, str_left, evalops, true, false);
@@ -2570,6 +2570,14 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 						else to_bits = bits;
 					}
 					do_to = true;
+				} else if(to_str.length() > 3 && equalsIgnoreCase(to_str.substr(0, 3), "hex") && is_in(NUMBERS, to_str[3])) {
+					to_base = BASE_HEXADECIMAL;
+					int bits = s2i(to_str.substr(3));
+					if(bits >= 0) {
+						if(bits > 4096) to_bits = 4096;
+						else to_bits = bits;
+					}
+					do_to = true;
 				} else if(to_str.length() > 3 && (equalsIgnoreCase(to_str.substr(0, 3), "utc") || equalsIgnoreCase(to_str.substr(0, 3), "gmt"))) {
 					to_str = to_str.substr(3);
 					remove_blanks(to_str);
@@ -2623,13 +2631,11 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 				} else if(equalsIgnoreCase(to_str, "optimal") || equalsIgnoreCase(to_str, _("optimal"))) {
 					evalops.parse_options.units_enabled = true;
 					evalops.auto_post_conversion = POST_CONVERSION_OPTIMAL_SI;
-					do_conv = false;
 					str_conv = "";
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "base") || equalsIgnoreCase(to_str, _("base"))) {
 					evalops.parse_options.units_enabled = true;
 					evalops.auto_post_conversion = POST_CONVERSION_BASE;
-					do_conv = false;
 					str_conv = "";
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "mixed") || equalsIgnoreCase(to_str, _("mixed"))) {
@@ -2655,9 +2661,8 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 					} else if(to_str.length() > 1 && to_str[1] == '?' && (to_str[0] == 'b' || to_str[0] == 'a' || to_str[0] == 'd')) {
 						to_prefix = to_str[0];
 					}
-					if(!str_conv.empty()) do_to = true;
-					do_conv = true;
-					str_conv += " to ";
+					do_to = true;
+					if(!str_conv.empty()) str_conv += " to ";
 					str_conv += to_str;
 				}
 				if(str_left.empty()) break;
@@ -2665,7 +2670,10 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			}
 			if(do_to) {
 				str = from_str;
-				str += str_conv;
+				if(!str_conv.empty()) {
+					str += " to ";
+					str += str_conv;
+				}
 			}
 		}
 		if(origstr) {
@@ -2681,7 +2689,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 				}
 			}
 		}
-		if(origstr && !do_conv && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")))) {
+		if(origstr && str_conv.empty() && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")))) {
 			string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), evalops.parse_options);
 			remove_blank_ends(ceu_str);
 			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {
@@ -2722,7 +2730,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			}
 			if(CALCULATOR->aborted()) mauto.setAborted();
 			CALCULATOR->stopControl();
-		} else if(do_conv && parsed_tostruct->containsType(STRUCT_UNIT, true) && !mauto.containsType(STRUCT_UNIT, false, true, true) && !parsed_mstruct->containsType(STRUCT_UNIT, false, true, true)) {
+		} else if(!str_conv.empty() && parsed_tostruct->containsType(STRUCT_UNIT, true) && !mauto.containsType(STRUCT_UNIT, false, true, true) && !parsed_mstruct->containsType(STRUCT_UNIT, false, true, true) && !CALCULATOR->hasToExpression(str_conv, false, evalops)) {
 			MathStructure to_struct(*parsed_tostruct);
 			to_struct.unformat();
 			to_struct = CALCULATOR->convertToOptimalUnit(to_struct, evalops, true);
@@ -2735,7 +2743,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 					else if(to_struct[1].isOne()) to_struct.delChild(2, true);
 				}
 				parsed_mstruct->multiply(to_struct);
-				CALCULATOR->calculate(&mauto, 100, evalops, CALCULATOR->unlocalizeExpression(to_str, evalops.parse_options));
+				CALCULATOR->calculate(&mauto, 100, evalops, CALCULATOR->unlocalizeExpression(str_conv, evalops.parse_options));
 			}
 		}
 		CALCULATOR->endTemporaryStopMessages(!mauto.isAborted(), &autocalc_messages);
@@ -3242,6 +3250,12 @@ void display_parse_status() {
 					parsed_expression += i2s(bits);
 					parsed_expression += "-bit ";
 					parsed_expression += _("binary number");
+				} else if(str_u.length() > 3 && equalsIgnoreCase(str_u.substr(0, 3), "hex") && is_in(NUMBERS, str_u[3])) {
+					unsigned int bits = s2i(str_u.substr(3));
+					if(bits > 4096) bits = 4096;
+					parsed_expression += i2s(bits);
+					parsed_expression += "-bit ";
+					parsed_expression += _("hexadecimal number");
 				} else if(str_u == "CET") {
 					parsed_expression += "UTC";
 					parsed_expression += "+01";
@@ -10540,7 +10554,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	b_busy = true;
 	b_busy_expression = true;
 
-	bool do_factors = false, do_pfe = false, do_expand = false, do_conv = false, do_ceu = execute_str.empty(), do_bases = false, do_calendars = false;
+	bool do_factors = false, do_pfe = false, do_expand = false, do_ceu = execute_str.empty(), do_bases = false, do_calendars = false;
 	if(do_stack && !rpn_mode) do_stack = false;
 	if(do_stack && do_mathoperation && f && stack_index == 0) do_stack = false;
 
@@ -10575,7 +10589,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		}
 	}
 
-	string to_str;
+	string to_str, str_conv;
 
 #if QALCULATE_MAJOR_VERSION > 3 || QALCULATE_MINOR_VERSION >= 10
 	if(execute_str.empty()) {
@@ -10613,7 +10627,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	string from_str = str;
 	if(execute_str.empty() && CALCULATOR->separateToExpression(from_str, to_str, evalops, true, !do_stack)) {
 		remove_duplicate_blanks(to_str);
-		string str_left, str_conv;
+		string str_left;
 		string to_str1, to_str2;
 		bool do_to = false;
 		while(true) {
@@ -10686,6 +10700,14 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				do_to = true;
 			} else if(to_str.length() > 3 && equalsIgnoreCase(to_str.substr(0, 3), "bin") && is_in(NUMBERS, to_str[3])) {
 				to_base = BASE_BINARY;
+				int bits = s2i(to_str.substr(3));
+				if(bits >= 0) {
+					if(bits > 4096) to_bits = 4096;
+					else to_bits = bits;
+				}
+				do_to = true;
+			} else if(to_str.length() > 3 && equalsIgnoreCase(to_str.substr(0, 3), "hex") && is_in(NUMBERS, to_str[3])) {
+				to_base = BASE_HEXADECIMAL;
 				int bits = s2i(to_str.substr(3));
 				if(bits >= 0) {
 					if(bits > 4096) to_bits = 4096;
@@ -10831,7 +10853,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				}
 				evalops.parse_options.units_enabled = true;
 				evalops.auto_post_conversion = POST_CONVERSION_OPTIMAL_SI;
-				do_conv = false;
 				str_conv = "";
 				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "base") || equalsIgnoreCase(to_str, _("base"))) {
@@ -10844,7 +10865,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				}
 				evalops.parse_options.units_enabled = true;
 				evalops.auto_post_conversion = POST_CONVERSION_BASE;
-				do_conv = false;
 				str_conv = "";
 				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "mixed") || equalsIgnoreCase(to_str, _("mixed"))) {
@@ -10901,9 +10921,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					to_prefix = to_str[0];
 
 				}
-				if(!str_conv.empty()) do_to = true;
-				do_conv = true;
-				str_conv += " to ";
+				do_to = true;
+				if(!str_conv.empty()) str_conv += " to ";
 				str_conv += to_str;
 			}
 			if(str_left.empty()) break;
@@ -10918,7 +10937,10 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				return;
 			} else {
 				execute_str = from_str;
-				execute_str += str_conv;
+				if(!str_conv.empty()) {
+					execute_str += " to ";
+					execute_str += str_conv;
+				}
 			}
 		}
 	}
@@ -10941,7 +10963,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 
 	update_expression_icons(EXPRESSION_STOP);
 
-	if(do_ceu && !do_conv && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")))) {
+	if(do_ceu && str_conv.empty() && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")))) {
 		string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), evalops.parse_options);
 		remove_blank_ends(ceu_str);
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {
@@ -11124,7 +11146,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		while(gtk_events_pending()) gtk_main_iteration();
 		sleep_ms(100);
 	}
-	if(!do_mathoperation && do_conv && parsed_tostruct->containsType(STRUCT_UNIT, true) && !mstruct->containsType(STRUCT_UNIT) && !parsed_mstruct->containsType(STRUCT_UNIT, false, true, true)) {
+	if(!do_mathoperation && !str_conv.empty() && parsed_tostruct->containsType(STRUCT_UNIT, true) && !mstruct->containsType(STRUCT_UNIT) && !parsed_mstruct->containsType(STRUCT_UNIT, false, true, true) && !CALCULATOR->hasToExpression(str_conv, false, evalops)) {
 		MathStructure to_struct(*parsed_tostruct);
 		to_struct.unformat();
 		to_struct = CALCULATOR->convertToOptimalUnit(to_struct, evalops, true);
@@ -11138,7 +11160,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			}
 			parsed_mstruct->multiply(to_struct);
 			CALCULATOR->calculate(mstruct, 0, evalops, CALCULATOR->unlocalizeExpression(to_str, evalops.parse_options));
-			do_conv = false;
+			str_conv = "";
 			goto do_progress;
 		}
 	}
