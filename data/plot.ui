@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.2 -->
+<!-- Generated with glade 3.36.0 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkAdjustment" id="adjustment1">
@@ -52,9 +52,6 @@
     <signal name="delete-event" handler="gtk_widget_hide" object="plot_dialog" swapped="yes"/>
     <signal name="destroy-event" handler="gtk_widget_hide" object="plot_dialog" swapped="yes"/>
     <signal name="hide" handler="on_plot_dialog_hide" swapped="no"/>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbox60">
         <property name="visible">True</property>
@@ -644,7 +641,7 @@
                           <object class="GtkEntry" id="plot_entry_min">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="text" translatable="yes">0</property>
+                            <property name="text">0</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
                           </object>
@@ -684,7 +681,7 @@
                           <object class="GtkEntry" id="plot_entry_max">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="text" translatable="yes">10</property>
+                            <property name="text">10</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
                           </object>
@@ -775,7 +772,7 @@
                             <property name="visible">True</property>
                             <property name="sensitive">False</property>
                             <property name="can_focus">True</property>
-                            <property name="text" translatable="yes">1</property>
+                            <property name="text">1</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
                           </object>
@@ -954,7 +951,6 @@
                             <property name="visible">True</property>
                             <property name="sensitive">False</property>
                             <property name="can_focus">True</property>
-                            <property name="text" translatable="yes">10</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
                             <property name="adjustment">adjustment4</property>
@@ -1002,7 +998,6 @@
                             <property name="visible">True</property>
                             <property name="sensitive">False</property>
                             <property name="can_focus">True</property>
-                            <property name="text" translatable="yes">10</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
                             <property name="adjustment">adjustment5</property>
@@ -1216,7 +1211,6 @@
                           <object class="GtkSpinButton" id="plot_spinbutton_linewidth">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="text" translatable="yes">10</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
                             <property name="adjustment">adjustment6</property>
@@ -1418,5 +1412,8 @@
       <action-widget response="0">plot_button_save</action-widget>
       <action-widget response="-7">plot_button_close</action-widget>
     </action-widgets>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
   </object>
 </interface>

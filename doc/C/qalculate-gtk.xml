@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "3.10.0">
-  <!ENTITY manrevision "3.10.0">
-  <!ENTITY date "May 2020">
+  <!ENTITY appversion "3.11.0">
+  <!ENTITY manrevision "3.11.0">
+  <!ENTITY date "June 2020">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -1174,6 +1174,14 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 				<entry><para>Opens this help.</para></entry>
 			</row>
 			<row valign="top">
+				<entry><para>Report a Bug</para></entry>
+				<entry><para>Opens the web interface for creation of bug reports.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>Check for Updates</para></entry>
+				<entry><para>Checks if a new version of &app; is available.</para></entry>
+			</row>
+			<row valign="top">
 				<entry><para>About</para></entry>
 				<entry><para>Info about &app;</para></entry>
 			</row>
@@ -1613,7 +1621,7 @@ Putting <quote> to </quote> followed by an expression at the end of the mathemat
 </varlistentry>
 <varlistentry>
 <term>hex / hexadecimal</term>
-<listitem><para>Show as hexadecimal number (e.g. <quote>623 to hex = 026F</quote>). Append an integer to specify the number of bits (e.g. <quote>4 to hex16 = 0004</quote>).</para></listitem></para></listitem> 
+<listitem><para>Show as hexadecimal number (e.g. <quote>623 to hex = 026F</quote>). Append an integer to specify the number of bits (e.g. <quote>4 to hex16 = 0004</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>sexa / sexagesimal</term>

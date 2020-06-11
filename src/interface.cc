@@ -2094,6 +2094,19 @@ GtkWidget* get_unit_edit_dialog(void) {
 		g_assert (gtk_builder_get_object(unitedit_builder, "unit_edit_dialog") != NULL);
 
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unitedit_builder, "unit_edit_combobox_class")), 0);
+		
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
+		gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_vbox_name")), 12);
+		gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_vbox_type")), 12);
+		gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_vbox_alias")), 12);
+		gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_vbox_mix")), 12);
+#else
+		gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_vbox_name")), 12);
+		gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_vbox_type")), 12);
+		gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_vbox_alias")), 12);
+		gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_vbox_mix")), 12);
+#endif
+
 
 		gtk_builder_connect_signals(unitedit_builder, NULL);
 

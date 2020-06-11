@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.2 -->
+<!-- Generated with glade 3.36.0 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkAdjustment" id="adjustment1">
@@ -29,9 +29,6 @@
     <property name="title" translatable="yes">Edit Unit</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox5">
         <property name="visible">True</property>
@@ -111,10 +108,9 @@
                 <property name="label_xalign">0</property>
                 <property name="shadow_type">none</property>
                 <child>
-                  <object class="GtkBox" id="vbox9">
+                  <object class="GtkBox" id="unit_edit_vbox_name">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_left">12</property>
                     <property name="margin_top">6</property>
                     <property name="margin_bottom">6</property>
                     <property name="orientation">vertical</property>
@@ -285,10 +281,9 @@
                 <property name="label_xalign">0</property>
                 <property name="shadow_type">none</property>
                 <child>
-                  <object class="GtkBox" id="vbox12">
+                  <object class="GtkBox" id="unit_edit_vbox_type">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_left">12</property>
                     <property name="margin_top">6</property>
                     <property name="margin_bottom">6</property>
                     <property name="orientation">vertical</property>
@@ -479,7 +474,6 @@
                   <object class="GtkBox" id="unit_edit_vbox_alias">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_left">12</property>
                     <property name="margin_top">6</property>
                     <property name="margin_bottom">6</property>
                     <property name="orientation">vertical</property>
@@ -549,7 +543,6 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="tooltip_text" translatable="yes">Exponent of the base unit</property>
-                            <property name="text" translatable="yes">1</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
                             <property name="adjustment">adjustment1</property>
@@ -576,6 +569,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
+                        <property name="spacing">6</property>
                         <child>
                           <object class="GtkBox" id="hbox29">
                             <property name="visible">True</property>
@@ -725,10 +719,9 @@ For non-linear relations use \x for the factor and \y for the exponent (e.g. "\x
                 <property name="label_xalign">0</property>
                 <property name="shadow_type">none</property>
                 <child>
-                  <object class="GtkBox" id="unit_edit_vbox_alias1">
+                  <object class="GtkBox" id="unit_edit_vbox_mix">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_left">6</property>
                     <property name="margin_top">6</property>
                     <property name="margin_bottom">6</property>
                     <property name="orientation">vertical</property>
@@ -759,7 +752,6 @@ For non-linear relations use \x for the factor and \y for the exponent (e.g. "\x
                           <object class="GtkSpinButton" id="unit_edit_spinbutton_mix_priority">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="text" translatable="yes">0</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
                             <property name="adjustment">adjustment2</property>
@@ -803,7 +795,6 @@ For non-linear relations use \x for the factor and \y for the exponent (e.g. "\x
                           <object class="GtkSpinButton" id="unit_edit_spinbutton_mix_min">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="text" translatable="yes">1</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
                             <property name="adjustment">adjustment3</property>
@@ -865,5 +856,8 @@ For non-linear relations use \x for the factor and \y for the exponent (e.g. "\x
       <action-widget response="-6">unit_edit_button_cancel</action-widget>
       <action-widget response="-5">unit_edit_button_ok</action-widget>
     </action-widgets>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
   </object>
 </interface>

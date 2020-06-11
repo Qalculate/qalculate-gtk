@@ -405,7 +405,6 @@ Note that only the mode, history and definitions of the last closed instance wil
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="width_chars">15</property>
-                        <property name="text" translatable="yes">3</property>
                         <property name="adjustment">adjustment_plot_time</property>
                         <property name="snap_to_ticks">True</property>
                         <property name="value">5</property>
@@ -1103,7 +1102,6 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkSpinButton" id="preferences_spin_completion_min">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="text" translatable="yes">7</property>
                     <property name="adjustment">adjustment_completion</property>
                     <property name="numeric">True</property>
                     <property name="value">1</property>
@@ -1142,7 +1140,6 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkSpinButton" id="preferences_spin_completion_min2">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="text" translatable="yes">1</property>
                     <property name="adjustment">adjustment_completion2</property>
                     <property name="numeric">True</property>
                     <property name="value">1</property>
@@ -1169,7 +1166,6 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkSpinButton" id="preferences_spin_completion_delay">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="text" translatable="yes">1</property>
                     <property name="adjustment">adjustment_completion_delay</property>
                     <property name="numeric">True</property>
                     <signal name="value-changed" handler="on_preferences_spin_completion_delay_value_changed" swapped="no"/>

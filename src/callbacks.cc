@@ -2713,6 +2713,8 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 
 		do_timeout_bak = do_timeout;
 		do_timeout = false;
+		
+		CALCULATOR->resetExchangeRatesUsed();
 
 		CALCULATOR->beginTemporaryStopMessages();
 		if(!CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), 100, evalops, parsed_mstruct, parsed_tostruct)) {
@@ -16233,7 +16235,7 @@ void load_preferences() {
 
 	size_t bookmark_index = 0;
 
-	int version_numbers[] = {3, 10, 0};
+	int version_numbers[] = {3, 11, 0};
 	bool old_history_format = false;
 
 	if(file) {

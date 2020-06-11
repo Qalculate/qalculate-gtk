@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.2 -->
+<!-- Generated with glade 3.36.0 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkAdjustment" id="adjustment_max">
@@ -22,9 +22,6 @@
     <property name="title" translatable="yes">Argument Rules</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbox56">
         <property name="visible">True</property>
@@ -132,7 +129,7 @@
                     <property name="visible">True</property>
                     <property name="sensitive">False</property>
                     <property name="can_focus">True</property>
-                    <property name="tooltip_text" translatable="yes">Ex. if argument is a matrix that must have equal number of rows and columns: rows(\x) = columns(\x)</property>
+                    <property name="tooltip_text" translatable="yes">For example if argument is a matrix that must have equal number of rows and columns: rows(\x) = columns(\x)</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
                     <signal name="changed" handler="on_argument_changed" swapped="no"/>
@@ -375,5 +372,8 @@
       <action-widget response="-6">button6</action-widget>
       <action-widget response="-5">argument_rules_button_ok</action-widget>
     </action-widgets>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
   </object>
 </interface>
