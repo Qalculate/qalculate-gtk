@@ -602,7 +602,7 @@ GtkBuilder *getBuilder(const char *filename) {
 
 #define SUP_STRING(X) string("<span size=\"x-small\" rise=\"" + i2s((int) (pango_font_description_get_size(font_desc) / 1.5)) + "\">") + string(X) + "</span>"
 
-void set_keypad_tooltip(const gchar *w, const char *s1, const char *s2, const char *s3 = NULL, bool b_markup = false, bool b_longpress = true) {
+void set_keypad_tooltip(const gchar *w, const char *s1, const char *s2 = NULL, const char *s3 = NULL, bool b_markup = false, bool b_longpress = true) {
 	string str;
 	if(s1) str += s1;
 	if(s2) {
@@ -619,6 +619,7 @@ void set_keypad_tooltip(const gchar *w, const char *s1, const char *s2, const ch
 	}
 	if(b_markup) gtk_widget_set_tooltip_markup(GTK_WIDGET(gtk_builder_get_object(main_builder, w)), str.c_str());
 	else gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, w)), str.c_str());
+	g_signal_connect(gtk_builder_get_object(main_builder, w), "clicked", G_CALLBACK(hide_tooltip), NULL);
 }
 
 void create_button_menus(void) {
@@ -923,19 +924,19 @@ void create_button_menus(void) {
 		MENU_ITEM_WITH_POINTER_AND_FLAG(to_us2[i]->title(true).c_str(), insert_button_currency, to_us2[i])
 	}
 
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_e_var")), CALCULATOR->v_e->title(true).c_str());
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_pi")), CALCULATOR->v_pi->title(true).c_str());
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sine")), CALCULATOR->f_sin->title(true).c_str());
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_cosine")), CALCULATOR->f_cos->title(true).c_str());
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_tan")), CALCULATOR->f_tan->title(true).c_str());
+	set_keypad_tooltip("button_e_var", CALCULATOR->v_e->title(true).c_str());
+	set_keypad_tooltip("button_pi", CALCULATOR->v_pi->title(true).c_str());
+	set_keypad_tooltip("button_sine", CALCULATOR->f_sin->title(true).c_str());
+	set_keypad_tooltip("button_cosine", CALCULATOR->f_cos->title(true).c_str());
+	set_keypad_tooltip("button_tan", CALCULATOR->f_tan->title(true).c_str());
 	f = CALCULATOR->getActiveFunction("mean");
-	if(f) gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_mean")), f->title(true).c_str());
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sum")), CALCULATOR->f_sum->title(true).c_str());
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_mod")), CALCULATOR->f_mod->title(true).c_str());
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_fac")), CALCULATOR->f_factorial->title(true).c_str());
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_ln")), CALCULATOR->f_ln->title(true).c_str());
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sqrt")), CALCULATOR->f_sqrt->title(true).c_str());
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_i")), CALCULATOR->v_i->title(true).c_str());
+	if(f) set_keypad_tooltip("button_mean", f->title(true).c_str());
+	set_keypad_tooltip("button_sum", CALCULATOR->f_sum->title(true).c_str());
+	set_keypad_tooltip("button_mod", CALCULATOR->f_mod->title(true).c_str());
+	set_keypad_tooltip("button_fac", CALCULATOR->f_factorial->title(true).c_str());
+	set_keypad_tooltip("button_ln", CALCULATOR->f_ln->title(true).c_str());
+	set_keypad_tooltip("button_sqrt", CALCULATOR->f_sqrt->title(true).c_str());
+	set_keypad_tooltip("button_i", CALCULATOR->v_i->title(true).c_str());
 	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_i")), (string("<i>") + CALCULATOR->v_i->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(main_builder, "label_i")).name + "</i>").c_str());
 
 	set_keypad_tooltip("button_percent", CALCULATOR->v_percent->title(true).c_str(), CALCULATOR->v_permille->title(true).c_str());
@@ -989,26 +990,26 @@ void create_button_menus(void) {
 	f = CALCULATOR->getActiveFunction("exp2");
 	set_keypad_tooltip("button_expf", CALCULATOR->f_exp->title(true).c_str(), f ? f->title(true).c_str() : NULL);
 	set_keypad_tooltip("button_mod2", CALCULATOR->f_mod->title(true).c_str(), CALCULATOR->f_rem->title(true).c_str());
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_ln2")), CALCULATOR->f_ln->title(true).c_str());
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_int")), CALCULATOR->f_int->title(true).c_str());
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_frac")), CALCULATOR->f_frac->title(true).c_str());
+	set_keypad_tooltip("button_ln2", CALCULATOR->f_ln->title(true).c_str());
+	set_keypad_tooltip("button_int", CALCULATOR->f_int->title(true).c_str());
+	set_keypad_tooltip("button_frac", CALCULATOR->f_frac->title(true).c_str());
 	set_keypad_tooltip("button_stamptodate", CALCULATOR->f_stamptodate->title(true).c_str(), CALCULATOR->f_timestamp->title(true).c_str());
 	set_keypad_tooltip("button_code", CALCULATOR->f_ascii->title(true).c_str(), CALCULATOR->f_char->title(true).c_str());
 	f = CALCULATOR->getActiveFunction("log2");
 	MathFunction *f2 = CALCULATOR->getActiveFunction("log10");
 	set_keypad_tooltip("button_log2", f ? f->title(true).c_str() : NULL, f2 ? f2->title(true).c_str() : NULL);
 	if(f) g_signal_connect(gtk_builder_get_object(main_builder, "button_log2"), "clicked", G_CALLBACK(insert_button_function), (gpointer) f);
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_reciprocal")), "1/x");
+	set_keypad_tooltip("button_reciprocal", "1/x");
 	f = CALCULATOR->getActiveFunction("div");
-	if(f) gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_idiv")), f->title(true).c_str());
+	if(f) set_keypad_tooltip("button_idiv", f->title(true).c_str());
 	set_keypad_tooltip("button_sqrt2", CALCULATOR->f_sqrt->title(true).c_str(), CALCULATOR->f_cbrt->title(true).c_str());
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_abs")), CALCULATOR->f_abs->title(true).c_str());
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_fac2")), CALCULATOR->f_factorial->title(true).c_str());
-	//gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rnd")), CALCULATOR->f_rand->title(true).c_str());
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_cmp")), CALCULATOR->f_bitcmp->title(true).c_str());
+	set_keypad_tooltip("button_abs", CALCULATOR->f_abs->title(true).c_str());
+	set_keypad_tooltip("button_fac2", CALCULATOR->f_factorial->title(true).c_str());
+	//set_keypad_tooltip("button_rnd", CALCULATOR->f_rand->title(true).c_str());
+	set_keypad_tooltip("button_cmp", CALCULATOR->f_bitcmp->title(true).c_str());
 	f = CALCULATOR->getActiveFunction("bitrot");
 	if(f) {
-		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rot")), f->title(true).c_str());
+		set_keypad_tooltip("button_rot", f->title(true).c_str());
 		g_signal_connect(gtk_builder_get_object(main_builder, "button_rot"), "clicked", G_CALLBACK(insert_button_function), (gpointer) f);
 	}
 
@@ -1023,8 +1024,8 @@ void create_button_menus(void) {
 
 	set_keypad_tooltip("button_store2", _("Store result as a variable"), _("Open menu with stored variables"));
 
-	if(caret_as_xor) gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_xor")), _("Bitwise Exclusive OR"));
-	else gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_xor")), (string(_("Bitwise Exclusive OR")) + " (Ctrl+^)").c_str());
+	if(caret_as_xor) set_keypad_tooltip("button_xor", _("Bitwise Exclusive OR"));
+	else set_keypad_tooltip("button_xor", (string(_("Bitwise Exclusive OR")) + " (Ctrl+^)").c_str());
 
 	update_mb_fx_menu();
 	update_mb_sto_menu();

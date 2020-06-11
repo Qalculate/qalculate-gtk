@@ -12296,7 +12296,7 @@ void insert_button_unit(GtkMenuItem*, gpointer user_data) {
 			si_label_str = latest_button_unit->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name;
 		}
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_si")), si_label_str.c_str());
-		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_si")), latest_button_unit->title(true).c_str());
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_si")), latest_button_unit->title(true).c_str());
 	}
 }
 void insert_button_currency(GtkMenuItem*, gpointer user_data) {
@@ -12316,7 +12316,7 @@ void insert_button_currency(GtkMenuItem*, gpointer user_data) {
 			currency_label_str = latest_button_currency->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name;
 		}
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_euro")), currency_label_str.c_str());
-		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_euro")), latest_button_currency->title(true).c_str());
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_euro")), latest_button_currency->title(true).c_str());
 	}
 }
 
@@ -20071,7 +20071,20 @@ void on_convert_entry_unit_changed(GtkEditable *w, gpointer) {
 	if(!keep_unit_selection) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector)));
 }
 
+gboolean reenable_tooltip_timeout(gpointer w) {
+	gtk_widget_set_has_tooltip(GTK_WIDGET(w), TRUE);
+	return FALSE;
+}
+void hide_tooltip(GtkWidget *w) {
+	if(!gtk_widget_get_has_tooltip(w)) return;
+	gtk_widget_set_has_tooltip(GTK_WIDGET(w), FALSE);
+	gtk_widget_trigger_tooltip_query(GTK_WIDGET(w));
+	while(gtk_events_pending()) gtk_main_iteration();
+	g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 1000, reenable_tooltip_timeout, w, NULL);
+}
+
 gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
+	hide_tooltip(w);
 	if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_divide"))) {
 		insertButtonFunction(CALCULATOR->getActiveFunction("inv"));
 		return TRUE;
@@ -20292,6 +20305,7 @@ gboolean keypad_long_press_timeout(gpointer data) {
 		return FALSE;
 	}
 	if(data) {
+		hide_tooltip(GTK_WIDGET(data));
 		if(GTK_WIDGET(data) == GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_to"))) {
 			if(b_busy) return TRUE;
 			update_mb_to_menu();
@@ -20302,6 +20316,7 @@ gboolean keypad_long_press_timeout(gpointer data) {
 		gtk_menu_popup(GTK_MENU(data), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
 #endif
 	} else if(button_press_timeout_w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move2"))) {
+		hide_tooltip(button_press_timeout_w);
 		GtkTextIter iter;
 		gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iter, gtk_text_buffer_get_insert(expressionbuffer));
 		if(button_press_timeout_side == 2) {
@@ -20315,6 +20330,7 @@ gboolean keypad_long_press_timeout(gpointer data) {
 		button_press_timeout_done = true;
 		return TRUE;
 	} else if(button_press_timeout_w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move"))) {
+		hide_tooltip(button_press_timeout_w);
 		if(button_press_timeout_side == 2) {
 			if(expression_history_index > -1) {
 				expression_history_index--;
@@ -20341,6 +20357,7 @@ gboolean keypad_long_press_timeout(gpointer data) {
 		button_press_timeout_done = true;
 		return TRUE;
 	} else if(button_press_timeout_w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_del"))) {
+		hide_tooltip(button_press_timeout_w);
 		on_button_del_clicked(GTK_BUTTON(button_press_timeout_w), NULL);
 		button_press_timeout_done = true;
 		return TRUE;
@@ -20393,6 +20410,7 @@ gboolean on_button_move2_button_event(GtkWidget *w, GdkEventButton *event, gpoin
 		button_press_timeout_id = g_timeout_add(250, keypad_long_press_timeout, NULL);
 		return FALSE;
 	}
+	hide_tooltip(w);
 	if(event->button == 2 || event->button == 3) {
 		if(event->type == GDK_BUTTON_RELEASE) {
 			GtkTextIter iter;
@@ -20418,6 +20436,7 @@ gboolean on_button_move2_button_event(GtkWidget *w, GdkEventButton *event, gpoin
 	return FALSE;
 }
 gboolean on_button_move_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
+	hide_tooltip(w);
 	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
 		g_source_remove(button_press_timeout_id);
 		bool b_this = (button_press_timeout_w == w);
@@ -20436,6 +20455,7 @@ gboolean on_button_move_button_event(GtkWidget *w, GdkEventButton *event, gpoint
 		button_press_timeout_id = g_timeout_add(250, keypad_long_press_timeout, NULL);
 		return FALSE;
 	}
+	hide_tooltip(w);
 	if(event->type == GDK_BUTTON_RELEASE && event->button == 1) {
 		if(event->window && (event->x < 0 || event->y < 0 || event->x > gdk_window_get_width(event->window) || event->y > gdk_window_get_height(event->window))) return FALSE;
 		if(event->window && event->x > gdk_window_get_width(event->window) / 2) {
@@ -20526,7 +20546,6 @@ gboolean on_keypad_menu_button_button_event(GtkWidget *w, GdkEventButton *event,
 	}
 	return FALSE;
 }
-
 
 /*
 	Button clicked -- insert text (1,2,3,... +,-,...)

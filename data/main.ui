@@ -4265,6 +4265,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                 <property name="receives_default">False</property>
                                 <property name="tooltip_text" translatable="yes">Calculate expression</property>
                                 <property name="use_underline">True</property>
+                                <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                 <signal name="clicked" handler="on_button_execute_clicked" swapped="no"/>
                                 <child>
                                   <object class="GtkLabel" id="label_equals">
@@ -4312,6 +4313,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                 <property name="receives_default">False</property>
                                 <property name="tooltip_text" translatable="yes">Clear</property>
                                 <property name="use_underline">True</property>
+                                <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                 <signal name="clicked" handler="on_button_ac_clicked" swapped="no"/>
                                 <child>
                                   <object class="GtkLabel" id="label_ac">
@@ -4396,6 +4398,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                 <property name="use_underline">True</property>
                                 <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
                                 <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                 <signal name="clicked" handler="on_button_ans_clicked" swapped="no"/>
                                 <child>
                                   <object class="GtkLabel" id="label_ans">
@@ -5265,6 +5268,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                         <property name="use_underline">True</property>
                                         <signal name="button-press-event" handler="on_keypad_menu_button_button_event" object="menu_xequals" swapped="no"/>
                                         <signal name="button-release-event" handler="on_keypad_menu_button_button_event" object="menu_xequals" swapped="no"/>
+                                        <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                         <signal name="clicked" handler="on_button_xequals_clicked" swapped="no"/>
                                         <child>
                                           <object class="GtkLabel" id="label_xequals">
@@ -5427,6 +5431,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                         <property name="use_underline">True</property>
                                         <signal name="button-press-event" handler="on_keypad_menu_button_button_event" object="menu_x" swapped="no"/>
                                         <signal name="button-release-event" handler="on_keypad_menu_button_button_event" object="menu_x" swapped="no"/>
+                                        <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                         <signal name="clicked" handler="on_button_x_clicked" swapped="no"/>
                                         <child>
                                           <object class="GtkLabel" id="label_x">
@@ -5484,6 +5489,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                         <property name="use_underline">True</property>
                                         <signal name="button-press-event" handler="on_keypad_menu_button_button_event" object="menu_y" swapped="no"/>
                                         <signal name="button-release-event" handler="on_keypad_menu_button_button_event" object="menu_y" swapped="no"/>
+                                        <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                         <signal name="clicked" handler="on_button_y_clicked" swapped="no"/>
                                         <child>
                                           <object class="GtkLabel" id="label_y">
@@ -5541,6 +5547,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                         <property name="use_underline">True</property>
                                         <signal name="button-press-event" handler="on_keypad_menu_button_button_event" object="menu_z" swapped="no"/>
                                         <signal name="button-release-event" handler="on_keypad_menu_button_button_event" object="menu_z" swapped="no"/>
+                                        <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                         <signal name="clicked" handler="on_button_z_clicked" swapped="no"/>
                                         <child>
                                           <object class="GtkLabel" id="label_z">
@@ -5706,6 +5713,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                         <property name="use_underline">True</property>
                                         <signal name="button-press-event" handler="on_keypad_menu_button_button_event" object="menu_fx" swapped="no"/>
                                         <signal name="button-release-event" handler="on_keypad_menu_button_button_event" object="menu_fx" swapped="no"/>
+                                        <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                         <signal name="clicked" handler="on_button_new_function_clicked" swapped="no"/>
                                         <child>
                                           <object class="GtkLabel" id="label_functions">
@@ -5868,6 +5876,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                         <property name="use_underline">True</property>
                                         <signal name="button-press-event" handler="on_keypad_menu_button_button_event" object="menu_sto" swapped="no"/>
                                         <signal name="button-release-event" handler="on_keypad_menu_button_button_event" object="menu_sto" swapped="no"/>
+                                        <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                         <signal name="clicked" handler="on_button_store_clicked" swapped="no"/>
                                         <child>
                                           <object class="GtkLabel" id="label_sto">
@@ -5925,6 +5934,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                         <property name="use_underline">True</property>
                                         <signal name="button-press-event" handler="on_keypad_menu_button_button_event" object="menu_bases" swapped="no"/>
                                         <signal name="button-release-event" handler="on_keypad_menu_button_button_event" object="menu_bases" swapped="no"/>
+                                        <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                         <signal name="clicked" handler="on_button_bases_clicked" swapped="no"/>
                                         <child>
                                           <object class="GtkLabel" id="label_bases">
@@ -5981,6 +5991,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                         <property name="use_underline">True</property>
                                         <signal name="button-press-event" handler="on_keypad_menu_button_button_event" object="menu_i" swapped="no"/>
                                         <signal name="button-release-event" handler="on_keypad_menu_button_button_event" object="menu_i" swapped="no"/>
+                                        <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                         <signal name="clicked" handler="on_button_i_clicked" swapped="no"/>
                                         <child>
                                           <object class="GtkLabel" id="label_i">
@@ -6037,6 +6048,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                         <property name="use_underline">True</property>
                                         <signal name="button-press-event" handler="on_keypad_menu_button_button_event" object="menu_units" swapped="no"/>
                                         <signal name="button-release-event" handler="on_keypad_menu_button_button_event" object="menu_units" swapped="no"/>
+                                        <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                         <signal name="clicked" handler="on_button_units_clicked" swapped="no"/>
                                         <child>
                                           <object class="GtkLabel" id="label_units">
@@ -6147,6 +6159,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                         <property name="use_underline">True</property>
                                         <signal name="button-press-event" handler="on_keypad_menu_button_button_event" object="menu_to" swapped="no"/>
                                         <signal name="button-release-event" handler="on_keypad_menu_button_button_event" object="menu_to" swapped="no"/>
+                                        <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                         <signal name="clicked" handler="on_button_to_clicked" swapped="no"/>
                                         <child>
                                           <object class="GtkLabel" id="label_to">
@@ -6203,6 +6216,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                         <property name="use_underline">True</property>
                                         <signal name="button-press-event" handler="on_keypad_menu_button_button_event" object="menu_euro" swapped="no"/>
                                         <signal name="button-release-event" handler="on_keypad_menu_button_button_event" object="menu_euro" swapped="no"/>
+                                        <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                         <signal name="clicked" handler="on_button_euro_clicked" swapped="no"/>
                                         <child>
                                           <object class="GtkLabel" id="label_euro">
@@ -6259,6 +6273,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                         <property name="use_underline">True</property>
                                         <signal name="button-press-event" handler="on_keypad_menu_button_button_event" object="menu_si" swapped="no"/>
                                         <signal name="button-release-event" handler="on_keypad_menu_button_button_event" object="menu_si" swapped="no"/>
+                                        <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                         <signal name="clicked" handler="on_button_si_clicked" swapped="no"/>
                                         <child>
                                           <object class="GtkLabel" id="label_si">
@@ -6315,6 +6330,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                         <property name="use_underline">True</property>
                                         <signal name="button-press-event" handler="on_keypad_menu_button_button_event" object="menu_factorize" swapped="no"/>
                                         <signal name="button-release-event" handler="on_keypad_menu_button_button_event" object="menu_factorize" swapped="no"/>
+                                        <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                         <signal name="clicked" handler="on_button_factorize_clicked" swapped="no"/>
                                         <child>
                                           <object class="GtkLabel" id="label_factorize">
@@ -6667,6 +6683,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                         <property name="receives_default">False</property>
                                         <property name="tooltip_text" translatable="yes">Bitwise Left Shift</property>
                                         <property name="use_underline">True</property>
+                                        <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                         <signal name="clicked" handler="insert_left_shift" swapped="no"/>
                                         <child>
                                           <object class="GtkLabel" id="label_left_shift">
@@ -6689,6 +6706,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                         <property name="receives_default">False</property>
                                         <property name="tooltip_text" translatable="yes">Bitwise Right Shift</property>
                                         <property name="use_underline">True</property>
+                                        <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                         <signal name="clicked" handler="insert_right_shift" swapped="no"/>
                                         <child>
                                           <object class="GtkLabel" id="label_right_shift">
@@ -7166,6 +7184,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                         <property name="receives_default">False</property>
                                         <property name="tooltip_text" translatable="yes">Factorize</property>
                                         <property name="use_underline">True</property>
+                                        <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                         <signal name="clicked" handler="on_button_factorize2_clicked" swapped="no"/>
                                         <child>
                                           <object class="GtkLabel" id="label_factorize2">
@@ -7188,6 +7207,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                         <property name="receives_default">False</property>
                                         <property name="tooltip_text" translatable="yes">Floating point conversion</property>
                                         <property name="use_underline">True</property>
+                                        <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                         <signal name="clicked" handler="on_button_fp_clicked" swapped="no"/>
                                         <child>
                                           <object class="GtkLabel" id="label_fp">

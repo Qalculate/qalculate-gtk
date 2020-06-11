@@ -320,6 +320,8 @@ void reload_history(gint from_index = -1);
 extern "C" {
 #endif
 
+void hide_tooltip(GtkWidget*);
+
 void on_tShortcuts_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 void on_tShortcutsType_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 
