@@ -20485,6 +20485,12 @@ gboolean on_button_move_button_event(GtkWidget *w, GdkEventButton *event, gpoint
 	return FALSE;
 }
 
+gboolean keypad_unblock_timeout(gpointer w) {
+	while(gtk_events_pending()) gtk_main_iteration();
+	g_signal_handlers_unblock_matched(w, (GSignalMatchType) (G_SIGNAL_MATCH_DATA | G_SIGNAL_MATCH_ID), g_signal_lookup("clicked", G_OBJECT_TYPE(w)), 0, NULL, NULL, NULL);
+	return FALSE;
+}
+
 gboolean on_keypad_button_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
 	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
 		g_source_remove(button_press_timeout_id);
@@ -20497,7 +20503,11 @@ gboolean on_keypad_button_button_event(GtkWidget *w, GdkEventButton *event, gpoi
 		bool b_this = (button_press_timeout_w == w);
 		button_press_timeout_w = NULL;
 		button_press_timeout_side = 0;
-		if(b_this) return TRUE;
+		if(b_this) {
+			g_signal_handlers_block_matched((gpointer) w, (GSignalMatchType) (G_SIGNAL_MATCH_DATA | G_SIGNAL_MATCH_ID), g_signal_lookup("clicked", G_OBJECT_TYPE(w)), 0, NULL, NULL, NULL);
+			g_timeout_add(50, keypad_unblock_timeout, (gpointer) w);
+			return FALSE;
+		}
 	}
 	if(event->type == GDK_BUTTON_PRESS && event->button == 1) {
 		button_press_timeout_w = w;
