@@ -1,0 +1,21 @@
+--------------------------------------------------------------------------------
+                       Self-contained Qalculate! binaries
+--------------------------------------------------------------------------------
+
+Extract (tar -xJf) and run from anywhere. The binaries are statically compiled
+against libqalculate, icu, and mpfr, libcurl, openssl, readline, and termcap,
+but requires that GTK (>= 3.10) is installed.
+
+qalc - CLI application
+qalculate - GUI application
+
+Also includes an install script and an update script:
+- Run install to install an icon and a desktop file.
+- Run update, from a terminal window, to check if a new version is available and
+update the binaries (qalc and qalculate). This can also be done from within
+the GUI.
+
+The source code and other binaries are available at https://qalculate.github.io
+and the project page, https://github.com/Qalculate.
+
+Qalculate! is free software, licensed under the GNU Public License v2 (or later).

@@ -48,20 +48,41 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="3.11.0" date="2020-06-22">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Allow multiple "to"-conversions in one expression (e.g. "5 m/s to hex to ft to h = 0xE6AF.1E*ft∕h)</li>
+      <li>Support specification of number of bits for hexadecimal "to" conversion (4 to hex16 = 0004)</li>
+      <li>Improvements and fixes for sexagesimal numbers and time format</li>
+      <li>Support for +, -, (, ) Unicode superscripts, and N-Ary Summation symbol</li>
+      <li>Improved display of unit expressions</li>
+      <li>Option to clear history on exit</li>
+      <li>Fix removal of history items, and move to top, when calculate-as-you-type is activated</li>
+      <li>Reduce the height of the result widget</li>
+      <li>Hide tooltip after keypad button click</li>
+      <li>Check for updates menu item</li>
+      <li>Slovenian translation</li>
+      <li>Fix segfault when parsing an expression that contains a prefix with more than one letter followed by a unit and an exponent without exponentiation operator</li>
+      <li>Fixes for the Gnome shell search provider</li>
+      <li>Minor bug fixes and feature improvements</li>
+     </ul>
+   </description>
+  </release>
   <release version="3.10.0" date="2020-05-11">
    <description>
     <p>Changes:</p>
      <ul>
       <li>Support for comments in expressions, using # (number sign)</li>
       <li>Gnome shell search provider</li>
-      <li>History search (GUI)</li>
-      <li>Configurable number of lines in expression entry (GUI)</li>
-      <li>Add angle unit selection to sin, cos, and tan button menus and an new status popup menu, and make it possible to set keyboard shortcut for angle units (GUI)</li>
-      <li>Improved keyboard shortcuts dialog (GUI)</li>
-      <li>New parentheses and other improvements in display of result (GUI)</li>
-      <li>Improved handling of vectors and matrices in insert function dialog (GUI)</li>
-      <li>Configurable time limit for plot (GUI)</li>
-      <li>Ellipsize long variable values used as title in completion popup (fixes segfault, GUI)</li>
+      <li>History search</li>
+      <li>Configurable number of lines in expression entry</li>
+      <li>Add angle unit selection to sin, cos, and tan button menus and an new status popup menu, and make it possible to set keyboard shortcut for angle units</li>
+      <li>Improved keyboard shortcuts dialog</li>
+      <li>New parentheses and other improvements in display of result</li>
+      <li>Improved handling of vectors and matrices in insert function dialog</li>
+      <li>Configurable time limit for plot</li>
+      <li>Ellipsize long variable values used as title in completion popup (fixes segfault)</li>
       <li>Tau (2pi) constant</li>
       <li>Allow angle as argument in nextlunarphase()</li>
       <li>Fix automatic conversion to Newton</li>
@@ -76,12 +97,11 @@
    <description>
     <p>Changes:</p>
      <ul>
-      <li>Persistent keypad option, which makes it possible to show the keypad and the history simultaneously (GUI)</li>
-      <li>Minimal window mode, which hides everything but the expression entry and, when not empty, the result (GUI)</li>
-      <li>Optional (disabled by default at compile time) internal help viewer using WebKitGTK (GUI)</li>
+      <li>Persistent keypad option, which makes it possible to show the keypad and the history simultaneously</li>
+      <li>Minimal window mode, which hides everything but the expression entry and, when not empty, the result</li>
+      <li>Optional (disabled by default at compile time) internal help viewer using WebKitGTK</li>
       <li>Fix segfault during calculation of atan(acos(x)), atan(asin(x)), and asin(atan(x)) when angle unit is degrees or gradians</li>
       <li>Fix order of prime factors</li>
-      <li>Fix immediate closing of plot window if qalc is started in non-interactive mode (persistent parameter added to plot() function)</li>
       <li>Minor bug fixes and feature improvements</li>
      </ul>
    </description>
@@ -91,8 +111,8 @@
     <p>Changes:</p>
      <ul>
       <li>IEEE 754 floating point conversion: float(), floatBits(), floatError(), floatParts(), and floatValue() functions, and fp16, fp32/float, fp64/double, fp80, and fp128 "to" conversion</li>
-      <li>Floating point conversion dialog (GUI)</li>
-      <li>Option to enable/disable new version notification (GUI)</li>
+      <li>Floating point conversion dialog</li>
+      <li>Option to enable/disable new version notification</li>
       <li>Restore A and B (case insensitive) digits in input of duodecimal number, use 0d as prefix for input of duodecimal numbers, and always interpret expression as duodecimal if it contains duodecimal Unicode characters</li>
       <li>Modify behavior of floor(), ceil(), trunc and round(): mark result as exact, allow approximate calculation of argument in exact mode, return interval when appropriate, and add "number of decimals" and "round halfway to even" (defaults to away from zero) arguments to round()</li>
       <li>Fix 1kOhm||1kOhm (and similar)</li>
@@ -106,7 +126,7 @@
    <description>
     <p>Changes:</p>
      <ul>
-      <li>Configurable keyboard shortcuts (GUI)</li>
+      <li>Configurable keyboard shortcuts</li>
       <li>New functions: bernoulli(), erfi(), fresnels(), fresnelc()</li>
       <li>Improved zeta(), with exact values for negative and even integers, support for all real values, and optional second argument for calculation of Hurwitz zeta</li>
       <li>Support for complex numbers in Ei(), li(), Si(), Ci(), Shi(), and Chi()</li>
@@ -131,8 +151,8 @@
       <li>New functions: dof() for photography depth of field calculation; awg() and awgd() for American Wire Gauge conversion; romberg() for numerical integration; randnorm(), randpoisson(), randrayleigh(), randexp(), and randuniform() for random numbers with different distributions; normdist(), expondist(), and binomdist() for distribution probability calculations</li>
       <li>New units: cmil and kcmil</li>
       <li>rand() (and related functions) now accepts an additional argument for specifying the number of random values to generate</li>
-      <li>Option to select custom keypad or application font (GUI)</li>
-      <li>Options to customize the window title: different modes selectable in preferences, command line option, and settitle() function (GUI)</li>
+      <li>Option to select custom keypad or application font</li>
+      <li>Options to customize the window title: different modes selectable in preferences, command line option, and settitle() function</li>
       <li>Minor bug fixes and feature improvements</li>
      </ul>
    </description>
@@ -148,9 +168,9 @@
       <li>poisson() function</li>
       <li>Fix steradian conversion</li>
       <li>Fix and improve integral of abs(f(x))</li>
-      <li>Add calculate-as-you-type result to history after idle time (GUI)</li>
-      <li>Negate, sum, and "LAST x" RPN buttons, keyboard shortcuts for RPN stack manipulation, and various other RPN improvements (GUI)</li>
-      <li>Fix segfault when saving mode/settings (on exit) if history is empty (GUI)</li>
+      <li>Add calculate-as-you-type result to history after idle time</li>
+      <li>Negate, sum, and "LAST x" RPN buttons, keyboard shortcuts for RPN stack manipulation, and various other RPN improvements</li>
+      <li>Fix segfault when saving mode/settings (on exit) if history is empty</li>
       <li>Minor bug fixes and feature improvements</li>
      </ul>
    </description>
@@ -165,10 +185,10 @@
       <li>Smarter comma interpretation (when defined as decimal separator, but used differently)</li>
       <li>Show warning when multiple decimal separators are used in a single number</li>
       <li>Man pages (documentation for Unix-like operating systems)</li>
-      <li>Option to automatically calculate the current expression on each change, as you type (GUI)</li>
-      <li>Fix segfault with command line expression (GUI)</li>
-      <li>Option to delete selected history items (GUI)</li>
-      <li>RPN stack drag and drop (GUI)</li>
+      <li>Option to automatically calculate the current expression on each change, as you type</li>
+      <li>Fix segfault with command line expression</li>
+      <li>Option to delete selected history items</li>
+      <li>RPN stack drag and drop</li>
       <li>Minor bug fixes and feature improvements</li>
      </ul>
    </description>
@@ -195,10 +215,10 @@
     <p>Changes:</p>
      <ul>
       <li>Updated physical constants (CODATA 2018)</li>
-      <li>Programming keypad (GUI) and programming mode (CLI)</li>
-      <li>Bookmarks and protect (from disappearing of the end of the list) option for history (GUI)</li>
-      <li>New and updated keypad buttons (GUI)</li>
-      <li>Keypad in number bases dialog (GUI)</li>
+      <li>Programming keypad</li>
+      <li>Bookmarks and protect (from disappearing of the end of the list) option for history</li>
+      <li>New and updated keypad buttons</li>
+      <li>Keypad in number bases dialog</li>
       <li>bitrot() function for bit rotation</li>
       <li>Bitwise XOR, mod and rem operators, % as modulo, // and \ operators for integer division</li>
       <li>Change order of operations for logical and bitwise operators to better match C operator precedence</li>
@@ -209,8 +229,8 @@
       <li>Recognize "factor" and "expand" commands at the beginning expressions</li>
       <li>For vector + scalar, add scalar to all components</li>
       <li>uptime variable</li>
-      <li>Fix random segfault on automatic unit category selection (GUI)</li>
-      <li>Fix display of number in sexagesimal base or time format (GUI)</li>
+      <li>Fix random segfault on automatic unit category selection</li>
+      <li>Fix display of number in sexagesimal base or time format</li>
       <li>Fix abs(x)=a for complex x</li>
       <li>Minor bug fixes and feature improvements</li>
      </ul>
@@ -228,7 +248,7 @@
       <li>Improved output with show ending zeroes activated</li>
       <li>Fix ignore system language on Windows</li>
       <li>Fix atomic unit of velocity</li>
-      <li>Fix and improve keypad menus, and add dynamic convert to menu to result popup menu (GUI)</li>
+      <li>Fix and improve keypad menus, and add dynamic convert to menu to result popup menu</li>
       <li>Fix compilation errors because of erroneous limits.h inclusion</li>
       <li>Fix "factorized result is wrong" error</li>
       <li>Minor bug fixes and feature improvements</li>
@@ -339,7 +359,6 @@
       <li>Option to keep insert function dialog open for repeated function calculations</li>
       <li>Minor bug fixes and feature enhancements</li>
      </ul>
-    <p>This release does not include any changes to libqalculate or the CLI application.</p>
    </description>
   </release>
   <release version="2.6.0" date="2018-06-11">
@@ -402,7 +421,7 @@
       <li>Unit-like conversion for physical constants (using "to")</li>
       <li>Allow user to change decimal separator (and consquently argument separator) independantly of locale</li>
       <li>Enhanced timastamp() and stamptodate()</li>
-      <li>Fix function completion (GUI)</li>
+      <li>Fix function completion</li>
       <li>Fix lambertw()/productlog()</li>
       <li>Fix display of parsed sexagesimal numbers</li>
      </ul>

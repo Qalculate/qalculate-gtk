@@ -139,7 +139,7 @@ AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[The package name for gettext])
 
 dnl Please keep this in alphabetical order
-ALL_LINGUAS="nl sv"
+ALL_LINGUAS="nl sl sv"
 AM_GLIB_GNU_GETTEXT
 
 dnl AM_GLIB_GNU_GETTEXT sets $DATADIRNAME

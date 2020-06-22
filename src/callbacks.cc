@@ -468,7 +468,7 @@ int ExpressionFunction::calculate(MathStructure &mstruct, const MathStructure &v
 	}
 	return 1;
 }
-SetTitleFunction::SetTitleFunction() : MathFunction(_("settitle"), 1, 1, CALCULATOR->f_warning->category(), _("Set Window Title")) {
+SetTitleFunction::SetTitleFunction() : MathFunction("settitle", 1, 1, CALCULATOR->f_warning->category(), _("Set Window Title")) {
 	setArgumentDefinition(1, new TextArgument());
 }
 int SetTitleFunction::calculate(MathStructure &mstruct, const MathStructure &vargs, const EvaluationOptions&) {
@@ -20071,16 +20071,15 @@ void on_convert_entry_unit_changed(GtkEditable *w, gpointer) {
 	if(!keep_unit_selection) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector)));
 }
 
-gboolean reenable_tooltip_timeout(gpointer w) {
-	gtk_widget_set_has_tooltip(GTK_WIDGET(w), TRUE);
+gboolean reenable_tooltip(GtkWidget *w, gpointer) {
+	gtk_widget_set_has_tooltip(w, TRUE);
+	g_signal_handlers_disconnect_matched((gpointer) w, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) reenable_tooltip, NULL);
 	return FALSE;
 }
 void hide_tooltip(GtkWidget *w) {
 	if(!gtk_widget_get_has_tooltip(w)) return;
-	gtk_widget_set_has_tooltip(GTK_WIDGET(w), FALSE);
-	gtk_widget_trigger_tooltip_query(GTK_WIDGET(w));
-	while(gtk_events_pending()) gtk_main_iteration();
-	g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 1000, reenable_tooltip_timeout, w, NULL);
+	gtk_widget_set_has_tooltip(w, FALSE);
+	g_signal_connect(w, "leave-notify-event", G_CALLBACK(reenable_tooltip), NULL);
 }
 
 gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {

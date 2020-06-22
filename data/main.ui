@@ -4075,6 +4075,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                             <property name="receives_default">True</property>
                             <property name="tooltip_text" translatable="yes">Show/hide programming keypad</property>
                             <property name="margin_bottom">12</property>
+                            <signal name="toggled" handler="hide_tooltip" swapped="no"/>
                             <signal name="toggled" handler="on_button_programmers_keypad_toggled" swapped="no"/>
                             <child>
                               <object class="GtkBox" id="box_programmers_icon">
@@ -4812,6 +4813,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                     <property name="use_underline">True</property>
                                     <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
                                     <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                     <signal name="clicked" handler="on_button_brace_wrap_clicked" swapped="no"/>
                                     <child>
                                       <object class="GtkLabel" id="label_brace_wrap">
