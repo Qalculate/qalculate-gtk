@@ -26,6 +26,12 @@
 
 #include "main.h"
 
+enum {
+	PROGRAMMING_KEYPAD = 1,
+	HIDE_LEFT_KEYPAD = 2,
+	HIDE_RIGHT_KEYPAD = 4
+};
+
 struct mode_struct {
 	PrintOptions po;
 	EvaluationOptions eo;
@@ -39,7 +45,7 @@ struct mode_struct {
 	bool interval;
 	bool adaptive_interval_display;
 	bool variable_units_enabled;
-	bool keypad;
+	int keypad;
 	bool autocalc;
 	bool complex_angle_form;
 };
@@ -351,7 +357,7 @@ void on_message_bar_response(GtkInfoBar *w, gint response_id, gpointer);
 void on_expressiontext_populate_popup(GtkTextView *w, GtkMenu *menu, gpointer user_data);
 void on_combobox_base_changed(GtkComboBox *w, gpointer user_data);
 void on_combobox_numerical_display_changed(GtkComboBox *w, gpointer user_data);
-void on_combobox_fraction_mode_changed(GtkComboBox *w, gpointer user_data);
+void on_button_fraction_toggled(GtkToggleButton *w, gpointer user_data);
 void on_button_exact_toggled(GtkToggleButton *w, gpointer user_data);
 void on_expander_keypad_expanded(GObject *o, GParamSpec *param_spec, gpointer user_data);
 void on_expander_history_expanded(GObject *o, GParamSpec *param_spec, gpointer user_data);

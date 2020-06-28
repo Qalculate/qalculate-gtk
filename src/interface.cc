@@ -233,7 +233,7 @@ void set_assumptions_items(AssumptionType at, AssumptionSign as) {
 	}
 }
 
-void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, AssumptionType at, AssumptionSign as, bool in_rpn_mode, int precision, bool interval, bool variable_units, bool id_adaptive, bool keypad, bool autocalc, bool caf, bool initial_update) {
+void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, AssumptionType at, AssumptionSign as, bool in_rpn_mode, int precision, bool interval, bool variable_units, bool id_adaptive, int keypad, bool autocalc, bool caf, bool initial_update) {
 
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_syntax")), evalops.parse_options.rpn);
 	if(initial_update) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_rpn_syntax")), evalops.parse_options.rpn);
@@ -470,22 +470,22 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 	switch(po.number_fraction_format) {
 		case FRACTION_DECIMAL: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
-			if(initial_update) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 0);
+			if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), FALSE);
 			break;
 		}
 		case FRACTION_DECIMAL_EXACT: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal_exact")), TRUE);
-			if(initial_update) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 1);
+			if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), FALSE);
 			break;
 		}
 		case FRACTION_COMBINED: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
-			if(initial_update) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 3);
+			if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), TRUE);
 			break;
 		}
 		case FRACTION_FRACTIONAL: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
-			if(initial_update) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 2);
+			if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), TRUE);
 			break;
 		}
 	}
@@ -580,7 +580,38 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 		}
 	}
 	update_keypad_bases();
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_programmers_keypad")), keypad == 1);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_programmers_keypad")), keypad & PROGRAMMING_KEYPAD);
+	visible_keypad = keypad;
+	
+	if(!initial_update) {
+		if(keypad & HIDE_LEFT_KEYPAD) {
+			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "stack_left_buttons")));
+			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "event_hide_right_buttons")));
+			gint h;
+			gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), NULL, &h);
+			gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), 1, 1);
+		} else if(keypad & HIDE_RIGHT_KEYPAD) {
+			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "table_buttons")));
+			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "event_hide_left_buttons")));
+			gint h;
+			gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), NULL, &h);
+			gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), 1, 1);
+		}
+	}
+	/*switch(keypad) {
+		case 1: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_keypad_programming")), TRUE);
+			break;
+		}
+		case 2: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_keypad_minimal")), TRUE);
+			break;
+		}
+		default: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_keypad_standard")), TRUE);
+			break;
+		}
+	}*/
 }
 
 gboolean completion_row_separator_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer) {
@@ -1152,12 +1183,34 @@ void create_main_window(void) {
 #	endif
 #endif
 
-	set_mode_items(printops, evalops, CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign(), rpn_mode, CALCULATOR->getPrecision(), CALCULATOR->usesIntervalArithmetic(), CALCULATOR->variableUnitsEnabled(), adaptive_interval_display, visible_keypad, auto_calculate, complex_angle_form, true);
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
+	gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
+	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
+	gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(main_builder, "image_keypad")), 6);
+	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "image_keypad")), 6);
+	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), 24);
+#else
+	gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
+	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
+	gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(main_builder, "image_keypad")), 6);
+	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "image_keypad")), 6);
+	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), 24);
+#endif
 
-	if(visible_keypad == 1) {
+	if(visible_keypad & PROGRAMMING_KEYPAD) {
 		gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "programmers_keypad")));
 		gtk_stack_set_visible_child_name(GTK_STACK(gtk_builder_get_object(main_builder, "stack_keypad_top")), "page1");
 	}
+	
+	if(visible_keypad & HIDE_LEFT_KEYPAD) {
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "stack_left_buttons")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "event_hide_right_buttons")));
+	} else if(visible_keypad & HIDE_RIGHT_KEYPAD) {
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "table_buttons")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "event_hide_left_buttons")));
+	}
+	
+	set_mode_items(printops, evalops, CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign(), rpn_mode, CALCULATOR->getPrecision(), CALCULATOR->usesIntervalArithmetic(), CALCULATOR->variableUnitsEnabled(), adaptive_interval_display, visible_keypad, auto_calculate, complex_angle_form, true);
 
 	if(use_custom_app_font) {
 		gchar *gstr = font_name_to_css(custom_app_font.c_str());

@@ -116,6 +116,43 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
   </object>
+  <object class="GtkMenu" id="menu_keypad">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_keypad_standard">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Standard</property>
+        <property name="use_underline">True</property>
+        <property name="active">True</property>
+        <property name="draw_as_radio">True</property>
+        <signal name="toggled" handler="on_menu_item_keypad_standard_toggled" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_keypad_minimal">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Minimal</property>
+        <property name="use_underline">True</property>
+        <property name="draw_as_radio">True</property>
+        <property name="group">menu_item_keypad_standard</property>
+        <signal name="toggled" handler="on_menu_item_keypad_minimal_toggled" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_keypad_programming">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Programming</property>
+        <property name="use_underline">True</property>
+        <property name="draw_as_radio">True</property>
+        <property name="group">menu_item_keypad_standard</property>
+        <signal name="toggled" handler="on_menu_item_keypad_programming_toggled" swapped="no"/>
+      </object>
+    </child>
+  </object>
   <object class="GtkMenu" id="menu_ln">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -4069,6 +4106,26 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                         <property name="vexpand">False</property>
                         <property name="spacing">6</property>
                         <child>
+                          <object class="GtkMenuButton" id="button_keypad">
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="margin_bottom">12</property>
+                            <property name="popup">menu_keypad</property>
+                            <child>
+                              <object class="GtkImage" id="image_keypad">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="icon_name">input-dialpad-symbolic</property>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
                           <object class="GtkToggleButton" id="button_programmers_keypad">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
@@ -4099,7 +4156,6 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="label">P</property>
-                                    <property name="use_markup">True</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -4113,7 +4169,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">0</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
@@ -4143,23 +4199,17 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkComboBoxText" id="combobox_fraction_mode">
+                                  <object class="GtkToggleButton" id="button_fraction">
+                                    <property name="label">a / b</property>
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="tooltip_text" translatable="yes">Rational number form</property>
-                                    <property name="active">0</property>
-                                    <items>
-                                      <item id="&lt;Ange ID&gt;" translatable="yes">Decimal fractions</item>
-                                      <item translatable="yes">Exact decimal fractions</item>
-                                      <item translatable="yes">Simple fractions</item>
-                                      <item translatable="yes">Mixed fractions</item>
-                                    </items>
-                                    <signal name="changed" handler="on_combobox_fraction_mode_changed" swapped="no"/>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                    <signal name="toggled" handler="on_button_fraction_toggled" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="expand">True</property>
                                     <property name="fill">True</property>
-                                    <property name="position">2</property>
+                                    <property name="position">1</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -4217,8 +4267,6 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                               <object class="GtkLabel" id="label_result_bases">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="margin_left">6</property>
-                                <property name="margin_right">6</property>
                                 <property name="margin_bottom">3</property>
                                 <property name="justify">right</property>
                                 <property name="selectable">True</property>
@@ -4233,7 +4281,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">2</property>
                           </packing>
                         </child>
                       </object>
@@ -4247,7 +4295,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                       <object class="GtkGrid" id="grid_buttons">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="column_spacing">18</property>
+                        <property name="column_spacing">2</property>
                         <child>
                           <object class="GtkGrid" id="table_buttons">
                             <property name="visible">True</property>
@@ -4320,6 +4368,8 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                   <object class="GtkLabel" id="label_ac">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
+                                    <property name="margin_top">6</property>
+                                    <property name="margin_bottom">6</property>
                                     <property name="label" translatable="yes">AC</property>
                                   </object>
                                 </child>
@@ -5023,7 +5073,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                             </child>
                           </object>
                           <packing>
-                            <property name="left_attach">1</property>
+                            <property name="left_attach">2</property>
                             <property name="top_attach">0</property>
                           </packing>
                         </child>
@@ -7261,6 +7311,65 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkBox" id="box_hide_buttons">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="valign">center</property>
+                            <property name="orientation">vertical</property>
+                            <property name="homogeneous">True</property>
+                            <child>
+                              <object class="GtkEventBox" id="event_hide_left_buttons">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Show/hide left keypad</property>
+                                <property name="valign">start</property>
+                                <property name="margin_top">6</property>
+                                <property name="margin_bottom">6</property>
+                                <signal name="button-release-event" handler="on_hide_left_buttons_button_release_event" swapped="no"/>
+                                <child>
+                                  <object class="GtkImage" id="image_hide_left_buttons">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="icon_name">pan-end-symbolic</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkEventBox" id="event_hide_right_buttons">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Show/hide right keypad</property>
+                                <property name="valign">end</property>
+                                <property name="margin_top">6</property>
+                                <property name="margin_bottom">6</property>
+                                <signal name="button-release-event" handler="on_hide_right_buttons_button_release_event" swapped="no"/>
+                                <child>
+                                  <object class="GtkImage" id="image_hide_right_buttons">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="icon_name">pan-start-symbolic</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
                             <property name="top_attach">0</property>
                           </packing>
                         </child>

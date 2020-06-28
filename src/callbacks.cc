@@ -210,7 +210,7 @@ bool parsed_had_errors = false, parsed_had_warnings = false;
 vector<DataProperty*> tmp_props;
 vector<DataProperty*> tmp_props_orig;
 bool keep_unit_selection = false;
-int visible_keypad = 0;
+int visible_keypad = 0, previous_keypad = 0;
 int programming_inbase = 0, programming_outbase = 0;
 bool title_modified = false;
 string current_mode;
@@ -1243,7 +1243,7 @@ bool is_at_beginning_of_expression(bool allow_selection = false) {
 }
 
 void set_assumptions_items(AssumptionType, AssumptionSign);
-void set_mode_items(const PrintOptions&, const EvaluationOptions&, AssumptionType, AssumptionSign, bool, int, bool, bool, bool, bool, bool, bool, bool);
+void set_mode_items(const PrintOptions&, const EvaluationOptions&, AssumptionType, AssumptionSign, bool, int, bool, bool, bool, int, bool, bool, bool);
 
 string sdot, saltdot, sdiv, sslash, stimes, sminus;
 string sdot_s, saltdot_s, sdiv_s, sslash_s, stimes_s, sminus_s;
@@ -1442,6 +1442,9 @@ void set_unicode_buttons() {
 		if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(main_builder, "label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), SIGN_DIVISION_SLASH);
 		else if(can_display_unicode_string_function(SIGN_DIVISION, (void*) gtk_builder_get_object(main_builder, "label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), SIGN_DIVISION);
 		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), DIVISION);
+		
+		if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(main_builder, "button_fraction"))) gtk_button_set_label(GTK_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), "a " SIGN_DIVISION_SLASH " b");
+		else gtk_button_set_label(GTK_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), "a " DIVISION " b");
 
 		if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(main_builder, "label_factorize"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize2")), "a" SIGN_MULTIPLICATION "b");
 		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize2")), "a" MULTIPLICATION "b");
@@ -1485,6 +1488,8 @@ void set_unicode_buttons() {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sum")), "sum");
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_pi")), "pi");
 		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize2")), "a" MULTIPLICATION "b");
+		
+		gtk_button_set_label(GTK_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), "a " DIVISION " b");
 
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sub")), MINUS);
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_times")), MULTIPLICATION);
@@ -2911,7 +2916,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			display_errors(NULL, NULL, NULL, 1);
 			result_bin = ""; result_oct = "", result_dec = "", result_hex = "";
 			if(max_bases.isZero()) {max_bases = 2; max_bases ^= 64; min_bases = -max_bases;}
-			if(visible_keypad == 1 && !CALCULATOR->aborted() && ((displayed_mstruct->isNumber() && displayed_mstruct->number() < max_bases && displayed_mstruct->number() > min_bases) || (displayed_mstruct->isNegate() && (*displayed_mstruct)[0].isNumber() && (*displayed_mstruct)[0].number() < max_bases && (*displayed_mstruct)[0].number() > min_bases))) {
+			if(visible_keypad & PROGRAMMING_KEYPAD && !CALCULATOR->aborted() && ((displayed_mstruct->isNumber() && displayed_mstruct->number() < max_bases && displayed_mstruct->number() > min_bases) || (displayed_mstruct->isNegate() && (*displayed_mstruct)[0].isNumber() && (*displayed_mstruct)[0].number() < max_bases && (*displayed_mstruct)[0].number() > min_bases))) {
 				Number nr;
 				if(displayed_mstruct->isNumber()) {
 					nr = displayed_mstruct->number();
@@ -15573,7 +15578,23 @@ void on_combobox_base_changed(GtkComboBox *w, gpointer) {
 	}
 }
 void on_combobox_numerical_display_changed(GtkComboBox *w, gpointer) {
-	switch(gtk_combo_box_get_active(w)) {
+	gint i = gtk_combo_box_get_active(w);
+	if(i == 0 || i == 4) {
+		if(printops.number_fraction_format == FRACTION_FRACTIONAL) {
+			bool bru_bak = block_result_update;
+			block_result_update = true;
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
+			block_result_update = bru_bak;
+		}
+	} else {
+		if(printops.number_fraction_format == FRACTION_COMBINED) {
+			bool bru_bak = block_result_update;
+			block_result_update = true;
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
+			block_result_update = bru_bak;
+		}
+	}
+	switch(i) {
 		case 0: {
 			printops.negative_exponents = false;
 			printops.sort_options.minus_last = true;
@@ -15620,24 +15641,13 @@ void on_button_exact_toggled(GtkToggleButton *w, gpointer) {
 
 }
 
-void on_combobox_fraction_mode_changed(GtkComboBox *w, gpointer) {
-	switch(gtk_combo_box_get_active(w)) {
-		case 0: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
-			break;
-		}
-		case 2: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
-			break;
-		}
-		case 1: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal_exact")), TRUE);
-			break;
-		}
-		case 3: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
-			break;
-		}
+void on_button_fraction_toggled(GtkToggleButton *w, gpointer) {
+	if(gtk_toggle_button_get_active(w)) {
+		if(printops.min_exp != EXP_NONE && printops.min_exp != EXP_PRECISION) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
+		else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
+	} else {
+		if(evalops.approximation == APPROXIMATION_EXACT) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal_exact")), TRUE);
+		else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
 	}
 }
 
@@ -17238,11 +17248,11 @@ void save_preferences(bool mode) {
 	fprintf(file, "hexadecimal_twos_complement=%i\n", printops.hexadecimal_twos_complement);
 	fprintf(file, "twos_complement_input=%i\n", twos_complement_in);
 	fprintf(file, "hexadecimal_twos_complement_input=%i\n", hexadecimal_twos_complement_in);
-	if(visible_keypad != 1 && programming_outbase != 0 && programming_inbase != 0) {
+	if(~visible_keypad & PROGRAMMING_KEYPAD && programming_outbase != 0 && programming_inbase != 0) {
 		fprintf(file, "programming_outbase=%i\n", programming_outbase);
 		fprintf(file, "programming_inbase=%i\n", programming_inbase);
 	}
-	if(visible_keypad == 1 && versatile_exact) {
+	if(visible_keypad & PROGRAMMING_KEYPAD && versatile_exact) {
 		fprintf(file, "general_exact=%i\n", versatile_exact);
 	}
 	if(default_bits >= 0) fprintf(file, "bit_width=%i\n", default_bits);
@@ -19363,9 +19373,75 @@ gboolean on_resultview_popup_menu(GtkWidget*, gpointer) {
 	return TRUE;
 }
 
+void on_menu_item_keypad_programming_toggled(GtkCheckMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(w)) return;
+	previous_keypad = visible_keypad;
+	visible_keypad = 1;
+	if(evalops.approximation == APPROXIMATION_EXACT) {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact")), FALSE);
+		versatile_exact = true;
+	} else {
+		versatile_exact = false;
+	}
+	if(programming_inbase > 0 && programming_outbase != 0 && (((programming_inbase != 10 || (programming_outbase != 10 && programming_outbase > 0 && programming_outbase <= 36)) && evalops.parse_options.base == 10 && printops.base == 10) || evalops.parse_options.base < 2 || printops.base < 2 || evalops.parse_options.base > 36 || printops.base > 16)) {
+		if(printops.base != programming_outbase) {
+			printops.base = programming_outbase;
+			set_output_base_from_dialog(programming_outbase);
+			output_base_updated_from_menu();
+			if(evalops.parse_options.base == programming_inbase) result_format_updated();
+		}
+		if(evalops.parse_options.base != programming_inbase) {
+			evalops.parse_options.base = programming_inbase;
+			input_base_updated_from_menu();
+			update_keypad_bases();
+			expression_format_updated();
+		}
+	}
+	programming_inbase = 0;
+	programming_outbase = 0;
+	gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "programmers_keypad")));
+	gtk_stack_set_visible_child_name(GTK_STACK(gtk_builder_get_object(main_builder, "stack_keypad_top")), "page1");
+	gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "stack_left_buttons")));
+	focus_keeping_selection();
+}
+void on_menu_item_keypad_standard_toggled(GtkCheckMenuItem *w, gpointer) {
+	previous_keypad = visible_keypad;
+	visible_keypad = 0;
+	if(previous_keypad == 1 && versatile_exact && evalops.approximation == APPROXIMATION_TRY_EXACT) {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact")), TRUE);
+		programming_inbase = evalops.parse_options.base;
+		programming_outbase = printops.base;
+		if(evalops.parse_options.base != 10) clear_expression_text();
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_dec")), TRUE);
+	}
+	gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "versatile_keypad")));
+	gtk_stack_set_visible_child_name(GTK_STACK(gtk_builder_get_object(main_builder, "stack_keypad_top")), "page0");
+	gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "stack_left_buttons")));
+	focus_keeping_selection();
+}
+void on_menu_item_keypad_minimal_toggled(GtkCheckMenuItem *w, gpointer) {
+	gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "stack_left_buttons")));
+	previous_keypad = visible_keypad;
+	visible_keypad = 2;
+	if(previous_keypad == 1 && versatile_exact && evalops.approximation == APPROXIMATION_TRY_EXACT) {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact")), TRUE);
+		programming_inbase = evalops.parse_options.base;
+		programming_outbase = printops.base;
+		if(evalops.parse_options.base != 10) clear_expression_text();
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_dec")), TRUE);
+	}
+	gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "versatile_keypad")));
+	gtk_stack_set_visible_child_name(GTK_STACK(gtk_builder_get_object(main_builder, "stack_keypad_top")), "page0");
+	gint h;
+	gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), NULL, &h);
+	gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), 1, 1);
+	focus_keeping_selection();
+}
+
 void on_button_programmers_keypad_toggled(GtkToggleButton *w, gpointer) {
+	previous_keypad = visible_keypad;
 	if(gtk_toggle_button_get_active(w)) {
-		visible_keypad = 1;
+		visible_keypad = visible_keypad | PROGRAMMING_KEYPAD;
 		if(evalops.approximation == APPROXIMATION_EXACT) {
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact")), FALSE);
 			versatile_exact = true;
@@ -19396,7 +19472,7 @@ void on_button_programmers_keypad_toggled(GtkToggleButton *w, gpointer) {
 		}
 		gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "versatile_keypad")));
 		gtk_stack_set_visible_child_name(GTK_STACK(gtk_builder_get_object(main_builder, "stack_keypad_top")), "page0");
-		visible_keypad = 0;
+		visible_keypad = visible_keypad & ~PROGRAMMING_KEYPAD;
 		programming_inbase = evalops.parse_options.base;
 		programming_outbase = printops.base;
 		if(evalops.parse_options.base != 10) clear_expression_text();
@@ -19405,13 +19481,41 @@ void on_button_programmers_keypad_toggled(GtkToggleButton *w, gpointer) {
 	focus_keeping_selection();
 }
 
-void on_popup_menu_programmers_keypad_toggled(GtkCheckMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(w)) return;
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_programmers_keypad")), TRUE);
+gboolean on_hide_left_buttons_button_release_event(GtkWidget*, GdkEventButton *event, gpointer) {
+	if(event->type == GDK_BUTTON_RELEASE && event->button == 1) {
+		bool hide_left_keypad = gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "stack_left_buttons")));
+		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "stack_left_buttons")), !hide_left_keypad);
+		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "event_hide_right_buttons")), !hide_left_keypad);
+		if(hide_left_keypad) {
+			visible_keypad = visible_keypad | HIDE_LEFT_KEYPAD;
+			gint h;
+			gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), NULL, &h);
+			gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), 1, 1);
+		} else {
+			visible_keypad = visible_keypad & ~HIDE_LEFT_KEYPAD;
+		}
+		focus_keeping_selection();
+		return TRUE;
+	}
+	return FALSE;
 }
-void on_popup_menu_general_keypad_toggled(GtkCheckMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(w)) return;
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_programmers_keypad")), FALSE);
+gboolean on_hide_right_buttons_button_release_event(GtkWidget*, GdkEventButton *event, gpointer) {
+	if(event->type == GDK_BUTTON_RELEASE && event->button == 1) {
+		bool hide_right_keypad = gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "table_buttons")));
+		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "table_buttons")), !hide_right_keypad);
+		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "event_hide_left_buttons")), !hide_right_keypad);
+		if(hide_right_keypad) {
+			visible_keypad = visible_keypad | HIDE_RIGHT_KEYPAD;
+			gint h;
+			gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), NULL, &h);
+			gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), 1, 1);
+		} else {
+			visible_keypad = visible_keypad & ~HIDE_RIGHT_KEYPAD;
+		}
+		focus_keeping_selection();
+		return TRUE;
+	}
+	return FALSE;
 }
 
 gboolean on_units_entry_from_val_focus_out_event(GtkEntry*, GdkEventFocus*, gpointer) {
@@ -25068,9 +25172,9 @@ void on_menu_item_fraction_decimal_activate(GtkMenuItem *w, gpointer) {
 	printops.restrict_fraction_length = false;
 	automatic_fraction = false;
 
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 0);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), FALSE);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
 
 	result_format_updated();
 }
@@ -25081,9 +25185,9 @@ void on_menu_item_fraction_decimal_exact_activate(GtkMenuItem *w, gpointer) {
 	printops.restrict_fraction_length = false;
 	automatic_fraction = false;
 
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 1);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), FALSE);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
 
 	result_format_updated();
 }
@@ -25094,9 +25198,9 @@ void on_menu_item_fraction_combined_activate(GtkMenuItem *w, gpointer) {
 	printops.restrict_fraction_length = false;
 	automatic_fraction = false;
 
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 3);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), TRUE);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
 
 	result_format_updated();
 }
@@ -25107,9 +25211,9 @@ void on_menu_item_fraction_fraction_activate(GtkMenuItem *w, gpointer) {
 	printops.restrict_fraction_length = true;
 	automatic_fraction = false;
 
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_fraction_mode")), 2);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_fraction_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_fraction_mode_changed, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), TRUE);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
 
 	result_format_updated();
 }
@@ -28074,8 +28178,8 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 				return true;
 			}
 			case SHORTCUT_TYPE_PROGRAMMING: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_programmers_keypad")), visible_keypad != 1);
-				if(visible_keypad == 1) gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad")), true);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_programmers_keypad")), ~visible_keypad & PROGRAMMING_KEYPAD);
+				if(visible_keypad & PROGRAMMING_KEYPAD) gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad")), true);
 				return true;
 			}
 			case SHORTCUT_TYPE_KEYPAD: {
