@@ -175,6 +175,7 @@ extern bool auto_calculate;
 extern bool complex_angle_form;
 extern bool check_version;
 extern int max_plot_time;
+extern int default_fraction_fraction;
 
 extern string nbases_error_color, nbases_warning_color;
 
@@ -466,7 +467,8 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_calculate_variables")), eo.calculate_variables);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_allow_complex")), eo.allow_complex);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_allow_infinite")), eo.allow_infinite);
-
+	
+	int dff = default_fraction_fraction;
 	switch(po.number_fraction_format) {
 		case FRACTION_DECIMAL: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
@@ -489,6 +491,7 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 			break;
 		}
 	}
+	default_fraction_fraction = dff;
 
 	switch(eo.complex_number_form) {
 		case COMPLEX_NUMBER_FORM_RECTANGULAR: {
@@ -598,20 +601,6 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 			gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), 1, 1);
 		}
 	}
-	/*switch(keypad) {
-		case 1: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_keypad_programming")), TRUE);
-			break;
-		}
-		case 2: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_keypad_minimal")), TRUE);
-			break;
-		}
-		default: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_keypad_standard")), TRUE);
-			break;
-		}
-	}*/
 }
 
 gboolean completion_row_separator_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer) {
@@ -1186,14 +1175,10 @@ void create_main_window(void) {
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
 	gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
 	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
-	gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(main_builder, "image_keypad")), 6);
-	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "image_keypad")), 6);
 	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), 24);
 #else
 	gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
 	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
-	gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(main_builder, "image_keypad")), 6);
-	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "image_keypad")), 6);
 	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), 24);
 #endif
 

@@ -340,6 +340,7 @@ bool enable_completion = true, enable_completion2 = true;
 bool keep_function_dialog_open = false;
 
 bool automatic_fraction = false;
+int default_fraction_fraction = -1;
 
 bool ignore_locale = false;
 
@@ -2779,10 +2780,9 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 				}
 				do_to = true;
 			}
-			if(to_fraction && (printops.restrict_fraction_length || (mstruct->isNumber() && printops.number_fraction_format != FRACTION_COMBINED) || (!mstruct->isNumber() && printops.number_fraction_format != FRACTION_FRACTIONAL))) {
+			if(to_fraction && (printops.restrict_fraction_length || printops.number_fraction_format != FRACTION_COMBINED)) {
 				printops.restrict_fraction_length = false;
-				if(mstruct->isNumber()) printops.number_fraction_format = FRACTION_COMBINED;
-				else printops.number_fraction_format = FRACTION_FRACTIONAL;
+				printops.number_fraction_format = FRACTION_COMBINED;
 				do_to = true;
 			}
 			if(to_prefix != 0) {
@@ -7008,7 +7008,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				uh = minus_h / 2 + minus_h % 2;
 				dh = minus_h / 2;
 
-				ips_n.wrap = m[0].needsParenthesis(po, ips_n, m, 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+				ips_n.wrap = m[0].isPower() ? m[0][0].needsParenthesis(po, ips_n, m, 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0) : m[0].needsParenthesis(po, ips_n, m, 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
 				cairo_surface_t *surface_arg = draw_structure(m[0], po, caf, ips_n, &ctmp, scaledown, color);
 				if(!surface_arg) {
 					g_object_unref(layout_minus);
@@ -7365,8 +7365,8 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						cairo_paint(cr);
 					}
 					gdk_cairo_set_source_rgba(cr, color);
-					cairo_move_to (cr, w, central_point);
-					cairo_line_to (cr, w + wfr, central_point);
+					cairo_move_to (cr, w, uh);
+					cairo_line_to (cr, w + wfr, uh);
 					cairo_set_line_width(cr, 2);
 					cairo_stroke(cr);
 					cairo_set_source_surface(cr, den_surface, w + (wfr - den_w) / 2, uh + 3);
@@ -9701,10 +9701,9 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				}
 				do_to = true;
 			}
-			if(to_fraction && (printops.restrict_fraction_length || (mstruct->isNumber() && printops.number_fraction_format != FRACTION_COMBINED) || (!mstruct->isNumber() && printops.number_fraction_format != FRACTION_FRACTIONAL))) {
+			if(to_fraction && (printops.restrict_fraction_length || printops.number_fraction_format != FRACTION_COMBINED)) {
 				printops.restrict_fraction_length = false;
-				if(mstruct->isNumber()) printops.number_fraction_format = FRACTION_COMBINED;
-				else printops.number_fraction_format = FRACTION_FRACTIONAL;
+				printops.number_fraction_format = FRACTION_COMBINED;
 				do_to = true;
 			}
 			if(to_prefix != 0 && !prefix) {
@@ -15576,23 +15575,27 @@ void on_combobox_base_changed(GtkComboBox *w, gpointer) {
 			break;
 		}
 	}
+	focus_keeping_selection();
 }
 void on_combobox_numerical_display_changed(GtkComboBox *w, gpointer) {
 	gint i = gtk_combo_box_get_active(w);
-	if(i == 0 || i == 4) {
-		if(printops.number_fraction_format == FRACTION_FRACTIONAL) {
-			bool bru_bak = block_result_update;
-			block_result_update = true;
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
-			block_result_update = bru_bak;
+	if(default_fraction_fraction < 0) {
+		if(i == 0 || i == 4) {
+			if(printops.number_fraction_format == FRACTION_FRACTIONAL) {
+				bool bru_bak = block_result_update;
+				block_result_update = true;
+				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
+				block_result_update = bru_bak;
+			}
+		} else {
+			if(printops.number_fraction_format == FRACTION_COMBINED) {
+				bool bru_bak = block_result_update;
+				block_result_update = true;
+				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
+				block_result_update = bru_bak;
+			}
 		}
-	} else {
-		if(printops.number_fraction_format == FRACTION_COMBINED) {
-			bool bru_bak = block_result_update;
-			block_result_update = true;
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
-			block_result_update = bru_bak;
-		}
+		default_fraction_fraction = -1;
 	}
 	switch(i) {
 		case 0: {
@@ -15630,6 +15633,7 @@ void on_combobox_numerical_display_changed(GtkComboBox *w, gpointer) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sort_minus_last")), printops.sort_options.minus_last);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_negative_exponents"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_negative_exponents_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sort_minus_last"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_sort_minus_last_activate, NULL);
+	focus_keeping_selection();
 }
 
 void on_button_exact_toggled(GtkToggleButton *w, gpointer) {
@@ -15638,17 +15642,29 @@ void on_button_exact_toggled(GtkToggleButton *w, gpointer) {
 	} else {
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_try_exact")), TRUE);
 	}
-
+	focus_keeping_selection();
 }
 
 void on_button_fraction_toggled(GtkToggleButton *w, gpointer) {
 	if(gtk_toggle_button_get_active(w)) {
-		if(printops.min_exp != EXP_NONE && printops.min_exp != EXP_PRECISION) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
-		else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
+		if(default_fraction_fraction >= 0) {
+			if(default_fraction_fraction == FRACTION_FRACTIONAL) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
+			else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
+		} else {
+			if(printops.min_exp != EXP_NONE && printops.min_exp != EXP_PRECISION) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
+			else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
+			default_fraction_fraction = -1;
+		}
+		
 	} else {
-		if(evalops.approximation == APPROXIMATION_EXACT) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal_exact")), TRUE);
-		else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
+		if(evalops.approximation == APPROXIMATION_EXACT) {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal_exact")), TRUE);
+			automatic_fraction = true;
+		} else {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
+		}
 	}
+	focus_keeping_selection();
 }
 
 void show_tabs(bool do_show) {
@@ -16136,6 +16152,7 @@ void load_preferences() {
 	ignore_locale = false;
 
 	automatic_fraction = false;
+	default_fraction_fraction = -1;
 
 	keep_function_dialog_open = false;
 
@@ -16504,17 +16521,19 @@ void load_preferences() {
 							break;
 						}
 					}
-					if(mode_index == 1) printops.restrict_fraction_length = (printops.number_fraction_format == FRACTION_FRACTIONAL);
-					else modes[mode_index].po.restrict_fraction_length = (modes[mode_index].po.number_fraction_format == FRACTION_FRACTIONAL);
+					if(mode_index == 1) printops.restrict_fraction_length = (printops.number_fraction_format >= FRACTION_FRACTIONAL);
+					else modes[mode_index].po.restrict_fraction_length = (modes[mode_index].po.number_fraction_format >= FRACTION_FRACTIONAL);
 				} else if(svar == "number_fraction_format") {
 					if(v >= FRACTION_DECIMAL && v <= FRACTION_COMBINED) {
 						if(mode_index == 1) printops.number_fraction_format = (NumberFractionFormat) v;
 						else modes[mode_index].po.number_fraction_format = (NumberFractionFormat) v;
 					}
-					if(mode_index == 1) printops.restrict_fraction_length = (printops.number_fraction_format == FRACTION_FRACTIONAL);
-					else modes[mode_index].po.restrict_fraction_length = (modes[mode_index].po.number_fraction_format == FRACTION_FRACTIONAL);
+					if(mode_index == 1) printops.restrict_fraction_length = (printops.number_fraction_format >= FRACTION_FRACTIONAL);
+					else modes[mode_index].po.restrict_fraction_length = (modes[mode_index].po.number_fraction_format >= FRACTION_FRACTIONAL);
 				} else if(svar == "automatic_number_fraction_format") {
 					automatic_fraction = v;
+				} else if(svar == "default_number_fraction_fraction") {
+					if(v >= FRACTION_FRACTIONAL && v <= FRACTION_COMBINED) default_fraction_fraction = (NumberFractionFormat) v;
 				} else if(svar == "complex_number_form") {
 					if(v == COMPLEX_NUMBER_FORM_CIS + 1) {
 						if(mode_index == 1) {
@@ -17280,6 +17299,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "multiplication_sign=%i\n", printops.multiplication_sign);
 	fprintf(file, "division_sign=%i\n", printops.division_sign);
 	if(automatic_fraction) fprintf(file, "automatic_number_fraction_format=%i\n", automatic_fraction);
+	if(default_fraction_fraction >= 0) fprintf(file, "default_number_fraction_fraction=%i\n", default_fraction_fraction);
 	if(!default_shortcuts) {
 		for(unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.begin(); it != keyboard_shortcuts.end(); ++it) {
 			if(it->second.value.empty()) fprintf(file, "keyboard_shortcut=%u:%u:%i\n", it->second.key, it->second.modifier, it->second.type);
@@ -19371,71 +19391,6 @@ gboolean on_resultview_popup_menu(GtkWidget*, gpointer) {
 	gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_resultview")), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
 #endif
 	return TRUE;
-}
-
-void on_menu_item_keypad_programming_toggled(GtkCheckMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(w)) return;
-	previous_keypad = visible_keypad;
-	visible_keypad = 1;
-	if(evalops.approximation == APPROXIMATION_EXACT) {
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact")), FALSE);
-		versatile_exact = true;
-	} else {
-		versatile_exact = false;
-	}
-	if(programming_inbase > 0 && programming_outbase != 0 && (((programming_inbase != 10 || (programming_outbase != 10 && programming_outbase > 0 && programming_outbase <= 36)) && evalops.parse_options.base == 10 && printops.base == 10) || evalops.parse_options.base < 2 || printops.base < 2 || evalops.parse_options.base > 36 || printops.base > 16)) {
-		if(printops.base != programming_outbase) {
-			printops.base = programming_outbase;
-			set_output_base_from_dialog(programming_outbase);
-			output_base_updated_from_menu();
-			if(evalops.parse_options.base == programming_inbase) result_format_updated();
-		}
-		if(evalops.parse_options.base != programming_inbase) {
-			evalops.parse_options.base = programming_inbase;
-			input_base_updated_from_menu();
-			update_keypad_bases();
-			expression_format_updated();
-		}
-	}
-	programming_inbase = 0;
-	programming_outbase = 0;
-	gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "programmers_keypad")));
-	gtk_stack_set_visible_child_name(GTK_STACK(gtk_builder_get_object(main_builder, "stack_keypad_top")), "page1");
-	gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "stack_left_buttons")));
-	focus_keeping_selection();
-}
-void on_menu_item_keypad_standard_toggled(GtkCheckMenuItem *w, gpointer) {
-	previous_keypad = visible_keypad;
-	visible_keypad = 0;
-	if(previous_keypad == 1 && versatile_exact && evalops.approximation == APPROXIMATION_TRY_EXACT) {
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact")), TRUE);
-		programming_inbase = evalops.parse_options.base;
-		programming_outbase = printops.base;
-		if(evalops.parse_options.base != 10) clear_expression_text();
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_dec")), TRUE);
-	}
-	gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "versatile_keypad")));
-	gtk_stack_set_visible_child_name(GTK_STACK(gtk_builder_get_object(main_builder, "stack_keypad_top")), "page0");
-	gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "stack_left_buttons")));
-	focus_keeping_selection();
-}
-void on_menu_item_keypad_minimal_toggled(GtkCheckMenuItem *w, gpointer) {
-	gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "stack_left_buttons")));
-	previous_keypad = visible_keypad;
-	visible_keypad = 2;
-	if(previous_keypad == 1 && versatile_exact && evalops.approximation == APPROXIMATION_TRY_EXACT) {
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact")), TRUE);
-		programming_inbase = evalops.parse_options.base;
-		programming_outbase = printops.base;
-		if(evalops.parse_options.base != 10) clear_expression_text();
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_dec")), TRUE);
-	}
-	gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "versatile_keypad")));
-	gtk_stack_set_visible_child_name(GTK_STACK(gtk_builder_get_object(main_builder, "stack_keypad_top")), "page0");
-	gint h;
-	gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), NULL, &h);
-	gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), 1, 1);
-	focus_keeping_selection();
 }
 
 void on_button_programmers_keypad_toggled(GtkToggleButton *w, gpointer) {
@@ -22952,7 +22907,8 @@ void menu_to_fraction(GtkMenuItem*, gpointer) {
 	bool save_restrict_fraction_length = printops.restrict_fraction_length;
 	printops.restrict_fraction_length = false;
 	to_fraction = false;
-	if(mstruct && mstruct->isNumber()) printops.number_fraction_format = FRACTION_COMBINED;
+	if(default_fraction_fraction >= 0) printops.number_fraction_format = (NumberFractionFormat) default_fraction_fraction;
+	else if(printops.min_exp == EXP_PRECISION || printops.min_exp == EXP_NONE) printops.number_fraction_format = FRACTION_COMBINED;
 	else printops.number_fraction_format = FRACTION_FRACTIONAL;
 	result_format_updated();
 	printops.number_fraction_format = save_format;
@@ -25195,8 +25151,9 @@ void on_menu_item_fraction_combined_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	to_fraction = false;
 	printops.number_fraction_format = FRACTION_COMBINED;
-	printops.restrict_fraction_length = false;
+	printops.restrict_fraction_length = true;
 	automatic_fraction = false;
+	if(default_fraction_fraction >= 0 || gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")))) default_fraction_fraction = FRACTION_COMBINED;
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), TRUE);
@@ -25210,6 +25167,7 @@ void on_menu_item_fraction_fraction_activate(GtkMenuItem *w, gpointer) {
 	printops.number_fraction_format = FRACTION_FRACTIONAL;
 	printops.restrict_fraction_length = true;
 	automatic_fraction = false;
+	if(default_fraction_fraction >= 0 || gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")))) default_fraction_fraction = FRACTION_FRACTIONAL;
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), TRUE);

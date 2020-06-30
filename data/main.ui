@@ -116,43 +116,6 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
   </object>
-  <object class="GtkMenu" id="menu_keypad">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <child>
-      <object class="GtkRadioMenuItem" id="menu_item_keypad_standard">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Standard</property>
-        <property name="use_underline">True</property>
-        <property name="active">True</property>
-        <property name="draw_as_radio">True</property>
-        <signal name="toggled" handler="on_menu_item_keypad_standard_toggled" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkRadioMenuItem" id="menu_item_keypad_minimal">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Minimal</property>
-        <property name="use_underline">True</property>
-        <property name="draw_as_radio">True</property>
-        <property name="group">menu_item_keypad_standard</property>
-        <signal name="toggled" handler="on_menu_item_keypad_minimal_toggled" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkRadioMenuItem" id="menu_item_keypad_programming">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Programming</property>
-        <property name="use_underline">True</property>
-        <property name="draw_as_radio">True</property>
-        <property name="group">menu_item_keypad_standard</property>
-        <signal name="toggled" handler="on_menu_item_keypad_programming_toggled" swapped="no"/>
-      </object>
-    </child>
-  </object>
   <object class="GtkMenu" id="menu_ln">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -4105,26 +4068,6 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                         <property name="can_focus">False</property>
                         <property name="vexpand">False</property>
                         <property name="spacing">6</property>
-                        <child>
-                          <object class="GtkMenuButton" id="button_keypad">
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="margin_bottom">12</property>
-                            <property name="popup">menu_keypad</property>
-                            <child>
-                              <object class="GtkImage" id="image_keypad">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="icon_name">input-dialpad-symbolic</property>
-                              </object>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
                         <child>
                           <object class="GtkToggleButton" id="button_programmers_keypad">
                             <property name="visible">True</property>
