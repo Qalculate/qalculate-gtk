@@ -6549,7 +6549,9 @@ cairo_surface_t *get_right_parenthesis(gint arc_w, gint arc_h, int, GdkRGBA *col
 	return s;
 }
 
-void get_image_blank_width(cairo_surface_t *surface, int w, int h, int *x1, int *x2) {
+void get_image_blank_width(cairo_surface_t *surface, int *x1, int *x2) {
+	int w = cairo_image_surface_get_width(surface);
+	int h = cairo_image_surface_get_height(surface);
 	unsigned char *data = cairo_image_surface_get_data(surface);
 	int stride = cairo_image_surface_get_stride(surface);
 	int first_col = w;
@@ -6580,6 +6582,42 @@ void get_image_blank_width(cairo_surface_t *surface, int w, int h, int *x1, int 
 	}
 	if(x1) *x1 = first_col;
 	if(x2) *x2 = last_col;
+}
+void get_image_blank_height(cairo_surface_t *surface, int *y1, int *y2) {
+	int w = cairo_image_surface_get_width(surface);
+	int h = cairo_image_surface_get_height(surface);
+	unsigned char *data = cairo_image_surface_get_data(surface);
+	int stride = cairo_image_surface_get_stride(surface);
+	if(y1) {
+		*y1 = 0;
+		for(int i = 0; i < h - 1; i++) {
+			unsigned char *row = data + i * stride;
+			for(int j = 0; j < w; j++) {
+				for(int s_i = 0; s_i < 4; s_i++) {
+					if(*(row + 4 * j + s_i) != 0) {
+						*y1 = i;
+						j = w; i = h;
+						break;
+					}
+				}
+			}
+		}
+	}
+	if(y2) {
+		*y2 = h;
+		for(int i = h - 1; i > 0; i--) {
+			unsigned char *row = data + i * stride;
+			for(int j = 0; j < w; j++) {
+				for(int s_i = 0; s_i < 4; s_i++) {
+					if(*(row + 4 * j + s_i) != 0) {
+						*y2 = i;
+						j = w; i = 0;
+						break;
+					}
+				}
+			}
+		}
+	}
 }
 
 #define SHOW_WITH_ROOT_SIGN(x) (x.isFunction() && ((x.function() == CALCULATOR->f_sqrt && x.size() == 1) || (x.function() == CALCULATOR->f_cbrt && x.size() == 1) || (x.function() == CALCULATOR->f_root && x.size() == 2 && x[1].isNumber() && x[1].number().isInteger() && x[1].number().isPositive() && x[1].number().isLessThan(10))))
@@ -7230,7 +7268,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				ips_n.depth++;
 				ips_n.division_depth++;
 
-				gint den_uh, den_w, den_dh, num_w, num_dh, num_uh, dh = 0, uh = 0, w = 0, h = 0, one_w = 0, one_h = 0;
+				gint den_uh, den_w, den_dh, num_w, num_dh, num_uh, dh = 0, uh = 0, w = 0, h = 0;
 
 				bool flat = ips.division_depth > 0 || ips.power_depth > 0;
 				bool b_units = false;
@@ -7256,27 +7294,21 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					}
 				}
 
-				cairo_surface_t *num_surface = NULL, *den_surface = NULL, *surface_one = NULL;
+				cairo_surface_t *num_surface = NULL, *den_surface = NULL;
 				if(m.type() == STRUCT_DIVISION) {
 					ips_n.wrap = (!m[0].isDivision() || !flat || ips.division_depth > 0 || ips.power_depth > 0) && !b_units && m[0].needsParenthesis(po, ips_n, m, 1, flat, ips.power_depth > 0);
 					num_surface = draw_structure(m[0], po, caf, ips_n, &num_dh, scaledown, color);
-					if(!num_surface) {
-						return NULL;
-					}
-					num_w = cairo_image_surface_get_width(num_surface) / scalefactor;
-					h = cairo_image_surface_get_height(num_surface) / scalefactor;
-					num_uh = h - num_dh;
 				} else {
 					MathStructure onestruct(1, 1);
 					ips_n.wrap = false;
-					surface_one = draw_structure(onestruct, po, caf, ips_n, NULL, scaledown, color);
-					if(!surface_one) {
-						return NULL;
-					}
-					one_w = cairo_image_surface_get_width(surface_one) / scalefactor;
-					one_h = cairo_image_surface_get_height(surface_one) / scalefactor;
-					num_w = one_w; num_dh = one_h / 2; num_uh = one_h - num_dh;
+					num_surface = draw_structure(onestruct, po, caf, ips_n, &num_dh, scaledown, color);
 				}
+				if(!num_surface) {
+					return NULL;
+				}
+				num_w = cairo_image_surface_get_width(num_surface) / scalefactor;
+				h = cairo_image_surface_get_height(num_surface) / scalefactor;
+				num_uh = h - num_dh;
 				if(m.type() == STRUCT_DIVISION) {
 					ips_n.wrap = m[1].needsParenthesis(po, ips_n, m, 2, flat, ips.power_depth > 0);
 					den_surface = draw_structure(m[1], po, caf, ips_n, &den_dh, scaledown, color);
@@ -7285,8 +7317,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					den_surface = draw_structure(m[0], po, caf, ips_n, &den_dh, scaledown, color);
 				}
 				if(!den_surface) {
-					if(num_surface) cairo_surface_destroy(num_surface);
-					if(surface_one) cairo_surface_destroy(surface_one);
+					cairo_surface_destroy(num_surface);
 					return NULL;
 				}
 				den_w = cairo_image_surface_get_width(den_surface) / scalefactor;
@@ -7324,13 +7355,8 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					cr = cairo_create(surface);
 					gdk_cairo_set_source_rgba(cr, color);
 					w = 0;
-					if(m.type() == STRUCT_DIVISION) {
-						cairo_set_source_surface(cr, num_surface, w, uh - num_uh);
-						cairo_paint(cr);
-					} else {
-						cairo_set_source_surface(cr, surface_one, w, uh - one_h / 2 - one_h % 2);
-						cairo_paint(cr);
-					}
+					cairo_set_source_surface(cr, num_surface, w, uh - num_uh);
+					cairo_paint(cr);
 					w += num_w;
 					w += space_w;
 					gdk_cairo_set_source_rgba(cr, color);
@@ -7342,6 +7368,14 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					cairo_paint(cr);
 					g_object_unref(layout_div);
 				} else {
+					int y1n;
+					get_image_blank_height(num_surface, &y1n, NULL);
+					y1n /= scalefactor;
+					num_uh -= y1n;
+					int y2d;
+					get_image_blank_height(den_surface, NULL, &y2d);
+					y2d = ::ceil((y2d + 1) / scalefactor);
+					den_dh -= (den_dh + den_uh - y2d);
 					gint wfr;
 					dh = den_dh + den_uh + 3;
 					uh = num_dh + num_uh + 3;
@@ -7357,13 +7391,8 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					cr = cairo_create(surface);
 					gdk_cairo_set_source_rgba(cr, color);
 					w = ips.depth > 0 ? 3 : 0;
-					if(m.type() == STRUCT_DIVISION) {
-						cairo_set_source_surface(cr, num_surface, w + (wfr - num_w) / 2, uh - 3 - num_uh - num_dh);
-						cairo_paint(cr);
-					} else {
-						cairo_set_source_surface(cr, surface_one, w + (wfr - one_w) / 2, uh - 3 - one_h);
-						cairo_paint(cr);
-					}
+					cairo_set_source_surface(cr, num_surface, w + (wfr - num_w) / 2, -y1n);
+					cairo_paint(cr);
 					gdk_cairo_set_source_rgba(cr, color);
 					cairo_move_to (cr, w, uh);
 					cairo_line_to (cr, w + wfr, uh);
@@ -7374,7 +7403,6 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				}
 				if(num_surface) cairo_surface_destroy(num_surface);
 				if(den_surface) cairo_surface_destroy(den_surface);
-				if(surface_one) cairo_surface_destroy(surface_one);
 				break;
 			}
 			case STRUCT_POWER: {
@@ -7383,7 +7411,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 				gint base_w, base_h, exp_w, exp_h, w = 0, h = 0, ctmp = 0;
 				CALCULATE_SPACE_W
-				ips_n.wrap = m[0].needsParenthesis(po, ips_n, m, 1, ips.division_depth > 0, false);
+				ips_n.wrap = SHOW_WITH_ROOT_SIGN(m[0]) || m[0].needsParenthesis(po, ips_n, m, 1, ips.division_depth > 0, false);
 				cairo_surface_t *surface_base = draw_structure(m[0], po, caf, ips_n, &central_point, scaledown, color);
 				if(!surface_base) {
 					return NULL;
@@ -8032,7 +8060,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 				int x1 = 0, x2 = 0;
 				if(surface_args.size() == 1) {
-					get_image_blank_width(surface_args[0], cairo_image_surface_get_width(surface_args[0]), cairo_image_surface_get_height(surface_args[0]), &x1, &x2);
+					get_image_blank_width(surface_args[0], &x1, &x2);
 					x1 /= scalefactor;
 					x1++;
 					x2 = ::ceil(x2 / scalefactor);
@@ -8040,13 +8068,13 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					wpa[0] = x2 - x1;
 					w += wpa[0];
 				} else if(surface_args.size() > 1) {
-					get_image_blank_width(surface_args[0], cairo_image_surface_get_width(surface_args[0]), cairo_image_surface_get_height(surface_args[0]), &x1, NULL);
+					get_image_blank_width(surface_args[0], &x1, NULL);
 					x1 /= scalefactor;
 					x1++;
 					w -= x1;
 					wpa[0] -= x1;
 					int i_last = surface_args.size() - 1;
-					get_image_blank_width(surface_args[i_last], cairo_image_surface_get_width(surface_args[i_last]), cairo_image_surface_get_height(surface_args[i_last]), NULL, &x2);
+					get_image_blank_width(surface_args[i_last], NULL, &x2);
 					x2 = ::ceil(x2 / scalefactor);
 					w -= wpa[i_last] - x2;
 					wpa[i_last] -= wpa[i_last] - x2;
@@ -8266,6 +8294,9 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					PangoLayout *layout_root = gtk_widget_create_pango_layout(resultview, NULL);
 					pango_layout_set_markup(layout_root, root_str.c_str(), -1);
 					pango_layout_get_pixel_size(layout_root, &root_w, &root_h);
+					PangoRectangle rect;
+					pango_layout_get_pixel_extents(layout_root, &rect, NULL);
+					root_h = rect.y + rect.height;
 
 					ips_n.wrap = false;
 					cairo_surface_t *surface_arg = draw_structure(m[0], po, caf, ips_n, &ctmp, scaledown, color);
@@ -8273,6 +8304,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 					arg_w = cairo_image_surface_get_width(surface_arg) / scalefactor;
 					arg_h = cairo_image_surface_get_height(surface_arg) / scalefactor;
+
+					int y;
+					get_image_blank_height(surface_arg, &y, NULL);
+					y /= scalefactor;
+					y -= 6;
+					arg_h -= y;
 
 					double divider = 1.0;
 					if(ips.power_depth >= 1) divider = 1.5;
@@ -8311,7 +8348,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					cairo_stroke(cr);
 
 					if(i_root != 2) {
-						cairo_move_to(cr, (sign_w - root_w) / 3.0, ((h / 2.0) - root_h) / 2.0);
+						cairo_move_to(cr, (sign_w - root_w) / 3.0, (h / 2.0) - root_h - extra_space / (divider * 2) - 1);
 						cairo_surface_set_device_scale(surface, scalefactor / divider, scalefactor / divider);
 						pango_cairo_show_layout(cr, layout_root);
 						cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
@@ -8319,7 +8356,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 					gdk_cairo_set_source_rgba(cr, color);
 					cairo_move_to(cr, 0, 0);
-					cairo_set_source_surface(cr, surface_arg, sign_w + 1, h - arg_h - extra_space / divider);
+					cairo_set_source_surface(cr, surface_arg, sign_w + 1, h - arg_h - extra_space / divider - y);
 					cairo_paint(cr);
 
 					cairo_surface_destroy(surface_arg);
@@ -8577,7 +8614,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 				int x1 = 0, x2 = 0;
 				if(surface_args.size() == 1) {
-					get_image_blank_width(surface_args[0], cairo_image_surface_get_width(surface_args[0]), cairo_image_surface_get_height(surface_args[0]), &x1, &x2);
+					get_image_blank_width(surface_args[0], &x1, &x2);
 					x1 /= scalefactor;
 					x1++;
 					x2 = ::ceil(x2 / scalefactor);
@@ -8585,13 +8622,13 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					wpa[0] = x2 - x1;
 					w += wpa[0];
 				} else if(surface_args.size() > 1) {
-					get_image_blank_width(surface_args[0], cairo_image_surface_get_width(surface_args[0]), cairo_image_surface_get_height(surface_args[0]), &x1, NULL);
+					get_image_blank_width(surface_args[0], &x1, NULL);
 					x1 /= scalefactor;
 					x1++;
 					w -= x1;
 					wpa[0] -= x1;
 					int i_last = surface_args.size() - 1;
-					get_image_blank_width(surface_args[i_last], cairo_image_surface_get_width(surface_args[i_last]), cairo_image_surface_get_height(surface_args[i_last]), NULL, &x2);
+					get_image_blank_width(surface_args[i_last], NULL, &x2);
 					x2 = ::ceil(x2 / scalefactor);
 					w -= wpa[i_last] - x2;
 					wpa[i_last] -= wpa[i_last] - x2;
@@ -8661,7 +8698,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 		base_w = cairo_image_surface_get_width(surface) / scalefactor;
 		base_h = cairo_image_surface_get_height(surface) / scalefactor;
 		int x1 = 0, x2 = 0;
-		get_image_blank_width(surface, cairo_image_surface_get_width(surface), cairo_image_surface_get_height(surface), &x1, &x2);
+		get_image_blank_width(surface, &x1, &x2);
 		x1 /= scalefactor;
 		x1++;
 		x2 = ::ceil(x2 / scalefactor);
@@ -22907,9 +22944,7 @@ void menu_to_fraction(GtkMenuItem*, gpointer) {
 	bool save_restrict_fraction_length = printops.restrict_fraction_length;
 	printops.restrict_fraction_length = false;
 	to_fraction = false;
-	if(default_fraction_fraction >= 0) printops.number_fraction_format = (NumberFractionFormat) default_fraction_fraction;
-	else if(printops.min_exp == EXP_PRECISION || printops.min_exp == EXP_NONE) printops.number_fraction_format = FRACTION_COMBINED;
-	else printops.number_fraction_format = FRACTION_FRACTIONAL;
+	printops.number_fraction_format = FRACTION_COMBINED;
 	result_format_updated();
 	printops.number_fraction_format = save_format;
 	printops.restrict_fraction_length = save_restrict_fraction_length;
@@ -25153,7 +25188,7 @@ void on_menu_item_fraction_combined_activate(GtkMenuItem *w, gpointer) {
 	printops.number_fraction_format = FRACTION_COMBINED;
 	printops.restrict_fraction_length = true;
 	automatic_fraction = false;
-	if(default_fraction_fraction >= 0 || gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")))) default_fraction_fraction = FRACTION_COMBINED;
+	default_fraction_fraction = FRACTION_COMBINED;
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), TRUE);
@@ -25167,7 +25202,7 @@ void on_menu_item_fraction_fraction_activate(GtkMenuItem *w, gpointer) {
 	printops.number_fraction_format = FRACTION_FRACTIONAL;
 	printops.restrict_fraction_length = true;
 	automatic_fraction = false;
-	if(default_fraction_fraction >= 0 || gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")))) default_fraction_fraction = FRACTION_FRACTIONAL;
+	default_fraction_fraction = FRACTION_FRACTIONAL;
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), TRUE);
