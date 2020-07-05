@@ -1347,17 +1347,6 @@ On: 2.5 ≈ 2, 1.5 ≈ 2</property>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkCheckMenuItem" id="menu_item_negative_exponents">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="tooltip_text" translatable="yes">Off: 1/x
-On: x^(-1)</property>
-                                <property name="label" translatable="yes">Negative Exponents</property>
-                                <property name="use_underline">True</property>
-                                <signal name="activate" handler="on_menu_item_negative_exponents_activate" swapped="no"/>
-                              </object>
-                            </child>
-                            <child>
                               <object class="GtkCheckMenuItem" id="menu_item_sort_minus_last">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
@@ -1609,6 +1598,16 @@ On: 1/2*pi = 0.5 pi</property>
                                 <property name="label" translatable="yes">Enable Denominator Prefixes</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="on_menu_item_denominator_prefixes_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkCheckMenuItem" id="menu_item_negative_exponents">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Off: J / K
+On: J * K^-1</property>
+                                <property name="label" translatable="yes">Negative Exponents</property>
+                                <signal name="activate" handler="on_menu_item_negative_exponents_activate" swapped="no"/>
                               </object>
                             </child>
                             <child>
