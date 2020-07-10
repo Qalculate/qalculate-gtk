@@ -10419,6 +10419,10 @@ void update_message_print_options() {
 
 void result_display_updated() {
 	if(block_result_update) return;
+	displayed_printops.use_unicode_signs = printops.use_unicode_signs;
+	displayed_printops.spell_out_logical_operators = printops.spell_out_logical_operators;
+	displayed_printops.multiplication_sign = printops.multiplication_sign;
+	displayed_printops.division_sign = printops.division_sign;
 	gtk_widget_queue_draw(resultview);
 	update_message_print_options();
 	update_status_text();
@@ -12289,8 +12293,8 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 	}
 
 	g_signal_connect((gpointer) fd->b_exec, "clicked", G_CALLBACK(on_insert_function_exec), (gpointer) f);
-	g_signal_connect((gpointer) fd->b_insert, "clicked", G_CALLBACK(on_insert_function_rpn), (gpointer) f);
-	g_signal_connect((gpointer) fd->b_insert, "clicked", G_CALLBACK(on_insert_function_insert), (gpointer) f);
+	if(fd->rpn) g_signal_connect((gpointer) fd->b_insert, "clicked", G_CALLBACK(on_insert_function_rpn), (gpointer) f);
+	else g_signal_connect((gpointer) fd->b_insert, "clicked", G_CALLBACK(on_insert_function_insert), (gpointer) f);
 	g_signal_connect((gpointer) fd->b_cancel, "clicked", G_CALLBACK(on_insert_function_close), (gpointer) f);
 	g_signal_connect((gpointer) fd->b_keepopen, "toggled", G_CALLBACK(on_insert_function_keepopen), (gpointer) f);
 	g_signal_connect((gpointer) fd->dialog, "delete-event", G_CALLBACK(on_insert_function_delete), (gpointer) f);
