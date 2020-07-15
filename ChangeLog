@@ -1,9 +1,19 @@
-2019-07-10 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-07-15 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Auto completion for objects and properites in data set functions
+	* Fixes for vectors in insert function dialog
+	* Improve spacing with numbers in result display
+
+2020-07-12 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add example expressions appendix to manual
+
+2020-07-10 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Fix Insert button in insert function dialog
 	* Fix updating of operator symbols in result when preferences change
 
-2019-07-04 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-07-04 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Use middle dot instead of multiplication x in unit expressions
 	* Fix alignment and improve spacing in flat division (primarily in unit expressions)
@@ -12,162 +22,162 @@
 	* Disable prefixes by default for scientific, engineering, and pure modes
 	* Do not disable sort minus last and enable negative exponents in scientific and pure modes if these options has been explicitely set by the user (when in one of these modes)
 
-2019-07-02 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-07-02 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Fix and improve display of division
 	* Improve display of roots
 
-2019-06-28 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-06-28 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Option to hide left or right part of the keypad
 	* Replace fraction mode combo box with a single toggle button
 
-2019-06-23 Fúlvio Alves <fga.fulvio@gmail.com>
+2020-06-23 Fúlvio Alves <fga.fulvio@gmail.com>
 
 	* Portuguese (Brazil) translation
 
-2019-06-19 Nejc Bertoncelj <nejc@bertoncelj.eu.org>
+2020-06-19 Nejc Bertoncelj <nejc@bertoncelj.eu.org>
 
 	* Slovenian translation
 
-2019-06-12 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-06-12 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Restore keypad button hover appearance after long press
 
-2019-06-11 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-06-11 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Hide tooltip after keypad button click
 
-2019-05-24 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-05-24 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Allow multiple "to"-conversions in one expression (e.g. "5 m/s to hex to ft to h = 0xE6AF.1E*ft∕h)
 	* Option to clear history on exit
 	* Support specification of number of bits for hexadecimal "to" conversion (4 to hex16 = 0004)
 
-2019-05-21 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-05-21 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Divide value with time units by hours if time format is used
 
-2019-05-19 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-05-19 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Do not add current calculation again to history after removing (or moving) history item, when calculate-as-you-type is activated
 	* Do not clear result after removal of history item, if not the current result was removed
 
-2019-05-17 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-05-17 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Reduce the height of the result widget
 
-2019-05-15 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-05-15 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Support for automatic updates of self-contained binaries
 	* Add check for updates menu item
 
-2019-05-12 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-05-12 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Fix report bug on Windows
 
-2019-05-06 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-05-06 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Improved handling of vectors and matrices in insert function dialog
 	* Fixes and improvements for old gtk versions
 	* --without-local-help configure option
 	* Configurable time limit for plot
 
-2019-05-02 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-05-02 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Gnome shell search provider
 
-2019-05-01 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-05-01 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Dark theme setting on Windows
 
-2019-04-28 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-04-28 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* History search
 	* Fix button order in some dialogs
 
-2019-04-27 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-04-27 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Improved handling of long history bookmarks
 	* Only add message to history when expression consists of error(), warning(), or message() function
 	* Interpret text after hashtag (#), in expression, as comments (add as separate history item if expression begins with double hashtags)
 	* Fix move to top for last history item
 
-2019-04-25 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-04-25 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Configurable number of lines in expression entry
 	* Add "Units & Currencies" tab to preferences dialog
 
-2019-04-24 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-04-24 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Add angle unit selection to sin, cos, and tan button menus
 	* Add right status popup menu with angle unit selection, etc.
 	* Make it possible to set keyboard shortcut for angle units
 	* Improved keyboard shortcuts dialog
 
-2019-04-22 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-04-22 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Reduce distance between base and exponent in result
 	* Ellipsize long variable values used as title in completion popup (fixes segfault)
 
-2019-04-20 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-04-20 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Draw parentheses instead of using scaled symbols from font
 
-2019-04-15 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-04-15 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* New icon
 
-2019-04-03 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-04-03 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Minimal window mode (hide everything except the expression entry and, when not empty, the result display)
 
-2019-04-01 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-04-01 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Persistent keypad option (makes it possible to show keypad and history simultaneously)
 
-2019-03-30 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-03-30 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Fix custom expression font with themes other than Adwaita, Yaru, and Ooxmox
 
-2019-03-15 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-03-15 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Make spacing between UI elements more consistent
 
-2019-03-12 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-03-12 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Report bug menu item
 
-2019-03-10 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-03-10 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Optional (at compile time; default off) internal help viewer using WebKitGTK
 
-2019-02-27 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-02-27 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Improve appearance on Ubuntu 16.04 (fix missing icon on edit register button and disable vertically linked buttons for incompatible themes)
 
-2019-02-26 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-02-26 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Fix initial keyboard shortcuts on first run
 
-2019-02-20 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-02-20 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Fix initial window title (use "Qalculate!" instead of "qalculate-gtk")
 
-2019-02-17 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-02-17 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Floating point conversion dialog
 
-2019-02-16 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-02-16 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Option to enable/disable new version notification
 
-2019-02-13 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-02-13 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* binary16/fp16, binary32/fp32/float, binary64/fp64/double, and binary128/fp128 "to" conversion
 	* Support specification of number of bits for binary "to" conversion (4 to bin16 = 0000 0000 0000 0100)
 
-2019-01-03 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2020-01-03 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Configurable keyboard shortcuts
 
