@@ -1074,6 +1074,21 @@ void create_main_window(void) {
 	gtk_scrolled_window_set_overlay_scrolling(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "scrolled_result")), false);
 #endif
 
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 14
+	GtkWidget *arrow_left = gtk_arrow_new(GTK_ARROW_RIGHT, GTK_SHADOW_OUT);
+	gtk_widget_set_size_request(GTK_WIDGET(arrow_left), 18, 18);
+	gtk_widget_show(arrow_left);
+	gtk_widget_destroy(GTK_WIDGET(gtk_builder_get_object(main_builder, "image_hide_left_buttons")));
+	gtk_container_add(GTK_CONTAINER(gtk_builder_get_object(main_builder, "event_hide_left_buttons")), arrow_left);
+	GtkWidget *arrow_right = gtk_arrow_new(GTK_ARROW_LEFT, GTK_SHADOW_OUT);
+	gtk_widget_set_size_request(GTK_WIDGET(arrow_right), 18, 18);
+	gtk_widget_show(arrow_right);
+	gtk_widget_destroy(GTK_WIDGET(gtk_builder_get_object(main_builder, "image_hide_right_buttons")));
+	gtk_container_add(GTK_CONTAINER(gtk_builder_get_object(main_builder, "event_hide_right_buttons")), arrow_right);
+	gtk_grid_set_column_spacing(GTK_GRID(gtk_builder_get_object(main_builder, "grid_buttons")), 0);
+	gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_swap")), "object-flip-vertical-symbolic", GTK_ICON_SIZE_BUTTON);
+#endif
+
 #ifdef _WIN32
 	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_down_image")), 12);
 	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_up_image")), 12);
@@ -1175,11 +1190,9 @@ void create_main_window(void) {
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
 	gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
 	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
-	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), 24);
 #else
 	gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
 	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
-	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), 24);
 #endif
 
 	if(visible_keypad & PROGRAMMING_KEYPAD) {

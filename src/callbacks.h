@@ -173,7 +173,7 @@ void set_operator_symbols();
 
 bool update_window_title(const char *str = NULL, bool is_result = false);
 
-cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po = default_print_options, bool caf = false, InternalPrintStruct ips = top_ips, gint *point_central = NULL, int scaledown = 0, GdkRGBA *color = NULL);
+cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po = default_print_options, bool caf = false, InternalPrintStruct ips = top_ips, gint *point_central = NULL, int scaledown = 0, GdkRGBA *color = NULL, gint *x_offset = NULL, gint *w_offset = NULL);
 
 void update_status_text();
 
@@ -220,7 +220,7 @@ void on_tUnitSelector_selection_changed(GtkTreeSelection *treeselection, gpointe
 void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 
 void execute_expression(bool force = true, bool do_mathoperation = false, MathOperation op = OPERATION_ADD, MathFunction *f = NULL, bool do_stack = false, size_t stack_index = 0, std::string execute_str = std::string(), std::string str = std::string(), bool check_exrates = true);
-void setResult(Prefix *prefix = NULL, bool update_history = true, bool update_parse = false, bool force = false, std::string transformation = "", size_t stack_index = 0, bool register_moved = false);
+void setResult(Prefix *prefix = NULL, bool update_history = true, bool update_parse = false, bool force = false, std::string transformation = "", size_t stack_index = 0, bool register_moved = false, bool supress_dialog = false);
 
 void set_rpn_mode(bool b);
 void calculateRPN(int op);
