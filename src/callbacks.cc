@@ -6828,8 +6828,19 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					if(po.lower_case_e) gsub("e", estr, value_str);
 					else gsub("E", estr, value_str);
 				}
-				str += value_str;
 				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
+				bool multiline = false;
+				if(ips.depth == 0 && scaledown >= 2 && exp.empty() && (po.base == BASE_DECIMAL || po.base == BASE_BINARY)) {
+					size_t i = value_str.find(" ", value_str.length() / 2);
+					if(i == string::npos) i = value_str.find(" ", value_str.length() / 2);
+					if(i != string::npos) {
+						if(value_str[i] == ' ') value_str[i] = '\n';
+						else {value_str.erase(i, strlen(" ") - 1); value_str[i] = '\n';}
+						if(po.base == BASE_DECIMAL) pango_layout_set_alignment(layout, PANGO_ALIGN_RIGHT);
+						multiline = true;
+					}
+				}
+				str += value_str;
 				if(!exp.empty()) {
 					if(po.lower_case_e) {TTP(str, "e");}
 					else {TTP_SMALL(str, "E");}
@@ -6838,8 +6849,14 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					}
 					str += exp;
 				}
-				bool twos = (((po.base == 2 && po.twos_complement) || (po.base == 16 && po.hexadecimal_twos_complement)) && m.number().isNegative() && value_str.find(SIGN_MINUS) == string::npos && value_str.find("-") == string::npos);
+				bool twos = (((po.base == BASE_BINARY && po.twos_complement) || (po.base == BASE_HEXADECIMAL && po.hexadecimal_twos_complement)) && m.number().isNegative() && value_str.find(SIGN_MINUS) == string::npos && value_str.find("-") == string::npos);
 				if(po.base != BASE_DECIMAL && (twos || po.base_display != BASE_DISPLAY_ALTERNATIVE || (po.base != BASE_HEXADECIMAL && po.base != BASE_BINARY && po.base != BASE_OCTAL)) && (po.base > 0 || po.base <= BASE_CUSTOM) && po.base <= 36) {
+					if(!multiline) {
+						string str2 = str;
+						TTE(str2)
+						pango_layout_set_markup(layout, str2.c_str(), -1);
+						pango_layout_get_pixel_size(layout, NULL, &central_point);
+					}
 					TTBP_SMALL(str)
 					str += "<sub>";
 					string str_base;
@@ -6888,7 +6905,14 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						w = rect.width + rect.x;
 					}
 				}
-				central_point = h / 2;
+				if(multiline) {
+					pango_layout_line_get_pixel_extents(pango_layout_get_line(layout, 0), NULL, &lrect);
+					central_point = h - (lrect.height / 2 + lrect.height % 2);
+				} else if(central_point != 0) {
+					central_point = h - (central_point / 2 + central_point % 2);
+				} else {
+					central_point = h / 2;
+				}
 				if(rect.y < 0) {
 					central_point = -rect.y;
 					h -= rect.y;
@@ -7270,7 +7294,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 									w += wopt[i - 1];
 									wopt[i - 1] = 0;
 								}
-								w += 2;
+								w++;
 							}
 						}
 					} else {
@@ -7345,7 +7369,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 									}
 									break;
 								}
-								default: {w += 2;}
+								default: {w++;}
 							}
 						}
 						w -= xpt[i];
@@ -19691,6 +19715,7 @@ gboolean on_resultview_button_press_event(GtkWidget*, GdkEventButton *event, gpo
 #endif
 		return TRUE;
 	}
+	if(event->button == 1) on_menu_item_copy_activate(NULL, NULL);
 	return FALSE;
 }
 gboolean on_resultview_popup_menu(GtkWidget*, gpointer) {
