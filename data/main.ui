@@ -2862,7 +2862,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                               <object class="GtkImage" id="image_keypad_lock">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="tooltip_text" translatable="yes">Toogles persistent keypad (makes it possible to show keypad and history simultaneously)</property>
+                                <property name="tooltip_text" translatable="yes">Toggles persistent keypad (makes it possible to show keypad and history simultaneously)</property>
                                 <property name="icon_name">changes-allow-symbolic</property>
                               </object>
                             </child>
@@ -3153,7 +3153,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="can_focus">True</property>
                                     <property name="focus_on_click">False</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Multiply the the selected value(s)</property>
+                                    <property name="tooltip_text" translatable="yes">Multiply the selected value(s)</property>
                                     <property name="use_underline">True</property>
                                     <signal name="clicked" handler="on_button_history_times_clicked" swapped="no"/>
                                     <child>
@@ -3630,7 +3630,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="can_focus">True</property>
                                     <property name="focus_on_click">False</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Swap the to top values or move the selected value to the top of the stack</property>
+                                    <property name="tooltip_text" translatable="yes">Swap the two top values or move the selected value to the top of the stack</property>
                                     <signal name="clicked" handler="on_button_registerswap_clicked" swapped="no"/>
                                     <child>
                                       <object class="GtkImage" id="image_swap">
@@ -3669,7 +3669,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="can_focus">True</property>
                                     <property name="focus_on_click">False</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Copy the the selected or top value to the top of the stack</property>
+                                    <property name="tooltip_text" translatable="yes">Copy the selected or top value to the top of the stack</property>
                                     <signal name="clicked" handler="on_button_copyregister_clicked" swapped="no"/>
                                     <child>
                                       <object class="GtkImage" id="image_copy">
