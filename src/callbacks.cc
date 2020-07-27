@@ -5613,7 +5613,7 @@ void update_accels() {
 				break;
 			}
 			case SHORTCUT_TYPE_RPN_SWAP: {
-				string str = _("Swap the to top values or move the selected value to the top of the stack");
+				string str = _("Swap the two top values or move the selected value to the top of the stack");
 				str += " (";
 				str += shortcut_to_text(it->second.key, it->second.modifier);
 				str += ")";
@@ -5621,7 +5621,7 @@ void update_accels() {
 				break;
 			}
 			case SHORTCUT_TYPE_RPN_COPY: {
-				string str = _("Copy the the selected or top value to the top of the stack");
+				string str = _("Copy the selected or top value to the top of the stack");
 				str += " (";
 				str += shortcut_to_text(it->second.key, it->second.modifier);
 				str += ")";
