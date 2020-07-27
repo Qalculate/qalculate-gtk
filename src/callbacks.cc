@@ -6630,9 +6630,11 @@ void get_image_blank_height(cairo_surface_t *surface, int *y1, int *y2) {
 	}
 }
 
+#define THIN_SPACE " "
+
 #define SHOW_WITH_ROOT_SIGN(x) (x.isFunction() && ((x.function() == CALCULATOR->f_sqrt && x.size() == 1) || (x.function() == CALCULATOR->f_cbrt && x.size() == 1) || (x.function() == CALCULATOR->f_root && x.size() == 2 && x[1].isNumber() && x[1].number().isInteger() && x[1].number().isPositive() && x[1].number().isLessThan(10))))
 
-cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, InternalPrintStruct ips, gint *point_central, int scaledown, GdkRGBA *color, gint *x_offset, gint *w_offset) {
+cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, InternalPrintStruct ips, gint *point_central, int scaledown, GdkRGBA *color, gint *x_offset, gint *w_offset, gint max_width) {
 
 	if(CALCULATOR->aborted()) return NULL;
 
@@ -6754,7 +6756,6 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				bool exp_minus = false;
 				ips_n.exp = &exp;
 				ips_n.exp_minus = &exp_minus;
-				TTBP(str)
 				unordered_map<void*, string>::iterator it = number_map.find((void*) &m.number());
 				string value_str;
 				if(it != number_map.end()) {
@@ -6771,7 +6772,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					if(po.base == BASE_HEXADECIMAL && po.base_display == BASE_DISPLAY_NORMAL) {
 						gsub("0x", "", value_str);
 					} else if(po.base == BASE_OCTAL && po.base_display == BASE_DISPLAY_NORMAL) {
-						if(str.length() > 1 && value_str[0] == '0' && is_in(NUMBERS, value_str[1])) value_str.erase(0, 1);
+						if(value_str.length() > 1 && value_str[0] == '0' && is_in(NUMBERS, value_str[1])) value_str.erase(0, 1);
 					}
 					number_map[(void*) &m.number()] = value_str;
 					number_exp_map[(void*) &m.number()] = exp;
@@ -6828,66 +6829,177 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					if(po.lower_case_e) gsub("e", estr, value_str);
 					else gsub("E", estr, value_str);
 				}
+				string value_str_bak, str_bak;
+				vector<gint> pos_x;
+				vector<PangoLayout*> pos_nr;
+				gint pos_h = 0, pos_y = 0;
+				gint wle = 0;
+				if(max_width > 0) {
+					PangoLayout *layout_equals = gtk_widget_create_pango_layout(resultview, NULL);
+					if((po.is_approximate && *po.is_approximate) || m.isApproximate()) {
+						if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, po.can_display_unicode_string_arg))) {
+							PANGO_TT(layout_equals, SIGN_ALMOST_EQUAL);
+						} else {
+
+							string str;
+							TT(str, _("approx."));
+							pango_layout_set_markup(layout_equals, str.c_str(), -1);
+						}
+					} else {
+						PANGO_TT(layout_equals, "=");
+					}
+					CALCULATE_SPACE_W
+					PangoRectangle rect, lrect;
+					pango_layout_get_pixel_extents(layout_equals, &rect, &lrect);
+					wle = lrect.width - offset_x + space_w;
+					if(rect.x < 0) wle -= rect.x;
+					g_object_unref(layout_equals);
+				}
 				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
 				bool multiline = false;
-				if(ips.depth == 0 && scaledown >= 2 && exp.empty() && (po.base == BASE_DECIMAL || po.base == BASE_BINARY)) {
-					size_t i = value_str.find(" ", value_str.length() / 2);
-					if(i == string::npos) i = value_str.find(" ", value_str.length() / 2);
-					if(i != string::npos) {
-						if(value_str[i] == ' ') value_str[i] = '\n';
-						else {value_str.erase(i, strlen(" ") - 1); value_str[i] = '\n';}
-						if(po.base == BASE_DECIMAL) pango_layout_set_alignment(layout, PANGO_ALIGN_RIGHT);
-						multiline = true;
-					}
-				}
-				str += value_str;
-				if(!exp.empty()) {
-					if(po.lower_case_e) {TTP(str, "e");}
-					else {TTP_SMALL(str, "E");}
-					if(exp_minus) {
-						str += "-";
-					}
-					str += exp;
-				}
-				bool twos = (((po.base == BASE_BINARY && po.twos_complement) || (po.base == BASE_HEXADECIMAL && po.hexadecimal_twos_complement)) && m.number().isNegative() && value_str.find(SIGN_MINUS) == string::npos && value_str.find("-") == string::npos);
-				if(po.base != BASE_DECIMAL && (twos || po.base_display != BASE_DISPLAY_ALTERNATIVE || (po.base != BASE_HEXADECIMAL && po.base != BASE_BINARY && po.base != BASE_OCTAL)) && (po.base > 0 || po.base <= BASE_CUSTOM) && po.base <= 36) {
-					if(!multiline) {
-						string str2 = str;
-						TTE(str2)
-						pango_layout_set_markup(layout, str2.c_str(), -1);
-						pango_layout_get_pixel_size(layout, NULL, &central_point);
-					}
-					TTBP_SMALL(str)
-					str += "<sub>";
-					string str_base;
-					if(it != number_map.end()) {
-						str_base = number_base_map[(void*) &m.number()];
-					} else {
-						switch(po.base) {
-							case BASE_GOLDEN_RATIO: {str_base = "<i>φ</i>"; break;}
-							case BASE_SUPER_GOLDEN_RATIO: {str_base = "<i>ψ</i>"; break;}
-							case BASE_PI: {str_base = "<i>π</i>"; break;}
-							case BASE_E: {str_base = "<i>e</i>"; break;}
-							case BASE_SQRT2: {str_base = "√2"; break;}
-							case BASE_UNICODE: {str_base = "Unicode"; break;}
-							case BASE_BIJECTIVE_26: {str_base = "b26"; break;}
-							case BASE_CUSTOM: {str_base = CALCULATOR->customOutputBase().print(CALCULATOR->messagePrintOptions()); break;}
-							case BASE_FP16: {}
-							case BASE_FP32: {}
-							case BASE_FP64: {}
-							case BASE_FP80: {}
-							case BASE_FP128: {str_base = "2"; break;}
-							default: {str_base = i2s(po.base);}
+				for(int try_i = 0; try_i <= 2; try_i++) {
+					if(try_i == 1) {
+						value_str_bak = value_str;
+						size_t i = string::npos, l = 0;
+						if(po.base == BASE_BINARY || (po.base == BASE_DECIMAL && po.digit_grouping != DIGIT_GROUPING_NONE)) {
+							i = value_str.find(" ", value_str.length() / 2);
+							l = 1;
+							if(i == string::npos && po.base == BASE_DECIMAL) {
+								if(po.digit_grouping != DIGIT_GROUPING_LOCALE) {
+									l = strlen(THIN_SPACE);
+									i = value_str.find(THIN_SPACE, value_str.length() / 2 - 1);
+									
+								} else if(!CALCULATOR->local_digit_group_separator.empty()) {
+									l = CALCULATOR->local_digit_group_separator.length();
+									i = value_str.find(CALCULATOR->local_digit_group_separator, value_str.length() / 2 - (l == 3 ? 1 : 0));
+								}
+							}
 						}
-						if(twos) str_base += '-';
-						number_base_map[(void*) &m.number()] = str_base;
+						if(i == string::npos && po.base != BASE_BINARY) {
+							l = 0;
+							i = value_str.length() / 2 + 2;
+							if(po.base == BASE_DECIMAL && (po.digit_grouping == DIGIT_GROUPING_STANDARD || (po.digit_grouping == DIGIT_GROUPING_LOCALE && CALCULATOR->local_digit_group_separator != " "))) {
+								size_t i2 = 0;
+								while(true) {
+									i2 = value_str.find(po.digit_grouping == DIGIT_GROUPING_LOCALE ? CALCULATOR->local_digit_group_separator : THIN_SPACE, i2 + 1);
+									if(i2 == string::npos || i2 == value_str.length() - 1) break;
+									i++;
+								}
+								if(i >= value_str.length()) i = string::npos;
+							}
+							while(value_str[i] < 0) {
+								i++;
+								if(i >= value_str.length()) {i = string::npos; break;}
+							}
+						}
+						if(i == string::npos) {
+							break;
+						} else {
+							if(l == 0) value_str.insert(i, 1, '\n');
+							else if(l == 1) value_str[i] = '\n';
+							else {value_str.erase(i, l - 1); value_str[i] = '\n';}
+							if(po.base == BASE_DECIMAL) pango_layout_set_alignment(layout, PANGO_ALIGN_RIGHT);
+							multiline = true;
+						}
+					} else if(try_i == 2) {
+						if(po.base == BASE_BINARY) {
+							PangoLayoutIter *iter = pango_layout_get_iter(layout);
+							PangoRectangle crect;
+							string str2;
+							size_t n_begin = (value_str.length() + 1) % 20;
+							for(size_t i = 0; i == 0 || pango_layout_iter_next_char(iter); i++) {
+								if((i % 20 == n_begin) || i == value_str.length() - 1) {
+									pango_layout_iter_get_char_extents(iter, &crect);
+									pango_extents_to_pixels(&crect, NULL);
+									PangoLayout *layout_pos = gtk_widget_create_pango_layout(resultview, NULL);
+									str2 = "";
+									TTB_XSMALL(str2);
+									if(i == value_str.length() - 1) str2 += "0";
+									else str2 += i2s(((value_str.length() - n_begin) - (value_str.length() - n_begin) / 5) - ((i - n_begin) - (i - n_begin) / 5) - 1);
+									TTE(str2);
+									pango_layout_set_markup(layout_pos, str2.c_str(), -1);
+									pos_nr.push_back(layout_pos);
+									if(i == value_str.length() - 1) {
+										pango_layout_get_pixel_size(layout_pos, &w, &pos_h);
+										pos_x.push_back(crect.x + (crect.width - w) / 2);
+										break;
+									} else {
+										pos_x.push_back(crect.x);
+									}
+								}
+							}
+							pango_layout_iter_free(iter);
+						}
+						break;
 					}
-					str += str_base;
-					str += "</sub>";
+					TTBP(str)
+					str += value_str;
+					if(!exp.empty()) {
+						if(po.lower_case_e) {TTP(str, "e");}
+						else {TTP_SMALL(str, "E");}
+						if(exp_minus) {
+							str += "-";
+						}
+						str += exp;
+					}
+					bool twos = (((po.base == BASE_BINARY && po.twos_complement) || (po.base == BASE_HEXADECIMAL && po.hexadecimal_twos_complement)) && m.number().isNegative() && value_str.find(SIGN_MINUS) == string::npos && value_str.find("-") == string::npos);
+					if(po.base != BASE_DECIMAL && (twos || po.base_display != BASE_DISPLAY_ALTERNATIVE || (po.base != BASE_HEXADECIMAL && po.base != BASE_BINARY && po.base != BASE_OCTAL)) && (po.base > 0 || po.base <= BASE_CUSTOM) && po.base <= 36) {
+						if(!multiline) {
+							string str2 = str;
+							TTE(str2)
+							pango_layout_set_markup(layout, str2.c_str(), -1);
+							pango_layout_get_pixel_size(layout, NULL, &central_point);
+						}
+						TTBP_SMALL(str)
+						str += "<sub>";
+						string str_base;
+						if(it != number_map.end()) {
+							str_base = number_base_map[(void*) &m.number()];
+						} else {
+							switch(po.base) {
+								case BASE_GOLDEN_RATIO: {str_base = "<i>φ</i>"; break;}
+								case BASE_SUPER_GOLDEN_RATIO: {str_base = "<i>ψ</i>"; break;}
+								case BASE_PI: {str_base = "<i>π</i>"; break;}
+								case BASE_E: {str_base = "<i>e</i>"; break;}
+								case BASE_SQRT2: {str_base = "√2"; break;}
+								case BASE_UNICODE: {str_base = "Unicode"; break;}
+								case BASE_BIJECTIVE_26: {str_base = "b26"; break;}
+								case BASE_CUSTOM: {str_base = CALCULATOR->customOutputBase().print(CALCULATOR->messagePrintOptions()); break;}
+								case BASE_FP16: {}
+								case BASE_FP32: {}
+								case BASE_FP64: {}
+								case BASE_FP80: {}
+								case BASE_FP128: {str_base = "2"; break;}
+								default: {str_base = i2s(po.base);}
+							}
+							if(twos) str_base += '-';
+							number_base_map[(void*) &m.number()] = str_base;
+						}
+						str += str_base;
+						str += "</sub>";
+						TTE(str)
+					}
 					TTE(str)
+					pango_layout_set_markup(layout, str.c_str(), -1);
+					if(max_width > 0 && exp.empty() && ((po.base >= 2 && po.base <= 36 && po.base != BASE_DUODECIMAL) || (po.base == BASE_CUSTOM && CALCULATOR->customOutputBase().isInteger() && CALCULATOR->customOutputBase() <= 62 && CALCULATOR->customOutputBase() >= -62))) {
+						pango_layout_get_pixel_size(layout, &w, NULL);
+						if(w + wle > max_width) {
+							if(try_i == 1) {
+								str = str_bak;
+								pango_layout_set_markup(layout, str.c_str(), -1);
+								multiline = false;
+								if(po.base != BASE_BINARY) break;
+							} else {
+								str_bak = str;
+								str = "";
+							}
+						} else {
+							break;
+						}
+					} else {
+						break;
+					}
 				}
-				TTE(str)
-				pango_layout_set_markup(layout, str.c_str(), -1);
 				PangoRectangle rect, lrect;
 				pango_layout_get_pixel_extents(layout, &rect, &lrect);
 				w = lrect.width;
@@ -6909,13 +7021,17 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					pango_layout_line_get_pixel_extents(pango_layout_get_line(layout, 0), NULL, &lrect);
 					central_point = h - (lrect.height / 2 + lrect.height % 2);
 				} else if(central_point != 0) {
+					pos_y = central_point;
+					if(pos_h + pos_y > h) h = pos_h + pos_y;
 					central_point = h - (central_point / 2 + central_point % 2);
 				} else {
 					central_point = h / 2;
+					pos_y = h;
+					h += pos_h;
 				}
 				if(rect.y < 0) {
-					central_point = -rect.y;
 					h -= rect.y;
+					pos_y -= rect.y;
 				}
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
@@ -6923,6 +7039,11 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				gdk_cairo_set_source_rgba(cr, color);
 				cairo_move_to(cr, offset_x, rect.y < 0 ? -rect.y : 0);
 				pango_cairo_show_layout(cr, layout);
+				for(size_t i = 0; i < pos_nr.size(); i++) {
+					cairo_move_to(cr, pos_x[i], pos_y);
+					pango_cairo_show_layout(cr, pos_nr[i]);
+					g_object_unref(pos_nr[i]);
+				}
 				g_object_unref(layout);
 				break;
 			}
@@ -6954,10 +7075,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					}
 				}
 				central_point = h / 2;
-				if(rect.y < 0) {
-					central_point = -rect.y;
-					h -= rect.y;
-				}
+				if(rect.y < 0) h -= rect.y;
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
 				cr = cairo_create(surface);
@@ -6999,10 +7117,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					}
 				}
 				central_point = h / 2;
-				if(rect.y < 0) {
-					central_point = -rect.y;
-					h -= rect.y;
-				}
+				if(rect.y < 0) h -= rect.y;
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
 				cr = cairo_create(surface);
@@ -7146,7 +7261,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				dh = minus_h / 2;
 
 				ips_n.wrap = m[0].isPower() ? m[0][0].needsParenthesis(po, ips_n, m, 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0) : m[0].needsParenthesis(po, ips_n, m, 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-				cairo_surface_t *surface_arg = draw_structure(m[0], po, caf, ips_n, &ctmp, scaledown, color, &xtmp, &offset_w);
+				cairo_surface_t *surface_arg = draw_structure(m[0], po, caf, ips_n, &ctmp, scaledown, color, &xtmp, &offset_w, ips.depth == 0 && max_width > 0 ? max_width - minus_w : -1);
 				if(!surface_arg) {
 					g_object_unref(layout_minus);
 					return NULL;
@@ -7509,8 +7624,8 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					cairo_paint(cr);
 					g_object_unref(layout_div);
 				} else {
-					num_w = num_w - xtmp1;
-					den_w = den_w - xtmp2;
+					num_w = num_w - xtmp1 - wotmp1;
+					den_w = den_w - xtmp2 - wotmp2;
 					int y1n;
 					get_image_blank_height(num_surface, &y1n, NULL);
 					y1n /= scalefactor;
@@ -7524,7 +7639,6 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					uh = num_dh + num_uh + 3;
 					wfr = den_w;
 					if(num_w > wfr) wfr = num_w;
-					wfr += 2;
 					w = wfr;
 					h = uh + dh;
 					central_point = dh;
@@ -7533,10 +7647,16 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					gint den_pos = (wfr - den_w) / 2;
 					if(num_pos - xtmp1 < 0) offset_x = -(num_pos - xtmp1);
 					if(den_pos - xtmp2 < -offset_x) offset_x = -(den_pos - xtmp2);
-					w += offset_x; w += w_extra * 2;
-					wfr += offset_x;
-					num_pos = (wfr - num_w) / 2;
-					den_pos = (wfr - den_w) / 2;
+					if(num_pos + num_w + wotmp1 > w) offset_w = (num_pos + num_w + wotmp1) - w;
+					if((den_pos + den_w + wotmp2) - w > offset_w) offset_w = (den_pos + den_w + wotmp2) - w;
+					w += offset_x + offset_w;
+					wfr = w;
+					if(num_pos - (wotmp1 + xtmp1) > den_pos) num_pos = (wfr - num_w) / 2;
+					else num_pos += offset_x;
+					if(den_pos - (wotmp2 + xtmp2) > num_pos) den_pos = (wfr - den_w) / 2;
+					else den_pos += offset_x;
+					wfr += 2; w += 2; num_pos++; den_pos++;
+					w += w_extra * 2;
 					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
 					cr = cairo_create(surface);
@@ -7552,6 +7672,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					cairo_set_source_surface(cr, den_surface, w + den_pos - xtmp2, uh + 3);
 					cairo_paint(cr);
 					offset_x = 0;
+					offset_w = 0;
 				}
 				if(num_surface) cairo_surface_destroy(num_surface);
 				if(den_surface) cairo_surface_destroy(den_surface);
@@ -8333,10 +8454,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					}
 				}
 				central_point = h / 2;
-				if(rect.y < 0) {
-					central_point = -rect.y;
-					h -= rect.y;
-				}
+				if(rect.y < 0) h -= rect.y;
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
 				cr = cairo_create(surface);
@@ -8409,10 +8527,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				}
 				if(m.variable() == CALCULATOR->v_i) w += 1;
 				central_point = h / 2;
-				if(rect.y < 0) {
-					central_point = -rect.y;
-					h -= rect.y;
-				}
+				if(rect.y < 0) h -= rect.y;
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
 				cr = cairo_create(surface);
@@ -8914,10 +9029,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					}
 				}
 				central_point = h / 2;
-				if(rect.y < 0) {
-					central_point = -rect.y;
-					h -= rect.y;
-				}
+				if(rect.y < 0) h -= rect.y;
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
 				cr = cairo_create(surface);
@@ -21004,6 +21116,7 @@ gboolean on_button_move_button_event(GtkWidget *w, GdkEventButton *event, gpoint
 gboolean keypad_unblock_timeout(gpointer w) {
 	while(gtk_events_pending()) gtk_main_iteration();
 	g_signal_handlers_unblock_matched(w, (GSignalMatchType) (G_SIGNAL_MATCH_DATA | G_SIGNAL_MATCH_ID), g_signal_lookup("clicked", G_OBJECT_TYPE(w)), 0, NULL, NULL, NULL);
+	g_signal_handlers_unblock_matched(w, (GSignalMatchType) (G_SIGNAL_MATCH_DATA | G_SIGNAL_MATCH_ID), g_signal_lookup("toggled", G_OBJECT_TYPE(w)), 0, NULL, NULL, NULL);
 	return FALSE;
 }
 
@@ -21021,6 +21134,7 @@ gboolean on_keypad_button_button_event(GtkWidget *w, GdkEventButton *event, gpoi
 		button_press_timeout_side = 0;
 		if(b_this) {
 			g_signal_handlers_block_matched((gpointer) w, (GSignalMatchType) (G_SIGNAL_MATCH_DATA | G_SIGNAL_MATCH_ID), g_signal_lookup("clicked", G_OBJECT_TYPE(w)), 0, NULL, NULL, NULL);
+			g_signal_handlers_block_matched((gpointer) w, (GSignalMatchType) (G_SIGNAL_MATCH_DATA | G_SIGNAL_MATCH_ID), g_signal_lookup("toggled", G_OBJECT_TYPE(w)), 0, NULL, NULL, NULL);
 			g_timeout_add(50, keypad_unblock_timeout, (gpointer) w);
 			return FALSE;
 		}
@@ -29162,7 +29276,9 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 					cairo_destroy(cr2);
 					g_object_unref(layout);
 				} else {
-					tmp_surface = draw_structure(*displayed_mstruct, displayed_printops, displayed_caf, top_ips, NULL, scale_n);
+					gint rw = -1;
+					if(scale_n == 3) rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
+					tmp_surface = draw_structure(*displayed_mstruct, displayed_printops, displayed_caf, top_ips, NULL, scale_n, NULL, NULL, NULL, rw);
 				}
 				surface_result = tmp_surface;
 			}
@@ -29186,7 +29302,7 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 					scale_n++;
 				}
 				cairo_surface_destroy(surface_result);
-				surface_result = draw_structure(*displayed_mstruct, displayed_printops, displayed_caf, top_ips, NULL, scale_n);
+				surface_result = draw_structure(*displayed_mstruct, displayed_printops, displayed_caf, top_ips, NULL, scale_n, NULL, NULL, NULL, scale_n == 3 ? rw : -1);
 				w = cairo_image_surface_get_width(surface_result) / scalefactor;
 				h = cairo_image_surface_get_height(surface_result) / scalefactor;
 			}

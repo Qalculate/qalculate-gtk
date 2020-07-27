@@ -48,6 +48,27 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="3.12.0" date="2020-07-27">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Option to hide left or right part of the keypad</li>
+      <li>Replace fraction mode combo box with a single toggle button</li>
+      <li>Disable prefixes by default in scientific, engineering, and pure modes, and change behaviour of composite modes when user changes separate options</li>
+      <li>Auto completion for objects and properites in data set functions</li>
+      <li>Split long numerical results in two lines and show bit position for binary number that does not fit in window</li>
+      <li>Improved text layout in result</li>
+      <li>Improved exact simplification of roots (e.g. sqrt(2)-2/sqrt(2)=0)</li>
+      <li>Only apply negative exponents option to units, and always use negative exponents instead of division for unit expressions with only negative exponents</li>
+      <li>Support use of right arrow as alternative to "to" for conversion (e.g. 5m→ft)</li>
+      <li>Use middle dot instead of multiplication x in unit expressions</li>
+      <li>Brazilian Portuguese (GUI only) and Spanish translations</li>
+      <li>Examples in manual</li>
+      <li>Fix Insert button in insert function dialog</li>
+      <li>Minor bug fixes and feature improvements</li>
+     </ul>
+   </description>
+  </release>
   <release version="3.11.0" date="2020-06-22">
    <description>
     <p>Changes:</p>

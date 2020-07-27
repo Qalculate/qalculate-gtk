@@ -11,7 +11,7 @@ In a terminal window in the top source code directory run
 * `./autogen.sh` *(not required if using a release source tarball, only if using the git version)*
 * `./configure`
 * `make`
-* `make install`
+* `make install` *(as root, e.g. `sudo make install`)*
 
 If libqalculate has been installed in the default /usr/local path you it might be necessary to specify the pkgconfig path when running configure:
 `PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure`
