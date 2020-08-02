@@ -6795,7 +6795,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						} else {
 							number_map[(void*) &mnr[1].number()] = exp;
 						}
-						surface = draw_structure(mnr, po, caf, ips, point_central, scaledown, color);
+						surface = draw_structure(mnr, po, caf, ips, point_central, scaledown, color, x_offset, w_offset, max_width);
 						if(exp_minus) number_map.erase(&mnr[1][0].number());
 						else number_map.erase(&mnr[1].number());
 						number_map.erase(&mnr[0].number());
@@ -6813,7 +6813,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						} else {
 							number_map[(void*) &mnr[1][1].number()] = exp;
 						}
-						surface = draw_structure(mnr, po, caf, ips, point_central, scaledown, color);
+						surface = draw_structure(mnr, po, caf, ips, point_central, scaledown, color, x_offset, w_offset, max_width);
 						if(exp_minus) number_map.erase(&mnr[1][1][0].number());
 						else number_map.erase(&mnr[1][1].number());
 						number_map.erase(&mnr[1][0].number());
