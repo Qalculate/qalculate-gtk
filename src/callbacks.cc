@@ -14996,16 +14996,7 @@ run_csv_export_dialog:
 		}
 		CALCULATOR->startControl(600000);
 		if(!CALCULATOR->exportCSV(*matrix_struct, str.c_str(), delimiter) && CALCULATOR->aborted()) {
-			GtkWidget *edialog = gtk_message_dialog_new(
-				GTK_WINDOW(
-					gtk_builder_get_object(main_builder, "main_window")
-				),
-				GTK_DIALOG_DESTROY_WITH_PARENT,
-				GTK_MESSAGE_ERROR,
-				GTK_BUTTONS_CLOSE,
-				_("Could not export to file \n%s"),
-				str.c_str()
-			);
+			GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not export to file \n%s"), str.c_str());
 			gtk_dialog_run(GTK_DIALOG(edialog));
 			gtk_widget_destroy(edialog);
 		}
@@ -25215,6 +25206,20 @@ void on_menu_item_periodic_table_activate(GtkMenuItem*, gpointer) {
 }
 void on_menu_item_plot_functions_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = get_plot_dialog();
+	if(!dialog) {
+		GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Gnuplot was not found."));
+		gtk_message_dialog_format_secondary_markup(GTK_MESSAGE_DIALOG(edialog), _("%s (%s) needs to be installed separately, and found in the executable search path, for plotting to work."), "Gnuplot", "<a href=\"http://www.gnuplot.info/\">http://www.gnuplot.info/</a>");
+		GList *childlist = gtk_container_get_children(GTK_CONTAINER(gtk_message_dialog_get_message_area(GTK_MESSAGE_DIALOG(edialog))));
+		for(guint i = 0; ; i++) {
+			GtkWidget *w = (GtkWidget*) g_list_nth_data(childlist, i);
+			if(!w) break;
+			g_signal_connect(G_OBJECT(w), "activate-link", G_CALLBACK(on_activate_link), NULL);
+		}
+		g_list_free(childlist);
+		gtk_dialog_run(GTK_DIALOG(edialog));
+		gtk_widget_destroy(edialog);
+		return;
+	}
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_expression")), get_selected_expression_text(true).c_str());
 	if(!gtk_widget_get_visible(dialog)) {

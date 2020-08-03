@@ -122,7 +122,6 @@ void create_application(GtkApplication *app) {
 	matrix_mstruct = new MathStructure();
 	parsed_to_str = new string;
 
-	bool canplot = CALCULATOR->canPlot();
 	bool canfetch = CALCULATOR->canFetch();
 
 	//create main window
@@ -226,7 +225,6 @@ void create_application(GtkApplication *app) {
 	check_expression_position = true;
 	expression_position = 1;
 
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object (main_builder, "menu_item_plot_functions")), canplot);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object (main_builder, "menu_item_fetch_exchange_rates")), canfetch);
 
 	//create button menus after definitions have been loaded

@@ -3082,6 +3082,8 @@ GtkWidget* get_decimals_dialog(void) {
 GtkWidget* get_plot_dialog(void) {
 	if(!plot_builder) {
 
+		if(!CALCULATOR->canPlot()) return NULL;
+
 		plot_builder = getBuilder("plot.ui");
 		g_assert(plot_builder != NULL);
 
