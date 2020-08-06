@@ -48,11 +48,18 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
-  <release version="3.12.1" date="2020-08-02">
+  <release version="3.12.1" date="2020-08-05">
    <description>
+    <p>This version includes some critical bug fixes.</p>
     <p>Changes:</p>
      <ul>
       <li>Fix display of negative numbers with scientific notation</li>
+      <li>Fix BTC, BYN, and BYR exchange rates</li>
+      <li>Fix exchange rates update time</li>
+      <li>Fix parsing of negative power in function arguments without parenthesis</li>
+      <li>Add arcsin, arccos, arsinh, arcosh, etc. as names for inverse trigonometric and hyperbolic functions</li>
+      <li>Interpret sin^-1, cos^-1, etc. as inverse functions (arcsin, arccos, etc.)</li>
+      <li>Add deftorad() and totient() functions</li>
      </ul>
    </description>
   </release>
