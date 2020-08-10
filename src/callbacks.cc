@@ -6229,7 +6229,7 @@ void update_completion() {
 	gtk_list_store_clear(completion_store);
 
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_store), 1, GTK_SORT_ASCENDING);
-	
+
 	string str, title;
 	for(size_t i = 0; i < CALCULATOR->functions.size(); i++) {
 		if(CALCULATOR->functions[i]->isActive()) {
@@ -20616,26 +20616,28 @@ void do_completion() {
 		if(!arg) {
 			string str2, str3, str4;
 			Prefix *p2 = NULL, *p3 = NULL, *p4 = NULL;
-			for(size_t pi = 1; ; pi++) {
-				Prefix *prefix = CALCULATOR->getPrefix(pi);
-				if(!prefix) break;
-				for(size_t name_i = 0; name_i < 3; name_i++) {
-					const string *pname;
-					if(name_i == 0) pname = &prefix->shortName(false);
-					else if(name_i == 1) pname = &prefix->longName(false);
-					else pname = &prefix->unicodeName(false);
-					if(!pname->empty() && pname->length() <= str.length()) {
-						bool pmatch = true;
-						for(size_t i = 0; i < pname->length(); i++) {
-							if((*pname)[i] != str[i]) {
-								pmatch = false;
-								break;
+			if(str.length() > (size_t) completion_min) {
+				for(size_t pi = 1; ; pi++) {
+					Prefix *prefix = CALCULATOR->getPrefix(pi);
+					if(!prefix) break;
+					for(size_t name_i = 0; name_i < 3; name_i++) {
+						const string *pname;
+						if(name_i == 0) pname = &prefix->shortName(false);
+						else if(name_i == 1) pname = &prefix->longName(false);
+						else pname = &prefix->unicodeName(false);
+						if(!pname->empty() && pname->length() < str.length() - completion_min + 1) {
+							bool pmatch = true;
+							for(size_t i = 0; i < pname->length(); i++) {
+								if((*pname)[i] != str[i]) {
+									pmatch = false;
+									break;
+								}
 							}
-						}
-						if(pmatch) {
-							if(!p2) {p2 = prefix; str2 = str.substr(pname->length());}
-							else if(!p3) {p3 = prefix; str3 = str.substr(pname->length());}
-							else if(!p4) {p4 = prefix; str4 = str.substr(pname->length());}
+							if(pmatch) {
+								if(str2.empty()) {p2 = prefix; str2 = str.substr(pname->length());}
+								else if(str3.empty()) {p3 = prefix; str3 = str.substr(pname->length());}
+								else if(str4.empty()) {p4 = prefix; str4 = str.substr(pname->length());}
+							}
 						}
 					}
 				}
@@ -20656,17 +20658,37 @@ void do_completion() {
 					else if(!evalops.parse_options.units_enabled && item->type() == TYPE_UNIT) {}
 					else {
 						CompositeUnit *cu = NULL;
+						int exp = 0;
 						if(item->type() == TYPE_UNIT && ((Unit*) item)->subtype() == SUBTYPE_COMPOSITE_UNIT) {
 							cu = (CompositeUnit*) item;
-							int exp = 1;
 							item = cu->get(1, &exp, &prefix);
-							if(item && prefix && exp == 1 && cu->countUnits() == 1) {
-								if(p2 == prefix || p3 == prefix || p4 == prefix) {
-									b_match = 2;
-								} else if(enable_completion2 && title_matches(cu, str, completion_min2)) {
-									b_match = 4;
+							if(item && prefix) {
+								for(size_t name_i = 0; name_i < 3; name_i++) {
+									const string *pname;
+									if(name_i == 0) pname = &prefix->shortName(false);
+									else if(name_i == 1) pname = &prefix->longName(false);
+									else pname = &prefix->unicodeName(false);
+									if(!pname->empty() && pname->length() >= str.length() && (name_i != 1 || str.length() >= 2)) {
+										bool pmatch = true;
+										for(size_t i = 0; i < str.length(); i++) {
+											if((*pname)[i] != str[i]) {
+												pmatch = false;
+												break;
+											}
+										}
+										if(pmatch) {
+											b_match = 2;
+											item = NULL;
+											break;
+										}
+									}
 								}
-								item = NULL;
+								if(item && exp == 1 && cu->countUnits() == 1 && ((Unit*) item)->useWithPrefixesByDefault()) {
+									if(!b_match && enable_completion2 && title_matches(cu, str, completion_min2)) {
+										b_match = 4;
+									}
+									item = NULL;
+								}
 							}
 						}
 						for(size_t name_i = 1; item && name_i <= item->countNames() && !b_match; name_i++) {
@@ -20677,19 +20699,16 @@ void do_completion() {
 								} else {
 									for(size_t icmp = 0; icmp < 4; icmp++) {
 										if(icmp == 1 && (item->type() != TYPE_UNIT || str2.empty() || (cu && !prefix) || (!cu && !((Unit*) item)->useWithPrefixesByDefault()))) break;
-										if(icmp == 1 && !p2) break;
-										if(icmp == 2 && !p3) break;
-										if(icmp == 3 && !p4) break;
 										if(cu && prefix) {
-											if(icmp == 0 || (icmp == 1 && prefix != p2) || (icmp == 2 && prefix != p3) || (icmp == 3 && prefix != p3)) icmp++;
-											if(icmp > 3) break;
+											if(icmp == 0 || (icmp == 1 && prefix != p2) || (icmp == 2 && prefix != p3) || (icmp == 3 && prefix != p3)) continue;
 										}
 										const string *cmpstr;
 										if(icmp == 0) cmpstr = &str;
 										else if(icmp == 1) cmpstr = &str2;
 										else if(icmp == 2) cmpstr = &str3;
 										else if(icmp == 3) cmpstr = &str4;
-										if(((cu && prefix) || cmpstr->length() >= (size_t) completion_min) && cmpstr->length() <= ename->name.length()) {
+										if(cmpstr->empty()) break;
+										if(cmpstr->length() <= ename->name.length()) {
 											b_match = 2;
 											for(size_t i = 0; i < cmpstr->length(); i++) {
 												if(ename->name[i] != (*cmpstr)[i]) {
@@ -20697,7 +20716,7 @@ void do_completion() {
 													break;
 												}
 											}
-											if(!cu && b_match && ename->name == *cmpstr) b_match = 1;
+											if(b_match && (!cu || (exp == 1 && cu->countUnits() == 1)) && ename->name == *cmpstr) b_match = 1;
 											if(b_match) {
 												if(icmp > 0 && !cu) {
 													if(icmp == 1) prefix = p2;
@@ -20712,37 +20731,32 @@ void do_completion() {
 								}
 							}
 						}
-						if(item && !cu && b_match == 2 && item->countNames() > 1) {
+						if(item && (!cu || (exp == 1 && cu->countUnits() == 1)) && b_match == 2 && item->countNames() > 1) {
 							for(size_t icmp = 0; icmp < 4 && b_match > 1; icmp++) {
 								if(icmp == 1 && (item->type() != TYPE_UNIT || str2.empty() || (cu && !prefix) || (!cu && !((Unit*) item)->useWithPrefixesByDefault()))) break;
-								if(icmp == 1 && !p2) break;
-								if(icmp == 2 && !p3) break;
-								if(icmp == 3 && !p4) break;
 								if(cu && prefix) {
-									if(icmp == 0 || (icmp == 1 && prefix != p2) || (icmp == 2 && prefix != p3) || (icmp == 3 && prefix != p3)) icmp++;
-									if(icmp > 3) break;
+									if(icmp == 0 || (icmp == 1 && prefix != p2) || (icmp == 2 && prefix != p3) || (icmp == 3 && prefix != p3)) continue;
 								}
 								const string *cmpstr;
 								if(icmp == 0) cmpstr = &str;
 								else if(icmp == 1) cmpstr = &str2;
 								else if(icmp == 2) cmpstr = &str3;
 								else cmpstr = &str4;
-								if((cu && prefix) || cmpstr->length() >= (size_t) completion_min) {
-									for(size_t name_i = 1; name_i <= item->countNames(); name_i++) {
-										if(item->getName(name_i).name == *cmpstr) {
-											if(!cu) {
-												if(icmp == 1) prefix = p2;
-												else if(icmp == 2) prefix = p3;
-												else if(icmp == 3) prefix = p4;
-												else prefix = NULL;
-											}
-											b_match = 1; break;
+								if(cmpstr->empty()) break;
+								for(size_t name_i = 1; name_i <= item->countNames(); name_i++) {
+									if(item->getName(name_i).name == *cmpstr) {
+										if(!cu) {
+											if(icmp == 1) prefix = p2;
+											else if(icmp == 2) prefix = p3;
+											else if(icmp == 3) prefix = p4;
+											else prefix = NULL;
 										}
+										b_match = 1; break;
 									}
 								}
 							}
 						}
-						if(item && !b_match && enable_completion2) {
+						if(item && !b_match && enable_completion2 && (!item->isHidden() || (item->type() == TYPE_UNIT && str.length() > 1 && ((Unit*) item)->isCurrency()))) {
 							if(title_matches(cu ? cu : item, str, completion_min2)) b_match = 4;
 							else if(!cu && item->type() == TYPE_UNIT && ((Unit*) item)->isCurrency() && country_matches((Unit*) item, str, completion_min2)) b_match = 5;
 						}
