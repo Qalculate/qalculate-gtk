@@ -6229,7 +6229,7 @@ void update_completion() {
 	gtk_list_store_clear(completion_store);
 
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_store), 1, GTK_SORT_ASCENDING);
-
+	
 	string str, title;
 	for(size_t i = 0; i < CALCULATOR->functions.size(); i++) {
 		if(CALCULATOR->functions[i]->isActive()) {
@@ -6364,7 +6364,6 @@ void update_completion() {
 			}
 		}
 	}
-	int exp;
 	for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 		Unit *u = CALCULATOR->units[i];
 		if(u->isActive()) {
@@ -6405,7 +6404,7 @@ void update_completion() {
 					size_t i_slash = string::npos;
 					if(u->category().length() > 1) i_slash = u->category().rfind("/", u->category().length() - 2);
 					if(i_slash != string::npos) i_slash++;
-					if(title.length() + u->category().length() - (i_slash == string::npos ? 0 : i_slash) < 30) {
+					if(title.length() + u->category().length() - (i_slash == string::npos ? 0 : i_slash) < 35) {
 						title += " (";
 						if(i_slash == string::npos) title += u->category();
 						else title += u->category().substr(i_slash, u->category().length() - i_slash);
@@ -6414,28 +6413,62 @@ void update_completion() {
 				}
 				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_images.end() ? NULL : it_flag->second, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
 				else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, title.c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_images.end() ? NULL : it_flag->second, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
-			} else if(!u->isHidden() && (((CompositeUnit*) u)->countUnits() > 1 || !((CompositeUnit*) u)->get(1, &exp, NULL)->useWithPrefixesByDefault() || exp != 1)) {
-				str = u->print(false, true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
-				if(str.find("_") == string::npos) {
-					if(printops.multiplication_sign == MULTIPLICATION_SIGN_DOT) gsub(saltdot, sdot, str);
-					gtk_list_store_append(completion_store, &iter);
-					size_t i_slash = string::npos;
-					if(u->category().length() > 1) i_slash = u->category().rfind("/", u->category().length() - 2);
-					if(i_slash != string::npos) i_slash++;
-					title = u->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
-					if(u->isSIUnit() && !u->category().empty()) {
-						if(title.length() + u->category().length() - (i_slash == string::npos ? 0 : i_slash) < 30 && title[title.length() - 1] != ')') {
-							title += " (";
-							if(i_slash == string::npos) title += u->category();
-							else title += u->category().substr(i_slash, u->category().length() - i_slash);
-							title += ")";
-						} else {
-							if(i_slash == string::npos) title = u->category();
-							else title = u->category().substr(i_slash, u->category().length() - i_slash);
+			} else if(!u->isHidden()) {
+				CompositeUnit *cu = (CompositeUnit*) u;
+				Prefix *prefix = NULL;
+				int exp = 1;
+				if(cu->countUnits() == 1 && (u = cu->get(1, &exp, &prefix)) != NULL && prefix != NULL && exp == 1) {
+					str = "";
+					for(size_t name_i = 0; name_i < 3; name_i++) {
+						const string *pname;
+						if(name_i == 1) pname = &prefix->shortName(false);
+						else if(name_i == 2) pname = &prefix->longName(false);
+						else pname = &prefix->unicodeName(false);
+						if(!pname->empty()) {
+							bool b_italic = !str.empty();
+							if(b_italic) str += " <i>";
+							str += *pname;
+							str += u->preferredInputName(name_i != 2, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name;
+							if(b_italic) str += "</i>";
 						}
 					}
-					gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, u, 3, FALSE, 4, 0, 5, NULL, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
+				} else {
+					str = cu->print(false, true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
+					size_t i_pow = str.find("^");
+					while(i_pow != string::npos) {
+						size_t i_end = str.find_first_of(NUMBERS);
+						if(i_end == string::npos) break;
+						if(i_end != str.length() - 1) {
+							i_end = str.find_first_not_of(NUMBERS, i_end + 1);
+						}
+						str.erase(i_pow, 1);
+						if(i_end == string::npos) str += "</sup></span>";
+						else str.insert(i_end, "</sup></span>");
+						str.insert(i_pow, "<span size=\"small\"><sup>");
+						if(i_end == string::npos) break;
+						i_pow = str.find("^", i_pow + 1);
+					}
+					if(printops.multiplication_sign == MULTIPLICATION_SIGN_DOT) gsub(saltdot, sdot, str);
+					gsub("_unit", "", str);
+					gsub("_eunit", "<span size=\"small\"><sub>e</sub></span>", str);
 				}
+				gtk_list_store_append(completion_store, &iter);
+				size_t i_slash = string::npos;
+				if(cu->category().length() > 1) i_slash = cu->category().rfind("/", cu->category().length() - 2);
+				if(i_slash != string::npos) i_slash++;
+				title = cu->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
+				if(cu->isSIUnit() && !cu->category().empty()) {
+					if(title.length() + cu->category().length() - (i_slash == string::npos ? 0 : i_slash) < 35 && title[title.length() - 1] != ')') {
+						title += " (";
+						if(i_slash == string::npos) title += cu->category();
+						else title += cu->category().substr(i_slash, cu->category().length() - i_slash);
+						title += ")";
+					} else {
+						if(i_slash == string::npos) title = cu->category();
+						else title = cu->category().substr(i_slash, cu->category().length() - i_slash);
+					}
+				}
+				gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, cu, 3, FALSE, 4, 0, 5, NULL, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
 			}
 		}
 	}
@@ -7459,7 +7492,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 									pango_layout_get_pixel_size(layout_mul, &mul_w, &mul_h);
 								}
 								if(nm[i] == MULTIPLICATION_SIGN_OPERATOR_SHORT && m[i].isUnit_exp() && m[i - 1].isUnit_exp()) w += mul_w + (space_w / 2) * 2;
-								if(nm[i] == MULTIPLICATION_SIGN_OPERATOR_SHORT) w += mul_w;
+								else if(nm[i] == MULTIPLICATION_SIGN_OPERATOR_SHORT) w += mul_w;
 								else w += mul_w + space_w * 2;
 								if(mul_h / 2 > dh) {
 									dh = mul_h / 2;
@@ -18597,6 +18630,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 	ExpressionItem *item = NULL;
 	Prefix *prefix = NULL;
 	int p_type = 0;
+	int exp = 1;
 	void *p = NULL;
 	const ExpressionName *ename = NULL, *ename_r = NULL, *ename_r2;
 	gint i_type = 0;
@@ -18615,15 +18649,54 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 		gstr_next = g_utf8_next_char(gstr_next);
 		if(strlen(gstr_pre) - strlen(gstr_next) >= i_match) break;
 	}
-	if(item && (item->type() != TYPE_UNIT || ((Unit*) item)->subtype() != SUBTYPE_COMPOSITE_UNIT)) {
-		ename_r = &item->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+	if(item && item->type() == TYPE_UNIT && ((Unit*) item)->subtype() == SUBTYPE_COMPOSITE_UNIT && (((CompositeUnit*) item)->countUnits() > 1 || !((CompositeUnit*) item)->get(1, &exp, &prefix) || exp != 1)) {
+		str = ((Unit*) item)->print(false, true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
+	} else if(item) {
+		CompositeUnit *cu = NULL;
+		if(item->type() == TYPE_UNIT && ((Unit*) item)->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+			cu = (CompositeUnit*) item;
+			item = cu->get(1);
+		}
 		if(i_type > 2) {
-			ename = ename_r;
+			ename = &item->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+			if(!ename) return;
+			if(cu && prefix) {
+				str = prefix->name(ename->abbreviation, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
+				str += ename->name;
+			} else {
+				str = ename->name;
+			}
+		} else if(cu && prefix) {
+			gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &object_start, &object_end, FALSE);
+			for(size_t name_i = 0; name_i < 3; name_i++) {
+				const string *pname;
+				if(name_i == 0) pname = &prefix->shortName(false);
+				else if(name_i == 1) pname = &prefix->longName(false);
+				else pname = &prefix->unicodeName(false);
+				if(!pname->empty() && (!((Unit*)item)->useWithPrefixesByDefault() || pname->length() >= strlen(gstr2))) {
+					bool pmatch = true;
+					for(size_t i = 0; i < strlen(gstr2) && i < pname->length(); i++) {
+						if((*pname)[i] != gstr2[i]) {
+							pmatch = false;
+							break;
+						}
+					}
+					if(pmatch) {
+						str = *pname;
+						ename = &item->preferredInputName(printops.abbreviate_names && name_i != 1, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+						if(pname->length() >= strlen(gstr2)) break;
+					}
+				}
+			}
+			g_free(gstr2);
+			if(!ename) return;
+			str += ename->name;
 		} else {
+			gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &object_start, &object_end, FALSE);
+			ename_r = &item->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
 			if(printops.abbreviate_names && ename_r->abbreviation) ename_r2 = &item->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
 			else ename_r2 = NULL;
 			if(ename_r2 == ename_r) ename_r2 = NULL;
-			gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &object_start, &object_end, FALSE);
 			for(size_t name_i = 0; name_i <= (ename_r2 ? item->countNames() + 1 : item->countNames()) && !ename; name_i++) {
 				if(name_i == 0) {
 					ename = ename_r;
@@ -18671,9 +18744,9 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 			}
 			if(!ename) ename = ename_r;
 			g_free(gstr2);
+			if(!ename) return;
+			str = ename->name;
 		}
-		if(!ename) return;
-		str = ename->name;
 	} else if(prefix) {
 		gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &object_start, &object_end, FALSE);
 		for(size_t name_i = (printops.abbreviate_names ? 1 : 0); name_i < 3; name_i++) {
@@ -20543,28 +20616,26 @@ void do_completion() {
 		if(!arg) {
 			string str2, str3, str4;
 			Prefix *p2 = NULL, *p3 = NULL, *p4 = NULL;
-			if(str.length() > (size_t) completion_min) {
-				for(size_t pi = 1; ; pi++) {
-					Prefix *prefix = CALCULATOR->getPrefix(pi);
-					if(!prefix) break;
-					for(size_t name_i = 0; name_i < 3; name_i++) {
-						const string *pname;
-						if(name_i == 0) pname = &prefix->shortName(false);
-						else if(name_i == 1) pname = &prefix->longName(false);
-						else pname = &prefix->unicodeName(false);
-						if(!pname->empty() && pname->length() < str.length() - completion_min + 1) {
-							bool pmatch = true;
-							for(size_t i = 0; i < pname->length(); i++) {
-								if((*pname)[i] != str[i]) {
-									pmatch = false;
-									break;
-								}
+			for(size_t pi = 1; ; pi++) {
+				Prefix *prefix = CALCULATOR->getPrefix(pi);
+				if(!prefix) break;
+				for(size_t name_i = 0; name_i < 3; name_i++) {
+					const string *pname;
+					if(name_i == 0) pname = &prefix->shortName(false);
+					else if(name_i == 1) pname = &prefix->longName(false);
+					else pname = &prefix->unicodeName(false);
+					if(!pname->empty() && pname->length() <= str.length()) {
+						bool pmatch = true;
+						for(size_t i = 0; i < pname->length(); i++) {
+							if((*pname)[i] != str[i]) {
+								pmatch = false;
+								break;
 							}
-							if(pmatch) {
-								if(str2.empty()) {p2 = prefix; str2 = str.substr(pname->length());}
-								else if(str3.empty()) {p3 = prefix; str3 = str.substr(pname->length());}
-								else if(str4.empty()) {p4 = prefix; str4 = str.substr(pname->length());}
-							}
+						}
+						if(pmatch) {
+							if(!p2) {p2 = prefix; str2 = str.substr(pname->length());}
+							else if(!p3) {p3 = prefix; str3 = str.substr(pname->length());}
+							else if(!p4) {p4 = prefix; str4 = str.substr(pname->length());}
 						}
 					}
 				}
@@ -20583,39 +20654,42 @@ void do_completion() {
 					if((editing_to_expression || !evalops.parse_options.functions_enabled) && item->type() == TYPE_FUNCTION) {}
 					else if(item->type() == TYPE_VARIABLE && (!evalops.parse_options.variables_enabled || (editing_to_expression && (!((Variable*) item)->isKnown() || ((KnownVariable*) item)->unit().empty())))) {}
 					else if(!evalops.parse_options.units_enabled && item->type() == TYPE_UNIT) {}
-					else if(item->type() == TYPE_UNIT && ((Unit*) item)->subtype() == SUBTYPE_COMPOSITE_UNIT) {
-						gchar *gstr;
-						gtk_tree_model_get(GTK_TREE_MODEL(completion_store), &iter, 0, &gstr, -1);
-						if(str.length() <= strlen(gstr)) {
-							b_match = 2;
-							for(size_t i = 0; i < str.length(); i++) {
-								if(gstr[i] != str[i]) {
-									b_match = false;
-									break;
+					else {
+						CompositeUnit *cu = NULL;
+						if(item->type() == TYPE_UNIT && ((Unit*) item)->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+							cu = (CompositeUnit*) item;
+							int exp = 1;
+							item = cu->get(1, &exp, &prefix);
+							if(item && prefix && exp == 1 && cu->countUnits() == 1) {
+								if(p2 == prefix || p3 == prefix || p4 == prefix) {
+									b_match = 2;
+								} else if(enable_completion2 && title_matches(cu, str, completion_min2)) {
+									b_match = 4;
 								}
+								item = NULL;
 							}
-							if(b_match && strlen(gstr) == str.length()) b_match = 1;
 						}
-						g_free(gstr);
-						if(!b_match && enable_completion2) {
-							if(title_matches(item, str, completion_min2)) b_match = 4;
-						}
-					} else {
-						for(size_t name_i = 1; name_i <= item->countNames() && !b_match; name_i++) {
+						for(size_t name_i = 1; item && name_i <= item->countNames() && !b_match; name_i++) {
 							const ExpressionName *ename = &item->getName(name_i);
-							if(ename) {
+							if(ename && (!cu || ename->abbreviation || str.length() >= 3 || str.length() == ename->name.length())) {
 								if(item->isHidden() && (item->type() != TYPE_UNIT || str.length() == 1 || !((Unit*) item)->isCurrency()) && ename) {
 									b_match = (ename->name == str) ? 1 : 0;
 								} else {
 									for(size_t icmp = 0; icmp < 4; icmp++) {
-										if(icmp == 1 && (item->type() != TYPE_UNIT || str2.empty() || !((Unit*) item)->useWithPrefixesByDefault())) break;
+										if(icmp == 1 && (item->type() != TYPE_UNIT || str2.empty() || (cu && !prefix) || (!cu && !((Unit*) item)->useWithPrefixesByDefault()))) break;
+										if(icmp == 1 && !p2) break;
+										if(icmp == 2 && !p3) break;
+										if(icmp == 3 && !p4) break;
+										if(cu && prefix) {
+											if(icmp == 0 || (icmp == 1 && prefix != p2) || (icmp == 2 && prefix != p3) || (icmp == 3 && prefix != p3)) icmp++;
+											if(icmp > 3) break;
+										}
 										const string *cmpstr;
 										if(icmp == 0) cmpstr = &str;
 										else if(icmp == 1) cmpstr = &str2;
 										else if(icmp == 2) cmpstr = &str3;
-										else cmpstr = &str4;
-										if(cmpstr->empty()) break;
-										if(cmpstr->length() <= ename->name.length()) {
+										else if(icmp == 3) cmpstr = &str4;
+										if(((cu && prefix) || cmpstr->length() >= (size_t) completion_min) && cmpstr->length() <= ename->name.length()) {
 											b_match = 2;
 											for(size_t i = 0; i < cmpstr->length(); i++) {
 												if(ename->name[i] != (*cmpstr)[i]) {
@@ -20623,9 +20697,9 @@ void do_completion() {
 													break;
 												}
 											}
-											if(b_match && ename->name == *cmpstr) b_match = 1;
+											if(!cu && b_match && ename->name == *cmpstr) b_match = 1;
 											if(b_match) {
-												if(icmp > 0) {
+												if(icmp > 0 && !cu) {
 													if(icmp == 1) prefix = p2;
 													else if(icmp == 2) prefix = p3;
 													else if(icmp == 3) prefix = p4;
@@ -20638,30 +20712,41 @@ void do_completion() {
 								}
 							}
 						}
-						if(b_match == 2 && item->countNames() > 1) {
+						if(item && !cu && b_match == 2 && item->countNames() > 1) {
 							for(size_t icmp = 0; icmp < 4 && b_match > 1; icmp++) {
-								if(icmp == 1 && (item->type() != TYPE_UNIT || str2.empty() || !((Unit*) item)->useWithPrefixesByDefault())) break;
+								if(icmp == 1 && (item->type() != TYPE_UNIT || str2.empty() || (cu && !prefix) || (!cu && !((Unit*) item)->useWithPrefixesByDefault()))) break;
+								if(icmp == 1 && !p2) break;
+								if(icmp == 2 && !p3) break;
+								if(icmp == 3 && !p4) break;
+								if(cu && prefix) {
+									if(icmp == 0 || (icmp == 1 && prefix != p2) || (icmp == 2 && prefix != p3) || (icmp == 3 && prefix != p3)) icmp++;
+									if(icmp > 3) break;
+								}
 								const string *cmpstr;
 								if(icmp == 0) cmpstr = &str;
 								else if(icmp == 1) cmpstr = &str2;
 								else if(icmp == 2) cmpstr = &str3;
 								else cmpstr = &str4;
-								if(cmpstr->empty()) break;
-								for(size_t name_i = 1; name_i <= item->countNames(); name_i++) {
-									if(item->getName(name_i).name == *cmpstr) {
-										if(icmp == 1) prefix = p2;
-										else if(icmp == 2) prefix = p3;
-										else if(icmp == 3) prefix = p4;
-										else prefix = NULL;
-										b_match = 1; break;
+								if((cu && prefix) || cmpstr->length() >= (size_t) completion_min) {
+									for(size_t name_i = 1; name_i <= item->countNames(); name_i++) {
+										if(item->getName(name_i).name == *cmpstr) {
+											if(!cu) {
+												if(icmp == 1) prefix = p2;
+												else if(icmp == 2) prefix = p3;
+												else if(icmp == 3) prefix = p4;
+												else prefix = NULL;
+											}
+											b_match = 1; break;
+										}
 									}
 								}
 							}
 						}
-						if(!b_match && enable_completion2) {
-							if(title_matches(item, str, completion_min2)) b_match = 4;
-							else if(item->type() == TYPE_UNIT && ((Unit*) item)->isCurrency() && country_matches((Unit*) item, str, completion_min2)) b_match = 5;
+						if(item && !b_match && enable_completion2) {
+							if(title_matches(cu ? cu : item, str, completion_min2)) b_match = 4;
+							else if(!cu && item->type() == TYPE_UNIT && ((Unit*) item)->isCurrency() && country_matches((Unit*) item, str, completion_min2)) b_match = 5;
 						}
+						if(cu) prefix = NULL;
 					}
 					if(b_match) {
 						gchar *gstr;
