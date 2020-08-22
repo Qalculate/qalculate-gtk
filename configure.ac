@@ -86,6 +86,7 @@ AC_CHECK_HEADERS([unordered_map])
 
 PKG_CHECK_MODULES(GLIB, [
 	glib-2.0 >= 2.4
+	gio-unix-2.0
 	libxml-2.0
 	])
 AC_SUBST(GLIB_CFLAGS)
