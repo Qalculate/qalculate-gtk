@@ -42,7 +42,7 @@ qalculate_gtk_LDADD = \
 	@QALCULATE_LIBS@
 
 if ENABLE_SEARCH_PROVIDER
-gnome-search-provider2.h gnome-search-provider2.c: $(top_srcdir)/data/org.gnome.ShellSearchProvider2.xml
+gnome-search-provider2.c: $(top_srcdir)/data/org.gnome.ShellSearchProvider2.xml
 	$(AM_V_GEN)gdbus-codegen \
 		--c-namespace Shell \
 		--generate-c-code gnome-search-provider2 \
@@ -59,6 +59,8 @@ qalculate_search_provider_LDADD = \
 	@GLIB_LIBS@ \
 	@GTK_LIBS@ \
 	@QALCULATE_LIBS@
+
+searchprovider.o: gnome-search-provider2.c
 
 dbusservicedir = $(datadir)/dbus-1/services
 dbusservice_DATA = io.github.Qalculate.SearchProvider.service
