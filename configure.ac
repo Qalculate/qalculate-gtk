@@ -114,6 +114,11 @@ AC_ARG_ENABLE([gnome_search], AS_HELP_STRING([--disable-gnome-search], [disable 
 if test -z $enable_gnome_search && (test "$build_windows" = "yes" || test "$build_mac" = "yes"); then
 	enable_gnome_search=no
 fi
+AS_IF([test "x$enable_gnome_search" != "xno"], [
+	PKG_CHECK_MODULES([GIOUNIX], [gio-unix-2.0])
+	AC_SUBST(GIOUNIX_CFLAGS)
+	AC_SUBST(GIOUNIX_LIBS)
+])
 AM_CONDITIONAL(ENABLE_SEARCH_PROVIDER, [test "x$enable_gnome_search" != "xno"])
 
 AC_ARG_WITH([local_help], AS_HELP_STRING([--without-local-help], [use online manual instead of local help files]))

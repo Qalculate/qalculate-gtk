@@ -8,6 +8,7 @@ AM_CPPFLAGS = \
 	@GTK_CFLAGS@ \
 	@GLIB_CFLAGS@ \
 	@WEBKITGTK_CFLAGS@ \
+	@GIOUNIX_CFLAGS@ \
 	@QALCULATE_CFLAGS@
 
 if ENABLE_SEARCH_PROVIDER
@@ -50,14 +51,15 @@ gnome-search-provider2.c: $(top_srcdir)/data/org.gnome.ShellSearchProvider2.xml
 		$<
 
 qalculate_search_provider_SOURCES = \
-	gnome-search-provider2.h \
-	gnome-search-provider2.c \
 	searchprovider.cc \
 	support.h
+
+nodist_qalculate_search_provider_SOURCES = gnome-search-provider2.h gnome-search-provider2.c
 
 qalculate_search_provider_LDADD = \
 	@GLIB_LIBS@ \
 	@GTK_LIBS@ \
+	@GIOUNIX_LIBS@ \
 	@QALCULATE_LIBS@
 
 searchprovider.o: gnome-search-provider2.c
