@@ -86,6 +86,49 @@ static GOptionEntry options[] = {
 	{NULL}
 };
 
+void block_completion();
+void unblock_completion();
+
+gboolean create_menus_etc(gpointer) {
+
+	g_signal_connect_after(gtk_builder_get_object(main_builder, "historyscrolled"), "size-allocate", G_CALLBACK(on_history_resize), NULL);
+
+	//create button menus after definitions have been loaded
+	create_button_menus();
+
+	//create dynamic menus
+	generate_units_tree_struct();
+
+	generate_functions_tree_struct();
+	generate_variables_tree_struct();
+	create_fmenu();
+	create_vmenu();
+	create_umenu();
+	create_umenu2();
+	create_pmenu2();
+
+	update_unit_selector_tree();
+
+	for(int i = ((int) recent_functions_pre.size()) - 1; i >= 0; i--) {
+		function_inserted(CALCULATOR->getActiveFunction(recent_functions_pre[i]));
+	}
+	for(int i = ((int) recent_variables_pre.size()) - 1; i >= 0; i--) {
+		variable_inserted(CALCULATOR->getActiveVariable(recent_variables_pre[i]));
+	}
+	for(int i = ((int) recent_units_pre.size()) - 1; i >= 0; i--) {
+		Unit *u = CALCULATOR->getActiveUnit(recent_units_pre[i]);
+		if(!u) u = CALCULATOR->getCompositeUnit(recent_units_pre[i]);
+		unit_inserted(u);
+	}
+
+	update_completion();
+	
+	unblock_completion();
+	
+	return FALSE;
+
+}
+
 void create_application(GtkApplication *app) {
 
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 14
@@ -227,36 +270,6 @@ void create_application(GtkApplication *app) {
 
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object (main_builder, "menu_item_fetch_exchange_rates")), canfetch);
 
-	//create button menus after definitions have been loaded
-	create_button_menus();
-
-	//create dynamic menus
-	generate_units_tree_struct();
-
-	generate_functions_tree_struct();
-	generate_variables_tree_struct();
-	create_fmenu();
-	create_vmenu();
-	create_umenu();
-	create_umenu2();
-	create_pmenu2();
-
-	update_unit_selector_tree();
-
-	for(int i = ((int) recent_functions_pre.size()) - 1; i >= 0; i--) {
-		function_inserted(CALCULATOR->getActiveFunction(recent_functions_pre[i]));
-	}
-	for(int i = ((int) recent_variables_pre.size()) - 1; i >= 0; i--) {
-		variable_inserted(CALCULATOR->getActiveVariable(recent_variables_pre[i]));
-	}
-	for(int i = ((int) recent_units_pre.size()) - 1; i >= 0; i--) {
-		Unit *u = CALCULATOR->getActiveUnit(recent_units_pre[i]);
-		if(!u) u = CALCULATOR->getCompositeUnit(recent_units_pre[i]);
-		unit_inserted(u);
-	}
-
-	update_completion();
-
 	view_thread = new ViewThread;
 	view_thread->start();
 	command_thread = new CommandThread;
@@ -286,11 +299,16 @@ void create_application(GtkApplication *app) {
 #endif
 	gtk_accel_map_load(gstr);
 	g_free(gstr);
+	
+	block_completion();
+	g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 100, create_menus_etc, NULL, NULL);
 
 	if(check_version) {
 		QalculateDateTime next_version_check_date(last_version_check_date);
 		next_version_check_date.addDays(14);
-		if(!next_version_check_date.isFutureDate()) g_idle_add(on_check_version_idle, NULL);
+		if(!next_version_check_date.isFutureDate()) {
+			g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 100, on_check_version_idle, NULL, NULL);
+		}
 	}
 
 }
