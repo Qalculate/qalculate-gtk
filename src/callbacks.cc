@@ -16767,6 +16767,8 @@ void load_preferences() {
 	twos_complement_in = false;
 	expression_lines = -1;
 	use_dark_theme = -1;
+	
+	CALCULATOR->setPrecision(10);
 
 	default_shortcuts = true;
 	keyboard_shortcuts.clear();
@@ -16939,6 +16941,7 @@ void load_preferences() {
 					if(mode_index == 1) printops.use_max_decimals = v;
 					else modes[mode_index].po.use_max_decimals = v;
 				} else if(svar == "precision") {
+					if(v == 8 && (version_numbers[0] < 3 || (version_numbers[0] == 3 && (version_numbers[1] < 12 || (version_numbers[1] == 12 && version_numbers[2] <= 1))))) v = 10;
 					if(mode_index == 1) CALCULATOR->setPrecision(v);
 					else modes[mode_index].precision = v;
 				} else if(svar == "min_exp") {

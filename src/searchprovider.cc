@@ -116,8 +116,8 @@ static void qalculate_search_provider_activate_result(ShellSearchProvider2 *obje
 					if(i == 0) i = strlen(SIGN_ALMOST_EQUAL) - 1;
 					else i = string::npos;
 				} else {
-					i = it->second.find(_("approx"));
-					if(i == 0) i = strlen(_("approx")) - 1;
+					i = it->second.find(_("approx."));
+					if(i == 0) i = strlen(_("approx.")) - 1;
 					else i = string::npos;
 				}
 				if(i == string::npos) i = it->second.find("= ");

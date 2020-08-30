@@ -642,6 +642,39 @@ void set_keypad_tooltip(const gchar *w, const char *s1, const char *s2 = NULL, c
 	g_signal_connect(gtk_builder_get_object(main_builder, w), "clicked", G_CALLBACK(hide_tooltip), NULL);
 }
 
+void set_custom_buttons(void) {
+	if(!latest_button_unit_pre.empty()) {
+		latest_button_unit = CALCULATOR->getActiveUnit(latest_button_unit_pre);
+		if(!latest_button_unit) latest_button_unit = CALCULATOR->getCompositeUnit(latest_button_unit_pre);
+	}
+	if(latest_button_unit) {
+		string si_label_str;
+		if(latest_button_unit->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+			si_label_str = ((CompositeUnit*) latest_button_unit)->print(false, true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
+		} else {
+
+			si_label_str = latest_button_unit->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name;
+		}
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_si")), si_label_str.c_str());
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_si")), latest_button_unit->title(true).c_str());
+	}
+	Unit *u_local_currency = CALCULATOR->getLocalCurrency();
+	if(!latest_button_currency_pre.empty()) {
+		latest_button_currency = CALCULATOR->getActiveUnit(latest_button_currency_pre);
+	}
+	if(!latest_button_currency && u_local_currency) latest_button_currency = u_local_currency;
+	if(!latest_button_currency) latest_button_currency = CALCULATOR->u_euro;
+	string unit_label_str;
+	if(latest_button_currency->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+		unit_label_str = ((CompositeUnit*) latest_button_currency)->print(false, true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
+	} else {
+
+		unit_label_str = latest_button_currency->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name;
+	}
+	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_euro")), unit_label_str.c_str());
+	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_euro")), latest_button_currency->title(true).c_str());
+}
+
 void create_button_menus(void) {
 
 	GtkWidget *item, *sub;
@@ -792,22 +825,6 @@ void create_button_menus(void) {
 	f = CALCULATOR->getActiveFunction("conj");
 	if(f) {MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_button_function, f);}
 
-
-	if(!latest_button_unit_pre.empty()) {
-		latest_button_unit = CALCULATOR->getActiveUnit(latest_button_unit_pre);
-		if(!latest_button_unit) latest_button_unit = CALCULATOR->getCompositeUnit(latest_button_unit_pre);
-	}
-	if(latest_button_unit) {
-		string si_label_str;
-		if(latest_button_unit->subtype() == SUBTYPE_COMPOSITE_UNIT) {
-			si_label_str = ((CompositeUnit*) latest_button_unit)->print(false, true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
-		} else {
-
-			si_label_str = latest_button_unit->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name;
-		}
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_si")), si_label_str.c_str());
-		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_si")), latest_button_unit->title(true).c_str());
-	}
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_si"));
 	const char *si_units[] = {"m", "g", "s", "A", "K", "N", "Pa", "J", "W", "L", "V", "ohm", "oC", "cd", "mol", "C", "Hz", "F", "S", "Wb", "T", "H", "lm", "lx", "Bq", "Gy", "Sv", "kat"};
 	vector<Unit*> to_us;
@@ -854,21 +871,7 @@ void create_button_menus(void) {
 		MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), insert_button_unit, to_us[i])
 	}
 
-	if(!latest_button_currency_pre.empty()) {
-		latest_button_currency = CALCULATOR->getActiveUnit(latest_button_currency_pre);
-	}
 	Unit *u_local_currency = CALCULATOR->getLocalCurrency();
-	if(!latest_button_currency && u_local_currency) latest_button_currency = u_local_currency;
-	if(!latest_button_currency) latest_button_currency = CALCULATOR->u_euro;
-	string unit_label_str;
-	if(latest_button_currency->subtype() == SUBTYPE_COMPOSITE_UNIT) {
-		unit_label_str = ((CompositeUnit*) latest_button_currency)->print(false, true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
-	} else {
-
-		unit_label_str = latest_button_currency->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name;
-	}
-	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_euro")), unit_label_str.c_str());
-	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_euro")), latest_button_currency->title(true).c_str());
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_euro"));
 	const char *currency_units[] = {"USD", "GBP", "JPY"};
 	to_us.clear();

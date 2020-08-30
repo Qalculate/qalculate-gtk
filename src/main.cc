@@ -91,13 +91,13 @@ void unblock_completion();
 
 gboolean create_menus_etc(gpointer) {
 
-	g_signal_connect_after(gtk_builder_get_object(main_builder, "historyscrolled"), "size-allocate", G_CALLBACK(on_history_resize), NULL);
-
 	//create button menus after definitions have been loaded
 	create_button_menus();
 
 	//create dynamic menus
 	generate_units_tree_struct();
+
+	update_unit_selector_tree();
 
 	generate_functions_tree_struct();
 	generate_variables_tree_struct();
@@ -106,8 +106,6 @@ gboolean create_menus_etc(gpointer) {
 	create_umenu();
 	create_umenu2();
 	create_pmenu2();
-
-	update_unit_selector_tree();
 
 	for(int i = ((int) recent_functions_pre.size()) - 1; i >= 0; i--) {
 		function_inserted(CALCULATOR->getActiveFunction(recent_functions_pre[i]));
@@ -301,13 +299,14 @@ void create_application(GtkApplication *app) {
 	g_free(gstr);
 	
 	block_completion();
-	g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 100, create_menus_etc, NULL, NULL);
+	set_custom_buttons();
+	g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 50, create_menus_etc, NULL, NULL);
 
 	if(check_version) {
 		QalculateDateTime next_version_check_date(last_version_check_date);
 		next_version_check_date.addDays(14);
 		if(!next_version_check_date.isFutureDate()) {
-			g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 100, on_check_version_idle, NULL, NULL);
+			g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 50, on_check_version_idle, NULL, NULL);
 		}
 	}
 
