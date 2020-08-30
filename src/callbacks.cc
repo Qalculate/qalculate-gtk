@@ -4825,10 +4825,6 @@ void on_convert_entry_search_changed(GtkEntry *w, gpointer) {
 		if(b) count++;
 		gtk_list_store_set(tUnitSelector_store, &iter, 3, b, -1);
 	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tUnitSelector_store), &iter));
-	/*if(str.empty() && count < 30) {
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")));
-		gtk_widget_grab_focus(tUnitSelector);
-	}*/
 	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnitSelector_selection_changed, NULL);
 	if(!str.empty()) {
 		if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnitSelector_store_filter), &iter)) {
@@ -4840,6 +4836,10 @@ void on_convert_entry_search_changed(GtkEntry *w, gpointer) {
 				gtk_tree_path_free(path);
 			}
 		}
+		gint start_pos = 0, end_pos = 0;
+		gtk_editable_get_selection_bounds(GTK_EDITABLE(w), &start_pos, &end_pos);
+		gtk_widget_grab_focus(GTK_WIDGET(w));
+		gtk_editable_select_region(GTK_EDITABLE(w), start_pos, end_pos);
 	}
 }
 
@@ -4938,7 +4938,6 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 	} else {
 		selected_unit_selector_category = "";
 	}
-	//gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")), count >= 30);
 	block_unit_selector_convert = false;
 
 }
@@ -29015,11 +29014,9 @@ gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_treeview_unit")))) {
 		if(!(event->keyval >= GDK_KEY_KP_Multiply && event->keyval <= GDK_KEY_KP_9) && !(event->keyval >= GDK_KEY_parenleft && event->keyval <= GDK_KEY_A)) {
 			if(gdk_keyval_to_unicode(event->keyval) > 32) {
-				//gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")));
-				gint start_pos = 0, end_pos = 0;
-				gtk_editable_get_selection_bounds(GTK_EDITABLE(gtk_builder_get_object(main_builder, "convert_entry_search")), &start_pos, &end_pos);
-				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")));
-				gtk_editable_select_region(GTK_EDITABLE(gtk_builder_get_object(main_builder, "convert_entry_search")), start_pos, end_pos);
+				if(!gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")))) {
+					gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")));
+				}
 			}
 			return FALSE;
 		}
