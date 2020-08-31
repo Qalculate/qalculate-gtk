@@ -188,6 +188,7 @@ bool first_error;
 bool display_expression_status;
 bool block_unit_convert, block_unit_selector_convert;
 extern MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct, *displayed_mstruct;
+MathStructure mbak_convert;
 extern string result_text, parsed_text;
 string previous_expression;
 bool result_text_approximate = false;
@@ -228,7 +229,8 @@ vector<GtkTreeViewColumn*> matrix_edit_columns, matrix_columns;
 
 extern GtkAccelGroup *accel_group;
 
-extern gint win_height, win_width, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
+extern gint win_height, win_width, win_x, win_y, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
+bool remember_position = false;
 
 gint minimal_width;
 
@@ -2468,6 +2470,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 	bool do_to = false;
 
 	if(recalculate) {
+		if(!mbak_convert.isUndefined()) mbak_convert.setUndefined();
 		auto_calc_stopped_at_operator = false;
 		if(autocalc_history_timeout_id != 0) {
 			g_source_remove(autocalc_history_timeout_id);
@@ -10677,11 +10680,19 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 	if(exit_in_progress) return;
 
 	if(run == 1) {
+	
 		if(expression_has_changed && !rpn_mode && command_type != COMMAND_TRANSFORM) {
 			execute_expression();
 		}
 
 		if(b_busy || b_busy_result || b_busy_expression || b_busy_command) return;
+		
+		if(command_type == COMMAND_CONVERT_UNIT || command_type == COMMAND_CONVERT_STRING) {
+			if(mbak_convert.isUndefined()) mbak_convert.set(*mstruct);
+			else mstruct->set(mbak_convert);
+		} else {
+			if(!mbak_convert.isUndefined()) mbak_convert.setUndefined();
+		}
 
 		do_timeout = false;
 		b_busy = true;
@@ -11050,6 +11061,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	bool do_factors = false, do_pfe = false, do_expand = false, do_ceu = execute_str.empty(), do_bases = false, do_calendars = false;
 	if(do_stack && !rpn_mode) do_stack = false;
 	if(do_stack && do_mathoperation && f && stack_index == 0) do_stack = false;
+	
+	if(!mbak_convert.isUndefined() && (!do_stack || stack_index == 0)) mbak_convert.setUndefined();
 
 	if(execute_str.empty()) {
 		to_fraction = false; to_prefix = 0; to_base = 0; to_bits = 0; to_nbase.clear();
@@ -16700,6 +16713,9 @@ void load_preferences() {
 	save_mode_as(_("Default"));
 	size_t mode_index = 1;
 
+	win_x = 0;
+	win_y = 0;
+	remember_position = false;
 	win_width = -1;
 	win_height = -1;
 	variables_width = -1;
@@ -16766,7 +16782,7 @@ void load_preferences() {
 	twos_complement_in = false;
 	expression_lines = -1;
 	use_dark_theme = -1;
-	
+
 	CALCULATOR->setPrecision(10);
 
 	default_shortcuts = true;
@@ -16819,6 +16835,12 @@ void load_preferences() {
 					win_width = v;
 				/*} else if(svar == "height") {
 					win_height = v;*/
+				} else if(svar == "x") {
+					win_x = v;
+					remember_position = true;
+				} else if(svar == "y") {
+					win_y = v;
+					remember_position = true;
 				} else if(svar == "variables_width") {
 					variables_width = v;
 				} else if(svar == "variables_height") {
@@ -17742,6 +17764,11 @@ void save_preferences(bool mode) {
 		fprintf(file, "width=%i\n", w);
 	}
 	//fprintf(file, "height=%i\n", h);
+	if(remember_position) {
+		gtk_window_get_position(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &win_x, &win_y);
+		fprintf(file, "x=%i\n", win_x);
+		fprintf(file, "y=%i\n", win_y);
+	}
 	if(variables_width > -1) fprintf(file, "variables_width=%i\n", variables_width);
 	if(variables_height > -1) fprintf(file, "variables_height=%i\n", variables_height);
 	if(variables_position > -1) fprintf(file, "variables_panel_position=%i\n", variables_position);
@@ -18947,6 +18974,9 @@ gboolean on_expander_keypad_button_press_event(GtkWidget*, GdkEventButton *event
 void on_preferences_checkbutton_check_version_toggled(GtkToggleButton *w, gpointer) {
 	check_version = gtk_toggle_button_get_active(w);
 	if(check_version) on_check_version_idle(NULL);
+}
+void on_preferences_checkbutton_remember_position_toggled(GtkToggleButton *w, gpointer) {
+	remember_position = gtk_toggle_button_get_active(w);
 }
 void on_preferences_checkbutton_local_currency_conversion_toggled(GtkToggleButton *w, gpointer) {
 	evalops.local_currency_conversion = gtk_toggle_button_get_active(w);
@@ -28494,10 +28524,7 @@ void on_unknown_edit_combobox_sign_changed(GtkComboBox *om, gpointer) {
 
 gboolean on_variables_dialog_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 	if(gtk_widget_has_focus(GTK_WIDGET(tVariables)) && gdk_keyval_to_unicode(event->keyval) > 32) {
-		gint start_pos = 0, end_pos = 0;
-		gtk_editable_get_selection_bounds(GTK_EDITABLE(gtk_builder_get_object(variables_builder, "variables_entry_search")), &start_pos, &end_pos);
 		gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_entry_search")));
-		gtk_editable_select_region(GTK_EDITABLE(gtk_builder_get_object(variables_builder, "variables_entry_search")), start_pos, end_pos);
 	}
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_entry_search")))) {
 		if(event->keyval == GDK_KEY_Escape) {
@@ -28512,10 +28539,7 @@ gboolean on_variables_dialog_key_press_event(GtkWidget *o, GdkEventKey *event, g
 }
 gboolean on_functions_dialog_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 	if(gtk_widget_has_focus(GTK_WIDGET(tFunctions)) && gdk_keyval_to_unicode(event->keyval) > 32) {
-		gint start_pos = 0, end_pos = 0;
-		gtk_editable_get_selection_bounds(GTK_EDITABLE(gtk_builder_get_object(functions_builder, "functions_entry_search")), &start_pos, &end_pos);
 		gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_entry_search")));
-		gtk_editable_select_region(GTK_EDITABLE(gtk_builder_get_object(functions_builder, "functions_entry_search")), start_pos, end_pos);
 	}
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_entry_search")))) {
 		if(event->keyval == GDK_KEY_Escape) {
@@ -28530,10 +28554,7 @@ gboolean on_functions_dialog_key_press_event(GtkWidget *o, GdkEventKey *event, g
 }
 gboolean on_units_dialog_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 	if(gtk_widget_has_focus(GTK_WIDGET(tUnits)) && gdk_keyval_to_unicode(event->keyval) > 32) {
-		gint start_pos = 0, end_pos = 0;
-		gtk_editable_get_selection_bounds(GTK_EDITABLE(gtk_builder_get_object(units_builder, "units_entry_search")), &start_pos, &end_pos);
 		gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_entry_search")));
-		gtk_editable_select_region(GTK_EDITABLE(gtk_builder_get_object(units_builder, "units_entry_search")), start_pos, end_pos);
 	}
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_entry_search")))) {
 		if(event->keyval == GDK_KEY_Escape) {

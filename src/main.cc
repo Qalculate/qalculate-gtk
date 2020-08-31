@@ -31,6 +31,7 @@ using std::vector;
 using std::endl;
 
 MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct, *displayed_mstruct;
+extern MathStructure mbak_convert;
 string *parsed_to_str;
 KnownVariable *vans[5];
 GtkWidget *functions_window;
@@ -162,6 +163,7 @@ void create_application(GtkApplication *app) {
 	parsed_tostruct->setUndefined();
 	matrix_mstruct = new MathStructure();
 	parsed_to_str = new string;
+	mbak_convert.setUndefined();
 
 	bool canfetch = CALCULATOR->canFetch();
 
