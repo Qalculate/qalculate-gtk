@@ -42,19 +42,19 @@
 <chapter id="qalculate-introduction">
 <title>Introduction</title>
 <para>
-&app; is powerful and highly flexible desktop calculator, that aims to make use of the capabilities of modern computers.
+&app; is powerful and highly flexible desktop calculator, but with a comparably simple and minimal user interface.
 </para>
 <para>
-The center of attention in &app; is the expression entry, Instead of entering each number in a mathematical expression separately, you can directly write the whole expression and later modify it. Just enter an expression as you would write it on paper, press <keycap>Enter</keycap> and voila!
+The center of attention in &app; is the expression entry. Just enter a mathematical expression as you would write it on paper, press <keycap>Enter</keycap> and voila!
 </para>
 <para>
-The interpretation of expressions is flexible and fault tolerant, and if you nevertheless do something wrong, &app; will tell you so. Not fully solvable expressions are however not errors. &app; will simplify as far as it can and answer with an expression.
+The interpretation of mathematical expressions is flexible and fault tolerant. If you nevertheless enter an expression which is not entirely recognised or is considered ambiguous, &app; will provide an informative, but unobtrusive, error or warning. If an expression cannot be fully solved, &app; will simplify it as far as it can and answer with an expression.
 </para>
 <para>
-In addition to numbers and arithmetic operators, an expression may contain any combination of variables, units, and functions. These are immediately accessible from the user interface — the menu bar, the managers, the calculator keypad, and automatic completion.
+In addition to numbers and arithmetic operators, expressions may contain any combination of variables, units, and functions. These are immediately accessible from the user interface — through automatic completion, or using the menu bar, the object managers, and the calculator keypad.
 </para>
 <para>
-&app; also provides some specific tools to increase your efficiency, including a number base conversion dialog and a simple plotting interface.
+&app; also provides some specific tools for your convenience, such as a number base conversion dialog and a simple plotting interface.
 </para>
 <para>
 Although use of &app; for simple calculations should be natural and self-explanatory, reading the rest of the manual can help you maximize your productivity and discover some maybe unexpected features. More advanced users should read on and discover a large number of customization options and the ability to create and modify your own variables, functions and units directly from the user interface.
@@ -1597,7 +1597,7 @@ Putting <quote> to </quote> (or a right arrow, e.g. <quote>-></quote>) followed 
 </varlistentry>
 <varlistentry>
 <term>base</term>
-<listitem><para>Convert to base units (e.g. <quote>1 lux to base = 1 cd/m²</quote>).</para></listitem>
+<listitem><para>Convert to base units (e.g. <quote>1 lux to base = 1 cd/m<superscript>2</superscript></quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>optimal</term>
@@ -1681,11 +1681,11 @@ Putting <quote> to </quote> (or a right arrow, e.g. <quote>-></quote>) followed 
 </varlistentry>
 <varlistentry>
 <term>partial fraction</term>
-<listitem><para>Show expanded partial fractions (e.g. <quote>1 / (x² + 2x − 3) to partial fraction = 1 ∕ (4x − 4) − 1 ∕ (4x + 12)</quote>).</para></listitem>
+<listitem><para>Show expanded partial fractions (e.g. <quote>1 / (x<superscript>2</superscript> + 2x − 3) to partial fraction = 1 ∕ (4x − 4) − 1 ∕ (4x + 12)</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>factors</term>
-<listitem><para>Show factorized (algebraic or integer factorization, e.g. <quote>3 645 678 to factors = 857 × 709 × 3 × 2</quote> or <quote>x² + 4x + 4 to factors = (x + 2)²</quote>).</para></listitem>
+<listitem><para>Show factorized (algebraic or integer factorization, e.g. <quote>3 645 678 to factors = 857 × 709 × 3 × 2</quote> or <quote>x<superscript>2</superscript> + 4x + 4 to factors = (x + 2)<superscript>2</superscript></quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>calendars</term>
