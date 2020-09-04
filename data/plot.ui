@@ -210,6 +210,7 @@
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
                             <signal name="activate" handler="on_plot_entry_expression_activate" swapped="no"/>
+                            <signal name="key-press-event" handler="on_plot_entry_expression_key_press_event" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">True</property>

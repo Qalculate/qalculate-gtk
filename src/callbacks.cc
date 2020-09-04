@@ -3304,7 +3304,7 @@ void display_parse_status() {
 					g_free(gstr);
 				} else {
 					Variable *v = CALCULATOR->getVariable(str_u);
-					if(v && (!v->isKnown() || ((KnownVariable*) v)->unit().empty())) v = NULL;
+					if(v && !v->isKnown()) v = NULL;
 					if(v && CALCULATOR->getUnit(str_u)) v = NULL;
 					if(v) {
 						mparse = v;
@@ -3845,8 +3845,12 @@ void on_tFunctionCategories_selection_changed(GtkTreeSelection *treeselection, g
 		}
 		if(!b_all && !no_cat && !b_inactive && selected_function_category[0] == '/') {
 			string str = selected_function_category.substr(1, selected_function_category.length() - 1);
+			ExpressionItem *o;
+			size_t l1 = str.length(), l2;
 			for(size_t i = 0; i < CALCULATOR->functions.size(); i++) {
-				if(CALCULATOR->functions[i]->isActive() && CALCULATOR->functions[i]->category().substr(0, selected_function_category.length() - 1) == str) {
+				o = CALCULATOR->functions[i];
+				l2 = o->category().length();
+				if(o->isActive() && (l2 == l1 || (l2 > l1 && o->category()[l1] == '/')) && o->category().substr(0, l1) == str) {
 					setFunctionTreeItem(iter2, CALCULATOR->functions[i]);
 				}
 			}
@@ -4253,8 +4257,12 @@ void on_tVariableCategories_selection_changed(GtkTreeSelection *treeselection, g
 
 		if(!b_all && !no_cat && !b_inactive && selected_variable_category[0] == '/') {
 			string str = selected_variable_category.substr(1, selected_variable_category.length() - 1);
+			ExpressionItem *o;
+			size_t l1 = str.length(), l2;
 			for(size_t i = 0; i < CALCULATOR->variables.size(); i++) {
-				if(CALCULATOR->variables[i]->isActive() && CALCULATOR->variables[i]->category().substr(0, selected_variable_category.length() - 1) == str) {
+				o = CALCULATOR->variables[i];
+				l2 = o->category().length();
+				if(o->isActive() && (l2 == l1 || (l2 > l1 && o->category()[l1] == '/')) && o->category().substr(0, l1) == str) {
 					setVariableTreeItem(iter2, CALCULATOR->variables[i]);
 				}
 			}
@@ -4489,8 +4497,12 @@ void on_tUnitCategories_selection_changed(GtkTreeSelection *treeselection, gpoin
 		}
 		if(!b_all && !no_cat && !b_inactive && selected_unit_category[0] == '/') {
 			string str = selected_unit_category.substr(1, selected_unit_category.length() - 1);
+			ExpressionItem *o;
+			size_t l1 = str.length(), l2;
 			for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
-				if(CALCULATOR->units[i]->isActive() && CALCULATOR->units[i]->category().substr(0, selected_unit_category.length() - 1) == str) {
+				o = CALCULATOR->units[i];
+				l2 = o->category().length();
+				if(o->isActive() && (l2 == l1 || (l2 > l1 && o->category()[l1] == '/')) && o->category().substr(0, l1) == str) {
 					if(CALCULATOR->units[i]->isCurrency()) b_currencies = true;
 					setUnitTreeItem(iter2, CALCULATOR->units[i]);
 					if(!b_sel && selected_to_unit == CALCULATOR->units[i]) b_sel = true;
@@ -8571,12 +8583,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
 				string str;
 
-				if(m.variable() != CALCULATOR->v_i) {
-					str = "<i>";
-				}
+				const ExpressionName *ename = &m.variable()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
+
+				bool cursive = m.variable() != CALCULATOR->v_i && ename->name != "%" && ename->name != "‰" && ename->name != "‱";
+				if(cursive) str = "<i>";
 				TTBP(str);
 
-				const ExpressionName *ename = &m.variable()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
 				if(ename->suffix && ename->name.length() > 1) {
 					size_t i = ename->name.rfind('_');
 					bool b = i == string::npos || i == ename->name.length() - 1 || i == 0;
@@ -8606,9 +8618,8 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				gsub("_", " ", str);
 
 				TTE(str);
-				if(m.variable() != CALCULATOR->v_i) {
-					str += "</i>";
-				}
+				if(cursive) str += "</i>";
+
 				pango_layout_set_markup(layout, str.c_str(), -1);
 				PangoRectangle rect, lrect;
 				pango_layout_get_pixel_extents(layout, &rect, &lrect);
@@ -20911,6 +20922,84 @@ void on_convert_entry_unit_changed(GtkEditable *w, gpointer) {
 	gtk_entry_set_icon_tooltip_text(GTK_ENTRY(w), GTK_ENTRY_ICON_SECONDARY, b ? _("Clear expression") : NULL);
 	if(!keep_unit_selection) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector)));
 }
+void entry_insert_text(GtkWidget *w, const gchar *text) {
+	gtk_editable_delete_selection(GTK_EDITABLE(w));
+	gint pos = gtk_editable_get_position(GTK_EDITABLE(w));
+	gtk_editable_insert_text(GTK_EDITABLE(w), text, -1, &pos);
+	gtk_editable_set_position(GTK_EDITABLE(w), pos);
+	gtk_widget_grab_focus(w);
+	gtk_editable_select_region(GTK_EDITABLE(w), pos, pos);
+}
+gboolean on_math_entry_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
+	switch(event->keyval) {
+		case GDK_KEY_asciicircum: {}
+		case GDK_KEY_dead_circumflex: {
+			bool input_xor = (caret_as_xor != ((event->state & GDK_CONTROL_MASK) > 0));
+			entry_insert_text(o, input_xor ? " xor " : "^");
+			return TRUE;
+		}
+		case GDK_KEY_KP_Multiply: {}
+		case GDK_KEY_asterisk: {
+			entry_insert_text(o, expression_times_sign());
+			return TRUE;
+		}
+		case GDK_KEY_KP_Divide: {}
+		case GDK_KEY_slash: {
+			entry_insert_text(o, expression_divide_sign());
+			return TRUE;
+		}
+		case GDK_KEY_KP_Subtract: {}
+		case GDK_KEY_minus: {
+			entry_insert_text(o, expression_sub_sign());
+			return TRUE;
+		}
+		case GDK_KEY_KP_Add: {}
+		case GDK_KEY_plus: {
+			entry_insert_text(o, expression_add_sign());
+			return TRUE;
+		}
+		case GDK_KEY_braceleft: {}
+		case GDK_KEY_braceright: {
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+gboolean on_convert_entry_unit_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
+	switch(event->keyval) {
+		case GDK_KEY_asciicircum: {}
+		case GDK_KEY_dead_circumflex: {
+			entry_insert_text(o, "^");
+			return TRUE;
+		}
+		case GDK_KEY_KP_Multiply: {}
+		case GDK_KEY_asterisk: {
+			if(printops.multiplication_sign == MULTIPLICATION_SIGN_X && can_display_unicode_string_function(SIGN_MIDDLEDOT, o)) entry_insert_text(o, SIGN_MIDDLEDOT);
+			else entry_insert_text(o, expression_times_sign());
+			return TRUE;
+		}
+		case GDK_KEY_KP_Divide: {}
+		case GDK_KEY_slash: {
+			entry_insert_text(o, expression_divide_sign());
+			return TRUE;
+		}
+		case GDK_KEY_KP_Subtract: {}
+		case GDK_KEY_minus: {
+			entry_insert_text(o, expression_sub_sign());
+			return TRUE;
+		}
+		case GDK_KEY_KP_Add: {}
+		case GDK_KEY_plus: {
+			entry_insert_text(o, expression_add_sign());
+			return TRUE;
+		}
+		case GDK_KEY_braceleft: {}
+		case GDK_KEY_braceright: {
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
 
 gboolean reenable_tooltip(GtkWidget *w, gpointer) {
 	gtk_widget_set_has_tooltip(w, TRUE);
@@ -30835,6 +30924,40 @@ void on_plot_entry_expression_activate(GtkEntry*, gpointer) {
 		on_plot_button_add_clicked(GTK_BUTTON(gtk_builder_get_object(plot_builder, "plot_button_add")), NULL);
 	}
 }
+gboolean on_plot_entry_expression_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
+	switch(event->keyval) {
+		case GDK_KEY_asciicircum: {}
+		case GDK_KEY_dead_circumflex: {
+			entry_insert_text(o, "^");
+			return TRUE;
+		}
+		case GDK_KEY_KP_Multiply: {}
+		case GDK_KEY_asterisk: {
+			entry_insert_text(o, expression_times_sign());
+			return TRUE;
+		}
+		case GDK_KEY_KP_Divide: {}
+		case GDK_KEY_slash: {
+			entry_insert_text(o, expression_divide_sign());
+			return TRUE;
+		}
+		case GDK_KEY_KP_Subtract: {}
+		case GDK_KEY_minus: {
+			entry_insert_text(o, expression_sub_sign());
+			return TRUE;
+		}
+		case GDK_KEY_KP_Add: {}
+		case GDK_KEY_plus: {
+			entry_insert_text(o, expression_add_sign());
+			return TRUE;
+		}
+		case GDK_KEY_braceleft: {}
+		case GDK_KEY_braceright: {
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
 
 void on_plot_radiobutton_function_toggled(GtkToggleButton *w, gpointer) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_box_variable")), gtk_toggle_button_get_active(w));
@@ -31127,6 +31250,7 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 		gtk_widget_set_halign(label, GTK_ALIGN_START);
 		gtk_grid_attach(GTK_GRID(ptable), label, 0, rows - 1, 1, 1);
 		entry[i] = gtk_entry_new();
+		g_signal_connect(G_OBJECT(entry[i]), "key-press-event", G_CALLBACK(on_math_entry_key_press_event), NULL);
 		gtk_widget_set_hexpand(entry[i], TRUE);
 		gtk_grid_attach(GTK_GRID(ptable), entry[i], 1, rows - 1, 1, 1);
 	}
