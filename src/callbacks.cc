@@ -1269,6 +1269,7 @@ void set_mode_items(const PrintOptions&, const EvaluationOptions&, AssumptionTyp
 
 string sdot, saltdot, sdiv, sslash, stimes, sminus;
 string sdot_s, saltdot_s, sdiv_s, sslash_s, stimes_s, sminus_s;
+string sdot_o, saltdot_o, sdiv_o, sslash_o, stimes_o, sminus_o;
 
 void set_operator_symbols() {
 	if(can_display_unicode_string_function_exact(SIGN_MINUS, (void*) expressiontext)) sminus = SIGN_MINUS;
@@ -1295,6 +1296,18 @@ void set_operator_symbols() {
 	else saltdot_s = "*";
 	if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) statuslabel_l)) stimes_s = SIGN_MULTIPLICATION;
 	else stimes_s = "*";
+	
+	if(can_display_unicode_string_function_exact(SIGN_MINUS, (void*) gtk_builder_get_object(main_builder, "convert_entry_unit"))) sminus_o = SIGN_MINUS;
+	else sminus_o = "-";
+	if(can_display_unicode_string_function(SIGN_DIVISION, (void*) gtk_builder_get_object(main_builder, "convert_entry_unit"))) sdiv_o = SIGN_DIVISION;
+	else sdiv_o = "/";
+	sslash_o = "/";
+	if(can_display_unicode_string_function(SIGN_MULTIDOT, (void*) gtk_builder_get_object(main_builder, "convert_entry_unit"))) sdot_o = SIGN_MULTIDOT;
+	else sdot_o = "*";
+	if(can_display_unicode_string_function(SIGN_MIDDLEDOT, (void*) gtk_builder_get_object(main_builder, "convert_entry_unit"))) saltdot_o = SIGN_MIDDLEDOT;
+	else saltdot_o = "*";
+	if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(main_builder, "convert_entry_unit"))) stimes_o = SIGN_MULTIPLICATION;
+	else stimes_o = "*";
 }
 
 const char *expression_add_sign() {
@@ -5239,7 +5252,7 @@ void on_tDataObjects_selection_changed(GtkTreeSelection *treeselection, gpointer
 					gtk_widget_set_halign(button, GTK_ALIGN_END);
 					//gtk_widget_set_valign(button, GTK_ALIGN_CENTER);
 					gtk_grid_attach(GTK_GRID(ptable), button, 2, rows - 1, 1, 1);
-					g_signal_connect((gpointer) button, "clicked", G_CALLBACK(on_dataset_button_function_clicked), (gpointer) dp);
+					g_signal_connect(G_OBJECT(button), "clicked", G_CALLBACK(on_dataset_button_function_clicked), (gpointer) dp);
 					rows++;
 				}
 			}
@@ -12536,7 +12549,8 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 					fd->entry[i] = gtk_spin_button_new_with_range(min, max, 1);
 					gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(fd->entry[i]), evalops.parse_options.base != BASE_DECIMAL);
 					gtk_entry_set_alignment(GTK_ENTRY(fd->entry[i]), 1.0);
-					g_signal_connect(GTK_SPIN_BUTTON(fd->entry[i]), "input", G_CALLBACK(on_function_int_input), NULL);
+					g_signal_connect(G_OBJECT(fd->entry[i]), "input", G_CALLBACK(on_function_int_input), NULL);
+					g_signal_connect(G_OBJECT(fd->entry[i]), "key-press-event", G_CALLBACK(on_math_entry_key_press_event), NULL);
 					if(!f->getDefaultValue(i + 1).empty()) {
 						gtk_spin_button_set_value(GTK_SPIN_BUTTON(fd->entry[i]), s2i(f->getDefaultValue(i + 1)));
 					} else if(!arg->zeroForbidden() && min <= 0 && max >= 0) {
@@ -12550,8 +12564,8 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 							gtk_spin_button_set_value(GTK_SPIN_BUTTON(fd->entry[i]), min);
 						}
 					}
-					g_signal_connect((gpointer) fd->entry[i], "changed", G_CALLBACK(on_insert_function_changed), (gpointer) f);
-					g_signal_connect((gpointer) fd->entry[i], "activate", G_CALLBACK(on_insert_function_entry_activated), (gpointer) f);
+					g_signal_connect(G_OBJECT(fd->entry[i]), "changed", G_CALLBACK(on_insert_function_changed), (gpointer) f);
+					g_signal_connect(G_OBJECT(fd->entry[i]), "activate", G_CALLBACK(on_insert_function_entry_activated), (gpointer) f);
 					break;
 				}
 				case ARGUMENT_TYPE_BOOLEAN: {
@@ -12565,8 +12579,8 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 					fd->boolean_buttons.push_back(gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(fd->boolean_buttons[fd->boolean_buttons.size() - 1]), _("False")));
 					gtk_box_pack_end(GTK_BOX(fd->entry[i]), fd->boolean_buttons[fd->boolean_buttons.size() - 1], TRUE, TRUE, 0);
 					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fd->boolean_buttons[fd->boolean_buttons.size() - 1]), TRUE);
-					g_signal_connect((gpointer) fd->boolean_buttons[fd->boolean_buttons.size() - 1], "toggled", G_CALLBACK(on_insert_function_changed), (gpointer) f);
-					g_signal_connect((gpointer) fd->boolean_buttons[fd->boolean_buttons.size() - 2], "toggled", G_CALLBACK(on_insert_function_changed), (gpointer) f);
+					g_signal_connect(G_OBJECT(fd->boolean_buttons[fd->boolean_buttons.size() - 1]), "toggled", G_CALLBACK(on_insert_function_changed), (gpointer) f);
+					g_signal_connect(G_OBJECT(fd->boolean_buttons[fd->boolean_buttons.size() - 2]), "toggled", G_CALLBACK(on_insert_function_changed), (gpointer) f);
 					break;
 				}
 				case ARGUMENT_TYPE_DATA_PROPERTY: {
@@ -12608,7 +12622,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 							gtk_combo_box_set_active_iter(GTK_COMBO_BOX(fd->entry[i]), &iter);
 						}
 						gtk_list_store_set(fd->properties_store, &iter, 0, _("Info"), 1, (gpointer) NULL, -1);
-						g_signal_connect((gpointer) fd->entry[i], "changed", G_CALLBACK(on_insert_function_changed), (gpointer) f);
+						g_signal_connect(G_OBJECT(fd->entry[i]), "changed", G_CALLBACK(on_insert_function_changed), (gpointer) f);
 						break;
 					}
 				}
@@ -12625,8 +12639,9 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 						gtk_entry_set_placeholder_text(GTK_ENTRY(fd->entry[i]), _("optional"));
 					}
 					gtk_entry_set_alignment(GTK_ENTRY(fd->entry[i]), 1.0);
-					g_signal_connect((gpointer) fd->entry[i], "changed", G_CALLBACK(on_insert_function_changed), (gpointer) f);
-					g_signal_connect((gpointer) fd->entry[i], "activate", G_CALLBACK(on_insert_function_entry_activated), (gpointer) f);
+					g_signal_connect(G_OBJECT(fd->entry[i]), "key-press-event", G_CALLBACK(on_math_entry_key_press_event), NULL);
+					g_signal_connect(G_OBJECT(fd->entry[i]), "changed", G_CALLBACK(on_insert_function_changed), (gpointer) f);
+					g_signal_connect(G_OBJECT(fd->entry[i]), "activate", G_CALLBACK(on_insert_function_entry_activated), (gpointer) f);
 				}
 			}
 		} else {
@@ -12635,23 +12650,24 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 				gtk_entry_set_placeholder_text(GTK_ENTRY(fd->entry[i]), _("optional"));
 			}
 			gtk_entry_set_alignment(GTK_ENTRY(fd->entry[i]), 1.0);
-			g_signal_connect((gpointer) fd->entry[i], "changed", G_CALLBACK(on_insert_function_changed), (gpointer) f);
-			g_signal_connect((gpointer) fd->entry[i], "activate", G_CALLBACK(on_insert_function_entry_activated), (gpointer) f);
+			g_signal_connect(G_OBJECT(fd->entry[i]), "key-press-event", G_CALLBACK(on_math_entry_key_press_event), NULL);
+			g_signal_connect(G_OBJECT(fd->entry[i]), "changed", G_CALLBACK(on_insert_function_changed), (gpointer) f);
+			g_signal_connect(G_OBJECT(fd->entry[i]), "activate", G_CALLBACK(on_insert_function_entry_activated), (gpointer) f);
 		}
 		gtk_widget_set_hexpand(fd->entry[i], TRUE);
 		if(arg && arg->type() == ARGUMENT_TYPE_DATE) {
 			typestr = typestr.substr(1, typestr.length() - 2);
 			fd->type_label[i] = gtk_button_new_with_label(typestr.c_str());
-			g_signal_connect((gpointer) fd->type_label[i], "clicked", G_CALLBACK(on_type_label_date_clicked), (gpointer) fd->entry[i]);
+			g_signal_connect(G_OBJECT(fd->type_label[i]), "clicked", G_CALLBACK(on_type_label_date_clicked), (gpointer) fd->entry[i]);
 		} else if(arg && arg->type() == ARGUMENT_TYPE_FILE) {
 			typestr = typestr.substr(1, typestr.length() - 2);
 			fd->type_label[i] = gtk_button_new_with_label(typestr.c_str());
-			g_signal_connect((gpointer) fd->type_label[i], "clicked", G_CALLBACK(on_type_label_file_clicked), (gpointer) fd->entry[i]);
+			g_signal_connect(G_OBJECT(fd->type_label[i]), "clicked", G_CALLBACK(on_type_label_file_clicked), (gpointer) fd->entry[i]);
 		} else if(arg && (arg->type() == ARGUMENT_TYPE_VECTOR || arg->type() == ARGUMENT_TYPE_MATRIX)) {
 			typestr = typestr.substr(1, typestr.length() - 2);
 			fd->type_label[i] = gtk_button_new_with_label(typestr.c_str());
-			if(arg->type() == ARGUMENT_TYPE_VECTOR) g_signal_connect((gpointer) fd->type_label[i], "clicked", G_CALLBACK(on_type_label_vector_clicked), (gpointer) fd->entry[i]);
-			else g_signal_connect((gpointer) fd->type_label[i], "clicked", G_CALLBACK(on_type_label_matrix_clicked), (gpointer) fd->entry[i]);
+			if(arg->type() == ARGUMENT_TYPE_VECTOR) g_signal_connect(G_OBJECT(fd->type_label[i]), "clicked", G_CALLBACK(on_type_label_vector_clicked), (gpointer) fd->entry[i]);
+			else g_signal_connect(G_OBJECT(fd->type_label[i]), "clicked", G_CALLBACK(on_type_label_matrix_clicked), (gpointer) fd->entry[i]);
 		} else if(!typestr.empty()) {
 			fd->type_label[i] = gtk_label_new(typestr.c_str());
 		} else {
@@ -12766,12 +12782,12 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 		gtk_grid_attach(GTK_GRID(table), fd->w_result, 0, args, 2, 1);
 	}
 
-	g_signal_connect((gpointer) fd->b_exec, "clicked", G_CALLBACK(on_insert_function_exec), (gpointer) f);
-	if(fd->rpn) g_signal_connect((gpointer) fd->b_insert, "clicked", G_CALLBACK(on_insert_function_rpn), (gpointer) f);
-	else g_signal_connect((gpointer) fd->b_insert, "clicked", G_CALLBACK(on_insert_function_insert), (gpointer) f);
-	g_signal_connect((gpointer) fd->b_cancel, "clicked", G_CALLBACK(on_insert_function_close), (gpointer) f);
-	g_signal_connect((gpointer) fd->b_keepopen, "toggled", G_CALLBACK(on_insert_function_keepopen), (gpointer) f);
-	g_signal_connect((gpointer) fd->dialog, "delete-event", G_CALLBACK(on_insert_function_delete), (gpointer) f);
+	g_signal_connect(G_OBJECT(fd->b_exec), "clicked", G_CALLBACK(on_insert_function_exec), (gpointer) f);
+	if(fd->rpn) g_signal_connect(G_OBJECT(fd->b_insert), "clicked", G_CALLBACK(on_insert_function_rpn), (gpointer) f);
+	else g_signal_connect(G_OBJECT(fd->b_insert), "clicked", G_CALLBACK(on_insert_function_insert), (gpointer) f);
+	g_signal_connect(G_OBJECT(fd->b_cancel), "clicked", G_CALLBACK(on_insert_function_close), (gpointer) f);
+	g_signal_connect(G_OBJECT(fd->b_keepopen), "toggled", G_CALLBACK(on_insert_function_keepopen), (gpointer) f);
+	g_signal_connect(G_OBJECT(fd->dialog), "delete-event", G_CALLBACK(on_insert_function_delete), (gpointer) f);
 
 	gtk_widget_show_all(fd->dialog);
 
@@ -15327,7 +15343,8 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 			w3 = gtk_spin_button_new_with_range(min, max, 1);
 			gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(w3), evalops.parse_options.base != BASE_DECIMAL);
 			gtk_entry_set_alignment(GTK_ENTRY(w3), 1.0);
-			g_signal_connect(GTK_SPIN_BUTTON(w3), "input", G_CALLBACK(on_function_int_input), NULL);
+			g_signal_connect(G_OBJECT(w3), "input", G_CALLBACK(on_function_int_input), NULL);
+			g_signal_connect(G_OBJECT(w3), "key-press-event", G_CALLBACK(on_math_entry_key_press_event), NULL);
 			if(!f->getDefaultValue(index).empty()) {
 				gtk_spin_button_set_value(GTK_SPIN_BUTTON(w3), s2i(f->getDefaultValue(index)));
 			} else if(!arg2->zeroForbidden() && min <= 0 && max >= 0) {
@@ -15438,6 +15455,7 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 		GtkWidget *entry = gtk_spin_button_new_with_range(min, max, 1);
 		gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(entry), evalops.parse_options.base != BASE_DECIMAL);
 		gtk_entry_set_alignment(GTK_ENTRY(entry), 1.0);
+		g_signal_connect(G_OBJECT(entry), "key-press-event", G_CALLBACK(on_math_entry_key_press_event), NULL);
 		g_signal_connect(GTK_SPIN_BUTTON(entry), "input", G_CALLBACK(on_function_int_input), NULL);
 		if(!f->getDefaultValue(index).empty()) {
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(entry), s2i(f->getDefaultValue(index)));
@@ -19205,6 +19223,10 @@ void on_preferences_checkbutton_custom_keypad_font_toggled(GtkToggleButton *w, g
 		gtk_css_provider_load_from_data(box_rpnl_provider, "", -1, NULL);
 	}
 	set_unicode_buttons();
+	while(gtk_events_pending()) gtk_main_iteration();
+	GtkRequisition req;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), &req, NULL);
+	gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), req.width + 24, 1);
 }
 void on_preferences_checkbutton_custom_app_font_toggled(GtkToggleButton *w, gpointer) {
 	use_custom_app_font = gtk_toggle_button_get_active(w);
@@ -19217,7 +19239,12 @@ void on_preferences_checkbutton_custom_app_font_toggled(GtkToggleButton *w, gpoi
 	} else {
 		gtk_css_provider_load_from_data(app_provider, "", -1, NULL);
 	}
+	set_operator_symbols();
 	set_unicode_buttons();
+	while(gtk_events_pending()) gtk_main_iteration();
+	GtkRequisition req;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), &req, NULL);
+	gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), req.width + 24, 1);
 }
 void on_preferences_radiobutton_dot_toggled(GtkToggleButton *w, gpointer) {
 	if(gtk_toggle_button_get_active(w)) {
@@ -19365,18 +19392,26 @@ void on_preferences_button_keypad_font_font_set(GtkFontButton *w, gpointer) {
 	gchar *gstr = font_name_to_css(custom_keypad_font.c_str());
 	gtk_css_provider_load_from_data(keypad_provider, gstr, -1, NULL);
 	gtk_css_provider_load_from_data(box_rpnl_provider, gstr, -1, NULL);
+	set_operator_symbols();
 	set_unicode_buttons();
 	g_free(gstr);
 	while(gtk_events_pending()) gtk_main_iteration();
+	GtkRequisition req;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), &req, NULL);
+	gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), req.width + 24, 1);
 }
 void on_preferences_button_app_font_font_set(GtkFontButton *w, gpointer) {
 	save_custom_app_font = true;
 	custom_app_font = gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w));
 	gchar *gstr = font_name_to_css(custom_app_font.c_str());
 	gtk_css_provider_load_from_data(app_provider, gstr, -1, NULL);
+	set_operator_symbols();
 	set_unicode_buttons();
 	g_free(gstr);
 	while(gtk_events_pending()) gtk_main_iteration();
+	GtkRequisition req;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), &req, NULL);
+	gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), req.width + 24, 1);
 }
 
 /*
@@ -20930,75 +20965,73 @@ void entry_insert_text(GtkWidget *w, const gchar *text) {
 	gtk_widget_grab_focus(w);
 	gtk_editable_select_region(GTK_EDITABLE(w), pos, pos);
 }
-gboolean on_math_entry_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
+const gchar *key_press_get_symbol(GdkEventKey *event, bool do_caret_as_xor = true, bool unit_expression = false) {
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
+	guint state = event->state & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK);
+	state = state & ~GDK_SHIFT_MASK;
+#else
+	guint state = event->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SUPER_MASK | GDK_HYPER_MASK | GDK_META_MASK);
+#endif
+	if(state == GDK_CONTROL_MASK) {
+		switch(event->keyval) {
+			case GDK_KEY_asciicircum: {}
+			case GDK_KEY_dead_circumflex: {
+				bool input_xor = !do_caret_as_xor || !caret_as_xor;
+				return input_xor ? " xor " : "^";
+			}
+			case GDK_KEY_KP_Multiply: {}
+			case GDK_KEY_asterisk: {
+				return "^";
+			}
+		}
+	}
+	if(state != 0) return NULL;
 	switch(event->keyval) {
 		case GDK_KEY_asciicircum: {}
 		case GDK_KEY_dead_circumflex: {
-			bool input_xor = (caret_as_xor != ((event->state & GDK_CONTROL_MASK) > 0));
-			entry_insert_text(o, input_xor ? " xor " : "^");
-			return TRUE;
+			bool input_xor = !do_caret_as_xor && caret_as_xor;
+			return input_xor ? " xor " : "^";
 		}
 		case GDK_KEY_KP_Multiply: {}
 		case GDK_KEY_asterisk: {
-			entry_insert_text(o, expression_times_sign());
-			return TRUE;
+			if(printops.use_unicode_signs && printops.multiplication_sign == MULTIPLICATION_SIGN_DOT) return sdot_o.c_str();
+			else if(printops.use_unicode_signs && (printops.multiplication_sign == MULTIPLICATION_SIGN_ALTDOT || (unit_expression && printops.multiplication_sign == MULTIPLICATION_SIGN_X))) return saltdot_o.c_str();
+			else if(printops.use_unicode_signs && printops.multiplication_sign == MULTIPLICATION_SIGN_X) return stimes_o.c_str();
+			return "*";
 		}
 		case GDK_KEY_KP_Divide: {}
 		case GDK_KEY_slash: {
-			entry_insert_text(o, expression_divide_sign());
-			return TRUE;
+			if(!printops.use_unicode_signs) return "/";
+			if(printops.division_sign == DIVISION_SIGN_DIVISION) return sdiv_o.c_str();
+			return sslash_o.c_str();
 		}
 		case GDK_KEY_KP_Subtract: {}
 		case GDK_KEY_minus: {
-			entry_insert_text(o, expression_sub_sign());
-			return TRUE;
+			if(!printops.use_unicode_signs) return "-";
+			return sminus_o.c_str();
 		}
 		case GDK_KEY_KP_Add: {}
 		case GDK_KEY_plus: {
-			entry_insert_text(o, expression_add_sign());
-			return TRUE;
+			return "+";
 		}
 		case GDK_KEY_braceleft: {}
 		case GDK_KEY_braceright: {
-			return TRUE;
+			return "";
 		}
 	}
-	return FALSE;
+	return NULL;
 }
-gboolean on_convert_entry_unit_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
-	switch(event->keyval) {
-		case GDK_KEY_asciicircum: {}
-		case GDK_KEY_dead_circumflex: {
-			entry_insert_text(o, "^");
-			return TRUE;
-		}
-		case GDK_KEY_KP_Multiply: {}
-		case GDK_KEY_asterisk: {
-			if(printops.multiplication_sign == MULTIPLICATION_SIGN_X && can_display_unicode_string_function(SIGN_MIDDLEDOT, o)) entry_insert_text(o, SIGN_MIDDLEDOT);
-			else entry_insert_text(o, expression_times_sign());
-			return TRUE;
-		}
-		case GDK_KEY_KP_Divide: {}
-		case GDK_KEY_slash: {
-			entry_insert_text(o, expression_divide_sign());
-			return TRUE;
-		}
-		case GDK_KEY_KP_Subtract: {}
-		case GDK_KEY_minus: {
-			entry_insert_text(o, expression_sub_sign());
-			return TRUE;
-		}
-		case GDK_KEY_KP_Add: {}
-		case GDK_KEY_plus: {
-			entry_insert_text(o, expression_add_sign());
-			return TRUE;
-		}
-		case GDK_KEY_braceleft: {}
-		case GDK_KEY_braceright: {
-			return TRUE;
-		}
-	}
-	return FALSE;
+gboolean on_math_entry_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
+	const gchar *key = key_press_get_symbol(event);
+	if(!key) return FALSE;
+	if(strlen(key) > 0) entry_insert_text(o, key);
+	return TRUE;
+}
+gboolean on_unit_entry_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
+	const gchar *key = key_press_get_symbol(event, false, true);
+	if(!key) return FALSE;
+	if(strlen(key) > 0) entry_insert_text(o, key);
+	return TRUE;
 }
 
 gboolean reenable_tooltip(GtkWidget *w, gpointer) {
@@ -28175,39 +28208,10 @@ gboolean on_nbases_dialog_key_press_event(GtkWidget *o, GdkEventKey *event, gpoi
 		}
 		return TRUE;
 	}
-	switch(event->keyval) {
-		case GDK_KEY_asciicircum: {}
-		case GDK_KEY_dead_circumflex: {
-			bool input_xor = (caret_as_xor != ((event->state & GDK_CONTROL_MASK) > 0));
-			nbases_insert_text(nbases_get_entry(), input_xor ? " xor " : "^");
-			return TRUE;
-		}
-		case GDK_KEY_KP_Multiply: {}
-		case GDK_KEY_asterisk: {
-			nbases_insert_text(nbases_get_entry(), expression_times_sign());
-			return TRUE;
-		}
-		case GDK_KEY_KP_Divide: {}
-		case GDK_KEY_slash: {
-			nbases_insert_text(nbases_get_entry(), expression_divide_sign());
-			return TRUE;
-		}
-		case GDK_KEY_KP_Subtract: {}
-		case GDK_KEY_minus: {
-			nbases_insert_text(nbases_get_entry(), expression_sub_sign());
-			return TRUE;
-		}
-		case GDK_KEY_KP_Add: {}
-		case GDK_KEY_plus: {
-			nbases_insert_text(nbases_get_entry(), expression_add_sign());
-			return TRUE;
-		}
-		case GDK_KEY_braceleft: {}
-		case GDK_KEY_braceright: {
-			return TRUE;
-		}
-	}
-	return FALSE;
+	const gchar *key = key_press_get_symbol(event);
+	if(!key) return FALSE;
+	if(strlen(key) > 0) nbases_insert_text(nbases_get_entry(), key);
+	return TRUE;
 }
 
 unsigned int get_fp_bits() {
@@ -28453,39 +28457,10 @@ gboolean on_floatingpoint_dialog_key_press_event(GtkWidget *o, GdkEventKey *even
 	return FALSE;
 }
 gboolean on_fp_entry_dec_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
-	switch(event->keyval) {
-		case GDK_KEY_asciicircum: {}
-		case GDK_KEY_dead_circumflex: {
-			bool input_xor = (caret_as_xor != ((event->state & GDK_CONTROL_MASK) > 0));
-			fp_insert_text(o, input_xor ? " xor " : "^");
-			return TRUE;
-		}
-		case GDK_KEY_KP_Multiply: {}
-		case GDK_KEY_asterisk: {
-			fp_insert_text(o, expression_times_sign());
-			return TRUE;
-		}
-		case GDK_KEY_KP_Divide: {}
-		case GDK_KEY_slash: {
-			fp_insert_text(o, expression_divide_sign());
-			return TRUE;
-		}
-		case GDK_KEY_KP_Subtract: {}
-		case GDK_KEY_minus: {
-			fp_insert_text(o, expression_sub_sign());
-			return TRUE;
-		}
-		case GDK_KEY_KP_Add: {}
-		case GDK_KEY_plus: {
-			fp_insert_text(o, expression_add_sign());
-			return TRUE;
-		}
-		case GDK_KEY_braceleft: {}
-		case GDK_KEY_braceright: {
-			return TRUE;
-		}
-	}
-	return FALSE;
+	const gchar *key = key_press_get_symbol(event);
+	if(!key) return FALSE;
+	if(strlen(key) > 0) fp_insert_text(o, key);
+	return TRUE;
 }
 
 void on_button_functions_clicked(GtkButton*, gpointer) {
@@ -29801,6 +29776,17 @@ void on_units_button_deactivate_clicked(GtkButton*, gpointer) {
 	}
 }
 
+gboolean on_function_edit_textview_expression_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer renderer) {
+	const gchar *key = key_press_get_symbol(event);
+	if(!key) return FALSE;
+	if(strlen(key) > 0) {
+		GtkTextBuffer *expression_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(w));
+		gtk_text_buffer_delete_selection(expression_buffer, FALSE, TRUE);
+		gtk_text_buffer_insert_at_cursor(expression_buffer, key, -1);
+		return TRUE;
+	}
+	return FALSE;
+}
 void on_function_edit_button_subfunctions_clicked(GtkButton*, gpointer) {
 	gtk_window_set_transient_for(GTK_WINDOW(gtk_builder_get_object(functionedit_builder, "function_edit_dialog_subfunctions")), GTK_WINDOW(gtk_builder_get_object(functionedit_builder, "function_edit_dialog")));
 	gtk_dialog_run(GTK_DIALOG(gtk_builder_get_object(functionedit_builder, "function_edit_dialog_subfunctions")));
@@ -30925,38 +30911,10 @@ void on_plot_entry_expression_activate(GtkEntry*, gpointer) {
 	}
 }
 gboolean on_plot_entry_expression_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
-	switch(event->keyval) {
-		case GDK_KEY_asciicircum: {}
-		case GDK_KEY_dead_circumflex: {
-			entry_insert_text(o, "^");
-			return TRUE;
-		}
-		case GDK_KEY_KP_Multiply: {}
-		case GDK_KEY_asterisk: {
-			entry_insert_text(o, expression_times_sign());
-			return TRUE;
-		}
-		case GDK_KEY_KP_Divide: {}
-		case GDK_KEY_slash: {
-			entry_insert_text(o, expression_divide_sign());
-			return TRUE;
-		}
-		case GDK_KEY_KP_Subtract: {}
-		case GDK_KEY_minus: {
-			entry_insert_text(o, expression_sub_sign());
-			return TRUE;
-		}
-		case GDK_KEY_KP_Add: {}
-		case GDK_KEY_plus: {
-			entry_insert_text(o, expression_add_sign());
-			return TRUE;
-		}
-		case GDK_KEY_braceleft: {}
-		case GDK_KEY_braceright: {
-			return TRUE;
-		}
-	}
-	return FALSE;
+	const gchar *key = key_press_get_symbol(event, false);
+	if(!key) return FALSE;
+	if(strlen(key) > 0) entry_insert_text(o, key);
+	return TRUE;
 }
 
 void on_plot_radiobutton_function_toggled(GtkToggleButton *w, gpointer) {
@@ -31073,7 +31031,7 @@ void on_element_button_clicked(GtkButton*, gpointer user_data) {
 		ewindows.push_back(dialog);
 		eobjects.push_back(e);
 		GtkWidget *close_button = gtk_dialog_add_button(GTK_DIALOG(dialog), _("_Close"), GTK_RESPONSE_CLOSE);
-		g_signal_connect((gpointer) close_button, "clicked", G_CALLBACK(on_element_button_close_clicked), (gpointer) dialog);
+		g_signal_connect(G_OBJECT(close_button), "clicked", G_CALLBACK(on_element_button_close_clicked), (gpointer) dialog);
 		gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(periodictable_builder, "periodic_dialog")));
 		gtk_window_set_title(GTK_WINDOW(dialog), _("Element Data"));
 		gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
@@ -31158,7 +31116,7 @@ void on_element_button_clicked(GtkButton*, gpointer user_data) {
 					button = gtk_button_new();
 					gtk_container_add(GTK_CONTAINER(button), gtk_image_new_from_icon_name("edit-paste", GTK_ICON_SIZE_BUTTON));
 					gtk_grid_attach(GTK_GRID(ptable), button, 2, rows - 1, 1, 1);
-					g_signal_connect((gpointer) button, "clicked", G_CALLBACK(on_element_button_function_clicked), (gpointer) dp);
+					g_signal_connect(G_OBJECT(button), "clicked", G_CALLBACK(on_element_button_function_clicked), (gpointer) dp);
 				}
 			}
 			dp = ds->getNextProperty(&it);

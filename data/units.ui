@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.2 -->
+<!-- Generated with glade 3.36.0 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkDialog" id="units_dialog">
@@ -13,9 +13,6 @@
     <signal name="delete-event" handler="gtk_widget_hide" swapped="no"/>
     <signal name="delete-event" handler="on_units_dialog_delete_event" swapped="no"/>
     <signal name="key-press-event" handler="on_units_dialog_key_press_event" swapped="no"/>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="box1">
         <property name="can_focus">False</property>
@@ -382,6 +379,7 @@
                     <property name="secondary_icon_activatable">False</property>
                     <signal name="activate" handler="on_units_entry_to_val_activate" swapped="no"/>
                     <signal name="focus-out-event" handler="on_units_entry_to_val_focus_out_event" swapped="no"/>
+                    <signal name="key-press-event" handler="on_math_entry_key_press_event" swapped="no"/>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -398,6 +396,7 @@
                     <property name="secondary_icon_activatable">False</property>
                     <signal name="activate" handler="on_units_entry_from_val_activate" swapped="no"/>
                     <signal name="focus-out-event" handler="on_units_entry_from_val_focus_out_event" swapped="no"/>
+                    <signal name="key-press-event" handler="on_math_entry_key_press_event" swapped="no"/>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -467,6 +466,9 @@
         </child>
       </object>
     </child>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
   </object>
   <object class="GtkWindow" id="units_convert_window">
     <property name="can_focus">False</property>
@@ -480,9 +482,6 @@
     <property name="transient_for">units_dialog</property>
     <signal name="button-press-event" handler="on_units_convert_window_button_press_event" swapped="no"/>
     <signal name="key-press-event" handler="on_units_convert_window_key_press_event" swapped="no"/>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
     <child>
       <object class="GtkBox" id="box8">
         <property name="visible">True</property>
@@ -540,6 +539,9 @@
           <class name="linked"/>
         </style>
       </object>
+    </child>
+    <child type="titlebar">
+      <placeholder/>
     </child>
   </object>
 </interface>

@@ -505,6 +505,7 @@
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
                             <signal name="changed" handler="on_unit_changed" swapped="no"/>
+                            <signal name="key-press-event" handler="on_unit_entry_key_press_event" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -600,6 +601,7 @@ For non-linear relations use \x for the factor and \y for the exponent (e.g. "\x
                                 <property name="secondary_icon_activatable">False</property>
                                 <signal name="changed" handler="on_unit_changed" swapped="no"/>
                                 <signal name="changed" handler="on_unit_edit_entry_relation_changed" swapped="no"/>
+                                <signal name="key-press-event" handler="on_math_entry_key_press_event" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
@@ -674,6 +676,7 @@ For non-linear relations use \x for the factor and \y for the exponent (e.g. "\x
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
                                 <signal name="changed" handler="on_unit_changed" swapped="no"/>
+                                <signal name="key-press-event" handler="on_math_entry_key_press_event" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">True</property>

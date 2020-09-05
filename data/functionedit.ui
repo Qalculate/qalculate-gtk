@@ -372,6 +372,7 @@
                             <property name="wrap_mode">word</property>
                             <property name="left_margin">3</property>
                             <property name="right_margin">3</property>
+                            <signal name="key-press-event" handler="on_function_edit_textview_expression_key_press_event" swapped="no"/>
                           </object>
                         </child>
                       </object>
@@ -408,6 +409,7 @@
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
                             <signal name="changed" handler="on_function_changed" swapped="no"/>
+                            <signal name="key-press-event" handler="on_math_entry_key_press_event" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -782,6 +784,7 @@
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
                     <signal name="activate" handler="on_function_edit_entry_subexpression_activate" swapped="no"/>
+                    <signal name="key-press-event" handler="on_math_entry_key_press_event" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>

@@ -326,6 +326,8 @@ void reload_history(gint from_index = -1);
 extern "C" {
 #endif
 
+gboolean on_math_entry_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer);
+
 void hide_tooltip(GtkWidget*);
 
 void on_tShortcuts_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);

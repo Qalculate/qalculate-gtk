@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.2 -->
+<!-- Generated with glade 3.36.0 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkDialog" id="variable_edit_dialog">
@@ -8,9 +8,6 @@
     <property name="title" translatable="yes">Edit Variable</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbox37">
         <property name="visible">True</property>
@@ -229,6 +226,7 @@
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
                     <signal name="changed" handler="on_variable_changed" swapped="no"/>
+                    <signal name="key-press-event" handler="on_math_entry_key_press_event" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -363,5 +361,8 @@
       <action-widget response="-6">variable_edit_button_cancel</action-widget>
       <action-widget response="-5">variable_edit_button_ok</action-widget>
     </action-widgets>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
   </object>
 </interface>

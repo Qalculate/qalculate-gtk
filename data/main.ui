@@ -3839,7 +3839,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <signal name="activate" handler="on_convert_entry_unit_activate" swapped="no"/>
                             <signal name="changed" handler="on_convert_entry_unit_changed" swapped="no"/>
                             <signal name="icon-release" handler="on_convert_entry_unit_icon_release" swapped="no"/>
-                            <signal name="key-press-event" handler="on_convert_entry_unit_key_press_event" swapped="no"/>
+                            <signal name="key-press-event" handler="on_unit_entry_key_press_event" swapped="no"/>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>

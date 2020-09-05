@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.2 -->
+<!-- Generated with glade 3.36.0 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkDialog" id="dataproperty_edit_dialog">
@@ -8,9 +8,6 @@
     <property name="title" translatable="yes">Edit Data Property</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbox59">
         <property name="visible">True</property>
@@ -435,6 +432,7 @@
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
                     <signal name="changed" handler="on_dataproperty_changed" swapped="no"/>
+                    <signal name="key-press-event" handler="on_unit_entry_key_press_event" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -462,6 +460,9 @@
       <action-widget response="-6">button2</action-widget>
       <action-widget response="-5">dataproperty_edit_button_ok</action-widget>
     </action-widgets>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
   </object>
   <object class="GtkDialog" id="dataset_edit_dialog">
     <property name="can_focus">False</property>
@@ -469,9 +470,6 @@
     <property name="title" translatable="yes">Edit Data Set</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbox27">
         <property name="visible">True</property>
@@ -627,7 +625,7 @@
                         <property name="can_focus">False</property>
                         <property name="halign">start</property>
                         <property name="label" translatable="yes">Description</property>
-                        <property name="yalign">0.070000000298023224</property>
+                        <property name="yalign">0,07000000029802322388</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -677,7 +675,7 @@
                         <property name="can_focus">False</property>
                         <property name="halign">start</property>
                         <property name="label" translatable="yes">Copyright</property>
-                        <property name="yalign">0.070000000298023224</property>
+                        <property name="yalign">0,07000000029802322388</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1084,5 +1082,8 @@
       <action-widget response="-6">button1</action-widget>
       <action-widget response="-5">dataset_edit_button_ok</action-widget>
     </action-widgets>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
   </object>
 </interface>
