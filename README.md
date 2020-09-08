@@ -20,6 +20,8 @@ In a terminal window in the top source code directory run
 If libqalculate has been installed in the default /usr/local path you it might be necessary to specify the pkgconfig path when running configure:
 `PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure`
 
+The resulting executable is named `qalculate-gtk`.
+
 ## Features
 Features specific to qalculate-gtk:
 
