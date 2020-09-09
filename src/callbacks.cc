@@ -386,6 +386,8 @@ extern bool check_version;
 guint32 current_shortcut_key = 0;
 guint32 current_shortcut_modifier = 0;
 
+#define THIN_SPACE " "
+
 #define TEXT_TAGS			"<span size=\"xx-large\">"
 #define TEXT_TAGS_END			"</span>"
 #define TEXT_TAGS_SMALL			"<span size=\"large\">"
@@ -685,7 +687,7 @@ void remove_separator(string &copy_text) {
 	for(size_t i = ((CALCULATOR->local_digit_group_separator.empty() || CALCULATOR->local_digit_group_separator == " ") ? 1 : 0); i < 3; i++) {
 		string str_sep;
 		if(i == 0) str_sep = CALCULATOR->local_digit_group_separator;
-		else if(i == 1) str_sep = " ";
+		else if(i == 1) str_sep = THIN_SPACE;
 		else str_sep = " ";
 		size_t index = copy_text.find(str_sep);
 		while(index != string::npos) {
@@ -2730,7 +2732,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 				}
 			}
 		}
-		if(origstr && str_conv.empty() && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")))) {
+		if(origstr && str_conv.empty() && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion"))) && gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) && !minimal_mode) {
 			string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), evalops.parse_options);
 			remove_blank_ends(ceu_str);
 			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {
@@ -6751,8 +6753,6 @@ void get_image_blank_height(cairo_surface_t *surface, int *y1, int *y2) {
 	}
 }
 
-#define THIN_SPACE " "
-
 #define SHOW_WITH_ROOT_SIGN(x) (x.isFunction() && ((x.function() == CALCULATOR->f_sqrt && x.size() == 1) || (x.function() == CALCULATOR->f_cbrt && x.size() == 1) || (x.function() == CALCULATOR->f_root && x.size() == 2 && x[1].isNumber() && x[1].number().isInteger() && x[1].number().isPositive() && x[1].number().isLessThan(10))))
 
 cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, InternalPrintStruct ips, gint *point_central, int scaledown, GdkRGBA *color, gint *x_offset, gint *w_offset, gint max_width) {
@@ -6969,7 +6969,10 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						} else {
 
 							string str;
-							TT(str, _("approx."));
+							TTB(str);
+							str += "= ";
+							str += _("approx.");
+							TTE(str);
 							pango_layout_set_markup(layout_equals, str.c_str(), -1);
 						}
 					} else {
@@ -9215,9 +9218,11 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 			if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, po.can_display_unicode_string_arg))) {
 				PANGO_TT(layout_equals, SIGN_ALMOST_EQUAL);
 			} else {
-
 				string str;
-				TT(str, _("approx."));
+				TTB(str);
+				str += "= ";
+				str += _("approx.");
+				TTE(str);
 				pango_layout_set_markup(layout_equals, str.c_str(), -1);
 			}
 		} else {
@@ -9741,7 +9746,7 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 			} else if(str[i] <= 0 && (unsigned char) str[i] >= 0xC0) {
 				size_t l = 1;
 				while(i + l < str.length() && str[i + l] <= 0 && (unsigned char) str[i + l] < 0xC0) l++;
-				if(str.substr(i, l) == " ") {
+				if(str.substr(i, l) == THIN_SPACE) {
 					str.erase(i, l);
 					if(i >= str.length()) i = str.length() - 1;
 				}
@@ -9798,14 +9803,14 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 											if(str[i - 1] == ' ') {
 												i--;
 											} else if(str[i - 1] < 0) {
-												if(teststr.find(" ", teststr.length() - 3) == teststr.length() - 3) i -= 3;
+												if(teststr.find(THIN_SPACE, teststr.length() - 3) == teststr.length() - 3) i -= 3;
 											} else if(i > 3 && str[i] <= '9' && str[i] >= '0' && str[i - 1] <= '9' && str[i - 1] >= '0') {
 												if(str[i - 2] == ' ' && str[i - 3] <= '9' && str[i - 3] >= '0') i -= 2;
 												else if(str[i - 3] == ' ' && str[i - 4] <= '9' && str[i - 4] >= '0') i -= 3;
 												else if((str[i - 2] == '.' || str[i - 2] == ',') && str[i - 3] <= '9' && str[i - 3] >= '0') i--;
 												else if((str[i - 3] == '.' || str[i - 3] == ',') && str[i - 4] <= '9' && str[i - 4] >= '0') i -= 2;
 												else if(teststr.length() > 6) {
-													size_t i2 = teststr.find(" ", teststr.length() - 6);
+													size_t i2 = teststr.find(THIN_SPACE, teststr.length() - 6);
 													if(i2 != string::npos && i2 > 0 && teststr[i2 - 1] <= '9' && teststr[i2 - 1] >= '0') {
 														i = i2 + i_row;
 													}
@@ -9872,14 +9877,14 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 										if(str[i - 1] == ' ') {
 											i--;
 										} else if(str[i - 1] < 0) {
-											if(teststr.find(" ", teststr.length() - 3) == teststr.length() - 3) i -= 3;
+											if(teststr.find(THIN_SPACE, teststr.length() - 3) == teststr.length() - 3) i -= 3;
 										} else if(i > 3 && str[i] <= '9' && str[i] >= '0' && str[i - 1] <= '9' && str[i - 1] >= '0') {
 											if(str[i - 2] == ' ' && str[i - 3] <= '9' && str[i - 3] >= '0') i -= 2;
 											else if(str[i - 3] == ' ' && str[i - 4] <= '9' && str[i - 4] >= '0') i -= 3;
 											else if((str[i - 2] == '.' || str[i - 2] == ',') && str[i - 3] <= '9' && str[i - 3] >= '0') i--;
 											else if((str[i - 3] == '.' || str[i - 3] == ',') && str[i - 4] <= '9' && str[i - 4] >= '0') i -= 2;
 											else if(teststr.length() > 6) {
-												size_t i2 = teststr.find(" ", teststr.length() - 6);
+												size_t i2 = teststr.find(THIN_SPACE, teststr.length() - 6);
 												if(i2 != string::npos && i2 > 0 && teststr[i2 - 1] <= '9' && teststr[i2 - 1] >= '0') {
 													i = i2 + i_row;
 												}
@@ -10649,7 +10654,7 @@ void CommandThread::run() {
 			}
 			case COMMAND_TRANSFORM: {
 				string ceu_str;
-				if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")))) {
+				if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion"))) && gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) && !minimal_mode) {
 					ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), evalops.parse_options);
 					remove_blank_ends(ceu_str);
 					if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {
@@ -10906,6 +10911,12 @@ void result_display_updated() {
 	displayed_printops.spell_out_logical_operators = printops.spell_out_logical_operators;
 	displayed_printops.multiplication_sign = printops.multiplication_sign;
 	displayed_printops.division_sign = printops.division_sign;
+	date_map.clear();
+	number_map.clear();
+	number_base_map.clear();
+	number_exp_map.clear();
+	number_exp_minus_map.clear();
+	number_approx_map.clear();
 	gtk_widget_queue_draw(resultview);
 	update_message_print_options();
 	update_status_text();
@@ -11493,7 +11504,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 
 	update_expression_icons(EXPRESSION_STOP);
 
-	if(do_ceu && str_conv.empty() && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")))) {
+	if(do_ceu && str_conv.empty() && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion"))) && gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) && !minimal_mode) {
 		string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), evalops.parse_options);
 		remove_blank_ends(ceu_str);
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {
@@ -16836,7 +16847,7 @@ void load_preferences() {
 
 	size_t bookmark_index = 0;
 
-	int version_numbers[] = {3, 12, 0};
+	int version_numbers[] = {3, 13, 0};
 	bool old_history_format = false;
 
 	if(file) {
@@ -16991,7 +17002,7 @@ void load_preferences() {
 					if(mode_index == 1) printops.use_max_decimals = v;
 					else modes[mode_index].po.use_max_decimals = v;
 				} else if(svar == "precision") {
-					if(v == 8 && (version_numbers[0] < 3 || (version_numbers[0] == 3 && (version_numbers[1] < 12 || (version_numbers[1] == 12 && version_numbers[2] <= 1))))) v = 10;
+					if(v == 8 && (version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] <= 12))) v = 10;
 					if(mode_index == 1) CALCULATOR->setPrecision(v);
 					else modes[mode_index].precision = v;
 				} else if(svar == "min_exp") {
@@ -19209,6 +19220,44 @@ void on_preferences_checkbutton_custom_status_font_toggled(GtkToggleButton *w, g
 	winh += (h_new - h_old);
 	gtk_window_resize(GTK_WINDOW(mainwindow), winw, winh);
 }
+void keypad_font_changed() {
+	set_unicode_buttons();
+	while(gtk_events_pending()) gtk_main_iteration();
+	gint winh, winw;
+	gtk_window_get_size(GTK_WINDOW(mainwindow), &winw, &winh);
+	if(minimal_mode) {
+		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
+		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
+	}
+	while(gtk_events_pending()) gtk_main_iteration();
+	bool b_buttons = gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad));
+	if(!b_buttons) gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
+	while(gtk_events_pending()) gtk_main_iteration();
+	for(size_t i = 0; i < 5 && (!b_buttons || minimal_mode); i++) {
+		sleep_ms(10);
+		while(gtk_events_pending()) gtk_main_iteration();
+	}
+	GtkRequisition req;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), &req, NULL);
+	gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), req.width + 24, 1);
+	if(!b_buttons || minimal_mode) {
+		while(gtk_events_pending()) gtk_main_iteration();
+		for(size_t i = 0; i < 5; i++) {
+			sleep_ms(10);
+			while(gtk_events_pending()) gtk_main_iteration();
+		}
+		if(minimal_mode) {
+			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
+			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
+			if(winw < req.width + 24) winw = req.width + 24;
+		}
+		gtk_window_get_size(GTK_WINDOW(mainwindow), &win_width, NULL);
+		if(!minimal_mode) winw = win_width;
+		if(!b_buttons) gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
+		while(gtk_events_pending()) gtk_main_iteration();
+		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), winw, winh);
+	}
+}
 void on_preferences_checkbutton_custom_keypad_font_toggled(GtkToggleButton *w, gpointer) {
 	use_custom_keypad_font = gtk_toggle_button_get_active(w);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_keypad_font")), use_custom_keypad_font);
@@ -19222,11 +19271,7 @@ void on_preferences_checkbutton_custom_keypad_font_toggled(GtkToggleButton *w, g
 		gtk_css_provider_load_from_data(keypad_provider, "", -1, NULL);
 		gtk_css_provider_load_from_data(box_rpnl_provider, "", -1, NULL);
 	}
-	set_unicode_buttons();
-	while(gtk_events_pending()) gtk_main_iteration();
-	GtkRequisition req;
-	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), &req, NULL);
-	gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), req.width + 24, 1);
+	keypad_font_changed();
 }
 void on_preferences_checkbutton_custom_app_font_toggled(GtkToggleButton *w, gpointer) {
 	use_custom_app_font = gtk_toggle_button_get_active(w);
@@ -19239,12 +19284,9 @@ void on_preferences_checkbutton_custom_app_font_toggled(GtkToggleButton *w, gpoi
 	} else {
 		gtk_css_provider_load_from_data(app_provider, "", -1, NULL);
 	}
-	set_operator_symbols();
-	set_unicode_buttons();
-	while(gtk_events_pending()) gtk_main_iteration();
-	GtkRequisition req;
-	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), &req, NULL);
-	gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), req.width + 24, 1);
+	expression_font_modified();
+	result_font_modified();
+	keypad_font_changed();
 }
 void on_preferences_radiobutton_dot_toggled(GtkToggleButton *w, gpointer) {
 	if(gtk_toggle_button_get_active(w)) {
@@ -19392,26 +19434,18 @@ void on_preferences_button_keypad_font_font_set(GtkFontButton *w, gpointer) {
 	gchar *gstr = font_name_to_css(custom_keypad_font.c_str());
 	gtk_css_provider_load_from_data(keypad_provider, gstr, -1, NULL);
 	gtk_css_provider_load_from_data(box_rpnl_provider, gstr, -1, NULL);
-	set_operator_symbols();
-	set_unicode_buttons();
 	g_free(gstr);
-	while(gtk_events_pending()) gtk_main_iteration();
-	GtkRequisition req;
-	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), &req, NULL);
-	gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), req.width + 24, 1);
+	keypad_font_changed();
 }
 void on_preferences_button_app_font_font_set(GtkFontButton *w, gpointer) {
 	save_custom_app_font = true;
 	custom_app_font = gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w));
 	gchar *gstr = font_name_to_css(custom_app_font.c_str());
 	gtk_css_provider_load_from_data(app_provider, gstr, -1, NULL);
-	set_operator_symbols();
-	set_unicode_buttons();
+	expression_font_modified();
+	result_font_modified();
 	g_free(gstr);
-	while(gtk_events_pending()) gtk_main_iteration();
-	GtkRequisition req;
-	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), &req, NULL);
-	gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), req.width + 24, 1);
+	keypad_font_changed();
 }
 
 /*
@@ -20720,6 +20754,8 @@ void do_completion() {
 					}
 				}
 			}
+			GtkTreeIter exact_prefix_match;
+			bool exact_match_found = false, exact_prefix_match_found = false;
 			do {
 				ExpressionItem *item = NULL;
 				Prefix *prefix = NULL;
@@ -20866,6 +20902,14 @@ void do_completion() {
 							}
 							g_free(gstr);
 						}
+						if(b_match == 1 && item->type() != TYPE_FUNCTION) {
+							if(prefix) {
+								exact_prefix_match = iter;
+								exact_prefix_match_found = true;
+							} else {
+								exact_match_found = true;
+							}
+						}
 					}
 				} else if(prefix) {
 					for(size_t name_i = 0; name_i < 3 && !b_match; name_i++) {
@@ -20900,6 +20944,10 @@ void do_completion() {
 					else if(b_match < 3) show_separator1 = true;
 				}
 			} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(completion_store), &iter));
+			if(exact_match_found && exact_prefix_match_found) {
+				gtk_list_store_set(completion_store, &exact_prefix_match, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, -1);
+				matches--;
+			}
 		}
 	}
 	if(matches > 0) {
@@ -29565,7 +29613,9 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 				} else {
 					gint rw = -1;
 					if(scale_n == 3) rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
+					displayed_printops.can_display_unicode_string_arg = (void*) resultview;
 					tmp_surface = draw_structure(*displayed_mstruct, displayed_printops, displayed_caf, top_ips, NULL, scale_n, NULL, NULL, NULL, rw);
+					displayed_printops.can_display_unicode_string_arg = NULL;
 				}
 				surface_result = tmp_surface;
 			}
@@ -29589,7 +29639,9 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 					scale_n++;
 				}
 				cairo_surface_destroy(surface_result);
+				displayed_printops.can_display_unicode_string_arg = (void*) resultview;
 				surface_result = draw_structure(*displayed_mstruct, displayed_printops, displayed_caf, top_ips, NULL, scale_n, NULL, NULL, NULL, scale_n == 3 ? rw : -1);
+				displayed_printops.can_display_unicode_string_arg = NULL;
 				w = cairo_image_surface_get_width(surface_result) / scalefactor;
 				h = cairo_image_surface_get_height(surface_result) / scalefactor;
 			}
