@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-31 16:49+0200\n"
-"PO-Revision-Date: 2020-06-23 13:52-0300\n"
+"PO-Revision-Date: 2020-09-10 10:38-0300\n"
 "Last-Translator: Fúlvio Alves <fga.fulvio@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -2740,7 +2740,7 @@ msgstr ""
 
 #: ../data/preferences.ui.h:16
 msgid "Remember window position"
-msgstr ""
+msgstr "Lembrar posição da janela"
 
 #: ../data/preferences.ui.h:17
 msgid "Use dark theme"
@@ -2791,13 +2791,12 @@ msgid "Persistent keypad"
 msgstr "Teclado persistente"
 
 #: ../data/preferences.ui.h:28
-#, fuzzy
 msgid "Use keyboard keys for RPN"
 msgstr "Usar teclado para RPN"
 
 #: ../data/preferences.ui.h:29
 msgid "Use keyboard operator keys for RPN operations (+-*/^)."
-msgstr ""
+msgstr "Usar as teclas de operação no teclado para operações RPN (+-*/^)."
 
 #: ../data/preferences.ui.h:30
 msgid "Use caret for bitwise XOR"
@@ -3731,7 +3730,7 @@ msgstr "expressão"
 
 #: ../src/callbacks.cc:468
 msgid "History Parsed Expression"
-msgstr ""
+msgstr "Expressão analisada historicamente"
 
 #: ../src/callbacks.cc:491
 msgid "Set Window Title"
@@ -4646,7 +4645,6 @@ msgid "calculation was aborted"
 msgstr "cálculo abortado"
 
 #: ../src/callbacks.cc:10110 ../src/callbacks.cc:22091
-#, fuzzy
 msgid "RPN Register Moved"
 msgstr "Registro RPN Movido"
 
@@ -5120,9 +5118,8 @@ msgid "Calendar conversion failed for: %s."
 msgstr "Falha na conversão do calendário para: %s."
 
 #: ../src/callbacks.cc:25435
-#, fuzzy
 msgid "Gnuplot was not found."
-msgstr "curl não encontrado."
+msgstr "Gnuplot não encontrado."
 
 #: ../src/callbacks.cc:25436
 #, c-format
@@ -5130,6 +5127,8 @@ msgid ""
 "%s (%s) needs to be installed separately, and found in the executable search "
 "path, for plotting to work."
 msgstr ""
+"%s (%s) precisa ser instalado separadamente e localizado no caminho de "
+"pesquisa do executável para que a plotagem funcione."
 
 #: ../src/callbacks.cc:26014
 msgid "Select file to save PNG image to"
