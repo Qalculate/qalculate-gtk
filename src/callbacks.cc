@@ -20214,7 +20214,6 @@ gboolean on_gcalc_exit(GtkWidget*, GdkEvent*, gpointer) {
 	if(plot_builder && gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")))) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
 	}
-	//save_accels();
 	if(save_mode_on_exit) {
 		save_mode();
 	} else {
@@ -20235,14 +20234,6 @@ gboolean on_gcalc_exit(GtkWidget*, GdkEvent*, gpointer) {
 	g_application_quit(g_application_get_default());
 	return TRUE;
 }
-
-void save_accels() {
-	recursiveMakeDir(getLocalDir());
-	gchar *gstr = g_build_filename(getLocalDir().c_str(), "accelmap", NULL);
-	gtk_accel_map_save(gstr);
-	g_free(gstr);
-}
-
 
 /*
 	DEL button clicked -- delete in expression entry
@@ -20820,7 +20811,7 @@ void do_completion() {
 										if(icmp == 0) cmpstr = &str;
 										else if(icmp == 1) cmpstr = &str2;
 										else if(icmp == 2) cmpstr = &str3;
-										else if(icmp == 3) cmpstr = &str4;
+										else cmpstr = &str4;
 										if(cmpstr->empty()) break;
 										if(cmpstr->length() <= ename->name.length()) {
 											b_match = 2;

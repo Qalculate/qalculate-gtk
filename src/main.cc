@@ -285,21 +285,6 @@ void create_application(GtkApplication *app) {
 	}
 	gtk_widget_queue_draw(resultview);
 
-	gchar *gstr = g_build_filename(getLocalDir().c_str(), "accelmap", NULL);
-#ifndef _WIN32
-	if(!fileExists(gstr)) {
-		g_free(gstr);
-		gstr = g_build_filename(getOldLocalDir().c_str(), "accelmap", NULL);
-		gtk_accel_map_load(gstr);
-		g_remove(gstr);
-		g_rmdir(getOldLocalDir().c_str());
-		g_free(gstr);
-		return;
-	}
-#endif
-	gtk_accel_map_load(gstr);
-	g_free(gstr);
-	
 	block_completion();
 	set_custom_buttons();
 	g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 50, create_menus_etc, NULL, NULL);

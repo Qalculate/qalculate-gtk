@@ -1493,7 +1493,6 @@ void create_main_window(void) {
 	}
 
 	gtk_builder_connect_signals(main_builder, NULL);
-	g_signal_connect(accel_group, "accel_changed", G_CALLBACK(save_accels), NULL);
 
 	gtk_style_context_get_color(gtk_widget_get_style_context(historyview), GTK_STATE_FLAG_NORMAL, &c);
 	GdkRGBA c_red = c;
