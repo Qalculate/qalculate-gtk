@@ -55,22 +55,23 @@
       <li>Add abhenry (abH), cP, cStoke, mTorr, dyn/cm², and kph (or kmph) units, add biot (Bi) name for abampere, and replace J/T with A/m² as unit for current density</li>
       <li>Use B as abbreviation for byte instead of bel (dB is still used for decibel)</li>
       <li>Group digits after decimal separator (in groups of three, when standard digit grouping is active)</li>
+      <li>Group hexadecimal digits</li>
       <li>Add binary prefixes zebi and yobi</li>
       <li>Do not use prefixes by default with most CGS units</li>
+      <li>Do not use “$”, “dollar”, and “dollars” for USD (and do not use “£” as symbol for GBP) and remove cent, if the symbol is also used by the local currency</li>
       <li>Consider vectors as matrices with one column (column vector) in operations that expect a matrix (e.g. matrix multiplication)</li>
-      <li>Reduce time before GUI appears on load in some cases</li>
-      <li>Group hexadecimal digits</li>
       <li>Increase default precision to 10</li>
-      <li>Add derived units without symbol (e.g. km/m³) to completion (GUI)</li>
-      <li>Option to remember window position (GUI)</li>
-      <li>Only perform continuous conversion when convert tab is visible (GUI)</li>
+      <li>Reduce time before GUI appears on load in some cases</li>
+      <li>Add derived units without symbol (e.g. kg/m³) to completion</li>
+      <li>Option to remember window position</li>
+      <li>Only perform continuous conversion when convert tab is visible</li>
       <li>Add "Copy result to clipboard" to Gnome shell search provider</li>
-      <li>Do not use "$", "dollar", and "dollars" for USD (and do not use "£" as symbol for GBP) and remove cent, if the symbol is also used by the local currency</li>
-      <li>Fix cot(pi/2), coth(pi/2*i), arccot(0), arcsch(0), and arcoth(0)</li>
+      <li>Fix cot(pi/2), coth(pi/2×i), arccot(0), arcsch(0), and arcoth(0)</li>
       <li>Fix conversion to ratio</li>
       <li>Fix logarithmic y scale in plot</li>
-      <li>Fix unit conversion search entry losing focus (GUI)</li>
-      <li>Fix potential precision loss when performing multiple consecutive unit conversions (GUI)</li>
+      <li>Fix unit conversion search entry losing focus</li>
+      <li>Fix potential precision loss when performing multiple consecutive unit conversions</li>
+      <li>Fix self-contained Linux binaries: change GUI binary name to qalculate (fixes install and update scripts), and fix check for updates at startup</li>
       <li>Minor bug fixes and feature improvements</li>
      </ul>
    </description>
