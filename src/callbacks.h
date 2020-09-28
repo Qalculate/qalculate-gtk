@@ -1,7 +1,7 @@
 /*
     Qalculate (GTK+ UI)
 
-    Copyright (C) 2003-2007, 2008, 2016  Hanna Knutsson (hanna.knutsson@protonmail.com)
+    Copyright (C) 2003-2007, 2008, 2016-2020  Hanna Knutsson (hanna.knutsson@protonmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -119,6 +119,11 @@ enum {
 	SHORTCUT_TYPE_MANAGE_UNITS,
 	SHORTCUT_TYPE_MANAGE_DATA_SETS,
 	SHORTCUT_TYPE_STORE,
+	SHORTCUT_TYPE_MEMORY_CLEAR,
+	SHORTCUT_TYPE_MEMORY_RECALL,
+	SHORTCUT_TYPE_MEMORY_STORE,
+	SHORTCUT_TYPE_MEMORY_ADD,
+	SHORTCUT_TYPE_MEMORY_SUBTRACT,
 	SHORTCUT_TYPE_NEW_VARIABLE,
 	SHORTCUT_TYPE_NEW_FUNCTION,
 	SHORTCUT_TYPE_PLOT,
@@ -139,6 +144,12 @@ struct keyboard_shortcut {
 	guint modifier;
 	int type;
 	std::string value;
+};
+
+struct custom_button {
+	int type[3];
+	std::string value[3], text;
+	custom_button() {type[0] = -1; type[1] = -1; type[2] = -1;}
 };
 
 std::string shortcut_to_text(guint key, guint state);

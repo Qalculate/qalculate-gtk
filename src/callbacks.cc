@@ -108,7 +108,7 @@ int two_result_bases_rows = -1;
 extern GtkTextBuffer *expressionbuffer;
 extern GtkTextTag *expression_par_tag;
 extern GtkWidget *f_menu, *v_menu, *u_menu, *u_menu2, *recent_menu;
-extern KnownVariable *vans[5];
+extern KnownVariable *vans[5], *v_memory;
 MathStructure lastx;
 extern GtkWidget *tPlotFunctions;
 extern GtkListStore *tPlotFunctions_store;
@@ -378,6 +378,7 @@ extern bool do_imaginary_j;
 bool complex_angle_form = false;
 
 unordered_map<guint64, keyboard_shortcut> keyboard_shortcuts;
+vector<custom_button> custom_buttons;
 
 bool default_shortcuts;
 
@@ -2496,7 +2497,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 #if QALCULATE_MAJOR_VERSION > 3 || QALCULATE_MINOR_VERSION >= 10
 		if(origstr) CALCULATOR->parseComments(str, evalops.parse_options);
 #endif
-		if(str.empty()) {clearresult(); return;}
+		if(str.empty() || (origstr && (str == "MC" || str == "MS" || str == "M+" || str == "M-" || str == "M−"))) {clearresult(); return;}
 
 		if(evalops.parse_options.base != BASE_UNICODE && (evalops.parse_options.base != BASE_CUSTOM || (CALCULATOR->customInputBase() <= 62 && CALCULATOR->customInputBase() >= -62))) {
 			if(last_is_operator(str, evalops.parse_options.base == 10) && (evalops.parse_options.base != BASE_ROMAN_NUMERALS || str[str.length() - 1] != '|' || str.find('|') == str.length() - 1)) return;
@@ -2985,10 +2986,15 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 					result_hex = nr.print(po);
 					gsub("0x", "", result_hex);
 					size_t l = result_hex.length();
-					for(int i = (int) l - 2; i > 0; i -= 2) {
+					size_t i_after_minus = 0;
+					if(nr.isNegative()) {
+						if(l > 1 && result_hex[0] == '-') i_after_minus = 1;
+						else if(result_hex.find("−") == 0) i_after_minus = strlen("−");
+					}
+					for(int i = (int) l - 2; i > (int) i_after_minus; i -= 2) {
 						result_hex.insert(i, 1, ' ');
 					}
-					if(result_hex.length() > 1 && result_hex[1] == ' ') result_hex.insert(0, 1, '0');
+					if(result_hex.length() > i_after_minus + 1 && result_hex[i_after_minus + 1] == ' ') result_hex.insert(i_after_minus, 1, '0');
 				}
 			}
 			update_result_bases();
@@ -3058,6 +3064,15 @@ void display_parse_status() {
 		text += ")";
 	}
 #endif
+	if(text == "MC") {
+		text = "MR:=0";
+	} else if(text == "MS") {
+		text = "MR:=ans";
+	} else if(text == "M+") {
+		text = "MR:=MR+ans";
+	} else if(text == "M-" || text == "M−") {
+		text = "MR:=MR-ans";
+	}
 	remove_duplicate_blanks(text);
 	size_t i = text.find_first_of(SPACES LEFT_PARENTHESIS);
 	if(i != string::npos) {
@@ -4321,9 +4336,9 @@ void on_tVariables_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 		selected_variable = v;
 		for(size_t i = 0; i < CALCULATOR->variables.size(); i++) {
 			if(CALCULATOR->variables[i] == selected_variable) {
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_edit")), !CALCULATOR->variables[i]->isBuiltin() && !is_answer_variable(CALCULATOR->variables[i]));
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_edit")), !CALCULATOR->variables[i]->isBuiltin() && !is_answer_variable(CALCULATOR->variables[i]) && CALCULATOR->variables[i] != v_memory);
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_insert")), CALCULATOR->variables[i]->isActive());
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_deactivate")), !is_answer_variable(CALCULATOR->variables[i]));
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_deactivate")), !is_answer_variable(CALCULATOR->variables[i]) && CALCULATOR->variables[i] != v_memory);
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_export")), CALCULATOR->variables[i]->isKnown());
 				if(CALCULATOR->variables[i]->isActive()) {
 					gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(variables_builder, "variables_buttonlabel_deactivate")), _("Deacti_vate"));
@@ -4331,7 +4346,7 @@ void on_tVariables_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 					gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(variables_builder, "variables_buttonlabel_deactivate")), _("Acti_vate"));
 				}
 				//user cannot delete global definitions
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_delete")), CALCULATOR->variables[i]->isLocal() && !is_answer_variable(CALCULATOR->variables[i]) && CALCULATOR->variables[i] != CALCULATOR->v_x && CALCULATOR->variables[i] != CALCULATOR->v_y && CALCULATOR->variables[i] != CALCULATOR->v_z);
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_delete")), CALCULATOR->variables[i]->isLocal() && !is_answer_variable(CALCULATOR->variables[i]) && CALCULATOR->variables[i] != v_memory && CALCULATOR->variables[i] != CALCULATOR->v_x && CALCULATOR->variables[i] != CALCULATOR->v_y && CALCULATOR->variables[i] != CALCULATOR->v_z);
 			}
 		}
 	} else {
@@ -5581,6 +5596,11 @@ const gchar *shortcut_type_text(int type) {
 		case SHORTCUT_TYPE_MANAGE_UNITS: {return _("Manage units"); break;}
 		case SHORTCUT_TYPE_MANAGE_DATA_SETS: {return _("Manage data sets"); break;}
 		case SHORTCUT_TYPE_STORE: {return _("Store result"); break;}
+		case SHORTCUT_TYPE_MEMORY_CLEAR: {return _("MC (memory clear)"); break;}
+		case SHORTCUT_TYPE_MEMORY_RECALL: {return _("MR (memory recall)"); break;}
+		case SHORTCUT_TYPE_MEMORY_STORE: {return _("MS (memory store)"); break;}
+		case SHORTCUT_TYPE_MEMORY_ADD: {return _("M+ (memory plus)"); break;}
+		case SHORTCUT_TYPE_MEMORY_SUBTRACT: {return _("M− (memory minus)"); break;}
 		case SHORTCUT_TYPE_NEW_VARIABLE: {return _("New variable"); break;}
 		case SHORTCUT_TYPE_NEW_FUNCTION: {return _("New function"); break;}
 		case SHORTCUT_TYPE_PLOT: {return _("Open plot functions/data"); break;}
@@ -6894,10 +6914,15 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						gsub("0x", "", value_str);
 						size_t l = value_str.find(po.decimalpoint());
 						if(l == string::npos) l = value_str.length();
-						for(int i = (int) l - 2; i > 0; i -= 2) {
+						size_t i_after_minus = 0;
+						if(m.number().isNegative()) {
+							if(l > 1 && value_str[0] == '-') i_after_minus = 1;
+							else if(value_str.find("−") == 0) i_after_minus = strlen("−");
+						}
+						for(int i = (int) l - 2; i > (int) i_after_minus; i -= 2) {
 							value_str.insert(i, 1, ' ');
 						}
-						if(po.binary_bits == 0 && value_str.length() > 1 && value_str[1] == ' ') value_str.insert(0, 1, '0');
+						if(po.binary_bits == 0 && value_str.length() > i_after_minus + 1 && value_str[i_after_minus] == ' ') value_str.insert(i_after_minus + 1, 1, '0');
 					} else if(po.base == BASE_OCTAL && po.base_display == BASE_DISPLAY_NORMAL) {
 						if(value_str.length() > 1 && value_str[0] == '0' && is_in(NUMBERS, value_str[1])) value_str.erase(0, 1);
 					}
@@ -9452,10 +9477,15 @@ void ViewThread::run() {
 					result_hex = nr.print(po);
 					gsub("0x", "", result_hex);
 					size_t l = result_hex.length();
-					for(int i = (int) l - 2; i > 0; i -= 2) {
+					size_t i_after_minus = 0;
+					if(nr.isNegative()) {
+						if(l > 1 && result_hex[0] == '-') i_after_minus = 1;
+						else if(result_hex.find("−") == 0) i_after_minus = strlen("−");
+					}
+					for(int i = (int) l - 2; i > (int) i_after_minus; i -= 2) {
 						result_hex.insert(i, 1, ' ');
 					}
-					if(result_hex.length() > 1 && result_hex[1] == ' ') result_hex.insert(0, 1, '0');
+					if(result_hex.length() > i_after_minus + 1 && result_hex[i_after_minus + 1] == ' ') result_hex.insert(i_after_minus, 1, '0');
 				}
 			}
 		}
@@ -11159,6 +11189,18 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	}
 #endif
 
+	if(execute_str.empty()) {
+		if(str == "MC") {
+			str = "MR:=0";
+		} else if(str == "MS") {
+			str = "MR:=ans";
+		} else if(str == "M+") {
+			str = "MR:=MR+ans";
+		} else if(str == "M-" || str == "M−") {
+			str = "MR:=MR-ans";
+		}
+	}
+
 	ComplexNumberForm cnf_bak = evalops.complex_number_form;
 	bool caf_bak = complex_angle_form;
 	bool b_units_saved = evalops.parse_options.units_enabled;
@@ -12084,7 +12126,7 @@ void function_inserted(MathFunction *object) {
 	update_mb_fx_menu();
 }
 void variable_inserted(Variable *object) {
-	if(!object) {
+	if(!object || object == CALCULATOR->v_x || object == CALCULATOR->v_y || object == CALCULATOR->v_z) {
 		return;
 	}
 	GtkWidget *item, *sub;
@@ -13804,6 +13846,11 @@ void edit_unknown(const char *category, Variable *var, GtkWidget *win) {
 
 		//fill in default values
 		string v_name = CALCULATOR->getName();
+		int i = 1;
+		do {
+			v_name = "v"; v_name += i2s(i);
+			i++;
+		} while(CALCULATOR->nameTaken(v_name));
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_name")), v_name.c_str());
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(unknownedit_builder, "unknown_edit_label_names")), "");
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combo_category")))), category);
@@ -13947,13 +13994,19 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(variableedit_builder, "variable_edit_label_names")), "");
 
+	gint w;
+	gtk_window_get_size(GTK_WINDOW(dialog), &w, NULL);
+	gtk_window_resize(GTK_WINDOW(dialog), w, 1);
+
 	if(mstruct_) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_box_names")));
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_box_value")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_value")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_label_value")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_checkbutton_exact")));
 	} else {
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_box_names")));
-		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_box_value")));
+		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_value")));
+		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_label_value")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_checkbutton_exact")));
 	}
 
@@ -13997,7 +14050,12 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_checkbutton_exact")), TRUE);
 
 		//fill in default values
-		string v_name = CALCULATOR->getName();
+		string v_name;
+		int i = 1;
+		do {
+			v_name = "v"; v_name += i2s(i);
+			i++;
+		} while(CALCULATOR->nameTaken(v_name));
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")), v_name.c_str());
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(variableedit_builder, "variable_edit_label_names")), "");
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_value")), displayed_mstruct ? get_value_string(*mstruct).c_str() : get_expression_text().c_str());
@@ -14177,7 +14235,12 @@ void edit_matrix(const char *category, Variable *var, MathStructure *mstruct_, G
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_radiobutton_vector")), TRUE);
 
 		//fill in default values
-		string v_name = CALCULATOR->getName();
+		string v_name;
+		int i = 1;
+		do {
+			v_name = "v"; v_name += i2s(i);
+			i++;
+		} while(CALCULATOR->nameTaken(v_name));
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_name")), v_name.c_str());
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(matrixedit_builder, "matrix_edit_label_names")), "");
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(matrixedit_builder, "matrix_edit_combo_category")))), category);
@@ -16828,6 +16891,17 @@ void load_preferences() {
 	default_shortcuts = true;
 	keyboard_shortcuts.clear();
 
+	custom_buttons.resize(6);
+	for(size_t i = 0; i < 6; i++) {
+		custom_buttons[i].type[0] = -1;
+		custom_buttons[i].type[1] = -1;
+		custom_buttons[i].type[2] = -1;
+		custom_buttons[i].value[0] = "";
+		custom_buttons[i].value[1] = "";
+		custom_buttons[i].value[2] = "";
+		custom_buttons[i].text = "";
+	}
+
 	last_version_check_date.setToCurrentDate();
 
 	latest_button_unit = NULL;
@@ -16847,7 +16921,7 @@ void load_preferences() {
 
 	size_t bookmark_index = 0;
 
-	int version_numbers[] = {3, 13, 0};
+	int version_numbers[] = {3, 13, 1};
 	bool old_history_format = false;
 
 	if(file) {
@@ -17543,6 +17617,20 @@ void load_preferences() {
 					default_plot_linewidth = v;
 				} else if(svar == "max_plot_time") {
 					max_plot_time = v;
+				} else if(svar == "custom_button") {
+					unsigned int index = 0;
+					unsigned int bi = 0;
+					char text[4];
+					char str[svalue.length()];
+					int type = -1;
+					int n = sscanf(svalue.c_str(), "%u:%u:%3s:%i:%s", &bi, &index, text, &type, str);
+					if(n >= 3 && index < custom_buttons.size()) {
+						custom_buttons[index].text = text;
+						if(bi <= 2) {
+							if(n >= 4) custom_buttons[index].type[bi] = type;
+							if(n >= 5) custom_buttons[index].value[bi] = str;
+						}
+					}
 				} else if(svar == "keyboard_shortcut") {
 					default_shortcuts = false;
 					char str[svalue.length()];
@@ -17556,6 +17644,9 @@ void load_preferences() {
 					}
 					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 9)) {
 						if(ks.type >= SHORTCUT_TYPE_MINIMAL) ks.type++;
+					}
+					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && (version_numbers[1] < 13 || (version_numbers[1] == 13 && version_numbers[2] == 0)))) {
+						if(ks.type >= SHORTCUT_TYPE_MEMORY_CLEAR) ks.type += 5;
 					}
 					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 8)) {
 						if(ks.type >= SHORTCUT_TYPE_FLOATING_POINT) ks.type++;
@@ -17909,6 +18000,17 @@ void save_preferences(bool mode) {
 	if(!scientific_noprefix) fprintf(file, "scientific_mode_unit_prefixes=%i\n", true);
 	if(!scientific_notminuslast) fprintf(file, "scientific_mode_sort_minus_last=%i\n", true);
 	if(!scientific_negexp) fprintf(file, "scientific_mode_negative_exponents=%i\n", false);
+	for(unsigned int i = 0; i < custom_buttons.size(); i++) {
+		bool b_text = false;
+		for(unsigned int bi = 0; bi <= 2; bi++) {
+			if(custom_buttons[i].type[bi] >= 0) {
+				if(custom_buttons[i].value[bi].empty()) fprintf(file, "keyboard_shortcut=%u:%u:%s:%i\n", bi, i, b_text ? "" : custom_buttons[i].text.c_str(), custom_buttons[i].type[bi]);
+				else fprintf(file, "custom_button=%u:%u:%s:%i:%s\n", bi, i, b_text ? "" : custom_buttons[i].text.c_str(), custom_buttons[i].type[bi], custom_buttons[i].value[bi].c_str());
+				b_text = true;
+			}
+		}
+		if(!b_text && !custom_buttons[i].text.empty()) fprintf(file, "keyboard_shortcut=%u:%u:%s\n", 1, i, custom_buttons[i].text.c_str());
+	}
 	if(!default_shortcuts) {
 		for(unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.begin(); it != keyboard_shortcuts.end(); ++it) {
 			if(it->second.value.empty()) fprintf(file, "keyboard_shortcut=%u:%u:%i\n", it->second.key, it->second.modifier, it->second.type);
@@ -18379,6 +18481,8 @@ gchar *font_name_to_css(const char *font_name) {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+bool do_shortcut(int type, string value);
 
 void on_button_minimal_mode_clicked(GtkButton*, gpointer) {
 	set_minimal_mode(false);
@@ -19824,7 +19928,7 @@ void update_resultview_popup() {
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_engineering")), !b_unit && !b_date);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_scientific")), !b_unit && !b_date);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_purely_scientific")), FALSE);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_non_scientific")), FALSE);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_non_scientific")), !b_unit && !b_date);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_display")), !b_unit && !b_date);
 
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_fraction")), b_rational);
@@ -21089,6 +21193,39 @@ gboolean reenable_tooltip(GtkWidget *w, gpointer) {
 	g_signal_handlers_disconnect_matched((gpointer) w, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) reenable_tooltip, NULL);
 	return FALSE;
 }
+
+void memory_recall() {
+	clear_expression_text();
+	insert_var(v_memory);
+	execute_expression();
+}
+void memory_store() {
+	if(expression_has_changed && !rpn_mode && !auto_calculate) execute_expression(true);
+	if(!mstruct) return;
+	v_memory->set(*mstruct);
+	if(parsed_mstruct && parsed_mstruct->contains(v_memory, true)) expression_calculation_updated();
+}
+void memory_add() {
+	if(expression_has_changed && !rpn_mode && !auto_calculate) execute_expression(true);
+	if(!mstruct) return;
+	MathStructure m = v_memory->get();
+	m.calculateAdd(*mstruct, evalops);
+	v_memory->set(m);
+	if(parsed_mstruct && parsed_mstruct->contains(v_memory, true)) expression_calculation_updated();
+}
+void memory_subtract() {
+	if(expression_has_changed && !rpn_mode && !auto_calculate) execute_expression(true);
+	if(!mstruct) return;
+	MathStructure m = v_memory->get();
+	m.calculateSubtract(*mstruct, evalops);
+	v_memory->set(m);
+	if(parsed_mstruct && parsed_mstruct->contains(v_memory, true)) expression_calculation_updated();
+}
+void memory_clear() {
+	v_memory->set(m_zero);
+	if(parsed_mstruct && parsed_mstruct->contains(v_memory, true)) expression_calculation_updated();
+}
+
 void hide_tooltip(GtkWidget *w) {
 	if(!gtk_widget_get_has_tooltip(w)) return;
 	gtk_widget_set_has_tooltip(w, FALSE);
@@ -21097,7 +21234,14 @@ void hide_tooltip(GtkWidget *w) {
 
 gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 	hide_tooltip(w);
-	if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_divide"))) {
+	if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_ac"))) {
+		memory_clear();
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_equals"))) {
+		if(b2) memory_store();
+		else memory_recall();
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_divide"))) {
 		insertButtonFunction(CALCULATOR->getActiveFunction("inv"));
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_exp"))) {
@@ -21107,7 +21251,17 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 			insertButtonFunction(CALCULATOR->f_exp);
 		}
 		return TRUE;
-	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_dot")) || w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_comma"))) {
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_comma"))) {
+		if(b2 && custom_buttons[4].type[2] >= 0) {
+			do_shortcut(custom_buttons[4].type[2], custom_buttons[4].value[2]);
+		} else if(custom_buttons[4].type[1] >= 0) {
+			do_shortcut(custom_buttons[4].type[1], custom_buttons[4].value[1]);
+		} else {
+			if(b2) insert_text("\n");
+			else insert_text(" ");
+		}
+		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_dot"))) {
 		if(b2) {
 			insert_text("\n");
 		} else {
@@ -21121,7 +21275,11 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 		insert_text("]");
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_wrap"))) {
-		if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
+		if(b2 && custom_buttons[5].type[2] >= 0) {
+			do_shortcut(custom_buttons[5].type[2], custom_buttons[5].value[2]);
+		} else if(custom_buttons[5].type[1] >= 0) {
+			do_shortcut(custom_buttons[5].type[1], custom_buttons[5].value[1]);
+		} else if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
 			GtkTextIter istart, iend;
 			gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
 			gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &istart, &iend, FALSE);
@@ -21139,7 +21297,8 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 		}
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_add"))) {
-		insert_bitwise_and();
+		if(b2) insert_bitwise_and();
+		else memory_add();
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sub"))) {
 		if(b2) insert_bitwise_or();
@@ -21152,19 +21311,23 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 		insertButtonFunction(CALCULATOR->f_sqrt);
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_del"))) {
-		if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
-			overwrite_expression_selection(NULL);
+		if(b2) {
+			memory_subtract();
 		} else {
-			block_completion();
-			GtkTextMark *mpos = gtk_text_buffer_get_insert(expressionbuffer);
-			GtkTextIter ipos, iend;
-			gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mpos);
-			iend = ipos;
-			if(gtk_text_iter_backward_char(&ipos)) {
-				gtk_text_buffer_delete(expressionbuffer, &ipos, &iend);
+			if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
+				overwrite_expression_selection(NULL);
+			} else {
+				block_completion();
+				GtkTextMark *mpos = gtk_text_buffer_get_insert(expressionbuffer);
+				GtkTextIter ipos, iend;
+				gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mpos);
+				iend = ipos;
+				if(gtk_text_iter_backward_char(&ipos)) {
+					gtk_text_buffer_delete(expressionbuffer, &ipos, &iend);
+				}
+				focus_keeping_selection();
+				unblock_completion();
 			}
-			focus_keeping_selection();
-			unblock_completion();
 		}
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_ans"))) {
@@ -21177,12 +21340,40 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 			insert_text(str.c_str());
 		}
 		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move"))) {
+		if(b2 && custom_buttons[0].type[2] >= 0) {
+			do_shortcut(custom_buttons[0].type[2], custom_buttons[0].value[2]);
+			return TRUE;
+		} else if(custom_buttons[0].type[1] >= 0) {
+			do_shortcut(custom_buttons[0].type[1], custom_buttons[0].value[1]);
+			return TRUE;
+		}
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move2"))) {
+		if(b2 && custom_buttons[0].type[2] >= 0) {
+			do_shortcut(custom_buttons[1].type[2], custom_buttons[1].value[2]);
+			return TRUE;
+		} else if(custom_buttons[0].type[1] >= 0) {
+			do_shortcut(custom_buttons[1].type[1], custom_buttons[1].value[1]);
+			return TRUE;
+		}
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_percent"))) {
-		insert_var(CALCULATOR->v_permille);
+		if(b2 && custom_buttons[2].type[2] >= 0) {
+			do_shortcut(custom_buttons[2].type[2], custom_buttons[2].value[2]);
+		} else if(custom_buttons[2].type[1] >= 0) {
+			do_shortcut(custom_buttons[2].type[1], custom_buttons[2].value[1]);
+		} else {
+			insert_var(CALCULATOR->v_permille);
+		}
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_plusminus"))) {
-		if(b2) insertButtonFunction(CALCULATOR->f_interval);
-		else insertButtonFunction(CALCULATOR->f_uncertainty);
+		if(b2 && custom_buttons[3].type[2] >= 0) {
+			do_shortcut(custom_buttons[3].type[2], custom_buttons[3].value[2]);
+		} else if(custom_buttons[3].type[1] >= 0) {
+			do_shortcut(custom_buttons[3].type[1], custom_buttons[3].value[1]);
+		} else {
+			if(b2) insertButtonFunction(CALCULATOR->f_interval);
+			else insertButtonFunction(CALCULATOR->f_uncertainty);
+		}
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_bin"))) {
 		base_button_alternative(2);
@@ -21327,7 +21518,7 @@ gboolean keypad_long_press_timeout(gpointer data) {
 #else
 		gtk_menu_popup(GTK_MENU(data), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
 #endif
-	} else if(button_press_timeout_w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move2"))) {
+	} else if(button_press_timeout_w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move2")) && custom_buttons[1].type[0] < 0 && custom_buttons[1].type[1] < 0 && custom_buttons[1].type[2] < 0) {
 		hide_tooltip(button_press_timeout_w);
 		GtkTextIter iter;
 		gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iter, gtk_text_buffer_get_insert(expressionbuffer));
@@ -21341,7 +21532,7 @@ gboolean keypad_long_press_timeout(gpointer data) {
 		gtk_text_buffer_place_cursor(expressionbuffer, &iter);
 		button_press_timeout_done = true;
 		return TRUE;
-	} else if(button_press_timeout_w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move"))) {
+	} else if(button_press_timeout_w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move")) && custom_buttons[0].type[0] < 0 && custom_buttons[0].type[1] < 0 && custom_buttons[0].type[2] < 0) {
 		hide_tooltip(button_press_timeout_w);
 		if(button_press_timeout_side == 2) {
 			if(expression_history_index > -1) {
@@ -21380,6 +21571,45 @@ gboolean keypad_long_press_timeout(gpointer data) {
 	button_press_timeout_id = 0;
 	return FALSE;
 }
+
+gboolean keypad_unblock_timeout(gpointer w) {
+	while(gtk_events_pending()) gtk_main_iteration();
+	g_signal_handlers_unblock_matched(w, (GSignalMatchType) (G_SIGNAL_MATCH_DATA | G_SIGNAL_MATCH_ID), g_signal_lookup("clicked", G_OBJECT_TYPE(w)), 0, NULL, NULL, NULL);
+	g_signal_handlers_unblock_matched(w, (GSignalMatchType) (G_SIGNAL_MATCH_DATA | G_SIGNAL_MATCH_ID), g_signal_lookup("toggled", G_OBJECT_TYPE(w)), 0, NULL, NULL, NULL);
+	return FALSE;
+}
+
+gboolean on_keypad_button_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
+	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
+		g_source_remove(button_press_timeout_id);
+		button_press_timeout_id = 0;
+		button_press_timeout_w = NULL;
+		button_press_timeout_side = 0;
+		button_press_timeout_done = false;
+	} else if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_done) {
+		button_press_timeout_done = false;
+		bool b_this = (button_press_timeout_w == w);
+		button_press_timeout_w = NULL;
+		button_press_timeout_side = 0;
+		if(b_this) {
+			g_signal_handlers_block_matched((gpointer) w, (GSignalMatchType) (G_SIGNAL_MATCH_DATA | G_SIGNAL_MATCH_ID), g_signal_lookup("clicked", G_OBJECT_TYPE(w)), 0, NULL, NULL, NULL);
+			g_signal_handlers_block_matched((gpointer) w, (GSignalMatchType) (G_SIGNAL_MATCH_DATA | G_SIGNAL_MATCH_ID), g_signal_lookup("toggled", G_OBJECT_TYPE(w)), 0, NULL, NULL, NULL);
+			g_timeout_add(50, keypad_unblock_timeout, (gpointer) w);
+			return FALSE;
+		}
+	}
+	if(event->type == GDK_BUTTON_PRESS && event->button == 1) {
+		button_press_timeout_w = w;
+		button_press_timeout_side = 0;
+		button_press_timeout_id = g_timeout_add(500, keypad_long_press_timeout, NULL);
+		return FALSE;
+	}
+	if(event->type == GDK_BUTTON_RELEASE && (event->button == 2 || event->button == 3)) {
+		if(on_keypad_button_alt(w, event->button == 2)) return TRUE;
+	}
+	return FALSE;
+}
+
 gboolean on_button_del_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
 	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
 		g_source_remove(button_press_timeout_id);
@@ -21404,6 +21634,7 @@ gboolean on_button_del_button_event(GtkWidget *w, GdkEventButton *event, gpointe
 	return FALSE;
 }
 gboolean on_button_move2_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
+	if(custom_buttons[1].type[0] >= 0 || custom_buttons[1].type[1] >= 0 || custom_buttons[1].type[2] >= 0) return on_keypad_button_button_event(w, event, NULL);
 	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
 		g_source_remove(button_press_timeout_id);
 		bool b_this = (button_press_timeout_w == w);
@@ -21448,6 +21679,7 @@ gboolean on_button_move2_button_event(GtkWidget *w, GdkEventButton *event, gpoin
 	return FALSE;
 }
 gboolean on_button_move_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
+	if(custom_buttons[0].type[0] >= 0 || custom_buttons[0].type[1] >= 0 || custom_buttons[0].type[2] >= 0) return on_keypad_button_button_event(w, event, NULL);
 	hide_tooltip(w);
 	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
 		g_source_remove(button_press_timeout_id);
@@ -21493,44 +21725,6 @@ gboolean on_button_move_button_event(GtkWidget *w, GdkEventButton *event, gpoint
 				dont_change_index = false;
 			}
 		}
-	}
-	return FALSE;
-}
-
-gboolean keypad_unblock_timeout(gpointer w) {
-	while(gtk_events_pending()) gtk_main_iteration();
-	g_signal_handlers_unblock_matched(w, (GSignalMatchType) (G_SIGNAL_MATCH_DATA | G_SIGNAL_MATCH_ID), g_signal_lookup("clicked", G_OBJECT_TYPE(w)), 0, NULL, NULL, NULL);
-	g_signal_handlers_unblock_matched(w, (GSignalMatchType) (G_SIGNAL_MATCH_DATA | G_SIGNAL_MATCH_ID), g_signal_lookup("toggled", G_OBJECT_TYPE(w)), 0, NULL, NULL, NULL);
-	return FALSE;
-}
-
-gboolean on_keypad_button_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
-	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
-		g_source_remove(button_press_timeout_id);
-		button_press_timeout_id = 0;
-		button_press_timeout_w = NULL;
-		button_press_timeout_side = 0;
-		button_press_timeout_done = false;
-	} else if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_done) {
-		button_press_timeout_done = false;
-		bool b_this = (button_press_timeout_w == w);
-		button_press_timeout_w = NULL;
-		button_press_timeout_side = 0;
-		if(b_this) {
-			g_signal_handlers_block_matched((gpointer) w, (GSignalMatchType) (G_SIGNAL_MATCH_DATA | G_SIGNAL_MATCH_ID), g_signal_lookup("clicked", G_OBJECT_TYPE(w)), 0, NULL, NULL, NULL);
-			g_signal_handlers_block_matched((gpointer) w, (GSignalMatchType) (G_SIGNAL_MATCH_DATA | G_SIGNAL_MATCH_ID), g_signal_lookup("toggled", G_OBJECT_TYPE(w)), 0, NULL, NULL, NULL);
-			g_timeout_add(50, keypad_unblock_timeout, (gpointer) w);
-			return FALSE;
-		}
-	}
-	if(event->type == GDK_BUTTON_PRESS && event->button == 1) {
-		button_press_timeout_w = w;
-		button_press_timeout_side = 0;
-		button_press_timeout_id = g_timeout_add(500, keypad_long_press_timeout, NULL);
-		return FALSE;
-	}
-	if(event->type == GDK_BUTTON_RELEASE && (event->button == 2 || event->button == 3)) {
-		if(on_keypad_button_alt(w, event->button == 2)) return TRUE;
 	}
 	return FALSE;
 }
@@ -21632,6 +21826,10 @@ void on_button_brace_close_clicked(GtkButton*, gpointer) {
 	insert_text(")");
 }
 void on_button_brace_wrap_clicked(GtkButton*, gpointer) {
+	if(custom_buttons[5].type[0] >= 0) {
+		do_shortcut(custom_buttons[5].type[0], custom_buttons[5].value[0]);
+		return;
+	}
 	string expr = get_expression_text();
 	GtkTextIter istart, iend, ipos;
 	gint il = expr.length();
@@ -21717,8 +21915,21 @@ void on_button_brace_wrap_clicked(GtkButton*, gpointer) {
 void on_button_i_clicked(GtkButton*, gpointer) {
 	insert_var(CALCULATOR->v_i);
 }
+void on_button_move_clicked(GtkButton*, gpointer) {
+	if(custom_buttons[0].type[0] >= 0) {
+		do_shortcut(custom_buttons[0].type[0], custom_buttons[0].value[0]);
+	}
+}void on_button_move2_clicked(GtkButton*, gpointer) {
+	if(custom_buttons[1].type[0] >= 0) {
+		do_shortcut(custom_buttons[1].type[0], custom_buttons[1].value[0]);
+	}
+}
 void on_button_percent_clicked(GtkButton*, gpointer) {
-	insert_text("%");
+	if(custom_buttons[2].type[0] >= 0) {
+		do_shortcut(custom_buttons[2].type[0], custom_buttons[2].value[0]);
+	} else {
+		insert_text("%");
+	}
 }
 void on_button_si_clicked(GtkButton*, gpointer) {
 	if(latest_button_unit) {
@@ -21763,7 +21974,11 @@ void on_button_fac_clicked(GtkButton*, gpointer) {
 	if(do_exec) execute_expression();
 }
 void on_button_comma_clicked(GtkButton*, gpointer) {
-	insert_text(CALCULATOR->getComma().c_str());
+	if(custom_buttons[4].type[0] >= 0) {
+		do_shortcut(custom_buttons[4].type[0], custom_buttons[4].value[0]);
+	} else {
+		insert_text(CALCULATOR->getComma().c_str());
+	}
 }
 void on_button_x_clicked(GtkButton*, gpointer) {
 	insert_text("x");
@@ -21778,8 +21993,12 @@ void on_button_xequals_clicked(GtkButton*, gpointer) {
 	insert_text("=");
 }
 void on_button_plusminus_clicked(GtkButton*, gpointer) {
-	wrap_expression_selection();
-	insert_text("±");
+	if(custom_buttons[3].type[0] >= 0) {
+			do_shortcut(custom_buttons[3].type[0], custom_buttons[3].value[0]);
+	} else {
+		wrap_expression_selection();
+		insert_text("±");
+	}
 }
 void on_button_factorize_clicked(GtkButton*, gpointer) {
 	if(evalops.structuring == STRUCTURING_FACTORIZE) executeCommand(COMMAND_EXPAND);
@@ -24269,6 +24488,22 @@ void on_popup_menu_sto_set_activate(GtkMenuItem *w, gpointer data) {
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "mb_sto")), FALSE);
 	focus_keeping_selection();
 }
+void on_popup_menu_sto_add_activate(GtkMenuItem *w, gpointer data) {
+	MathStructure m(((KnownVariable*) data)->get());
+	m.calculateAdd(*mstruct, evalops);
+	((KnownVariable*) data)->set(m);
+	gtk_menu_popdown(GTK_MENU(gtk_builder_get_object(main_builder, "menu_sto")));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "mb_sto")), FALSE);
+	focus_keeping_selection();
+}
+void on_popup_menu_sto_sub_activate(GtkMenuItem *w, gpointer data) {
+	MathStructure m(((KnownVariable*) data)->get());
+	m.calculateSubtract(*mstruct, evalops);
+	((KnownVariable*) data)->set(m);
+	gtk_menu_popdown(GTK_MENU(gtk_builder_get_object(main_builder, "menu_sto")));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "mb_sto")), FALSE);
+	focus_keeping_selection();
+}
 void on_popup_menu_sto_edit_activate(GtkMenuItem *w, gpointer data) {
 	edit_variable("", (Variable*) data, NULL, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 }
@@ -24279,19 +24514,27 @@ void on_popup_menu_sto_delete_activate(GtkMenuItem *w, gpointer data) {
 	focus_keeping_selection();
 }
 
-gulong on_popup_menu_sto_set_activate_handler = 0, on_popup_menu_sto_edit_activate_handler = 0, on_popup_menu_sto_delete_activate_handler = 0;
+gulong on_popup_menu_sto_set_activate_handler = 0, on_popup_menu_sto_add_activate_handler = 0, on_popup_menu_sto_sub_activate_handler = 0, on_popup_menu_sto_edit_activate_handler = 0, on_popup_menu_sto_delete_activate_handler = 0;
 
 gboolean on_menu_sto_popup_menu(GtkWidget*, gpointer data) {
 	if(b_busy) return TRUE;
 	if(on_popup_menu_sto_set_activate_handler != 0) g_signal_handler_disconnect(gtk_builder_get_object(main_builder, "popup_menu_sto_set"), on_popup_menu_sto_set_activate_handler);
+	if(on_popup_menu_sto_add_activate_handler != 0) g_signal_handler_disconnect(gtk_builder_get_object(main_builder, "popup_menu_sto_add"), on_popup_menu_sto_add_activate_handler);
+	if(on_popup_menu_sto_sub_activate_handler != 0) g_signal_handler_disconnect(gtk_builder_get_object(main_builder, "popup_menu_sto_sub"), on_popup_menu_sto_sub_activate_handler);
 	if(on_popup_menu_sto_edit_activate_handler != 0) g_signal_handler_disconnect(gtk_builder_get_object(main_builder, "popup_menu_sto_edit"), on_popup_menu_sto_edit_activate_handler);
 	if(on_popup_menu_sto_delete_activate_handler != 0) g_signal_handler_disconnect(gtk_builder_get_object(main_builder, "popup_menu_sto_delete"), on_popup_menu_sto_delete_activate_handler);
 	if(((Variable*) data)->isKnown() && mstruct && displayed_mstruct) {
 		on_popup_menu_sto_set_activate_handler = g_signal_connect(gtk_builder_get_object(main_builder, "popup_menu_sto_set"), "activate", G_CALLBACK(on_popup_menu_sto_set_activate), data);
+		on_popup_menu_sto_add_activate_handler = g_signal_connect(gtk_builder_get_object(main_builder, "popup_menu_sto_add"), "activate", G_CALLBACK(on_popup_menu_sto_add_activate), data);
+		on_popup_menu_sto_sub_activate_handler = g_signal_connect(gtk_builder_get_object(main_builder, "popup_menu_sto_sub"), "activate", G_CALLBACK(on_popup_menu_sto_sub_activate), data);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_sto_set")), TRUE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_sto_add")), TRUE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_sto_sub")), TRUE);
 	} else {
 		on_popup_menu_sto_set_activate_handler = 0;
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_sto_set")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_sto_add")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_sto_sub")), FALSE);
 	}
 	on_popup_menu_sto_edit_activate_handler = g_signal_connect(gtk_builder_get_object(main_builder, "popup_menu_sto_edit"), "activate", G_CALLBACK(on_popup_menu_sto_edit_activate), data);
 	on_popup_menu_sto_delete_activate_handler = g_signal_connect(gtk_builder_get_object(main_builder, "popup_menu_sto_delete"), "activate", G_CALLBACK(on_popup_menu_sto_delete_activate), data);
@@ -24311,7 +24554,6 @@ gboolean on_menu_sto_button_press(GtkWidget *widget, GdkEventButton *event, gpoi
 	}
 	return FALSE;
 }
-
 void update_mb_sto_menu() {
 	GtkMenu *sub = GTK_MENU(gtk_builder_get_object(main_builder, "menu_sto"));
 	GtkWidget *item;
@@ -24330,6 +24572,12 @@ void update_mb_sto_menu() {
 		}
 	}
 	if(!b) {MENU_NO_ITEMS(_("No items found"))}
+	/*if(b) {MENU_SEPARATOR}
+	MENU_ITEM(_("MC (Memory Clear)"), memory_clear);
+	MENU_ITEM(_("MR (Memory Recall)"), memory_recall);
+	MENU_ITEM(_("MS (Memory Store)"), memory_store);
+	MENU_ITEM(_("M+ (Memory Plus)"), memory_add);
+	MENU_ITEM(_("M− (Memory Minus)"), memory_subtract);*/
 }
 
 void on_menu_item_status_exact_activate(GtkMenuItem *w, gpointer) {
@@ -28808,6 +29056,334 @@ gboolean on_units_convert_to_button_key_press_event(GtkWidget*, GdkEventKey *eve
 	return FALSE;
 }
 
+bool do_shortcut(int type, string value) {
+	switch(type) {
+		case SHORTCUT_TYPE_FUNCTION: {
+			insertButtonFunction(CALCULATOR->getActiveFunction(value));
+			return true;
+		}
+		case SHORTCUT_TYPE_FUNCTION_WITH_DIALOG: {
+			insert_function(CALCULATOR->getActiveFunction(value), mainwindow);
+			return true;
+		}
+		case SHORTCUT_TYPE_VARIABLE: {
+			insert_var(CALCULATOR->getActiveVariable(value));
+			return true;
+		}
+		case SHORTCUT_TYPE_UNIT: {
+			Unit *u = CALCULATOR->getActiveUnit(value);
+			if(u && CALCULATOR->stillHasUnit(u)) {
+				if(u->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+					string str = ((CompositeUnit*) u)->print(true, printops.abbreviate_names, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
+					if(printops.multiplication_sign == MULTIPLICATION_SIGN_DOT) gsub(saltdot, sdot, str);
+					insert_text(str.c_str());
+				} else {
+					insert_text(u->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, true, false, &can_display_unicode_string_function, (void*) expressiontext).name.c_str());
+				}
+			}
+			return true;
+		}
+		case SHORTCUT_TYPE_TEXT: {
+			insert_text(value.c_str());
+			return true;
+		}
+		case SHORTCUT_TYPE_DATE: {
+			on_menu_item_insert_date_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_VECTOR: {
+			on_menu_item_insert_vector_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_MATRIX: {
+			on_menu_item_insert_matrix_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_SMART_PARENTHESES: {
+			on_button_brace_wrap_clicked(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_CONVERT: {
+			executeCommand(COMMAND_CONVERT_STRING, true, value);
+			return true;
+		}
+		case SHORTCUT_TYPE_CONVERT_ENTRY: {
+			on_menu_item_convert_to_unit_expression_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_OPTIMAL_UNIT: {
+			executeCommand(COMMAND_CONVERT_OPTIMAL);
+			return true;
+		}
+		case SHORTCUT_TYPE_BASE_UNITS: {
+			executeCommand(COMMAND_CONVERT_BASE);
+			return true;
+		}
+		case SHORTCUT_TYPE_OPTIMAL_PREFIX: {
+			result_prefix_changed(NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_TO_NUMBER_BASE: {
+			int save_base = printops.base;
+			Number save_nbase = CALCULATOR->customOutputBase();
+			to_base = 0;
+			to_bits = 0;
+			Number nbase;
+			base_from_string(value, printops.base, nbase);
+			CALCULATOR->setCustomOutputBase(nbase);
+			result_format_updated();
+			printops.base = save_base;
+			CALCULATOR->setCustomOutputBase(save_nbase);
+			return true;
+		}
+		case SHORTCUT_TYPE_FACTORIZE: {
+			executeCommand(COMMAND_FACTORIZE);
+			return true;
+		}
+		case SHORTCUT_TYPE_EXPAND: {
+			executeCommand(COMMAND_EXPAND);
+			return true;
+		}
+		case SHORTCUT_TYPE_PARTIAL_FRACTIONS: {
+			executeCommand(COMMAND_EXPAND_PARTIAL_FRACTIONS);
+			return true;
+		}
+		case SHORTCUT_TYPE_SET_UNKNOWNS: {
+			on_menu_item_set_unknowns_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_RPN_UP: {
+			if(!rpn_mode) return false;
+			on_button_registerup_clicked(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_RPN_DOWN: {
+			if(!rpn_mode) return false;
+			on_button_registerdown_clicked(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_RPN_SWAP: {
+			if(!rpn_mode) return false;
+			on_button_registerswap_clicked(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_RPN_COPY: {
+			if(!rpn_mode) return false;
+			on_button_copyregister_clicked(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_RPN_LASTX: {
+			if(!rpn_mode) return false;
+			on_button_lastx_clicked(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_RPN_DELETE: {
+			if(!rpn_mode) return false;
+			on_button_deleteregister_clicked(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_RPN_CLEAR: {
+			if(!rpn_mode) return false;
+			on_button_clearstack_clicked(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_META_MODE: {
+			for(size_t i = 0; i < modes.size(); i++) {
+				if(equalsIgnoreCase(modes[i].name, value)) {
+					load_mode(modes[i]);
+					return true;
+				}
+			}
+			show_message(_("Mode not found."), mainwindow);
+			return true;
+		}
+		case SHORTCUT_TYPE_INPUT_BASE: {
+			Number nbase;
+			base_from_string(value, evalops.parse_options.base, nbase, true);
+			CALCULATOR->setCustomInputBase(nbase);
+			on_historyview_selection_changed(NULL, NULL);
+			update_keypad_bases();
+			expression_format_updated(true);
+			input_base_updated_from_menu();
+			return true;
+		}
+		case SHORTCUT_TYPE_OUTPUT_BASE: {
+			Number nbase; int base;
+			base_from_string(value, base, nbase);
+			CALCULATOR->setCustomOutputBase(nbase);
+			set_output_base_from_dialog(base);
+			output_base_updated_from_menu();
+			return true;
+		}
+		case SHORTCUT_TYPE_EXACT_MODE: {
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact")), !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact"))));
+			return true;
+		}
+		case SHORTCUT_TYPE_DEGREES: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_degrees")), TRUE);
+			return true;
+		}
+		case SHORTCUT_TYPE_RADIANS: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_radians")), TRUE);
+			return true;
+		}
+		case SHORTCUT_TYPE_GRADIANS: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_gradians")), TRUE);
+			return true;
+		}
+		case SHORTCUT_TYPE_FRACTIONS: {
+			if(printops.number_fraction_format >= FRACTION_FRACTIONAL) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
+			else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
+			return true;
+		}
+		case SHORTCUT_TYPE_MIXED_FRACTIONS: {
+			if(printops.number_fraction_format == FRACTION_COMBINED) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
+			else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
+			return true;
+		}
+		case SHORTCUT_TYPE_SCIENTIFIC_NOTATION: {
+			if(printops.min_exp == EXP_SCIENTIFIC) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 0);
+			else gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 2);
+			return true;
+		}
+		case SHORTCUT_TYPE_SIMPLE_NOTATION: {
+			if(printops.min_exp == EXP_NONE) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 0);
+			else gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 4);
+			return true;
+		}
+		case SHORTCUT_TYPE_RPN_MODE: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_mode")), !rpn_mode);
+			return true;
+		}
+		case SHORTCUT_TYPE_AUTOCALC: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_autocalc")), !auto_calculate);
+			return true;
+		}
+		case SHORTCUT_TYPE_PROGRAMMING: {
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_programmers_keypad")), ~visible_keypad & PROGRAMMING_KEYPAD);
+			if(visible_keypad & PROGRAMMING_KEYPAD) gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad")), true);
+			return true;
+		}
+		case SHORTCUT_TYPE_KEYPAD: {
+			//void on_expander_history_expanded(GObject *o, GParamSpec*, gpointer)
+			gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad")), !gtk_expander_get_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad"))));
+			return true;
+		}
+		case SHORTCUT_TYPE_HISTORY: {
+			gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_history")), !gtk_expander_get_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_history"))));
+			return true;
+		}
+		case SHORTCUT_TYPE_HISTORY_SEARCH: {
+			on_popup_menu_item_history_search_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_CONVERSION: {
+			gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_convert")), !gtk_expander_get_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_convert"))));
+			return true;
+		}
+		case SHORTCUT_TYPE_STACK: {
+			gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_stack")), !gtk_expander_get_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_stack"))));
+			return true;
+		}
+		case SHORTCUT_TYPE_MINIMAL: {
+			set_minimal_mode(!minimal_mode);
+			return true;
+		}
+		case SHORTCUT_TYPE_MANAGE_VARIABLES: {
+			on_menu_item_manage_variables_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_MANAGE_FUNCTIONS: {
+			on_menu_item_manage_functions_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_MANAGE_UNITS: {
+			on_menu_item_manage_units_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_MANAGE_DATA_SETS: {
+			on_menu_item_datasets_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_STORE: {
+			on_menu_item_save_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_MEMORY_CLEAR: {
+			memory_clear();
+			return true;
+		}
+		case SHORTCUT_TYPE_MEMORY_RECALL: {
+			memory_recall();
+			return true;
+		}
+		case SHORTCUT_TYPE_MEMORY_STORE: {
+			memory_store();
+			return true;
+		}
+		case SHORTCUT_TYPE_MEMORY_ADD: {
+			memory_add();
+			return true;
+		}
+		case SHORTCUT_TYPE_MEMORY_SUBTRACT: {
+			memory_subtract();
+			return true;
+		}
+		case SHORTCUT_TYPE_NEW_VARIABLE: {
+			on_menu_item_new_variable_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_NEW_FUNCTION: {
+			on_menu_item_new_function_simple_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_PLOT: {
+			on_menu_item_plot_functions_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_NUMBER_BASES: {
+			on_menu_item_convert_number_bases_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_FLOATING_POINT: {
+			on_menu_item_convert_floatingpoint_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_CALENDARS: {
+			on_menu_item_show_calendarconversion_dialog_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_PERCENTAGE_TOOL: {
+			on_menu_item_show_percentage_dialog_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_PERIODIC_TABLE: {
+			on_menu_item_periodic_table_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_UPDATE_EXRATES: {
+			on_menu_item_fetch_exchange_rates_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_COPY_RESULT: {
+			on_menu_item_copy_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_SAVE_IMAGE: {
+			on_menu_item_save_image_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_HELP: {
+			on_menu_item_help_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_QUIT: {
+			on_menu_item_quit_activate(NULL, NULL);
+			return true;
+		}
+	}
+	return false;
+}
 bool do_keyboard_shortcut(GdkEventKey *event) {
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
 	guint state = event->state & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK);
@@ -28817,311 +29393,7 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 	unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find((guint64) event->keyval + (guint64) G_MAXUINT32 * (guint64) state);
 	if(it == keyboard_shortcuts.end() && event->keyval == GDK_KEY_KP_Delete) it = keyboard_shortcuts.find((guint64) GDK_KEY_Delete + (guint64) G_MAXUINT32 * (guint64) state);
 	if(it != keyboard_shortcuts.end()) {
-		switch(it->second.type) {
-			case SHORTCUT_TYPE_FUNCTION: {
-				insertButtonFunction(CALCULATOR->getActiveFunction(it->second.value));
-				return true;
-			}
-			case SHORTCUT_TYPE_FUNCTION_WITH_DIALOG: {
-				insert_function(CALCULATOR->getActiveFunction(it->second.value), mainwindow);
-				return true;
-			}
-			case SHORTCUT_TYPE_VARIABLE: {
-				insert_var(CALCULATOR->getActiveVariable(it->second.value));
-				return true;
-			}
-			case SHORTCUT_TYPE_UNIT: {
-				Unit *u = CALCULATOR->getActiveUnit(it->second.value);
-				if(u && CALCULATOR->stillHasUnit(u)) {
-					if(u->subtype() == SUBTYPE_COMPOSITE_UNIT) {
-						string str = ((CompositeUnit*) u)->print(true, printops.abbreviate_names, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
-						if(printops.multiplication_sign == MULTIPLICATION_SIGN_DOT) gsub(saltdot, sdot, str);
-						insert_text(str.c_str());
-					} else {
-						insert_text(u->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, true, false, &can_display_unicode_string_function, (void*) expressiontext).name.c_str());
-					}
-				}
-				return true;
-			}
-			case SHORTCUT_TYPE_TEXT: {
-				insert_text(it->second.value.c_str());
-				return true;
-			}
-			case SHORTCUT_TYPE_DATE: {
-				on_menu_item_insert_date_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_VECTOR: {
-				on_menu_item_insert_vector_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_MATRIX: {
-				on_menu_item_insert_matrix_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_SMART_PARENTHESES: {
-				on_button_brace_wrap_clicked(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_CONVERT: {
-				executeCommand(COMMAND_CONVERT_STRING, true, it->second.value);
-				return true;
-			}
-			case SHORTCUT_TYPE_CONVERT_ENTRY: {
-				on_menu_item_convert_to_unit_expression_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_OPTIMAL_UNIT: {
-				executeCommand(COMMAND_CONVERT_OPTIMAL);
-				return true;
-			}
-			case SHORTCUT_TYPE_BASE_UNITS: {
-				executeCommand(COMMAND_CONVERT_BASE);
-				return true;
-			}
-			case SHORTCUT_TYPE_OPTIMAL_PREFIX: {
-				result_prefix_changed(NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_TO_NUMBER_BASE: {
-				int save_base = printops.base;
-				Number save_nbase = CALCULATOR->customOutputBase();
-				to_base = 0;
-				to_bits = 0;
-				Number nbase;
-				base_from_string(it->second.value, printops.base, nbase);
-				CALCULATOR->setCustomOutputBase(nbase);
-				result_format_updated();
-				printops.base = save_base;
-				CALCULATOR->setCustomOutputBase(save_nbase);
-				return true;
-			}
-			case SHORTCUT_TYPE_FACTORIZE: {
-				executeCommand(COMMAND_FACTORIZE);
-				return true;
-			}
-			case SHORTCUT_TYPE_EXPAND: {
-				executeCommand(COMMAND_EXPAND);
-				return true;
-			}
-			case SHORTCUT_TYPE_PARTIAL_FRACTIONS: {
-				executeCommand(COMMAND_EXPAND_PARTIAL_FRACTIONS);
-				return true;
-			}
-			case SHORTCUT_TYPE_SET_UNKNOWNS: {
-				on_menu_item_set_unknowns_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_RPN_UP: {
-				if(!rpn_mode) return false;
-				on_button_registerup_clicked(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_RPN_DOWN: {
-				if(!rpn_mode) return false;
-				on_button_registerdown_clicked(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_RPN_SWAP: {
-				if(!rpn_mode) return false;
-				on_button_registerswap_clicked(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_RPN_COPY: {
-				if(!rpn_mode) return false;
-				on_button_copyregister_clicked(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_RPN_LASTX: {
-				if(!rpn_mode) return false;
-				on_button_lastx_clicked(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_RPN_DELETE: {
-				if(!rpn_mode) return false;
-				on_button_deleteregister_clicked(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_RPN_CLEAR: {
-				if(!rpn_mode) return false;
-				on_button_clearstack_clicked(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_META_MODE: {
-				for(size_t i = 0; i < modes.size(); i++) {
-					if(equalsIgnoreCase(modes[i].name, it->second.value)) {
-						load_mode(modes[i]);
-						return true;
-					}
-				}
-				show_message(_("Mode not found."), mainwindow);
-				return true;
-			}
-			case SHORTCUT_TYPE_INPUT_BASE: {
-				Number nbase;
-				base_from_string(it->second.value, evalops.parse_options.base, nbase, true);
-				CALCULATOR->setCustomInputBase(nbase);
-				on_historyview_selection_changed(NULL, NULL);
-				update_keypad_bases();
-				expression_format_updated(true);
-				input_base_updated_from_menu();
-				return true;
-			}
-			case SHORTCUT_TYPE_OUTPUT_BASE: {
-				Number nbase; int base;
-				base_from_string(it->second.value, base, nbase);
-				CALCULATOR->setCustomOutputBase(nbase);
-				set_output_base_from_dialog(base);
-				output_base_updated_from_menu();
-				return true;
-			}
-			case SHORTCUT_TYPE_EXACT_MODE: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact")), !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_exact"))));
-				return true;
-			}
-			case SHORTCUT_TYPE_DEGREES: {
-				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_degrees")), TRUE);
-				return true;
-			}
-			case SHORTCUT_TYPE_RADIANS: {
-				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_radians")), TRUE);
-				return true;
-			}
-			case SHORTCUT_TYPE_GRADIANS: {
-				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_gradians")), TRUE);
-				return true;
-			}
-			case SHORTCUT_TYPE_FRACTIONS: {
-				if(printops.number_fraction_format >= FRACTION_FRACTIONAL) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
-				else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
-				return true;
-			}
-			case SHORTCUT_TYPE_MIXED_FRACTIONS: {
-				if(printops.number_fraction_format == FRACTION_COMBINED) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
-				else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
-				return true;
-			}
-			case SHORTCUT_TYPE_SCIENTIFIC_NOTATION: {
-				if(printops.min_exp == EXP_SCIENTIFIC) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 0);
-				else gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 2);
-				return true;
-			}
-			case SHORTCUT_TYPE_SIMPLE_NOTATION: {
-				if(printops.min_exp == EXP_NONE) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 0);
-				else gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 4);
-				return true;
-			}
-			case SHORTCUT_TYPE_RPN_MODE: {
-				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_mode")), !rpn_mode);
-				return true;
-			}
-			case SHORTCUT_TYPE_AUTOCALC: {
-				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_autocalc")), !auto_calculate);
-				return true;
-			}
-			case SHORTCUT_TYPE_PROGRAMMING: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_programmers_keypad")), ~visible_keypad & PROGRAMMING_KEYPAD);
-				if(visible_keypad & PROGRAMMING_KEYPAD) gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad")), true);
-				return true;
-			}
-			case SHORTCUT_TYPE_KEYPAD: {
-				//void on_expander_history_expanded(GObject *o, GParamSpec*, gpointer)
-				gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad")), !gtk_expander_get_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_keypad"))));
-				return true;
-			}
-			case SHORTCUT_TYPE_HISTORY: {
-				gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_history")), !gtk_expander_get_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_history"))));
-				return true;
-			}
-			case SHORTCUT_TYPE_HISTORY_SEARCH: {
-				on_popup_menu_item_history_search_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_CONVERSION: {
-				gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_convert")), !gtk_expander_get_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_convert"))));
-				return true;
-			}
-			case SHORTCUT_TYPE_STACK: {
-				gtk_expander_set_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_stack")), !gtk_expander_get_expanded(GTK_EXPANDER(gtk_builder_get_object(main_builder, "expander_stack"))));
-				return true;
-			}
-			case SHORTCUT_TYPE_MINIMAL: {
-				set_minimal_mode(!minimal_mode);
-				return true;
-			}
-			case SHORTCUT_TYPE_MANAGE_VARIABLES: {
-				on_menu_item_manage_variables_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_MANAGE_FUNCTIONS: {
-				on_menu_item_manage_functions_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_MANAGE_UNITS: {
-				on_menu_item_manage_units_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_MANAGE_DATA_SETS: {
-				on_menu_item_datasets_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_STORE: {
-				on_menu_item_save_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_NEW_VARIABLE: {
-				on_menu_item_new_variable_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_NEW_FUNCTION: {
-				on_menu_item_new_function_simple_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_PLOT: {
-				on_menu_item_plot_functions_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_NUMBER_BASES: {
-				on_menu_item_convert_number_bases_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_FLOATING_POINT: {
-				on_menu_item_convert_floatingpoint_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_CALENDARS: {
-				on_menu_item_show_calendarconversion_dialog_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_PERCENTAGE_TOOL: {
-				on_menu_item_show_percentage_dialog_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_PERIODIC_TABLE: {
-				on_menu_item_periodic_table_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_UPDATE_EXRATES: {
-				on_menu_item_fetch_exchange_rates_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_COPY_RESULT: {
-				on_menu_item_copy_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_SAVE_IMAGE: {
-				on_menu_item_save_image_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_HELP: {
-				on_menu_item_help_activate(NULL, NULL);
-				return true;
-			}
-			case SHORTCUT_TYPE_QUIT: {
-				on_menu_item_quit_activate(NULL, NULL);
-				return true;
-			}
-		}
+		return do_shortcut(it->second.type, it->second.value);
 	}
 	return false;
 }

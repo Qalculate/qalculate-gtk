@@ -134,6 +134,7 @@ enum {
 };
 
 void set_custom_buttons(void);
+void update_custom_buttons(void);
 void create_button_menus(void);
 void create_main_window (void);
 GtkWidget* get_functions_dialog (void);

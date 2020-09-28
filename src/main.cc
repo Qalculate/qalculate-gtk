@@ -33,7 +33,7 @@ using std::endl;
 MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct, *displayed_mstruct;
 extern MathStructure mbak_convert;
 string *parsed_to_str;
-KnownVariable *vans[5];
+KnownVariable *vans[5], *v_memory;
 GtkWidget *functions_window;
 string selected_function_category;
 MathFunction *selected_function;
@@ -224,6 +224,8 @@ void create_application(GtkApplication *app) {
 	vans[2] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str + "3", m_undefined, _("Answer 3"), false));
 	vans[3] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str + "4", m_undefined, _("Answer 4"), false));
 	vans[4] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str + "5", m_undefined, _("Answer 5"), false));
+	v_memory = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), "MR", m_zero, _("Memory")));
+	v_memory->addName("MRC");
 
 	//load global definitions
 	if(load_global_defs && !CALCULATOR->loadGlobalDefinitions()) {
@@ -287,6 +289,7 @@ void create_application(GtkApplication *app) {
 
 	block_completion();
 	set_custom_buttons();
+	update_custom_buttons();
 	g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 50, create_menus_etc, NULL, NULL);
 
 	if(check_version) {
