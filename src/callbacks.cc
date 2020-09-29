@@ -85,7 +85,7 @@ extern gint expression_position;
 
 extern GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *setbase_builder, *datasetedit_builder, *datasets_builder, *decimals_builder;
 extern GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
-extern GtkBuilder *shortcuts_builder, *preferences_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder;
+extern GtkBuilder *shortcuts_builder, *preferences_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder, *buttonsedit_builder;
 extern GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_builder, *calendarconversion_builder, *floatingpoint_builder;
 
 extern GtkWidget *mainwindow;
@@ -143,6 +143,8 @@ extern GtkWidget *tNames;
 extern GtkListStore *tNames_store;
 extern GtkWidget *tShortcuts, *tShortcutsType;
 extern GtkListStore *tShortcuts_store, *tShortcutsType_store;
+extern GtkWidget *tButtonsEditType;
+extern GtkListStore *tButtonsEditType_store;
 extern GtkAccelGroup *accel_group;
 extern string selected_function_category;
 extern MathFunction *selected_function;
@@ -1567,7 +1569,7 @@ void set_unicode_buttons() {
 	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_log2")), (string("log") + SUB_STRING("2")).c_str());
 	pango_font_description_free(font_desc);
 
-	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_comma")), CALCULATOR->getComma().c_str());
+	if(custom_buttons[4].text.empty()) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_comma")), CALCULATOR->getComma().c_str());
 	if(can_display_unicode_string_function(SIGN_SQRT, (void*) gtk_builder_get_object(main_builder, "label_history_sqrt"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sqrt")), SIGN_SQRT);
 	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sqrt")), "sqrt");
 	if(can_display_unicode_string_function(SIGN_SQRT, (void*) gtk_builder_get_object(main_builder, "label_rpn_sqrt"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), SIGN_SQRT);
@@ -5543,7 +5545,7 @@ string shortcut_to_text(guint key, guint state) {
 	}
 	return str;
 }
-const gchar *shortcut_type_text(int type) {
+const gchar *shortcut_type_text(int type, bool return_null) {
 	switch(type) {
 		case SHORTCUT_TYPE_FUNCTION: {return _("Insert function"); break;}
 		case SHORTCUT_TYPE_FUNCTION_WITH_DIALOG: {return _("Insert function (dialog)"); break;}
@@ -5615,6 +5617,7 @@ const gchar *shortcut_type_text(int type) {
 		case SHORTCUT_TYPE_HELP: {return _("Help"); break;}
 		case SHORTCUT_TYPE_QUIT: {return _("Quit"); break;}
 	}
+	if(return_null) return NULL;
 	return "";
 }
 void update_accels() {
@@ -17617,18 +17620,25 @@ void load_preferences() {
 					default_plot_linewidth = v;
 				} else if(svar == "max_plot_time") {
 					max_plot_time = v;
+				} else if(svar == "custom_button_label") {
+					unsigned int index = 0;
+					unsigned int bi = 0;
+					char str[svalue.length()];
+					int n = sscanf(svalue.c_str(), "%u:%u:%s", &bi, &index, str);
+					if(n >= 3 && index < custom_buttons.size()) {
+						custom_buttons[index].text = str;
+					}
 				} else if(svar == "custom_button") {
 					unsigned int index = 0;
 					unsigned int bi = 0;
-					char text[4];
 					char str[svalue.length()];
 					int type = -1;
-					int n = sscanf(svalue.c_str(), "%u:%u:%3s:%i:%s", &bi, &index, text, &type, str);
+					int n = sscanf(svalue.c_str(), "%u:%u:%i:%s", &bi, &index, &type, str);
 					if(n >= 3 && index < custom_buttons.size()) {
-						custom_buttons[index].text = text;
 						if(bi <= 2) {
-							if(n >= 4) custom_buttons[index].type[bi] = type;
-							if(n >= 5) custom_buttons[index].value[bi] = str;
+							custom_buttons[index].type[bi] = type;
+							if(n >= 4) custom_buttons[index].value[bi] = str;
+							else custom_buttons[index].value[bi] = "";
 						}
 					}
 				} else if(svar == "keyboard_shortcut") {
@@ -18001,15 +18011,13 @@ void save_preferences(bool mode) {
 	if(!scientific_notminuslast) fprintf(file, "scientific_mode_sort_minus_last=%i\n", true);
 	if(!scientific_negexp) fprintf(file, "scientific_mode_negative_exponents=%i\n", false);
 	for(unsigned int i = 0; i < custom_buttons.size(); i++) {
-		bool b_text = false;
+		if(!custom_buttons[i].text.empty()) fprintf(file, "custom_button_label=%u:%u:%s\n", 1, i, custom_buttons[i].text.c_str());
 		for(unsigned int bi = 0; bi <= 2; bi++) {
 			if(custom_buttons[i].type[bi] >= 0) {
-				if(custom_buttons[i].value[bi].empty()) fprintf(file, "keyboard_shortcut=%u:%u:%s:%i\n", bi, i, b_text ? "" : custom_buttons[i].text.c_str(), custom_buttons[i].type[bi]);
-				else fprintf(file, "custom_button=%u:%u:%s:%i:%s\n", bi, i, b_text ? "" : custom_buttons[i].text.c_str(), custom_buttons[i].type[bi], custom_buttons[i].value[bi].c_str());
-				b_text = true;
+				if(custom_buttons[i].value[bi].empty()) fprintf(file, "custom_button=%u:%u:%i\n", bi, i, custom_buttons[i].type[bi]);
+				else fprintf(file, "custom_button=%u:%u:%i:%s\n", bi, i, custom_buttons[i].type[bi], custom_buttons[i].value[bi].c_str());
 			}
 		}
-		if(!b_text && !custom_buttons[i].text.empty()) fprintf(file, "keyboard_shortcut=%u:%u:%s\n", 1, i, custom_buttons[i].text.c_str());
 	}
 	if(!default_shortcuts) {
 		for(unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.begin(); it != keyboard_shortcuts.end(); ++it) {
@@ -21195,9 +21203,7 @@ gboolean reenable_tooltip(GtkWidget *w, gpointer) {
 }
 
 void memory_recall() {
-	clear_expression_text();
 	insert_var(v_memory);
-	execute_expression();
 }
 void memory_store() {
 	if(expression_has_changed && !rpn_mode && !auto_calculate) execute_expression(true);
@@ -21252,9 +21258,10 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 		}
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_comma"))) {
-		if(b2 && custom_buttons[4].type[2] >= 0) {
+		if(b2 && custom_buttons[4].type[2] != -1) {
 			do_shortcut(custom_buttons[4].type[2], custom_buttons[4].value[2]);
-		} else if(custom_buttons[4].type[1] >= 0) {
+		} else if(!b2 && custom_buttons[4].type[1] != -1) {
+			if(custom_buttons[4].type[1] < 0) return FALSE;
 			do_shortcut(custom_buttons[4].type[1], custom_buttons[4].value[1]);
 		} else {
 			if(b2) insert_text("\n");
@@ -21275,9 +21282,11 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 		insert_text("]");
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_wrap"))) {
-		if(b2 && custom_buttons[5].type[2] >= 0) {
+		if(b2 && custom_buttons[5].type[2] != -1) {
+			if(custom_buttons[5].type[2] < 0) return FALSE;
 			do_shortcut(custom_buttons[5].type[2], custom_buttons[5].value[2]);
-		} else if(custom_buttons[5].type[1] >= 0) {
+		} else if(!b2 && custom_buttons[5].type[1] != -1) {
+			if(custom_buttons[5].type[1] < 0) return FALSE;
 			do_shortcut(custom_buttons[5].type[1], custom_buttons[5].value[1]);
 		} else if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
 			GtkTextIter istart, iend;
@@ -21344,22 +21353,24 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 		if(b2 && custom_buttons[0].type[2] >= 0) {
 			do_shortcut(custom_buttons[0].type[2], custom_buttons[0].value[2]);
 			return TRUE;
-		} else if(custom_buttons[0].type[1] >= 0) {
+		} else if(!b2 && custom_buttons[0].type[1] >= 0) {
 			do_shortcut(custom_buttons[0].type[1], custom_buttons[0].value[1]);
 			return TRUE;
 		}
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move2"))) {
-		if(b2 && custom_buttons[0].type[2] >= 0) {
+		if(b2 && custom_buttons[1].type[2] >= 0) {
 			do_shortcut(custom_buttons[1].type[2], custom_buttons[1].value[2]);
 			return TRUE;
-		} else if(custom_buttons[0].type[1] >= 0) {
+		} else if(!b2 && custom_buttons[1].type[1] >= 0) {
 			do_shortcut(custom_buttons[1].type[1], custom_buttons[1].value[1]);
 			return TRUE;
 		}
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_percent"))) {
-		if(b2 && custom_buttons[2].type[2] >= 0) {
+		if(b2 && custom_buttons[2].type[2] != -1) {
+			if(custom_buttons[2].type[2] < 0) return FALSE;
 			do_shortcut(custom_buttons[2].type[2], custom_buttons[2].value[2]);
-		} else if(custom_buttons[2].type[1] >= 0) {
+		} else if(!b2 && custom_buttons[2].type[1] != -1) {
+			if(custom_buttons[2].type[1] < 0) return FALSE;
 			do_shortcut(custom_buttons[2].type[1], custom_buttons[2].value[1]);
 		} else {
 			insert_var(CALCULATOR->v_permille);
@@ -21367,8 +21378,10 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_plusminus"))) {
 		if(b2 && custom_buttons[3].type[2] >= 0) {
+			if(custom_buttons[3].type[2] < 0) return FALSE;
 			do_shortcut(custom_buttons[3].type[2], custom_buttons[3].value[2]);
-		} else if(custom_buttons[3].type[1] >= 0) {
+		} else if(!b2 && custom_buttons[3].type[1] != -1) {
+			if(custom_buttons[3].type[1] < 0) return FALSE;
 			do_shortcut(custom_buttons[3].type[1], custom_buttons[3].value[1]);
 		} else {
 			if(b2) insertButtonFunction(CALCULATOR->f_interval);
@@ -21518,7 +21531,7 @@ gboolean keypad_long_press_timeout(gpointer data) {
 #else
 		gtk_menu_popup(GTK_MENU(data), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
 #endif
-	} else if(button_press_timeout_w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move2")) && custom_buttons[1].type[0] < 0 && custom_buttons[1].type[1] < 0 && custom_buttons[1].type[2] < 0) {
+	} else if(button_press_timeout_w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move2")) && button_press_timeout_side) {
 		hide_tooltip(button_press_timeout_w);
 		GtkTextIter iter;
 		gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iter, gtk_text_buffer_get_insert(expressionbuffer));
@@ -21532,7 +21545,7 @@ gboolean keypad_long_press_timeout(gpointer data) {
 		gtk_text_buffer_place_cursor(expressionbuffer, &iter);
 		button_press_timeout_done = true;
 		return TRUE;
-	} else if(button_press_timeout_w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move")) && custom_buttons[0].type[0] < 0 && custom_buttons[0].type[1] < 0 && custom_buttons[0].type[2] < 0) {
+	} else if(button_press_timeout_w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move")) && button_press_timeout_side) {
 		hide_tooltip(button_press_timeout_w);
 		if(button_press_timeout_side == 2) {
 			if(expression_history_index > -1) {
@@ -21634,7 +21647,8 @@ gboolean on_button_del_button_event(GtkWidget *w, GdkEventButton *event, gpointe
 	return FALSE;
 }
 gboolean on_button_move2_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
-	if(custom_buttons[1].type[0] >= 0 || custom_buttons[1].type[1] >= 0 || custom_buttons[1].type[2] >= 0) return on_keypad_button_button_event(w, event, NULL);
+	if((event->button == 1 && custom_buttons[1].type[0] != -1) || (event->button == 3 && custom_buttons[1].type[1] != -1) || (event->button == 2 && custom_buttons[1].type[2] != -1)) return on_keypad_button_button_event(w, event, NULL);
+	hide_tooltip(w);
 	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
 		g_source_remove(button_press_timeout_id);
 		bool b_this = (button_press_timeout_w == w);
@@ -21679,7 +21693,7 @@ gboolean on_button_move2_button_event(GtkWidget *w, GdkEventButton *event, gpoin
 	return FALSE;
 }
 gboolean on_button_move_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
-	if(custom_buttons[0].type[0] >= 0 || custom_buttons[0].type[1] >= 0 || custom_buttons[0].type[2] >= 0) return on_keypad_button_button_event(w, event, NULL);
+	if((event->button == 1 && custom_buttons[0].type[0] != -1) || (event->button == 3 && custom_buttons[0].type[1] != -1) || (event->button == 2 && custom_buttons[0].type[2] != -1)) return on_keypad_button_button_event(w, event, NULL);
 	hide_tooltip(w);
 	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
 		g_source_remove(button_press_timeout_id);
@@ -21826,7 +21840,7 @@ void on_button_brace_close_clicked(GtkButton*, gpointer) {
 	insert_text(")");
 }
 void on_button_brace_wrap_clicked(GtkButton*, gpointer) {
-	if(custom_buttons[5].type[0] >= 0) {
+	if(custom_buttons[5].type[0] != -1) {
 		do_shortcut(custom_buttons[5].type[0], custom_buttons[5].value[0]);
 		return;
 	}
@@ -21916,16 +21930,16 @@ void on_button_i_clicked(GtkButton*, gpointer) {
 	insert_var(CALCULATOR->v_i);
 }
 void on_button_move_clicked(GtkButton*, gpointer) {
-	if(custom_buttons[0].type[0] >= 0) {
+	if(custom_buttons[0].type[0] != -1) {
 		do_shortcut(custom_buttons[0].type[0], custom_buttons[0].value[0]);
 	}
 }void on_button_move2_clicked(GtkButton*, gpointer) {
-	if(custom_buttons[1].type[0] >= 0) {
+	if(custom_buttons[1].type[0] != -1) {
 		do_shortcut(custom_buttons[1].type[0], custom_buttons[1].value[0]);
 	}
 }
 void on_button_percent_clicked(GtkButton*, gpointer) {
-	if(custom_buttons[2].type[0] >= 0) {
+	if(custom_buttons[2].type[0] != -1) {
 		do_shortcut(custom_buttons[2].type[0], custom_buttons[2].value[0]);
 	} else {
 		insert_text("%");
@@ -21974,7 +21988,7 @@ void on_button_fac_clicked(GtkButton*, gpointer) {
 	if(do_exec) execute_expression();
 }
 void on_button_comma_clicked(GtkButton*, gpointer) {
-	if(custom_buttons[4].type[0] >= 0) {
+	if(custom_buttons[4].type[0] != -1) {
 		do_shortcut(custom_buttons[4].type[0], custom_buttons[4].value[0]);
 	} else {
 		insert_text(CALCULATOR->getComma().c_str());
@@ -21993,8 +22007,8 @@ void on_button_xequals_clicked(GtkButton*, gpointer) {
 	insert_text("=");
 }
 void on_button_plusminus_clicked(GtkButton*, gpointer) {
-	if(custom_buttons[3].type[0] >= 0) {
-			do_shortcut(custom_buttons[3].type[0], custom_buttons[3].value[0]);
+	if(custom_buttons[3].type[0] != -1) {
+		do_shortcut(custom_buttons[3].type[0], custom_buttons[3].value[0]);
 	} else {
 		wrap_expression_selection();
 		insert_text("±");
@@ -24571,13 +24585,13 @@ void update_mb_sto_menu() {
 			b = true;
 		}
 	}
-	if(!b) {MENU_NO_ITEMS(_("No items found"))}
-	/*if(b) {MENU_SEPARATOR}
-	MENU_ITEM(_("MC (Memory Clear)"), memory_clear);
-	MENU_ITEM(_("MR (Memory Recall)"), memory_recall);
-	MENU_ITEM(_("MS (Memory Store)"), memory_store);
-	MENU_ITEM(_("M+ (Memory Plus)"), memory_add);
-	MENU_ITEM(_("M− (Memory Minus)"), memory_subtract);*/
+	//if(!b) {MENU_NO_ITEMS(_("No items found"))}
+	if(b) {MENU_SEPARATOR}
+	MENU_ITEM(_("MC (memory clear)"), memory_clear);
+	MENU_ITEM(_("MR (memory recall)"), memory_recall);
+	MENU_ITEM(_("MS (memory store)"), memory_store);
+	MENU_ITEM(_("M+ (memory plus)"), memory_add);
+	MENU_ITEM(_("M− (memory minus)"), memory_subtract);
 }
 
 void on_menu_item_status_exact_activate(GtkMenuItem *w, gpointer) {
@@ -30461,6 +30475,19 @@ void on_names_edit_entry_name_changed(GtkEditable *editable, gpointer) {
 	if(etype >= 0) correct_name_entry(editable, (ExpressionItemType) etype, (gpointer) on_names_edit_entry_name_changed);
 }
 
+void on_menu_item_customize_buttons_activate(GtkMenuItem*, gpointer) {
+	bool set_sr = !buttonsedit_builder;
+	GtkWidget *dialog = get_buttons_edit_dialog();
+	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
+	gtk_widget_show(dialog);
+	if(set_sr) {
+		gint w;
+		gtk_window_get_size(GTK_WINDOW(dialog), &w, NULL);
+		gtk_widget_set_size_request(dialog, w, -1);
+	}
+	gtk_window_present(GTK_WINDOW(dialog));
+}
+
 void on_menu_item_edit_shortcuts_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = get_shortcuts_dialog();
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
@@ -30515,6 +30542,37 @@ void on_tShortcutsType_selection_changed(GtkTreeSelection *treeselection, gpoint
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_ok")), TRUE);
 	} else {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_ok")), FALSE);
+	}
+}
+void on_tButtonsEditType_selection_changed(GtkTreeSelection *treeselection, gpointer) {
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	if(gtk_tree_selection_get_selected(treeselection, &model, &iter)) {
+		int type = 0;
+		gtk_tree_model_get(model, &iter, 1, &type, -1);
+		switch(type) {
+			case SHORTCUT_TYPE_FUNCTION: {}
+			case SHORTCUT_TYPE_FUNCTION_WITH_DIALOG: {}
+			case SHORTCUT_TYPE_VARIABLE: {}
+			case SHORTCUT_TYPE_UNIT: {}
+			case SHORTCUT_TYPE_TEXT: {}
+			case SHORTCUT_TYPE_CONVERT: {}
+			case SHORTCUT_TYPE_TO_NUMBER_BASE: {}
+			case SHORTCUT_TYPE_META_MODE: {}
+			case SHORTCUT_TYPE_INPUT_BASE: {}
+			case SHORTCUT_TYPE_OUTPUT_BASE: {
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")), TRUE);
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_label_value")), TRUE);
+				break;
+			}
+			default: {
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")), FALSE);
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_label_value")), FALSE);
+			}
+		}
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_button_ok")), TRUE);
+	} else {
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_button_ok")), FALSE);
 	}
 }
 
@@ -30579,11 +30637,17 @@ bool get_keyboard_shortcut(GtkWindow *parent) {
 	gtk_widget_destroy(dialog);
 	return false;
 }
-void on_shortcuts_entry_value_activate(GtkEntry*, gpointer) {
+void on_shortcuts_entry_value_activate(GtkEntry*, gpointer d) {
 	gtk_dialog_response(GTK_DIALOG(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog")), GTK_RESPONSE_ACCEPT);
+}
+void on_buttonsedit_entry_value_activate(GtkEntry*, gpointer d) {
+	gtk_dialog_response(GTK_DIALOG(gtk_builder_get_object(buttonsedit_builder, "shortcuts_type_dialog")), GTK_RESPONSE_ACCEPT);
 }
 void on_shortcuts_type_treeview_row_activated(GtkTreeView*, GtkTreePath*, GtkTreeViewColumn*, gpointer) {
 	if(!gtk_widget_get_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")))) gtk_dialog_response(GTK_DIALOG(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog")), GTK_RESPONSE_ACCEPT);
+}
+void on_buttonsedit_type_treeview_row_activated(GtkTreeView*, GtkTreePath*, GtkTreeViewColumn*, gpointer) {
+	if(!gtk_widget_get_sensitive(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")))) gtk_dialog_response(GTK_DIALOG(gtk_builder_get_object(buttonsedit_builder, "shortcuts_type_dialog")), GTK_RESPONSE_ACCEPT);
 }
 void on_shortcuts_button_new_clicked(GtkButton*, gpointer) {
 	GtkWidget *d = GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog"));
@@ -30866,6 +30930,126 @@ void on_shortcuts_treeview_row_activated(GtkTreeView *w, GtkTreePath *path, GtkT
 		gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_type_text(ks.type), 1, ks.value.c_str(), -1);
 	}
 	gtk_widget_hide(d);
+}
+
+void on_buttonsedit_button_clicked(GtkButton*, gpointer user_data) {
+	int i = GPOINTER_TO_INT(user_data);
+	int b_i = i % 10;
+	i /= 10;
+	GtkWidget *d = GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_type_dialog"));
+	GtkTreeIter iter2;
+	GtkTreeModel *model;
+	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEditType));
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")), custom_buttons[i].value[b_i].c_str());
+	if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tButtonsEditType_store), &iter2)) {
+		do {
+			int type = 0;
+			gtk_tree_model_get(GTK_TREE_MODEL(tButtonsEditType_store), &iter2, 1, &type, -1);
+			if(type == custom_buttons[i].type[b_i]) {
+				gtk_tree_selection_select_iter(select, &iter2);
+				GtkTreePath *path = gtk_tree_model_get_path(gtk_tree_view_get_model(GTK_TREE_VIEW(tButtonsEditType)), &iter2);
+				gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(tButtonsEditType), path, NULL, TRUE, 0.5, 0);
+				gtk_tree_path_free(path);
+				break;
+			}
+		} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tButtonsEditType_store), &iter2));
+	}
+	gtk_widget_grab_focus(tButtonsEditType);
+	run_shortcuts_dialog:
+	if(gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
+		int type = 0;
+		string value;
+		if(gtk_tree_selection_get_selected(select, &model, &iter2)) gtk_tree_model_get(GTK_TREE_MODEL(tButtonsEditType_store), &iter2, 1, &type, -1);
+		else goto run_shortcuts_dialog;
+		if(gtk_widget_is_sensitive(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")))) {
+			value = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")));
+			remove_blank_ends(value);
+			if(value.empty()) {
+				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")));
+				show_message(_("Empty value."), d);
+				goto run_shortcuts_dialog;
+			}
+			switch(type) {
+				case SHORTCUT_TYPE_FUNCTION: {}
+				case SHORTCUT_TYPE_FUNCTION_WITH_DIALOG: {
+					remove_blanks(value);
+					if(value.length() > 2 && value.substr(value.length() - 2, 2) == "()") value = value.substr(0, value.length() - 2);
+					if(!CALCULATOR->getActiveFunction(value)) {
+						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")));
+						show_message(_("Function not found."), GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_dialog")));
+						goto run_shortcuts_dialog;
+					}
+					break;
+				}
+				case SHORTCUT_TYPE_VARIABLE: {
+					if(!CALCULATOR->getActiveVariable(value)) {
+						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")));
+						show_message(_("Variable not found."), GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_dialog")));
+						goto run_shortcuts_dialog;
+					}
+					break;
+				}
+				case SHORTCUT_TYPE_UNIT: {
+					if(!CALCULATOR->getActiveUnit(value)) {
+						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")));
+						show_message(_("Unit not found."), GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_dialog")));
+						goto run_shortcuts_dialog;
+					}
+					break;
+				}
+				case SHORTCUT_TYPE_META_MODE: {
+					bool b = false;
+					for(size_t i = 0; i < modes.size(); i++) {
+						if(equalsIgnoreCase(modes[i].name, value)) {
+							b = true;
+							break;
+						}
+					}
+					if(!b) {
+						show_message(_("Mode not found."), mainwindow);
+						goto run_shortcuts_dialog;
+					}
+					break;
+				}
+				case SHORTCUT_TYPE_TO_NUMBER_BASE: {}
+				case SHORTCUT_TYPE_INPUT_BASE: {}
+				case SHORTCUT_TYPE_OUTPUT_BASE: {
+					Number nbase; int base;
+					base_from_string(value, base, nbase, type == SHORTCUT_TYPE_INPUT_BASE);
+					if(base == BASE_CUSTOM && nbase.isZero()) {
+						show_message(_("Unsupported base."), GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_dialog")));
+						goto run_shortcuts_dialog;
+					}
+					break;
+				}
+			}
+		} else {
+			value = "";
+		}
+		custom_buttons[i].type[b_i] = type;
+		custom_buttons[i].value[b_i] = value;
+		update_custom_buttons(i);
+		update_custom_buttons_edit(i);
+	}
+	gtk_widget_hide(d);
+}
+void on_buttonsedit_defaults_clicked(GtkButton *w, gpointer user_data) {
+	int i = GPOINTER_TO_INT(user_data);
+	custom_buttons[i].type[0] = -1;
+	custom_buttons[i].value[0] = "";
+	custom_buttons[i].type[1] = -1;
+	custom_buttons[i].value[1] = "";
+	custom_buttons[i].type[2] = -1;
+	custom_buttons[i].value[2] = "";
+	custom_buttons[i].text = "";
+	update_custom_buttons(i);
+	update_custom_buttons_edit(i);
+}
+void on_buttonsedit_label_changed(GtkEditable *w, gpointer user_data) {
+	int i = GPOINTER_TO_INT(user_data);
+	gtk_entry_get_text(GTK_ENTRY(w));
+	custom_buttons[i].text = gtk_entry_get_text(GTK_ENTRY(w));
+	update_custom_buttons(i);
 }
 
 bool generate_plot(PlotParameters &pp, vector<MathStructure> &y_vectors, vector<MathStructure> &x_vectors, vector<PlotDataParameters*> &pdps) {

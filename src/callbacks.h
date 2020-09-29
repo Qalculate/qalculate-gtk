@@ -153,7 +153,7 @@ struct custom_button {
 };
 
 std::string shortcut_to_text(guint key, guint state);
-const gchar *shortcut_type_text(int type);
+const gchar *shortcut_type_text(int type, bool return_null = false);
 void update_accels();
 
 DECLARE_BUILTIN_FUNCTION(AnswerFunction, 0)
@@ -343,6 +343,11 @@ void hide_tooltip(GtkWidget*);
 
 void on_tShortcuts_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 void on_tShortcutsType_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
+
+void on_tButtonsEditType_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
+void on_buttonsedit_button_clicked(GtkButton *w, gpointer user_data);
+void on_buttonsedit_defaults_clicked(GtkButton *w, gpointer user_data);
+void on_buttonsedit_label_changed(GtkEditable *w, gpointer user_data);
 
 void insert_left_shift();
 void insert_right_shift();

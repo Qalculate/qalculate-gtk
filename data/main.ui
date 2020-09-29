@@ -1106,6 +1106,15 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkMenuItem" id="menu_item_customize_buttons">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Customize Keypad Buttons</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menu_item_customize_buttons_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkMenuItem" id="menu_item_edit_prefs">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
