@@ -2631,42 +2631,59 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                     <property name="can_focus">False</property>
                     <property name="hexpand">True</property>
                     <child>
-                      <object class="GtkScrolledWindow" id="scrolled_result">
-                        <property name="height_request">1</property>
+                      <object class="GtkSpinner" id="resultspinner">
+                        <property name="width_request">100</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkOverlay" id="resultoverlay">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="events">GDK_BUTTON_PRESS_MASK | GDK_STRUCTURE_MASK</property>
-                        <property name="margin_top">4</property>
-                        <property name="margin_bottom">2</property>
+                        <property name="can_focus">False</property>
                         <property name="hexpand">True</property>
-                        <signal name="button-press-event" handler="on_resultview_button_press_event" swapped="no"/>
-                        <signal name="popup-menu" handler="on_resultview_popup_menu" swapped="no"/>
                         <child>
-                          <object class="GtkViewport" id="resultport">
+                          <object class="GtkScrolledWindow" id="scrolled_result">
+                            <property name="height_request">1</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can_focus">True</property>
+                            <property name="events">GDK_BUTTON_PRESS_MASK | GDK_STRUCTURE_MASK</property>
+                            <property name="margin_top">4</property>
+                            <property name="margin_bottom">2</property>
                             <property name="hexpand">True</property>
-                            <property name="shadow_type">none</property>
                             <signal name="button-press-event" handler="on_resultview_button_press_event" swapped="no"/>
                             <signal name="popup-menu" handler="on_resultview_popup_menu" swapped="no"/>
                             <child>
-                              <object class="GtkEventBox" id="resulteventbox">
+                              <object class="GtkViewport" id="resultport">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="hexpand">True</property>
+                                <property name="shadow_type">none</property>
                                 <signal name="button-press-event" handler="on_resultview_button_press_event" swapped="no"/>
                                 <signal name="popup-menu" handler="on_resultview_popup_menu" swapped="no"/>
                                 <child>
-                                  <object class="GtkDrawingArea" id="resultview">
+                                  <object class="GtkEventBox" id="resulteventbox">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="hexpand">True</property>
                                     <signal name="button-press-event" handler="on_resultview_button_press_event" swapped="no"/>
-                                    <signal name="draw" handler="on_resultview_draw" swapped="no"/>
                                     <signal name="popup-menu" handler="on_resultview_popup_menu" swapped="no"/>
-                                    <child internal-child="accessible">
-                                      <object class="AtkObject" id="resultview-atkobject">
-                                        <property name="AtkObject::accessible-name" translatable="yes">Calculation result</property>
+                                    <child>
+                                      <object class="GtkDrawingArea" id="resultview">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="hexpand">True</property>
+                                        <signal name="button-press-event" handler="on_resultview_button_press_event" swapped="no"/>
+                                        <signal name="draw" handler="on_resultview_draw" swapped="no"/>
+                                        <signal name="popup-menu" handler="on_resultview_popup_menu" swapped="no"/>
+                                        <child internal-child="accessible">
+                                          <object class="AtkObject" id="resultview-atkobject">
+                                            <property name="AtkObject::accessible-name" translatable="yes">Calculation result</property>
+                                          </object>
+                                        </child>
                                       </object>
                                     </child>
                                   </object>
@@ -2674,20 +2691,47 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                               </object>
                             </child>
                           </object>
+                          <packing>
+                            <property name="index">-1</property>
+                          </packing>
+                        </child>
+                        <child type="overlay">
+                          <object class="GtkRevealer" id="overlayrevealer">
+                            <property name="can_focus">False</property>
+                            <property name="halign">center</property>
+                            <property name="valign">center</property>
+                            <property name="transition_type">crossfade</property>
+                            <property name="transition_duration">500</property>
+                            <child>
+                              <object class="GtkBox" id="overlaybox">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="orientation">vertical</property>
+                                <child>
+                                  <object class="GtkLabel" id="overlaylabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <style>
+                                  <class name="app-notification"/>
+                                </style>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="pass_through">True</property>
+                            <property name="index">1</property>
+                          </packing>
                         </child>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
-                        <property name="top_attach">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSpinner" id="resultspinner">
-                        <property name="width_request">100</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
                         <property name="top_attach">0</property>
                       </packing>
                     </child>
@@ -3830,7 +3874,6 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="halign">end</property>
-                            <property name="margin_right">12</property>
                             <property name="label" translatable="yes">Unit expression</property>
                           </object>
                           <packing>
@@ -4268,7 +4311,6 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                 <property name="use_underline">True</property>
                                 <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
                                 <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
-                                <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                 <signal name="clicked" handler="on_button_execute_clicked" swapped="no"/>
                                 <child>
                                   <object class="GtkLabel" id="label_equals">
@@ -4317,7 +4359,6 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                 <property name="use_underline">True</property>
                                 <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
                                 <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
-                                <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                 <signal name="clicked" handler="on_button_ac_clicked" swapped="no"/>
                                 <child>
                                   <object class="GtkLabel" id="label_ac">
@@ -4425,7 +4466,6 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                 <property name="use_underline">True</property>
                                 <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
                                 <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
-                                <signal name="clicked" handler="hide_tooltip" swapped="no"/>
                                 <signal name="clicked" handler="on_button_ans_clicked" swapped="no"/>
                                 <child>
                                   <object class="GtkLabel" id="label_ans">

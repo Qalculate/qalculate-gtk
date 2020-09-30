@@ -674,7 +674,7 @@ void update_custom_buttons(int index) {
 	}
 	if(index == 5 || index < 0) {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_brace_wrap")), custom_buttons[5].text.empty() ? "(x)" : custom_buttons[5].text.c_str());
-		set_keypad_tooltip("button_brace_wrap", custom_buttons[5].type[0] == -1 ? _("Smart parentheses") : (custom_buttons[5].value[0].empty() ? shortcut_type_text(custom_buttons[5].type[0], true) : custom_buttons[5].value[0].c_str()), custom_buttons[5].type[1] == -1 ? _("Vector brackets") : (custom_buttons[5].value[1].empty() ? shortcut_type_text(custom_buttons[5].type[1], true) : custom_buttons[5].value[1].c_str()), custom_buttons[5].type[2] == -1 ? (custom_buttons[5].type[1] != -1 ? NULL : _("Vector brackets")) : (custom_buttons[5].value[2].empty() ? shortcut_type_text(custom_buttons[5].type[2], true) : custom_buttons[5].value[2].c_str()));
+		set_keypad_tooltip("button_brace_wrap", custom_buttons[5].type[0] == -1 ? _("Smart parentheses") : (custom_buttons[5].value[0].empty() ? shortcut_type_text(custom_buttons[5].type[0], true) : custom_buttons[5].value[0].c_str()), custom_buttons[5].type[1] == -1 ? _("Vector brackets") : (custom_buttons[5].value[1].empty() ? shortcut_type_text(custom_buttons[5].type[1], true) : custom_buttons[5].value[1].c_str()), custom_buttons[5].type[2] == -1 ? (custom_buttons[5].type[1] != -1 ? _("Vector brackets") : NULL) : (custom_buttons[5].value[2].empty() ? shortcut_type_text(custom_buttons[5].type[2], true) : custom_buttons[5].value[2].c_str()));
 	}
 }
 
@@ -1023,10 +1023,10 @@ void create_button_menus() {
 	set_keypad_tooltip("button_brace_close", _("Right parenthesis"), _("Right vector bracket"));
 	set_keypad_tooltip("button_brace_open", _("Left parenthesis"), _("Left vector bracket"));
 
-	set_keypad_tooltip("button_ac", _("Clear"), _("MC (memory clear)"), NULL, false, false);
+	set_keypad_tooltip("button_ac", _("Clear"), _("MC (memory clear)"), NULL);
 	set_keypad_tooltip("button_del", _("Delete"), _("Backspace"), _("M− (memory minus)"), false, false);
-	set_keypad_tooltip("button_ans", _("Previous result"), _("Previous result (static)"), NULL, false, false);
-	set_keypad_tooltip("button_equals", _("Calculate expression"), _("MR (memory recall)"), _("MS (memory store)"), false, false);
+	set_keypad_tooltip("button_ans", _("Previous result"), _("Previous result (static)"), NULL);
+	set_keypad_tooltip("button_equals", _("Calculate expression"), _("MR (memory recall)"), _("MS (memory store)"));
 
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_cmp"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_bitcmp);
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_int"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_int);
@@ -1223,9 +1223,11 @@ void create_main_window(void) {
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
 	gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
 	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
+	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_label_unit")), 12);
 #else
 	gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
 	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
+	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_label_unit")), 12);
 #endif
 
 	if(visible_keypad & PROGRAMMING_KEYPAD) {
@@ -1431,6 +1433,9 @@ void create_main_window(void) {
 	g_object_get(gtk_settings_get_default(), "gtk-theme-name", &theme_name, NULL);
 	string themestr;
 	if(theme_name) themestr = theme_name;
+
+	GtkCssProvider *notification_style = gtk_css_provider_new(); gtk_css_provider_load_from_data(notification_style, "* {border-radius: 5px}", -1, NULL);
+	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "overlaybox"))), GTK_STYLE_PROVIDER(notification_style), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
 	if(themestr.substr(0, 7) == "Adwaita" || themestr.substr(0, 6) == "ooxmox" || themestr == "Breeze" || themestr == "Breeze-Dark" || themestr == "Yaru") {
 
@@ -3396,13 +3401,13 @@ GtkWidget* get_buttons_edit_dialog(void) {
 		GtkWidget *boxl = GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_boxl"));
 		GtkWidget *boxr = GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_boxr"));
 
-		GtkWidget *w = gtk_label_new("Label"); gtk_widget_set_halign(w, GTK_ALIGN_START);
+		GtkWidget *w = gtk_label_new(_("Label")); gtk_widget_set_halign(w, GTK_ALIGN_CENTER);
 		gtk_container_add(GTK_CONTAINER(boxl), w);
-		w = gtk_label_new("Left Button"); gtk_widget_set_halign(w, GTK_ALIGN_START);
+		w = gtk_label_new(_("Left-click")); gtk_widget_set_halign(w, GTK_ALIGN_CENTER);
 		gtk_grid_attach(GTK_GRID(ptable), w, 0, 0, 1, 1);
-		w = gtk_label_new("Right Button"); gtk_widget_set_halign(w, GTK_ALIGN_START);
+		w = gtk_label_new(_("Right-click")); gtk_widget_set_halign(w, GTK_ALIGN_CENTER);
 		gtk_grid_attach(GTK_GRID(ptable), w, 1, 0, 1, 1);
-		w = gtk_label_new("Middle Button"); gtk_widget_set_halign(w, GTK_ALIGN_START);
+		w = gtk_label_new(_("Middle-click")); gtk_widget_set_halign(w, GTK_ALIGN_CENTER);
 		gtk_grid_attach(GTK_GRID(ptable), w, 2, 0, 1, 1);
 		w = gtk_label_new("");
 		gtk_container_add(GTK_CONTAINER(boxr), w);

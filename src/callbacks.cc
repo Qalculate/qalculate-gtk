@@ -1705,6 +1705,20 @@ bool ask_question(const gchar *text, GtkWidget *win) {
 	return question_answer == GTK_RESPONSE_YES;
 }
 
+gboolean do_notification_timeout(gpointer) {
+	gtk_revealer_set_reveal_child(GTK_REVEALER(gtk_builder_get_object(main_builder, "overlayrevealer")), FALSE);
+	gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "overlayrevealer")));
+	return FALSE;
+}
+void show_notification(string text) {
+	text.insert(0, "<big>");
+	text += "</big>";
+	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "overlaylabel")), text.c_str());
+	gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "overlayrevealer")));
+	gtk_revealer_set_reveal_child(GTK_REVEALER(gtk_builder_get_object(main_builder, "overlayrevealer")), TRUE);
+	g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 1000, do_notification_timeout, NULL, NULL);
+}
+
 #define STATUS_SPACE	if(b) str += "  "; else b = true;
 
 void set_status_text(string text, bool break_begin = false, bool had_errors = false, bool had_warnings = false) {
@@ -20188,7 +20202,11 @@ gboolean on_resultview_button_press_event(GtkWidget*, GdkEventButton *event, gpo
 #endif
 		return TRUE;
 	}
-	if(event->button == 1) on_menu_item_copy_activate(NULL, NULL);
+	if(event->button == 1) {
+		on_menu_item_copy_activate(NULL, NULL);
+		// Result was copied
+		show_notification(_("Copied"));
+	}
 	return FALSE;
 }
 gboolean on_resultview_popup_menu(GtkWidget*, gpointer) {
@@ -21242,9 +21260,10 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 	hide_tooltip(w);
 	if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_ac"))) {
 		memory_clear();
+		show_notification("MC");
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_equals"))) {
-		if(b2) memory_store();
+		if(b2) {memory_store(); show_notification("MS");}
 		else memory_recall();
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_divide"))) {
@@ -21307,7 +21326,7 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_add"))) {
 		if(b2) insert_bitwise_and();
-		else memory_add();
+		else {memory_add(); show_notification("M+");}
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sub"))) {
 		if(b2) insert_bitwise_or();
@@ -21322,6 +21341,7 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_del"))) {
 		if(b2) {
 			memory_subtract();
+			show_notification("M−");
 		} else {
 			if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
 				overwrite_expression_selection(NULL);
