@@ -116,8 +116,8 @@ GtkListStore *tNames_store;
 GtkWidget *tShortcuts, *tShortcutsType;
 GtkListStore *tShortcuts_store, *tShortcutsType_store;
 
-GtkWidget *tButtonsEditType;
-GtkListStore *tButtonsEditType_store;
+GtkWidget *tButtonsEditType, *tButtonsEdit;
+GtkListStore *tButtonsEditType_store, *tButtonsEdit_store;
 
 GtkWidget *tabs, *expander_keypad, *expander_history, *expander_stack, *expander_convert;
 GtkEntryCompletion *completion;
@@ -647,6 +647,40 @@ void set_keypad_tooltip(const gchar *w, const char *s1, const char *s2 = NULL, c
 	g_signal_connect(gtk_builder_get_object(main_builder, w), "clicked", G_CALLBACK(hide_tooltip), NULL);
 }
 
+#define SET_LABEL_AND_TOOLTIP_2(i, w1, w2, l, t1, t2) \
+	if(index == i || index < 0) {\
+		if(index >= 0 || !custom_buttons[i].text.empty()) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, w1)), custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str()); \
+		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : (custom_buttons[i].value[0].empty() ? shortcut_type_text(custom_buttons[i].type[0], true) : custom_buttons[i].value[0].c_str()), custom_buttons[i].type[1] == -1 ? t2 : (custom_buttons[i].value[1].empty() ? shortcut_type_text(custom_buttons[i].type[1], true) : custom_buttons[i].value[1].c_str()), custom_buttons[i].type[2] == -1 ? (custom_buttons[i].type[1] == -1 ? NULL : t2) : (custom_buttons[i].value[2].empty() ? shortcut_type_text(custom_buttons[i].type[2], true) : custom_buttons[i].value[2].c_str()));\
+	}
+
+#define SET_LABEL_AND_TOOLTIP_2NL(i, w2, t1, t2) \
+	if(index == i || index < 0) {\
+		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : (custom_buttons[i].value[0].empty() ? shortcut_type_text(custom_buttons[i].type[0], true) : custom_buttons[i].value[0].c_str()), custom_buttons[i].type[1] == -1 ? t2 : (custom_buttons[i].value[1].empty() ? shortcut_type_text(custom_buttons[i].type[1], true) : custom_buttons[i].value[1].c_str()), custom_buttons[i].type[2] == -1 ? (custom_buttons[i].type[1] == -1 ? NULL : t2) : (custom_buttons[i].value[2].empty() ? shortcut_type_text(custom_buttons[i].type[2], true) : custom_buttons[i].value[2].c_str()));\
+	}
+
+#define SET_LABEL_AND_TOOLTIP_3(i, w1, w2, l, t1, t2, t3) \
+	if(index == i || index < 0) {\
+		if(index >= 0 || !custom_buttons[i].text.empty()) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, w1)), custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str()); \
+		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : (custom_buttons[i].value[0].empty() ? shortcut_type_text(custom_buttons[i].type[0], true) : custom_buttons[i].value[0].c_str()), custom_buttons[i].type[1] == -1 ? t2 : (custom_buttons[i].value[1].empty() ? shortcut_type_text(custom_buttons[i].type[1], true) : custom_buttons[i].value[1].c_str()), custom_buttons[i].type[2] == -1 ? t3 : (custom_buttons[i].value[2].empty() ? shortcut_type_text(custom_buttons[i].type[2], true) : custom_buttons[i].value[2].c_str()));\
+	}
+
+#define SET_LABEL_AND_TOOLTIP_3NP(i, w1, w2, l, t1, t2, t3) \
+	if(index == i || index < 0) {\
+		if(index >= 0 || !custom_buttons[i].text.empty()) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, w1)), custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str()); \
+		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : (custom_buttons[i].value[0].empty() ? shortcut_type_text(custom_buttons[i].type[0], true) : custom_buttons[i].value[0].c_str()), custom_buttons[i].type[1] == -1 ? t2 : (custom_buttons[i].value[1].empty() ? shortcut_type_text(custom_buttons[i].type[1], true) : custom_buttons[i].value[1].c_str()), custom_buttons[i].type[2] == -1 ? t3 : (custom_buttons[i].value[2].empty() ? shortcut_type_text(custom_buttons[i].type[2], true) : custom_buttons[i].value[2].c_str()), false, custom_buttons[i].type[0] == -1);\
+	}
+
+#define SET_LABEL_AND_TOOLTIP_3M(i, w1, w2, l, t1, t2, t3) \
+	if(index == i || index < 0) {\
+		if(index >= 0 || !custom_buttons[i].text.empty()) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, w1)), custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str()); \
+		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : (custom_buttons[i].value[0].empty() ? shortcut_type_text(custom_buttons[i].type[0], true) : custom_buttons[i].value[0].c_str()), custom_buttons[i].type[1] == -1 ? t2 : (custom_buttons[i].value[1].empty() ? shortcut_type_text(custom_buttons[i].type[1], true) : custom_buttons[i].value[1].c_str()), custom_buttons[i].type[2] == -1 ? t3 : (custom_buttons[i].value[2].empty() ? shortcut_type_text(custom_buttons[i].type[2], true) : custom_buttons[i].value[2].c_str()), true);\
+	}
+
+#define SET_LABEL_AND_TOOLTIP_3NL(i, w2, t1, t2, t3) \
+	if(index == i || index < 0) {\
+		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : (custom_buttons[i].value[0].empty() ? shortcut_type_text(custom_buttons[i].type[0], true) : custom_buttons[i].value[0].c_str()), custom_buttons[i].type[1] == -1 ? t2 : (custom_buttons[i].value[1].empty() ? shortcut_type_text(custom_buttons[i].type[1], true) : custom_buttons[i].value[1].c_str()), custom_buttons[i].type[2] == -1 ? t3 : (custom_buttons[i].value[2].empty() ? shortcut_type_text(custom_buttons[i].type[2], true) : custom_buttons[i].value[2].c_str()));\
+	}
+
 void update_custom_buttons(int index) {
 	if(index == 0 || index < 0) {
 		if(custom_buttons[0].text.empty()) gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_move")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_move")));
@@ -660,22 +694,82 @@ void update_custom_buttons(int index) {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_move2")), custom_buttons[1].text.c_str());
 		set_keypad_tooltip("button_move2", custom_buttons[1].type[0] == -1 ? _("Move cursor left or right") : (custom_buttons[1].value[0].empty() ? shortcut_type_text(custom_buttons[1].type[0], true) : custom_buttons[1].value[0].c_str()), custom_buttons[1].type[1] == -1 ? _("Move cursor to beginning or end") : (custom_buttons[1].value[1].empty() ? shortcut_type_text(custom_buttons[1].type[1], true) : custom_buttons[1].value[1].c_str()), custom_buttons[1].type[2] == -1 ? (custom_buttons[1].type[1] == -1 ? NULL : _("Move cursor to beginning or end")) : (custom_buttons[1].value[2].empty() ? shortcut_type_text(custom_buttons[1].type[2], true) : custom_buttons[1].value[2].c_str()), false, custom_buttons[1].type[0] != -1);
 	}
-	if(index == 2 || index < 0) {
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_percent")), custom_buttons[2].text.empty() ? "%" : custom_buttons[2].text.c_str());
-		set_keypad_tooltip("button_percent", custom_buttons[2].type[0] == -1 ? CALCULATOR->v_percent->title(true).c_str() : (custom_buttons[2].value[0].empty() ? shortcut_type_text(custom_buttons[2].type[0], true) : custom_buttons[2].value[0].c_str()), custom_buttons[2].type[1] == -1 ? CALCULATOR->v_permille->title(true).c_str() : (custom_buttons[2].value[1].empty() ? shortcut_type_text(custom_buttons[2].type[1], true) : custom_buttons[2].value[1].c_str()), custom_buttons[2].type[2] == -1 ? (custom_buttons[2].type[1] == -1 ? NULL : CALCULATOR->v_permille->title(true).c_str()) : (custom_buttons[2].value[2].empty() ? shortcut_type_text(custom_buttons[2].type[2], true) : custom_buttons[2].value[2].c_str()));
-	}
-	if(index == 3 || index < 0) {
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_plusminus")), custom_buttons[3].text.empty() ? "±" : custom_buttons[3].text.c_str());
-		set_keypad_tooltip("button_plusminus", custom_buttons[3].type[0] == -1 ? _("Uncertainty/interval") : (custom_buttons[3].value[0].empty() ? shortcut_type_text(custom_buttons[3].type[0], true) : custom_buttons[3].value[0].c_str()), custom_buttons[3].type[1] == -1 ? _("Relative error") : (custom_buttons[3].value[1].empty() ? shortcut_type_text(custom_buttons[3].type[1], true) : custom_buttons[3].value[1].c_str()), custom_buttons[3].type[2] == -1 ? _("Interval") : (custom_buttons[3].value[2].empty() ? shortcut_type_text(custom_buttons[3].type[2], true) : custom_buttons[3].value[2].c_str()));
-	}
-	if(index == 4 || index < 0) {
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_comma")), custom_buttons[4].text.empty() ? CALCULATOR->getComma().c_str() : custom_buttons[4].text.c_str());
-		set_keypad_tooltip("button_comma", custom_buttons[4].type[0] == -1 ? _("Argument separator") : (custom_buttons[4].value[0].empty() ? shortcut_type_text(custom_buttons[4].type[0], true) : custom_buttons[4].value[0].c_str()), custom_buttons[4].type[1] == -1 ? _("Blank space") : (custom_buttons[4].value[1].empty() ? shortcut_type_text(custom_buttons[4].type[1], true) : custom_buttons[4].value[1].c_str()), custom_buttons[4].type[2] == -1 ? _("New line") : (custom_buttons[4].value[2].empty() ? shortcut_type_text(custom_buttons[4].type[2], true) : custom_buttons[4].value[2].c_str()));
-	}
-	if(index == 5 || index < 0) {
+	SET_LABEL_AND_TOOLTIP_2(2, "label_percent", "button_percent", "%", CALCULATOR->v_percent->title(true).c_str(), CALCULATOR->v_permille->title(true).c_str())
+	SET_LABEL_AND_TOOLTIP_3(3, "label_plusminus", "button_plusminus", "±", _("Uncertainty/interval"), _("Relative error"), _("Interval"))
+	SET_LABEL_AND_TOOLTIP_3(4, "label_comma", "button_comma", CALCULATOR->getComma().c_str(), _("Argument separator"), _("Blank space"), _("New line"))
+	SET_LABEL_AND_TOOLTIP_2(5, "label_brace_wrap", "button_brace_wrap", "(x)", _("Smart parentheses"), _("Vector brackets"))
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_brace_wrap")), custom_buttons[5].text.empty() ? "(x)" : custom_buttons[5].text.c_str());
-		set_keypad_tooltip("button_brace_wrap", custom_buttons[5].type[0] == -1 ? _("Smart parentheses") : (custom_buttons[5].value[0].empty() ? shortcut_type_text(custom_buttons[5].type[0], true) : custom_buttons[5].value[0].c_str()), custom_buttons[5].type[1] == -1 ? _("Vector brackets") : (custom_buttons[5].value[1].empty() ? shortcut_type_text(custom_buttons[5].type[1], true) : custom_buttons[5].value[1].c_str()), custom_buttons[5].type[2] == -1 ? (custom_buttons[5].type[1] != -1 ? _("Vector brackets") : NULL) : (custom_buttons[5].value[2].empty() ? shortcut_type_text(custom_buttons[5].type[2], true) : custom_buttons[5].value[2].c_str()));
+	SET_LABEL_AND_TOOLTIP_2(6, "label_brace_open", "button_brace_open", "(", _("Left parenthesis"), _("Left vector bracket"))
+	SET_LABEL_AND_TOOLTIP_2(7, "label_brace_close", "button_brace_close", ")", _("Right parenthesis"), _("Right vector bracket"))
+	SET_LABEL_AND_TOOLTIP_3M(8, "label_zero", "button_zero", "0", NULL, "x<sup>0</sup>", CALCULATOR->getDegUnit()->title(true).c_str())
+	SET_LABEL_AND_TOOLTIP_3M(9, "label_one", "button_one", "1", NULL, "x<sup>1</sup>", "1/x")
+	SET_LABEL_AND_TOOLTIP_3M(10, "label_two", "button_two", "2", NULL, "x<sup>2</sup>", "1/2")
+	SET_LABEL_AND_TOOLTIP_3M(11, "label_three", "button_three", "3", NULL, "x<sup>3</sup>", "1/3")
+	SET_LABEL_AND_TOOLTIP_3M(12, "label_four", "button_four", "4", NULL, "x<sup>4</sup>", "1/4")
+	SET_LABEL_AND_TOOLTIP_3M(13, "label_five", "button_five", "5", NULL, "x<sup>5</sup>", "1/5")
+	SET_LABEL_AND_TOOLTIP_3M(14, "label_six", "button_six", "6", NULL, "x<sup>6</sup>", "1/6")
+	SET_LABEL_AND_TOOLTIP_3M(15, "label_seven", "button_seven", "7", NULL, "x<sup>7</sup>", "1/7")
+	SET_LABEL_AND_TOOLTIP_3M(16, "label_eight", "button_eight", "8", NULL, "x<sup>8</sup>", "1/8")
+	SET_LABEL_AND_TOOLTIP_3M(17, "label_nine", "button_nine", "9", NULL, "x<sup>9</sup>", "1/9")
+	SET_LABEL_AND_TOOLTIP_3(18, "label_dot", "button_dot", CALCULATOR->getDecimalPoint().c_str(), _("Decimal point"), _("Blank space"), _("New line"))
+	if(index < 0 || index == 19) {
+		MathFunction *f = CALCULATOR->getActiveFunction("exp10");
+		SET_LABEL_AND_TOOLTIP_3M(19, "label_exp", "button_exp", _("EXP"), "10<sup>x</sup> (Ctrl+Shift+E)", CALCULATOR->f_exp->title(true).c_str(), (f ? f->title(true).c_str() : NULL))
 	}
+	if(index == 20 || (index < 0 && !custom_buttons[20].text.empty())) {
+		if(custom_buttons[20].text.empty()) {
+			PangoFontDescription *font_desc = NULL;
+			gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_xy"))), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+			gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_xy")), (string("x") + SUP_STRING("y")).c_str());
+			pango_font_description_free(font_desc);
+		} else {
+			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_xy")), custom_buttons[20].text.c_str());
+		}
+	}
+	SET_LABEL_AND_TOOLTIP_2NL(20, "button_xy", _("Raise (Ctrl+*)"), CALCULATOR->f_sqrt->title(true).c_str())
+	if(index == 24 || (index < 0 && !custom_buttons[24].text.empty())) {
+		if(custom_buttons[24].text.empty()) {
+			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(main_builder, "label_sub"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sub")), SIGN_MINUS);
+			else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sub")), MINUS);
+		} else {
+			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sub")), custom_buttons[24].text.c_str());
+		}
+	}
+	if(index == 22 || (index < 0 && !custom_buttons[22].text.empty())) {
+		if(custom_buttons[22].text.empty()) {
+			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(main_builder, "label_times"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), SIGN_MULTIPLICATION);
+			else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), MULTIPLICATION);
+		} else {
+			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), custom_buttons[22].text.c_str());
+		}
+	}
+	if(index == 21 || (index < 0 && !custom_buttons[21].text.empty())) {
+		if(custom_buttons[21].text.empty()) {
+			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(main_builder, "label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), SIGN_DIVISION_SLASH);
+			else if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_DIVISION, (void*) gtk_builder_get_object(main_builder, "label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), SIGN_DIVISION);
+			else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), DIVISION);
+		} else {
+			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), custom_buttons[21].text.c_str());
+		}
+	}
+	SET_LABEL_AND_TOOLTIP_2NL(21, "button_divide", _("Divide"), "1/x")
+	SET_LABEL_AND_TOOLTIP_2NL(22, "button_times", _("Multiply"), _("Bitwise Exclusive OR"))
+	SET_LABEL_AND_TOOLTIP_3(23, "label_add", "button_add", "+", _("Add"), _("M+ (memory plus)"), _("Bitwise AND"))
+	if(index < 0 || index == 24) {
+		MathFunction *f = CALCULATOR->getActiveFunction("neg");
+		SET_LABEL_AND_TOOLTIP_3NL(24, "button_sub", _("Subtract"), f ? f->title(true).c_str() : NULL, _("Bitwise OR"));
+	}
+	SET_LABEL_AND_TOOLTIP_2(25, "label_ac", "button_ac", _("AC"), _("Clear"), _("MC (memory clear)"))
+	SET_LABEL_AND_TOOLTIP_3NP(26, "label_del", "button_del", _("DEL"), _("Delete"), _("Backspace"), _("M− (memory minus)"))
+	SET_LABEL_AND_TOOLTIP_2(27, "label_ans", "button_ans", _("ANS"), _("Previous result"), _("Previous result (static)"))
+	if(index == 28 || (index < 0 && !custom_buttons[28].text.empty())) {
+		if(custom_buttons[28].text.empty()) {
+			gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_equals")), "<big>=</big>");
+		} else {
+			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_equals")), custom_buttons[28].text.c_str());
+		}
+	}
+	SET_LABEL_AND_TOOLTIP_3NL(28, "button_equals", _("Calculate expression"), _("MR (memory recall)"), _("MS (memory store)"))
 }
 
 void set_custom_buttons() {
@@ -997,36 +1091,6 @@ void create_button_menus() {
 	set_keypad_tooltip("button_sqrt", CALCULATOR->f_sqrt->title(true).c_str());
 	set_keypad_tooltip("button_i", CALCULATOR->v_i->title(true).c_str());
 	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_i")), (string("<i>") + CALCULATOR->v_i->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(main_builder, "label_i")).name + "</i>").c_str());
-
-	set_keypad_tooltip("button_one", NULL, "x<sup>1</sup>", "1/x", true);
-	set_keypad_tooltip("button_two", NULL, "x<sup>2</sup>", "1/2", true);
-	set_keypad_tooltip("button_three", NULL, "x<sup>3</sup>", "1/3", true);
-	set_keypad_tooltip("button_four", NULL, "x<sup>4</sup>", "1/4", true);
-	set_keypad_tooltip("button_five", NULL, "x<sup>5</sup>", "1/5", true);
-	set_keypad_tooltip("button_six", NULL, "x<sup>6</sup>", "1/6", true);
-	set_keypad_tooltip("button_seven", NULL, "x<sup>7</sup>", "1/7", true);
-	set_keypad_tooltip("button_eight", NULL, "x<sup>8</sup>", "1/8", true);
-	set_keypad_tooltip("button_nine", NULL, "x<sup>9</sup>", "1/9", true);
-	set_keypad_tooltip("button_zero", NULL, "x<sup>0</sup>", CALCULATOR->getDegUnit()->title(true).c_str(), true);
-	set_keypad_tooltip("button_dot", _("Decimal point"), _("Blank space"), _("New line"));
-
-	f = CALCULATOR->getActiveFunction("exp10");
-	set_keypad_tooltip("button_exp", "10<sup>x</sup> (Ctrl+Shift+E)", CALCULATOR->f_exp->title(true).c_str(), f ? f->title(true).c_str() : NULL, true);
-
-	set_keypad_tooltip("button_xy", _("Raise (Ctrl+*)"), CALCULATOR->f_sqrt->title(true).c_str());
-	set_keypad_tooltip("button_divide", _("Divide"), "1/x");
-	set_keypad_tooltip("button_times", _("Multiply"), _("Bitwise Exclusive OR"));
-	set_keypad_tooltip("button_add", _("Add"), _("M+ (memory plus)"), _("Bitwise AND"));
-	f = CALCULATOR->getActiveFunction("neg");
-	set_keypad_tooltip("button_sub", _("Subtract"), f ? f->title(true).c_str() : NULL, _("Bitwise OR"));
-
-	set_keypad_tooltip("button_brace_close", _("Right parenthesis"), _("Right vector bracket"));
-	set_keypad_tooltip("button_brace_open", _("Left parenthesis"), _("Left vector bracket"));
-
-	set_keypad_tooltip("button_ac", _("Clear"), _("MC (memory clear)"), NULL);
-	set_keypad_tooltip("button_del", _("Delete"), _("Backspace"), _("M− (memory minus)"), false, false);
-	set_keypad_tooltip("button_ans", _("Previous result"), _("Previous result (static)"), NULL);
-	set_keypad_tooltip("button_equals", _("Calculate expression"), _("MR (memory recall)"), _("MS (memory store)"));
 
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_cmp"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_bitcmp);
 	g_signal_connect(gtk_builder_get_object(main_builder, "button_int"), "clicked", G_CALLBACK(insert_button_function), (gpointer) CALCULATOR->f_int);
@@ -3339,55 +3403,56 @@ GtkWidget* get_floatingpoint_dialog(void) {
 
 	return GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "floatingpoint_dialog"));
 }
+
+#define SET_BUTTONS_EDIT_ITEM_3(l, t1, t2, t3) \
+	{gtk_list_store_set(tButtonsEdit_store, &iter, 1, custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str(), 2, custom_buttons[i].type[0] == -1 ? t1 : (custom_buttons[i].value[0].empty() ? shortcut_type_text(custom_buttons[i].type[0], true) : custom_buttons[i].value[0].c_str()), 3, custom_buttons[i].type[1] == -1 ? t2 : (custom_buttons[i].value[1].empty() ? shortcut_type_text(custom_buttons[i].type[1], true) : custom_buttons[i].value[1].c_str()), 4, custom_buttons[i].type[2] == -1 ? t3 : (custom_buttons[i].value[2].empty() ? shortcut_type_text(custom_buttons[i].type[2], true) : custom_buttons[i].value[2].c_str()), -1);\
+	if(index >= 0) break;}
+	
+#define SET_BUTTONS_EDIT_ITEM_3B(l, t1, t2, t3) SET_BUTTONS_EDIT_ITEM_3(gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(main_builder, l))), t1, t2, t3)
+#define SET_BUTTONS_EDIT_ITEM_2(l, t1, t2) SET_BUTTONS_EDIT_ITEM_3(l, t1, t2, t2)
+#define SET_BUTTONS_EDIT_ITEM_2B(l, t1, t2) SET_BUTTONS_EDIT_ITEM_3(gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(main_builder, l))), t1, t2, t2)
+
 void update_custom_buttons_edit(int index) {
-	GtkWidget *ptable = GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_grid"));
-	for(int i = index < 0 ? 0 : index; index < 0 ? (i < 6) : i == index; i++) {
-		GtkWidget *w = gtk_grid_get_child_at(GTK_GRID(ptable), 0, i + 1);
-		if(custom_buttons[i].type[0] < -1) gtk_button_set_label(GTK_BUTTON(w), "");
-		else if(custom_buttons[i].type[0] >= 0) {
-			string str = shortcut_type_text(custom_buttons[i].type[0]);
-			if(!custom_buttons[i].value[0].empty()) {
-				str += ": ";
-				str += custom_buttons[i].value[0];
-			}
-			gtk_button_set_label(GTK_BUTTON(w), str.c_str());
-		} else if(i == 0) gtk_button_set_label(GTK_BUTTON(w), _("Cycle through previous expression"));
-		else if(i == 1) gtk_button_set_label(GTK_BUTTON(w), _("Move cursor left or right"));
-		else if(i == 2) gtk_button_set_label(GTK_BUTTON(w), CALCULATOR->v_percent->title(true).c_str());
-		else if(i == 3) gtk_button_set_label(GTK_BUTTON(w), _("Uncertainty/interval"));
-		else if(i == 4) gtk_button_set_label(GTK_BUTTON(w), _("Argument separator"));
-		else if(i == 5) gtk_button_set_label(GTK_BUTTON(w), _("Smart parentheses"));
-		w = gtk_grid_get_child_at(GTK_GRID(ptable), 1, i + 1);
-		if(custom_buttons[i].type[1] < -1) gtk_button_set_label(GTK_BUTTON(w), "");
-		else if(custom_buttons[i].type[1] >= 0) {
-			string str = shortcut_type_text(custom_buttons[i].type[1]);
-			if(!custom_buttons[i].value[1].empty()) {
-				str += ": ";
-				str += custom_buttons[i].value[1];
-			}
-			gtk_button_set_label(GTK_BUTTON(w), str.c_str());
-		} else if(i == 0) gtk_button_set_label(GTK_BUTTON(w), "");
-		else if(i == 1) gtk_button_set_label(GTK_BUTTON(w), _("Move cursor to beginning or end"));
-		else if(i == 2) gtk_button_set_label(GTK_BUTTON(w), CALCULATOR->v_permille->title(true).c_str());
-		else if(i == 3) gtk_button_set_label(GTK_BUTTON(w), _("Relative error"));
-		else if(i == 4) gtk_button_set_label(GTK_BUTTON(w), _("Blank space"));
-		else if(i == 5) gtk_button_set_label(GTK_BUTTON(w), _("Vector brackets"));
-		w = gtk_grid_get_child_at(GTK_GRID(ptable), 2, i + 1);
-		if(custom_buttons[i].type[2] < -1) gtk_button_set_label(GTK_BUTTON(w), "");
-		else if(custom_buttons[i].type[2] >= 0) {
-			string str = shortcut_type_text(custom_buttons[i].type[2]);
-			if(!custom_buttons[i].value[2].empty()) {
-				str += ": ";
-				str += custom_buttons[i].value[2];
-			}
-			gtk_button_set_label(GTK_BUTTON(w), str.c_str());
-		} else if(i == 0) gtk_button_set_label(GTK_BUTTON(w), "");
-		else if(i == 1) gtk_button_set_label(GTK_BUTTON(w), _("Move cursor to beginning or end"));
-		else if(i == 2) gtk_button_set_label(GTK_BUTTON(w), CALCULATOR->v_permille->title(true).c_str());
-		else if(i == 3) gtk_button_set_label(GTK_BUTTON(w), _("Interval"));
-		else if(i == 4) gtk_button_set_label(GTK_BUTTON(w), _("New line"));
-		else if(i == 5) gtk_button_set_label(GTK_BUTTON(w), _("Vector brackets"));
-	}
+	GtkTreeIter iter;
+	gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tButtonsEdit_store), &iter);
+	int i = 0;
+	do {
+		gtk_tree_model_get(GTK_TREE_MODEL(tButtonsEdit_store), &iter, 0, &i, -1);
+		if(i == 0 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2("↑ ↓", _("Cycle through previous expression"), "")
+		else if(i == 1 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2("← →", _("Move cursor left or right"), _("Move cursor to beginning or end"))
+		else if(i == 2 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2("%", CALCULATOR->v_percent->title(true).c_str(), CALCULATOR->v_permille->title(true).c_str())
+		else if(i == 3 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("±", _("Uncertainty/interval"), _("Relative error"), _("Interval"))
+		else if(i == 4 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3B("label_comma", _("Argument separator"), _("Blank space"), _("New line"))
+		else if(i == 5 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2("(x)", _("Smart parentheses"), _("Vector brackets"))
+		else if(i == 6 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2("(", _("Left parenthesis"), _("Left vector bracket"))
+		else if(i == 7 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2(")", _("Right parenthesis"), _("Right vector bracket"))
+		else if(i == 8 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("0", "0", "x^0", CALCULATOR->getDegUnit()->title(true).c_str())
+		else if(i == 9 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("1", "1", "x^1", "1/x")
+		else if(i == 10 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("2", "2", "x^2", "1/2")
+		else if(i == 11 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("3", "3", "x^3", "1/3")
+		else if(i == 12 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("4", "4", "x^4", "1/4")
+		else if(i == 13 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("5", "5", "x^5", "1/5")
+		else if(i == 14 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("6", "6", "x^6", "1/6")
+		else if(i == 15 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("7", "7", "x^7", "1/7")
+		else if(i == 16 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("8", "8", "x^8", "1/8")
+		else if(i == 17 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("9", "9", "x^9", "1/9")
+		else if(i == 18 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3B("label_dot", _("Decimal point"), _("Blank space"), _("New line"))
+		else if(i == 19 && (index == i || index < 0)) {
+			MathFunction *f = CALCULATOR->getActiveFunction("exp10");
+			SET_BUTTONS_EDIT_ITEM_3B("label_exp", "10^x", CALCULATOR->f_exp->title(true).c_str(), (f ? f->title(true).c_str() : ""));
+		} else if(i == 20 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2("x^y", _("Raise"), CALCULATOR->f_sqrt->title(true).c_str())
+		else if(i == 21 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2B("label_divide", _("Divide"), "1/x")
+		else if(i == 22 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2B("label_times", _("Multiply"), _("Bitwise Exclusive OR"))
+		else if(i == 23 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3B("label_add", _("Add"), _("M+ (memory plus)"), _("Bitwise AND"))
+		else if(i == 24 && (index == i || index < 0)) {
+			MathFunction *f = CALCULATOR->getActiveFunction("neg");
+			SET_BUTTONS_EDIT_ITEM_3B("label_sub", _("Subtract"), f ? f->title(true).c_str() : "", _("Bitwise OR"));
+		} else if(i == 25 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2B("label_ac", _("Clear"), _("MC (memory clear)"))
+		else if(i == 26 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3B("label_del", _("Delete"), _("Backspace"), _("M− (memory minus)"))
+		else if(i == 27 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2B("label_ans", _("Previous result"), _("Previous result (static)"))
+		else if(i == 28 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("=", _("Calculate expression"), _("MR (memory recall)"), _("MS (memory store)"))
+	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tButtonsEdit_store), &iter));
+	on_tButtonsEdit_selection_changed(gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEdit)), NULL);
 }
 GtkWidget* get_buttons_edit_dialog(void) {
 	if(!buttonsedit_builder) {
@@ -3397,74 +3462,47 @@ GtkWidget* get_buttons_edit_dialog(void) {
 
 		g_assert(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_dialog") != NULL);
 		
-		GtkWidget *ptable = GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_grid"));
-		GtkWidget *boxl = GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_boxl"));
-		GtkWidget *boxr = GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_boxr"));
+		tButtonsEdit = GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_treeview"));
 
-		GtkWidget *w = gtk_label_new(_("Label")); gtk_widget_set_halign(w, GTK_ALIGN_CENTER);
-		gtk_container_add(GTK_CONTAINER(boxl), w);
-		w = gtk_label_new(_("Left-click")); gtk_widget_set_halign(w, GTK_ALIGN_CENTER);
-		gtk_grid_attach(GTK_GRID(ptable), w, 0, 0, 1, 1);
-		w = gtk_label_new(_("Right-click")); gtk_widget_set_halign(w, GTK_ALIGN_CENTER);
-		gtk_grid_attach(GTK_GRID(ptable), w, 1, 0, 1, 1);
-		w = gtk_label_new(_("Middle-click")); gtk_widget_set_halign(w, GTK_ALIGN_CENTER);
-		gtk_grid_attach(GTK_GRID(ptable), w, 2, 0, 1, 1);
-		w = gtk_label_new("");
-		gtk_container_add(GTK_CONTAINER(boxr), w);
+		tButtonsEdit_store = gtk_list_store_new(5, G_TYPE_INT, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+		gtk_tree_view_set_model(GTK_TREE_VIEW(tButtonsEdit), GTK_TREE_MODEL(tButtonsEdit_store));
+		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEdit));
+		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
+		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Label"), renderer, "text", 1, NULL);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(tButtonsEdit), column);
+		renderer = gtk_cell_renderer_text_new();
+		column = gtk_tree_view_column_new_with_attributes(_("Left-click"), renderer, "text", 2, NULL);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(tButtonsEdit), column);
+		renderer = gtk_cell_renderer_text_new();
+		column = gtk_tree_view_column_new_with_attributes(_("Right-click"), renderer, "text", 3, NULL);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(tButtonsEdit), column);
+		renderer = gtk_cell_renderer_text_new();
+		column = gtk_tree_view_column_new_with_attributes(_("Middle-click"), renderer, "text", 4, NULL);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(tButtonsEdit), column);
+		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tButtonsEdit_selection_changed), NULL);
 
-		for(int i = 0; i < 6; i++) {
-			w = gtk_entry_new();
-			gtk_entry_set_max_length(GTK_ENTRY(w), 3);
-			if(i == 0) gtk_entry_set_text(GTK_ENTRY(w), gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_move"))));
-			else if(i == 1) gtk_entry_set_text(GTK_ENTRY(w), gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_move2"))));
-			else if(i == 2) gtk_entry_set_text(GTK_ENTRY(w), gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_percent"))));
-			else if(i == 3) gtk_entry_set_text(GTK_ENTRY(w), gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_plusminus"))));
-			else if(i == 4) gtk_entry_set_text(GTK_ENTRY(w), gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_comma"))));
-			else if(i == 5) gtk_entry_set_text(GTK_ENTRY(w), gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_brace_wrap"))));
-			if(i == 0) gtk_entry_set_placeholder_text(GTK_ENTRY(w), "↑ ↓");
-			else if(i == 1) gtk_entry_set_placeholder_text(GTK_ENTRY(w), "← →");
-			else if(i == 2) gtk_entry_set_placeholder_text(GTK_ENTRY(w), "%");
-			else if(i == 3) gtk_entry_set_placeholder_text(GTK_ENTRY(w), "±");
-			else if(i == 4) gtk_entry_set_placeholder_text(GTK_ENTRY(w), CALCULATOR->getComma().c_str());
-			else if(i == 5) gtk_entry_set_placeholder_text(GTK_ENTRY(w), "(x)");
-			g_signal_connect(w, "changed", G_CALLBACK(on_buttonsedit_label_changed), GINT_TO_POINTER(i));
-			gtk_container_add(GTK_CONTAINER(boxl), w);
-			w = gtk_button_new();
-			gtk_widget_set_hexpand(w, TRUE);
-			g_signal_connect(w, "clicked", G_CALLBACK(on_buttonsedit_button_clicked), GINT_TO_POINTER(i * 10));
-			gtk_grid_attach(GTK_GRID(ptable), w, 0, i + 1, 1, 1);
-			w = gtk_button_new();
-			gtk_widget_set_hexpand(w, TRUE);
-			g_signal_connect(w, "clicked", G_CALLBACK(on_buttonsedit_button_clicked), GINT_TO_POINTER(i * 10 + 1));
-			gtk_grid_attach(GTK_GRID(ptable), w, 1, i + 1, 1, 1);
-			w = gtk_button_new();
-			gtk_widget_set_hexpand(w, TRUE);
-			g_signal_connect(w, "clicked", G_CALLBACK(on_buttonsedit_button_clicked), GINT_TO_POINTER(i * 10 + 2));
-			gtk_grid_attach(GTK_GRID(ptable), w, 2, i + 1, 1, 1);
-			w = gtk_button_new_with_label(_("Defaults"));
-			g_signal_connect(w, "clicked", G_CALLBACK(on_buttonsedit_defaults_clicked), GINT_TO_POINTER(i));
-			gtk_container_add(GTK_CONTAINER(boxr), w);
+		GtkTreeIter iter;
+		for(int i = 0; i < 29; i++) {
+			gtk_list_store_append(tButtonsEdit_store, &iter);
+			gtk_list_store_set(tButtonsEdit_store, &iter, 0, i, -1);
 		}
+		gtk_tree_selection_unselect_all(selection);
 
-		gtk_widget_show_all(ptable);
-		gtk_widget_show_all(boxl);
-		gtk_widget_show_all(boxr);
-		
 		update_custom_buttons_edit();
 		
 		tButtonsEditType = GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_type_treeview"));
 
 		tButtonsEditType_store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_INT);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tButtonsEditType), GTK_TREE_MODEL(tButtonsEditType_store));
-		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEditType));
+		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEditType));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_BROWSE);
-		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
-		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Action"), renderer, "text", 0, NULL);
+		renderer = gtk_cell_renderer_text_new();
+		column = gtk_tree_view_column_new_with_attributes(_("Action"), renderer, "text", 0, NULL);
 		gtk_tree_view_column_set_sort_column_id(column, 0);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tButtonsEditType), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tButtonsEditType_selection_changed), NULL);
 
-		GtkTreeIter iter;
 		gtk_list_store_append(tButtonsEditType_store, &iter);
 		gtk_list_store_set(tButtonsEditType_store, &iter, 0, _("Default"), 1, -1, -1);
 		gtk_tree_selection_select_iter(selection, &iter);

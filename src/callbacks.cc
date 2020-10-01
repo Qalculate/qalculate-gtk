@@ -143,8 +143,8 @@ extern GtkWidget *tNames;
 extern GtkListStore *tNames_store;
 extern GtkWidget *tShortcuts, *tShortcutsType;
 extern GtkListStore *tShortcuts_store, *tShortcutsType_store;
-extern GtkWidget *tButtonsEditType;
-extern GtkListStore *tButtonsEditType_store;
+extern GtkWidget *tButtonsEditType, *tButtonsEdit;
+extern GtkListStore *tButtonsEditType_store, *tButtonsEdit_store;
 extern GtkAccelGroup *accel_group;
 extern string selected_function_category;
 extern MathFunction *selected_function;
@@ -1475,13 +1475,19 @@ void set_expression_size_request() {
 
 void set_unicode_buttons() {
 	if(printops.use_unicode_signs) {
-		if(can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(main_builder, "label_sub"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sub")), SIGN_MINUS);
-		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sub")), MINUS);
-		if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(main_builder, "label_times"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), SIGN_MULTIPLICATION);
-		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), MULTIPLICATION);
-		if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(main_builder, "label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), SIGN_DIVISION_SLASH);
-		else if(can_display_unicode_string_function(SIGN_DIVISION, (void*) gtk_builder_get_object(main_builder, "label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), SIGN_DIVISION);
-		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), DIVISION);
+		if(custom_buttons[24].text.empty()) {
+			if(can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(main_builder, "label_sub"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sub")), SIGN_MINUS);
+			else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sub")), MINUS);
+		}
+		if(custom_buttons[22].text.empty()) {
+			if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(main_builder, "label_times"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), SIGN_MULTIPLICATION);
+			else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), MULTIPLICATION);
+		}
+		if(custom_buttons[21].text.empty()) {
+			if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(main_builder, "label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), SIGN_DIVISION_SLASH);
+			else if(can_display_unicode_string_function(SIGN_DIVISION, (void*) gtk_builder_get_object(main_builder, "label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), SIGN_DIVISION);
+			else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), DIVISION);
+		}
 		
 		if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(main_builder, "button_fraction"))) gtk_button_set_label(GTK_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), "a " SIGN_DIVISION_SLASH " b");
 		else gtk_button_set_label(GTK_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), "a " DIVISION " b");
@@ -1519,9 +1525,10 @@ void set_unicode_buttons() {
 		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_pi")), "pi");
 
 	} else {
-		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sub")), MINUS);
-		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), MULTIPLICATION);
-		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), DIVISION);
+		
+		if(custom_buttons[24].text.empty()) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sub")), MINUS);
+		if(custom_buttons[22].text.empty()) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_times")), MULTIPLICATION);
+		if(custom_buttons[21].text.empty()) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), DIVISION);
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sqrt")), "sqrt");
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sqrt2")), "sqrt");
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_mean")), "mean");
@@ -1541,7 +1548,8 @@ void set_unicode_buttons() {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_negate")), MINUS "x");
 	}
 
-	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_dot")), CALCULATOR->getDecimalPoint().c_str());
+	if(custom_buttons[18].text.empty()) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_dot")), CALCULATOR->getDecimalPoint().c_str());
+	if(custom_buttons[4].text.empty()) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_comma")), CALCULATOR->getComma().c_str());
 
 #define SUP_STRING(X) string("<span size=\"x-small\" rise=\"" + i2s((int) (pango_font_description_get_size(font_desc) / 1.5)) + "\">") + string(X) + "</span>"
 #define SUB_STRING(X) string("<span size=\"x-small\" rise=\"" + i2s((int) (-pango_font_description_get_size(font_desc) / 1.5)) + "\">") + string(X) + "</span>"
@@ -1554,7 +1562,7 @@ void set_unicode_buttons() {
 	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_xy")), (string("x") + SUP_STRING("y")).c_str());
 	pango_font_description_free(font_desc);
 	gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_xy"))), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_xy")), (string("x") + SUP_STRING("y")).c_str());
+	if(custom_buttons[20].text.empty()) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_xy")), (string("x") + SUP_STRING("y")).c_str());
 	if(evalops.structuring != STRUCTURING_FACTORIZE) {
 		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize")), (string("a(x)") + SUP_STRING("b")).c_str());
 		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_factorize")), _("Factorize"));
@@ -1569,7 +1577,6 @@ void set_unicode_buttons() {
 	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_log2")), (string("log") + SUB_STRING("2")).c_str());
 	pango_font_description_free(font_desc);
 
-	if(custom_buttons[4].text.empty()) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_comma")), CALCULATOR->getComma().c_str());
 	if(can_display_unicode_string_function(SIGN_SQRT, (void*) gtk_builder_get_object(main_builder, "label_history_sqrt"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sqrt")), SIGN_SQRT);
 	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sqrt")), "sqrt");
 	if(can_display_unicode_string_function(SIGN_SQRT, (void*) gtk_builder_get_object(main_builder, "label_rpn_sqrt"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), SIGN_SQRT);
@@ -16908,8 +16915,8 @@ void load_preferences() {
 	default_shortcuts = true;
 	keyboard_shortcuts.clear();
 
-	custom_buttons.resize(6);
-	for(size_t i = 0; i < 6; i++) {
+	custom_buttons.resize(29);
+	for(size_t i = 0; i < 29; i++) {
 		custom_buttons[i].type[0] = -1;
 		custom_buttons[i].type[1] = -1;
 		custom_buttons[i].type[2] = -1;
@@ -21278,6 +21285,7 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_comma"))) {
 		if(b2 && custom_buttons[4].type[2] != -1) {
+			if(custom_buttons[4].type[2] < 0) return FALSE;
 			do_shortcut(custom_buttons[4].type[2], custom_buttons[4].value[2]);
 		} else if(!b2 && custom_buttons[4].type[1] != -1) {
 			if(custom_buttons[4].type[1] < 0) return FALSE;
@@ -21295,10 +21303,26 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 		}
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_open"))) {
-		insert_text("[");
+		if(b2 && custom_buttons[6].type[2] != -1) {
+			if(custom_buttons[6].type[2] < 0) return FALSE;
+			do_shortcut(custom_buttons[6].type[2], custom_buttons[6].value[2]);
+		} else if(!b2 && custom_buttons[6].type[1] != -1) {
+			if(custom_buttons[6].type[1] < 0) return FALSE;
+			do_shortcut(custom_buttons[6].type[1], custom_buttons[6].value[1]);
+		} else {
+			insert_text("[");
+		}
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_close"))) {
-		insert_text("]");
+		if(b2 && custom_buttons[7].type[2] != -1) {
+			if(custom_buttons[7].type[2] < 0) return FALSE;
+			do_shortcut(custom_buttons[7].type[2], custom_buttons[7].value[2]);
+		} else if(!b2 && custom_buttons[7].type[1] != -1) {
+			if(custom_buttons[7].type[1] < 0) return FALSE;
+			do_shortcut(custom_buttons[7].type[1], custom_buttons[7].value[1]);
+		} else {
+			insert_text("]");
+		}
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_wrap"))) {
 		if(b2 && custom_buttons[5].type[2] != -1) {
@@ -21854,10 +21878,18 @@ void on_button_dot_clicked(GtkButton*, gpointer) {
 	insert_text(CALCULATOR->getDecimalPoint().c_str());
 }
 void on_button_brace_open_clicked(GtkButton*, gpointer) {
-	insert_text("(");
+	if(custom_buttons[6].type[0] != -1) {
+		do_shortcut(custom_buttons[6].type[0], custom_buttons[6].value[0]);
+	} else {
+		insert_text("(");
+	}
 }
 void on_button_brace_close_clicked(GtkButton*, gpointer) {
-	insert_text(")");
+	if(custom_buttons[7].type[0] != -1) {
+		do_shortcut(custom_buttons[7].type[0], custom_buttons[7].value[0]);
+	} else {
+		insert_text(")");
+	}
 }
 void on_button_brace_wrap_clicked(GtkButton*, gpointer) {
 	if(custom_buttons[5].type[0] != -1) {
@@ -30952,14 +30984,53 @@ void on_shortcuts_treeview_row_activated(GtkTreeView *w, GtkTreePath *path, GtkT
 	gtk_widget_hide(d);
 }
 
-void on_buttonsedit_button_clicked(GtkButton*, gpointer user_data) {
-	int i = GPOINTER_TO_INT(user_data);
-	int b_i = i % 10;
-	i /= 10;
+void on_buttons_edit_entry_label_changed(GtkEditable *w, gpointer user_data) {
+	int i = 0;
+	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEdit));
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	if(!gtk_tree_selection_get_selected(select, &model, &iter)) return;
+	gtk_tree_model_get(model, &iter, 0, &i, -1);
+	gtk_entry_get_text(GTK_ENTRY(w));
+	custom_buttons[i].text = gtk_entry_get_text(GTK_ENTRY(w));
+	update_custom_buttons(i);
+	update_custom_buttons_edit(i);
+}
+void on_tButtonsEdit_selection_changed(GtkTreeSelection *treeselection, gpointer) {
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	selected_subfunction = 0;
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(buttonsedit_builder, "buttons_edit_entry_label"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_buttons_edit_entry_label_changed, NULL);
+	if(gtk_tree_selection_get_selected(treeselection, &model, &iter)) {
+		int i = 0;
+		gchar *gstr, *gstr2, *gstr3, *gstr4;
+		gtk_tree_model_get(model, &iter, 0, &i, 1, &gstr, 2, &gstr2, 3, &gstr3, 4, &gstr4, -1);
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_button_1")), gstr2);
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_button_2")), gstr3);
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_button_3")), gstr4);
+		if(i <= 1) gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_entry_label")), custom_buttons[i].text.c_str());
+		else gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_entry_label")), gstr);
+		g_free(gstr); g_free(gstr2); g_free(gstr3); g_free(gstr4);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_box_edit")), TRUE);
+	} else {
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_entry_label")), "");
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_box_edit")), FALSE);
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_button_1")), "");
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_button_2")), "");
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_button_3")), "");
+	}
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(buttonsedit_builder, "buttons_edit_entry_label"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_buttons_edit_entry_label_changed, NULL);
+}
+void on_buttonsedit_button_x_clicked(int b_i) {
+	int i = 0;
+	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEdit));
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	if(!gtk_tree_selection_get_selected(select, &model, &iter)) return;
+	gtk_tree_model_get(model, &iter, 0, &i, -1);
 	GtkWidget *d = GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_type_dialog"));
 	GtkTreeIter iter2;
-	GtkTreeModel *model;
-	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEditType));
+	select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEditType));
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")), custom_buttons[i].value[b_i].c_str());
 	if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tButtonsEditType_store), &iter2)) {
 		do {
@@ -31053,8 +31124,22 @@ void on_buttonsedit_button_clicked(GtkButton*, gpointer user_data) {
 	}
 	gtk_widget_hide(d);
 }
-void on_buttonsedit_defaults_clicked(GtkButton *w, gpointer user_data) {
-	int i = GPOINTER_TO_INT(user_data);
+void on_buttons_edit_button_1_clicked(GtkButton*, gpointer user_data) {
+	on_buttonsedit_button_x_clicked(0);
+}
+void on_buttons_edit_button_2_clicked(GtkButton*, gpointer user_data) {
+	on_buttonsedit_button_x_clicked(1);
+}
+void on_buttons_edit_button_3_clicked(GtkButton*, gpointer user_data) {
+	on_buttonsedit_button_x_clicked(2);
+}
+void on_buttons_edit_button_defaults_clicked(GtkButton *w, gpointer user_data) {
+	int i = 0;
+	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEdit));
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	if(!gtk_tree_selection_get_selected(select, &model, &iter)) return;
+	gtk_tree_model_get(model, &iter, 0, &i, -1);
 	custom_buttons[i].type[0] = -1;
 	custom_buttons[i].value[0] = "";
 	custom_buttons[i].type[1] = -1;
@@ -31065,12 +31150,22 @@ void on_buttonsedit_defaults_clicked(GtkButton *w, gpointer user_data) {
 	update_custom_buttons(i);
 	update_custom_buttons_edit(i);
 }
-void on_buttonsedit_label_changed(GtkEditable *w, gpointer user_data) {
-	int i = GPOINTER_TO_INT(user_data);
-	gtk_entry_get_text(GTK_ENTRY(w));
-	custom_buttons[i].text = gtk_entry_get_text(GTK_ENTRY(w));
-	update_custom_buttons(i);
+void on_buttons_edit_treeview_row_activated(GtkTreeView *w, GtkTreePath *path, GtkTreeViewColumn *column, gpointer) {
+	GtkTreeIter iter;
+	if(!gtk_tree_model_get_iter(GTK_TREE_MODEL(tButtonsEdit_store), &iter, path)) return;
+	int i = 0;
+	gtk_tree_model_get(GTK_TREE_MODEL(tButtonsEdit_store), &iter, 0, &i, -1);
+	if(column == gtk_tree_view_get_column(w, 0)) {
+		gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_entry_label")));
+	} else if(column == gtk_tree_view_get_column(w, 1)) {
+		on_buttons_edit_button_1_clicked(NULL, NULL);
+	} else if(column == gtk_tree_view_get_column(w, 2)) {
+		on_buttons_edit_button_2_clicked(NULL, NULL);
+	} else if(column == gtk_tree_view_get_column(w, 3)) {
+		on_buttons_edit_button_3_clicked(NULL, NULL);
+	}
 }
+
 
 bool generate_plot(PlotParameters &pp, vector<MathStructure> &y_vectors, vector<MathStructure> &x_vectors, vector<PlotDataParameters*> &pdps) {
 	GtkTreeIter iter;

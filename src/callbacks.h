@@ -344,6 +344,7 @@ void hide_tooltip(GtkWidget*);
 void on_tShortcuts_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 void on_tShortcutsType_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 
+void on_tButtonsEdit_selection_changed(GtkTreeSelection *treeselection, gpointer);
 void on_tButtonsEditType_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 void on_buttonsedit_button_clicked(GtkButton *w, gpointer user_data);
 void on_buttonsedit_defaults_clicked(GtkButton *w, gpointer user_data);
