@@ -1375,8 +1375,6 @@ void create_main_window(void) {
 		}
 	}
 
-	update_accels();
-
 	set_unicode_buttons();
 
 	set_operator_symbols();
@@ -3412,7 +3410,7 @@ GtkWidget* get_floatingpoint_dialog(void) {
 #define SET_BUTTONS_EDIT_ITEM_2(l, t1, t2) SET_BUTTONS_EDIT_ITEM_3(l, t1, t2, t2)
 #define SET_BUTTONS_EDIT_ITEM_2B(l, t1, t2) SET_BUTTONS_EDIT_ITEM_3(gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(main_builder, l))), t1, t2, t2)
 
-void update_custom_buttons_edit(int index) {
+void update_custom_buttons_edit(int index, bool update_label_entry) {
 	GtkTreeIter iter;
 	gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tButtonsEdit_store), &iter);
 	int i = 0;
@@ -3452,7 +3450,7 @@ void update_custom_buttons_edit(int index) {
 		else if(i == 27 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2B("label_ans", _("Previous result"), _("Previous result (static)"))
 		else if(i == 28 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("=", _("Calculate expression"), _("MR (memory recall)"), _("MS (memory store)"))
 	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tButtonsEdit_store), &iter));
-	on_tButtonsEdit_selection_changed(gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEdit)), NULL);
+	on_tButtonsEdit_update_selection(gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEdit)), update_label_entry);
 }
 GtkWidget* get_buttons_edit_dialog(void) {
 	if(!buttonsedit_builder) {
