@@ -337,6 +337,12 @@ void reload_history(gint from_index = -1);
 extern "C" {
 #endif
 
+void memory_recall();
+void memory_store();
+void memory_add();
+void memory_subtract();
+void memory_clear();
+
 gboolean on_math_entry_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer);
 
 void hide_tooltip(GtkWidget*);

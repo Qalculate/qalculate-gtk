@@ -3088,13 +3088,17 @@ void display_parse_status() {
 	}
 #endif
 	if(text == "MC") {
-		text = "MR:=0";
+		set_status_text(_("MC (memory clear)"), true, false, false);
+		return;
 	} else if(text == "MS") {
-		text = "MR:=ans";
+		set_status_text(_("MS (memory store)"), true, false, false);
+		return;
 	} else if(text == "M+") {
-		text = "MR:=MR+ans";
+		set_status_text(_("M+ (memory plus)"), true, false, false);
+		return;
 	} else if(text == "M-" || text == "M−") {
-		text = "MR:=MR-ans";
+		set_status_text(_("M− (memory minus)"), true, false, false);
+		return;
 	}
 	remove_duplicate_blanks(text);
 	size_t i = text.find_first_of(SPACES LEFT_PARENTHESIS);
@@ -11225,13 +11229,37 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 
 	if(execute_str.empty()) {
 		if(str == "MC") {
-			str = "MR:=0";
+			b_busy = false;
+			b_busy_expression = false;
+			set_previous_expression();
+			expression_has_changed = false;
+			memory_clear();
+			setResult(NULL, false, false);
+			return;
 		} else if(str == "MS") {
-			str = "MR:=ans";
+			b_busy = false;
+			b_busy_expression = false;
+			set_previous_expression();
+			expression_has_changed = false;
+			memory_store();
+			setResult(NULL, false, false);
+			return;
 		} else if(str == "M+") {
-			str = "MR:=MR+ans";
+			b_busy = false;
+			b_busy_expression = false;
+			set_previous_expression();
+			expression_has_changed = false;
+			memory_add();
+			setResult(NULL, false, false);
+			return;
 		} else if(str == "M-" || str == "M−") {
-			str = "MR:=MR-ans";
+			b_busy = false;
+			b_busy_expression = false;
+			set_previous_expression();
+			expression_has_changed = false;
+			memory_subtract();
+			setResult(NULL, false, false);
+			return;
 		}
 	}
 
