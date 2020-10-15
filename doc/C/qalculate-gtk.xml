@@ -171,7 +171,7 @@ Operators will be placed after any selected text (except bitwise and logical NOT
 The mathematical functions accessed using keypad buttons (and menus) behave differently depending on the current edited expression. If the cursor is at the end of the expression and there is no operator or parenthesis immediately to left of the cursor (at the end of expression), the whole expression is used as function argument and the expression is immediately calculated using the function (if you type <quote>5 + 2</quote> and then click <guibutton>sin</guibutton>, <quote>sin(5 + 2)</quote> will be calculated). If text in the expression is selected, the selection will be used as the function argument. If the whole expression was selected the resulting expression will immediately be calculated. Functions that requires more than one argument do not follow these rules and in many cases opens a separate dialog for argument input. In RPN mode the function will always be applied to the register(s) at the top of stack, if the current expression is empty and there are enough registers for functions that require more one argument.
 </para>
 <para>
-The buttons on the right, with associated actions, is listed below:
+All actions and labels of the buttons on the right be customed using <menuchoice><guimenu>Edit</guimenu><guimenuitem>Customize Keypad Buttons</guimenuitem></menuchoice>. The default buttons, and associated actions, are listed below.
 <table id="qalculate-TBL-keypad-right" frame="topbot" colsep="1">
 	<title>Right Keypad</title> 
 	<tgroup cols="2" colsep="1" rowsep="0">
@@ -365,6 +365,8 @@ The buttons on the right, with associated actions, is listed below:
 		</tbody>
 	</tgroup>
 </table>
+</para>
+<para>
 <guibutton>DEL</guibutton> deletes one character the to the right or, if the cursor is at the end of the expression, to the left of the cursor (right-click always deletes the character to the left of the cursor). Long press on the button will continuously delete.
 </para>
 <para>
@@ -383,7 +385,7 @@ The arrow buttons works a bit differently than the other. The direction of the a
 The characters used as decimal point and argument separator varies between different locales. The argument separator is used for separation of arguments to functions that takes more than one argument, as well as to separate elements in vectors and matrices (although this is not strictly necessary).
 </para>
 <para>
-Below follows a list of the buttons on the left side (including their menus and associated actions), from left the right, top to bottom:
+Below follows a list of the buttons on the left side (including their menus and associated actions), from left the right, top to bottom.
 <table id="qalculate-TBL-keypad-left" frame="topbot" colsep="1">
 	<title>Left Keypad</title> 
 	<tgroup cols="2" colsep="1" rowsep="0">

@@ -2483,6 +2483,54 @@ gboolean do_autocalc_history_timeout(gpointer) {
 
 bool auto_calc_stopped_at_operator = false;
 
+void set_result_bases(const MathStructure &m) {
+	result_bin = ""; result_oct = "", result_dec = "", result_hex = "";
+	if(max_bases.isZero()) {max_bases = 2; max_bases ^= 64; min_bases = -max_bases;}
+	if(!CALCULATOR->aborted() && ((m.isNumber() && m.number() < max_bases && m.number() > min_bases) || (m.isNegate() && m[0].isNumber() && m[0].number() < max_bases && m[0].number() > min_bases))) {
+		Number nr;
+		if(m.isNumber()) {
+			nr = m.number();
+		} else {
+			nr = m[0].number();
+			nr.negate();
+		}
+		nr.round(printops.round_halfway_to_even);
+		PrintOptions po = printops;
+		po.show_ending_zeroes = false;
+		po.base_display = BASE_DISPLAY_NORMAL;
+		po.min_exp = 0;
+		if(printops.base != 2) {
+			po.base = 2;
+			result_bin = nr.print(po);
+		}
+		if(printops.base != 8) {
+			po.base = 8;
+			result_oct = nr.print(po);
+			size_t i = result_oct.find_first_of(NUMBERS);
+			if(i != string::npos && result_oct.length() > i + 1 && result_oct[i] == '0' && is_in(NUMBERS, result_oct[i + 1])) result_oct.erase(i, 1);
+		}
+		if(printops.base != 10) {
+			po.base = 10;
+			result_dec = nr.print(po);
+		}
+		if(printops.base != 16) {
+			po.base = 16;
+			result_hex = nr.print(po);
+			gsub("0x", "", result_hex);
+			size_t l = result_hex.length();
+			size_t i_after_minus = 0;
+			if(nr.isNegative()) {
+				if(l > 1 && result_hex[0] == '-') i_after_minus = 1;
+				else if(result_hex.find("−") == 0) i_after_minus = strlen("−");
+			}
+			for(int i = (int) l - 2; i > (int) i_after_minus; i -= 2) {
+				result_hex.insert(i, 1, ' ');
+			}
+			if(result_hex.length() > i_after_minus + 1 && result_hex[i_after_minus + 1] == ' ') result_hex.insert(i_after_minus, 1, '0');
+		}
+	}
+}
+
 void do_auto_calc(bool recalculate = true, string str = string()) {
 	if(block_result_update || block_expression_execution) return;
 	MathStructure mauto;
@@ -2975,52 +3023,10 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			}
 			update_expression_icons();
 			display_errors(NULL, NULL, NULL, 1);
-			result_bin = ""; result_oct = "", result_dec = "", result_hex = "";
-			if(max_bases.isZero()) {max_bases = 2; max_bases ^= 64; min_bases = -max_bases;}
-			if(visible_keypad & PROGRAMMING_KEYPAD && !CALCULATOR->aborted() && ((displayed_mstruct->isNumber() && displayed_mstruct->number() < max_bases && displayed_mstruct->number() > min_bases) || (displayed_mstruct->isNegate() && (*displayed_mstruct)[0].isNumber() && (*displayed_mstruct)[0].number() < max_bases && (*displayed_mstruct)[0].number() > min_bases))) {
-				Number nr;
-				if(displayed_mstruct->isNumber()) {
-					nr = displayed_mstruct->number();
-				} else {
-					nr = (*displayed_mstruct)[0].number();
-					nr.negate();
-				}
-				nr.round(printops.round_halfway_to_even);
-				PrintOptions po = printops;
-				po.show_ending_zeroes = false;
-				po.min_exp = 0;
-				po.base_display = BASE_DISPLAY_NORMAL;
-				if(printops.base != 2) {
-					po.base = 2;
-					result_bin = nr.print(po);
-				}
-				if(printops.base != 8) {
-					po.base = 8;
-					result_oct = nr.print(po);
-					size_t i = result_oct.find_first_of(NUMBERS);
-					if(i != string::npos && result_oct.length() > i + 1 && result_oct[i] == '0' && is_in(NUMBERS, result_oct[i + 1])) result_oct.erase(i, 1);
-				}
-				if(printops.base != 10) {
-					po.base = 10;
-					result_dec = nr.print(po);
-				}
-				if(printops.base != 16) {
-					po.base = 16;
-					result_hex = nr.print(po);
-					gsub("0x", "", result_hex);
-					size_t l = result_hex.length();
-					size_t i_after_minus = 0;
-					if(nr.isNegative()) {
-						if(l > 1 && result_hex[0] == '-') i_after_minus = 1;
-						else if(result_hex.find("−") == 0) i_after_minus = strlen("−");
-					}
-					for(int i = (int) l - 2; i > (int) i_after_minus; i -= 2) {
-						result_hex.insert(i, 1, ' ');
-					}
-					if(result_hex.length() > i_after_minus + 1 && result_hex[i_after_minus + 1] == ' ') result_hex.insert(i_after_minus, 1, '0');
-				}
+			if(visible_keypad & PROGRAMMING_KEYPAD) {
+				set_result_bases(*displayed_mstruct);
+				update_result_bases();
 			}
-			update_result_bases();
 		} else {
 			displayed_mstruct_pre->unref();
 			CALCULATOR->endTemporaryStopMessages();
@@ -7538,6 +7544,11 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 							nm.push_back(MULTIPLICATION_SIGN_OPERATOR);
 						} else {
 							nm.push_back(m[i].neededMultiplicationSign(po, ips_n, m, i + 1, ips_n.wrap || (m[i].isPower() && m[i][0].needsParenthesis(po, ips_n, m[i], 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0)), par_prev, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0));
+							if(nm[i] == MULTIPLICATION_SIGN_NONE && m[i].isPower() && m[i][0].isUnit() && po.use_unicode_signs && po.abbreviate_names && m[i][0].unit() == CALCULATOR->getDegUnit()) {
+								PrintOptions po2 = po;
+								po2.use_unicode_signs = false;
+								nm[i] = m[i].neededMultiplicationSign(po2, ips_n, m, i + 1, ips_n.wrap || (m[i].isPower() && m[i][0].needsParenthesis(po, ips_n, m[i], 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0)), par_prev, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+							}
 						}
 						if(nm[i] != MULTIPLICATION_SIGN_NONE) {
 							w += wopt[i - 1];
@@ -7878,7 +7889,14 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				gint base_w, base_h, exp_w, exp_h, w = 0, h = 0, ctmp = 0;
 				CALCULATE_SPACE_W
 				ips_n.wrap = SHOW_WITH_ROOT_SIGN(m[0]) || m[0].needsParenthesis(po, ips_n, m, 1, ips.division_depth > 0, false);
-				cairo_surface_t *surface_base = draw_structure(m[0], po, caf, ips_n, &central_point, scaledown, color, &offset_x);
+				cairo_surface_t *surface_base = NULL;
+				if(m[0].isUnit() && po.use_unicode_signs && po.abbreviate_names && m[0].unit() == CALCULATOR->getDegUnit()) {
+					PrintOptions po2 = po;
+					po2.use_unicode_signs = false;
+					surface_base = draw_structure(m[0], po2, caf, ips_n, &central_point, scaledown, color, &offset_x);
+				} else {
+					surface_base = draw_structure(m[0], po, caf, ips_n, &central_point, scaledown, color, &offset_x);
+				}
 				if(!surface_base) {
 					return NULL;
 				}
@@ -9358,10 +9376,10 @@ void clearresult() {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), FALSE);
 		gtk_widget_queue_draw(resultview);
 	}
-	result_bin = ""; result_oct = ""; result_dec = ""; result_hex = "";
-	gtk_label_set_text(GTK_LABEL(result_bases), "");
-	gtk_widget_set_tooltip_markup(result_bases, "");
-	gtk_widget_set_tooltip_text(resultview, "");
+	if(visible_keypad & PROGRAMMING_KEYPAD) {
+		result_bin = ""; result_oct = ""; result_dec = ""; result_hex = "";
+		update_result_bases();
+	}
 }
 
 void on_abort_display(GtkDialog*, gint, gpointer) {
@@ -9480,52 +9498,8 @@ void ViewThread::run() {
 		if(complex_angle_form) replace_result_cis(result_text);
 		result_text_approximate = *printops.is_approximate;
 
-		if(!b_stack) {
-			result_bin = ""; result_oct = "", result_dec = "", result_hex = "";
-			if(max_bases.isZero()) {max_bases = 2; max_bases ^= 64; min_bases = -max_bases;}
-			if(!CALCULATOR->aborted() && ((m.isNumber() && m.number() < max_bases && m.number() > min_bases) || (m.isNegate() && m[0].isNumber() && m[0].number() < max_bases && m[0].number() > min_bases))) {
-				Number nr;
-				if(m.isNumber()) {
-					nr = m.number();
-				} else {
-					nr = m[0].number();
-					nr.negate();
-				}
-				nr.round(printops.round_halfway_to_even);
-				PrintOptions po = printops;
-				po.show_ending_zeroes = false;
-				po.base_display = BASE_DISPLAY_NORMAL;
-				po.min_exp = 0;
-				if(printops.base != 2) {
-					po.base = 2;
-					result_bin = nr.print(po);
-				}
-				if(printops.base != 8) {
-					po.base = 8;
-					result_oct = nr.print(po);
-					size_t i = result_oct.find_first_of(NUMBERS);
-					if(i != string::npos && result_oct.length() > i + 1 && result_oct[i] == '0' && is_in(NUMBERS, result_oct[i + 1])) result_oct.erase(i, 1);
-				}
-				if(printops.base != 10) {
-					po.base = 10;
-					result_dec = nr.print(po);
-				}
-				if(printops.base != 16) {
-					po.base = 16;
-					result_hex = nr.print(po);
-					gsub("0x", "", result_hex);
-					size_t l = result_hex.length();
-					size_t i_after_minus = 0;
-					if(nr.isNegative()) {
-						if(l > 1 && result_hex[0] == '-') i_after_minus = 1;
-						else if(result_hex.find("−") == 0) i_after_minus = strlen("−");
-					}
-					for(int i = (int) l - 2; i > (int) i_after_minus; i -= 2) {
-						result_hex.insert(i, 1, ' ');
-					}
-					if(result_hex.length() > i_after_minus + 1 && result_hex[i_after_minus + 1] == ' ') result_hex.insert(i_after_minus, 1, '0');
-				}
-			}
+		if(!b_stack && visible_keypad & PROGRAMMING_KEYPAD) {
+			set_result_bases(m);
 		}
 
 		if(!b_stack && g_get_monotonic_time() - time1 < 200000) {
@@ -10449,7 +10423,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	}
 
 	if(stack_index == 0) {
-		update_result_bases();
+		if(visible_keypad & PROGRAMMING_KEYPAD) update_result_bases();
 		if(title_set) {
 			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultspinner")));
 			gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
@@ -20291,6 +20265,10 @@ void on_button_programmers_keypad_toggled(GtkToggleButton *w, gpointer) {
 		programming_inbase = 0;
 		programming_outbase = 0;
 		gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "programmers_keypad")));
+		if(displayed_mstruct) {
+			set_result_bases(*displayed_mstruct);
+			update_result_bases();
+		}
 		gtk_stack_set_visible_child_name(GTK_STACK(gtk_builder_get_object(main_builder, "stack_keypad_top")), "page1");
 	} else {
 		if(versatile_exact && evalops.approximation == APPROXIMATION_TRY_EXACT) {
@@ -20303,6 +20281,8 @@ void on_button_programmers_keypad_toggled(GtkToggleButton *w, gpointer) {
 		programming_outbase = printops.base;
 		if(evalops.parse_options.base != 10) clear_expression_text();
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_dec")), TRUE);
+		result_bin = ""; result_oct = ""; result_dec = ""; result_hex = "";
+		update_result_bases();
 	}
 	focus_keeping_selection();
 }
@@ -30713,10 +30693,12 @@ void on_buttonsedit_entry_value_activate(GtkEntry*, gpointer d) {
 	gtk_dialog_response(GTK_DIALOG(gtk_builder_get_object(buttonsedit_builder, "shortcuts_type_dialog")), GTK_RESPONSE_ACCEPT);
 }
 void on_shortcuts_type_treeview_row_activated(GtkTreeView*, GtkTreePath*, GtkTreeViewColumn*, gpointer) {
-	if(!gtk_widget_get_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")))) gtk_dialog_response(GTK_DIALOG(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog")), GTK_RESPONSE_ACCEPT);
+	if(gtk_widget_get_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")))) gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
+	else gtk_dialog_response(GTK_DIALOG(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog")), GTK_RESPONSE_ACCEPT);
 }
 void on_buttonsedit_type_treeview_row_activated(GtkTreeView*, GtkTreePath*, GtkTreeViewColumn*, gpointer) {
-	if(!gtk_widget_get_sensitive(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")))) gtk_dialog_response(GTK_DIALOG(gtk_builder_get_object(buttonsedit_builder, "shortcuts_type_dialog")), GTK_RESPONSE_ACCEPT);
+	if(gtk_widget_get_sensitive(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")))) gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")));
+	else gtk_dialog_response(GTK_DIALOG(gtk_builder_get_object(buttonsedit_builder, "shortcuts_type_dialog")), GTK_RESPONSE_ACCEPT);
 }
 void on_shortcuts_button_new_clicked(GtkButton*, gpointer) {
 	GtkWidget *d = GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog"));

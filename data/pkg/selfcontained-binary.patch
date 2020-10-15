@@ -67,35 +67,3 @@ index 64c33d2..fbd9cb9 100644
  
  	b_busy = false;
  	b_busy_result = false;
-diff --git a/src/Makefile.am b/src/Makefile.am
-index c2f44a3..9bf143b 100644
---- a/src/Makefile.am
-+++ b/src/Makefile.am
-@@ -5,6 +5,7 @@
- AM_CPPFLAGS = \
- 	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
- 	-DPACKAGE_DOC_DIR=\""$(docdir)"\" \
-+	-std=c++11 \
- 	@GTK_CFLAGS@ \
- 	@GLIB_CFLAGS@ \
- 	@WEBKITGTK_CFLAGS@ \
-@@ -26,6 +27,10 @@ ui.c : $(top_srcdir)/data/ui.gresource.xml $(top_srcdir)/data/*.ui
- 	
- flags.c : $(top_srcdir)/data/flags.gresource.xml $(top_srcdir)/data/flags/*.png
- 	glib-compile-resources --generate-source --target=$@ --sourcedir=$(top_srcdir)/data/flags $(top_srcdir)/data/flags.gresource.xml
-+	
-+definitions.c : $(top_srcdir)/data/definitions.gresource.xml $(top_srcdir)/data/*.xml
-+	glib-compile-resources --generate-source --target=$@ --sourcedir=$(top_srcdir)/data $(top_srcdir)/data/definitions.gresource.xml
-+	
- 
- qalculate_gtk_SOURCES = \
- 	main.cc		main.h		\
-@@ -33,7 +38,7 @@ qalculate_gtk_SOURCES = \
- 	callbacks.cc	callbacks.h	\
- 	support.h
- 
--nodist_qalculate_gtk_SOURCES = ui.c flags.c
-+nodist_qalculate_gtk_SOURCES = ui.c flags.c definitions.c
- 
- qalculate_gtk_LDADD = \
- 	@GLIB_LIBS@ \
