@@ -2805,7 +2805,8 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			}
 		}
 		if(origstr && str_conv.empty() && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion"))) && gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) && !minimal_mode) {
-			string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), evalops.parse_options);
+			ParseOptions pa = evalops.parse_options; pa.base = 10;
+			string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), pa);
 			remove_blank_ends(ceu_str);
 			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {
 				if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-' && (ceu_str.length() == 1 || ceu_str[1] != '?')) {
@@ -4056,7 +4057,8 @@ void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 								str2 += ", ";
 								//argument default, in description
 								str2 += _("default: ");
-								str2 += f->getDefaultValue(i2);
+								ParseOptions pa = evalops.parse_options; pa.base = 10;
+								str2 += CALCULATOR->localizeExpression(f->getDefaultValue(i2), pa);
 							}
 							str2 += ")";
 						}
@@ -4226,7 +4228,8 @@ void setVariableTreeItem(GtkTreeIter &iter2, Variable *v) {
 		value = _("a previous result");
 	} else if(v->isKnown()) {
 		if(((KnownVariable*) v)->isExpression()) {
-			value = CALCULATOR->localizeExpression(((KnownVariable*) v)->expression());
+			ParseOptions pa = evalops.parse_options; pa.base = 10;
+			value = CALCULATOR->localizeExpression(((KnownVariable*) v)->expression(), pa);
 			bool is_relative = false;
 			if(!((KnownVariable*) v)->uncertainty(&is_relative).empty()) {
 				if(is_relative) {
@@ -4234,12 +4237,12 @@ void setVariableTreeItem(GtkTreeIter &iter2, Variable *v) {
 					value.insert(0, CALCULATOR->f_uncertainty->referenceName());
 					value += CALCULATOR->getComma();
 					value += " ";
-					value += CALCULATOR->localizeExpression(((KnownVariable*) v)->uncertainty());
+					value += CALCULATOR->localizeExpression(((KnownVariable*) v)->uncertainty(), pa);
 					value += CALCULATOR->getComma();
 					value += " 1)";
 				} else {
 					value += SIGN_PLUSMINUS;
-					value += CALCULATOR->localizeExpression(((KnownVariable*) v)->uncertainty());
+					value += CALCULATOR->localizeExpression(((KnownVariable*) v)->uncertainty(), pa);
 				}
 			}
 			if(!((KnownVariable*) v)->unit().empty()) {value += " "; value += ((KnownVariable*) v)->unit();}
@@ -6412,7 +6415,8 @@ void update_completion() {
 					title = _("a previous result");
 				} else if(v->isKnown()) {
 					if(((KnownVariable*) v)->isExpression()) {
-						title = CALCULATOR->localizeExpression(((KnownVariable*) v)->expression());
+						ParseOptions pa = evalops.parse_options; pa.base = 10;
+						title = CALCULATOR->localizeExpression(((KnownVariable*) v)->expression(), pa);
 						if(title.length() > 30) {title = title.substr(0, 30); title += "…";}
 						else if(!((KnownVariable*) v)->unit().empty()) {title += " "; title += ((KnownVariable*) v)->unit();}
 					} else {
@@ -9029,7 +9033,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						if(defstr.empty()) break;
 						if(m[argcount - 1].isUndefined() && defstr == "undefined") {
 							argcount--;
-						} else if(argcount > 1 && arg && arg->type() == ARGUMENT_TYPE_SYMBOLIC && defstr == "undefined" && m[argcount - 1] == m[0].find_x_var()) {
+						} else if(argcount > 1 && arg && arg->type() == ARGUMENT_TYPE_SYMBOLIC && ((argcount > 1 && defstr == "undefined" && m[argcount - 1] == m[0].find_x_var()) || (defstr == "\"\"" && m[argcount - 1] == ""))) {
 							argcount--;
 						} else if(m[argcount - 1].isVariable() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr == m[argcount - 1].variable()->referenceName()) {
 							argcount--;
@@ -10697,7 +10701,8 @@ void CommandThread::run() {
 			case COMMAND_TRANSFORM: {
 				string ceu_str;
 				if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion"))) && gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) && !minimal_mode) {
-					ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), evalops.parse_options);
+					ParseOptions pa = evalops.parse_options; pa.base = 10;
+					ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), pa);
 					remove_blank_ends(ceu_str);
 					if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {
 						if(ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-' && (ceu_str.length() == 1 || ceu_str[1] != '?')) {
@@ -11530,7 +11535,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			} else if(from_str.empty()) {
 				b_busy = false;
 				b_busy_expression = false;
-				executeCommand(COMMAND_CONVERT_STRING, true, to_str);
+				executeCommand(COMMAND_CONVERT_STRING, true, CALCULATOR->unlocalizeExpression(to_str, evalops.parse_options));
 				set_previous_expression();
 				return;
 			} else {
@@ -11583,7 +11588,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	update_expression_icons(EXPRESSION_STOP);
 
 	if(do_ceu && str_conv.empty() && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion"))) && gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) && !minimal_mode) {
-		string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), evalops.parse_options);
+		ParseOptions pa = evalops.parse_options; pa.base = 10;
+		string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), pa);
 		remove_blank_ends(ceu_str);
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {
 			if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-' && (ceu_str.length() == 1 || ceu_str[1] != '?')) {
@@ -12282,7 +12288,8 @@ void insert_function_do(MathFunction *f, FunctionDialog *fd) {
 	int argcount = fd->args;
 	if(f->maxargs() > 0 && f->minargs() < f->maxargs() && argcount > f->minargs()) {
 		while(true) {
-			string defstr = f->getDefaultValue(argcount);
+			ParseOptions pa = evalops.parse_options; pa.base = 10;
+			string defstr = CALCULATOR->localizeExpression(f->getDefaultValue(argcount), pa);
 			remove_blank_ends(defstr);
 			if(f->getArgumentDefinition(argcount) && f->getArgumentDefinition(argcount)->type() == ARGUMENT_TYPE_BOOLEAN) {
 				if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fd->boolean_buttons[fd->boolean_index[argcount - 1]]))) {
@@ -12320,7 +12327,7 @@ void insert_function_do(MathFunction *f, FunctionDialog *fd) {
 		}
 	}
 
-	int i_vector = argcount;
+	int i_vector = f->maxargs() > 0 ? f->maxargs() : argcount;
 	for(int i = 0; i < argcount; i++) {
 		if(f->getArgumentDefinition(i + 1) && f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_BOOLEAN) {
 			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fd->boolean_buttons[fd->boolean_index[i]]))) {
@@ -12328,11 +12335,11 @@ void insert_function_do(MathFunction *f, FunctionDialog *fd) {
 			} else {
 				str2 = "0";
 			}
-		} else if((i != argcount - 1 || i_vector == i - 1) && f->getArgumentDefinition(i + 1) && f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_VECTOR) {
+		} else if((i != (f->maxargs() > 0 ? f->maxargs() : argcount) - 1 || i_vector == i - 1) && f->getArgumentDefinition(i + 1) && f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_VECTOR) {
 			i_vector = i;
 			str2 = gtk_entry_get_text(GTK_ENTRY(fd->entry[i]));
 			remove_blank_ends(str2);
-			if(str2.find_first_of(PARENTHESISS VECTOR_WRAPS) == string::npos) {
+			if(str2.find_first_of(PARENTHESISS VECTOR_WRAPS) == string::npos && str2.find_first_of(CALCULATOR->getComma() == COMMA ? COMMAS : CALCULATOR->getComma()) != string::npos) {
 				str2.insert(0, 1, '[');
 				str2 += ']';
 			}
@@ -12563,7 +12570,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 
 	gtk_container_set_border_width(GTK_CONTAINER(fd->dialog), 6);
 	gtk_window_set_resizable(GTK_WINDOW(fd->dialog), FALSE);
-	GtkWidget *vbox_pre = gtk_box_new(GTK_ORIENTATION_VERTICAL, 12);
+	GtkWidget *vbox_pre = gtk_box_new(GTK_ORIENTATION_VERTICAL, 18);
 	gtk_container_set_border_width(GTK_CONTAINER(vbox_pre), 6);
 	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(fd->dialog))), vbox_pre);
 	f_title.insert(0, "<b>");
@@ -12576,7 +12583,8 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 
 	GtkWidget *table = gtk_grid_new();
 	gtk_grid_set_row_spacing(GTK_GRID(table), 6);
-	gtk_grid_set_column_spacing(GTK_GRID(table), 12);
+	gtk_grid_set_column_spacing(GTK_GRID(table), 6);
+	gtk_grid_set_row_homogeneous(GTK_GRID(table), TRUE);
 	gtk_container_add(GTK_CONTAINER(vbox_pre), table);
 	gtk_widget_set_hexpand(table, TRUE);
 	fd->label.resize(args, NULL);
@@ -12585,6 +12593,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 	fd->boolean_index.resize(args, 0);
 
 	fd->w_result = gtk_label_new("");
+	gtk_widget_set_margin_bottom(fd->w_result, 6);
 	gtk_label_set_max_width_chars(GTK_LABEL(fd->w_result), 20);
 	gtk_label_set_ellipsize(GTK_LABEL(fd->w_result), PANGO_ELLIPSIZE_MIDDLE);
 	gtk_widget_set_hexpand(fd->w_result, TRUE);
@@ -12617,13 +12626,19 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 		}
 		typestr = "";
 		argtype = "";
-		defstr = f->getDefaultValue(i + 1);
+		ParseOptions pa = evalops.parse_options; pa.base = 10;
+		defstr = CALCULATOR->localizeExpression(f->getDefaultValue(i + 1), pa);
 		if(arg && (arg->suggestsQuotes() || arg->type() == ARGUMENT_TYPE_TEXT) && defstr.length() >= 2 && defstr[0] == '\"' && defstr[defstr.length() - 1] == '\"') {
 			defstr = defstr.substr(1, defstr.length() - 2);
 		}
 		fd->label[i] = gtk_label_new(argstr.c_str());
 		gtk_widget_set_halign(fd->label[i], GTK_ALIGN_END);
 		gtk_widget_set_hexpand(fd->label[i], FALSE);
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
+		gtk_widget_set_margin_end(fd->label[i], 6);
+#else
+		gtk_widget_set_margin_right(fd->label[i], 6);
+#endif
 		if(arg) {
 			switch(arg->type()) {
 				case ARGUMENT_TYPE_INTEGER: {
@@ -12640,9 +12655,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 					gtk_entry_set_alignment(GTK_ENTRY(fd->entry[i]), 1.0);
 					g_signal_connect(G_OBJECT(fd->entry[i]), "input", G_CALLBACK(on_function_int_input), NULL);
 					g_signal_connect(G_OBJECT(fd->entry[i]), "key-press-event", G_CALLBACK(on_math_entry_key_press_event), NULL);
-					if(!f->getDefaultValue(i + 1).empty()) {
-						gtk_spin_button_set_value(GTK_SPIN_BUTTON(fd->entry[i]), s2i(f->getDefaultValue(i + 1)));
-					} else if(!arg->zeroForbidden() && min <= 0 && max >= 0) {
+					if(!arg->zeroForbidden() && min <= 0 && max >= 0) {
 						gtk_spin_button_set_value(GTK_SPIN_BUTTON(fd->entry[i]), 0);
 					} else {
 						if(max < 0) {
@@ -12745,20 +12758,26 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 		}
 		gtk_widget_set_hexpand(fd->entry[i], TRUE);
 		if(arg && arg->type() == ARGUMENT_TYPE_DATE) {
+			if(defstr == "now") defstr = CALCULATOR->v_now->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) fd->entry[i]).name;
+			else if(defstr == "today") defstr = CALCULATOR->v_today->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) fd->entry[i]).name;
 			typestr = typestr.substr(1, typestr.length() - 2);
 			fd->type_label[i] = gtk_button_new_with_label(typestr.c_str());
 			g_signal_connect(G_OBJECT(fd->type_label[i]), "clicked", G_CALLBACK(on_type_label_date_clicked), (gpointer) fd->entry[i]);
+			gtk_widget_set_halign(fd->type_label[i], GTK_ALIGN_FILL);
 		} else if(arg && arg->type() == ARGUMENT_TYPE_FILE) {
 			typestr = typestr.substr(1, typestr.length() - 2);
 			fd->type_label[i] = gtk_button_new_with_label(typestr.c_str());
 			g_signal_connect(G_OBJECT(fd->type_label[i]), "clicked", G_CALLBACK(on_type_label_file_clicked), (gpointer) fd->entry[i]);
+			gtk_widget_set_halign(fd->type_label[i], GTK_ALIGN_FILL);
 		} else if(arg && (arg->type() == ARGUMENT_TYPE_VECTOR || arg->type() == ARGUMENT_TYPE_MATRIX)) {
 			typestr = typestr.substr(1, typestr.length() - 2);
 			fd->type_label[i] = gtk_button_new_with_label(typestr.c_str());
 			if(arg->type() == ARGUMENT_TYPE_VECTOR) g_signal_connect(G_OBJECT(fd->type_label[i]), "clicked", G_CALLBACK(on_type_label_vector_clicked), (gpointer) fd->entry[i]);
 			else g_signal_connect(G_OBJECT(fd->type_label[i]), "clicked", G_CALLBACK(on_type_label_matrix_clicked), (gpointer) fd->entry[i]);
+			gtk_widget_set_halign(fd->type_label[i], GTK_ALIGN_FILL);
 		} else if(!typestr.empty()) {
 			fd->type_label[i] = gtk_label_new(typestr.c_str());
+			gtk_widget_set_halign(fd->type_label[i], GTK_ALIGN_START);
 		} else {
 			fd->type_label[i] = NULL;
 		}
@@ -12805,12 +12824,20 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 		} else if(fd->properties_store && arg && arg->type() == ARGUMENT_TYPE_DATA_PROPERTY) {
 		} else {
 			g_signal_handlers_block_matched((gpointer) fd->entry[i], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
-			if(i < f->minargs() || has_vector || defstr != "undefined") gtk_entry_set_text(GTK_ENTRY(fd->entry[i]), defstr.c_str());
-			//insert selection in expression entry into the first argument entry
-			if(i == 0) {
-				gtk_entry_set_text(GTK_ENTRY(fd->entry[i]), get_selected_expression_text(true).c_str());
+			if(!defstr.empty() && (i < f->minargs() || has_vector || (defstr != "undefined" && defstr != "\"\""))) {
+				gtk_entry_set_text(GTK_ENTRY(fd->entry[i]), defstr.c_str());
 				if(arg && arg->type() == ARGUMENT_TYPE_INTEGER) {
 					gtk_spin_button_update(GTK_SPIN_BUTTON(fd->entry[i]));
+				}
+			}
+			//insert selection in expression entry into the first argument entry
+			if(i == 0) {
+				string seltext = get_selected_expression_text(true);
+				if(!seltext.empty()) {
+					gtk_entry_set_text(GTK_ENTRY(fd->entry[i]), seltext.c_str());
+					if(arg && arg->type() == ARGUMENT_TYPE_INTEGER) {
+						gtk_spin_button_update(GTK_SPIN_BUTTON(fd->entry[i]));
+					}
 				}
 			}
 			g_signal_handlers_unblock_matched((gpointer) fd->entry[i], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
@@ -12819,7 +12846,6 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 		gtk_grid_attach(GTK_GRID(table), fd->entry[i], 1, i, 1, 1);
 		if(fd->type_label[i]) {
 			gtk_widget_set_hexpand(fd->type_label[i], FALSE);
-			gtk_widget_set_halign(fd->type_label[i], GTK_ALIGN_START);
 			gtk_grid_attach(GTK_GRID(table), fd->type_label[i], 2, i, 1, 1);
 		}
 	}
@@ -13094,22 +13120,23 @@ void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 				gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp")), au->firstBaseExponent());
 				if(au->firstBaseExponent() != 1) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_frame_mix")), FALSE);
 				bool is_relative = false;
+				ParseOptions pa = evalops.parse_options; pa.base = 10;
 				if(au->uncertainty(&is_relative).empty()) {
-					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), CALCULATOR->localizeExpression(au->expression()).c_str());
+					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), CALCULATOR->localizeExpression(au->expression(), pa).c_str());
 				} else if(is_relative) {
 					string value = CALCULATOR->f_uncertainty->referenceName();
 					value += "(";
 					value += au->expression();
 					value += CALCULATOR->getComma();
 					value += " ";
-					value += CALCULATOR->localizeExpression(au->uncertainty());
+					value += CALCULATOR->localizeExpression(au->uncertainty(), pa);
 					value += CALCULATOR->getComma();
 					value += " 1)";
-					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), CALCULATOR->localizeExpression(value).c_str());
+					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), CALCULATOR->localizeExpression(value, pa).c_str());
 				} else {
-					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), CALCULATOR->localizeExpression(au->expression() + SIGN_PLUSMINUS + au->uncertainty()).c_str());
+					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), CALCULATOR->localizeExpression(au->expression() + SIGN_PLUSMINUS + au->uncertainty(), pa).c_str());
 				}
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")), CALCULATOR->localizeExpression(au->inverseExpression()).c_str());
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")), CALCULATOR->localizeExpression(au->inverseExpression(), pa).c_str());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_box_reversed")), au->hasNonlinearExpression());
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact")), !au->isApproximate());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), !u->isBuiltin());
@@ -13145,6 +13172,7 @@ void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_button_ok")), TRUE);
 	}
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_button_ok")), FALSE);
+	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_name")));
 
 run_unit_edit_dialog:
 	gint response = gtk_dialog_run(GTK_DIALOG(dialog));
@@ -13188,8 +13216,9 @@ run_unit_edit_dialog:
 							goto run_unit_edit_dialog;
 						}
 						au->setBaseUnit(bu);
-						au->setExpression(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation"))), evalops.parse_options));
-						au->setInverseExpression(au->hasNonlinearExpression() ? CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed"))), evalops.parse_options) : "");
+						ParseOptions pa = evalops.parse_options; pa.base = 10;
+						au->setExpression(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation"))), pa));
+						au->setInverseExpression(au->hasNonlinearExpression() ? CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed"))), pa) : "");
 						au->setExponent(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp"))));
 						au->setApproximate(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact"))));
 						if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")))) {
@@ -13237,7 +13266,8 @@ run_unit_edit_dialog:
 						show_message(_("Base unit does not exist."), dialog);
 						goto run_unit_edit_dialog;
 					}
-					u = new AliasUnit(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(unitedit_builder, "unit_edit_combo_category"))), "", "", "", gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_desc"))), bu, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation"))), evalops.parse_options), gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp"))), CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed"))), evalops.parse_options), true);
+					ParseOptions pa = evalops.parse_options; pa.base = 10;
+					u = new AliasUnit(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(unitedit_builder, "unit_edit_combo_category"))), "", "", "", gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_desc"))), bu, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation"))), pa), gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp"))), CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed"))), pa), true);
 					((AliasUnit*) u)->setApproximate(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact"))));
 					if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")))) {
 						((AliasUnit*) u)->setMixWithBase(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_priority"))));
@@ -13302,7 +13332,8 @@ bool edit_argument(Argument *arg) {
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_enable_test")), arg->tests());
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_allow_matrix")), arg->matrixAllowed());
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_allow_matrix")), TRUE);
-	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(argumentrules_builder, "argument_rules_entry_condition")), CALCULATOR->localizeExpression(arg->getCustomCondition()).c_str());
+	ParseOptions pa = evalops.parse_options; pa.base = 10;
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(argumentrules_builder, "argument_rules_entry_condition")), CALCULATOR->localizeExpression(arg->getCustomCondition(), pa).c_str());
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_enable_condition")), !arg->getCustomCondition().empty());
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_entry_condition")), !arg->getCustomCondition().empty());
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_forbid_zero")), arg->zeroForbidden());
@@ -13383,6 +13414,7 @@ bool edit_argument(Argument *arg) {
 		}
 	}
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_button_ok")), FALSE);
+	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_enable_test")));
 	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
 		arg->setTests(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_enable_test"))));
 		arg->setMatrixAllowed(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_allow_matrix"))));
@@ -13518,12 +13550,13 @@ void edit_function(const char *category = "", MathFunction *f = NULL, GtkWidget 
 	if(f) {
 		//fill in original paramaters
 		set_name_label_and_entry(f, GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")), GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_label_names")));
+		ParseOptions pa = evalops.parse_options; pa.base = 10;
 		if(!f->isBuiltin()) {
-			gtk_text_buffer_set_text(expression_buffer, CALCULATOR->localizeExpression(((UserFunction*) f)->formula()).c_str(), -1);
+			gtk_text_buffer_set_text(expression_buffer, CALCULATOR->localizeExpression(((UserFunction*) f)->formula(), pa).c_str(), -1);
 		}
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(functionedit_builder, "function_edit_combo_category")))), f->category().c_str());
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_desc")), f->title(false).c_str());
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_condition")), CALCULATOR->localizeExpression(f->condition()).c_str());
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_condition")), CALCULATOR->localizeExpression(f->condition(), pa).c_str());
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(functionedit_builder, "function_edit_checkbutton_hidden")), f->isHidden());
 		gtk_text_buffer_set_text(description_buffer, f->description().c_str(), -1);
 
@@ -13569,7 +13602,8 @@ run_function_edit_dialog:
 		gtk_text_buffer_get_start_iter(expression_buffer, &e_iter_s);
 		gtk_text_buffer_get_end_iter(expression_buffer, &e_iter_e);
 		gchar *gstr = gtk_text_buffer_get_text(expression_buffer, &e_iter_s, &e_iter_e, FALSE);
-		string str2 = CALCULATOR->unlocalizeExpression(gstr, evalops.parse_options);
+		ParseOptions pa = evalops.parse_options; pa.base = 10;
+		string str2 = CALCULATOR->unlocalizeExpression(gstr, pa);
 		g_free(gstr);
 		remove_blank_ends(str2);
 		gsub("\n", " ", str2);
@@ -13607,7 +13641,7 @@ run_function_edit_dialog:
 		}
 		g_free(gstr_descr);
 		if(f) {
-			f->setCondition(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_condition"))), evalops.parse_options));
+			f->setCondition(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_condition"))), pa));
 			GtkTreeIter iter;
 			bool b = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tFunctionArguments_store), &iter);
 			int i = 1;
@@ -13697,7 +13731,8 @@ void edit_function_simple(const char *category = "", MathFunction *f = NULL, Gtk
 
 	if(f) {
 		//fill in original paramaters
-		gtk_text_buffer_set_text(expression_buffer, CALCULATOR->localizeExpression(((UserFunction*) f)->formula()).c_str(), -1);
+		ParseOptions pa = evalops.parse_options; pa.base = 10;
+		gtk_text_buffer_set_text(expression_buffer, CALCULATOR->localizeExpression(((UserFunction*) f)->formula(), pa).c_str(), -1);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_entry_name")), f->getName(1).name.c_str());
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_radiobutton_slash")), TRUE);
 	} else {
@@ -13723,7 +13758,8 @@ run_simple_function_edit_dialog:
 		gtk_text_buffer_get_start_iter(expression_buffer, &e_iter_s);
 		gtk_text_buffer_get_end_iter(expression_buffer, &e_iter_e);;
 		gchar *gstr = gtk_text_buffer_get_text(expression_buffer, &e_iter_s, &e_iter_e, FALSE);
-		string str2 = CALCULATOR->unlocalizeExpression(gstr, evalops.parse_options);
+		ParseOptions pa = evalops.parse_options; pa.base = 10;
+		string str2 = CALCULATOR->unlocalizeExpression(gstr, pa);
 		g_free(gstr);
 		remove_blank_ends(str2);
 		gsub("\n", " ", str2);
@@ -14051,7 +14087,8 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 		set_name_label_and_entry(v, GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")), GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_label_names")));
 		string value_str;
 		if(v->isExpression()) {
-			value_str = CALCULATOR->localizeExpression(v->expression());
+			ParseOptions pa = evalops.parse_options; pa.base = 10;
+			value_str = CALCULATOR->localizeExpression(v->expression(), pa);
 			bool is_relative = false;
 			if(!v->uncertainty(&is_relative).empty()) {
 				if(is_relative) {
@@ -14110,7 +14147,8 @@ run_variable_edit_dialog:
 	if(response == GTK_RESPONSE_OK) {
 		//clicked "OK"
 		string str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")));
-		string str2 = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_value"))), evalops.parse_options);
+		ParseOptions pa = evalops.parse_options; pa.base = 10;
+		string str2 = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_value"))), pa);
 		remove_blank_ends(str);
 		remove_blank_ends(str2);
 		GtkTreeIter iter;
@@ -14394,6 +14432,7 @@ run_matrix_edit_dialog:
 			gchar *gstr = NULL;
 			string mstr;
 			do_timeout = false;
+			ParseOptions pa = evalops.parse_options; pa.base = 10; pa.rpn = false;
 			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(matrixedit_builder, "matrix_edit_radiobutton_vector")))) {
 				mstruct_new.clearVector();
 				for(size_t index_r = 0; index_r < (size_t) r && b; index_r++) {
@@ -14403,7 +14442,7 @@ run_matrix_edit_dialog:
 						g_free(gstr);
 						remove_blank_ends(mstr);
 						if(!mstr.empty()) {
-							mstruct_new.addChild(CALCULATOR->parse(CALCULATOR->unlocalizeExpression(mstr, evalops.parse_options), evalops.parse_options));
+							mstruct_new.addChild(CALCULATOR->parse(CALCULATOR->unlocalizeExpression(mstr, pa), pa));
 						}
 					}
 					b = gtk_tree_model_iter_next(GTK_TREE_MODEL(tMatrixEdit_store), &iter);
@@ -14417,7 +14456,7 @@ run_matrix_edit_dialog:
 						mstr = gstr;
 						g_free(gstr);
 						remove_blank_ends(mstr);
-						mstruct_new.setElement(CALCULATOR->parse(CALCULATOR->unlocalizeExpression(mstr, evalops.parse_options), evalops.parse_options), index_r + 1, index_c + 1);
+						mstruct_new.setElement(CALCULATOR->parse(CALCULATOR->unlocalizeExpression(mstr, pa), pa), index_r + 1, index_c + 1);
 					}
 					b = gtk_tree_model_iter_next(GTK_TREE_MODEL(tMatrixEdit_store), &iter);
 				}
@@ -14708,6 +14747,7 @@ void edit_dataobject(DataSet *ds, DataObject *o, GtkWidget *win) {
 		rows++;
 		dp = ds->getNextProperty(&it);
 	}
+	if(value_entries.size() > 0) gtk_widget_grab_focus(value_entries[0]);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasets_builder, "dataobject_edit_button_ok")), FALSE);
 	gtk_widget_show_all(ptable);
 	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
@@ -14833,11 +14873,11 @@ bool edit_dataproperty(DataProperty *dp, bool new_property = false) {
 		}
 	}
 
-	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_entry_name")));
-
 	bool return_val = false;
 
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_button_ok")), new_property);
+	
+	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_entry_name")));
 
 	run_dataproperty_edit_dialog:
 	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
@@ -14985,8 +15025,9 @@ void edit_dataset(DataSet *ds, GtkWidget *win) {
 
 	update_dataset_property_list(ds);
 
-	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_name")));
 	gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(datasetedit_builder, "dataset_edit_tabs")), 0);
+	
+	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_desc")));
 
 	run_dataset_edit_dialog:
 	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
@@ -15328,6 +15369,12 @@ void edit_names(ExpressionItem *item, const gchar *namestr, GtkWidget *win, bool
 		on_tNames_selection_changed(gtk_tree_view_get_selection(GTK_TREE_VIEW(tNames)), NULL);
 	}
 
+	if(!(item && item->isBuiltin() && !(item->type() == TYPE_FUNCTION && item->subtype() == SUBTYPE_DATA_SET))) {
+		gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name")));
+	} else {
+		gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "button_close")));
+	}
+
 	gtk_dialog_run(GTK_DIALOG(dialog));
 	names_edited = true;
 
@@ -15569,6 +15616,8 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 		g_signal_connect(GTK_SPIN_BUTTON(entry), "input", G_CALLBACK(on_function_int_input), NULL);
 		if(!f->getDefaultValue(index).empty()) {
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(entry), s2i(f->getDefaultValue(index)));
+		} else if(f == CALCULATOR->f_root) {
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(entry), 2);
 		} else if(!arg2->zeroForbidden() && min <= 0 && max >= 0) {
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(entry), 0);
 		} else {
@@ -15766,15 +15815,18 @@ void convert_in_wUnits(int toFrom) {
 			} else {
 				EvaluationOptions eo;
 				eo.approximation = APPROXIMATION_APPROXIMATE;
-				eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
+				eo.parse_options = evalops.parse_options;
+				eo.parse_options.base = 10;
+				eo.parse_options.rpn = false;
+				eo.parse_options.read_precision = DONT_READ_PRECISION;
 				PrintOptions po;
 				po.is_approximate = &b;
 				po.number_fraction_format = FRACTION_DECIMAL;
 				po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 				CALCULATOR->resetExchangeRatesUsed();
 				do_timeout = false;
-				MathStructure v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(toValue, evalops.parse_options), uTo, uFrom, 1500, eo);
-				if(!v_mstruct.isAborted() && check_exchange_rates(get_units_dialog())) v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(toValue, evalops.parse_options), uTo, uFrom, 1500, eo);
+				MathStructure v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(toValue, eo.parse_options), uTo, uFrom, 1500, eo);
+				if(!v_mstruct.isAborted() && check_exchange_rates(get_units_dialog())) v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(toValue, eo.parse_options), uTo, uFrom, 1500, eo);
 				if(v_mstruct.isAborted()) {
 					old_fromValue = CALCULATOR->timedOutString();
 				} else {
@@ -15792,15 +15844,18 @@ void convert_in_wUnits(int toFrom) {
 			} else {
 				EvaluationOptions eo;
 				eo.approximation = APPROXIMATION_APPROXIMATE;
-				eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
+				eo.parse_options = evalops.parse_options;
+				eo.parse_options.base = 10;
+				eo.parse_options.rpn = false;
+				eo.parse_options.read_precision = DONT_READ_PRECISION;
 				PrintOptions po;
 				po.is_approximate = &b;
 				po.number_fraction_format = FRACTION_DECIMAL;
 				po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 				CALCULATOR->resetExchangeRatesUsed();
 				do_timeout = false;
-				MathStructure v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(fromValue, evalops.parse_options), uFrom, uTo, 1500, eo);
-				if(!v_mstruct.isAborted() && check_exchange_rates(get_units_dialog())) v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(fromValue, evalops.parse_options), uFrom, uTo, 1500, eo);
+				MathStructure v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(fromValue, eo.parse_options), uFrom, uTo, 1500, eo);
+				if(!v_mstruct.isAborted() && check_exchange_rates(get_units_dialog())) v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(fromValue, eo.parse_options), uFrom, uTo, 1500, eo);
 				if(v_mstruct.isAborted()) {
 					old_toValue = CALCULATOR->timedOutString();
 				} else {
@@ -16957,7 +17012,7 @@ void load_preferences() {
 
 	size_t bookmark_index = 0;
 
-	int version_numbers[] = {3, 13, 1};
+	int version_numbers[] = {3, 14, 0};
 	bool old_history_format = false;
 
 	if(file) {
@@ -19837,7 +19892,7 @@ void update_resultview_popup() {
 
 	bool b_unit = displayed_mstruct && contains_convertable_unit(*displayed_mstruct);
 	bool b_date = displayed_mstruct && displayed_mstruct->isDateTime();
-	bool b_complex = displayed_mstruct && mstruct && contains_imaginary_number(*mstruct);
+	bool b_complex = displayed_mstruct && mstruct && (contains_imaginary_number(*mstruct) || mstruct->containsFunctionId(FUNCTION_ID_CIS));
 	bool b_rational = displayed_mstruct && mstruct && contains_rational_number(*mstruct);
 	bool b_object = displayed_mstruct && (displayed_mstruct->containsType(STRUCT_UNIT) || displayed_mstruct->containsType(STRUCT_FUNCTION) || displayed_mstruct->containsType(STRUCT_VARIABLE));
 
@@ -24201,7 +24256,7 @@ void update_mb_to_menu() {
 	if(!mstruct || !displayed_mstruct || !contains_convertable_unit(*displayed_mstruct)) {
 		bool b_date = (mstruct && displayed_mstruct && mstruct->isDateTime());
 		bool b_integ = (mstruct && displayed_mstruct && mstruct->isInteger());
-		bool b_complex = (mstruct && displayed_mstruct && contains_imaginary_number(*mstruct));
+		bool b_complex = (mstruct && displayed_mstruct && (contains_imaginary_number(*mstruct) || mstruct->containsFunctionId(FUNCTION_ID_CIS)));
 		bool b_rational = (mstruct && displayed_mstruct && contains_rational_number(*displayed_mstruct));
 		if(b_date) {
 			MENU_ITEM(_("Calendars"), on_popup_menu_item_calendarconversion_activate)
@@ -25818,6 +25873,7 @@ void show_percentage_dialog(const gchar *initial_expression) {
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 	on_percentage_button_clear_clicked(NULL, NULL);
 	if(strlen(initial_expression) > 0 && strcmp(initial_expression, "0") != 0) gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_1")), initial_expression);
+	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_entry_1")));
 	gtk_widget_show(dialog);
 	gtk_window_present(GTK_WINDOW(dialog));
 }
@@ -25829,6 +25885,7 @@ void on_menu_item_show_percentage_dialog_activate(GtkMenuItem*, gpointer) {
 }
 void show_calendarconversion_dialog() {
 	GtkWidget *dialog = get_calendarconversion_dialog();
+	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_1")));
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 	gtk_widget_show(dialog);
 	gtk_window_present(GTK_WINDOW(dialog));
@@ -25928,7 +25985,7 @@ void on_menu_item_plot_functions_activate(GtkMenuItem*, gpointer) {
 		return;
 	}
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
-	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_expression")), get_selected_expression_text(true).c_str());
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_expression")), evalops.parse_options.base == 10 ? get_selected_expression_text(true).c_str() : "");
 	if(!gtk_widget_get_visible(dialog)) {
 		gtk_list_store_clear(tPlotFunctions_store);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_button_modify")), FALSE);
@@ -26532,10 +26589,12 @@ void on_menu_item_precision_activate(GtkMenuItem*, gpointer) {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(precision_builder, "precision_dialog_spinbutton_precision"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_precision_dialog_spinbutton_precision_value_changed, NULL);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(precision_builder, "precision_dialog_spinbutton_precision")), PRECISION);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(precision_builder, "precision_dialog_spinbutton_precision"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_precision_dialog_spinbutton_precision_value_changed, NULL);
+	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(precision_builder, "precision_dialog_spinbutton_precision")));
 	gtk_widget_show(dialog);
 }
 void on_menu_item_decimals_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = get_decimals_dialog();
+	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(decimals_builder, "decimals_dialog_checkbutton_min")));
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(decimals_builder, "decimals_dialog_checkbutton_max"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_decimals_dialog_checkbutton_max_toggled, NULL);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(decimals_builder, "decimals_dialog_checkbutton_min"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_decimals_dialog_checkbutton_min_toggled, NULL);
@@ -27914,9 +27973,16 @@ void update_percentage_entries() {
 		default: {variant = 0;}
 	}
 	do_timeout = false;
+	EvaluationOptions eo;
+	eo.parse_options = evalops.parse_options;
+	eo.parse_options.rpn = false;
+	eo.parse_options.read_precision = DONT_READ_PRECISION;
+	eo.parse_options.base = 10;
+	eo.assume_denominators_nonzero = true;
+	eo.warn_about_denominators_assumed_nonzero = false;
 	if(variant != 0) {
-		m1_pre.set(CALCULATOR->parse(CALCULATOR->unlocalizeExpression(str1)));
-		m2_pre.set(CALCULATOR->parse(CALCULATOR->unlocalizeExpression(str2)));
+		m1_pre.set(CALCULATOR->parse(CALCULATOR->unlocalizeExpression(str1, eo.parse_options), eo.parse_options));
+		m2_pre.set(CALCULATOR->parse(CALCULATOR->unlocalizeExpression(str2, eo.parse_options), eo.parse_options));
 	}
 	switch(variant) {
 		case 3: {m1 = m1_pre; m2 = m2_pre; break;}
@@ -27943,12 +28009,6 @@ void update_percentage_entries() {
 		m4 = m6; m4 -= 1;
 		m5 = m7; m5 -= 1;
 		m4 *= 100; m5 *= 100; m6 *= 100; m7 *= 100;
-		EvaluationOptions eo;
-		eo.parse_options = evalops.parse_options;
-		eo.parse_options.rpn = false;
-		eo.parse_options.base = 10;
-		eo.assume_denominators_nonzero = true;
-		eo.warn_about_denominators_assumed_nonzero = false;
 		CALCULATOR->calculate(&m1, 500, eo);
 		CALCULATOR->calculate(&m2, 500, eo);
 		CALCULATOR->calculate(&m3, 500, eo);
@@ -28134,11 +28194,13 @@ void on_nbases_entry_decimal_changed(GtkEditable *editable, gpointer) {
 	if(last_is_operator(str, true)) return;
 	changing_in_nbases_dialog = true;
 	EvaluationOptions eo;
-	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
-	eo.parse_options.unknowns_enabled = evalops.parse_options.unknowns_enabled;
+	eo.parse_options = evalops.parse_options;
+	eo.parse_options.rpn = false;
+	eo.parse_options.read_precision = DONT_READ_PRECISION;
+	eo.parse_options.base = 10;
 	MathStructure value;
 	do_timeout = false;
-	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), evalops.parse_options), 1500, eo);
+	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options), 1500, eo);
 	update_nbases_entries(value, 10);
 	do_timeout = true;
 	changing_in_nbases_dialog = false;
@@ -28150,14 +28212,15 @@ void on_nbases_entry_binary_changed(GtkEditable *editable, gpointer) {
 	if(str.empty()) return;
 	if(last_is_operator(str)) return;
 	EvaluationOptions eo;
-	eo.parse_options.unknowns_enabled = evalops.parse_options.unknowns_enabled;
+	eo.parse_options = evalops.parse_options;
+	eo.parse_options.rpn = false;
+	eo.parse_options.read_precision = DONT_READ_PRECISION;
 	eo.parse_options.base = BASE_BINARY;
-	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
 	eo.parse_options.twos_complement = twos_complement_in;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
 	do_timeout = false;
-	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), evalops.parse_options), 1500, eo);
+	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options), 1500, eo);
 	update_nbases_entries(value, 2);
 	do_timeout = true;
 	changing_in_nbases_dialog = false;
@@ -28169,13 +28232,14 @@ void on_nbases_entry_octal_changed(GtkEditable *editable, gpointer) {
 	if(str.empty()) return;
 	if(last_is_operator(str)) return;
 	EvaluationOptions eo;
-	eo.parse_options.unknowns_enabled = evalops.parse_options.unknowns_enabled;
+	eo.parse_options = evalops.parse_options;
+	eo.parse_options.rpn = false;
+	eo.parse_options.read_precision = DONT_READ_PRECISION;
 	eo.parse_options.base = BASE_OCTAL;
-	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
 	do_timeout = false;
-	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), evalops.parse_options), 1500, eo);
+	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options), 1500, eo);
 	update_nbases_entries(value, 8);
 	do_timeout = true;
 	changing_in_nbases_dialog = false;
@@ -28187,14 +28251,15 @@ void on_nbases_entry_hexadecimal_changed(GtkEditable *editable, gpointer) {
 	if(str.empty()) return;
 	if(last_is_operator(str)) return;
 	EvaluationOptions eo;
-	eo.parse_options.unknowns_enabled = evalops.parse_options.unknowns_enabled;
+	eo.parse_options = evalops.parse_options;
+	eo.parse_options.rpn = false;
+	eo.parse_options.read_precision = DONT_READ_PRECISION;
 	eo.parse_options.base = BASE_HEXADECIMAL;
-	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
 	eo.parse_options.hexadecimal_twos_complement = hexadecimal_twos_complement_in;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
 	do_timeout = false;
-	str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), evalops.parse_options);
+	str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options);
 	CALCULATOR->calculate(&value, str, 1500, eo);
 	update_nbases_entries(value, 16);
 	do_timeout = true;
@@ -28207,13 +28272,14 @@ void on_nbases_entry_duo_changed(GtkEditable *editable, gpointer) {
 	if(str.empty()) return;
 	if(last_is_operator(str)) return;
 	EvaluationOptions eo;
-	eo.parse_options.unknowns_enabled = evalops.parse_options.unknowns_enabled;
+	eo.parse_options = evalops.parse_options;
+	eo.parse_options.rpn = false;
+	eo.parse_options.read_precision = DONT_READ_PRECISION;
 	eo.parse_options.base = BASE_DUODECIMAL;
-	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
 	do_timeout = false;
-	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), evalops.parse_options), 1500, eo);
+	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options), 1500, eo);
 	update_nbases_entries(value, 12);
 	do_timeout = true;
 	changing_in_nbases_dialog = false;
@@ -28225,13 +28291,14 @@ void on_nbases_entry_roman_changed(GtkEditable *editable, gpointer) {
 	if(str.empty()) return;
 	if(last_is_operator(str) && (str[str.length() - 1] != '|' || str.find('|') == str.length() - 1)) return;
 	EvaluationOptions eo;
-	eo.parse_options.unknowns_enabled = evalops.parse_options.unknowns_enabled;
+	eo.parse_options = evalops.parse_options;
+	eo.parse_options.rpn = false;
+	eo.parse_options.read_precision = DONT_READ_PRECISION;
 	eo.parse_options.base = BASE_ROMAN_NUMERALS;
-	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
 	do_timeout = false;
-	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), evalops.parse_options), 1500, eo);
+	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options), 1500, eo);
 	update_nbases_entries(value, BASE_ROMAN_NUMERALS);
 	do_timeout = true;
 	changing_in_nbases_dialog = false;
@@ -28724,11 +28791,13 @@ void on_fp_entry_dec_changed(GtkEditable *editable, gpointer) {
 	unsigned int expbits = standard_expbits(bits);
 	changing_in_fp_dialog = true;
 	EvaluationOptions eo;
-	eo.parse_options.angle_unit = evalops.parse_options.angle_unit;
-	eo.parse_options.unknowns_enabled = evalops.parse_options.unknowns_enabled;
+	eo.parse_options = evalops.parse_options;
+	eo.parse_options.read_precision = DONT_READ_PRECISION;
+	eo.parse_options.rpn = false;
+	eo.parse_options.base = 10;
 	MathStructure value;
 	do_timeout = false;
-	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), evalops.parse_options), 1500, eo);
+	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options), 1500, eo);
 	if(value.isNumber()) {
 		string sbin = to_float(value.number(), bits, expbits);
 		update_fp_entries(sbin, 10, &value.number());
@@ -29167,7 +29236,8 @@ bool do_shortcut(int type, string value) {
 			return true;
 		}
 		case SHORTCUT_TYPE_CONVERT: {
-			executeCommand(COMMAND_CONVERT_STRING, true, value);
+			ParseOptions pa = evalops.parse_options; pa.base = 10;
+			executeCommand(COMMAND_CONVERT_STRING, true, CALCULATOR->unlocalizeExpression(value, pa));
 			return true;
 		}
 		case SHORTCUT_TYPE_CONVERT_ENTRY: {
@@ -30113,7 +30183,7 @@ void on_type_label_date_clicked(GtkButton *w, gpointer user_data) {
 	gtk_widget_destroy(d);
 }
 void on_type_label_vector_clicked(GtkButton *w, gpointer user_data) {
-	MathStructure mstruct;
+	MathStructure mstruct_v;
 	GtkEntry *entry = GTK_ENTRY(user_data);
 	string str = gtk_entry_get_text(entry);
 	remove_blank_ends(str);
@@ -30123,23 +30193,23 @@ void on_type_label_vector_clicked(GtkButton *w, gpointer user_data) {
 			str += ']';
 		}
 		CALCULATOR->beginTemporaryStopMessages();
-		CALCULATOR->parse(&mstruct, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), evalops.parse_options);
+		CALCULATOR->parse(&mstruct_v, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), evalops.parse_options);
 		CALCULATOR->endTemporaryStopMessages();
 	}
-	insert_matrix(str.empty() ? NULL : &mstruct, gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW), TRUE, false, false, entry);
+	insert_matrix(str.empty() ? NULL : &mstruct_v, gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW), TRUE, false, false, entry);
 }
 void on_type_label_matrix_clicked(GtkButton *w, gpointer user_data) {
-	MathStructure mstruct;
+	MathStructure mstruct_m;
 	GtkEntry *entry = GTK_ENTRY(user_data);
 	string str = gtk_entry_get_text(entry);
 	remove_blank_ends(str);
 	if(!str.empty()) {
 		CALCULATOR->beginTemporaryStopMessages();
-		CALCULATOR->parse(&mstruct, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), evalops.parse_options);
+		CALCULATOR->parse(&mstruct_m, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), evalops.parse_options);
 		CALCULATOR->endTemporaryStopMessages();
-		if(!mstruct.isMatrix()) str = "";
+		if(!mstruct_m.isMatrix()) str = "";
 	}
-	insert_matrix(str.empty() ? NULL : &mstruct, gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW), FALSE, false, false, entry);
+	insert_matrix(str.empty() ? NULL : &mstruct_m, gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW), FALSE, false, false, entry);
 }
 void on_type_label_file_clicked(GtkButton*, gpointer user_data) {
 	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file to import"), GTK_WINDOW(gtk_builder_get_object(csvimport_builder, "csv_import_dialog")), GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT, NULL);
@@ -30527,6 +30597,7 @@ void on_names_edit_entry_name_changed(GtkEditable *editable, gpointer) {
 void on_menu_item_customize_buttons_activate(GtkMenuItem*, gpointer) {
 	bool set_sr = !buttonsedit_builder;
 	GtkWidget *dialog = get_buttons_edit_dialog();
+	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_treeview")));
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 	gtk_widget_show(dialog);
 	if(set_sr) {
@@ -30539,6 +30610,7 @@ void on_menu_item_customize_buttons_activate(GtkMenuItem*, gpointer) {
 
 void on_menu_item_edit_shortcuts_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = get_shortcuts_dialog();
+	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_treeview")));
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 	gtk_widget_show(dialog);
 	gtk_window_present(GTK_WINDOW(dialog));
@@ -31375,11 +31447,12 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 	EvaluationOptions eo;
 	eo.approximation = APPROXIMATION_APPROXIMATE;
 	eo.parse_options = evalops.parse_options;
+	eo.parse_options.base = 10;
 	eo.parse_options.read_precision = DONT_READ_PRECISION;
 	do_timeout = false;
 	if(type == 1 || type == 2) {
 		*y_vector = new MathStructure();
-		if(!CALCULATOR->calculate(*y_vector, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), max_plot_time * 1000, eo)) {
+		if(!CALCULATOR->calculate(*y_vector, CALCULATOR->unlocalizeExpression(str, eo.parse_options), max_plot_time * 1000, eo)) {
 			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("It took too long to generate the plot data."));
 			gtk_dialog_run(GTK_DIALOG(d));
 			gtk_widget_destroy(d);
@@ -31389,7 +31462,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 		*x_vector = new MathStructure();
 		(*x_vector)->clearVector();
 		MathStructure min;
-		if(!CALCULATOR->calculate(&min, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_min"))), evalops.parse_options), 1000, eo)) {
+		if(!CALCULATOR->calculate(&min, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_min"))), eo.parse_options), 1000, eo)) {
 			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("It took too long to generate the plot data."));
 			gtk_dialog_run(GTK_DIALOG(d));
 			gtk_widget_destroy(d);
@@ -31398,7 +31471,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 			return;
 		}
 		MathStructure max;
-		if(!CALCULATOR->calculate(&max, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_max"))), evalops.parse_options), 1000, eo)) {
+		if(!CALCULATOR->calculate(&max, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_max"))), eo.parse_options), 1000, eo)) {
 			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("It took too long to generate the plot data."));
 			gtk_dialog_run(GTK_DIALOG(d));
 			gtk_widget_destroy(d);
@@ -31407,9 +31480,9 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 			return;
 		}
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_radiobutton_step")))) {
-			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(str, min, max, CALCULATOR->calculate(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_step"))), evalops.parse_options), eo), *x_vector, str_x, evalops.parse_options, max_plot_time * 1000));
+			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(str, min, max, CALCULATOR->calculate(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_step"))), eo.parse_options), eo), *x_vector, str_x, eo.parse_options, max_plot_time * 1000));
 		} else {
-			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(str, min, max, gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_steps"))), *x_vector, str_x, evalops.parse_options, max_plot_time * 1000));
+			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(str, min, max, gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_steps"))), *x_vector, str_x, eo.parse_options, max_plot_time * 1000));
 		}
 	}
 	CALCULATOR->endTemporaryStopIntervalArithmetic();
@@ -31594,7 +31667,8 @@ void on_plot_button_appearance_apply_clicked(GtkButton*, gpointer) {
 
 void convert_from_convert_entry_unit() {
 	do_timeout = false;
-	string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), evalops.parse_options);
+	ParseOptions pa = evalops.parse_options; pa.base = 10;
+	string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), pa);
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {
 		remove_blank_ends(ceu_str);
 		if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-' && (ceu_str.length() == 1 || ceu_str[1] != '?')) {

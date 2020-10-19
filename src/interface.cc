@@ -1491,6 +1491,51 @@ void create_main_window(void) {
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")), continuous_conversion);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes")), set_missing_prefixes);
 
+#if GTK_MAJOR_VERSION <= 3 && GTK_MINOR_VERSION < 20
+#	define SET_FOCUS_ON_CLICK(x) gtk_button_set_focus_on_click(GTK_BUTTON(x), FALSE)
+#else
+#	define SET_FOCUS_ON_CLICK(x) gtk_widget_set_focus_on_click(GTK_WIDGET(x), FALSE)
+#endif
+#define CHILDREN_SET_FOCUS_ON_CLICK(x) list = gtk_container_get_children(GTK_CONTAINER(gtk_builder_get_object(main_builder, x))); \
+	for(l = list; l != NULL; l = l->next) { \
+		SET_FOCUS_ON_CLICK(l->data); \
+	} \
+	g_list_free(list);
+#define CHILDREN_SET_FOCUS_ON_CLICK_2(x, y) list = gtk_container_get_children(GTK_CONTAINER(gtk_builder_get_object(main_builder, x))); \
+	obj = gtk_builder_get_object(main_builder, y); \
+	for(l = list; l != NULL; l = l->next) { \
+		if(l->data != obj) SET_FOCUS_ON_CLICK(l->data); \
+	} \
+	g_list_free(list);
+
+	GList *l, *l2;
+	GList *list, *list2;
+	GObject *obj;
+	CHILDREN_SET_FOCUS_ON_CLICK_2("table_buttons", "grid_numbers")
+	CHILDREN_SET_FOCUS_ON_CLICK("grid_numbers")
+	CHILDREN_SET_FOCUS_ON_CLICK("grid_programmers_buttons")
+	CHILDREN_SET_FOCUS_ON_CLICK("box_bases")
+	CHILDREN_SET_FOCUS_ON_CLICK("box_twos")
+	CHILDREN_SET_FOCUS_ON_CLICK("historyactions")
+	SET_FOCUS_ON_CLICK(gtk_builder_get_object(main_builder, "button_history_copy"));
+	CHILDREN_SET_FOCUS_ON_CLICK("box_ho")
+	CHILDREN_SET_FOCUS_ON_CLICK("box_rm")
+	CHILDREN_SET_FOCUS_ON_CLICK("box_re")
+	SET_FOCUS_ON_CLICK(gtk_builder_get_object(main_builder, "button_clearstack"));
+	SET_FOCUS_ON_CLICK(gtk_builder_get_object(main_builder, "button_editregister"));
+	CHILDREN_SET_FOCUS_ON_CLICK("box_ro1")
+	CHILDREN_SET_FOCUS_ON_CLICK("box_ro2")
+	SET_FOCUS_ON_CLICK(gtk_builder_get_object(main_builder, "button_rpn_sum"));
+	list = gtk_container_get_children(GTK_CONTAINER(gtk_builder_get_object(main_builder, "versatile_keypad")));
+	for(l = list; l != NULL; l = l->next) {
+		list2 = gtk_container_get_children(GTK_CONTAINER(l->data));
+		for(l2 = list2; l2 != NULL; l2 = l2->next) {
+			SET_FOCUS_ON_CLICK(l2->data);
+		}
+		g_list_free(list2);
+	}
+	g_list_free(list);
+
 	gchar *theme_name = NULL;
 	g_object_get(gtk_settings_get_default(), "gtk-theme-name", &theme_name, NULL);
 	string themestr;
@@ -2575,7 +2620,6 @@ GtkWidget* get_dataset_edit_dialog(void) {
 }
 
 GtkWidget* get_dataproperty_edit_dialog(void) {
-
 	return GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_dialog"));
 }
 
@@ -2862,6 +2906,8 @@ GtkWidget* get_set_base_dialog(void) {
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), i2s(printops.base).c_str());
 			}
 		}
+		
+		SET_FOCUS_ON_CLICK(gtk_builder_get_object(setbase_builder, "button_close"));
 
 		gtk_builder_connect_signals(setbase_builder, NULL);
 

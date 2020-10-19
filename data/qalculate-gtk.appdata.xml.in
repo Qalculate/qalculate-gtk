@@ -48,6 +48,26 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="3.14.0" date="2020-10-26">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Customizable keypad buttons—change labels and actions for all buttons on the right-hand side of the keypad</li>
+      <li>Support traditional calculator memory (MR/MC/MS/M+/M-)</li>
+      <li>Notifications for invisible actions, e.g. result left-click copy</li>
+      <li>Use v1, v2, … as default variable names</li>
+      <li>Add Rutherford (Rd), millirem (mrem), mrem/s, and erg/g units</li>
+      <li>Add yr and annus names for year unit, röntgen name for roentgen (R) unit, and rem for roentgen equivalent man</li>
+      <li>Keep angle units in calculations involving both length and (plane) angle units (fixes lumen calculations)</li>
+      <li>Improve plot speed for functions defined using expression</li>
+      <li>Improvements and fixes in insert function dialog</li>
+      <li>Improvements and fixes for qalc on Windows</li>
+      <li>Compiled definitions without GIO and with support for out-of-tree builds</li>
+      <li>Fix programming keypad base conversion for negative integers</li>
+      <li>Minor bug fixes and feature improvements</li>
+     </ul>
+   </description>
+  </release>
   <release version="3.13.0" date="2020-09-21">
    <description>
     <p>Changes:</p>
