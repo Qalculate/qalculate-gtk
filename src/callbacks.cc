@@ -21180,7 +21180,7 @@ void entry_insert_text(GtkWidget *w, const gchar *text) {
 
 bool block_input = false;
 const gchar *key_press_get_symbol(GdkEventKey *event, bool do_caret_as_xor = true, bool unit_expression = false) {
-	if(block_input && (event->keyval == GDK_KEY_q || event->keyval == GDK_KEY_Q) && (event->state & ~GDK_CONTROL_MASK)) {block_input = false; return "";}
+	if(block_input && (event->keyval == GDK_KEY_q || event->keyval == GDK_KEY_Q) && !(event->state & GDK_CONTROL_MASK)) {block_input = false; return "";}
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
 	guint state = event->state & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK);
 	state = state & ~GDK_SHIFT_MASK;
@@ -29545,7 +29545,7 @@ gboolean on_configure_event(GtkWidget*, GdkEventConfigure *event, gpointer) {
 }
 
 gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
-	if(block_input && (event->keyval == GDK_KEY_q || event->keyval == GDK_KEY_Q) && (event->state & ~GDK_CONTROL_MASK)) {block_input = false; return TRUE;}
+	if(block_input && (event->keyval == GDK_KEY_q || event->keyval == GDK_KEY_Q) && !(event->state & GDK_CONTROL_MASK)) {block_input = false; return TRUE;}
 	if(gtk_widget_has_focus(expressiontext) || b_editing_stack) return FALSE;
 	if(!b_busy && gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "mb_to"))) && !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "mb_to"))) && (event->keyval == GDK_KEY_Return || event->keyval == GDK_KEY_ISO_Enter || event->keyval == GDK_KEY_KP_Enter || event->keyval == GDK_KEY_space)) {update_mb_to_menu(); gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "mb_to")));}
 	if(do_keyboard_shortcut(event)) return TRUE;
@@ -29587,7 +29587,8 @@ gboolean on_expressiontext_focus_out_event(GtkWidget*, GdkEvent*, gpointer) {
 	return FALSE;
 }
 gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
-	if(block_input && (event->keyval == GDK_KEY_q || event->keyval == GDK_KEY_Q) && (event->state & ~GDK_CONTROL_MASK)) {block_input = false; return TRUE;}
+	if(block_input && (event->keyval == GDK_KEY_q || event->keyval == GDK_KEY_Q) && !(event->state & GDK_CONTROL_MASK)) {block_input = false;
+return TRUE;}
 	if(b_busy) {
 		if(event->keyval == GDK_KEY_Escape) {
 			if(b_busy_expression) on_abort_calculation(NULL, 0, NULL);
