@@ -2855,7 +2855,9 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			fix_to_struct_gtk(to_struct);
 			if(!to_struct.isZero()) {
 				mauto.multiply(to_struct);
-				to_struct.format(printops);
+				PrintOptions po = printops;
+				po.negative_exponents = false;
+				to_struct.format(po);
 				if(to_struct.isMultiplication() && to_struct.size() >= 2) {
 					if(to_struct[0].isOne()) to_struct.delChild(1, true);
 					else if(to_struct[1].isOne()) to_struct.delChild(2, true);
@@ -3379,7 +3381,7 @@ void display_parse_status() {
 						had_errors = CALCULATOR->endTemporaryStopMessages(NULL, &warnings_count) > 0 || had_errors;
 						had_warnings = had_warnings || warnings_count > 0;
 						bool b_unit = mparse.containsType(STRUCT_UNIT, false, true, true);
-						mparse = cu.generateMathStructure(!printops.negative_exponents);
+						mparse = cu.generateMathStructure(true);
 						mparse.format(po);
 						if(!mparse.isZero() && !b_unit && !str_e.empty() && str_w.empty()) {
 							CALCULATOR->beginTemporaryStopMessages();
@@ -3390,7 +3392,9 @@ void display_parse_status() {
 							if(!to_struct.isZero()) {
 								MathStructure mparse2;
 								CALCULATOR->parse(&mparse2, str_e, evalops.parse_options);
-								to_struct.format(printops);
+								po.preserve_format = false;
+								to_struct.format(po);
+								po.preserve_format = true;
 								if(to_struct.isMultiplication() && to_struct.size() >= 2) {
 									if(to_struct[0].isOne()) to_struct.delChild(1, true);
 									else if(to_struct[1].isOne()) to_struct.delChild(2, true);
@@ -11778,7 +11782,9 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		fix_to_struct_gtk(to_struct);
 		if(!to_struct.isZero()) {
 			mstruct->multiply(to_struct);
-			to_struct.format(printops);
+			PrintOptions po = printops;
+			po.negative_exponents = false;
+			to_struct.format(po);
 			if(to_struct.isMultiplication() && to_struct.size() >= 2) {
 				if(to_struct[0].isOne()) to_struct.delChild(1, true);
 				else if(to_struct[1].isOne()) to_struct.delChild(2, true);
