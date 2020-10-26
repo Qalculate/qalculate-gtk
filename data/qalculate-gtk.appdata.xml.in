@@ -58,10 +58,12 @@
       <li>Use v1, v2, … as default variable names</li>
       <li>Add Rutherford (Rd), millirem (mrem), mrem/s, and erg/g units</li>
       <li>Add yr and annus names for year unit, röntgen name for roentgen (R) unit, and rem for roentgen equivalent man</li>
+      <li>Add matrix rank (rk) and reduced row echelon form (rref) functions</li>
+      <li>Support for different character encodings in code() function</li>
       <li>Keep angle units in calculations involving both length and (plane) angle units (fixes lumen calculations)</li>
       <li>Improve plot speed for functions defined using expression</li>
+      <li>Always perform conversion to optimal (SI) unit when the expression is a number multiplied by a unit and input equals output</li>
       <li>Improvements and fixes in insert function dialog</li>
-      <li>Improvements and fixes for qalc on Windows</li>
       <li>Compiled definitions without GIO and with support for out-of-tree builds</li>
       <li>Fix programming keypad base conversion for negative integers</li>
       <li>Minor bug fixes and feature improvements</li>

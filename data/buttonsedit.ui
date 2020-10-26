@@ -193,7 +193,6 @@
                   <object class="GtkTreeView" id="buttons_edit_treeview">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="tooltip-text" translatable="yes">Definition of this function's arguments</property>
                     <property name="headers-clickable">False</property>
                     <property name="enable-search">False</property>
                     <signal name="row-activated" handler="on_buttons_edit_treeview_row_activated" swapped="no"/>
@@ -295,7 +294,6 @@
                   <object class="GtkTreeView" id="shortcuts_type_treeview">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="tooltip-text" translatable="yes">Definition of this function's arguments</property>
                     <signal name="row-activated" handler="on_buttonsedit_type_treeview_row_activated" swapped="no"/>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection" id="shortcuts_type_selection"/>

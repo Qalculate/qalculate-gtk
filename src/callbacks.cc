@@ -2603,8 +2603,10 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			to_fraction = false; to_prefix = 0; to_base = 0; to_bits = 0; to_nbase.clear();
 		}
 		string from_str = str, to_str, str_conv;
+		bool had_to_expression = false;
 		
-		if(origstr && CALCULATOR->separateToExpression(from_str, to_str, evalops, true, true)) {
+		if(origstr && CALCULATOR->separateToExpression(from_str, to_str, evalops, true, false)) {
+			had_to_expression = true;
 			if(from_str.empty()) {
 				clearresult(); 
 				complex_angle_form = caf_bak;
@@ -2864,6 +2866,38 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 				}
 				parsed_mstruct->multiply(to_struct);
 				CALCULATOR->calculate(&mauto, 100, evalops, CALCULATOR->unlocalizeExpression(str_conv, evalops.parse_options));
+			}
+		// Always perform conversion to optimal (SI) unit when the expression is a number multiplied by a unit and input equals output
+		} else if((!parsed_tostruct || parsed_tostruct->isUndefined()) && origstr && !had_to_expression && (evalops.approximation == APPROXIMATION_EXACT || evalops.auto_post_conversion == POST_CONVERSION_OPTIMAL || evalops.auto_post_conversion == POST_CONVERSION_NONE) && parsed_mstruct && ((parsed_mstruct->isMultiplication() && parsed_mstruct->size() == 2 && (*parsed_mstruct)[0].isNumber() && (*parsed_mstruct)[1].isUnit_exp() && parsed_mstruct->equals(mauto)) || (parsed_mstruct->isNegate() && (*parsed_mstruct)[0].isMultiplication() && (*parsed_mstruct)[0].size() == 2 && (*parsed_mstruct)[0][0].isNumber() && (*parsed_mstruct)[0][1].isUnit_exp() && mauto.isMultiplication() && mauto.size() == 2 && mauto[1] == (*parsed_mstruct)[0][1] && mauto[0].isNumber() && (*parsed_mstruct)[0][0].number() == -mauto[0].number()) || (parsed_mstruct->isUnit_exp() && parsed_mstruct->equals(mauto)))) {
+			Unit *u = NULL;
+			MathStructure *munit = NULL;
+			if(mauto.isMultiplication()) munit = &mauto[1];
+			else munit = &mauto;
+			if(munit->isUnit()) u = munit->unit();
+			else u = (*munit)[0].unit();
+			if(u && u->isCurrency()) {
+				if(evalops.local_currency_conversion && CALCULATOR->getLocalCurrency() && u != CALCULATOR->getLocalCurrency()) {
+					ApproximationMode abak = evalops.approximation;
+					if(evalops.approximation == APPROXIMATION_EXACT) evalops.approximation = APPROXIMATION_TRY_EXACT;
+					mauto.set(CALCULATOR->convertToOptimalUnit(mauto, evalops, true));
+					evalops.approximation = abak;
+				}
+			} else if(u && u->subtype() != SUBTYPE_BASE_UNIT && !u->isSIUnit()) {
+				MathStructure mbak(mauto);
+				if(evalops.auto_post_conversion == POST_CONVERSION_OPTIMAL || evalops.auto_post_conversion == POST_CONVERSION_NONE) {
+					if(munit->isUnit() && u->referenceName() == "oF") {
+						u = CALCULATOR->getActiveUnit("oC");
+						if(u) mauto.set(CALCULATOR->convert(mauto, u, evalops, true, false));
+					} else {
+						mauto.set(CALCULATOR->convertToOptimalUnit(mauto, evalops, true));
+					}
+				}
+				if(evalops.approximation == APPROXIMATION_EXACT && ((evalops.auto_post_conversion != POST_CONVERSION_OPTIMAL && evalops.auto_post_conversion != POST_CONVERSION_NONE) || mauto.equals(mbak))) {
+					evalops.approximation = APPROXIMATION_TRY_EXACT;
+					if(evalops.auto_post_conversion == POST_CONVERSION_BASE) mauto.set(CALCULATOR->convertToBaseUnits(mauto, evalops));
+					else mauto.set(CALCULATOR->convertToOptimalUnit(mauto, evalops, true));
+					evalops.approximation = APPROXIMATION_EXACT;
+				}
 			}
 		}
 		CALCULATOR->endTemporaryStopMessages(!mauto.isAborted(), &autocalc_messages);
@@ -3137,7 +3171,7 @@ void display_parse_status() {
 		if(!gtk_text_iter_is_end(&ipos)) {
 			gtext = gtk_text_buffer_get_text(expressionbuffer, &istart, &ipos, FALSE);
 			str_e = CALCULATOR->unlocalizeExpression(gtext, evalops.parse_options);
-			bool b = CALCULATOR->separateToExpression(str_e, str_u, evalops, false, true);
+			bool b = CALCULATOR->separateToExpression(str_e, str_u, evalops, false, !auto_calculate);
 			b = CALCULATOR->separateWhereExpression(str_e, str_w, evalops) || b;
 			if(!b) {
 				CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
@@ -3145,7 +3179,7 @@ void display_parse_status() {
 			g_free(gtext);
 		} else {
 			str_e = CALCULATOR->unlocalizeExpression(text, evalops.parse_options);
-			bool b = CALCULATOR->separateToExpression(str_e, str_u, evalops, false, true);
+			bool b = CALCULATOR->separateToExpression(str_e, str_u, evalops, false, !auto_calculate);
 			b = CALCULATOR->separateWhereExpression(str_e, str_w, evalops) || b;
 			if(!b) {
 				CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
@@ -3172,7 +3206,7 @@ void display_parse_status() {
 		if(!full_parsed) {
 			CALCULATOR->beginTemporaryStopMessages();
 			str_e = CALCULATOR->unlocalizeExpression(text, evalops.parse_options);
-			CALCULATOR->separateToExpression(str_e, str_u, evalops, false, true);
+			CALCULATOR->separateToExpression(str_e, str_u, evalops, false, !auto_calculate);
 			CALCULATOR->separateWhereExpression(str_e, str_w, evalops);
 			if(!str_e.empty()) CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
 			int warnings_count;
@@ -11252,9 +11286,11 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
 	MixedUnitsConversion save_mixed_units_conversion = evalops.mixed_units_conversion;
 
+	bool had_to_expression = false;
 	string from_str = str;
-	if(execute_str.empty() && CALCULATOR->separateToExpression(from_str, to_str, evalops, true, !do_stack)) {
+	if(execute_str.empty() && CALCULATOR->separateToExpression(from_str, to_str, evalops, true, !do_stack && !auto_calculate)) {
 		remove_duplicate_blanks(to_str);
+		had_to_expression = true;
 		string str_left;
 		string to_str1, to_str2;
 		bool do_to = false;
@@ -11857,6 +11893,40 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 
 	if(rpn_mode && do_mathoperation && parsed_tostruct && !parsed_tostruct->isUndefined() && parsed_tostruct->isSymbolic()) {
 		mstruct->set(CALCULATOR->convert(*mstruct, parsed_tostruct->symbol(), evalops));
+	}
+
+	// Always perform conversion to optimal (SI) unit when the expression is a number multiplied by a unit and input equals output
+	if(!rpn_mode && (!parsed_tostruct || parsed_tostruct->isUndefined()) && execute_str.empty() && !had_to_expression && (evalops.approximation == APPROXIMATION_EXACT || evalops.auto_post_conversion == POST_CONVERSION_OPTIMAL || evalops.auto_post_conversion == POST_CONVERSION_NONE) && parsed_mstruct && mstruct && ((parsed_mstruct->isMultiplication() && parsed_mstruct->size() == 2 && (*parsed_mstruct)[0].isNumber() && (*parsed_mstruct)[1].isUnit_exp() && parsed_mstruct->equals(*mstruct)) || (parsed_mstruct->isNegate() && (*parsed_mstruct)[0].isMultiplication() && (*parsed_mstruct)[0].size() == 2 && (*parsed_mstruct)[0][0].isNumber() && (*parsed_mstruct)[0][1].isUnit_exp() && mstruct->isMultiplication() && mstruct->size() == 2 && (*mstruct)[1] == (*parsed_mstruct)[0][1] && (*mstruct)[0].isNumber() && (*parsed_mstruct)[0][0].number() == -(*mstruct)[0].number()) || (parsed_mstruct->isUnit_exp() && parsed_mstruct->equals(*mstruct)))) {
+		Unit *u = NULL;
+		MathStructure *munit = NULL;
+		if(mstruct->isMultiplication()) munit = &(*mstruct)[1];
+		else munit = mstruct;
+		if(munit->isUnit()) u = munit->unit();
+		else u = (*munit)[0].unit();
+		if(u && u->isCurrency()) {
+			if(evalops.local_currency_conversion && CALCULATOR->getLocalCurrency() && u != CALCULATOR->getLocalCurrency()) {
+				ApproximationMode abak = evalops.approximation;
+				if(evalops.approximation == APPROXIMATION_EXACT) evalops.approximation = APPROXIMATION_TRY_EXACT;
+				mstruct->set(CALCULATOR->convertToOptimalUnit(*mstruct, evalops, true));
+				evalops.approximation = abak;
+			}
+		} else if(u && u->subtype() != SUBTYPE_BASE_UNIT && !u->isSIUnit()) {
+			MathStructure mbak(*mstruct);
+			if(evalops.auto_post_conversion == POST_CONVERSION_OPTIMAL || evalops.auto_post_conversion == POST_CONVERSION_NONE) {
+				if(munit->isUnit() && u->referenceName() == "oF") {
+					u = CALCULATOR->getActiveUnit("oC");
+					if(u) mstruct->set(CALCULATOR->convert(*mstruct, u, evalops, true, false));
+				} else {
+					mstruct->set(CALCULATOR->convertToOptimalUnit(*mstruct, evalops, true));
+				}
+			}
+			if(evalops.approximation == APPROXIMATION_EXACT && ((evalops.auto_post_conversion != POST_CONVERSION_OPTIMAL && evalops.auto_post_conversion != POST_CONVERSION_NONE) || mstruct->equals(mbak))) {
+				evalops.approximation = APPROXIMATION_TRY_EXACT;
+				if(evalops.auto_post_conversion == POST_CONVERSION_BASE) mstruct->set(CALCULATOR->convertToBaseUnits(*mstruct, evalops));
+				else mstruct->set(CALCULATOR->convertToOptimalUnit(*mstruct, evalops, true));
+				evalops.approximation = APPROXIMATION_EXACT;
+			}
+		}
 	}
 
 	if(!do_mathoperation && check_exrates && check_exchange_rates(NULL, (!do_stack || stack_index == 0) && !do_bases && !do_calendars && !do_pfe && !do_factors && !do_expand)) {
@@ -12521,7 +12591,10 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 			} else {
 				g_signal_handlers_block_matched((gpointer) fd->entry[0], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
 				//insert selection in expression entry into the first argument entry
-				gtk_entry_set_text(GTK_ENTRY(fd->entry[0]), get_selected_expression_text(true).c_str());
+				string str = get_selected_expression_text(true), str2;
+				CALCULATOR->separateToExpression(str, str2, evalops, true);
+				remove_blank_ends(str);
+				gtk_entry_set_text(GTK_ENTRY(fd->entry[0]), str.c_str());
 				if(arg && arg->type() == ARGUMENT_TYPE_INTEGER) {
 					gtk_spin_button_update(GTK_SPIN_BUTTON(fd->entry[0]));
 				}
@@ -12645,6 +12718,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 #else
 		gtk_widget_set_margin_right(fd->label[i], 6);
 #endif
+		GtkWidget *combo = NULL;
 		if(arg) {
 			switch(arg->type()) {
 				case ARGUMENT_TYPE_INTEGER: {
@@ -12742,7 +12816,29 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 						typestr += argtype;
 						typestr += ")";
 					}
-					fd->entry[i] = gtk_entry_new();
+					if(i == 1 && f == CALCULATOR->f_ascii && arg->type() == ARGUMENT_TYPE_TEXT) {
+						combo = gtk_combo_box_text_new_with_entry();
+						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "UTF-8");
+						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "UTF-16");
+						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "UTF-32");
+						fd->entry[i] = gtk_bin_get_child(GTK_BIN(combo));
+					} else if(i == 3 && f == CALCULATOR->f_date && arg->type() == ARGUMENT_TYPE_TEXT) {
+						combo = gtk_combo_box_text_new_with_entry();
+						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "chinese");
+						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "coptic");
+						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "egyptian");
+						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "ethiopian");
+						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "gregorian");
+						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "hebrew");
+						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "indian");
+						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "islamic");
+						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "julian");
+						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "milankovic");
+						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "persian");
+						fd->entry[i] = gtk_bin_get_child(GTK_BIN(combo));
+					} else {
+						fd->entry[i] = gtk_entry_new();
+					}
 					if(i >= f->minargs() && !has_vector) {
 						gtk_entry_set_placeholder_text(GTK_ENTRY(fd->entry[i]), _("optional"));
 					}
@@ -12838,7 +12934,9 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 			}
 			//insert selection in expression entry into the first argument entry
 			if(i == 0) {
-				string seltext = get_selected_expression_text(true);
+				string seltext = get_selected_expression_text(true), str2;
+				CALCULATOR->separateToExpression(seltext, str2, evalops, true);
+				remove_blank_ends(seltext);
 				if(!seltext.empty()) {
 					gtk_entry_set_text(GTK_ENTRY(fd->entry[i]), seltext.c_str());
 					if(arg && arg->type() == ARGUMENT_TYPE_INTEGER) {
@@ -12849,7 +12947,8 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 			g_signal_handlers_unblock_matched((gpointer) fd->entry[i], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
 		}
 		gtk_grid_attach(GTK_GRID(table), fd->label[i], 0, i, 1, 1);
-		gtk_grid_attach(GTK_GRID(table), fd->entry[i], 1, i, 1, 1);
+		if(combo) gtk_grid_attach(GTK_GRID(table), combo, 1, i, 1, 1);
+		else gtk_grid_attach(GTK_GRID(table), fd->entry[i], 1, i, 1, 1);
 		if(fd->type_label[i]) {
 			gtk_widget_set_hexpand(fd->type_label[i], FALSE);
 			gtk_grid_attach(GTK_GRID(table), fd->type_label[i], 2, i, 1, 1);
@@ -23721,7 +23820,8 @@ void on_menu_item_set_prefix_activate(GtkMenuItem*, gpointer user_data) {
 void on_menu_item_insert_date_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *d = gtk_dialog_new_with_buttons(_("Select date"), GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_CANCEL, _("_OK"), GTK_RESPONSE_OK, NULL);
 	GtkWidget *date_w = gtk_calendar_new();
-	string str = get_selected_expression_text();
+	string str = get_selected_expression_text(), str2;
+	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	remove_blank_ends(str);
 	int b_quote = -1;
 	if(str.length() > 2 && ((str[0] == '\"' && str[str.length() - 1] == '\"') || (str[0] == '\'' && str[str.length() - 1] == '\''))) {
@@ -23752,7 +23852,8 @@ void on_menu_item_insert_date_activate(GtkMenuItem*, gpointer) {
 }
 
 void on_menu_item_insert_matrix_activate(GtkMenuItem*, gpointer) {
-	string str = get_selected_expression_text();
+	string str = get_selected_expression_text(), str2;
+	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	remove_blank_ends(str);
 	if(!str.empty()) {
 		MathStructure mstruct_sel;
@@ -23767,7 +23868,8 @@ void on_menu_item_insert_matrix_activate(GtkMenuItem*, gpointer) {
 	insert_matrix(NULL, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), false);
 }
 void on_menu_item_insert_vector_activate(GtkMenuItem*, gpointer) {
-	string str = get_selected_expression_text();
+	string str = get_selected_expression_text(), str2;
+	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	remove_blank_ends(str);
 	if(!str.empty()) {
 		MathStructure mstruct_sel;
@@ -25840,6 +25942,7 @@ void on_menu_item_convert_number_bases_activate(GtkMenuItem*, gpointer) {
 	if(displayed_mstruct && !result_text.empty()) return convert_number_bases(((mstruct->isNumber() && !mstruct->number().hasImaginaryPart()) || mstruct->isUndefined()) ? result_text.c_str() : "", true);
 	string str = get_selected_expression_text(true), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
+	remove_blank_ends(str);
 	convert_number_bases(str.c_str(), false);
 }
 void convert_floatingpoint(const gchar *initial_expression, bool b_result) {
@@ -25869,6 +25972,7 @@ void on_menu_item_convert_floatingpoint_activate(GtkMenuItem*, gpointer) {
 	if(displayed_mstruct && !result_text.empty()) return convert_floatingpoint(((mstruct->isNumber() && !mstruct->number().hasImaginaryPart()) || mstruct->isUndefined()) ? result_text.c_str() : "", true);
 	string str = get_selected_expression_text(true), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
+	remove_blank_ends(str);
 	convert_floatingpoint(str.c_str(), false);
 }
 void on_button_fp_clicked(GtkWidget*, gpointer) {
@@ -25887,6 +25991,7 @@ void on_menu_item_show_percentage_dialog_activate(GtkMenuItem*, gpointer) {
 	if(!result_text.empty()) return show_percentage_dialog(result_text.c_str());
 	string str = get_selected_expression_text(true), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
+	remove_blank_ends(str);
 	show_percentage_dialog(str.c_str());
 }
 void show_calendarconversion_dialog() {
@@ -25991,7 +26096,10 @@ void on_menu_item_plot_functions_activate(GtkMenuItem*, gpointer) {
 		return;
 	}
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
-	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_expression")), evalops.parse_options.base == 10 ? get_selected_expression_text(true).c_str() : "");
+	string str = get_selected_expression_text(), str2;
+	CALCULATOR->separateToExpression(str, str2, evalops, true);
+	remove_blank_ends(str);
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_expression")), evalops.parse_options.base == 10 ? str.c_str() : "");
 	if(!gtk_widget_get_visible(dialog)) {
 		gtk_list_store_clear(tPlotFunctions_store);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_button_modify")), FALSE);
