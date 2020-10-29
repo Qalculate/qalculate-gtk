@@ -2690,6 +2690,9 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                               </object>
                             </child>
                           </object>
+                          <packing>
+                            <property name="index">-1</property>
+                          </packing>
                         </child>
                         <child type="overlay">
                           <object class="GtkRevealer" id="overlayrevealer">
@@ -3070,10 +3073,10 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="use-underline">True</property>
                                     <signal name="clicked" handler="on_button_history_insert_value_clicked" swapped="no"/>
                                     <child>
-                                      <object class="GtkLabel" id="label_insert_value">
+                                      <object class="GtkImage" id="image_history_insert_value">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes">Value</property>
+                                        <property name="icon-name">edit-paste</property>
                                       </object>
                                     </child>
                                   </object>
@@ -3093,10 +3096,10 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                     <property name="use-underline">True</property>
                                     <signal name="clicked" handler="on_button_history_insert_text_clicked" swapped="no"/>
                                     <child>
-                                      <object class="GtkLabel" id="label_insert_text">
+                                      <object class="GtkImage" id="image_history_insert_text">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes">Text</property>
+                                        <property name="icon-name">insert-text</property>
                                       </object>
                                     </child>
                                   </object>
@@ -3126,10 +3129,10 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="use-underline">True</property>
                                 <signal name="clicked" handler="on_button_history_copy_clicked" swapped="no"/>
                                 <child>
-                                  <object class="GtkLabel" id="label_history_copy">
+                                  <object class="GtkImage" id="image_history_copy">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="label" translatable="yes">Copy</property>
+                                    <property name="icon-name">edit-copy</property>
                                   </object>
                                 </child>
                               </object>
@@ -7299,7 +7302,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">2</property>
+                <property name="position">1</property>
               </packing>
             </child>
           </object>
@@ -7605,6 +7608,15 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       <object class="GtkSeparatorMenuItem" id="separator_popup_nonzero">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkCheckMenuItem" id="popup_menu_item_exact">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="tooltip-text" translatable="yes">Assume that unknown denominators are non-zero</property>
+        <property name="label" translatable="yes">Exact</property>
+        <signal name="activate" handler="on_popup_menu_item_exact_activate" swapped="no"/>
       </object>
     </child>
     <child>

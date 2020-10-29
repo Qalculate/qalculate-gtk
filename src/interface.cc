@@ -1436,7 +1436,7 @@ void create_main_window(void) {
 	expander_stack = GTK_WIDGET(gtk_builder_get_object(main_builder, "expander_stack"));
 	expander_convert = GTK_WIDGET(gtk_builder_get_object(main_builder, "expander_convert"));
 	tabs = GTK_WIDGET(gtk_builder_get_object(main_builder, "tabs"));
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_ho")), !persistent_keypad);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_hi")), !persistent_keypad);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnl")), !persistent_keypad || (show_stack && rpn_mode));
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnr")), !persistent_keypad || (show_stack && rpn_mode));
 	if(history_height > 0) gtk_widget_set_size_request(tabs, -1, history_height);

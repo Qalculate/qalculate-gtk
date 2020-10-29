@@ -576,6 +576,7 @@ void on_menu_item_assumptions_nonnegative_activate(GtkMenuItem *w, gpointer user
 void on_menu_item_assumptions_negative_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_assumptions_nonpositive_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_assumptions_unknown_activate(GtkMenuItem *w, gpointer user_data);
+void on_popup_menu_item_exact_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_assume_nonzero_denominators_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_abort_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_clear_activate(GtkMenuItem *w, gpointer user_data);
