@@ -311,6 +311,7 @@ int nr_of_new_expressions = 0;
 int expression_lines = -1;
 
 unordered_map<void*, string> date_map;
+unordered_map<void*, bool> date_approx_map;
 unordered_map<void*, string> number_map;
 unordered_map<void*, string> number_base_map;
 unordered_map<void*, bool> number_approx_map;
@@ -369,6 +370,7 @@ bool versatile_exact = false;
 
 bool auto_calculate = false;
 bool result_autocalculated = false;
+gint autocalc_history_timeout_id = 0;
 
 bool to_fraction = false;
 char to_prefix = 0;
@@ -1205,6 +1207,17 @@ void unblock_completion() {
 	completion_blocked = false;
 }
 
+gboolean do_autocalc_history_timeout(gpointer);
+bool result_text_empty() {
+	return result_text.empty() && !autocalc_history_timeout_id;
+}
+const string &get_result_text() {
+	if(autocalc_history_timeout_id) {
+		g_source_remove(autocalc_history_timeout_id);
+		do_autocalc_history_timeout(NULL);
+	}
+	return result_text;
+}
 string get_expression_text() {
 	GtkTextIter istart, iend;
 	gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
@@ -2316,6 +2329,11 @@ bool display_function_hint(MathFunction *f, int arg_index = 1) {
 					if(i_reduced == 2) str3 = arg_default.print();
 					else str3 = arg_default.printlong();
 				}
+				if(i_reduced != 2 && printops.use_unicode_signs) {
+					gsub(">=", SIGN_GREATER_OR_EQUAL, str3);
+					gsub("<=", SIGN_LESS_OR_EQUAL, str3);
+					gsub("!=", SIGN_NOT_EQUAL, str3);
+				}
 				if(!str3.empty()) {
 					str2 += ": ";
 					str2 += str3;
@@ -2438,7 +2456,7 @@ bool is_time(const MathStructure &m) {
 }
 
 void add_to_expression_history(string str);
-gint autocalc_history_timeout_id = 0;
+
 vector<CalculatorMessage> autocalc_messages;
 gboolean do_autocalc_history_timeout(gpointer) {
 	autocalc_history_timeout_id = 0;
@@ -2976,6 +2994,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		printops.can_display_unicode_string_arg = (void*) resultview;
 
 		date_map.clear();
+		date_approx_map.clear();
 		number_map.clear();
 		number_base_map.clear();
 		number_exp_map.clear();
@@ -3026,38 +3045,9 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			gtk_widget_queue_draw(resultview);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), true);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), true);
-			result_text = displayed_mstruct->print();
-			if(complex_angle_form) replace_result_cis(result_text);
-			PrintOptions printops_long = printops;
-			printops_long.abbreviate_names = false;
-			printops_long.short_multiplication = false;
-			printops_long.excessive_parenthesis = true;
-			printops_long.is_approximate = NULL;
-			result_text = displayed_mstruct->print(printops_long);
-			result_text_approximate = printops_long.is_approximate;
-			if(CALCULATOR->aborted()) {
-				result_text = "";
-			} else {
-				result_text_long = displayed_mstruct->print(printops_long);
-				if(complex_angle_form) replace_result_cis(result_text_long);
-			}
-			if(CALCULATOR->aborted()) {
-				result_text_long = "";
-				gtk_widget_set_tooltip_text(resultview, "");
-			} else {
-				string eqstr;
-				if(result_text_approximate && !mstruct->isApproximate()) {
-					eqstr = "=";
-				} else {
-					if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_ALMOST_EQUAL, (void*) historyview)) {
-						eqstr = SIGN_ALMOST_EQUAL;
-					} else {
-						eqstr = "= ";
-						eqstr += _("approx.");
-					}
-				}
-				gtk_widget_set_tooltip_text(resultview, result_text_long.length() < 1000 ? (eqstr + result_text_long).c_str() : "");
-			}
+			result_text = "";
+			result_text_long = "";
+			gtk_widget_set_tooltip_text(resultview, "");
 			update_expression_icons();
 			display_errors(NULL, NULL, NULL, 1);
 			if(visible_keypad & PROGRAMMING_KEYPAD) {
@@ -4087,6 +4077,11 @@ void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 						} else {
 							str2 = default_arg.printlong();
 						}
+						if(printops.use_unicode_signs) {
+							gsub(">=", SIGN_GREATER_OR_EQUAL, str2);
+							gsub("<=", SIGN_LESS_OR_EQUAL, str2);
+							gsub("!=", SIGN_NOT_EQUAL, str2);
+						}
 						if(i2 > f->minargs()) {
 							str2 += " (";
 							//optional argument
@@ -4112,6 +4107,11 @@ void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 					str += _("Requirement");
 					str += ": ";
 					str += f->printCondition();
+					if(printops.use_unicode_signs) {
+						gsub(">=", SIGN_GREATER_OR_EQUAL, str);
+						gsub("<=", SIGN_LESS_OR_EQUAL, str);
+						gsub("!=", SIGN_NOT_EQUAL, str);
+					}
 					str += "\n";
 					gtk_text_buffer_get_end_iter(buffer, &iter);
 					gtk_text_buffer_insert(buffer, &iter, str.c_str(), -1);
@@ -6995,6 +6995,8 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						exp_minus = number_exp_minus_map[(void*) &m.number()];
 					}
 				} else {
+					bool was_approx = (po.is_approximate && *po.is_approximate);
+					if(po.is_approximate) *po.is_approximate = false;
 					value_str = m.number().print(po, ips_n);
 					if(po.base == BASE_HEXADECIMAL && po.base_display == BASE_DISPLAY_NORMAL) {
 						gsub("0x", "", value_str);
@@ -7016,11 +7018,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					number_exp_map[(void*) &m.number()] = exp;
 					number_exp_minus_map[(void*) &m.number()] = exp_minus;
 					if(po.is_approximate) {
-						number_approx_map[(void*) &m.number()] = *po.is_approximate;
+						number_approx_map[(void*) &m.number()] = po.is_approximate && *po.is_approximate;
 					} else {
 						number_approx_map[(void*) &m.number()] = FALSE;
 					}
 					number_base_map[(void*) &m.number()] = "";
+					if(po.is_approximate && was_approx) *po.is_approximate = true;
 				}
 				if((!use_e_notation || (po.base != BASE_DECIMAL && po.base >= 2 && po.base <= 36)) && !exp.empty()) {
 					if(value_str == "1") {
@@ -7333,9 +7336,16 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				unordered_map<void*, string>::iterator it = date_map.find((void*) m.datetime());
 				if(it != date_map.end()) {
 					str += it->second;
+					if(date_approx_map.find((void*) m.datetime()) != date_approx_map.end()) {
+						if(po.is_approximate && !(*po.is_approximate) && date_approx_map[(void*) m.datetime()]) *po.is_approximate = true;
+					}
 				} else {
+					bool was_approx = (po.is_approximate && *po.is_approximate);
+					if(po.is_approximate) *po.is_approximate = false;
 					string value_str = m.datetime()->print(po);
 					date_map[(void*) m.datetime()] = value_str;
+					date_approx_map[(void*) m.datetime()] = po.is_approximate && *po.is_approximate;
+					if(po.is_approximate && was_approx) *po.is_approximate = true;
 					str += value_str;
 				}
 				TTE(str)
@@ -21274,7 +21284,7 @@ void on_expressionbuffer_changed(GtkTextBuffer*, gpointer) {
 		}
 	}
 	if(!rpn_mode && auto_calculate) do_auto_calc();
-	if(result_text.empty()) return;
+	if(result_text.empty() && !autocalc_history_timeout_id) return;
 	if(!dont_change_index) expression_history_index = -1;
 	if(!auto_calculate && !rpn_mode) clearresult();
 }
@@ -25956,7 +25966,7 @@ void convert_number_bases(const gchar *initial_expression, bool b_result) {
 	gtk_window_present(GTK_WINDOW(dialog));
 }
 void on_menu_item_convert_number_bases_activate(GtkMenuItem*, gpointer) {
-	if(displayed_mstruct && !result_text.empty()) return convert_number_bases(((mstruct->isNumber() && !mstruct->number().hasImaginaryPart()) || mstruct->isUndefined()) ? result_text.c_str() : "", true);
+	if(displayed_mstruct && !result_text_empty()) return convert_number_bases(((mstruct->isNumber() && !mstruct->number().hasImaginaryPart()) || mstruct->isUndefined()) ? get_result_text().c_str() : "", true);
 	string str = get_selected_expression_text(true), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	remove_blank_ends(str);
@@ -25986,7 +25996,7 @@ void convert_floatingpoint(const gchar *initial_expression, bool b_result) {
 	gtk_window_present(GTK_WINDOW(dialog));
 }
 void on_menu_item_convert_floatingpoint_activate(GtkMenuItem*, gpointer) {
-	if(displayed_mstruct && !result_text.empty()) return convert_floatingpoint(((mstruct->isNumber() && !mstruct->number().hasImaginaryPart()) || mstruct->isUndefined()) ? result_text.c_str() : "", true);
+	if(displayed_mstruct && !result_text_empty()) return convert_floatingpoint(((mstruct->isNumber() && !mstruct->number().hasImaginaryPart()) || mstruct->isUndefined()) ? get_result_text().c_str() : "", true);
 	string str = get_selected_expression_text(true), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	remove_blank_ends(str);
@@ -26005,7 +26015,7 @@ void show_percentage_dialog(const gchar *initial_expression) {
 	gtk_window_present(GTK_WINDOW(dialog));
 }
 void on_menu_item_show_percentage_dialog_activate(GtkMenuItem*, gpointer) {
-	if(!result_text.empty()) return show_percentage_dialog(result_text.c_str());
+	if(!result_text_empty()) return show_percentage_dialog(get_result_text().c_str());
 	string str = get_selected_expression_text(true), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	remove_blank_ends(str);
@@ -26712,7 +26722,7 @@ void on_menu_item_save_image_activate(GtkMenuItem*, gpointer) {
 	gtk_widget_destroy(d);
 }
 void on_menu_item_copy_activate(GtkMenuItem*, gpointer) {
-	string copy_text = result_text;
+	string copy_text = get_result_text();
 	if(!copy_separator) {
 		remove_separator(copy_text);
 	}
@@ -32062,7 +32072,7 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 		gtk_grid_attach(GTK_GRID(ptable), entry[i], 1, rows - 1, 1, 1);
 	}
 	MathStructure msave(*mstruct);
-	string result_save = result_text;
+	string result_save = get_result_text();
 	gtk_widget_show_all(dialog);
 	bool b_changed = false;
 	vector<string> unknown_text;
