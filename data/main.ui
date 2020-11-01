@@ -2542,7 +2542,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
             <property name="border-width">12</property>
             <property name="orientation">vertical</property>
             <child>
-              <!-- n-columns=2 n-rows=3 -->
+              <!-- n-columns=1 n-rows=3 -->
               <object class="GtkGrid" id="grid_expression_result">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -2599,23 +2599,141 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkScrolledWindow" id="expressionscrolled">
+                  <object class="GtkOverlay" id="expressionoverlay">
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="hexpand">True</property>
-                    <property name="shadow-type">in</property>
+                    <property name="can-focus">False</property>
                     <child>
-                      <object class="GtkTextView" id="expressiontext">
+                      <object class="GtkScrolledWindow" id="expressionscrolled">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="wrap-mode">word-char</property>
-                        <property name="buffer">expressionbuffer</property>
-                        <property name="accepts-tab">False</property>
-                        <signal name="button-press-event" handler="on_expressiontext_button_press_event" swapped="no"/>
-                        <signal name="focus-out-event" handler="on_expressiontext_focus_out_event" swapped="no"/>
-                        <signal name="key-press-event" handler="on_expressiontext_key_press_event" swapped="no"/>
-                        <signal name="populate-popup" handler="on_expressiontext_populate_popup" swapped="no"/>
+                        <property name="hexpand">True</property>
+                        <property name="shadow-type">in</property>
+                        <child>
+                          <object class="GtkTextView" id="expressiontext">
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="wrap-mode">word-char</property>
+                            <property name="buffer">expressionbuffer</property>
+                            <property name="accepts-tab">False</property>
+                            <signal name="button-press-event" handler="on_expressiontext_button_press_event" swapped="no"/>
+                            <signal name="focus-out-event" handler="on_expressiontext_focus_out_event" swapped="no"/>
+                            <signal name="key-press-event" handler="on_expressiontext_key_press_event" swapped="no"/>
+                            <signal name="populate-popup" handler="on_expressiontext_populate_popup" swapped="no"/>
+                          </object>
+                        </child>
                       </object>
+                      <packing>
+                        <property name="index">-1</property>
+                      </packing>
+                    </child>
+                    <child type="overlay">
+                      <object class="GtkBox" id="box_expression_buttons">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkEventBox" id="expression_button">
+                            <property name="width-request">44</property>
+                            <property name="height-request">44</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="has-tooltip">True</property>
+                            <signal name="button-press-event" handler="on_expression_button_button_press_event" swapped="no"/>
+                            <child>
+                              <object class="GtkStack" id="expression_button_stack">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <child>
+                                  <object class="GtkLabel" id="expression_button_equals">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes">=</property>
+                                    <property name="justify">center</property>
+                                  </object>
+                                  <packing>
+                                    <property name="name">page0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkImage" id="expression_button_clear">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="icon-name">edit-clear-symbolic</property>
+                                  </object>
+                                  <packing>
+                                    <property name="name">page1</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkImage" id="message_tooltip_icon">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="icon-name">dialog-warning</property>
+                                  </object>
+                                  <packing>
+                                    <property name="name">page2</property>
+                                    <property name="position">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkSpinner" id="expressionspinner">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                  </object>
+                                  <packing>
+                                    <property name="name">page3</property>
+                                    <property name="position">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkImage" id="expression_button_stop">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="icon-name">process-stop</property>
+                                  </object>
+                                  <packing>
+                                    <property name="name">page4</property>
+                                    <property name="position">4</property>
+                                  </packing>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkEventBox" id="button_minimal_mode">
+                            <property name="width-request">44</property>
+                            <property name="height-request">44</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <signal name="button-press-event" handler="on_button_minimal_mode_button_press_event" swapped="no"/>
+                            <child>
+                              <object class="GtkImage" id="image_minimal_mode">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="tooltip-text" translatable="yes">Toggle minimal window</property>
+                                <property name="icon-name">view-fullscreen-symbolic</property>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="pack-type">end</property>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="index">1</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>
@@ -2624,65 +2742,47 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                   </packing>
                 </child>
                 <child>
-                  <!-- n-columns=3 n-rows=1 -->
-                  <object class="GtkGrid" id="grid_result">
+                  <object class="GtkOverlay" id="resultoverlay">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="hexpand">True</property>
                     <child>
-                      <object class="GtkSpinner" id="resultspinner">
-                        <property name="width-request">100</property>
-                        <property name="can-focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="left-attach">1</property>
-                        <property name="top-attach">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkOverlay" id="resultoverlay">
+                      <object class="GtkScrolledWindow" id="scrolled_result">
+                        <property name="height-request">1</property>
                         <property name="visible">True</property>
-                        <property name="can-focus">False</property>
+                        <property name="can-focus">True</property>
+                        <property name="events">GDK_BUTTON_PRESS_MASK | GDK_STRUCTURE_MASK</property>
+                        <property name="margin-top">4</property>
+                        <property name="margin-bottom">2</property>
                         <property name="hexpand">True</property>
+                        <signal name="button-press-event" handler="on_resultview_button_press_event" swapped="no"/>
+                        <signal name="popup-menu" handler="on_resultview_popup_menu" swapped="no"/>
                         <child>
-                          <object class="GtkScrolledWindow" id="scrolled_result">
-                            <property name="height-request">1</property>
+                          <object class="GtkViewport" id="resultport">
                             <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="events">GDK_BUTTON_PRESS_MASK | GDK_STRUCTURE_MASK</property>
-                            <property name="margin-top">4</property>
-                            <property name="margin-bottom">2</property>
+                            <property name="can-focus">False</property>
                             <property name="hexpand">True</property>
+                            <property name="shadow-type">none</property>
                             <signal name="button-press-event" handler="on_resultview_button_press_event" swapped="no"/>
                             <signal name="popup-menu" handler="on_resultview_popup_menu" swapped="no"/>
                             <child>
-                              <object class="GtkViewport" id="resultport">
+                              <object class="GtkEventBox" id="resulteventbox">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="hexpand">True</property>
-                                <property name="shadow-type">none</property>
                                 <signal name="button-press-event" handler="on_resultview_button_press_event" swapped="no"/>
                                 <signal name="popup-menu" handler="on_resultview_popup_menu" swapped="no"/>
                                 <child>
-                                  <object class="GtkEventBox" id="resulteventbox">
+                                  <object class="GtkDrawingArea" id="resultview">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="hexpand">True</property>
                                     <signal name="button-press-event" handler="on_resultview_button_press_event" swapped="no"/>
+                                    <signal name="draw" handler="on_resultview_draw" swapped="no"/>
                                     <signal name="popup-menu" handler="on_resultview_popup_menu" swapped="no"/>
-                                    <child>
-                                      <object class="GtkDrawingArea" id="resultview">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="hexpand">True</property>
-                                        <signal name="button-press-event" handler="on_resultview_button_press_event" swapped="no"/>
-                                        <signal name="draw" handler="on_resultview_draw" swapped="no"/>
-                                        <signal name="popup-menu" handler="on_resultview_popup_menu" swapped="no"/>
-                                        <child internal-child="accessible">
-                                          <object class="AtkObject" id="resultview-atkobject">
-                                            <property name="AtkObject::accessible-name" translatable="yes">Calculation result</property>
-                                          </object>
-                                        </child>
+                                    <child internal-child="accessible">
+                                      <object class="AtkObject" id="resultview-atkobject">
+                                        <property name="AtkObject::accessible-name" translatable="yes">Calculation result</property>
                                       </object>
                                     </child>
                                   </object>
@@ -2690,166 +2790,47 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                               </object>
                             </child>
                           </object>
-                          <packing>
-                            <property name="index">-1</property>
-                          </packing>
-                        </child>
-                        <child type="overlay">
-                          <object class="GtkRevealer" id="overlayrevealer">
-                            <property name="can-focus">False</property>
-                            <property name="halign">center</property>
-                            <property name="valign">center</property>
-                            <property name="transition-type">crossfade</property>
-                            <property name="transition-duration">500</property>
-                            <child>
-                              <object class="GtkBox" id="overlaybox">
-                                <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                                <property name="orientation">vertical</property>
-                                <child>
-                                  <object class="GtkLabel" id="overlaylabel">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">False</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <style>
-                                  <class name="app-notification"/>
-                                </style>
-                              </object>
-                            </child>
-                          </object>
                         </child>
                       </object>
                       <packing>
-                        <property name="left-attach">0</property>
-                        <property name="top-attach">0</property>
+                        <property name="index">-1</property>
                       </packing>
                     </child>
-                    <child>
-                      <placeholder/>
+                    <child type="overlay">
+                      <object class="GtkRevealer" id="overlayrevealer">
+                        <property name="can-focus">False</property>
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                        <property name="transition-type">crossfade</property>
+                        <property name="transition-duration">500</property>
+                        <child>
+                          <object class="GtkBox" id="overlaybox">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkLabel" id="overlaylabel">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <style>
+                              <class name="app-notification"/>
+                            </style>
+                          </object>
+                        </child>
+                      </object>
                     </child>
                   </object>
                   <packing>
                     <property name="left-attach">0</property>
                     <property name="top-attach">2</property>
                   </packing>
-                </child>
-                <child>
-                  <object class="GtkBox" id="box_expression_button">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="orientation">vertical</property>
-                    <property name="spacing">6</property>
-                    <child>
-                      <object class="GtkButton" id="expression_button">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="receives-default">True</property>
-                        <property name="valign">start</property>
-                        <signal name="clicked" handler="on_expression_button_clicked" swapped="no"/>
-                        <child>
-                          <object class="GtkStack" id="expression_button_stack">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <child>
-                              <object class="GtkLabel" id="expression_button_equals">
-                                <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                                <property name="label" translatable="yes">=</property>
-                                <property name="justify">center</property>
-                              </object>
-                              <packing>
-                                <property name="name">page0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkImage" id="expression_button_clear">
-                                <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                                <property name="icon-name">edit-clear-symbolic</property>
-                              </object>
-                              <packing>
-                                <property name="name">page1</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkImage" id="message_tooltip_icon">
-                                <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                                <property name="icon-name">dialog-warning</property>
-                              </object>
-                              <packing>
-                                <property name="name">page2</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkSpinner" id="expressionspinner">
-                                <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                              </object>
-                              <packing>
-                                <property name="name">page3</property>
-                                <property name="position">3</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkImage" id="expression_button_stop">
-                                <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                                <property name="icon-name">process-stop</property>
-                              </object>
-                              <packing>
-                                <property name="name">page4</property>
-                                <property name="position">4</property>
-                              </packing>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="button_minimal_mode">
-                        <property name="can-focus">True</property>
-                        <property name="receives-default">False</property>
-                        <property name="tooltip-text" translatable="yes">Restore the window</property>
-                        <property name="valign">start</property>
-                        <property name="use-underline">True</property>
-                        <signal name="clicked" handler="on_button_minimal_mode_clicked" swapped="no"/>
-                        <child>
-                          <object class="GtkImage" id="image_minimal_mode">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="icon-name">view-fullscreen-symbolic</property>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">0</property>
-                    <property name="height">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
               </object>
               <packing>
@@ -4101,7 +4082,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                             <property name="can-focus">True</property>
                             <property name="receives-default">True</property>
                             <property name="tooltip-text" translatable="yes">Show/hide programming keypad</property>
-                            <property name="margin-bottom">12</property>
+                            <property name="margin-bottom">9</property>
                             <signal name="toggled" handler="hide_tooltip" swapped="no"/>
                             <signal name="toggled" handler="on_button_programmers_keypad_toggled" swapped="no"/>
                             <child>
@@ -4152,7 +4133,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                               <object class="GtkBox" id="hbox62">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="margin-bottom">12</property>
+                                <property name="margin-bottom">9</property>
                                 <property name="spacing">6</property>
                                 <child>
                                   <object class="GtkToggleButton" id="button_exact">
@@ -4238,7 +4219,6 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                               <object class="GtkLabel" id="label_result_bases">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="margin-bottom">3</property>
                                 <property name="justify">right</property>
                                 <property name="selectable">True</property>
                                 <property name="ellipsize">start</property>

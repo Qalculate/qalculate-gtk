@@ -1230,7 +1230,7 @@ void create_main_window(void) {
 	expression_undo_buffer.push_back("");
 
 	gtk_text_view_set_left_margin(GTK_TEXT_VIEW(expressiontext), 6);
-	gtk_text_view_set_right_margin(GTK_TEXT_VIEW(expressiontext), 6);
+	gtk_text_view_set_right_margin(GTK_TEXT_VIEW(expressiontext), 44);
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
 	gtk_text_view_set_top_margin(GTK_TEXT_VIEW(expressiontext), 6);
 	gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(expressiontext), 6);
@@ -1248,16 +1248,22 @@ void create_main_window(void) {
 	result_bases = GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases"));
 	keypad = GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons"));
 
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
-	gtk_label_set_xalign(GTK_LABEL(statuslabel_l), 0.0);
+	gtk_widget_set_margin_top(statuslabel_r, 1);
+	gtk_widget_set_margin_top(statuslabel_l, 1);
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
+	gtk_widget_set_margin_end(statuslabel_r, 6);
 #else
-	gtk_misc_set_alignment(GTK_MISC(statuslabel_l), 0.0, 0.5);
+	gtk_widget_set_margin_right(statuslabel_r, 6);
 #endif
 
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
+	gtk_label_set_xalign(GTK_LABEL(statuslabel_l), 0.0);
 	gtk_label_set_xalign(GTK_LABEL(result_bases), 1.0);
 	gtk_label_set_yalign(GTK_LABEL(result_bases), 0.5);
+	gtk_label_set_yalign(GTK_LABEL(statuslabel_l), 0.5);
+	gtk_label_set_yalign(GTK_LABEL(statuslabel_r), 0.5);
 #else
+	gtk_misc_set_alignment(GTK_MISC(statuslabel_l), 0.0, 0.5);
 	gtk_misc_set_alignment(GTK_MISC(result_bases), 1.0, 0.5);
 #endif
 
@@ -1306,6 +1312,9 @@ void create_main_window(void) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "table_buttons")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "event_hide_left_buttons")));
 	}
+	GtkCssProvider *expression_button_equals_provider = gtk_css_provider_new();
+	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals"))), GTK_STYLE_PROVIDER(expression_button_equals_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_css_provider_load_from_data(expression_button_equals_provider, "* {font-size: 32px; font-weight: bold;}", -1, NULL);
 	
 	set_mode_items(printops, evalops, CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign(), rpn_mode, CALCULATOR->getPrecision(), CALCULATOR->usesIntervalArithmetic(), CALCULATOR->variableUnitsEnabled(), adaptive_interval_display, visible_keypad, auto_calculate, complex_angle_form, true);
 
@@ -1482,7 +1491,7 @@ void create_main_window(void) {
 	if(minimal_mode) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "grid_result")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
 		gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), TRUE);
 		gtk_widget_set_vexpand(resultview, FALSE);
 	}
@@ -1760,13 +1769,15 @@ void create_main_window(void) {
 	g_signal_connect((gpointer) stackstore, "row-inserted", G_CALLBACK(on_stackstore_row_inserted), NULL);
 
 	if(rpn_mode) {
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_equals")), _("Ent"));
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "expression_button_equals")), _("Ent"));
+		gtk_label_set_angle(GTK_LABEL(gtk_builder_get_object(main_builder, "label_equals")), 90.0);
+		// RPN Enter (calculate and add to stack)
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_equals")), _("ENTER"));
 		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_equals")), _("Calculate expression and add to stack"));
 		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), _("Calculate expression and add to stack"));
 	} else {
 		gtk_widget_hide(expander_stack);
 	}
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), FALSE);
 
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), FALSE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), FALSE);
