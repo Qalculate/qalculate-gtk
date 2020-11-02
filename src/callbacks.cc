@@ -18279,8 +18279,10 @@ void save_preferences(bool mode) {
 			else fprintf(file, "keyboard_shortcut=%u:%u:%i:%s\n", it->second.key, it->second.modifier, it->second.type, it->second.value.c_str());
 		}
 	}
-	for(size_t i = 0; i < expression_history.size(); i++) {
-		fprintf(file, "expression_history=%s\n", expression_history[i].c_str());
+	if(!clear_history_on_exit) {
+		for(size_t i = 0; i < expression_history.size(); i++) {
+			fprintf(file, "expression_history=%s\n", expression_history[i].c_str());
+		}
 	}
 
 	int lines = 300;
