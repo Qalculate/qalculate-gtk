@@ -17149,8 +17149,8 @@ void load_preferences() {
 	default_shortcuts = true;
 	keyboard_shortcuts.clear();
 
-	custom_buttons.resize(29);
-	for(size_t i = 0; i < 29; i++) {
+	custom_buttons.resize(34);
+	for(size_t i = 0; i < 34; i++) {
 		custom_buttons[i].type[0] = -1;
 		custom_buttons[i].type[1] = -1;
 		custom_buttons[i].type[2] = -1;
@@ -18749,6 +18749,7 @@ extern "C" {
 bool do_shortcut(int type, string value);
 
 gboolean on_button_minimal_mode_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
+	if(event->button != 1) return FALSE;
 	set_minimal_mode(false);
 	return TRUE;
 }
@@ -20418,6 +20419,7 @@ void update_resultview_popup() {
 }
 
 gboolean on_expression_button_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
+	if(event->button != 1) return FALSE;
 	GtkWidget *w = gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack")));
 	if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals"))) {
 		execute_expression();
@@ -21680,6 +21682,16 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 		if(!evalops.parse_options.rpn && wrap_expression_selection("!")) return TRUE;
 		insert_text("!");
 		return TRUE;
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c1"))) {
+		DO_CUSTOM_BUTTONS(29)
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c2"))) {
+		DO_CUSTOM_BUTTONS(30)
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c3"))) {
+		DO_CUSTOM_BUTTONS(31)
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c4"))) {
+		DO_CUSTOM_BUTTONS(32)
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c5"))) {
+		DO_CUSTOM_BUTTONS(33)
 	} else {
 		int i = 0;
 		if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_zero"))) i = 0;
@@ -22063,6 +22075,21 @@ void on_button_eight_clicked(GtkButton*, gpointer) {
 void on_button_nine_clicked(GtkButton*, gpointer) {
 	DO_CUSTOM_BUTTON_1(17)
 	insert_text("9");
+}
+void on_button_c1_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_1(29)
+}
+void on_button_c2_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_1(30)
+}
+void on_button_c3_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_1(31)
+}
+void on_button_c4_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_1(32)
+}
+void on_button_c5_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_1(33)
 }
 void on_button_a_clicked(GtkButton*, gpointer) {
 	insert_text(printops.lower_case_numbers ? "a" : "A");

@@ -4243,7 +4243,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                       </packing>
                     </child>
                     <child>
-                      <!-- n-columns=3 n-rows=1 -->
+                      <!-- n-columns=4 n-rows=1 -->
                       <object class="GtkGrid" id="grid_buttons">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
@@ -4698,28 +4698,6 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="button_seven">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="receives-default">False</property>
-                                    <property name="use-underline">True</property>
-                                    <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
-                                    <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
-                                    <signal name="clicked" handler="on_button_seven_clicked" swapped="no"/>
-                                    <child>
-                                      <object class="GtkLabel" id="label_seven">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="label">7</property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="left-attach">0</property>
-                                    <property name="top-attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
                                   <object class="GtkButton" id="button_eight">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
@@ -4850,6 +4828,28 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                   <packing>
                                     <property name="left-attach">0</property>
                                     <property name="top-attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="button_seven">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="use-underline">True</property>
+                                    <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="clicked" handler="on_button_seven_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkLabel" id="label_seven">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label">7</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">1</property>
                                   </packing>
                                 </child>
                               </object>
@@ -5039,7 +5039,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                             </child>
                           </object>
                           <packing>
-                            <property name="left-attach">2</property>
+                            <property name="left-attach">3</property>
                             <property name="top-attach">0</property>
                           </packing>
                         </child>
@@ -7261,6 +7261,127 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                           </object>
                           <packing>
                             <property name="left-attach">1</property>
+                            <property name="top-attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkBox" id="box_custom_buttons">
+                            <property name="can-focus">False</property>
+                            <property name="orientation">vertical</property>
+                            <property name="spacing">2</property>
+                            <child>
+                              <object class="GtkButton" id="button_c1">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">False</property>
+                                <property name="use-underline">True</property>
+                                <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                <signal name="clicked" handler="on_button_c1_clicked" swapped="no"/>
+                                <child>
+                                  <object class="GtkLabel" id="label_c1">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="button_c2">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">False</property>
+                                <property name="use-underline">True</property>
+                                <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                <signal name="clicked" handler="on_button_c2_clicked" swapped="no"/>
+                                <child>
+                                  <object class="GtkLabel" id="label_c2">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="button_c3">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">False</property>
+                                <property name="use-underline">True</property>
+                                <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                <signal name="clicked" handler="on_button_c3_clicked" swapped="no"/>
+                                <child>
+                                  <object class="GtkLabel" id="label_c3">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="button_c4">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">False</property>
+                                <property name="use-underline">True</property>
+                                <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                <signal name="clicked" handler="on_button_c4_clicked" swapped="no"/>
+                                <child>
+                                  <object class="GtkLabel" id="label_c4">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="button_c5">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">False</property>
+                                <property name="use-underline">True</property>
+                                <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                <signal name="clicked" handler="on_button_c5_clicked" swapped="no"/>
+                                <child>
+                                  <object class="GtkLabel" id="label_c5">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">4</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="left-attach">2</property>
                             <property name="top-attach">0</property>
                           </packing>
                         </child>
