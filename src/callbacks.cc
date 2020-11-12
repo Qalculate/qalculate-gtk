@@ -267,8 +267,6 @@ string nbases_error_color, nbases_warning_color;
 
 bool names_edited = false;
 
-int message_type = 1;
-
 gint current_object_start = -1, current_object_end = -1;
 MathFunction *current_function = NULL;
 size_t current_function_index = 0;
@@ -1347,15 +1345,28 @@ const char *expression_divide_sign() {
 	return sslash.c_str();
 }
 
+GtkWidget *prev_eb = NULL;
+bool prev_ebv = false;
+string prev_ebtext;
+int block_update_expression_icons = 0;
+
 void showhide_expression_button() {
+	if(block_update_expression_icons) return;
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), !expression_is_empty() || (gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack"))) != GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")) && gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack"))) != GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_clear"))));
 }
-
+void hide_expression_spinner() {
+	if(prev_eb) {
+		gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack")), prev_eb);
+		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), prev_ebv);
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), prev_ebtext.c_str());
+	}
+}
 #define EXPRESSION_STOP 1
 #define EXPRESSION_SPINNER 2
 #define EXPRESSION_INFO 3
 #define EXPRESSION_CLEAR 4
 void update_expression_icons(int id = 0) {
+	if(block_update_expression_icons) return;
 	if(auto_calculate && id == 0) id = EXPRESSION_CLEAR;
 	switch(id) {
 		case EXPRESSION_STOP: {
@@ -1364,6 +1375,11 @@ void update_expression_icons(int id = 0) {
 			break;
 		}
 		case EXPRESSION_SPINNER: {
+			prev_eb = gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack")));
+			prev_ebv = gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
+			gchar *gstr = gtk_widget_get_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
+			prev_ebtext = gstr;
+			g_free(gstr);
 			gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack")), GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionspinner")));
 			gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), _("Stop process"));
 			break;
@@ -1387,7 +1403,6 @@ void update_expression_icons(int id = 0) {
 			}
 		}
 	}
-	if(id != EXPRESSION_INFO) gtk_widget_set_tooltip_text(expressiontext, "");
 	showhide_expression_button();
 }
 
@@ -1499,8 +1514,14 @@ void set_expression_size_request() {
 	gint h;
 	pango_layout_get_pixel_size(layout_test, NULL, &h);
 	h += 12;
-	if(minimal_mode && h < 88) h = 88;
-	else if(!minimal_mode && h < 44) h = 44;
+	bool show_eb = gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
+	gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
+	gint h2 = 0;
+	gtk_widget_get_preferred_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_expression_buttons")), NULL, &h2);
+	if(!show_eb) gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
+	if(h2 <= 0) h2 = minimal_mode ? 88 : 44;
+	if(minimal_mode) h2 += 2;
+	if(h < h2) h = h2;
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), -1, h);
 }
 
@@ -1986,8 +2007,8 @@ bool check_exchange_rates(GtkWidget *win = NULL, bool set_result = false) {
 /*
 	display errors generated under calculation
 */
-void display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inhistory_index = NULL, int type = 0) {
-	if(!CALCULATOR->message()) return;
+bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inhistory_index = NULL, int type = 0) {
+	if(!CALCULATOR->message()) return false;
 	int index = 0;
 	MessageType mtype, mtype_highest = MESSAGE_INFORMATION;
 	string str = "";
@@ -2078,7 +2099,6 @@ void display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 	if(!str.empty()) {
 		if(type == 1 || type == 3) {
 			gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon")), str.c_str());
-			gtk_widget_set_tooltip_text(expressiontext, str.c_str());
 			if(mtype_highest == MESSAGE_ERROR) {
 				gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "message_tooltip_icon")), "dialog-error", GTK_ICON_SIZE_BUTTON);
 			} else if(mtype_highest == MESSAGE_WARNING) {
@@ -2095,6 +2115,7 @@ void display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 				gtk_revealer_set_reveal_child(GTK_REVEALER(gtk_builder_get_object(main_builder, "message_revealer")), TRUE);
 				first_error = FALSE;
 			}
+			return true;
 		} else if(type == 2) {
 			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "message_label")), str.c_str());
 			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "message_icon")));
@@ -2109,16 +2130,14 @@ void display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 				gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "message_icon")), "dialog-information-symbolic", GTK_ICON_SIZE_BUTTON);
 			}
 			gtk_info_bar_set_show_close_button(GTK_INFO_BAR(gtk_builder_get_object(main_builder, "message_bar")), TRUE);
-			/*gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "message_yes_button")));
-			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "message_no_button")));*/
 			gtk_revealer_set_reveal_child(GTK_REVEALER(gtk_builder_get_object(main_builder, "message_revealer")), TRUE);
 		} else if(mtype_highest != MESSAGE_INFORMATION) {
 			GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(win),GTK_DIALOG_DESTROY_WITH_PARENT, mtype_highest == MESSAGE_ERROR ? GTK_MESSAGE_ERROR : (mtype_highest == MESSAGE_WARNING ? GTK_MESSAGE_WARNING : GTK_MESSAGE_INFO), GTK_BUTTONS_CLOSE, "%s", str.c_str());
 			gtk_dialog_run(GTK_DIALOG(edialog));
 			gtk_widget_destroy(edialog);
 		}
-
 	}
+	return false;
 }
 
 extern GtkCellRenderer *history_renderer;
@@ -3067,8 +3086,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			result_text = "";
 			result_text_long = "";
 			gtk_widget_set_tooltip_text(resultview, "");
-			update_expression_icons(EXPRESSION_CLEAR);
-			display_errors(NULL, NULL, NULL, 1);
+			if(!display_errors(NULL, NULL, NULL, 1)) update_expression_icons(EXPRESSION_CLEAR);
 			if(visible_keypad & PROGRAMMING_KEYPAD) {
 				set_result_bases(*displayed_mstruct);
 				update_result_bases();
@@ -5711,7 +5729,7 @@ const gchar *shortcut_type_text(int type, bool return_null) {
 		case SHORTCUT_TYPE_QUIT: {return _("Quit"); break;}
 	}
 	if(return_null) return NULL;
-	return "";
+	return "-";
 }
 void update_accels() {
 	for(unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.begin(); it != keyboard_shortcuts.end(); ++it) {
@@ -10234,6 +10252,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		update_parse = false;
 	}
 
+	bool error_icon = false;
 
 	int inhistory_index = 0;
 
@@ -10248,9 +10267,10 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		inhistory.push_back("");
 		inhistory_value.push_back(-1);
 		int inhistory_index = inhistory.size() - 2;
-		display_errors(&history_index, NULL, &inhistory_index, message_type);
 		if(history_index >= 0) gtk_list_store_insert_with_values(historystore, NULL, history_index + 1, 1, -1, 5, history_scroll_width, 6, 1.0, 7, PANGO_ALIGN_RIGHT, -1);
+		block_update_expression_icons++;
 		clearresult();
+		block_update_expression_icons--;
 		while(gtk_events_pending()) gtk_main_iteration();
 		if(gtk_widget_get_realized(historyview)) {
 			GtkTreePath *path = gtk_tree_path_new_from_indices(0, -1);
@@ -10259,6 +10279,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			gtk_tree_path_free(path);
 		}
 		clear_expression_text();
+		display_errors(&history_index, NULL, &inhistory_index, 1);
 		current_inhistory_index = inhistory_index;
 		return;
 	}
@@ -10355,10 +10376,10 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	}
 
 	if(stack_index == 0) {
+		block_update_expression_icons++;
 		clearresult();
+		block_update_expression_icons--;
 	}
-
-	update_expression_icons(EXPRESSION_STOP);
 
 	scale_n = 0;
 
@@ -10515,7 +10536,6 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		}
 	}
 
-	update_expression_icons(EXPRESSION_CLEAR);
 	if(was_busy) {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), TRUE);
@@ -10523,16 +10543,14 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyview")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyactions")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "rpntab")), TRUE);
+		if(!update_parse && stack_index == 0) hide_expression_spinner();
 		if(title_set && stack_index != 0) update_window_title();
+		gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
+		g_application_unmark_busy(g_application_get_default());
 	}
 
 	if(stack_index == 0) {
 		if(visible_keypad & PROGRAMMING_KEYPAD) update_result_bases();
-		if(title_set) {
-			gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
-			g_application_unmark_busy(g_application_get_default());
-			while(gtk_events_pending()) gtk_main_iteration();
-		}
 		surface_result = NULL;
 		if(tmp_surface) {
 			showing_first_time_message = FALSE;
@@ -10566,7 +10584,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			result_text = "(…)";
 		}
 		RPNRegisterChanged(result_text, stack_index);
-		display_errors(NULL, supress_dialog ? NULL : GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), NULL, message_type == 0 ? 0 : 2);
+		error_icon = display_errors(NULL, supress_dialog ? NULL : GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), NULL, supress_dialog ? 2 : 0);
 	} else if(update_history) {
 		if(result_text.length() > 500000) {
 			result_text = "(…)";
@@ -10631,7 +10649,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			g_free(expr_str);
 		}
 		int history_index_bak = history_index;
-		display_errors(&history_index, supress_dialog ? NULL : GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &inhistory_index, message_type);
+		error_icon = display_errors(&history_index, supress_dialog ? NULL : GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &inhistory_index, 1);
 		if(rpn_mode && !register_moved) {
 			RPNRegisterChanged(result_text, stack_index);
 		}
@@ -10712,7 +10730,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		do_scroll = true;
 	} else {
 		int history_index_bak = history_index;
-		display_errors(&history_index, supress_dialog ? NULL : GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &inhistory_index, message_type);
+		error_icon = display_errors(&history_index, supress_dialog ? NULL : GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &inhistory_index, 1);
 		do_scroll = (history_index != history_index_bak);
 	}
 	if(do_to) {
@@ -10752,6 +10770,8 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		}
 		if(!supress_dialog) insert_matrix(matrix_mstruct, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), false, true, true);
 	}
+
+	if(!error_icon && (update_parse || stack_index != 0)) update_expression_icons(rpn_mode ? 0 : EXPRESSION_CLEAR);
 
 	do_timeout = true;
 
@@ -10885,7 +10905,7 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 	}
 
 	bool title_set = false, was_busy = false;
-	update_expression_icons(EXPRESSION_STOP);
+
 	int i = 0;
 
 	MathStructure *mfactor = new MathStructure(*mstruct);
@@ -10956,7 +10976,6 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 	b_busy = false;
 	b_busy_command = false;
 
-	update_expression_icons(EXPRESSION_CLEAR);
 	if(was_busy) {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), TRUE);
@@ -10965,6 +10984,7 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyactions")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "rpntab")), TRUE);
 		if(title_set) update_window_title();
+		hide_expression_spinner();
 		gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
 		g_application_unmark_busy(g_application_get_default());
 	}
@@ -11163,6 +11183,7 @@ void add_to_expression_history(string str) {
 }
 
 void set_previous_expression() {
+	block_update_expression_icons++;
 	if(rpn_mode) {
 		clear_expression_text();
 	} else {
@@ -11175,6 +11196,11 @@ void set_previous_expression() {
 		gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
 		gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
 		gtk_text_buffer_remove_tag(expressionbuffer, expression_par_tag, &istart, &iend);
+	}
+	block_update_expression_icons--;
+	if(gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack"))) != GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon"))) {
+		if(rpn_mode) update_expression_icons();
+		else update_expression_icons(EXPRESSION_CLEAR);
 	}
 }
 
@@ -11257,7 +11283,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			gtk_tree_model_get(GTK_TREE_MODEL(stackstore), &iter, 1, &gstr, -1);
 			str = gstr;
 			g_free(gstr);
-			do_timeout = false;
 		} else {
 			GtkTextIter istart, iend;
 			gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
@@ -11270,11 +11295,11 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				b_busy_expression = false;
 				return;
 			}
-			do_timeout = false;
 			expression_has_changed = false;
 			if(!do_mathoperation && !str.empty()) add_to_expression_history(str);
 		}
 	}
+	do_timeout = false;
 
 	string to_str, str_conv;
 
@@ -11287,8 +11312,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				if(!double_tag && current_inhistory_index > 0) {
 					clear_expression_text();
 					CALCULATOR->message(MESSAGE_INFORMATION, to_str.c_str(), NULL);
-					display_errors(&history_index, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &current_inhistory_index, 3);
-					update_expression_icons(EXPRESSION_CLEAR);
+					if(!display_errors(&history_index, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &current_inhistory_index, 3)) update_expression_icons(EXPRESSION_CLEAR);
 					do_timeout = true;
 					b_busy = false;
 					b_busy_expression = false;
@@ -11685,9 +11709,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 
 	size_t stack_size = 0;
 
-
-	update_expression_icons(EXPRESSION_STOP);
-
 	if(do_ceu && str_conv.empty() && gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion"))) && gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) && !minimal_mode) {
 		ParseOptions pa = evalops.parse_options; pa.base = 10;
 		string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), pa);
@@ -11892,7 +11913,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			goto do_progress;
 		}
 	}
-	update_expression_icons(EXPRESSION_CLEAR);
+
 	if(was_busy) {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), TRUE);
@@ -11950,7 +11971,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			RPNRegisterAdded("");
 		}
 	}
-
 
 	if(rpn_mode && do_mathoperation && parsed_tostruct && !parsed_tostruct->isUndefined() && parsed_tostruct->isSymbolic()) {
 		mstruct->set(CALCULATOR->convert(*mstruct, parsed_tostruct->symbol(), evalops));
@@ -17179,7 +17199,7 @@ void load_preferences() {
 
 	size_t bookmark_index = 0;
 
-	int version_numbers[] = {3, 14, 0};
+	int version_numbers[] = {3, 15, 0};
 	bool old_history_format = false;
 
 	if(file) {
@@ -20040,6 +20060,14 @@ bool test_can_approximate(const MathStructure &m, bool top = true) {
 	return false;
 }
 
+bool has_prefix(const MathStructure &m) {
+	if(m.isUnit() && (m.prefix() && m.prefix() != CALCULATOR->decimal_null_prefix && m.prefix() != CALCULATOR->binary_null_prefix)) return true;
+	for(size_t i = 0; i < m.size(); i++) {
+		if(has_prefix(m[i])) return true;
+	}
+	return false;
+}
+
 void update_resultview_popup() {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_octal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_octal_activate, NULL);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_decimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_decimal_activate, NULL);
@@ -20108,16 +20136,18 @@ void update_resultview_popup() {
 		if(displayed_mstruct) u_result = find_exact_matching_unit(*displayed_mstruct);
 		bool b_exact = (u_result != NULL);
 		if(!u_result) u_result = CALCULATOR->findMatchingUnit(*mstruct);
+		bool b_prefix = false;
+		if(b_exact && u_result && u_result->subtype() != SUBTYPE_COMPOSITE_UNIT) b_prefix = has_prefix(*displayed_mstruct);
 		vector<Unit*> to_us;
 		if(u_result && u_result->isCurrency()) {
 			Unit *u_local_currency = CALCULATOR->getLocalCurrency();
-			if(latest_button_currency && latest_button_currency != u_result && latest_button_currency != u_local_currency) to_us.push_back(latest_button_currency);
+			if(latest_button_currency && (!b_exact || b_prefix || latest_button_currency != u_result) && latest_button_currency != u_local_currency) to_us.push_back(latest_button_currency);
 			for(size_t i = 0; i < CALCULATOR->units.size() + 2; i++) {
 				Unit * u;
 				if(i == 0) u = u_local_currency;
 				else if(i == 1) u = latest_button_currency;
 				else u = CALCULATOR->units[i - 2];
-				if(u && (!b_exact || u != u_result) && u->isActive() && u->isCurrency() && (i == 0 || (u != u_local_currency && u != latest_button_currency && !u->isHidden()))) {
+				if(u && (!b_exact || b_prefix || u != u_result) && u->isActive() && u->isCurrency() && (i == 0 || (u != u_local_currency && u != latest_button_currency && !u->isHidden()))) {
 					bool b = false;
 					for(size_t i2 = 0; i2 < to_us.size(); i2++) {
 						if(string_is_less(u->title(true), to_us[i2]->title(true))) {
@@ -20136,7 +20166,7 @@ void update_resultview_popup() {
 			for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 				if(CALCULATOR->units[i]->isCurrency()) {
 					Unit *u = CALCULATOR->units[i];
-					if(u->isActive() && (!b_exact || u != u_result) && u->isHidden() && u != u_local_currency && u != latest_button_currency) {
+					if(u->isActive() && (!b_exact || b_prefix || u != u_result) && u->isHidden() && u != u_local_currency && u != latest_button_currency) {
 						bool b = false;
 						for(int i2 = to_us2.size() - 1; i2 >= 0; i2--) {
 							if(u->title(true) > to_us2[(size_t) i2]->title(true)) {
@@ -20163,7 +20193,7 @@ void update_resultview_popup() {
 			for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 				if(CALCULATOR->units[i]->category() == s_cat) {
 					Unit *u = CALCULATOR->units[i];
-					if((!b_exact || u != u_result) && u->isActive() && !u->isHidden()) {
+					if((!b_exact || b_prefix || u != u_result) && u->isActive() && !u->isHidden()) {
 						bool b = false;
 						for(size_t i2 = 0; i2 < to_us.size(); i2++) {
 							if(string_is_less(u->title(true), to_us[i2]->title(true))) {
@@ -20418,6 +20448,10 @@ void update_resultview_popup() {
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_angle"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_angle_activate, NULL);
 }
 
+gboolean epxression_tooltip_timeout(gpointer) {
+	gtk_widget_trigger_tooltip_query(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
+	return FALSE;
+}
 gboolean on_expression_button_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
 	if(event->button != 1) return FALSE;
 	GtkWidget *w = gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack")));
@@ -20427,13 +20461,21 @@ gboolean on_expression_button_button_press_event(GtkWidget*, GdkEventButton *eve
 		clear_expression_text();
 		gtk_widget_grab_focus(expressiontext);
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon"))) {
-		gtk_widget_trigger_tooltip_query(w);
+		g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 0, epxression_tooltip_timeout, NULL, NULL);
 	} else {
 		if(b_busy_command) on_abort_command(NULL, 0, NULL);
 		else if(b_busy_expression) on_abort_calculation(NULL, 0, NULL);
 		else if(b_busy_result) on_abort_display(NULL, 0, NULL);
 	}
 	return TRUE;
+}
+gboolean on_expression_button_button_release_event(GtkWidget*, GdkEventButton *event, gpointer) {
+	if(event->button != 1) return FALSE;
+	if(gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack"))) == GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon"))) {
+		g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 0, epxression_tooltip_timeout, NULL, NULL);
+		return TRUE;
+	}
+	return FALSE;
 }
 gboolean on_expressiontext_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
 	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
@@ -20553,8 +20595,8 @@ gboolean on_hide_left_buttons_button_release_event(GtkWidget*, GdkEventButton *e
 }
 gboolean on_hide_right_buttons_button_release_event(GtkWidget*, GdkEventButton *event, gpointer) {
 	if(event->type == GDK_BUTTON_RELEASE && event->button == 1) {
-		bool hide_right_keypad = gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "table_buttons")));
-		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "table_buttons")), !hide_right_keypad);
+		bool hide_right_keypad = gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_right_buttons")));
+		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_right_buttons")), !hide_right_keypad);
 		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "event_hide_left_buttons")), !hide_right_keypad);
 		if(hide_right_keypad) {
 			visible_keypad = visible_keypad | HIDE_RIGHT_KEYPAD;
@@ -21329,7 +21371,7 @@ void on_expressionbuffer_changed(GtkTextBuffer *o, gpointer) {
 		completion_timeout_id = 0;
 	}
 	if(add_to_undo) add_expression_to_undo();
-	if(!expression_has_changed) {
+	if(!expression_has_changed || (rpn_mode && gtk_text_buffer_get_char_count(o) == 1)) {
 		expression_has_changed = true;
 		update_expression_icons();
 	}
@@ -24521,19 +24563,21 @@ void update_mb_to_menu() {
 	bool b_exact = (u_result != NULL);
 	if(!u_result) u_result = CALCULATOR->findMatchingUnit(*mstruct);
 	if(u_result) s_cat = u_result->category();
+	bool b_prefix = false;
+	if(b_exact && u_result && u_result->subtype() != SUBTYPE_COMPOSITE_UNIT) b_prefix = has_prefix(*displayed_mstruct);
 	vector<Unit*> to_us;
 	size_t i_added = 0;
 	if(u_result && u_result->isCurrency()) {
 		Unit *u_local_currency = CALCULATOR->getLocalCurrency();
 		const char *currency_units[] = {"USD", "GBP", "JPY", "CNY", "INR", "CAD", "BRL"};
 		to_us.clear();
-		if(latest_button_currency && latest_button_currency != u_result) to_us.push_back(latest_button_currency);
+		if(latest_button_currency && (!b_exact || b_prefix || latest_button_currency != u_result)) to_us.push_back(latest_button_currency);
 		for(size_t i = 0; i < 9 && to_us.size() < 6; i++) {
 			Unit * u;
 			if(i == 0) u = CALCULATOR->u_euro;
 			else if(i == 1) u = u_local_currency;
 			else u = CALCULATOR->getActiveUnit(currency_units[i - 2]);
-			if(u && (!b_exact || u != u_result) && (i == 1 || !u->isHidden())) {
+			if(u && (!b_exact || b_prefix || u != u_result) && (i == 1 || !u->isHidden())) {
 				bool b = false;
 				for(size_t i2 = 0; i2 < to_us.size(); i2++) {
 					if(u == to_us[i2]) {
@@ -24559,7 +24603,7 @@ void update_mb_to_menu() {
 				Unit *u = CALCULATOR->units[i];
 				if(u->isActive()) {
 					bool b = false;
-					if(u->isHidden() && (!b_exact || u != u_result) && u != u_local_currency) {
+					if(u->isHidden() && (!b_exact || b_prefix || u != u_result) && u != u_local_currency) {
 						for(int i2 = to_us2.size() - 1; i2 >= 0; i2--) {
 							if(u->title(true) > to_us2[(size_t) i2]->title(true)) {
 								if((size_t) i2 == to_us2.size() - 1) to_us2.push_back(u);
@@ -24602,7 +24646,7 @@ void update_mb_to_menu() {
 		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 			if(CALCULATOR->units[i]->category() == s_cat) {
 				Unit *u = CALCULATOR->units[i];
-				if(u->isActive() && (!b_exact || u != u_result) && !u->isHidden()) {
+				if(u->isActive() && (!b_exact || b_prefix || u != u_result) && !u->isHidden()) {
 					bool b = false;
 					for(size_t i2 = 0; i2 < to_us.size(); i2++) {
 						if(string_is_less(u->title(true), to_us[i2]->title(true))) {
@@ -24626,7 +24670,7 @@ void update_mb_to_menu() {
 		vector<Unit*> to_us2;
 		for(size_t i = 0; i < 8 && i_added + 3 < 10; i++) {
 			Unit * u = CALCULATOR->getActiveUnit(si_units[i]);
-			if(!u->isHidden() && (!b_exact || u != u_result)) {
+			if(!u->isHidden() && (!b_exact || b_prefix || u != u_result)) {
 				bool b = false;
 				for(size_t i2 = 0; i2 < to_us.size(); i2++) {
 					if(u == to_us[i2]) {
@@ -31334,9 +31378,18 @@ void on_buttonsedit_button_x_clicked(int b_i) {
 	select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEditType));
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")), custom_buttons[i].value[b_i].c_str());
 	if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tButtonsEditType_store), &iter2)) {
+		int type = 0;
+		gtk_tree_model_get(GTK_TREE_MODEL(tButtonsEditType_store), &iter2, 1, &type, -1);
+		if(type == -1 && i >= 29) {
+			gtk_list_store_remove(tButtonsEditType_store, &iter2);
+		} else if(type == -2 && i < 29) {
+			gtk_list_store_insert(tButtonsEditType_store, &iter2, 0);
+			gtk_list_store_set(tButtonsEditType_store, &iter2, 0, _("Default"), 1, -1, -1);
+		}
 		do {
 			int type = 0;
 			gtk_tree_model_get(GTK_TREE_MODEL(tButtonsEditType_store), &iter2, 1, &type, -1);
+			if(type == -2 && i >= 29) type = -1;
 			if(type == custom_buttons[i].type[b_i]) {
 				gtk_tree_selection_select_iter(select, &iter2);
 				GtkTreePath *path = gtk_tree_model_get_path(gtk_tree_view_get_model(GTK_TREE_VIEW(tButtonsEditType)), &iter2);
@@ -31353,6 +31406,7 @@ void on_buttonsedit_button_x_clicked(int b_i) {
 		string value;
 		if(gtk_tree_selection_get_selected(select, &model, &iter2)) gtk_tree_model_get(GTK_TREE_MODEL(tButtonsEditType_store), &iter2, 1, &type, -1);
 		else goto run_shortcuts_dialog;
+		if(i >= 29 && type == -2) type = -1;
 		if(gtk_widget_is_sensitive(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")))) {
 			value = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")));
 			remove_blank_ends(value);
@@ -32116,7 +32170,7 @@ void on_dataproperty_edit_button_names_clicked(GtkButton*, gpointer) {
 }
 
 void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
-	if(expression_has_changed && !rpn_mode) execute_expression(true);
+	if(expression_has_changed && !expression_is_empty() && !rpn_mode) execute_expression(true);
 	MathStructure unknowns;
 	mstruct->findAllUnknowns(unknowns);
 	if(unknowns.size() == 0) {

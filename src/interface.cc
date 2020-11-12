@@ -599,7 +599,7 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 			gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), NULL, &h);
 			gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), 1, 1);
 		} else if(keypad & HIDE_RIGHT_KEYPAD) {
-			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "table_buttons")));
+			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_right_buttons")));
 			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "event_hide_left_buttons")));
 			gint h;
 			gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), NULL, &h);
@@ -782,7 +782,19 @@ void update_custom_buttons(int index) {
 	SET_LABEL_AND_TOOLTIP_3C(32, "label_c4", "button_c4", "C4")
 	SET_LABEL_AND_TOOLTIP_3C(33, "label_c5", "button_c5", "C5")
 	if(index >= 29) {
-		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons")), custom_buttons[29].type[0] >= 0 || custom_buttons[29].type[1] >= 0 || custom_buttons[29].type[2] >= 0 || custom_buttons[30].type[0] >= 0 || custom_buttons[30].type[1] >= 0 || custom_buttons[30].type[2] >= 0 || custom_buttons[31].type[0] >= 0 || custom_buttons[31].type[1] >= 0 || custom_buttons[31].type[2] >= 0 || custom_buttons[32].type[0] >= 0 || custom_buttons[32].type[1] >= 0 || custom_buttons[32].type[2] >= 0 || custom_buttons[33].type[0] >= 0 || custom_buttons[33].type[1] >= 0 || custom_buttons[33].type[2] >= 0);
+		bool b_show = (custom_buttons[29].type[0] >= 0 || custom_buttons[29].type[1] >= 0 || custom_buttons[29].type[2] >= 0 || custom_buttons[30].type[0] >= 0 || custom_buttons[30].type[1] >= 0 || custom_buttons[30].type[2] >= 0 || custom_buttons[31].type[0] >= 0 || custom_buttons[31].type[1] >= 0 || custom_buttons[31].type[2] >= 0 || custom_buttons[32].type[0] >= 0 || custom_buttons[32].type[1] >= 0 || custom_buttons[32].type[2] >= 0 || custom_buttons[33].type[0] >= 0 || custom_buttons[33].type[1] >= 0 || custom_buttons[33].type[2] >= 0);
+		if(b_show != gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons")))) {
+			if(!b_show && gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad)) && !minimal_mode) {
+				gint w_c = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons"))) + 6;
+				gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons")), b_show);
+				while(gtk_events_pending()) gtk_main_iteration();
+				gint w, h;
+				gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
+				gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), w - w_c, h);
+			} else {
+				gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons")), b_show);
+			}
+		}
 	}
 }
 
@@ -1323,12 +1335,12 @@ void create_main_window(void) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "stack_left_buttons")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "event_hide_right_buttons")));
 	} else if(visible_keypad & HIDE_RIGHT_KEYPAD) {
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "table_buttons")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_right_buttons")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "event_hide_left_buttons")));
 	}
 	GtkCssProvider *expression_button_equals_provider = gtk_css_provider_new();
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals"))), GTK_STYLE_PROVIDER(expression_button_equals_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	gtk_css_provider_load_from_data(expression_button_equals_provider, "* {font-size: 32px; font-weight: bold;}", -1, NULL);
+	gtk_css_provider_load_from_data(expression_button_equals_provider, "* {font-size: 32px;}", -1, NULL);
 	
 	set_mode_items(printops, evalops, CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign(), rpn_mode, CALCULATOR->getPrecision(), CALCULATOR->usesIntervalArithmetic(), CALCULATOR->variableUnitsEnabled(), adaptive_interval_display, visible_keypad, auto_calculate, complex_angle_form, true);
 
@@ -1535,6 +1547,7 @@ void create_main_window(void) {
 	GList *list, *list2;
 	GObject *obj;
 	CHILDREN_SET_FOCUS_ON_CLICK_2("table_buttons", "grid_numbers")
+	CHILDREN_SET_FOCUS_ON_CLICK("box_custom_buttons")
 	CHILDREN_SET_FOCUS_ON_CLICK("grid_numbers")
 	CHILDREN_SET_FOCUS_ON_CLICK("grid_programmers_buttons")
 	CHILDREN_SET_FOCUS_ON_CLICK("box_bases")
@@ -1611,11 +1624,6 @@ void create_main_window(void) {
 		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c2"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c3"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c4"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
-		gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons")), 6);
-#else
-		gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons")), 6);
-#endif
 		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons")), custom_buttons[29].type[0] >= 0 || custom_buttons[29].type[1] >= 0 || custom_buttons[29].type[2] >= 0 || custom_buttons[30].type[0] >= 0 || custom_buttons[30].type[1] >= 0 || custom_buttons[30].type[2] >= 0 || custom_buttons[31].type[0] >= 0 || custom_buttons[31].type[1] >= 0 || custom_buttons[31].type[2] >= 0 || custom_buttons[32].type[0] >= 0 || custom_buttons[32].type[1] >= 0 || custom_buttons[32].type[2] >= 0 || custom_buttons[33].type[0] >= 0 || custom_buttons[33].type[1] >= 0 || custom_buttons[33].type[2] >= 0);
 
 
@@ -1803,7 +1811,6 @@ void create_main_window(void) {
 	} else {
 		gtk_widget_hide(expander_stack);
 	}
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), FALSE);
 
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), FALSE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), FALSE);
@@ -1894,6 +1901,7 @@ void create_main_window(void) {
 
 	set_result_size_request();
 	set_expression_size_request();
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), FALSE);
 
 	if(win_height <= 0) gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), NULL, &win_height);
 	if(minimal_mode && minimal_width > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), minimal_width, win_height);
@@ -3486,13 +3494,13 @@ GtkWidget* get_floatingpoint_dialog(void) {
 }
 
 #define SET_BUTTONS_EDIT_ITEM_3(l, t1, t2, t3) \
-	{gtk_list_store_set(tButtonsEdit_store, &iter, 1, custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str(), 2, custom_buttons[i].type[0] == -1 ? t1 : (custom_buttons[i].value[0].empty() ? shortcut_type_text(custom_buttons[i].type[0], true) : custom_buttons[i].value[0].c_str()), 3, custom_buttons[i].type[1] == -1 ? t2 : (custom_buttons[i].value[1].empty() ? shortcut_type_text(custom_buttons[i].type[1], true) : custom_buttons[i].value[1].c_str()), 4, custom_buttons[i].type[2] == -1 ? t3 : (custom_buttons[i].value[2].empty() ? shortcut_type_text(custom_buttons[i].type[2], true) : custom_buttons[i].value[2].c_str()), -1);\
+	{gtk_list_store_set(tButtonsEdit_store, &iter, 1, custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str(), 2, custom_buttons[i].type[0] == -1 ? t1 : (custom_buttons[i].value[0].empty() ? shortcut_type_text(custom_buttons[i].type[0]) : custom_buttons[i].value[0].c_str()), 3, custom_buttons[i].type[1] == -1 ? t2 : (custom_buttons[i].value[1].empty() ? shortcut_type_text(custom_buttons[i].type[1]) : custom_buttons[i].value[1].c_str()), 4, custom_buttons[i].type[2] == -1 ? t3 : (custom_buttons[i].value[2].empty() ? shortcut_type_text(custom_buttons[i].type[2]) : custom_buttons[i].value[2].c_str()), -1);\
 	if(index >= 0) break;}
 	
 #define SET_BUTTONS_EDIT_ITEM_3B(l, t1, t2, t3) SET_BUTTONS_EDIT_ITEM_3(gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(main_builder, l))), t1, t2, t3)
 #define SET_BUTTONS_EDIT_ITEM_2(l, t1, t2) SET_BUTTONS_EDIT_ITEM_3(l, t1, t2, t2)
 #define SET_BUTTONS_EDIT_ITEM_2B(l, t1, t2) SET_BUTTONS_EDIT_ITEM_3(gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(main_builder, l))), t1, t2, t2)
-#define SET_BUTTONS_EDIT_ITEM_C(l) SET_BUTTONS_EDIT_ITEM_3(l, "", "", "")
+#define SET_BUTTONS_EDIT_ITEM_C(l) SET_BUTTONS_EDIT_ITEM_3(l, "-", "-", "-")
 
 void update_custom_buttons_edit(int index, bool update_label_entry) {
 	GtkTreeIter iter;
@@ -3500,7 +3508,7 @@ void update_custom_buttons_edit(int index, bool update_label_entry) {
 	int i = 0;
 	do {
 		gtk_tree_model_get(GTK_TREE_MODEL(tButtonsEdit_store), &iter, 0, &i, -1);
-		if(i == 0 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2("↑ ↓", _("Cycle through previous expression"), "")
+		if(i == 0 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2("↑ ↓", _("Cycle through previous expression"), "-")
 		else if(i == 1 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2("← →", _("Move cursor left or right"), _("Move cursor to beginning or end"))
 		else if(i == 2 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2("%", CALCULATOR->v_percent->title(true).c_str(), CALCULATOR->v_permille->title(true).c_str())
 		else if(i == 3 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("±", _("Uncertainty/interval"), _("Relative error"), _("Interval"))
@@ -3521,14 +3529,14 @@ void update_custom_buttons_edit(int index, bool update_label_entry) {
 		else if(i == 18 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3B("label_dot", _("Decimal point"), _("Blank space"), _("New line"))
 		else if(i == 19 && (index == i || index < 0)) {
 			MathFunction *f = CALCULATOR->getActiveFunction("exp10");
-			SET_BUTTONS_EDIT_ITEM_3B("label_exp", "10^x", CALCULATOR->f_exp->title(true).c_str(), (f ? f->title(true).c_str() : ""));
+			SET_BUTTONS_EDIT_ITEM_3B("label_exp", "10^x", CALCULATOR->f_exp->title(true).c_str(), (f ? f->title(true).c_str() : "-"));
 		} else if(i == 20 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2("x^y", _("Raise"), CALCULATOR->f_sqrt->title(true).c_str())
 		else if(i == 21 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2B("label_divide", _("Divide"), "1/x")
 		else if(i == 22 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2B("label_times", _("Multiply"), _("Bitwise Exclusive OR"))
 		else if(i == 23 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3B("label_add", _("Add"), _("M+ (memory plus)"), _("Bitwise AND"))
 		else if(i == 24 && (index == i || index < 0)) {
 			MathFunction *f = CALCULATOR->getActiveFunction("neg");
-			SET_BUTTONS_EDIT_ITEM_3B("label_sub", _("Subtract"), f ? f->title(true).c_str() : "", _("Bitwise OR"));
+			SET_BUTTONS_EDIT_ITEM_3B("label_sub", _("Subtract"), f ? f->title(true).c_str() : "-", _("Bitwise OR"));
 		} else if(i == 25 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2B("label_ac", _("Clear"), _("MC (memory clear)"))
 		else if(i == 26 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3B("label_del", _("Delete"), _("Backspace"), _("M− (memory minus)"))
 		else if(i == 27 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2B("label_ans", _("Previous result"), _("Previous result (static)"))
@@ -3594,9 +3602,6 @@ GtkWidget* get_buttons_edit_dialog(void) {
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tButtonsEditType), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tButtonsEditType_selection_changed), NULL);
 
-		gtk_list_store_append(tButtonsEditType_store, &iter);
-		gtk_list_store_set(tButtonsEditType_store, &iter, 0, _("Default"), 1, -1, -1);
-		gtk_tree_selection_select_iter(selection, &iter);
 		gtk_list_store_append(tButtonsEditType_store, &iter);
 		gtk_list_store_set(tButtonsEditType_store, &iter, 0, _("None"), 1, -2, -1);
 		for(int i = 0; i <= SHORTCUT_TYPE_QUIT; i++) {

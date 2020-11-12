@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "3.14.0">
-  <!ENTITY manrevision "3.14.0">
-  <!ENTITY date "October 2020">
+  <!ENTITY appversion "3.15.0">
+  <!ENTITY manrevision "3.15.0">
+  <!ENTITY date "November 2020">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -70,7 +70,7 @@ Although use of &app; for simple calculations should be natural and self-explana
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/mainwindow.png" format="PNG" width="690"/>
+				<imagedata fileref="figures/mainwindow.png" format="PNG" width="594"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -84,12 +84,15 @@ The main window provides a menu bar, the expression entry, the result display an
 <para>
 The expression entry is the most important part of the &app; user interface. The normal calculation procedure in &app; is to type in a mathematical expression (e.g. <quote>5 + 5</quote>) and press <keycap>Enter</keycap> (or click <guibutton>=</guibutton>). The result (<quote>10</quote>) is then displayed below the expression entry in the result display.
 </para>
+<para>
+The icon in the upper right corner of the expression entry changes function depending on the current status. While editing the expression an equals sign is shown. When the icon is clicked the expression will be calculated. If this results in an error or a warning, the be corresponding icon will be displayed instead, and if this is clicked, or if the pointer is placed over it, the error/warning text will be shown. If no error or warning is triggered, activation of the icon will instead clear the expression entry. No icon is shown when the expression is empty.
+</para>
 <figure id="qalculate-FIG-completion">
 	<title>Completion</title>
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/completion.png" format="PNG" width="485"/>
+				<imagedata fileref="figures/completion.png" format="PNG" width="347"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -171,7 +174,7 @@ Operators will be placed after any selected text (except bitwise and logical NOT
 The mathematical functions accessed using keypad buttons (and menus) behave differently depending on the current edited expression. If the cursor is at the end of the expression and there is no operator or parenthesis immediately to left of the cursor (at the end of expression), the whole expression is used as function argument and the expression is immediately calculated using the function (if you type <quote>5 + 2</quote> and then click <guibutton>sin</guibutton>, <quote>sin(5 + 2)</quote> will be calculated). If text in the expression is selected, the selection will be used as the function argument. If the whole expression was selected the resulting expression will immediately be calculated. Functions that requires more than one argument do not follow these rules and in many cases opens a separate dialog for argument input. In RPN mode the function will always be applied to the register(s) at the top of stack, if the current expression is empty and there are enough registers for functions that require more one argument.
 </para>
 <para>
-All actions and labels of the buttons on the right be customed using <menuchoice><guimenu>Edit</guimenu><guimenuitem>Customize Keypad Buttons</guimenuitem></menuchoice>. The default buttons, and associated actions, are listed below.
+All actions and labels of the buttons on the right can be customed using <menuchoice><guimenu>Edit</guimenu><guimenuitem>Customize Keypad Buttons</guimenuitem></menuchoice> (it is also possible to add an additional column of buttons). The default buttons, and associated actions, are listed below.
 <table id="qalculate-TBL-keypad-right" frame="topbot" colsep="1">
 	<title>Right Keypad</title> 
 	<tgroup cols="2" colsep="1" rowsep="0">
@@ -766,13 +769,13 @@ Additional actions are available in the context menu of the history list. This i
 </sect1>
 <sect1 id="minimal-window">
 <title>Minimal Window</title>
-<para>It is possible to minimize the footprint of the calculator window using <menuchoice><guimenu>File</guimenu><guimenuitem>Minimal Window</guimenuitem></menuchoice> or <keycombo><keycap>Ctrl</keycap><keycap>Space</keycap></keycombo>. This will hide everything but the expression entry and the equals button. The window is expanded to reveal to result, but the result display stays hidden while empty. Restore the window using the keyboard shortcut or the lower right button.</para>
+<para>It is possible to minimize the footprint of the calculator window using <menuchoice><guimenu>File</guimenu><guimenuitem>Minimal Window</guimenuitem></menuchoice> or <keycombo><keycap>Ctrl</keycap><keycap>Space</keycap></keycombo>. This will hide everything but the expression entry and the equals button. The window is expanded to reveal to result, but the result display stays hidden while empty. Restore the window using the keyboard shortcut or the icon in lower right corner of the expression entry.</para>
 <figure id="qalculate-FIG-minimal-window">
 	<title>Minimal Window</title>
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/minimal-window.png" format="PNG" width="336"/>
+				<imagedata fileref="figures/minimal-window.png" format="PNG" width="294"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -995,7 +998,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			</row>
 			<row valign="top">
 				<entry><para>Customize Keypad Buttons</para></entry>
-				<entry><para>Opens a dialog for customizing the labels and actions for the the keypad buttons on the right side.</para></entry>
+				<entry><para>Opens a dialog for customizing the labels and actions for the the keypad buttons on the right side, and optionally adding another column of buttons.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Preferences</para></entry>
@@ -1015,7 +1018,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 				<entry colname="COLSPEC1"><para>Description</para></entry>
 			</row>
 		</thead> 
-                <tbody>
+		<tbody>
 			<row valign="top">
 				<entry><para>Number Base</para></entry>
 				<entry><para>Submenu with a list of number bases (binary, octal, decimal, duodecimal, hexadecimal, sexagesimal, time format, and other bases, and roman numerals) to select for result display, and a menu item (<keycombo><keycap>Ctrl</keycap><keycap>B</keycap></keycombo>) for opening a dialog to switch number bases in expression (input) and result (output).</para></entry>
