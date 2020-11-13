@@ -1378,8 +1378,10 @@ void update_expression_icons(int id = 0) {
 			prev_eb = gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack")));
 			prev_ebv = gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
 			gchar *gstr = gtk_widget_get_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
-			prev_ebtext = gstr;
-			g_free(gstr);
+			if(gstr) {
+				prev_ebtext = gstr;
+				g_free(gstr);
+			}
 			gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack")), GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionspinner")));
 			gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), _("Stop process"));
 			break;
@@ -1519,7 +1521,7 @@ void set_expression_size_request() {
 	gint h2 = 0;
 	gtk_widget_get_preferred_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_expression_buttons")), NULL, &h2);
 	if(!show_eb) gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
-	if(h2 <= 0) h2 = minimal_mode ? 88 : 44;
+	if(h2 <= 0) h2 = minimal_mode ? 68 : 40;
 	if(minimal_mode) h2 += 2;
 	if(h < h2) h = h2;
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), -1, h);
@@ -16734,6 +16736,16 @@ void on_expander_convert_expanded(GObject *o, GParamSpec*, gpointer) {
 	}
 }
 
+gint minimal_window_resized_timeout_id = 0;
+gboolean minimal_window_resized_timeout(gpointer) {
+	minimal_window_resized_timeout_id = 0;
+	if(minimal_mode) {
+		gint w;
+		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, NULL);
+		if(w != win_width) minimal_width = w;
+	}
+	return FALSE;
+}
 gboolean do_minimal_mode_timeout(gpointer) {
 	gtk_widget_set_size_request(tabs, -1, -1);
 	return FALSE;
@@ -16761,6 +16773,13 @@ void set_minimal_mode(bool b) {
 		gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), TRUE);
 		gtk_widget_set_vexpand(resultview, FALSE);
 	} else {
+		if(minimal_window_resized_timeout_id) {
+			g_source_remove(minimal_window_resized_timeout_id);
+			minimal_window_resized_timeout_id = 0;
+			gint w;
+			gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, NULL);
+			if(w != win_width) minimal_width = w;
+		}
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")));
 		if(history_height > 0 && (gtk_expander_get_expanded(GTK_EXPANDER(expander_history)) || gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) || gtk_expander_get_expanded(GTK_EXPANDER(expander_stack)))) {
 			gtk_widget_set_size_request(tabs, -1, history_height);
@@ -29800,8 +29819,9 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 }
 
 gboolean on_configure_event(GtkWidget*, GdkEventConfigure *event, gpointer) {
-	if(minimal_mode && event->width != win_width) {
-		minimal_width = event->width;
+	if(minimal_mode) {
+		if(minimal_window_resized_timeout_id) g_source_remove(minimal_window_resized_timeout_id);
+		minimal_window_resized_timeout_id = g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 1000, minimal_window_resized_timeout, NULL, NULL);
 	}
 	return FALSE;
 }

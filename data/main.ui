@@ -2573,6 +2573,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                       <object class="GtkEventBox" id="status_right_eventbox">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
+                        <property name="events">GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="visible-window">False</property>
                         <signal name="button-press-event" handler="on_status_right_button_press_event" swapped="no"/>
                         <signal name="button-release-event" handler="on_status_right_button_release_event" swapped="no"/>
                         <child>
@@ -2634,11 +2636,14 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                         <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkEventBox" id="expression_button">
-                            <property name="width-request">44</property>
-                            <property name="height-request">44</property>
+                            <property name="width-request">40</property>
+                            <property name="height-request">40</property>
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
+                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="has-tooltip">True</property>
+                            <property name="visible-window">False</property>
+                            <property name="above-child">True</property>
                             <signal name="button-press-event" handler="on_expression_button_button_press_event" swapped="no"/>
                             <signal name="button-release-event" handler="on_expression_button_button_release_event" swapped="no"/>
                             <child>
@@ -2660,6 +2665,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                   <object class="GtkImage" id="expression_button_clear">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
+                                    <property name="pixel-size">16</property>
                                     <property name="icon-name">edit-clear-symbolic</property>
                                   </object>
                                   <packing>
@@ -2671,6 +2677,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                   <object class="GtkImage" id="message_tooltip_icon">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
+                                    <property name="pixel-size">16</property>
                                     <property name="icon-name">dialog-warning</property>
                                   </object>
                                   <packing>
@@ -2680,8 +2687,12 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 </child>
                                 <child>
                                   <object class="GtkSpinner" id="expressionspinner">
+                                    <property name="width-request">32</property>
+                                    <property name="height-request">32</property>
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
+                                    <property name="halign">center</property>
+                                    <property name="valign">center</property>
                                   </object>
                                   <packing>
                                     <property name="name">page3</property>
@@ -2692,6 +2703,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                   <object class="GtkImage" id="expression_button_stop">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
+                                    <property name="pixel-size">16</property>
                                     <property name="icon-name">process-stop</property>
                                   </object>
                                   <packing>
@@ -2710,16 +2722,20 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                         </child>
                         <child>
                           <object class="GtkEventBox" id="button_minimal_mode">
-                            <property name="width-request">44</property>
-                            <property name="height-request">44</property>
+                            <property name="width-request">40</property>
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
+                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK</property>
+                            <property name="margin-bottom">12</property>
+                            <property name="visible-window">False</property>
+                            <property name="above-child">True</property>
                             <signal name="button-press-event" handler="on_button_minimal_mode_button_press_event" swapped="no"/>
                             <child>
                               <object class="GtkImage" id="image_minimal_mode">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="tooltip-text" translatable="yes">Toggle minimal window</property>
+                                <property name="pixel-size">16</property>
                                 <property name="icon-name">view-fullscreen-symbolic</property>
                               </object>
                             </child>
@@ -2770,7 +2786,10 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                               <object class="GtkEventBox" id="resulteventbox">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
+                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK</property>
                                 <property name="hexpand">True</property>
+                                <property name="visible-window">False</property>
+                                <property name="above-child">True</property>
                                 <signal name="button-press-event" handler="on_resultview_button_press_event" swapped="no"/>
                                 <signal name="popup-menu" handler="on_resultview_popup_menu" swapped="no"/>
                                 <child>
@@ -2886,7 +2905,9 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                           <object class="GtkEventBox" id="eventbox_keypad">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
+                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="visible-window">False</property>
+                            <property name="above-child">True</property>
                             <signal name="button-press-event" handler="on_image_keypad_lock_button_press_event" swapped="no"/>
                             <signal name="button-release-event" handler="on_image_keypad_lock_button_release_event" swapped="no"/>
                             <child>
@@ -6422,10 +6443,13 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                               <object class="GtkEventBox" id="event_hide_left_buttons">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
+                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="tooltip-text" translatable="yes">Show/hide left keypad</property>
                                 <property name="valign">start</property>
                                 <property name="margin-top">6</property>
                                 <property name="margin-bottom">6</property>
+                                <property name="visible-window">False</property>
+                                <property name="above-child">True</property>
                                 <signal name="button-release-event" handler="on_hide_left_buttons_button_release_event" swapped="no"/>
                                 <child>
                                   <object class="GtkImage" id="image_hide_left_buttons">
@@ -6449,11 +6473,14 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                 <property name="valign">end</property>
                                 <property name="margin-top">6</property>
                                 <property name="margin-bottom">6</property>
+                                <property name="visible-window">False</property>
+                                <property name="above-child">True</property>
                                 <signal name="button-release-event" handler="on_hide_right_buttons_button_release_event" swapped="no"/>
                                 <child>
                                   <object class="GtkImage" id="image_hide_right_buttons">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="icon-name">pan-start-symbolic</property>
                                   </object>
                                 </child>

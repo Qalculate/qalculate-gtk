@@ -1340,7 +1340,15 @@ void create_main_window(void) {
 	}
 	GtkCssProvider *expression_button_equals_provider = gtk_css_provider_new();
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals"))), GTK_STYLE_PROVIDER(expression_button_equals_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	gtk_css_provider_load_from_data(expression_button_equals_provider, "* {font-size: 32px;}", -1, NULL);
+	gtk_css_provider_load_from_data(expression_button_equals_provider, "* {font-size: 24px; font-weight: 500;}", -1, NULL);
+	PangoLayout *layout_equals = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), "=");
+	gint w_equals = 0;
+	pango_layout_get_pixel_size(layout_equals, &w_equals, NULL);
+	if(w_equals > 16) {
+		gtk_css_provider_load_from_data(expression_button_equals_provider, "* {font-size: 16px; font-weight: 500;}", -1, NULL);
+	}if(w_equals < 14) {
+		gtk_css_provider_load_from_data(expression_button_equals_provider, "* {font-size: 28px; font-weight: 500;}", -1, NULL);
+	}
 	
 	set_mode_items(printops, evalops, CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign(), rpn_mode, CALCULATOR->getPrecision(), CALCULATOR->usesIntervalArithmetic(), CALCULATOR->variableUnitsEnabled(), adaptive_interval_display, visible_keypad, auto_calculate, complex_angle_form, true);
 
