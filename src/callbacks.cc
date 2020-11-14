@@ -16736,14 +16736,16 @@ void on_expander_convert_expanded(GObject *o, GParamSpec*, gpointer) {
 	}
 }
 
+void update_minimal_width() {
+	gint w;
+	gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, NULL);
+	if(w != win_width) minimal_width = w;
+}
+
 gint minimal_window_resized_timeout_id = 0;
 gboolean minimal_window_resized_timeout(gpointer) {
 	minimal_window_resized_timeout_id = 0;
-	if(minimal_mode) {
-		gint w;
-		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, NULL);
-		if(w != win_width) minimal_width = w;
-	}
+	if(minimal_mode) update_minimal_width();
 	return FALSE;
 }
 gboolean do_minimal_mode_timeout(gpointer) {
@@ -16776,9 +16778,7 @@ void set_minimal_mode(bool b) {
 		if(minimal_window_resized_timeout_id) {
 			g_source_remove(minimal_window_resized_timeout_id);
 			minimal_window_resized_timeout_id = 0;
-			gint w;
-			gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, NULL);
-			if(w != win_width) minimal_width = w;
+			update_minimal_width();
 		}
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")));
 		if(history_height > 0 && (gtk_expander_get_expanded(GTK_EXPANDER(expander_history)) || gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) || gtk_expander_get_expanded(GTK_EXPANDER(expander_stack)))) {
@@ -17136,7 +17136,7 @@ void load_preferences() {
 	help_width = -1;
 	help_height = -1;
 	help_zoom = -1.0;
-	minimal_width = 0;
+	minimal_width = 500;
 	history_height = 0;
 	save_mode_on_exit = true;
 	save_defs_on_exit = true;
@@ -17320,7 +17320,7 @@ void load_preferences() {
 				} else if(svar == "history_height") {
 					history_height = v;
 				} else if(svar == "minimal_width") {
-					minimal_width = v;
+					if(v != 0 || version_numbers[0] > 3 || (version_numbers[0] == 3 && version_numbers[1] >= 15)) minimal_width = v;
 				} else if(svar == "show_stack") {
 					show_stack = v;
 				} else if(svar == "show_convert") {
@@ -18241,6 +18241,11 @@ void save_preferences(bool mode) {
 	fprintf(file, "show_history=%i\n", (rpn_mode && show_history && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_history)));
 	h = gtk_widget_get_allocated_height(tabs);
 	fprintf(file, "history_height=%i\n", h > 10 ? h : history_height);
+	if(minimal_window_resized_timeout_id) {
+		g_source_remove(minimal_window_resized_timeout_id);
+		minimal_window_resized_timeout_id = 0;
+		update_minimal_width();
+	}
 	if(minimal_width > 0) fprintf(file, "minimal_width=%i\n", minimal_width);
 	fprintf(file, "show_stack=%i\n", rpn_mode ? gtk_expander_get_expanded(GTK_EXPANDER(expander_stack)) : show_stack);
 	fprintf(file, "show_convert=%i\n", (rpn_mode && show_convert && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)));

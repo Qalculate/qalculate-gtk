@@ -1,6 +1,6 @@
 #! /bin/sh
-aclocal \
+libtoolize --force --copy \
+&& aclocal \
 && autoheader \
-&& libtoolize \
 && automake --add-missing \
 && autoconf
