@@ -1255,8 +1255,8 @@ void create_main_window(void) {
 
 	expression_undo_buffer.push_back("");
 
-	gtk_text_view_set_left_margin(GTK_TEXT_VIEW(expressiontext), 6);
-	gtk_text_view_set_right_margin(GTK_TEXT_VIEW(expressiontext), 44);
+	gtk_text_view_set_left_margin(GTK_TEXT_VIEW(expressiontext), 9);
+	gtk_text_view_set_right_margin(GTK_TEXT_VIEW(expressiontext), 30);
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
 	gtk_text_view_set_top_margin(GTK_TEXT_VIEW(expressiontext), 6);
 	gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(expressiontext), 6);
@@ -1338,17 +1338,6 @@ void create_main_window(void) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_right_buttons")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "event_hide_left_buttons")));
 	}
-	GtkCssProvider *expression_button_equals_provider = gtk_css_provider_new();
-	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals"))), GTK_STYLE_PROVIDER(expression_button_equals_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	gtk_css_provider_load_from_data(expression_button_equals_provider, "* {font-size: 24px; font-weight: 500;}", -1, NULL);
-	PangoLayout *layout_equals = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), "=");
-	gint w_equals = 0;
-	pango_layout_get_pixel_size(layout_equals, &w_equals, NULL);
-	if(w_equals > 16) {
-		gtk_css_provider_load_from_data(expression_button_equals_provider, "* {font-size: 16px; font-weight: 500;}", -1, NULL);
-	}if(w_equals < 14) {
-		gtk_css_provider_load_from_data(expression_button_equals_provider, "* {font-size: 28px; font-weight: 500;}", -1, NULL);
-	}
 	
 	set_mode_items(printops, evalops, CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign(), rpn_mode, CALCULATOR->getPrecision(), CALCULATOR->usesIntervalArithmetic(), CALCULATOR->variableUnitsEnabled(), adaptive_interval_display, visible_keypad, auto_calculate, complex_angle_form, true);
 
@@ -1364,6 +1353,27 @@ void create_main_window(void) {
 			pango_font_description_free(font_desc);
 		}
 	}
+
+	GtkCssProvider *expression_button_equals_provider = gtk_css_provider_new();
+	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals"))), GTK_STYLE_PROVIDER(expression_button_equals_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_css_provider_load_from_data(expression_button_equals_provider, "* {font-size: 26px; font-weight: 500;}", -1, NULL);
+	PangoLayout *layout_equals = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), "=");
+	PangoRectangle rect, lrect;
+	pango_layout_get_pixel_extents(layout_equals, &rect, &lrect);
+	g_object_unref(layout_equals);
+	if(rect.width >= 16) {
+		gtk_css_provider_load_from_data(expression_button_equals_provider, "* {font-size: 18px; font-weight: 500;}", -1, NULL);
+		layout_equals = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), "=");
+		pango_layout_get_pixel_extents(layout_equals, &rect, &lrect);
+		g_object_unref(layout_equals);
+	}
+	if(rect.y * 2 - lrect.height + rect.height > 0) gtk_widget_set_margin_bottom(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), rect.y * 2 - lrect.height + rect.height);
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
+	gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), 2);
+#else
+	gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), 2);
+#endif
+
 	if(use_custom_result_font) {
 		gchar *gstr = font_name_to_css(custom_result_font.c_str());
 		gtk_css_provider_load_from_data(resultview_provider, gstr, -1, NULL);
@@ -1467,6 +1477,7 @@ void create_main_window(void) {
 	pango_layout_get_pixel_size(layout_par, &w1, NULL);
 	pango_layout_set_markup(layout_par, "<b>()</b>", -1);
 	pango_layout_get_pixel_size(layout_par, &w2, NULL);
+	g_object_unref(layout_par);
 	if(w1 == w2) expression_par_tag = gtk_text_buffer_create_tag(expressionbuffer, "curpar", "foreground-rgba", &c, "weight", PANGO_WEIGHT_BOLD, NULL);
 	else expression_par_tag = gtk_text_buffer_create_tag(expressionbuffer, "curpar", "foreground-rgba", &c, NULL);
 

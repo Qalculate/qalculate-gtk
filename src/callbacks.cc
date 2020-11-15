@@ -1521,7 +1521,7 @@ void set_expression_size_request() {
 	gint h2 = 0;
 	gtk_widget_get_preferred_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_expression_buttons")), NULL, &h2);
 	if(!show_eb) gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
-	if(h2 <= 0) h2 = minimal_mode ? 68 : 40;
+	if(h2 <= 0) h2 = minimal_mode ? 58 : 34;
 	if(minimal_mode) h2 += 2;
 	if(h < h2) h = h2;
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), -1, h);
@@ -2110,7 +2110,7 @@ bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 			}
 			update_expression_icons(EXPRESSION_INFO);
 			if(first_error && !minimal_mode) {
-				gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "message_label")), _("When errors, warnings and other information are generated during calculation the button to the right of the expression entry changes to reflect this. If you hold the pointer over or click the button, the message will be shown."));
+				gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "message_label")), _("When errors, warnings and other information are generated during calculation the in the upper right corner of the expression entry changes to reflect this. If you hold the pointer over or click the icon, the message will be shown."));
 				gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "message_icon")));
 				gtk_info_bar_set_message_type(GTK_INFO_BAR(gtk_builder_get_object(main_builder, "message_bar")), GTK_MESSAGE_INFO);
 				gtk_info_bar_set_show_close_button(GTK_INFO_BAR(gtk_builder_get_object(main_builder, "message_bar")), TRUE);
@@ -17244,6 +17244,7 @@ void load_preferences() {
 					allow_multiple_instances = v;
 				} else if(svar == "width") {
 					win_width = v;
+					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 15)) win_width -= 6;
 				/*} else if(svar == "height") {
 					win_height = v;*/
 				} else if(svar == "x") {
