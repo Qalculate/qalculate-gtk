@@ -168,12 +168,19 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 		}
 		if(!b_valid) return;
 		if(CALCULATOR->busy()) CALCULATOR->abort();
+		bool result_is_comparison = false;
 		string parsed;
-#if QALCULATE_MAJOR_VERSION > 3 || QALCULATE_MINOR_VERSION >= 10
-		string result = CALCULATOR->calculateAndPrint(CALCULATOR->unlocalizeExpression(expression, search_eo.parse_options), 100, search_eo, search_po, &parsed);
+		string str = CALCULATOR->unlocalizeExpression(expression, search_eo.parse_options);
+#if QALCULATE_MAJOR_VERSION > 3 || QALCULATE_MINOR_VERSION >= 15
+		int max_length = 100 - unicode_length(str);
+		if(max_length < 50) max_length = 50;
+		string result = CALCULATOR->calculateAndPrint(str, 100, search_eo, search_po, AUTOMATIC_FRACTION_AUTO, AUTOMATIC_APPROXIMATION_AUTO, &parsed, max_length, &result_is_comparison);
+#elif QALCULATE_MINOR_VERSION >= 10
+		string result = CALCULATOR->calculateAndPrint(str, 100, search_eo, search_po, &parsed);
 #else
-		string result = CALCULATOR->calculateAndPrint(CALCULATOR->unlocalizeExpression(expression, search_eo.parse_options), 100, search_eo, search_po);
+		string result = CALCULATOR->calculateAndPrint(str, search_eo.parse_options), 100, search_eo, search_po);
 #endif
+		search_po.number_fraction_format = FRACTION_DECIMAL;
 		if(has_error() || result.empty() || parsed.find(CALCULATOR->abortedMessage()) != string::npos || parsed.find(CALCULATOR->timedOutString()) != string::npos) {
 			return;
 		}
@@ -188,13 +195,14 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 		} else {
 			if(!result.empty()) {
 				if(*search_po.is_approximate) {
+					if(result_is_comparison) {result.insert(0, LEFT_PARENTHESIS); result += RIGHT_PARENTHESIS;}
 					if(search_po.use_unicode_signs) {
 						result.insert(0, SIGN_ALMOST_EQUAL " ");
 					} else {
 						result.insert(0, " ");
 						result.insert(0, _("approx."));
 					}
-				} else {
+				} else if(!result_is_comparison) {
 					result.insert(0, "= ");
 				}
 				g_variant_builder_add(&builder, "s", "copy-to-clipboard");
@@ -388,6 +396,7 @@ void load_preferences_search() {
 
 	CALCULATOR->useIntervalArithmetic(true);
 	CALCULATOR->useBinaryPrefixes(0);
+	CALCULATOR->setPrecision(10);
 
 	FILE *file = NULL;
 	gchar *gstr_file = g_build_filename(getLocalDir().c_str(), "qalculate-gtk.cfg", NULL);
@@ -422,9 +431,9 @@ void load_preferences_search() {
 					search_po.max_decimals = v;
 				} else if(svar == "use_max_deci") {
 					search_po.use_max_decimals = v;
-				} else if(svar == "precision") {
+				} /*else if(svar == "precision") {
 					CALCULATOR->setPrecision(v);
-				} else if(svar == "interval_arithmetic") {
+				}*/ else if(svar == "interval_arithmetic") {
 					CALCULATOR->useIntervalArithmetic(v);
 				} else if(svar == "interval_display") {
 					if(v == 0) {
@@ -463,11 +472,13 @@ void load_preferences_search() {
 					search_po.use_prefixes_for_all_units = v;
 				} else if(svar == "use_prefixes_for_currencies") {
 					search_po.use_prefixes_for_currencies = v;
+#if QALCULATE_MAJOR_VERSION == 3 && QALCULATE_MINOR_VERSION < 15
 				} else if(svar == "number_fraction_format") {
 					if(v >= FRACTION_DECIMAL && v <= FRACTION_COMBINED) {
 						search_po.number_fraction_format = (NumberFractionFormat) v;
 						search_po.restrict_fraction_length = (v == FRACTION_FRACTIONAL);
 					}
+#endif
 				} else if(svar == "complex_number_form") {
 					if(v == COMPLEX_NUMBER_FORM_CIS + 1) {
 						search_eo.complex_number_form = COMPLEX_NUMBER_FORM_CIS;

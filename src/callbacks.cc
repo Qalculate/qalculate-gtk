@@ -1515,6 +1515,7 @@ void set_expression_size_request() {
 	PangoLayout *layout_test = gtk_widget_create_pango_layout(expressiontext, test_str.c_str());
 	gint h;
 	pango_layout_get_pixel_size(layout_test, NULL, &h);
+	g_object_unref(layout_test);
 	h += 12;
 	bool show_eb = gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
 	gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
@@ -1525,6 +1526,16 @@ void set_expression_size_request() {
 	if(minimal_mode) h2 += 2;
 	if(h < h2) h = h2;
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), -1, h);
+	layout_test = gtk_widget_create_pango_layout(expressiontext, "Äy");
+	pango_layout_get_pixel_size(layout_test, NULL, &h);
+	g_object_unref(layout_test);
+	h -= 8; h /= 2;
+	if(h > 0) {
+		gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), 32, 26 + h);
+		gtk_widget_set_margin_top(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), h);
+		gtk_widget_set_margin_top(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_clear")), h);
+		gtk_widget_set_margin_top(GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon")), h);
+	}
 }
 
 void set_unicode_buttons() {
@@ -9938,8 +9949,8 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 											i++;
 											if(str[i - 1] == ' ') {
 												i--;
-											} else if(str[i - 1] < 0) {
-												if(teststr.find(THIN_SPACE, teststr.length() - 3) == teststr.length() - 3) i -= 3;
+											} else if(str[i - 1] == -30 && i + 1 < str.length() && str[i] == -128 && str[i + 1] == -119) {
+												i--;
 											} else if(i > 3 && str[i] <= '9' && str[i] >= '0' && str[i - 1] <= '9' && str[i - 1] >= '0') {
 												if(str[i - 2] == ' ' && str[i - 3] <= '9' && str[i - 3] >= '0') i -= 2;
 												else if(str[i - 3] == ' ' && str[i - 4] <= '9' && str[i - 4] >= '0') i -= 3;
@@ -10012,8 +10023,8 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 										i++;
 										if(str[i - 1] == ' ') {
 											i--;
-										} else if(str[i - 1] < 0) {
-											if(teststr.find(THIN_SPACE, teststr.length() - 3) == teststr.length() - 3) i -= 3;
+										} else if(str[i - 1] == -30 && i + 1 < str.length() && str[i] == -128 && str[i + 1] == -119) {
+											i--;
 										} else if(i > 3 && str[i] <= '9' && str[i] >= '0' && str[i - 1] <= '9' && str[i - 1] >= '0') {
 											if(str[i - 2] == ' ' && str[i - 3] <= '9' && str[i - 3] >= '0') i -= 2;
 											else if(str[i - 3] == ' ' && str[i - 4] <= '9' && str[i - 4] >= '0') i -= 3;
@@ -24450,6 +24461,14 @@ void menu_to_oct(GtkMenuItem*, gpointer) {
 	result_format_updated();
 	printops.base = save_base;
 }
+void menu_to_dec(GtkMenuItem*, gpointer) {
+	int save_base = printops.base;
+	to_base = 0;
+	to_bits = 0;
+	printops.base = BASE_DECIMAL;
+	result_format_updated();
+	printops.base = save_base;
+}
 void menu_to_duo(GtkMenuItem*, gpointer) {
 	int save_base = printops.base;
 	to_base = 0;
@@ -24547,12 +24566,13 @@ void update_mb_to_menu() {
 		bool base_sep = false;
 		if(!b_complex) {
 			MENU_ITEM(_("Number bases"), on_menu_item_convert_number_bases_activate)
-			MENU_ITEM(_("Binary"), menu_to_bin)
-			MENU_ITEM(_("Octal"), menu_to_oct)
-			MENU_ITEM(_("Duodecimal"), menu_to_duo)
-			MENU_ITEM(_("Hexadecimal"), menu_to_hex)
+			if(displayed_printops.base != BASE_BINARY) {MENU_ITEM(_("Binary"), menu_to_bin)}
+			if(displayed_printops.base != BASE_OCTAL) {MENU_ITEM(_("Octal"), menu_to_oct)}
+			if(displayed_printops.base != BASE_DECIMAL) {MENU_ITEM(_("Decimal"), menu_to_dec)}
+			if(displayed_printops.base != BASE_DUODECIMAL) {MENU_ITEM(_("Duodecimal"), menu_to_duo)}
+			if(displayed_printops.base != BASE_HEXADECIMAL) {MENU_ITEM(_("Hexadecimal"), menu_to_hex)}
 			if(b_integ) {
-				MENU_ITEM(_("Roman"), menu_to_roman)
+				if(displayed_printops.base != BASE_ROMAN_NUMERALS) {MENU_ITEM(_("Roman"), menu_to_roman)}
 				MENU_SEPARATOR
 				base_sep = true;
 				MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)
@@ -29019,6 +29039,7 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 			gtk_entry_set_text(GTK_ENTRY(w_error), "");
 			if(base != 10) gtk_entry_set_text(GTK_ENTRY(w_dec), m_undefined.print(po).c_str());
 		} else {
+			if(sbin.length() < bits) sbin.insert(0, bits - sbin.length(), '0');
 			Number exponent, significand;
 			exponent.set(sbin.substr(1, expbits), pa);
 			Number expbias(2);

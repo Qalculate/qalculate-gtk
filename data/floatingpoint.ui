@@ -1,38 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.2 -->
+<!-- Generated with glade 3.38.1 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkTextBuffer" id="fp_buffer_bin">
     <signal name="changed" handler="on_fp_buffer_bin_changed" swapped="no"/>
   </object>
   <object class="GtkDialog" id="floatingpoint_dialog">
-    <property name="can_focus">False</property>
-    <property name="border_width">6</property>
+    <property name="can-focus">False</property>
+    <property name="border-width">6</property>
     <property name="title" translatable="yes">Floating Point Conversion</property>
-    <property name="type_hint">normal</property>
+    <property name="type-hint">normal</property>
     <signal name="delete-event" handler="gtk_widget_hide" swapped="no"/>
     <signal name="destroy-event" handler="gtk_widget_hide" swapped="no"/>
     <signal name="key-press-event" handler="on_floatingpoint_dialog_key_press_event" swapped="no"/>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox5">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="dialog-action_area5">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
+            <property name="can-focus">False</property>
+            <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="nbases_button_close">
                 <property name="label" translatable="yes">_Close</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_underline">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="use-underline">True</property>
                 <signal name="clicked" handler="gtk_widget_hide" object="floatingpoint_dialog" swapped="yes"/>
               </object>
               <packing>
@@ -45,133 +42,134 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="pack_type">end</property>
+            <property name="pack-type">end</property>
             <property name="position">1</property>
           </packing>
         </child>
         <child>
+          <!-- n-columns=3 n-rows=8 -->
           <object class="GtkGrid" id="fp_grid">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="border_width">6</property>
-            <property name="row_spacing">6</property>
-            <property name="column_spacing">12</property>
-            <property name="row_homogeneous">True</property>
+            <property name="can-focus">False</property>
+            <property name="border-width">6</property>
+            <property name="row-spacing">6</property>
+            <property name="column-spacing">12</property>
+            <property name="row-homogeneous">True</property>
             <child>
               <object class="GtkLabel" id="fp_label_dec">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="halign">end</property>
                 <property name="label" translatable="yes">Decimal value</property>
-                <property name="use_markup">True</property>
+                <property name="use-markup">True</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">1</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkEntry" id="fp_entry_dec">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="tooltip_text" translatable="yes">Binary value</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Binary value</property>
                 <property name="hexpand">True</property>
                 <property name="xalign">1</property>
-                <property name="primary_icon_activatable">False</property>
-                <property name="secondary_icon_activatable">False</property>
+                <property name="primary-icon-activatable">False</property>
+                <property name="secondary-icon-activatable">False</property>
                 <signal name="changed" handler="on_fp_entry_dec_changed" swapped="no"/>
                 <signal name="key-press-event" handler="on_fp_entry_dec_key_press_event" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">1</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkEntry" id="fp_entry_hex">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="tooltip_text" translatable="yes">Octal value</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Octal value</property>
                 <property name="hexpand">True</property>
                 <property name="xalign">1</property>
-                <property name="primary_icon_activatable">False</property>
-                <property name="secondary_icon_activatable">False</property>
+                <property name="primary-icon-activatable">False</property>
+                <property name="secondary-icon-activatable">False</property>
                 <signal name="changed" handler="on_fp_entry_hex_changed" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">4</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">4</property>
               </packing>
             </child>
             <child>
               <object class="GtkLabel" id="fp_label_hex">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="halign">end</property>
                 <property name="label" translatable="yes">Hexadecimal representation</property>
-                <property name="use_markup">True</property>
+                <property name="use-markup">True</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">4</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">4</property>
               </packing>
             </child>
             <child>
               <object class="GtkLabel" id="fp_label_error">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="halign">end</property>
                 <property name="label" translatable="yes">Conversion error</property>
-                <property name="use_markup">True</property>
+                <property name="use-markup">True</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">7</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">7</property>
               </packing>
             </child>
             <child>
               <object class="GtkLabel" id="fp_label_bin">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="halign">end</property>
                 <property name="label" translatable="yes">Binary representation</property>
-                <property name="use_markup">True</property>
+                <property name="use-markup">True</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">2</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkLabel" id="fp_label_value">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="halign">end</property>
                 <property name="label" translatable="yes">Floating point value</property>
-                <property name="use_markup">True</property>
+                <property name="use-markup">True</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">5</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">5</property>
               </packing>
             </child>
             <child>
               <object class="GtkLabel" id="fp_label_format">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="halign">end</property>
                 <property name="label" translatable="yes">Format</property>
-                <property name="use_markup">True</property>
+                <property name="use-markup">True</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">0</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkComboBoxText" id="fp_combo_bits">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="active">1</property>
                 <items>
                   <item translatable="yes">16-bit (half precision)</item>
@@ -183,82 +181,106 @@
                 <signal name="changed" handler="on_fp_combo_bits_changed" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">0</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkScrolledWindow" id="fp_scrolled_bin">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="shadow_type">in</property>
+                <property name="can-focus">True</property>
+                <property name="shadow-type">in</property>
                 <child>
                   <object class="GtkTextView" id="fp_textedit_bin">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="wrap_mode">char</property>
+                    <property name="can-focus">True</property>
+                    <property name="wrap-mode">char</property>
                     <property name="justification">right</property>
-                    <property name="left_margin">16</property>
-                    <property name="right_margin">16</property>
+                    <property name="left-margin">16</property>
+                    <property name="right-margin">16</property>
                     <property name="buffer">fp_buffer_bin</property>
                   </object>
                 </child>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">2</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">2</property>
                 <property name="height">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkEntry" id="fp_entry_error">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="tooltip_text" translatable="yes">Octal value</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Octal value</property>
                 <property name="hexpand">True</property>
                 <property name="editable">False</property>
-                <property name="width_chars">25</property>
+                <property name="width-chars">25</property>
                 <property name="xalign">1</property>
-                <property name="primary_icon_activatable">False</property>
-                <property name="secondary_icon_activatable">False</property>
+                <property name="primary-icon-activatable">False</property>
+                <property name="secondary-icon-activatable">False</property>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">7</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">7</property>
               </packing>
             </child>
             <child>
               <object class="GtkEntry" id="fp_entry_float">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="tooltip_text" translatable="yes">Octal value</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Octal value</property>
                 <property name="hexpand">True</property>
                 <property name="editable">False</property>
-                <property name="width_chars">66</property>
+                <property name="width-chars">66</property>
                 <property name="xalign">1</property>
-                <property name="primary_icon_activatable">False</property>
-                <property name="secondary_icon_activatable">False</property>
+                <property name="primary-icon-activatable">False</property>
+                <property name="secondary-icon-activatable">False</property>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">5</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">5</property>
               </packing>
             </child>
             <child>
               <object class="GtkEntry" id="fp_entry_value">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="tooltip_text" translatable="yes">Hexadecimal value</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Hexadecimal value</property>
                 <property name="hexpand">True</property>
                 <property name="editable">False</property>
                 <property name="xalign">1</property>
-                <property name="primary_icon_activatable">False</property>
-                <property name="secondary_icon_activatable">False</property>
+                <property name="primary-icon-activatable">False</property>
+                <property name="secondary-icon-activatable">False</property>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">6</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">6</property>
               </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
             </child>
             <child>
               <placeholder/>

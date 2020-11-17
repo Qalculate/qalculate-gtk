@@ -1255,7 +1255,7 @@ void create_main_window(void) {
 
 	expression_undo_buffer.push_back("");
 
-	gtk_text_view_set_left_margin(GTK_TEXT_VIEW(expressiontext), 9);
+	gtk_text_view_set_left_margin(GTK_TEXT_VIEW(expressiontext), 6);
 	gtk_text_view_set_right_margin(GTK_TEXT_VIEW(expressiontext), 30);
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
 	gtk_text_view_set_top_margin(GTK_TEXT_VIEW(expressiontext), 6);
@@ -1353,27 +1353,6 @@ void create_main_window(void) {
 			pango_font_description_free(font_desc);
 		}
 	}
-
-	GtkCssProvider *expression_button_equals_provider = gtk_css_provider_new();
-	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals"))), GTK_STYLE_PROVIDER(expression_button_equals_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	gtk_css_provider_load_from_data(expression_button_equals_provider, "* {font-size: 26px; font-weight: 500;}", -1, NULL);
-	PangoLayout *layout_equals = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), "=");
-	PangoRectangle rect, lrect;
-	pango_layout_get_pixel_extents(layout_equals, &rect, &lrect);
-	g_object_unref(layout_equals);
-	if(rect.width >= 16) {
-		gtk_css_provider_load_from_data(expression_button_equals_provider, "* {font-size: 18px; font-weight: 500;}", -1, NULL);
-		layout_equals = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), "=");
-		pango_layout_get_pixel_extents(layout_equals, &rect, &lrect);
-		g_object_unref(layout_equals);
-	}
-	if(rect.y * 2 - lrect.height + rect.height > 0) gtk_widget_set_margin_bottom(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), rect.y * 2 - lrect.height + rect.height);
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
-	gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), 2);
-#else
-	gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), 2);
-#endif
-
 	if(use_custom_result_font) {
 		gchar *gstr = font_name_to_css(custom_result_font.c_str());
 		gtk_css_provider_load_from_data(resultview_provider, gstr, -1, NULL);
@@ -1427,6 +1406,43 @@ void create_main_window(void) {
 			pango_font_description_free(font_desc);
 		}
 	}
+
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 14
+
+	gint scalefactor = gtk_widget_get_scale_factor(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")));
+	cairo_surface_t *surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 16 * scalefactor, 16 * scalefactor);
+	cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+	cairo_t *cr = cairo_create(surface);
+	GdkRGBA rgba;
+	gtk_style_context_get_color(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals"))), GTK_STATE_FLAG_NORMAL, &rgba);
+
+	PangoLayout *layout_equals = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), "=");
+	PangoFontDescription *font_desc;
+	gtk_style_context_get(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+	pango_font_description_set_weight(font_desc, PANGO_WEIGHT_MEDIUM);
+	pango_font_description_set_absolute_size(font_desc, PANGO_SCALE * 26);
+	pango_layout_set_font_description(layout_equals, font_desc);
+
+	PangoRectangle rect, lrect;
+	pango_layout_get_pixel_extents(layout_equals, &rect, &lrect);
+	if(rect.width >= 16) {
+		pango_font_description_set_absolute_size(font_desc, PANGO_SCALE * 18);
+		pango_layout_set_font_description(layout_equals, font_desc);
+		pango_layout_get_pixel_extents(layout_equals, &rect, &lrect);
+	}
+
+	pango_font_description_free(font_desc);
+
+	double offset_x = (rect.x - (lrect.width - (rect.x + rect.width))) / 2.0, offset_y = (rect.y - (lrect.height - (rect.y + rect.height))) / 2.0;
+	cairo_move_to(cr, (16 - lrect.width) / 2.0 - offset_x, (16 - lrect.height) / 2.0 - offset_y);
+	gdk_cairo_set_source_rgba(cr, &rgba);
+	pango_cairo_show_layout(cr, layout_equals);
+	g_object_unref(layout_equals);
+	cairo_destroy(cr);
+	gtk_image_set_from_surface(GTK_IMAGE(gtk_builder_get_object(main_builder, "expression_button_equals")), surface);
+	cairo_surface_destroy(surface);
+
+#endif
 
 	set_unicode_buttons();
 

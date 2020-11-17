@@ -2636,13 +2636,13 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                         <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkEventBox" id="expression_button">
-                            <property name="width-request">32</property>
-                            <property name="height-request">32</property>
+                            <property name="width-request">30</property>
+                            <property name="height-request">26</property>
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="has-tooltip">True</property>
-                            <property name="margin-top">2</property>
+                            <property name="border-width">2</property>
                             <property name="visible-window">False</property>
                             <property name="above-child">True</property>
                             <signal name="button-press-event" handler="on_expression_button_button_press_event" swapped="no"/>
@@ -2652,11 +2652,12 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <child>
-                                  <object class="GtkLabel" id="expression_button_equals">
+                                  <object class="GtkImage" id="expression_button_equals">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="label" translatable="yes">=</property>
-                                    <property name="justify">center</property>
+                                    <property name="valign">start</property>
+                                    <property name="pixel-size">16</property>
+                                    <property name="icon-name">equals-symbolic</property>
                                   </object>
                                   <packing>
                                     <property name="name">page0</property>
@@ -2666,6 +2667,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                   <object class="GtkImage" id="expression_button_clear">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
+                                    <property name="valign">start</property>
                                     <property name="pixel-size">16</property>
                                     <property name="icon-name">edit-clear-symbolic</property>
                                   </object>
@@ -2678,6 +2680,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                   <object class="GtkImage" id="message_tooltip_icon">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
+                                    <property name="valign">start</property>
                                     <property name="pixel-size">16</property>
                                     <property name="icon-name">dialog-warning</property>
                                   </object>
@@ -2688,12 +2691,8 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                 </child>
                                 <child>
                                   <object class="GtkSpinner" id="expressionspinner">
-                                    <property name="width-request">26</property>
-                                    <property name="height-request">26</property>
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="halign">center</property>
-                                    <property name="valign">center</property>
                                   </object>
                                   <packing>
                                     <property name="name">page3</property>
@@ -2704,6 +2703,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                   <object class="GtkImage" id="expression_button_stop">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
+                                    <property name="valign">start</property>
                                     <property name="pixel-size">16</property>
                                     <property name="icon-name">process-stop</property>
                                   </object>
