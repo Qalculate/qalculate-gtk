@@ -48,6 +48,26 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="3.15.0" date="2020-11-23">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Replace equals button with a clickable icon on the upper right corner of the expression entry</li>
+      <li>Optional extra column of customizable keypad buttons</li>
+      <li>Use icons for "Value", "Text", and "Copy" in history view and hide all buttons when keypad is shown simultaneously</li>
+      <li>Add "Exact" menu item to result popup menu when appropriate</li>
+      <li>Automatic/dual approximation and fractions in Gnome shell search provider</li>
+      <li>Add "precalculate expression" argument (default false) to save() function (this also changes the behaviour of ":=")</li>
+      <li>Support multiple equivalent custom digits, separated by semicolon (e.g. "0;aA1;bB2;cC3"), and phoneword digit set in base() function</li>
+      <li>Always place unit with prefix first (fixes kWh)</li>
+      <li>Fix local time zone on Windows</li>
+      <li>Fix matrix/vector multiplication with approximate matrix/vector variable</li>
+      <li>Fix parsing of expression with multiple degree signs</li>
+      <li>Fix segfault in unit manager</li>
+      <li>Minor bug fixes and feature improvements</li>
+     </ul>
+   </description>
+  </release>
   <release version="3.14.0" date="2020-10-26">
    <description>
     <p>Changes:</p>

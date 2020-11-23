@@ -1121,7 +1121,7 @@ void unfix_history_string(string &str) {
 	gsub("&gt;", ">", str);
 	gsub("&lt;", "<", str);
 }
-void replace_result_cis(string &resstr) {
+void replace_result_cis_gtk(string &resstr) {
 	if(can_display_unicode_string_function_exact("∠", (void*) historyview)) gsub(" cis ", "∠", resstr);
 }
 void improve_result_text(string &resstr) {
@@ -2600,6 +2600,17 @@ void set_result_bases(const MathStructure &m) {
 	}
 }
 
+bool test_parsed_comparison_gtk(const MathStructure &m) {
+	if(m.isComparison()) return true;
+	if((m.isLogicalOr() || m.isLogicalAnd()) && m.size() > 0) {
+		for(size_t i = 0; i < m.size(); i++) {
+			if(!test_parsed_comparison_gtk(m[i])) return false;
+		}
+		return true;
+	}
+	return false;
+}
+
 void do_auto_calc(bool recalculate = true, string str = string()) {
 	if(block_result_update || block_expression_execution) return;
 	MathStructure mauto;
@@ -3052,7 +3063,6 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		number_exp_minus_map.clear();
 		number_approx_map.clear();
 
-
 		// convert time units to hours when using time format
 		if(printops.base == BASE_TIME && is_time(*displayed_mstruct_pre)) {
 			Unit *u = CALCULATOR->getActiveUnit("h");
@@ -3062,8 +3072,19 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			}
 		}
 
+		if(printops.spell_out_logical_operators && parsed_mstruct && test_parsed_comparison_gtk(*parsed_mstruct)) {
+			if(displayed_mstruct_pre->isZero()) {
+				Variable *v = CALCULATOR->getActiveVariable("false");
+				if(v) displayed_mstruct_pre->set(v);
+			} else if(displayed_mstruct_pre->isOne()) {
+				Variable *v = CALCULATOR->getActiveVariable("true");
+				if(v) displayed_mstruct_pre->set(v);
+			}
+		}
+
 		displayed_mstruct_pre->removeDefaultAngleUnit(evalops);
 		displayed_mstruct_pre->format(printops);
+		displayed_mstruct_pre->removeDefaultAngleUnit(evalops);
 		tmp_surface = draw_structure(*displayed_mstruct_pre, printops, complex_angle_form, top_ips, NULL, 0);
 		if(tmp_surface && CALCULATOR->aborted()) {
 			CALCULATOR->endTemporaryStopMessages();
@@ -4138,7 +4159,7 @@ void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 							str2 += " (";
 							//optional argument
 							str2 += _("optional");
-							if(!f->getDefaultValue(i2).empty()) {
+							if(!f->getDefaultValue(i2).empty() && f->getDefaultValue(i2) != "\"\"") {
 								str2 += ", ";
 								//argument default, in description
 								str2 += _("default: ");
@@ -8786,7 +8807,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 				const ExpressionName *ename = &m.variable()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
 
-				bool cursive = m.variable() != CALCULATOR->v_i && ename->name != "%" && ename->name != "‰" && ename->name != "‱";
+				bool cursive = m.variable() != CALCULATOR->v_i && ename->name != "%" && ename->name != "‰" && ename->name != "‱" && m.variable()->referenceName() != "true" && m.variable()->referenceName() != "false";
 				if(cursive) str = "<i>";
 				TTBP(str);
 
@@ -9139,7 +9160,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 							argcount--;
 						} else if(m[argcount - 1].isInteger() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr.find_first_not_of(NUMBERS) == string::npos && m[argcount - 1].number() == s2i(defstr)) {
 							argcount--;
-						} else if(m[argcount - 1].isSymbolic() && arg && arg->type() == ARGUMENT_TYPE_TEXT && m[argcount - 1] == defstr) {
+						} else if(m[argcount - 1].isSymbolic() && arg && arg->type() == ARGUMENT_TYPE_TEXT && (m[argcount - 1].symbol() == defstr || (defstr == "\"\"" && m[argcount - 1].symbol().empty()))) {
 							argcount--;
 						} else {
 							break;
@@ -9596,11 +9617,22 @@ void ViewThread::run() {
 			}
 		}
 
+		if(printops.spell_out_logical_operators && x && test_parsed_comparison_gtk(*((MathStructure*) x))) {
+			if(m.isZero()) {
+				Variable *v = CALCULATOR->getActiveVariable("false");
+				if(v) m.set(v);
+			} else if(m.isOne()) {
+				Variable *v = CALCULATOR->getActiveVariable("true");
+				if(v) m.set(v);
+			}
+		}
+
 		m.removeDefaultAngleUnit(evalops);
 		m.format(printops);
+		m.removeDefaultAngleUnit(evalops);
 		gint64 time1 = g_get_monotonic_time();
 		result_text = m.print(printops);
-		if(complex_angle_form) replace_result_cis(result_text);
+		if(complex_angle_form) replace_result_cis_gtk(result_text);
 		result_text_approximate = *printops.is_approximate;
 
 		if(!b_stack && visible_keypad & PROGRAMMING_KEYPAD) {
@@ -9614,7 +9646,7 @@ void ViewThread::run() {
 			printops_long.excessive_parenthesis = true;
 			printops_long.is_approximate = NULL;
 			result_text_long = m.print(printops_long);
-			if(complex_angle_form) replace_result_cis(result_text_long);
+			if(complex_angle_form) replace_result_cis_gtk(result_text_long);
 		} else if(!b_stack) {
 			result_text_long = "";
 		}
@@ -16808,7 +16840,7 @@ void set_minimal_mode(bool b) {
 		if(gtk_widget_is_visible(tabs) || gtk_widget_is_visible(keypad)) {
 			gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), NULL, &h);
 		}
-		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width, h);
+		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width < 0 ? 1 : win_width, h);
 	}
 	set_expression_size_request();
 }
@@ -18140,6 +18172,7 @@ void load_preferences() {
 			keyboard_shortcuts[(guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier] = ks;
 		}
 	}
+	if(show_keypad && !(visible_keypad & HIDE_RIGHT_KEYPAD) && !(visible_keypad & HIDE_LEFT_KEYPAD) && (version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 15))) win_width = -1;
 	update_message_print_options();
 	displayed_printops = printops;
 	displayed_printops.allow_non_usable = true;
@@ -30383,7 +30416,12 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 		gtk_widget_set_size_request(widget, w, h);
 		if(h > sbh) rw -= sbw;
 		if(rw >= w) {
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
+			// compensate for overlay scrollbars
+			cairo_set_source_surface(cr, surface_result, rw >= w + 11 ? rw - w - 11 : rw - w - (rw - w) / 2, h < rh ? (rh - h) / 2 : 0);
+#else
 			cairo_set_source_surface(cr, surface_result, rw >= w + 6 ? rw - w - 6 : rw - w - (rw - w) / 2, h < rh ? (rh - h) / 2 : 0);
+#endif
 		} else {
 			if(h + ((rh - h) / 2) < rh - sbh) cairo_set_source_surface(cr, surface_result, 0, (rh - h) / 2);
 			else cairo_set_source_surface(cr, surface_result, 0, (h > rh - sbh) ? 0 : (rh - h - sbh) / 2);

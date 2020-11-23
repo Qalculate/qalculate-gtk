@@ -1615,7 +1615,7 @@ void create_main_window(void) {
 	GtkCssProvider *notification_style = gtk_css_provider_new(); gtk_css_provider_load_from_data(notification_style, "* {border-radius: 5px}", -1, NULL);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "overlaybox"))), GTK_STYLE_PROVIDER(notification_style), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
-	if(themestr.substr(0, 7) == "Adwaita" || themestr.substr(0, 6) == "ooxmox" || themestr == "Breeze" || themestr == "Breeze-Dark" || themestr == "Yaru") {
+	if(themestr.substr(0, 7) == "Adwaita" || themestr.substr(0, 6) == "ooxmox" || themestr == "Breeze" || themestr == "Breeze-Dark" || themestr.substr(0, 4) == "Yaru") {
 
 		GtkCssProvider *link_style_top = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_top, "* {border-bottom-left-radius: 0; border-bottom-right-radius: 0}", -1, NULL);
 		GtkCssProvider *link_style_bot = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_bot, "* {border-top-left-radius: 0; border-top-right-radius: 0}", -1, NULL);
@@ -1654,13 +1654,11 @@ void create_main_window(void) {
 		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_del"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_ans"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_equals"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c5"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c1"))), GTK_STYLE_PROVIDER(link_style_top), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c2"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c3"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c4"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons")), custom_buttons[29].type[0] >= 0 || custom_buttons[29].type[1] >= 0 || custom_buttons[29].type[2] >= 0 || custom_buttons[30].type[0] >= 0 || custom_buttons[30].type[1] >= 0 || custom_buttons[30].type[2] >= 0 || custom_buttons[31].type[0] >= 0 || custom_buttons[31].type[1] >= 0 || custom_buttons[31].type[2] >= 0 || custom_buttons[32].type[0] >= 0 || custom_buttons[32].type[1] >= 0 || custom_buttons[32].type[2] >= 0 || custom_buttons[33].type[0] >= 0 || custom_buttons[33].type[1] >= 0 || custom_buttons[33].type[2] >= 0);
-
+		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c5"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
 		if(themestr == "Breeze" || themestr == "Breeze-Dark") {
 
@@ -1696,6 +1694,8 @@ void create_main_window(void) {
 			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_deleteregister"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		}
 	}
+
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons")), custom_buttons[29].type[0] >= 0 || custom_buttons[29].type[1] >= 0 || custom_buttons[29].type[2] >= 0 || custom_buttons[30].type[0] >= 0 || custom_buttons[30].type[1] >= 0 || custom_buttons[30].type[2] >= 0 || custom_buttons[31].type[0] >= 0 || custom_buttons[31].type[1] >= 0 || custom_buttons[31].type[2] >= 0 || custom_buttons[32].type[0] >= 0 || custom_buttons[32].type[1] >= 0 || custom_buttons[32].type[2] >= 0 || custom_buttons[33].type[0] >= 0 || custom_buttons[33].type[1] >= 0 || custom_buttons[33].type[2] >= 0);
 
 	if(!gtk_icon_theme_has_icon(gtk_icon_theme_get_default(), "document-edit-symbolic")) {
 		gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_edit")), "gtk-edit", GTK_ICON_SIZE_BUTTON);
