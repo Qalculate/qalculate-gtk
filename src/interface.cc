@@ -1255,13 +1255,13 @@ void create_main_window(void) {
 
 	expression_undo_buffer.push_back("");
 
-	gtk_text_view_set_left_margin(GTK_TEXT_VIEW(expressiontext), 6);
-	gtk_text_view_set_right_margin(GTK_TEXT_VIEW(expressiontext), 30);
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
-	gtk_text_view_set_top_margin(GTK_TEXT_VIEW(expressiontext), 6);
+	gtk_text_view_set_left_margin(GTK_TEXT_VIEW(expressiontext), 12);
+	gtk_text_view_set_top_margin(GTK_TEXT_VIEW(expressiontext), 12);
 	gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(expressiontext), 6);
 #else
-	gtk_text_view_set_pixels_above_lines(GTK_TEXT_VIEW(expressiontext), 6);
+	gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(expressiontext), GTK_TEXT_WINDOW_LEFT, 12);
+	gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(expressiontext), GTK_TEXT_WINDOW_TOP, 12);
 #endif
 
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION > 22 || (GTK_MINOR_VERSION == 22 && GTK_MICRO_VERSION >= 20)
@@ -1274,12 +1274,36 @@ void create_main_window(void) {
 	result_bases = GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases"));
 	keypad = GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons"));
 
-	gtk_widget_set_margin_top(statuslabel_r, 1);
-	gtk_widget_set_margin_top(statuslabel_l, 1);
+	gtk_widget_set_margin_top(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")), 3);
+	gtk_widget_set_margin_bottom(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")), 3);
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
 	gtk_widget_set_margin_end(statuslabel_r, 6);
+	gtk_widget_set_margin_start(statuslabel_l, 6);
+	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator1")), 6);
+	gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator1")), 6);
+	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator2")), 6);
+	gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator2")), 6);
+	gtk_widget_set_margin_end(resultview, 12);
+	gtk_widget_set_margin_start(resultview, 12);
+	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), 6);
+	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_clear")), 6);
+	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_stop")), 6);
+	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon")), 6);
+	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")), 6);
 #else
 	gtk_widget_set_margin_right(statuslabel_r, 6);
+	gtk_widget_set_margin_left(statuslabel_r, 6);
+	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator1")), 6);
+	gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator1")), 6);
+	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator2")), 6);
+	gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator2")), 6);
+	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), 12);
+	gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), 12);
+	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), 6);
+	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_clear")), 6);
+	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_stop")), 6);
+	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon")), 6);
+	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")), 6);
 #endif
 
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
@@ -1307,6 +1331,13 @@ void create_main_window(void) {
 	gtk_style_context_add_provider(gtk_widget_get_style_context(keypad), GTK_STYLE_PROVIDER(keypad_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnl"))), GTK_STYLE_PROVIDER(box_rpnl_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(app_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+	GtkCssProvider *topframe_provider = gtk_css_provider_new();
+	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "topframe"))), GTK_STYLE_PROVIDER(topframe_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_style_context_add_provider(gtk_widget_get_style_context(expressiontext), GTK_STYLE_PROVIDER(topframe_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_css_provider_load_from_data(topframe_provider, "* {background-color: @theme_base_color;}", -1, NULL);
+
+
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
 #	ifdef _WIN32
 	app_provider_theme = gtk_css_provider_new();
@@ -1320,6 +1351,15 @@ void create_main_window(void) {
 	gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
 	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
 	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_label_unit")), 12);
+	/*gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(main_builder, "expenders")), 6);
+	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "expenders")), 6);
+	gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(main_builder, "tabs")), 12);
+	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "tabs")), 12);
+	gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), 12);
+	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), 12);*/
+	gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")), 6);
+	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")), 6);
+	gtk_widget_set_margin_bottom(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")), 6);
 #else
 	gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
 	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases")), 6);
@@ -1367,10 +1407,11 @@ void create_main_window(void) {
 		}
 	}
 	if(use_custom_expression_font) {
-		gchar *gstr = font_name_to_css(custom_expression_font.c_str());
+		gchar *gstr = font_name_to_css(custom_expression_font.c_str(), "textview.view");
 		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
+		gtk_css_provider_load_from_data(expression_provider, "textview.view {font-size: large;}", -1, NULL);
 		if(custom_expression_font.empty()) {
 			PangoFontDescription *font_desc;
 			gtk_style_context_get(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);

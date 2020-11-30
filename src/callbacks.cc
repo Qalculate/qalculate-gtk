@@ -373,6 +373,7 @@ gint autocalc_history_timeout_id = 0;
 bool to_fraction = false;
 char to_prefix = 0;
 int to_base = 0;
+int to_caf = -1;
 unsigned int to_bits = 0;
 Number to_nbase;
 
@@ -696,10 +697,10 @@ int completion_names_match(string name, const string &str, size_t minlength = 0,
 		size_t i2 = name.find(i == 0 ? " <i>" : "</i>", i);
 		if(equalsIgnoreCase(str, name, i, i2, minlength)) {
 			if((i2 == string::npos && name.length() - i == str.length()) || (i2 != string::npos && i2 - i == str.length())) {
-				if(i_match) *i_match = i2;
+				if(i_match) *i_match = n;
 				return 1;
 			}
-			if(i_match && *i_match == 0) *i_match = i2;
+			if(i_match && *i_match == 0) *i_match = n;
 			b_match = true;
 		}
 		if(i2 == string::npos) break;
@@ -1389,20 +1390,19 @@ void hide_expression_spinner() {
 		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), prev_ebv);
 		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), prev_ebtext.c_str());
 	}
+	gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionspinner")));
+	gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultspinner")));
 }
 #define EXPRESSION_STOP 1
 #define EXPRESSION_SPINNER 2
+#define RESULT_SPINNER 5
 #define EXPRESSION_INFO 3
 #define EXPRESSION_CLEAR 4
 void update_expression_icons(int id = 0) {
 	if(block_update_expression_icons) return;
 	if(auto_calculate && id == 0) id = EXPRESSION_CLEAR;
 	switch(id) {
-		case EXPRESSION_STOP: {
-			gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack")), GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_stop")));
-			gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), _("Stop process"));
-			break;
-		}
+		case RESULT_SPINNER: {}
 		case EXPRESSION_SPINNER: {
 			prev_eb = gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack")));
 			prev_ebv = gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
@@ -1411,7 +1411,9 @@ void update_expression_icons(int id = 0) {
 				prev_ebtext = gstr;
 				g_free(gstr);
 			}
-			gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack")), GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionspinner")));
+		}
+		case EXPRESSION_STOP: {
+			gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack")), GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_stop")));
 			gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), _("Stop process"));
 			break;
 		}
@@ -1434,6 +1436,8 @@ void update_expression_icons(int id = 0) {
 			}
 		}
 	}
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionspinner")), id == EXPRESSION_SPINNER);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultspinner")), id == RESULT_SPINNER);
 	showhide_expression_button();
 }
 
@@ -1545,7 +1549,7 @@ void set_expression_size_request() {
 	gint h;
 	pango_layout_get_pixel_size(layout_test, NULL, &h);
 	g_object_unref(layout_test);
-	h += 12;
+	h += 18;
 	bool show_eb = gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
 	gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
 	gint h2 = 0;
@@ -1558,13 +1562,12 @@ void set_expression_size_request() {
 	layout_test = gtk_widget_create_pango_layout(expressiontext, "Äy");
 	pango_layout_get_pixel_size(layout_test, NULL, &h);
 	g_object_unref(layout_test);
-	h -= 8; h /= 2;
-	if(h > 0) {
-		gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), 32, 26 + h);
-		gtk_widget_set_margin_top(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), h);
-		gtk_widget_set_margin_top(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_clear")), h);
-		gtk_widget_set_margin_top(GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon")), h);
-	}
+	h = h / 2 + 1;
+	if(h < 0) h = 0;
+	gtk_widget_set_margin_top(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), h);
+	gtk_widget_set_margin_top(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_clear")), h);
+	gtk_widget_set_margin_top(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_stop")), h);
+	gtk_widget_set_margin_top(GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon")), h);
 }
 
 void set_unicode_buttons() {
@@ -2709,7 +2712,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			}
 		}
 		if(origstr) {
-			to_fraction = false; to_prefix = 0; to_base = 0; to_bits = 0; to_nbase.clear();
+			to_caf = -1; to_fraction = false; to_prefix = 0; to_base = 0; to_bits = 0; to_nbase.clear();
 		}
 		string from_str = str, to_str, str_conv;
 		bool had_to_expression = false;
@@ -2718,7 +2721,6 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			had_to_expression = true;
 			if(from_str.empty()) {
 				clearresult(); 
-				complex_angle_form = caf_bak;
 				evalops.complex_number_form = cnf_bak;
 				evalops.auto_post_conversion = save_auto_post_conversion;
 				evalops.parse_options.units_enabled = b_units_saved;
@@ -2836,23 +2838,23 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 				} else if(equalsIgnoreCase(to_str, "calendars") || equalsIgnoreCase(to_str, _("calendars"))) {
 					str = from_str;
 				} else if(equalsIgnoreCase(to_str, "rectangular") || equalsIgnoreCase(to_str, "cartesian") || equalsIgnoreCase(to_str, _("rectangular")) || equalsIgnoreCase(to_str, _("cartesian"))) {
-					complex_angle_form = false;
+					to_caf = 0;
 					evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "exponential") || equalsIgnoreCase(to_str, _("exponential"))) {
-					complex_angle_form = false;
+					to_caf = 0;
 					evalops.complex_number_form = COMPLEX_NUMBER_FORM_EXPONENTIAL;
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "polar") || equalsIgnoreCase(to_str, _("polar"))) {
-					complex_angle_form = false;
+					to_caf = 0;
 					evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
 					do_to = true;
 				} else if(to_str == "cis") {
-					complex_angle_form = false;
+					to_caf = 0;
 					evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "angle") || equalsIgnoreCase(to_str, _("angle")) || equalsIgnoreCase(to_str, "phasor") || equalsIgnoreCase(to_str, _("phasor"))) {
-					complex_angle_form = true;
+					to_caf = 1;
 					evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "optimal") || equalsIgnoreCase(to_str, _("optimal"))) {
@@ -3025,7 +3027,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 
 		CALCULATOR->startControl(100);
 
-		if(to_base != 0 || to_fraction || to_prefix != 0) {
+		if(to_base != 0 || to_fraction || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form)) {
 			if(to_base != 0 && (to_base != printops.base || to_bits != printops.binary_bits || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()))) {
 				printops.base = to_base;
 				printops.binary_bits = to_bits;
@@ -3039,6 +3041,10 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			if(to_fraction && (printops.restrict_fraction_length || printops.number_fraction_format != FRACTION_COMBINED)) {
 				printops.restrict_fraction_length = false;
 				printops.number_fraction_format = FRACTION_COMBINED;
+				do_to = true;
+			}
+			if(to_caf >= 0 && to_caf != complex_angle_form) {
+				complex_angle_form = to_caf;
 				do_to = true;
 			}
 			if(to_prefix != 0) {
@@ -10488,6 +10494,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	Number save_nbase;
 	bool custom_base_set = false;
 	int save_base = printops.base;
+	bool caf_bak = complex_angle_form;
 	unsigned int save_bits = printops.binary_bits;
 	bool save_pre = printops.use_unit_prefixes;
 	bool save_cur = printops.use_prefixes_for_currencies;
@@ -10498,9 +10505,10 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	NumberFractionFormat save_format = printops.number_fraction_format;
 	bool save_restrict_fraction_length = printops.restrict_fraction_length;
 	bool do_to = false;
+	bool result_cleared = false;
 
 	if(stack_index == 0) {
-		if(to_base != 0 || to_fraction || to_prefix != 0) {
+		if(to_base != 0 || to_fraction || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form)) {
 			if(to_base != 0 && (to_base != printops.base || to_bits != printops.binary_bits || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()))) {
 				printops.base = to_base;
 				printops.binary_bits = to_bits;
@@ -10514,6 +10522,10 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			if(to_fraction && (printops.restrict_fraction_length || printops.number_fraction_format != FRACTION_COMBINED)) {
 				printops.restrict_fraction_length = false;
 				printops.number_fraction_format = FRACTION_COMBINED;
+				do_to = true;
+			}
+			if(to_caf >= 0 && to_caf != complex_angle_form) {
+				complex_angle_form = to_caf;
 				do_to = true;
 			}
 			if(to_prefix != 0 && !prefix) {
@@ -10554,8 +10566,15 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		}
 		if(surface_result) {
 			cairo_surface_destroy(surface_result);
+			surface_result = NULL;
+			result_cleared = true;
 		}
-		surface_result = NULL;
+		date_map.clear();
+		number_map.clear();
+		number_base_map.clear();
+		number_exp_map.clear();
+		number_exp_minus_map.clear();
+		number_approx_map.clear();
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), FALSE);
 	}
@@ -10595,9 +10614,11 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	i = 0;
 
 	if(b_busy && view_thread->running) {
+		if(result_cleared) gtk_widget_queue_draw(resultview);
 		g_application_mark_busy(g_application_get_default());
-		update_expression_icons(EXPRESSION_SPINNER);
-		gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
+		update_expression_icons(stack_index == 0 ? (!minimal_mode ? RESULT_SPINNER : EXPRESSION_SPINNER) : EXPRESSION_STOP);
+		if(minimal_mode) gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
+		else gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
 		if(update_window_title(_("Processing…"))) title_set = true;
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), FALSE);
@@ -10643,7 +10664,8 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "rpntab")), TRUE);
 		if(!update_parse && stack_index == 0) hide_expression_spinner();
 		if(title_set && stack_index != 0) update_window_title();
-		gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
+		if(minimal_mode) gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
+		else gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
 		g_application_unmark_busy(g_application_get_default());
 	}
 
@@ -10832,6 +10854,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		do_scroll = (history_index != history_index_bak);
 	}
 	if(do_to) {
+		complex_angle_form = caf_bak;
 		printops.base = save_base;
 		printops.binary_bits = save_bits;
 		if(custom_base_set) CALCULATOR->setCustomOutputBase(save_nbase);
@@ -11053,8 +11076,9 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyview")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyactions")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "rpntab")), FALSE);
-		update_expression_icons(EXPRESSION_SPINNER);
-		gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
+		update_expression_icons(!minimal_mode ? RESULT_SPINNER : EXPRESSION_SPINNER);
+		if(!minimal_mode) gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
+		else gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
 		g_application_mark_busy(g_application_get_default());
 		was_busy = true;
 	}
@@ -11083,7 +11107,8 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "rpntab")), TRUE);
 		if(title_set) update_window_title();
 		hide_expression_spinner();
-		gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
+		if(!minimal_mode) gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
+		else gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
 		g_application_unmark_busy(g_application_get_default());
 	}
 
@@ -11366,11 +11391,12 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	bool do_factors = false, do_pfe = false, do_expand = false, do_ceu = execute_str.empty(), do_bases = false, do_calendars = false;
 	if(do_stack && !rpn_mode) do_stack = false;
 	if(do_stack && do_mathoperation && f && stack_index == 0) do_stack = false;
+	if(!do_stack) stack_index = 0;
 	
-	if(!mbak_convert.isUndefined() && (!do_stack || stack_index == 0)) mbak_convert.setUndefined();
+	if(!mbak_convert.isUndefined() && stack_index == 0) mbak_convert.setUndefined();
 
 	if(execute_str.empty()) {
-		to_fraction = false; to_prefix = 0; to_base = 0; to_bits = 0; to_nbase.clear();
+		to_fraction = false; to_prefix = 0; to_base = 0; to_bits = 0; to_nbase.clear(); to_caf = -1;
 	}
 
 	if(str.empty() && !do_mathoperation) {
@@ -11464,7 +11490,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	}
 
 	ComplexNumberForm cnf_bak = evalops.complex_number_form;
-	bool caf_bak = complex_angle_form;
 	bool b_units_saved = evalops.parse_options.units_enabled;
 	AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
 	MixedUnitsConversion save_mixed_units_conversion = evalops.mixed_units_conversion;
@@ -11629,69 +11654,66 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				execute_str = from_str;
 			} else if(equalsIgnoreCase(to_str, "rectangular") || equalsIgnoreCase(to_str, "cartesian") || equalsIgnoreCase(to_str, _("rectangular")) || equalsIgnoreCase(to_str, _("cartesian"))) {
 				evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
-				complex_angle_form = false;
+				to_caf = 0;
+				do_to = true;
 				if(from_str.empty()) {
 					b_busy = false;
 					b_busy_expression = false;
 					executeCommand(COMMAND_EVAL);
 					set_previous_expression();
-					complex_angle_form = caf_bak;
 					evalops.complex_number_form = cnf_bak;
 					return;
 				}
-				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "exponential") || equalsIgnoreCase(to_str, _("exponential"))) {
 				evalops.complex_number_form = COMPLEX_NUMBER_FORM_EXPONENTIAL;
-				complex_angle_form = false;
+				to_caf = 0;
+				do_to = true;
 				if(from_str.empty()) {
 					b_busy = false;
 					b_busy_expression = false;
 					executeCommand(COMMAND_EVAL);
 					set_previous_expression();
-					complex_angle_form = caf_bak;
 					evalops.complex_number_form = cnf_bak;
 					return;
 				}
-				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "polar") || equalsIgnoreCase(to_str, _("polar"))) {
 				evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
-				complex_angle_form = false;
+				to_caf = 0;
+				do_to = true;
 				if(from_str.empty()) {
 					b_busy = false;
 					b_busy_expression = false;
 					executeCommand(COMMAND_EVAL);
 					set_previous_expression();
-					complex_angle_form = caf_bak;
 					evalops.complex_number_form = cnf_bak;
 					return;
 				}
+				to_caf = 0;
 				do_to = true;
 			} else if(to_str == "cis") {
 				evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
-				complex_angle_form = false;
+				to_caf = 0;
+				do_to = true;
 				if(from_str.empty()) {
 					b_busy = false;
 					b_busy_expression = false;
 					executeCommand(COMMAND_EVAL);
 					set_previous_expression();
-					complex_angle_form = caf_bak;
 					evalops.complex_number_form = cnf_bak;
 					return;
 				}
-				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "phasor") || equalsIgnoreCase(to_str, _("phasor")) || equalsIgnoreCase(to_str, "angle") || equalsIgnoreCase(to_str, _("angle"))) {
 				evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
-				complex_angle_form = true;
+				to_caf = 1;
+				do_to = true;
 				if(from_str.empty()) {
 					b_busy = false;
 					b_busy_expression = false;
 					executeCommand(COMMAND_EVAL);
 					set_previous_expression();
-					complex_angle_form = caf_bak;
 					evalops.complex_number_form = cnf_bak;
 					return;
 				}
-				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "optimal") || equalsIgnoreCase(to_str, _("optimal"))) {
 				if(from_str.empty()) {
 					b_busy = false;
@@ -11978,14 +12000,20 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 
 	if(CALCULATOR->busy()) {
 		if(update_window_title(_("Calculating…"))) title_set = true;
+		if(stack_index == 0 && surface_result) {
+			cairo_surface_destroy(surface_result);
+			surface_result = NULL;
+			gtk_widget_queue_draw(resultview);
+		}
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyview")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyactions")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "rpntab")), FALSE);
-		update_expression_icons(EXPRESSION_SPINNER);
-		gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
+		update_expression_icons(stack_index == 0 ? (!minimal_mode ? RESULT_SPINNER : EXPRESSION_SPINNER) : EXPRESSION_STOP);
+		if(!minimal_mode) gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
+		else gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
 		g_application_mark_busy(g_application_get_default());
 		was_busy = true;
 	}
@@ -12022,14 +12050,15 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyactions")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "rpntab")), TRUE);
 		if(title_set) update_window_title();
-		gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
+		if(!minimal_mode) gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
+		else gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
 		g_application_unmark_busy(g_application_get_default());
 	}
 
 	b_busy = false;
 	b_busy_expression = false;
 
-	if(rpn_mode && (!do_stack || stack_index == 0)) {
+	if(rpn_mode && stack_index == 0) {
 		mstruct->unref();
 		mstruct = CALCULATOR->getRPNRegister(1);
 		if(!mstruct) mstruct = new MathStructure();
@@ -12037,7 +12066,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	}
 
 	//update "ans" variables
-	if(!do_stack || stack_index == 0) {
+	if(stack_index == 0) {
 		MathStructure m4(vans[3]->get());
 		m4.replace(vans[4], vans[4]->get());
 		vans[4]->set(m4);
@@ -12061,7 +12090,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		result_text = str;
 	}
 	printops.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
-	if(rpn_mode && (!do_stack || stack_index == 0)) {
+	if(rpn_mode && stack_index == 0) {
 		clear_expression_text();
 		while(CALCULATOR->RPNStackSize() < stack_size) {
 			RPNRegisterRemoved(1);
@@ -12110,9 +12139,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		}
 	}
 
-	if(!do_mathoperation && check_exrates && check_exchange_rates(NULL, (!do_stack || stack_index == 0) && !do_bases && !do_calendars && !do_pfe && !do_factors && !do_expand)) {
-		execute_expression(force, do_mathoperation, op, f, rpn_mode, do_stack ? stack_index : 0, saved_execute_str, str, false);
-		complex_angle_form = caf_bak;
+	if(!do_mathoperation && check_exrates && check_exchange_rates(NULL, stack_index == 0 && !do_bases && !do_calendars && !do_pfe && !do_factors && !do_expand)) {
+		execute_expression(force, do_mathoperation, op, f, rpn_mode, stack_index, saved_execute_str, str, false);
 		evalops.complex_number_form = cnf_bak;
 		evalops.auto_post_conversion = save_auto_post_conversion;
 		evalops.parse_options.units_enabled = b_units_saved;
@@ -12134,12 +12162,11 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	}
 
 	if(!do_stack) previous_expression = execute_str.empty() ? str : execute_str;
-	setResult(NULL, true, !do_stack || stack_index == 0, true, "", do_stack ? stack_index : 0);
+	setResult(NULL, true, stack_index == 0, true, "", stack_index);
 	
 	if(do_bases) convert_number_bases(execute_str.c_str());
 	if(do_calendars) on_popup_menu_item_calendarconversion_activate(NULL, NULL);
 	
-	complex_angle_form = caf_bak;
 	evalops.complex_number_form = cnf_bak;
 	evalops.auto_post_conversion = save_auto_post_conversion;
 	evalops.parse_options.units_enabled = b_units_saved;
@@ -12147,7 +12174,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	printops.custom_time_zone = 0;
 	printops.time_zone = TIME_ZONE_LOCAL;
 
-	if(!do_stack || stack_index == 0) {
+	if(stack_index == 0) {
 		if(!block_conversion_category_switch) {
 			Unit *u = CALCULATOR->findMatchingUnit(*mstruct);
 			if(u && !u->category().empty()) {
@@ -16883,6 +16910,7 @@ void set_minimal_mode(bool b) {
 			h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
 			clearresult();
 		}
+		h -= 12;
 		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), minimal_width > 0 ? minimal_width : win_width, h);
 		gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), TRUE);
 		gtk_widget_set_vexpand(resultview, FALSE);
@@ -18877,21 +18905,21 @@ void edit_preferences() {
 	gtk_widget_show(dialog);
 }
 
-gchar *font_name_to_css(const char *font_name) {
+gchar *font_name_to_css(const char *font_name, const char *w) {
 	gchar *gstr = NULL;
 	PangoFontDescription *font_desc = pango_font_description_from_string(font_name);
 	gint size = pango_font_description_get_size(font_desc) / PANGO_SCALE;
 	switch(pango_font_description_get_style(font_desc)) {
 		case PANGO_STYLE_NORMAL: {
-			gstr = g_strdup_printf("* {font-family: %s; font-weight: %i; font-size: %ipt;}", pango_font_description_get_family(font_desc), pango_font_description_get_weight(font_desc), size);
+			gstr = g_strdup_printf("%s {font-family: %s; font-weight: %i; font-size: %ipt;}", w, pango_font_description_get_family(font_desc), pango_font_description_get_weight(font_desc), size);
 			break;
 		}
 		case PANGO_STYLE_OBLIQUE: {
-			gstr = g_strdup_printf("* {font-family: %s; font-weight: %i; font-size: %ipt; font-style: oblique;}", pango_font_description_get_family(font_desc), pango_font_description_get_weight(font_desc), size);
+			gstr = g_strdup_printf("%s {font-family: %s; font-weight: %i; font-size: %ipt; font-style: oblique;}", w, pango_font_description_get_family(font_desc), pango_font_description_get_weight(font_desc), size);
 			break;
 		}
 		case PANGO_STYLE_ITALIC: {
-			gstr = g_strdup_printf("* {font-family: %s; font-weight: %i; font-size: %ipt; font-style: italic;}", pango_font_description_get_family(font_desc), pango_font_description_get_weight(font_desc), size);
+			gstr = g_strdup_printf("%s {font-family: %s; font-weight: %i; font-size: %ipt; font-style: italic;}", w, pango_font_description_get_family(font_desc), pango_font_description_get_weight(font_desc), size);
 			break;
 		}
 	}
@@ -19395,6 +19423,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 		while(i_match > 0) {
 			if(i == 0) i = i2 + 4;
 			else i = i2 + 8;
+			if(i >= str.length()) break;
 			i2 = str.find("</i>", i);
 			if(i2 == string::npos) break;
 			i_match--;
@@ -19743,11 +19772,11 @@ void on_preferences_checkbutton_custom_expression_font_toggled(GtkToggleButton *
 	gint h_old, h_new;
 	gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h_old);
 	if(use_custom_expression_font) {
-		gchar *gstr = font_name_to_css(custom_expression_font.c_str());
+		gchar *gstr = font_name_to_css(custom_expression_font.c_str(), "textview.view");
 		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
-		gtk_css_provider_load_from_data(expression_provider, "", -1, NULL);
+		gtk_css_provider_load_from_data(expression_provider, "textview.view {font-size: large;}", -1, NULL);
 	}
 	expression_font_modified();
 	gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h_new);
@@ -24707,38 +24736,30 @@ void menu_to_fraction(GtkMenuItem*, gpointer) {
 }
 void menu_to_rectangular(GtkMenuItem*, gpointer) {
 	ComplexNumberForm cnf_bak = evalops.complex_number_form;
-	bool caf_bak = complex_angle_form;
-	complex_angle_form = false;
+	to_caf = 0;
 	evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
 	executeCommand(COMMAND_EVAL);
-	complex_angle_form = caf_bak;
 	evalops.complex_number_form = cnf_bak;
 }
 void menu_to_exponential(GtkMenuItem*, gpointer) {
 	ComplexNumberForm cnf_bak = evalops.complex_number_form;
-	bool caf_bak = complex_angle_form;
-	complex_angle_form = false;
+	to_caf = 0;
 	evalops.complex_number_form = COMPLEX_NUMBER_FORM_EXPONENTIAL;
 	executeCommand(COMMAND_EVAL);
-	complex_angle_form = caf_bak;
 	evalops.complex_number_form = cnf_bak;
 }
 void menu_to_polar(GtkMenuItem*, gpointer) {
 	ComplexNumberForm cnf_bak = evalops.complex_number_form;
-	bool caf_bak = complex_angle_form;
-	complex_angle_form = false;
+	to_caf = 0;
 	evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
 	executeCommand(COMMAND_EVAL);
-	complex_angle_form = caf_bak;
 	evalops.complex_number_form = cnf_bak;
 }
 void menu_to_angle(GtkMenuItem*, gpointer) {
 	ComplexNumberForm cnf_bak = evalops.complex_number_form;
-	bool caf_bak = complex_angle_form;
-	complex_angle_form = true;
+	to_caf = 1;
 	evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
 	executeCommand(COMMAND_EVAL);
-	complex_angle_form = caf_bak;
 	evalops.complex_number_form = cnf_bak;
 }
 void update_mb_to_menu() {
@@ -27034,24 +27055,28 @@ void on_menu_item_complex_rectangular_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
 	complex_angle_form = false;
+	to_caf = -1;
 	expression_calculation_updated();
 }
 void on_menu_item_complex_exponential_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.complex_number_form = COMPLEX_NUMBER_FORM_EXPONENTIAL;
 	complex_angle_form = false;
+	to_caf = -1;
 	expression_calculation_updated();
 }
 void on_menu_item_complex_polar_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
 	complex_angle_form = false;
+	to_caf = -1;
 	expression_calculation_updated();
 }
 void on_menu_item_complex_angle_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
 	complex_angle_form = true;
+	to_caf = -1;
 	expression_calculation_updated();
 }
 
@@ -30542,7 +30567,7 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 					g_object_unref(layout);
 				} else {
 					gint rw = -1;
-					if(scale_n == 3) rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
+					if(scale_n == 3) rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - 24;
 					displayed_printops.can_display_unicode_string_arg = (void*) resultview;
 					tmp_surface = draw_structure(*displayed_mstruct, displayed_printops, displayed_caf, top_ips, NULL, scale_n, NULL, NULL, NULL, rw);
 					displayed_printops.can_display_unicode_string_arg = NULL;
@@ -30556,7 +30581,7 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 		gtk_widget_get_preferred_width(gtk_scrolled_window_get_vscrollbar(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "scrolled_result"))), NULL, &sbw);
 		gtk_widget_get_preferred_height(gtk_scrolled_window_get_hscrollbar(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "scrolled_result"))), NULL, &sbh);
 		gint rh = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
-		gint rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
+		gint rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - 24;
 		if(first_draw_of_result || (!b_busy && result_font_updated)) {
 			while(displayed_mstruct && !display_aborted && scale_n < 3 && (w > rw || h > (w > rw - sbw ? rh - sbh : rh))) {
 				int scroll_diff = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport")));
@@ -30582,9 +30607,9 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 		if(rw >= w) {
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
 			// compensate for overlay scrollbars
-			cairo_set_source_surface(cr, surface_result, rw >= w + 11 ? rw - w - 11 : rw - w - (rw - w) / 2, h < rh ? (rh - h) / 2 : 0);
+			cairo_set_source_surface(cr, surface_result, rw >= w + 5 ? rw - w - 5 : rw - w - (rw - w) / 2, h < rh ? (rh - h) / 2 : 0);
 #else
-			cairo_set_source_surface(cr, surface_result, rw >= w + 6 ? rw - w - 6 : rw - w - (rw - w) / 2, h < rh ? (rh - h) / 2 : 0);
+			cairo_set_source_surface(cr, surface_result, rw >= w ? rw - w : rw - w - (rw - w) / 2, h < rh ? (rh - h) / 2 : 0);
 #endif
 		} else {
 			if(h + ((rh - h) / 2) < rh - sbh) cairo_set_source_surface(cr, surface_result, 0, (rh - h) / 2);
