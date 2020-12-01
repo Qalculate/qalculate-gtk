@@ -1549,7 +1549,11 @@ void set_expression_size_request() {
 	gint h;
 	pango_layout_get_pixel_size(layout_test, NULL, &h);
 	g_object_unref(layout_test);
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
 	h += 18;
+#else
+	h += 12;
+#endif
 	bool show_eb = gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
 	gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
 	gint h2 = 0;
@@ -1562,7 +1566,11 @@ void set_expression_size_request() {
 	layout_test = gtk_widget_create_pango_layout(expressiontext, "Äy");
 	pango_layout_get_pixel_size(layout_test, NULL, &h);
 	g_object_unref(layout_test);
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
 	h = h / 2 + 1;
+#else
+	h = h / 2 - 4;
+#endif
 	if(h < 0) h = 0;
 	gtk_widget_set_margin_top(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), h);
 	gtk_widget_set_margin_top(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_clear")), h);
@@ -3146,6 +3154,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 				gint h = -1;
 				gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h);
 				gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), -1, gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled"))));
+				gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator1")));
 				gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
 				while(gtk_events_pending()) gtk_main_iteration();
 				gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), -1, h);
@@ -9530,10 +9539,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 void clearresult() {
 	if(minimal_mode && gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")))) {
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
 		gint w, h;
 		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
 		h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
+		h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator1")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator1")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
 		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), w, h);
 	}
 	showing_first_time_message = false;
@@ -10680,6 +10691,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				gint h = -1;
 				gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h);
 				gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), -1, gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled"))));
+				gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator1")));
 				gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
 				while(gtk_events_pending()) gtk_main_iteration();
 				gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), -1, h);
@@ -16907,6 +16919,7 @@ void set_minimal_mode(bool b) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")));
 		if(expression_is_empty() || !displayed_mstruct) {
+			h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator1")));
 			h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
 			clearresult();
 		}
@@ -16928,6 +16941,7 @@ void set_minimal_mode(bool b) {
 		gtk_widget_set_vexpand(resultview, !gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons"))) && !gtk_widget_get_visible(tabs));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
+		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator1")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
 		if(history_height > 0 && (gtk_expander_get_expanded(GTK_EXPANDER(expander_history)) || gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) || gtk_expander_get_expanded(GTK_EXPANDER(expander_stack)))) {
 			gdk_threads_add_timeout(500, do_minimal_mode_timeout, NULL);
@@ -19795,8 +19809,8 @@ void on_preferences_checkbutton_custom_status_font_toggled(GtkToggleButton *w, g
 		gtk_css_provider_load_from_data(statuslabel_r_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
-		gtk_css_provider_load_from_data(statuslabel_l_provider, "* {font-size: smaller;}", -1, NULL);
-		gtk_css_provider_load_from_data(statuslabel_r_provider, "* {font-size: smaller;}", -1, NULL);
+		gtk_css_provider_load_from_data(statuslabel_l_provider, "* {font-size: small;}", -1, NULL);
+		gtk_css_provider_load_from_data(statuslabel_r_provider, "* {font-size: small;}", -1, NULL);
 	}
 	set_operator_symbols();
 	while(gtk_events_pending()) gtk_main_iteration();
@@ -30567,7 +30581,7 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 					g_object_unref(layout);
 				} else {
 					gint rw = -1;
-					if(scale_n == 3) rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - 24;
+					if(scale_n == 3) rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - 12;
 					displayed_printops.can_display_unicode_string_arg = (void*) resultview;
 					tmp_surface = draw_structure(*displayed_mstruct, displayed_printops, displayed_caf, top_ips, NULL, scale_n, NULL, NULL, NULL, rw);
 					displayed_printops.can_display_unicode_string_arg = NULL;
@@ -30581,9 +30595,9 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 		gtk_widget_get_preferred_width(gtk_scrolled_window_get_vscrollbar(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "scrolled_result"))), NULL, &sbw);
 		gtk_widget_get_preferred_height(gtk_scrolled_window_get_hscrollbar(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "scrolled_result"))), NULL, &sbh);
 		gint rh = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
-		gint rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - 24;
+		gint rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - 12;
 		if(first_draw_of_result || (!b_busy && result_font_updated)) {
-			while(displayed_mstruct && !display_aborted && scale_n < 3 && (w > rw || h > (w > rw - sbw ? rh - sbh : rh))) {
+			while(displayed_mstruct && !display_aborted && scale_n < 3 && (w > rw || h + 24 / (scale_n + 1) > (w > rw - sbw ? rh - sbh : rh))) {
 				int scroll_diff = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport")));
 				double scale_div = (double) h / (gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport"))) + scroll_diff);
 				if(scale_div > 1.44) {
