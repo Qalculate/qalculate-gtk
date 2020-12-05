@@ -2548,7 +2548,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                 <property name="label-xalign">0</property>
                 <property name="shadow-type">in</property>
                 <child>
-                  <object class="GtkBox" id="statusframebox">
+                  <object class="GtkBox" id="topframebox">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="orientation">vertical</property>
@@ -2723,78 +2723,67 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkSeparator" id="statusseparator1">
+                      <object class="GtkFrame" id="statusframe">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="statusbox">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="hexpand">True</property>
-                        <property name="spacing">6</property>
+                        <property name="label-xalign">0</property>
+                        <property name="shadow-type">in</property>
                         <child>
-                          <object class="GtkLabel" id="label_status_left">
+                          <object class="GtkBox" id="statusbox">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="hexpand">True</property>
-                            <property name="label">&lt;span size="small"&gt; &lt;/span&gt;</property>
-                            <property name="use-markup">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="padding">4</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkEventBox" id="status_right_eventbox">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="events">GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                            <property name="visible-window">False</property>
-                            <signal name="button-press-event" handler="on_status_right_button_press_event" swapped="no"/>
-                            <signal name="button-release-event" handler="on_status_right_button_release_event" swapped="no"/>
+                            <property name="spacing">6</property>
                             <child>
-                              <object class="GtkLabel" id="label_status_right">
+                              <object class="GtkLabel" id="label_status_left">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="label">&lt;span size="small"&gt;STATUS&lt;/span&gt;</property>
+                                <property name="hexpand">True</property>
+                                <property name="label">&lt;span size="small"&gt; &lt;/span&gt;</property>
                                 <property name="use-markup">True</property>
-                                <property name="justify">right</property>
                               </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="padding">4</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkEventBox" id="status_right_eventbox">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="events">GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                <property name="visible-window">False</property>
+                                <signal name="button-press-event" handler="on_status_right_button_press_event" swapped="no"/>
+                                <signal name="button-release-event" handler="on_status_right_button_release_event" swapped="no"/>
+                                <child>
+                                  <object class="GtkLabel" id="label_status_right">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label">&lt;span size="small"&gt;STATUS&lt;/span&gt;</property>
+                                    <property name="use-markup">True</property>
+                                    <property name="justify">right</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="pack-type">end</property>
+                                <property name="position">1</property>
+                              </packing>
                             </child>
                           </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="pack-type">end</property>
-                            <property name="position">1</property>
-                          </packing>
+                        </child>
+                        <child type="label_item">
+                          <placeholder/>
                         </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
                         <property name="position">2</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator" id="statusseparator2">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">3</property>
                       </packing>
                     </child>
                     <child>
@@ -2915,7 +2904,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="orientation">vertical</property>
-                <property name="spacing">3</property>
+                <property name="spacing">6</property>
                 <child>
                   <object class="GtkBox" id="expenders">
                     <property name="visible">True</property>

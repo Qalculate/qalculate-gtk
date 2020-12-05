@@ -101,7 +101,7 @@ extern GtkTreeModel *completion_filter, *completion_sort;
 extern unordered_map<size_t, GtkWidget*> cal_year, cal_month, cal_day, cal_label;
 extern GtkWidget *chinese_stem, *chinese_branch;
 
-extern GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider, *app_provider_theme;
+extern GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider, *app_provider_theme, *statusframe_provider;
 
 extern GtkWidget *expressiontext, *statuslabel_l, *statuslabel_r, *result_bases, *keypad;
 int two_result_bases_rows = -1;
@@ -7264,14 +7264,16 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				}
 				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
 				bool multiline = false;
+				int base = po.base;
+				if(base <= BASE_FP16 && base >= BASE_FP80) base =  BASE_BINARY;
 				for(int try_i = 0; try_i <= 2; try_i++) {
 					if(try_i == 1) {
 						value_str_bak = value_str;
 						size_t i = string::npos, l = 0;
-						if(po.base == BASE_BINARY || (po.base == BASE_DECIMAL && po.digit_grouping != DIGIT_GROUPING_NONE)) {
+						if(base == BASE_BINARY || (base == BASE_DECIMAL && po.digit_grouping != DIGIT_GROUPING_NONE)) {
 							i = value_str.find(" ", value_str.length() / 2);
 							l = 1;
-							if(i == string::npos && po.base == BASE_DECIMAL) {
+							if(i == string::npos && base == BASE_DECIMAL) {
 								if(po.digit_grouping != DIGIT_GROUPING_LOCALE) {
 									l = strlen(THIN_SPACE);
 									i = value_str.find(THIN_SPACE, value_str.length() / 2 - 1);
@@ -7282,10 +7284,10 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 								}
 							}
 						}
-						if(i == string::npos && po.base != BASE_BINARY) {
+						if(i == string::npos && base != BASE_BINARY) {
 							l = 0;
 							i = value_str.length() / 2 + 2;
-							if(po.base == BASE_DECIMAL && (po.digit_grouping == DIGIT_GROUPING_STANDARD || (po.digit_grouping == DIGIT_GROUPING_LOCALE && CALCULATOR->local_digit_group_separator != " "))) {
+							if(base == BASE_DECIMAL && (po.digit_grouping == DIGIT_GROUPING_STANDARD || (po.digit_grouping == DIGIT_GROUPING_LOCALE && CALCULATOR->local_digit_group_separator != " "))) {
 								size_t i2 = 0;
 								while(true) {
 									i2 = value_str.find(po.digit_grouping == DIGIT_GROUPING_LOCALE ? CALCULATOR->local_digit_group_separator : THIN_SPACE, i2 + 1);
@@ -7305,11 +7307,11 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 							if(l == 0) value_str.insert(i, 1, '\n');
 							else if(l == 1) value_str[i] = '\n';
 							else {value_str.erase(i, l - 1); value_str[i] = '\n';}
-							if(po.base == BASE_DECIMAL) pango_layout_set_alignment(layout, PANGO_ALIGN_RIGHT);
+							if(base == BASE_DECIMAL) pango_layout_set_alignment(layout, PANGO_ALIGN_RIGHT);
 							multiline = true;
 						}
 					} else if(try_i == 2) {
-						if(po.base == BASE_BINARY) {
+						if(base == BASE_BINARY) {
 							PangoLayoutIter *iter = pango_layout_get_iter(layout);
 							PangoRectangle crect;
 							string str2;
@@ -7350,7 +7352,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						str += exp;
 					}
 					bool twos = (((po.base == BASE_BINARY && po.twos_complement) || (po.base == BASE_HEXADECIMAL && po.hexadecimal_twos_complement)) && m.number().isNegative() && value_str.find(SIGN_MINUS) == string::npos && value_str.find("-") == string::npos);
-					if(po.base != BASE_DECIMAL && (twos || po.base_display != BASE_DISPLAY_ALTERNATIVE || (po.base != BASE_HEXADECIMAL && po.base != BASE_BINARY && po.base != BASE_OCTAL)) && (po.base > 0 || po.base <= BASE_CUSTOM) && po.base <= 36) {
+					if(base != BASE_DECIMAL && (twos || po.base_display != BASE_DISPLAY_ALTERNATIVE || (base != BASE_HEXADECIMAL && base != BASE_BINARY && base != BASE_OCTAL)) && (base > 0 || base <= BASE_CUSTOM) && base <= 36) {
 						if(!multiline) {
 							string str2 = str;
 							TTE(str2)
@@ -7363,7 +7365,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						if(it != number_map.end()) {
 							str_base = number_base_map[(void*) &m.number()];
 						} else {
-							switch(po.base) {
+							switch(base) {
 								case BASE_GOLDEN_RATIO: {str_base = "<i>φ</i>"; break;}
 								case BASE_SUPER_GOLDEN_RATIO: {str_base = "<i>ψ</i>"; break;}
 								case BASE_PI: {str_base = "<i>π</i>"; break;}
@@ -7372,12 +7374,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 								case BASE_UNICODE: {str_base = "Unicode"; break;}
 								case BASE_BIJECTIVE_26: {str_base = "b26"; break;}
 								case BASE_CUSTOM: {str_base = CALCULATOR->customOutputBase().print(CALCULATOR->messagePrintOptions()); break;}
-								case BASE_FP16: {}
-								case BASE_FP32: {}
-								case BASE_FP64: {}
-								case BASE_FP80: {}
-								case BASE_FP128: {str_base = "2"; break;}
-								default: {str_base = i2s(po.base);}
+								default: {str_base = i2s(base);}
 							}
 							if(twos) str_base += '-';
 							number_base_map[(void*) &m.number()] = str_base;
@@ -7388,14 +7385,14 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					}
 					TTE(str)
 					pango_layout_set_markup(layout, str.c_str(), -1);
-					if(max_width > 0 && exp.empty() && ((po.base >= 2 && po.base <= 36 && po.base != BASE_DUODECIMAL) || (po.base == BASE_CUSTOM && CALCULATOR->customOutputBase().isInteger() && CALCULATOR->customOutputBase() <= 62 && CALCULATOR->customOutputBase() >= -62))) {
+					if(max_width > 0 && exp.empty() && ((base >= 2 && base <= 36 && base != BASE_DUODECIMAL) || (base == BASE_CUSTOM && CALCULATOR->customOutputBase().isInteger() && CALCULATOR->customOutputBase() <= 62 && CALCULATOR->customOutputBase() >= -62))) {
 						pango_layout_get_pixel_size(layout, &w, NULL);
 						if(w + wle > max_width) {
 							if(try_i == 1) {
 								str = str_bak;
 								pango_layout_set_markup(layout, str.c_str(), -1);
 								multiline = false;
-								if(po.base != BASE_BINARY) break;
+								if(base != BASE_BINARY) break;
 							} else {
 								str_bak = str;
 								str = "";
@@ -9559,13 +9556,25 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 	return surface;
 }
 
+void set_status_bottom_border_visible(bool b) {
+	gchar *gstr = gtk_css_provider_to_string(statusframe_provider);
+	string status_css = gstr;
+	g_free(gstr);
+	if(b) {
+		gsub("border-bottom-width: 0;", "", status_css);
+	} else {
+		gsub("}", "border-bottom-width: 0;}", status_css);
+	}
+	gtk_css_provider_load_from_data(statusframe_provider, status_css.c_str(), -1, NULL);
+}
+
 void clearresult() {
 	if(minimal_mode && gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")))) {
 		gint w, h;
 		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
 		h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
-		h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator1")));
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator1")));
+		set_status_bottom_border_visible(false);
+		h -= 1;
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
 		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), w, h);
 	}
@@ -10713,7 +10722,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				gint h = -1;
 				gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h);
 				gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), -1, gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled"))));
-				gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator1")));
+				set_status_bottom_border_visible(true);
 				gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
 				while(gtk_events_pending()) gtk_main_iteration();
 				gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), -1, h);
@@ -16944,21 +16953,16 @@ void set_minimal_mode(bool b) {
 			gint h = gtk_widget_get_allocated_height(tabs);
 			if(h > 10) history_height = h;
 		}
-		gint w = 0, h = 1;
-		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
+		gint w = 0;
+		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, NULL);
 		win_width = w;
-		h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
-		h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")));
 		if(expression_is_empty() || !displayed_mstruct) {
-			h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator1")));
-			h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
 			clearresult();
 		}
-		h -= 12;
-		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), minimal_width > 0 ? minimal_width : win_width, h);
+		gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), minimal_width > 0 ? minimal_width : win_width, 1);
 		gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), TRUE);
 		gtk_widget_set_vexpand(resultview, FALSE);
 	} else {
@@ -16975,11 +16979,10 @@ void set_minimal_mode(bool b) {
 		gtk_widget_set_vexpand(resultview, !gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons"))) && !gtk_widget_get_visible(tabs));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
-		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator1")));
+		set_status_bottom_border_visible(true);
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
 		if(history_height > 0 && (gtk_expander_get_expanded(GTK_EXPANDER(expander_history)) || gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) || gtk_expander_get_expanded(GTK_EXPANDER(expander_stack)))) {
 			gdk_threads_add_timeout(500, do_minimal_mode_timeout, NULL);
-
 		}
 		gint h = 1;
 		if(gtk_widget_is_visible(tabs) || gtk_widget_is_visible(keypad)) {
@@ -18515,6 +18518,7 @@ void save_preferences(bool mode) {
 	}
 	if(!clear_history_on_exit) {
 		for(size_t i = 0; i < expression_history.size(); i++) {
+			gsub("\n", " ", expression_history[i]);
 			fprintf(file, "expression_history=%s\n", expression_history[i].c_str());
 		}
 	}
@@ -19818,11 +19822,19 @@ void on_preferences_checkbutton_custom_expression_font_toggled(GtkToggleButton *
 	gint h_old, h_new;
 	gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h_old);
 	if(use_custom_expression_font) {
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
 		gchar *gstr = font_name_to_css(custom_expression_font.c_str(), "textview.view");
+#else
+		gchar *gstr = font_name_to_css(custom_expression_font.c_str();
+#endif
 		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
 		gtk_css_provider_load_from_data(expression_provider, "textview.view {font-size: large;}", -1, NULL);
+#else
+		gtk_css_provider_load_from_data(expression_provider, "* {font-size: large;}", -1, NULL);
+#endif
 	}
 	expression_font_modified();
 	gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h_new);

@@ -92,6 +92,8 @@ void unblock_completion();
 
 gboolean create_menus_etc(gpointer) {
 
+	test_border();
+
 	//create button menus after definitions have been loaded
 	create_button_menus();
 
@@ -123,7 +125,9 @@ gboolean create_menus_etc(gpointer) {
 	update_completion();
 	
 	unblock_completion();
-	
+
+	test_border();
+
 	return FALSE;
 
 }
@@ -181,6 +185,7 @@ void create_application(GtkApplication *app) {
 	gtk_window_set_application(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), app);
 
 	while(gtk_events_pending()) gtk_main_iteration();
+	test_border();
 
 	showing_first_time_message = first_time;
 
@@ -298,6 +303,7 @@ void create_application(GtkApplication *app) {
 	set_custom_buttons();
 	update_custom_buttons();
 	update_accels();
+	test_border();
 	g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 50, create_menus_etc, NULL, NULL);
 
 	if(check_version) {

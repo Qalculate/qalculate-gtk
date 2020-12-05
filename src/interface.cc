@@ -156,7 +156,7 @@ GtkAccelGroup *accel_group;
 
 gint history_scroll_width = 16;
 
-GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider, *app_provider_theme;
+GtkCssProvider *topframe_provider, *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider, *app_provider_theme, *statusframe_provider;
 
 extern bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad, minimal_mode;
 extern bool save_mode_on_exit, save_defs_on_exit, load_global_defs, hyp_is_on, inv_is_on, fetch_exchange_rates_at_startup, clear_history_on_exit;
@@ -217,6 +217,28 @@ extern string fix_history_string(const string &str);
 
 gint compare_categories(gconstpointer a, gconstpointer b) {
 	return strcasecmp((const char*) a, (const char*) b);
+}
+
+bool border_tested = false;
+string topframe_css;
+size_t topframe_border_i = 0;
+size_t topframe_border_l = 0;
+
+void test_border() {
+#ifndef _WIN32
+	if(border_tested) return;
+	GdkWindow *window = gtk_widget_get_window(mainwindow);
+	GdkRectangle rect;
+	gdk_window_get_frame_extents(window, &rect);
+	gint window_border = (rect.width - gtk_widget_get_allocated_width(mainwindow)) / 2;
+	if(window_border > 0) {
+		topframe_css.erase(topframe_border_i, topframe_border_l);
+		gtk_css_provider_load_from_data(topframe_provider, topframe_css.c_str(), -1, NULL);
+		border_tested = true;
+	} else if(rect.x != 0 || rect.y != 0) {
+		border_tested = true;
+	}
+#endif
 }
 
 void set_assumptions_items(AssumptionType at, AssumptionSign as) {
@@ -1278,8 +1300,8 @@ void create_main_window(void) {
 	keypad = GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons"));
 	tabs = GTK_WIDGET(gtk_builder_get_object(main_builder, "tabs"));
 
-	gtk_widget_set_margin_top(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")), 3);
-	gtk_widget_set_margin_bottom(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")), 3);
+	gtk_widget_set_margin_top(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")), 2);
+	gtk_widget_set_margin_bottom(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")), 2);
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
 	gtk_widget_set_margin_end(statuslabel_r, 12);
 	gtk_widget_set_margin_start(statuslabel_l, 9);
@@ -1328,18 +1350,36 @@ void create_main_window(void) {
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnl"))), GTK_STYLE_PROVIDER(box_rpnl_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(app_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
-	GtkCssProvider *topframe_provider = gtk_css_provider_new();
+	topframe_provider = gtk_css_provider_new();
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "topframe"))), GTK_STYLE_PROVIDER(topframe_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	topframe_css = "* {background-color: ";
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
 	GdkRGBA bg_color;
 	gtk_style_context_get_background_color(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, &bg_color);
 	gchar *gstr = gdk_rgba_to_string(&bg_color);
-	gtk_css_provider_load_from_data(topframe_provider, (string("* {background-color: ") + string(gstr) + "; border-left: 0; border-right: 0;}").c_str(), -1, NULL);
+	topframe_css += gstr;
 	g_free(gstr);
 #else
-	gtk_css_provider_load_from_data(topframe_provider, "* {background-color: @theme_base_color; border-left: 0; border-right: 0;}", -1, NULL);
+	topframe_css += "@theme_base_color;";
+#endif
+	topframe_border_i = topframe_css.length();
+
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 18
+	GtkCssProvider *expressionborder_provider = gtk_css_provider_new();
+	gtk_style_context_add_provider(gtk_widget_get_style_context(expressiontext), GTK_STYLE_PROVIDER(expressionborder_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	string border_css = topframe_css; border_css += ";}";
+	gsub("*", "textview.view > border", border_css);
+	gtk_css_provider_load_from_data(expressionborder_provider, border_css.c_str(), -1, NULL);
 #endif
 
+	topframe_css += "; border-left: 0; border-right: 0";
+	topframe_border_l = topframe_css.length() - topframe_border_i;
+	topframe_css += "; border-radius: 0;}";
+	gtk_css_provider_load_from_data(topframe_provider, topframe_css.c_str(), -1, NULL);
+
+	statusframe_provider = gtk_css_provider_new();
+	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusframe"))), GTK_STYLE_PROVIDER(statusframe_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_css_provider_load_from_data(statusframe_provider, topframe_css.c_str(), -1, NULL);
 
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
 #	ifdef _WIN32
@@ -1363,9 +1403,9 @@ void create_main_window(void) {
 	gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")), 12);
 	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")), 12);
 #endif
-	gtk_widget_set_margin_bottom(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")), 6);
-	gtk_widget_set_margin_bottom(tabs, 6);
-	gtk_widget_set_margin_bottom(keypad, 6);
+	gtk_widget_set_margin_bottom(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")), 9);
+	gtk_widget_set_margin_bottom(tabs, 3);
+	gtk_widget_set_margin_bottom(keypad, 3);
 
 	if(visible_keypad & PROGRAMMING_KEYPAD) {
 		gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "programmers_keypad")));
@@ -1408,11 +1448,19 @@ void create_main_window(void) {
 		}
 	}
 	if(use_custom_expression_font) {
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
 		gchar *gstr = font_name_to_css(custom_expression_font.c_str(), "textview.view");
+#else
+		gchar *gstr = font_name_to_css(custom_expression_font.c_str());
+#endif
 		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
 		gtk_css_provider_load_from_data(expression_provider, "textview.view {font-size: large;}", -1, NULL);
+#else
+		gtk_css_provider_load_from_data(expression_provider, "* {font-size: large;}", -1, NULL);
+#endif
 		if(custom_expression_font.empty()) {
 			PangoFontDescription *font_desc;
 			gtk_style_context_get(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
@@ -1448,6 +1496,8 @@ void create_main_window(void) {
 			pango_font_description_free(font_desc);
 		}
 	}
+
+	update_status_text();
 
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 14
 
@@ -1594,7 +1644,7 @@ void create_main_window(void) {
 	if(minimal_mode) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator1")));
+		set_status_bottom_border_visible(false);
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
 		gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), TRUE);
 		gtk_widget_set_vexpand(resultview, FALSE);
@@ -1828,7 +1878,6 @@ void create_main_window(void) {
 	if(history_scroll_width == 0) history_scroll_width = 3;
 	history_scroll_width += 1;
 	gtk_tree_view_append_column(GTK_TREE_VIEW(historyview), history_column);
-	g_signal_connect_after(gtk_builder_get_object(main_builder, "historyscrolled"), "size-allocate", G_CALLBACK(on_history_resize), NULL);
 	g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_historyview_selection_changed), NULL);
 	gtk_tree_view_set_row_separator_func(GTK_TREE_VIEW(historyview), history_row_separator_func, NULL, NULL);
 
@@ -1897,6 +1946,11 @@ void create_main_window(void) {
 	completion_scrolled = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionscrolled"));
 	gtk_widget_set_size_request(gtk_scrolled_window_get_vscrollbar(GTK_SCROLLED_WINDOW(completion_scrolled)), -1, 0);
 	completion_window = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionwindow"));
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 20
+	GtkCssProvider *completion_provider = gtk_css_provider_new();
+	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "completionview"))), GTK_STYLE_PROVIDER(completion_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_css_provider_load_from_data(completion_provider, "* {font-size: medium;}", -1, NULL);
+#endif
 	completion_store = gtk_list_store_new(9, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN, G_TYPE_INT, GDK_TYPE_PIXBUF, G_TYPE_INT, G_TYPE_UINT, G_TYPE_INT);
 	completion_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(completion_store), NULL);
 	gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(completion_filter), 3);
@@ -1987,11 +2041,14 @@ void create_main_window(void) {
 
 	if(remember_position) gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_x, win_y);
 
+	g_signal_connect_after(gtk_builder_get_object(main_builder, "historyscrolled"), "size-allocate", G_CALLBACK(on_history_resize), NULL);
+
 	gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 18
+	set_expression_size_request();
+#endif
 	if(history_height > 0) gtk_widget_set_size_request(tabs, -1, -1);
-
-	update_status_text();
 
 }
 
