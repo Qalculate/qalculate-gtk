@@ -133,6 +133,11 @@ enum {
 	PLOTLEGEND_MENU_OUTSIDE
 };
 
+#ifdef _WIN32
+void create_systray_icon();
+void destroy_systray_icon();
+#endif
+bool has_systray_icon();
 void test_border(void);
 void set_custom_buttons(void);
 void update_custom_buttons(int index = -1);

@@ -179,6 +179,7 @@ extern bool complex_angle_form;
 extern bool check_version;
 extern int max_plot_time;
 extern int default_fraction_fraction;
+extern bool use_systray_icon, hide_on_startup;
 
 extern string nbases_error_color, nbases_warning_color;
 
@@ -220,9 +221,72 @@ gint compare_categories(gconstpointer a, gconstpointer b) {
 }
 
 bool border_tested = false;
-string topframe_css;
-size_t topframe_border_i = 0;
-size_t topframe_border_l = 0;
+
+#ifdef _WIN32
+#	include <gdk/gdkwin32.h>
+#	define WIN_TRAY_ICON_ID 1000
+#	define WIN_TRAY_ICON_MESSAGE WM_APP + WIN_TRAY_ICON_ID
+static NOTIFYICONDATA nid;
+static HWND hwnd = NULL;
+
+INT_PTR CALLBACK tray_window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+	if(message == WIN_TRAY_ICON_MESSAGE && (lParam == WM_LBUTTONDBLCLK || lParam == WM_LBUTTONUP)) {
+		gtk_widget_show(mainwindow);
+		gtk_window_present(GTK_WINDOW(mainwindow));
+	}
+	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+void destroy_systray_icon() {
+	if(hwnd == NULL) return;
+	Shell_NotifyIcon(NIM_DELETE, &nid);
+	DestroyWindow(hwnd);
+	hwnd = NULL;
+}
+void create_systray_icon() {
+
+	if(hwnd != NULL) return;
+
+	WNDCLASSEX wcex;
+	TCHAR wname[32];
+	strcpy(wname, "QalculateTrayWin");
+	wcex.cbSize = sizeof(WNDCLASSEX);
+
+	wcex.style = 0;
+	wcex.lpfnWndProc = (WNDPROC) tray_window_proc;
+	wcex.cbClsExtra = 0;
+	wcex.cbWndExtra = 0;
+	wcex.hInstance = GetModuleHandle(NULL);
+	wcex.hIcon = NULL;
+	wcex.hCursor = NULL,
+	wcex.hbrBackground = NULL;
+	wcex.lpszMenuName = NULL;
+	wcex.lpszClassName = wname;
+	wcex.hIconSm = NULL;
+
+	if(RegisterClassEx(&wcex)) {
+		hwnd = CreateWindow(wname, "", 0, 0, 0, 0, 0, (HWND) gdk_win32_window_get_handle(gtk_widget_get_window(mainwindow)), NULL, GetModuleHandle(NULL), 0);
+	}
+	if(hwnd != NULL) {
+		UpdateWindow(hwnd);
+		memset(&nid, 0, sizeof(nid));
+		nid.cbSize = sizeof(NOTIFYICONDATA);
+		nid.hWnd = hwnd;
+		nid.uID = WIN_TRAY_ICON_ID;
+		nid.uFlags = NIF_ICON | NIF_MESSAGE;
+		nid.uCallbackMessage = WIN_TRAY_ICON_MESSAGE;
+		strcpy(nid.szTip, "Qalculate!");
+		nid.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(100));
+		Shell_NotifyIcon(NIM_ADD, &nid);
+	}
+}
+bool has_systray_icon() {
+	return hwnd != NULL;
+}
+#else
+bool has_systray_icon() {
+	return false;
+}
+#endif
 
 void test_border() {
 #ifndef _WIN32
@@ -232,7 +296,11 @@ void test_border() {
 	gdk_window_get_frame_extents(window, &rect);
 	gint window_border = (rect.width - gtk_widget_get_allocated_width(mainwindow)) / 2;
 	if(window_border > 0) {
-		topframe_css.erase(topframe_border_i, topframe_border_l);
+		gchar *gstr = gtk_css_provider_to_string(topframe_provider);
+		string topframe_css = gstr;
+		g_free(gstr);
+		gsub("border-left-width: 0;", "", topframe_css);
+		gsub("border-right-width: 0;", "", topframe_css);
 		gtk_css_provider_load_from_data(topframe_provider, topframe_css.c_str(), -1, NULL);
 		border_tested = true;
 	} else if(rect.x != 0 || rect.y != 0) {
@@ -1301,7 +1369,7 @@ void create_main_window(void) {
 	tabs = GTK_WIDGET(gtk_builder_get_object(main_builder, "tabs"));
 
 	gtk_widget_set_margin_top(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")), 2);
-	gtk_widget_set_margin_bottom(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")), 2);
+	gtk_widget_set_margin_bottom(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")), 3);
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
 	gtk_widget_set_margin_end(statuslabel_r, 12);
 	gtk_widget_set_margin_start(statuslabel_l, 9);
@@ -1352,7 +1420,7 @@ void create_main_window(void) {
 
 	topframe_provider = gtk_css_provider_new();
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "topframe"))), GTK_STYLE_PROVIDER(topframe_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	topframe_css = "* {background-color: ";
+	string topframe_css = "* {background-color: ";
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
 	GdkRGBA bg_color;
 	gtk_style_context_get_background_color(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, &bg_color);
@@ -1362,8 +1430,6 @@ void create_main_window(void) {
 #else
 	topframe_css += "@theme_base_color;";
 #endif
-	topframe_border_i = topframe_css.length();
-
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 18
 	GtkCssProvider *expressionborder_provider = gtk_css_provider_new();
 	gtk_style_context_add_provider(gtk_widget_get_style_context(expressiontext), GTK_STYLE_PROVIDER(expressionborder_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
@@ -1371,12 +1437,8 @@ void create_main_window(void) {
 	gsub("*", "textview.view > border", border_css);
 	gtk_css_provider_load_from_data(expressionborder_provider, border_css.c_str(), -1, NULL);
 #endif
-
-	topframe_css += "; border-left: 0; border-right: 0";
-	topframe_border_l = topframe_css.length() - topframe_border_i;
-	topframe_css += "; border-radius: 0;}";
+	topframe_css += "; border-left-width: 0; border-right-width: 0; border-radius: 0;}";
 	gtk_css_provider_load_from_data(topframe_provider, topframe_css.c_str(), -1, NULL);
-
 	statusframe_provider = gtk_css_provider_new();
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusframe"))), GTK_STYLE_PROVIDER(statusframe_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_css_provider_load_from_data(statusframe_provider, topframe_css.c_str(), -1, NULL);
@@ -1457,9 +1519,9 @@ void create_main_window(void) {
 		g_free(gstr);
 	} else {
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
-		gtk_css_provider_load_from_data(expression_provider, "textview.view {font-size: large;}", -1, NULL);
+		gtk_css_provider_load_from_data(expression_provider, "textview.view {font-size: larger;}", -1, NULL);
 #else
-		gtk_css_provider_load_from_data(expression_provider, "* {font-size: large;}", -1, NULL);
+		gtk_css_provider_load_from_data(expression_provider, "* {font-size: larger;}", -1, NULL);
 #endif
 		if(custom_expression_font.empty()) {
 			PangoFontDescription *font_desc;
@@ -1474,8 +1536,8 @@ void create_main_window(void) {
 		gtk_css_provider_load_from_data(statuslabel_r_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
-		gtk_css_provider_load_from_data(statuslabel_l_provider, "* {font-size: small;}", -1, NULL);
-		gtk_css_provider_load_from_data(statuslabel_r_provider, "* {font-size: small;}", -1, NULL);
+		gtk_css_provider_load_from_data(statuslabel_l_provider, "* {font-size: 90%;}", -1, NULL);
+		gtk_css_provider_load_from_data(statuslabel_r_provider, "* {font-size: 90%;}", -1, NULL);
 		if(custom_status_font.empty()) {
 			PangoFontDescription *font_desc;
 			gtk_style_context_get(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
@@ -2050,6 +2112,11 @@ void create_main_window(void) {
 #endif
 	if(history_height > 0) gtk_widget_set_size_request(tabs, -1, -1);
 
+#ifdef _WIN32
+	if(use_systray_icon) create_systray_icon();
+#endif
+	if(hide_on_startup) gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
+
 }
 
 GtkWidget* get_functions_dialog(void) {
@@ -2448,6 +2515,13 @@ GtkWidget* get_preferences_dialog(void) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_dark_theme")), use_dark_theme > 0);
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_dark_theme")));
 #	endif
+#endif
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_use_systray_icon")), use_systray_icon);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_hide_on_startup")), hide_on_startup);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_hide_on_startup")), use_systray_icon);
+#ifdef _WIN32
+		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_use_systray_icon")));
+		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_hide_on_startup")));
 #endif
 		gtk_builder_connect_signals(preferences_builder, NULL);
 

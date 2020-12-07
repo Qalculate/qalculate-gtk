@@ -639,8 +639,8 @@
     <property name="icon-name">qalculate</property>
     <signal name="button-press-event" handler="on_main_window_button_press_event" swapped="no"/>
     <signal name="configure-event" handler="on_configure_event" swapped="no"/>
-    <signal name="delete-event" handler="on_gcalc_exit" swapped="no"/>
-    <signal name="destroy-event" handler="on_gcalc_exit" swapped="no"/>
+    <signal name="delete-event" handler="on_main_window_close" swapped="no"/>
+    <signal name="destroy-event" handler="on_main_window_close" swapped="no"/>
     <signal name="focus-in-event" handler="on_main_window_focus_in_event" swapped="no"/>
     <signal name="key-press-event" handler="on_key_press_event" swapped="no"/>
     <child>
@@ -2738,6 +2738,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                               <object class="GtkLabel" id="label_status_left">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
+                                <property name="valign">center</property>
                                 <property name="hexpand">True</property>
                                 <property name="label">&lt;span size="small"&gt; &lt;/span&gt;</property>
                                 <property name="use-markup">True</property>
@@ -2761,6 +2762,7 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                                   <object class="GtkLabel" id="label_status_right">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
+                                    <property name="valign">center</property>
                                     <property name="label">&lt;span size="small"&gt;STATUS&lt;/span&gt;</property>
                                     <property name="use-markup">True</property>
                                     <property name="justify">right</property>

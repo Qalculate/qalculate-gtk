@@ -281,6 +281,8 @@ bool rpn_mode, rpn_keys;
 bool adaptive_interval_display;
 bool use_e_notation;
 
+bool use_systray_icon = false, hide_on_startup = false;
+
 extern Thread *view_thread, *command_thread;
 bool exit_in_progress = false, command_aborted = false, display_aborted = false, result_too_long = false;
 
@@ -1593,7 +1595,7 @@ void set_unicode_buttons() {
 			else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_divide")), DIVISION);
 		}
 
-		if(can_display_unicode_string_function("➞", (void*) gtk_builder_get_object(main_builder, "button_fraction"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_to")), "x➞");
+		if(can_display_unicode_string_function("➞", (void*) gtk_builder_get_object(main_builder, "button_fraction"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_to")), "x ➞");
 		else gtk_label_set_label(GTK_LABEL(gtk_builder_get_object(main_builder, "label_to")), _("to"));
 		
 		if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(main_builder, "button_fraction"))) gtk_button_set_label(GTK_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), "a " SIGN_DIVISION_SLASH " b");
@@ -17256,6 +17258,9 @@ void load_preferences() {
 	evalops.interval_calculation = INTERVAL_CALCULATION_VARIANCE_FORMULA;
 	b_decimal_comma = -1;
 
+	use_systray_icon = false;
+	hide_on_startup = false;
+
 #ifdef _WIN32
 	check_version = true;
 #else
@@ -17444,6 +17449,12 @@ void load_preferences() {
 				} else if(svar == "y") {
 					win_y = v;
 					remember_position = true;
+#ifdef _WIN32
+				} else if(svar == "use_system_tray_icon") {
+					use_systray_icon = v;
+#endif
+				} else if(svar == "hide_on_startup") {
+					hide_on_startup = v;
 				} else if(svar == "variables_width") {
 					variables_width = v;
 				} else if(svar == "variables_height") {
@@ -18396,6 +18407,13 @@ void save_preferences(bool mode) {
 		fprintf(file, "x=%i\n", win_x);
 		fprintf(file, "y=%i\n", win_y);
 	}
+#ifdef _WIN32
+	fprintf(file, "use_system_tray_icon=%i\n", use_systray_icon);
+	fprintf(file, "hide_on_startup=%i\n", hide_on_startup);
+#else
+	if(hide_on_startup) fprintf(file, "hide_on_startup=%i\n", hide_on_startup);
+#endif
+	if(variables_height > -1) fprintf(file, "variables_height=%i\n", variables_height);
 	if(variables_width > -1) fprintf(file, "variables_width=%i\n", variables_width);
 	if(variables_height > -1) fprintf(file, "variables_height=%i\n", variables_height);
 	if(variables_position > -1) fprintf(file, "variables_panel_position=%i\n", variables_position);
@@ -19509,10 +19527,21 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 	}
 	gtk_widget_hide(completion_window);
 	unblock_completion();
+	if(!item && !prefix && editing_to_expression && gtk_text_iter_is_end(&ipos)) {
+		execute_expression();
+	}
 }
 
 void on_menu_item_quit_activate(GtkMenuItem*, gpointer user_data) {
 	on_gcalc_exit(NULL, NULL, user_data);
+}
+
+void on_main_window_close(GtkWidget *w, GdkEvent *event, gpointer user_data) {
+	if(has_systray_icon()) {
+		gtk_widget_hide(w);
+	} else {
+		on_gcalc_exit(w, event, user_data);
+	}
 }
 
 /*
@@ -19797,6 +19826,17 @@ void on_preferences_checkbutton_dark_theme_toggled(GtkToggleButton *w, gpointer)
 	else gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/Adwaita/gtk-contained.css");
 #endif
 }
+void on_preferences_checkbutton_use_systray_icon_toggled(GtkToggleButton *w, gpointer) {
+#ifdef _WIN32
+	use_systray_icon = gtk_toggle_button_get_active(w);
+	if(use_systray_icon) create_systray_icon();
+	else destroy_systray_icon();
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_hide_on_startup")), use_systray_icon);
+#endif
+}
+void on_preferences_checkbutton_hide_on_startup_toggled(GtkToggleButton *w, gpointer) {
+	hide_on_startup = gtk_toggle_button_get_active(w);
+}
 void on_preferences_checkbutton_custom_result_font_toggled(GtkToggleButton *w, gpointer) {
 	use_custom_result_font = gtk_toggle_button_get_active(w);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_result_font")), use_custom_result_font);
@@ -19831,9 +19871,9 @@ void on_preferences_checkbutton_custom_expression_font_toggled(GtkToggleButton *
 		g_free(gstr);
 	} else {
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
-		gtk_css_provider_load_from_data(expression_provider, "textview.view {font-size: large;}", -1, NULL);
+		gtk_css_provider_load_from_data(expression_provider, "textview.view {font-size: larger;}", -1, NULL);
 #else
-		gtk_css_provider_load_from_data(expression_provider, "* {font-size: large;}", -1, NULL);
+		gtk_css_provider_load_from_data(expression_provider, "* {font-size: larger;}", -1, NULL);
 #endif
 	}
 	expression_font_modified();
@@ -19853,8 +19893,8 @@ void on_preferences_checkbutton_custom_status_font_toggled(GtkToggleButton *w, g
 		gtk_css_provider_load_from_data(statuslabel_r_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
-		gtk_css_provider_load_from_data(statuslabel_l_provider, "* {font-size: small;}", -1, NULL);
-		gtk_css_provider_load_from_data(statuslabel_r_provider, "* {font-size: small;}", -1, NULL);
+		gtk_css_provider_load_from_data(statuslabel_l_provider, "* {font-size: 90%;}", -1, NULL);
+		gtk_css_provider_load_from_data(statuslabel_r_provider, "* {font-size: 90%;}", -1, NULL);
 	}
 	set_operator_symbols();
 	while(gtk_events_pending()) gtk_main_iteration();
@@ -21505,6 +21545,9 @@ void do_completion() {
 													else if(icmp == 2) prefix = p3;
 													else if(icmp == 3) prefix = p4;
 													i_match = str.length() - cmpstr->length();
+												} else if(b_match > 1 && !editing_to_expression && item->isHidden() && str.length() == 1) {
+													b_match = 4;
+													i_match = name_i;
 												}
 												break;
 											}
@@ -21513,7 +21556,7 @@ void do_completion() {
 								}
 							}
 						}
-						if(item && (!cu || (exp == 1 && cu->countUnits() == 1)) && b_match == 2 && item->countNames() > 1) {
+						if(item && ((!cu && b_match >= 2) || (exp == 1 && cu->countUnits() == 1 && b_match == 2)) && item->countNames() > 1) {
 							for(size_t icmp = 0; icmp < 4 && b_match > 1; icmp++) {
 								if(icmp == 1 && (item->type() != TYPE_UNIT || str2.empty() || (cu && !prefix) || (!cu && !((Unit*) item)->useWithPrefixesByDefault()))) break;
 								if(cu && prefix) {
@@ -21554,7 +21597,6 @@ void do_completion() {
 						b_match = 0;
 						i_match = 0;
 					}
-					if(b_match > 0 && b_match < 4 && !editing_to_expression && item && item->isHidden() && str.length() == 1) b_match = 4;
 					if(b_match) {
 						gchar *gstr;
 						gtk_tree_model_get(GTK_TREE_MODEL(completion_store), &iter, 0, &gstr, -1);
@@ -22647,16 +22689,13 @@ void on_button_ac_clicked(GtkButton*, gpointer) {
 void on_button_to_clicked(GtkButton*, gpointer) {
 	if(b_busy) return;
 	string to_str;
-	if(can_display_unicode_string_function("➞", (void*) expressiontext)) {
+	GtkTextIter istart, iend;
+	gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
+	gtk_text_buffer_select_range(expressionbuffer, &iend, &iend);
+	if(printops.use_unicode_signs && can_display_unicode_string_function("➞", (void*) expressiontext)) {
 		to_str = "➞";
 	} else {
-		GtkTextIter istart, iend;
-		if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
-			gtk_text_buffer_get_bounds(expressionbuffer, &istart, &iend);
-			gtk_text_buffer_select_range(expressionbuffer, &iend, &iend);
-		}
 		gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
-		gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
 		gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &istart, &iend, FALSE);
 		to_str = CALCULATOR->localToString();
 		remove_blank_ends(to_str);
@@ -22664,11 +22703,6 @@ void on_button_to_clicked(GtkButton*, gpointer) {
 		if(strlen(gstr) > 0 && gstr[strlen(gstr) - 1] != ' ') to_str.insert(0, " ");
 		g_free(gstr);
 	}
-	block_completion();
-	add_to_undo = false;
-	gtk_text_buffer_delete_selection(expressionbuffer, FALSE, TRUE);
-	add_to_undo = true;
-	unblock_completion();
 	gtk_text_buffer_insert_at_cursor(expressionbuffer, to_str.c_str(), -1);
 	if(!gtk_widget_is_focus(expressiontext)) {
 		gtk_widget_grab_focus(expressiontext);

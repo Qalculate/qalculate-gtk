@@ -1,70 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.36.0 -->
+<!-- Generated with glade 3.38.1 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkAdjustment" id="adjustment_completion">
     <property name="lower">1</property>
     <property name="upper">10</property>
     <property name="value">1</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">1</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">1</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_completion2">
     <property name="lower">1</property>
     <property name="upper">10</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">1</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">1</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_completion_delay">
     <property name="upper">10000</property>
-    <property name="step_increment">100</property>
-    <property name="page_increment">1000</property>
+    <property name="step-increment">100</property>
+    <property name="page-increment">1000</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_expression_lines">
     <property name="lower">2</property>
     <property name="upper">20</property>
     <property name="value">3</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_plot_time">
     <property name="lower">1</property>
     <property name="upper">10000</property>
     <property name="value">5</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
   </object>
   <object class="GtkAdjustment" id="preferences_update_exchange_rates_adjustment">
     <property name="lower">-1</property>
     <property name="upper">100</property>
     <property name="value">-1</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">7</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">7</property>
   </object>
   <object class="GtkDialog" id="preferences_dialog">
-    <property name="can_focus">False</property>
-    <property name="border_width">6</property>
+    <property name="can-focus">False</property>
+    <property name="border-width">6</property>
     <property name="title" translatable="yes">Preferences</property>
     <property name="resizable">False</property>
-    <property name="type_hint">dialog</property>
+    <property name="type-hint">dialog</property>
     <signal name="delete-event" handler="gtk_widget_hide" swapped="no"/>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox4">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="dialog-action_area4">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
+            <property name="can-focus">False</property>
+            <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="preferences_button_close">
                 <property name="label" translatable="yes">_Close</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_underline">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="use-underline">True</property>
                 <signal name="clicked" handler="gtk_widget_hide" object="preferences_dialog" swapped="yes"/>
               </object>
               <packing>
@@ -77,32 +77,32 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="pack_type">end</property>
+            <property name="pack-type">end</property>
             <property name="position">2</property>
           </packing>
         </child>
         <child>
           <object class="GtkNotebook" id="preferences_tabs">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="border_width">6</property>
+            <property name="can-focus">True</property>
+            <property name="border-width">6</property>
             <child>
               <object class="GtkBox" id="box_general">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="valign">start</property>
-                <property name="border_width">18</property>
+                <property name="border-width">18</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">12</property>
                 <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_save_mode">
                     <property name="label" translatable="yes">Save mode on exit</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If the mode of the calculator shall be restored</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If the mode of the calculator shall be restored</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_save_mode_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -115,11 +115,11 @@
                   <object class="GtkCheckButton" id="preferences_checkbutton_save_defs">
                     <property name="label" translatable="yes">Save definitions on exit</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If changes to functions, units and variables shall be saved automatically</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If changes to functions, units and variables shall be saved automatically</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_save_defs_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -132,10 +132,10 @@
                   <object class="GtkCheckButton" id="preferences_checkbutton_clear_history">
                     <property name="label" translatable="yes">Clear history on exit</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_clear_history_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -148,10 +148,10 @@
                   <object class="GtkCheckButton" id="preferences_checkbutton_ignore_locale">
                     <property name="label" translatable="yes">Ignore system language (requires restart)</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_ignore_locale_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -164,11 +164,11 @@
                   <object class="GtkCheckButton" id="preferences_checkbutton_unicode_signs">
                     <property name="label" translatable="yes">Enable Unicode symbols</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">Disable this if you have problems with some fancy characters</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">Disable this if you have problems with some fancy characters</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_unicode_signs_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -181,10 +181,10 @@
                   <object class="GtkCheckButton" id="preferences_checkbutton_check_version">
                     <property name="label" translatable="yes">Notify when a new version is available</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_check_version_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -197,13 +197,13 @@
                   <object class="GtkCheckButton" id="preferences_checkbutton_allow_multiple_instances">
                     <property name="label" translatable="yes">Allow multiple instances</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">Allow multiple instances of the Qalculate! main window to be open at the same time. 
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">Allow multiple instances of the Qalculate! main window to be open at the same time. 
 
 Note that only the mode, history and definitions of the last closed instance will be saved.</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_allow_multiple_instances_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -216,10 +216,10 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkCheckButton" id="preferences_checkbutton_remember_position">
                     <property name="label" translatable="yes">Remember window position</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_remember_position_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -229,13 +229,14 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="preferences_checkbutton_dark_theme">
-                    <property name="label" translatable="yes">Use dark theme</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
-                    <signal name="toggled" handler="on_preferences_checkbutton_dark_theme_toggled" swapped="no"/>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_use_systray_icon">
+                    <property name="label" translatable="yes">Use system tray icon</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">Hides the application in the system tray when the main window is closed</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_use_systray_icon_toggled" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -244,14 +245,44 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_hide_on_startup">
+                    <property name="label" translatable="yes">Hide on startup</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_hide_on_startup_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">9</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_dark_theme">
+                    <property name="label" translatable="yes">Use dark theme</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_dark_theme_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">10</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkBox" id="box_window_title">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="spacing">12</property>
                     <child>
                       <object class="GtkLabel" id="label_window_title">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="halign">start</property>
                         <property name="label" translatable="yes">Window title</property>
                       </object>
@@ -264,7 +295,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <child>
                       <object class="GtkComboBoxText" id="preferences_combo_title">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <items>
                           <item translatable="yes">Application name</item>
                           <item translatable="yes">Result</item>
@@ -284,18 +315,18 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">9</property>
+                    <property name="position">11</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkBox" id="box_expression_lines">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="spacing">12</property>
                     <child>
                       <object class="GtkLabel" id="label_expression_lines">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="halign">start</property>
                         <property name="label" translatable="yes">Number of expression lines</property>
                       </object>
@@ -308,9 +339,9 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <child>
                       <object class="GtkSpinButton" id="preferences_expression_lines_spin_button">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
+                        <property name="can-focus">True</property>
                         <property name="adjustment">adjustment_expression_lines</property>
-                        <property name="snap_to_ticks">True</property>
+                        <property name="snap-to-ticks">True</property>
                         <property name="numeric">True</property>
                         <property name="value">3</property>
                         <signal name="value-changed" handler="on_preferences_expression_lines_spin_button_value_changed" swapped="no"/>
@@ -325,54 +356,20 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">10</property>
+                    <property name="position">12</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_display_expression_status">
                     <property name="label" translatable="yes">Display expression status</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If as-you-type expression status shall be displayed below the expression entry</property>
-                    <property name="use_underline">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If as-you-type expression status shall be displayed below the expression entry</property>
+                    <property name="use-underline">True</property>
                     <property name="active">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_display_expression_status_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">11</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="preferences_checkbutton_persistent_keypad">
-                    <property name="label" translatable="yes">Persistent keypad</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
-                    <signal name="toggled" handler="on_preferences_checkbutton_persistent_keypad_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">12</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="preferences_checkbutton_rpn_keys">
-                    <property name="label" translatable="yes">Use keyboard keys for RPN</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">Use keyboard operator keys for RPN operations (+-*/^).</property>
-                    <property name="use_underline">True</property>
-                    <property name="active">True</property>
-                    <property name="draw_indicator">True</property>
-                    <signal name="toggled" handler="on_preferences_checkbutton_rpn_keys_toggled" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -381,16 +378,14 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="preferences_checkbutton_caret_as_xor">
-                    <property name="label" translatable="yes">Use caret for bitwise XOR</property>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_persistent_keypad">
+                    <property name="label" translatable="yes">Persistent keypad</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">Input XOR (⊻) using caret (^) on keyboard (otherwise use Ctrl+^). The exponentiation operator (^) can always be input using Ctrl+*.</property>
-                    <property name="use_underline">True</property>
-                    <property name="active">True</property>
-                    <property name="draw_indicator">True</property>
-                    <signal name="toggled" handler="on_preferences_checkbutton_caret_as_xor_toggled" swapped="no"/>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_persistent_keypad_toggled" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -399,14 +394,50 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_rpn_keys">
+                    <property name="label" translatable="yes">Use keyboard keys for RPN</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">Use keyboard operator keys for RPN operations (+-*/^).</property>
+                    <property name="use-underline">True</property>
+                    <property name="active">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_rpn_keys_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">15</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_caret_as_xor">
+                    <property name="label" translatable="yes">Use caret for bitwise XOR</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">Input XOR (⊻) using caret (^) on keyboard (otherwise use Ctrl+^). The exponentiation operator (^) can always be input using Ctrl+*.</property>
+                    <property name="use-underline">True</property>
+                    <property name="active">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_caret_as_xor_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">16</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkBox" id="box_expression_lines1">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="spacing">12</property>
                     <child>
                       <object class="GtkLabel" id="label_plot_time">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="halign">start</property>
                         <property name="label" translatable="yes">Time limit for plot</property>
                       </object>
@@ -419,10 +450,10 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <child>
                       <object class="GtkSpinButton" id="preferences_plot_time_spin_button">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="width_chars">15</property>
+                        <property name="can-focus">True</property>
+                        <property name="width-chars">15</property>
                         <property name="adjustment">adjustment_plot_time</property>
-                        <property name="snap_to_ticks">True</property>
+                        <property name="snap-to-ticks">True</property>
                         <property name="value">5</property>
                         <signal name="input" handler="on_preferences_plot_time_spin_button_input" swapped="no"/>
                         <signal name="output" handler="on_preferences_plot_time_spin_button_output" swapped="no"/>
@@ -438,7 +469,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">15</property>
+                    <property name="position">17</property>
                   </packing>
                 </child>
               </object>
@@ -446,30 +477,30 @@ Note that only the mode, history and definitions of the last closed instance wil
             <child type="tab">
               <object class="GtkLabel" id="label_general">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">General</property>
               </object>
               <packing>
-                <property name="tab_fill">False</property>
+                <property name="tab-fill">False</property>
               </packing>
             </child>
             <child>
               <object class="GtkBox" id="box_numbers">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="valign">start</property>
-                <property name="border_width">18</property>
+                <property name="border-width">18</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_twos_complement">
                     <property name="label" translatable="yes">Binary two's complement representation</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If two's complement representation shall be used for negative binary numbers.</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If two's complement representation shall be used for negative binary numbers.</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_twos_complement_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -482,11 +513,11 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkCheckButton" id="preferences_checkbutton_hexadecimal_twos_complement">
                     <property name="label" translatable="yes">Hexadecimal two's complement representation</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If two's complement representation shall be used for negative hexadecimal numbers.</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If two's complement representation shall be used for negative hexadecimal numbers.</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_hexadecimal_twos_complement_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -499,11 +530,11 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkCheckButton" id="preferences_checkbutton_lower_case_numbers">
                     <property name="label" translatable="yes">Use lower case letters in non-decimal numbers</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If lower case letters should be used in numbers with non-decimal base</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If lower case letters should be used in numbers with non-decimal base</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_lower_case_numbers_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -516,11 +547,11 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkCheckButton" id="preferences_checkbutton_alternative_base_prefixes">
                     <property name="label" translatable="yes">Alternative base prefixes</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If hexadecimal numbers shall be displayed with "0x0" and binary numbers with "0b00" as prefixes</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If hexadecimal numbers shall be displayed with "0x0" and binary numbers with "0b00" as prefixes</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_alternative_base_prefixes_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -533,12 +564,12 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkCheckButton" id="preferences_checkbutton_spell_out_logical_operators">
                     <property name="label" translatable="yes">Spell out logical operators</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If logical and/or shall be displayed as "&amp;&amp;"/"||" or "and"/"or"</property>
-                    <property name="margin_top">12</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If logical and/or shall be displayed as "&amp;&amp;"/"||" or "and"/"or"</property>
+                    <property name="margin-top">12</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_spell_out_logical_operators_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -550,19 +581,19 @@ Note that only the mode, history and definitions of the last closed instance wil
                 <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_e_notation">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If "e" shall be used instead of "E" in numbers</property>
-                    <property name="margin_top">12</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If "e" shall be used instead of "E" in numbers</property>
+                    <property name="margin-top">12</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_e_notation_toggled" swapped="no"/>
                     <child>
                       <object class="GtkLabel" id="label_e_notation">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Use E-notation instead of 10&lt;sup&gt;&lt;i&gt;n&lt;/i&gt;&lt;/sup&gt;</property>
-                        <property name="use_markup">True</property>
+                        <property name="use-markup">True</property>
                         <property name="justify">center</property>
                       </object>
                     </child>
@@ -577,11 +608,11 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkCheckButton" id="preferences_checkbutton_lower_case_e">
                     <property name="label" translatable="yes">Use lower case "e" (as in 1e10)</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If "e" shall be used instead of "E" in numbers</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If "e" shall be used instead of "E" in numbers</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_lower_case_e_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -594,12 +625,12 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkCheckButton" id="preferences_checkbutton_imaginary_j">
                     <property name="label" translatable="yes">Use 'j' as imaginary unit</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">Use 'j' (instead of 'i') as default symbol for the imaginary unit, and place it in front the imaginary part.</property>
-                    <property name="margin_top">12</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">Use 'j' (instead of 'i') as default symbol for the imaginary unit, and place it in front the imaginary part.</property>
+                    <property name="margin-top">12</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_imaginary_j_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -612,12 +643,12 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkCheckButton" id="preferences_checkbutton_decimal_comma">
                     <property name="label" translatable="yes">Use comma as decimal separator</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">Allow dots, '.',  to be used as thousands separator instead of as an alternative decimal sign</property>
-                    <property name="margin_top">12</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">Allow dots, '.',  to be used as thousands separator instead of as an alternative decimal sign</property>
+                    <property name="margin-top">12</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_decimal_comma_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -630,11 +661,11 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkCheckButton" id="preferences_checkbutton_comma_as_separator">
                     <property name="label" translatable="yes">Ignore comma in numbers</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">Allow commas, ',',  to be used as thousands separator instead of as an function argument separator</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">Allow commas, ',',  to be used as thousands separator instead of as an function argument separator</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_comma_as_separator_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -647,11 +678,11 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkCheckButton" id="preferences_checkbutton_dot_as_separator">
                     <property name="label" translatable="yes">Ignore dots in numbers</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">Allow dots, '.',  to be used as thousands separator instead of as an alternative decimal sign</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">Allow dots, '.',  to be used as thousands separator instead of as an alternative decimal sign</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_dot_as_separator_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -661,39 +692,40 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
+                  <!-- n-columns=3 n-rows=4 -->
                   <object class="GtkGrid" id="grid_groupsign">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="margin_top">12</property>
-                    <property name="row_spacing">12</property>
-                    <property name="column_spacing">12</property>
+                    <property name="can-focus">False</property>
+                    <property name="margin-top">12</property>
+                    <property name="row-spacing">12</property>
+                    <property name="column-spacing">12</property>
                     <child>
                       <object class="GtkLabel" id="preferences_label_digit_grouping">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="halign">start</property>
                         <property name="label" translatable="yes">Digit grouping</property>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">0</property>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">0</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkBox" id="hbox3">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="halign">start</property>
                         <property name="spacing">6</property>
                         <child>
                           <object class="GtkRadioButton" id="preferences_radiobutton_digit_grouping_none">
                             <property name="label" translatable="yes">off</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
                             <property name="active">True</property>
-                            <property name="draw_indicator">True</property>
+                            <property name="draw-indicator">True</property>
                             <signal name="toggled" handler="on_preferences_radiobutton_digit_grouping_none_toggled" swapped="no"/>
                           </object>
                           <packing>
@@ -706,10 +738,10 @@ Note that only the mode, history and definitions of the last closed instance wil
                           <object class="GtkRadioButton" id="preferences_radiobutton_digit_grouping_standard">
                             <property name="label" translatable="yes">standard</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
-                            <property name="draw_indicator">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
+                            <property name="draw-indicator">True</property>
                             <property name="group">preferences_radiobutton_digit_grouping_none</property>
                             <signal name="toggled" handler="on_preferences_radiobutton_digit_grouping_standard_toggled" swapped="no"/>
                           </object>
@@ -723,10 +755,10 @@ Note that only the mode, history and definitions of the last closed instance wil
                           <object class="GtkRadioButton" id="preferences_radiobutton_digit_grouping_locale">
                             <property name="label" translatable="yes">local</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
-                            <property name="draw_indicator">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
+                            <property name="draw-indicator">True</property>
                             <property name="group">preferences_radiobutton_digit_grouping_none</property>
                             <signal name="toggled" handler="on_preferences_radiobutton_digit_grouping_locale_toggled" swapped="no"/>
                           </object>
@@ -738,26 +770,26 @@ Note that only the mode, history and definitions of the last closed instance wil
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">0</property>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">0</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkLabel" id="preferences_label_multi_sign">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="halign">start</property>
                         <property name="label" translatable="yes">Multiplication sign</property>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">3</property>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">3</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkBox" id="hbox1">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="halign">start</property>
                         <property name="spacing">6</property>
                         <property name="homogeneous">True</property>
@@ -765,11 +797,11 @@ Note that only the mode, history and definitions of the last closed instance wil
                           <object class="GtkRadioButton" id="preferences_radiobutton_dot">
                             <property name="label">.</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
                             <property name="active">True</property>
-                            <property name="draw_indicator">True</property>
+                            <property name="draw-indicator">True</property>
                             <signal name="toggled" handler="on_preferences_radiobutton_dot_toggled" swapped="no"/>
                           </object>
                           <packing>
@@ -782,10 +814,10 @@ Note that only the mode, history and definitions of the last closed instance wil
                           <object class="GtkRadioButton" id="preferences_radiobutton_ex">
                             <property name="label">x</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
-                            <property name="draw_indicator">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
+                            <property name="draw-indicator">True</property>
                             <property name="group">preferences_radiobutton_dot</property>
                             <signal name="toggled" handler="on_preferences_radiobutton_ex_toggled" swapped="no"/>
                           </object>
@@ -799,10 +831,10 @@ Note that only the mode, history and definitions of the last closed instance wil
                           <object class="GtkRadioButton" id="preferences_radiobutton_altdot">
                             <property name="label">.</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
-                            <property name="draw_indicator">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
+                            <property name="draw-indicator">True</property>
                             <property name="group">preferences_radiobutton_dot</property>
                             <signal name="toggled" handler="on_preferences_radiobutton_altdot_toggled" swapped="no"/>
                           </object>
@@ -816,10 +848,10 @@ Note that only the mode, history and definitions of the last closed instance wil
                           <object class="GtkRadioButton" id="preferences_radiobutton_asterisk">
                             <property name="label">*</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
-                            <property name="draw_indicator">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
+                            <property name="draw-indicator">True</property>
                             <property name="group">preferences_radiobutton_dot</property>
                             <signal name="toggled" handler="on_preferences_radiobutton_asterisk_toggled" swapped="no"/>
                           </object>
@@ -831,14 +863,14 @@ Note that only the mode, history and definitions of the last closed instance wil
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">3</property>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">3</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkBox" id="hbox2">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="halign">start</property>
                         <property name="spacing">6</property>
                         <property name="homogeneous">True</property>
@@ -846,11 +878,11 @@ Note that only the mode, history and definitions of the last closed instance wil
                           <object class="GtkRadioButton" id="preferences_radiobutton_division_slash">
                             <property name="label">/</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
                             <property name="active">True</property>
-                            <property name="draw_indicator">True</property>
+                            <property name="draw-indicator">True</property>
                             <signal name="toggled" handler="on_preferences_radiobutton_division_slash_toggled" swapped="no"/>
                           </object>
                           <packing>
@@ -863,10 +895,10 @@ Note that only the mode, history and definitions of the last closed instance wil
                           <object class="GtkRadioButton" id="preferences_radiobutton_division">
                             <property name="label">/</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
-                            <property name="draw_indicator">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
+                            <property name="draw-indicator">True</property>
                             <property name="group">preferences_radiobutton_division_slash</property>
                             <signal name="toggled" handler="on_preferences_radiobutton_division_toggled" swapped="no"/>
                           </object>
@@ -880,10 +912,10 @@ Note that only the mode, history and definitions of the last closed instance wil
                           <object class="GtkRadioButton" id="preferences_radiobutton_slash">
                             <property name="label">/</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
-                            <property name="draw_indicator">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
+                            <property name="draw-indicator">True</property>
                             <property name="group">preferences_radiobutton_division_slash</property>
                             <signal name="toggled" handler="on_preferences_radiobutton_slash_toggled" swapped="no"/>
                           </object>
@@ -895,40 +927,52 @@ Note that only the mode, history and definitions of the last closed instance wil
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">2</property>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">2</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkLabel" id="preferences_label_division_sign">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="halign">start</property>
                         <property name="label" translatable="yes">Division sign</property>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">2</property>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">2</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkCheckButton" id="preferences_checkbutton_copy_separator">
                         <property name="label" translatable="yes">Copy digit separator</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="tooltip_text" translatable="yes">Deactivate to remove digit separator when copying result</property>
-                        <property name="margin_bottom">12</property>
-                        <property name="use_underline">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text" translatable="yes">Deactivate to remove digit separator when copying result</property>
+                        <property name="margin-bottom">12</property>
+                        <property name="use-underline">True</property>
                         <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
+                        <property name="draw-indicator">True</property>
                         <signal name="toggled" handler="on_preferences_checkbutton_copy_separator_toggled" swapped="no"/>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">1</property>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">1</property>
                         <property name="width">2</property>
                       </packing>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
                     </child>
                   </object>
                   <packing>
@@ -945,31 +989,31 @@ Note that only the mode, history and definitions of the last closed instance wil
             <child type="tab">
               <object class="GtkLabel" id="label_numbers">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Numbers &amp; Operators</property>
               </object>
               <packing>
                 <property name="position">1</property>
-                <property name="tab_fill">False</property>
+                <property name="tab-fill">False</property>
               </packing>
             </child>
             <child>
               <object class="GtkBox" id="box_units">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="valign">start</property>
-                <property name="border_width">18</property>
+                <property name="border-width">18</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_binary_prefixes">
                     <property name="label" translatable="yes">Use binary prefixes for information units</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">Use binary, instead of decimal, prefixes by default for information units (e.g. bytes).</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">Use binary, instead of decimal, prefixes by default for information units (e.g. bytes).</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_binary_prefixes_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -982,13 +1026,13 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkCheckButton" id="preferences_checkbutton_local_currency_conversion">
                     <property name="label" translatable="yes">Conversion to local currency</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">Automatically convert to the local currency when optimal unit conversion is activated.</property>
-                    <property name="margin_top">12</property>
-                    <property name="use_underline">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">Automatically convert to the local currency when optimal unit conversion is activated.</property>
+                    <property name="margin-top">12</property>
+                    <property name="use-underline">True</property>
                     <property name="active">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_local_currency_conversion_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -1000,11 +1044,11 @@ Note that only the mode, history and definitions of the last closed instance wil
                 <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_fetch_exchange_rates">
                     <property name="label" translatable="yes">Update exchange rates on start</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If current exchange rates shall be downloaded from the internet at program start</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If current exchange rates shall be downloaded from the internet at program start</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_fetch_exchange_rates_toggled" swapped="no"/>
                   </object>
                   <packing>
@@ -1016,12 +1060,12 @@ Note that only the mode, history and definitions of the last closed instance wil
                 <child>
                   <object class="GtkBox" id="box_exrates">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="spacing">12</property>
                     <child>
                       <object class="GtkLabel" id="label_xrates">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="halign">start</property>
                         <property name="label" translatable="yes">Exchange rates updates</property>
                       </object>
@@ -1034,8 +1078,8 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <child>
                       <object class="GtkSpinButton" id="preferences_update_exchange_rates_spin_button">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="width_chars">15</property>
+                        <property name="can-focus">True</property>
+                        <property name="width-chars">15</property>
                         <property name="adjustment">preferences_update_exchange_rates_adjustment</property>
                         <property name="value">7</property>
                         <signal name="input" handler="on_preferences_update_exchange_rates_spin_button_input" swapped="no"/>
@@ -1063,36 +1107,37 @@ Note that only the mode, history and definitions of the last closed instance wil
             <child type="tab">
               <object class="GtkLabel" id="label_units">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Units &amp; Currencies</property>
               </object>
               <packing>
                 <property name="position">2</property>
-                <property name="tab_fill">False</property>
+                <property name="tab-fill">False</property>
               </packing>
             </child>
             <child>
+              <!-- n-columns=3 n-rows=5 -->
               <object class="GtkGrid" id="grid_completion">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="valign">start</property>
-                <property name="border_width">18</property>
-                <property name="row_spacing">6</property>
-                <property name="column_spacing">12</property>
+                <property name="border-width">18</property>
+                <property name="row-spacing">6</property>
+                <property name="column-spacing">12</property>
                 <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_enable_completion">
                     <property name="label" translatable="yes">Show expression completion suggestions</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If the mode of the calculator shall be restored</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If the mode of the calculator shall be restored</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_enable_completion_toggled" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">0</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
                     <property name="width">2</property>
                   </packing>
                 </child>
@@ -1100,96 +1145,111 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkCheckButton" id="preferences_checkbutton_enable_completion2">
                     <property name="label" translatable="yes">Search titles and countries</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If the mode of the calculator shall be restored</property>
-                    <property name="margin_top">12</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If the mode of the calculator shall be restored</property>
+                    <property name="margin-top">12</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_enable_completion2_toggled" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">3</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">3</property>
                     <property name="width">2</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkSpinButton" id="preferences_spin_completion_min">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="can-focus">True</property>
                     <property name="adjustment">adjustment_completion</property>
                     <property name="numeric">True</property>
                     <property name="value">1</property>
                     <signal name="value-changed" handler="on_preferences_spin_completion_min_value_changed" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">1</property>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="preferences_label_completion_min">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="halign">start</property>
                     <property name="label" translatable="yes">Minimum characters</property>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">1</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="preferences_label_completion_min2">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="halign">start</property>
                     <property name="label" translatable="yes">Minimum characters</property>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">4</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">4</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkSpinButton" id="preferences_spin_completion_min2">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="can-focus">True</property>
                     <property name="adjustment">adjustment_completion2</property>
                     <property name="numeric">True</property>
                     <property name="value">1</property>
                     <signal name="value-changed" handler="on_preferences_spin_completion_min2_value_changed" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">4</property>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">4</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="preferences_label_completion_delay">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="halign">start</property>
                     <property name="label" translatable="yes">Popup delay (ms)</property>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">2</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkSpinButton" id="preferences_spin_completion_delay">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="can-focus">True</property>
                     <property name="adjustment">adjustment_completion_delay</property>
                     <property name="numeric">True</property>
                     <signal name="value-changed" handler="on_preferences_spin_completion_delay_value_changed" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">2</property>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">2</property>
                   </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
                 </child>
               </object>
               <packing>
@@ -1199,121 +1259,122 @@ Note that only the mode, history and definitions of the last closed instance wil
             <child type="tab">
               <object class="GtkLabel" id="label_completion">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Completion</property>
               </object>
               <packing>
                 <property name="position">3</property>
-                <property name="tab_fill">False</property>
+                <property name="tab-fill">False</property>
               </packing>
             </child>
             <child>
+              <!-- n-columns=3 n-rows=12 -->
               <object class="GtkGrid" id="grid_fonts">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="halign">start</property>
                 <property name="valign">start</property>
-                <property name="border_width">18</property>
-                <property name="row_spacing">6</property>
-                <property name="column_spacing">12</property>
+                <property name="border-width">18</property>
+                <property name="row-spacing">6</property>
+                <property name="column-spacing">12</property>
                 <child>
                   <object class="GtkLabel" id="label2">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="halign">start</property>
                     <property name="label" translatable="yes">Status warning color</property>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">11</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">11</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkColorButton" id="colorbutton_status_warning_color">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
                     <property name="hexpand">True</property>
                     <signal name="color-set" handler="on_colorbutton_status_warning_color_color_set" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">11</property>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">11</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="label1">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="halign">start</property>
                     <property name="label" translatable="yes">Status error color</property>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">10</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">10</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkColorButton" id="colorbutton_status_error_color">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
                     <property name="hexpand">True</property>
                     <signal name="color-set" handler="on_colorbutton_status_error_color_color_set" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">10</property>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">10</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_custom_status_font">
                     <property name="label" translatable="yes">Custom status font</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If you want to use a font other than the default in the status display below the expression entry</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If you want to use a font other than the default in the status display below the expression entry</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_custom_status_font_toggled" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">4</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">4</property>
                     <property name="width">2</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkFontButton" id="preferences_button_status_font">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
                     <property name="font">Sans 12</property>
-                    <property name="preview_text">1+2−3×4/√(π)²</property>
-                    <property name="use_font">True</property>
-                    <property name="use_size">True</property>
+                    <property name="preview-text">1+2−3×4/√(π)²</property>
+                    <property name="use-font">True</property>
+                    <property name="use-size">True</property>
                     <signal name="font-set" handler="on_preferences_button_status_font_font_set" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">5</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">5</property>
                     <property name="width">2</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkFontButton" id="preferences_button_expression_font">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
                     <property name="font">Sans 12</property>
-                    <property name="preview_text">1+2−3×4/√(π)²</property>
-                    <property name="use_font">True</property>
-                    <property name="use_size">True</property>
+                    <property name="preview-text">1+2−3×4/√(π)²</property>
+                    <property name="use-font">True</property>
+                    <property name="use-size">True</property>
                     <signal name="font-set" handler="on_preferences_button_expression_font_font_set" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">3</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">3</property>
                     <property name="width">2</property>
                   </packing>
                 </child>
@@ -1321,16 +1382,16 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkCheckButton" id="preferences_checkbutton_custom_expression_font">
                     <property name="label" translatable="yes">Custom expression font</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If you want to use a font other than the default in the expression entry</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If you want to use a font other than the default in the expression entry</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_custom_expression_font_toggled" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">2</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
                     <property name="width">2</property>
                   </packing>
                 </child>
@@ -1338,33 +1399,33 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkCheckButton" id="preferences_checkbutton_custom_result_font">
                     <property name="label" translatable="yes">Custom result font</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If you want to use a font other than the default in the result display</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If you want to use a font other than the default in the result display</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_custom_result_font_toggled" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">0</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
                     <property name="width">2</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkFontButton" id="preferences_button_result_font">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
                     <property name="font">Sans 12</property>
-                    <property name="preview_text">1+2−3×4/√(π)²</property>
-                    <property name="use_font">True</property>
-                    <property name="use_size">True</property>
+                    <property name="preview-text">1+2−3×4/√(π)²</property>
+                    <property name="use-font">True</property>
+                    <property name="use-size">True</property>
                     <signal name="font-set" handler="on_preferences_button_result_font_font_set" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">1</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
                     <property name="width">2</property>
                   </packing>
                 </child>
@@ -1372,33 +1433,33 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkCheckButton" id="preferences_checkbutton_custom_keypad_font">
                     <property name="label" translatable="yes">Custom keypad font</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If you want to use a font other than the default in the keypad</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If you want to use a font other than the default in the keypad</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_custom_keypad_font_toggled" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">6</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">6</property>
                     <property name="width">2</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkFontButton" id="preferences_button_keypad_font">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
                     <property name="font">Sans 12</property>
-                    <property name="preview_text">1+2−3×4/√(π)²</property>
-                    <property name="use_font">True</property>
-                    <property name="use_size">True</property>
+                    <property name="preview-text">1+2−3×4/√(π)²</property>
+                    <property name="use-font">True</property>
+                    <property name="use-size">True</property>
                     <signal name="font-set" handler="on_preferences_button_keypad_font_font_set" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">7</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">7</property>
                     <property name="width">2</property>
                   </packing>
                 </child>
@@ -1406,36 +1467,72 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkCheckButton" id="preferences_checkbutton_custom_app_font">
                     <property name="label" translatable="yes">Custom application font</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="tooltip_text" translatable="yes">If you want to use a font other than the default for the whole application</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If you want to use a font other than the default for the whole application</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_custom_app_font_toggled" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">8</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">8</property>
                     <property name="width">2</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkFontButton" id="preferences_button_app_font">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="margin_bottom">12</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="margin-bottom">12</property>
                     <property name="font">Sans 12</property>
-                    <property name="preview_text">1+2−3×4/√(π)²</property>
-                    <property name="use_font">True</property>
-                    <property name="use_size">True</property>
+                    <property name="preview-text">1+2−3×4/√(π)²</property>
+                    <property name="use-font">True</property>
+                    <property name="use-size">True</property>
                     <signal name="font-set" handler="on_preferences_button_app_font_font_set" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">9</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">9</property>
                     <property name="width">2</property>
                   </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
                 </child>
               </object>
               <packing>
@@ -1445,12 +1542,12 @@ Note that only the mode, history and definitions of the last closed instance wil
             <child type="tab">
               <object class="GtkLabel" id="label_fonts">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Fonts</property>
               </object>
               <packing>
                 <property name="position">4</property>
-                <property name="tab_fill">False</property>
+                <property name="tab-fill">False</property>
               </packing>
             </child>
           </object>
@@ -1461,9 +1558,6 @@ Note that only the mode, history and definitions of the last closed instance wil
           </packing>
         </child>
       </object>
-    </child>
-    <child type="titlebar">
-      <placeholder/>
     </child>
   </object>
 </interface>
