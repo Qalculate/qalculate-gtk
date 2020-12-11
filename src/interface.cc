@@ -178,6 +178,7 @@ extern bool auto_calculate;
 extern bool complex_angle_form;
 extern bool check_version;
 extern int max_plot_time;
+extern gint autocalc_history_delay;
 extern int default_fraction_fraction;
 extern bool use_systray_icon, hide_on_startup;
 
@@ -331,8 +332,6 @@ void set_assumptions_items(AssumptionType at, AssumptionSign as) {
 
 void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, AssumptionType at, AssumptionSign as, bool in_rpn_mode, int precision, bool interval, bool variable_units, bool id_adaptive, int keypad, bool autocalc, bool caf, bool initial_update) {
 
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_syntax")), evalops.parse_options.rpn);
-	if(initial_update) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_rpn_syntax")), evalops.parse_options.rpn);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_autocalc")), autocalc && (!initial_update || !in_rpn_mode));
 	auto_calculate = autocalc;
 	if(initial_update) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_autocalc")), !in_rpn_mode);
@@ -431,14 +430,27 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 	switch(eo.parse_options.parsing_mode) {
 		case PARSING_MODE_IMPLICIT_MULTIPLICATION_FIRST: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_ignore_whitespace")), TRUE);
+			if(initial_update) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_ignore_whitespace")), TRUE);
 			break;
 		}
 		case PARSING_MODE_CONVENTIONAL: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_no_special_implicit_multiplication")), TRUE);
+			if(initial_update) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_no_special_implicit_multiplication")), TRUE);
 			break;
-		 }
-		 default: {
+		}
+		case PARSING_MODE_CHAIN_CALCULATION: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_chain_calculation")), TRUE);
+			if(initial_update) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_chain_calculation")), TRUE);
+			break;
+		}
+		case PARSING_MODE_RPN: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_syntax")), TRUE);
+			if(initial_update) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_rpn_syntax")), TRUE);
+			break;
+		}
+		default: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_adaptive_parsing")), TRUE);
+			if(initial_update) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_adaptive_parsing")), TRUE);
 			break;
 		}
 	}
@@ -1772,8 +1784,8 @@ void create_main_window(void) {
 
 	if(themestr.substr(0, 7) == "Adwaita" || themestr.substr(0, 6) == "ooxmox" || themestr == "Breeze" || themestr == "Breeze-Dark" || themestr.substr(0, 4) == "Yaru") {
 
-		GtkCssProvider *link_style_top = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_top, "* {border-bottom-left-radius: 0; border-bottom-right-radius: 0}", -1, NULL);
-		GtkCssProvider *link_style_bot = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_bot, "* {border-top-left-radius: 0; border-top-right-radius: 0}", -1, NULL);
+		GtkCssProvider *link_style_top = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_top, "* {border-bottom-left-radius: 0; border-bottom-right-radius: 0;}", -1, NULL);
+		GtkCssProvider *link_style_bot = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_bot, "* {border-top-left-radius: 0; border-top-right-radius: 0;}", -1, NULL);
 		GtkCssProvider *link_style_tl = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_tl, "* {border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-top-right-radius: 0;}", -1, NULL);
 		GtkCssProvider *link_style_tr = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_tr, "* {border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-top-left-radius: 0;}", -1, NULL);
 		GtkCssProvider *link_style_bl = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_bl, "* {border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;}", -1, NULL);
@@ -2510,15 +2522,34 @@ GtkWidget* get_preferences_dialog(void) {
 				break;
 			}
 		}
+		gtk_range_set_value(GTK_RANGE(gtk_builder_get_object(preferences_builder, "preferences_scale_autocalc_history")), autocalc_history_delay < 0 ? 10000.0 : (double) autocalc_history_delay);
+		gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_autocalc_history")), 500.0, GTK_POS_BOTTOM, NULL);
+		gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_autocalc_history")), 1000.0, GTK_POS_BOTTOM, "1 s");
+		gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_autocalc_history")), 1500.0, GTK_POS_BOTTOM, NULL);
+		gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_autocalc_history")), 2000.0, GTK_POS_BOTTOM, "2 s");
+		gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_autocalc_history")), 3000.0, GTK_POS_BOTTOM, NULL);
+		gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_autocalc_history")), 4000.0, GTK_POS_BOTTOM, NULL);
+		gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_autocalc_history")), 5000.0, GTK_POS_BOTTOM, "5 s");
+		gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_autocalc_history")), 10000.0, GTK_POS_BOTTOM, _("never"));
+		for(int i = 1; i < 5; i++) gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_plot_time")), (double) i, GTK_POS_BOTTOM, NULL);
+		gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_plot_time")), 5.0, GTK_POS_BOTTOM, "5 s");
+		gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_plot_time")), 10.0, GTK_POS_BOTTOM, "10 s");
+		for(int i = 15; i <= 55; i += 10) gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_plot_time")), (double) i, GTK_POS_BOTTOM, NULL);
+		gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_plot_time")), 20.0, GTK_POS_BOTTOM, "20 s");
+		gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_plot_time")), 30.0, GTK_POS_BOTTOM, "30 s");
+		gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_plot_time")), 40.0, GTK_POS_BOTTOM, "40 s");
+		gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_plot_time")), 50.0, GTK_POS_BOTTOM, "50 s");
+		gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_plot_time")), 60.0, GTK_POS_BOTTOM, "60 s");
+		gtk_range_set_value(GTK_RANGE(gtk_builder_get_object(preferences_builder, "preferences_scale_plot_time")), (double) max_plot_time);
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
 #	ifdef _WIN32
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_dark_theme")), use_dark_theme > 0);
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_dark_theme")));
 #	endif
 #endif
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_use_systray_icon")), use_systray_icon);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_hide_on_startup")), hide_on_startup);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_hide_on_startup")), use_systray_icon);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_use_systray_icon")), use_systray_icon);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_hide_on_startup")), hide_on_startup);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_hide_on_startup")), use_systray_icon);
 #ifdef _WIN32
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_use_systray_icon")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_hide_on_startup")));
@@ -2526,6 +2557,7 @@ GtkWidget* get_preferences_dialog(void) {
 		gtk_builder_connect_signals(preferences_builder, NULL);
 
 	}
+
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_update_exchange_rates_spin_button")), (double) auto_update_exchange_rates);
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_enable_completion")), enable_completion);
@@ -2540,8 +2572,6 @@ GtkWidget* get_preferences_dialog(void) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_delay")), enable_completion);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay")), enable_completion);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay")), (double) completion_delay);
-
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_plot_time_spin_button")), (double) max_plot_time);
 
 	return GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_dialog"));
 }

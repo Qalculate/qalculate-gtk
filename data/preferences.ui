@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.1 -->
+<!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
+  <object class="GtkAdjustment" id="adjustment_autocalc_history">
+    <property name="upper">10000</property>
+    <property name="value">2000</property>
+    <property name="step-increment">500</property>
+    <property name="page-increment">1000</property>
+  </object>
   <object class="GtkAdjustment" id="adjustment_completion">
     <property name="lower">1</property>
     <property name="upper">10</property>
@@ -29,10 +35,10 @@
   </object>
   <object class="GtkAdjustment" id="adjustment_plot_time">
     <property name="lower">1</property>
-    <property name="upper">10000</property>
+    <property name="upper">60</property>
     <property name="value">5</property>
     <property name="step-increment">1</property>
-    <property name="page-increment">10</property>
+    <property name="page-increment">5</property>
   </object>
   <object class="GtkAdjustment" id="preferences_update_exchange_rates_adjustment">
     <property name="lower">-1</property>
@@ -394,52 +400,17 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="preferences_checkbutton_rpn_keys">
-                    <property name="label" translatable="yes">Use keyboard keys for RPN</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">Use keyboard operator keys for RPN operations (+-*/^).</property>
-                    <property name="use-underline">True</property>
-                    <property name="active">True</property>
-                    <property name="draw-indicator">True</property>
-                    <signal name="toggled" handler="on_preferences_checkbutton_rpn_keys_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">15</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="preferences_checkbutton_caret_as_xor">
-                    <property name="label" translatable="yes">Use caret for bitwise XOR</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">Input XOR (⊻) using caret (^) on keyboard (otherwise use Ctrl+^). The exponentiation operator (^) can always be input using Ctrl+*.</property>
-                    <property name="use-underline">True</property>
-                    <property name="active">True</property>
-                    <property name="draw-indicator">True</property>
-                    <signal name="toggled" handler="on_preferences_checkbutton_caret_as_xor_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">16</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkBox" id="box_expression_lines1">
+                  <object class="GtkBox" id="box_autocalc_history">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="spacing">12</property>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">3</property>
                     <child>
-                      <object class="GtkLabel" id="label_plot_time">
+                      <object class="GtkLabel" id="label_autocalc_history">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">start</property>
-                        <property name="label" translatable="yes">Time limit for plot</property>
+                        <property name="label" translatable="yes">Calculate as you type history delay:</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -448,16 +419,13 @@ Note that only the mode, history and definitions of the last closed instance wil
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkSpinButton" id="preferences_plot_time_spin_button">
+                      <object class="GtkScale" id="preferences_scale_autocalc_history">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="width-chars">15</property>
-                        <property name="adjustment">adjustment_plot_time</property>
-                        <property name="snap-to-ticks">True</property>
-                        <property name="value">5</property>
-                        <signal name="input" handler="on_preferences_plot_time_spin_button_input" swapped="no"/>
-                        <signal name="output" handler="on_preferences_plot_time_spin_button_output" swapped="no"/>
-                        <signal name="value-changed" handler="on_preferences_plot_time_spin_button_value_changed" swapped="no"/>
+                        <property name="adjustment">adjustment_autocalc_history</property>
+                        <property name="round-digits">0</property>
+                        <property name="draw-value">False</property>
+                        <signal name="value-changed" handler="on_preferences_scale_autocalc_history_value_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -469,7 +437,48 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">17</property>
+                    <property name="position">15</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="box_plot_time">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">3</property>
+                    <child>
+                      <object class="GtkLabel" id="label_plot_time">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Time limit for plot:</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="preferences_scale_plot_time">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="adjustment">adjustment_plot_time</property>
+                        <property name="round-digits">0</property>
+                        <property name="draw-value">False</property>
+                        <signal name="value-changed" handler="on_preferences_scale_plot_time_value_changed" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">16</property>
                   </packing>
                 </child>
               </object>
@@ -557,7 +566,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">4</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
                 <child>
@@ -575,7 +584,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">5</property>
+                    <property name="position">4</property>
                   </packing>
                 </child>
                 <child>
@@ -601,7 +610,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">6</property>
+                    <property name="position">5</property>
                   </packing>
                 </child>
                 <child>
@@ -618,7 +627,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">7</property>
+                    <property name="position">6</property>
                   </packing>
                 </child>
                 <child>
@@ -636,7 +645,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">8</property>
+                    <property name="position">7</property>
                   </packing>
                 </child>
                 <child>
@@ -654,7 +663,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">9</property>
+                    <property name="position">8</property>
                   </packing>
                 </child>
                 <child>
@@ -671,7 +680,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">10</property>
+                    <property name="position">9</property>
                   </packing>
                 </child>
                 <child>
@@ -688,7 +697,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">11</property>
+                    <property name="position">10</property>
                   </packing>
                 </child>
                 <child>
@@ -978,6 +987,43 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="position">11</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_rpn_keys">
+                    <property name="label" translatable="yes">Use keyboard keys for RPN</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">Use keyboard operator keys for RPN operations (+-*/^).</property>
+                    <property name="margin-top">12</property>
+                    <property name="use-underline">True</property>
+                    <property name="active">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_rpn_keys_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">12</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_caret_as_xor">
+                    <property name="label" translatable="yes">Use caret for bitwise XOR</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">Input XOR (⊻) using caret (^) on keyboard (otherwise use Ctrl+^). The exponentiation operator (^) can always be input using Ctrl+*.</property>
+                    <property name="use-underline">True</property>
+                    <property name="active">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_caret_as_xor_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
                     <property name="position">13</property>
                   </packing>
                 </child>
