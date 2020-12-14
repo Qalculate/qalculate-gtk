@@ -2241,7 +2241,7 @@ On: 1/2*pi = 0.5 pi</property>
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="tooltip-text">1 + 2 × 3 = (1 + 2) × 3 = 9</property>
-                                <property name="label" translatable="yes">Chain Calculation</property>
+                                <property name="label" translatable="yes">Chain Syntax</property>
                                 <property name="use-underline">True</property>
                                 <property name="draw-as-radio">True</property>
                                 <property name="group">menu_item_adaptive_parsing</property>
@@ -2327,21 +2327,30 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckMenuItem" id="menu_item_rpn_mode">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="tooltip-text" translatable="yes">Activate the RPN stack.</property>
-                        <property name="label" translatable="yes">RPN Mode</property>
-                        <signal name="activate" handler="on_menu_item_rpn_mode_activate" swapped="no"/>
-                      </object>
-                    </child>
-                    <child>
                       <object class="GtkCheckMenuItem" id="menu_item_autocalc">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Calculate As You Type</property>
                         <property name="use-underline">True</property>
                         <signal name="activate" handler="on_menu_item_autocalc_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem" id="menu_item_chain_mode">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Chain Mode</property>
+                        <property name="use-underline">True</property>
+                        <signal name="activate" handler="on_menu_item_chain_mode_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem" id="menu_item_rpn_mode">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="tooltip-text" translatable="yes">Activate the RPN stack.</property>
+                        <property name="label" translatable="yes">RPN Mode</property>
+                        <signal name="activate" handler="on_menu_item_rpn_mode_activate" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -4283,6 +4292,9 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                   </packing>
                                 </child>
                               </object>
+                              <packing>
+                                <property name="name">page0</property>
+                              </packing>
                             </child>
                             <child>
                               <object class="GtkLabel" id="label_result_bases">
@@ -4293,6 +4305,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                 <property name="ellipsize">start</property>
                               </object>
                               <packing>
+                                <property name="name">page1</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
@@ -8527,7 +8540,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       <object class="GtkRadioMenuItem" id="menu_item_status_chain_calculation">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="yes">Chain Calculation</property>
+        <property name="label" translatable="yes">Chain Syntax</property>
         <property name="use-underline">True</property>
         <property name="draw-as-radio">True</property>
         <property name="group">menu_item_status_adaptive_parsing</property>

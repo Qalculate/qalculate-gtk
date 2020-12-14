@@ -47,6 +47,7 @@ struct mode_struct {
 	bool variable_units_enabled;
 	int keypad;
 	bool autocalc;
+	bool chain_mode;
 	bool complex_angle_form;
 };
 
@@ -510,6 +511,7 @@ void on_menu_item_new_function_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_new_dataset_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_new_unit_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_autocalc_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_chain_mode_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_rpn_mode_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_rpn_syntax_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_limit_implicit_multiplication_activate(GtkMenuItem *w, gpointer user_data);

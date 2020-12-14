@@ -1,6 +1,10 @@
+2020-12-13 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Chain mode (key presses 1, 2, *, 3 results in expression (1+2)*3, with result updated intermittently)
+
 2020-12-11 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
-	* Chain calculation parsing mode
+	* Chain syntax parsing mode (1+2*3=(1+2)*3=9)
 	* RPN syntax as parsing mode
 	* Use slider for max plot time
 	* Configurable calculate-as-you-type add to history delay
