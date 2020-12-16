@@ -233,6 +233,7 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 
 void execute_expression(bool force = true, bool do_mathoperation = false, MathOperation op = OPERATION_ADD, MathFunction *f = NULL, bool do_stack = false, size_t stack_index = 0, std::string execute_str = std::string(), std::string str = std::string(), bool check_exrates = true);
 void setResult(Prefix *prefix = NULL, bool update_history = true, bool update_parse = false, bool force = false, std::string transformation = "", size_t stack_index = 0, bool register_moved = false, bool supress_dialog = false);
+void execute_from_file(std::string file_name);
 
 void set_rpn_mode(bool b);
 void calculateRPN(int op);
@@ -338,6 +339,8 @@ void set_status_bottom_border_visible(bool);
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+void update_menu_base();
 
 void memory_recall();
 void memory_store();
@@ -676,8 +679,10 @@ gboolean on_main_window_focus_in_event(GtkWidget *w, GdkEventFocus *e, gpointer 
 
 void on_button_registerup_clicked(GtkButton *button, gpointer user_data);
 void on_button_registerdown_clicked(GtkButton *button, gpointer user_data);
+void on_button_registerswap_clicked(GtkButton *button, gpointer user_data);
 void on_button_editregister_clicked(GtkButton *button, gpointer user_data);
 void on_button_deleteregister_clicked(GtkButton *button, gpointer user_data);
+void on_button_copyregister_clicked(GtkButton *button, gpointer user_data);
 void on_button_clearstack_clicked(GtkButton *button, gpointer user_data);
 void on_stackview_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 void on_stackview_item_edited(GtkCellRendererText *renderer, gchar *path, gchar *new_text, gpointer user_data);

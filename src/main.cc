@@ -32,7 +32,6 @@ using std::endl;
 
 MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct, *displayed_mstruct;
 extern MathStructure mbak_convert;
-string *parsed_to_str;
 KnownVariable *vans[5], *v_memory;
 GtkWidget *functions_window;
 string selected_function_category;
@@ -50,6 +49,7 @@ int allow_multiple_instances = -1;
 cairo_surface_t *surface_result;
 GdkPixbuf *pixbuf_result;
 extern bool b_busy, b_busy_command, b_busy_result, b_busy_expression;
+extern int block_expression_execution;
 extern vector<string> recent_functions_pre;
 extern vector<string> recent_variables_pre;
 extern vector<string> recent_units_pre;
@@ -71,7 +71,7 @@ GtkBuilder *shortcuts_builder, *preferences_builder, *unit_builder, *unitedit_bu
 GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_builder, *calendarconversion_builder, *floatingpoint_builder;
 
 Thread *view_thread, *command_thread;
-string calc_arg;
+string calc_arg, file_arg;
 
 bool do_timeout, check_expression_position;
 gint expression_position;
@@ -80,6 +80,7 @@ bool do_imaginary_j = false;
 QalculateDateTime last_version_check_date;
 
 static GOptionEntry options[] = {
+	{"file", 'f', 0, G_OPTION_ARG_STRING, NULL, N_("Execute expressions and commands from a file"), NULL},
 	{"new-instance", 'n', 0, G_OPTION_ARG_NONE, NULL, N_("Start a new instance of the application"), NULL},
 	{"version", 'v', 0, G_OPTION_ARG_NONE, NULL, N_("Display the application version"), NULL},
 	{"title", 0, 0, G_OPTION_ARG_STRING, NULL, N_("Specify the window title"), N_("TITLE")},
@@ -95,7 +96,9 @@ gboolean create_menus_etc(gpointer) {
 	test_border();
 
 	//create button menus after definitions have been loaded
+	block_expression_execution++;
 	create_button_menus();
+	block_expression_execution--;
 
 	//create dynamic menus
 	generate_units_tree_struct();
@@ -166,7 +169,6 @@ void create_application(GtkApplication *app) {
 	parsed_tostruct = new MathStructure();
 	parsed_tostruct->setUndefined();
 	matrix_mstruct = new MathStructure();
-	parsed_to_str = new string;
 	mbak_convert.setUndefined();
 
 	bool canfetch = CALCULATOR->canFetch();
@@ -189,7 +191,7 @@ void create_application(GtkApplication *app) {
 
 	showing_first_time_message = first_time;
 
-	if(calc_arg.empty() && first_time) {
+	if(calc_arg.empty() && first_time && file_arg.empty()) {
 		PangoLayout *layout = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview")), NULL);
 		GdkRGBA rgba;
 #if GDK_MAJOR_VERSION > 3 || GDK_MINOR_VERSION >= 22
@@ -288,10 +290,11 @@ void create_application(GtkApplication *app) {
 	view_thread->start();
 	command_thread = new CommandThread;
 
+	if(!file_arg.empty()) execute_from_file(file_arg);
 	if(!calc_arg.empty()) {
 		gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_builder_get_object(main_builder, "expressionbuffer")), calc_arg.c_str(), -1);
 		execute_expression();
-	} else if(!first_time && !minimal_mode) {
+	} else if(!first_time && !minimal_mode && !file_arg.empty()) {
 		int base = printops.base;
 		printops.base = 10;
 		setResult(NULL, false, false, false);
@@ -400,6 +403,13 @@ static gint qalculate_handle_local_options(GtkApplication *app, GVariantDict *op
 
 static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine *cmd_line) {
 	GVariantDict *options_dict = g_application_command_line_get_options_dict(cmd_line);
+	gchar *str = NULL;
+	file_arg = "";
+	g_variant_dict_lookup(options_dict, "file", "s", &str);
+	if(str) {
+		file_arg = str;
+		g_free(str);
+	}
 	gchar **remaining = NULL;
 	g_variant_dict_lookup(options_dict, G_OPTION_REMAINING, "^as", &remaining);
 	calc_arg = "";
@@ -415,7 +425,7 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 		}
 	}
 	if(main_builder) {
-		gchar *str = NULL;
+		str = NULL;
 		g_variant_dict_lookup(options_dict, "title", "s", &str);
 		if(str) {
 			gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), str);
@@ -423,10 +433,11 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 			g_free(str);
 		}
 		gtk_window_present(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
+		if(!file_arg.empty()) execute_from_file(file_arg);
 		if(!calc_arg.empty()) {
 			gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_builder_get_object(main_builder, "expressionbuffer")), calc_arg.c_str(), -1);
 			execute_expression();
-		} else if(allow_multiple_instances < 0) {
+		} else if(allow_multiple_instances < 0 && file_arg.empty()) {
 			GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, _("By default, only one instance (one main window) of %s is allowed.\n\nIf multiple instances are opened simultaneously, only the definitions (variables, functions, etc.), mode, preferences, and history of the last closed window will be saved.\n\nDo you, despite this, want to change the default bahvior and allow multiple simultaneous instances?"), "Qalculate!");
 			allow_multiple_instances = gtk_dialog_run(GTK_DIALOG(edialog)) == GTK_RESPONSE_YES;
 			save_preferences(false);
