@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "3.15.0">
-  <!ENTITY manrevision "3.15.0">
-  <!ENTITY date "November 2020">
+  <!ENTITY appversion "3.16.0">
+  <!ENTITY manrevision "3.16.0">
+  <!ENTITY date "January 2020">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -70,7 +70,7 @@ Although use of &app; for simple calculations should be natural and self-explana
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/mainwindow.png" format="PNG" width="594"/>
+				<imagedata fileref="figures/mainwindow.png" format="PNG" width="809"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -92,7 +92,7 @@ The icon in the upper right corner of the expression entry changes function depe
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/completion.png" format="PNG" width="347"/>
+				<imagedata fileref="figures/completion.png" format="PNG" width="445"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -146,7 +146,7 @@ The keypad provides access to a simple traditional number pad and as well as mor
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/calculator-buttons.png" format="PNG" width="650"/>
+				<imagedata fileref="figures/calculator-buttons.png" format="PNG" width="818"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -533,7 +533,7 @@ Below follows a list of the buttons on the left side (including their menus and 
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/programming-keypad.png" format="PNG" width="443"/>
+				<imagedata fileref="figures/programming-keypad.png" format="PNG" width="617"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -752,7 +752,7 @@ The history view provides access to previous calculation results (50 rows are re
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/calculation-history.png" format="PNG" width="485"/>
+				<imagedata fileref="figures/calculation-history.png" format="PNG" width="518"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -775,7 +775,7 @@ Additional actions are available in the context menu of the history list. This i
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/minimal-window.png" format="PNG" width="294"/>
+				<imagedata fileref="figures/minimal-window.png" format="PNG" width="390"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -1069,7 +1069,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			</row>
 			<row valign="top">
 				<entry><para>Parsing Mode</para></entry>
-				<entry><para>Submenu with options to control how expressions are parsed (read/interpreted). There are three different modes to choose from. In addition the <quote>read precision</quote> option enables/disables interpretation of input numbers with decimals as approximate with a precision equal to the number of digits (after preceding zeroes), and <quote>limit implicit multiplication</quote> limits the use of implicit multiplication for parsing and display of expressions. For more information see <xref linkend="qalculate-implicit-multiplication"/>. In this menu you also find the option to switch to RPN syntax for expression parsing.</para></entry>
+				<entry><para>Submenu with options to control how expressions are parsed (read/interpreted). There are three main modes to choose from. In addition the <quote>read precision</quote> option enables/disables interpretation of input numbers with decimals as approximate with a precision equal to the number of digits (after preceding zeroes), and <quote>limit implicit multiplication</quote> limits the use of implicit multiplication for parsing and display of expressions. For more information see <xref linkend="qalculate-implicit-multiplication"/>. Additionally RPN and chain syntax modes can be selected.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Precision</para></entry>
@@ -1080,12 +1080,16 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 				<entry><para>Opens a dialog to change displayed number of decimals.</para></entry>
 			</row>
 			<row valign="top">
-				<entry><para>RPN Mode (<keycombo><keycap>Ctrl</keycap><keycap>R</keycap></keycombo>)</para></entry>
-				<entry><para>(De)activates the Reverse Polish Notation stack (not RPN syntax). For details see <xref linkend="qalculate-rpn"/></para></entry>
-			</row>
-			<row valign="top">
 				<entry><para>Calculate As You Type</para></entry>
 				<entry><para>When activated the current expression will be continuosly calculated on each single change.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>Chain Mode</para></entry>
+				<entry><para>(De)activates chain mode. In chain mode the expression are, when operators are entered, transformed to mimic the behavior of traditional simple calculators in immediate execution mode. The result is equivalent to that of the chain syntax (see <xref linkend="qalculate-implicit-multiplication"/>). The result is updated each time an operator is entered.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>RPN Mode (<keycombo><keycap>Ctrl</keycap><keycap>R</keycap></keycombo>)</para></entry>
+				<entry><para>(De)activates the Reverse Polish Notation stack (not RPN syntax). For details see <xref linkend="qalculate-rpn"/></para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Meta Modes</para></entry>
@@ -1210,7 +1214,7 @@ The manager windows provide a structural way of working with variables, function
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/variable-manager.png" format="PNG" width="519"/>
+				<imagedata fileref="figures/variable-manager.png" format="PNG" width="745"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -1226,7 +1230,7 @@ The buttons on the right work on the selected object in the list. <guibutton>New
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/function-manager.png" format="PNG" width="512"/>
+				<imagedata fileref="figures/function-manager.png" format="PNG" width="636"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -1239,7 +1243,7 @@ The function manager has a description box at the bottom, which shows the syntax
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/unit-manager.png" format="PNG" width="557"/>
+				<imagedata fileref="figures/unit-manager.png" format="PNG" width="665"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -1260,7 +1264,7 @@ The number bases dialog, accessible from the <guimenu>File Menu</guimenu>, is an
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/convert-number-bases.png" format="PNG" width="676"/>
+				<imagedata fileref="figures/convert-number-bases.png" format="PNG" width="626"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -1590,6 +1594,9 @@ The evaluation of short/implicit multiplication, without any multiplication sign
 <para>
 If the limit implicit multiplication option is activated, the use of implicit multiplication when parsing expressions and displaying results will be limited to avoid confusion. For example, if this mode is not activated and <quote>integrte(5x)</quote> is accidently typed instead of <quote>integrate(5x)</quote>, the expression is interpreted as <quote>int(e × e × (5 × x) × gr × t)</quote> (displayed in history window). The result will then without any error be <quote>int(2.3940139x × km^2)</quote> instead of <quote>2.5x^2</quote>. If limit implicit multiplication is activated, the mistyped expression would instead show an error telling that <quote>integrte</quote> is not a valid variable, function or unit (unless unknowns is enabled in which case the result will be <quote>5 "integrate" × x</quote>). When implicit multiplication is limited, variables, functions and units must be separated by a space, operator or parenthesis (<quote>xy</quote> does not equal <quote>x × y</quote>).
 </para>
+<para>
+In addition there are two special parsing modes — RPN syntax (for details see <xref linkend="qalculate-rpn"/>) and chain syntax. The chain syntax interprets the expressions similar to a traditional calculator in immediate execution mode. Instead of standard order of operations, the expression is simply calculated from left to right (e.g. <quote>1 + 2 × 3 = (1 + 2) × 3 = 9</quote> instead of <quote>1 + 2 × 3 = 1 + (2 × 3) = 7</quote>). Functions, with a simgle argument, applies to the value immediate to the left of the function name (e.g. <quote>1 + 2 sin = 1 + sin(2)</quote>), unless parentheses are used.
+</para>
 </sect1>
 <sect1 id="qalculate-to">
 <title>The <quote>to</quote> (and <quote>where</quote>) operators</title>
@@ -1905,7 +1912,7 @@ When the RPN stack is enabled, full expressions can still be entered (you can ad
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/rpn-mode.png" format="PNG" width="414"/>
+				<imagedata fileref="figures/rpn-mode.png" format="PNG" width="493"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -1978,7 +1985,7 @@ For a complete list of available variables see <xref linkend="qalculate-definiti
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/store-variable.png" format="PNG" width="221"/>
+				<imagedata fileref="figures/store-variable.png" format="PNG" width="284"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -1994,7 +2001,7 @@ Known variables can also be created from scratch by selecting <menuchoice><guime
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/edit-variable.png" format="PNG" width="223"/>
+				<imagedata fileref="figures/edit-variable.png" format="PNG" width="284"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -2022,7 +2029,7 @@ Vectors and matrices are most effectively used stored in a variable. &app; provi
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/edit-matrix.png" format="PNG" width="325"/>
+				<imagedata fileref="figures/edit-matrix.png" format="PNG" width="384"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -2038,7 +2045,7 @@ Matrices and vectors can also be loaded from data files. These files most be pla
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/import-csv.png" format="PNG" width="240"/>
+				<imagedata fileref="figures/import-csv.png" format="PNG" width="332"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -2062,7 +2069,7 @@ Functions is normally entered in an expression by writing the name followed by a
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/insert-function.png" format="PNG" width="529"/>
+				<imagedata fileref="figures/insert-function.png" format="PNG" width="644"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -2233,7 +2240,7 @@ The simple function edit dialog only allows entry of a single name and an expres
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/edit-function-simplified.png" format="PNG" width="191"/>
+				<imagedata fileref="figures/edit-function-simplified.png" format="PNG" width="293"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -2248,7 +2255,7 @@ The expression of a function is basically a normal expression with placeholders 
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/edit-function.png" format="PNG" width="232"/>
+				<imagedata fileref="figures/edit-function.png" format="PNG" width="365"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -2298,7 +2305,7 @@ The unit conversion view can also be used. It is shown when pressing <guilabel>C
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/convert-unit.png" format="PNG" width="485"/>
+				<imagedata fileref="figures/convert-unit.png" format="PNG" width="508"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -2329,7 +2336,7 @@ Select <menuchoice><guimenu>File</guimenu><guisubmenu>New</guisubmenu><guimenuit
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/edit-unit.png" format="PNG" width="306"/>
+				<imagedata fileref="figures/edit-unit.png" format="PNG" width="354"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -2364,7 +2371,7 @@ To plot functions or data sets, select <menuchoice><guimenu>File</guimenu><guime
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/plot-data.png" format="PNG" width="304"/>
+				<imagedata fileref="figures/plot-data.png" format="PNG" width="358"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -2391,7 +2398,7 @@ For functions, the function range — min and max x value, and the number of val
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/plot-settings.png" format="PNG" width="304"/>
+				<imagedata fileref="figures/plot-settings.png" format="PNG" width="358"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
@@ -2407,7 +2414,7 @@ To update the plot window, click <guibutton>Apply</guibutton> at the bottom of t
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/gnuplot.png" format="PNG" width="488"/>
+				<imagedata fileref="figures/gnuplot.png" format="PNG" width="555"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
