@@ -2237,7 +2237,7 @@ On: 1/2*pi = 0.5 pi</property>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkRadioMenuItem" id="menu_item_chain_calculation">
+                              <object class="GtkRadioMenuItem" id="menu_item_chain_syntax">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="tooltip-text">1 + 2 × 3 = (1 + 2) × 3 = 9</property>
@@ -2245,7 +2245,7 @@ On: 1/2*pi = 0.5 pi</property>
                                 <property name="use-underline">True</property>
                                 <property name="draw-as-radio">True</property>
                                 <property name="group">menu_item_adaptive_parsing</property>
-                                <signal name="activate" handler="on_menu_item_chain_calculation_activate" swapped="no"/>
+                                <signal name="activate" handler="on_menu_item_chain_syntax_activate" swapped="no"/>
                               </object>
                             </child>
                             <child>
@@ -8537,14 +8537,14 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       </object>
     </child>
     <child>
-      <object class="GtkRadioMenuItem" id="menu_item_status_chain_calculation">
+      <object class="GtkRadioMenuItem" id="menu_item_status_chain_syntax">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
         <property name="label" translatable="yes">Chain Syntax</property>
         <property name="use-underline">True</property>
         <property name="draw-as-radio">True</property>
         <property name="group">menu_item_status_adaptive_parsing</property>
-        <signal name="activate" handler="on_menu_item_status_chain_calculation_activate" swapped="no"/>
+        <signal name="activate" handler="on_menu_item_status_chain_syntax_activate" swapped="no"/>
       </object>
     </child>
     <child>

@@ -442,8 +442,8 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 			break;
 		}
 		case PARSING_MODE_CHAIN: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_chain_calculation")), TRUE);
-			if(initial_update) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_chain_calculation")), TRUE);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_chain_syntax")), TRUE);
+			if(initial_update) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_chain_syntax")), TRUE);
 			break;
 		}
 		case PARSING_MODE_RPN: {
@@ -2595,19 +2595,6 @@ GtkWidget* get_unit_edit_dialog(void) {
 
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unitedit_builder, "unit_edit_combobox_class")), 0);
 		
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
-		gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_vbox_name")), 12);
-		gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_vbox_type")), 12);
-		gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_vbox_alias")), 12);
-		gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_vbox_mix")), 12);
-#else
-		gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_vbox_name")), 12);
-		gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_vbox_type")), 12);
-		gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_vbox_alias")), 12);
-		gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_vbox_mix")), 12);
-#endif
-
-
 		gtk_builder_connect_signals(unitedit_builder, NULL);
 
 	}
@@ -3703,6 +3690,10 @@ GtkWidget* get_shortcuts_dialog(void) {
 			GtkTreeIter iter;
 			gtk_list_store_append(tShortcutsType_store, &iter);
 			gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(i), 1, i, -1);
+			if(i == SHORTCUT_TYPE_RPN_MODE) {
+				gtk_list_store_append(tShortcutsType_store, &iter);
+				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_CHAIN_MODE), 1, SHORTCUT_TYPE_CHAIN_MODE, -1);
+			}
 			if(i == 0) gtk_tree_selection_select_iter(selection, &iter);
 		}
 
@@ -3854,6 +3845,10 @@ GtkWidget* get_buttons_edit_dialog(void) {
 		for(int i = 0; i <= SHORTCUT_TYPE_QUIT; i++) {
 			gtk_list_store_append(tButtonsEditType_store, &iter);
 			gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(i), 1, i, -1);
+			if(i == SHORTCUT_TYPE_RPN_MODE) {
+				gtk_list_store_append(tButtonsEditType_store, &iter);
+				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_CHAIN_MODE), 1, SHORTCUT_TYPE_CHAIN_MODE, -1);
+			}
 			if(i == 0) gtk_tree_selection_select_iter(selection, &iter);
 		}
 
