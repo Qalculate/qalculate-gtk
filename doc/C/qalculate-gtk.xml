@@ -2288,18 +2288,18 @@ For a complete list of available units see <xref linkend="qalculate-definitions-
 <sect1 id="qalculate-currency">
 <title>Currency</title>
 <para>
-Among units, &app; has support for currencies with up-to-date exchange rates. Currencies are normally referenced with the standard three letter code due to name clashes, but a number of currency unit can also be accessed through their regular name and symbol. U.S. dollars can, for example, be referenced both as USD and dollar/dollars, or with the $ symbol. 
+Among units, &app; has support for currencies with up-to-date exchange rates. Currencies are normally referenced with the standard three letter code due to name clashes, but a number of currency unit can also be accessed through their regular name and symbol. U.S. dollars can, for example, be referenced both as USD and dollar/dollars or the $ symbol, unless the same name and/or symbol are used by the local currency. 
 </para>
-<para>The exchange rates can to be updated manually from <menuchoice><guimenu>File</guimenu><guimenuitem>Update Exchange Rates</guimenuitem></menuchoice>, or automatically at specific intervals (by default once every week, but it can be changed in the preferences dialog), when needed (when currencies are converted).
+<para>The exchange rates can to be updated manually using <menuchoice><guimenu>File</guimenu><guimenuitem>Update Exchange Rates</guimenuitem></menuchoice>, or automatically at specific intervals (by default once every week, but this can be changed in the preferences dialog), when needed (when currencies are converted).
 </para>
 </sect1>
 <sect1 id="qalculate-unit-conversion">
 <title>Conversion</title>
 <para>
-Expressions can be converted to a specific unit directly in the expression entry with the <quote>to</quote> operator (right arrows, including <quote>-></quote> are also supported), which converts the left-hand expression (or the previous result) to a specified unit (e.g. <quote>5 feet + 2 inches to cm</quote> converts the result of <quote>5 feet + 2 inches</quote> to centimeters and displays it). Unit expressions may only contain units, prefixes, exponents, multiplication and division. By default, no prefix will be added to units typed without prefix, but this behavior can be modified by putting a question mark in front of the unit expression (<quote>6 561 ft to m ≈ 2000 m</quote> but <quote>6 561 ft to ?m ≈ 2 km</quote>). Type <quote>to optimal</quote> to get optimal unit, <quote>to base</quote> for base units, or <quote>to mixed</quote> to force the use of mixed units (see below). Other elements are ignored (except <quote>bin</quote>, <quote>oct</quote> and <quote>hex</quote>). 
+Expressions can be converted to a specific unit directly in the expression entry with the <quote>to</quote> operator (right arrows, including <quote>-></quote> are also supported), which converts the left-hand expression (or the previous result) to a specified unit (e.g. <quote>5 feet + 2 inches to cm</quote> converts the result of <quote>5 feet + 2 inches</quote> to centimeters). Unit expressions may contain units, prefixes, exponents, multiplication and division. By default, no prefix will be added to units typed without prefix, but this behavior can be modified by putting a question mark in front of the unit expression (<quote>6 561 ft to m ≈ 2000 m</quote> but <quote>6 561 ft to ?m ≈ 2 km</quote>). Type <quote>to optimal</quote> to get optimal unit, <quote>to base</quote> for base units, or <quote>to mixed</quote> to force the use of mixed units (see below). The <quote>to</quote> operator can also be used for other types of result transformations (see <xref linkend="qalculate-to"/>). 
 </para>
 <para>
-The unit conversion view can also be used. It is shown when pressing <guilabel>Conversion</guilabel>, <keycombo><keycap>Ctrl</keycap><keycap>C</keycap></keycombo>, <menuchoice><guimenu>Edit</guimenu><guimenuitem>Convert To Unit Expression...</guimenuitem></menuchoice> or <keycombo><keycap>Ctrl</keycap><keycap>T</keycap></keycombo> (the last two options moves to focus to the unit expression entry). Enter a unit expression in the text entry and press <keycap>Enter</keycap> (or click <guibutton>Convert</guibutton>), or select a unit from the list. An appropriate unit category will automatically be selected from units in the current result. If <guibutton>Continuous expression</guibutton> is checked subsequent results will automatically be converted, and if <guibutton>Add prefix</guibutton> the optimal prefix will be set for unit expressions without any prefix. A unit can be inserted directly into the expression entry from the list by middle click selection or using the context menu.
+Alternatively the unit conversion view can be used. It is opened using <guilabel>Conversion</guilabel>, <keycombo><keycap>Ctrl</keycap><keycap>O</keycap></keycombo>, <menuchoice><guimenu>Edit</guimenu><guimenuitem>Convert To Unit Expression...</guimenuitem></menuchoice> or <keycombo><keycap>Ctrl</keycap><keycap>T</keycap></keycombo> (the last two options moves the focus to the unit expression entry). Enter a unit expression in the text entry and press <keycap>Enter</keycap> (or click <guibutton>Convert</guibutton>), or select a unit from the list. An appropriate unit category will automatically be selected from units in the current result. If <guibutton>Continuous expression</guibutton> is checked subsequent results will automatically be converted (if the conversion view is open), and if <guibutton>Add prefix</guibutton> is checked the optimal prefix will be set for unit expressions without any prefix. A unit can be inserted directly into the expression entry from the list using middle click or the context menu.
 <figure id="qalculate-FIG-unit-conversion">
 	<title>Unit Conversion View</title>
 	<screenshot>
@@ -2312,13 +2312,13 @@ The unit conversion view can also be used. It is shown when pressing <guilabel>C
 </figure>
 </para>
 <para>
-The menu associated with the <guibutton>to</guibutton> keypad button also provides a automatically generated list of units for conversion.
+The the result context menu and the menu associated with the <guibutton>to</guibutton> keypad button also provides a list of units for conversion.
 </para>
 <para>
-The final way to convert to another unit is to use the predefined units in the <menuchoice><guimenu>Edit</guimenu><guisubmenu>Convert To Unit</guisubmenu></menuchoice> menu or press <guibutton>Convert Result</guibutton> in the unit manager, which also provides quick conversion of a value between two selected units. <menuchoice><guimenu>Edit</guimenu><guisubmenu>Set Prefix</guisubmenu></menuchoice> can be used to select a prefix.
+The final way to convert the result to another unit is to use <menuchoice><guimenu>Edit</guimenu><guisubmenu>Convert To Unit</guisubmenu></menuchoice> menu or to press <guibutton>Convert Result</guibutton> in the unit manager, which also provides quick conversion of a value between two selected units. <menuchoice><guimenu>Edit</guimenu><guisubmenu>Set Prefix</guisubmenu></menuchoice> can be used to select a prefix.
 </para>
 <para>
-It is also possible to let &app; automagically convert the result to appropriate units with <menuchoice><guimenu>Edit</guimenu><guisubmenu>Convert To Optimal Unit</guisubmenu></menuchoice> or <menuchoice><guimenu>Edit</guimenu><guisubmenu>Convert To Base Units</guisubmenu></menuchoice> (or the corresponding options in the result context menu). If instead the corresponding choice is selected from <menuchoice><guimenu>Mode</guimenu><guimenu>Unit Display</guimenu></menuchoice>, each result will automatically be converted until the choice is deactivated (<menuchoice><guimenu>Mode</guimenu><guimenu>Unit Display</guimenu><guisubmenu>No Automatic Conversion</guisubmenu></menuchoice>).
+It is also possible to let &app; automagically convert the result to appropriate units with <menuchoice><guimenu>Edit</guimenu><guisubmenu>Convert To Optimal Unit</guisubmenu></menuchoice> or <menuchoice><guimenu>Edit</guimenu><guisubmenu>Convert To Base Units</guisubmenu></menuchoice> (or the corresponding options in the result context menu). If instead the corresponding choice is selected from <menuchoice><guimenu>Mode</guimenu><guimenu>Unit Display</guimenu></menuchoice> (or the result context menu), each result will automatically be converted until the choice is deactivated (<menuchoice><guimenu>Mode</guimenu><guimenu>Unit Display</guimenu><guisubmenu>No Automatic Conversion</guisubmenu></menuchoice>).
 </para>
 <para>
 By default (controlled by <menuchoice><guimenu>Mode</guimenu><guisubmenu>Unit Display</guisubmenu><guimenuitem>Convert To Mixed Units</guimenuitem></menuchoice>) certain units, such as time units and many imperial/U.S. customary units, are automatically converted to mixed units (e.g. <quote>60.2 minutes = 1 hour to 12 seconds</quote>). When explicitely converting to a specific unit the integer value of the selected unit is preserved (<quote>1.51 h to min = 90 min + 36 s</quote>) and mixed units is not used if otherwise the unit would not be present in the result (<quote>6 in to ft = 0.5 ft</quote>). This behavior can be modified by prepending the unit with a plus or minus sign (e.g. <quote>174 cm to +in ≈ 5 ft + 8,5 in</quote>, <quote>1.51 h to -min = 90.6 min</quote>).
@@ -2327,33 +2327,48 @@ By default (controlled by <menuchoice><guimenu>Mode</guimenu><guisubmenu>Unit Di
 <sect1 id="qalculate-unit-creation">
 <title>Unit creation/editing</title>
 <para>
-There are three different unit classes in &app; — base, alias and composite units. Base units are units defined as basis for other units. Meters and seconds are typical base units. Alias units is defined in relation to another unit. For example, hour is defined as an alias unit that equals 60 minutes which in turn is defined in relation to seconds. Finally, composite units are defined by a unit expression with multiple units. Composite units often have an alias unit associated with them, as they do not have a reference name on their own. For example, a joule is defined as an alias defined in relation to a composite unit defined as <quote>Newton × meter</quote>.
+There are three different unit classes in &app; — base units, named derived units, and (unnamed) derived units. Base units are standard units that form the basis for all other units. Meters and seconds are typical base units. Derived units are defined in relation to other units. Named derived units are defined in relation to a single other unit, with an optional exponent (e.g. hour is defined as a named derived unit that equals 60 minutes which in turn is defined in relation to seconds). Unnamed derived units are defined by a unit expression with one or multiple units (e.g. <quote>J/s</quote>). They are primarily useful as basis for named derived units (e.g. W = J/s), and for simplified conversion and entry of the specified unit expression.
 </para>
 <para>
 Select <menuchoice><guimenu>File</guimenu><guisubmenu>New</guisubmenu><guimenuitem>Unit</guimenuitem></menuchoice>, or click <guibutton>New</guibutton> in the unit manager, and the unit edit dialog pops up. 
 <figure id="qalculate-FIG-edit-unit">
-	<title>Unit Edit Dialog</title>
+	<title>Unit Edit Dialog (General)</title>
 	<screenshot>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/edit-unit.png" format="PNG" width="354"/>
+				<imagedata fileref="figures/edit-unit.png" format="PNG" width="365"/>
 			</imageobject>
 		</mediaobject>
 	</screenshot>
 </figure>
-First the unit class needs to be selected. Depending on the unit class, different elements in the dialog will be enabled. For all units, category and descriptive name can be specified to keep them well organized. A unit can also be hidden from unit menus with the corresponding check box, which can be useful for some composite units.
+Base units and named derived units normally have three different name forms defined for use in expressions — abbreviation (e.g. <quote>m</quote>), singular (<quote>meter</quote>) and plural (<quote>meters</quote>). Unnamed derived units only have an internal name, which is used to reference the unit in definitions of other units, but which should not be used in mathematical expressions.
+</para>
+<para>In addition category and descriptive name can be specified to keep the units well organized. A unit can be hidden from unit menus with the corresponding check box (this is primarily useful for some unnamed derived units which are only defined as basis for named derived units).
 </para>
 <para>
-Base and alias units normally have three different name forms defined for use in expressions — abbreviation (e.g. <quote>m</quote>), singular (<quote>meter</quote>) and plural (<quote>meters</quote>). Composite units only have an internal name, used to reference the unit in definitions of other units.
+Depending on the unit class, different elements in the relation page of the dialog will be enabled.
+<figure id="qalculate-FIG-edit-unit-relation">
+	<title>Unit Edit Dialog (Relation)</title>
+	<screenshot>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="figures/edit-unit-relation.png" format="PNG" width="365"/>
+			</imageobject>
+		</mediaobject>
+	</screenshot>
+</figure>
 </para>
 <para>
-For base units, the name is all that is needed. For alias units, on the other hand, a base unit, exponent and relation are necessary. The base unit must not necessarily be of the base unit class and it is recommended that an alias unit is defined in relation to the closest unit (e.g. 1ft = 3 hands, 1 hand = 4 in, and 1 in = 0.0254 m). The relation is usually just a number that tells how large quantity of the base unit is needed to get the alias unit (alias unit = base unit × relation). The check box below relation in the dialog specifies if the relation is exact or approximate. The exponent defines the exponential relation to the base unit, so that the alias unit equals the base unit raised to the exponent. For simple unit relations this gives: alias unit = relation × base unit^exponent.
+For named derived units, base unit, exponent and relation must all be specified (although the exponent and relation may both left as <quote>1</quote>). The base unit can be of any unit class and it is recommended that named derived units are defined in relation to the closest unit (e.g. 1 ft = 3 hands, 1 hand = 4 in, and 1 in = 0.0254 m). The relation is usually just a number that tells how large quantity of the base unit is needed to get the derived unit (derived unit = relation × base unit<superscript>exponent</superscript>).
 </para>
 <para>
 It is possible to create units with non-linear relation to the base unit. Replace the factor with <quote>\x</quote> and the exponent with <quote>\y</quote> (e.g. <quote>\x + 273.15</quote> for degrees Celsius with Kelvin as base unit). For non-linear relations the reverse relation (for conversion back from the base unit) should also be specified (<quote>\x - 273.15</quote> for degrees Celsius).
 </para>
 <para>
-Composite units need a unit expression with multiple units as base, in the base unit field. These expressions may only contain units, prefixes, exponents, multiplication and division (e.g. <quote>km/h</quote>). 
+Base unit mixing can be enabled (by default) for named derived units. This is used for units such as feet and minutes, which are often combined with other units instead of using decimals (e.g. <quote>5.25 ft = 5 ft + 3 in</quote>, <quote>250 s = 4 min + 10 s</quote>). This behaviour can be fine-tuned used the priority and minumum base unit number properties.
+</para>
+<para>
+For unnamed derived units a unit expression, with one or multiple units, must be specified in the base units field. This expressions may only contain units, prefixes, exponents, multiplication and division (e.g. <quote>km/h</quote>). 
 </para>
 </sect1>
 </chapter>

@@ -52,6 +52,7 @@
     <property name="can-focus">False</property>
     <property name="border-width">6</property>
     <property name="title" translatable="yes">Preferences</property>
+    <property name="resizable">False</property>
     <property name="type-hint">dialog</property>
     <signal name="delete-event" handler="gtk_widget_hide" swapped="no"/>
     <child internal-child="vbox">
@@ -92,10 +93,9 @@
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="border-width">6</property>
-            <property name="scrollable">True</property>
-            <property name="enable-popup">True</property>
+            <property name="tab-pos">left</property>
             <child>
-              <object class="GtkBox">
+              <object class="GtkBox" id="box_behavior">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="valign">start</property>
@@ -323,19 +323,22 @@ Note that only the mode, history and definitions of the last closed instance wil
               </object>
             </child>
             <child type="tab">
-              <object class="GtkLabel">
+              <object class="GtkLabel" id="label_behavior">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Behaviour</property>
+                <property name="margin-top">6</property>
+                <property name="margin-bottom">6</property>
+                <property name="label" translatable="yes">Behavior</property>
               </object>
               <packing>
                 <property name="tab-fill">False</property>
               </packing>
             </child>
             <child>
-              <object class="GtkBox">
+              <object class="GtkBox" id="box_appearance">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="halign">start</property>
                 <property name="valign">start</property>
                 <property name="border-width">18</property>
                 <property name="orientation">vertical</property>
@@ -467,7 +470,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                         <signal name="changed" handler="on_preferences_combo_title_changed" swapped="no"/>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="expand">True</property>
                         <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>
@@ -509,7 +512,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                         <signal name="value-changed" handler="on_preferences_expression_lines_spin_button_value_changed" swapped="no"/>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="expand">True</property>
                         <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>
@@ -561,9 +564,11 @@ Note that only the mode, history and definitions of the last closed instance wil
               </packing>
             </child>
             <child type="tab">
-              <object class="GtkLabel">
+              <object class="GtkLabel" id="label_appearance">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="margin-top">6</property>
+                <property name="margin-bottom">6</property>
                 <property name="label" translatable="yes">Look &amp; Feel</property>
               </object>
               <packing>
@@ -779,10 +784,11 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
-                  <!-- n-columns=3 n-rows=4 -->
+                  <!-- n-columns=2 n-rows=4 -->
                   <object class="GtkGrid" id="grid_groupsign">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
+                    <property name="halign">start</property>
                     <property name="margin-top">12</property>
                     <property name="row-spacing">12</property>
                     <property name="column-spacing">12</property>
@@ -1049,18 +1055,6 @@ Note that only the mode, history and definitions of the last closed instance wil
                         <property name="width">2</property>
                       </packing>
                     </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1077,6 +1071,8 @@ Note that only the mode, history and definitions of the last closed instance wil
               <object class="GtkLabel" id="label_numbers">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="margin-top">6</property>
+                <property name="margin-bottom">6</property>
                 <property name="label" translatable="yes">Numbers &amp; Operators</property>
               </object>
               <packing>
@@ -1166,7 +1162,6 @@ Note that only the mode, history and definitions of the last closed instance wil
                       <object class="GtkSpinButton" id="preferences_update_exchange_rates_spin_button">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="width-chars">15</property>
                         <property name="adjustment">preferences_update_exchange_rates_adjustment</property>
                         <property name="value">7</property>
                         <signal name="input" handler="on_preferences_update_exchange_rates_spin_button_input" swapped="no"/>
@@ -1174,7 +1169,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                         <signal name="value-changed" handler="on_preferences_update_exchange_rates_spin_button_value_changed" swapped="no"/>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="expand">True</property>
                         <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>
@@ -1195,6 +1190,8 @@ Note that only the mode, history and definitions of the last closed instance wil
               <object class="GtkLabel" id="label_units">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="margin-top">6</property>
+                <property name="margin-bottom">6</property>
                 <property name="label" translatable="yes">Units &amp; Currencies</property>
               </object>
               <packing>
@@ -1203,10 +1200,11 @@ Note that only the mode, history and definitions of the last closed instance wil
               </packing>
             </child>
             <child>
-              <!-- n-columns=3 n-rows=5 -->
+              <!-- n-columns=2 n-rows=5 -->
               <object class="GtkGrid" id="grid_completion">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="halign">start</property>
                 <property name="valign">start</property>
                 <property name="border-width">18</property>
                 <property name="row-spacing">6</property>
@@ -1323,21 +1321,6 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="top-attach">2</property>
                   </packing>
                 </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
               </object>
               <packing>
                 <property name="position">4</property>
@@ -1347,6 +1330,8 @@ Note that only the mode, history and definitions of the last closed instance wil
               <object class="GtkLabel" id="label_completion">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="margin-top">6</property>
+                <property name="margin-bottom">6</property>
                 <property name="label" translatable="yes">Completion</property>
               </object>
               <packing>
@@ -1355,7 +1340,7 @@ Note that only the mode, history and definitions of the last closed instance wil
               </packing>
             </child>
             <child>
-              <!-- n-columns=3 n-rows=12 -->
+              <!-- n-columns=2 n-rows=12 -->
               <object class="GtkGrid" id="grid_fonts">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -1421,6 +1406,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
                     <property name="tooltip-text" translatable="yes">If you want to use a font other than the default in the status display below the expression entry</property>
+                    <property name="margin-top">6</property>
                     <property name="use-underline">True</property>
                     <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_custom_status_font_toggled" swapped="no"/>
@@ -1472,6 +1458,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
                     <property name="tooltip-text" translatable="yes">If you want to use a font other than the default in the expression entry</property>
+                    <property name="margin-top">6</property>
                     <property name="use-underline">True</property>
                     <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_custom_expression_font_toggled" swapped="no"/>
@@ -1523,6 +1510,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
                     <property name="tooltip-text" translatable="yes">If you want to use a font other than the default in the keypad</property>
+                    <property name="margin-top">6</property>
                     <property name="use-underline">True</property>
                     <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_custom_keypad_font_toggled" swapped="no"/>
@@ -1557,6 +1545,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
                     <property name="tooltip-text" translatable="yes">If you want to use a font other than the default for the whole application</property>
+                    <property name="margin-top">6</property>
                     <property name="use-underline">True</property>
                     <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_custom_app_font_toggled" swapped="no"/>
@@ -1585,42 +1574,6 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="width">2</property>
                   </packing>
                 </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
               </object>
               <packing>
                 <property name="position">5</property>
@@ -1630,7 +1583,9 @@ Note that only the mode, history and definitions of the last closed instance wil
               <object class="GtkLabel" id="label_fonts">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Fonts</property>
+                <property name="margin-top">6</property>
+                <property name="margin-bottom">6</property>
+                <property name="label" translatable="yes">Fonts &amp; Colors</property>
               </object>
               <packing>
                 <property name="position">5</property>

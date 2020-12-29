@@ -410,12 +410,12 @@
                       <object class="GtkComboBoxText" id="unit_edit_combobox_class">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="tooltip-text" translatable="yes">The class that this unit belongs to. Alias units is defined in relation to another unit, composite units is a composition of a number of other units Base units is not defined in relation to other units.</property>
+                        <property name="tooltip-text" translatable="yes">The class that this unit belongs to. Named derived units are defined in relation to a single other unit, with an optional exponent, while (unnamed) derived units are defined by a unit expression with one or multiple units.</property>
                         <property name="active">0</property>
                         <items>
-                          <item translatable="yes">Base Unit</item>
-                          <item translatable="yes">Alias</item>
-                          <item translatable="yes">Composite Unit</item>
+                          <item translatable="yes">Base unit</item>
+                          <item translatable="yes">Named derived unit</item>
+                          <item translatable="yes">Derived unit</item>
                         </items>
                         <signal name="changed" handler="on_unit_changed" swapped="no"/>
                         <signal name="changed" handler="on_unit_edit_combobox_class_changed" swapped="no"/>
@@ -444,7 +444,7 @@
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">start</property>
-                        <property name="label" translatable="yes">Base unit</property>
+                        <property name="label" translatable="yes">Base unit(s)</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -456,7 +456,7 @@
                       <object class="GtkEntry" id="unit_edit_entry_base">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="tooltip-text" translatable="yes">Unit (for alias unit) or units (for composite unit) that this unit as defined in relation to</property>
+                        <property name="tooltip-text" translatable="yes">Unit (for named derived unit) or unit expression (for unnamed derived unit) that this unit as defined in relation to</property>
                         <property name="primary-icon-activatable">False</property>
                         <property name="secondary-icon-activatable">False</property>
                         <signal name="changed" handler="on_unit_changed" swapped="no"/>
@@ -499,7 +499,6 @@
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="tooltip-text" translatable="yes">Exponent of the base unit</property>
-                        <property name="text" translatable="yes">1</property>
                         <property name="primary-icon-activatable">False</property>
                         <property name="secondary-icon-activatable">False</property>
                         <property name="adjustment">adjustment1</property>
@@ -704,7 +703,6 @@ For non-linear relations use \x for the factor and \y for the exponent (e.g. "\x
                           <object class="GtkSpinButton" id="unit_edit_spinbutton_mix_priority">
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
-                            <property name="text" translatable="yes">1</property>
                             <property name="primary-icon-activatable">False</property>
                             <property name="secondary-icon-activatable">False</property>
                             <property name="adjustment">adjustment2</property>
@@ -748,7 +746,6 @@ For non-linear relations use \x for the factor and \y for the exponent (e.g. "\x
                           <object class="GtkSpinButton" id="unit_edit_spinbutton_mix_min">
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
-                            <property name="text" translatable="yes">1</property>
                             <property name="primary-icon-activatable">False</property>
                             <property name="secondary-icon-activatable">False</property>
                             <property name="adjustment">adjustment3</property>

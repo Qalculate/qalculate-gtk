@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-20 10:32+0100\n"
+"POT-Creation-Date: 2020-12-23 09:42+0100\n"
 "PO-Revision-Date: 2020-09-10 10:38-0300\n"
 "Last-Translator: Fúlvio Alves <fga.fulvio@gmail.com>\n"
 "Language-Team: \n"
@@ -78,10 +78,10 @@ msgstr "Regras de argumento"
 #: ../src/callbacks.cc:17390 ../src/callbacks.cc:18519
 #: ../src/callbacks.cc:18574 ../src/callbacks.cc:25370
 #: ../src/callbacks.cc:25847 ../src/callbacks.cc:27031
-#: ../src/callbacks.cc:28736 ../src/callbacks.cc:32280
-#: ../src/callbacks.cc:32305 ../src/callbacks.cc:32322
-#: ../src/callbacks.cc:32365 ../src/callbacks.cc:33543
-#: ../src/callbacks.cc:34064
+#: ../src/callbacks.cc:28736 ../src/callbacks.cc:32282
+#: ../src/callbacks.cc:32307 ../src/callbacks.cc:32324
+#: ../src/callbacks.cc:32367 ../src/callbacks.cc:33545
+#: ../src/callbacks.cc:34066
 msgid "_Cancel"
 msgstr "_Cancelar"
 
@@ -97,7 +97,7 @@ msgstr "Não salvar modificações"
 #: ../data/unknownedit.ui.h:5 ../data/variableedit.ui.h:5
 #: ../src/callbacks.cc:2367 ../src/callbacks.cc:17272 ../src/callbacks.cc:17390
 #: ../src/callbacks.cc:25370 ../src/callbacks.cc:25847
-#: ../src/callbacks.cc:32322 ../src/callbacks.cc:34064
+#: ../src/callbacks.cc:32324 ../src/callbacks.cc:34066
 msgid "_OK"
 msgstr "_OK"
 
@@ -161,7 +161,7 @@ msgstr "Atalhos do teclado"
 #: ../data/setbase.ui.h:2 ../data/shortcuts.ui.h:2 ../data/units.ui.h:2
 #: ../data/variables.ui.h:2 ../src/callbacks.cc:2369 ../src/callbacks.cc:14264
 #: ../src/callbacks.cc:16280 ../src/callbacks.cc:25296
-#: ../src/callbacks.cc:33906
+#: ../src/callbacks.cc:33908
 msgid "_Close"
 msgstr "_Fechar"
 
@@ -800,7 +800,7 @@ msgid "Add entered argument definition"
 msgstr "Adicionar definição de argumento inserido"
 
 #: ../data/functionedit.ui.h:51 ../data/functions.ui.h:13 ../data/plot.ui.h:36
-#: ../src/callbacks.cc:34064
+#: ../src/callbacks.cc:34066
 msgid "_Apply"
 msgstr "_Aplicar"
 
@@ -910,7 +910,7 @@ msgstr "Grados"
 msgid "Default assumptions"
 msgstr "Suposições padrão"
 
-#: ../data/main.ui.h:5 ../data/unknownedit.ui.h:17 ../src/callbacks.cc:33963
+#: ../data/main.ui.h:5 ../data/unknownedit.ui.h:17 ../src/callbacks.cc:33965
 msgid "Unknown"
 msgstr "Desconhecido"
 
@@ -2270,9 +2270,9 @@ msgstr "Número de colunas nesta matriz (colunas exibidas para vetores)"
 msgid "If this is a matrix or vector"
 msgstr "Se isso é uma matriz ou vetor"
 
-#: ../data/matrix.ui.h:12 ../data/matrixedit.ui.h:21 ../src/callbacks.cc:32241
-#: ../src/callbacks.cc:32249 ../src/callbacks.cc:32257
-#: ../src/callbacks.cc:32265
+#: ../data/matrix.ui.h:12 ../data/matrixedit.ui.h:21 ../src/callbacks.cc:32243
+#: ../src/callbacks.cc:32251 ../src/callbacks.cc:32259
+#: ../src/callbacks.cc:32267
 msgid "Elements"
 msgstr "Elementos"
 
@@ -2463,7 +2463,7 @@ msgid "Plot"
 msgstr "Plotagem"
 
 #: ../data/plot.ui.h:3 ../src/callbacks.cc:18519 ../src/callbacks.cc:28736
-#: ../src/callbacks.cc:33543
+#: ../src/callbacks.cc:33545
 msgid "_Save"
 msgstr "_Salvar"
 
@@ -2774,8 +2774,8 @@ msgid "Time limit for plot:"
 msgstr "Tempo limite para plotagem:"
 
 #: ../data/preferences.ui.h:20
-msgid "Behaviour"
-msgstr ""
+msgid "Behavior"
+msgstr "Comportamento"
 
 #: ../data/preferences.ui.h:21
 msgid "Enable Unicode symbols"
@@ -2860,7 +2860,7 @@ msgstr "Teclado persistente"
 
 #: ../data/preferences.ui.h:40
 msgid "Look & Feel"
-msgstr ""
+msgstr "Aparência"
 
 #: ../data/preferences.ui.h:41
 msgid "Binary two's complement representation"
@@ -3001,7 +3001,7 @@ msgstr "Desative para remover o separador de dígitos ao copiar o resultado"
 
 #: ../data/preferences.ui.h:69
 msgid "Numbers & Operators"
-msgstr "Números e Operadores"
+msgstr "Números e operadores"
 
 #: ../data/preferences.ui.h:70
 msgid "Use binary prefixes for information units"
@@ -3044,7 +3044,7 @@ msgstr "Atualizações das taxas de câmbio"
 
 #: ../data/preferences.ui.h:77
 msgid "Units & Currencies"
-msgstr "Unidades e Moedas"
+msgstr "Unidades e moedas"
 
 #: ../data/preferences.ui.h:78
 msgid "Show expression completion suggestions"
@@ -3123,8 +3123,8 @@ msgid ""
 msgstr "Se você desejar usar uma fonte diferente da padrão em todo o programa"
 
 #: ../data/preferences.ui.h:95
-msgid "Fonts"
-msgstr "Fontes"
+msgid "Fonts & Colors"
+msgstr "Fontes e cores"
 
 #: ../data/setbase.ui.h:11
 msgid "Other:"
@@ -3228,10 +3228,11 @@ msgid "Class"
 msgstr "Classe"
 
 #: ../data/unitedit.ui.h:22
+#, fuzzy
 msgid ""
-"The class that this unit belongs to. Alias units is defined in relation to "
-"another unit, composite units is a composition of a number of other units "
-"Base units is not defined in relation to other units."
+"The class that this unit belongs to. Named derived units are defined in "
+"relation to a single other unit, with an optional exponent, while (unnamed) "
+"derived units are defined by a unit expression with one or multiple units."
 msgstr ""
 "A classe à qual esta unidade pertence. Unidades de alias são definidas em "
 "relação a outra unidade, unidades compostas são uma composição de várias "
@@ -3239,25 +3240,26 @@ msgstr ""
 "unidades."
 
 #: ../data/unitedit.ui.h:23
-msgid "Base Unit"
-msgstr "Unidade base"
-
-#: ../data/unitedit.ui.h:24
-msgid "Alias"
-msgstr "Alias"
-
-#: ../data/unitedit.ui.h:25
-msgid "Composite Unit"
-msgstr "Unidade composta"
-
-#: ../data/unitedit.ui.h:26
 msgid "Base unit"
 msgstr "Unidade base"
 
+#: ../data/unitedit.ui.h:24
+msgid "Named derived unit"
+msgstr "Unidade derivada nomeada"
+
+#: ../data/unitedit.ui.h:25
+msgid "Derived unit"
+msgstr "Unidade derivada"
+
+#: ../data/unitedit.ui.h:26
+msgid "Base unit(s)"
+msgstr "Unidade(s) base"
+
 #: ../data/unitedit.ui.h:27
+#, fuzzy
 msgid ""
-"Unit (for alias unit) or units (for composite unit) that this unit as "
-"defined in relation to"
+"Unit (for named derived unit) or unit expression (for unnamed derived unit) "
+"that this unit as defined in relation to"
 msgstr ""
 "Unidade (para unidade de alias) ou unidades (para unidade composta) "
 "definidas por esta unidade em relação a unidade base"
@@ -3271,14 +3273,10 @@ msgid "Exponent of the base unit"
 msgstr "Exponent of the base unit"
 
 #: ../data/unitedit.ui.h:30
-msgid "1"
-msgstr ""
-
-#: ../data/unitedit.ui.h:31
 msgid "Relation"
 msgstr "Relação"
 
-#: ../data/unitedit.ui.h:32
+#: ../data/unitedit.ui.h:31
 msgid ""
 "Relation to the base unit. For linear relations this should just be a "
 "number.\n"
@@ -3292,29 +3290,29 @@ msgstr ""
 "Para relações não-lineares, use \\x para o fator e \\y para o expoente (por "
 "exemplo, \"\\x + 273.15\" para a relação entre graus Celsius e Kelvin)."
 
-#: ../data/unitedit.ui.h:35
+#: ../data/unitedit.ui.h:34
 msgid "Relation is exact"
 msgstr "Relação é exata"
 
-#: ../data/unitedit.ui.h:36
+#: ../data/unitedit.ui.h:35
 msgid "If the relation is precise"
 msgstr "Se a relação é precisa"
 
-#: ../data/unitedit.ui.h:37
+#: ../data/unitedit.ui.h:36
 msgid "Inverse relation"
 msgstr "Relação inversa"
 
-#: ../data/unitedit.ui.h:38
+#: ../data/unitedit.ui.h:37
 msgid "Specify for non-linear relation, for conversion back to the base unit."
 msgstr ""
 "Específica para relação não-linear, para converter de volta para a unidade "
 "base."
 
-#: ../data/unitedit.ui.h:39
+#: ../data/unitedit.ui.h:38
 msgid "Mix with base unit"
 msgstr "Mesclar com a unidade base"
 
-#: ../data/unitedit.ui.h:40
+#: ../data/unitedit.ui.h:39
 msgid ""
 "- Decides which units the base unit is mixed with if multple options exist.\n"
 "- The original unit will not be mixed with units with lower priority.\n"
@@ -3325,15 +3323,15 @@ msgstr ""
 "- A unidade original não será mesclada com unidades de menor prioridade.\n"
 "- Um valor mais baixo significa prioridade mais alta."
 
-#: ../data/unitedit.ui.h:43
+#: ../data/unitedit.ui.h:42
 msgid "Priority"
 msgstr "Prioridade"
 
-#: ../data/unitedit.ui.h:44
+#: ../data/unitedit.ui.h:43
 msgid "Minimum base unit number"
 msgstr "Número mínimo da unidade base"
 
-#: ../data/unitedit.ui.h:45
+#: ../data/unitedit.ui.h:44
 msgid "Use with prefixes by default"
 msgstr "Use com prefixos por padrão"
 
@@ -3946,8 +3944,8 @@ msgstr "Faz %s dia(s) desde a última atualização das taxas de câmbio."
 msgid "Do not ask again"
 msgstr "Não perguntar novamente"
 
-#: ../src/callbacks.cc:2113 ../src/callbacks.cc:33616 ../src/callbacks.cc:33626
-#: ../src/callbacks.cc:33635
+#: ../src/callbacks.cc:2113 ../src/callbacks.cc:33618 ../src/callbacks.cc:33628
+#: ../src/callbacks.cc:33637
 msgid "It took too long to generate the plot data."
 msgstr "Demorou muito para gerar os dados da plotagem."
 
@@ -4735,8 +4733,8 @@ msgstr "Número sexagesimal"
 msgid "and"
 msgstr "e"
 
-#: ../src/callbacks.cc:8518 ../src/callbacks.cc:10100 ../src/callbacks.cc:10123
-#: ../src/callbacks.cc:10124
+#: ../src/callbacks.cc:8518 ../src/callbacks.cc:10100 ../src/callbacks.cc:10119
+#: ../src/callbacks.cc:10120
 msgid "or"
 msgstr "ou"
 
@@ -4847,7 +4845,7 @@ msgstr "Nova unidade"
 #: ../src/callbacks.cc:15902 ../src/callbacks.cc:16157
 #: ../src/callbacks.cc:16635 ../src/callbacks.cc:16786
 #: ../src/callbacks.cc:16900 ../src/callbacks.cc:18542
-#: ../src/callbacks.cc:32660
+#: ../src/callbacks.cc:32662
 msgid "Empty name field."
 msgstr "Campo de nome vazio."
 
@@ -4872,13 +4870,13 @@ msgstr "Editar Função (global)"
 msgid "New Function"
 msgstr "Nova Função"
 
-#: ../src/callbacks.cc:15313 ../src/callbacks.cc:32421
-#: ../src/callbacks.cc:32433
+#: ../src/callbacks.cc:15313 ../src/callbacks.cc:32423
+#: ../src/callbacks.cc:32435
 msgid "Yes"
 msgstr "Sim"
 
-#: ../src/callbacks.cc:15315 ../src/callbacks.cc:32423
-#: ../src/callbacks.cc:32435
+#: ../src/callbacks.cc:15315 ../src/callbacks.cc:32425
+#: ../src/callbacks.cc:32437
 msgid "No"
 msgstr "Não"
 
@@ -4965,7 +4963,7 @@ msgid "New Data Object"
 msgstr "Novo Objeto de Dados"
 
 #: ../src/callbacks.cc:16481 ../src/callbacks.cc:17755
-#: ../src/callbacks.cc:18741 ../src/callbacks.cc:33268
+#: ../src/callbacks.cc:18741 ../src/callbacks.cc:33270
 msgid "Default"
 msgstr "Padrão"
 
@@ -5158,7 +5156,7 @@ msgstr ""
 msgid "No items found"
 msgstr "Nenhum item encontrado"
 
-#: ../src/callbacks.cc:25847 ../src/callbacks.cc:32322
+#: ../src/callbacks.cc:25847 ../src/callbacks.cc:32324
 msgid "Select date"
 msgstr "Selecionar data"
 
@@ -5219,8 +5217,8 @@ msgstr "Não foi possível copiar o arquivo para %s."
 
 #: ../src/callbacks.cc:27670 ../src/callbacks.cc:27750
 #: ../src/callbacks.cc:27830 ../src/callbacks.cc:27877
-#: ../src/callbacks.cc:32993 ../src/callbacks.cc:33192
-#: ../src/callbacks.cc:33347
+#: ../src/callbacks.cc:32995 ../src/callbacks.cc:33194
+#: ../src/callbacks.cc:33349
 msgid "Unsupported base."
 msgstr "Base não suportada."
 
@@ -5254,11 +5252,11 @@ msgstr ""
 msgid "Select file to save PNG image to"
 msgstr "Selecione o arquivo para salvar a imagem PNG"
 
-#: ../src/callbacks.cc:28739 ../src/callbacks.cc:33546
+#: ../src/callbacks.cc:28739 ../src/callbacks.cc:33548
 msgid "Allowed File Types"
 msgstr "Tipos de arquivo permitidos"
 
-#: ../src/callbacks.cc:28744 ../src/callbacks.cc:33557
+#: ../src/callbacks.cc:28744 ../src/callbacks.cc:33559
 msgid "All Files"
 msgstr "Todos os arquivos"
 
@@ -5278,30 +5276,30 @@ msgstr "nenhum"
 msgid "result is too long"
 msgstr "resultado é muito longo"
 
-#: ../src/callbacks.cc:31513 ../src/callbacks.cc:32982
-#: ../src/callbacks.cc:33181 ../src/callbacks.cc:33336
+#: ../src/callbacks.cc:31513 ../src/callbacks.cc:32984
+#: ../src/callbacks.cc:33183 ../src/callbacks.cc:33338
 msgid "Mode not found."
 msgstr "Modo não encontrado."
 
-#: ../src/callbacks.cc:32243 ../src/callbacks.cc:32251
-#: ../src/callbacks.cc:32259 ../src/callbacks.cc:32267
+#: ../src/callbacks.cc:32245 ../src/callbacks.cc:32253
+#: ../src/callbacks.cc:32261 ../src/callbacks.cc:32269
 msgid "Elements (in horizontal order)"
 msgstr "Elementos (em ordem horizontal)"
 
-#: ../src/callbacks.cc:32280 ../src/callbacks.cc:32365
+#: ../src/callbacks.cc:32282 ../src/callbacks.cc:32367
 msgid "Select file to import"
 msgstr "Selecionar arquivo para importar"
 
-#: ../src/callbacks.cc:32280 ../src/callbacks.cc:32305
-#: ../src/callbacks.cc:32365
+#: ../src/callbacks.cc:32282 ../src/callbacks.cc:32307
+#: ../src/callbacks.cc:32367
 msgid "_Open"
 msgstr "_Abrir"
 
-#: ../src/callbacks.cc:32305
+#: ../src/callbacks.cc:32307
 msgid "Select file to export to"
 msgstr "Selecionar o arquivo para o qual exportar"
 
-#: ../src/callbacks.cc:32671 ../src/callbacks.cc:32701
+#: ../src/callbacks.cc:32673 ../src/callbacks.cc:32703
 msgid ""
 "A conflicting object with the same name exists. If you proceed and save "
 "changes, the conflicting object will be overwritten or deactivated.\n"
@@ -5311,12 +5309,12 @@ msgstr ""
 "alterações, o objeto conflitante será substituído ou desativado.\n"
 "Você quer continuar?"
 
-#: ../src/callbacks.cc:32883
+#: ../src/callbacks.cc:32885
 msgid "Set key combination"
 msgstr "Definir combinação de teclas"
 
 #. Make the line reasonably long, but not to short (at least around 40 characters)
-#: ../src/callbacks.cc:32887
+#: ../src/callbacks.cc:32889
 msgid ""
 "Press the key combination you wish to use for the action\n"
 "(press Escape to cancel)."
@@ -5324,31 +5322,31 @@ msgstr ""
 "Pressione a combinação de teclas que deseja usar para a ação\n"
 "(pressione Escape para cancelar)."
 
-#: ../src/callbacks.cc:32897
+#: ../src/callbacks.cc:32899
 msgid "No keys"
 msgstr "Sem teclas"
 
-#: ../src/callbacks.cc:32942 ../src/callbacks.cc:33141
-#: ../src/callbacks.cc:33296
+#: ../src/callbacks.cc:32944 ../src/callbacks.cc:33143
+#: ../src/callbacks.cc:33298
 msgid "Empty value."
 msgstr "Valor vazio."
 
-#: ../src/callbacks.cc:32952 ../src/callbacks.cc:33151
-#: ../src/callbacks.cc:33306
+#: ../src/callbacks.cc:32954 ../src/callbacks.cc:33153
+#: ../src/callbacks.cc:33308
 msgid "Function not found."
 msgstr "Função não encontrada."
 
-#: ../src/callbacks.cc:32960 ../src/callbacks.cc:33159
-#: ../src/callbacks.cc:33314
+#: ../src/callbacks.cc:32962 ../src/callbacks.cc:33161
+#: ../src/callbacks.cc:33316
 msgid "Variable not found."
 msgstr "Variável não encontrada."
 
-#: ../src/callbacks.cc:32968 ../src/callbacks.cc:33167
-#: ../src/callbacks.cc:33322
+#: ../src/callbacks.cc:32970 ../src/callbacks.cc:33169
+#: ../src/callbacks.cc:33324
 msgid "Unit not found."
 msgstr "Unidade não encontrada."
 
-#: ../src/callbacks.cc:33009 ../src/callbacks.cc:33068
+#: ../src/callbacks.cc:33011 ../src/callbacks.cc:33070
 msgid ""
 "The key combination is already in use.\n"
 "Do you wish to replace the current action?"
@@ -5356,81 +5354,93 @@ msgstr ""
 "A combinação de teclas já está em uso.\n"
 "Deseja substituir a ação atual?"
 
-#: ../src/callbacks.cc:33543
+#: ../src/callbacks.cc:33545
 msgid "Select file to export"
 msgstr "Selecionar arquivo para exportar"
 
-#: ../src/callbacks.cc:33656 ../src/callbacks.cc:33701
+#: ../src/callbacks.cc:33658 ../src/callbacks.cc:33703
 msgid "Empty expression."
 msgstr "Expressão vazia."
 
-#: ../src/callbacks.cc:33670 ../src/callbacks.cc:33715
+#: ../src/callbacks.cc:33672 ../src/callbacks.cc:33717
 msgid "Empty x variable."
 msgstr "Variável x vazia."
 
-#: ../src/callbacks.cc:33909
+#: ../src/callbacks.cc:33911
 msgid "Element Data"
 msgstr "Dados do elemento"
 
-#: ../src/callbacks.cc:33947
+#: ../src/callbacks.cc:33949
 msgid "Classification"
 msgstr "Classificação"
 
-#: ../src/callbacks.cc:33952
+#: ../src/callbacks.cc:33954
 msgid "Alkali Metal"
 msgstr "Metal alcalino"
 
-#: ../src/callbacks.cc:33953
+#: ../src/callbacks.cc:33955
 msgid "Alkaline-Earth Metal"
 msgstr "Metal alcalino-terroso"
 
-#: ../src/callbacks.cc:33954
+#: ../src/callbacks.cc:33956
 msgid "Lanthanide"
 msgstr "Lantanídeo"
 
-#: ../src/callbacks.cc:33955
+#: ../src/callbacks.cc:33957
 msgid "Actinide"
 msgstr "Actinídeo"
 
-#: ../src/callbacks.cc:33956
+#: ../src/callbacks.cc:33958
 msgid "Transition Metal"
 msgstr "Metal de transição"
 
-#: ../src/callbacks.cc:33957
+#: ../src/callbacks.cc:33959
 msgid "Metal"
 msgstr "Metal"
 
-#: ../src/callbacks.cc:33958
+#: ../src/callbacks.cc:33960
 msgid "Metalloid"
 msgstr "Metaloide"
 
-#: ../src/callbacks.cc:33959
+#: ../src/callbacks.cc:33961
 msgid "Polyatomic Non-Metal"
 msgstr "Não-metal poliatômico"
 
-#: ../src/callbacks.cc:33960
+#: ../src/callbacks.cc:33962
 msgid "Diatomic Non-Metal"
 msgstr "Não-metal diatômico"
 
-#: ../src/callbacks.cc:33961
+#: ../src/callbacks.cc:33963
 msgid "Noble Gas"
 msgstr "Gás nobre"
 
-#: ../src/callbacks.cc:33962
+#: ../src/callbacks.cc:33964
 msgid "Unknown chemical properties"
 msgstr "Propriedades químicas desconhecidas"
 
-#: ../src/callbacks.cc:34058
+#: ../src/callbacks.cc:34060
 msgid "No unknowns in result."
 msgstr "Não há incógnitas no resultado."
 
-#: ../src/callbacks.cc:34064
+#: ../src/callbacks.cc:34066
 msgid "Set Unknowns"
 msgstr "Definir incógnitas"
 
 #: ../src/searchprovider.cc:244
 msgid "Copy result to clipboard"
 msgstr "Copiar resultado"
+
+#~ msgid "Base Unit"
+#~ msgstr "Unidade base"
+
+#~ msgid "Alias"
+#~ msgstr "Alias"
+
+#~ msgid "Composite Unit"
+#~ msgstr "Unidade composta"
+
+#~ msgid "Fonts"
+#~ msgstr "Fontes"
 
 #, fuzzy
 #~ msgid "Chain Calculation"

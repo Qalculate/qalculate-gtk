@@ -1693,6 +1693,13 @@ void set_unicode_buttons() {
 	if(can_display_unicode_string_function("∑", (void*) gtk_builder_get_object(main_builder, "label_rpn_sum"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sum")), "∑");
 	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sum")), "sum");
 
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), -1, -1);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_copyregister")), -1, -1);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_editregister")), -1, -1);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), -1, -1);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_add")), -1, -1);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sqrt")), -1, -1);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sum")), -1, -1);
 	GtkRequisition a;
 	gint w, h;
 	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_reciprocal")), &a, NULL);
@@ -1706,10 +1713,25 @@ void set_unicode_buttons() {
 	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sum")), &a, NULL);
 	if(a.width > w) w = a.width;
 	if(a.height > h) h = a.height;
+	if(gtk_image_get_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_up"))) != -1) gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_up")), -1);
 	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), &a, NULL);
 	if(a.width > w) w = a.width;
 	if(a.height > h) h = a.height;
+	if(gtk_image_get_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_swap"))) != -1) gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_swap")), -1);
 	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), &a, NULL);
+	gint h_i = -1;
+	if(use_custom_keypad_font || use_custom_app_font) {
+		h_i = 16 + (h - a.height);
+		if(h_i < 20) h_i = -1;
+	}
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_up")), h_i);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_down")), h_i);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_swap")), h_i);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_copy")), h_i);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_lastx")), h_i);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_delete")), h_i);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_edit")), h_i);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_clear")), h_i);
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), w, h);
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_copyregister")), w, h);
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_editregister")), w, h);
@@ -1717,17 +1739,37 @@ void set_unicode_buttons() {
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_add")), w, h);
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sqrt")), w, h);
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sum")), w, h);
-	if(use_custom_keypad_font || use_custom_app_font) {
-		h = 16 + (h - a.height); if(h < 16) h = 16;
-		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_up")), h);
-		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_down")), h);
-		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_swap")), h);
-		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_copy")), h);
-		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_lastx")), h);
-		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_delete")), h);
-		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_edit")), h);
-		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_clear")), h);
+
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_insert_value")), -1, -1);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_copy")), -1, -1);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_add")), -1, -1);
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_xy")), &a, NULL);
+	w = a.width; h = a.height;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_sqrt")), &a, NULL);
+	if(a.width > w) w = a.width;
+	if(a.height > h) h = a.height;
+	if(gtk_image_get_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_history_insert_value"))) != -1) {
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_history_insert_value")), -1);
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_history_insert_text")), -1);
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_history_copy")), -1);
 	}
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_insert_value")), &a, NULL);
+	if(a.width > w) w = a.width;
+	if(a.height > h) h = a.height;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_copy")), &a, NULL);
+	h_i = -1;
+	if(use_custom_keypad_font || use_custom_app_font) {
+		h_i = 16 + (h - a.height);
+		if(h_i < 20) h_i = -1;
+	}
+	if(h_i != -1) {
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_history_insert_value")), h_i);
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_history_insert_text")), h_i);
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_history_copy")), h_i);
+	}
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_insert_value")), w, h);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_copy")), w, h);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_add")), w, h);
 }
 
 
@@ -10103,13 +10145,9 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 			if(str[i] == ' ') {
 				str.erase(i, 1);
 				if(i >= str.length()) i = str.length() - 1;
-			} else if(str[i] <= 0 && (unsigned char) str[i] >= 0xC0) {
-				size_t l = 1;
-				while(i + l < str.length() && str[i + l] <= 0 && (unsigned char) str[i + l] < 0xC0) l++;
-				if(str.substr(i, l) == THIN_SPACE) {
-					str.erase(i, l);
-					if(i >= str.length()) i = str.length() - 1;
-				}
+			} else if(str[i] == -30 && i + 2 < str.length() && str[i + 1] == -128 && str[i + 2] == -119) {
+				str.erase(i, 3);
+				if(i >= str.length()) i = str.length() - 1;
 			}
 		}
 		if(str[i] > 0 || (unsigned char) str[i] >= 0xC0 || i == str.length() - 1) {
@@ -10164,6 +10202,8 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 												i--;
 											} else if(str[i - 1] == -30 && i + 1 < str.length() && str[i] == -128 && str[i + 1] == -119) {
 												i--;
+											} else if(i > 3 && str[i - 1] == -119 && str[i - 2] == -128 && str[i - 3] == -30) {
+												i -= 3;
 											} else if(i > 3 && str[i] <= '9' && str[i] >= '0' && str[i - 1] <= '9' && str[i - 1] >= '0') {
 												if(str[i - 2] == ' ' && str[i - 3] <= '9' && str[i - 3] >= '0') i -= 2;
 												else if(str[i - 3] == ' ' && str[i - 4] <= '9' && str[i - 4] >= '0') i -= 3;
@@ -10238,6 +10278,8 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 											i--;
 										} else if(str[i - 1] == -30 && i + 1 < str.length() && str[i] == -128 && str[i + 1] == -119) {
 											i--;
+										} else if(i > 3 && str[i - 1] == -119 && str[i - 2] == -128 && str[i - 3] == -30) {
+											i -= 3;
 										} else if(i > 3 && str[i] <= '9' && str[i] >= '0' && str[i - 1] <= '9' && str[i - 1] >= '0') {
 											if(str[i - 2] == ' ' && str[i - 3] <= '9' && str[i - 3] >= '0') i -= 2;
 											else if(str[i - 3] == ' ' && str[i - 4] <= '9' && str[i - 4] >= '0') i -= 3;
@@ -12384,7 +12426,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 						}
 						bool b = true;
 						if(!CALCULATOR->variableNameIsValid(name)) {
-							CALCULATOR->error(true, "Illegal name: %s.", name, NULL);
+							CALCULATOR->error(true, "Illegal name: %s.", name.c_str(), NULL);
 							b = false;
 						}
 						Variable *v = NULL;
@@ -18846,7 +18888,7 @@ void load_preferences() {
 
 	size_t bookmark_index = 0;
 
-	int version_numbers[] = {3, 15, 0};
+	int version_numbers[] = {3, 16, 0};
 	bool old_history_format = false;
 
 	if(file) {
@@ -32233,6 +32275,8 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 		gdk_cairo_set_source_rgba(cr, &rgba);
 		pango_cairo_show_layout(cr, layout);
 		g_object_unref(layout);
+	} else {
+		gtk_widget_set_size_request(widget, -1, -1);
 	}
 	return TRUE;
 }
