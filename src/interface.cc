@@ -1303,16 +1303,20 @@ void create_main_window(void) {
 #endif
 
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 14
-	GtkWidget *arrow_left = gtk_arrow_new(GTK_ARROW_RIGHT, GTK_SHADOW_OUT);
-	gtk_widget_set_size_request(GTK_WIDGET(arrow_left), 18, 18);
-	gtk_widget_show(arrow_left);
-	gtk_widget_destroy(GTK_WIDGET(gtk_builder_get_object(main_builder, "image_hide_left_buttons")));
-	gtk_container_add(GTK_CONTAINER(gtk_builder_get_object(main_builder, "event_hide_left_buttons")), arrow_left);
-	GtkWidget *arrow_right = gtk_arrow_new(GTK_ARROW_LEFT, GTK_SHADOW_OUT);
-	gtk_widget_set_size_request(GTK_WIDGET(arrow_right), 18, 18);
-	gtk_widget_show(arrow_right);
-	gtk_widget_destroy(GTK_WIDGET(gtk_builder_get_object(main_builder, "image_hide_right_buttons")));
-	gtk_container_add(GTK_CONTAINER(gtk_builder_get_object(main_builder, "event_hide_right_buttons")), arrow_right);
+	if(!gtk_icon_theme_has_icon(gtk_icon_theme_get_default(), "pan-start-symbolic")) {
+		GtkWidget *arrow_left = gtk_arrow_new(GTK_ARROW_RIGHT, GTK_SHADOW_OUT);
+		gtk_widget_set_size_request(GTK_WIDGET(arrow_left), 18, 18);
+		gtk_widget_show(arrow_left);
+		gtk_widget_destroy(GTK_WIDGET(gtk_builder_get_object(main_builder, "image_hide_left_buttons")));
+		gtk_container_add(GTK_CONTAINER(gtk_builder_get_object(main_builder, "event_hide_left_buttons")), arrow_left);
+	}
+	if(!gtk_icon_theme_has_icon(gtk_icon_theme_get_default(), "pan-end-symbolic")) {
+		GtkWidget *arrow_right = gtk_arrow_new(GTK_ARROW_LEFT, GTK_SHADOW_OUT);
+		gtk_widget_set_size_request(GTK_WIDGET(arrow_right), 18, 18);
+		gtk_widget_show(arrow_right);
+		gtk_widget_destroy(GTK_WIDGET(gtk_builder_get_object(main_builder, "image_hide_right_buttons")));
+		gtk_container_add(GTK_CONTAINER(gtk_builder_get_object(main_builder, "event_hide_right_buttons")), arrow_right);
+	}
 	gtk_grid_set_column_spacing(GTK_GRID(gtk_builder_get_object(main_builder, "grid_buttons")), 0);
 	gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_swap")), "object-flip-vertical-symbolic", GTK_ICON_SIZE_BUTTON);
 #endif
@@ -1649,6 +1653,11 @@ void create_main_window(void) {
 	}
 
 	gtk_style_context_get_color(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, &c);
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
+	if(gdk_rgba_equal(&c, &bg_color)) {
+		gtk_style_context_get_color(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, &c);
+	}
+#endif
 	if(c.green >= 0.8) {
 		c.red /= 1.5;
 		c.blue /= 1.5;
@@ -2260,6 +2269,16 @@ GtkWidget* get_units_dialog(void) {
 		tUnitCategories = GTK_WIDGET(gtk_builder_get_object(units_builder, "units_treeview_category"));
 		tUnits = GTK_WIDGET(gtk_builder_get_object(units_builder, "units_treeview_unit"));
 
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 14
+		if(!gtk_icon_theme_has_icon(gtk_icon_theme_get_default(), "pan-down-symbolic")) {
+			GtkWidget *arrow_down = gtk_arrow_new(GTK_ARROW_DOWN, GTK_SHADOW_OUT);
+			gtk_widget_set_size_request(GTK_WIDGET(arrow_down), 18, 18);
+			gtk_widget_show(arrow_down);
+			gtk_widget_destroy(GTK_WIDGET(gtk_builder_get_object(units_builder, "image_to_unit")));
+			gtk_container_add(GTK_CONTAINER(gtk_builder_get_object(units_builder, "units_to_box")), arrow_down);
+		}
+#endif
+
 		tUnits_store = gtk_list_store_new(UNITS_N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_PIXBUF, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
 		tUnits_store_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(tUnits_store), NULL);
 		gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(tUnits_store_filter), UNITS_VISIBLE_COLUMN);
@@ -2321,6 +2340,16 @@ GtkWidget* get_units_dialog(void) {
 		column = gtk_tree_view_column_new_with_area(area);
 		gtk_tree_view_column_set_sort_column_id(column, UNITS_TITLE_COLUMN);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(units_convert_view), column);
+
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION >= 16
+		gtk_label_set_width_chars(GTK_LABEL(gtk_builder_get_object(units_builder, "units_label_to_unit")), 20);
+		gtk_label_set_xalign(GTK_LABEL(gtk_builder_get_object(units_builder, "units_label_to_unit")), 0.0);
+#else
+		gint w;
+		PangoLayout *layout = gtk_widget_create_pango_layout(GTK_WIDGET((gtk_builder_get_object(units_builder, "units_label_to_unit"))), "AAAAAAAAAAAAAAAAAAAA");
+		pango_layout_get_pixel_size(layout, &w, NULL);
+		gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_to_box")), w + 16, -1);
+#endif
 
 		if(units_width > 0 && units_height > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")), units_width, units_height);
 		if(units_position > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(units_builder, "units_hpaned")), units_position);

@@ -519,8 +519,8 @@ Below follows a list of the buttons on the left side (including their menus and 
 				<entry><para>All current currency units (excludes currencies replaced by euro)</para></entry>
 			</row>
 			<row valign="top">
-				<entry><para>to</para></entry>
-				<entry><para>Convert to operator (selection is unselected). The expression before <quote>to</quote> (or the previous result if the expressions begins with <quote>to</quote>) is converted to the unit expression after <quote>to</quote>. See <xref linkend="qalculate-to"/>.</para></entry>
+				<entry><para>x ➞</para></entry>
+				<entry><para>Convert to operator (selection is unselected). The expression before right arrow or <quote>to</quote> (or the previous result if the expressions begins with <quote>to</quote>) is converted to the unit expression after <quote>to</quote>. See <xref linkend="qalculate-to"/>.</para></entry>
 				<entry><para>Convert to base units, optimal unit, or optimal prefix. Below is a list of appropriate units (with common units appended) to convert the current result to. If the result does not include any units options to convert the result to different number bases, fraction and factors appear. The current expression (if modified) is calculated when the menu is opened.</para></entry>
 			</row>
 		</tbody>
@@ -1595,7 +1595,7 @@ The evaluation of short/implicit multiplication, without any multiplication sign
 If the limit implicit multiplication option is activated, the use of implicit multiplication when parsing expressions and displaying results will be limited to avoid confusion. For example, if this mode is not activated and <quote>integrte(5x)</quote> is accidently typed instead of <quote>integrate(5x)</quote>, the expression is interpreted as <quote>int(e × e × (5 × x) × gr × t)</quote> (displayed in history window). The result will then without any error be <quote>int(2.3940139x × km^2)</quote> instead of <quote>2.5x^2</quote>. If limit implicit multiplication is activated, the mistyped expression would instead show an error telling that <quote>integrte</quote> is not a valid variable, function or unit (unless unknowns is enabled in which case the result will be <quote>5 "integrate" × x</quote>). When implicit multiplication is limited, variables, functions and units must be separated by a space, operator or parenthesis (<quote>xy</quote> does not equal <quote>x × y</quote>).
 </para>
 <para>
-In addition there are two special parsing modes — RPN syntax (for details see <xref linkend="qalculate-rpn"/>) and chain syntax. The chain syntax interprets the expressions similar to a traditional calculator in immediate execution mode. Instead of standard order of operations, the expression is simply calculated from left to right (e.g. <quote>1 + 2 × 3 = (1 + 2) × 3 = 9</quote> instead of <quote>1 + 2 × 3 = 1 + (2 × 3) = 7</quote>). Functions, with a simgle argument, applies to the value immediate to the left of the function name (e.g. <quote>1 + 2 sin = 1 + sin(2)</quote>), unless parentheses are used.
+In addition there are two special parsing modes — RPN syntax (for details see <xref linkend="qalculate-rpn"/>) and chain syntax. The chain syntax interprets expressions in a manner similar to the immediate execution mode of a traditional calculator. Instead of using the standard order of operations, the expression is simply calculated from left to right (e.g. <quote>1 + 2 × 3 = (1 + 2) × 3 = 9</quote> instead of <quote>1 + 2 × 3 = 1 + (2 × 3) = 7</quote>). Functions, with a simgle argument, applies to the value immediate to the left of the function name (e.g. <quote>1 + 2 sin = 1 + sin(2)</quote>), unless parentheses are used.
 </para>
 </sect1>
 <sect1 id="qalculate-to">
@@ -2312,7 +2312,7 @@ Alternatively the unit conversion view can be used. It is opened using <guilabel
 </figure>
 </para>
 <para>
-The the result context menu and the menu associated with the <guibutton>to</guibutton> keypad button also provides a list of units for conversion.
+The the result context menu and the menu associated with the <guibutton>to (x ➞)</guibutton> keypad button also provides a list of units for conversion.
 </para>
 <para>
 The final way to convert the result to another unit is to use <menuchoice><guimenu>Edit</guimenu><guisubmenu>Convert To Unit</guisubmenu></menuchoice> menu or to press <guibutton>Convert Result</guibutton> in the unit manager, which also provides quick conversion of a value between two selected units. <menuchoice><guimenu>Edit</guimenu><guisubmenu>Set Prefix</guisubmenu></menuchoice> can be used to select a prefix.

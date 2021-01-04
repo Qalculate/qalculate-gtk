@@ -48,6 +48,27 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="3.16.0" date="2021-01-04">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Redesigned expression, status, and result widgets</li>
+      <li>Chain mode and syntax (e.g. 1+2*3=(1+2)*3=6)</li>
+      <li>Configurable calculate-as-you-type add to history delay</li>
+      <li>Improved completion</li>
+      <li>Support for qalc commands in GUI (expression is interpreted as command if it begins with '/')</li>
+      <li>Support for reading expressions and commands from file in GUI (as in qalc, using command line option -f/--file)</li>
+      <li>Use arrow instead of "to" by default</li>
+      <li>French GUI translation</li>
+      <li>Make all currency codes (except CUP and KGS) case insensitive</li>
+      <li>Fixes for floating point format output</li>
+      <li>Fix segfault on factorization in qalc</li>
+      <li>Fix saving of local data objects</li>
+      <li>Fix BYN exchange rate url</li>
+      <li>Minor bug fixes and feature improvements</li>
+     </ul>
+   </description>
+  </release>
   <release version="3.15.0" date="2020-11-23">
    <description>
     <p>Changes:</p>

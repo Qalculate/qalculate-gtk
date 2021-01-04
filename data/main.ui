@@ -641,8 +641,8 @@
     <signal name="configure-event" handler="on_configure_event" swapped="no"/>
     <signal name="delete-event" handler="on_main_window_close" swapped="no"/>
     <signal name="destroy-event" handler="on_main_window_close" swapped="no"/>
-    <signal name="focus-in-event" handler="on_main_window_focus_in_event" swapped="no"/>
     <signal name="key-press-event" handler="on_key_press_event" swapped="no"/>
+    <signal name="key-release-event" handler="on_key_release_event" swapped="no"/>
     <child>
       <object class="GtkBox" id="top_vbox">
         <property name="visible">True</property>
@@ -2608,8 +2608,18 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                               </packing>
                             </child>
                             <child type="overlay">
-                              <object class="GtkSpinner" id="expressionspinner">
+                              <object class="GtkEventBox" id="expressionspinnerbox">
                                 <property name="can-focus">False</property>
+                                <property name="events">GDK_BUTTON_PRESS_MASK</property>
+                                <property name="border-width">12</property>
+                                <property name="visible-window">False</property>
+                                <signal name="button-press-event" handler="on_resultspinner_button_press_event" swapped="no"/>
+                                <child>
+                                  <object class="GtkSpinner" id="expressionspinner">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                  </object>
+                                </child>
                               </object>
                             </child>
                           </object>
@@ -2892,8 +2902,18 @@ On: 1.1 * 1.1 ≈ 1.2</property>
                           </object>
                         </child>
                         <child type="overlay">
-                          <object class="GtkSpinner" id="resultspinner">
+                          <object class="GtkEventBox" id="resultspinnerbox">
                             <property name="can-focus">False</property>
+                            <property name="events">GDK_BUTTON_PRESS_MASK</property>
+                            <property name="border-width">12</property>
+                            <property name="visible-window">False</property>
+                            <signal name="button-press-event" handler="on_resultspinner_button_press_event" swapped="no"/>
+                            <child>
+                              <object class="GtkSpinner" id="resultspinner">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                              </object>
+                            </child>
                           </object>
                           <packing>
                             <property name="index">1</property>
