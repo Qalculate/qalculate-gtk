@@ -59,6 +59,7 @@ extern PrintOptions printops;
 extern bool ignore_locale;
 extern bool title_modified;
 extern bool minimal_mode;
+extern gint hidden_x, hidden_y;
 bool check_version = false;
 string custom_title;
 
@@ -323,10 +324,15 @@ static void qalculate_activate(GtkApplication *app) {
 
 	GList *list;
 
-	list = gtk_application_get_windows (app);
+	list = gtk_application_get_windows(app);
 
 	if(list) {
-		gtk_window_present(GTK_WINDOW(list->data));
+		if(hidden_x >= 0) {
+			gtk_widget_show(GTK_WIDGET(list->data));
+			gtk_window_move(GTK_WINDOW(list->data), hidden_x, hidden_y);
+			hidden_x = -1;
+		}
+		gtk_window_present_with_time(GTK_WINDOW(list->data), GDK_CURRENT_TIME);
 		return;
 	}
 
@@ -432,7 +438,12 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 			title_modified = true;
 			g_free(str);
 		}
-		gtk_window_present(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
+		if(hidden_x >= 0) {
+			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
+			gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), hidden_x, hidden_y);
+			hidden_x = -1;
+		}
+		gtk_window_present_with_time(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GDK_CURRENT_TIME);
 		if(!file_arg.empty()) execute_from_file(file_arg);
 		if(!calc_arg.empty()) {
 			gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_builder_get_object(main_builder, "expressionbuffer")), calc_arg.c_str(), -1);

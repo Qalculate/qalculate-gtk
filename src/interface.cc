@@ -222,6 +222,7 @@ gint compare_categories(gconstpointer a, gconstpointer b) {
 }
 
 bool border_tested = false;
+gint hidden_x = -1, hidden_y = -1;
 
 #ifdef _WIN32
 #	include <gdk/gdkwin32.h>
@@ -232,8 +233,12 @@ static HWND hwnd = NULL;
 
 INT_PTR CALLBACK tray_window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	if(message == WIN_TRAY_ICON_MESSAGE && (lParam == WM_LBUTTONDBLCLK || lParam == WM_LBUTTONUP)) {
-		gtk_widget_show(mainwindow);
-		gtk_window_present(GTK_WINDOW(mainwindow));
+		if(hidden_x >= 0) {
+			gtk_widget_show(mainwindow);
+			gtk_window_move(GTK_WINDOW(mainwindow), hidden_x, hidden_y);
+			hidden_x = -1;
+		}
+		gtk_window_present_with_time(GTK_WINDOW(mainwindow), GDK_CURRENT_TIME);
 	}
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }

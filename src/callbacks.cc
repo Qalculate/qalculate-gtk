@@ -14273,7 +14273,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 			}
 			gtk_widget_grab_focus(fd->entry[0]);
 		}
-		gtk_window_present(GTK_WINDOW(fd->dialog));
+		gtk_window_present_with_time(GTK_WINDOW(fd->dialog), GDK_CURRENT_TIME);
 		return;
 	}
 
@@ -17602,7 +17602,7 @@ void manage_variables() {
 		gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 		gtk_widget_show(dialog);
 	}
-	gtk_window_present(GTK_WINDOW(dialog));
+	gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
 }
 
 /*
@@ -17616,7 +17616,7 @@ void manage_functions() {
 		gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 		gtk_widget_show(dialog);
 	}
-	gtk_window_present(GTK_WINDOW(dialog));
+	gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
 }
 
 /*
@@ -17630,7 +17630,7 @@ void manage_units() {
 		gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 		gtk_widget_show(dialog);
 	}
-	gtk_window_present(GTK_WINDOW(dialog));
+	gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
 }
 
 /*
@@ -18016,7 +18016,7 @@ void on_popup_menu_item_input_base(GtkMenuItem *w, gpointer data) {
 		GtkWidget *dialog = get_set_base_dialog();
 		gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 		gtk_widget_show(dialog);
-		gtk_window_present(GTK_WINDOW(dialog));
+		gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
 		gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")));
 	} else {
@@ -21060,8 +21060,13 @@ void on_menu_item_quit_activate(GtkMenuItem*, gpointer user_data) {
 	on_gcalc_exit(NULL, NULL, user_data);
 }
 
+extern gint hidden_x, hidden_y;
 void on_main_window_close(GtkWidget *w, GdkEvent *event, gpointer user_data) {
 	if(has_systray_icon()) {
+		if(save_mode_on_exit) save_mode();
+		else save_preferences();
+		if(save_defs_on_exit) save_defs();
+		gtk_window_get_position(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &hidden_x, &hidden_y);
 		gtk_widget_hide(w);
 	} else {
 		on_gcalc_exit(w, event, user_data);
@@ -25350,7 +25355,7 @@ void on_popup_menu_item_history_search_activate(GtkMenuItem*, gpointer) {
 	gtk_expander_set_expanded(GTK_EXPANDER(expander_history), TRUE);
 	if(history_search_dialog) {
 		gtk_widget_show(history_search_dialog);
-		gtk_window_present(GTK_WINDOW(history_search_dialog));
+		gtk_window_present_with_time(GTK_WINDOW(history_search_dialog), GDK_CURRENT_TIME);
 		gtk_widget_grab_focus(history_search_entry);
 		return;
 	}
@@ -25874,7 +25879,7 @@ void on_menu_item_datasets_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = get_datasets_dialog();
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 	gtk_widget_show(dialog);
-	gtk_window_present(GTK_WINDOW(dialog));
+	gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
 }
 
 void on_menu_item_import_csv_file_activate(GtkMenuItem*, gpointer) {
@@ -27658,7 +27663,7 @@ void on_menu_item_custom_base_activate(GtkMenuItem *w, gpointer) {
 	GtkWidget *dialog = get_set_base_dialog();
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 	gtk_widget_show(dialog);
-	gtk_window_present(GTK_WINDOW(dialog));
+	gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")));
 }
@@ -27829,7 +27834,7 @@ void on_menu_item_set_base_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = get_set_base_dialog();
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 	gtk_widget_show(dialog);
-	gtk_window_present(GTK_WINDOW(dialog));
+	gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
 }
 void on_set_base_radiobutton_input_binary_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) return;
@@ -28060,7 +28065,7 @@ void convert_number_bases(const gchar *initial_expression, bool b_result) {
 		}
 	}
 	gtk_widget_show(dialog);
-	gtk_window_present(GTK_WINDOW(dialog));
+	gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
 }
 void on_menu_item_convert_number_bases_activate(GtkMenuItem*, gpointer) {
 	if(displayed_mstruct && !result_text_empty()) return convert_number_bases(((mstruct->isNumber() && !mstruct->number().hasImaginaryPart()) || mstruct->isUndefined()) ? get_result_text().c_str() : "", true);
@@ -28090,7 +28095,7 @@ void convert_floatingpoint(const gchar *initial_expression, bool b_result) {
 		}
 	}
 	gtk_widget_show(dialog);
-	gtk_window_present(GTK_WINDOW(dialog));
+	gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
 }
 void on_menu_item_convert_floatingpoint_activate(GtkMenuItem*, gpointer) {
 	if(displayed_mstruct && !result_text_empty()) return convert_floatingpoint(((mstruct->isNumber() && !mstruct->number().hasImaginaryPart()) || mstruct->isUndefined()) ? get_result_text().c_str() : "", true);
@@ -28109,7 +28114,7 @@ void show_percentage_dialog(const gchar *initial_expression) {
 	if(strlen(initial_expression) > 0 && strcmp(initial_expression, "0") != 0) gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_1")), initial_expression);
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_entry_1")));
 	gtk_widget_show(dialog);
-	gtk_window_present(GTK_WINDOW(dialog));
+	gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
 }
 void on_menu_item_show_percentage_dialog_activate(GtkMenuItem*, gpointer) {
 	if(!result_text_empty()) return show_percentage_dialog(get_result_text().c_str());
@@ -28123,7 +28128,7 @@ void show_calendarconversion_dialog() {
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_1")));
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 	gtk_widget_show(dialog);
-	gtk_window_present(GTK_WINDOW(dialog));
+	gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
 }
 bool block_calendar_conversion = false;
 void calendar_changed(GtkWidget*, gpointer data) {
@@ -28201,7 +28206,7 @@ void on_menu_item_periodic_table_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = get_periodic_dialog();
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 	gtk_widget_show(dialog);
-	gtk_window_present(GTK_WINDOW(dialog));
+	gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
 }
 void on_menu_item_plot_functions_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = get_plot_dialog();
@@ -28283,7 +28288,7 @@ void on_menu_item_plot_functions_activate(GtkMenuItem*, gpointer) {
 
 		gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_entry_expression")));
 	} else {
-		gtk_window_present(GTK_WINDOW(dialog));
+		gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
 	}
 }
 void on_plot_dialog_hide(GtkWidget*, gpointer) {
@@ -32841,7 +32846,7 @@ void on_menu_item_customize_buttons_activate(GtkMenuItem*, gpointer) {
 		gtk_window_get_size(GTK_WINDOW(dialog), &w, NULL);
 		gtk_widget_set_size_request(dialog, w, -1);
 	}
-	gtk_window_present(GTK_WINDOW(dialog));
+	gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
 }
 
 void on_menu_item_edit_shortcuts_activate(GtkMenuItem*, gpointer) {
@@ -32849,7 +32854,7 @@ void on_menu_item_edit_shortcuts_activate(GtkMenuItem*, gpointer) {
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_treeview")));
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 	gtk_widget_show(dialog);
-	gtk_window_present(GTK_WINDOW(dialog));
+	gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
 }
 
 void on_tShortcuts_selection_changed(GtkTreeSelection *treeselection, gpointer) {
