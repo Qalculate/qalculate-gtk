@@ -17,6 +17,9 @@
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <glib/gstdio.h>
+#ifdef G_OS_UNIX
+#include <glib-unix.h>
+#endif
 #include <unistd.h>
 #include <sys/stat.h>
 
@@ -134,6 +137,11 @@ gboolean create_menus_etc(gpointer) {
 
 	return FALSE;
 
+}
+
+static gboolean on_sigterm_received(gpointer) {
+	on_gcalc_exit(NULL, NULL, NULL);
+	return G_SOURCE_REMOVE;
 }
 
 void create_application(GtkApplication *app) {
@@ -317,6 +325,13 @@ void create_application(GtkApplication *app) {
 			g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 50, on_check_version_idle, NULL, NULL);
 		}
 	}
+
+#ifdef G_OS_UNIX
+	GSource *source = g_unix_signal_source_new(SIGTERM);
+	g_source_set_callback(source, on_sigterm_received, NULL, NULL);
+	g_source_attach(source, NULL);
+	g_source_unref(source);
+#endif
 
 }
 
