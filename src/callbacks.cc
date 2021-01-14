@@ -281,6 +281,8 @@ bool rpn_mode, rpn_keys;
 bool adaptive_interval_display;
 bool use_e_notation;
 
+bool tc_set = false;
+
 bool use_systray_icon = false, hide_on_startup = false;
 
 extern Thread *view_thread, *command_thread;
@@ -18778,6 +18780,9 @@ void load_preferences() {
 	adaptive_interval_display = true;
 
 	CALCULATOR->useIntervalArithmetic(true);
+	
+	CALCULATOR->setTemperatureCalculation(TEMPERATURE_CALCULATION_HYBRID);
+	tc_set = false;
 
 	CALCULATOR->useBinaryPrefixes(0);
 
@@ -19283,6 +19288,9 @@ void load_preferences() {
 				} else if(svar == "sync_units") {
 					if(mode_index == 1) evalops.sync_units = v;
 					else modes[mode_index].eo.sync_units = v;
+				} else if(svar == "temperature_calculation") {
+					CALCULATOR->setTemperatureCalculation((TemperatureCalculation) v);
+					tc_set = true;
 				} else if(svar == "unknownvariables_enabled") {
 					if(mode_index == 1) evalops.parse_options.unknowns_enabled = v;
 					else modes[mode_index].eo.parse_options.unknowns_enabled = v;
@@ -20007,6 +20015,7 @@ void save_preferences(bool mode) {
 	if(!scientific_noprefix) fprintf(file, "scientific_mode_unit_prefixes=%i\n", true);
 	if(!scientific_notminuslast) fprintf(file, "scientific_mode_sort_minus_last=%i\n", true);
 	if(!scientific_negexp) fprintf(file, "scientific_mode_negative_exponents=%i\n", false);
+	if(tc_set) fprintf(file, "temperature_calculation=%i\n", CALCULATOR->getTemperatureCalculation());
 	for(unsigned int i = 0; i < custom_buttons.size(); i++) {
 		if(!custom_buttons[i].text.empty()) fprintf(file, "custom_button_label=%u:%s\n", i, custom_buttons[i].text.c_str());
 		for(unsigned int bi = 0; bi <= 2; bi++) {
@@ -21207,6 +21216,24 @@ void on_preferences_checkbutton_local_currency_conversion_toggled(GtkToggleButto
 void on_preferences_checkbutton_binary_prefixes_toggled(GtkToggleButton *w, gpointer) {
 	CALCULATOR->useBinaryPrefixes(gtk_toggle_button_get_active(w) ? 1 : 0);
 	result_format_updated();
+}
+void on_preferences_radiobutton_temp_rel_toggled(GtkToggleButton *w, gpointer) {
+	if(!gtk_toggle_button_get_active(w)) return;
+	CALCULATOR->setTemperatureCalculation(TEMPERATURE_CALCULATION_RELATIVE);
+	tc_set = true;
+	expression_calculation_updated();
+}
+void on_preferences_radiobutton_temp_abs_toggled(GtkToggleButton *w, gpointer) {
+	if(!gtk_toggle_button_get_active(w)) return;
+	CALCULATOR->setTemperatureCalculation(TEMPERATURE_CALCULATION_ABSOLUTE);
+	tc_set = true;
+	expression_calculation_updated();
+}
+void on_preferences_radiobutton_temp_hybrid_toggled(GtkToggleButton *w, gpointer) {
+	if(!gtk_toggle_button_get_active(w)) return;
+	CALCULATOR->setTemperatureCalculation(TEMPERATURE_CALCULATION_HYBRID);
+	tc_set = true;
+	expression_calculation_updated();
 }
 void on_preferences_checkbutton_ignore_locale_toggled(GtkToggleButton *w, gpointer) {
 	ignore_locale = gtk_toggle_button_get_active(w);

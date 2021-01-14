@@ -1181,6 +1181,99 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="position">3</property>
                   </packing>
                 </child>
+                <child>
+                  <object class="GtkLabel" id="label_temp">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="margin-top">12</property>
+                    <property name="label" translatable="yes">Temperature unit calculations:</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="hbox4">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkRadioButton" id="preferences_radiobutton_temp_abs">
+                        <property name="label" translatable="yes">Absolute</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text">1 °C + 1 °C ≈ 274 K + 274 K ≈ 548 K
+1 °C + 5 °F ≈ 274 K + 258 K ≈ 532 K
+2 °C − 1 °C = 1 K
+1 °C − 5 °F = 16 K
+1 °C + 1 K = 2 °C</property>
+                        <property name="use-underline">True</property>
+                        <property name="active">True</property>
+                        <property name="draw-indicator">True</property>
+                        <signal name="toggled" handler="on_preferences_radiobutton_temp_abs_toggled" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkRadioButton" id="preferences_radiobutton_temp_rel">
+                        <property name="label" translatable="yes">Relative</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text">1 °C + 1 °C = 2 °C
+1 °C + 5 °F = 1 °C + 5 °R ≈ 277 K
+2 °C − 1 °C = 1 °C
+1 °C − 5 °F = 1 °C - 5 °R ≈ −2 °C 
+1 °C + 1 K = 2 °C</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
+                        <property name="group">preferences_radiobutton_temp_abs</property>
+                        <signal name="toggled" handler="on_preferences_radiobutton_temp_rel_toggled" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkRadioButton" id="preferences_radiobutton_temp_hybrid">
+                        <property name="label" translatable="yes">Hybrid</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text">1 °C + 1 °C ≈ 2 °C
+1 °C + 5 °F ≈ 274 K + 258 K ≈ 532 K
+2 °C − 1 °C = 1 °C
+1 °C − 5 °F = 16 K
+1 °C + 1 K = 2 °C</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
+                        <property name="group">preferences_radiobutton_temp_abs</property>
+                        <signal name="toggled" handler="on_preferences_radiobutton_temp_hybrid_toggled" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">5</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="position">3</property>
