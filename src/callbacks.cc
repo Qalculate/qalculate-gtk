@@ -2627,11 +2627,92 @@ bool is_time(const MathStructure &m) {
 
 void add_to_expression_history(string str);
 
+bool contains_temperature_unit_gtk(const MathStructure &m) {
+	if(m.isUnit()) {
+		return m.unit() == CALCULATOR->getUnitById(UNIT_ID_CELSIUS) || m.unit() == CALCULATOR->getUnitById(UNIT_ID_FAHRENHEIT);
+	}
+	if(m.isVariable() && m.variable()->isKnown()) {
+		return contains_temperature_unit_gtk(((KnownVariable*) m.variable())->get());
+	}
+	if(m.isFunction() && m.function()->id() == FUNCTION_ID_STRIP_UNITS) return false;
+	for(size_t i = 0; i < m.size(); i++) {
+		if(contains_temperature_unit_gtk(m[i])) return true;
+	}
+	return false;
+}
+bool test_ask_tc(MathStructure &m) {
+	if(tc_set || CALCULATOR->getTemperatureCalculationMode() == TEMPERATURE_CALCULATION_RELATIVE || !CALCULATOR->getUnitById(UNIT_ID_KELVIN) || !contains_temperature_unit_gtk(m)) return false;
+	MathStructure *mp = &m;
+	if(m.isMultiplication() && m.size() == 2 && m[0].isMinusOne()) mp = &m[1];
+	else if(m.isNegate()) mp = &m[0];
+	if(mp->isUnit_exp()) return false;
+	if(mp->isMultiplication() && mp->size() > 0 && mp->last().isUnit_exp()) {
+		bool b = false;
+		for(size_t i = 0; i < mp->size() - 1; i++) {
+			if(contains_temperature_unit_gtk((*mp)[i])) {b = true; break;}
+		}
+		if(!b) return false;
+	}
+	return true;
+}
+bool ask_tc() {
+	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Temperature Calculation Mode"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_OK"), GTK_RESPONSE_ACCEPT, NULL);
+	gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT);
+	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
+	GtkWidget *grid = gtk_grid_new();
+	gtk_grid_set_row_spacing(GTK_GRID(grid), 12);
+	gtk_grid_set_column_spacing(GTK_GRID(grid), 12);
+	gtk_container_set_border_width(GTK_CONTAINER(grid), 6);
+	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), grid);
+	gtk_widget_show(grid);
+	GtkWidget *label = gtk_label_new(_("The expression is ambiguous.\nPlease select temperature calculation mode\n(the mode can later be changed in preferences)."));
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), label, 0, 0, 2, 1);
+	GtkWidget *w_abs = gtk_radio_button_new_with_label(NULL, _("Absolute"));
+	gtk_widget_set_valign(w_abs, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), w_abs, 0, 1, 1, 1);
+	label = gtk_label_new("<i>1 °C + 1 °C ≈ 274 K + 274 K ≈ 548 K\n1 °C + 5 °F ≈ 274 K + 258 K ≈ 532 K\n2 °C − 1 °C = 1 K\n1 °C − 5 °F = 16 K\n1 °C + 1 K = 2 °C</i>");
+	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), label, 1, 1, 1, 1);
+	GtkWidget *w_rel = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(w_abs), _("Relative"));
+	gtk_widget_set_valign(w_rel, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), w_rel, 0, 2, 1, 1);
+	label = gtk_label_new("<i>1 °C + 1 °C = 2 °C\n1 °C + 5 °F = 1 °C + 5 °R ≈ 277 K\n2 °C − 1 °C = 1 °C\n1 °C − 5 °F = 1 °C - 5 °R ≈ −2 °C\n1 °C + 1 K = 2 °C</i>");
+	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), label, 1, 2, 1, 1);
+	GtkWidget *w_hybrid = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(w_abs), _("Hybrid"));
+	gtk_widget_set_valign(w_hybrid, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), w_hybrid, 0, 3, 1, 1);
+	label = gtk_label_new("<i>1 °C + 1 °C ≈ 2 °C\n1 °C + 5 °F ≈ 274 K + 258 K ≈ 532 K\n2 °C − 1 °C = 1 °C\n1 °C − 5 °F = 16 K\n1 °C + 1 K = 2 °C</i>");
+	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), label, 1, 3, 1, 1);
+	switch(CALCULATOR->getTemperatureCalculationMode()) {
+		case TEMPERATURE_CALCULATION_ABSOLUTE: {gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w_abs), TRUE); break;}
+		case TEMPERATURE_CALCULATION_RELATIVE: {gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w_rel), TRUE); break;}
+		default: {gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w_hybrid), TRUE); break;}
+	}
+	gtk_widget_show_all(grid);
+	gtk_dialog_run(GTK_DIALOG(dialog));
+	TemperatureCalculationMode tc_mode = TEMPERATURE_CALCULATION_HYBRID;
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w_abs))) tc_mode = TEMPERATURE_CALCULATION_ABSOLUTE;
+	else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w_rel))) tc_mode = TEMPERATURE_CALCULATION_RELATIVE;
+	gtk_widget_destroy(dialog);
+	tc_set = true;
+	if(tc_mode != CALCULATOR->getTemperatureCalculationMode()) {
+		CALCULATOR->setTemperatureCalculationMode(tc_mode);
+		return true;
+	}
+	return false;
+}
+
 vector<CalculatorMessage> autocalc_messages;
 gboolean do_autocalc_history_timeout(gpointer) {
 	autocalc_history_timeout_id = 0;
 	if(!do_timeout || !result_autocalculated || rpn_mode) return FALSE;
-	if(check_exchange_rates(NULL, true)) {
+	if((test_ask_tc(*parsed_mstruct) && ask_tc()) || check_exchange_rates(NULL, true)) {
 		execute_expression(true, false, OPERATION_ADD, NULL, false, 0, "", "", false);
 		return FALSE;
 	}
@@ -12259,7 +12340,6 @@ void set_option(string str) {
 	}
 }
 
-
 /*
 	calculate entered expression and display result
 */
@@ -13464,24 +13544,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		else mstruct->ref();
 	}
 
-	//update "ans" variables
-	if(stack_index == 0) {
-		MathStructure m4(vans[3]->get());
-		m4.replace(vans[4], vans[4]->get());
-		vans[4]->set(m4);
-		MathStructure m3(vans[2]->get());
-		m3.replace(vans[3], vans[4]);
-		vans[3]->set(m3);
-		MathStructure m2(vans[1]->get());
-		m2.replace(vans[2], vans[3]);
-		vans[2]->set(m2);
-		MathStructure m1(vans[0]->get());
-		m1.replace(vans[1], vans[2]);
-		vans[1]->set(m1);
-		mstruct->replace(vans[0], vans[1]);
-		vans[0]->set(*mstruct);
-	}
-
 	if(do_stack && stack_index > 0) {
 	} else if(rpn_mode && do_mathoperation) {
 		result_text = _("RPN Operation");
@@ -13538,7 +13600,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		}
 	}
 
-	if(!do_mathoperation && check_exrates && check_exchange_rates(NULL, stack_index == 0 && !do_bases && !do_calendars && !do_pfe && !do_factors && !do_expand)) {
+	if(!do_mathoperation && ((test_ask_tc(*parsed_mstruct) && ask_tc()) || (check_exrates && check_exchange_rates(NULL, stack_index == 0 && !do_bases && !do_calendars && !do_pfe && !do_factors && !do_expand)))) {
 		execute_expression(force, do_mathoperation, op, f, rpn_mode, stack_index, saved_execute_str, str, false);
 		evalops.complex_number_form = cnf_bak;
 		evalops.auto_post_conversion = save_auto_post_conversion;
@@ -13547,6 +13609,24 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		printops.custom_time_zone = 0;
 		printops.time_zone = TIME_ZONE_LOCAL;
 		return;
+	}
+
+	//update "ans" variables
+	if(stack_index == 0) {
+		MathStructure m4(vans[3]->get());
+		m4.replace(vans[4], vans[4]->get());
+		vans[4]->set(m4);
+		MathStructure m3(vans[2]->get());
+		m3.replace(vans[3], vans[4]);
+		vans[3]->set(m3);
+		MathStructure m2(vans[1]->get());
+		m2.replace(vans[2], vans[3]);
+		vans[2]->set(m2);
+		MathStructure m1(vans[0]->get());
+		m1.replace(vans[1], vans[2]);
+		vans[1]->set(m1);
+		mstruct->replace(vans[0], vans[1]);
+		vans[0]->set(*mstruct);
 	}
 
 	if(do_factors || do_pfe || do_expand) {
@@ -18781,7 +18861,7 @@ void load_preferences() {
 
 	CALCULATOR->useIntervalArithmetic(true);
 	
-	CALCULATOR->setTemperatureCalculation(TEMPERATURE_CALCULATION_HYBRID);
+	CALCULATOR->setTemperatureCalculationMode(TEMPERATURE_CALCULATION_HYBRID);
 	tc_set = false;
 
 	CALCULATOR->useBinaryPrefixes(0);
@@ -19289,7 +19369,7 @@ void load_preferences() {
 					if(mode_index == 1) evalops.sync_units = v;
 					else modes[mode_index].eo.sync_units = v;
 				} else if(svar == "temperature_calculation") {
-					CALCULATOR->setTemperatureCalculation((TemperatureCalculation) v);
+					CALCULATOR->setTemperatureCalculationMode((TemperatureCalculationMode) v);
 					tc_set = true;
 				} else if(svar == "unknownvariables_enabled") {
 					if(mode_index == 1) evalops.parse_options.unknowns_enabled = v;
@@ -20015,7 +20095,7 @@ void save_preferences(bool mode) {
 	if(!scientific_noprefix) fprintf(file, "scientific_mode_unit_prefixes=%i\n", true);
 	if(!scientific_notminuslast) fprintf(file, "scientific_mode_sort_minus_last=%i\n", true);
 	if(!scientific_negexp) fprintf(file, "scientific_mode_negative_exponents=%i\n", false);
-	if(tc_set) fprintf(file, "temperature_calculation=%i\n", CALCULATOR->getTemperatureCalculation());
+	if(tc_set) fprintf(file, "temperature_calculation=%i\n", CALCULATOR->getTemperatureCalculationMode());
 	for(unsigned int i = 0; i < custom_buttons.size(); i++) {
 		if(!custom_buttons[i].text.empty()) fprintf(file, "custom_button_label=%u:%s\n", i, custom_buttons[i].text.c_str());
 		for(unsigned int bi = 0; bi <= 2; bi++) {
@@ -21219,19 +21299,19 @@ void on_preferences_checkbutton_binary_prefixes_toggled(GtkToggleButton *w, gpoi
 }
 void on_preferences_radiobutton_temp_rel_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(w)) return;
-	CALCULATOR->setTemperatureCalculation(TEMPERATURE_CALCULATION_RELATIVE);
+	CALCULATOR->setTemperatureCalculationMode(TEMPERATURE_CALCULATION_RELATIVE);
 	tc_set = true;
 	expression_calculation_updated();
 }
 void on_preferences_radiobutton_temp_abs_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(w)) return;
-	CALCULATOR->setTemperatureCalculation(TEMPERATURE_CALCULATION_ABSOLUTE);
+	CALCULATOR->setTemperatureCalculationMode(TEMPERATURE_CALCULATION_ABSOLUTE);
 	tc_set = true;
 	expression_calculation_updated();
 }
 void on_preferences_radiobutton_temp_hybrid_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(w)) return;
-	CALCULATOR->setTemperatureCalculation(TEMPERATURE_CALCULATION_HYBRID);
+	CALCULATOR->setTemperatureCalculationMode(TEMPERATURE_CALCULATION_HYBRID);
 	tc_set = true;
 	expression_calculation_updated();
 }
