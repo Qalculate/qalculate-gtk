@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Qalculate 3.16\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-14 18:40+0100\n"
-"PO-Revision-Date: 2021-01-16 22:22+0800\n"
+"PO-Revision-Date: 2021-01-18 18:30+0800\n"
 "Last-Translator: tuberry <orzun@foxmail.com>\n"
 "Language-Team: Chinese (Simplified) <orzun@foxmail.com>\n"
 "Language: zh_CHS\n"
@@ -671,7 +671,7 @@ msgstr "隐藏函数"
 
 #: ../data/functionedit.ui.h:14
 msgid "If this function shall be hidden in menus"
-msgstr "若此函数应在菜单中被隐藏"
+msgstr "若要此函数应在菜单中被隐藏"
 
 #: ../data/functionedit.ui.h:16 ../data/unitedit.ui.h:19
 msgid "Description of this function"
@@ -996,7 +996,7 @@ msgstr "作函数/数据图"
 
 #: ../data/main.ui.h:37
 msgid "Convert Number Bases"
-msgstr "换算数字基数"
+msgstr "换算数字进制"
 
 #: ../data/main.ui.h:38
 msgid "Floating Point Conversion (IEEE 754)"
@@ -1037,7 +1037,7 @@ msgstr "管理数据集"
 #: ../data/main.ui.h:49 ../src/interface.cc:1076 ../src/callbacks.cc:1681
 #: ../src/callbacks.cc:27088
 msgid "Factorize"
-msgstr "因素分解"
+msgstr "因式分解"
 
 #: ../data/main.ui.h:50 ../src/interface.cc:1074 ../src/callbacks.cc:1684
 #: ../src/callbacks.cc:27101
@@ -1046,11 +1046,11 @@ msgstr "展开"
 
 #: ../data/main.ui.h:51
 msgid "Apply partial fraction decomposition to the current result."
-msgstr "对当前结果应用部分分数分解。"
+msgstr "对当前结果应用部分分式分解。"
 
 #: ../data/main.ui.h:52 ../src/interface.cc:1078
 msgid "Expand Partial Fractions"
-msgstr "展开部分分数"
+msgstr "展开部分分式"
 
 #: ../data/main.ui.h:53
 msgid "Set Unknowns…"
@@ -1106,11 +1106,11 @@ msgstr "模式(_M)"
 
 #: ../data/main.ui.h:67 ../src/callbacks.cc:18179
 msgid "Number Base"
-msgstr "数字基数"
+msgstr "数字进制"
 
 #: ../data/main.ui.h:68
 msgid "Select Result and Expression Base…"
-msgstr "选择结果和表达式基数…"
+msgstr "选择结果和表达式进制…"
 
 #: ../data/main.ui.h:69 ../data/nbases.ui.h:4 ../data/setbase.ui.h:3
 #: ../src/interface.cc:1273 ../src/callbacks.cc:18182 ../src/callbacks.cc:26576
@@ -1160,7 +1160,7 @@ msgstr "罗马数字"
 
 #: ../data/main.ui.h:78
 msgid "Numerical Display"
-msgstr "数字显示"
+msgstr "数值显示"
 
 #: ../data/main.ui.h:79
 msgid "Normal"
@@ -1196,7 +1196,7 @@ msgstr "指示循环小数"
 
 #: ../data/main.ui.h:87
 msgid "Show Ending Zeroes"
-msgstr "显示结尾零"
+msgstr "显示结尾的零"
 
 #: ../data/main.ui.h:88
 msgid ""
@@ -1208,7 +1208,7 @@ msgstr ""
 
 #: ../data/main.ui.h:90
 msgid "Round Halfway Numbers to Even"
-msgstr "将中间数约到偶数"
+msgstr "将中间数舍入到偶数"
 
 #: ../data/main.ui.h:91
 msgid ""
@@ -1220,7 +1220,7 @@ msgstr ""
 
 #: ../data/main.ui.h:93
 msgid "Sort Minus Last"
-msgstr "将减法排序至末尾"
+msgstr "将负号排至末尾"
 
 #: ../data/main.ui.h:94
 msgid "Complex Rectangular Form"
@@ -1276,7 +1276,7 @@ msgstr "6/4 = 1+1/2"
 
 #: ../data/main.ui.h:107
 msgid "Mixed Fractions"
-msgstr "混合分数(带分数)"
+msgstr "混合分数"
 
 #: ../data/main.ui.h:108
 msgid "Interval Display"
@@ -1310,7 +1310,7 @@ msgstr "区间"
 
 #: ../data/main.ui.h:115
 msgid "Plus/Minus"
-msgstr "加/减"
+msgstr "加/减(±)"
 
 #: ../data/main.ui.h:116
 msgid "Midpoint"
@@ -1459,7 +1459,7 @@ msgstr "近似估算"
 
 #: ../data/main.ui.h:153
 msgid "Always Exact"
-msgstr "始终精确"
+msgstr "总是精确"
 
 #: ../data/main.ui.h:154
 msgid "Try Exact"
@@ -1828,7 +1828,7 @@ msgstr "分数"
 
 #: ../data/main.ui.h:248
 msgid "Numerical display"
-msgstr "数字显示"
+msgstr "数值显示"
 
 #: ../data/main.ui.h:249
 msgid "Pure"
@@ -1836,7 +1836,7 @@ msgstr "纯粹"
 
 #: ../data/main.ui.h:250 ../src/callbacks.cc:6951
 msgid "Number base"
-msgstr "数字基数"
+msgstr "数字进制"
 
 #: ../data/main.ui.h:251 ../data/setbase.ui.h:9 ../src/callbacks.cc:6999
 msgid "Time format"
@@ -1896,7 +1896,7 @@ msgstr "STO"
 
 #: ../data/main.ui.h:266
 msgid "Convert number bases"
-msgstr "换算数字基数"
+msgstr "换算数字进制"
 
 #: ../data/main.ui.h:267
 msgid "Imaginary unit i (√-1)"
@@ -1918,7 +1918,7 @@ msgstr "换算运算符"
 #: ../data/main.ui.h:271
 msgctxt "Button for convert to operator"
 msgid "to"
-msgstr "至"
+msgstr "to"
 
 #: ../data/main.ui.h:272
 msgid "Kilogram"
@@ -2205,7 +2205,7 @@ msgstr "清空栈"
 
 #: ../data/main.ui.h:342
 msgid "Select Number Base…"
-msgstr "选择数字基数…"
+msgstr "选择数字进制…"
 
 #: ../data/main.ui.h:343 ../src/callbacks.cc:5956
 msgid "Store result"
@@ -2326,7 +2326,7 @@ msgstr "仅补全"
 
 #: ../data/nbases.ui.h:1 ../data/setbase.ui.h:1
 msgid "Number Bases"
-msgstr "数字基数"
+msgstr "数字进制"
 
 #: ../data/nbases.ui.h:9 ../data/setbase.ui.h:10 ../src/callbacks.cc:6995
 #: ../src/callbacks.cc:30489 ../src/callbacks.cc:30529
@@ -2681,7 +2681,7 @@ msgstr "退出时保存定义"
 #: ../data/preferences.ui.h:6
 msgid ""
 "If changes to functions, units and variables shall be saved automatically"
-msgstr "若函数、单位和变量发生变化，应自动保存"
+msgstr "若要函数、单位和变量发生变化自动保存"
 
 #: ../data/preferences.ui.h:7
 msgid "Clear history on exit"
@@ -2749,7 +2749,7 @@ msgstr "启用Unicode符号"
 
 #: ../data/preferences.ui.h:22
 msgid "Disable this if you have problems with some fancy characters"
-msgstr "若您对某些花哨的字符有问题，请禁用此功能"
+msgstr "若您觉得某些花哨的字符有问题，请禁用此功能"
 
 #: ../data/preferences.ui.h:23
 msgid "Ignore system language (requires restart)"
@@ -2832,7 +2832,7 @@ msgstr "二进制二的补码表示"
 #: ../data/preferences.ui.h:42
 msgid ""
 "If two's complement representation shall be used for negative binary numbers."
-msgstr "若对负二进制数应用二的补码表示法。"
+msgstr "若要对负二进制数应用二的补码表示法。"
 
 #: ../data/preferences.ui.h:43
 msgid "Hexadecimal two's complement representation"
@@ -2842,7 +2842,7 @@ msgstr "十六进制二进制补码表示"
 msgid ""
 "If two's complement representation shall be used for negative hexadecimal "
 "numbers."
-msgstr "若对负十六进制数应用二的补码表示法。"
+msgstr "若要对负十六进制数应用二的补码表示法。"
 
 #: ../data/preferences.ui.h:45
 msgid "Use lower case letters in non-decimal numbers"
@@ -2850,17 +2850,17 @@ msgstr "在非十进制数字中使用小写字母"
 
 #: ../data/preferences.ui.h:46
 msgid "If lower case letters should be used in numbers with non-decimal base"
-msgstr "若在非十进制基数的数字中使用小写字母"
+msgstr "若要在非十进制数字中使用小写字母"
 
 #: ../data/preferences.ui.h:47
 msgid "Alternative base prefixes"
-msgstr "备选基数前缀"
+msgstr "备选进制前缀"
 
 #: ../data/preferences.ui.h:48
 msgid ""
 "If hexadecimal numbers shall be displayed with \"0x0\" and binary numbers "
 "with \"0b00\" as prefixes"
-msgstr "若十六进制数字以“0x0”显示，二进制数字以“0b00”作为前缀"
+msgstr "若要十六进制数字以“0x0”为前缀，二进制数字以“0b00”为前缀"
 
 #: ../data/preferences.ui.h:49
 msgid "Spell out logical operators"
@@ -2868,11 +2868,11 @@ msgstr "拼出逻辑运算符"
 
 #: ../data/preferences.ui.h:50
 msgid "If logical and/or shall be displayed as \"&&\"/\"||\" or \"and\"/\"or\""
-msgstr "若逻辑与/或应显示为 &&/|| 或 and/or"
+msgstr "若要逻辑与/或应显示为 &&/|| 或 and/or"
 
 #: ../data/preferences.ui.h:51
 msgid "If \"e\" shall be used instead of \"E\" in numbers"
-msgstr "若在数字中以 e 代替 E"
+msgstr "若要在数字中以 e 代替 E"
 
 #: ../data/preferences.ui.h:52
 msgid "Use E-notation instead of 10<sup><i>n</i></sup>"
@@ -2918,7 +2918,7 @@ msgstr "忽略数字中的点"
 
 #: ../data/preferences.ui.h:61
 msgid "Digit grouping"
-msgstr "数字分组"
+msgstr "数字分节"
 
 #: ../data/preferences.ui.h:62
 msgid "off"
@@ -2980,7 +2980,7 @@ msgstr "启动时更新汇率"
 msgid ""
 "If current exchange rates shall be downloaded from the internet at program "
 "start"
-msgstr "若在程序启动时从网上下载当前汇率"
+msgstr "若要在程序启动时从网上下载当前汇率"
 
 #: ../data/preferences.ui.h:76
 msgid "Exchange rates updates"
@@ -3096,11 +3096,11 @@ msgstr "Bijective base-26"
 
 #: ../data/setbase.ui.h:13
 msgid "<b>Result Base</b>"
-msgstr "<b>结果基数</b>"
+msgstr "<b>结果进制</b>"
 
 #: ../data/setbase.ui.h:14
 msgid "<b>Expression Base</b>"
-msgstr "<b>表达式基数</b>"
+msgstr "<b>表达式进制</b>"
 
 #: ../data/shortcuts.ui.h:6
 msgid "New Keyboard Shortcut"
@@ -3246,7 +3246,7 @@ msgstr "精确关系"
 
 #: ../data/unitedit.ui.h:35
 msgid "If the relation is precise"
-msgstr "若关系精确"
+msgstr "若要关系精确"
 
 #: ../data/unitedit.ui.h:36
 msgid "Inverse relation"
@@ -3489,7 +3489,7 @@ msgstr "答案5"
 
 #: ../src/main.cc:243
 msgid "Memory"
-msgstr "存储"
+msgstr "存值"
 
 #: ../src/main.cc:255 ../src/searchprovider.cc:652
 #, c-format
@@ -3522,7 +3522,7 @@ msgstr ""
 "若同时打开多个实例，只有最后一个关闭窗口的定义(变量、函数等)、模式、偏好和历"
 "史记录会被保存。\n"
 "\n"
-"尽管这样，你是否想改变默认的行为，允许多个实例同时打开？"
+"尽管这样，你是否想改变默认的行为，允许同时打开多个实例？"
 
 #: ../src/interface.cc:745
 #, c-format
@@ -3603,21 +3603,21 @@ msgstr "小数点"
 
 #: ../src/interface.cc:845
 msgid "Raise (Ctrl+*)"
-msgstr "增加(Ctrl+*)"
+msgstr "幂(Ctrl+*)"
 
 #: ../src/interface.cc:873 ../src/interface.cc:3822
 msgid "Add"
-msgstr "添加"
+msgstr "加"
 
 #: ../src/interface.cc:873 ../src/interface.cc:3822 ../src/callbacks.cc:3382
 #: ../src/callbacks.cc:5960 ../src/callbacks.cc:27006
 msgid "M+ (memory plus)"
-msgstr "M+(存储加上)"
+msgstr "M+(存值加上)"
 
 #: ../src/interface.cc:878 ../src/interface.cc:3826 ../src/callbacks.cc:3376
 #: ../src/callbacks.cc:5957 ../src/callbacks.cc:27003
 msgid "MC (memory clear)"
-msgstr "MC (存储清除)"
+msgstr "MC (存值清除)"
 
 #: ../src/interface.cc:879 ../src/interface.cc:3827
 msgid "Backspace"
@@ -3626,7 +3626,7 @@ msgstr "退格键"
 #: ../src/interface.cc:879 ../src/interface.cc:3827 ../src/callbacks.cc:3385
 #: ../src/callbacks.cc:5961 ../src/callbacks.cc:27007
 msgid "M− (memory minus)"
-msgstr "M−(存储减去)"
+msgstr "M−(存值减去)"
 
 #: ../src/interface.cc:880 ../src/interface.cc:3828
 msgid "Previous result (static)"
@@ -3640,12 +3640,12 @@ msgstr "计算表达式"
 #: ../src/interface.cc:888 ../src/interface.cc:3829 ../src/callbacks.cc:5958
 #: ../src/callbacks.cc:27004
 msgid "MR (memory recall)"
-msgstr "MR(存储读取)"
+msgstr "MR(存值读取)"
 
 #: ../src/interface.cc:888 ../src/interface.cc:3829 ../src/callbacks.cc:3379
 #: ../src/callbacks.cc:5959 ../src/callbacks.cc:27005
 msgid "MS (memory store)"
-msgstr "MS(存储存入)"
+msgstr "MS(存值存入)"
 
 #: ../src/interface.cc:1071 ../src/callbacks.cc:5924
 msgid "Set unknowns"
@@ -3674,7 +3674,7 @@ msgstr "逻辑非"
 #: ../src/interface.cc:1273 ../src/interface.cc:1274 ../src/interface.cc:1275
 #: ../src/interface.cc:1276
 msgid "Toggle Result Base"
-msgstr "切换结果基数"
+msgstr "切换结果进制"
 
 #: ../src/interface.cc:1278
 msgid "Open menu with stored variables"
@@ -3752,7 +3752,7 @@ msgstr "组合键"
 
 #: ../src/interface.cc:3819
 msgid "Raise"
-msgstr "增加"
+msgstr "幂"
 
 #: ../src/callbacks.cc:459
 msgid "History Answer Value"
@@ -3773,7 +3773,7 @@ msgstr "表达"
 
 #: ../src/callbacks.cc:482
 msgid "History Parsed Expression"
-msgstr "历史已解析表达式"
+msgstr "已解析表达式"
 
 #: ../src/callbacks.cc:505
 msgid "Set Window Title"
@@ -3808,7 +3808,7 @@ msgstr ""
 #: ../src/callbacks.cc:24948 ../src/searchprovider.cc:119
 #: ../src/searchprovider.cc:120 ../src/searchprovider.cc:203
 msgid "approx."
-msgstr "大约。"
+msgstr "约。"
 
 #: ../src/callbacks.cc:1429
 msgid "Stop process"
@@ -4014,7 +4014,7 @@ msgstr "时间"
 
 #: ../src/callbacks.cc:2924 ../src/callbacks.cc:3585 ../src/callbacks.cc:13113
 msgid "bases"
-msgstr "基数"
+msgstr "进制"
 
 #: ../src/callbacks.cc:2926 ../src/callbacks.cc:3587 ../src/callbacks.cc:3588
 #: ../src/callbacks.cc:13123
@@ -4052,7 +4052,7 @@ msgstr "最优"
 #: ../src/callbacks.cc:2953 ../src/callbacks.cc:2972 ../src/callbacks.cc:3591
 #: ../src/callbacks.cc:3666 ../src/callbacks.cc:13207 ../src/callbacks.cc:13257
 msgid "base"
-msgstr "基数"
+msgstr "基本"
 
 #: ../src/callbacks.cc:2958 ../src/callbacks.cc:3593 ../src/callbacks.cc:13219
 msgid "mixed"
@@ -4070,12 +4070,12 @@ msgstr "因子"
 
 #: ../src/callbacks.cc:2969 ../src/callbacks.cc:3599 ../src/callbacks.cc:13247
 msgid "partial fraction"
-msgstr "部分分数"
+msgstr "部分分式"
 
 #: ../src/callbacks.cc:3000 ../src/callbacks.cc:3392 ../src/callbacks.cc:3394
 #: ../src/callbacks.cc:13300 ../src/searchprovider.cc:161
 msgid "factorize"
-msgstr "因素分解"
+msgstr "因式分解"
 
 #: ../src/callbacks.cc:3003 ../src/callbacks.cc:3395 ../src/callbacks.cc:3397
 #: ../src/callbacks.cc:13303 ../src/searchprovider.cc:161
@@ -4140,7 +4140,7 @@ msgstr "时间格式"
 
 #: ../src/callbacks.cc:3586
 msgid "number bases"
-msgstr "数字基数"
+msgstr "数字进制"
 
 #: ../src/callbacks.cc:3590
 msgid "optimal unit"
@@ -4156,7 +4156,7 @@ msgstr "混合单位"
 
 #: ../src/callbacks.cc:3600
 msgid "expanded partial fractions"
-msgstr "展开部分分数"
+msgstr "已展开部分分式"
 
 #: ../src/callbacks.cc:3602
 msgid "complex rectangular form"
@@ -4189,7 +4189,7 @@ msgstr "UTC时区"
 #: ../src/callbacks.cc:3667
 #, c-format
 msgid "number base %s"
-msgstr "编号基数 %s"
+msgstr "数字进制 %s"
 
 #: ../src/callbacks.cc:4169 ../src/callbacks.cc:4170 ../src/callbacks.cc:4219
 #: ../src/callbacks.cc:4532 ../src/callbacks.cc:4533 ../src/callbacks.cc:4642
@@ -4374,11 +4374,11 @@ msgstr "换算为最优前缀"
 
 #: ../src/callbacks.cc:5920
 msgid "Convert to number base"
-msgstr "换算为数字基数"
+msgstr "换算为数字进制"
 
 #: ../src/callbacks.cc:5921
 msgid "Factorize result"
-msgstr "因素分解结果"
+msgstr "因式分解结果"
 
 #: ../src/callbacks.cc:5922
 msgid "Expand result"
@@ -4386,7 +4386,7 @@ msgstr "展开结果"
 
 #: ../src/callbacks.cc:5923
 msgid "Expand partial fractions"
-msgstr "展开部分分数"
+msgstr "展开部分分式"
 
 #: ../src/callbacks.cc:5925
 msgid "RPN: down"
@@ -4398,11 +4398,11 @@ msgstr "RPN: 向上"
 
 #: ../src/callbacks.cc:5927
 msgid "RPN: swap"
-msgstr "RPN: 交换"
+msgstr "RPN: swap"
 
 #: ../src/callbacks.cc:5928
 msgid "RPN: copy"
-msgstr "RPN: 复制"
+msgstr "RPN: copy"
 
 #: ../src/callbacks.cc:5929
 msgid "RPN: lastx"
@@ -4414,7 +4414,7 @@ msgstr "RPN: 删除寄存器"
 
 #: ../src/callbacks.cc:5931
 msgid "RPN: clear stack"
-msgstr "RPN: 清空栈"
+msgstr "RPN: clear stack"
 
 #: ../src/callbacks.cc:5932
 msgid "Load meta mode"
@@ -4422,11 +4422,11 @@ msgstr "加载元模式"
 
 #: ../src/callbacks.cc:5933
 msgid "Set expression base"
-msgstr "设置表达式基数"
+msgstr "设置表达式进制"
 
 #: ../src/callbacks.cc:5934
 msgid "Set result base"
-msgstr "设置结果基数"
+msgstr "设置结果进制"
 
 #: ../src/callbacks.cc:5935
 msgid "Toggle exact mode"
@@ -4518,7 +4518,7 @@ msgstr "打开函数/数据作图"
 
 #: ../src/callbacks.cc:5965
 msgid "Open convert number bases"
-msgstr "打开换算数字基数"
+msgstr "打开换算数字进制"
 
 #: ../src/callbacks.cc:5966
 msgid "Open floating point conversion"
@@ -4582,7 +4582,7 @@ msgstr "复角/相量记号"
 
 #: ../src/callbacks.cc:6947 ../src/callbacks.cc:26575
 msgid "Number bases"
-msgstr "数字基数"
+msgstr "数字进制"
 
 #: ../src/callbacks.cc:6949 ../src/callbacks.cc:26608
 msgid "Base units"
@@ -4654,7 +4654,7 @@ msgstr "最优单位"
 
 #: ../src/callbacks.cc:6989
 msgid "Expanded partial fractions"
-msgstr "展开部分分数"
+msgstr "展开部分分式"
 
 #: ../src/callbacks.cc:6991
 msgid "Complex polar form"
@@ -4704,7 +4704,7 @@ msgstr "RPN操作"
 
 #: ../src/callbacks.cc:10792
 msgid "Processing…"
-msgstr "正在处理…"
+msgstr "处理中…"
 
 #: ../src/callbacks.cc:10812 ../src/callbacks.cc:32335
 msgid "result processing was aborted"
@@ -4712,11 +4712,11 @@ msgstr "结果处理已中止"
 
 #: ../src/callbacks.cc:11224
 msgid "Factorizing…"
-msgstr "因素分解…"
+msgstr "因式分解…"
 
 #: ../src/callbacks.cc:11228
 msgid "Expanding partial fractions…"
-msgstr "展开部分分数…"
+msgstr "展开部分分式…"
 
 #: ../src/callbacks.cc:11232
 msgid "Expanding…"
@@ -5168,7 +5168,7 @@ msgstr "无法将文件复制到 %s 。"
 #: ../src/callbacks.cc:33196 ../src/callbacks.cc:33395
 #: ../src/callbacks.cc:33550
 msgid "Unsupported base."
-msgstr "不支持的基数。"
+msgstr "不支持的进制。"
 
 #: ../src/callbacks.cc:28254
 msgid "The selected Chinese year does not exist."
