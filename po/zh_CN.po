@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Qalculate 3.16\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-14 18:40+0100\n"
-"PO-Revision-Date: 2021-01-20 20:41+0800\n"
+"PO-Revision-Date: 2021-01-20 23:36+0800\n"
 "Last-Translator: tuberry <orzun@foxmail.com>\n"
 "Language-Team: Chinese (Simplified) <orzun@foxmail.com>\n"
 "Language: zh_CHS\n"
@@ -117,7 +117,7 @@ msgid ""
 "For example if argument is a matrix that must have equal number of rows and "
 "columns: rows(\\x) = columns(\\x)"
 msgstr ""
-"例如，若参数是一个矩阵，必须有相同数量的行和列： rows(\\x) = columns(\\x)"
+"例如，若参数必须是一个有相同数量行和列的矩阵：rows(\\x) = columns(\\x)"
 
 #: ../data/argumentrules.ui.h:9
 msgid "Allow matrix"
@@ -311,7 +311,7 @@ msgstr "描述性名称"
 #: ../data/csvimport.ui.h:17 ../data/matrixedit.ui.h:13
 #: ../data/unknownedit.ui.h:26 ../data/variableedit.ui.h:15
 msgid "Title displayed in menus and in variable manager"
-msgstr "菜单和变量管理器中显示的标题"
+msgstr "菜单和变量管理器中显示的名称"
 
 #: ../data/csvimport.ui.h:18 ../data/functionedit.ui.h:10 ../data/main.ui.h:236
 #: ../data/matrixedit.ui.h:11 ../data/unitedit.ui.h:10
@@ -339,7 +339,7 @@ msgstr "若第一行包含列标题"
 
 #: ../data/csvimport.ui.h:24
 msgid "Delimiter used to separate columns in the file"
-msgstr "用于分隔文件中列的分隔符"
+msgstr "文件中用于分隔列的分隔符"
 
 #: ../data/csvimport.ui.h:30
 msgid "Custom delimiter"
@@ -457,7 +457,7 @@ msgstr "属性:"
 
 #: ../data/datasetedit.ui.h:30
 msgid "Definition of the properties of this data set"
-msgstr "此数据集属性的定义"
+msgstr "此数据集的属性定义"
 
 #: ../data/datasetedit.ui.h:31 ../data/functions.ui.h:3 ../data/main.ui.h:18
 #: ../data/units.ui.h:3 ../data/variables.ui.h:3
@@ -659,7 +659,7 @@ msgstr "接受此函数的创建/修改"
 
 #: ../data/functionedit.ui.h:8
 msgid "Name used to invoke this function in expressions"
-msgstr "用于在表达式中调用此函数的名称"
+msgstr "用于在表达式中调用的函数名"
 
 #: ../data/functionedit.ui.h:12
 msgid "Title displayed in menus and in function manager"
@@ -671,7 +671,7 @@ msgstr "隐藏函数"
 
 #: ../data/functionedit.ui.h:14
 msgid "If this function shall be hidden in menus"
-msgstr "若要此函数应在菜单中被隐藏"
+msgstr "若要在菜单中隐藏此函数"
 
 #: ../data/functionedit.ui.h:16 ../data/unitedit.ui.h:19
 msgid "Description of this function"
@@ -705,7 +705,7 @@ msgstr "参数:"
 
 #: ../data/functionedit.ui.h:24
 msgid "Definition of this function's arguments"
-msgstr "此函数参数的定义"
+msgstr "此函数的参数定义"
 
 #: ../data/functionedit.ui.h:26
 msgid "Free"
@@ -1502,7 +1502,7 @@ msgstr "代数模式"
 
 #: ../data/main.ui.h:164
 msgid "Assume that unknown denominators are non-zero"
-msgstr "假设未知分母为非零"
+msgstr "假设未知分母非零"
 
 #: ../data/main.ui.h:165
 msgid "Non-Zero Denominators"
@@ -1673,11 +1673,11 @@ msgstr "插入所选值"
 
 #: ../data/main.ui.h:208
 msgid "Insert the selected text"
-msgstr "插入选定文本"
+msgstr "插入所选文本"
 
 #: ../data/main.ui.h:209
 msgid "Copy the selected text"
-msgstr "复制选定文本"
+msgstr "复制所选文本"
 
 #: ../data/main.ui.h:210
 msgid "Add the selected value(s)"
@@ -1887,7 +1887,7 @@ msgstr "mean"
 
 #: ../data/main.ui.h:264 ../src/interface.cc:1278
 msgid "Store result as a variable"
-msgstr "将结果存储为变量"
+msgstr "将结果储存为变量"
 
 #: ../data/main.ui.h:265
 msgid "STO"
@@ -2680,7 +2680,7 @@ msgstr "退出时保存定义"
 #: ../data/preferences.ui.h:6
 msgid ""
 "If changes to functions, units and variables shall be saved automatically"
-msgstr "若要函数、单位和变量发生变化时自动保存"
+msgstr "若要函数、单位和变量在发生变化时自动保存"
 
 #: ../data/preferences.ui.h:7
 msgid "Clear history on exit"
@@ -2723,12 +2723,12 @@ msgid ""
 "Input XOR (⊻) using caret (^) on keyboard (otherwise use Ctrl+^). The "
 "exponentiation operator (^) can always be input using Ctrl+*."
 msgstr ""
-"使用键盘上的插入符号(^)输入XOR (⊻)(否则使用Ctrl+^)。指数运算符(^)可以一直使用"
-"Ctrl+*输入。"
+"使用键盘上的插入符(^)输入XOR (⊻)(否则使用Ctrl+^)。指数运算符(^)总是可以用Ctrl"
+"+*输入。"
 
 #: ../data/preferences.ui.h:17
 msgid "Add calculate-as-you-type result to history"
-msgstr "在历史记录中添加“输入时计算”的计算结果。"
+msgstr "向历史记录中添加“输入时计算”的结果。"
 
 #: ../data/preferences.ui.h:18
 msgid "Delay:"
@@ -2814,7 +2814,7 @@ msgstr "显示表达式状态"
 msgid ""
 "If as-you-type expression status shall be displayed below the expression "
 "entry"
-msgstr "若要在表达式条目下方显示表达式键入状态"
+msgstr "若要在表达式框下方显示表达式键入状态"
 
 #: ../data/preferences.ui.h:39
 msgid "Persistent keypad"
@@ -2859,7 +2859,7 @@ msgstr "可选进制前缀"
 msgid ""
 "If hexadecimal numbers shall be displayed with \"0x0\" and binary numbers "
 "with \"0b00\" as prefixes"
-msgstr "若要十六进制数字以“0x0”为前缀，二进制数字以“0b00”为前缀"
+msgstr "若要十六进制数以“0x0”为前缀，二进制数以“0b00”为前缀"
 
 #: ../data/preferences.ui.h:49
 msgid "Spell out logical operators"
@@ -2889,17 +2889,17 @@ msgstr "用 j 作虚数单位"
 msgid ""
 "Use 'j' (instead of 'i') as default symbol for the imaginary unit, and place "
 "it in front the imaginary part."
-msgstr "使用 j (而不是 i)作为虚部的默认符号，并将其放在虚部的前面。"
+msgstr "将j(而非i)作为虚部默认符号并放在虚部前面。"
 
 #: ../data/preferences.ui.h:56
 msgid "Use comma as decimal separator"
-msgstr "使用逗号作为小数分隔符"
+msgstr "将逗号作为小数分隔符"
 
 #: ../data/preferences.ui.h:57
 msgid ""
 "Allow dots, '.',  to be used as thousands separator instead of as an "
 "alternative decimal sign"
-msgstr "允许使用点，“.”，作为千位分隔符，而不是作为小数点符号。"
+msgstr "允许使用点“.”作为千位分隔符而非小数点符号。"
 
 #: ../data/preferences.ui.h:58
 msgid "Ignore comma in numbers"
@@ -2909,7 +2909,7 @@ msgstr "忽略数字中的逗号"
 msgid ""
 "Allow commas, ',',  to be used as thousands separator instead of as an "
 "function argument separator"
-msgstr "允许将逗号“,”用作千位分隔符，而不是用作函数参数分隔符"
+msgstr "允许将逗号“,”作为千位分隔符而非函数参数分隔符"
 
 #: ../data/preferences.ui.h:60
 msgid "Ignore dots in numbers"
@@ -2959,17 +2959,17 @@ msgstr "信息单位使用二进制前缀"
 msgid ""
 "Use binary, instead of decimal, prefixes by default for information units (e."
 "g. bytes)."
-msgstr "对于信息单位(例如字节)，默认情况下使用二进制前缀，而不是十进制前缀。"
+msgstr "对于信息单位(例如字节)，默认情况下使用二进制而非十进制前缀。"
 
 #: ../data/preferences.ui.h:72
 msgid "Conversion to local currency"
-msgstr "换算为当地货币"
+msgstr "换算为本地货币"
 
 #: ../data/preferences.ui.h:73
 msgid ""
 "Automatically convert to the local currency when optimal unit conversion is "
 "activated."
-msgstr "激活最优单位换算时，自动换算为当地货币。"
+msgstr "激活最优单位换算时，自动换算为本地货币。"
 
 #: ../data/preferences.ui.h:74
 msgid "Update exchange rates on start"
@@ -2979,7 +2979,7 @@ msgstr "启动时更新汇率"
 msgid ""
 "If current exchange rates shall be downloaded from the internet at program "
 "start"
-msgstr "若要在程序启动时从网上下载当前汇率"
+msgstr "若要在程序启动时从网上下载最新汇率"
 
 #: ../data/preferences.ui.h:76
 msgid "Exchange rates updates"
@@ -3015,7 +3015,7 @@ msgstr "搜索标题和国家/地区"
 
 #: ../data/preferences.ui.h:84
 msgid "Minimum characters"
-msgstr "最小字符数"
+msgstr "最少字符"
 
 #: ../data/preferences.ui.h:85
 msgid "Popup delay (ms)"
@@ -3027,11 +3027,11 @@ msgstr "补全"
 
 #: ../data/preferences.ui.h:87
 msgid "Status warning color"
-msgstr "状态警告颜色"
+msgstr "警告状态颜色"
 
 #: ../data/preferences.ui.h:88
 msgid "Status error color"
-msgstr "状态错误颜色"
+msgstr "错误状态颜色"
 
 #: ../data/preferences.ui.h:89
 msgid "Custom status font"
@@ -3041,7 +3041,7 @@ msgstr "自定义状态字体"
 msgid ""
 "If you want to use a font other than the default in the status display below "
 "the expression entry"
-msgstr "若要在表达式项下方的状态显示中使用默认字体以外的字体"
+msgstr "若要在表达式框下方的状态显示中使用默认字体以外的字体"
 
 #: ../data/preferences.ui.h:91
 msgid "Custom expression font"
@@ -3050,7 +3050,7 @@ msgstr "自定义表达式字体"
 #: ../data/preferences.ui.h:92
 msgid ""
 "If you want to use a font other than the default in the expression entry"
-msgstr "若要在表达式条目中使用默认字体以外的字体"
+msgstr "若要在表达式框中使用默认字体以外的字体"
 
 #: ../data/preferences.ui.h:93
 msgid "Custom result font"
@@ -3075,7 +3075,7 @@ msgstr "自定义应用程序字体"
 #: ../data/preferences.ui.h:98
 msgid ""
 "If you want to use a font other than the default for the whole application"
-msgstr "若要使用整个应用程序的默认字体以外的字体"
+msgstr "若要整个应用程序使用默认字体以外的字体"
 
 #: ../data/preferences.ui.h:99
 msgid "Fonts & Colors"
@@ -3135,8 +3135,8 @@ msgid ""
 "Use \\x, \\y and \\z for 1st, 2nd and 3rd function argument, respectively. "
 "This avoids potential conflicts with variables, functions and units."
 msgstr ""
-"分别使用 \\x ，\\y 和 \\z 作为第一个，第二个和第三个函数参数。 这避免了与变"
-"量，函数和单位之间的潜在冲突。"
+"分别使用\\x，\\y和\\z作为第一，二和三个函数参数。这能避免和变量，函数和单位的"
+"潜在冲突。"
 
 #: ../data/unitedit.ui.h:1 ../src/callbacks.cc:14929
 msgid "Edit Unit"
@@ -3188,8 +3188,8 @@ msgid ""
 "relation to a single other unit, with an optional exponent, while (unnamed) "
 "derived units are defined by a unit expression with one or multiple units."
 msgstr ""
-"此单位所属的类。已命名的派生单位是相对于一个单一的其他单位而定义的，有一个可"
-"选的指数，而(未命名的)派生单位是由一个或多个单位的单位表达式定义的。"
+"此单位所属的类。命名派生单位是相对于一个单一的其他单位而定义的，可以带有指"
+"数，而(未命名)派生单位是由含一个或多个单位的单位表达式定义的。"
 
 #: ../data/unitedit.ui.h:23
 msgid "Base unit"
@@ -3212,7 +3212,8 @@ msgid ""
 "Unit (for named derived unit) or unit expression (for unnamed derived unit) "
 "that this unit as defined in relation to"
 msgstr ""
-"单位(对于命名的派生单位)或单位表达式(对于未命名的派生单位)，该单位如定义于"
+"该单位(对于命名派生单位)或单位表达式(对于未命名派生单位)的定义所关联(基于)的"
+"单位"
 
 #: ../data/unitedit.ui.h:28
 msgid "Exponent"
@@ -3236,8 +3237,8 @@ msgid ""
 msgstr ""
 "与基本单位的关系。 对于线性关系，这应该只是一个数字。\n"
 "\n"
-"对于非线性关系，用 \\x 表示因子，用 \\y 表示指数(例如，“\\x + 273.15”表示摄氏"
-"度和开尔文之间的关系)。"
+"对于非线性关系，用\\x表示因子，用\\y表示指数(例如，“\\x + 273.15”表示摄氏度和"
+"开尔文之间的关系)。"
 
 #: ../data/unitedit.ui.h:34
 msgid "Relation is exact"
@@ -3245,7 +3246,7 @@ msgstr "精确关系"
 
 #: ../data/unitedit.ui.h:35
 msgid "If the relation is precise"
-msgstr "若要关系精确"
+msgstr "若关系是精确的"
 
 #: ../data/unitedit.ui.h:36
 msgid "Inverse relation"
@@ -3279,7 +3280,7 @@ msgstr "最小基本单位数"
 
 #: ../data/unitedit.ui.h:44
 msgid "Use with prefixes by default"
-msgstr "默认与前缀一起使用"
+msgstr "默认使用前缀"
 
 #: ../data/units.ui.h:4
 msgid "Create a new unit"
@@ -3291,7 +3292,7 @@ msgstr "编辑所选单位"
 
 #: ../data/units.ui.h:8
 msgid "Insert the selected unit into the expression entry"
-msgstr "将所选单位插入表达式条目"
+msgstr "将所选单位插入表达式框"
 
 #: ../data/units.ui.h:9
 msgid "C_onvert"
@@ -3315,7 +3316,7 @@ msgstr "单位(_U)"
 
 #: ../data/units.ui.h:17
 msgid "Convert between units"
-msgstr "在单位之间换算"
+msgstr "在单位间换算"
 
 #: ../data/units.ui.h:18
 msgid "="
@@ -3327,15 +3328,15 @@ msgstr "换算(_s)"
 
 #: ../data/units.ui.h:20
 msgid "Converted value"
-msgstr "换算值"
+msgstr "换算后的值"
 
 #: ../data/units.ui.h:21
 msgid "Value to convert from"
-msgstr "要换算的值"
+msgstr "换算前的值"
 
 #: ../data/units.ui.h:22
 msgid "Type anywhere"
-msgstr "随处键入"
+msgstr "在任何地方输入"
 
 #: ../data/unknownedit.ui.h:1 ../src/callbacks.cc:15757
 msgid "Edit Unknown Variable"
@@ -3424,11 +3425,11 @@ msgstr "变量(_V)"
 
 #: ../src/main.cc:87
 msgid "Execute expressions and commands from a file"
-msgstr "从文件中执行表达式和命令"
+msgstr "执行文件中的表达式和命令"
 
 #: ../src/main.cc:88
 msgid "Start a new instance of the application"
-msgstr "启动应用程序的新实例"
+msgstr "启动一个新的程序实例"
 
 #: ../src/main.cc:89
 msgid "Display the application version"
@@ -3456,7 +3457,7 @@ msgid ""
 "and press the enter key."
 msgstr ""
 "<span font=\"10\">在上面键入一个数学表达式，例如“5+2/3”，\n"
-"然后按enter键。</span> "
+"然后按Enter键。</span> "
 
 #: ../src/main.cc:235
 msgid "ans"
@@ -3516,7 +3517,7 @@ msgid ""
 "Do you, despite this, want to change the default bahvior and allow multiple "
 "simultaneous instances?"
 msgstr ""
-"默认情况下，只允许打开 %s 的一个实例(一个主窗口)。\n"
+"默认情况下，只允许打开%s的一个实例(一个主窗口)。\n"
 "\n"
 "若同时打开多个实例，只有最后一个关闭窗口的定义(变量、函数等)、模式、偏好和历"
 "史记录会被保存。\n"
@@ -3905,8 +3906,8 @@ msgid ""
 "changes to reflect this. If you hold the pointer over or click the icon, the "
 "message will be shown."
 msgstr ""
-"当计算过程中产生错误、警告和其他信息时，表达式条目右上角的图标会发生变化以反"
-"映这一点。若按住鼠标不放或点击图标，将显示信息。"
+"当计算过程中产生错误、警告和其他信息时，表达式框右上角的图标会发生变化以反"
+"映。此时可以长按鼠标或点击图标来显示信息。"
 
 #: ../src/callbacks.cc:2321
 msgid "Path of executable not found."
@@ -4206,8 +4207,8 @@ msgid ""
 "\"info\" is typed as property, a dialog window will pop up with all "
 "properties of the object."
 msgstr ""
-"从 %s 数据集中检索给定对象和属性的数据。 若将“info”键入为属性，则会弹出一个对"
-"话框窗口，其中包含该对象的所有属性。"
+"从 %s 数据集中检索与所给对象和属性相关的数据。若将“info”键入为属性，则会弹出"
+"一个包含该对象的所有属性的对话框窗口。"
 
 #: ../src/callbacks.cc:4333 ../src/callbacks.cc:14730
 msgid "Example:"
@@ -4745,7 +4746,7 @@ msgid ""
 msgstr ""
 "表达方式有歧义。\n"
 "请选择温度计算模式\n"
-"(以后可以在偏好设置中更改模式)。"
+"(以后可以在偏好设置中更改)。"
 
 #: ../src/callbacks.cc:13088
 msgid "Time zone parsing failed."
@@ -4966,7 +4967,7 @@ msgstr "未输入变量名。"
 
 #: ../src/callbacks.cc:17166
 msgid "No known variable with entered name found."
-msgstr "未找到具有输入名称的已知变量。"
+msgstr "未找到所输入名称的已知变量。"
 
 #: ../src/callbacks.cc:17173
 #, c-format
@@ -5096,7 +5097,7 @@ msgid ""
 "A bookmark with the selected name already exists.\n"
 "Do you want to overwrite it?"
 msgstr ""
-"具有选定名称的书签已存在。 \n"
+"已存在同名的书签。 \n"
 "是否要覆盖它？ "
 
 #: ../src/callbacks.cc:25764
@@ -5180,7 +5181,7 @@ msgstr "换算为公历失败。"
 #: ../src/callbacks.cc:28291
 #, c-format
 msgid "Calendar conversion failed for: %s."
-msgstr "日历 %s 换算失败。"
+msgstr "日历换算失败: %s。"
 
 #: ../src/callbacks.cc:28326
 msgid "Gnuplot was not found."
@@ -5195,7 +5196,7 @@ msgstr "%s (%s) 需要单独安装，并在可执行的搜索路径中找到，�
 
 #: ../src/callbacks.cc:28914
 msgid "Select file to save PNG image to"
-msgstr "选择要将PNG图像保存到的文件"
+msgstr "将PNG图像保存为"
 
 #: ../src/callbacks.cc:28917 ../src/callbacks.cc:33749
 msgid "Allowed File Types"
@@ -5208,7 +5209,7 @@ msgstr "所有文件"
 #. do not delete units that are used by other units
 #: ../src/callbacks.cc:29495
 msgid "Cannot delete unit as it is needed by other units."
-msgstr "无法删除单位，因为其他单位需要它。"
+msgstr "无法删除单位，因为它被其他单位依赖。"
 
 #: ../src/callbacks.cc:29950 ../src/callbacks.cc:30179
 msgid "none"
@@ -5218,7 +5219,7 @@ msgstr "无"
 #: ../src/callbacks.cc:30452 ../src/callbacks.cc:30453
 #: ../src/callbacks.cc:30465
 msgid "result is too long"
-msgstr "结果太长"
+msgstr "结果过长"
 
 #: ../src/callbacks.cc:31685 ../src/callbacks.cc:33185
 #: ../src/callbacks.cc:33384 ../src/callbacks.cc:33539
@@ -5241,7 +5242,7 @@ msgstr "打开(_O)"
 
 #: ../src/callbacks.cc:32508
 msgid "Select file to export to"
-msgstr "选择要导出到的文件"
+msgstr "选择导出到文件"
 
 #: ../src/callbacks.cc:32874 ../src/callbacks.cc:32904
 msgid ""
@@ -5294,7 +5295,7 @@ msgid ""
 "The key combination is already in use.\n"
 "Do you wish to replace the current action?"
 msgstr ""
-"组合键已在使用中。 \n"
+"组合键已被占用。 \n"
 "是否要替换当前操作？ "
 
 #: ../src/callbacks.cc:33746
