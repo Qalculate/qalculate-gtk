@@ -20479,6 +20479,7 @@ void save_preferences(bool mode) {
 		fprintf(file, "interval_calculation=%i\n", modes[i].eo.interval_calculation);
 		fprintf(file, "calculate_as_you_type=%i\n", modes[i].autocalc);
 		fprintf(file, "in_rpn_mode=%i\n", modes[i].rpn_mode);
+		fprintf(file, "chain_mode=%i\n", modes[i].chain_mode);
 		fprintf(file, "limit_implicit_multiplication=%i\n", modes[i].eo.parse_options.limit_implicit_multiplication);
 		fprintf(file, "parsing_mode=%i\n", modes[i].eo.parse_options.parsing_mode);
 		fprintf(file, "spacious=%i\n", modes[i].po.spacious);
