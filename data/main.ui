@@ -7833,7 +7833,6 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       <object class="GtkCheckMenuItem" id="popup_menu_item_exact">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="tooltip-text" translatable="yes">Assume that unknown denominators are non-zero</property>
         <property name="label" translatable="yes">Exact</property>
         <signal name="activate" handler="on_popup_menu_item_exact_activate" swapped="no"/>
       </object>
@@ -8170,6 +8169,17 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
             </child>
           </object>
         </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkCheckMenuItem" id="popup_menu_item_mixed_units_conversion">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="tooltip-text" translatable="yes">If enabled:
+15 in = 1 ft + 3 in
+3,2 h = 3 h + 12 min</property>
+        <property name="label" translatable="yes">Convert to Mixed Units</property>
+        <signal name="activate" handler="on_popup_menu_item_mixed_units_conversion_activate" swapped="no"/>
       </object>
     </child>
     <child>

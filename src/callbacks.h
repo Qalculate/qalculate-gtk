@@ -596,6 +596,7 @@ void on_popup_menu_item_display_no_prefixes_activate(GtkMenuItem *w, gpointer us
 void on_popup_menu_item_display_prefixes_for_selected_units_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_display_prefixes_for_currencies_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_display_prefixes_for_all_units_activate(GtkMenuItem *w, gpointer user_data);
+void on_popup_menu_item_mixed_units_conversion_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_fraction_decimal_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_fraction_decimal_exact_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_fraction_combined_activate(GtkMenuItem *w, gpointer user_data);
