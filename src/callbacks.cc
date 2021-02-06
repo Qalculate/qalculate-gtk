@@ -20135,7 +20135,19 @@ void save_preferences(bool mode) {
 		}
 	}
 	if(!default_shortcuts) {
+		std::vector<guint64> ksv;
+		ksv.reserve(keyboard_shortcuts.size());
 		for(unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.begin(); it != keyboard_shortcuts.end(); ++it) {
+			if(ksv.empty() || it->first > ksv.back()) {
+				ksv.push_back(it->first);
+			} else {
+				for(vector<guint64>::iterator it2 = ksv.begin(); it2 != ksv.end(); ++it2) {
+					if(it->first <= *it2) {ksv.insert(it2, it->first); break;}
+				}
+			}
+		}
+		for(size_t i = 0; i < ksv.size(); i++) {
+			unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find(ksv[i]);
 			if(it->second.value.empty()) fprintf(file, "keyboard_shortcut=%u:%u:%i\n", it->second.key, it->second.modifier, it->second.type);
 			else fprintf(file, "keyboard_shortcut=%u:%u:%i:%s\n", it->second.key, it->second.modifier, it->second.type, it->second.value.c_str());
 		}
