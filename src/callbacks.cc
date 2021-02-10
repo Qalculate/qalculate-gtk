@@ -1,7 +1,7 @@
 /*
     Qalculate (GTK+ UI)
 
-    Copyright (C) 2003-2007, 2008, 2016-2020  Hanna Knutsson (hanna.knutsson@protonmail.com)
+    Copyright (C) 2003-2007, 2008, 2016-2021  Hanna Knutsson (hanna.knutsson@protonmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -2641,7 +2641,7 @@ bool contains_temperature_unit_gtk(const MathStructure &m) {
 	return false;
 }
 bool test_ask_tc(MathStructure &m) {
-	if(tc_set || CALCULATOR->getTemperatureCalculationMode() == TEMPERATURE_CALCULATION_RELATIVE || !CALCULATOR->getUnitById(UNIT_ID_KELVIN) || !contains_temperature_unit_gtk(m)) return false;
+	if(tc_set || !contains_temperature_unit_gtk(m)) return false;
 	MathStructure *mp = &m;
 	if(m.isMultiplication() && m.size() == 2 && m[0].isMinusOne()) mp = &m[1];
 	else if(m.isNegate()) mp = &m[0];
@@ -18889,7 +18889,7 @@ void load_preferences() {
 	adaptive_interval_display = true;
 
 	CALCULATOR->useIntervalArithmetic(true);
-	
+
 	CALCULATOR->setTemperatureCalculationMode(TEMPERATURE_CALCULATION_HYBRID);
 	tc_set = false;
 
@@ -19007,7 +19007,7 @@ void load_preferences() {
 
 	size_t bookmark_index = 0;
 
-	int version_numbers[] = {3, 16, 0};
+	int version_numbers[] = {3, 17, 0};
 	bool old_history_format = false;
 
 	if(file) {
@@ -22111,7 +22111,7 @@ void update_resultview_popup() {
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_convert_to_best_unit")), b_unit);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_set_optimal_prefix")), b_unit);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_convert_to")), FALSE);
-	if(displayed_mstruct && ((displayed_mstruct->isMultiplication() && displayed_mstruct->size() == 2 && (*displayed_mstruct)[1].isUnit() && (*displayed_mstruct)[1].isUnit() && (*displayed_mstruct)[1].unit()->subtype() == SUBTYPE_ALIAS_UNIT && ((AliasUnit*) (*displayed_mstruct)[1].unit())->mixWithBase())) || (displayed_mstruct && displayed_mstruct->isAddition() && displayed_mstruct->size() > 0 && (*displayed_mstruct)[0].isMultiplication() && (*displayed_mstruct)[0].size() == 2 && (*displayed_mstruct)[0][1].isUnit() && (*displayed_mstruct)[0][1].isUnit() && (*displayed_mstruct)[0][1].unit()->subtype() == SUBTYPE_ALIAS_UNIT && ((AliasUnit*) (*displayed_mstruct)[0][1].unit())->mixWithBase())) {
+	if(displayed_mstruct && ((displayed_mstruct->isMultiplication() && displayed_mstruct->size() == 2 && (*displayed_mstruct)[1].isUnit() && (*displayed_mstruct)[0].isNumber() && (*displayed_mstruct)[1].unit()->subtype() == SUBTYPE_ALIAS_UNIT && ((AliasUnit*) (*displayed_mstruct)[1].unit())->mixWithBase()) || (displayed_mstruct->isAddition() && displayed_mstruct->size() > 0 && (*displayed_mstruct)[0].isMultiplication() && (*displayed_mstruct)[0].size() == 2 && (*displayed_mstruct)[0][1].isUnit() && (*displayed_mstruct)[0][0].isNumber() && (*displayed_mstruct)[0][1].unit()->subtype() == SUBTYPE_ALIAS_UNIT && ((AliasUnit*) (*displayed_mstruct)[0][1].unit())->mixWithBase()))) {
 		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_mixed_units_conversion")), TRUE);
 	} else {
 		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_mixed_units_conversion")), FALSE);

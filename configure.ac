@@ -6,26 +6,24 @@ dnl  ----------------------
 dnl | initialize autotools |---------------------------------------------------
 dnl  ----------------------
 
-AC_INIT([Qalculate! (GTK+ UI)], [3.16.0],[],[qalculate-gtk])
+AC_INIT([Qalculate! (GTK+ UI)],[3.17.0],[],[qalculate-gtk])
 AC_CONFIG_SRCDIR([src/callbacks.cc])
 AM_INIT_AUTOMAKE
-AC_CONFIG_MACRO_DIR([m4])
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS(config.h)
 AM_MAINTAINER_MODE
-
+AC_CONFIG_MACRO_DIR(m4)
 
 dnl  -------------------------------
 dnl | check for neccessary programs |------------------------------------------
 dnl  -------------------------------
 
-AC_ISC_POSIX
 AC_PROG_CC
 AC_PROG_CXX
-AM_PROG_CC_STDC
 AC_PROG_LN_S
-AC_HEADER_STDC
-AC_PROG_INTLTOOL
-AM_PROG_LIBTOOL
+AC_PROG_EGREP
+
+IT_PROG_INTLTOOL
+LT_INIT
 
 dnl  ------------------------------------
 dnl | check for compiler characteristics |-------------------------------------
@@ -128,7 +126,7 @@ AS_IF([test "x$with_local_help" != "xno"], [
 AM_CONDITIONAL(ENABLE_LOCAL_HELP, [test "x$with_local_help" != "xno"])
 
 PKG_CHECK_MODULES(QALCULATE, [
-	libqalculate >= 3.16.0
+	libqalculate >= 3.17.0
 	])
 AC_SUBST(QALCULATE_CFLAGS)
 AC_SUBST(QALCULATE_LIBS)
@@ -145,7 +143,8 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[The package name for gett
 
 dnl Please keep this in alphabetical order
 ALL_LINGUAS="es fr nl pt_BR sl sv zh_CN"
-AM_GLIB_GNU_GETTEXT
+AM_GNU_GETTEXT(external)
+AM_GNU_GETTEXT_VERSION([0.21])
 
 dnl AM_GLIB_GNU_GETTEXT sets $DATADIRNAME
 AC_MSG_CHECKING(locale directory)
@@ -164,7 +163,7 @@ dnl  --------
 dnl | output |-----------------------------------------------------------------
 dnl  --------
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 	Makefile
 	data/Makefile
 	data/icons/Makefile
@@ -181,4 +180,5 @@ AC_OUTPUT([
 	src/Makefile
 	po/Makefile.in
 ])
+AC_OUTPUT
 
