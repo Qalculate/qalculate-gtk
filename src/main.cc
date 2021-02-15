@@ -139,10 +139,12 @@ gboolean create_menus_etc(gpointer) {
 
 }
 
+#ifdef G_OS_UNIX
 static gboolean on_sigterm_received(gpointer) {
 	on_gcalc_exit(NULL, NULL, NULL);
 	return G_SOURCE_REMOVE;
 }
+#endif
 
 void create_application(GtkApplication *app) {
 

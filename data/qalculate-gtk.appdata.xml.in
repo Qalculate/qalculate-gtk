@@ -48,6 +48,22 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="3.17.0" date="2021-02-17">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Temperature calculation modes (absolute, relative, hybrid)</li>
+      <li>Allow prefixes, with full name, without units (e.g. kilo = 10^3)</li>
+      <li>Save chain mode setting</li>
+      <li>Handle SIGTERM signal</li>
+      <li>Add convert to mixed units to result context menu</li>
+      <li>Extended and improved simplified Chinese translation</li>
+      <li>Save handle vector function argument property</li>
+      <li>Fix never ending loop when calculating []*[]</li>
+      <li>Minor bug fixes and feature improvements</li>
+     </ul>
+   </description>
+  </release>
   <release version="3.16.0" date="2021-01-04">
    <description>
     <p>Changes:</p>

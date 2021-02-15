@@ -11131,7 +11131,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		gtk_tree_path_free(path);
 	}
 
-	if(!register_moved && stack_index == 0 && mstruct->isMatrix() && (mstruct->rows() > 4 || mstruct->columns() > 4) && matrix_mstruct->isMatrix() && matrix_mstruct->columns() < 200) {
+	if(!register_moved && stack_index == 0 && mstruct->isMatrix() && mstruct->rows() > 3 && matrix_mstruct->isMatrix() && matrix_mstruct->columns() < 200) {
 		while(gtk_events_pending()) gtk_main_iteration();
 		gtk_widget_grab_focus(expressiontext);
 		if(update_history && update_parse && force) {
@@ -16508,7 +16508,7 @@ void insert_matrix(const MathStructure *initial_value, GtkWidget *win, gboolean 
 
 	if(r > 0 && c > 0) {
 		GtkTreePath *path = gtk_tree_path_new_from_indices(0, -1);
-		gtk_tree_view_set_cursor(GTK_TREE_VIEW(tMatrix), path, matrix_columns[0], TRUE);
+		if(!is_result) gtk_tree_view_set_cursor(GTK_TREE_VIEW(tMatrix), path, matrix_columns[0], TRUE);
 		while(gtk_events_pending()) gtk_main_iteration();
 		gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(tMatrix), path, matrix_columns[0], FALSE, 0.0, 0.0);
 		on_tMatrix_cursor_changed(GTK_TREE_VIEW(tMatrix), NULL);
