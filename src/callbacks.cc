@@ -21197,8 +21197,9 @@ void on_main_window_close(GtkWidget *w, GdkEvent *event, gpointer user_data) {
 		if(save_mode_on_exit) save_mode();
 		else save_preferences();
 		if(save_defs_on_exit) save_defs();
-		gtk_window_get_position(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &hidden_x, &hidden_y);
+		gtk_window_get_position(GTK_WINDOW(w), &hidden_x, &hidden_y);
 		gtk_widget_hide(w);
+		clear_expression_text();
 	} else {
 		on_gcalc_exit(w, event, user_data);
 	}
@@ -32069,6 +32070,9 @@ return TRUE;}
 		case GDK_KEY_Escape: {
 			if(gtk_widget_get_visible(completion_window)) {
 				gtk_widget_hide(completion_window);
+				return TRUE;
+			} else if(has_systray_icon() && expression_is_empty()) {
+				on_main_window_close(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), NULL, NULL);
 				return TRUE;
 			} else {
 				clear_expression_text();

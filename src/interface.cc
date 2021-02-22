@@ -239,6 +239,7 @@ INT_PTR CALLBACK tray_window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			hidden_x = -1;
 		}
 		gtk_window_present_with_time(GTK_WINDOW(mainwindow), GDK_CURRENT_TIME);
+		if(expressiontext) gtk_widget_grab_focus(expressiontext);
 	}
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
