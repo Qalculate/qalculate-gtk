@@ -56,7 +56,7 @@ extern int block_expression_execution;
 extern vector<string> recent_functions_pre;
 extern vector<string> recent_variables_pre;
 extern vector<string> recent_units_pre;
-extern GtkWidget *expression;
+extern GtkWidget *expressiontext;
 extern GtkWidget *resultview;
 extern PrintOptions printops;
 extern bool ignore_locale;
@@ -349,6 +349,10 @@ static void qalculate_activate(GtkApplication *app) {
 			gtk_window_move(GTK_WINDOW(list->data), hidden_x, hidden_y);
 			hidden_x = -1;
 		}
+#ifdef _WIN32
+		gtk_window_present_with_time(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GDK_CURRENT_TIME);
+#endif
+		if(expressiontext) gtk_widget_grab_focus(expressiontext);
 		gtk_window_present_with_time(GTK_WINDOW(list->data), GDK_CURRENT_TIME);
 		return;
 	}
@@ -460,6 +464,10 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 			gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), hidden_x, hidden_y);
 			hidden_x = -1;
 		}
+#ifdef _WIN32
+		gtk_window_present_with_time(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GDK_CURRENT_TIME);
+#endif
+		if(expressiontext) gtk_widget_grab_focus(expressiontext);
 		gtk_window_present_with_time(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GDK_CURRENT_TIME);
 		if(!file_arg.empty()) execute_from_file(file_arg);
 		if(!calc_arg.empty()) {

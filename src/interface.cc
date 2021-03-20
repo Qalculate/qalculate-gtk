@@ -240,6 +240,7 @@ INT_PTR CALLBACK tray_window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		}
 		gtk_window_present_with_time(GTK_WINDOW(mainwindow), GDK_CURRENT_TIME);
 		if(expressiontext) gtk_widget_grab_focus(expressiontext);
+		gtk_window_present_with_time(GTK_WINDOW(mainwindow), GDK_CURRENT_TIME);
 	}
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
@@ -2145,7 +2146,13 @@ void create_main_window(void) {
 #ifdef _WIN32
 	if(use_systray_icon) create_systray_icon();
 #endif
-	if(hide_on_startup) gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
+	if(hide_on_startup) {
+		if(remember_position) {
+			hidden_x = win_x;
+			hidden_y = win_y;
+		}
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
+	}
 
 }
 
