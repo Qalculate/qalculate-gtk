@@ -231,7 +231,7 @@ vector<GtkTreeViewColumn*> matrix_edit_columns, matrix_columns;
 
 extern GtkAccelGroup *accel_group;
 
-extern gint win_height, win_width, win_x, win_y, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
+extern gint win_height, win_width, win_x, win_y, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2, hidden_x, hidden_y;;
 bool remember_position = false;
 
 gint minimal_width;
@@ -397,6 +397,9 @@ guint32 current_shortcut_key = 0;
 guint32 current_shortcut_modifier = 0;
 
 PangoLayout *status_layout = NULL;
+
+#define EQUALS_IGNORECASE_AND_LOCAL(x,y,z)	(equalsIgnoreCase(x, y) || equalsIgnoreCase(x, z))
+#define EQUALS_IGNORECASE_AND_LOCAL_NR(x,y,z,a)	(equalsIgnoreCase(x, y a) || (x.length() == strlen(z) + strlen(a) && equalsIgnoreCase(x.substr(0, x.length() - strlen(a)), z) && equalsIgnoreCase(x.substr(x.length() - strlen(a)), a)))
 
 #define THIN_SPACE " "
 
@@ -708,7 +711,7 @@ int completion_names_match(string name, const string &str, size_t minlength = 0,
 				if(i_match) *i_match = n;
 				return 1;
 			}
-			if(i_match && *i_match == 0) *i_match = n;
+			if(i_match && *i_match == 0) *i_match = n + 1;
 			b_match = true;
 		}
 		if(i2 == string::npos) break;
@@ -721,6 +724,7 @@ int completion_names_match(string name, const string &str, size_t minlength = 0,
 		}
 		n++;
 	}
+	if(i_match && *i_match > 0) *i_match -= 1;
 	return (b_match ? 2 : 0);
 }
 
@@ -2678,7 +2682,7 @@ bool ask_tc() {
 	GtkWidget *w_rel = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(w_abs), _("Relative"));
 	gtk_widget_set_valign(w_rel, GTK_ALIGN_START);
 	gtk_grid_attach(GTK_GRID(grid), w_rel, 0, 2, 1, 1);
-	label = gtk_label_new("<i>1 °C + 1 °C = 2 °C\n1 °C + 5 °F = 1 °C + 5 °R ≈ 277 K\n2 °C − 1 °C = 1 °C\n1 °C − 5 °F = 1 °C - 5 °R ≈ −2 °C\n1 °C + 1 K = 2 °C</i>");
+	label = gtk_label_new("<i>1 °C + 1 °C = 2 °C\n1 °C + 5 °F = 1 °C + 5 °R ≈ 4 °C ≈ 277 K\n2 °C − 1 °C = 1 °C\n1 °C − 5 °F = 1 °C - 5 °R ≈ −2 °C\n1 °C + 1 K = 2 °C</i>");
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_widget_set_halign(label, GTK_ALIGN_START);
 	gtk_grid_attach(GTK_GRID(grid), label, 1, 2, 1, 1);
@@ -2935,6 +2939,24 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "sexa") || equalsIgnoreCase(to_str, "sexagesimal") || equalsIgnoreCase(to_str, _("sexagesimal"))) {
 					to_base = BASE_SEXAGESIMAL;
+					do_to = true;
+				} else if(equalsIgnoreCase(to_str, "sexa2") || EQUALS_IGNORECASE_AND_LOCAL_NR(to_str, "sexagesimal", _("sexagesimal"), "2")) {
+					to_base = BASE_SEXAGESIMAL_2;
+					do_to = true;
+				} else if(equalsIgnoreCase(to_str, "sexa3") || EQUALS_IGNORECASE_AND_LOCAL_NR(to_str, "sexagesimal", _("sexagesimal"), "3")) {
+					to_base = BASE_SEXAGESIMAL_3;
+					do_to = true;
+				} else if(equalsIgnoreCase(to_str, "latitude") || equalsIgnoreCase(to_str, _("latitude"))) {
+					to_base = BASE_LATITUDE;
+					do_to = true;
+				} else if(EQUALS_IGNORECASE_AND_LOCAL_NR(to_str, "latitude", _("latitude"), "2")) {
+					to_base = BASE_LATITUDE_2;
+					do_to = true;
+				} else if(equalsIgnoreCase(to_str, "longitude") || equalsIgnoreCase(to_str, _("longitude"))) {
+					to_base = BASE_LONGITUDE;
+					do_to = true;
+				} else if(EQUALS_IGNORECASE_AND_LOCAL_NR(to_str, "longitude", _("longitude"), "2")) {
+					to_base = BASE_LONGITUDE_2;
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "fp32") || equalsIgnoreCase(to_str, "binary32") || equalsIgnoreCase(to_str, "float")) {
 					to_base = BASE_FP32;
@@ -3647,8 +3669,12 @@ void display_parse_status() {
 					parsed_expression += _("roman numerals");
 				} else if(equalsIgnoreCase(str_u, "bijective") || equalsIgnoreCase(str_u, _("bijective"))) {
 					parsed_expression += _("bijective base-26");
-				} else if(equalsIgnoreCase(str_u, "sexa") || equalsIgnoreCase(str_u, "sexagesimal") || equalsIgnoreCase(str_u, _("sexagesimal"))) {
+				} else if(equalsIgnoreCase(str_u, "sexa") || equalsIgnoreCase(str_u, "sexa2") || equalsIgnoreCase(str_u, "sexa3") || equalsIgnoreCase(str_u, "sexagesimal") || equalsIgnoreCase(str_u, _("sexagesimal")) || EQUALS_IGNORECASE_AND_LOCAL_NR(str_u, "sexagesimal", _("sexagesimal"), "2") || EQUALS_IGNORECASE_AND_LOCAL_NR(str_u, "sexagesimal", _("sexagesimal"), "3")) {
 					parsed_expression += _("sexagesimal number");
+				} else if(equalsIgnoreCase(str_u, "latitude") || equalsIgnoreCase(str_u, _("latitude")) || EQUALS_IGNORECASE_AND_LOCAL_NR(to_str, "latitude", _("latitude"), "2")) {
+					parsed_expression += _("latitude");
+				} else if(equalsIgnoreCase(str_u, "longitude") || equalsIgnoreCase(str_u, _("longitude")) || EQUALS_IGNORECASE_AND_LOCAL_NR(to_str, "longitude", _("longitude"), "2")) {
+					parsed_expression += _("longitude");
 				} else if(equalsIgnoreCase(str_u, "fp32") || equalsIgnoreCase(str_u, "binary32") || equalsIgnoreCase(str_u, "float")) {
 					parsed_expression += _("32-bit floating point");
 				} else if(equalsIgnoreCase(str_u, "fp64") || equalsIgnoreCase(str_u, "binary64") || equalsIgnoreCase(str_u, "double")) {
@@ -7060,6 +7086,10 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Fraction"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 300, -1);
 	COMPLETION_CONVERT_STRING("hexadecimal") str += " <i>"; str += "hex"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Hexadecimal number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 216, -1);
+	COMPLETION_CONVERT_STRING("latitude") str += " <i>"; str += "latitude2"; str += "</i>";
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Latitude"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 294, -1);
+	COMPLETION_CONVERT_STRING("longitude") str += " <i>"; str += "longitude2"; str += "</i>";
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Longitude"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 294, -1);
 	COMPLETION_CONVERT_STRING("mixed")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Mixed units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 102, -1);
 	COMPLETION_CONVERT_STRING("octal") str += " <i>"; str += "oct"; str += "</i>";
@@ -7074,7 +7104,7 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex rectangular form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 404, -1);
 	COMPLETION_CONVERT_STRING("roman")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Roman numerals"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 280, -1);
-	COMPLETION_CONVERT_STRING("sexagesimal") str += " <i>"; str += "sexa"; str += "</i>";
+	COMPLETION_CONVERT_STRING("sexagesimal") str += " <i>"; str += "sexa"; str += "</i>"; str += " <i>"; str += "sexa2"; str += "</i>"; str += " <i>"; str += "sexa3"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Sexagesimal number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 292, -1);
 	COMPLETION_CONVERT_STRING("time")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Time format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 293, -1);
@@ -7236,6 +7266,10 @@ void get_image_blank_height(cairo_surface_t *surface, int *y1, int *y2) {
 cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, InternalPrintStruct ips, gint *point_central, int scaledown, GdkRGBA *color, gint *x_offset, gint *w_offset, gint max_width) {
 
 	if(CALCULATOR->aborted()) return NULL;
+
+	if(BASE_IS_SEXAGESIMAL(po.base) && m.isMultiplication() && m.size() == 2 && m[0].isNumber() && m[1].isUnit() && m[1].unit() == CALCULATOR->getDegUnit()) {
+		return draw_structure(m[0], po, caf, ips, point_central, scaledown, color, x_offset, w_offset, max_width);
+	}
 
 	gint scalefactor = gtk_widget_get_scale_factor(expressiontext);
 
@@ -7435,7 +7469,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						return surface;
 					}
 				}
-				if(exp.empty() && (po.base == BASE_SEXAGESIMAL || po.base == BASE_TIME)) {
+				if(exp.empty() && (BASE_IS_SEXAGESIMAL(po.base) || po.base == BASE_TIME)) {
 					string estr;
 					if(po.lower_case_e) {TTP(estr, "e");}
 					else {TTP_SMALL(estr, "E");}
@@ -11733,6 +11767,12 @@ void set_option(string str) {
 		else if(equalsIgnoreCase(svalue, "oct") || equalsIgnoreCase(svalue, "octal")) v = BASE_OCTAL;
 		else if(equalsIgnoreCase(svalue, "dec") || equalsIgnoreCase(svalue, "decimal")) v = BASE_DECIMAL;
 		else if(equalsIgnoreCase(svalue, "sexa") || equalsIgnoreCase(svalue, "sexagesimal")) {if(b_in) v = 0; else v = BASE_SEXAGESIMAL;}
+		else if(equalsIgnoreCase(svalue, "sexa2") || equalsIgnoreCase(svalue, "sexagesimal2")) {if(b_in) v = 0; else v = BASE_SEXAGESIMAL_2;}
+		else if(equalsIgnoreCase(svalue, "sexa3") || equalsIgnoreCase(svalue, "sexagesimal3")) {if(b_in) v = 0; else v = BASE_SEXAGESIMAL_3;}
+		else if(equalsIgnoreCase(svalue, "latitude")) {if(b_in) v = 0; else v = BASE_LATITUDE;}
+		else if(equalsIgnoreCase(svalue, "latitude2")) {if(b_in) v = 0; else v = BASE_LATITUDE_2;}
+		else if(equalsIgnoreCase(svalue, "longitude")) {if(b_in) v = 0; else v = BASE_LONGITUDE;}
+		else if(equalsIgnoreCase(svalue, "longitude2")) {if(b_in) v = 0; else v = BASE_LONGITUDE_2;}
 		else if(!b_in && !b_out && (index = svalue.find_first_of(SPACES)) != string::npos) {
 			str = svalue;
 			svalue = str.substr(index + 1, str.length() - (index + 1));
@@ -13047,6 +13087,24 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "sexa") || equalsIgnoreCase(to_str, "sexagesimal") || equalsIgnoreCase(to_str, _("sexagesimal"))) {
 				to_base = BASE_SEXAGESIMAL;
+				do_to = true;
+			} else if(equalsIgnoreCase(to_str, "sexa2") || EQUALS_IGNORECASE_AND_LOCAL_NR(to_str, "sexagesimal", _("sexagesimal"), "2")) {
+				to_base = BASE_SEXAGESIMAL_2;
+				do_to = true;
+			} else if(equalsIgnoreCase(to_str, "sexa3") || EQUALS_IGNORECASE_AND_LOCAL_NR(to_str, "sexagesimal", _("sexagesimal"), "3")) {
+				to_base = BASE_SEXAGESIMAL_3;
+				do_to = true;
+			} else if(equalsIgnoreCase(to_str, "latitude") || equalsIgnoreCase(to_str, _("latitude"))) {
+				to_base = BASE_LATITUDE;
+				do_to = true;
+			} else if(EQUALS_IGNORECASE_AND_LOCAL_NR(to_str, "latitude", _("latitude"), "2")) {
+				to_base = BASE_LATITUDE_2;
+				do_to = true;
+			} else if(equalsIgnoreCase(to_str, "longitude") || equalsIgnoreCase(to_str, _("longitude"))) {
+				to_base = BASE_LONGITUDE;
+				do_to = true;
+			} else if(EQUALS_IGNORECASE_AND_LOCAL_NR(to_str, "longitude", _("longitude"), "2")) {
+				to_base = BASE_LONGITUDE_2;
 				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "fp32") || equalsIgnoreCase(to_str, "binary32") || equalsIgnoreCase(to_str, "float")) {
 				to_base = BASE_FP32;
@@ -19007,7 +19065,7 @@ void load_preferences() {
 
 	size_t bookmark_index = 0;
 
-	int version_numbers[] = {3, 17, 0};
+	int version_numbers[] = {3, 18, 0};
 	bool old_history_format = false;
 
 	if(file) {
@@ -20007,9 +20065,14 @@ void save_preferences(bool mode) {
 	}
 	//fprintf(file, "height=%i\n", h);
 	if(remember_position) {
-		gtk_window_get_position(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &win_x, &win_y);
-		fprintf(file, "x=%i\n", win_x);
-		fprintf(file, "y=%i\n", win_y);
+		if(hidden_x >= 0 && !gtk_widget_is_visible(mainwindow)) {
+			fprintf(file, "x=%i\n", hidden_x);
+			fprintf(file, "y=%i\n", hidden_y);
+		} else {
+			gtk_window_get_position(GTK_WINDOW(mainwindow), &win_x, &win_y);
+			fprintf(file, "x=%i\n", win_x);
+			fprintf(file, "y=%i\n", win_y);
+		}
 	}
 #ifdef _WIN32
 	fprintf(file, "use_system_tray_icon=%i\n", use_systray_icon);
@@ -21183,7 +21246,8 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 	gtk_widget_hide(completion_window);
 	unblock_completion();
 	if(!item && !prefix && editing_to_expression && gtk_text_iter_is_end(&ipos)) {
-		execute_expression();
+		string str = get_expression_text();
+		if(str[str.length() - 1] != ' ') execute_expression();
 	}
 }
 
@@ -21191,7 +21255,6 @@ void on_menu_item_quit_activate(GtkMenuItem*, gpointer user_data) {
 	on_gcalc_exit(NULL, NULL, user_data);
 }
 
-extern gint hidden_x, hidden_y;
 void on_main_window_close(GtkWidget *w, GdkEvent *event, gpointer user_data) {
 	if(has_systray_icon()) {
 		if(save_mode_on_exit) save_mode();
@@ -21506,9 +21569,14 @@ void on_preferences_checkbutton_dark_theme_toggled(GtkToggleButton *w, gpointer)
 void on_preferences_checkbutton_use_systray_icon_toggled(GtkToggleButton *w, gpointer) {
 #ifdef _WIN32
 	use_systray_icon = gtk_toggle_button_get_active(w);
-	if(use_systray_icon) create_systray_icon();
-	else destroy_systray_icon();
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_hide_on_startup")), use_systray_icon);
+	if(use_systray_icon) {
+		create_systray_icon();
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_hide_on_startup")), TRUE);
+	} else {
+		destroy_systray_icon();
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_hide_on_startup")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_hide_on_startup")), FALSE);
+	}
 #endif
 }
 void on_preferences_checkbutton_hide_on_startup_toggled(GtkToggleButton *w, gpointer) {
@@ -23381,9 +23449,13 @@ void do_completion() {
 						if(current_from_struct && str.length() < 3) {
 							if(p_type >= 100 && p_type < 200) {
 								if(to_type == 5 || current_from_struct->containsType(STRUCT_UNIT) <= 0) b_match = 0;
-							} else if(p_type >= 200 && p_type < 300 && ((p_type != 292 && p_type != 200) || to_type == 1 || to_type >= 3)) {
+							} else if((p_type == 294 || (p_type == 292 && to_type == 4)) && current_from_unit) {
+								if(current_from_unit != CALCULATOR->getDegUnit()) b_match = 0;
+							} else if(p_type >= 290 && p_type < 300 && (p_type != 292 || to_type >= 1)) {
+								if(!current_from_struct->isNumber() || (str.empty() && current_from_struct->isInteger())) b_match = 0;
+							} else if(p_type >= 200 && p_type < 290 && (p_type != 200 || to_type == 1 || to_type >= 3)) {
 								if(!current_from_struct->isNumber()) b_match = 0;
-								else if(str.empty() && p_type >= 202 && p_type < 290 && !current_from_struct->isInteger()) b_match = 0;
+								else if(str.empty() && p_type >= 202 && !current_from_struct->isInteger()) b_match = 0;
 							} else if(p_type >= 300 && p_type < 400) {
 								if(p_type == 300) {
 									if(!contains_rational_number(*current_from_struct)) b_match = 0;
@@ -26546,6 +26618,22 @@ void menu_to_hex(GtkMenuItem*, gpointer) {
 	result_format_updated();
 	printops.base = save_base;
 }
+void menu_to_sexa(GtkMenuItem*, gpointer) {
+	int save_base = printops.base;
+	to_base = 0;
+	to_bits = 0;
+	printops.base = BASE_SEXAGESIMAL;
+	result_format_updated();
+	printops.base = save_base;
+}
+void menu_to_time(GtkMenuItem*, gpointer) {
+	int save_base = printops.base;
+	to_base = 0;
+	to_bits = 0;
+	printops.base = BASE_TIME;
+	result_format_updated();
+	printops.base = save_base;
+}
 void menu_to_roman(GtkMenuItem*, gpointer) {
 	int save_base = printops.base;
 	to_base = 0;
@@ -26608,7 +26696,8 @@ void update_mb_to_menu() {
 	g_list_free(list);
 	if(!mstruct || !displayed_mstruct || !contains_convertable_unit(*displayed_mstruct)) {
 		bool b_date = (mstruct && displayed_mstruct && mstruct->isDateTime());
-		bool b_integ = (mstruct && displayed_mstruct && mstruct->isInteger());
+		bool b_number = (mstruct && displayed_mstruct && mstruct->isNumber());
+		bool b_integ = b_number && mstruct->isInteger();
 		bool b_complex = (mstruct && displayed_mstruct && (contains_imaginary_number(*mstruct) || mstruct->containsFunctionId(FUNCTION_ID_CIS)));
 		bool b_rational = (mstruct && displayed_mstruct && contains_rational_number(*displayed_mstruct));
 		if(b_date) {
@@ -26633,6 +26722,9 @@ void update_mb_to_menu() {
 				MENU_SEPARATOR
 				base_sep = true;
 				MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)
+			} else if(b_number) {
+				if(displayed_printops.base != BASE_SEXAGESIMAL) {MENU_ITEM(_("Sexagesimal"), menu_to_sexa)}
+				if(displayed_printops.base != BASE_TIME) {MENU_ITEM(_("Time format"), menu_to_time)}
 			}
 		}
 		if(b_rational) {
@@ -26651,10 +26743,6 @@ void update_mb_to_menu() {
 		if(b_complex && (evalops.complex_number_form != COMPLEX_NUMBER_FORM_CIS || !complex_angle_form)) {MENU_ITEM(_("Angle/phasor notation"), menu_to_angle)}
 		return;
 	}
-	MENU_ITEM(_("Base units"), on_menu_item_convert_to_base_units_activate);
-	MENU_ITEM(_("Optimal unit"), on_menu_item_convert_to_best_unit_activate);
-	MENU_ITEM(_("Optimal prefix"), on_menu_item_set_prefix_activate);
-	MENU_SEPARATOR
 	string s_cat;
 	Unit *u_result = NULL;
 	if(displayed_mstruct) u_result = find_exact_matching_unit(*displayed_mstruct);
@@ -26665,6 +26753,14 @@ void update_mb_to_menu() {
 	if(b_exact && u_result && u_result->subtype() != SUBTYPE_COMPOSITE_UNIT) b_prefix = has_prefix(*displayed_mstruct);
 	vector<Unit*> to_us;
 	size_t i_added = 0;
+	if(u_result && displayed_printops.base != BASE_SEXAGESIMAL && u_result == CALCULATOR->getDegUnit()) {
+		MENU_ITEM(_("Sexagesimal"), menu_to_sexa)
+		MENU_SEPARATOR
+	}
+	MENU_ITEM(_("Base units"), on_menu_item_convert_to_base_units_activate);
+	MENU_ITEM(_("Optimal unit"), on_menu_item_convert_to_best_unit_activate);
+	MENU_ITEM(_("Optimal prefix"), on_menu_item_set_prefix_activate);
+	MENU_SEPARATOR
 	if(u_result && u_result->isCurrency()) {
 		Unit *u_local_currency = CALCULATOR->getLocalCurrency();
 		const char *currency_units[] = {"USD", "GBP", "JPY", "CNY", "INR", "CAD", "BRL"};

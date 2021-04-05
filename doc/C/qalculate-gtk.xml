@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "3.17.0">
-  <!ENTITY manrevision "3.17.0">
-  <!ENTITY date "February 2021">
+  <!ENTITY appversion "3.18.0">
+  <!ENTITY manrevision "3.18.0">
+  <!ENTITY date "April 2021">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -15,7 +15,7 @@
 <title>&app; Manual v&manrevision;</title>
 <bookinfo>
 	<copyright>
-		<year>2005-2007, 2016-2020</year>
+		<year>2005-2007, 2016-2021</year>
 		<holder>Hanna Knutsson</holder>
 	</copyright>
 	<publisher> 
@@ -1640,8 +1640,12 @@ Putting <quote> to </quote> (or a right arrow, e.g. <quote>-></quote>) followed 
 <listitem><para>Show as hexadecimal number (e.g. <quote>623 to hex = 026F</quote>). Append an integer to specify the number of bits (e.g. <quote>4 to hex16 = 0004</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
-<term>sexa / sexagesimal</term>
-<listitem><para>Show as sexagesimal number (e.g. <quote>7.33 to sexagesimal = 7°19′48″</quote>).</para></listitem>
+<term>sexa / sexa2 / sexa3 / sexagesimal</term>
+<listitem><para>Show as sexagesimal number (e.g. <quote>7.33 to sexagesimal = 7°19′48″</quote>). For sexa2, arcseconds are hidden, and for sexa3 arcseconds are rounded.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>longitude / longitude2 / latitude / latitude2</term>
+<listitem><para>Show as sexagesimal latitude/longitude (e.g. <quote>-7.33 to latitude = 7°19′48″S</quote>). longitude2/latitude2 only shows degrees and arcminutes (e.g. <quote>-7.33 to latitude2 = 7°19.8′S</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>bijective</term>

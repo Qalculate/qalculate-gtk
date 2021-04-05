@@ -1,8 +1,23 @@
+2021-04-04 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Do not calculate expression immediately on completion if "to" expression requires addition input (e.g. "to base #")
+	* Do not append degrees at end of sexagesimal output
+	* Add support for new sexagesimal bases
+	* Add sexagesimal and time format to "to" menu when appropriate
+
+2021-03-20 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix keyboard focus when run hidden automatically at startup
+
+2021-02-22 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* If system tray icon is enabled, clear expression when the main window is hidden, and hide the window when escape key is pressed and expression is empty
+
 2021-02-15 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Show matrix result dialog when number of rows >= 3 (instead rows or columns >= 4), and set initial focus on cancel button
 
-2021-01-06 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2021-02-06 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Always save keyboard shortcuts in the same order
 
