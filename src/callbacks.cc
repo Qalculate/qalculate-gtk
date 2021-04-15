@@ -276,6 +276,7 @@ bool stop_timeouts = false;
 PrintOptions printops, parse_printops, displayed_printops;
 bool displayed_caf = false;
 EvaluationOptions evalops;
+bool dot_question_asked = false;
 
 bool rpn_mode, rpn_keys;
 bool adaptive_interval_display;
@@ -2704,6 +2705,28 @@ bool ask_tc() {
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w_abs))) tc_mode = TEMPERATURE_CALCULATION_ABSOLUTE;
 	else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w_rel))) tc_mode = TEMPERATURE_CALCULATION_RELATIVE;
 	gtk_widget_destroy(dialog);
+	if(preferences_builder) {
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_radiobutton_temp_abs"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_radiobutton_temp_abs_toggled, NULL);
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_radiobutton_temp_rel"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_radiobutton_temp_rel_toggled, NULL);
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_radiobutton_temp_hybrid"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_radiobutton_temp_hybrid_toggled, NULL);
+		switch(tc_mode) {
+			case TEMPERATURE_CALCULATION_ABSOLUTE: {
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_temp_abs")), TRUE);
+				break;
+			}
+			case TEMPERATURE_CALCULATION_RELATIVE: {
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_temp_rel")), TRUE);
+				break;
+			}
+			default: {
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_temp_hybrid")), TRUE);
+				break;
+			}
+		}
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_radiobutton_temp_abs"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_radiobutton_temp_abs_toggled, NULL);
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_radiobutton_temp_rel"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_radiobutton_temp_rel_toggled, NULL);
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_radiobutton_temp_hybrid"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_radiobutton_temp_hybrid_toggled, NULL);
+	}
 	tc_set = true;
 	if(tc_mode != CALCULATOR->getTemperatureCalculationMode()) {
 		CALCULATOR->setTemperatureCalculationMode(tc_mode);
@@ -2712,11 +2735,91 @@ bool ask_tc() {
 	return false;
 }
 
+bool test_ask_dot(const string &str) {
+	if(dot_question_asked || CALCULATOR->getDecimalPoint() == DOT) return false;
+	size_t i = 0;
+	while(true) {
+		i = str.find(DOT, i);
+		if(i == string::npos) return false;
+		i = str.find_first_not_of(SPACES, i + 1);
+		if(i == string::npos) return false;
+		if(is_in(NUMBERS, str[i])) return true;
+	}
+	return false;
+}
+
+bool ask_dot() {
+	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Interpretation of dots"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_OK"), GTK_RESPONSE_ACCEPT, NULL);
+	gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT);
+	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
+	GtkWidget *grid = gtk_grid_new();
+	gtk_grid_set_row_spacing(GTK_GRID(grid), 12);
+	gtk_grid_set_column_spacing(GTK_GRID(grid), 12);
+	gtk_container_set_border_width(GTK_CONTAINER(grid), 6);
+	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), grid);
+	gtk_widget_show(grid);
+	GtkWidget *label = gtk_label_new(_("Please select interpretation of dots (\".\")\n(this can later be changed in preferences)."));
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), label, 0, 0, 2, 1);
+	GtkWidget *w_bothdeci = gtk_radio_button_new_with_label(NULL, _("Both dot and comma as decimal separators"));
+	gtk_widget_set_valign(w_bothdeci, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), w_bothdeci, 0, 1, 1, 1);
+	label = gtk_label_new("<i>(1.2 = 1,2)</i>");
+	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), label, 1, 1, 1, 1);
+	GtkWidget *w_ignoredot = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(w_bothdeci), _("Dot as thousands separator"));
+	gtk_widget_set_valign(w_ignoredot, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), w_ignoredot, 0, 2, 1, 1);
+	label = gtk_label_new("<i>(1.000.000 = 1000000)</i>");
+	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), label, 1, 2, 1, 1);
+	GtkWidget *w_dotdeci = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(w_bothdeci), _("Only dot as decimal separator"));
+	gtk_widget_set_valign(w_dotdeci, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), w_dotdeci, 0, 3, 1, 1);
+	label = gtk_label_new("<i>(1.2 + root(16, 4) = 3.2)</i>");
+	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), label, 1, 3, 1, 1);
+	if(evalops.parse_options.dot_as_separator) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w_ignoredot), TRUE);
+	else gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w_bothdeci), TRUE);
+	gtk_widget_show_all(grid);
+	gtk_dialog_run(GTK_DIALOG(dialog));
+	dot_question_asked = true;
+	bool das = evalops.parse_options.dot_as_separator;
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w_dotdeci))) {
+		evalops.parse_options.dot_as_separator = false;
+		evalops.parse_options.comma_as_separator = false;
+		CALCULATOR->useDecimalPoint(false);
+		das = !evalops.parse_options.dot_as_separator;
+	} else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w_ignoredot))) {
+		evalops.parse_options.dot_as_separator = true;
+	} else {
+		evalops.parse_options.dot_as_separator = false;
+	}
+	if(preferences_builder) {
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_dot_as_separator"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_dot_as_separator_toggled, NULL);
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_comma_as_separator"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_comma_as_separator_toggled, NULL);
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_decimal_comma"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_decimal_comma_toggled, NULL);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_decimal_comma")), CALCULATOR->getDecimalPoint() == COMMA);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_dot_as_separator")), evalops.parse_options.dot_as_separator);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_comma_as_separator")), evalops.parse_options.comma_as_separator);
+		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_dot_as_separator")), CALCULATOR->getDecimalPoint() != DOT);
+		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_comma_as_separator")), CALCULATOR->getDecimalPoint() != COMMA);
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_dot_as_separator"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_dot_as_separator_toggled, NULL);
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_comma_as_separator"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_comma_as_separator_toggled, NULL);
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_decimal_comma"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_decimal_comma_toggled, NULL);
+	}
+	gtk_widget_destroy(dialog);
+	return das != evalops.parse_options.dot_as_separator;
+}
+
 vector<CalculatorMessage> autocalc_messages;
 gboolean do_autocalc_history_timeout(gpointer) {
 	autocalc_history_timeout_id = 0;
 	if(!do_timeout || !result_autocalculated || rpn_mode) return FALSE;
-	if((test_ask_tc(*parsed_mstruct) && ask_tc()) || check_exchange_rates(NULL, true)) {
+	if((test_ask_tc(*parsed_mstruct) && ask_tc()) || (test_ask_dot(result_text) && ask_dot()) || check_exchange_rates(NULL, true)) {
 		execute_expression(true, false, OPERATION_ADD, NULL, false, 0, "", "", false);
 		return FALSE;
 	}
@@ -12461,6 +12564,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			}
 			expression_has_changed = false;
 			if(!do_mathoperation && !str.empty()) add_to_expression_history(str);
+			if(test_ask_dot(str)) ask_dot();
 		}
 	}
 	do_timeout = false;
@@ -18896,6 +19000,7 @@ void load_preferences() {
 	evalops.parse_options.parsing_mode = PARSING_MODE_ADAPTIVE;
 	evalops.parse_options.angle_unit = ANGLE_UNIT_RADIANS;
 	evalops.parse_options.dot_as_separator = CALCULATOR->default_dot_as_separator;
+	dot_question_asked = false;
 	evalops.parse_options.comma_as_separator = false;
 	evalops.mixed_units_conversion = MIXED_UNITS_CONVERSION_DEFAULT;
 	evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
@@ -19624,7 +19729,13 @@ void load_preferences() {
 					if(v == 0) CALCULATOR->useDecimalPoint(evalops.parse_options.comma_as_separator);
 					else if(v > 0) CALCULATOR->useDecimalComma();
 				} else if(svar == "dot_as_separator") {
-					evalops.parse_options.dot_as_separator = v;
+					if(v < 0 || (CALCULATOR->default_dot_as_separator == v && (version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 19) || (version_numbers[0] == 3 && version_numbers[1] == 18 && version_numbers[2] < 1)))) {
+						evalops.parse_options.dot_as_separator = CALCULATOR->default_dot_as_separator;
+						dot_question_asked = false;
+					} else {
+						evalops.parse_options.dot_as_separator = v;
+						dot_question_asked = true;
+					}
 				} else if(svar == "comma_as_separator") {
 					evalops.parse_options.comma_as_separator = v;
 					if(CALCULATOR->getDecimalPoint() != COMMA) {
@@ -20054,7 +20165,7 @@ void save_preferences(bool mode) {
 		datasets_vposition2 = gtk_paned_get_position(GTK_PANED(gtk_builder_get_object(datasets_builder, "datasets_vpaned2")));
 	}
 	fprintf(file, "\n[General]\n");
-	fprintf(file, "version=%s\n", VERSION);
+	fprintf(file, "version=%s\n", "3.18.1");
 	fprintf(file, "allow_multiple_instances=%i\n", allow_multiple_instances);
 	if(title_type != TITLE_APP) fprintf(file, "window_title_mode=%i\n", title_type);
 	if(minimal_width > 0 && minimal_mode) {
@@ -20164,7 +20275,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "digit_grouping=%i\n", printops.digit_grouping);
 	fprintf(file, "copy_separator=%i\n", copy_separator);
 	fprintf(file, "decimal_comma=%i\n", b_decimal_comma);
-	fprintf(file, "dot_as_separator=%i\n", evalops.parse_options.dot_as_separator);
+	fprintf(file, "dot_as_separator=%i\n", dot_question_asked ? evalops.parse_options.dot_as_separator : -1);
 	fprintf(file, "comma_as_separator=%i\n", evalops.parse_options.comma_as_separator);
 	if(use_dark_theme >= 0) fprintf(file, "use_dark_theme=%i\n", use_dark_theme);
 	fprintf(file, "use_custom_result_font=%i\n", use_custom_result_font);
@@ -21530,18 +21641,21 @@ void on_preferences_checkbutton_decimal_comma_toggled(GtkToggleButton *w, gpoint
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_dot_as_separator")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_comma_as_separator")));
 	}
+	dot_question_asked = true;
 	expression_format_updated(false);
 	result_display_updated();
 	set_unicode_buttons();
 }
 void on_preferences_checkbutton_dot_as_separator_toggled(GtkToggleButton *w, gpointer) {
 	evalops.parse_options.dot_as_separator = gtk_toggle_button_get_active(w);
+	dot_question_asked = true;
 	expression_format_updated(false);
 }
 void on_preferences_checkbutton_comma_as_separator_toggled(GtkToggleButton *w, gpointer) {
 	evalops.parse_options.comma_as_separator = gtk_toggle_button_get_active(w);
 	CALCULATOR->useDecimalPoint(evalops.parse_options.comma_as_separator);
 	set_unicode_buttons();
+	dot_question_asked = true;
 	expression_format_updated(false);
 }
 void on_preferences_checkbutton_load_defs_toggled(GtkToggleButton *w, gpointer) {

@@ -433,6 +433,12 @@ void on_preferences_radiobutton_digit_grouping_locale_toggled(GtkToggleButton *w
 void on_preferences_button_result_font_toggled(GtkButton *w, gpointer user_data);
 void on_preferences_button_expression_font_toggled(GtkButton *w, gpointer user_data);
 void on_preferences_button_status_font_toggled(GtkButton *w, gpointer user_data);
+void on_preferences_checkbutton_decimal_comma_toggled(GtkToggleButton *w, gpointer);
+void on_preferences_checkbutton_dot_as_separator_toggled(GtkToggleButton *w, gpointer);
+void on_preferences_checkbutton_comma_as_separator_toggled(GtkToggleButton *w, gpointer);
+void on_preferences_radiobutton_temp_rel_toggled(GtkToggleButton *w, gpointer);
+void on_preferences_radiobutton_temp_abs_toggled(GtkToggleButton *w, gpointer);
+void on_preferences_radiobutton_temp_hybrid_toggled(GtkToggleButton *w, gpointer);
 void on_units_togglebutton_from_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 void on_units_button_convert_clicked(GtkButton *button, gpointer user_data);
 void on_units_togglebutton_to_toggled(GtkToggleButton *togglebutton, gpointer user_data);
