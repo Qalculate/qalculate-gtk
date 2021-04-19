@@ -164,7 +164,7 @@ extern int allow_multiple_instances;
 extern int title_type;
 extern bool display_expression_status;
 extern int expression_lines;
-extern int use_dark_theme;
+extern int gtk_theme;
 extern bool use_custom_result_font, use_custom_expression_font, use_custom_status_font, use_custom_keypad_font, use_custom_app_font;
 extern string custom_result_font, custom_expression_font, custom_status_font, custom_keypad_font, custom_app_font;
 extern string status_error_color, status_warning_color;
@@ -1470,12 +1470,18 @@ void create_main_window(void) {
 	gtk_css_provider_load_from_data(statusframe_provider, topframe_css.c_str(), -1, NULL);
 
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
-#	ifdef _WIN32
-	app_provider_theme = gtk_css_provider_new();
-	gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(app_provider_theme), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	if(use_dark_theme > 0) gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/Adwaita/gtk-contained-dark.css");
-	else if(use_dark_theme == 0) gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/Adwaita/gtk-contained.css");
-#	endif
+	if(gtk_theme < 0) {
+		app_provider_theme = NULL;
+	} else {
+		app_provider_theme = gtk_css_provider_new();
+		gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(app_provider_theme), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		switch(gtk_theme) {
+			case 0: {gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/Adwaita/gtk-contained.css"); break;}
+			case 1: {gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/Adwaita/gtk-contained-dark.css"); break;}
+			case 2: {gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/HighContrast/gtk-contained.css"); break;}
+			case 3: {gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/HighContrast/gtk-contained-inverse.css"); break;}
+		}
+	}
 #endif
 
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
@@ -2605,11 +2611,10 @@ GtkWidget* get_preferences_dialog(void) {
 		gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_plot_time")), 8.91, GTK_POS_BOTTOM, "600 s");
 		nr.set(max_plot_time); nr.log(2);
 		gtk_range_set_value(GTK_RANGE(gtk_builder_get_object(preferences_builder, "preferences_scale_plot_time")), nr.floatValue() - 0.322);
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
-#	ifdef _WIN32
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_dark_theme")), use_dark_theme > 0);
-		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_dark_theme")));
-#	endif
+		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_theme")), gtk_theme < 0 ? 0 : gtk_theme + 1);
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_theme")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_combo_theme")));
 #endif
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_use_systray_icon")), use_systray_icon);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_hide_on_startup")), hide_on_startup);

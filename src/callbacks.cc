@@ -171,7 +171,7 @@ extern Unit *selected_to_unit;
 bool save_mode_on_exit;
 bool save_defs_on_exit;
 bool clear_history_on_exit = false;
-int use_dark_theme = -1;
+int gtk_theme = -1;
 bool use_custom_result_font, use_custom_expression_font, use_custom_status_font, use_custom_keypad_font, use_custom_app_font;
 bool save_custom_result_font = false, save_custom_expression_font = false, save_custom_status_font = false, save_custom_keypad_font = false, save_custom_app_font = false;
 string custom_result_font, custom_expression_font, custom_status_font, custom_keypad_font, custom_app_font;
@@ -1097,7 +1097,9 @@ void show_help(const char *file, GObject *parent) {
 	GtkWidget *webView = webkit_web_view_new();
 	help_find_entries[webView] = entry_find;
 	WebKitSettings *settings = webkit_web_view_get_settings(WEBKIT_WEB_VIEW(webView));
+#	if GTK_MAJOR_VERSION == 2 && GTK_MINOR_VERSION < 32
 	webkit_settings_set_enable_plugins(settings, FALSE);
+#	endif
 	webkit_settings_set_zoom_text_only(settings, FALSE);
 	if(help_zoom > 0.0) webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(webView), help_zoom);
 	PangoFontDescription *font_desc;
@@ -19133,7 +19135,7 @@ void load_preferences() {
 	hexadecimal_twos_complement_in = false;
 	twos_complement_in = false;
 	expression_lines = -1;
-	use_dark_theme = -1;
+	gtk_theme = -1;
 
 	CALCULATOR->setPrecision(10);
 
@@ -19729,7 +19731,7 @@ void load_preferences() {
 					if(v == 0) CALCULATOR->useDecimalPoint(evalops.parse_options.comma_as_separator);
 					else if(v > 0) CALCULATOR->useDecimalComma();
 				} else if(svar == "dot_as_separator") {
-					if(v < 0 || (CALCULATOR->default_dot_as_separator == v && (version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 19) || (version_numbers[0] == 3 && version_numbers[1] == 18 && version_numbers[2] < 1)))) {
+					if(v < 0 || (CALCULATOR->default_dot_as_separator == v && (version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 18) || (version_numbers[0] == 3 && version_numbers[1] == 18 && version_numbers[2] < 1)))) {
 						evalops.parse_options.dot_as_separator = CALCULATOR->default_dot_as_separator;
 						dot_question_asked = false;
 					} else {
@@ -19742,7 +19744,9 @@ void load_preferences() {
 						CALCULATOR->useDecimalPoint(evalops.parse_options.comma_as_separator);
 					}
 				} else if(svar == "use_dark_theme") {
-					use_dark_theme = v;
+					if(v > 0) gtk_theme = 1;
+				} else if(svar == "gtk_theme") {
+					gtk_theme = v;
 				} else if(svar == "use_custom_result_font") {
 					use_custom_result_font = v;
 				} else if(svar == "use_custom_expression_font") {
@@ -20277,7 +20281,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "decimal_comma=%i\n", b_decimal_comma);
 	fprintf(file, "dot_as_separator=%i\n", dot_question_asked ? evalops.parse_options.dot_as_separator : -1);
 	fprintf(file, "comma_as_separator=%i\n", evalops.parse_options.comma_as_separator);
-	if(use_dark_theme >= 0) fprintf(file, "use_dark_theme=%i\n", use_dark_theme);
+	if(gtk_theme >= 0) fprintf(file, "gtk_theme=%i\n", gtk_theme);
 	fprintf(file, "use_custom_result_font=%i\n", use_custom_result_font);
 	fprintf(file, "use_custom_expression_font=%i\n", use_custom_expression_font);
 	fprintf(file, "use_custom_status_font=%i\n", use_custom_status_font);
@@ -21673,11 +21677,20 @@ void on_preferences_checkbutton_display_expression_status_toggled(GtkToggleButto
 		set_status_text("");
 	}
 }
-void on_preferences_checkbutton_dark_theme_toggled(GtkToggleButton *w, gpointer) {
+void on_preferences_combo_theme_changed(GtkComboBox *w, gpointer) {
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
-	use_dark_theme = gtk_toggle_button_get_active(w);
-	if(use_dark_theme) gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/Adwaita/gtk-contained-dark.css");
-	else gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/Adwaita/gtk-contained.css");
+	if(!app_provider_theme) {
+		app_provider_theme = gtk_css_provider_new();
+		gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(app_provider_theme), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	}
+	gtk_theme = gtk_combo_box_get_active(w) - 1;
+	switch(gtk_theme) {
+		case 0: {gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/Adwaita/gtk-contained.css"); break;}
+		case 1: {gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/Adwaita/gtk-contained-dark.css"); break;}
+		case 2: {gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/HighContrast/gtk-contained.css"); break;}
+		case 3: {gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/HighContrast/gtk-contained-inverse.css"); break;}
+		default: {gtk_css_provider_load_from_data(app_provider_theme, "", -1, NULL);}
+	}
 #endif
 }
 void on_preferences_checkbutton_use_systray_icon_toggled(GtkToggleButton *w, gpointer) {
