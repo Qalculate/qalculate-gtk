@@ -4167,6 +4167,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                 </child>
                 <child>
                   <object class="GtkBox" id="buttons">
+                    <property name="name">buttons</property>
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="vexpand">True</property>
@@ -4179,6 +4180,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                         <property name="spacing">6</property>
                         <child>
                           <object class="GtkToggleButton" id="button_programmers_keypad">
+                            <property name="name">button_programmers_keypad</property>
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="receives-default">True</property>
@@ -4239,6 +4241,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                 <child>
                                   <object class="GtkToggleButton" id="button_exact">
                                     <property name="label" translatable="yes">Exact</property>
+                                    <property name="name">button_exact</property>
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
@@ -4253,6 +4256,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                 <child>
                                   <object class="GtkToggleButton" id="button_fraction">
                                     <property name="label">a / b</property>
+                                    <property name="name">button_fraction</property>
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
@@ -4267,6 +4271,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                 </child>
                                 <child>
                                   <object class="GtkComboBoxText" id="combobox_numerical_display">
+                                    <property name="name">combobox_numerical_display</property>
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="tooltip-text" translatable="yes">Numerical display</property>
@@ -4288,6 +4293,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                 </child>
                                 <child>
                                   <object class="GtkComboBoxText" id="combobox_base">
+                                    <property name="name">combobox_base</property>
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="tooltip-text" translatable="yes">Number base</property>
@@ -4346,6 +4352,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                     <child>
                       <!-- n-columns=3 n-rows=1 -->
                       <object class="GtkGrid" id="grid_buttons">
+                        <property name="name">grid_buttons</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="column-spacing">1</property>

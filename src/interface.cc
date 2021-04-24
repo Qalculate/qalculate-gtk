@@ -156,7 +156,7 @@ GtkAccelGroup *accel_group;
 
 gint history_scroll_width = 16;
 
-GtkCssProvider *topframe_provider, *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider, *app_provider_theme, *statusframe_provider;
+GtkCssProvider *topframe_provider, *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider, *app_provider_theme, *statusframe_provider, *button_padding_provider;
 
 extern bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad, minimal_mode;
 extern bool save_mode_on_exit, save_defs_on_exit, load_global_defs, hyp_is_on, inv_is_on, fetch_exchange_rates_at_startup, clear_history_on_exit;
@@ -181,6 +181,7 @@ extern int max_plot_time;
 extern gint autocalc_history_delay;
 extern int default_fraction_fraction;
 extern bool use_systray_icon, hide_on_startup;
+extern int horizontal_button_padding, vertical_button_padding;
 
 extern string nbases_error_color, nbases_warning_color;
 
@@ -1290,6 +1291,26 @@ void create_button_menus() {
 
 }
 
+void update_button_padding(bool initial) {
+	if(horizontal_button_padding >= 0 || vertical_button_padding >= 0) {
+		string padding_css;
+		if(horizontal_button_padding >= 0) {
+			padding_css += "#grid_buttons button, #button_exact, #button_fraction {";
+			padding_css += "padding-left: "; padding_css += i2s(horizontal_button_padding);
+			padding_css += "px; padding-right: "; padding_css += i2s(horizontal_button_padding); padding_css += "px}";
+		}
+		if(vertical_button_padding >= 0) {
+			if(horizontal_button_padding >= 0) padding_css += "\n";
+			padding_css += "#buttons button {";
+			padding_css += "padding-top: "; padding_css += i2s(vertical_button_padding);
+			padding_css += "px; padding-bottom: "; padding_css += i2s(vertical_button_padding); padding_css += "px}";
+		}
+		gtk_css_provider_load_from_data(button_padding_provider, padding_css.c_str(), -1, NULL);
+	} else if(!initial) {
+		gtk_css_provider_load_from_data(button_padding_provider, "", -1, NULL);
+	}
+}
+
 void create_main_window(void) {
 
 	main_builder = getBuilder("main.ui");
@@ -1806,6 +1827,10 @@ void create_main_window(void) {
 
 	GtkCssProvider *notification_style = gtk_css_provider_new(); gtk_css_provider_load_from_data(notification_style, "* {border-radius: 5px}", -1, NULL);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "overlaybox"))), GTK_STYLE_PROVIDER(notification_style), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+	button_padding_provider = gtk_css_provider_new();
+	update_button_padding(true);
+	gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(button_padding_provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 
 	if(themestr.substr(0, 7) == "Adwaita" || themestr.substr(0, 6) == "ooxmox" || themestr == "Breeze" || themestr == "Breeze-Dark" || themestr.substr(0, 4) == "Yaru") {
 
@@ -2467,6 +2492,9 @@ GtkWidget* get_preferences_dialog(void) {
 		g_assert (gtk_builder_get_object(preferences_builder, "preferences_dialog") != NULL);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_display_expression_status")), display_expression_status);
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_expression_lines_spin_button")), (double) (expression_lines < 1 ? 3 : expression_lines));
+		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_vertical_padding_combo")), vertical_button_padding > 9 ? 9 : vertical_button_padding + 1);
+		if(horizontal_button_padding > 4) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_horizontal_padding_combo")), horizontal_button_padding > 12 ? 9 : (horizontal_button_padding - 4) / 2 + 4 + 1);
+		else gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_horizontal_padding_combo")), horizontal_button_padding + 1);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_fetch_exchange_rates")), fetch_exchange_rates_at_startup);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_local_currency_conversion")), evalops.local_currency_conversion);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_save_mode")), save_mode_on_exit);

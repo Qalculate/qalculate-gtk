@@ -215,6 +215,7 @@ int visible_keypad = 0, previous_keypad = 0;
 int programming_inbase = 0, programming_outbase = 0;
 bool title_modified = false;
 string current_mode;
+int vertical_button_padding = -1, horizontal_button_padding = -1;
 
 bool cursor_has_moved = false;
 
@@ -9593,7 +9594,11 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 							argcount--;
 						} else if(m[argcount - 1].isVariable() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr == m[argcount - 1].variable()->referenceName()) {
 							argcount--;
-						} else if(m[argcount - 1].isInteger() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr.find_first_not_of(NUMBERS) == string::npos && m[argcount - 1].number() == s2i(defstr)) {
+						} else if(m[argcount - 1].isInteger() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr.find_first_not_of(NUMBERS, defstr[0] == '-' && defstr.size() > 1 ? 1 : 0) == string::npos && m[argcount - 1].number() == s2i(defstr)) {
+							argcount--;
+						} else if(defstr[0] == '-' && m[argcount - 1].isNegate() && m[argcount - 1][0].isInteger() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr.size() > 1 && defstr.find_first_not_of(NUMBERS, 1) == string::npos && m[argcount - 1][0].number() == -s2i(defstr)) {
+							argcount--;
+						} else if(defstr[0] == '-' && m[argcount - 1].isMultiplication() && m[argcount - 1].size() == 2 && (m[argcount - 1][0].isMinusOne() || (m[argcount - 1][0].isNegate() && m[argcount - 1][0][0].isOne())) && m[argcount - 1][1].isInteger() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr.size() > 1 && defstr.find_first_not_of(NUMBERS, 1) == string::npos && m[argcount - 1][1].number() == -s2i(defstr)) {
 							argcount--;
 						} else if(m[argcount - 1].isSymbolic() && arg && arg->type() == ARGUMENT_TYPE_TEXT && (m[argcount - 1].symbol() == defstr || (defstr == "\"\"" && m[argcount - 1].symbol().empty()))) {
 							argcount--;
@@ -19090,6 +19095,12 @@ void load_preferences() {
 	help_width = -1;
 	help_height = -1;
 	help_zoom = -1.0;
+#ifdef _WIN32
+	horizontal_button_padding = 6;
+#else
+	horizontal_button_padding = -1;
+#endif
+	vertical_button_padding = -1;
 	minimal_width = 500;
 	history_height = 0;
 	save_mode_on_exit = true;
@@ -19747,6 +19758,10 @@ void load_preferences() {
 					if(v > 0) gtk_theme = 1;
 				} else if(svar == "gtk_theme") {
 					gtk_theme = v;
+				} else if(svar == "horizontal_button_padding") {
+					horizontal_button_padding = v;
+				} else if(svar == "vertical_button_padding") {
+					vertical_button_padding = v;
 				} else if(svar == "use_custom_result_font") {
 					use_custom_result_font = v;
 				} else if(svar == "use_custom_expression_font") {
@@ -20282,6 +20297,8 @@ void save_preferences(bool mode) {
 	fprintf(file, "dot_as_separator=%i\n", dot_question_asked ? evalops.parse_options.dot_as_separator : -1);
 	fprintf(file, "comma_as_separator=%i\n", evalops.parse_options.comma_as_separator);
 	if(gtk_theme >= 0) fprintf(file, "gtk_theme=%i\n", gtk_theme);
+	fprintf(file, "vertical_button_padding=%i\n", vertical_button_padding);
+	fprintf(file, "horizontal_button_padding=%i\n", horizontal_button_padding);
 	fprintf(file, "use_custom_result_font=%i\n", use_custom_result_font);
 	fprintf(file, "use_custom_expression_font=%i\n", use_custom_expression_font);
 	fprintf(file, "use_custom_status_font=%i\n", use_custom_status_font);
@@ -21414,6 +21431,18 @@ void on_preferences_expression_lines_spin_button_value_changed(GtkSpinButton *sp
 	gint h_new = gtk_widget_get_allocated_height(expressiontext);
 	winh += (h_new - h_old);
 	gtk_window_resize(GTK_WINDOW(mainwindow), winw, winh);
+}
+void keypad_font_changed();
+void on_preferences_vertical_padding_combo_changed(GtkComboBox *w, gpointer) {
+	vertical_button_padding = gtk_combo_box_get_active(w) - 1;
+	update_button_padding();
+	keypad_font_changed();
+}
+void on_preferences_horizontal_padding_combo_changed(GtkComboBox *w, gpointer) {
+	horizontal_button_padding = gtk_combo_box_get_active(w) - 1;
+	if(horizontal_button_padding > 4) horizontal_button_padding = (horizontal_button_padding - 4) * 2 + 4;
+	update_button_padding();
+	keypad_font_changed();
 }
 void on_preferences_update_exchange_rates_spin_button_value_changed(GtkSpinButton *spin, gpointer) {
 	auto_update_exchange_rates = gtk_spin_button_get_value_as_int(spin);

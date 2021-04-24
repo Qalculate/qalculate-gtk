@@ -143,6 +143,7 @@ void set_custom_buttons(void);
 void update_custom_buttons(int index = -1);
 void update_custom_buttons_edit(int index = -1, bool update_label_entry = true);
 void create_button_menus(void);
+void update_button_padding(bool initial = false);
 void create_main_window(void);
 GtkWidget* get_functions_dialog(void);
 GtkWidget* get_variables_dialog(void);
