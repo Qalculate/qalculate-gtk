@@ -293,6 +293,17 @@
       </object>
     </child>
     <child>
+      <object class="GtkRadioMenuItem" id="menu_item_x_boolean">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="label" translatable="yes">Boolean</property>
+        <property name="use-underline">True</property>
+        <property name="draw-as-radio">True</property>
+        <property name="group">menu_item_x_number</property>
+        <signal name="activate" handler="on_menu_item_x_boolean_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
       <object class="GtkSeparatorMenuItem" id="separator_x2">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
@@ -435,6 +446,16 @@
       </object>
     </child>
     <child>
+      <object class="GtkRadioMenuItem" id="menu_item_y_boolean">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="label" translatable="yes">Boolean</property>
+        <property name="use-underline">True</property>
+        <property name="group">menu_item_y_number</property>
+        <signal name="activate" handler="on_menu_item_y_boolean_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
       <object class="GtkSeparatorMenuItem" id="separator_y2">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
@@ -570,6 +591,17 @@
         <property name="label" translatable="yes">Integer</property>
         <property name="group">menu_item_z_number</property>
         <signal name="activate" handler="on_menu_item_z_integer_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_z_boolean">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="label" translatable="yes">Boolean</property>
+        <property name="use-underline">True</property>
+        <property name="draw-as-radio">True</property>
+        <property name="group">menu_item_z_number</property>
+        <signal name="activate" handler="on_menu_item_z_boolean_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -2059,6 +2091,17 @@ On: 1/2*pi = 0.5 pi</property>
                                 <property name="use-underline">True</property>
                                 <property name="group">menu_item_assumptions_number</property>
                                 <signal name="activate" handler="on_menu_item_assumptions_integer_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_assumptions_boolean">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="yes">Boolean</property>
+                                <property name="use-underline">True</property>
+                                <property name="draw-as-radio">True</property>
+                                <property name="group">menu_item_assumptions_number</property>
+                                <signal name="activate" handler="on_menu_item_assumptions_boolean_activate" swapped="no"/>
                               </object>
                             </child>
                             <child>
