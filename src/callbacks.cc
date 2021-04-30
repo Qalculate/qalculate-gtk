@@ -2110,7 +2110,8 @@ bool check_exchange_rates(GtkWidget *win = NULL, bool set_result = false) {
 	bool b = false;
 	if(auto_update_exchange_rates < 0) {
 		GtkWidget *edialog = gtk_message_dialog_new(win == NULL ? GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")) : GTK_WINDOW(win), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO, _("Do you wish to update the exchange rates now?"));
-		gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(edialog), _("It has been %s day(s) since the exchange rates last were updated."), i2s((int) floor(difftime(time(NULL), CALCULATOR->getExchangeRatesTime(i)) / 86400)).c_str());
+		int days = (int) floor(difftime(time(NULL), CALCULATOR->getExchangeRatesTime(i)) / 86400);
+		gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(edialog), _n("It has been %s day since the exchange rates last were updated.", "It has been %s days since the exchange rates last were updated.", days), i2s(days).c_str());
 		GtkWidget *w = gtk_check_button_new_with_label(_("Do not ask again"));
 		gtk_container_add(GTK_CONTAINER(gtk_message_dialog_get_message_area(GTK_MESSAGE_DIALOG(edialog))), w);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w), FALSE);
