@@ -21459,7 +21459,7 @@ gboolean on_preferences_update_exchange_rates_spin_button_output(GtkSpinButton *
 	int value = gtk_spin_button_get_value_as_int(spin);
 	if(value > 0) {
 		gchar *text;
-		text = g_strdup_printf(_("%i days"), value);
+		text = g_strdup_printf(_n("%i day","%i days", value), value);
 		gtk_entry_set_text(GTK_ENTRY(spin), text);
 		g_free(text);
 	} else if(value == 0) {
