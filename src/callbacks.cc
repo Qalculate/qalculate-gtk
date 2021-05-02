@@ -78,8 +78,9 @@ using std::ofstream;
 using std::deque;
 using std::stack;
 
-extern bool do_timeout, check_expression_position;
+extern bool check_expression_position;
 extern gint expression_position;
+int block_error_timeout = 0;
 
 extern GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *setbase_builder, *datasetedit_builder, *datasets_builder, *decimals_builder;
 extern GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
@@ -206,7 +207,7 @@ bool b_busy, b_busy_command, b_busy_result, b_busy_expression, b_busy_fetch;
 cairo_surface_t *tmp_surface;
 bool expression_has_changed = false, current_object_has_changed = false, expression_has_changed2 = false, expression_has_changed_pos = false;
 int block_result_update = 0, block_expression_execution = 0, block_display_parse = 0;
-string parsed_expression;
+string parsed_expression, parsed_expression_tooltip;
 bool parsed_had_errors = false, parsed_had_warnings = false;
 vector<DataProperty*> tmp_props;
 vector<DataProperty*> tmp_props_orig;
@@ -1905,7 +1906,7 @@ void show_notification(string text) {
 
 #define STATUS_SPACE	if(b) str += "  "; else b = true;
 
-void set_status_text(string text, bool break_begin = false, bool had_errors = false, bool had_warnings = false) {
+void set_status_text(string text, bool break_begin = false, bool had_errors = false, bool had_warnings = false, string tooltip_text = "") {
 
 	string str;
 	if(had_errors) {
@@ -1933,8 +1934,8 @@ void set_status_text(string text, bool break_begin = false, bool had_errors = fa
 		pango_layout_set_markup(status_layout, str.c_str(), -1);
 		pango_layout_get_pixel_size(status_layout, &w, NULL);
 	}
-	if(w < 0 || w > gtk_widget_get_allocated_width(statuslabel_l)) gtk_widget_set_tooltip_markup(statuslabel_l, text.c_str());
-	else gtk_widget_set_tooltip_text(statuslabel_l, "");
+	if((!had_errors || tooltip_text.empty()) && (w < 0 || w > gtk_widget_get_allocated_width(statuslabel_l))) gtk_widget_set_tooltip_markup(statuslabel_l, text.c_str());
+	else gtk_widget_set_tooltip_text(statuslabel_l, tooltip_text.c_str());
 }
 
 void display_parse_status();
@@ -2109,8 +2110,8 @@ bool check_exchange_rates(GtkWidget *win = NULL, bool set_result = false) {
 	if(auto_update_exchange_rates == 0) return false;
 	bool b = false;
 	if(auto_update_exchange_rates < 0) {
-		GtkWidget *edialog = gtk_message_dialog_new(win == NULL ? GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")) : GTK_WINDOW(win), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO, _("Do you wish to update the exchange rates now?"));
 		int days = (int) floor(difftime(time(NULL), CALCULATOR->getExchangeRatesTime(i)) / 86400);
+		GtkWidget *edialog = gtk_message_dialog_new(win == NULL ? GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")) : GTK_WINDOW(win), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO, _("Do you wish to update the exchange rates now?"));
 		gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(edialog), _n("It has been %s day since the exchange rates last were updated.", "It has been %s days since the exchange rates last were updated.", days), i2s(days).c_str());
 		GtkWidget *w = gtk_check_button_new_with_label(_("Do not ask again"));
 		gtk_container_add(GTK_CONTAINER(gtk_message_dialog_get_message_area(GTK_MESSAGE_DIALOG(edialog))), w);
@@ -2305,7 +2306,7 @@ void on_history_resize(GtkWidget*, GdkRectangle *alloc, gpointer) {
 
 gboolean on_display_errors_timeout(gpointer) {
 	if(stop_timeouts) return false;
-	if(!do_timeout) return true;
+	if(block_error_timeout) return true;
 	if(CALCULATOR->checkSaveFunctionCalled()) {
 		update_vmenu();
 	}
@@ -2822,7 +2823,7 @@ bool ask_dot() {
 vector<CalculatorMessage> autocalc_messages;
 gboolean do_autocalc_history_timeout(gpointer) {
 	autocalc_history_timeout_id = 0;
-	if(!do_timeout || !result_autocalculated || rpn_mode) return FALSE;
+	if(stop_timeouts || !result_autocalculated || rpn_mode) return FALSE;
 	if((test_ask_tc(*parsed_mstruct) && ask_tc()) || (test_ask_dot(result_text) && ask_dot()) || check_exchange_rates(NULL, true)) {
 		execute_expression(true, false, OPERATION_ADD, NULL, false, 0, "", "", false);
 		return FALSE;
@@ -2924,7 +2925,6 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 	if(block_result_update || block_expression_execution) return;
 	MathStructure mauto;
 	bool do_factors = false, do_pfe = false, do_expand = false;
-	bool do_timeout_bak = do_timeout;
 
 	ComplexNumberForm cnf_bak = evalops.complex_number_form;
 	bool caf_bak = complex_angle_form;
@@ -3239,8 +3239,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			parsed_tostruct->setUndefined();
 		}
 
-		do_timeout_bak = do_timeout;
-		do_timeout = false;
+		block_error_timeout++;
 		
 		CALCULATOR->resetExchangeRatesUsed();
 
@@ -3318,8 +3317,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			}
 		}
 	} else {
-		do_timeout_bak = do_timeout;
-		do_timeout = false;
+		block_error_timeout++;
 	}
 	if(!recalculate || !mauto.isAborted()) {
 
@@ -3499,7 +3497,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		printops.time_zone = TIME_ZONE_LOCAL;
 	}
 	
-	do_timeout = do_timeout_bak;
+	block_error_timeout--;
 }
 void print_auto_calc() {
 	do_auto_calc(false);
@@ -3566,6 +3564,7 @@ void display_parse_status() {
 	if(text.empty()) {
 		set_status_text("", true, false, false);
 		parsed_expression = "";
+		parsed_expression_tooltip = "";
 		expression_has_changed2 = false;
 		return;
 	}
@@ -3617,9 +3616,10 @@ void display_parse_status() {
 	string str_e, str_u, str_w;
 	bool had_errors = false, had_warnings = false;
 	evalops.parse_options.preserve_format = true;
+	on_display_errors_timeout(NULL);
+	block_error_timeout++;
 	if(!gtk_text_iter_is_start(&ipos)) {
 		evalops.parse_options.unended_function = &mfunc;
-		CALCULATOR->beginTemporaryStopMessages();
 		if(current_from_struct) {current_from_struct->unref(); current_from_struct = NULL; current_from_unit = NULL;}
 		if(!gtk_text_iter_is_end(&ipos)) {
 			gtext = gtk_text_buffer_get_text(expressionbuffer, &istart, &ipos, FALSE);
@@ -3627,7 +3627,9 @@ void display_parse_status() {
 			bool b = CALCULATOR->separateToExpression(str_e, str_u, evalops, false, !auto_calculate);
 			b = CALCULATOR->separateWhereExpression(str_e, str_w, evalops) || b;
 			if(!b) {
+				CALCULATOR->beginTemporaryStopMessages();
 				CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
+				CALCULATOR->endTemporaryStopMessages();
 			}
 			g_free(gtext);
 		} else {
@@ -3639,9 +3641,6 @@ void display_parse_status() {
 				full_parsed = true;
 			}
 		}
-		int warnings_count;
-		had_errors = CALCULATOR->endTemporaryStopMessages(NULL, &warnings_count) > 0;
-		had_warnings = warnings_count > 0;
 		evalops.parse_options.unended_function = NULL;
 	}
 	bool b_func = false;
@@ -3657,8 +3656,8 @@ void display_parse_status() {
 	}
 	if(expression_has_changed2) {
 		bool last_is_space = false;
+		parsed_expression_tooltip = "";
 		if(!full_parsed) {
-			CALCULATOR->beginTemporaryStopMessages();
 			str_e = CALCULATOR->unlocalizeExpression(text, evalops.parse_options);
 			last_is_space = is_in(SPACES, str_e[str_e.length() - 1]);
 			if(CALCULATOR->separateToExpression(str_e, str_u, evalops, false, !auto_calculate) && !str_e.empty()) {
@@ -3680,9 +3679,6 @@ void display_parse_status() {
 			}
 			CALCULATOR->separateWhereExpression(str_e, str_w, evalops);
 			if(!str_e.empty()) CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
-			int warnings_count;
-			had_errors = CALCULATOR->endTemporaryStopMessages(NULL, &warnings_count) > 0;
-			had_warnings = warnings_count > 0;
 		}
 		PrintOptions po;
 		po.preserve_format = true;
@@ -3727,11 +3723,7 @@ void display_parse_status() {
 			CALCULATOR->endTemporaryStopMessages();
 		}
 		if(!str_w.empty()) {
-			CALCULATOR->beginTemporaryStopMessages();
 			CALCULATOR->parse(&mparse, str_w, evalops.parse_options);
-			int warnings_count;
-			had_errors = CALCULATOR->endTemporaryStopMessages(NULL, &warnings_count) > 0 || had_errors;
-			had_warnings = warnings_count > 0 || had_warnings || (!mparse.isLogicalAnd() && !mparse.isComparison());
 			parsed_expression += CALCULATOR->localWhereString();
 			CALCULATOR->beginTemporaryStopMessages();
 			mparse.format(po);
@@ -3888,11 +3880,7 @@ void display_parse_status() {
 					if(v) {
 						mparse = v;
 					} else {
-						CALCULATOR->beginTemporaryStopMessages();
 						CompositeUnit cu("", "temporary_composite_parse", "", str_u);
-						int warnings_count;
-						had_errors = CALCULATOR->endTemporaryStopMessages(NULL, &warnings_count) > 0 || had_errors;
-						had_warnings = had_warnings || warnings_count > 0;
 						bool b_unit = mparse.containsType(STRUCT_UNIT, false, true, true);
 						mparse = cu.generateMathStructure(true);
 						mparse.format(po);
@@ -3936,15 +3924,33 @@ void display_parse_status() {
 			}
 		}
 		if(po.base == BASE_CUSTOM) CALCULATOR->setCustomOutputBase(nr_base);
+		size_t message_n = 0;
+		while(CALCULATOR->message()) {
+			MessageType mtype = CALCULATOR->message()->type();
+			if(mtype == MESSAGE_ERROR || mtype == MESSAGE_WARNING) {
+				if(mtype == MESSAGE_ERROR) had_errors = true;
+				else had_warnings = true;
+				if(message_n > 0) {
+					if(message_n == 1) parsed_expression_tooltip = "• " + parsed_expression_tooltip;
+					parsed_expression_tooltip += "\n• ";
+				}
+				parsed_expression_tooltip += CALCULATOR->message()->message();
+			}
+			CALCULATOR->nextMessage();
+			message_n++;
+		}
+		block_error_timeout--;
 		parsed_had_errors = had_errors; parsed_had_warnings = had_warnings;
 		if(!str_f.empty()) {str_f += " "; parsed_expression.insert(0, str_f);}
 		gsub("&", "&amp;", parsed_expression);
 		gsub(">", "&gt;", parsed_expression);
 		gsub("<", "&lt;", parsed_expression);
-		if(!b_func) set_status_text(parsed_expression.c_str(), true, had_errors, had_warnings);
+		if(!b_func) set_status_text(parsed_expression.c_str(), true, had_errors, had_warnings, parsed_expression_tooltip);
 		expression_has_changed2 = false;
 	} else if(!b_func) {
-		set_status_text(parsed_expression.c_str(), true, parsed_had_errors, parsed_had_warnings);
+		CALCULATOR->clearMessages();
+		block_error_timeout--;
+		set_status_text(parsed_expression.c_str(), true, parsed_had_errors, parsed_had_warnings, parsed_expression_tooltip);
 	}
 	evalops.parse_options.preserve_format = false;
 }
@@ -4805,6 +4811,7 @@ void setVariableTreeItem(GtkTreeIter &iter2, Variable *v) {
 			}
 			if(!value.empty() && ((UnknownVariable*) v)->assumptions()->type() != ASSUMPTION_TYPE_NONE) value += " ";
 			switch(((UnknownVariable*) v)->assumptions()->type()) {
+				case ASSUMPTION_TYPE_BOOLEAN: {value += _("boolean"); break;}
 				case ASSUMPTION_TYPE_INTEGER: {value += _("integer"); break;}
 				case ASSUMPTION_TYPE_RATIONAL: {value += _("rational"); break;}
 				case ASSUMPTION_TYPE_REAL: {value += _("real"); break;}
@@ -6985,6 +6992,7 @@ void update_completion() {
 						}
 						if(!title.empty() && ((UnknownVariable*) v)->assumptions()->type() != ASSUMPTION_TYPE_NONE) title += " ";
 						switch(((UnknownVariable*) v)->assumptions()->type()) {
+							case ASSUMPTION_TYPE_BOOLEAN: {title += _("boolean"); break;}
 							case ASSUMPTION_TYPE_INTEGER: {title += _("integer"); break;}
 							case ASSUMPTION_TYPE_RATIONAL: {title += _("rational"); break;}
 							case ASSUMPTION_TYPE_REAL: {title += _("real"); break;}
@@ -10741,6 +10749,11 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 
 	if(b_busy || b_busy_result || b_busy_expression || b_busy_command) return;
 
+	if(autocalc_history_timeout_id != 0) {
+		g_source_remove(autocalc_history_timeout_id);
+		autocalc_history_timeout_id = 0;
+	}
+
 	if(!rpn_mode) stack_index = 0;
 
 	if(stack_index != 0) {
@@ -10784,7 +10797,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		return;
 	}
 
-	do_timeout = false;
+	block_error_timeout++;
 	b_busy = true;
 	b_busy_result = true;
 	display_aborted = false;
@@ -10792,7 +10805,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	if(!view_thread->running && !view_thread->start()) {
 		b_busy = false;
 		b_busy_result = false;
-		do_timeout = true;
+		block_error_timeout--;
 		return;
 	}
 
@@ -10865,7 +10878,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		} else {
 			b_busy = false;
 			b_busy_result = false;
-			do_timeout = true;
+			block_error_timeout--;
 			return;
 		}
 		result_text = "?";
@@ -10978,28 +10991,30 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	printops.prefix = prefix;
 	tmp_surface = NULL;
 
-	if(!view_thread->write(scale_n)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
+#define SET_RESULT_RETURN {b_busy = false; b_busy_result = false; block_error_timeout--; return;}
+
+	if(!view_thread->write(scale_n)) SET_RESULT_RETURN
 	if(stack_index == 0) {
-		if(!view_thread->write((void *) mstruct)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
+		if(!view_thread->write((void *) mstruct)) SET_RESULT_RETURN
 	} else {
 		MathStructure *mreg = CALCULATOR->getRPNRegister(stack_index + 1);
-		if(!view_thread->write((void *) mreg)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
+		if(!view_thread->write((void *) mreg)) SET_RESULT_RETURN
 	}
 	bool b_stack = stack_index != 0;
-	if(!view_thread->write(b_stack)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
+	if(!view_thread->write(b_stack)) SET_RESULT_RETURN
 	if(b_stack) {
-		if(!view_thread->write(NULL)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
+		if(!view_thread->write(NULL)) SET_RESULT_RETURN
 	} else {
 		matrix_mstruct->clear();
-		if(!view_thread->write((void *) matrix_mstruct)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
+		if(!view_thread->write((void *) matrix_mstruct)) SET_RESULT_RETURN
 	}
 	if(update_parse) {
-		if(!view_thread->write((void *) parsed_mstruct)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
+		if(!view_thread->write((void *) parsed_mstruct)) SET_RESULT_RETURN
 		bool *parsed_approx_p = &parsed_approx;
-		if(!view_thread->write((void *) parsed_approx_p)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
-		if(!view_thread->write((void *) (b_rpn_operation ? NULL : parsed_tostruct))) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
+		if(!view_thread->write((void *) parsed_approx_p)) SET_RESULT_RETURN
+		if(!view_thread->write((void *) (b_rpn_operation ? NULL : parsed_tostruct))) SET_RESULT_RETURN
 	} else {
-		if(!view_thread->write(NULL)) {b_busy = false; b_busy_result = false; do_timeout = true; return;}
+		if(!view_thread->write(NULL)) SET_RESULT_RETURN
 	}
 
 	int i = 0;
@@ -11278,7 +11293,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 
 	if(!register_moved && stack_index == 0 && mstruct->isMatrix() && mstruct->rows() > 3 && matrix_mstruct->isMatrix() && matrix_mstruct->columns() < 200) {
 		while(gtk_events_pending()) gtk_main_iteration();
-		gtk_widget_grab_focus(expressiontext);
+		if(!gtk_widget_is_focus(expressiontext)) gtk_widget_grab_focus(expressiontext);
 		if(update_history && update_parse && force) {
 			GtkTextIter istart, iend;
 			gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
@@ -11291,7 +11306,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 
 	if(!error_icon && (update_parse || stack_index != 0)) update_expression_icons(rpn_mode ? 0 : EXPRESSION_CLEAR);
 
-	do_timeout = true;
+	block_error_timeout--;
 
 }
 
@@ -11399,7 +11414,12 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 		}
 
 		if(b_busy || b_busy_result || b_busy_expression || b_busy_command) return;
-		
+
+		if(autocalc_history_timeout_id != 0) {
+			g_source_remove(autocalc_history_timeout_id);
+			autocalc_history_timeout_id = 0;
+		}
+
 		if(command_type == COMMAND_CONVERT_UNIT || command_type == COMMAND_CONVERT_STRING) {
 			if(mbak_convert.isUndefined()) mbak_convert.set(*mstruct);
 			else mstruct->set(mbak_convert);
@@ -11407,7 +11427,7 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 			if(!mbak_convert.isUndefined()) mbak_convert.setUndefined();
 		}
 
-		do_timeout = false;
+		block_error_timeout++;
 		b_busy = true;
 		b_busy_command = true;
 		command_aborted = false;
@@ -11430,10 +11450,7 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 
 	rerun_command:
 
-	if(!command_thread->running && !command_thread->start()) {do_timeout = true; b_busy = false; b_busy_command = false; return;}
-
-	if(!command_thread->write(command_type)) {do_timeout = true; b_busy = false; b_busy_command = false; return;}
-	if(!command_thread->write((void *) mfactor)) {do_timeout = true; b_busy = false; b_busy_command = false; return;}
+	if((!command_thread->running && !command_thread->start()) || !command_thread->write(command_type) || !command_thread->write((void *) mfactor)) {block_error_timeout--; b_busy = false; b_busy_command = false; return;}
 
 	while(b_busy && command_thread->running && i < 50) {
 		sleep_ms(10);
@@ -11550,15 +11567,14 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 		gtk_widget_queue_draw(resultview);
 	}
 
-	do_timeout = true;
+	block_error_timeout--;
 
 }
 
 void fetch_exchange_rates(int timeout, int n) {
 	bool b_busy_bak = b_busy;
-	bool do_timeout_bak = do_timeout;
+	block_error_timeout++;
 	b_busy = true;
-	do_timeout = false;
 	FetchExchangeRatesThread fetch_thread;
 	if(fetch_thread.start() && fetch_thread.write(timeout) && fetch_thread.write(n)) {
 		int i = 0;
@@ -11578,7 +11594,7 @@ void fetch_exchange_rates(int timeout, int n) {
 		}
 	}
 	b_busy = b_busy_bak;
-	do_timeout = do_timeout_bak;
+	block_error_timeout--;
 }
 
 void FetchExchangeRatesThread::run() {
@@ -11723,7 +11739,7 @@ void set_previous_expression() {
 		rpn_mode = true;
 		gtk_text_buffer_set_text(expressionbuffer, previous_expression.c_str(), -1);
 		rpn_mode = false;
-		gtk_widget_grab_focus(expressiontext);
+		if(!gtk_widget_is_focus(expressiontext)) gtk_widget_grab_focus(expressiontext);
 		GtkTextIter istart, iend;
 		gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
 		gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
@@ -11812,6 +11828,8 @@ void set_assumption(const string &str, AssumptionType &at, AssumptionSign &as, b
 		at = ASSUMPTION_TYPE_RATIONAL;
 	} else if(equalsIgnoreCase(str, "integer") || str == "int") {
 		at = ASSUMPTION_TYPE_INTEGER;
+	} else if(equalsIgnoreCase(str, "boolean") || str == "bool") {
+		at = ASSUMPTION_TYPE_BOOLEAN;
 	} else if(equalsIgnoreCase(str, "non-zero") || str == "nz") {
 		as = ASSUMPTION_SIGN_NONZERO;
 	} else if(equalsIgnoreCase(str, "positive") || str == "pos") {
@@ -12535,6 +12553,10 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		g_source_remove(completion_timeout_id);
 		completion_timeout_id = 0;
 	}
+	if(autocalc_history_timeout_id != 0) {
+		g_source_remove(autocalc_history_timeout_id);
+		autocalc_history_timeout_id = 0;
+	}
 
 	b_busy = true;
 	b_busy_expression = true;
@@ -12575,7 +12597,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			if(test_ask_dot(str)) ask_dot();
 		}
 	}
-	do_timeout = false;
+	block_error_timeout++;
 
 	string to_str, str_conv;
 
@@ -12588,7 +12610,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					clear_expression_text();
 					CALCULATOR->message(MESSAGE_INFORMATION, to_str.c_str(), NULL);
 					if(!display_errors(&history_index, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &current_inhistory_index, 3)) update_expression_icons(EXPRESSION_CLEAR);
-					do_timeout = true;
+					block_error_timeout--;
 					b_busy = false;
 					b_busy_expression = false;
 					return;
@@ -13108,7 +13130,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
 			if(current_inhistory_index < 0) current_inhistory_index = 0;
 			if(!display_errors(&history_index, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &current_inhistory_index, 3)) update_expression_icons(EXPRESSION_CLEAR);
-			do_timeout = true;
+			block_error_timeout--;
 			return;
 		}
 	}
@@ -13871,7 +13893,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector)));
 			}
 		}
-		gtk_widget_grab_focus(expressiontext);
+		if(!gtk_widget_is_focus(expressiontext)) gtk_widget_grab_focus(expressiontext);
 		GtkTextIter istart, iend;
 		gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
 		gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
@@ -13879,7 +13901,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		gtk_text_buffer_remove_tag(expressionbuffer, expression_par_tag, &istart, &iend);
 		cursor_has_moved = false;
 	}
-	do_timeout = true;
+	block_error_timeout--;
 
 }
 
@@ -14089,9 +14111,7 @@ void insert_text(const gchar *name) {
 	if(b_busy) return;
 	block_completion();
 	overwrite_expression_selection(name);
-	if(!gtk_widget_is_focus(expressiontext)) {
-		gtk_widget_grab_focus(expressiontext);
-	}
+	if(!gtk_widget_is_focus(expressiontext)) gtk_widget_grab_focus(expressiontext);
 	unblock_completion();
 }
 
@@ -15969,13 +15989,13 @@ void edit_unknown(const char *category, Variable *var, GtkWidget *win) {
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unknownedit_builder, "unknown_edit_checkbutton_custom_assumptions")), TRUE);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_type")), TRUE);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_sign")), TRUE);
-			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), v->assumptions()->type() - 2);
+			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")),  v->assumptions()->type() < ASSUMPTION_TYPE_REAL ? 0 : v->assumptions()->type() - 3);
 			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), v->assumptions()->sign());
 		} else {
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unknownedit_builder, "unknown_edit_checkbutton_custom_assumptions")), FALSE);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_type")), FALSE);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_sign")), FALSE);
-			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), CALCULATOR->defaultAssumptions()->type() - 2);
+			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), CALCULATOR->defaultAssumptions()->type() < ASSUMPTION_TYPE_REAL ? 0 : CALCULATOR->defaultAssumptions()->type() - 3);
 			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), CALCULATOR->defaultAssumptions()->sign());
 		}
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_button_ok")), FALSE);
@@ -15999,7 +16019,7 @@ void edit_unknown(const char *category, Variable *var, GtkWidget *win) {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(unknownedit_builder, "unknown_edit_label_names")), "");
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combo_category")))), category);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_desc")), "");
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), CALCULATOR->defaultAssumptions()->type() - 2);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), CALCULATOR->defaultAssumptions()->type() < ASSUMPTION_TYPE_REAL ? 0 : CALCULATOR->defaultAssumptions()->type() - 3);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), CALCULATOR->defaultAssumptions()->sign());
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_button_ok")), TRUE);
 	}
@@ -16045,7 +16065,10 @@ run_unknown_edit_dialog:
 			if(!v->isBuiltin()) {
 				if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unknownedit_builder, "unknown_edit_checkbutton_custom_assumptions")))) {
 					if(!v->assumptions()) v->setAssumptions(new Assumptions());
-					v->assumptions()->setType((AssumptionType) (gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"))) + 2));
+					int type = gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")));
+					if(type == 0) type = 2;
+					else type += 3;
+					v->assumptions()->setType((AssumptionType) type);
 					v->assumptions()->setSign((AssumptionSign) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"))));
 				} else {
 					v->setAssumptions(NULL);
@@ -16503,7 +16526,7 @@ run_matrix_edit_dialog:
 			r = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(matrixedit_builder, "matrix_edit_spinbutton_rows")));
 			gchar *gstr = NULL;
 			string mstr;
-			do_timeout = false;
+			block_error_timeout++;
 			ParseOptions pa = evalops.parse_options; pa.base = 10; pa.rpn = false;
 			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(matrixedit_builder, "matrix_edit_radiobutton_vector")))) {
 				mstruct_new.clearVector();
@@ -16534,7 +16557,7 @@ run_matrix_edit_dialog:
 				}
 			}
 			display_errors(NULL, dialog);
-			do_timeout = true;
+			block_error_timeout--;
 		}
 		bool add_var = false;
 		if(v) {
@@ -17262,14 +17285,14 @@ run_csv_import_dialog:
 			show_message(_("No delimiter selected."), dialog);
 			goto run_csv_import_dialog;
 		}
-		do_timeout = false;
+		block_error_timeout++;
 		if(!CALCULATOR->importCSV(str.c_str(), gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(csvimport_builder, "csv_import_spinbutton_first_row"))), gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(csvimport_builder, "csv_import_checkbutton_headers"))), delimiter, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(csvimport_builder, "csv_import_radiobutton_matrix"))), name_str, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(csvimport_builder, "csv_import_entry_desc"))), gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(csvimport_builder, "csv_import_combo_category"))))) {
 			GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not import from file \n%s"), str.c_str());
 			gtk_dialog_run(GTK_DIALOG(edialog));
 			gtk_widget_destroy(edialog);
 		}
 		display_errors(NULL, dialog);
-		do_timeout = true;
+		block_error_timeout--;
 		update_vmenu();
 	}
 	gtk_widget_hide(dialog);
@@ -17946,7 +17969,7 @@ void convert_in_wUnits(int toFrom) {
 				po.number_fraction_format = FRACTION_DECIMAL;
 				po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 				CALCULATOR->resetExchangeRatesUsed();
-				do_timeout = false;
+				block_error_timeout++;
 				MathStructure v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(toValue, eo.parse_options), uTo, uFrom, 1500, eo);
 				if(!v_mstruct.isAborted() && check_exchange_rates(get_units_dialog())) v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(toValue, eo.parse_options), uTo, uFrom, 1500, eo);
 				if(v_mstruct.isAborted()) {
@@ -17957,7 +17980,7 @@ void convert_in_wUnits(int toFrom) {
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_from_val")), old_fromValue.c_str());
 				b = b || v_mstruct.isApproximate();
 				display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")));
-				do_timeout = true;
+				block_error_timeout--;
 			}
 		} else {
 			if(CALCULATOR->timedOutString() == fromValue) return;
@@ -17975,7 +17998,7 @@ void convert_in_wUnits(int toFrom) {
 				po.number_fraction_format = FRACTION_DECIMAL;
 				po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 				CALCULATOR->resetExchangeRatesUsed();
-				do_timeout = false;
+				block_error_timeout++;
 				MathStructure v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(fromValue, eo.parse_options), uFrom, uTo, 1500, eo);
 				if(!v_mstruct.isAborted() && check_exchange_rates(get_units_dialog())) v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(fromValue, eo.parse_options), uFrom, uTo, 1500, eo);
 				if(v_mstruct.isAborted()) {
@@ -17986,7 +18009,7 @@ void convert_in_wUnits(int toFrom) {
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_to_val")), old_toValue.c_str());
 				b = b || v_mstruct.isApproximate();
 				display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")));
-				do_timeout = true;
+				block_error_timeout--;
 			}
 		}
 		if(b && printops.use_unicode_signs && can_display_unicode_string_function(SIGN_ALMOST_EQUAL, (void*) gtk_builder_get_object(units_builder, "units_label_equals"))) {
@@ -19686,7 +19709,7 @@ void load_preferences() {
 						}
 					}
 				} else if(svar == "default_assumption_type") {
-					if(v >= ASSUMPTION_TYPE_NONE && v <= ASSUMPTION_TYPE_INTEGER) {
+					if(v >= ASSUMPTION_TYPE_NONE && v <= ASSUMPTION_TYPE_BOOLEAN) {
 						if(v < ASSUMPTION_TYPE_NUMBER && version_numbers[0] < 1) v = ASSUMPTION_TYPE_NUMBER;
 						if(v == ASSUMPTION_TYPE_COMPLEX && version_numbers[0] < 2) v = ASSUMPTION_TYPE_NUMBER;
 						if(mode_index == 1) CALCULATOR->defaultAssumptions()->setType((AssumptionType) v);
@@ -20695,7 +20718,7 @@ void save_preferences(bool mode) {
 		fprintf(file, "visible_keypad=%i\n", modes[i].keypad);
 		fprintf(file, "short_multiplication=%i\n", modes[i].po.short_multiplication);
 		fprintf(file, "default_assumption_type=%i\n", modes[i].at);
-		fprintf(file, "default_assumption_sign=%i\n", modes[i].as);
+		if(modes[i].at != ASSUMPTION_TYPE_BOOLEAN) fprintf(file, "default_assumption_sign=%i\n", modes[i].as);
 	}
 	fprintf(file, "\n[Plotting]\n");
 	fprintf(file, "plot_legend_placement=%i\n", default_plot_legend_placement);
@@ -22680,7 +22703,7 @@ gboolean on_expression_button_button_press_event(GtkWidget*, GdkEventButton *eve
 		execute_expression();
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_clear"))) {
 		clear_expression_text();
-		gtk_widget_grab_focus(expressiontext);
+		if(!gtk_widget_is_focus(expressiontext)) gtk_widget_grab_focus(expressiontext);
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon"))) {
 		g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 0, epxression_tooltip_timeout, NULL, NULL);
 	} else {
@@ -24646,9 +24669,7 @@ void on_button_to_clicked(GtkButton*, gpointer) {
 		g_free(gstr);
 	}
 	gtk_text_buffer_insert_at_cursor(expressionbuffer, to_str.c_str(), -1);
-	if(!gtk_widget_is_focus(expressiontext)) {
-		gtk_widget_grab_focus(expressiontext);
-	}
+	if(!gtk_widget_is_focus(expressiontext)) gtk_widget_grab_focus(expressiontext);
 }
 void on_button_new_function_clicked(GtkButton*, gpointer) {
 	edit_function_simple("", NULL, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
@@ -26375,6 +26396,12 @@ void on_menu_item_assumptions_integer_activate(GtkMenuItem *w, gpointer) {
 	update_assumptions_items();
 	expression_calculation_updated();
 }
+void on_menu_item_assumptions_boolean_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	CALCULATOR->defaultAssumptions()->setType(ASSUMPTION_TYPE_BOOLEAN);
+	update_assumptions_items();
+	expression_calculation_updated();
+}
 void on_menu_item_assumptions_rational_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	CALCULATOR->defaultAssumptions()->setType(ASSUMPTION_TYPE_RATIONAL);
@@ -26490,6 +26517,7 @@ void set_x_assumptions_items() {
 		default: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_x_unknown")), TRUE);}
 	}
 	switch(ass->type()) {
+		case ASSUMPTION_TYPE_BOOLEAN: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_x_boolean")), TRUE); break;}
 		case ASSUMPTION_TYPE_INTEGER: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_x_integer")), TRUE); break;}
 		case ASSUMPTION_TYPE_RATIONAL: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_x_rational")), TRUE); break;}
 		case ASSUMPTION_TYPE_REAL: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_x_real")), TRUE); break;}
@@ -26507,6 +26535,10 @@ void on_mb_x_toggled(GtkToggleButton *w, gpointer) {
 
 void on_menu_item_x_default_activate() {
 	reset_assumptions("x");
+}
+void on_menu_item_x_boolean_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	set_type("x", ASSUMPTION_TYPE_BOOLEAN);
 }
 void on_menu_item_x_integer_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
@@ -26577,6 +26609,7 @@ void set_y_assumptions_items() {
 		default: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_y_unknown")), TRUE);}
 	}
 	switch(ass->type()) {
+		case ASSUMPTION_TYPE_BOOLEAN: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_y_boolean")), TRUE); break;}
 		case ASSUMPTION_TYPE_INTEGER: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_y_integer")), TRUE); break;}
 		case ASSUMPTION_TYPE_RATIONAL: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_y_rational")), TRUE); break;}
 		case ASSUMPTION_TYPE_REAL: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_y_real")), TRUE); break;}
@@ -26594,6 +26627,10 @@ void on_mb_y_toggled(GtkToggleButton *w, gpointer) {
 
 void on_menu_item_y_default_activate() {
 	reset_assumptions("y");
+}
+void on_menu_item_y_boolean_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	set_type("y", ASSUMPTION_TYPE_BOOLEAN);
 }
 void on_menu_item_y_integer_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
@@ -26664,6 +26701,7 @@ void set_z_assumptions_items() {
 		default: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_z_unknown")), TRUE);}
 	}
 	switch(ass->type()) {
+		case ASSUMPTION_TYPE_BOOLEAN: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_z_boolean")), TRUE); break;}
 		case ASSUMPTION_TYPE_INTEGER: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_z_integer")), TRUE); break;}
 		case ASSUMPTION_TYPE_RATIONAL: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_z_rational")), TRUE); break;}
 		case ASSUMPTION_TYPE_REAL: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_z_real")), TRUE); break;}
@@ -26681,6 +26719,10 @@ void on_mb_z_toggled(GtkToggleButton *w, gpointer) {
 
 void on_menu_item_z_default_activate() {
 	reset_assumptions("z");
+}
+void on_menu_item_z_boolean_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	set_type("z", ASSUMPTION_TYPE_BOOLEAN);
 }
 void on_menu_item_z_integer_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
@@ -27493,11 +27535,15 @@ void on_menu_item_chain_syntax_activate(GtkMenuItem *w, gpointer) {
 }
 
 void on_menu_item_fetch_exchange_rates_activate(GtkMenuItem*, gpointer) {
-	do_timeout = false;
+	if(autocalc_history_timeout_id != 0) {
+		g_source_remove(autocalc_history_timeout_id);
+		autocalc_history_timeout_id = 0;
+	}
+	block_error_timeout++;
 	fetch_exchange_rates(15);
 	CALCULATOR->loadExchangeRates();
 	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
-	do_timeout = true;
+	block_error_timeout--;
 	while(gtk_events_pending()) gtk_main_iteration();
 	expression_calculation_updated();
 }
@@ -30628,7 +30674,7 @@ void update_percentage_entries() {
 		case 68: {str1 = gtk_entry_get_text(GTK_ENTRY(w3)); str2 = gtk_entry_get_text(GTK_ENTRY(w7)); break;}
 		default: {variant = 0;}
 	}
-	do_timeout = false;
+	block_error_timeout++;
 	EvaluationOptions eo;
 	eo.parse_options = evalops.parse_options;
 	if(eo.parse_options.parsing_mode == PARSING_MODE_RPN || eo.parse_options.parsing_mode == PARSING_MODE_CHAIN) eo.parse_options.parsing_mode = PARSING_MODE_ADAPTIVE;
@@ -30687,7 +30733,7 @@ void update_percentage_entries() {
 		gtk_entry_set_text(GTK_ENTRY(w7), m7.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(m7, 200, po).c_str());
 	}
 	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_dialog")));
-	do_timeout = true;
+	block_error_timeout--;
 	g_signal_handlers_unblock_matched((gpointer) w1, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_1_changed, NULL);
 	g_signal_handlers_unblock_matched((gpointer) w2, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_2_changed, NULL);
 	g_signal_handlers_unblock_matched((gpointer) w3, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_3_changed, NULL);
@@ -30855,10 +30901,10 @@ void on_nbases_entry_decimal_changed(GtkEditable *editable, gpointer) {
 	eo.parse_options.read_precision = DONT_READ_PRECISION;
 	eo.parse_options.base = 10;
 	MathStructure value;
-	do_timeout = false;
+	block_error_timeout++;
 	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options), 1500, eo);
 	update_nbases_entries(value, 10);
-	do_timeout = true;
+	block_error_timeout--;
 	changing_in_nbases_dialog = false;
 }
 void on_nbases_entry_binary_changed(GtkEditable *editable, gpointer) {
@@ -30875,10 +30921,10 @@ void on_nbases_entry_binary_changed(GtkEditable *editable, gpointer) {
 	eo.parse_options.twos_complement = twos_complement_in;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
-	do_timeout = false;
+	block_error_timeout++;
 	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options), 1500, eo);
 	update_nbases_entries(value, 2);
-	do_timeout = true;
+	block_error_timeout--;
 	changing_in_nbases_dialog = false;
 }
 void on_nbases_entry_octal_changed(GtkEditable *editable, gpointer) {
@@ -30894,10 +30940,10 @@ void on_nbases_entry_octal_changed(GtkEditable *editable, gpointer) {
 	eo.parse_options.base = BASE_OCTAL;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
-	do_timeout = false;
+	block_error_timeout++;
 	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options), 1500, eo);
 	update_nbases_entries(value, 8);
-	do_timeout = true;
+	block_error_timeout--;
 	changing_in_nbases_dialog = false;
 }
 void on_nbases_entry_hexadecimal_changed(GtkEditable *editable, gpointer) {
@@ -30914,11 +30960,11 @@ void on_nbases_entry_hexadecimal_changed(GtkEditable *editable, gpointer) {
 	eo.parse_options.hexadecimal_twos_complement = hexadecimal_twos_complement_in;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
-	do_timeout = false;
+	block_error_timeout++;
 	str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options);
 	CALCULATOR->calculate(&value, str, 1500, eo);
 	update_nbases_entries(value, 16);
-	do_timeout = true;
+	block_error_timeout--;
 	changing_in_nbases_dialog = false;
 }
 void on_nbases_entry_duo_changed(GtkEditable *editable, gpointer) {
@@ -30934,10 +30980,10 @@ void on_nbases_entry_duo_changed(GtkEditable *editable, gpointer) {
 	eo.parse_options.base = BASE_DUODECIMAL;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
-	do_timeout = false;
+	block_error_timeout++;
 	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options), 1500, eo);
 	update_nbases_entries(value, 12);
-	do_timeout = true;
+	block_error_timeout--;
 	changing_in_nbases_dialog = false;
 }
 void on_nbases_entry_roman_changed(GtkEditable *editable, gpointer) {
@@ -30953,10 +30999,10 @@ void on_nbases_entry_roman_changed(GtkEditable *editable, gpointer) {
 	eo.parse_options.base = BASE_ROMAN_NUMERALS;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
-	do_timeout = false;
+	block_error_timeout++;
 	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options), 1500, eo);
 	update_nbases_entries(value, BASE_ROMAN_NUMERALS);
-	do_timeout = true;
+	block_error_timeout--;
 	changing_in_nbases_dialog = false;
 }
 
@@ -31453,7 +31499,7 @@ void on_fp_entry_dec_changed(GtkEditable *editable, gpointer) {
 	if(eo.parse_options.parsing_mode == PARSING_MODE_RPN || eo.parse_options.parsing_mode == PARSING_MODE_CHAIN) eo.parse_options.parsing_mode = PARSING_MODE_ADAPTIVE;
 	eo.parse_options.base = 10;
 	MathStructure value;
-	do_timeout = false;
+	block_error_timeout++;
 	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options), 1500, eo);
 	if(value.isNumber()) {
 		string sbin = to_float(value.number(), bits, expbits);
@@ -31466,7 +31512,7 @@ void on_fp_entry_dec_changed(GtkEditable *editable, gpointer) {
 	}
 	changing_in_fp_dialog = false;
 	CALCULATOR->clearMessages();
-	do_timeout = true;
+	block_error_timeout--;
 }
 void on_fp_combo_bits_changed(GtkComboBox*, gpointer) {
 	on_fp_entry_dec_changed(GTK_EDITABLE(gtk_builder_get_object(floatingpoint_builder, "fp_entry_dec")), NULL);
@@ -31482,7 +31528,7 @@ void on_fp_buffer_bin_changed(GtkTextBuffer *w, gpointer) {
 	remove_blanks(str);
 	if(str.empty()) return;
 	changing_in_fp_dialog = true;
-	do_timeout = false;
+	block_error_timeout++;
 	unsigned int bits = get_fp_bits();
 	if(str.find_first_not_of("01") == string::npos && str.length() <= bits) {
 		update_fp_entries(str, 2);
@@ -31491,7 +31537,7 @@ void on_fp_buffer_bin_changed(GtkTextBuffer *w, gpointer) {
 	}
 	changing_in_fp_dialog = false;
 	CALCULATOR->clearMessages();
-	do_timeout = true;
+	block_error_timeout--;
 }
 void on_fp_entry_hex_changed(GtkEditable *editable, gpointer) {
 	if(changing_in_fp_dialog) return;
@@ -31500,7 +31546,7 @@ void on_fp_entry_hex_changed(GtkEditable *editable, gpointer) {
 	if(str.empty()) return;
 	changing_in_fp_dialog = true;
 	unsigned int bits = get_fp_bits();
-	do_timeout = false;
+	block_error_timeout++;
 	ParseOptions pa;
 	pa.base = BASE_HEXADECIMAL;
 	Number nr(str, pa);
@@ -31519,7 +31565,7 @@ void on_fp_entry_hex_changed(GtkEditable *editable, gpointer) {
 	}
 	changing_in_fp_dialog = false;
 	CALCULATOR->clearMessages();
-	do_timeout = true;
+	block_error_timeout--;
 }
 void fp_insert_text(GtkWidget *w, const gchar *text) {
 	changing_in_fp_dialog = true;
@@ -31659,16 +31705,16 @@ void on_unknown_edit_checkbutton_custom_assumptions_toggled(GtkToggleButton *w, 
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_sign")), gtk_toggle_button_get_active(w));
 }
 void on_unknown_edit_combobox_type_changed(GtkComboBox *om, gpointer) {
-	if((AssumptionType) gtk_combo_box_get_active(om) + 2 <= ASSUMPTION_TYPE_COMPLEX && (AssumptionSign) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"))) != ASSUMPTION_SIGN_NONZERO) {
+	if((gtk_combo_box_get_active(om) == 0 && (AssumptionSign) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"))) != ASSUMPTION_SIGN_NONZERO) || ((gtk_combo_box_get_active(om) == 0 || (AssumptionType) gtk_combo_box_get_active(om) + 3 == ASSUMPTION_TYPE_BOOLEAN) && (AssumptionSign) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"))) != ASSUMPTION_SIGN_UNKNOWN)) {
 		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_unknown_edit_combobox_sign_changed, NULL);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), ASSUMPTION_SIGN_UNKNOWN);
 		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_unknown_edit_combobox_sign_changed, NULL);
 	}
 }
 void on_unknown_edit_combobox_sign_changed(GtkComboBox *om, gpointer) {
-	if((AssumptionSign) gtk_combo_box_get_active(om) != ASSUMPTION_SIGN_NONZERO && (AssumptionSign) gtk_combo_box_get_active(om) != ASSUMPTION_SIGN_UNKNOWN && (AssumptionType) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"))) <= ASSUMPTION_TYPE_COMPLEX - 2) {
+	if(((AssumptionSign) gtk_combo_box_get_active(om) != ASSUMPTION_SIGN_NONZERO && gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"))) == 0) || ((AssumptionSign) gtk_combo_box_get_active(om) != ASSUMPTION_SIGN_UNKNOWN && (gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"))) == 0 || (AssumptionType) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"))) + 3 == ASSUMPTION_TYPE_BOOLEAN))) {
 		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_unknown_edit_combobox_type_changed, NULL);
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), ASSUMPTION_TYPE_REAL - 2);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), 1);
 		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_unknown_edit_combobox_type_changed, NULL);
 	}
 }
@@ -34079,10 +34125,10 @@ void on_plot_button_save_clicked(GtkButton*, gpointer) {
 		if(generate_plot(pp, y_vectors, x_vectors, pdps)) {
 			pp.filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(d));
 			pp.filetype = PLOT_FILETYPE_AUTO;
-			do_timeout = false;
+			block_error_timeout++;
 			CALCULATOR->plotVectors(&pp, y_vectors, x_vectors, pdps, false, max_plot_time * 1000);
 			display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
-			do_timeout = true;
+			block_error_timeout--;
 			for(size_t i = 0; i < pdps.size(); i++) {
 				if(pdps[i]) delete pdps[i];
 			}
@@ -34100,10 +34146,10 @@ void update_plot() {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_button_save")), false);
 		return;
 	}
-	do_timeout = false;
+	block_error_timeout++;
 	CALCULATOR->plotVectors(&pp, y_vectors, x_vectors, pdps, false, max_plot_time * 1000);
 	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
-	do_timeout = true;
+	block_error_timeout--;
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_button_save")), true);
 	for(size_t i = 0; i < pdps.size(); i++) {
 		if(pdps[i]) delete pdps[i];
@@ -34117,7 +34163,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 	eo.parse_options = evalops.parse_options;
 	eo.parse_options.base = 10;
 	eo.parse_options.read_precision = DONT_READ_PRECISION;
-	do_timeout = false;
+	block_error_timeout++;
 	if(type == 1 || type == 2) {
 		*y_vector = new MathStructure();
 		if(!CALCULATOR->calculate(*y_vector, CALCULATOR->unlocalizeExpression(str, eo.parse_options), max_plot_time * 1000, eo)) {
@@ -34135,7 +34181,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 			gtk_dialog_run(GTK_DIALOG(d));
 			gtk_widget_destroy(d);
 			display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
-			do_timeout = true;
+			block_error_timeout--;
 			return;
 		}
 		MathStructure max;
@@ -34144,7 +34190,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 			gtk_dialog_run(GTK_DIALOG(d));
 			gtk_widget_destroy(d);
 			display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
-			do_timeout = true;
+			block_error_timeout--;
 			return;
 		}
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_radiobutton_step")))) {
@@ -34155,7 +34201,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 	}
 	CALCULATOR->endTemporaryStopIntervalArithmetic();
 	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
-	do_timeout = true;
+	block_error_timeout--;
 }
 void on_plot_button_add_clicked(GtkButton*, gpointer) {
 	string expression = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_expression")));
@@ -34334,7 +34380,7 @@ void on_plot_button_appearance_apply_clicked(GtkButton*, gpointer) {
 }
 
 void convert_from_convert_entry_unit() {
-	do_timeout = false;
+	block_error_timeout++;
 	ParseOptions pa = evalops.parse_options; pa.base = 10;
 	string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), pa);
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))) && !ceu_str.empty()) {
@@ -34350,7 +34396,7 @@ void convert_from_convert_entry_unit() {
 	executeCommand(COMMAND_CONVERT_STRING, true, ceu_str);
 	block_conversion_category_switch--;
 	printops.use_unit_prefixes = b_puup;
-	do_timeout = true;
+	block_error_timeout--;
 }
 void on_convert_button_set_missing_prefixes_toggled(GtkToggleButton *w, gpointer) {
 	if(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))) != 0) {
@@ -34604,7 +34650,7 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 		bool b1 = false, b2 = false;
 		if(response == GTK_RESPONSE_ACCEPT || response == GTK_RESPONSE_APPLY) {
 			string str, result_mod = "";
-			do_timeout = false;
+			block_error_timeout++;
 			for(size_t i = 0; i < unknowns.size(); i++) {
 				str = gtk_entry_get_text(GTK_ENTRY(entry[i]));
 				remove_blank_ends(str);
@@ -34649,7 +34695,7 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 				printops.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
 				setResult(NULL, true, false, false, result_mod);
 			}
-			do_timeout = true;
+			block_error_timeout--;
 			if(response == GTK_RESPONSE_ACCEPT) {
 				break;
 			}

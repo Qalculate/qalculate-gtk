@@ -77,7 +77,7 @@ GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_buil
 Thread *view_thread, *command_thread;
 string calc_arg, file_arg;
 
-bool do_timeout, check_expression_position;
+bool check_expression_position;
 gint expression_position;
 bool do_imaginary_j = false;
 
@@ -289,7 +289,6 @@ void create_application(GtkApplication *app) {
 	pixbuf_result = NULL;
 
 	//check for calculation errros regularly
-	do_timeout = true;
 	g_timeout_add_seconds(1, on_display_errors_timeout, NULL);
 
 	check_expression_position = true;

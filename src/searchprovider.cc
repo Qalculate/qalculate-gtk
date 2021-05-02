@@ -565,7 +565,7 @@ void load_preferences_search() {
 					if(v == 0) CALCULATOR->useDecimalPoint(search_eo.parse_options.comma_as_separator);
 					else if(v > 0) CALCULATOR->useDecimalComma();
 				} else if(svar == "dot_as_separator") {
-					search_eo.parse_options.dot_as_separator = v;
+					if(v >= 0) search_eo.parse_options.dot_as_separator = v;
 				} else if(svar == "comma_as_separator") {
 					search_eo.parse_options.comma_as_separator = v;
 					if(CALCULATOR->getDecimalPoint() != COMMA) {

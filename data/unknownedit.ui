@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.36.0 -->
+<!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkDialog" id="unknown_edit_dialog">
-    <property name="can_focus">False</property>
-    <property name="border_width">6</property>
+    <property name="can-focus">False</property>
+    <property name="border-width">6</property>
     <property name="title" translatable="yes">Edit Unknown Variable</property>
     <property name="modal">True</property>
-    <property name="type_hint">dialog</property>
+    <property name="type-hint">dialog</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbox37">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="hbuttonbox4">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
+            <property name="can-focus">False</property>
+            <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="unknown_edit_button_help">
                 <property name="label" translatable="yes">_Help</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="can_default">True</property>
-                <property name="receives_default">False</property>
-                <property name="use_underline">True</property>
+                <property name="can-focus">True</property>
+                <property name="can-default">True</property>
+                <property name="receives-default">False</property>
+                <property name="use-underline">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -37,11 +37,11 @@
               <object class="GtkButton" id="button3">
                 <property name="label" translatable="yes">_Cancel</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="can_default">True</property>
-                <property name="receives_default">False</property>
-                <property name="tooltip_text" translatable="yes">Do not create/modify this unknown variable</property>
-                <property name="use_underline">True</property>
+                <property name="can-focus">True</property>
+                <property name="can-default">True</property>
+                <property name="receives-default">False</property>
+                <property name="tooltip-text" translatable="yes">Do not create/modify this unknown variable</property>
+                <property name="use-underline">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -53,11 +53,11 @@
               <object class="GtkButton" id="unknown_edit_button_ok">
                 <property name="label" translatable="yes">_OK</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="can_default">True</property>
-                <property name="receives_default">False</property>
-                <property name="tooltip_text" translatable="yes">Accept the creation/modification of this unknown variable</property>
-                <property name="use_underline">True</property>
+                <property name="can-focus">True</property>
+                <property name="can-default">True</property>
+                <property name="receives-default">False</property>
+                <property name="tooltip-text" translatable="yes">Accept the creation/modification of this unknown variable</property>
+                <property name="use-underline">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -69,34 +69,34 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="pack_type">end</property>
+            <property name="pack-type">end</property>
             <property name="position">0</property>
           </packing>
         </child>
         <child>
           <object class="GtkBox" id="vbox38">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="border_width">6</property>
+            <property name="can-focus">False</property>
+            <property name="border-width">6</property>
             <property name="orientation">vertical</property>
             <property name="spacing">6</property>
             <child>
               <object class="GtkBox" id="vbox39">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_bottom">6</property>
+                <property name="can-focus">False</property>
+                <property name="margin-bottom">6</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <child>
                   <object class="GtkBox" id="hbox49">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="spacing">6</property>
                     <property name="homogeneous">True</property>
                     <child>
                       <object class="GtkLabel" id="label50">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="halign">start</property>
                         <property name="label" translatable="yes">Name</property>
                       </object>
@@ -109,10 +109,10 @@
                     <child>
                       <object class="GtkEntry" id="unknown_edit_entry_name">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="tooltip_text" translatable="yes">Name used to reference this unknown variable in expressions</property>
-                        <property name="primary_icon_activatable">False</property>
-                        <property name="secondary_icon_activatable">False</property>
+                        <property name="can-focus">True</property>
+                        <property name="tooltip-text" translatable="yes">Name used to reference this unknown variable in expressions</property>
+                        <property name="primary-icon-activatable">False</property>
+                        <property name="secondary-icon-activatable">False</property>
                         <signal name="changed" handler="on_unknown_changed" swapped="no"/>
                         <signal name="changed" handler="on_variable_edit_entry_name_changed" swapped="no"/>
                       </object>
@@ -132,14 +132,14 @@
                 <child>
                   <object class="GtkBox" id="hbox55">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="halign">end</property>
                     <property name="valign">start</property>
                     <property name="spacing">6</property>
                     <child>
                       <object class="GtkLabel" id="unknown_edit_label_names">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -151,9 +151,9 @@
                       <object class="GtkButton" id="unknown_edit_button_names">
                         <property name="label" translatable="yes">Properties</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="use-underline">True</property>
                         <signal name="clicked" handler="on_unknown_edit_button_names_clicked" swapped="no"/>
                       </object>
                       <packing>
@@ -180,12 +180,12 @@
               <object class="GtkCheckButton" id="unknown_edit_checkbutton_custom_assumptions">
                 <property name="label" translatable="yes">Use custom assumptions</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
                 <property name="halign">start</property>
-                <property name="use_underline">True</property>
+                <property name="use-underline">True</property>
                 <property name="active">True</property>
-                <property name="draw_indicator">True</property>
+                <property name="draw-indicator">True</property>
                 <signal name="toggled" handler="on_unknown_changed" swapped="no"/>
                 <signal name="toggled" handler="on_unknown_edit_checkbutton_custom_assumptions_toggled" swapped="no"/>
               </object>
@@ -198,13 +198,13 @@
             <child>
               <object class="GtkBox" id="unknown_edit_hbox_type">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="spacing">6</property>
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkLabel" id="label51">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="halign">start</property>
                     <property name="label" translatable="yes">Type</property>
                   </object>
@@ -217,13 +217,14 @@
                 <child>
                   <object class="GtkComboBoxText" id="unknown_edit_combobox_type">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="can-focus">True</property>
                     <property name="active">0</property>
                     <items>
                       <item translatable="yes">Number</item>
                       <item translatable="yes">Real Number</item>
                       <item translatable="yes">Rational Number</item>
                       <item translatable="yes">Integer</item>
+                      <item translatable="yes">Boolean</item>
                     </items>
                     <signal name="changed" handler="on_unknown_changed" swapped="no"/>
                     <signal name="changed" handler="on_unknown_edit_combobox_type_changed" swapped="no"/>
@@ -244,13 +245,13 @@
             <child>
               <object class="GtkBox" id="unknown_edit_hbox_sign">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="spacing">6</property>
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkLabel" id="label57">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="halign">start</property>
                     <property name="label" translatable="yes">Sign</property>
                   </object>
@@ -263,7 +264,7 @@
                 <child>
                   <object class="GtkComboBoxText" id="unknown_edit_combobox_sign">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="can-focus">True</property>
                     <property name="active">0</property>
                     <items>
                       <item translatable="yes">Unknown</item>
@@ -292,13 +293,13 @@
             <child>
               <object class="GtkBox" id="hbox53">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="spacing">6</property>
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkLabel" id="label55">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="halign">start</property>
                     <property name="label" translatable="yes">Category</property>
                   </object>
@@ -311,12 +312,12 @@
                 <child>
                   <object class="GtkComboBoxText" id="unknown_edit_combo_category">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="tooltip_text" translatable="yes">The category this unknown variable belongs to</property>
-                    <property name="has_entry">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="tooltip-text" translatable="yes">The category this unknown variable belongs to</property>
+                    <property name="has-entry">True</property>
                     <child internal-child="entry">
                       <object class="GtkEntry" id="entry_category">
-                        <property name="can_focus">True</property>
+                        <property name="can-focus">True</property>
                         <signal name="changed" handler="on_unknown_changed" swapped="no"/>
                       </object>
                     </child>
@@ -337,13 +338,13 @@
             <child>
               <object class="GtkBox" id="hbox54">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="spacing">6</property>
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkLabel" id="label56">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="halign">start</property>
                     <property name="label" translatable="yes">Descriptive name</property>
                   </object>
@@ -356,10 +357,10 @@
                 <child>
                   <object class="GtkEntry" id="unknown_edit_entry_desc">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="tooltip_text" translatable="yes">Title displayed in menus and in variable manager</property>
-                    <property name="primary_icon_activatable">False</property>
-                    <property name="secondary_icon_activatable">False</property>
+                    <property name="can-focus">True</property>
+                    <property name="tooltip-text" translatable="yes">Title displayed in menus and in variable manager</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="secondary-icon-activatable">False</property>
                     <signal name="changed" handler="on_unknown_changed" swapped="no"/>
                   </object>
                   <packing>
@@ -389,8 +390,5 @@
       <action-widget response="-6">button3</action-widget>
       <action-widget response="-5">unknown_edit_button_ok</action-widget>
     </action-widgets>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
   </object>
 </interface>
