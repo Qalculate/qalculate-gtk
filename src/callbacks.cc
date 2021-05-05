@@ -6704,15 +6704,15 @@ void create_pmenu(GtkWidget *item) {
 		gchar *gstr = NULL;
 		switch(p->type()) {
 			case PREFIX_DECIMAL: {
-				gstr = g_strdup_printf("%s (10<span size=\"x-small\" rise=\"%i\">%i</span>)", p->name(false, true, &can_display_unicode_string_function, (void*) item).c_str(), (int) (pango_font_description_get_size(font_desc) / 1.5), ((DecimalPrefix*) p)->exponent());
+				gstr = g_strdup_printf("%s (10<span size=\"x-small\" rise=\"%i\">%i</span>)", p->preferredDisplayName(false, true, false, false, &can_display_unicode_string_function, (void*) item).name.c_str(), (int) (pango_font_description_get_size(font_desc) / 1.5), ((DecimalPrefix*) p)->exponent());
 				break;
 			}
 			case PREFIX_BINARY: {
-				gstr = g_strdup_printf("%s (2<span size=\"x-small\" rise=\"%i\">%i</span>)", p->name(false, true, &can_display_unicode_string_function, (void*) item).c_str(), (int) (pango_font_description_get_size(font_desc) / 1.5), ((BinaryPrefix*) p)->exponent());
+				gstr = g_strdup_printf("%s (2<span size=\"x-small\" rise=\"%i\">%i</span>)", p->preferredDisplayName(false, true, false, false, &can_display_unicode_string_function, (void*) item).name.c_str(), (int) (pango_font_description_get_size(font_desc) / 1.5), ((BinaryPrefix*) p)->exponent());
 				break;
 			}
 			case PREFIX_NUMBER: {
-				gstr = g_strdup_printf("%s", p->name(false, true, &can_display_unicode_string_function, (void*) item).c_str());
+				gstr = g_strdup_printf("%s", p->preferredDisplayName(false, true, false, false, &can_display_unicode_string_function, (void*) item).name.c_str());
 				break;
 			}
 		}
@@ -6741,15 +6741,15 @@ void create_pmenu2() {
 		gchar *gstr = NULL;
 		switch(p->type()) {
 			case PREFIX_DECIMAL: {
-				gstr = g_strdup_printf("%s (10<sup>%i</sup>)", p->name(false, true, &can_display_unicode_string_function, (void*) item).c_str(), ((DecimalPrefix*) p)->exponent());
+				gstr = g_strdup_printf("%s (10<sup>%i</sup>)", p->preferredDisplayName(false, true, false, false, &can_display_unicode_string_function, (void*) item).name.c_str(), ((DecimalPrefix*) p)->exponent());
 				break;
 			}
 			case PREFIX_BINARY: {
-				gstr = g_strdup_printf("%s (2<sup>%i</sup>)", p->name(false, true, &can_display_unicode_string_function, (void*) item).c_str(), ((BinaryPrefix*) p)->exponent());
+				gstr = g_strdup_printf("%s (2<sup>%i</sup>)", p->preferredDisplayName(false, true, false, false, &can_display_unicode_string_function, (void*) item).name.c_str(), ((BinaryPrefix*) p)->exponent());
 				break;
 			}
 			case PREFIX_NUMBER: {
-				gstr = g_strdup_printf("%s", p->name(false, true, &can_display_unicode_string_function, (void*) item).c_str());
+				gstr = g_strdup_printf("%s", p->preferredDisplayName(false, true, false, false, &can_display_unicode_string_function, (void*) item).name.c_str());
 				break;
 			}
 		}
@@ -7066,16 +7066,18 @@ void update_completion() {
 				int exp = 1;
 				if(cu->countUnits() == 1 && (u = cu->get(1, &exp, &prefix)) != NULL && prefix != NULL && exp == 1) {
 					str = "";
-					for(size_t name_i = 0; name_i < 3; name_i++) {
-						const string *pname;
-						if(name_i == 1) pname = &prefix->shortName(false);
-						else if(name_i == 2) pname = &prefix->longName(false);
-						else pname = &prefix->unicodeName(false);
-						if(!pname->empty()) {
+					for(size_t name_i = 0; name_i < 2; name_i++) {
+						const ExpressionName *ename;
+						ename = &prefix->preferredInputName(name_i != 1, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+						if(!ename->name.empty() && (ename->abbreviation == (name_i != 1))) {
 							bool b_italic = !str.empty();
 							if(b_italic) str += " <i>";
-							str += *pname;
-							str += u->preferredInputName(name_i != 2, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name;
+							if(ename->suffix && ename->name.length() > 1) {
+								str += sub_suffix(ename);
+							} else {
+								str += ename->name;
+							}
+							str += u->preferredInputName(name_i != 1, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name;
 							if(b_italic) str += "</i>";
 						}
 					}
@@ -7126,19 +7128,27 @@ void update_completion() {
 		if(!p) break;
 		gtk_list_store_append(completion_store, &iter);
 		str = "";
-		for(size_t name_i = 1; name_i <= 3; name_i++) {
-			const string *pstr;
-			if(name_i == 1) pstr = &p->longName(false);
-			else if(name_i == 2) pstr = &p->unicodeName(false);
-			else pstr = &p->shortName(false);
-			if(!pstr->empty()) {
-				if(!str.empty()) {
-					str += " <i>";
-					str += *pstr;
-					str += "</i>";
-				} else {
-					str += *pstr;
+		const ExpressionName *ename, *ename_r;
+		bool b = false;
+		ename_r = &p->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+		for(size_t name_i = 1; name_i <= p->countNames(); name_i++) {
+			ename = &p->getName(name_i);
+			if(ename && ename != ename_r && !ename->completion_only && !ename->plural && (!ename->unicode || can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))) {
+				if(!b) {
+					if(ename_r->suffix && ename_r->name.length() > 1) {
+						str = sub_suffix(ename_r);
+					} else {
+						str = ename_r->name;
+					}
+					b = true;
 				}
+				str += " <i>";
+				if(ename->suffix && ename->name.length() > 1) {
+					str += sub_suffix(ename);
+				} else {
+					str += ename->name;
+				}
+				str += "</i>";
 			}
 		}
 		gchar *gstr = NULL;
@@ -9184,7 +9194,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				const ExpressionName *ename = &m.unit()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, m.isPlural(), po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
 
 				if(m.prefix()) {
-					str += m.prefix()->name(po.abbreviate_names && ename->abbreviation && (ename->suffix || ename->name.find("_") == string::npos), po.use_unicode_signs, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
+					str += m.prefix()->preferredDisplayName(po.abbreviate_names && ename->abbreviation && (ename->suffix || ename->name.find("_") == string::npos), po.use_unicode_signs, m.isPlural(), po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg).name;
 				}
 				if(ename->suffix && ename->name.length() > 1) {
 					size_t i = ename->name.rfind('_');
@@ -21236,36 +21246,81 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 			else ename = &item->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
 			if(!ename) return;
 			if(cu && prefix) {
-				str = prefix->name(ename->abbreviation, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
+				str = prefix->preferredInputName(ename->abbreviation, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name;
 				str += ename->name;
 			} else {
 				str = ename->name;
 			}
 		} else if(cu && prefix) {
 			gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &object_start, &object_end, FALSE);
-			for(size_t name_i = 0; name_i < 3; name_i++) {
-				const string *pname;
-				if(name_i == 0) pname = &prefix->shortName(false);
-				else if(name_i == 1) pname = &prefix->longName(false);
-				else pname = &prefix->unicodeName(false);
-				if(!pname->empty() && (!((Unit*)item)->useWithPrefixesByDefault() || pname->length() >= strlen(gstr2))) {
-					bool pmatch = true;
-					for(size_t i = 0; i < strlen(gstr2) && i < pname->length(); i++) {
-						if((*pname)[i] != gstr2[i]) {
-							pmatch = false;
-							break;
-						}
-					}
-					if(pmatch) {
-						str = *pname;
-						ename = &item->preferredInputName(printops.abbreviate_names && name_i != 1, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
-						if(pname->length() >= strlen(gstr2)) break;
+			ename_r = &prefix->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+			if(printops.abbreviate_names && ename_r->abbreviation) ename_r2 = &prefix->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+			else ename_r2 = NULL;
+			if(ename_r2 == ename_r) ename_r2 = NULL;
+			const ExpressionName *ename_i;
+			size_t l = 0;
+			for(size_t name_i = 0; name_i <= (ename_r2 ? prefix->countNames() + 1 : prefix->countNames()) && l != strlen(gstr2); name_i++) {
+				if(name_i == 0) {
+					ename_i = ename_r;
+				} else if(name_i == 1 && ename_r2) {
+					ename_i = ename_r2;
+				} else {
+					ename_i = &prefix->getName(ename_r2 ? name_i - 1 : name_i);
+					if(!ename_i || ename_i == ename_r || ename_i == ename_r2 || (ename_i->name.length() <= l && ename_i->name.length() != strlen(gstr2)) || ename_i->plural || (ename_i->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename_i->name.c_str(), (void*) expressiontext)))) {
+						ename_i = NULL;
 					}
 				}
+				if(ename_i) {
+					if(!((Unit*)item)->useWithPrefixesByDefault() || ename_i->name.length() >= strlen(gstr2)) {
+						for(size_t i = 0; i < strlen(gstr2) && i < ename_i->name.length(); i++) {
+							if(ename_i->name[i] != gstr2[i]) {
+								if(i_type != 1 || !equalsIgnoreCase(ename_i->name, gstr2)) {
+									ename_i = NULL;
+								}
+								break;
+							}
+						}
+					} else {
+						ename_i = NULL;
+					}
+				}
+				if(ename_i) {
+					l = ename_i->name.length();
+					ename = ename_i;
+				}
 			}
+			for(size_t name_i = 1; name_i <= prefix->countNames() && l != strlen(gstr2); name_i++) {
+				ename_i = &prefix->getName(name_i);
+				if(!ename_i || ename_i == ename_r || ename_i == ename_r2 || (ename_i->name.length() <= l && ename_i->name.length() != strlen(gstr2)) || (!ename_i->plural && !(ename_i->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename_i->name.c_str(), (void*) expressiontext))))) {
+					ename_i = NULL;
+				}
+				if(ename_i) {
+					if(!((Unit*)item)->useWithPrefixesByDefault() || ename_i->name.length() >= strlen(gstr2)) {
+						for(size_t i = 0; i < strlen(gstr2) && i < ename_i->name.length(); i++) {
+							if(ename_i->name[i] != gstr2[i] && (ename_i->name[i] < 'A' || ename_i->name[i] > 'Z' || ename_i->name[i] != gstr2[i] + 32) && (ename_i->name[i] < 'a' || ename_i->name[i] > '<' || ename_i->name[i] != gstr2[i] - 32)) {
+								if(i_type != 1 || !equalsIgnoreCase(ename_i->name, gstr2)) {
+									ename_i = NULL;
+								}
+								break;
+							}
+						}
+					} else {
+						ename_i = NULL;
+					}
+				}
+				if(ename_i) {
+					l = ename_i->name.length();
+					ename = ename_i;
+				}
+			}
+			if(ename && ename->completion_only) {
+				ename = &prefix->preferredInputName(ename->abbreviation, printops.use_unicode_signs, ename->plural, false, &can_display_unicode_string_function, (void*) expressiontext);
+			}
+			if(!ename) ename = ename_r;
 			g_free(gstr2);
 			if(!ename) return;
-			str += ename->name;
+			str = ename->name;
+			str += item->preferredInputName(printops.abbreviate_names && ename->abbreviation, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name;
 		} else {
 			gchar *gstr_pre = gtk_text_buffer_get_text(expressionbuffer, &object_start, &object_end, FALSE);
 			gchar *gstr2 = gstr_pre;
@@ -21334,27 +21389,62 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 		}
 	} else if(prefix) {
 		gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &object_start, &object_end, FALSE);
-		for(size_t name_i = (printops.abbreviate_names ? 1 : 0); name_i < 3; name_i++) {
-			const string *pname;
-			if(name_i == 0) pname = &prefix->longName(false);
-			else if(name_i == 1) pname = &prefix->shortName(false);
-			else pname = &prefix->unicodeName(false);
-			if(!pname->empty() && strlen(gstr2) <= pname->length()) {
-				bool b = true;
-				for(size_t i = 0; i < strlen(gstr2); i++) {
-					if(gstr2[i] != (*pname)[i]) {
-						b = false;
-						break;
-					}
+		ename_r = &prefix->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+		if(printops.abbreviate_names && ename_r->abbreviation) ename_r2 = &prefix->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+		else ename_r2 = NULL;
+		if(ename_r2 == ename_r) ename_r2 = NULL;
+		for(size_t name_i = 0; name_i <= (ename_r2 ? prefix->countNames() + 1 : prefix->countNames()) && !ename; name_i++) {
+			if(name_i == 0) {
+				ename = ename_r;
+			} else if(name_i == 1 && ename_r2) {
+				ename = ename_r2;
+			} else {
+				ename = &prefix->getName(ename_r2 ? name_i - 1 : name_i);
+				if(!ename || ename == ename_r || ename == ename_r2 || ename->plural || (ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext)))) {
+					ename = NULL;
 				}
-				if(b) {
-					if(name_i == 1 && printops.use_unicode_signs) str = prefix->unicodeName();
-					else str = *pname;
-					break;
+			}
+			if(ename) {
+				if(strlen(gstr2) <= ename->name.length()) {
+					for(size_t i = 0; i < strlen(gstr2); i++) {
+						if(ename->name[i] != gstr2[i]) {
+							if(i_type != 1 || !equalsIgnoreCase(ename->name, gstr2)) {
+								ename = NULL;
+							}
+							break;
+						}
+					}
+				} else {
+					ename = NULL;
 				}
 			}
 		}
-		if(str.empty()) str = prefix->longName();
+		for(size_t name_i = 1; name_i <= prefix->countNames() && !ename; name_i++) {
+			ename = &prefix->getName(name_i);
+			if(!ename || ename == ename_r || ename == ename_r2 || (!ename->plural && !(ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))))) {
+				ename = NULL;
+			}
+			if(ename) {
+				if(strlen(gstr2) <= ename->name.length()) {
+					for(size_t i = 0; i < strlen(gstr2); i++) {
+						if(ename->name[i] != gstr2[i] && (ename->name[i] < 'A' || ename->name[i] > 'Z' || ename->name[i] != gstr2[i] + 32) && (ename->name[i] < 'a' || ename->name[i] > '<' || ename->name[i] != gstr2[i] - 32)) {
+							if(i_type != 1 || !equalsIgnoreCase(ename->name, gstr2)) {
+								ename = NULL;
+							}
+							break;
+						}
+					}
+				} else {
+					ename = NULL;
+				}
+			}
+		}
+		if(ename && ename->completion_only) {
+			ename = &prefix->preferredInputName(ename->abbreviation, printops.use_unicode_signs, ename->plural, false, &can_display_unicode_string_function, (void*) expressiontext);
+		}
+		if(!ename) ename = ename_r;
+		if(!ename) return;
+		str = ename->name;
 		g_free(gstr2);
 	} else {
 		gchar *gstr;
@@ -23389,11 +23479,8 @@ void do_completion() {
 				for(size_t pi = 1; ; pi++) {
 					Prefix *prefix = CALCULATOR->getPrefix(pi);
 					if(!prefix) break;
-					for(size_t name_i = 0; name_i < 3; name_i++) {
-						const string *pname;
-						if(name_i == 0) pname = &prefix->shortName(false);
-						else if(name_i == 1) pname = &prefix->longName(false);
-						else pname = &prefix->unicodeName(false);
+					for(size_t name_i = 1; name_i <= prefix->countNames(); name_i++) {
+						const string *pname = &prefix->getName(name_i).name;
 						if(!pname->empty() && pname->length() < str.length() - completion_min + 1) {
 							bool pmatch = true;
 							for(size_t i = 0; i < pname->length(); i++) {
@@ -23434,15 +23521,12 @@ void do_completion() {
 							cu = (CompositeUnit*) item;
 							item = cu->get(1, &exp, &prefix);
 							if(item && prefix) {
-								for(size_t name_i = 0; name_i < 3; name_i++) {
-									const string *pname;
-									if(name_i == 0) pname = &prefix->shortName(false);
-									else if(name_i == 1) pname = &prefix->longName(false);
-									else pname = &prefix->unicodeName(false);
-									if(!pname->empty() && pname->length() >= str.length() && (name_i != 1 || str.length() >= 2)) {
+								for(size_t name_i = 1; name_i <= prefix->countNames(); name_i++) {
+									const ExpressionName *ename = &prefix->getName(name_i);
+									if(!ename->name.empty() && ename->name.length() >= str.length() && (ename->abbreviation || str.length() >= 2)) {
 										bool pmatch = true;
 										for(size_t i = 0; i < str.length(); i++) {
-											if((*pname)[i] != str[i]) {
+											if(ename->name[i] != str[i]) {
 												pmatch = false;
 												break;
 											}
@@ -23600,11 +23684,8 @@ void do_completion() {
 				} else if(item && to_type == 5) {
 					if(item->type() == TYPE_UNIT && ((Unit*) item)->isCurrency() && (!item->isHidden() || item == CALCULATOR->getLocalCurrency())) b_match = 2;
 				} else if(prefix && to_type < 2) {
-					for(size_t name_i = 0; name_i < 3 && !b_match; name_i++) {
-						const string *pname;
-						if(name_i == 0) pname = &prefix->shortName(false);
-						else if(name_i == 1) pname = &prefix->unicodeName(false);
-						else pname = &prefix->longName(false);
+					for(size_t name_i = 1; name_i <= prefix->countNames() && !b_match; name_i++) {
+						const string *pname = &prefix->getName(name_i).name;
 						if(!pname->empty() && str.length() <= pname->length()) {
 							b_match = 2;
 							for(size_t i = 0; i < str.length(); i++) {
