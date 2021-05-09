@@ -156,7 +156,7 @@ GtkAccelGroup *accel_group;
 
 gint history_scroll_width = 16;
 
-GtkCssProvider *topframe_provider, *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider, *app_provider_theme, *statusframe_provider, *button_padding_provider;
+GtkCssProvider *topframe_provider, *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider, *app_provider_theme, *statusframe_provider, *button_padding_provider, *color_provider;
 
 extern bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad, minimal_mode;
 extern bool save_mode_on_exit, save_defs_on_exit, load_global_defs, hyp_is_on, inv_is_on, fetch_exchange_rates_at_startup, clear_history_on_exit;
@@ -167,8 +167,8 @@ extern int expression_lines;
 extern int gtk_theme;
 extern bool use_custom_result_font, use_custom_expression_font, use_custom_status_font, use_custom_keypad_font, use_custom_app_font;
 extern string custom_result_font, custom_expression_font, custom_status_font, custom_keypad_font, custom_app_font;
-extern string status_error_color, status_warning_color;
-extern bool status_error_color_set, status_warning_color_set;
+extern string status_error_color, status_warning_color, text_color;
+extern bool status_error_color_set, status_warning_color_set, text_color_set;
 extern int auto_update_exchange_rates;
 extern bool copy_separator;
 extern bool ignore_locale;
@@ -1294,6 +1294,10 @@ void create_button_menus() {
 
 void update_button_padding(bool initial) {
 	if(horizontal_button_padding >= 0 || vertical_button_padding >= 0) {
+		if(!button_padding_provider) {
+			button_padding_provider = gtk_css_provider_new();
+			gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(button_padding_provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+		}
 		string padding_css;
 		if(horizontal_button_padding >= 0) {
 			padding_css += "#grid_buttons button, #button_exact, #button_fraction {";
@@ -1308,7 +1312,7 @@ void update_button_padding(bool initial) {
 		}
 		gtk_css_provider_load_from_data(button_padding_provider, padding_css.c_str(), -1, NULL);
 	} else if(!initial) {
-		gtk_css_provider_load_from_data(button_padding_provider, "", -1, NULL);
+		if(button_padding_provider) gtk_css_provider_load_from_data(button_padding_provider, "", -1, NULL);
 	}
 }
 
@@ -1457,14 +1461,12 @@ void create_main_window(void) {
 	statuslabel_r_provider = gtk_css_provider_new();
 	keypad_provider = gtk_css_provider_new();
 	box_rpnl_provider = gtk_css_provider_new();
-	app_provider = gtk_css_provider_new();
 	gtk_style_context_add_provider(gtk_widget_get_style_context(expressiontext), GTK_STYLE_PROVIDER(expression_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(resultview), GTK_STYLE_PROVIDER(resultview_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(statuslabel_l), GTK_STYLE_PROVIDER(statuslabel_l_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(statuslabel_r), GTK_STYLE_PROVIDER(statuslabel_r_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(keypad), GTK_STYLE_PROVIDER(keypad_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnl"))), GTK_STYLE_PROVIDER(box_rpnl_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(app_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
 	topframe_provider = gtk_css_provider_new();
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "topframe"))), GTK_STYLE_PROVIDER(topframe_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
@@ -1539,10 +1541,13 @@ void create_main_window(void) {
 	set_mode_items(printops, evalops, CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign(), rpn_mode, CALCULATOR->getPrecision(), CALCULATOR->usesIntervalArithmetic(), CALCULATOR->variableUnitsEnabled(), adaptive_interval_display, visible_keypad, auto_calculate, chain_mode, complex_angle_form, true);
 
 	if(use_custom_app_font) {
+		app_provider = gtk_css_provider_new();
+		gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(app_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		gchar *gstr = font_name_to_css(custom_app_font.c_str());
 		gtk_css_provider_load_from_data(app_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
+		app_provider = NULL;
 		if(custom_app_font.empty()) {
 			PangoFontDescription *font_desc;
 			gtk_style_context_get(gtk_widget_get_style_context(mainwindow), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
@@ -1657,6 +1662,20 @@ void create_main_window(void) {
 	set_operator_symbols();
 	GdkRGBA c;
 	gtk_style_context_get_color(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, &c);
+
+	gchar tcs[8];
+	g_snprintf(tcs, 8, "#%02x%02x%02x", (int) (c.red * 255), (int) (c.green * 255), (int) (c.blue * 255));
+	if(text_color == tcs) text_color_set = false;
+	if(!text_color_set) {
+		text_color = tcs;
+		color_provider = NULL;
+	} else {
+		color_provider = gtk_css_provider_new();
+		string css_str = "* {color: "; css_str += text_color; css_str += "}";
+		gtk_css_provider_load_from_data(color_provider, css_str.c_str(), -1, NULL);
+		gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(color_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	}
+
 	if(!status_error_color_set) {
 		GdkRGBA c_err = c;
 		if(c_err.red >= 0.8) {
@@ -1829,9 +1848,8 @@ void create_main_window(void) {
 	GtkCssProvider *notification_style = gtk_css_provider_new(); gtk_css_provider_load_from_data(notification_style, "* {border-radius: 5px}", -1, NULL);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "overlaybox"))), GTK_STYLE_PROVIDER(notification_style), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
-	button_padding_provider = gtk_css_provider_new();
+	button_padding_provider = NULL;
 	update_button_padding(true);
-	gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(button_padding_provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 
 	if(themestr.substr(0, 7) == "Adwaita" || themestr.substr(0, 6) == "ooxmox" || themestr == "Breeze" || themestr == "Breeze-Dark" || themestr.substr(0, 4) == "Yaru") {
 
@@ -2555,6 +2573,8 @@ GtkWidget* get_preferences_dialog(void) {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_app_font")), use_custom_app_font);
 		gtk_font_chooser_set_font(GTK_FONT_CHOOSER(gtk_builder_get_object(preferences_builder, "preferences_button_app_font")), custom_app_font.c_str());
 		GdkRGBA c;
+		gdk_rgba_parse(&c, text_color.c_str());
+		gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(gtk_builder_get_object(preferences_builder, "colorbutton_text_color")), &c);
 		gdk_rgba_parse(&c, status_error_color.c_str());
 		gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(gtk_builder_get_object(preferences_builder, "colorbutton_status_error_color")), &c);
 		gdk_rgba_parse(&c, status_warning_color.c_str());

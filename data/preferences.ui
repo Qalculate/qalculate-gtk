@@ -1552,7 +1552,7 @@ Note that only the mode, history and definitions of the last closed instance wil
               </packing>
             </child>
             <child>
-              <!-- n-columns=2 n-rows=12 -->
+              <!-- n-columns=2 n-rows=13 -->
               <object class="GtkGrid" id="grid_fonts">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -1570,7 +1570,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </object>
                   <packing>
                     <property name="left-attach">0</property>
-                    <property name="top-attach">11</property>
+                    <property name="top-attach">12</property>
                   </packing>
                 </child>
                 <child>
@@ -1583,7 +1583,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </object>
                   <packing>
                     <property name="left-attach">1</property>
-                    <property name="top-attach">11</property>
+                    <property name="top-attach">12</property>
                   </packing>
                 </child>
                 <child>
@@ -1595,7 +1595,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </object>
                   <packing>
                     <property name="left-attach">0</property>
-                    <property name="top-attach">10</property>
+                    <property name="top-attach">11</property>
                   </packing>
                 </child>
                 <child>
@@ -1608,7 +1608,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </object>
                   <packing>
                     <property name="left-attach">1</property>
-                    <property name="top-attach">10</property>
+                    <property name="top-attach">11</property>
                   </packing>
                 </child>
                 <child>
@@ -1784,6 +1784,31 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="left-attach">0</property>
                     <property name="top-attach">9</property>
                     <property name="width">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label3">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Text color</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">10</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkColorButton" id="colorbutton_text_color">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="hexpand">True</property>
+                    <signal name="color-set" handler="on_colorbutton_text_color_color_set" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">10</property>
                   </packing>
                 </child>
               </object>

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Qalculate!\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-25 15:18+0200\n"
+"POT-Creation-Date: 2021-05-09 15:18+0200\n"
 "PO-Revision-Date: 2020-12-01 18:19+0100\n"
 "Last-Translator: Polakrity\n"
 "Language-Team: none\n"
@@ -16,8 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.4.2\n"
 
-#: ../data/qalculate-gtk.desktop.in.h:1 ../src/callbacks.cc:10696
-#: ../src/callbacks.cc:10703 ../src/callbacks.cc:10718
+#: ../data/qalculate-gtk.desktop.in.h:1 ../src/callbacks.cc:10714
+#: ../src/callbacks.cc:10721 ../src/callbacks.cc:10736
 msgid "Qalculate!"
 msgstr "Qalculate!"
 
@@ -26,7 +26,7 @@ msgid "Calculator"
 msgstr "Calculatrice"
 
 #: ../data/qalculate-gtk.desktop.in.h:3
-#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/callbacks.cc:31615
+#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/callbacks.cc:31744
 msgid "Powerful and easy to use calculator"
 msgstr "Une calculatrice puissante et facile d'utilisation"
 
@@ -74,14 +74,14 @@ msgstr "Règles d'argument"
 #: ../data/matrixedit.ui.h:3 ../data/shortcuts.ui.h:7
 #: ../data/simplefunctionedit.ui.h:3 ../data/unitedit.ui.h:3
 #: ../data/unknownedit.ui.h:3 ../data/variableedit.ui.h:3
-#: ../src/callbacks.cc:2422 ../src/callbacks.cc:16622 ../src/callbacks.cc:17606
-#: ../src/callbacks.cc:17724 ../src/callbacks.cc:18853
-#: ../src/callbacks.cc:18908 ../src/callbacks.cc:25829
-#: ../src/callbacks.cc:26306 ../src/callbacks.cc:27535
-#: ../src/callbacks.cc:29243 ../src/callbacks.cc:32815
-#: ../src/callbacks.cc:32840 ../src/callbacks.cc:32857
-#: ../src/callbacks.cc:32900 ../src/callbacks.cc:34078
-#: ../src/callbacks.cc:34599
+#: ../src/callbacks.cc:2425 ../src/callbacks.cc:16650 ../src/callbacks.cc:17634
+#: ../src/callbacks.cc:17752 ../src/callbacks.cc:18881
+#: ../src/callbacks.cc:18936 ../src/callbacks.cc:25954
+#: ../src/callbacks.cc:26431 ../src/callbacks.cc:27664
+#: ../src/callbacks.cc:29372 ../src/callbacks.cc:32944
+#: ../src/callbacks.cc:32969 ../src/callbacks.cc:32986
+#: ../src/callbacks.cc:33029 ../src/callbacks.cc:34207
+#: ../src/callbacks.cc:34728
 msgid "_Cancel"
 msgstr "_Fermer"
 
@@ -95,10 +95,10 @@ msgstr "Ne pas sauvegarder les modifications"
 #: ../data/matrixedit.ui.h:5 ../data/shortcuts.ui.h:8
 #: ../data/simplefunctionedit.ui.h:5 ../data/unitedit.ui.h:5
 #: ../data/unknownedit.ui.h:5 ../data/variableedit.ui.h:5
-#: ../src/callbacks.cc:2422 ../src/callbacks.cc:2667 ../src/callbacks.cc:2755
-#: ../src/callbacks.cc:17606 ../src/callbacks.cc:17724
-#: ../src/callbacks.cc:25829 ../src/callbacks.cc:26306
-#: ../src/callbacks.cc:32857 ../src/callbacks.cc:34599
+#: ../src/callbacks.cc:2425 ../src/callbacks.cc:2670 ../src/callbacks.cc:2758
+#: ../src/callbacks.cc:17634 ../src/callbacks.cc:17752
+#: ../src/callbacks.cc:25954 ../src/callbacks.cc:26431
+#: ../src/callbacks.cc:32986 ../src/callbacks.cc:34728
 msgid "_OK"
 msgstr "_OK"
 
@@ -160,25 +160,25 @@ msgstr "Raccourcis clavier"
 #: ../data/namesedit.ui.h:2 ../data/nbases.ui.h:2 ../data/percentage.ui.h:5
 #: ../data/plot.ui.h:5 ../data/precision.ui.h:2 ../data/preferences.ui.h:2
 #: ../data/setbase.ui.h:2 ../data/shortcuts.ui.h:2 ../data/units.ui.h:2
-#: ../data/variables.ui.h:2 ../src/callbacks.cc:2424 ../src/callbacks.cc:14595
-#: ../src/callbacks.cc:16614 ../src/callbacks.cc:25755
-#: ../src/callbacks.cc:34441
+#: ../data/variables.ui.h:2 ../src/callbacks.cc:2427 ../src/callbacks.cc:14623
+#: ../src/callbacks.cc:16642 ../src/callbacks.cc:25880
+#: ../src/callbacks.cc:34570
 msgid "_Close"
 msgstr "_Fermer"
 
-#: ../data/buttonsedit.ui.h:3 ../src/interface.cc:3895
+#: ../data/buttonsedit.ui.h:3 ../src/interface.cc:3915
 msgid "Label"
 msgstr "Intitulé"
 
-#: ../data/buttonsedit.ui.h:4 ../src/interface.cc:3898
+#: ../data/buttonsedit.ui.h:4 ../src/interface.cc:3918
 msgid "Left-click"
 msgstr "Clic gauche"
 
-#: ../data/buttonsedit.ui.h:5 ../src/interface.cc:3901
+#: ../data/buttonsedit.ui.h:5 ../src/interface.cc:3921
 msgid "Right-click"
 msgstr "Clic droit"
 
-#: ../data/buttonsedit.ui.h:6 ../src/interface.cc:3904
+#: ../data/buttonsedit.ui.h:6 ../src/interface.cc:3924
 msgid "Middle-click"
 msgstr "Clic du milieu"
 
@@ -191,8 +191,8 @@ msgid "Button Action"
 msgstr "Bouton d'action"
 
 #: ../data/buttonsedit.ui.h:11 ../data/shortcuts.ui.h:9
-#: ../data/variableedit.ui.h:9 ../src/interface.cc:2050
-#: ../src/interface.cc:2270 ../src/interface.cc:3756 ../src/callbacks.cc:14653
+#: ../data/variableedit.ui.h:9 ../src/interface.cc:2068
+#: ../src/interface.cc:2288 ../src/interface.cc:3776 ../src/callbacks.cc:14681
 msgid "Value"
 msgstr "Valeur"
 
@@ -271,24 +271,23 @@ msgid "Import as"
 msgstr "Importer comme"
 
 #: ../data/csvimport.ui.h:10 ../data/functionedit.ui.h:33 ../data/main.ui.h:21
-#: ../data/matrix.ui.h:1 ../data/matrixedit.ui.h:18 ../src/callbacks.cc:16627
+#: ../data/matrix.ui.h:1 ../data/matrixedit.ui.h:18 ../src/callbacks.cc:16655
 msgid "Matrix"
 msgstr "Matrice"
 
 #: ../data/csvimport.ui.h:11
-msgid ""
-"If a matrix or vectors shall be generated from the contents of the file "
+msgid "If a matrix shall be generated from the contents of the file"
 msgstr ""
 "Si une matrice ou des vecteurs doivent être générés à partir du contenu du "
-"fichier "
+"fichier"
 
-#: ../data/csvimport.ui.h:12 ../src/callbacks.cc:17496
-#: ../src/callbacks.cc:27448
+#: ../data/csvimport.ui.h:12 ../src/callbacks.cc:17524
+#: ../src/callbacks.cc:27573
 msgid "Vectors"
 msgstr "Vecteurs"
 
 #: ../data/csvimport.ui.h:13
-msgid "If a matrix or vectors shall be generated from the contents of the file"
+msgid "If vectors shall be generated from the contents of the file"
 msgstr ""
 "Si une matrice ou des vecteurs doivent être générés à partir du contenu du "
 "fichier"
@@ -297,9 +296,9 @@ msgstr ""
 #: ../data/functionedit.ui.h:7 ../data/matrixedit.ui.h:8
 #: ../data/namesedit.ui.h:3 ../data/simplefunctionedit.ui.h:6
 #: ../data/unitedit.ui.h:7 ../data/unknownedit.ui.h:7
-#: ../data/variableedit.ui.h:6 ../src/interface.cc:2141
-#: ../src/interface.cc:2338 ../src/interface.cc:2730 ../src/interface.cc:2973
-#: ../src/interface.cc:3011 ../src/callbacks.cc:18859 ../src/callbacks.cc:25835
+#: ../data/variableedit.ui.h:6 ../src/interface.cc:2159
+#: ../src/interface.cc:2356 ../src/interface.cc:2750 ../src/interface.cc:2993
+#: ../src/interface.cc:3031 ../src/callbacks.cc:18887 ../src/callbacks.cc:25960
 msgid "Name"
 msgstr "Nom"
 
@@ -325,8 +324,8 @@ msgstr "Titre affiché dans les menus et dans le gestionnaire de variables"
 #: ../data/csvimport.ui.h:18 ../data/functionedit.ui.h:10 ../data/main.ui.h:237
 #: ../data/matrixedit.ui.h:11 ../data/unitedit.ui.h:10
 #: ../data/unknownedit.ui.h:24 ../data/variableedit.ui.h:14
-#: ../src/interface.cc:2152 ../src/interface.cc:2224 ../src/interface.cc:2286
-#: ../src/interface.cc:2362
+#: ../src/interface.cc:2170 ../src/interface.cc:2242 ../src/interface.cc:2304
+#: ../src/interface.cc:2380
 msgid "Category"
 msgstr "Catégorie"
 
@@ -373,7 +372,7 @@ msgstr "Nom utilisé pour référencement"
 #: ../data/datasetedit.ui.h:8 ../data/functionedit.ui.h:9
 #: ../data/matrixedit.ui.h:10 ../data/unitedit.ui.h:9
 #: ../data/unknownedit.ui.h:9 ../data/variableedit.ui.h:8
-#: ../src/callbacks.cc:4619 ../src/callbacks.cc:5667
+#: ../src/callbacks.cc:4627 ../src/callbacks.cc:5675
 msgid "Properties"
 msgstr "Propriétés"
 
@@ -396,7 +395,7 @@ msgid "Value Type"
 msgstr "Type de valeur"
 
 #: ../data/datasetedit.ui.h:14 ../data/functionedit.ui.h:30
-#: ../src/callbacks.cc:25760
+#: ../src/callbacks.cc:25885
 msgid "Text"
 msgstr "Texte"
 
@@ -406,8 +405,8 @@ msgid "Number"
 msgstr "Nombre"
 
 #: ../data/datasetedit.ui.h:16 ../data/functionedit.ui.h:18 ../data/plot.ui.h:8
-#: ../data/simplefunctionedit.ui.h:8 ../src/interface.cc:2746
-#: ../src/interface.cc:3627
+#: ../data/simplefunctionedit.ui.h:8 ../src/interface.cc:2766
+#: ../src/interface.cc:3647
 msgid "Expression"
 msgstr "Expression"
 
@@ -435,12 +434,12 @@ msgstr "Valeur utilise des crochets"
 msgid "Unit expression"
 msgstr "Expression d'unité"
 
-#: ../data/datasetedit.ui.h:23 ../src/callbacks.cc:17047
+#: ../data/datasetedit.ui.h:23 ../src/callbacks.cc:17075
 msgid "Edit Data Set"
 msgstr "Éditer l'ensemble de données"
 
-#: ../data/datasetedit.ui.h:24 ../data/plot.ui.h:7 ../src/interface.cc:2970
-#: ../src/interface.cc:3624
+#: ../data/datasetedit.ui.h:24 ../data/plot.ui.h:7 ../src/interface.cc:2990
+#: ../src/interface.cc:3644
 msgid "Title"
 msgstr "Titre"
 
@@ -481,7 +480,7 @@ msgstr "_Éditer"
 
 #: ../data/datasetedit.ui.h:33 ../data/functionedit.ui.h:53
 #: ../data/functions.ui.h:9 ../data/units.ui.h:11 ../data/variables.ui.h:9
-#: ../src/callbacks.cc:18908
+#: ../src/callbacks.cc:18936
 msgid "_Delete"
 msgstr "_Supprimer"
 
@@ -502,11 +501,11 @@ msgid "Default property"
 msgstr "Propriété par défaut"
 
 #: ../data/datasetedit.ui.h:38 ../data/functionedit.ui.h:42
-#: ../data/main.ui.h:24 ../data/plot.ui.h:9 ../src/interface.cc:2210
+#: ../data/main.ui.h:24 ../data/plot.ui.h:9 ../src/interface.cc:2228
 msgid "Function"
 msgstr "Fonction"
 
-#: ../data/datasets.ui.h:1 ../src/callbacks.cc:16772
+#: ../data/datasets.ui.h:1 ../src/callbacks.cc:16800
 msgid "Edit Data Object"
 msgstr "Éditer les données d'objet"
 
@@ -519,11 +518,11 @@ msgid "Accept the creation/modification of this data object"
 msgstr "Accepter la création/modification de cette donnée d'objet"
 
 #. new dataset
-#: ../data/datasets.ui.h:6 ../src/callbacks.cc:17144
+#: ../data/datasets.ui.h:6 ../src/callbacks.cc:17172
 msgid "Data Sets"
 msgstr "Ensembles de données"
 
-#: ../data/datasets.ui.h:8 ../data/main.ui.h:26 ../src/interface.cc:2453
+#: ../data/datasets.ui.h:8 ../data/main.ui.h:26 ../src/interface.cc:2471
 msgid "Data Set"
 msgstr "Ensemble de données"
 
@@ -649,8 +648,8 @@ msgstr "128-bit (quadruple précision)"
 msgid "Hexadecimal value"
 msgstr "Valeur hexadécimale"
 
-#: ../data/functionedit.ui.h:1 ../src/callbacks.cc:15589
-#: ../src/callbacks.cc:15794
+#: ../data/functionedit.ui.h:1 ../src/callbacks.cc:15617
+#: ../src/callbacks.cc:15822
 msgid "Edit Function"
 msgstr "Éditer la fonction"
 
@@ -738,7 +737,7 @@ msgid "Date"
 msgstr "Date"
 
 #: ../data/functionedit.ui.h:32 ../data/main.ui.h:22 ../data/matrix.ui.h:11
-#: ../data/matrixedit.ui.h:20 ../src/callbacks.cc:16625
+#: ../data/matrixedit.ui.h:20 ../src/callbacks.cc:16653
 msgid "Vector"
 msgstr "Vecteur"
 
@@ -771,16 +770,16 @@ msgstr "Entier positif ou nul"
 msgid "Boolean"
 msgstr "Booléen"
 
-#: ../data/functionedit.ui.h:41 ../src/callbacks.cc:17152
+#: ../data/functionedit.ui.h:41 ../src/callbacks.cc:17180
 msgid "Object"
 msgstr "Objet"
 
-#: ../data/functionedit.ui.h:43 ../data/main.ui.h:27 ../src/interface.cc:2342
-#: ../src/interface.cc:2346
+#: ../data/functionedit.ui.h:43 ../data/main.ui.h:27 ../src/interface.cc:2360
+#: ../src/interface.cc:2364
 msgid "Unit"
 msgstr "Unité"
 
-#: ../data/functionedit.ui.h:44 ../data/main.ui.h:20 ../src/interface.cc:2266
+#: ../data/functionedit.ui.h:44 ../data/main.ui.h:20 ../src/interface.cc:2284
 msgid "Variable"
 msgstr "Variable"
 
@@ -788,7 +787,7 @@ msgstr "Variable"
 msgid "Angle"
 msgstr "Angle"
 
-#: ../data/functionedit.ui.h:47 ../src/callbacks.cc:23323
+#: ../data/functionedit.ui.h:47 ../src/callbacks.cc:23459
 msgid "Data object"
 msgstr "Données de l'objet"
 
@@ -805,7 +804,7 @@ msgid "Add entered argument definition"
 msgstr "Ajouter une définition d'argument entrée"
 
 #: ../data/functionedit.ui.h:51 ../data/functions.ui.h:13 ../data/plot.ui.h:36
-#: ../src/callbacks.cc:34599
+#: ../src/callbacks.cc:34728
 msgid "_Apply"
 msgstr "_Appliquer"
 
@@ -829,7 +828,7 @@ msgstr "Éditer les conditions pour l'argument sélectionné"
 msgid "Close this dialog"
 msgstr "Fermer cette boîte de dialogue"
 
-#: ../data/functionedit.ui.h:59 ../src/interface.cc:2749
+#: ../data/functionedit.ui.h:59 ../src/interface.cc:2769
 msgid "Precalculate"
 msgstr "Précalculer"
 
@@ -862,7 +861,7 @@ msgid "Edit the selected function"
 msgstr "Éditer la fonction sélectionnée"
 
 #: ../data/functions.ui.h:7 ../data/matrix.ui.h:4 ../data/units.ui.h:7
-#: ../data/variables.ui.h:7 ../src/callbacks.cc:14602
+#: ../data/variables.ui.h:7 ../src/callbacks.cc:14630
 msgid "_Insert"
 msgstr "_Insérer"
 
@@ -880,7 +879,7 @@ msgid "(De)activate the selected function"
 msgstr "(Dés)activer la fonction sélectionnée"
 
 #: ../data/functions.ui.h:12 ../data/units.ui.h:14 ../data/variables.ui.h:12
-#: ../src/callbacks.cc:4657 ../src/callbacks.cc:4916 ../src/callbacks.cc:5166
+#: ../src/callbacks.cc:4665 ../src/callbacks.cc:4924 ../src/callbacks.cc:5174
 msgid "Deacti_vate"
 msgstr "Désacti_ver"
 
@@ -916,7 +915,7 @@ msgstr "Grades"
 msgid "Default assumptions"
 msgstr "Suppositions par défaut"
 
-#: ../data/main.ui.h:5 ../data/unknownedit.ui.h:18 ../src/callbacks.cc:34498
+#: ../data/main.ui.h:5 ../data/unknownedit.ui.h:18 ../src/callbacks.cc:34627
 msgid "Unknown"
 msgstr "Inconnue"
 
@@ -1048,13 +1047,13 @@ msgstr "Gestion des unités"
 msgid "Manage Data Sets"
 msgstr "Gestion des ensembles de données"
 
-#: ../data/main.ui.h:50 ../src/interface.cc:1080 ../src/callbacks.cc:1689
-#: ../src/callbacks.cc:27414
+#: ../data/main.ui.h:50 ../src/interface.cc:1080 ../src/callbacks.cc:1691
+#: ../src/callbacks.cc:27539
 msgid "Factorize"
 msgstr "Factoriser"
 
-#: ../data/main.ui.h:51 ../src/interface.cc:1078 ../src/callbacks.cc:1692
-#: ../src/callbacks.cc:27427
+#: ../data/main.ui.h:51 ../src/interface.cc:1078 ../src/callbacks.cc:1694
+#: ../src/callbacks.cc:27552
 msgid "Expand"
 msgstr "Développer"
 
@@ -1090,15 +1089,15 @@ msgstr "Convertir en unités de base"
 msgid "Convert to Optimal Unit"
 msgstr "Convertir en unité optimale"
 
-#: ../data/main.ui.h:60 ../src/callbacks.cc:18405
+#: ../data/main.ui.h:60 ../src/callbacks.cc:18433
 msgid "Insert Date…"
 msgstr "Insérer une date…"
 
-#: ../data/main.ui.h:61 ../src/callbacks.cc:18406
+#: ../data/main.ui.h:61 ../src/callbacks.cc:18434
 msgid "Insert Matrix…"
 msgstr "Insérer une matrice…"
 
-#: ../data/main.ui.h:62 ../src/callbacks.cc:18407
+#: ../data/main.ui.h:62 ../src/callbacks.cc:18435
 msgid "Insert Vector…"
 msgstr "Insérer un vecteur…"
 
@@ -1118,7 +1117,7 @@ msgstr "_Préférences"
 msgid "_Mode"
 msgstr "_Mode"
 
-#: ../data/main.ui.h:68 ../src/callbacks.cc:18379
+#: ../data/main.ui.h:68 ../src/callbacks.cc:18407
 msgid "Number Base"
 msgstr "Base numérique"
 
@@ -1127,41 +1126,41 @@ msgid "Select Result and Expression Base…"
 msgstr "Sélectionner le résultat et la base d'expression…"
 
 #: ../data/main.ui.h:70 ../data/nbases.ui.h:4 ../data/setbase.ui.h:3
-#: ../src/interface.cc:1277 ../src/callbacks.cc:18382 ../src/callbacks.cc:26895
-#: ../src/callbacks.cc:30813 ../src/callbacks.cc:30853
+#: ../src/interface.cc:1277 ../src/callbacks.cc:18410 ../src/callbacks.cc:27020
+#: ../src/callbacks.cc:30942 ../src/callbacks.cc:30982
 msgid "Binary"
 msgstr "Binaire"
 
 #: ../data/main.ui.h:71 ../data/nbases.ui.h:5 ../data/setbase.ui.h:4
-#: ../src/interface.cc:1278 ../src/callbacks.cc:18383 ../src/callbacks.cc:26896
-#: ../src/callbacks.cc:30814 ../src/callbacks.cc:30854
+#: ../src/interface.cc:1278 ../src/callbacks.cc:18411 ../src/callbacks.cc:27021
+#: ../src/callbacks.cc:30943 ../src/callbacks.cc:30983
 msgid "Octal"
 msgstr "Octal"
 
 #: ../data/main.ui.h:72 ../data/nbases.ui.h:3 ../data/setbase.ui.h:5
-#: ../src/interface.cc:1279 ../src/callbacks.cc:18384 ../src/callbacks.cc:26897
-#: ../src/callbacks.cc:30815 ../src/callbacks.cc:30855
+#: ../src/interface.cc:1279 ../src/callbacks.cc:18412 ../src/callbacks.cc:27022
+#: ../src/callbacks.cc:30944 ../src/callbacks.cc:30984
 msgid "Decimal"
 msgstr "Décimal"
 
 #: ../data/main.ui.h:73 ../data/nbases.ui.h:10 ../data/setbase.ui.h:6
-#: ../src/callbacks.cc:18385 ../src/callbacks.cc:26898
-#: ../src/callbacks.cc:30816 ../src/callbacks.cc:30856
+#: ../src/callbacks.cc:18413 ../src/callbacks.cc:27023
+#: ../src/callbacks.cc:30945 ../src/callbacks.cc:30985
 msgid "Duodecimal"
 msgstr "Duodécimal"
 
 #: ../data/main.ui.h:74 ../data/nbases.ui.h:11 ../data/setbase.ui.h:7
-#: ../src/interface.cc:1280 ../src/callbacks.cc:18386 ../src/callbacks.cc:26899
-#: ../src/callbacks.cc:30817 ../src/callbacks.cc:30857
+#: ../src/interface.cc:1280 ../src/callbacks.cc:18414 ../src/callbacks.cc:27024
+#: ../src/callbacks.cc:30946 ../src/callbacks.cc:30986
 msgid "Hexadecimal"
 msgstr "Hexadécimal"
 
-#: ../data/main.ui.h:75 ../src/callbacks.cc:18388
+#: ../data/main.ui.h:75 ../src/callbacks.cc:18416
 msgid "Other…"
 msgstr "Autre…"
 
-#: ../data/main.ui.h:76 ../data/setbase.ui.h:8 ../src/callbacks.cc:26910
-#: ../src/callbacks.cc:26941
+#: ../data/main.ui.h:76 ../data/setbase.ui.h:8 ../src/callbacks.cc:27035
+#: ../src/callbacks.cc:27066
 msgid "Sexagesimal"
 msgstr "Sexagésimal"
 
@@ -1169,7 +1168,7 @@ msgstr "Sexagésimal"
 msgid "Time Format"
 msgstr "Format de l'heure"
 
-#: ../data/main.ui.h:78 ../src/callbacks.cc:18387
+#: ../data/main.ui.h:78 ../src/callbacks.cc:18415
 msgid "Roman Numerals"
 msgstr "Chiffres romains"
 
@@ -1321,7 +1320,7 @@ msgstr ""
 msgid "Significant Digits"
 msgstr "Chiffres significatifs"
 
-#: ../data/main.ui.h:115 ../src/interface.cc:818 ../src/interface.cc:3842
+#: ../data/main.ui.h:115 ../src/interface.cc:818 ../src/interface.cc:3862
 msgid "Interval"
 msgstr "Intervalle"
 
@@ -1487,7 +1486,7 @@ msgstr "Toujours exact"
 msgid "Try Exact"
 msgstr "Essayer exactitude"
 
-#: ../data/main.ui.h:156 ../src/callbacks.cc:16816
+#: ../data/main.ui.h:156 ../src/callbacks.cc:16844
 msgid "Approximate"
 msgstr "Approximatif"
 
@@ -1511,7 +1510,7 @@ msgstr ""
 msgid "Angle Unit"
 msgstr "Unité d'angle"
 
-#: ../data/main.ui.h:162 ../data/plot.ui.h:27 ../src/interface.cc:3934
+#: ../data/main.ui.h:162 ../data/plot.ui.h:27 ../src/interface.cc:3954
 msgid "None"
 msgstr "Aucune"
 
@@ -1539,7 +1538,7 @@ msgstr ""
 msgid "Warn About Denominators Assumed Non-Zero"
 msgstr ""
 
-#: ../data/main.ui.h:169 ../src/callbacks.cc:18369
+#: ../data/main.ui.h:169 ../src/callbacks.cc:18397
 msgid "Parsing Mode"
 msgstr "Mode d'analyse"
 
@@ -1614,11 +1613,11 @@ msgstr "Activer la pile NPI."
 msgid "RPN Mode"
 msgstr "Mode NPI"
 
-#: ../data/main.ui.h:189 ../src/callbacks.cc:18390
+#: ../data/main.ui.h:189 ../src/callbacks.cc:18418
 msgid "Meta Modes"
 msgstr ""
 
-#: ../data/main.ui.h:190 ../src/callbacks.cc:18402
+#: ../data/main.ui.h:190 ../src/callbacks.cc:18430
 msgid "Save Mode…"
 msgstr "Sauvegarder mode…"
 
@@ -1658,7 +1657,7 @@ msgstr "Vérifier les mises à jour"
 msgid "_About"
 msgstr "_À propos"
 
-#: ../data/main.ui.h:201 ../src/callbacks.cc:6165
+#: ../data/main.ui.h:201 ../src/callbacks.cc:6173
 msgid "Toggle minimal window"
 msgstr "Basculer en fenêtre minimale"
 
@@ -1726,7 +1725,7 @@ msgstr "Élever la valeur sélectionnée à la puissance"
 msgid "Calculate the square root of the selected value"
 msgstr "Calculer la racine carrée de la valeur sélectionnée"
 
-#: ../data/main.ui.h:217 ../src/interface.cc:1999
+#: ../data/main.ui.h:217 ../src/interface.cc:2017
 msgid "History"
 msgstr "Historique"
 
@@ -1762,28 +1761,28 @@ msgstr "Calculer la racine carrée de la valeur supérieure"
 msgid "Calculate the sum of all values"
 msgstr "Calcule la somme de toutes les valeurs"
 
-#: ../data/main.ui.h:227 ../src/callbacks.cc:6256
+#: ../data/main.ui.h:227 ../src/callbacks.cc:6264
 msgid "Rotate the stack or move selected register up"
 msgstr ""
 
-#: ../data/main.ui.h:228 ../src/callbacks.cc:6264
+#: ../data/main.ui.h:228 ../src/callbacks.cc:6272
 msgid "Rotate the stack or move selected register down"
 msgstr ""
 
-#: ../data/main.ui.h:229 ../src/callbacks.cc:6272
+#: ../data/main.ui.h:229 ../src/callbacks.cc:6280
 msgid ""
 "Swap the two top values or move the selected value to the top of the stack"
 msgstr ""
 
-#: ../data/main.ui.h:230 ../src/callbacks.cc:6280
+#: ../data/main.ui.h:230 ../src/callbacks.cc:6288
 msgid "Copy the selected or top value to the top of the stack"
 msgstr ""
 
-#: ../data/main.ui.h:231 ../src/callbacks.cc:6288
+#: ../data/main.ui.h:231 ../src/callbacks.cc:6296
 msgid "Enter the top value from before the last numeric operation"
 msgstr ""
 
-#: ../data/main.ui.h:232 ../src/callbacks.cc:6296
+#: ../data/main.ui.h:232 ../src/callbacks.cc:6304
 msgid "Delete the top or selected value"
 msgstr "Supprimer la valeur supérieure ou sélectionnée"
 
@@ -1791,7 +1790,7 @@ msgstr "Supprimer la valeur supérieure ou sélectionnée"
 msgid "Edit the selected value"
 msgstr "Éditer la valeur sélectionnée"
 
-#: ../data/main.ui.h:234 ../src/callbacks.cc:6304
+#: ../data/main.ui.h:234 ../src/callbacks.cc:6312
 msgid "Clear the RPN stack"
 msgstr "Vider la pile NPI"
 
@@ -1834,15 +1833,15 @@ msgstr ""
 msgid "Conversion"
 msgstr "Conversion"
 
-#: ../data/main.ui.h:246 ../src/callbacks.cc:6336
+#: ../data/main.ui.h:246 ../src/callbacks.cc:6344
 msgid "Show/hide programming keypad"
 msgstr "Afficher/masquer le clavier de programmation"
 
-#: ../data/main.ui.h:247 ../src/callbacks.cc:16817
+#: ../data/main.ui.h:247 ../src/callbacks.cc:16845
 msgid "Exact"
 msgstr "Exact"
 
-#: ../data/main.ui.h:248 ../src/callbacks.cc:7194 ../src/callbacks.cc:26919
+#: ../data/main.ui.h:248 ../src/callbacks.cc:7212 ../src/callbacks.cc:27044
 msgid "Fraction"
 msgstr "Fraction"
 
@@ -1854,16 +1853,16 @@ msgstr "Affichage numérique"
 msgid "Pure"
 msgstr "Pur"
 
-#: ../data/main.ui.h:251 ../src/callbacks.cc:7166
+#: ../data/main.ui.h:251 ../src/callbacks.cc:7184
 msgid "Number base"
 msgstr "Base numérique"
 
-#: ../data/main.ui.h:252 ../data/setbase.ui.h:9 ../src/callbacks.cc:7218
-#: ../src/callbacks.cc:26911
+#: ../data/main.ui.h:252 ../data/setbase.ui.h:9 ../src/callbacks.cc:7236
+#: ../src/callbacks.cc:27036
 msgid "Time format"
 msgstr "Format de l'heure"
 
-#: ../data/main.ui.h:253 ../src/callbacks.cc:26901
+#: ../data/main.ui.h:253 ../src/callbacks.cc:27026
 msgid "Roman"
 msgstr "Romain"
 
@@ -1911,324 +1910,328 @@ msgstr "moyenne"
 msgid "Store result as a variable"
 msgstr "Enregistrer le résultat sous forme de variable"
 
-#: ../data/main.ui.h:266
+#. Standard calculator button. Do not use more than three characters.
+#: ../data/main.ui.h:267
 msgid "STO"
 msgstr ""
 
-#: ../data/main.ui.h:267
+#: ../data/main.ui.h:268
 msgid "Convert number bases"
 msgstr "Convertir des bases numériques"
 
-#: ../data/main.ui.h:268
+#: ../data/main.ui.h:269
 msgid "Imaginary unit i (√-1)"
 msgstr ""
 
-#: ../data/main.ui.h:269 ../src/callbacks.cc:6168
+#: ../data/main.ui.h:270 ../src/callbacks.cc:6176
 msgid "Manage units"
 msgstr "Gérer les unités"
 
-#: ../data/main.ui.h:271
+#: ../data/main.ui.h:272
 msgid "Conversion operator"
 msgstr "Opérateur de conversion"
 
-#: ../data/main.ui.h:273
+#: ../data/main.ui.h:274
 msgid "Kilogram"
 msgstr "Kilogramme"
 
-#: ../data/main.ui.h:274
+#: ../data/main.ui.h:275
 msgid "Two's complement input"
 msgstr ""
 
-#: ../data/main.ui.h:275
+#: ../data/main.ui.h:276
 msgid "Two's complement output"
 msgstr ""
 
-#: ../data/main.ui.h:276 ../data/nbases.ui.h:25 ../src/interface.cc:876
+#: ../data/main.ui.h:277 ../data/nbases.ui.h:25 ../src/interface.cc:876
 #: ../src/interface.cc:958 ../src/interface.cc:1284 ../src/interface.cc:1285
-#: ../src/interface.cc:3863 ../src/callbacks.cc:21643 ../src/callbacks.cc:21644
+#: ../src/interface.cc:3883 ../src/callbacks.cc:21771 ../src/callbacks.cc:21772
 msgid "Bitwise Exclusive OR"
 msgstr "Bitwise Exclusive OR"
 
-#: ../data/main.ui.h:277 ../data/nbases.ui.h:31 ../src/interface.cc:954
+#: ../data/main.ui.h:278 ../data/nbases.ui.h:31 ../src/interface.cc:954
 msgid "Bitwise Left Shift"
 msgstr ""
 
-#: ../data/main.ui.h:278 ../data/nbases.ui.h:32 ../src/interface.cc:955
+#: ../data/main.ui.h:279 ../data/nbases.ui.h:32 ../src/interface.cc:955
 msgid "Bitwise Right Shift"
 msgstr ""
 
-#: ../data/main.ui.h:279
+#: ../data/main.ui.h:280
 msgid "Floating point conversion"
 msgstr "Conversion en virgule flottante"
 
-#: ../data/main.ui.h:280
+#: ../data/main.ui.h:281
 msgid "Show/hide left keypad"
 msgstr "Afficher/masquer le clavier gauche"
 
-#: ../data/main.ui.h:281
+#: ../data/main.ui.h:282
 msgid "Show/hide right keypad"
 msgstr "Afficher/masquer le clavier droite"
 
-#: ../data/main.ui.h:282 ../data/nbases.ui.h:28 ../src/interface.cc:883
+#. Standard calculator button. Do not use more than three characters.
+#: ../data/main.ui.h:284 ../data/nbases.ui.h:28 ../src/interface.cc:883
 msgid "DEL"
 msgstr "DEL"
 
-#: ../data/main.ui.h:283 ../data/nbases.ui.h:30 ../src/interface.cc:882
+#. Standard calculator button. Do not use more than three characters.
+#: ../data/main.ui.h:286 ../data/nbases.ui.h:30 ../src/interface.cc:882
 msgid "AC"
 msgstr "AC"
 
-#: ../data/main.ui.h:284 ../src/interface.cc:884 ../src/interface.cc:3870
+#: ../data/main.ui.h:287 ../src/interface.cc:884 ../src/interface.cc:3890
 msgid "Previous result"
 msgstr "Résultat précédent"
 
-#: ../data/main.ui.h:285 ../src/interface.cc:884
+#. Standard calculator button. Do not use more than three characters.
+#: ../data/main.ui.h:289 ../src/interface.cc:884
 msgid "ANS"
 msgstr "ANS"
 
-#: ../data/main.ui.h:286 ../src/interface.cc:837
+#: ../data/main.ui.h:290 ../src/interface.cc:837
 msgid "EXP"
 msgstr "EXP"
 
-#: ../data/main.ui.h:287
+#: ../data/main.ui.h:291
 msgid "Add to Expression"
 msgstr "Ajouter à l'expression"
 
-#: ../data/main.ui.h:288
+#: ../data/main.ui.h:292
 msgid "Persistent Keypad"
 msgstr "Clavier permanent"
 
-#: ../data/main.ui.h:289
+#: ../data/main.ui.h:293
 msgid "Edit"
 msgstr "Éditer"
 
-#: ../data/main.ui.h:290 ../data/nbases.ui.h:27 ../src/interface.cc:883
-#: ../src/interface.cc:3869
+#: ../data/main.ui.h:294 ../data/nbases.ui.h:27 ../src/interface.cc:883
+#: ../src/interface.cc:3889
 msgid "Delete"
 msgstr "Supprimer"
 
-#: ../data/main.ui.h:291
+#: ../data/main.ui.h:295
 msgid "Update"
 msgstr "Mettre à jour"
 
-#: ../data/main.ui.h:292
+#: ../data/main.ui.h:296
 msgid "Insert Value"
 msgstr "Insérer valeur"
 
-#: ../data/main.ui.h:293
+#: ../data/main.ui.h:297
 msgid "Insert Text"
 msgstr "Insérer texte"
 
-#: ../data/main.ui.h:294
+#: ../data/main.ui.h:298
 msgid "Insert Parsed Text"
 msgstr "Insérer texte analysé"
 
-#: ../data/main.ui.h:295 ../src/searchprovider.cc:243
+#: ../data/main.ui.h:299 ../src/searchprovider.cc:243
 msgid "Copy"
 msgstr "Copier"
 
-#: ../data/main.ui.h:296
+#: ../data/main.ui.h:300
 msgid "Copy Full Text"
 msgstr "Copier le texte entier"
 
-#: ../data/main.ui.h:297
+#: ../data/main.ui.h:301
 msgid "Search…"
 msgstr "Rechercher…"
 
-#: ../data/main.ui.h:298 ../src/callbacks.cc:26027
+#: ../data/main.ui.h:302 ../src/callbacks.cc:26152
 msgid "Add Bookmark…"
 msgstr "Ajouter favoris…"
 
-#: ../data/main.ui.h:299
+#: ../data/main.ui.h:303
 msgid "Bookmarks"
 msgstr "Favoris"
 
-#: ../data/main.ui.h:300
+#: ../data/main.ui.h:304
 msgid "Protect"
 msgstr "Protéger"
 
-#: ../data/main.ui.h:301
+#: ../data/main.ui.h:305
 msgid "Move To Top"
 msgstr "Se déplacer en haut"
 
-#: ../data/main.ui.h:302
+#: ../data/main.ui.h:306
 msgid "Remove"
 msgstr "Supprimer"
 
-#: ../data/main.ui.h:303
+#: ../data/main.ui.h:307
 msgid "Clear All"
 msgstr "Effacer tout"
 
-#: ../data/main.ui.h:304
+#: ../data/main.ui.h:308
 msgid "_Copy"
 msgstr "_Copier"
 
-#: ../data/main.ui.h:305
+#: ../data/main.ui.h:309
 msgid "_Store…"
 msgstr "_Enregistrer…"
 
-#: ../data/main.ui.h:306
+#: ../data/main.ui.h:310
 msgid "Save Image…"
 msgstr "Sauvegarder l'image…"
 
-#: ../data/main.ui.h:307
+#: ../data/main.ui.h:311
 msgid "_Factorize"
 msgstr "_Factoriser"
 
-#: ../data/main.ui.h:308
+#: ../data/main.ui.h:312
 msgid "_Expand"
 msgstr "_Développer"
 
-#: ../data/main.ui.h:309
+#: ../data/main.ui.h:313
 msgid "_Normal"
 msgstr "_Normal"
 
-#: ../data/main.ui.h:310
+#: ../data/main.ui.h:314
 msgid "Sc_ientific"
 msgstr "Sc_ientifique"
 
-#: ../data/main.ui.h:311
+#: ../data/main.ui.h:315
 msgid "Purel_y Scientific"
 msgstr "Puremen_t scientifique"
 
-#: ../data/main.ui.h:312
+#: ../data/main.ui.h:316
 msgid "Simp_le"
 msgstr "Simp_le"
 
-#: ../data/main.ui.h:313
+#: ../data/main.ui.h:317
 msgid "_Binary"
 msgstr "_Binaire"
 
-#: ../data/main.ui.h:314
+#: ../data/main.ui.h:318
 msgid "_Octal"
 msgstr "_Octal"
 
-#: ../data/main.ui.h:315
+#: ../data/main.ui.h:319
 msgid "_Decimal"
 msgstr "_Décimal"
 
-#: ../data/main.ui.h:316
+#: ../data/main.ui.h:320
 msgid "_Hexadecimal"
 msgstr "_Hexadécimal"
 
-#: ../data/main.ui.h:317
+#: ../data/main.ui.h:321
 msgid "Decimal Fraction"
 msgstr "Fraction décimale"
 
-#: ../data/main.ui.h:318
+#: ../data/main.ui.h:322
 msgid "Exact Decimal Fraction"
 msgstr "Fraction décimale exacte"
 
-#: ../data/main.ui.h:319
+#: ../data/main.ui.h:323
 msgid "Simple Fraction"
 msgstr "Fraction simple"
 
-#: ../data/main.ui.h:320
+#: ../data/main.ui.h:324
 msgid "Mixed Fraction"
 msgstr "Fraction mixte"
 
-#: ../data/main.ui.h:321
+#: ../data/main.ui.h:325
 msgid "_Abbreviate Names"
 msgstr "_Noms abrégés"
 
-#: ../data/main.ui.h:322
+#: ../data/main.ui.h:326
 msgid "C_onvert…"
 msgstr "C_onvertir…"
 
-#: ../data/main.ui.h:323
+#: ../data/main.ui.h:327
 msgid "Convert to Base _Units"
 msgstr "Convertir en _unités de base"
 
-#: ../data/main.ui.h:324
+#: ../data/main.ui.h:328
 msgid "Convert _to Optimal Unit"
 msgstr "Convertir _en unité optimale"
 
-#: ../data/main.ui.h:325
+#: ../data/main.ui.h:329
 msgid "Use Optimal Prefix"
 msgstr "Utiliser le préfixe optimal"
 
-#: ../data/main.ui.h:326
+#: ../data/main.ui.h:330
 msgid "Convert to"
 msgstr "Convertir vers"
 
-#: ../data/main.ui.h:327
+#: ../data/main.ui.h:331
 msgid "Convert to UTC"
 msgstr "Convertir vers UTC"
 
-#: ../data/main.ui.h:328
+#: ../data/main.ui.h:332
 msgid "Convert to Calendars"
 msgstr "Convertir vers calendriers"
 
-#: ../data/main.ui.h:329
+#: ../data/main.ui.h:333
 msgid "Use prefixes for all units"
 msgstr "Utiliser des préfixes pour toutes les unités"
 
-#: ../data/main.ui.h:330
+#: ../data/main.ui.h:334
 msgid "Enable All SI Prefi_xes"
 msgstr ""
 
-#: ../data/main.ui.h:331
+#: ../data/main.ui.h:335
 msgid "View/Edit Matrix"
 msgstr "Afficher/éditer matrice"
 
-#: ../data/main.ui.h:332
+#: ../data/main.ui.h:336
 msgid "View/Edit Vector"
 msgstr "Afficher/Éditer vecteur"
 
-#: ../data/main.ui.h:333
+#: ../data/main.ui.h:337
 msgid "Copy Text"
 msgstr "Copier texte"
 
-#: ../data/main.ui.h:334
+#: ../data/main.ui.h:338
 msgid "To Top"
 msgstr "En haut"
 
-#: ../data/main.ui.h:335
+#: ../data/main.ui.h:339
 msgid "Swap"
 msgstr ""
 
-#: ../data/main.ui.h:336
+#: ../data/main.ui.h:340
 msgid "Up"
 msgstr ""
 
-#: ../data/main.ui.h:337
+#: ../data/main.ui.h:341
 msgid "Down"
 msgstr ""
 
-#: ../data/main.ui.h:338
+#: ../data/main.ui.h:342
 msgid "Negate"
 msgstr ""
 
-#: ../data/main.ui.h:339
+#: ../data/main.ui.h:343
 msgid "Invert"
 msgstr "Intervertir"
 
-#: ../data/main.ui.h:340
+#: ../data/main.ui.h:344
 msgid "Square"
 msgstr "Carré"
 
-#: ../data/main.ui.h:341
+#: ../data/main.ui.h:345
 msgid "Square Root"
 msgstr "Racine carrée"
 
-#: ../data/main.ui.h:342
+#: ../data/main.ui.h:346
 msgid "Clear Stack"
 msgstr "Vider pile"
 
-#: ../data/main.ui.h:343
+#: ../data/main.ui.h:347
 msgid "Select Number Base…"
 msgstr "Sélectionner la base numérique…"
 
-#: ../data/main.ui.h:344 ../src/callbacks.cc:6170
+#: ../data/main.ui.h:348 ../src/callbacks.cc:6178
 msgid "Store result"
 msgstr "Enregistrer résultat"
 
 #. Add current result to variable value
-#: ../data/main.ui.h:346
+#: ../data/main.ui.h:350
 msgid "Add result"
 msgstr "Ajouter résultat"
 
 #. Subtruct current result from variable value
-#: ../data/main.ui.h:348
+#: ../data/main.ui.h:352
 msgid "Subtract result"
 msgstr "Soustraire résultat"
 
@@ -2258,9 +2261,9 @@ msgstr ""
 msgid "If this is a matrix or vector"
 msgstr "Si c'est une matrice ou un vecteur"
 
-#: ../data/matrix.ui.h:12 ../data/matrixedit.ui.h:21 ../src/callbacks.cc:32776
-#: ../src/callbacks.cc:32784 ../src/callbacks.cc:32792
-#: ../src/callbacks.cc:32800
+#: ../data/matrix.ui.h:12 ../data/matrixedit.ui.h:21 ../src/callbacks.cc:32905
+#: ../src/callbacks.cc:32913 ../src/callbacks.cc:32921
+#: ../src/callbacks.cc:32929
 msgid "Elements"
 msgstr "Éléments"
 
@@ -2268,7 +2271,7 @@ msgstr "Éléments"
 msgid "Current element:"
 msgstr "Élément actuel :"
 
-#: ../data/matrixedit.ui.h:1 ../src/callbacks.cc:16352
+#: ../data/matrixedit.ui.h:1 ../src/callbacks.cc:16380
 msgid "Edit Matrix"
 msgstr "Éditer matrice"
 
@@ -2305,15 +2308,15 @@ msgstr "Appliquer les changements au nom selectionné"
 msgid "Remove the selected name"
 msgstr "Supprimer le nom sélectionné"
 
-#: ../data/namesedit.ui.h:7 ../src/interface.cc:3016
+#: ../data/namesedit.ui.h:7 ../src/interface.cc:3036
 msgid "Abbreviation"
 msgstr "Abréviation"
 
-#: ../data/namesedit.ui.h:8 ../src/callbacks.cc:3797 ../src/callbacks.cc:7220
+#: ../data/namesedit.ui.h:8 ../src/callbacks.cc:3791 ../src/callbacks.cc:7238
 msgid "Unicode"
 msgstr "Unicode"
 
-#: ../data/namesedit.ui.h:9 ../src/interface.cc:3020
+#: ../data/namesedit.ui.h:9 ../src/interface.cc:3040
 msgid "Plural"
 msgstr "Pluriel"
 
@@ -2321,7 +2324,7 @@ msgstr "Pluriel"
 msgid "Suffix"
 msgstr "Suffixe"
 
-#: ../data/namesedit.ui.h:11 ../src/interface.cc:2743 ../src/interface.cc:3024
+#: ../data/namesedit.ui.h:11 ../src/interface.cc:2763 ../src/interface.cc:3044
 msgid "Reference"
 msgstr "Référence"
 
@@ -2341,16 +2344,16 @@ msgstr "Complétion seulement"
 msgid "Number Bases"
 msgstr "Bases numériques"
 
-#: ../data/nbases.ui.h:9 ../data/setbase.ui.h:10 ../src/callbacks.cc:7214
-#: ../src/callbacks.cc:30818 ../src/callbacks.cc:30858
+#: ../data/nbases.ui.h:9 ../data/setbase.ui.h:10 ../src/callbacks.cc:7232
+#: ../src/callbacks.cc:30947 ../src/callbacks.cc:30987
 msgid "Roman numerals"
 msgstr "Chiffres romains"
 
-#: ../data/nbases.ui.h:13 ../src/callbacks.cc:1969
+#: ../data/nbases.ui.h:13 ../src/callbacks.cc:1971
 msgid "BIN"
 msgstr "BIN"
 
-#: ../data/nbases.ui.h:14 ../src/callbacks.cc:1974
+#: ../data/nbases.ui.h:14 ../src/callbacks.cc:1976
 msgid "OCT"
 msgstr "OCT"
 
@@ -2358,11 +2361,11 @@ msgstr "OCT"
 msgid "DEC"
 msgstr "DÉC"
 
-#: ../data/nbases.ui.h:16 ../src/callbacks.cc:1979
+#: ../data/nbases.ui.h:16 ../src/callbacks.cc:1981
 msgid "DUO"
 msgstr "DUO"
 
-#: ../data/nbases.ui.h:17 ../src/callbacks.cc:1984
+#: ../data/nbases.ui.h:17 ../src/callbacks.cc:1986
 msgid "HEX"
 msgstr "HEX"
 
@@ -2370,25 +2373,25 @@ msgstr "HEX"
 msgid "ROM"
 msgstr "ROM"
 
-#: ../data/nbases.ui.h:20 ../src/interface.cc:880 ../src/interface.cc:3867
+#: ../data/nbases.ui.h:20 ../src/interface.cc:880 ../src/interface.cc:3887
 msgid "Subtract"
 msgstr "Soustraire"
 
-#: ../data/nbases.ui.h:21 ../src/interface.cc:876 ../src/interface.cc:3863
+#: ../data/nbases.ui.h:21 ../src/interface.cc:876 ../src/interface.cc:3883
 msgid "Multiply"
 msgstr "Multiplier"
 
-#: ../data/nbases.ui.h:22 ../src/interface.cc:875 ../src/interface.cc:3862
+#: ../data/nbases.ui.h:22 ../src/interface.cc:875 ../src/interface.cc:3882
 msgid "Divide"
 msgstr "Diviser"
 
 #: ../data/nbases.ui.h:23 ../src/interface.cc:877 ../src/interface.cc:956
-#: ../src/interface.cc:1273 ../src/interface.cc:3864
+#: ../src/interface.cc:1273 ../src/interface.cc:3884
 msgid "Bitwise AND"
 msgstr ""
 
 #: ../data/nbases.ui.h:24 ../src/interface.cc:880 ../src/interface.cc:957
-#: ../src/interface.cc:1274 ../src/interface.cc:3867
+#: ../src/interface.cc:1274 ../src/interface.cc:3887
 msgid "Bitwise OR"
 msgstr ""
 
@@ -2397,7 +2400,7 @@ msgid "Bitwise NOT"
 msgstr ""
 
 #: ../data/nbases.ui.h:29 ../data/percentage.ui.h:4 ../src/interface.cc:882
-#: ../src/interface.cc:3868 ../src/callbacks.cc:18323
+#: ../src/interface.cc:3888 ../src/callbacks.cc:18351
 msgid "Clear"
 msgstr "Effacer"
 
@@ -2443,8 +2446,8 @@ msgstr "Différence de 2 à 1"
 msgid "Plot"
 msgstr "Graph"
 
-#: ../data/plot.ui.h:3 ../src/callbacks.cc:18853 ../src/callbacks.cc:29243
-#: ../src/callbacks.cc:34078
+#: ../data/plot.ui.h:3 ../src/callbacks.cc:18881 ../src/callbacks.cc:29372
+#: ../src/callbacks.cc:34207
 msgid "_Save"
 msgstr "_Sauvegarder"
 
@@ -2806,7 +2809,7 @@ msgstr "Résultat"
 msgid "Application name + result"
 msgstr "Nom de l'application + mode"
 
-#: ../data/preferences.ui.h:31 ../src/callbacks.cc:18914
+#: ../data/preferences.ui.h:31 ../src/callbacks.cc:18942
 msgid "Mode"
 msgstr "Mode"
 
@@ -2818,9 +2821,9 @@ msgstr "Nom de l'application + mode"
 msgid "Window title"
 msgstr "Titre de la fenêtre"
 
-#: ../data/preferences.ui.h:34 ../src/callbacks.cc:16815
-#: ../src/callbacks.cc:18089 ../src/callbacks.cc:19079
-#: ../src/callbacks.cc:33803
+#: ../data/preferences.ui.h:34 ../src/callbacks.cc:16843
+#: ../src/callbacks.cc:18117 ../src/callbacks.cc:19107
+#: ../src/callbacks.cc:33932
 msgid "Default"
 msgstr "Défaut"
 
@@ -3055,16 +3058,16 @@ msgstr "Mises à jour des taux de change"
 msgid "Temperature calculation mode:"
 msgstr "Ouvrir l'outil de calcul de pourcentages"
 
-#: ../data/preferences.ui.h:85 ../src/callbacks.cc:2679
+#: ../data/preferences.ui.h:85 ../src/callbacks.cc:2682
 msgid "Absolute"
 msgstr ""
 
-#: ../data/preferences.ui.h:86 ../src/callbacks.cc:2686
+#: ../data/preferences.ui.h:86 ../src/callbacks.cc:2689
 #, fuzzy
 msgid "Relative"
 msgstr "Relation"
 
-#: ../data/preferences.ui.h:87 ../src/callbacks.cc:2693
+#: ../data/preferences.ui.h:87 ../src/callbacks.cc:2696
 msgid "Hybrid"
 msgstr ""
 
@@ -3154,6 +3157,10 @@ msgstr ""
 "pour toute l'application."
 
 #: ../data/preferences.ui.h:106
+msgid "Text color"
+msgstr "Couleur de texte"
+
+#: ../data/preferences.ui.h:107
 msgid "Fonts & Colors"
 msgstr "Polices et couleurs"
 
@@ -3161,11 +3168,11 @@ msgstr "Polices et couleurs"
 msgid "Other:"
 msgstr "Autre :"
 
-#: ../data/setbase.ui.h:12 ../src/interface.cc:3164 ../src/interface.cc:3241
-#: ../src/callbacks.cc:7168 ../src/callbacks.cc:27872 ../src/callbacks.cc:28012
-#: ../src/callbacks.cc:28147 ../src/callbacks.cc:28154
-#: ../src/callbacks.cc:28234 ../src/callbacks.cc:28319
-#: ../src/callbacks.cc:28358 ../src/callbacks.cc:28366
+#: ../data/setbase.ui.h:12 ../src/interface.cc:3184 ../src/interface.cc:3261
+#: ../src/callbacks.cc:7186 ../src/callbacks.cc:28001 ../src/callbacks.cc:28141
+#: ../src/callbacks.cc:28276 ../src/callbacks.cc:28283
+#: ../src/callbacks.cc:28363 ../src/callbacks.cc:28448
+#: ../src/callbacks.cc:28487 ../src/callbacks.cc:28495
 msgid "Bijective base-26"
 msgstr "Bijectif base-26"
 
@@ -3182,7 +3189,7 @@ msgid "New Keyboard Shortcut"
 msgstr "Nouveau raccourci clavier"
 
 #: ../data/simplefunctionedit.ui.h:1 ../data/variableedit.ui.h:1
-#: ../src/callbacks.cc:16138
+#: ../src/callbacks.cc:16166
 msgid "Edit Variable"
 msgstr "Éditer variable"
 
@@ -3212,7 +3219,7 @@ msgid ""
 "This avoids potential conflicts with variables, functions and units."
 msgstr ""
 
-#: ../data/unitedit.ui.h:1 ../src/callbacks.cc:15126
+#: ../data/unitedit.ui.h:1 ../src/callbacks.cc:15154
 msgid "Edit Unit"
 msgstr "Éditer unité"
 
@@ -3402,7 +3409,7 @@ msgstr "Valeur à convertir"
 msgid "Type anywhere"
 msgstr "Taper n'importe où"
 
-#: ../data/unknownedit.ui.h:1 ../src/callbacks.cc:15954
+#: ../data/unknownedit.ui.h:1 ../src/callbacks.cc:15982
 msgid "Edit Unknown Variable"
 msgstr "Éditer la variable de l'inconnue"
 
@@ -3423,8 +3430,8 @@ msgstr ""
 msgid "Use custom assumptions"
 msgstr "Utiliser des suppositions personnalisées"
 
-#: ../data/unknownedit.ui.h:11 ../src/interface.cc:2733
-#: ../src/interface.cc:2976
+#: ../data/unknownedit.ui.h:11 ../src/interface.cc:2753
+#: ../src/interface.cc:2996
 msgid "Type"
 msgstr ""
 
@@ -3517,7 +3524,7 @@ msgstr "L'expression à calculer"
 msgid "[EXPRESSION]"
 msgstr "[EXPRESSION]"
 
-#: ../src/main.cc:214 ../src/callbacks.cc:32763
+#: ../src/main.cc:214 ../src/callbacks.cc:32892
 msgid ""
 "Type a mathematical expression above, e.g. \"5 + 2 / 3\",\n"
 "and press the enter key."
@@ -3533,7 +3540,7 @@ msgstr "résultat"
 msgid "Last Answer"
 msgstr "Dernier résultat"
 
-#: ../src/main.cc:239 ../src/callbacks.cc:464 ../src/callbacks.cc:465
+#: ../src/main.cc:239 ../src/callbacks.cc:466 ../src/callbacks.cc:467
 msgid "answer"
 msgstr "résultat"
 
@@ -3553,25 +3560,25 @@ msgstr "Résultat 4"
 msgid "Answer 5"
 msgstr "Résultat 5"
 
-#: ../src/main.cc:245
+#: ../src/main.cc:254
 msgid "Memory"
 msgstr "Mémoire"
 
-#: ../src/main.cc:257 ../src/searchprovider.cc:652
+#: ../src/main.cc:266 ../src/searchprovider.cc:652
 #, c-format
 msgid "Failed to load global definitions!\n"
 msgstr "Impossible de charger les définitions globales !\n"
 
 #. if no category has been selected (previously selected has been renamed/deleted), select "All"
-#: ../src/main.cc:277 ../src/main.cc:280 ../src/main.cc:283
-#: ../src/callbacks.cc:4328 ../src/callbacks.cc:4389 ../src/callbacks.cc:4428
-#: ../src/callbacks.cc:4689 ../src/callbacks.cc:4752 ../src/callbacks.cc:4852
-#: ../src/callbacks.cc:4947 ../src/callbacks.cc:5007 ../src/callbacks.cc:5093
-#: ../src/callbacks.cc:5192 ../src/callbacks.cc:5247 ../src/callbacks.cc:5497
+#: ../src/main.cc:286 ../src/main.cc:289 ../src/main.cc:292
+#: ../src/callbacks.cc:4336 ../src/callbacks.cc:4397 ../src/callbacks.cc:4436
+#: ../src/callbacks.cc:4697 ../src/callbacks.cc:4760 ../src/callbacks.cc:4860
+#: ../src/callbacks.cc:4955 ../src/callbacks.cc:5015 ../src/callbacks.cc:5101
+#: ../src/callbacks.cc:5200 ../src/callbacks.cc:5255 ../src/callbacks.cc:5505
 msgid "All"
 msgstr "Tout"
 
-#: ../src/main.cc:477
+#: ../src/main.cc:485
 #, c-format
 msgid ""
 "By default, only one instance (one main window) of %s is allowed.\n"
@@ -3608,65 +3615,65 @@ msgstr "Clic droit : %s"
 msgid "Middle-click: %s"
 msgstr "Clic du milieu : %s"
 
-#: ../src/interface.cc:809 ../src/interface.cc:3839
+#: ../src/interface.cc:809 ../src/interface.cc:3859
 msgid "Cycle through previous expression"
 msgstr "Parcourir l'expression précédente"
 
-#: ../src/interface.cc:815 ../src/interface.cc:3840
+#: ../src/interface.cc:815 ../src/interface.cc:3860
 msgid "Move cursor left or right"
 msgstr "Déplacer le curseur de gauche ou droite"
 
-#: ../src/interface.cc:815 ../src/interface.cc:3840
+#: ../src/interface.cc:815 ../src/interface.cc:3860
 msgid "Move cursor to beginning or end"
 msgstr "Déplacer le curseur au début ou à la fin"
 
-#: ../src/interface.cc:818 ../src/interface.cc:3842
+#: ../src/interface.cc:818 ../src/interface.cc:3862
 msgid "Uncertainty/interval"
 msgstr ""
 
-#: ../src/interface.cc:818 ../src/interface.cc:3842
+#: ../src/interface.cc:818 ../src/interface.cc:3862
 msgid "Relative error"
 msgstr "Erreur relative"
 
-#: ../src/interface.cc:819 ../src/interface.cc:3843
+#: ../src/interface.cc:819 ../src/interface.cc:3863
 msgid "Argument separator"
 msgstr "Séparateur d'arguments"
 
-#: ../src/interface.cc:819 ../src/interface.cc:834 ../src/interface.cc:3843
-#: ../src/interface.cc:3857
+#: ../src/interface.cc:819 ../src/interface.cc:834 ../src/interface.cc:3863
+#: ../src/interface.cc:3877
 msgid "Blank space"
 msgstr "Espace vide"
 
-#: ../src/interface.cc:819 ../src/interface.cc:834 ../src/interface.cc:3843
-#: ../src/interface.cc:3857
+#: ../src/interface.cc:819 ../src/interface.cc:834 ../src/interface.cc:3863
+#: ../src/interface.cc:3877
 msgid "New line"
 msgstr "Nouvelle ligne"
 
-#: ../src/interface.cc:820 ../src/interface.cc:3844
+#: ../src/interface.cc:820 ../src/interface.cc:3864
 msgid "Smart parentheses"
 msgstr "Parenthèses intelligentes"
 
-#: ../src/interface.cc:820 ../src/interface.cc:3844
+#: ../src/interface.cc:820 ../src/interface.cc:3864
 msgid "Vector brackets"
 msgstr "Crochets de vecteur"
 
-#: ../src/interface.cc:822 ../src/interface.cc:3845
+#: ../src/interface.cc:822 ../src/interface.cc:3865
 msgid "Left parenthesis"
 msgstr "Parenthèse gauche"
 
-#: ../src/interface.cc:822 ../src/interface.cc:3845
+#: ../src/interface.cc:822 ../src/interface.cc:3865
 msgid "Left vector bracket"
 msgstr "Crochet gauche du vecteur"
 
-#: ../src/interface.cc:823 ../src/interface.cc:3846
+#: ../src/interface.cc:823 ../src/interface.cc:3866
 msgid "Right parenthesis"
 msgstr "Parenthèse droite"
 
-#: ../src/interface.cc:823 ../src/interface.cc:3846
+#: ../src/interface.cc:823 ../src/interface.cc:3866
 msgid "Right vector bracket"
 msgstr "Crochet droit du vecteur"
 
-#: ../src/interface.cc:834 ../src/interface.cc:3857
+#: ../src/interface.cc:834 ../src/interface.cc:3877
 msgid "Decimal point"
 msgstr "Virgule"
 
@@ -3674,57 +3681,57 @@ msgstr "Virgule"
 msgid "Raise (Ctrl+*)"
 msgstr "Élever (Ctrl+*)"
 
-#: ../src/interface.cc:877 ../src/interface.cc:3864
+#: ../src/interface.cc:877 ../src/interface.cc:3884
 msgid "Add"
 msgstr "Ajouter"
 
-#: ../src/interface.cc:877 ../src/interface.cc:3864 ../src/callbacks.cc:3591
-#: ../src/callbacks.cc:6174 ../src/callbacks.cc:27332
+#: ../src/interface.cc:877 ../src/interface.cc:3884 ../src/callbacks.cc:3592
+#: ../src/callbacks.cc:6182 ../src/callbacks.cc:27457
 msgid "M+ (memory plus)"
 msgstr ""
 
-#: ../src/interface.cc:882 ../src/interface.cc:3868 ../src/callbacks.cc:3585
-#: ../src/callbacks.cc:6171 ../src/callbacks.cc:27329
+#: ../src/interface.cc:882 ../src/interface.cc:3888 ../src/callbacks.cc:3586
+#: ../src/callbacks.cc:6179 ../src/callbacks.cc:27454
 msgid "MC (memory clear)"
 msgstr ""
 
-#: ../src/interface.cc:883 ../src/interface.cc:3869
+#: ../src/interface.cc:883 ../src/interface.cc:3889
 msgid "Backspace"
 msgstr "Retour arrière"
 
-#: ../src/interface.cc:883 ../src/interface.cc:3869 ../src/callbacks.cc:3594
-#: ../src/callbacks.cc:6175 ../src/callbacks.cc:27333
+#: ../src/interface.cc:883 ../src/interface.cc:3889 ../src/callbacks.cc:3595
+#: ../src/callbacks.cc:6183 ../src/callbacks.cc:27458
 msgid "M− (memory minus)"
 msgstr ""
 
-#: ../src/interface.cc:884 ../src/interface.cc:3870
+#: ../src/interface.cc:884 ../src/interface.cc:3890
 msgid "Previous result (static)"
 msgstr "Résultat précédent (statique)"
 
-#: ../src/interface.cc:892 ../src/interface.cc:3871 ../src/callbacks.cc:1455
-#: ../src/callbacks.cc:13982
+#: ../src/interface.cc:892 ../src/interface.cc:3891 ../src/callbacks.cc:1457
+#: ../src/callbacks.cc:14012
 msgid "Calculate expression"
 msgstr "Calculer l'expression"
 
-#: ../src/interface.cc:892 ../src/interface.cc:3871 ../src/callbacks.cc:6172
-#: ../src/callbacks.cc:27330
+#: ../src/interface.cc:892 ../src/interface.cc:3891 ../src/callbacks.cc:6180
+#: ../src/callbacks.cc:27455
 msgid "MR (memory recall)"
 msgstr ""
 
-#: ../src/interface.cc:892 ../src/interface.cc:3871 ../src/callbacks.cc:3588
-#: ../src/callbacks.cc:6173 ../src/callbacks.cc:27331
+#: ../src/interface.cc:892 ../src/interface.cc:3891 ../src/callbacks.cc:3589
+#: ../src/callbacks.cc:6181 ../src/callbacks.cc:27456
 msgid "MS (memory store)"
 msgstr ""
 
-#: ../src/interface.cc:1075 ../src/callbacks.cc:6138
+#: ../src/interface.cc:1075 ../src/callbacks.cc:6146
 msgid "Set unknowns"
 msgstr "Définir inconnues"
 
 #. Show further items in a submenu
 #: ../src/interface.cc:1123 ../src/interface.cc:1211 ../src/interface.cc:1214
-#: ../src/callbacks.cc:6476 ../src/callbacks.cc:6563 ../src/callbacks.cc:22409
-#: ../src/callbacks.cc:27015 ../src/callbacks.cc:27018
-#: ../src/callbacks.cc:27042
+#: ../src/callbacks.cc:6484 ../src/callbacks.cc:6571 ../src/callbacks.cc:22545
+#: ../src/callbacks.cc:27140 ../src/callbacks.cc:27143
+#: ../src/callbacks.cc:27167
 msgid "more"
 msgstr "plus"
 
@@ -3749,106 +3756,106 @@ msgstr ""
 msgid "Open menu with stored variables"
 msgstr "Ouvrir le menu avec les variables enregistrées"
 
-#: ../src/interface.cc:1993 ../src/interface.cc:2043
+#: ../src/interface.cc:2011 ../src/interface.cc:2061
 msgid "Index"
 msgstr "Index"
 
 #. RPN Enter (calculate and add to stack)
-#: ../src/interface.cc:2060 ../src/callbacks.cc:13954
+#: ../src/interface.cc:2078 ../src/callbacks.cc:13984
 msgid "ENTER"
 msgstr "Entr"
 
-#: ../src/interface.cc:2061 ../src/interface.cc:2062 ../src/callbacks.cc:1455
-#: ../src/callbacks.cc:13955
+#: ../src/interface.cc:2079 ../src/interface.cc:2080 ../src/callbacks.cc:1457
+#: ../src/callbacks.cc:13985
 msgid "Calculate expression and add to stack"
 msgstr "Calculer l'expression et l'ajouter à la pile"
 
-#: ../src/interface.cc:2138 ../src/interface.cc:2335
+#: ../src/interface.cc:2156 ../src/interface.cc:2353
 msgid "Flag"
 msgstr "Drapeau"
 
-#: ../src/interface.cc:2895 ../src/callbacks.cc:17489 ../src/callbacks.cc:27445
+#: ../src/interface.cc:2915 ../src/callbacks.cc:17517 ../src/callbacks.cc:27570
 msgid "Matrices"
 msgstr "Matrices"
 
-#: ../src/interface.cc:3435
+#: ../src/interface.cc:3455
 msgid "Gregorian"
 msgstr "Grégorien"
 
-#: ../src/interface.cc:3436
+#: ../src/interface.cc:3456
 msgid "Revised Julian (Milanković)"
 msgstr "Julien révisé (Milanković)"
 
-#: ../src/interface.cc:3437
+#: ../src/interface.cc:3457
 msgid "Julian"
 msgstr "Julien"
 
-#: ../src/interface.cc:3438
+#: ../src/interface.cc:3458
 msgid "Islamic (Hijri)"
 msgstr "Islamique (Hijri)"
 
-#: ../src/interface.cc:3439
+#: ../src/interface.cc:3459
 msgid "Hebrew"
 msgstr "Hébraïque"
 
-#: ../src/interface.cc:3440
+#: ../src/interface.cc:3460
 msgid "Chinese"
 msgstr "Chinois"
 
-#: ../src/interface.cc:3441
+#: ../src/interface.cc:3461
 msgid "Persian (Solar Hijri)"
 msgstr "Persan (Hijri solaire)"
 
-#: ../src/interface.cc:3442
+#: ../src/interface.cc:3462
 msgid "Coptic"
 msgstr "Copte"
 
-#: ../src/interface.cc:3443
+#: ../src/interface.cc:3463
 msgid "Ethiopian"
 msgstr "Éthiopien"
 
-#: ../src/interface.cc:3444
+#: ../src/interface.cc:3464
 msgid "Indian (National)"
 msgstr "Indien (National)"
 
-#: ../src/interface.cc:3752 ../src/interface.cc:3774 ../src/interface.cc:3928
+#: ../src/interface.cc:3772 ../src/interface.cc:3794 ../src/interface.cc:3948
 msgid "Action"
 msgstr "Action"
 
-#: ../src/interface.cc:3760
+#: ../src/interface.cc:3780
 msgid "Key combination"
 msgstr "Combinaison de touches"
 
-#: ../src/interface.cc:3861
+#: ../src/interface.cc:3881
 msgid "Raise"
 msgstr "Élever"
 
-#: ../src/callbacks.cc:464
+#: ../src/callbacks.cc:466
 msgid "History Answer Value"
 msgstr ""
 
-#: ../src/callbacks.cc:466 ../src/callbacks.cc:489
+#: ../src/callbacks.cc:468 ../src/callbacks.cc:491
 msgid "History Index(es)"
 msgstr "Index(es) de l'historique"
 
-#: ../src/callbacks.cc:477 ../src/callbacks.cc:500
+#: ../src/callbacks.cc:479 ../src/callbacks.cc:502
 #, c-format
 msgid "History index %s does not exist."
 msgstr "L'index de l'historique %s n'existe pas."
 
-#: ../src/callbacks.cc:487 ../src/callbacks.cc:488 ../src/callbacks.cc:16892
+#: ../src/callbacks.cc:489 ../src/callbacks.cc:490 ../src/callbacks.cc:16920
 msgid "expression"
 msgstr "expression"
 
-#: ../src/callbacks.cc:487
+#: ../src/callbacks.cc:489
 msgid "History Parsed Expression"
 msgstr ""
 
-#: ../src/callbacks.cc:510
+#: ../src/callbacks.cc:512
 msgid "Set Window Title"
 msgstr "Définir le titre de la fenêtre"
 
-#: ../src/callbacks.cc:1032 ../src/callbacks.cc:13892 ../src/callbacks.cc:31640
+#: ../src/callbacks.cc:1034 ../src/callbacks.cc:13922 ../src/callbacks.cc:31769
 #, c-format
 msgid ""
 "Failed to open %s.\n"
@@ -3857,11 +3864,11 @@ msgstr ""
 "Impossible d'ouvrir %s.\n"
 "%s"
 
-#: ../src/callbacks.cc:1049
+#: ../src/callbacks.cc:1051
 msgid "Could not display help for Qalculate!."
 msgstr "Impossible d'afficher l'aide pour Qalculate!."
 
-#: ../src/callbacks.cc:1144
+#: ../src/callbacks.cc:1146
 #, c-format
 msgid ""
 "Could not display help for Qalculate!.\n"
@@ -3870,111 +3877,111 @@ msgstr ""
 "Impossible d'afficher l'aide pour Qalculate!.\n"
 "%s"
 
-#: ../src/callbacks.cc:1175 ../src/callbacks.cc:7602 ../src/callbacks.cc:9872
-#: ../src/callbacks.cc:10227 ../src/callbacks.cc:10272
-#: ../src/callbacks.cc:10569 ../src/callbacks.cc:11130
-#: ../src/callbacks.cc:11185 ../src/callbacks.cc:14443
-#: ../src/callbacks.cc:25229 ../src/searchprovider.cc:119
+#: ../src/callbacks.cc:1177 ../src/callbacks.cc:7620 ../src/callbacks.cc:9890
+#: ../src/callbacks.cc:10245 ../src/callbacks.cc:10290
+#: ../src/callbacks.cc:10587 ../src/callbacks.cc:11155
+#: ../src/callbacks.cc:11210 ../src/callbacks.cc:14471
+#: ../src/callbacks.cc:25354 ../src/searchprovider.cc:119
 #: ../src/searchprovider.cc:120 ../src/searchprovider.cc:203
 msgid "approx."
 msgstr "approx."
 
-#: ../src/callbacks.cc:1437
+#: ../src/callbacks.cc:1439
 msgid "Stop process"
 msgstr "Arrêter le processus"
 
-#: ../src/callbacks.cc:1448 ../src/callbacks.cc:23711
+#: ../src/callbacks.cc:1450 ../src/callbacks.cc:23838
 msgid "Clear expression"
 msgstr "Effacer l'expression"
 
-#: ../src/callbacks.cc:1949
+#: ../src/callbacks.cc:1951
 msgid "EXACT"
 msgstr "EXACTE"
 
-#: ../src/callbacks.cc:1952
+#: ../src/callbacks.cc:1954
 msgid "APPROX"
 msgstr "APPROX"
 
-#: ../src/callbacks.cc:1956
+#: ../src/callbacks.cc:1958
 msgid "RPN"
 msgstr "NPI"
 
 #. Chain mode
-#: ../src/callbacks.cc:1961
+#: ../src/callbacks.cc:1963
 msgid "CHN"
 msgstr ""
 
-#: ../src/callbacks.cc:1989
+#: ../src/callbacks.cc:1991
 msgid "ROMAN"
 msgstr "ROMAIN"
 
-#: ../src/callbacks.cc:2041
+#: ../src/callbacks.cc:2043
 msgid "DEG"
 msgstr "DEG"
 
-#: ../src/callbacks.cc:2046
+#: ../src/callbacks.cc:2048
 msgid "RAD"
 msgstr "RAD"
 
-#: ../src/callbacks.cc:2051
+#: ../src/callbacks.cc:2053
 msgid "GRA"
 msgstr "GRA"
 
-#: ../src/callbacks.cc:2058
+#: ../src/callbacks.cc:2060
 msgid "PREC"
 msgstr "PREC"
 
-#: ../src/callbacks.cc:2063
+#: ../src/callbacks.cc:2065
 msgid "FUNC"
 msgstr "FONC"
 
-#: ../src/callbacks.cc:2069
+#: ../src/callbacks.cc:2071
 msgid "UNIT"
 msgstr "UNITÉ"
 
-#: ../src/callbacks.cc:2075
+#: ../src/callbacks.cc:2077
 msgid "VAR"
 msgstr "VAR"
 
-#: ../src/callbacks.cc:2081
+#: ../src/callbacks.cc:2083
 msgid "INF"
 msgstr "INF"
 
-#: ../src/callbacks.cc:2087
+#: ../src/callbacks.cc:2089
 msgid "CPLX"
 msgstr "CPLX"
 
-#: ../src/callbacks.cc:2112
+#: ../src/callbacks.cc:2115
 msgid "Do you wish to update the exchange rates now?"
 msgstr "Souhaitez-vous mettre à jour les taux de change maintenant ?"
 
-#: ../src/callbacks.cc:2113
+#: ../src/callbacks.cc:2116
 #, c-format
 msgid "It has been %s day since the exchange rates last were updated."
 msgid_plural "It has been %s days since the exchange rates last were updated."
 msgstr[0] ""
-"Cela fait %s jour que les taux de change ont été mis à jour pour la "
-"dernière fois."
+"Cela fait %s jour que les taux de change ont été mis à jour pour la dernière "
+"fois."
 msgstr[1] ""
 "Cela fait %s jours que les taux de change ont été mis à jour pour la "
 "dernière fois."
 
-#: ../src/callbacks.cc:2114
+#: ../src/callbacks.cc:2117
 msgid "Do not ask again"
 msgstr "Ne plus demander"
 
-#: ../src/callbacks.cc:2167 ../src/callbacks.cc:34151 ../src/callbacks.cc:34161
-#: ../src/callbacks.cc:34170
+#: ../src/callbacks.cc:2170 ../src/callbacks.cc:34280 ../src/callbacks.cc:34290
+#: ../src/callbacks.cc:34299
 msgid "It took too long to generate the plot data."
 msgstr "Cela a pris trop de temps pour générer les données du graph."
 
-#: ../src/callbacks.cc:2167
+#: ../src/callbacks.cc:2170
 msgid ""
 "It took too long to generate the plot data. Please decrease the sampling "
 "rate or increase the time limit in preferences."
 msgstr ""
 
-#: ../src/callbacks.cc:2251
+#: ../src/callbacks.cc:2254
 msgid ""
 "When errors, warnings and other information are generated during "
 "calculation, the icon in the upper right corner of the expression entry "
@@ -3982,15 +3989,15 @@ msgid ""
 "message will be shown."
 msgstr ""
 
-#: ../src/callbacks.cc:2329
+#: ../src/callbacks.cc:2332
 msgid "Path of executable not found."
 msgstr "Impossible de trouver le chemin de l'exécutable."
 
-#: ../src/callbacks.cc:2338
+#: ../src/callbacks.cc:2341
 msgid "curl not found."
 msgstr "Impossible de trouver curl."
 
-#: ../src/callbacks.cc:2395
+#: ../src/callbacks.cc:2398
 #, c-format
 msgid ""
 "Failed to run update script.\n"
@@ -3999,15 +4006,15 @@ msgstr ""
 "Impossible d'exécuter le script de mise à jour.\n"
 "%s"
 
-#: ../src/callbacks.cc:2414
+#: ../src/callbacks.cc:2417
 msgid "Failed to check for updates."
 msgstr "Échec de la vérification des mises à jour."
 
-#: ../src/callbacks.cc:2414
+#: ../src/callbacks.cc:2417
 msgid "No updates found."
 msgstr "Aucune mise à jour trouvée."
 
-#: ../src/callbacks.cc:2432
+#: ../src/callbacks.cc:2435
 #, c-format
 msgid ""
 "A new version of %s is available at %s.\n"
@@ -4018,7 +4025,7 @@ msgstr ""
 "\n"
 "Souhaitez-vous le mettre à jour vers la version %s."
 
-#: ../src/callbacks.cc:2434
+#: ../src/callbacks.cc:2437
 #, c-format
 msgid ""
 "A new version of %s is available.\n"
@@ -4029,300 +4036,300 @@ msgstr ""
 "\n"
 "Vous pouvez télécharger la version %s de %s."
 
-#: ../src/callbacks.cc:2470
+#: ../src/callbacks.cc:2473
 #, c-format
 msgid "Too many arguments for %s()."
 msgstr "Trop d'arguments pour %s()."
 
-#: ../src/callbacks.cc:2497 ../src/callbacks.cc:4507 ../src/callbacks.cc:5730
+#: ../src/callbacks.cc:2500 ../src/callbacks.cc:4515 ../src/callbacks.cc:5738
 msgid "argument"
 msgstr "argument"
 
-#: ../src/callbacks.cc:2667
+#: ../src/callbacks.cc:2670
 #, fuzzy
 msgid "Temperature Calculation Mode"
 msgstr "Outil de calcul de pourcentages"
 
-#: ../src/callbacks.cc:2676
+#: ../src/callbacks.cc:2679
 msgid ""
 "The expression is ambiguous.\n"
 "Please select temperature calculation mode\n"
 "(the mode can later be changed in preferences)."
 msgstr ""
 
-#: ../src/callbacks.cc:2755
+#: ../src/callbacks.cc:2758
 msgid "Interpretation of dots"
 msgstr ""
 
-#: ../src/callbacks.cc:2764
+#: ../src/callbacks.cc:2767
 msgid ""
 "Please select interpretation of dots (\".\")\n"
 "(this can later be changed in preferences)."
 msgstr ""
 
-#: ../src/callbacks.cc:2767
+#: ../src/callbacks.cc:2770
 #, fuzzy
 msgid "Both dot and comma as decimal separators"
 msgstr "Utiliser la virgule comme séparateur décimal"
 
-#: ../src/callbacks.cc:2774
+#: ../src/callbacks.cc:2777
 msgid "Dot as thousands separator"
 msgstr ""
 
-#: ../src/callbacks.cc:2781
+#: ../src/callbacks.cc:2784
 #, fuzzy
 msgid "Only dot as decimal separator"
 msgstr "Utiliser la virgule comme séparateur décimal"
 
-#: ../src/callbacks.cc:2843 ../src/callbacks.cc:4373 ../src/callbacks.cc:4374
-#: ../src/callbacks.cc:4430 ../src/callbacks.cc:4736 ../src/callbacks.cc:4737
-#: ../src/callbacks.cc:4854 ../src/callbacks.cc:4991 ../src/callbacks.cc:4992
-#: ../src/callbacks.cc:5095 ../src/callbacks.cc:5238 ../src/callbacks.cc:5239
-#: ../src/callbacks.cc:5240 ../src/callbacks.cc:5499 ../src/callbacks.cc:13863
-#: ../src/callbacks.cc:15382 ../src/callbacks.cc:15756
-#: ../src/callbacks.cc:16071 ../src/callbacks.cc:16290
-#: ../src/callbacks.cc:16577
+#: ../src/callbacks.cc:2846 ../src/callbacks.cc:4381 ../src/callbacks.cc:4382
+#: ../src/callbacks.cc:4438 ../src/callbacks.cc:4744 ../src/callbacks.cc:4745
+#: ../src/callbacks.cc:4862 ../src/callbacks.cc:4999 ../src/callbacks.cc:5000
+#: ../src/callbacks.cc:5103 ../src/callbacks.cc:5246 ../src/callbacks.cc:5247
+#: ../src/callbacks.cc:5248 ../src/callbacks.cc:5507 ../src/callbacks.cc:13893
+#: ../src/callbacks.cc:15410 ../src/callbacks.cc:15784
+#: ../src/callbacks.cc:16099 ../src/callbacks.cc:16318
+#: ../src/callbacks.cc:16605
 msgid "Uncategorized"
 msgstr "Non classé"
 
-#: ../src/callbacks.cc:3025 ../src/callbacks.cc:3764 ../src/callbacks.cc:13182
+#: ../src/callbacks.cc:3027 ../src/callbacks.cc:3758 ../src/callbacks.cc:13212
 msgid "hexadecimal"
 msgstr "hexadécimal"
 
-#: ../src/callbacks.cc:3028 ../src/callbacks.cc:3766 ../src/callbacks.cc:13185
+#: ../src/callbacks.cc:3030 ../src/callbacks.cc:3760 ../src/callbacks.cc:13215
 msgid "octal"
 msgstr "octal"
 
-#: ../src/callbacks.cc:3031 ../src/callbacks.cc:3768 ../src/callbacks.cc:13188
+#: ../src/callbacks.cc:3033 ../src/callbacks.cc:3762 ../src/callbacks.cc:13218
 msgid "decimal"
 msgstr "décimal"
 
-#: ../src/callbacks.cc:3034 ../src/callbacks.cc:3770 ../src/callbacks.cc:13191
+#: ../src/callbacks.cc:3036 ../src/callbacks.cc:3764 ../src/callbacks.cc:13221
 msgid "duodecimal"
 msgstr "duodécimal"
 
-#: ../src/callbacks.cc:3037 ../src/callbacks.cc:3772 ../src/callbacks.cc:13194
+#: ../src/callbacks.cc:3039 ../src/callbacks.cc:3766 ../src/callbacks.cc:13224
 msgid "binary"
 msgstr "binaire"
 
-#: ../src/callbacks.cc:3040 ../src/callbacks.cc:3774 ../src/callbacks.cc:13197
+#: ../src/callbacks.cc:3042 ../src/callbacks.cc:3768 ../src/callbacks.cc:13227
 msgid "roman"
 msgstr "romain"
 
-#: ../src/callbacks.cc:3043 ../src/callbacks.cc:3776 ../src/callbacks.cc:13200
+#: ../src/callbacks.cc:3045 ../src/callbacks.cc:3770 ../src/callbacks.cc:13230
 msgid "bijective"
 msgstr "bijectif"
 
-#: ../src/callbacks.cc:3046 ../src/callbacks.cc:3049 ../src/callbacks.cc:3052
-#: ../src/callbacks.cc:3778 ../src/callbacks.cc:13203 ../src/callbacks.cc:13206
-#: ../src/callbacks.cc:13209
+#: ../src/callbacks.cc:3048 ../src/callbacks.cc:3051 ../src/callbacks.cc:3054
+#: ../src/callbacks.cc:3772 ../src/callbacks.cc:13233 ../src/callbacks.cc:13236
+#: ../src/callbacks.cc:13239
 msgid "sexagesimal"
 msgstr "sexagésimal"
 
-#: ../src/callbacks.cc:3055 ../src/callbacks.cc:3058 ../src/callbacks.cc:3780
-#: ../src/callbacks.cc:3781 ../src/callbacks.cc:13212 ../src/callbacks.cc:13215
+#: ../src/callbacks.cc:3057 ../src/callbacks.cc:3060 ../src/callbacks.cc:3774
+#: ../src/callbacks.cc:3775 ../src/callbacks.cc:13242 ../src/callbacks.cc:13245
 #, fuzzy
 msgid "latitude"
 msgstr "Relation"
 
-#: ../src/callbacks.cc:3061 ../src/callbacks.cc:3064 ../src/callbacks.cc:3782
-#: ../src/callbacks.cc:3783 ../src/callbacks.cc:13218 ../src/callbacks.cc:13221
+#: ../src/callbacks.cc:3063 ../src/callbacks.cc:3066 ../src/callbacks.cc:3776
+#: ../src/callbacks.cc:3777 ../src/callbacks.cc:13248 ../src/callbacks.cc:13251
 msgid "longitude"
 msgstr ""
 
-#: ../src/callbacks.cc:3082 ../src/callbacks.cc:3794 ../src/callbacks.cc:13239
+#: ../src/callbacks.cc:3084 ../src/callbacks.cc:3788 ../src/callbacks.cc:13269
 msgid "time"
 msgstr "temps"
 
-#: ../src/callbacks.cc:3133 ../src/callbacks.cc:3798 ../src/callbacks.cc:13316
+#: ../src/callbacks.cc:3135 ../src/callbacks.cc:3792 ../src/callbacks.cc:13346
 msgid "bases"
 msgstr "bases"
 
-#: ../src/callbacks.cc:3135 ../src/callbacks.cc:3800 ../src/callbacks.cc:3801
-#: ../src/callbacks.cc:13326
+#: ../src/callbacks.cc:3137 ../src/callbacks.cc:3794 ../src/callbacks.cc:3795
+#: ../src/callbacks.cc:13356
 msgid "calendars"
 msgstr "calendriers"
 
-#: ../src/callbacks.cc:3137 ../src/callbacks.cc:3814 ../src/callbacks.cc:13336
+#: ../src/callbacks.cc:3139 ../src/callbacks.cc:3808 ../src/callbacks.cc:13366
 msgid "rectangular"
 msgstr "algébrique"
 
-#: ../src/callbacks.cc:3137 ../src/callbacks.cc:3814 ../src/callbacks.cc:13336
+#: ../src/callbacks.cc:3139 ../src/callbacks.cc:3808 ../src/callbacks.cc:13366
 msgid "cartesian"
 msgstr "cartésien"
 
-#: ../src/callbacks.cc:3141 ../src/callbacks.cc:3816 ../src/callbacks.cc:13348
+#: ../src/callbacks.cc:3143 ../src/callbacks.cc:3810 ../src/callbacks.cc:13378
 msgid "exponential"
 msgstr "exponentielle"
 
-#: ../src/callbacks.cc:3145 ../src/callbacks.cc:3818 ../src/callbacks.cc:13360
+#: ../src/callbacks.cc:3147 ../src/callbacks.cc:3812 ../src/callbacks.cc:13390
 msgid "polar"
 msgstr "polaire"
 
-#: ../src/callbacks.cc:3153 ../src/callbacks.cc:3822 ../src/callbacks.cc:13386
+#: ../src/callbacks.cc:3155 ../src/callbacks.cc:3816 ../src/callbacks.cc:13416
 msgid "angle"
 msgstr "angle"
 
-#: ../src/callbacks.cc:3153 ../src/callbacks.cc:3824 ../src/callbacks.cc:13386
+#: ../src/callbacks.cc:3155 ../src/callbacks.cc:3818 ../src/callbacks.cc:13416
 msgid "phasor"
 msgstr "phaseur"
 
-#: ../src/callbacks.cc:3157 ../src/callbacks.cc:3802 ../src/callbacks.cc:13398
+#: ../src/callbacks.cc:3159 ../src/callbacks.cc:3796 ../src/callbacks.cc:13428
 msgid "optimal"
 msgstr "optimal"
 
-#: ../src/callbacks.cc:3162 ../src/callbacks.cc:3181 ../src/callbacks.cc:3804
-#: ../src/callbacks.cc:3879 ../src/callbacks.cc:13410 ../src/callbacks.cc:13460
+#: ../src/callbacks.cc:3164 ../src/callbacks.cc:3183 ../src/callbacks.cc:3798
+#: ../src/callbacks.cc:3873 ../src/callbacks.cc:13440 ../src/callbacks.cc:13490
 msgid "base"
 msgstr "base"
 
-#: ../src/callbacks.cc:3167 ../src/callbacks.cc:3806 ../src/callbacks.cc:13422
+#: ../src/callbacks.cc:3169 ../src/callbacks.cc:3800 ../src/callbacks.cc:13452
 msgid "mixed"
 msgstr "mixte"
 
-#: ../src/callbacks.cc:3172 ../src/callbacks.cc:3808 ../src/callbacks.cc:3809
-#: ../src/callbacks.cc:13437
+#: ../src/callbacks.cc:3174 ../src/callbacks.cc:3802 ../src/callbacks.cc:3803
+#: ../src/callbacks.cc:13467
 msgid "fraction"
 msgstr "fraction"
 
-#: ../src/callbacks.cc:3175 ../src/callbacks.cc:3810 ../src/callbacks.cc:3811
-#: ../src/callbacks.cc:13440
+#: ../src/callbacks.cc:3177 ../src/callbacks.cc:3804 ../src/callbacks.cc:3805
+#: ../src/callbacks.cc:13470
 msgid "factors"
 msgstr "facteurs"
 
-#: ../src/callbacks.cc:3178 ../src/callbacks.cc:3812 ../src/callbacks.cc:13450
+#: ../src/callbacks.cc:3180 ../src/callbacks.cc:3806 ../src/callbacks.cc:13480
 msgid "partial fraction"
 msgstr "fraction partielle"
 
-#: ../src/callbacks.cc:3209 ../src/callbacks.cc:3601 ../src/callbacks.cc:3603
-#: ../src/callbacks.cc:13503 ../src/searchprovider.cc:161
+#: ../src/callbacks.cc:3211 ../src/callbacks.cc:3602 ../src/callbacks.cc:3604
+#: ../src/callbacks.cc:13533 ../src/searchprovider.cc:161
 msgid "factorize"
 msgstr "factoriser"
 
-#: ../src/callbacks.cc:3212 ../src/callbacks.cc:3604 ../src/callbacks.cc:3606
-#: ../src/callbacks.cc:13506 ../src/searchprovider.cc:161
+#: ../src/callbacks.cc:3214 ../src/callbacks.cc:3605 ../src/callbacks.cc:3607
+#: ../src/callbacks.cc:13536 ../src/searchprovider.cc:161
 msgid "expand"
 msgstr "développer"
 
-#: ../src/callbacks.cc:3765 ../src/callbacks.cc:3875
+#: ../src/callbacks.cc:3759 ../src/callbacks.cc:3869
 msgid "hexadecimal number"
 msgstr "nombre hexadécimal"
 
-#: ../src/callbacks.cc:3767
+#: ../src/callbacks.cc:3761
 msgid "octal number"
 msgstr "nombre octal"
 
-#: ../src/callbacks.cc:3769
+#: ../src/callbacks.cc:3763
 msgid "decimal number"
 msgstr "nombre décimal"
 
-#: ../src/callbacks.cc:3771
+#: ../src/callbacks.cc:3765
 msgid "duodecimal number"
 msgstr "nombre duodécimal"
 
-#: ../src/callbacks.cc:3773 ../src/callbacks.cc:3869
+#: ../src/callbacks.cc:3767 ../src/callbacks.cc:3863
 msgid "binary number"
 msgstr "nombre binaire"
 
-#: ../src/callbacks.cc:3775
+#: ../src/callbacks.cc:3769
 msgid "roman numerals"
 msgstr "chiffres romains"
 
-#: ../src/callbacks.cc:3777
+#: ../src/callbacks.cc:3771
 msgid "bijective base-26"
 msgstr "bijectif base-26"
 
-#: ../src/callbacks.cc:3779
+#: ../src/callbacks.cc:3773
 msgid "sexagesimal number"
 msgstr "nombre sexagésimal"
 
-#: ../src/callbacks.cc:3785
+#: ../src/callbacks.cc:3779
 msgid "32-bit floating point"
 msgstr "Virgule flottante 32-bits"
 
-#: ../src/callbacks.cc:3787
+#: ../src/callbacks.cc:3781
 msgid "64-bit floating point"
 msgstr "Virgule flottante 64-bits"
 
-#: ../src/callbacks.cc:3789
+#: ../src/callbacks.cc:3783
 msgid "16-bit floating point"
 msgstr "Virgule flottante 16-bits"
 
-#: ../src/callbacks.cc:3791
+#: ../src/callbacks.cc:3785
 msgid "80-bit (x86) floating point"
 msgstr "Virgule flottante 80-bits (x86)"
 
-#: ../src/callbacks.cc:3793
+#: ../src/callbacks.cc:3787
 msgid "128-bit floating point"
 msgstr "Virgule flottante 128-bits"
 
-#: ../src/callbacks.cc:3795
+#: ../src/callbacks.cc:3789
 msgid "time format"
 msgstr "fuseau horaire"
 
-#: ../src/callbacks.cc:3799
+#: ../src/callbacks.cc:3793
 msgid "number bases"
 msgstr "bases numériques"
 
-#: ../src/callbacks.cc:3803
+#: ../src/callbacks.cc:3797
 msgid "optimal unit"
 msgstr "unité optimale"
 
-#: ../src/callbacks.cc:3805
+#: ../src/callbacks.cc:3799
 msgid "base units"
 msgstr "unités de base"
 
-#: ../src/callbacks.cc:3807
+#: ../src/callbacks.cc:3801
 msgid "mixed units"
 msgstr "unités mixtes"
 
-#: ../src/callbacks.cc:3813
+#: ../src/callbacks.cc:3807
 msgid "expanded partial fractions"
 msgstr ""
 
-#: ../src/callbacks.cc:3815
+#: ../src/callbacks.cc:3809
 msgid "complex rectangular form"
 msgstr ""
 
-#: ../src/callbacks.cc:3817
+#: ../src/callbacks.cc:3811
 msgid "complex exponential form"
 msgstr ""
 
-#: ../src/callbacks.cc:3819
+#: ../src/callbacks.cc:3813
 msgid "complex polar form"
 msgstr ""
 
-#: ../src/callbacks.cc:3821
+#: ../src/callbacks.cc:3815
 msgid "complex cis form"
 msgstr ""
 
-#: ../src/callbacks.cc:3823
+#: ../src/callbacks.cc:3817
 msgid "complex angle notation"
 msgstr ""
 
-#: ../src/callbacks.cc:3825
+#: ../src/callbacks.cc:3819
 msgid "complex phasor notation"
 msgstr ""
 
-#: ../src/callbacks.cc:3827 ../src/callbacks.cc:7222
+#: ../src/callbacks.cc:3821 ../src/callbacks.cc:7240
 msgid "UTC time zone"
 msgstr "fuseau horaire UTC"
 
-#: ../src/callbacks.cc:3880
+#: ../src/callbacks.cc:3874
 #, c-format
 msgid "number base %s"
 msgstr "base numérique %s"
 
-#: ../src/callbacks.cc:4382 ../src/callbacks.cc:4383 ../src/callbacks.cc:4432
-#: ../src/callbacks.cc:4745 ../src/callbacks.cc:4746 ../src/callbacks.cc:4856
-#: ../src/callbacks.cc:4999 ../src/callbacks.cc:5000 ../src/callbacks.cc:5097
-#: ../src/callbacks.cc:15380 ../src/callbacks.cc:15754
-#: ../src/callbacks.cc:16069 ../src/callbacks.cc:16288
-#: ../src/callbacks.cc:16575
+#: ../src/callbacks.cc:4390 ../src/callbacks.cc:4391 ../src/callbacks.cc:4440
+#: ../src/callbacks.cc:4753 ../src/callbacks.cc:4754 ../src/callbacks.cc:4864
+#: ../src/callbacks.cc:5007 ../src/callbacks.cc:5008 ../src/callbacks.cc:5105
+#: ../src/callbacks.cc:15408 ../src/callbacks.cc:15782
+#: ../src/callbacks.cc:16097 ../src/callbacks.cc:16316
+#: ../src/callbacks.cc:16603
 msgid "Inactive"
 msgstr "Inactif"
 
-#: ../src/callbacks.cc:4534
+#: ../src/callbacks.cc:4542
 #, c-format
 msgid ""
 "Retrieves data from the %s data set for a given object and property. If "
@@ -4333,491 +4340,491 @@ msgstr ""
 "propriété donnés. Si \"info\" est inscrit comme propriété, une fenêtre de "
 "dialogue apparaîtra avec toutes les propriétés de l'objet."
 
-#: ../src/callbacks.cc:4546 ../src/callbacks.cc:14927
+#: ../src/callbacks.cc:4554 ../src/callbacks.cc:14955
 msgid "Example:"
 msgstr "Exemple :"
 
-#: ../src/callbacks.cc:4560
+#: ../src/callbacks.cc:4568
 msgid "Arguments"
 msgstr "Arguments"
 
 #. optional argument
-#: ../src/callbacks.cc:4585 ../src/callbacks.cc:14799 ../src/callbacks.cc:14810
+#: ../src/callbacks.cc:4593 ../src/callbacks.cc:14827 ../src/callbacks.cc:14838
 msgid "optional"
 msgstr "optionnel"
 
 #. argument default, in description
-#: ../src/callbacks.cc:4589
+#: ../src/callbacks.cc:4597
 msgid "default: "
 msgstr "par défaut :"
 
-#: ../src/callbacks.cc:4604
+#: ../src/callbacks.cc:4612
 msgid "Requirement"
 msgstr "Nécessaire"
 
 #. indicating that the property is a data set key
-#: ../src/callbacks.cc:4638 ../src/callbacks.cc:5685 ../src/callbacks.cc:16898
+#: ../src/callbacks.cc:4646 ../src/callbacks.cc:5693 ../src/callbacks.cc:16926
 msgid "key"
 msgstr "touche"
 
-#: ../src/callbacks.cc:4659 ../src/callbacks.cc:4918 ../src/callbacks.cc:5168
+#: ../src/callbacks.cc:4667 ../src/callbacks.cc:4926 ../src/callbacks.cc:5176
 msgid "Acti_vate"
 msgstr "Acti_ver"
 
-#: ../src/callbacks.cc:4763 ../src/callbacks.cc:6957
+#: ../src/callbacks.cc:4771 ../src/callbacks.cc:6965
 msgid "a previous result"
 msgstr "un résultat précédent"
 
-#: ../src/callbacks.cc:4786 ../src/callbacks.cc:6966
+#: ../src/callbacks.cc:4794 ../src/callbacks.cc:6974
 msgid "matrix"
 msgstr "matrice"
 
-#: ../src/callbacks.cc:4788 ../src/callbacks.cc:6968
+#: ../src/callbacks.cc:4796 ../src/callbacks.cc:6976
 msgid "vector"
 msgstr "vecteur"
 
-#: ../src/callbacks.cc:4798 ../src/callbacks.cc:6979
+#: ../src/callbacks.cc:4806 ../src/callbacks.cc:6987
 msgid "positive"
 msgstr "positif"
 
-#: ../src/callbacks.cc:4799 ../src/callbacks.cc:6980
+#: ../src/callbacks.cc:4807 ../src/callbacks.cc:6988
 msgid "non-positive"
 msgstr "négatif et non nul"
 
-#: ../src/callbacks.cc:4800 ../src/callbacks.cc:6981
+#: ../src/callbacks.cc:4808 ../src/callbacks.cc:6989
 msgid "negative"
 msgstr "négatif"
 
-#: ../src/callbacks.cc:4801 ../src/callbacks.cc:6982
+#: ../src/callbacks.cc:4809 ../src/callbacks.cc:6990
 msgid "non-negative"
 msgstr "positif et non nul"
 
-#: ../src/callbacks.cc:4802 ../src/callbacks.cc:6983
+#: ../src/callbacks.cc:4810 ../src/callbacks.cc:6991
 msgid "non-zero"
 msgstr "non nul"
 
-#: ../src/callbacks.cc:4807 ../src/callbacks.cc:6988
+#: ../src/callbacks.cc:4815 ../src/callbacks.cc:6996
 msgid "boolean"
 msgstr "booléen"
 
-#: ../src/callbacks.cc:4808 ../src/callbacks.cc:6989
+#: ../src/callbacks.cc:4816 ../src/callbacks.cc:6997
 msgid "integer"
 msgstr "entier"
 
-#: ../src/callbacks.cc:4809 ../src/callbacks.cc:6990
+#: ../src/callbacks.cc:4817 ../src/callbacks.cc:6998
 msgid "rational"
 msgstr "rationnel"
 
-#: ../src/callbacks.cc:4810 ../src/callbacks.cc:6991
+#: ../src/callbacks.cc:4818 ../src/callbacks.cc:6999
 msgid "real"
 msgstr "réel"
 
-#: ../src/callbacks.cc:4811 ../src/callbacks.cc:6992
+#: ../src/callbacks.cc:4819 ../src/callbacks.cc:7000
 msgid "complex"
 msgstr "complexe"
 
-#: ../src/callbacks.cc:4812 ../src/callbacks.cc:6993 ../src/callbacks.cc:16884
+#: ../src/callbacks.cc:4820 ../src/callbacks.cc:7001 ../src/callbacks.cc:16912
 msgid "number"
 msgstr "nombre"
 
-#: ../src/callbacks.cc:4813 ../src/callbacks.cc:6994
+#: ../src/callbacks.cc:4821 ../src/callbacks.cc:7002
 msgid "(not matrix)"
 msgstr "(pas de matrice)"
 
-#: ../src/callbacks.cc:4816 ../src/callbacks.cc:6997
+#: ../src/callbacks.cc:4824 ../src/callbacks.cc:7005
 msgid "unknown"
 msgstr "inconnue"
 
-#: ../src/callbacks.cc:4818 ../src/callbacks.cc:6999
+#: ../src/callbacks.cc:4826 ../src/callbacks.cc:7007
 msgid "default assumptions"
 msgstr "suppositions par défaut"
 
-#: ../src/callbacks.cc:4902 ../src/callbacks.cc:14991 ../src/callbacks.cc:15000
-#: ../src/callbacks.cc:16091 ../src/callbacks.cc:29870
-#: ../src/callbacks.cc:29885 ../src/callbacks.cc:29903
-#: ../src/callbacks.cc:29936
+#: ../src/callbacks.cc:4910 ../src/callbacks.cc:15019 ../src/callbacks.cc:15028
+#: ../src/callbacks.cc:16119 ../src/callbacks.cc:29999
+#: ../src/callbacks.cc:30014 ../src/callbacks.cc:30032
+#: ../src/callbacks.cc:30065
 msgid "Variable does not exist anymore."
 msgstr "La variable n'existe plus."
 
-#: ../src/callbacks.cc:5701
+#: ../src/callbacks.cc:5709
 msgid "Data Retrieval Function"
 msgstr "Fonction de récupération de données"
 
-#: ../src/callbacks.cc:6120
+#: ../src/callbacks.cc:6128
 msgid "Insert function"
 msgstr "Insérer fonction"
 
-#: ../src/callbacks.cc:6121
+#: ../src/callbacks.cc:6129
 msgid "Insert function (dialog)"
 msgstr "Insérer fonction (dialogue)"
 
-#: ../src/callbacks.cc:6122
+#: ../src/callbacks.cc:6130
 msgid "Insert variable"
 msgstr "Insérer variable"
 
-#: ../src/callbacks.cc:6123
+#: ../src/callbacks.cc:6131
 msgid "Insert unit"
 msgstr "Insérer unité"
 
-#: ../src/callbacks.cc:6124
+#: ../src/callbacks.cc:6132
 msgid "Insert text"
 msgstr "Insérer texte"
 
-#: ../src/callbacks.cc:6125
+#: ../src/callbacks.cc:6133
 msgid "Insert date"
 msgstr "Insérer date"
 
-#: ../src/callbacks.cc:6126
+#: ../src/callbacks.cc:6134
 msgid "Insert vector"
 msgstr "Insérer vecteur"
 
-#: ../src/callbacks.cc:6127
+#: ../src/callbacks.cc:6135
 msgid "Insert matrix"
 msgstr "Insérer matrice"
 
-#: ../src/callbacks.cc:6128
+#: ../src/callbacks.cc:6136
 msgid "Insert smart parentheses"
 msgstr "Insérer parenthèses intelligentes"
 
-#: ../src/callbacks.cc:6129
+#: ../src/callbacks.cc:6137
 msgid "Convert to unit"
 msgstr "Convertir en unité"
 
-#: ../src/callbacks.cc:6130
+#: ../src/callbacks.cc:6138
 msgid "Convert to unit (entry)"
 msgstr "Convertir en unité (entrée)"
 
-#: ../src/callbacks.cc:6131
+#: ../src/callbacks.cc:6139
 msgid "Convert to optimal unit"
 msgstr "Convertir en unité optimale"
 
-#: ../src/callbacks.cc:6132
+#: ../src/callbacks.cc:6140
 msgid "Convert to base units"
 msgstr "Convertir en unités de base"
 
-#: ../src/callbacks.cc:6133
+#: ../src/callbacks.cc:6141
 msgid "Convert to optimal prefix"
 msgstr "Convertir en préfixe optimal"
 
-#: ../src/callbacks.cc:6134
+#: ../src/callbacks.cc:6142
 msgid "Convert to number base"
 msgstr "Convertir en base numérique"
 
-#: ../src/callbacks.cc:6135
+#: ../src/callbacks.cc:6143
 msgid "Factorize result"
 msgstr "Factoriser le résultat"
 
-#: ../src/callbacks.cc:6136
+#: ../src/callbacks.cc:6144
 msgid "Expand result"
 msgstr "Développer le résultat"
 
-#: ../src/callbacks.cc:6137
+#: ../src/callbacks.cc:6145
 msgid "Expand partial fractions"
 msgstr "Développer les fractions partielles"
 
-#: ../src/callbacks.cc:6139
+#: ../src/callbacks.cc:6147
 msgid "RPN: down"
 msgstr "NPI : down"
 
-#: ../src/callbacks.cc:6140
+#: ../src/callbacks.cc:6148
 msgid "RPN: up"
 msgstr "NPI : up"
 
-#: ../src/callbacks.cc:6141
+#: ../src/callbacks.cc:6149
 msgid "RPN: swap"
 msgstr "NPI : swap"
 
-#: ../src/callbacks.cc:6142
+#: ../src/callbacks.cc:6150
 msgid "RPN: copy"
 msgstr "NPI : copier"
 
-#: ../src/callbacks.cc:6143
+#: ../src/callbacks.cc:6151
 msgid "RPN: lastx"
 msgstr "NPI : lastx"
 
-#: ../src/callbacks.cc:6144
+#: ../src/callbacks.cc:6152
 msgid "RPN: delete register"
 msgstr "NPI : supprimer registre"
 
-#: ../src/callbacks.cc:6145
+#: ../src/callbacks.cc:6153
 msgid "RPN: clear stack"
 msgstr "NPI : vider pile"
 
-#: ../src/callbacks.cc:6146
+#: ../src/callbacks.cc:6154
 msgid "Load meta mode"
 msgstr ""
 
-#: ../src/callbacks.cc:6147
+#: ../src/callbacks.cc:6155
 msgid "Set expression base"
 msgstr "Définir la base d'expression"
 
-#: ../src/callbacks.cc:6148
+#: ../src/callbacks.cc:6156
 msgid "Set result base"
 msgstr "Définir la base de résultats"
 
-#: ../src/callbacks.cc:6149
+#: ../src/callbacks.cc:6157
 msgid "Toggle exact mode"
 msgstr "Basculer en mode exact"
 
-#: ../src/callbacks.cc:6150
+#: ../src/callbacks.cc:6158
 msgid "Set angle unit to degrees"
 msgstr "Définir l'unité d'angle en degrés"
 
-#: ../src/callbacks.cc:6151
+#: ../src/callbacks.cc:6159
 msgid "Set angle unit to radians"
 msgstr "Définir l'unité d'angle en radians"
 
-#: ../src/callbacks.cc:6152
+#: ../src/callbacks.cc:6160
 msgid "Set angle unit to gradians"
 msgstr "Définir l'unité d'angle sur les grades"
 
-#: ../src/callbacks.cc:6153
+#: ../src/callbacks.cc:6161
 msgid "Toggle simple fractions"
 msgstr "Bascule fractions simples"
 
-#: ../src/callbacks.cc:6154
+#: ../src/callbacks.cc:6162
 msgid "Toggle mixed fractions"
 msgstr "Bascule fractions mixtes"
 
-#: ../src/callbacks.cc:6155
+#: ../src/callbacks.cc:6163
 msgid "Toggle scientific notation"
 msgstr "Bascule notation scientifique"
 
-#: ../src/callbacks.cc:6156
+#: ../src/callbacks.cc:6164
 msgid "Toggle simple notation"
 msgstr "Bascule notation simple"
 
-#: ../src/callbacks.cc:6157
+#: ../src/callbacks.cc:6165
 msgid "Toggle RPN mode"
 msgstr "Bascule mode NPI"
 
-#: ../src/callbacks.cc:6158
+#: ../src/callbacks.cc:6166
 msgid "Toggle calculate as you type"
 msgstr "Active/Désactive le calcul lors de la saisie"
 
-#: ../src/callbacks.cc:6159
+#: ../src/callbacks.cc:6167
 msgid "Toggle programming keypad"
 msgstr "Basculer le clavier de programmation"
 
-#: ../src/callbacks.cc:6160
+#: ../src/callbacks.cc:6168
 msgid "Show keypad"
 msgstr "Afficher le clavier"
 
-#: ../src/callbacks.cc:6161
+#: ../src/callbacks.cc:6169
 msgid "Show history"
 msgstr "Afficher l'historique"
 
-#: ../src/callbacks.cc:6162
+#: ../src/callbacks.cc:6170
 msgid "Search history"
 msgstr "Historique des recherches"
 
-#: ../src/callbacks.cc:6163
+#: ../src/callbacks.cc:6171
 msgid "Show conversion"
 msgstr "Afficher conversion"
 
-#: ../src/callbacks.cc:6164
+#: ../src/callbacks.cc:6172
 msgid "Show RPN stack"
 msgstr "Afficher la pile NPI"
 
-#: ../src/callbacks.cc:6166
+#: ../src/callbacks.cc:6174
 msgid "Manage variables"
 msgstr "Gérer les variables"
 
-#: ../src/callbacks.cc:6167
+#: ../src/callbacks.cc:6175
 msgid "Manage functions"
 msgstr "Gérer les fonctions"
 
-#: ../src/callbacks.cc:6169
+#: ../src/callbacks.cc:6177
 msgid "Manage data sets"
 msgstr "Gérer les ensembles de données"
 
-#: ../src/callbacks.cc:6176
+#: ../src/callbacks.cc:6184
 msgid "New variable"
 msgstr "Nouvelle variable"
 
-#: ../src/callbacks.cc:6177
+#: ../src/callbacks.cc:6185
 msgid "New function"
 msgstr "Nouvelle fonction"
 
-#: ../src/callbacks.cc:6178
+#: ../src/callbacks.cc:6186
 msgid "Open plot functions/data"
 msgstr "Ouvrir graph fonctions/données"
 
-#: ../src/callbacks.cc:6179
+#: ../src/callbacks.cc:6187
 msgid "Open convert number bases"
 msgstr "Ouvrir convertisseur de bases numériques"
 
-#: ../src/callbacks.cc:6180
+#: ../src/callbacks.cc:6188
 msgid "Open floating point conversion"
 msgstr "Ouvrir convertisseur à virgule flottante"
 
-#: ../src/callbacks.cc:6181
+#: ../src/callbacks.cc:6189
 msgid "Open calender conversion"
 msgstr "Ouvrir conversion calendrier"
 
-#: ../src/callbacks.cc:6182
+#: ../src/callbacks.cc:6190
 msgid "Open percentage calculation tool"
 msgstr "Ouvrir l'outil de calcul de pourcentages"
 
-#: ../src/callbacks.cc:6183
+#: ../src/callbacks.cc:6191
 msgid "Open periodic table"
 msgstr "Ouvrir le tableau périodique"
 
-#: ../src/callbacks.cc:6184
+#: ../src/callbacks.cc:6192
 msgid "Update exchange rates"
 msgstr "Mettre à jour les taux de change"
 
-#: ../src/callbacks.cc:6185
+#: ../src/callbacks.cc:6193
 msgid "Copy result"
 msgstr "Copier le résultat"
 
-#: ../src/callbacks.cc:6186
+#: ../src/callbacks.cc:6194
 msgid "Save result image"
 msgstr "Sauvegarder le résultat en image"
 
-#: ../src/callbacks.cc:6187
+#: ../src/callbacks.cc:6195
 msgid "Help"
 msgstr "Aide"
 
-#: ../src/callbacks.cc:6188
+#: ../src/callbacks.cc:6196
 msgid "Quit"
 msgstr "Quitter"
 
-#: ../src/callbacks.cc:6189
+#: ../src/callbacks.cc:6197
 #, fuzzy
 msgid "Toggle chain mode"
 msgstr "Basculer en mode exact"
 
-#: ../src/callbacks.cc:6508
+#: ../src/callbacks.cc:6516
 msgid "Prefixes"
 msgstr "Préfixes"
 
-#: ../src/callbacks.cc:6730
+#: ../src/callbacks.cc:6738
 msgid "No Prefix"
 msgstr "Pas de préfixe"
 
-#: ../src/callbacks.cc:6731
+#: ../src/callbacks.cc:6739
 msgid "Optimal Prefix"
 msgstr "Préfixe optimal"
 
-#: ../src/callbacks.cc:7140 ../src/callbacks.cc:7144 ../src/callbacks.cc:7148
+#: ../src/callbacks.cc:7158 ../src/callbacks.cc:7162 ../src/callbacks.cc:7166
 msgid "Prefix"
 msgstr "Préfixe"
 
-#: ../src/callbacks.cc:7160
+#: ../src/callbacks.cc:7178
 msgid "Complex angle/phasor notation"
 msgstr "Notation complexe angle/phaseur"
 
-#: ../src/callbacks.cc:7162 ../src/callbacks.cc:26894
+#: ../src/callbacks.cc:7180 ../src/callbacks.cc:27019
 msgid "Number bases"
 msgstr "Bases numériques"
 
-#: ../src/callbacks.cc:7164 ../src/callbacks.cc:26944
+#: ../src/callbacks.cc:7182 ../src/callbacks.cc:27069
 msgid "Base units"
 msgstr "Unités de base"
 
-#: ../src/callbacks.cc:7170
+#: ../src/callbacks.cc:7188
 msgid "Binary number"
 msgstr "Nombre binaire"
 
-#: ../src/callbacks.cc:7172 ../src/callbacks.cc:26888
+#: ../src/callbacks.cc:7190 ../src/callbacks.cc:27013
 msgid "Calendars"
 msgstr "Calendriers"
 
-#: ../src/callbacks.cc:7174
+#: ../src/callbacks.cc:7192
 msgid "Complex cis form"
 msgstr "Forme cis complexe"
 
-#: ../src/callbacks.cc:7176
+#: ../src/callbacks.cc:7194
 msgid "Decimal number"
 msgstr "Nombre décimal"
 
-#: ../src/callbacks.cc:7178
+#: ../src/callbacks.cc:7196
 msgid "Duodecimal number"
 msgstr "Nombre duodécimal"
 
-#: ../src/callbacks.cc:7180
+#: ../src/callbacks.cc:7198
 msgid "Complex exponential form"
 msgstr "Forme exponentielle complexe"
 
-#: ../src/callbacks.cc:7182 ../src/callbacks.cc:26904 ../src/callbacks.cc:26908
+#: ../src/callbacks.cc:7200 ../src/callbacks.cc:27029 ../src/callbacks.cc:27033
 msgid "Factors"
 msgstr "Facteurs"
 
-#: ../src/callbacks.cc:7184
+#: ../src/callbacks.cc:7202
 msgid "16-bit floating point binary format"
 msgstr "Format binaire à virgule flottante - 16 bits"
 
-#: ../src/callbacks.cc:7186
+#: ../src/callbacks.cc:7204
 msgid "32-bit floating point binary format"
 msgstr "Format binaire à virgule flottante - 32 bits"
 
-#: ../src/callbacks.cc:7188
+#: ../src/callbacks.cc:7206
 msgid "64-bit floating point binary format"
 msgstr "Format binaire à virgule flottante - 64 bits"
 
-#: ../src/callbacks.cc:7190
+#: ../src/callbacks.cc:7208
 msgid "80-bit (x86) floating point binary format"
 msgstr "Format binaire à virgule flottante - 80 bits (x86)"
 
-#: ../src/callbacks.cc:7192
+#: ../src/callbacks.cc:7210
 msgid "128-bit floating point binary format"
 msgstr "Format binaire à virgule flottante - 128 bits"
 
-#: ../src/callbacks.cc:7196
+#: ../src/callbacks.cc:7214
 msgid "Hexadecimal number"
 msgstr "Nombre hexadécimale"
 
-#: ../src/callbacks.cc:7198
+#: ../src/callbacks.cc:7216
 msgid "Latitude"
 msgstr ""
 
-#: ../src/callbacks.cc:7200
+#: ../src/callbacks.cc:7218
 msgid "Longitude"
 msgstr ""
 
-#: ../src/callbacks.cc:7202
+#: ../src/callbacks.cc:7220
 msgid "Mixed units"
 msgstr "Unités mixtes"
 
-#: ../src/callbacks.cc:7204
+#: ../src/callbacks.cc:7222
 msgid "Octal number"
 msgstr "Nombre octal"
 
-#: ../src/callbacks.cc:7206
+#: ../src/callbacks.cc:7224
 msgid "Optimal units"
 msgstr "Unités optimales"
 
-#: ../src/callbacks.cc:7208
+#: ../src/callbacks.cc:7226
 msgid "Expanded partial fractions"
 msgstr "Fractions partielles développées"
 
-#: ../src/callbacks.cc:7210
+#: ../src/callbacks.cc:7228
 msgid "Complex polar form"
 msgstr "Forme polaire complexe"
 
-#: ../src/callbacks.cc:7212
+#: ../src/callbacks.cc:7230
 msgid "Complex rectangular form"
 msgstr "Forme rectangulaire complexe"
 
-#: ../src/callbacks.cc:7216
+#: ../src/callbacks.cc:7234
 msgid "Sexagesimal number"
 msgstr "Nombre sexagésimal"
 
-#: ../src/callbacks.cc:8786
+#: ../src/callbacks.cc:8804
 msgid "and"
 msgstr "et"
 
-#: ../src/callbacks.cc:8789 ../src/callbacks.cc:10375 ../src/callbacks.cc:10394
-#: ../src/callbacks.cc:10395
+#: ../src/callbacks.cc:8807 ../src/callbacks.cc:10393 ../src/callbacks.cc:10412
+#: ../src/callbacks.cc:10413
 msgid "or"
 msgstr "ou"
 
-#: ../src/callbacks.cc:9789
+#: ../src/callbacks.cc:9807
 msgid "undefined"
 msgstr "indéfini"
 
-#: ../src/callbacks.cc:10115 ../src/callbacks.cc:32667
+#: ../src/callbacks.cc:10133 ../src/callbacks.cc:32796
 msgid ""
 "result is too long\n"
 "see history"
@@ -4825,107 +4832,107 @@ msgstr ""
 "le résultat est trop long\n"
 "voir l'historique"
 
-#: ../src/callbacks.cc:10140 ../src/callbacks.cc:32688
+#: ../src/callbacks.cc:10158 ../src/callbacks.cc:32817
 msgid "calculation was aborted"
 msgstr "le calcul a été interrompu"
 
-#: ../src/callbacks.cc:10807 ../src/callbacks.cc:25198
+#: ../src/callbacks.cc:10830 ../src/callbacks.cc:25323
 msgid "RPN Register Moved"
 msgstr "Registre NPI déplacé"
 
-#: ../src/callbacks.cc:10815 ../src/callbacks.cc:13751
-#: ../src/callbacks.cc:25204
+#: ../src/callbacks.cc:10838 ../src/callbacks.cc:13781
+#: ../src/callbacks.cc:25329
 msgid "RPN Operation"
 msgstr "Opération NPI"
 
-#: ../src/callbacks.cc:11019
+#: ../src/callbacks.cc:11044
 msgid "Processing…"
 msgstr "Traitement en cours…"
 
-#: ../src/callbacks.cc:11039 ../src/callbacks.cc:32667
+#: ../src/callbacks.cc:11064 ../src/callbacks.cc:32796
 msgid "result processing was aborted"
 msgstr "le traitement du résultat a été interrompu"
 
-#: ../src/callbacks.cc:11451
+#: ../src/callbacks.cc:11478
 msgid "Factorizing…"
 msgstr "Factorisation en cours…"
 
-#: ../src/callbacks.cc:11455
+#: ../src/callbacks.cc:11482
 msgid "Expanding partial fractions…"
 msgstr "Développement des fractions partielles…"
 
-#: ../src/callbacks.cc:11459
+#: ../src/callbacks.cc:11486
 msgid "Expanding…"
 msgstr "Développement en cours…"
 
-#: ../src/callbacks.cc:11464 ../src/callbacks.cc:13683
+#: ../src/callbacks.cc:11491 ../src/callbacks.cc:13713
 msgid "Calculating…"
 msgstr "Calcul en cours…"
 
-#: ../src/callbacks.cc:11468
+#: ../src/callbacks.cc:11495
 msgid "Converting…"
 msgstr "Conversion en cours…"
 
-#: ../src/callbacks.cc:11572
+#: ../src/callbacks.cc:11598
 msgid "Fetching exchange rates."
 msgstr "Récupération des taux de change."
 
-#: ../src/callbacks.cc:13291
+#: ../src/callbacks.cc:13321
 msgid "Time zone parsing failed."
 msgstr "L'analyse du fuseau horaire a échoué."
 
-#: ../src/callbacks.cc:14590
+#: ../src/callbacks.cc:14618
 msgid "Keep open"
 msgstr "Garder ouvert"
 
 #. RPN Enter (calculate and add to stack)
-#: ../src/callbacks.cc:14599
+#: ../src/callbacks.cc:14627
 msgid "Enter"
 msgstr "Entrer"
 
-#: ../src/callbacks.cc:14599
+#: ../src/callbacks.cc:14627
 msgid "C_alculate"
 msgstr "C_alculer"
 
-#: ../src/callbacks.cc:14602
+#: ../src/callbacks.cc:14630
 msgid "Apply to Stack"
 msgstr "Appliquer à la pile"
 
-#: ../src/callbacks.cc:14655
+#: ../src/callbacks.cc:14683
 msgid "Argument"
 msgstr "Argument"
 
-#: ../src/callbacks.cc:14715
+#: ../src/callbacks.cc:14743
 msgid "True"
 msgstr "Vrai"
 
-#: ../src/callbacks.cc:14717
+#: ../src/callbacks.cc:14745
 msgid "False"
 msgstr "Faux"
 
-#: ../src/callbacks.cc:14762
+#: ../src/callbacks.cc:14790
 msgid "Info"
 msgstr "Info"
 
-#: ../src/callbacks.cc:15128
+#: ../src/callbacks.cc:15156
 msgid "Edit Unit (global)"
 msgstr "Éditer unité (global)"
 
-#: ../src/callbacks.cc:15130
+#: ../src/callbacks.cc:15158
 msgid "New Unit"
 msgstr "Nouvelle unité"
 
-#: ../src/callbacks.cc:15254 ../src/callbacks.cc:15673
-#: ../src/callbacks.cc:15829 ../src/callbacks.cc:16024
-#: ../src/callbacks.cc:16236 ../src/callbacks.cc:16491
-#: ../src/callbacks.cc:16969 ../src/callbacks.cc:17120
-#: ../src/callbacks.cc:17234 ../src/callbacks.cc:18876
-#: ../src/callbacks.cc:33195
+#: ../src/callbacks.cc:15282 ../src/callbacks.cc:15701
+#: ../src/callbacks.cc:15857 ../src/callbacks.cc:16052
+#: ../src/callbacks.cc:16264 ../src/callbacks.cc:16519
+#: ../src/callbacks.cc:16997 ../src/callbacks.cc:17148
+#: ../src/callbacks.cc:17262 ../src/callbacks.cc:18904
+#: ../src/callbacks.cc:33324
 msgid "Empty name field."
 msgstr "Nom du champ vide."
 
 #. unit with the same name exists -- overwrite or open the dialog again
-#: ../src/callbacks.cc:15259
+#: ../src/callbacks.cc:15287
 msgid ""
 "A variable or unit with the same name already exists.\n"
 "Do you want to overwrite it?"
@@ -4933,36 +4940,36 @@ msgstr ""
 "Une variable ou unité portant le même nom existe déjà.\n"
 "Voulez-vous l'écraser ?"
 
-#: ../src/callbacks.cc:15283 ../src/callbacks.cc:15335
+#: ../src/callbacks.cc:15311 ../src/callbacks.cc:15363
 msgid "Base unit does not exist."
 msgstr "L'unité de base n'existe pas."
 
-#: ../src/callbacks.cc:15591
+#: ../src/callbacks.cc:15619
 msgid "Edit Function (global)"
 msgstr "Éditer fonction (global)"
 
-#: ../src/callbacks.cc:15593 ../src/callbacks.cc:15798
+#: ../src/callbacks.cc:15621 ../src/callbacks.cc:15826
 msgid "New Function"
 msgstr "Nouvelle fonction"
 
-#: ../src/callbacks.cc:15644 ../src/callbacks.cc:32956
-#: ../src/callbacks.cc:32968
+#: ../src/callbacks.cc:15672 ../src/callbacks.cc:33085
+#: ../src/callbacks.cc:33097
 msgid "Yes"
 msgstr "Oui"
 
-#: ../src/callbacks.cc:15646 ../src/callbacks.cc:32958
-#: ../src/callbacks.cc:32970
+#: ../src/callbacks.cc:15674 ../src/callbacks.cc:33087
+#: ../src/callbacks.cc:33099
 msgid "No"
 msgstr "Non"
 
-#: ../src/callbacks.cc:15689 ../src/callbacks.cc:15849
+#: ../src/callbacks.cc:15717 ../src/callbacks.cc:15877
 msgid "Empty expression field."
 msgstr "Expression du champ vide."
 
 #. function with the same name exists -- overwrite or open the dialog again
 #. dataset with the same name exists -- overwrite or open the dialog again
-#: ../src/callbacks.cc:15697 ../src/callbacks.cc:15853
-#: ../src/callbacks.cc:17130
+#: ../src/callbacks.cc:15725 ../src/callbacks.cc:15881
+#: ../src/callbacks.cc:17158
 msgid ""
 "A function with the same name already exists.\n"
 "Do you want to overwrite the function?"
@@ -4970,22 +4977,22 @@ msgstr ""
 "Une fonction portant le même nom existe déjà.\n"
 "Voulez-vous l'écraser ?"
 
-#: ../src/callbacks.cc:15913 ../src/callbacks.cc:15927
+#: ../src/callbacks.cc:15941 ../src/callbacks.cc:15955
 msgid "Unit does not exist"
 msgstr "L'unité n'existe pas"
 
-#: ../src/callbacks.cc:15956
+#: ../src/callbacks.cc:15984
 msgid "Edit Unknown Variable (global)"
 msgstr "Éditer variable d'inconnue (global)"
 
-#: ../src/callbacks.cc:15958
+#: ../src/callbacks.cc:15986
 msgid "New Unknown Variable"
 msgstr "Nouvelle variable de l'inconnue"
 
 #. unknown with the same name exists -- overwrite or open dialog again
 #. variable with the same name exists -- overwrite or open dialog again
-#: ../src/callbacks.cc:16029 ../src/callbacks.cc:16246
-#: ../src/callbacks.cc:16496 ../src/callbacks.cc:17238
+#: ../src/callbacks.cc:16057 ../src/callbacks.cc:16274
+#: ../src/callbacks.cc:16524 ../src/callbacks.cc:17266
 msgid ""
 "An unit or variable with the same name already exists.\n"
 "Do you want to overwrite it?"
@@ -4993,83 +5000,83 @@ msgstr ""
 "Une unité ou variable portant le même nom existe déjà.\n"
 "Voulez-vous l'écraser ?"
 
-#: ../src/callbacks.cc:16140
+#: ../src/callbacks.cc:16168
 msgid "Edit Variable (global)"
 msgstr "Éditer variable (global)"
 
-#: ../src/callbacks.cc:16142
+#: ../src/callbacks.cc:16170
 msgid "New Variable"
 msgstr "Nouvelle variable"
 
-#: ../src/callbacks.cc:16242
+#: ../src/callbacks.cc:16270
 msgid "Empty value field."
 msgstr "Valeur du champ vide."
 
-#: ../src/callbacks.cc:16343
+#: ../src/callbacks.cc:16371
 msgid "Edit Vector"
 msgstr "Éditer vecteur"
 
-#: ../src/callbacks.cc:16345
+#: ../src/callbacks.cc:16373
 msgid "Edit Vector (global)"
 msgstr "Éditer vecteur (global)"
 
-#: ../src/callbacks.cc:16347
+#: ../src/callbacks.cc:16375
 msgid "New Vector"
 msgstr "Nouveau vecteur"
 
-#: ../src/callbacks.cc:16354
+#: ../src/callbacks.cc:16382
 msgid "Edit Matrix (global)"
 msgstr "Éditer matrice (global)"
 
-#: ../src/callbacks.cc:16356
+#: ../src/callbacks.cc:16384
 msgid "New Matrix"
 msgstr "Nouvelle matrice"
 
-#: ../src/callbacks.cc:16617
+#: ../src/callbacks.cc:16645
 msgid "Vector Result"
 msgstr "Résultat vecteur"
 
-#: ../src/callbacks.cc:16619
+#: ../src/callbacks.cc:16647
 msgid "Matrix Result"
 msgstr "Résultat matrice"
 
-#: ../src/callbacks.cc:16774
+#: ../src/callbacks.cc:16802
 msgid "New Data Object"
 msgstr "Nouveau objet de données"
 
-#: ../src/callbacks.cc:16876
+#: ../src/callbacks.cc:16904
 msgid "text"
 msgstr "texte"
 
-#: ../src/callbacks.cc:16881 ../src/callbacks.cc:16889
+#: ../src/callbacks.cc:16909 ../src/callbacks.cc:16917
 msgid "approximate"
 msgstr "approximatif"
 
-#: ../src/callbacks.cc:17049
+#: ../src/callbacks.cc:17077
 msgid "Edit Data Set (global)"
 msgstr "Éditer ensemble de données (global)"
 
-#: ../src/callbacks.cc:17051
+#: ../src/callbacks.cc:17079
 msgid "New Data Set"
 msgstr "Nouveau ensemble de données"
 
-#: ../src/callbacks.cc:17068
+#: ../src/callbacks.cc:17096
 msgid "info"
 msgstr "info"
 
-#: ../src/callbacks.cc:17159
+#: ../src/callbacks.cc:17187
 msgid "Property"
 msgstr "Propriété"
 
-#: ../src/callbacks.cc:17226 ../src/callbacks.cc:17312
+#: ../src/callbacks.cc:17254 ../src/callbacks.cc:17340
 msgid "No file name entered."
 msgstr "Pas de nom de fichier entré."
 
-#: ../src/callbacks.cc:17268 ../src/callbacks.cc:17341
+#: ../src/callbacks.cc:17296 ../src/callbacks.cc:17369
 msgid "No delimiter selected."
 msgstr "Pas de délimiteur sélectionné."
 
-#: ../src/callbacks.cc:17273
+#: ../src/callbacks.cc:17301
 #, c-format
 msgid ""
 "Could not import from file \n"
@@ -5078,15 +5085,15 @@ msgstr ""
 "Ne peut importer depuis le fichier \n"
 "%s"
 
-#: ../src/callbacks.cc:17354
+#: ../src/callbacks.cc:17382
 msgid "No variable name entered."
 msgstr "Pas de nom de variable entré."
 
-#: ../src/callbacks.cc:17366
+#: ../src/callbacks.cc:17394
 msgid "No known variable with entered name found."
 msgstr "Aucune variable connue avec le nom saisi n'a été trouvée."
 
-#: ../src/callbacks.cc:17373
+#: ../src/callbacks.cc:17401
 #, c-format
 msgid ""
 "Could not export to file \n"
@@ -5095,77 +5102,77 @@ msgstr ""
 "Ne peut exporter depuis le fichier \n"
 "%s"
 
-#: ../src/callbacks.cc:17473 ../src/callbacks.cc:17481
-#: ../src/callbacks.cc:22923 ../src/callbacks.cc:27439
-#: ../src/callbacks.cc:27442
+#: ../src/callbacks.cc:17501 ../src/callbacks.cc:17509
+#: ../src/callbacks.cc:23059 ../src/callbacks.cc:27564
+#: ../src/callbacks.cc:27567
 msgid "My Variables"
 msgstr "Mes variables"
 
-#: ../src/callbacks.cc:18012
+#: ../src/callbacks.cc:18040
 msgid "Couldn't write definitions"
 msgstr "Ne peut pas écrire de définitions"
 
-#: ../src/callbacks.cc:18089 ../src/callbacks.cc:19078
+#: ../src/callbacks.cc:18117 ../src/callbacks.cc:19106
 msgid "Preset"
 msgstr "Prédéfini"
 
-#: ../src/callbacks.cc:18328
+#: ../src/callbacks.cc:18356
 msgid "Abort"
 msgstr "Interrompre"
 
-#: ../src/callbacks.cc:18331
+#: ../src/callbacks.cc:18359
 msgid "Undo"
 msgstr "Défaire"
 
-#: ../src/callbacks.cc:18334
+#: ../src/callbacks.cc:18362
 msgid "Redo"
 msgstr "Refaire"
 
-#: ../src/callbacks.cc:18339
+#: ../src/callbacks.cc:18367
 msgid "Completion Mode"
 msgstr "Mode complétion"
 
-#: ../src/callbacks.cc:18352
+#: ../src/callbacks.cc:18380
 msgid "Limited strict completion"
 msgstr "Complétion stricte limitée"
 
-#: ../src/callbacks.cc:18353
+#: ../src/callbacks.cc:18381
 msgid "Strict completion"
 msgstr "Complétion stricte"
 
-#: ../src/callbacks.cc:18354
+#: ../src/callbacks.cc:18382
 msgid "Limited full completion"
 msgstr "Complétion complète limitée"
 
-#: ../src/callbacks.cc:18355
+#: ../src/callbacks.cc:18383
 msgid "Full completion"
 msgstr "Complétion complète"
 
-#: ../src/callbacks.cc:18356
+#: ../src/callbacks.cc:18384
 msgid "No completion"
 msgstr "Pas de complétion"
 
-#: ../src/callbacks.cc:18365
+#: ../src/callbacks.cc:18393
 msgid "Delayed completion"
 msgstr "Complétion retardée"
 
-#: ../src/callbacks.cc:18367
+#: ../src/callbacks.cc:18395
 msgid "Customize completion…"
 msgstr "Personnaliser complétion…"
 
-#: ../src/callbacks.cc:18853
+#: ../src/callbacks.cc:18881
 msgid "Save Mode"
 msgstr "Sauvegarder mode"
 
-#: ../src/callbacks.cc:18880
+#: ../src/callbacks.cc:18908
 msgid "Preset mode cannot be overwritten."
 msgstr "Le mode préréglage ne peut pas être écrasé."
 
-#: ../src/callbacks.cc:18908
+#: ../src/callbacks.cc:18936
 msgid "Delete Mode"
 msgstr "Supprimer mode"
 
-#: ../src/callbacks.cc:20157
+#: ../src/callbacks.cc:20190
 #, c-format
 msgid ""
 "Couldn't write preferences to\n"
@@ -5174,45 +5181,47 @@ msgstr ""
 "Impossible d'écrire les préférences dans\n"
 "%s"
 
-#: ../src/callbacks.cc:21459 ../src/callbacks.cc:21472
+#: ../src/callbacks.cc:21587 ../src/callbacks.cc:21600
 msgid "never"
 msgstr "jamais"
 
-#: ../src/callbacks.cc:21460 ../src/callbacks.cc:21474
+#: ../src/callbacks.cc:21588 ../src/callbacks.cc:21602
 msgid "ask"
 msgstr "demandé"
 
-#: ../src/callbacks.cc:21468
+#: ../src/callbacks.cc:21596
 #, c-format
-msgid "%i days"
-msgstr "%i jours"
+msgid "%i day"
+msgid_plural "%i days"
+msgstr[0] "%i jour"
+msgstr[1] "%i jours"
 
 #. Result was copied
-#: ../src/callbacks.cc:22741
+#: ../src/callbacks.cc:22877
 msgid "Copied"
 msgstr "Copié"
 
-#: ../src/callbacks.cc:24877
+#: ../src/callbacks.cc:25002
 msgid "log10 function not found."
 msgstr "Fonction log10 n'a pas été trouvée."
 
-#: ../src/callbacks.cc:25755
+#: ../src/callbacks.cc:25880
 msgid "Search"
 msgstr "Rechercher"
 
-#: ../src/callbacks.cc:25755
+#: ../src/callbacks.cc:25880
 msgid "_Search"
 msgstr "_Rechercher"
 
-#: ../src/callbacks.cc:25775 ../src/callbacks.cc:26026
+#: ../src/callbacks.cc:25900 ../src/callbacks.cc:26151
 msgid "Remove Bookmark"
 msgstr "Suppriver favoris"
 
-#: ../src/callbacks.cc:25829
+#: ../src/callbacks.cc:25954
 msgid "Add Bookmark"
 msgstr "Ajouter favoris"
 
-#: ../src/callbacks.cc:25854
+#: ../src/callbacks.cc:25979
 msgid ""
 "A bookmark with the selected name already exists.\n"
 "Do you want to overwrite it?"
@@ -5220,94 +5229,94 @@ msgstr ""
 "Un favoris portant le même nom existe déjà.\n"
 "Voulez-vous l'écraser ?"
 
-#: ../src/callbacks.cc:26045
+#: ../src/callbacks.cc:26170
 msgid "No items found"
 msgstr "Aucun élément trouvé"
 
-#: ../src/callbacks.cc:26306 ../src/callbacks.cc:32857
+#: ../src/callbacks.cc:26431 ../src/callbacks.cc:32986
 msgid "Select date"
 msgstr "Sélectionner date"
 
-#: ../src/callbacks.cc:26924
+#: ../src/callbacks.cc:27049
 msgid "Rectangular form"
 msgstr "Forme algébrique"
 
-#: ../src/callbacks.cc:26925
+#: ../src/callbacks.cc:27050
 msgid "Exponential form"
 msgstr "Forme exponentielle"
 
-#: ../src/callbacks.cc:26926
+#: ../src/callbacks.cc:27051
 msgid "Polar form"
 msgstr "Forme polaire"
 
-#: ../src/callbacks.cc:26927
+#: ../src/callbacks.cc:27052
 msgid "Angle/phasor notation"
 msgstr "Notation angle/phaseur"
 
-#: ../src/callbacks.cc:26945
+#: ../src/callbacks.cc:27070
 msgid "Optimal unit"
 msgstr "Unité optimale"
 
-#: ../src/callbacks.cc:26946
+#: ../src/callbacks.cc:27071
 msgid "Optimal prefix"
 msgstr "Préfixe optimal"
 
-#: ../src/callbacks.cc:27182
+#: ../src/callbacks.cc:27307
 msgid "All functions"
 msgstr "Toutes les fonctions"
 
-#: ../src/callbacks.cc:27234
+#: ../src/callbacks.cc:27359
 msgid "All variables"
 msgstr "Toutes les variables"
 
-#: ../src/callbacks.cc:27535
+#: ../src/callbacks.cc:27664
 msgid "Select definitions file"
 msgstr "Sélectionner le fichier de définitions"
 
-#: ../src/callbacks.cc:27535
+#: ../src/callbacks.cc:27664
 msgid "_Import"
 msgstr "_Importer"
 
-#: ../src/callbacks.cc:27554
+#: ../src/callbacks.cc:27683
 #, c-format
 msgid "Could not copy %s to %s."
 msgstr "Ne peut pas copier %s vers %s."
 
-#: ../src/callbacks.cc:27562
+#: ../src/callbacks.cc:27691
 #, c-format
 msgid "Could not read %s."
 msgstr "Ne peut pas lire %s."
 
-#: ../src/callbacks.cc:27570
+#: ../src/callbacks.cc:27699
 #, c-format
 msgid "Could not copy file to %s."
 msgstr "Ne peut pas copier le fichier vers %s."
 
-#: ../src/callbacks.cc:28174 ../src/callbacks.cc:28254
-#: ../src/callbacks.cc:28334 ../src/callbacks.cc:28381
-#: ../src/callbacks.cc:33528 ../src/callbacks.cc:33727
-#: ../src/callbacks.cc:33882
+#: ../src/callbacks.cc:28303 ../src/callbacks.cc:28383
+#: ../src/callbacks.cc:28463 ../src/callbacks.cc:28510
+#: ../src/callbacks.cc:33657 ../src/callbacks.cc:33856
+#: ../src/callbacks.cc:34011
 msgid "Unsupported base."
 msgstr "La base n'est pas supportée."
 
-#: ../src/callbacks.cc:28580
+#: ../src/callbacks.cc:28709
 msgid "The selected Chinese year does not exist."
 msgstr "L'année chinoise sélectionnée n'existe pas."
 
-#: ../src/callbacks.cc:28592
+#: ../src/callbacks.cc:28721
 msgid "Conversion to Gregorian calendar failed."
 msgstr "La conversion au format du calendrier grégorien a échoué."
 
-#: ../src/callbacks.cc:28617
+#: ../src/callbacks.cc:28746
 #, c-format
 msgid "Calendar conversion failed for: %s."
 msgstr "Conversion vers le calendrier impossible pour : %s."
 
-#: ../src/callbacks.cc:28652
+#: ../src/callbacks.cc:28781
 msgid "Gnuplot was not found."
 msgstr "Impossible de trouver Gnuplot."
 
-#: ../src/callbacks.cc:28653
+#: ../src/callbacks.cc:28782
 #, c-format
 msgid ""
 "%s (%s) needs to be installed separately, and found in the executable search "
@@ -5317,57 +5326,57 @@ msgstr ""
 "d'installation dans la recherche de chemin de l'exécutable, pour faire "
 "fonctionner les graphs."
 
-#: ../src/callbacks.cc:29243
+#: ../src/callbacks.cc:29372
 msgid "Select file to save PNG image to"
 msgstr "Sélectionner le fichier à enregistrer en image PNG"
 
-#: ../src/callbacks.cc:29246 ../src/callbacks.cc:34081
+#: ../src/callbacks.cc:29375 ../src/callbacks.cc:34210
 msgid "Allowed File Types"
 msgstr "Types de fichiers autorisés"
 
-#: ../src/callbacks.cc:29251 ../src/callbacks.cc:34092
+#: ../src/callbacks.cc:29380 ../src/callbacks.cc:34221
 msgid "All Files"
 msgstr "Tous les fichiers"
 
 #. do not delete units that are used by other units
-#: ../src/callbacks.cc:29824
+#: ../src/callbacks.cc:29953
 msgid "Cannot delete unit as it is needed by other units."
 msgstr "Impossible de supprimer l'unité car d'autres unités en ont besoin."
 
-#: ../src/callbacks.cc:30279 ../src/callbacks.cc:30508
+#: ../src/callbacks.cc:30408 ../src/callbacks.cc:30637
 msgid "none"
 msgstr "aucun"
 
-#: ../src/callbacks.cc:30779 ../src/callbacks.cc:30780
-#: ../src/callbacks.cc:30781 ../src/callbacks.cc:30782
-#: ../src/callbacks.cc:30794
+#: ../src/callbacks.cc:30908 ../src/callbacks.cc:30909
+#: ../src/callbacks.cc:30910 ../src/callbacks.cc:30911
+#: ../src/callbacks.cc:30923
 msgid "result is too long"
 msgstr "le résultat est trop long"
 
-#: ../src/callbacks.cc:32014 ../src/callbacks.cc:33517
-#: ../src/callbacks.cc:33716 ../src/callbacks.cc:33871
+#: ../src/callbacks.cc:32143 ../src/callbacks.cc:33646
+#: ../src/callbacks.cc:33845 ../src/callbacks.cc:34000
 msgid "Mode not found."
 msgstr "Le mode n'a pas été trouvé."
 
-#: ../src/callbacks.cc:32778 ../src/callbacks.cc:32786
-#: ../src/callbacks.cc:32794 ../src/callbacks.cc:32802
+#: ../src/callbacks.cc:32907 ../src/callbacks.cc:32915
+#: ../src/callbacks.cc:32923 ../src/callbacks.cc:32931
 msgid "Elements (in horizontal order)"
 msgstr "Éléments (dans l'ordre horizontale)"
 
-#: ../src/callbacks.cc:32815 ../src/callbacks.cc:32900
+#: ../src/callbacks.cc:32944 ../src/callbacks.cc:33029
 msgid "Select file to import"
 msgstr "Sélectionner le fichier à importer"
 
-#: ../src/callbacks.cc:32815 ../src/callbacks.cc:32840
-#: ../src/callbacks.cc:32900
+#: ../src/callbacks.cc:32944 ../src/callbacks.cc:32969
+#: ../src/callbacks.cc:33029
 msgid "_Open"
 msgstr "_Ouvrir"
 
-#: ../src/callbacks.cc:32840
+#: ../src/callbacks.cc:32969
 msgid "Select file to export to"
 msgstr "Sélectionner le fichier à exporter"
 
-#: ../src/callbacks.cc:33206 ../src/callbacks.cc:33236
+#: ../src/callbacks.cc:33335 ../src/callbacks.cc:33365
 msgid ""
 "A conflicting object with the same name exists. If you proceed and save "
 "changes, the conflicting object will be overwritten or deactivated.\n"
@@ -5377,12 +5386,12 @@ msgstr ""
 "les changements, l'objet en conflit sera écrasé ou désactivé.\n"
 "Voulez-vous réellement continuer ?"
 
-#: ../src/callbacks.cc:33418
+#: ../src/callbacks.cc:33547
 msgid "Set key combination"
 msgstr "Définir la combinaison de touches"
 
 #. Make the line reasonably long, but not to short (at least around 40 characters)
-#: ../src/callbacks.cc:33422
+#: ../src/callbacks.cc:33551
 msgid ""
 "Press the key combination you wish to use for the action\n"
 "(press Escape to cancel)."
@@ -5391,31 +5400,31 @@ msgstr ""
 "l'action\n"
 "(appuyer sur Echap pour annuler)."
 
-#: ../src/callbacks.cc:33432
+#: ../src/callbacks.cc:33561
 msgid "No keys"
 msgstr "Pas de touches"
 
-#: ../src/callbacks.cc:33477 ../src/callbacks.cc:33676
-#: ../src/callbacks.cc:33831
+#: ../src/callbacks.cc:33606 ../src/callbacks.cc:33805
+#: ../src/callbacks.cc:33960
 msgid "Empty value."
 msgstr "La valeur est vide."
 
-#: ../src/callbacks.cc:33487 ../src/callbacks.cc:33686
-#: ../src/callbacks.cc:33841
+#: ../src/callbacks.cc:33616 ../src/callbacks.cc:33815
+#: ../src/callbacks.cc:33970
 msgid "Function not found."
 msgstr "La fonction n'a pas été trouvée."
 
-#: ../src/callbacks.cc:33495 ../src/callbacks.cc:33694
-#: ../src/callbacks.cc:33849
+#: ../src/callbacks.cc:33624 ../src/callbacks.cc:33823
+#: ../src/callbacks.cc:33978
 msgid "Variable not found."
 msgstr "La variable n'a pas été trouvée."
 
-#: ../src/callbacks.cc:33503 ../src/callbacks.cc:33702
-#: ../src/callbacks.cc:33857
+#: ../src/callbacks.cc:33632 ../src/callbacks.cc:33831
+#: ../src/callbacks.cc:33986
 msgid "Unit not found."
 msgstr "L'unité n'a pas été trouvée."
 
-#: ../src/callbacks.cc:33544 ../src/callbacks.cc:33603
+#: ../src/callbacks.cc:33673 ../src/callbacks.cc:33732
 msgid ""
 "The key combination is already in use.\n"
 "Do you wish to replace the current action?"
@@ -5423,81 +5432,87 @@ msgstr ""
 "La combinaison de touches est déjà utilisée.\n"
 "Souhaitez-vous remplacer l'action en cours ?"
 
-#: ../src/callbacks.cc:34078
+#: ../src/callbacks.cc:34207
 msgid "Select file to export"
 msgstr "Sélectionner le fichier à exporter"
 
-#: ../src/callbacks.cc:34191 ../src/callbacks.cc:34236
+#: ../src/callbacks.cc:34320 ../src/callbacks.cc:34365
 msgid "Empty expression."
 msgstr "L'expression est vide."
 
-#: ../src/callbacks.cc:34205 ../src/callbacks.cc:34250
+#: ../src/callbacks.cc:34334 ../src/callbacks.cc:34379
 msgid "Empty x variable."
 msgstr "La variable x est vide."
 
-#: ../src/callbacks.cc:34444
+#: ../src/callbacks.cc:34573
 msgid "Element Data"
 msgstr "Données de l'élément"
 
-#: ../src/callbacks.cc:34482
+#: ../src/callbacks.cc:34611
 msgid "Classification"
 msgstr "Classification"
 
-#: ../src/callbacks.cc:34487
+#: ../src/callbacks.cc:34616
 msgid "Alkali Metal"
 msgstr "Métal alcalin"
 
-#: ../src/callbacks.cc:34488
+#: ../src/callbacks.cc:34617
 msgid "Alkaline-Earth Metal"
 msgstr "Métal alcalino-terreux"
 
-#: ../src/callbacks.cc:34489
+#: ../src/callbacks.cc:34618
 msgid "Lanthanide"
 msgstr "Lanthanide"
 
-#: ../src/callbacks.cc:34490
+#: ../src/callbacks.cc:34619
 msgid "Actinide"
 msgstr "Actinide"
 
-#: ../src/callbacks.cc:34491
+#: ../src/callbacks.cc:34620
 msgid "Transition Metal"
 msgstr "Métal de transition"
 
-#: ../src/callbacks.cc:34492
+#: ../src/callbacks.cc:34621
 msgid "Metal"
 msgstr "Métal"
 
-#: ../src/callbacks.cc:34493
+#: ../src/callbacks.cc:34622
 msgid "Metalloid"
 msgstr "Métalloïde"
 
-#: ../src/callbacks.cc:34494
+#: ../src/callbacks.cc:34623
 msgid "Polyatomic Non-Metal"
 msgstr "Polyatomique (Non-métal)"
 
-#: ../src/callbacks.cc:34495
+#: ../src/callbacks.cc:34624
 msgid "Diatomic Non-Metal"
 msgstr "Diatomique (Non-métal)"
 
-#: ../src/callbacks.cc:34496
+#: ../src/callbacks.cc:34625
 msgid "Noble Gas"
 msgstr "Gaz noble"
 
-#: ../src/callbacks.cc:34497
+#: ../src/callbacks.cc:34626
 msgid "Unknown chemical properties"
 msgstr "Propriétés chimiques inconnues"
 
-#: ../src/callbacks.cc:34593
+#: ../src/callbacks.cc:34722
 msgid "No unknowns in result."
 msgstr "Aucune inconnue dans le résultat."
 
-#: ../src/callbacks.cc:34599
+#: ../src/callbacks.cc:34728
 msgid "Set Unknowns"
 msgstr "Définir les inconnues"
 
 #: ../src/searchprovider.cc:244
 msgid "Copy result to clipboard"
 msgstr "Copier le résultat dans le presse-papier"
+
+#~ msgid ""
+#~ "If a matrix or vectors shall be generated from the contents of the file "
+#~ msgstr ""
+#~ "Si une matrice ou des vecteurs doivent être générés à partir du contenu "
+#~ "du fichier "
 
 #~ msgid "Use dark theme"
 #~ msgstr "Utiliser le thème sombre"

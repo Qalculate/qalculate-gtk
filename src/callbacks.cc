@@ -100,7 +100,7 @@ extern GtkTreeModel *completion_filter, *completion_sort;
 extern unordered_map<size_t, GtkWidget*> cal_year, cal_month, cal_day, cal_label;
 extern GtkWidget *chinese_stem, *chinese_branch;
 
-extern GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider, *app_provider_theme, *statusframe_provider;
+extern GtkCssProvider *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider, *app_provider_theme, *statusframe_provider, *color_provider;
 
 extern GtkWidget *expressiontext, *statuslabel_l, *statuslabel_r, *result_bases, *keypad;
 int two_result_bases_rows = -1;
@@ -263,7 +263,7 @@ int max_plot_time = 5;
 
 bool b_editing_stack = false;
 
-string status_error_color, status_warning_color;
+string status_error_color, status_warning_color, text_color;
 
 string nbases_error_color, nbases_warning_color;
 
@@ -337,6 +337,7 @@ extern gchar history_bookmark_color[8];
 
 bool status_error_color_set;
 bool status_warning_color_set;
+bool text_color_set;
 
 string old_fromValue, old_toValue;
 
@@ -19156,6 +19157,8 @@ void load_preferences() {
 	status_warning_color = "#0000FF";
 	status_error_color_set = false;
 	status_warning_color_set = false;
+	text_color = "#FFFFFF";
+	text_color_set = false;
 	show_keypad = true;
 	show_history = false;
 	show_stack = true;
@@ -19824,6 +19827,9 @@ void load_preferences() {
 				} else if(svar == "status_error_color") {
 					status_error_color = svalue;
 					status_error_color_set = true;
+				} else if(svar == "text_color") {
+					text_color = svalue;
+					text_color_set = true;
 				} else if(svar == "status_warning_color") {
 					status_warning_color = svalue;
 					status_warning_color_set = true;
@@ -20345,6 +20351,7 @@ void save_preferences(bool mode) {
 	if(use_custom_app_font || save_custom_app_font) fprintf(file, "custom_application_font=%s\n", custom_app_font.c_str());
 	if(status_error_color_set) fprintf(file, "status_error_color=%s\n", status_error_color.c_str());
 	if(status_warning_color_set) fprintf(file, "status_warning_color=%s\n", status_warning_color.c_str());
+	if(text_color_set) fprintf(file, "text_color=%s\n", text_color.c_str());
 	fprintf(file, "multiplication_sign=%i\n", printops.multiplication_sign);
 	fprintf(file, "division_sign=%i\n", printops.division_sign);
 	if(automatic_fraction) fprintf(file, "automatic_number_fraction_format=%i\n", automatic_fraction);
@@ -21517,6 +21524,20 @@ void on_main_window_close(GtkWidget *w, GdkEvent *event, gpointer user_data) {
 /*
 	change preferences
 */
+void on_colorbutton_text_color_color_set(GtkColorButton *w, gpointer) {
+	GdkRGBA c;
+	gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(w), &c);
+	gchar color_str[8];
+	g_snprintf(color_str, 8, "#%02x%02x%02x", (int) (c.red * 255), (int) (c.green * 255), (int) (c.blue * 255));
+	text_color = color_str;
+	text_color_set = true;
+	if(!color_provider) {
+		color_provider = gtk_css_provider_new();
+		gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(color_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	}
+	string css_str = "* {color: "; css_str += text_color; css_str += "}";
+	gtk_css_provider_load_from_data(color_provider, css_str.c_str(), -1, NULL);
+}
 void on_colorbutton_status_error_color_color_set(GtkColorButton *w, gpointer) {
 	GdkRGBA c;
 	gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(w), &c);
@@ -21976,11 +21997,15 @@ void on_preferences_checkbutton_custom_app_font_toggled(GtkToggleButton *w, gpoi
 	use_custom_app_font = gtk_toggle_button_get_active(w);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_app_font")), use_custom_app_font);
 	if(use_custom_app_font) {
+		if(!app_provider) {
+			app_provider = gtk_css_provider_new();
+			gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(app_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		}
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_keypad_font")), FALSE);
 		gchar *gstr = font_name_to_css(custom_app_font.c_str());
 		gtk_css_provider_load_from_data(app_provider, gstr, -1, NULL);
 		g_free(gstr);
-	} else {
+	} else if(app_provider) {
 		gtk_css_provider_load_from_data(app_provider, "", -1, NULL);
 	}
 	expression_font_modified();
@@ -22157,6 +22182,10 @@ void on_preferences_button_app_font_font_set(GtkFontButton *w, gpointer) {
 	save_custom_app_font = true;
 	custom_app_font = gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w));
 	gchar *gstr = font_name_to_css(custom_app_font.c_str());
+	if(!app_provider) {
+		app_provider = gtk_css_provider_new();
+		gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(app_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	}
 	gtk_css_provider_load_from_data(app_provider, gstr, -1, NULL);
 	expression_font_modified();
 	result_font_modified();
@@ -31786,14 +31815,14 @@ void on_unknown_edit_checkbutton_custom_assumptions_toggled(GtkToggleButton *w, 
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_sign")), gtk_toggle_button_get_active(w));
 }
 void on_unknown_edit_combobox_type_changed(GtkComboBox *om, gpointer) {
-	if((gtk_combo_box_get_active(om) == 0 && (AssumptionSign) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"))) != ASSUMPTION_SIGN_NONZERO) || ((gtk_combo_box_get_active(om) == 0 || (AssumptionType) gtk_combo_box_get_active(om) + 3 == ASSUMPTION_TYPE_BOOLEAN) && (AssumptionSign) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"))) != ASSUMPTION_SIGN_UNKNOWN)) {
+	if((gtk_combo_box_get_active(om) == 0 && (AssumptionSign) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"))) != ASSUMPTION_SIGN_NONZERO && gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"))) != ASSUMPTION_SIGN_UNKNOWN) || ((AssumptionType) gtk_combo_box_get_active(om) + 3 == ASSUMPTION_TYPE_BOOLEAN && (AssumptionSign) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"))) != ASSUMPTION_SIGN_UNKNOWN)) {
 		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_unknown_edit_combobox_sign_changed, NULL);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), ASSUMPTION_SIGN_UNKNOWN);
 		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_unknown_edit_combobox_sign_changed, NULL);
 	}
 }
 void on_unknown_edit_combobox_sign_changed(GtkComboBox *om, gpointer) {
-	if(((AssumptionSign) gtk_combo_box_get_active(om) != ASSUMPTION_SIGN_NONZERO && gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"))) == 0) || ((AssumptionSign) gtk_combo_box_get_active(om) != ASSUMPTION_SIGN_UNKNOWN && (gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"))) == 0 || (AssumptionType) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"))) + 3 == ASSUMPTION_TYPE_BOOLEAN))) {
+	if((gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"))) == 0 && (AssumptionSign) gtk_combo_box_get_active(om) != ASSUMPTION_SIGN_UNKNOWN && (AssumptionSign) gtk_combo_box_get_active(om) != ASSUMPTION_SIGN_NONZERO) || ((AssumptionType) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"))) + 3 == ASSUMPTION_TYPE_BOOLEAN && (AssumptionSign) gtk_combo_box_get_active(om) != ASSUMPTION_SIGN_UNKNOWN)) {
 		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_unknown_edit_combobox_type_changed, NULL);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), 1);
 		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_unknown_edit_combobox_type_changed, NULL);
