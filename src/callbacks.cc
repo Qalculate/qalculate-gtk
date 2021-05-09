@@ -1,5 +1,5 @@
 /*
-    Qalculate (GTK+ UI)
+    Qalculate (GTK UI)
 
     Copyright (C) 2003-2007, 2008, 2016-2021  Hanna Knutsson (hanna.knutsson@protonmail.com)
 
@@ -31714,11 +31714,11 @@ void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
 	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(dialog), authors);
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), _("Powerful and easy to use calculator"));
 	gtk_about_dialog_set_license_type(GTK_ABOUT_DIALOG(dialog), GTK_LICENSE_GPL_2_0);
-	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016-2020 Hanna Knutsson");
+	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016-2021 Hanna Knutsson");
 	gtk_about_dialog_set_logo_icon_name(GTK_ABOUT_DIALOG(dialog), "qalculate");
-	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(dialog), "Qalculate! (GTK+)");
+	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(dialog), "Qalculate! (GTK)");
 	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dialog), VERSION);
-	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(dialog), "http://qalculate.github.io/");
+	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(dialog), "https://qalculate.github.io/");
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(mainwindow));
 	g_signal_connect(G_OBJECT(dialog), "activate-link", G_CALLBACK(on_about_activate_link), NULL);
 	gtk_dialog_run(GTK_DIALOG(dialog));
