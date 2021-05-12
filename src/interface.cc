@@ -318,6 +318,204 @@ void test_border() {
 #endif
 }
 
+GdkRGBA c_gray;
+
+void update_colors(bool initial) {
+
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
+	if(!initial) {
+		gchar *gstr = gtk_css_provider_to_string(topframe_provider);
+		string topframe_css = gstr;
+		size_t i1 = topframe_css.find("background-color:");
+		if(i1 != string::npos) {
+			i1 += 18;
+			size_t i2 = topframe_css.find(";", i1);
+			if(i2 != string::npos) {
+				topframe_css
+				GdkRGBA bg_color;
+				gtk_style_context_get_background_color(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, &bg_color);
+				gchar *gstr = gdk_rgba_to_string(&bg_color);
+				topframe_css.replace(i1, i2 - i1 - 1, gstr);
+				g_free(gstr);
+				gtk_css_provider_load_from_data(topframe_provider, topframe_css.c_str(), -1, NULL);
+			}
+		}
+	}
+#endif
+
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 14
+
+	gint scalefactor = gtk_widget_get_scale_factor(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")));
+	cairo_surface_t *surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 16 * scalefactor, 16 * scalefactor);
+	cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
+	cairo_t *cr = cairo_create(surface);
+	GdkRGBA rgba;
+	gtk_style_context_get_color(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals"))), GTK_STATE_FLAG_NORMAL, &rgba);
+
+	PangoLayout *layout_equals = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), "=");
+	PangoFontDescription *font_desc;
+	gtk_style_context_get(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+	pango_font_description_set_weight(font_desc, PANGO_WEIGHT_MEDIUM);
+	pango_font_description_set_absolute_size(font_desc, PANGO_SCALE * 26);
+	pango_layout_set_font_description(layout_equals, font_desc);
+
+	PangoRectangle rect, lrect;
+	pango_layout_get_pixel_extents(layout_equals, &rect, &lrect);
+	if(rect.width >= 16) {
+		pango_font_description_set_absolute_size(font_desc, PANGO_SCALE * 18);
+		pango_layout_set_font_description(layout_equals, font_desc);
+		pango_layout_get_pixel_extents(layout_equals, &rect, &lrect);
+	}
+
+	pango_font_description_free(font_desc);
+
+	double offset_x = (rect.x - (lrect.width - (rect.x + rect.width))) / 2.0, offset_y = (rect.y - (lrect.height - (rect.y + rect.height))) / 2.0;
+	cairo_move_to(cr, (16 - lrect.width) / 2.0 - offset_x, (16 - lrect.height) / 2.0 - offset_y);
+	gdk_cairo_set_source_rgba(cr, &rgba);
+	pango_cairo_show_layout(cr, layout_equals);
+	g_object_unref(layout_equals);
+	cairo_destroy(cr);
+	gtk_image_set_from_surface(GTK_IMAGE(gtk_builder_get_object(main_builder, "expression_button_equals")), surface);
+	cairo_surface_destroy(surface);
+
+#endif
+
+	if(initial || !text_color_set) {
+
+		GdkRGBA c;
+
+		gtk_style_context_get_color(gtk_widget_get_style_context(historyview), GTK_STATE_FLAG_NORMAL, &c);
+		GdkRGBA c_red = c;
+		if(c_red.red >= 0.8) {
+			c_red.green /= 1.5;
+			c_red.blue /= 1.5;
+			c_red.red = 1.0;
+		} else {
+			if(c_red.red >= 0.5) c_red.red = 1.0;
+			else c_red.red += 0.5;
+		}
+		g_snprintf(history_error_color, 8, "#%02x%02x%02x", (int) (c_red.red * 255), (int) (c_red.green * 255), (int) (c_red.blue * 255));
+
+		GdkRGBA c_blue = c;
+		if(c_blue.blue >= 0.8) {
+			c_blue.green /= 1.5;
+			c_blue.red /= 1.5;
+			c_blue.blue = 1.0;
+		} else {
+			if(c_blue.blue >= 0.4) c_blue.blue = 1.0;
+			else c_blue.blue += 0.6;
+		}
+		g_snprintf(history_warning_color, 8, "#%02x%02x%02x", (int) (c_blue.red * 255), (int) (c_blue.green * 255), (int) (c_blue.blue * 255));
+
+		GdkRGBA c_green = c;
+		if(c_green.green >= 0.8) {
+			c_green.blue /= 1.5;
+			c_green.red /= 1.5;
+			c_green.green = 0.8;
+		} else {
+			if(c_green.green >= 0.4) c_green.green = 0.8;
+			else c_green.green += 0.4;
+		}
+		g_snprintf(history_bookmark_color, 8, "#%02x%02x%02x", (int) (c_green.red * 255), (int) (c_green.green * 255), (int) (c_green.blue * 255));
+
+		c_gray = c;
+		if(c_gray.blue + c_gray.green + c_gray.red > 1.5) {
+			c_gray.green /= 1.5;
+			c_gray.red /= 1.5;
+			c_gray.blue /= 1.5;
+		} else if(c_gray.blue + c_gray.green + c_gray.red > 0.3) {
+			c_gray.green += 0.235;
+			c_gray.red += 0.235;
+			c_gray.blue += 0.235;
+		} else if(c_gray.blue + c_gray.green + c_gray.red > 0.15) {
+			c_gray.green += 0.3;
+			c_gray.red += 0.3;
+			c_gray.blue += 0.3;
+		} else {
+			c_gray.green += 0.4;
+			c_gray.red += 0.4;
+			c_gray.blue += 0.4;
+		}
+		g_snprintf(history_parse_color, 8, "#%02x%02x%02x", (int) (c_gray.red * 255), (int) (c_gray.green * 255), (int) (c_gray.blue * 255));
+		if(!initial) g_object_set(G_OBJECT(history_index_renderer), "ypad", 0, "yalign", 0.0, "xalign", 0.5, "foreground-rgba", &c_gray, NULL);
+
+		gtk_style_context_get_color(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, &c);
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
+		if(gdk_rgba_equal(&c, &bg_color)) {
+			gtk_style_context_get_color(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, &c);
+		}
+#endif
+		GdkRGBA c_par = c;
+		if(c_par.green >= 0.8) {
+			c_par.red /= 1.5;
+			c_par.blue /= 1.5;
+			c_par.green = 1.0;
+		} else {
+			if(c_par.green >= 0.5) c_par.green = 1.0;
+			else c_par.green += 0.5;
+		}
+		if(initial) {
+			PangoLayout *layout_par = gtk_widget_create_pango_layout(expressiontext, "()");
+			gint w1 = 0, w2 = 0;
+			pango_layout_get_pixel_size(layout_par, &w1, NULL);
+			pango_layout_set_markup(layout_par, "<b>()</b>", -1);
+			pango_layout_get_pixel_size(layout_par, &w2, NULL);
+			g_object_unref(layout_par);
+			if(w1 == w2) expression_par_tag = gtk_text_buffer_create_tag(expressionbuffer, "curpar", "foreground-rgba", &c_par, "weight", PANGO_WEIGHT_BOLD, NULL);
+			else expression_par_tag = gtk_text_buffer_create_tag(expressionbuffer, "curpar", "foreground-rgba", &c_par, NULL);
+		} else {
+			g_object_set(G_OBJECT(expression_par_tag), "foreground-rgba", &c_par, NULL);
+		}
+
+		gchar tcs[8];
+		g_snprintf(tcs, 8, "#%02x%02x%02x", (int) (c.red * 255), (int) (c.green * 255), (int) (c.blue * 255));
+		if(initial && text_color == tcs) text_color_set = false;
+		if(!text_color_set) {
+			text_color = tcs;
+			if(initial) color_provider = NULL;
+		} else if(initial) {
+			color_provider = gtk_css_provider_new();
+			string css_str = "* {color: "; css_str += text_color; css_str += "}";
+			gtk_css_provider_load_from_data(color_provider, css_str.c_str(), -1, NULL);
+			gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(color_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		}
+
+		if(initial) gtk_style_context_get_color(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, &c);
+
+		if(!status_error_color_set) {
+			GdkRGBA c_err = c;
+			if(c_err.red >= 0.8) {
+				c_err.green /= 1.5;
+				c_err.blue /= 1.5;
+				c_err.red = 1.0;
+			} else {
+				if(c_err.red >= 0.5) c_err.red = 1.0;
+				else c_err.red += 0.5;
+			}
+			gchar ecs[8];
+			g_snprintf(ecs, 8, "#%02x%02x%02x", (int) (c_err.red * 255), (int) (c_err.green * 255), (int) (c_err.blue * 255));
+			status_error_color = ecs;
+		}
+
+		if(!status_warning_color_set) {
+			GdkRGBA c_warn = c;
+			if(c_warn.blue >= 0.8) {
+				c_warn.green /= 1.5;
+				c_warn.red /= 1.5;
+				c_warn.blue = 1.0;
+			} else {
+				if(c_warn.blue >= 0.3) c_warn.blue = 1.0;
+				else c_warn.blue += 0.7;
+			}
+			gchar wcs[8];
+			g_snprintf(wcs, 8, "#%02x%02x%02x", (int) (c_warn.red * 255), (int) (c_warn.green * 255), (int) (c_warn.blue * 255));
+			status_warning_color = wcs;
+		}
+
+	}
+
+}
+
 void set_assumptions_items(AssumptionType at, AssumptionSign as) {
 	switch(as) {
 		case ASSUMPTION_SIGN_POSITIVE: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_assumptions_positive")), TRUE); break;}
@@ -1620,114 +1818,11 @@ void create_main_window(void) {
 
 	update_status_text();
 
-#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 14
-
-	gint scalefactor = gtk_widget_get_scale_factor(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")));
-	cairo_surface_t *surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 16 * scalefactor, 16 * scalefactor);
-	cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-	cairo_t *cr = cairo_create(surface);
-	GdkRGBA rgba;
-	gtk_style_context_get_color(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals"))), GTK_STATE_FLAG_NORMAL, &rgba);
-
-	PangoLayout *layout_equals = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), "=");
-	PangoFontDescription *font_desc;
-	gtk_style_context_get(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-	pango_font_description_set_weight(font_desc, PANGO_WEIGHT_MEDIUM);
-	pango_font_description_set_absolute_size(font_desc, PANGO_SCALE * 26);
-	pango_layout_set_font_description(layout_equals, font_desc);
-
-	PangoRectangle rect, lrect;
-	pango_layout_get_pixel_extents(layout_equals, &rect, &lrect);
-	if(rect.width >= 16) {
-		pango_font_description_set_absolute_size(font_desc, PANGO_SCALE * 18);
-		pango_layout_set_font_description(layout_equals, font_desc);
-		pango_layout_get_pixel_extents(layout_equals, &rect, &lrect);
-	}
-
-	pango_font_description_free(font_desc);
-
-	double offset_x = (rect.x - (lrect.width - (rect.x + rect.width))) / 2.0, offset_y = (rect.y - (lrect.height - (rect.y + rect.height))) / 2.0;
-	cairo_move_to(cr, (16 - lrect.width) / 2.0 - offset_x, (16 - lrect.height) / 2.0 - offset_y);
-	gdk_cairo_set_source_rgba(cr, &rgba);
-	pango_cairo_show_layout(cr, layout_equals);
-	g_object_unref(layout_equals);
-	cairo_destroy(cr);
-	gtk_image_set_from_surface(GTK_IMAGE(gtk_builder_get_object(main_builder, "expression_button_equals")), surface);
-	cairo_surface_destroy(surface);
-
-#endif
+	update_colors(true);
 
 	set_unicode_buttons();
 
 	set_operator_symbols();
-	GdkRGBA c;
-	gtk_style_context_get_color(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, &c);
-
-	gchar tcs[8];
-	g_snprintf(tcs, 8, "#%02x%02x%02x", (int) (c.red * 255), (int) (c.green * 255), (int) (c.blue * 255));
-	if(text_color == tcs) text_color_set = false;
-	if(!text_color_set) {
-		text_color = tcs;
-		color_provider = NULL;
-	} else {
-		color_provider = gtk_css_provider_new();
-		string css_str = "* {color: "; css_str += text_color; css_str += "}";
-		gtk_css_provider_load_from_data(color_provider, css_str.c_str(), -1, NULL);
-		gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(color_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	}
-
-	if(!status_error_color_set) {
-		GdkRGBA c_err = c;
-		if(c_err.red >= 0.8) {
-			c_err.green /= 1.5;
-			c_err.blue /= 1.5;
-			c_err.red = 1.0;
-		} else {
-			if(c_err.red >= 0.5) c_err.red = 1.0;
-			else c_err.red += 0.5;
-		}
-		gchar ecs[8];
-		g_snprintf(ecs, 8, "#%02x%02x%02x", (int) (c_err.red * 255), (int) (c_err.green * 255), (int) (c_err.blue * 255));
-		status_error_color = ecs;
-	}
-
-	if(!status_warning_color_set) {
-		GdkRGBA c_warn = c;
-		if(c_warn.blue >= 0.8) {
-			c_warn.green /= 1.5;
-			c_warn.red /= 1.5;
-			c_warn.blue = 1.0;
-		} else {
-			if(c_warn.blue >= 0.3) c_warn.blue = 1.0;
-			else c_warn.blue += 0.7;
-		}
-		gchar wcs[8];
-		g_snprintf(wcs, 8, "#%02x%02x%02x", (int) (c_warn.red * 255), (int) (c_warn.green * 255), (int) (c_warn.blue * 255));
-		status_warning_color = wcs;
-	}
-
-	gtk_style_context_get_color(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, &c);
-#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
-	if(gdk_rgba_equal(&c, &bg_color)) {
-		gtk_style_context_get_color(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, &c);
-	}
-#endif
-	if(c.green >= 0.8) {
-		c.red /= 1.5;
-		c.blue /= 1.5;
-		c.green = 1.0;
-	} else {
-		if(c.green >= 0.5) c.green = 1.0;
-		else c.green += 0.5;
-	}
-	PangoLayout *layout_par = gtk_widget_create_pango_layout(expressiontext, "()");
-	gint w1 = 0, w2 = 0;
-	pango_layout_get_pixel_size(layout_par, &w1, NULL);
-	pango_layout_set_markup(layout_par, "<b>()</b>", -1);
-	pango_layout_get_pixel_size(layout_par, &w2, NULL);
-	g_object_unref(layout_par);
-	if(w1 == w2) expression_par_tag = gtk_text_buffer_create_tag(expressionbuffer, "curpar", "foreground-rgba", &c, "weight", PANGO_WEIGHT_BOLD, NULL);
-	else expression_par_tag = gtk_text_buffer_create_tag(expressionbuffer, "curpar", "foreground-rgba", &c, NULL);
 
 	gtk_widget_grab_focus(expressiontext);
 	gtk_widget_set_can_default(expressiontext, TRUE);
@@ -1948,60 +2043,6 @@ void create_main_window(void) {
 	}
 
 	gtk_builder_connect_signals(main_builder, NULL);
-
-	gtk_style_context_get_color(gtk_widget_get_style_context(historyview), GTK_STATE_FLAG_NORMAL, &c);
-	GdkRGBA c_red = c;
-	if(c_red.red >= 0.8) {
-		c_red.green /= 1.5;
-		c_red.blue /= 1.5;
-		c_red.red = 1.0;
-	} else {
-		if(c_red.red >= 0.5) c_red.red = 1.0;
-		else c_red.red += 0.5;
-	}
-	g_snprintf(history_error_color, 8, "#%02x%02x%02x", (int) (c_red.red * 255), (int) (c_red.green * 255), (int) (c_red.blue * 255));
-
-	GdkRGBA c_blue = c;
-	if(c_blue.blue >= 0.8) {
-		c_blue.green /= 1.5;
-		c_blue.red /= 1.5;
-		c_blue.blue = 1.0;
-	} else {
-		if(c_blue.blue >= 0.4) c_blue.blue = 1.0;
-		else c_blue.blue += 0.6;
-	}
-	g_snprintf(history_warning_color, 8, "#%02x%02x%02x", (int) (c_blue.red * 255), (int) (c_blue.green * 255), (int) (c_blue.blue * 255));
-
-	GdkRGBA c_green = c;
-	if(c_green.green >= 0.8) {
-		c_green.blue /= 1.5;
-		c_green.red /= 1.5;
-		c_green.green = 0.8;
-	} else {
-		if(c_green.green >= 0.4) c_green.green = 0.8;
-		else c_green.green += 0.4;
-	}
-	g_snprintf(history_bookmark_color, 8, "#%02x%02x%02x", (int) (c_green.red * 255), (int) (c_green.green * 255), (int) (c_green.blue * 255));
-
-	GdkRGBA c_gray = c;
-	if(c_gray.blue + c_gray.green + c_gray.red > 1.5) {
-		c_gray.green /= 1.5;
-		c_gray.red /= 1.5;
-		c_gray.blue /= 1.5;
-	} else if(c_gray.blue + c_gray.green + c_gray.red > 0.3) {
-		c_gray.green += 0.235;
-		c_gray.red += 0.235;
-		c_gray.blue += 0.235;
-	} else if(c_gray.blue + c_gray.green + c_gray.red > 0.15) {
-		c_gray.green += 0.3;
-		c_gray.red += 0.3;
-		c_gray.blue += 0.3;
-	} else {
-		c_gray.green += 0.4;
-		c_gray.red += 0.4;
-		c_gray.blue += 0.4;
-	}
-	g_snprintf(history_parse_color, 8, "#%02x%02x%02x", (int) (c_gray.red * 255), (int) (c_gray.green * 255), (int) (c_gray.blue * 255));
 
 	historystore = gtk_list_store_new(8, G_TYPE_STRING, G_TYPE_INT, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_FLOAT, G_TYPE_INT);
 	gtk_tree_view_set_model(GTK_TREE_VIEW(historyview), GTK_TREE_MODEL(historystore));

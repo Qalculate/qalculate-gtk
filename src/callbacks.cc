@@ -1935,7 +1935,7 @@ void set_status_text(string text, bool break_begin = false, bool had_errors = fa
 		pango_layout_set_markup(status_layout, str.c_str(), -1);
 		pango_layout_get_pixel_size(status_layout, &w, NULL);
 	}
-	if((!had_errors || tooltip_text.empty()) && (w < 0 || w > gtk_widget_get_allocated_width(statuslabel_l))) gtk_widget_set_tooltip_markup(statuslabel_l, text.c_str());
+	if((auto_calculate || !had_errors || tooltip_text.empty()) && (w < 0 || w > gtk_widget_get_allocated_width(statuslabel_l))) gtk_widget_set_tooltip_markup(statuslabel_l, text.c_str());
 	else gtk_widget_set_tooltip_text(statuslabel_l, tooltip_text.c_str());
 }
 
@@ -2306,13 +2306,13 @@ void on_history_resize(GtkWidget*, GdkRectangle *alloc, gpointer) {
 }
 
 gboolean on_display_errors_timeout(gpointer) {
-	if(stop_timeouts) return false;
-	if(block_error_timeout) return true;
+	if(stop_timeouts) return FALSE;
+	if(block_error_timeout > 0) return TRUE;
 	if(CALCULATOR->checkSaveFunctionCalled()) {
 		update_vmenu();
 	}
 	display_errors();
-	return true;
+	return TRUE;
 }
 
 gboolean on_activate_link(GtkLabel*, gchar *uri, gpointer) {
@@ -3936,9 +3936,9 @@ void display_parse_status() {
 					parsed_expression_tooltip += "\n• ";
 				}
 				parsed_expression_tooltip += CALCULATOR->message()->message();
+				message_n++;
 			}
 			CALCULATOR->nextMessage();
-			message_n++;
 		}
 		block_error_timeout--;
 		parsed_had_errors = had_errors; parsed_had_warnings = had_warnings;
@@ -7152,6 +7152,10 @@ void update_completion() {
 				str += "</i>";
 			}
 		}
+		if(!b && ename_r->suffix && ename_r->name.length() > 1) {
+			str = sub_suffix(ename_r);
+			b = true;
+		}
 		gchar *gstr = NULL;
 		switch(p->type()) {
 			case PREFIX_DECIMAL: {
@@ -7167,7 +7171,8 @@ void update_completion() {
 				break;
 			}
 		}
-		gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, gstr, 2, p, 3, FALSE, 4, 0, 5, NULL, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 2, -1);
+		if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, gstr, 2, p, 3, FALSE, 4, 0, 5, NULL, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 2, -1);
+		else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, gstr, 2, p, 3, FALSE, 4, 0, 5, NULL, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 2, -1);
 		g_free(gstr);
 	}
 	pango_font_description_free(font_desc);
@@ -9614,11 +9619,11 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 							argcount--;
 						} else if(m[argcount - 1].isVariable() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr == m[argcount - 1].variable()->referenceName()) {
 							argcount--;
-						} else if(m[argcount - 1].isInteger() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr.find_first_not_of(NUMBERS, defstr[0] == '-' && defstr.size() > 1 ? 1 : 0) == string::npos && m[argcount - 1].number() == s2i(defstr)) {
+						} else if(m[argcount - 1].isInteger() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr.find_first_not_of(NUMBERS, defstr[0] == '-' && defstr.length() > 1 ? 1 : 0) == string::npos && m[argcount - 1].number() == s2i(defstr)) {
 							argcount--;
-						} else if(defstr[0] == '-' && m[argcount - 1].isNegate() && m[argcount - 1][0].isInteger() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr.size() > 1 && defstr.find_first_not_of(NUMBERS, 1) == string::npos && m[argcount - 1][0].number() == -s2i(defstr)) {
+						} else if(defstr[0] == '-' && m[argcount - 1].isNegate() && m[argcount - 1][0].isInteger() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr.find_first_not_of(NUMBERS, 1) == string::npos && m[argcount - 1][0].number() == -s2i(defstr)) {
 							argcount--;
-						} else if(defstr[0] == '-' && m[argcount - 1].isMultiplication() && m[argcount - 1].size() == 2 && (m[argcount - 1][0].isMinusOne() || (m[argcount - 1][0].isNegate() && m[argcount - 1][0][0].isOne())) && m[argcount - 1][1].isInteger() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr.size() > 1 && defstr.find_first_not_of(NUMBERS, 1) == string::npos && m[argcount - 1][1].number() == -s2i(defstr)) {
+						} else if(defstr[0] == '-' && m[argcount - 1].isMultiplication() && m[argcount - 1].size() == 2 && (m[argcount - 1][0].isMinusOne() || (m[argcount - 1][0].isNegate() && m[argcount - 1][0][0].isOne())) && m[argcount - 1][1].isInteger() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr.find_first_not_of(NUMBERS, 1) == string::npos && m[argcount - 1][1].number() == -s2i(defstr)) {
 							argcount--;
 						} else if(m[argcount - 1].isSymbolic() && arg && arg->type() == ARGUMENT_TYPE_TEXT && (m[argcount - 1].symbol() == defstr || (defstr == "\"\"" && m[argcount - 1].symbol().empty()))) {
 							argcount--;
@@ -21446,7 +21451,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 				}
 			}
 		}
-		if(ename && ename->completion_only) {
+		if(ename && (ename->completion_only || (printops.use_unicode_signs && ename->name == "u"))) {
 			ename = &prefix->preferredInputName(ename->abbreviation, printops.use_unicode_signs, ename->plural, false, &can_display_unicode_string_function, (void*) expressiontext);
 		}
 		if(!ename) ename = ename_r;
@@ -21855,6 +21860,15 @@ void on_preferences_combo_theme_changed(GtkComboBox *w, gpointer) {
 		case 3: {gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/HighContrast/gtk-contained-inverse.css"); break;}
 		default: {gtk_css_provider_load_from_data(app_provider_theme, "", -1, NULL);}
 	}
+	update_colors(false);
+	reload_history();
+	GdkRGBA c;
+	gdk_rgba_parse(&c, text_color.c_str());
+	gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(gtk_builder_get_object(preferences_builder, "colorbutton_text_color")), &c);
+	gdk_rgba_parse(&c, status_error_color.c_str());
+	gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(gtk_builder_get_object(preferences_builder, "colorbutton_status_error_color")), &c);
+	gdk_rgba_parse(&c, status_warning_color.c_str());
+	gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(gtk_builder_get_object(preferences_builder, "colorbutton_status_warning_color")), &c);
 #endif
 }
 void on_preferences_checkbutton_use_systray_icon_toggled(GtkToggleButton *w, gpointer) {

@@ -139,6 +139,7 @@ void destroy_systray_icon();
 #endif
 bool has_systray_icon();
 void test_border(void);
+void update_colors(bool initial = false);
 void set_custom_buttons(void);
 void update_custom_buttons(int index = -1);
 void update_custom_buttons_edit(int index = -1, bool update_label_entry = true);
