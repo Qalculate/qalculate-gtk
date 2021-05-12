@@ -1,5 +1,5 @@
 /*
-    Qalculate (GTK+ UI)
+    Qalculate (GTK UI)
 
     Copyright (C) 2003-2007, 2008, 2016-2020  Hanna Knutsson (hanna.knutsson@protonmail.com)
 
