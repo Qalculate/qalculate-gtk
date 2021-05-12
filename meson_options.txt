@@ -1,0 +1,20 @@
+option(
+  'webkitgtk',
+  type: 'feature',
+  value: 'auto',
+  description: 'use WebKitGTK for display of the user manual.'
+)
+
+option(
+  'gnome-search',
+  type: 'feature',
+  value: 'auto',
+  description: 'GNOME shell search provider.'
+)
+
+option(
+    'local-help',
+    type: 'boolean',
+    value: true,
+    description: 'Use local help files instead of online manual',
+)
