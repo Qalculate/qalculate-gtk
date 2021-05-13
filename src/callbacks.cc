@@ -234,7 +234,7 @@ vector<GtkTreeViewColumn*> matrix_edit_columns, matrix_columns;
 extern GtkAccelGroup *accel_group;
 
 extern gint win_height, win_width, win_x, win_y, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2, hidden_x, hidden_y;;
-bool remember_position = false;
+bool remember_position = false, always_on_top = false;
 
 gint minimal_width;
 
@@ -19115,6 +19115,7 @@ void load_preferences() {
 	win_x = 0;
 	win_y = 0;
 	remember_position = false;
+	always_on_top = false;
 	win_width = -1;
 	win_height = -1;
 	variables_width = -1;
@@ -19254,6 +19255,8 @@ void load_preferences() {
 					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 15)) win_width -= 6;
 				/*} else if(svar == "height") {
 					win_height = v;*/
+				} else if(svar == "always_on_top") {
+					always_on_top = v;
 				} else if(svar == "x") {
 					win_x = v;
 					remember_position = true;
@@ -20249,6 +20252,7 @@ void save_preferences(bool mode) {
 			fprintf(file, "y=%i\n", win_y);
 		}
 	}
+	fprintf(file, "always_on_top=%i\n", always_on_top);
 #ifdef _WIN32
 	fprintf(file, "use_system_tray_icon=%i\n", use_systray_icon);
 	fprintf(file, "hide_on_startup=%i\n", hide_on_startup);
@@ -21678,6 +21682,10 @@ void on_preferences_checkbutton_check_version_toggled(GtkToggleButton *w, gpoint
 }
 void on_preferences_checkbutton_remember_position_toggled(GtkToggleButton *w, gpointer) {
 	remember_position = gtk_toggle_button_get_active(w);
+}
+void on_preferences_checkbutton_keep_above_toggled(GtkToggleButton *w, gpointer) {
+	always_on_top = gtk_toggle_button_get_active(w);
+	gtk_window_set_keep_above(GTK_WINDOW(mainwindow), always_on_top);
 }
 void on_preferences_checkbutton_local_currency_conversion_toggled(GtkToggleButton *w, gpointer) {
 	evalops.local_currency_conversion = gtk_toggle_button_get_active(w);

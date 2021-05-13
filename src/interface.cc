@@ -196,7 +196,7 @@ extern vector<GtkWidget*> popup_result_mode_items;
 extern deque<string> expression_undo_buffer;
 
 gint win_height, win_width, win_x, win_y, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
-extern bool remember_position;
+extern bool remember_position, always_on_top;
 extern gint minimal_width;
 
 extern Unit *latest_button_unit, *latest_button_currency;
@@ -2224,6 +2224,7 @@ void create_main_window(void) {
 	else if(win_width > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width, win_height);
 
 	if(remember_position) gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_x, win_y);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), always_on_top);
 
 	g_signal_connect_after(gtk_builder_get_object(main_builder, "historyscrolled"), "size-allocate", G_CALLBACK(on_history_resize), NULL);
 
@@ -2563,6 +2564,7 @@ GtkWidget* get_preferences_dialog(void) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_ignore_locale")), ignore_locale);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_check_version")), check_version);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_remember_position")), remember_position);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_keep_above")), always_on_top);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_persistent_keypad")), persistent_keypad);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_title")), title_type);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_unicode_signs")), printops.use_unicode_signs);
