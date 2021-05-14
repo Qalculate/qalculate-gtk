@@ -6195,6 +6195,9 @@ const gchar *shortcut_type_text(int type, bool return_null) {
 		case SHORTCUT_TYPE_HELP: {return _("Help"); break;}
 		case SHORTCUT_TYPE_QUIT: {return _("Quit"); break;}
 		case SHORTCUT_TYPE_CHAIN_MODE: {return _("Toggle chain mode"); break;}
+		case SHORTCUT_TYPE_ALWAYS_ON_TOP: {return _("Toggle keep above"); break;}
+		case SHORTCUT_TYPE_DO_COMPLETION: {return _("Show/hide completion"); break;}
+		case SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION: {return _("Perform completion (activate first item)"); break;}
 	}
 	if(return_null) return NULL;
 	return "-";
@@ -19996,7 +19999,7 @@ void load_preferences() {
 					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 8)) {
 						if(ks.type >= SHORTCUT_TYPE_FLOATING_POINT) ks.type++;
 					}
-					if(n >= 3 && ks.type >= SHORTCUT_TYPE_FUNCTION && ks.type <= SHORTCUT_TYPE_CHAIN_MODE) {
+					if(n >= 3 && ks.type >= SHORTCUT_TYPE_FUNCTION && ks.type <= LAST_SHORTCUT_TYPE) {
 						if(n == 4) ks.value = str;
 						keyboard_shortcuts[(guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier] = ks;
 					}
@@ -20163,11 +20166,18 @@ void load_preferences() {
 		ADD_SHORTCUT(GDK_KEY_c, GDK_CONTROL_MASK | GDK_SHIFT_MASK, SHORTCUT_TYPE_RPN_COPY, "")
 		ADD_SHORTCUT(GDK_KEY_Delete, GDK_CONTROL_MASK, SHORTCUT_TYPE_RPN_DELETE, "")
 		ADD_SHORTCUT(GDK_KEY_Delete, GDK_CONTROL_MASK | GDK_SHIFT_MASK, SHORTCUT_TYPE_RPN_CLEAR, "")
-	} else if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 9)) {
+		ADD_SHORTCUT(GDK_KEY_Tab, 0, SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION, "")
+	} else if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 19)) {
 		keyboard_shortcut ks;
-		ks.key = GDK_KEY_space; ks.modifier = GDK_CONTROL_MASK; ks.type = SHORTCUT_TYPE_MINIMAL; ks.value = "";
+		ks.key = GDK_KEY_Tab; ks.modifier = 0; ks.type = SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION; ks.value = "";
 		if(keyboard_shortcuts.find((guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier) == keyboard_shortcuts.end()) {
 			keyboard_shortcuts[(guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier] = ks;
+		}
+		if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 9)) {
+			ks.key = GDK_KEY_space; ks.modifier = GDK_CONTROL_MASK; ks.type = SHORTCUT_TYPE_MINIMAL; ks.value = "";
+			if(keyboard_shortcuts.find((guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier) == keyboard_shortcuts.end()) {
+				keyboard_shortcuts[(guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier] = ks;
+			}
 		}
 	}
 	if(show_keypad && !(visible_keypad & HIDE_RIGHT_KEYPAD) && !(visible_keypad & HIDE_LEFT_KEYPAD) && (version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 15))) win_width = -1;
@@ -32353,6 +32363,43 @@ bool do_shortcut(int type, string value) {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_chain_mode")), !chain_mode);
 			return true;
 		}
+		case SHORTCUT_TYPE_ALWAYS_ON_TOP: {
+			if(preferences_builder) {
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_keep_above")), !always_on_top);
+			} else {
+				always_on_top = !always_on_top;
+				gtk_window_set_keep_above(GTK_WINDOW(mainwindow), always_on_top);
+			}
+			return true;
+		}
+		case SHORTCUT_TYPE_DO_COMPLETION: {
+			if(gtk_widget_get_visible(completion_window)) {
+				gtk_widget_hide(completion_window);
+			} else {
+				int cm_bak = completion_min;
+				bool ec_bak = enable_completion, ec2_bak = enable_completion2;
+				completion_min = 1;
+				if(!enable_completion) enable_completion2 = true;
+				enable_completion = true;
+				do_completion();
+				completion_min = cm_bak;
+				enable_completion = ec_bak;
+				enable_completion2 = ec2_bak;
+			}
+			return true;
+		}
+		case SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION: {
+			if(gtk_widget_get_visible(completion_window)) {
+				GtkTreeIter iter;
+				if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(completion_view)), NULL, &iter)) {
+					gtk_tree_model_get_iter_first(completion_sort, &iter);
+				}
+				GtkTreePath *path = gtk_tree_model_get_path(completion_sort, &iter);
+				on_completion_match_selected(GTK_TREE_VIEW(completion_view), path, NULL, NULL);
+				gtk_tree_path_free(path);
+				return true;
+			}
+		}
 	}
 	return false;
 }
@@ -33589,7 +33636,7 @@ bool get_keyboard_shortcut(GtkWindow *parent) {
 	gtk_widget_show(shortcut_label);
 	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
 		gtk_widget_destroy(dialog);
-		return current_shortcut_key != 0 && current_shortcut_modifier != 0;
+		return current_shortcut_key != 0;
 	}
 	gtk_widget_destroy(dialog);
 	return false;

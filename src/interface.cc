@@ -3846,6 +3846,13 @@ GtkWidget* get_shortcuts_dialog(void) {
 			if(i == SHORTCUT_TYPE_RPN_MODE) {
 				gtk_list_store_append(tShortcutsType_store, &iter);
 				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_CHAIN_MODE), 1, SHORTCUT_TYPE_CHAIN_MODE, -1);
+			} else if(i == SHORTCUT_TYPE_MINIMAL) {
+				gtk_list_store_append(tShortcutsType_store, &iter);
+				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_ALWAYS_ON_TOP), 1, SHORTCUT_TYPE_ALWAYS_ON_TOP, -1);
+				gtk_list_store_append(tShortcutsType_store, &iter);
+				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_DO_COMPLETION), 1, SHORTCUT_TYPE_DO_COMPLETION, -1);
+				gtk_list_store_append(tShortcutsType_store, &iter);
+				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION), 1, SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION, -1);
 			}
 			if(i == 0) gtk_tree_selection_select_iter(selection, &iter);
 		}
@@ -4001,6 +4008,13 @@ GtkWidget* get_buttons_edit_dialog(void) {
 			if(i == SHORTCUT_TYPE_RPN_MODE) {
 				gtk_list_store_append(tButtonsEditType_store, &iter);
 				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_CHAIN_MODE), 1, SHORTCUT_TYPE_CHAIN_MODE, -1);
+			} else if(i == SHORTCUT_TYPE_MINIMAL) {
+				gtk_list_store_append(tButtonsEditType_store, &iter);
+				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_ALWAYS_ON_TOP), 1, SHORTCUT_TYPE_ALWAYS_ON_TOP, -1);
+				gtk_list_store_append(tButtonsEditType_store, &iter);
+				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_DO_COMPLETION), 1, SHORTCUT_TYPE_DO_COMPLETION, -1);
+				gtk_list_store_append(tButtonsEditType_store, &iter);
+				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION), 1, SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION, -1);
 			}
 			if(i == 0) gtk_tree_selection_select_iter(selection, &iter);
 		}
