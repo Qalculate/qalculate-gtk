@@ -323,17 +323,17 @@ GdkRGBA c_gray;
 void update_colors(bool initial) {
 
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
+	GdkRGBA bg_color;
+	gtk_style_context_get_background_color(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, &bg_color);
 	if(!initial) {
 		gchar *gstr = gtk_css_provider_to_string(topframe_provider);
 		string topframe_css = gstr;
+		g_free(gstr);
 		size_t i1 = topframe_css.find("background-color:");
 		if(i1 != string::npos) {
 			i1 += 18;
 			size_t i2 = topframe_css.find(";", i1);
 			if(i2 != string::npos) {
-				topframe_css
-				GdkRGBA bg_color;
-				gtk_style_context_get_background_color(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, &bg_color);
 				gchar *gstr = gdk_rgba_to_string(&bg_color);
 				topframe_css.replace(i1, i2 - i1 - 1, gstr);
 				g_free(gstr);
@@ -2217,7 +2217,7 @@ void create_main_window(void) {
 
 	set_result_size_request();
 	set_expression_size_request();
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_stack")), FALSE);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), FALSE);
 
 	if(win_height <= 0) gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), NULL, &win_height);
 	if(minimal_mode && minimal_width > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), minimal_width, win_height);
@@ -3987,7 +3987,7 @@ GtkWidget* get_buttons_edit_dialog(void) {
 		gtk_tree_selection_unselect_all(selection);
 
 		update_custom_buttons_edit();
-		
+
 		tButtonsEditType = GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_type_treeview"));
 
 		tButtonsEditType_store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_INT);

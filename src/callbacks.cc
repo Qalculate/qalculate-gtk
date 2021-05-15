@@ -1404,7 +1404,7 @@ int block_update_expression_icons = 0;
 
 void showhide_expression_button() {
 	if(block_update_expression_icons) return;
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_stack")), !expression_is_empty() || (gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack"))) != GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")) && gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack"))) != GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_clear"))));
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), !expression_is_empty() || (gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack"))) != GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")) && gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack"))) != GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_clear"))));
 }
 void hide_expression_spinner() {
 	if(prev_eb) {
@@ -1427,7 +1427,7 @@ void update_expression_icons(int id = 0) {
 		case RESULT_SPINNER: {}
 		case EXPRESSION_SPINNER: {
 			prev_eb = gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack")));
-			prev_ebv = gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_stack")));
+			prev_ebv = gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
 			gchar *gstr = gtk_widget_get_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
 			if(gstr) {
 				prev_ebtext = gstr;
@@ -1572,11 +1572,11 @@ void set_expression_size_request() {
 	pango_layout_get_pixel_size(layout_test, NULL, &h);
 	g_object_unref(layout_test);
 	h += 12;
-	bool show_eb = gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_stack")));
-	gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_stack")));
+	bool show_eb = gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
+	gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
 	gint h2 = 0;
 	gtk_widget_get_preferred_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_expression_buttons")), NULL, &h2);
-	if(!show_eb) gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_stack")));
+	if(!show_eb) gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
 	if(h2 <= 0) h2 = minimal_mode ? 58 : 34;
 	if(minimal_mode) h2 += 2;
 	if(h < h2) h = h2;
@@ -2797,6 +2797,7 @@ bool ask_dot() {
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w_dotdeci))) {
 		evalops.parse_options.dot_as_separator = false;
 		evalops.parse_options.comma_as_separator = false;
+		b_decimal_comma = false;
 		CALCULATOR->useDecimalPoint(false);
 		das = !evalops.parse_options.dot_as_separator;
 	} else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w_ignoredot))) {
