@@ -4789,7 +4789,9 @@ void setVariableTreeItem(GtkTreeIter &iter2, Variable *v) {
 					value += CALCULATOR->localizeExpression(((KnownVariable*) v)->uncertainty(), pa);
 				}
 			}
-			if(!((KnownVariable*) v)->unit().empty()) {value += " "; value += ((KnownVariable*) v)->unit();}
+			if(!((KnownVariable*) v)->unit().empty() && ((KnownVariable*) v)->unit() != "auto") {
+				value += " "; value += ((KnownVariable*) v)->unit();
+			}
 		} else {
 			if(((KnownVariable*) v)->get().isMatrix()) {
 				value = _("matrix");
@@ -6972,7 +6974,7 @@ void update_completion() {
 						ParseOptions pa = evalops.parse_options; pa.base = 10;
 						title = CALCULATOR->localizeExpression(((KnownVariable*) v)->expression(), pa);
 						if(title.length() > 30) {title = title.substr(0, 30); title += "…";}
-						else if(!((KnownVariable*) v)->unit().empty()) {title += " "; title += ((KnownVariable*) v)->unit();}
+						else if(!((KnownVariable*) v)->unit().empty() && ((KnownVariable*) v)->unit() != "auto") {title += " "; title += ((KnownVariable*) v)->unit();}
 					} else {
 						if(((KnownVariable*) v)->get().isMatrix()) {
 							title = _("matrix");
@@ -16840,7 +16842,7 @@ void edit_dataobject(DataSet *ds, DataObject *o, GtkWidget *win) {
 		value_entries.push_back(entry);
 		int iapprox = -1;
 		if(o) {
-			gtk_entry_set_text(GTK_ENTRY(entry), o->getProperty(dp, &iapprox).c_str());
+			gtk_entry_set_text(GTK_ENTRY(entry), CALCULATOR->localizeExpression(o->getProperty(dp, &iapprox), evalops.parse_options).c_str());
 		}
 		gtk_grid_attach(GTK_GRID(ptable), entry, 1, rows - 1, 1, 1);
 
@@ -16875,7 +16877,7 @@ void edit_dataobject(DataSet *ds, DataObject *o, GtkWidget *win) {
 		size_t i = 0;
 		string val;
 		while(dp) {
-			val = gtk_entry_get_text(GTK_ENTRY(value_entries[i]));
+			val = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(value_entries[i])), evalops.parse_options);
 			remove_blank_ends(val);
 			if(!val.empty()) {
 				o->setProperty(dp, val, gtk_combo_box_get_active(GTK_COMBO_BOX(approx_menus[i])) - 1);
@@ -19230,7 +19232,7 @@ void load_preferences() {
 
 	size_t bookmark_index = 0;
 
-	int version_numbers[] = {3, 18, 0};
+	int version_numbers[] = {3, 19, 0};
 	bool old_history_format = false;
 
 	if(file) {
@@ -20182,6 +20184,9 @@ void load_preferences() {
 		}
 	}
 	if(show_keypad && !(visible_keypad & HIDE_RIGHT_KEYPAD) && !(visible_keypad & HIDE_LEFT_KEYPAD) && (version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 15))) win_width = -1;
+#ifdef _WIN32
+	else if(!(visible_keypad & HIDE_RIGHT_KEYPAD) && !(visible_keypad & HIDE_LEFT_KEYPAD) && (version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 19))) win_width -= 80;
+#endif
 	update_message_print_options();
 	displayed_printops = printops;
 	displayed_printops.allow_non_usable = true;
@@ -20243,7 +20248,7 @@ void save_preferences(bool mode) {
 		datasets_vposition2 = gtk_paned_get_position(GTK_PANED(gtk_builder_get_object(datasets_builder, "datasets_vpaned2")));
 	}
 	fprintf(file, "\n[General]\n");
-	fprintf(file, "version=%s\n", "3.18.1");
+	fprintf(file, "version=%s\n", VERSION);
 	fprintf(file, "allow_multiple_instances=%i\n", allow_multiple_instances);
 	if(title_type != TITLE_APP) fprintf(file, "window_title_mode=%i\n", title_type);
 	if(minimal_width > 0 && minimal_mode) {
