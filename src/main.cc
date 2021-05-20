@@ -493,6 +493,20 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 	return 0;
 }
 
+#ifdef _WIN32
+#	include <winsock2.h>
+#	include <windows.h>
+#	include <shlobj.h>
+#	include <direct.h>
+#	include <knownfolders.h>
+#	include <initguid.h>
+#	include <shlobj.h>
+#	include <unordered_set>
+#	include <sys/types.h>
+#	include <sys/stat.h>
+#	include <dirent.h>
+using std::unordered_set;
+#endif
 
 int main (int argc, char *argv[]) {
 
@@ -534,6 +548,37 @@ int main (int argc, char *argv[]) {
 	status = g_application_run(G_APPLICATION(app), argc, argv);
 
 	g_object_unref(app);
+
+#ifdef _WIN32
+	char path[MAX_PATH];
+	SHGetFolderPathA(NULL, CSIDL_LOCAL_APPDATA | CSIDL_FLAG_CREATE, NULL, 0, path);
+	string tmpdir = buildPath(path, "Temp"), str, newest_file;
+	unordered_set<string> tmpfiles;
+	struct dirent *ep;
+	struct stat stats;
+	time_t newest_time = 0;
+	DIR *dp = opendir(tmpdir.c_str());
+	if(dp) {
+		while((ep = readdir(dp))) {
+			str = ep->d_name;
+			if(str.find("gdbus-nonce-file-") == 0) {
+				str = buildPath(tmpdir, str);
+				if(stat(str.c_str(), &stats) == 0) {
+					if(stats.st_mtime > newest_time) {
+						newest_time = stats.st_mtime;
+						newest_file = str;
+					}
+					tmpfiles.insert(str);
+				}
+			}
+		}
+		closedir(dp);
+		if(!newest_file.empty()) tmpfiles.erase(newest_file);
+		for(unordered_set<string>::iterator it = tmpfiles.begin(); it != tmpfiles.end(); ++it) {
+			remove(it->c_str());
+		}
+	}
+#endif
 
 	return status;
 

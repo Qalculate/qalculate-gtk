@@ -196,7 +196,7 @@ extern vector<GtkWidget*> popup_result_mode_items;
 extern deque<string> expression_undo_buffer;
 
 gint win_height, win_width, win_x, win_y, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
-extern bool remember_position;
+extern bool remember_position, always_on_top;
 extern gint minimal_width;
 
 extern Unit *latest_button_unit, *latest_button_currency;
@@ -323,17 +323,17 @@ GdkRGBA c_gray;
 void update_colors(bool initial) {
 
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
+	GdkRGBA bg_color;
+	gtk_style_context_get_background_color(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, &bg_color);
 	if(!initial) {
 		gchar *gstr = gtk_css_provider_to_string(topframe_provider);
 		string topframe_css = gstr;
+		g_free(gstr);
 		size_t i1 = topframe_css.find("background-color:");
 		if(i1 != string::npos) {
 			i1 += 18;
 			size_t i2 = topframe_css.find(";", i1);
 			if(i2 != string::npos) {
-				topframe_css
-				GdkRGBA bg_color;
-				gtk_style_context_get_background_color(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, &bg_color);
 				gchar *gstr = gdk_rgba_to_string(&bg_color);
 				topframe_css.replace(i1, i2 - i1 - 1, gstr);
 				g_free(gstr);
@@ -2217,13 +2217,14 @@ void create_main_window(void) {
 
 	set_result_size_request();
 	set_expression_size_request();
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_stack")), FALSE);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), FALSE);
 
 	if(win_height <= 0) gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), NULL, &win_height);
 	if(minimal_mode && minimal_width > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), minimal_width, win_height);
 	else if(win_width > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width, win_height);
 
 	if(remember_position) gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_x, win_y);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), always_on_top);
 
 	g_signal_connect_after(gtk_builder_get_object(main_builder, "historyscrolled"), "size-allocate", G_CALLBACK(on_history_resize), NULL);
 
@@ -2563,6 +2564,7 @@ GtkWidget* get_preferences_dialog(void) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_ignore_locale")), ignore_locale);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_check_version")), check_version);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_remember_position")), remember_position);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_keep_above")), always_on_top);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_persistent_keypad")), persistent_keypad);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_title")), title_type);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_unicode_signs")), printops.use_unicode_signs);
@@ -3844,6 +3846,13 @@ GtkWidget* get_shortcuts_dialog(void) {
 			if(i == SHORTCUT_TYPE_RPN_MODE) {
 				gtk_list_store_append(tShortcutsType_store, &iter);
 				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_CHAIN_MODE), 1, SHORTCUT_TYPE_CHAIN_MODE, -1);
+			} else if(i == SHORTCUT_TYPE_MINIMAL) {
+				gtk_list_store_append(tShortcutsType_store, &iter);
+				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_ALWAYS_ON_TOP), 1, SHORTCUT_TYPE_ALWAYS_ON_TOP, -1);
+				gtk_list_store_append(tShortcutsType_store, &iter);
+				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_DO_COMPLETION), 1, SHORTCUT_TYPE_DO_COMPLETION, -1);
+				gtk_list_store_append(tShortcutsType_store, &iter);
+				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION), 1, SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION, -1);
 			}
 			if(i == 0) gtk_tree_selection_select_iter(selection, &iter);
 		}
@@ -3978,7 +3987,7 @@ GtkWidget* get_buttons_edit_dialog(void) {
 		gtk_tree_selection_unselect_all(selection);
 
 		update_custom_buttons_edit();
-		
+
 		tButtonsEditType = GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_type_treeview"));
 
 		tButtonsEditType_store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_INT);
@@ -3999,6 +4008,13 @@ GtkWidget* get_buttons_edit_dialog(void) {
 			if(i == SHORTCUT_TYPE_RPN_MODE) {
 				gtk_list_store_append(tButtonsEditType_store, &iter);
 				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_CHAIN_MODE), 1, SHORTCUT_TYPE_CHAIN_MODE, -1);
+			} else if(i == SHORTCUT_TYPE_MINIMAL) {
+				gtk_list_store_append(tButtonsEditType_store, &iter);
+				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_ALWAYS_ON_TOP), 1, SHORTCUT_TYPE_ALWAYS_ON_TOP, -1);
+				gtk_list_store_append(tButtonsEditType_store, &iter);
+				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_DO_COMPLETION), 1, SHORTCUT_TYPE_DO_COMPLETION, -1);
+				gtk_list_store_append(tButtonsEditType_store, &iter);
+				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION), 1, SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION, -1);
 			}
 			if(i == 0) gtk_tree_selection_select_iter(selection, &iter);
 		}

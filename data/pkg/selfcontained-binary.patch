@@ -2,7 +2,7 @@ diff --git a/src/callbacks.cc b/src/callbacks.cc
 index f61afc2..d4a3155 100644
 --- a/src/callbacks.cc
 +++ b/src/callbacks.cc
-@@ -2050,6 +2050,8 @@ gboolean on_activate_link(GtkLabel*, gchar *uri, gpointer) {
+@@ -2324,6 +2324,8 @@ gboolean on_activate_link(GtkLabel*, gchar *uri, gpointer) {
  #endif
  }
  
@@ -11,9 +11,9 @@ index f61afc2..d4a3155 100644
  #ifdef AUTO_UPDATE
  void auto_update(string new_version) {
  	char selfpath[1000];
-@@ -15923,11 +15923,7 @@ void load_preferences() {
- 	evalops.interval_calculation = INTERVAL_CALCULATION_VARIANCE_FORMULA;
- 	b_decimal_comma = -1;
+@@ -19062,11 +19064,7 @@ void load_preferences() {
+ 	use_systray_icon = false;
+ 	hide_on_startup = false;
  
 -#ifdef _WIN32
  	check_version = true;
@@ -23,7 +23,7 @@ index f61afc2..d4a3155 100644
  
  	title_type = TITLE_APP;
  
-@@ -16138,7 +16134,9 @@ void load_preferences() {
+@@ -19328,7 +19326,9 @@ void load_preferences() {
  				} else if(svar == "auto_update_exchange_rates") {
  					auto_update_exchange_rates = v;
  				} else if(svar == "check_version") {
@@ -34,20 +34,20 @@ index f61afc2..d4a3155 100644
  				} else if(svar == "last_version_check") {
  					last_version_check_date.set(svalue);
  				} else if(svar == "last_found_version") {
-@@ -27330,7 +27326,7 @@ void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
+@@ -31776,7 +31776,7 @@ void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
  	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), _("Powerful and easy to use calculator"));
  	gtk_about_dialog_set_license_type(GTK_ABOUT_DIALOG(dialog), GTK_LICENSE_GPL_2_0);
- 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016-2020 Hanna Knutsson");
+ 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016-2021 Hanna Knutsson");
 -	gtk_about_dialog_set_logo_icon_name(GTK_ABOUT_DIALOG(dialog), "qalculate");
 +	gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(dialog), gdk_pixbuf_new_from_resource("/qalculate-gtk/icons/128x128/apps/qalculate.png", NULL));
  	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(dialog), "Qalculate! (GTK)");
  	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dialog), VERSION);
- 	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(dialog), "http://qalculate.github.io/");
+ 	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(dialog), "https://qalculate.github.io/");
 diff --git a/src/main.cc b/src/main.cc
 index 64c33d2..fbd9cb9 100644
 --- a/src/main.cc
 +++ b/src/main.cc
-@@ -91,8 +91,17 @@ void create_application(GtkApplication *app) {
+@@ -151,8 +151,17 @@ void create_application(GtkApplication *app) {
  #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 14
  	gtk_icon_theme_add_resource_path(gtk_icon_theme_get_default(), "/qalculate-gtk/icons");
  #endif
