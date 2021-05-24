@@ -2785,15 +2785,25 @@ GtkWidget* get_function_edit_dialog(void) {
 		g_assert (gtk_builder_get_object(functionedit_builder, "function_edit_dialog") != NULL);
 
 		tFunctionArguments = GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_treeview_arguments"));
-		tFunctionArguments_store = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
+		tFunctionArguments_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_STRING);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tFunctionArguments), GTK_TREE_MODEL(tFunctionArguments_store));
 		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctionArguments));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
 		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", 0, NULL);
+		gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+		gtk_tree_view_column_set_expand(column, TRUE);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tFunctionArguments), column);
 		renderer = gtk_cell_renderer_text_new();
 		column = gtk_tree_view_column_new_with_attributes(_("Type"), renderer, "text", 1, NULL);
+		gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+		gtk_tree_view_column_set_expand(column, TRUE);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(tFunctionArguments), column);
+		renderer = gtk_cell_renderer_text_new();
+		column = gtk_tree_view_column_new_with_attributes("Reference", renderer, "text", 3, NULL);
+		gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+		gtk_tree_view_column_set_expand(column, FALSE);
+		g_object_set(G_OBJECT(renderer), "xalign", 0.5, "style", PANGO_STYLE_ITALIC, NULL);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tFunctionArguments), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tFunctionArguments_selection_changed), NULL);
 
@@ -2804,12 +2814,17 @@ GtkWidget* get_function_edit_dialog(void) {
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 		renderer = gtk_cell_renderer_text_new();
 		column = gtk_tree_view_column_new_with_attributes(_("Reference"), renderer, "text", 0, NULL);
+		gtk_tree_view_column_set_expand(column, FALSE);
+		g_object_set(G_OBJECT(renderer), "xalign", 0.5, NULL);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tSubfunctions), column);
 		renderer = gtk_cell_renderer_text_new();
 		column = gtk_tree_view_column_new_with_attributes(_("Expression"), renderer, "text", 1, NULL);
+		gtk_tree_view_column_set_expand(column, TRUE);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tSubfunctions), column);
 		renderer = gtk_cell_renderer_text_new();
 		column = gtk_tree_view_column_new_with_attributes(_("Precalculate"), renderer, "text", 2, NULL);
+		gtk_tree_view_column_set_expand(column, FALSE);
+		g_object_set(G_OBJECT(renderer), "xalign", 0.5, NULL);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tSubfunctions), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tSubfunctions_selection_changed), NULL);
 

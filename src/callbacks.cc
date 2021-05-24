@@ -6029,6 +6029,18 @@ void on_tFunctionArguments_selection_changed(GtkTreeSelection *treeselection, gp
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_rules")), FALSE);
 	}
 }
+void update_argument_refs() {
+	GtkTreeIter iter;
+	if(!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tFunctionArguments_store), &iter)) return;
+	int i = 0;
+	do {
+		string refstr = "\\";
+		if(i < 3) refstr += 'x' + i;
+		else refstr += 'a' + (i - 3);
+		gtk_list_store_set(tFunctionArguments_store, &iter, 3, refstr.c_str(), -1);
+		i++;
+	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tFunctionArguments_store), &iter));
+}
 void update_function_arguments_list(MathFunction *f) {
 	if(!functionedit_builder) return;
 	selected_argument = NULL;
@@ -6043,6 +6055,7 @@ void update_function_arguments_list(MathFunction *f) {
 		if(args < 0) {
 			args = f->minargs() + 1;
 		}
+		if((int) f->lastArgumentDefinitionIndex() > args) args = (int) f->lastArgumentDefinitionIndex();
 		Argument defarg;
 		string str, str2;
 		for(int i = 1; i <= args; i++) {
@@ -6058,6 +6071,7 @@ void update_function_arguments_list(MathFunction *f) {
 			}
 			gtk_list_store_set(tFunctionArguments_store, &iter, 0, str2.c_str(), 1, str.c_str(), 2, (gpointer) arg, -1);
 		}
+		update_argument_refs();
 	}
 }
 
@@ -20185,7 +20199,7 @@ void load_preferences() {
 	}
 	if(show_keypad && !(visible_keypad & HIDE_RIGHT_KEYPAD) && !(visible_keypad & HIDE_LEFT_KEYPAD) && (version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 15))) win_width = -1;
 #ifdef _WIN32
-	else if(!(visible_keypad & HIDE_RIGHT_KEYPAD) && !(visible_keypad & HIDE_LEFT_KEYPAD) && (version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 19))) win_width -= 80;
+	else if(!(visible_keypad & HIDE_RIGHT_KEYPAD) && !(visible_keypad & HIDE_LEFT_KEYPAD) && (version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 19))) win_width -= 84;
 #endif
 	update_message_print_options();
 	displayed_printops = printops;
@@ -33237,6 +33251,7 @@ void on_function_edit_button_add_argument_clicked(GtkButton*, gpointer) {
 	}
 	arg->setName(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_argument_name"))));
 	gtk_list_store_set(tFunctionArguments_store, &iter, 0, arg->name().c_str(), 1, arg->printlong().c_str(), 2, arg, -1);
+	update_argument_refs();
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_argument_name")), "");
 	on_function_changed();
 }
@@ -33250,6 +33265,7 @@ void on_function_edit_button_remove_argument_clicked(GtkButton*, gpointer) {
 			selected_argument = NULL;
 		}
 		gtk_list_store_remove(tFunctionArguments_store, &iter);
+		update_argument_refs();
 		on_function_changed();
 	}
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_argument_name")), "");

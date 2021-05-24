@@ -48,6 +48,27 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="3.19.0" date="2021-05-24">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Customizable text color and button padding</li>
+      <li>Option to keep the main window above other windows</li>
+      <li>Activate first (or selected) completion item using Tab key</li>
+      <li>Ask (once) for the correct interpretation of dots, when comma is decimal separator</li>
+      <li>Improve simplification of logical expressions (boolean algebra) and add boolean assumptions for unknown variables</li>
+      <li>Add nand and nor operators and spelled out version of logical not operator ("not"), and interpret bitwise operators as logical in some cases</li>
+      <li>New functions for inverse cumulative distributions: chisqdistinv(), fdistinv(), normdistinv(), and tdistinv()</li>
+      <li>Add inverse incomplete beta function, betaincinv(), and improve betainc() (now returns <i>regularized</i> incomplete beta function)</li>
+      <li>newtonsolve() and secantsolve() functions for solving equations using Newton's or secant method</li>
+      <li>Do not return dot product when multiplication operator is used with vectors (use "." or dot() function instead)</li>
+      <li>Russian and German translations</li>
+      <li>Fix custom keyboard shortcuts without modifier</li>
+      <li>Fix cumulative t-distribution for negative values</li>
+      <li>Minor bug fixes and feature improvements</li>
+     </ul>
+   </description>
+  </release>
   <release version="3.18.0" date="2021-04-05">
    <description>
     <p>Changes:</p>
