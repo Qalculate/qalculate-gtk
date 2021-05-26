@@ -196,7 +196,7 @@ extern vector<GtkWidget*> popup_result_mode_items;
 extern deque<string> expression_undo_buffer;
 
 gint win_height, win_width, win_x, win_y, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
-extern bool remember_position, always_on_top;
+extern bool remember_position, always_on_top, aot_changed;
 extern gint minimal_width;
 
 extern Unit *latest_button_unit, *latest_button_currency;
@@ -2302,6 +2302,7 @@ GtkWidget* get_functions_dialog(void) {
 
 	}
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(functions_builder, "functions_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_dialog"));
 }
 
@@ -2359,6 +2360,7 @@ GtkWidget* get_variables_dialog(void) {
 
 	}
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_dialog"));
 }
 
@@ -2470,6 +2472,7 @@ GtkWidget* get_units_dialog(void) {
 
 	}
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog"));
 }
 
@@ -2541,6 +2544,7 @@ GtkWidget* get_datasets_dialog(void) {
 
 	}
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(datasets_builder, "datasets_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(datasets_builder, "datasets_dialog"));
 }
 
@@ -2734,6 +2738,7 @@ GtkWidget* get_preferences_dialog(void) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay")), enable_completion);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay")), (double) completion_delay);
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(preferences_builder, "preferences_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_dialog"));
 }
 
@@ -2772,6 +2777,7 @@ GtkWidget* get_unit_edit_dialog(void) {
 	g_hash_table_destroy(hash);
 	g_list_free(items);
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(unitedit_builder, "unit_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_dialog"));
 }
 
@@ -2857,6 +2863,7 @@ GtkWidget* get_function_edit_dialog(void) {
 	g_hash_table_destroy(hash);
 	g_list_free(items);
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(functionedit_builder, "function_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_dialog"));
 }
 
@@ -2875,6 +2882,7 @@ GtkWidget* get_simple_function_edit_dialog(void) {
 
 	}
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_dialog"));
 }
 
@@ -2910,6 +2918,7 @@ GtkWidget* get_variable_edit_dialog(void) {
 	g_hash_table_destroy(hash);
 	g_list_free(items);
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog"));
 }
 
@@ -2949,6 +2958,7 @@ GtkWidget* get_unknown_edit_dialog(void) {
 	g_hash_table_destroy(hash);
 	g_list_free(items);
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog"));
 }
 
@@ -2996,7 +3006,7 @@ GtkWidget* get_matrix_edit_dialog(void) {
 	g_hash_table_destroy(hash);
 	g_list_free(items);
 
-
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(matrixedit_builder, "matrix_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_dialog"));
 }
 GtkWidget* get_matrix_dialog(void) {
@@ -3021,12 +3031,13 @@ GtkWidget* get_matrix_dialog(void) {
 
 	}
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(matrix_builder, "matrix_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(matrix_builder, "matrix_dialog"));
 
 }
 
 GtkWidget* get_dataobject_edit_dialog(void) {
-
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(datasets_builder, "dataobject_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(datasets_builder, "dataobject_edit_dialog"));
 }
 
@@ -3062,11 +3073,12 @@ GtkWidget* get_dataset_edit_dialog(void) {
 		gtk_builder_connect_signals(datasetedit_builder, NULL);
 
 	}
-
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(datasetedit_builder, "dataset_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_dialog"));
 }
 
 GtkWidget* get_dataproperty_edit_dialog(void) {
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_dialog"));
 }
 
@@ -3108,6 +3120,7 @@ GtkWidget* get_names_edit_dialog(void) {
 
 	}
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(namesedit_builder, "names_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_dialog"));
 }
 
@@ -3145,6 +3158,7 @@ GtkWidget* get_csv_import_dialog(void) {
 	g_hash_table_destroy(hash);
 	g_list_free(items);
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(csvimport_builder, "csv_import_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(csvimport_builder, "csv_import_dialog"));
 }
 
@@ -3163,6 +3177,7 @@ GtkWidget* get_csv_export_dialog(void) {
 
 	}
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(csvexport_builder, "csv_export_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(csvexport_builder, "csv_export_dialog"));
 
 }
@@ -3360,6 +3375,7 @@ GtkWidget* get_set_base_dialog(void) {
 
 	}
 	prev_output_base = ""; prev_input_base = "";
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(setbase_builder, "set_base_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_dialog"));
 }
 
@@ -3465,6 +3481,7 @@ GtkWidget* get_nbases_dialog(void) {
 
 	}
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(nbases_builder, "nbases_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_dialog"));
 }
 GtkWidget* get_percentage_dialog(void) {
@@ -3496,6 +3513,7 @@ GtkWidget* get_percentage_dialog(void) {
 
 	}
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(percentage_builder, "percentage_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_dialog"));
 }
 
@@ -3629,6 +3647,7 @@ GtkWidget* get_calendarconversion_dialog(void) {
 
 	}
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog"));
 }
 
@@ -3667,6 +3686,7 @@ GtkWidget* get_argument_rules_dialog(void) {
 
 	}
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(argumentrules_builder, "argument_rules_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_dialog"));
 }
 GtkWidget* get_decimals_dialog(void) {
@@ -3681,6 +3701,7 @@ GtkWidget* get_decimals_dialog(void) {
 
 	}
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(decimals_builder, "decimals_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(decimals_builder, "decimals_dialog"));
 }
 GtkWidget* get_plot_dialog(void) {
@@ -3716,6 +3737,7 @@ GtkWidget* get_plot_dialog(void) {
 
 	}
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog"));
 }
 GtkWidget* get_precision_dialog(void) {
@@ -3730,6 +3752,7 @@ GtkWidget* get_precision_dialog(void) {
 
 	}
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(precision_builder, "precision_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(precision_builder, "precision_dialog"));
 }
 GtkWidget* get_periodic_dialog(void) {
@@ -3744,6 +3767,7 @@ GtkWidget* get_periodic_dialog(void) {
 
 		DataSet *dc = CALCULATOR->getDataSet("atom");
 		if(!dc) {
+			if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(periodictable_builder, "periodic_dialog")), always_on_top);
 			return GTK_WIDGET(gtk_builder_get_object(periodictable_builder, "periodic_dialog"));
 		}
 
@@ -3809,6 +3833,7 @@ GtkWidget* get_periodic_dialog(void) {
 		gtk_css_provider_load_from_data(e_style[11], "* {color: #000000; background-image: none;}", -1, NULL);
 	}
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(periodictable_builder, "periodic_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(periodictable_builder, "periodic_dialog"));
 }
 
@@ -3882,6 +3907,7 @@ GtkWidget* get_shortcuts_dialog(void) {
 
 	}
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog"));
 }
 GtkWidget* get_floatingpoint_dialog(void) {
@@ -3903,6 +3929,7 @@ GtkWidget* get_floatingpoint_dialog(void) {
 
 	}
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(floatingpoint_builder, "floatingpoint_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "floatingpoint_dialog"));
 }
 
@@ -4038,6 +4065,7 @@ GtkWidget* get_buttons_edit_dialog(void) {
 
 	}
 
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_dialog"));
 }
 
