@@ -195,7 +195,7 @@ extern vector<GtkWidget*> popup_result_mode_items;
 
 extern deque<string> expression_undo_buffer;
 
-gint win_height, win_width, win_x, win_y, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
+gint win_height, win_width, win_x, win_y, win_monitor, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
 extern bool remember_position, always_on_top, aot_changed;
 extern gint minimal_width;
 
@@ -223,7 +223,7 @@ gint compare_categories(gconstpointer a, gconstpointer b) {
 }
 
 bool border_tested = false;
-gint hidden_x = -1, hidden_y = -1;
+gint hidden_x = -1, hidden_y = -1, hidden_monitor = 1;
 
 #ifdef _WIN32
 #	include <gdk/gdkwin32.h>
@@ -236,7 +236,15 @@ INT_PTR CALLBACK tray_window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 	if(message == WIN_TRAY_ICON_MESSAGE && (lParam == WM_LBUTTONDBLCLK || lParam == WM_LBUTTONUP)) {
 		if(hidden_x >= 0) {
 			gtk_widget_show(mainwindow);
-			gtk_window_move(GTK_WINDOW(mainwindow), hidden_x, hidden_y);
+			GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(mainwindow));
+			GdkMonitor *monitor = gdk_display_get_monitor(display, hidden_monitor - 1);
+			if(monitor) {
+				GdkRectangle area;
+				gdk_monitor_get_workarea(monitor, &area);
+				gtk_window_move(GTK_WINDOW(mainwindow), hidden_x + area.x, hidden_y + area.y);
+			} else {
+				gtk_window_move(GTK_WINDOW(mainwindow), hidden_x, hidden_y);
+			}
 			hidden_x = -1;
 		}
 		gtk_window_present_with_time(GTK_WINDOW(mainwindow), GDK_CURRENT_TIME);
@@ -2223,7 +2231,17 @@ void create_main_window(void) {
 	if(minimal_mode && minimal_width > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), minimal_width, win_height);
 	else if(win_width > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width, win_height);
 
-	if(remember_position) gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_x, win_y);
+	if(remember_position) {
+		GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
+		GdkMonitor *monitor = gdk_display_get_monitor(display, win_monitor - 1);
+		if(monitor) {
+			GdkRectangle area;
+			gdk_monitor_get_workarea(monitor, &area);
+			gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_x + area.x, win_y + area.y);
+		} else {
+			gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_x, win_y);
+		}
+	}
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), always_on_top);
 
 	g_signal_connect_after(gtk_builder_get_object(main_builder, "historyscrolled"), "size-allocate", G_CALLBACK(on_history_resize), NULL);
@@ -2242,6 +2260,7 @@ void create_main_window(void) {
 		if(remember_position) {
 			hidden_x = win_x;
 			hidden_y = win_y;
+			hidden_monitor = win_monitor;
 		}
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 	}

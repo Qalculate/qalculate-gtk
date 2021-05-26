@@ -62,7 +62,7 @@ extern PrintOptions printops;
 extern bool ignore_locale;
 extern bool title_modified;
 extern bool minimal_mode;
-extern gint hidden_x, hidden_y;
+extern gint hidden_x, hidden_y, hidden_monitor;
 bool check_version = false;
 string custom_title;
 
@@ -354,7 +354,15 @@ static void qalculate_activate(GtkApplication *app) {
 	if(list) {
 		if(hidden_x >= 0) {
 			gtk_widget_show(GTK_WIDGET(list->data));
-			gtk_window_move(GTK_WINDOW(list->data), hidden_x, hidden_y);
+			GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(list->data));
+			GdkMonitor *monitor = gdk_display_get_monitor(display, hidden_monitor - 1);
+			if(monitor) {
+				GdkRectangle area;
+				gdk_monitor_get_workarea(monitor, &area);
+				gtk_window_move(GTK_WINDOW(list->data), hidden_x + area.x, hidden_y + area.y);
+			} else {
+				gtk_window_move(GTK_WINDOW(list->data), hidden_x, hidden_y);
+			}
 			hidden_x = -1;
 		}
 #ifdef _WIN32
@@ -469,7 +477,15 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 		}
 		if(hidden_x >= 0) {
 			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
-			gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), hidden_x, hidden_y);
+			GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
+			GdkMonitor *monitor = gdk_display_get_monitor(display, hidden_monitor - 1);
+			if(monitor) {
+				GdkRectangle area;
+				gdk_monitor_get_workarea(monitor, &area);
+				gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), hidden_x + area.x, hidden_y + area.y);
+			} else {
+				gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), hidden_x, hidden_y);
+			}
 			hidden_x = -1;
 		}
 #ifdef _WIN32

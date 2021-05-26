@@ -233,7 +233,7 @@ vector<GtkTreeViewColumn*> matrix_edit_columns, matrix_columns;
 
 extern GtkAccelGroup *accel_group;
 
-extern gint win_height, win_width, win_x, win_y, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2, hidden_x, hidden_y;;
+extern gint win_height, win_width, win_x, win_y, win_monitor, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2, hidden_x, hidden_y, hidden_monitor;
 bool remember_position = false, always_on_top = false, aot_changed = false;
 
 gint minimal_width;
@@ -19161,6 +19161,7 @@ void load_preferences() {
 
 	win_x = 0;
 	win_y = 0;
+	win_monitor = 1;
 	remember_position = false;
 	always_on_top = false;
 	aot_changed = false;
@@ -19305,6 +19306,8 @@ void load_preferences() {
 					win_height = v;*/
 				} else if(svar == "always_on_top") {
 					always_on_top = v;
+				} else if(svar == "monitor") {
+					if(win_monitor > 0) win_monitor = v;
 				} else if(svar == "x") {
 					win_x = v;
 					remember_position = true;
@@ -20303,10 +20306,30 @@ void save_preferences(bool mode) {
 	//fprintf(file, "height=%i\n", h);
 	if(remember_position) {
 		if(hidden_x >= 0 && !gtk_widget_is_visible(mainwindow)) {
+			fprintf(file, "monitor=%i\n", hidden_monitor);
 			fprintf(file, "x=%i\n", hidden_x);
 			fprintf(file, "y=%i\n", hidden_y);
 		} else {
 			gtk_window_get_position(GTK_WINDOW(mainwindow), &win_x, &win_y);
+			GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(mainwindow));
+			win_monitor = 1;
+			GdkMonitor *monitor = gdk_display_get_monitor_at_window(display, gtk_widget_get_window(mainwindow));
+			if(monitor) {
+				int n = gdk_display_get_n_monitors(display);
+				if(n > 1) {
+					for(int i = 0; i < n; i++) {
+						if(monitor == gdk_display_get_monitor(display, i)) {
+							win_monitor = i + 1;
+							break;
+						}
+					}
+				}
+				GdkRectangle area;
+				gdk_monitor_get_workarea(monitor, &area);
+				win_x -= area.x;
+				win_y -= area.y;
+			}
+			fprintf(file, "monitor=%i\n", win_monitor);
 			fprintf(file, "x=%i\n", win_x);
 			fprintf(file, "y=%i\n", win_y);
 		}
@@ -21582,6 +21605,24 @@ void on_main_window_close(GtkWidget *w, GdkEvent *event, gpointer user_data) {
 		else save_preferences();
 		if(save_defs_on_exit) save_defs();
 		gtk_window_get_position(GTK_WINDOW(w), &hidden_x, &hidden_y);
+		hidden_monitor = 1;
+		GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(mainwindow));
+		int n = gdk_display_get_n_monitors(display);
+		GdkMonitor *monitor = gdk_display_get_monitor_at_window(display, gtk_widget_get_window(mainwindow));
+		if(monitor) {
+			if(n > 1) {
+				for(int i = 0; i < n; i++) {
+					if(monitor == gdk_display_get_monitor(display, i)) {
+						hidden_monitor = i + 1;
+						break;
+					}
+				}
+			}
+			GdkRectangle area;
+			gdk_monitor_get_workarea(monitor, &area);
+			hidden_x -= area.x;
+			hidden_y -= area.y;
+		}
 		gtk_widget_hide(w);
 		clear_expression_text();
 	} else {
