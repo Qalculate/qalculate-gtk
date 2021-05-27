@@ -63,6 +63,7 @@ extern bool ignore_locale;
 extern bool title_modified;
 extern bool minimal_mode;
 extern gint hidden_x, hidden_y, hidden_monitor;
+extern bool hidden_monitor_primary;
 bool check_version = false;
 string custom_title;
 
@@ -355,10 +356,16 @@ static void qalculate_activate(GtkApplication *app) {
 		if(hidden_x >= 0) {
 			gtk_widget_show(GTK_WIDGET(list->data));
 			GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(list->data));
-			GdkMonitor *monitor = gdk_display_get_monitor(display, hidden_monitor - 1);
+			GdkMonitor *monitor = NULL;
+			if(hidden_monitor_primary) monitor = gdk_display_get_primary_monitor(display);
+			if(!monitor && hidden_monitor > 0) gdk_display_get_monitor(display, hidden_monitor - 1);
 			if(monitor) {
 				GdkRectangle area;
 				gdk_monitor_get_workarea(monitor, &area);
+				gint w = 0, h = 0;
+				gtk_window_get_size(GTK_WINDOW(list->data), &w, &h);
+				if(hidden_x + w > area.width) hidden_x = area.width - w;
+				if(hidden_y + h > area.height) hidden_y = area.height - h;
 				gtk_window_move(GTK_WINDOW(list->data), hidden_x + area.x, hidden_y + area.y);
 			} else {
 				gtk_window_move(GTK_WINDOW(list->data), hidden_x, hidden_y);
@@ -478,10 +485,16 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 		if(hidden_x >= 0) {
 			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 			GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
-			GdkMonitor *monitor = gdk_display_get_monitor(display, hidden_monitor - 1);
+			GdkMonitor *monitor = NULL;
+			if(hidden_monitor_primary) monitor = gdk_display_get_primary_monitor(display);
+			if(!monitor && hidden_monitor > 0) gdk_display_get_monitor(display, hidden_monitor - 1);
 			if(monitor) {
 				GdkRectangle area;
 				gdk_monitor_get_workarea(monitor, &area);
+				gint w = 0, h = 0;
+				gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
+				if(hidden_x + w > area.width) hidden_x = area.width - w;
+				if(hidden_y + h > area.height) hidden_y = area.height - h;
 				gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), hidden_x + area.x, hidden_y + area.y);
 			} else {
 				gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), hidden_x, hidden_y);
@@ -533,7 +546,7 @@ int main (int argc, char *argv[]) {
 	gchar *gstr_file = g_build_filename(getLocalDir().c_str(), "qalculate-gtk.cfg", NULL);
 	FILE *file = fopen(gstr_file, "r");
 	char line[10000];
-	string stmp;
+	string stmp, lang;
 	if(file) {
 		while(true) {
 			if(fgets(line, 10000, file) == NULL) break;
@@ -541,6 +554,11 @@ int main (int argc, char *argv[]) {
 				ignore_locale = true;
 				break;
 			} else if(strcmp(line, "ignore_locale=0\n") == 0) {
+				break;
+			} else if(strncmp(line, "language=", 9) == 0) {
+				lang = line + sizeof(char) * 9;
+				remove_blank_ends(lang);
+				if(!lang.empty()) setenv("LANG", lang.c_str(), 1);
 				break;
 			}
 		}
