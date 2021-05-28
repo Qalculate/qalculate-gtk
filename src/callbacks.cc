@@ -234,6 +234,7 @@ vector<GtkTreeViewColumn*> matrix_edit_columns, matrix_columns;
 extern GtkAccelGroup *accel_group;
 
 extern gint win_height, win_width, win_x, win_y, win_monitor, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2, hidden_x, hidden_y, hidden_monitor;
+extern bool win_monitor_primary, hidden_monitor_primary;
 bool remember_position = false, always_on_top = false, aot_changed = false;
 
 gint minimal_width;
@@ -1032,7 +1033,7 @@ gboolean on_help_decide_policy(WebKitWebView *w, WebKitPolicyDecision *d, WebKit
 			if(error) {
 				gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
 				GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(window), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Failed to open %s.\n%s"), uri, error_str);
-				if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+				if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 				gtk_dialog_run(GTK_DIALOG(dialog));
 				gtk_widget_destroy(dialog);
 				g_free(error_str);
@@ -1050,13 +1051,13 @@ void show_help(const char *file, GObject *parent) {
 #ifdef _WIN32
 	if(ShellExecuteA(NULL, "open", get_doc_uri("index.html").c_str(), NULL, NULL, SW_SHOWNORMAL) <= (HINSTANCE) 32) {
 		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help for Qalculate!."));
-		if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 		gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(dialog);
 	}
 #elif USE_WEBKITGTK
 	GtkWidget *dialog = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 	gtk_window_set_title(GTK_WINDOW(dialog), "Qalculate! Manual");
 	if(parent) {
 		gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(parent));
@@ -1147,7 +1148,7 @@ void show_help(const char *file, GObject *parent) {
 	if(error) {
 		gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
 		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help for Qalculate!.\n%s"), error_str);
-		if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 		gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(dialog);
 		g_free(error_str);
@@ -1885,13 +1886,13 @@ int wrap_expression_selection(const char *insert_before = NULL, bool return_true
 
 void show_message(const gchar *text, GtkWidget *win) {
 	GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(win), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", text);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
 	gtk_dialog_run(GTK_DIALOG(edialog));
 	gtk_widget_destroy(edialog);
 }
 bool ask_question(const gchar *text, GtkWidget *win) {
 	GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(win), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_YES_NO, "%s", text);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
 	int question_answer = gtk_dialog_run(GTK_DIALOG(edialog));
 	gtk_widget_destroy(edialog);
 	return question_answer == GTK_RESPONSE_YES;
@@ -2119,7 +2120,7 @@ bool check_exchange_rates(GtkWidget *win = NULL, bool set_result = false) {
 	if(auto_update_exchange_rates < 0) {
 		int days = (int) floor(difftime(time(NULL), CALCULATOR->getExchangeRatesTime(i)) / 86400);
 		GtkWidget *edialog = gtk_message_dialog_new(win == NULL ? GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")) : GTK_WINDOW(win), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO, _("Do you wish to update the exchange rates now?"));
-		if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
+		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
 		gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(edialog), _n("It has been %s day since the exchange rates last were updated.", "It has been %s days since the exchange rates last were updated.", days), i2s(days).c_str());
 		GtkWidget *w = gtk_check_button_new_with_label(_("Do not ask again"));
 		gtk_container_add(GTK_CONTAINER(gtk_message_dialog_get_message_area(GTK_MESSAGE_DIALOG(edialog))), w);
@@ -2167,7 +2168,7 @@ bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 		mtype = CALCULATOR->message()->type();
 		if(mtype == MESSAGE_INFORMATION && (type == 1 || type == 2) && win && CALCULATOR->message()->message().find("-------------------------------------\n") == 0) {
 			GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(win),GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, "%s", CALCULATOR->message()->message().c_str());
-			if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
+			if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
 			gtk_dialog_run(GTK_DIALOG(edialog));
 			gtk_widget_destroy(edialog);
 		} else {
@@ -2284,7 +2285,7 @@ bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 			gtk_revealer_set_reveal_child(GTK_REVEALER(gtk_builder_get_object(main_builder, "message_revealer")), TRUE);
 		} else if(mtype_highest != MESSAGE_INFORMATION) {
 			GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(win),GTK_DIALOG_DESTROY_WITH_PARENT, mtype_highest == MESSAGE_ERROR ? GTK_MESSAGE_ERROR : (mtype_highest == MESSAGE_WARNING ? GTK_MESSAGE_WARNING : GTK_MESSAGE_INFO), GTK_BUTTONS_CLOSE, "%s", str.c_str());
-			if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
+			if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
 			gtk_dialog_run(GTK_DIALOG(edialog));
 			gtk_widget_destroy(edialog);
 		}
@@ -2339,7 +2340,7 @@ void auto_update(string new_version) {
 	ssize_t n = readlink("/proc/self/exe", selfpath, 999);
 	if(n < 0 || n >= 999) {
 		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Path of executable not found."));
-		if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 		gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(dialog);
 		return;
@@ -2349,7 +2350,7 @@ void auto_update(string new_version) {
 	FILE *pipe = popen("curl --version 1>/dev/null", "w");
 	if(!pipe) {
 		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("curl not found."));
-		if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 		gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(dialog);
 		return;
@@ -2407,7 +2408,7 @@ void auto_update(string new_version) {
 	if(error) {
 		gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
 		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Failed to run update script.\n%s"), error_str);
-		if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 		gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(dialog);
 		g_free(error_str);
@@ -2427,7 +2428,7 @@ void check_for_new_version(bool do_not_show_again) {
 #endif
 	if(!do_not_show_again && ret <= 0) {
 		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), (GtkDialogFlags) 0, ret < 0 ? GTK_MESSAGE_ERROR : GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, ret < 0 ? _("Failed to check for updates.") : _("No updates found."));
-		if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 		gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(dialog);
 		if(ret < 0) return;
@@ -2439,7 +2440,7 @@ void check_for_new_version(bool do_not_show_again) {
 #else
 		GtkWidget *dialog = gtk_dialog_new_with_buttons(NULL, GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Close"), GTK_RESPONSE_REJECT, NULL);
 #endif
-		if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 		gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 		GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
 		gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
@@ -2682,7 +2683,7 @@ bool test_ask_tc(MathStructure &m) {
 }
 bool ask_tc() {
 	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Temperature Calculation Mode"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_OK"), GTK_RESPONSE_ACCEPT, NULL);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 	gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT);
 	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 	GtkWidget *grid = gtk_grid_new();
@@ -2771,7 +2772,7 @@ bool test_ask_dot(const string &str) {
 
 bool ask_dot() {
 	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Interpretation of dots"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_OK"), GTK_RESPONSE_ACCEPT, NULL);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 	gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT);
 	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 	GtkWidget *grid = gtk_grid_new();
@@ -6224,6 +6225,7 @@ const gchar *shortcut_type_text(int type, bool return_null) {
 		case SHORTCUT_TYPE_PERIODIC_TABLE: {return _("Open periodic table"); break;}
 		case SHORTCUT_TYPE_UPDATE_EXRATES: {return _("Update exchange rates"); break;}
 		case SHORTCUT_TYPE_COPY_RESULT: {return _("Copy result"); break;}
+		case SHORTCUT_TYPE_INSERT_RESULT: {return _("Insert result"); break;}
 		case SHORTCUT_TYPE_SAVE_IMAGE: {return _("Save result image"); break;}
 		case SHORTCUT_TYPE_HELP: {return _("Help"); break;}
 		case SHORTCUT_TYPE_QUIT: {return _("Quit"); break;}
@@ -11637,7 +11639,7 @@ void fetch_exchange_rates(int timeout, int n) {
 		}
 		if(fetch_thread.running) {
 			GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) (GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL), GTK_MESSAGE_INFO, GTK_BUTTONS_NONE, _("Fetching exchange rates."));
-			if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+			if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 			gtk_widget_show(dialog);
 			while(fetch_thread.running) {
 				while(gtk_events_pending()) gtk_main_iteration();
@@ -14653,7 +14655,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 
 	string f_title = f->title(true);
 	fd->dialog = gtk_dialog_new();
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(fd->dialog), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(fd->dialog), always_on_top);
 	gtk_window_set_title(GTK_WINDOW(fd->dialog), f_title.c_str());
 	gtk_window_set_transient_for(GTK_WINDOW(fd->dialog), GTK_WINDOW(parent));
 	gtk_window_set_destroy_with_parent(GTK_WINDOW(fd->dialog), TRUE);
@@ -15982,7 +15984,7 @@ void convert_to_unit(GtkMenuItem*, gpointer user_data)
 	Unit *u = (Unit*) user_data;
 	if(!u) {
 		edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Unit does not exist"));
-		if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
+		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
 		gtk_dialog_run(GTK_DIALOG(edialog));
 		gtk_widget_destroy(edialog);
 	}
@@ -15997,7 +15999,7 @@ void convert_to_unit_noprefix(GtkMenuItem*, gpointer user_data)
 	Unit *u = (Unit*) user_data;
 	if(!u) {
 		edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Unit does not exist"));
-		if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
+		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
 		gtk_dialog_run(GTK_DIALOG(edialog));
 		gtk_widget_destroy(edialog);
 	}
@@ -17344,7 +17346,7 @@ run_csv_import_dialog:
 		block_error_timeout++;
 		if(!CALCULATOR->importCSV(str.c_str(), gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(csvimport_builder, "csv_import_spinbutton_first_row"))), gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(csvimport_builder, "csv_import_checkbutton_headers"))), delimiter, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(csvimport_builder, "csv_import_radiobutton_matrix"))), name_str, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(csvimport_builder, "csv_import_entry_desc"))), gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(csvimport_builder, "csv_import_combo_category"))))) {
 			GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not import from file \n%s"), str.c_str());
-			if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
+			if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
 			gtk_dialog_run(GTK_DIALOG(edialog));
 			gtk_widget_destroy(edialog);
 		}
@@ -17445,7 +17447,7 @@ run_csv_export_dialog:
 		CALCULATOR->startControl(600000);
 		if(!CALCULATOR->exportCSV(*matrix_struct, str.c_str(), delimiter) && CALCULATOR->aborted()) {
 			GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not export to file \n%s"), str.c_str());
-			if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
+			if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
 			gtk_dialog_run(GTK_DIALOG(edialog));
 			gtk_widget_destroy(edialog);
 		}
@@ -17679,7 +17681,7 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 		if(!arg2 || !arg3 || (b_bitrot && !arg4)) return;
 		gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
 		GtkWidget *dialog = gtk_dialog_new_with_buttons(f->title(true).c_str(), GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_CANCEL, _("_OK"), GTK_RESPONSE_OK, NULL);
-		if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 		gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 		GtkWidget *grid = gtk_grid_new();
 		gtk_grid_set_row_homogeneous(GTK_GRID(grid), TRUE);
@@ -17798,7 +17800,7 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 		}
 		gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
 		GtkWidget *dialog = gtk_dialog_new_with_buttons(f->title(true).c_str(), GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_CANCEL, _("_OK"), GTK_RESPONSE_OK, NULL);
-		if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 		gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 		GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
 		gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
@@ -18087,7 +18089,7 @@ void convert_in_wUnits(int toFrom) {
 void save_defs() {
 	if(!CALCULATOR->saveDefinitions()) {
 		GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Couldn't write definitions"));
-		if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
+		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
 		gtk_dialog_run(GTK_DIALOG(edialog));
 		gtk_widget_destroy(edialog);
 	}
@@ -18929,7 +18931,7 @@ void on_menu_item_meta_mode_activate(GtkMenuItem*, gpointer user_data) {
 }
 void on_menu_item_meta_mode_save_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Save Mode"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_REJECT, _("_Save"), GTK_RESPONSE_ACCEPT, NULL);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 	GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
 	gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
@@ -18985,7 +18987,7 @@ run_meta_mode_save_dialog:
 
 void on_menu_item_meta_mode_delete_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Delete Mode"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_REJECT, _("_Delete"), GTK_RESPONSE_ACCEPT, NULL);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 	GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
 	gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
@@ -19161,7 +19163,8 @@ void load_preferences() {
 
 	win_x = 0;
 	win_y = 0;
-	win_monitor = 1;
+	win_monitor = 0;
+	win_monitor_primary = false;
 	remember_position = false;
 	always_on_top = false;
 	aot_changed = false;
@@ -19308,6 +19311,8 @@ void load_preferences() {
 					always_on_top = v;
 				} else if(svar == "monitor") {
 					if(win_monitor > 0) win_monitor = v;
+				} else if(svar == "monitor_primary") {
+					win_monitor_primary = v;
 				} else if(svar == "x") {
 					win_x = v;
 					remember_position = true;
@@ -20257,7 +20262,7 @@ void save_preferences(bool mode) {
 	file = fopen(gstr2, "w+");
 	if(file == NULL) {
 		GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Couldn't write preferences to\n%s"), gstr2);
-		if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
+		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
 		gtk_dialog_run(GTK_DIALOG(edialog));
 		gtk_widget_destroy(edialog);
 		g_free(gstr2);
@@ -20307,12 +20312,14 @@ void save_preferences(bool mode) {
 	if(remember_position) {
 		if(hidden_x >= 0 && !gtk_widget_is_visible(mainwindow)) {
 			fprintf(file, "monitor=%i\n", hidden_monitor);
+			fprintf(file, "monitor_primary=%i\n", hidden_monitor_primary);
 			fprintf(file, "x=%i\n", hidden_x);
 			fprintf(file, "y=%i\n", hidden_y);
 		} else {
 			gtk_window_get_position(GTK_WINDOW(mainwindow), &win_x, &win_y);
 			GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(mainwindow));
 			win_monitor = 1;
+			win_monitor_primary = false;
 			GdkMonitor *monitor = gdk_display_get_monitor_at_window(display, gtk_widget_get_window(mainwindow));
 			if(monitor) {
 				int n = gdk_display_get_n_monitors(display);
@@ -20328,8 +20335,10 @@ void save_preferences(bool mode) {
 				gdk_monitor_get_workarea(monitor, &area);
 				win_x -= area.x;
 				win_y -= area.y;
+				win_monitor_primary = gdk_monitor_is_primary(monitor);
 			}
 			fprintf(file, "monitor=%i\n", win_monitor);
+			fprintf(file, "monitor_primary=%i\n", win_monitor_primary);
 			fprintf(file, "x=%i\n", win_x);
 			fprintf(file, "y=%i\n", win_y);
 		}
@@ -21606,6 +21615,7 @@ void on_main_window_close(GtkWidget *w, GdkEvent *event, gpointer user_data) {
 		if(save_defs_on_exit) save_defs();
 		gtk_window_get_position(GTK_WINDOW(w), &hidden_x, &hidden_y);
 		hidden_monitor = 1;
+		hidden_monitor_primary = false;
 		GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(mainwindow));
 		int n = gdk_display_get_n_monitors(display);
 		GdkMonitor *monitor = gdk_display_get_monitor_at_window(display, gtk_widget_get_window(mainwindow));
@@ -21622,6 +21632,7 @@ void on_main_window_close(GtkWidget *w, GdkEvent *event, gpointer user_data) {
 			gdk_monitor_get_workarea(monitor, &area);
 			hidden_x -= area.x;
 			hidden_y -= area.y;
+			hidden_monitor_primary = gdk_monitor_is_primary(monitor);
 		}
 		gtk_widget_hide(w);
 		clear_expression_text();
@@ -26001,7 +26012,7 @@ void on_popup_menu_item_history_search_activate(GtkMenuItem*, gpointer) {
 		return;
 	}
 	history_search_dialog = gtk_dialog_new_with_buttons(_("Search"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) GTK_DIALOG_DESTROY_WITH_PARENT, _("_Close"), GTK_RESPONSE_REJECT, _("_Search"), GTK_RESPONSE_ACCEPT, NULL);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(history_search_dialog), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(history_search_dialog), always_on_top);
 	gtk_container_set_border_width(GTK_CONTAINER(history_search_dialog), 6);
 	GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
 	gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
@@ -26076,7 +26087,7 @@ void on_popup_menu_item_history_bookmark_activate(GtkMenuItem *w, gpointer) {
 	} else {
 		string history_message;
 		GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Add Bookmark"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_REJECT, _("_OK"), GTK_RESPONSE_ACCEPT, NULL);
-		if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 		gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 		GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
 		gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
@@ -26554,7 +26565,7 @@ void on_menu_item_set_prefix_activate(GtkMenuItem*, gpointer user_data) {
 
 void on_menu_item_insert_date_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *d = gtk_dialog_new_with_buttons(_("Select date"), GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_CANCEL, _("_OK"), GTK_RESPONSE_OK, NULL);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 	GtkWidget *date_w = gtk_calendar_new();
 	string str = get_selected_expression_text(), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
@@ -27788,7 +27799,7 @@ void on_menu_item_save_defs_activate(GtkMenuItem*, gpointer) {
 }
 void on_menu_item_import_definitions_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select definitions file"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Import"), GTK_RESPONSE_ACCEPT, NULL);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(d), TRUE);
 	GtkFileFilter *filter = gtk_file_filter_new();
 	//gtk_file_filter_set_name(filter, _("XML Files"));
@@ -28906,7 +28917,7 @@ void on_menu_item_plot_functions_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = get_plot_dialog();
 	if(!dialog) {
 		GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Gnuplot was not found."));
-		if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
+		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
 		gtk_message_dialog_format_secondary_markup(GTK_MESSAGE_DIALOG(edialog), _("%s (%s) needs to be installed separately, and found in the executable search path, for plotting to work."), "Gnuplot", "<a href=\"http://www.gnuplot.info/\">http://www.gnuplot.info/</a>");
 		GList *childlist = gtk_container_get_children(GTK_CONTAINER(gtk_message_dialog_get_message_area(GTK_MESSAGE_DIALOG(edialog))));
 		for(guint i = 0; ; i++) {
@@ -29498,7 +29509,7 @@ void on_menu_item_save_activate(GtkMenuItem*, gpointer) {
 void on_menu_item_save_image_activate(GtkMenuItem*, gpointer) {
 	if(display_aborted || !displayed_mstruct) return;
 	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file to save PNG image to"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_FILE_CHOOSER_ACTION_SAVE, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Save"), GTK_RESPONSE_ACCEPT, NULL);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(d), TRUE);
 	GtkFileFilter *filter = gtk_file_filter_new();
 	gtk_file_filter_set_name(filter, _("Allowed File Types"));
@@ -31869,7 +31880,7 @@ void on_menu_item_check_updates_activate(GtkMenuItem*, gpointer) {
 void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
 	const gchar *authors[] = {"Hanna Knutsson", NULL};
 	GtkWidget *dialog = gtk_about_dialog_new();
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(dialog), authors);
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), _("Powerful and easy to use calculator"));
 	gtk_about_dialog_set_license_type(GTK_ABOUT_DIALOG(dialog), GTK_LICENSE_GPL_2_0);
@@ -31897,7 +31908,7 @@ void on_menu_item_reportbug_activate(GtkMenuItem*, gpointer) {
 	if(error) {
 		gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
 		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Failed to open %s.\n%s"), "https://github.com/Qalculate/qalculate-gtk/issues", error_str);
-		if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 		gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(dialog);
 		g_free(error_str);
@@ -32444,6 +32455,10 @@ bool do_shortcut(int type, string value) {
 		}
 		case SHORTCUT_TYPE_COPY_RESULT: {
 			on_menu_item_copy_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_INSERT_RESULT: {
+			if(!result_text_empty()) insert_text(get_result_text().c_str());
 			return true;
 		}
 		case SHORTCUT_TYPE_SAVE_IMAGE: {
@@ -33111,7 +33126,7 @@ void on_csv_import_combobox_delimiter_changed(GtkComboBox *w, gpointer) {
 }
 void on_csv_import_button_file_clicked(GtkButton*, gpointer) {
 	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file to import"), GTK_WINDOW(gtk_builder_get_object(csvimport_builder, "csv_import_dialog")), GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT, NULL);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 	string filestr = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(csvimport_builder, "csv_import_entry_file")));
 	remove_blank_ends(filestr);
 	if(!filestr.empty()) gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(d), filestr.c_str());
@@ -33137,7 +33152,7 @@ void on_csv_export_combobox_delimiter_changed(GtkComboBox *w, gpointer) {
 }
 void on_csv_export_button_file_clicked(GtkButton*, gpointer) {
 	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file to export to"), GTK_WINDOW(gtk_builder_get_object(csvexport_builder, "csv_export_dialog")), GTK_FILE_CHOOSER_ACTION_SAVE, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT, NULL);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 	string filestr = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(csvexport_builder, "csv_export_entry_file")));
 	remove_blank_ends(filestr);
 	if(!filestr.empty()) gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(d), filestr.c_str());
@@ -33155,7 +33170,7 @@ void on_csv_export_radiobutton_matrix_toggled(GtkToggleButton *w, gpointer) {
 
 void on_type_label_date_clicked(GtkButton *w, gpointer user_data) {
 	GtkWidget *d = gtk_dialog_new_with_buttons(_("Select date"), GTK_WINDOW(gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW)), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_CANCEL, _("_OK"), GTK_RESPONSE_OK, NULL);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 	GtkWidget *date_w = gtk_calendar_new();
 	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(d))), date_w);
 	gtk_widget_show_all(d);
@@ -33199,7 +33214,7 @@ void on_type_label_matrix_clicked(GtkButton *w, gpointer user_data) {
 }
 void on_type_label_file_clicked(GtkButton*, gpointer user_data) {
 	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file to import"), GTK_WINDOW(gtk_builder_get_object(csvimport_builder, "csv_import_dialog")), GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT, NULL);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 	string filestr = gtk_entry_get_text(GTK_ENTRY(user_data));
 	remove_blank_ends(filestr);
 	if(!filestr.empty()) gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(d), filestr.c_str());
@@ -33719,7 +33734,7 @@ gboolean on_shortcut_key_pressed(GtkWidget *w, GdkEventKey *event, gpointer) {
 }
 bool get_keyboard_shortcut(GtkWindow *parent) {
 	GtkWidget *dialog = gtk_dialog_new();
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), parent);
 	gtk_window_set_title(GTK_WINDOW(dialog), _("Set key combination"));
 	gtk_window_set_resizable(GTK_WINDOW(dialog), FALSE);
@@ -34384,7 +34399,7 @@ void on_plot_button_help_clicked(GtkButton, gpointer) {
 }
 void on_plot_button_save_clicked(GtkButton*, gpointer) {
 	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file to export"), GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), GTK_FILE_CHOOSER_ACTION_SAVE, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Save"), GTK_RESPONSE_ACCEPT, NULL);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(d), TRUE);
 	GtkFileFilter *filter = gtk_file_filter_new();
 	gtk_file_filter_set_name(filter, _("Allowed File Types"));
@@ -34458,7 +34473,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 		*y_vector = new MathStructure();
 		if(!CALCULATOR->calculate(*y_vector, CALCULATOR->unlocalizeExpression(str, eo.parse_options), max_plot_time * 1000, eo)) {
 			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("It took too long to generate the plot data."));
-			if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+			if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 			gtk_dialog_run(GTK_DIALOG(d));
 			gtk_widget_destroy(d);
 		}
@@ -34469,7 +34484,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 		MathStructure min;
 		if(!CALCULATOR->calculate(&min, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_min"))), eo.parse_options), 1000, eo)) {
 			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("It took too long to generate the plot data."));
-			if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+			if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 			gtk_dialog_run(GTK_DIALOG(d));
 			gtk_widget_destroy(d);
 			display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
@@ -34479,7 +34494,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 		MathStructure max;
 		if(!CALCULATOR->calculate(&max, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_max"))), eo.parse_options), 1000, eo)) {
 			GtkWidget *d = gtk_message_dialog_new (GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("It took too long to generate the plot data."));
-			if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+			if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 			gtk_dialog_run(GTK_DIALOG(d));
 			gtk_widget_destroy(d);
 			display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
@@ -34748,7 +34763,7 @@ void on_element_button_clicked(GtkButton*, gpointer user_data) {
 		DataSet *ds = e->parentSet();
 		if(!ds) return;
 		GtkWidget *dialog = gtk_dialog_new();
-		if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 		ewindows.push_back(dialog);
 		eobjects.push_back(e);
 		GtkWidget *close_button = gtk_dialog_add_button(GTK_DIALOG(dialog), _("_Close"), GTK_RESPONSE_CLOSE);
@@ -34910,7 +34925,7 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 	unknowns.sort();
 
 	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Set Unknowns"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_REJECT, _("_Apply"), GTK_RESPONSE_APPLY, _("_OK"), GTK_RESPONSE_ACCEPT, NULL);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 	gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_MOUSE);
 	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 	GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);

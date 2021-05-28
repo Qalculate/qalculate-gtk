@@ -196,6 +196,7 @@ extern vector<GtkWidget*> popup_result_mode_items;
 extern deque<string> expression_undo_buffer;
 
 gint win_height, win_width, win_x, win_y, win_monitor, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
+bool win_monitor_primary;
 extern bool remember_position, always_on_top, aot_changed;
 extern gint minimal_width;
 
@@ -224,6 +225,7 @@ gint compare_categories(gconstpointer a, gconstpointer b) {
 
 bool border_tested = false;
 gint hidden_x = -1, hidden_y = -1, hidden_monitor = 1;
+bool hidden_monitor_primary = false;
 
 #ifdef _WIN32
 #	include <gdk/gdkwin32.h>
@@ -237,10 +239,16 @@ INT_PTR CALLBACK tray_window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		if(hidden_x >= 0) {
 			gtk_widget_show(mainwindow);
 			GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(mainwindow));
-			GdkMonitor *monitor = gdk_display_get_monitor(display, hidden_monitor - 1);
+			GdkMonitor *monitor = NULL;
+			if(hidden_monitor_primary) monitor = gdk_display_get_primary_monitor(display);
+			if(!monitor && hidden_monitor > 0) gdk_display_get_monitor(display, hidden_monitor - 1);
 			if(monitor) {
 				GdkRectangle area;
 				gdk_monitor_get_workarea(monitor, &area);
+				gint w = 0, h = 0;
+				gtk_window_get_size(GTK_WINDOW(mainwindow), &w, &h);
+				if(hidden_x + w > area.width) hidden_x = area.width - w;
+				if(hidden_y + h > area.height) hidden_y = area.height - h;
 				gtk_window_move(GTK_WINDOW(mainwindow), hidden_x + area.x, hidden_y + area.y);
 			} else {
 				gtk_window_move(GTK_WINDOW(mainwindow), hidden_x, hidden_y);
@@ -1689,10 +1697,15 @@ void create_main_window(void) {
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 18
 	GtkCssProvider *expressionborder_provider = gtk_css_provider_new();
 	gtk_style_context_add_provider(gtk_widget_get_style_context(expressiontext), GTK_STYLE_PROVIDER(expressionborder_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	string border_css = topframe_css; border_css += ";}";
+	string border_css = topframe_css; border_css += "}";
 	gsub("*", "textview.view > border", border_css);
 	gtk_css_provider_load_from_data(expressionborder_provider, border_css.c_str(), -1, NULL);
 #endif
+	GtkCssProvider *expression_provider2 = gtk_css_provider_new();
+	gtk_style_context_add_provider(gtk_widget_get_style_context(expressiontext), GTK_STYLE_PROVIDER(expression_provider2), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	string expression_css = topframe_css; expression_css += "}";
+	gsub("*", "textview.view > text", expression_css);
+	gtk_css_provider_load_from_data(expression_provider2, expression_css.c_str(), -1, NULL);
 	topframe_css += "; border-left-width: 0; border-right-width: 0; border-radius: 0;}";
 	gtk_css_provider_load_from_data(topframe_provider, topframe_css.c_str(), -1, NULL);
 	statusframe_provider = gtk_css_provider_new();
@@ -2233,10 +2246,16 @@ void create_main_window(void) {
 
 	if(remember_position) {
 		GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
-		GdkMonitor *monitor = gdk_display_get_monitor(display, win_monitor - 1);
+		GdkMonitor *monitor = NULL;
+		if(win_monitor_primary) monitor = gdk_display_get_primary_monitor(display);
+		if(!monitor && win_monitor > 0) gdk_display_get_monitor(display, win_monitor - 1);
 		if(monitor) {
 			GdkRectangle area;
 			gdk_monitor_get_workarea(monitor, &area);
+			gint w = 0, h = 0;
+			gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
+			if(win_x + w > area.width) win_x = area.width - w;
+			if(win_y + h > area.height) win_y = area.height - h;
 			gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_x + area.x, win_y + area.y);
 		} else {
 			gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_x, win_y);
@@ -2261,6 +2280,7 @@ void create_main_window(void) {
 			hidden_x = win_x;
 			hidden_y = win_y;
 			hidden_monitor = win_monitor;
+			hidden_monitor_primary = win_monitor_primary;
 		}
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 	}
@@ -3905,6 +3925,9 @@ GtkWidget* get_shortcuts_dialog(void) {
 			if(i == SHORTCUT_TYPE_RPN_MODE) {
 				gtk_list_store_append(tShortcutsType_store, &iter);
 				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_CHAIN_MODE), 1, SHORTCUT_TYPE_CHAIN_MODE, -1);
+			} else if(i == SHORTCUT_TYPE_COPY_RESULT) {
+				gtk_list_store_append(tShortcutsType_store, &iter);
+				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_INSERT_RESULT), 1, SHORTCUT_TYPE_INSERT_RESULT, -1);
 			} else if(i == SHORTCUT_TYPE_MINIMAL) {
 				gtk_list_store_append(tShortcutsType_store, &iter);
 				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_ALWAYS_ON_TOP), 1, SHORTCUT_TYPE_ALWAYS_ON_TOP, -1);
@@ -4069,6 +4092,9 @@ GtkWidget* get_buttons_edit_dialog(void) {
 			if(i == SHORTCUT_TYPE_RPN_MODE) {
 				gtk_list_store_append(tButtonsEditType_store, &iter);
 				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_CHAIN_MODE), 1, SHORTCUT_TYPE_CHAIN_MODE, -1);
+			} else if(i == SHORTCUT_TYPE_COPY_RESULT) {
+				gtk_list_store_append(tButtonsEditType_store, &iter);
+				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_INSERT_RESULT), 1, SHORTCUT_TYPE_INSERT_RESULT, -1);
 			} else if(i == SHORTCUT_TYPE_MINIMAL) {
 				gtk_list_store_append(tButtonsEditType_store, &iter);
 				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_ALWAYS_ON_TOP), 1, SHORTCUT_TYPE_ALWAYS_ON_TOP, -1);
