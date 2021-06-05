@@ -17872,7 +17872,7 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 				else gstr2 = g_strdup_printf(b_text ? "%s(\"%s\"%s %s)" : "%s(%s%s %s)", ename->name.c_str(), gstr, CALCULATOR->getComma().c_str(), str2.c_str());
 			}
 		} else {
-			gstr2 = g_strdup_printf(b_text ? "%s(\"%s\")" : "%s(%s)", ename->name.c_str(), gstr);
+			gstr2 = g_strdup_printf(b_text ? "%s(\"%s\")" : "%s(%s)", f->referenceName() == "neg" ? expression_sub_sign() : ename->name.c_str(), gstr);
 		}
 		insert_text(gstr2);
 		if(f->minargs() > 1) {
@@ -31878,13 +31878,11 @@ void on_menu_item_check_updates_activate(GtkMenuItem*, gpointer) {
 }
 
 void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
-	const gchar *authors[] = {"Hanna Knutsson <hanna.knutsson@protonmail.com>, 2003-2007, 2016-2021",
-		"Sven Herzberg <herzi@gnome-de.org>, 2003",
-		"Jonathan Stickel <jjstickel@vcn.com>, 2009", NULL};
+	const gchar *authors[] = {"Hanna Knutsson <hanna.knutsson@protonmail.com>", NULL};
 	GtkWidget *dialog = gtk_about_dialog_new();
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(dialog), authors);
-	if(_("translator-credits") != "translator-credits") {
+	if(strcmp(_("translator-credits"), "translator-credits") != 0) {
 		gtk_about_dialog_set_translator_credits(GTK_ABOUT_DIALOG(dialog), _("translator-credits"));
 	}
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), _("Powerful and easy to use calculator"));
