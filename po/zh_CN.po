@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Qalculate 3.16\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-24 07:50+0200\n"
+"POT-Creation-Date: 2021-06-05 13:09+0700\n"
 "PO-Revision-Date: 2021-04-17 20:14+0800\n"
 "Last-Translator: tuberry <orzun@foxmail.com>\n"
 "Language-Team: Chinese (Simplified) <orzun@foxmail.com>\n"
@@ -19,8 +19,8 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0\n"
 "X-Generator: Gtranslator 40.0\n"
 
-#: ../data/qalculate-gtk.desktop.in.h:1 ../src/callbacks.cc:10739
-#: ../src/callbacks.cc:10746 ../src/callbacks.cc:10761
+#: ../data/qalculate-gtk.desktop.in.h:1 ../src/callbacks.cc:10757
+#: ../src/callbacks.cc:10764 ../src/callbacks.cc:10779
 msgid "Qalculate!"
 msgstr "Qalculate!"
 
@@ -29,7 +29,7 @@ msgid "Calculator"
 msgstr "计算器"
 
 #: ../data/qalculate-gtk.desktop.in.h:3
-#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/callbacks.cc:31796
+#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/callbacks.cc:31888
 msgid "Powerful and easy to use calculator"
 msgstr "强大而易用的计算器"
 
@@ -72,14 +72,14 @@ msgstr "参数规则"
 #: ../data/matrixedit.ui.h:3 ../data/shortcuts.ui.h:7
 #: ../data/simplefunctionedit.ui.h:3 ../data/unitedit.ui.h:3
 #: ../data/unknownedit.ui.h:3 ../data/variableedit.ui.h:3
-#: ../src/callbacks.cc:2425 ../src/callbacks.cc:16675 ../src/callbacks.cc:17659
-#: ../src/callbacks.cc:17777 ../src/callbacks.cc:18906
-#: ../src/callbacks.cc:18961 ../src/callbacks.cc:26006
-#: ../src/callbacks.cc:26483 ../src/callbacks.cc:27716
-#: ../src/callbacks.cc:29424 ../src/callbacks.cc:33033
-#: ../src/callbacks.cc:33058 ../src/callbacks.cc:33075
-#: ../src/callbacks.cc:33118 ../src/callbacks.cc:34298
-#: ../src/callbacks.cc:34819
+#: ../src/callbacks.cc:2439 ../src/callbacks.cc:16697 ../src/callbacks.cc:17683
+#: ../src/callbacks.cc:17802 ../src/callbacks.cc:18933
+#: ../src/callbacks.cc:18989 ../src/callbacks.cc:26089
+#: ../src/callbacks.cc:26567 ../src/callbacks.cc:27801
+#: ../src/callbacks.cc:29511 ../src/callbacks.cc:33131
+#: ../src/callbacks.cc:33157 ../src/callbacks.cc:33175
+#: ../src/callbacks.cc:33219 ../src/callbacks.cc:34404
+#: ../src/callbacks.cc:34930
 msgid "_Cancel"
 msgstr "取消(_C)"
 
@@ -93,10 +93,10 @@ msgstr "不保存修改"
 #: ../data/matrixedit.ui.h:5 ../data/shortcuts.ui.h:8
 #: ../data/simplefunctionedit.ui.h:5 ../data/unitedit.ui.h:5
 #: ../data/unknownedit.ui.h:5 ../data/variableedit.ui.h:5
-#: ../src/callbacks.cc:2425 ../src/callbacks.cc:2670 ../src/callbacks.cc:2758
-#: ../src/callbacks.cc:17659 ../src/callbacks.cc:17777
-#: ../src/callbacks.cc:26006 ../src/callbacks.cc:26483
-#: ../src/callbacks.cc:33075 ../src/callbacks.cc:34819
+#: ../src/callbacks.cc:2439 ../src/callbacks.cc:2685 ../src/callbacks.cc:2774
+#: ../src/callbacks.cc:17683 ../src/callbacks.cc:17802
+#: ../src/callbacks.cc:26089 ../src/callbacks.cc:26567
+#: ../src/callbacks.cc:33175 ../src/callbacks.cc:34930
 msgid "_OK"
 msgstr "确定(_O)"
 
@@ -156,25 +156,25 @@ msgstr "键盘快捷键"
 #: ../data/namesedit.ui.h:2 ../data/nbases.ui.h:2 ../data/percentage.ui.h:5
 #: ../data/plot.ui.h:5 ../data/precision.ui.h:2 ../data/preferences.ui.h:2
 #: ../data/setbase.ui.h:2 ../data/shortcuts.ui.h:2 ../data/units.ui.h:2
-#: ../data/variables.ui.h:2 ../src/callbacks.cc:2427 ../src/callbacks.cc:14648
-#: ../src/callbacks.cc:16667 ../src/callbacks.cc:25932
-#: ../src/callbacks.cc:34661
+#: ../data/variables.ui.h:2 ../src/callbacks.cc:2441 ../src/callbacks.cc:14668
+#: ../src/callbacks.cc:16689 ../src/callbacks.cc:26014
+#: ../src/callbacks.cc:34772
 msgid "_Close"
 msgstr "关闭(_C)"
 
-#: ../data/buttonsedit.ui.h:3 ../src/interface.cc:3980
+#: ../data/buttonsedit.ui.h:3 ../src/interface.cc:4049
 msgid "Label"
 msgstr "标签"
 
-#: ../data/buttonsedit.ui.h:4 ../src/interface.cc:3983
+#: ../data/buttonsedit.ui.h:4 ../src/interface.cc:4052
 msgid "Left-click"
 msgstr "左键"
 
-#: ../data/buttonsedit.ui.h:5 ../src/interface.cc:3986
+#: ../data/buttonsedit.ui.h:5 ../src/interface.cc:4055
 msgid "Right-click"
 msgstr "右键"
 
-#: ../data/buttonsedit.ui.h:6 ../src/interface.cc:3989
+#: ../data/buttonsedit.ui.h:6 ../src/interface.cc:4058
 msgid "Middle-click"
 msgstr "中键"
 
@@ -187,8 +187,8 @@ msgid "Button Action"
 msgstr "按钮动作"
 
 #: ../data/buttonsedit.ui.h:11 ../data/shortcuts.ui.h:9
-#: ../data/variableedit.ui.h:9 ../src/interface.cc:2109
-#: ../src/interface.cc:2330 ../src/interface.cc:3834 ../src/callbacks.cc:14706
+#: ../data/variableedit.ui.h:9 ../src/interface.cc:2130
+#: ../src/interface.cc:2370 ../src/interface.cc:3898 ../src/callbacks.cc:14726
 msgid "Value"
 msgstr "值"
 
@@ -267,7 +267,7 @@ msgid "Import as"
 msgstr "导入为"
 
 #: ../data/csvimport.ui.h:10 ../data/functionedit.ui.h:33 ../data/main.ui.h:21
-#: ../data/matrix.ui.h:1 ../data/matrixedit.ui.h:18 ../src/callbacks.cc:16680
+#: ../data/matrix.ui.h:1 ../data/matrixedit.ui.h:18 ../src/callbacks.cc:16702
 msgid "Matrix"
 msgstr "矩阵"
 
@@ -275,8 +275,8 @@ msgstr "矩阵"
 msgid "If a matrix shall be generated from the contents of the file"
 msgstr "若要从文件内容生成矩阵或向量"
 
-#: ../data/csvimport.ui.h:12 ../src/callbacks.cc:17549
-#: ../src/callbacks.cc:27625
+#: ../data/csvimport.ui.h:12 ../src/callbacks.cc:17573
+#: ../src/callbacks.cc:27710
 msgid "Vectors"
 msgstr "向量"
 
@@ -288,9 +288,9 @@ msgstr "若要从文件内容生成矩阵或向量"
 #: ../data/functionedit.ui.h:7 ../data/matrixedit.ui.h:8
 #: ../data/namesedit.ui.h:3 ../data/simplefunctionedit.ui.h:6
 #: ../data/unitedit.ui.h:7 ../data/unknownedit.ui.h:7
-#: ../data/variableedit.ui.h:6 ../src/interface.cc:2200
-#: ../src/interface.cc:2398 ../src/interface.cc:2793 ../src/interface.cc:3051
-#: ../src/interface.cc:3089 ../src/callbacks.cc:18912 ../src/callbacks.cc:26012
+#: ../data/variableedit.ui.h:6 ../src/interface.cc:2221
+#: ../src/interface.cc:2439 ../src/interface.cc:2838 ../src/interface.cc:3101
+#: ../src/interface.cc:3140 ../src/callbacks.cc:18940 ../src/callbacks.cc:26096
 msgid "Name"
 msgstr "名称"
 
@@ -314,8 +314,8 @@ msgstr "菜单和变量管理器中显示的名称"
 #: ../data/csvimport.ui.h:18 ../data/functionedit.ui.h:10 ../data/main.ui.h:237
 #: ../data/matrixedit.ui.h:11 ../data/unitedit.ui.h:10
 #: ../data/unknownedit.ui.h:24 ../data/variableedit.ui.h:14
-#: ../src/interface.cc:2211 ../src/interface.cc:2284 ../src/interface.cc:2346
-#: ../src/interface.cc:2422
+#: ../src/interface.cc:2232 ../src/interface.cc:2323 ../src/interface.cc:2386
+#: ../src/interface.cc:2463
 msgid "Category"
 msgstr "类别"
 
@@ -362,7 +362,7 @@ msgstr "引用名称"
 #: ../data/datasetedit.ui.h:8 ../data/functionedit.ui.h:9
 #: ../data/matrixedit.ui.h:10 ../data/unitedit.ui.h:9
 #: ../data/unknownedit.ui.h:9 ../data/variableedit.ui.h:8
-#: ../src/callbacks.cc:4628 ../src/callbacks.cc:5678
+#: ../src/callbacks.cc:4645 ../src/callbacks.cc:5695
 msgid "Properties"
 msgstr "属性"
 
@@ -384,7 +384,7 @@ msgid "Value Type"
 msgstr "值类型"
 
 #: ../data/datasetedit.ui.h:14 ../data/functionedit.ui.h:30
-#: ../src/callbacks.cc:25937
+#: ../src/callbacks.cc:26020
 msgid "Text"
 msgstr "文本"
 
@@ -394,8 +394,8 @@ msgid "Number"
 msgstr "数字"
 
 #: ../data/datasetedit.ui.h:16 ../data/functionedit.ui.h:18 ../data/plot.ui.h:8
-#: ../data/simplefunctionedit.ui.h:8 ../src/interface.cc:2821
-#: ../src/interface.cc:3705
+#: ../data/simplefunctionedit.ui.h:8 ../src/interface.cc:2866
+#: ../src/interface.cc:3765
 msgid "Expression"
 msgstr "表达式"
 
@@ -423,12 +423,12 @@ msgstr "值使用括号"
 msgid "Unit expression"
 msgstr "单位表达式"
 
-#: ../data/datasetedit.ui.h:23 ../src/callbacks.cc:17100
+#: ../data/datasetedit.ui.h:23 ../src/callbacks.cc:17122
 msgid "Edit Data Set"
 msgstr "编辑数据集"
 
-#: ../data/datasetedit.ui.h:24 ../data/plot.ui.h:7 ../src/interface.cc:3048
-#: ../src/interface.cc:3702
+#: ../data/datasetedit.ui.h:24 ../data/plot.ui.h:7 ../src/interface.cc:3098
+#: ../src/interface.cc:3762
 msgid "Title"
 msgstr "标题"
 
@@ -469,7 +469,7 @@ msgstr "编辑(_E)"
 
 #: ../data/datasetedit.ui.h:33 ../data/functionedit.ui.h:53
 #: ../data/functions.ui.h:9 ../data/units.ui.h:11 ../data/variables.ui.h:9
-#: ../src/callbacks.cc:18961
+#: ../src/callbacks.cc:18989
 msgid "_Delete"
 msgstr "删除(_D)"
 
@@ -490,11 +490,11 @@ msgid "Default property"
 msgstr "默认属性"
 
 #: ../data/datasetedit.ui.h:38 ../data/functionedit.ui.h:42
-#: ../data/main.ui.h:24 ../data/plot.ui.h:9 ../src/interface.cc:2270
+#: ../data/main.ui.h:24 ../data/plot.ui.h:9 ../src/interface.cc:2309
 msgid "Function"
 msgstr "函数"
 
-#: ../data/datasets.ui.h:1 ../src/callbacks.cc:16825
+#: ../data/datasets.ui.h:1 ../src/callbacks.cc:16847
 msgid "Edit Data Object"
 msgstr "编辑数据对象"
 
@@ -507,11 +507,11 @@ msgid "Accept the creation/modification of this data object"
 msgstr "接受此数据对象的创建/修改"
 
 #. new dataset
-#: ../data/datasets.ui.h:6 ../src/callbacks.cc:17197
+#: ../data/datasets.ui.h:6 ../src/callbacks.cc:17219
 msgid "Data Sets"
 msgstr "数据集"
 
-#: ../data/datasets.ui.h:8 ../data/main.ui.h:26 ../src/interface.cc:2513
+#: ../data/datasets.ui.h:8 ../data/main.ui.h:26 ../src/interface.cc:2555
 msgid "Data Set"
 msgstr "数据集"
 
@@ -636,8 +636,8 @@ msgstr "128位(四倍精度)"
 msgid "Hexadecimal value"
 msgstr "十六进制值"
 
-#: ../data/functionedit.ui.h:1 ../src/callbacks.cc:15642
-#: ../src/callbacks.cc:15847
+#: ../data/functionedit.ui.h:1 ../src/callbacks.cc:15662
+#: ../src/callbacks.cc:15867
 msgid "Edit Function"
 msgstr "编辑函数"
 
@@ -723,7 +723,7 @@ msgid "Date"
 msgstr "日期"
 
 #: ../data/functionedit.ui.h:32 ../data/main.ui.h:22 ../data/matrix.ui.h:11
-#: ../data/matrixedit.ui.h:20 ../src/callbacks.cc:16678
+#: ../data/matrixedit.ui.h:20 ../src/callbacks.cc:16700
 msgid "Vector"
 msgstr "向量"
 
@@ -756,16 +756,16 @@ msgstr "非负整数"
 msgid "Boolean"
 msgstr "布尔值"
 
-#: ../data/functionedit.ui.h:41 ../src/callbacks.cc:17205
+#: ../data/functionedit.ui.h:41 ../src/callbacks.cc:17227
 msgid "Object"
 msgstr "对象"
 
-#: ../data/functionedit.ui.h:43 ../data/main.ui.h:27 ../src/interface.cc:2402
-#: ../src/interface.cc:2406
+#: ../data/functionedit.ui.h:43 ../data/main.ui.h:27 ../src/interface.cc:2443
+#: ../src/interface.cc:2447
 msgid "Unit"
 msgstr "单位"
 
-#: ../data/functionedit.ui.h:44 ../data/main.ui.h:20 ../src/interface.cc:2326
+#: ../data/functionedit.ui.h:44 ../data/main.ui.h:20 ../src/interface.cc:2366
 msgid "Variable"
 msgstr "变量"
 
@@ -773,7 +773,7 @@ msgstr "变量"
 msgid "Angle"
 msgstr "角度"
 
-#: ../data/functionedit.ui.h:47 ../src/callbacks.cc:23511
+#: ../data/functionedit.ui.h:47 ../src/callbacks.cc:23593
 msgid "Data object"
 msgstr "数据对象"
 
@@ -790,7 +790,7 @@ msgid "Add entered argument definition"
 msgstr "添加输入参数的定义"
 
 #: ../data/functionedit.ui.h:51 ../data/functions.ui.h:13 ../data/plot.ui.h:35
-#: ../src/callbacks.cc:34819
+#: ../src/callbacks.cc:34930
 msgid "_Apply"
 msgstr "应用(_A)"
 
@@ -814,7 +814,7 @@ msgstr "编辑所选参数的条件"
 msgid "Close this dialog"
 msgstr "关闭此对话框"
 
-#: ../data/functionedit.ui.h:59 ../src/interface.cc:2825
+#: ../data/functionedit.ui.h:59 ../src/interface.cc:2870
 msgid "Precalculate"
 msgstr "预计算"
 
@@ -847,7 +847,7 @@ msgid "Edit the selected function"
 msgstr "编辑所选函数"
 
 #: ../data/functions.ui.h:7 ../data/matrix.ui.h:4 ../data/units.ui.h:7
-#: ../data/variables.ui.h:7 ../src/callbacks.cc:14655
+#: ../data/variables.ui.h:7 ../src/callbacks.cc:14675
 msgid "_Insert"
 msgstr "插入(_I)"
 
@@ -864,7 +864,7 @@ msgid "(De)activate the selected function"
 msgstr "(取消)激活所选函数"
 
 #: ../data/functions.ui.h:12 ../data/units.ui.h:14 ../data/variables.ui.h:12
-#: ../src/callbacks.cc:4666 ../src/callbacks.cc:4927 ../src/callbacks.cc:5177
+#: ../src/callbacks.cc:4683 ../src/callbacks.cc:4944 ../src/callbacks.cc:5194
 msgid "Deacti_vate"
 msgstr "停用(_v)"
 
@@ -900,7 +900,7 @@ msgstr "梯度"
 msgid "Default assumptions"
 msgstr "默认假设"
 
-#: ../data/main.ui.h:5 ../data/unknownedit.ui.h:18 ../src/callbacks.cc:34718
+#: ../data/main.ui.h:5 ../data/unknownedit.ui.h:18 ../src/callbacks.cc:34829
 msgid "Unknown"
 msgstr "未知数"
 
@@ -1032,13 +1032,13 @@ msgstr "管理单位"
 msgid "Manage Data Sets"
 msgstr "管理数据集"
 
-#: ../data/main.ui.h:50 ../src/interface.cc:1278 ../src/callbacks.cc:1691
-#: ../src/callbacks.cc:27591
+#: ../data/main.ui.h:50 ../src/interface.cc:1294 ../src/callbacks.cc:1696
+#: ../src/callbacks.cc:27676
 msgid "Factorize"
 msgstr "分解"
 
-#: ../data/main.ui.h:51 ../src/interface.cc:1276 ../src/callbacks.cc:1694
-#: ../src/callbacks.cc:27604
+#: ../data/main.ui.h:51 ../src/interface.cc:1292 ../src/callbacks.cc:1699
+#: ../src/callbacks.cc:27689
 msgid "Expand"
 msgstr "展开"
 
@@ -1046,7 +1046,7 @@ msgstr "展开"
 msgid "Apply partial fraction decomposition to the current result."
 msgstr "部分分式分解当前结果。"
 
-#: ../data/main.ui.h:53 ../src/interface.cc:1280
+#: ../data/main.ui.h:53 ../src/interface.cc:1296
 msgid "Expand Partial Fractions"
 msgstr "展开部分分式"
 
@@ -1074,15 +1074,15 @@ msgstr "换算为基本单位"
 msgid "Convert to Optimal Unit"
 msgstr "换算为最优单位"
 
-#: ../data/main.ui.h:60 ../src/callbacks.cc:18458
+#: ../data/main.ui.h:60 ../src/callbacks.cc:18485
 msgid "Insert Date…"
 msgstr "插入日期…"
 
-#: ../data/main.ui.h:61 ../src/callbacks.cc:18459
+#: ../data/main.ui.h:61 ../src/callbacks.cc:18486
 msgid "Insert Matrix…"
 msgstr "插入矩阵…"
 
-#: ../data/main.ui.h:62 ../src/callbacks.cc:18460
+#: ../data/main.ui.h:62 ../src/callbacks.cc:18487
 msgid "Insert Vector…"
 msgstr "插入向量…"
 
@@ -1102,7 +1102,7 @@ msgstr "首选项(_P)"
 msgid "_Mode"
 msgstr "模式(_M)"
 
-#: ../data/main.ui.h:68 ../src/callbacks.cc:18432
+#: ../data/main.ui.h:68 ../src/callbacks.cc:18459
 msgid "Number Base"
 msgstr "数字进制"
 
@@ -1111,41 +1111,41 @@ msgid "Select Result and Expression Base…"
 msgstr "选择结果和表达式进制…"
 
 #: ../data/main.ui.h:70 ../data/nbases.ui.h:4 ../data/setbase.ui.h:3
-#: ../src/interface.cc:1475 ../src/callbacks.cc:18435 ../src/callbacks.cc:27072
-#: ../src/callbacks.cc:30994 ../src/callbacks.cc:31034
+#: ../src/interface.cc:1491 ../src/callbacks.cc:18462 ../src/callbacks.cc:27157
+#: ../src/callbacks.cc:31082 ../src/callbacks.cc:31122
 msgid "Binary"
 msgstr "二进制"
 
 #: ../data/main.ui.h:71 ../data/nbases.ui.h:5 ../data/setbase.ui.h:4
-#: ../src/interface.cc:1476 ../src/callbacks.cc:18436 ../src/callbacks.cc:27073
-#: ../src/callbacks.cc:30995 ../src/callbacks.cc:31035
+#: ../src/interface.cc:1492 ../src/callbacks.cc:18463 ../src/callbacks.cc:27158
+#: ../src/callbacks.cc:31083 ../src/callbacks.cc:31123
 msgid "Octal"
 msgstr "八进制"
 
 #: ../data/main.ui.h:72 ../data/nbases.ui.h:3 ../data/setbase.ui.h:5
-#: ../src/interface.cc:1477 ../src/callbacks.cc:18437 ../src/callbacks.cc:27074
-#: ../src/callbacks.cc:30996 ../src/callbacks.cc:31036
+#: ../src/interface.cc:1493 ../src/callbacks.cc:18464 ../src/callbacks.cc:27159
+#: ../src/callbacks.cc:31084 ../src/callbacks.cc:31124
 msgid "Decimal"
 msgstr "十进制"
 
 #: ../data/main.ui.h:73 ../data/nbases.ui.h:10 ../data/setbase.ui.h:6
-#: ../src/callbacks.cc:18438 ../src/callbacks.cc:27075
-#: ../src/callbacks.cc:30997 ../src/callbacks.cc:31037
+#: ../src/callbacks.cc:18465 ../src/callbacks.cc:27160
+#: ../src/callbacks.cc:31085 ../src/callbacks.cc:31125
 msgid "Duodecimal"
 msgstr "十二进制"
 
 #: ../data/main.ui.h:74 ../data/nbases.ui.h:11 ../data/setbase.ui.h:7
-#: ../src/interface.cc:1478 ../src/callbacks.cc:18439 ../src/callbacks.cc:27076
-#: ../src/callbacks.cc:30998 ../src/callbacks.cc:31038
+#: ../src/interface.cc:1494 ../src/callbacks.cc:18466 ../src/callbacks.cc:27161
+#: ../src/callbacks.cc:31086 ../src/callbacks.cc:31126
 msgid "Hexadecimal"
 msgstr "十六进制"
 
-#: ../data/main.ui.h:75 ../src/callbacks.cc:18441
+#: ../data/main.ui.h:75 ../src/callbacks.cc:18468
 msgid "Other…"
 msgstr "其他…"
 
-#: ../data/main.ui.h:76 ../data/setbase.ui.h:8 ../src/callbacks.cc:27087
-#: ../src/callbacks.cc:27118
+#: ../data/main.ui.h:76 ../data/setbase.ui.h:8 ../src/callbacks.cc:27172
+#: ../src/callbacks.cc:27203
 msgid "Sexagesimal"
 msgstr "六十进制"
 
@@ -1153,7 +1153,7 @@ msgstr "六十进制"
 msgid "Time Format"
 msgstr "时间格式"
 
-#: ../data/main.ui.h:78 ../src/callbacks.cc:18440
+#: ../data/main.ui.h:78 ../src/callbacks.cc:18467
 msgid "Roman Numerals"
 msgstr "罗马数字"
 
@@ -1303,7 +1303,7 @@ msgstr "计算可能值的区间，并跟踪精度变化。"
 msgid "Significant Digits"
 msgstr "有效数字"
 
-#: ../data/main.ui.h:115 ../src/interface.cc:1016 ../src/interface.cc:3927
+#: ../data/main.ui.h:115 ../src/interface.cc:1032 ../src/interface.cc:3996
 msgid "Interval"
 msgstr "区间"
 
@@ -1464,7 +1464,7 @@ msgstr "总是精确"
 msgid "Try Exact"
 msgstr "尝试精确"
 
-#: ../data/main.ui.h:156 ../src/callbacks.cc:16869
+#: ../data/main.ui.h:156 ../src/callbacks.cc:16891
 msgid "Approximate"
 msgstr "近似值"
 
@@ -1488,7 +1488,7 @@ msgstr "改变三角函数中的角度单位"
 msgid "Angle Unit"
 msgstr "角度单位"
 
-#: ../data/main.ui.h:162 ../data/plot.ui.h:26 ../src/interface.cc:4019
+#: ../data/main.ui.h:162 ../data/plot.ui.h:26 ../src/interface.cc:4088
 msgid "None"
 msgstr "无"
 
@@ -1516,7 +1516,7 @@ msgstr "假设未知分母为非零时发出警告"
 msgid "Warn About Denominators Assumed Non-Zero"
 msgstr "警告分母假定非零"
 
-#: ../data/main.ui.h:169 ../src/callbacks.cc:18422
+#: ../data/main.ui.h:169 ../src/callbacks.cc:18449
 msgid "Parsing Mode"
 msgstr "解析模式"
 
@@ -1593,11 +1593,11 @@ msgstr "激活RPN栈。"
 msgid "RPN Mode"
 msgstr "逆波兰模式"
 
-#: ../data/main.ui.h:189 ../src/callbacks.cc:18443
+#: ../data/main.ui.h:189 ../src/callbacks.cc:18470
 msgid "Meta Modes"
 msgstr "元模式"
 
-#: ../data/main.ui.h:190 ../src/callbacks.cc:18455
+#: ../data/main.ui.h:190 ../src/callbacks.cc:18482
 msgid "Save Mode…"
 msgstr "保存模式…"
 
@@ -1637,7 +1637,7 @@ msgstr "检查更新"
 msgid "_About"
 msgstr "关于(_A)"
 
-#: ../data/main.ui.h:201 ../src/callbacks.cc:6190
+#: ../data/main.ui.h:201 ../src/callbacks.cc:6207
 msgid "Toggle minimal window"
 msgstr "切换最小窗口"
 
@@ -1703,7 +1703,7 @@ msgstr "幂乘所选值"
 msgid "Calculate the square root of the selected value"
 msgstr "计算所选值的平方根"
 
-#: ../data/main.ui.h:217 ../src/interface.cc:2058
+#: ../data/main.ui.h:217 ../src/interface.cc:2079
 msgid "History"
 msgstr "历史"
 
@@ -1739,28 +1739,28 @@ msgstr "计算顶部值的平方根"
 msgid "Calculate the sum of all values"
 msgstr "计算所有值的和"
 
-#: ../data/main.ui.h:227 ../src/callbacks.cc:6284
+#: ../data/main.ui.h:227 ../src/callbacks.cc:6302
 msgid "Rotate the stack or move selected register up"
 msgstr "循环栈或上移选定寄存器"
 
-#: ../data/main.ui.h:228 ../src/callbacks.cc:6292
+#: ../data/main.ui.h:228 ../src/callbacks.cc:6310
 msgid "Rotate the stack or move selected register down"
 msgstr "循环栈或下移选定寄存器"
 
-#: ../data/main.ui.h:229 ../src/callbacks.cc:6300
+#: ../data/main.ui.h:229 ../src/callbacks.cc:6318
 msgid ""
 "Swap the two top values or move the selected value to the top of the stack"
 msgstr "交换顶部两个值或将所选值移到栈顶"
 
-#: ../data/main.ui.h:230 ../src/callbacks.cc:6308
+#: ../data/main.ui.h:230 ../src/callbacks.cc:6326
 msgid "Copy the selected or top value to the top of the stack"
 msgstr "将选定的或顶部值复制到栈顶"
 
-#: ../data/main.ui.h:231 ../src/callbacks.cc:6316
+#: ../data/main.ui.h:231 ../src/callbacks.cc:6334
 msgid "Enter the top value from before the last numeric operation"
 msgstr "输入上次数值操作前的顶部值"
 
-#: ../data/main.ui.h:232 ../src/callbacks.cc:6324
+#: ../data/main.ui.h:232 ../src/callbacks.cc:6342
 msgid "Delete the top or selected value"
 msgstr "删除顶部值或所选值"
 
@@ -1768,7 +1768,7 @@ msgstr "删除顶部值或所选值"
 msgid "Edit the selected value"
 msgstr "编辑所选值"
 
-#: ../data/main.ui.h:234 ../src/callbacks.cc:6332
+#: ../data/main.ui.h:234 ../src/callbacks.cc:6350
 msgid "Clear the RPN stack"
 msgstr "清空RPN栈"
 
@@ -1808,15 +1808,15 @@ msgstr ""
 msgid "Conversion"
 msgstr "换算"
 
-#: ../data/main.ui.h:246 ../src/callbacks.cc:6364
+#: ../data/main.ui.h:246 ../src/callbacks.cc:6382
 msgid "Show/hide programming keypad"
 msgstr "显示/隐藏编程键盘"
 
-#: ../data/main.ui.h:247 ../src/callbacks.cc:16870
+#: ../data/main.ui.h:247 ../src/callbacks.cc:16892
 msgid "Exact"
 msgstr "精确"
 
-#: ../data/main.ui.h:248 ../src/callbacks.cc:7237 ../src/callbacks.cc:27096
+#: ../data/main.ui.h:248 ../src/callbacks.cc:7255 ../src/callbacks.cc:27181
 msgid "Fraction"
 msgstr "分数"
 
@@ -1828,16 +1828,16 @@ msgstr "数值显示"
 msgid "Pure"
 msgstr "纯净"
 
-#: ../data/main.ui.h:251 ../src/callbacks.cc:7209
+#: ../data/main.ui.h:251 ../src/callbacks.cc:7227
 msgid "Number base"
 msgstr "数字进制"
 
-#: ../data/main.ui.h:252 ../data/setbase.ui.h:9 ../src/callbacks.cc:7261
-#: ../src/callbacks.cc:27088
+#: ../data/main.ui.h:252 ../data/setbase.ui.h:9 ../src/callbacks.cc:7279
+#: ../src/callbacks.cc:27173
 msgid "Time format"
 msgstr "时间格式"
 
-#: ../data/main.ui.h:253 ../src/callbacks.cc:27078
+#: ../data/main.ui.h:253 ../src/callbacks.cc:27163
 msgid "Roman"
 msgstr "罗马"
 
@@ -1881,7 +1881,7 @@ msgstr "mod"
 msgid "mean"
 msgstr "mean"
 
-#: ../data/main.ui.h:265 ../src/interface.cc:1480
+#: ../data/main.ui.h:265 ../src/interface.cc:1496
 msgid "Store result as a variable"
 msgstr "将结果储存为变量"
 
@@ -1898,7 +1898,7 @@ msgstr "换算数字进制"
 msgid "Imaginary unit i (√-1)"
 msgstr "虚数单位 i (√-1)"
 
-#: ../data/main.ui.h:270 ../src/callbacks.cc:6193
+#: ../data/main.ui.h:270 ../src/callbacks.cc:6210
 msgid "Manage units"
 msgstr "管理单位"
 
@@ -1918,17 +1918,17 @@ msgstr "二的补码输入"
 msgid "Two's complement output"
 msgstr "二的补码输出"
 
-#: ../data/main.ui.h:277 ../data/nbases.ui.h:25 ../src/interface.cc:1074
-#: ../src/interface.cc:1156 ../src/interface.cc:1482 ../src/interface.cc:1483
-#: ../src/interface.cc:3948 ../src/callbacks.cc:21814 ../src/callbacks.cc:21815
+#: ../data/main.ui.h:277 ../data/nbases.ui.h:25 ../src/interface.cc:1090
+#: ../src/interface.cc:1172 ../src/interface.cc:1498 ../src/interface.cc:1499
+#: ../src/interface.cc:4017 ../src/callbacks.cc:21896 ../src/callbacks.cc:21897
 msgid "Bitwise Exclusive OR"
 msgstr "按位异或"
 
-#: ../data/main.ui.h:278 ../data/nbases.ui.h:31 ../src/interface.cc:1152
+#: ../data/main.ui.h:278 ../data/nbases.ui.h:31 ../src/interface.cc:1168
 msgid "Bitwise Left Shift"
 msgstr "按位左移"
 
-#: ../data/main.ui.h:279 ../data/nbases.ui.h:32 ../src/interface.cc:1153
+#: ../data/main.ui.h:279 ../data/nbases.ui.h:32 ../src/interface.cc:1169
 msgid "Bitwise Right Shift"
 msgstr "按位右移"
 
@@ -1945,25 +1945,25 @@ msgid "Show/hide right keypad"
 msgstr "显示/隐藏右侧键盘"
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:284 ../data/nbases.ui.h:28 ../src/interface.cc:1081
+#: ../data/main.ui.h:284 ../data/nbases.ui.h:28 ../src/interface.cc:1097
 msgid "DEL"
 msgstr "DEL"
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:286 ../data/nbases.ui.h:30 ../src/interface.cc:1080
+#: ../data/main.ui.h:286 ../data/nbases.ui.h:30 ../src/interface.cc:1096
 msgid "AC"
 msgstr "AC"
 
-#: ../data/main.ui.h:287 ../src/interface.cc:1082 ../src/interface.cc:3955
+#: ../data/main.ui.h:287 ../src/interface.cc:1098 ../src/interface.cc:4024
 msgid "Previous result"
 msgstr "前一结果"
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:289 ../src/interface.cc:1082
+#: ../data/main.ui.h:289 ../src/interface.cc:1098
 msgid "ANS"
 msgstr "ANS"
 
-#: ../data/main.ui.h:290 ../src/interface.cc:1035
+#: ../data/main.ui.h:290 ../src/interface.cc:1051
 msgid "EXP"
 msgstr "EXP"
 
@@ -1979,8 +1979,8 @@ msgstr "常驻键盘"
 msgid "Edit"
 msgstr "编辑"
 
-#: ../data/main.ui.h:294 ../data/nbases.ui.h:27 ../src/interface.cc:1081
-#: ../src/interface.cc:3954
+#: ../data/main.ui.h:294 ../data/nbases.ui.h:27 ../src/interface.cc:1097
+#: ../src/interface.cc:4023
 msgid "Delete"
 msgstr "删除"
 
@@ -2012,7 +2012,7 @@ msgstr "复制全文"
 msgid "Search…"
 msgstr "搜索…"
 
-#: ../data/main.ui.h:302 ../src/callbacks.cc:26204
+#: ../data/main.ui.h:302 ../src/callbacks.cc:26288
 msgid "Add Bookmark…"
 msgstr "添加书签…"
 
@@ -2196,7 +2196,7 @@ msgstr "清空栈"
 msgid "Select Number Base…"
 msgstr "选择数字进制…"
 
-#: ../data/main.ui.h:348 ../src/callbacks.cc:6195
+#: ../data/main.ui.h:348 ../src/callbacks.cc:6212
 msgid "Store result"
 msgstr "存储结果"
 
@@ -2234,9 +2234,9 @@ msgstr "此矩阵的列数(向量显示的列)"
 msgid "If this is a matrix or vector"
 msgstr "若这是矩阵或向量"
 
-#: ../data/matrix.ui.h:12 ../data/matrixedit.ui.h:21 ../src/callbacks.cc:32994
-#: ../src/callbacks.cc:33002 ../src/callbacks.cc:33010
-#: ../src/callbacks.cc:33018
+#: ../data/matrix.ui.h:12 ../data/matrixedit.ui.h:21 ../src/callbacks.cc:33092
+#: ../src/callbacks.cc:33100 ../src/callbacks.cc:33108
+#: ../src/callbacks.cc:33116
 msgid "Elements"
 msgstr "元素"
 
@@ -2244,7 +2244,7 @@ msgstr "元素"
 msgid "Current element:"
 msgstr "当前元素:"
 
-#: ../data/matrixedit.ui.h:1 ../src/callbacks.cc:16405
+#: ../data/matrixedit.ui.h:1 ../src/callbacks.cc:16427
 msgid "Edit Matrix"
 msgstr "编辑矩阵"
 
@@ -2281,15 +2281,15 @@ msgstr "将更改应用于所选名称"
 msgid "Remove the selected name"
 msgstr "删除所选名称"
 
-#: ../data/namesedit.ui.h:7 ../src/interface.cc:3094
+#: ../data/namesedit.ui.h:7 ../src/interface.cc:3145
 msgid "Abbreviation"
 msgstr "缩写"
 
-#: ../data/namesedit.ui.h:8 ../src/callbacks.cc:3792 ../src/callbacks.cc:7263
+#: ../data/namesedit.ui.h:8 ../src/callbacks.cc:3809 ../src/callbacks.cc:7281
 msgid "Unicode"
 msgstr "Unicode"
 
-#: ../data/namesedit.ui.h:9 ../src/interface.cc:3098
+#: ../data/namesedit.ui.h:9 ../src/interface.cc:3149
 msgid "Plural"
 msgstr "复数"
 
@@ -2297,7 +2297,7 @@ msgstr "复数"
 msgid "Suffix"
 msgstr "后缀"
 
-#: ../data/namesedit.ui.h:11 ../src/interface.cc:2816 ../src/interface.cc:3102
+#: ../data/namesedit.ui.h:11 ../src/interface.cc:2861 ../src/interface.cc:3153
 msgid "Reference"
 msgstr "参考"
 
@@ -2317,16 +2317,16 @@ msgstr "仅补全"
 msgid "Number Bases"
 msgstr "数字进制"
 
-#: ../data/nbases.ui.h:9 ../data/setbase.ui.h:10 ../src/callbacks.cc:7257
-#: ../src/callbacks.cc:30999 ../src/callbacks.cc:31039
+#: ../data/nbases.ui.h:9 ../data/setbase.ui.h:10 ../src/callbacks.cc:7275
+#: ../src/callbacks.cc:31087 ../src/callbacks.cc:31127
 msgid "Roman numerals"
 msgstr "罗马数字"
 
-#: ../data/nbases.ui.h:13 ../src/callbacks.cc:1971
+#: ../data/nbases.ui.h:13 ../src/callbacks.cc:1978
 msgid "BIN"
 msgstr "BIN"
 
-#: ../data/nbases.ui.h:14 ../src/callbacks.cc:1976
+#: ../data/nbases.ui.h:14 ../src/callbacks.cc:1983
 msgid "OCT"
 msgstr "OCT"
 
@@ -2334,11 +2334,11 @@ msgstr "OCT"
 msgid "DEC"
 msgstr "DEC"
 
-#: ../data/nbases.ui.h:16 ../src/callbacks.cc:1981
+#: ../data/nbases.ui.h:16 ../src/callbacks.cc:1988
 msgid "DUO"
 msgstr "DUO"
 
-#: ../data/nbases.ui.h:17 ../src/callbacks.cc:1986
+#: ../data/nbases.ui.h:17 ../src/callbacks.cc:1993
 msgid "HEX"
 msgstr "HEX"
 
@@ -2346,34 +2346,34 @@ msgstr "HEX"
 msgid "ROM"
 msgstr "ROM"
 
-#: ../data/nbases.ui.h:20 ../src/interface.cc:1078 ../src/interface.cc:3952
+#: ../data/nbases.ui.h:20 ../src/interface.cc:1094 ../src/interface.cc:4021
 msgid "Subtract"
 msgstr "减"
 
-#: ../data/nbases.ui.h:21 ../src/interface.cc:1074 ../src/interface.cc:3948
+#: ../data/nbases.ui.h:21 ../src/interface.cc:1090 ../src/interface.cc:4017
 msgid "Multiply"
 msgstr "乘"
 
-#: ../data/nbases.ui.h:22 ../src/interface.cc:1073 ../src/interface.cc:3947
+#: ../data/nbases.ui.h:22 ../src/interface.cc:1089 ../src/interface.cc:4016
 msgid "Divide"
 msgstr "除"
 
-#: ../data/nbases.ui.h:23 ../src/interface.cc:1075 ../src/interface.cc:1154
-#: ../src/interface.cc:1471 ../src/interface.cc:3949
+#: ../data/nbases.ui.h:23 ../src/interface.cc:1091 ../src/interface.cc:1170
+#: ../src/interface.cc:1487 ../src/interface.cc:4018
 msgid "Bitwise AND"
 msgstr "按位与"
 
-#: ../data/nbases.ui.h:24 ../src/interface.cc:1078 ../src/interface.cc:1155
-#: ../src/interface.cc:1472 ../src/interface.cc:3952
+#: ../data/nbases.ui.h:24 ../src/interface.cc:1094 ../src/interface.cc:1171
+#: ../src/interface.cc:1488 ../src/interface.cc:4021
 msgid "Bitwise OR"
 msgstr "按位或"
 
-#: ../data/nbases.ui.h:26 ../src/interface.cc:1157 ../src/interface.cc:1473
+#: ../data/nbases.ui.h:26 ../src/interface.cc:1173 ../src/interface.cc:1489
 msgid "Bitwise NOT"
 msgstr "按位非"
 
-#: ../data/nbases.ui.h:29 ../data/percentage.ui.h:4 ../src/interface.cc:1080
-#: ../src/interface.cc:3953 ../src/callbacks.cc:18376
+#: ../data/nbases.ui.h:29 ../data/percentage.ui.h:4 ../src/interface.cc:1096
+#: ../src/interface.cc:4022 ../src/callbacks.cc:18403
 msgid "Clear"
 msgstr "清除"
 
@@ -2419,8 +2419,8 @@ msgstr "乙转变为甲"
 msgid "Plot"
 msgstr "作图"
 
-#: ../data/plot.ui.h:3 ../src/callbacks.cc:18906 ../src/callbacks.cc:29424
-#: ../src/callbacks.cc:34298
+#: ../data/plot.ui.h:3 ../src/callbacks.cc:18933 ../src/callbacks.cc:29511
+#: ../src/callbacks.cc:34404
 msgid "_Save"
 msgstr "保存(_S)"
 
@@ -2773,7 +2773,7 @@ msgstr "结果"
 msgid "Application name + result"
 msgstr "应用程序名称+结果"
 
-#: ../data/preferences.ui.h:33 ../src/callbacks.cc:18967
+#: ../data/preferences.ui.h:33 ../src/callbacks.cc:18996
 msgid "Mode"
 msgstr "模式"
 
@@ -2785,9 +2785,9 @@ msgstr "应用程序名称+模式"
 msgid "Window title"
 msgstr "窗口标题"
 
-#: ../data/preferences.ui.h:36 ../src/callbacks.cc:16868
-#: ../src/callbacks.cc:18142 ../src/callbacks.cc:19132
-#: ../src/callbacks.cc:34023
+#: ../data/preferences.ui.h:36 ../src/callbacks.cc:16890
+#: ../src/callbacks.cc:18169 ../src/callbacks.cc:19161
+#: ../src/callbacks.cc:34130
 msgid "Default"
 msgstr "默认值"
 
@@ -3011,15 +3011,15 @@ msgstr "汇率更新"
 msgid "Temperature calculation mode:"
 msgstr "温度计算模式:"
 
-#: ../data/preferences.ui.h:87 ../src/callbacks.cc:2682
+#: ../data/preferences.ui.h:87 ../src/callbacks.cc:2698
 msgid "Absolute"
 msgstr "绝对"
 
-#: ../data/preferences.ui.h:88 ../src/callbacks.cc:2689
+#: ../data/preferences.ui.h:88 ../src/callbacks.cc:2705
 msgid "Relative"
 msgstr "相对"
 
-#: ../data/preferences.ui.h:89 ../src/callbacks.cc:2696
+#: ../data/preferences.ui.h:89 ../src/callbacks.cc:2712
 msgid "Hybrid"
 msgstr "混合"
 
@@ -3111,11 +3111,11 @@ msgstr "字体与颜色"
 msgid "Other:"
 msgstr "其他:"
 
-#: ../data/setbase.ui.h:12 ../src/interface.cc:3242 ../src/interface.cc:3319
-#: ../src/callbacks.cc:7211 ../src/callbacks.cc:28053 ../src/callbacks.cc:28193
-#: ../src/callbacks.cc:28328 ../src/callbacks.cc:28335
-#: ../src/callbacks.cc:28415 ../src/callbacks.cc:28500
-#: ../src/callbacks.cc:28539 ../src/callbacks.cc:28547
+#: ../data/setbase.ui.h:12 ../src/interface.cc:3296 ../src/interface.cc:3373
+#: ../src/callbacks.cc:7229 ../src/callbacks.cc:28139 ../src/callbacks.cc:28279
+#: ../src/callbacks.cc:28414 ../src/callbacks.cc:28421
+#: ../src/callbacks.cc:28501 ../src/callbacks.cc:28586
+#: ../src/callbacks.cc:28625 ../src/callbacks.cc:28633
 msgid "Bijective base-26"
 msgstr "Bijective base-26"
 
@@ -3132,7 +3132,7 @@ msgid "New Keyboard Shortcut"
 msgstr "新建键盘快捷键"
 
 #: ../data/simplefunctionedit.ui.h:1 ../data/variableedit.ui.h:1
-#: ../src/callbacks.cc:16191
+#: ../src/callbacks.cc:16213
 msgid "Edit Variable"
 msgstr "编辑变量"
 
@@ -3164,7 +3164,7 @@ msgstr ""
 "分别使用\\x，\\y和\\z作为第一，二和三个函数参数。这能避免和变量，函数和单位的"
 "潜在冲突。"
 
-#: ../data/unitedit.ui.h:1 ../src/callbacks.cc:15179
+#: ../data/unitedit.ui.h:1 ../src/callbacks.cc:15199
 msgid "Edit Unit"
 msgstr "编辑单位"
 
@@ -3364,7 +3364,7 @@ msgstr "换算前的值"
 msgid "Type anywhere"
 msgstr "在任何地方输入"
 
-#: ../data/unknownedit.ui.h:1 ../src/callbacks.cc:16007
+#: ../data/unknownedit.ui.h:1 ../src/callbacks.cc:16029
 msgid "Edit Unknown Variable"
 msgstr "编辑未知变量"
 
@@ -3384,8 +3384,8 @@ msgstr "用于在表达式中引用此未知变量的名称"
 msgid "Use custom assumptions"
 msgstr "使用自定义假设"
 
-#: ../data/unknownedit.ui.h:11 ../src/interface.cc:2798
-#: ../src/interface.cc:3054
+#: ../data/unknownedit.ui.h:11 ../src/interface.cc:2843
+#: ../src/interface.cc:3104
 msgid "Type"
 msgstr "类型"
 
@@ -3449,35 +3449,35 @@ msgstr "导出(_x)"
 msgid "_Variable"
 msgstr "变量(_V)"
 
-#: ../src/main.cc:87
+#: ../src/main.cc:88
 msgid "Execute expressions and commands from a file"
 msgstr "执行文件中的表达式和命令"
 
-#: ../src/main.cc:88
+#: ../src/main.cc:89
 msgid "Start a new instance of the application"
 msgstr "启动一个新的程序实例"
 
-#: ../src/main.cc:89
+#: ../src/main.cc:90
 msgid "Display the application version"
 msgstr "显示应用程序版本"
 
-#: ../src/main.cc:90
+#: ../src/main.cc:91
 msgid "Specify the window title"
 msgstr "指定窗口标题"
 
-#: ../src/main.cc:90
+#: ../src/main.cc:91
 msgid "TITLE"
 msgstr "TITLE"
 
-#: ../src/main.cc:91
+#: ../src/main.cc:92
 msgid "Expression to calculate"
 msgstr "要计算的表达式"
 
-#: ../src/main.cc:91
+#: ../src/main.cc:92
 msgid "[EXPRESSION]"
 msgstr "[EXPRESSION]"
 
-#: ../src/main.cc:214 ../src/callbacks.cc:32981
+#: ../src/main.cc:215 ../src/callbacks.cc:33079
 msgid ""
 "Type a mathematical expression above, e.g. \"5 + 2 / 3\",\n"
 "and press the enter key."
@@ -3485,53 +3485,53 @@ msgstr ""
 "<span font=\"10\">在上面键入一个数学表达式，例如“5+2/3”，\n"
 "然后按Enter键。</span> "
 
-#: ../src/main.cc:237
+#: ../src/main.cc:238
 msgid "ans"
 msgstr "ans"
 
-#: ../src/main.cc:238
+#: ../src/main.cc:239
 msgid "Last Answer"
 msgstr "上一答案"
 
-#: ../src/main.cc:239 ../src/callbacks.cc:466 ../src/callbacks.cc:467
+#: ../src/main.cc:240 ../src/callbacks.cc:467 ../src/callbacks.cc:468
 msgid "answer"
 msgstr "答案"
 
-#: ../src/main.cc:241
+#: ../src/main.cc:242
 msgid "Answer 2"
 msgstr "答案二"
 
-#: ../src/main.cc:242
+#: ../src/main.cc:243
 msgid "Answer 3"
 msgstr "答案三"
 
-#: ../src/main.cc:243
+#: ../src/main.cc:244
 msgid "Answer 4"
 msgstr "答案四"
 
-#: ../src/main.cc:244
+#: ../src/main.cc:245
 msgid "Answer 5"
 msgstr "答案五"
 
-#: ../src/main.cc:254
+#: ../src/main.cc:255
 msgid "Memory"
 msgstr "存值"
 
-#: ../src/main.cc:266 ../src/searchprovider.cc:652
+#: ../src/main.cc:267 ../src/searchprovider.cc:652
 #, c-format
 msgid "Failed to load global definitions!\n"
 msgstr "加载全局定义失败！ \n"
 
 #. if no category has been selected (previously selected has been renamed/deleted), select "All"
-#: ../src/main.cc:286 ../src/main.cc:289 ../src/main.cc:292
-#: ../src/callbacks.cc:4337 ../src/callbacks.cc:4398 ../src/callbacks.cc:4437
-#: ../src/callbacks.cc:4698 ../src/callbacks.cc:4761 ../src/callbacks.cc:4863
-#: ../src/callbacks.cc:4958 ../src/callbacks.cc:5018 ../src/callbacks.cc:5104
-#: ../src/callbacks.cc:5203 ../src/callbacks.cc:5258 ../src/callbacks.cc:5508
+#: ../src/main.cc:287 ../src/main.cc:290 ../src/main.cc:293
+#: ../src/callbacks.cc:4354 ../src/callbacks.cc:4415 ../src/callbacks.cc:4454
+#: ../src/callbacks.cc:4715 ../src/callbacks.cc:4778 ../src/callbacks.cc:4880
+#: ../src/callbacks.cc:4975 ../src/callbacks.cc:5035 ../src/callbacks.cc:5121
+#: ../src/callbacks.cc:5220 ../src/callbacks.cc:5275 ../src/callbacks.cc:5525
 msgid "All"
 msgstr "全部"
 
-#: ../src/main.cc:485
+#: ../src/main.cc:514
 #, c-format
 msgid ""
 "By default, only one instance (one main window) of %s is allowed.\n"
@@ -3550,262 +3550,262 @@ msgstr ""
 "\n"
 "尽管这样，你是否想改变默认的行为，允许同时打开多个实例？"
 
-#: ../src/interface.cc:947
+#: ../src/interface.cc:963
 #, c-format
 msgid "Right-click/long press: %s"
 msgstr "右键/长按: %s"
 
-#: ../src/interface.cc:948
+#: ../src/interface.cc:964
 #, c-format
 msgid "Right-click: %s"
 msgstr "右键: %s"
 
-#: ../src/interface.cc:954
+#: ../src/interface.cc:970
 #, c-format
 msgid "Middle-click: %s"
 msgstr "中键: %s"
 
-#: ../src/interface.cc:1007 ../src/interface.cc:3924
+#: ../src/interface.cc:1023 ../src/interface.cc:3993
 msgid "Cycle through previous expression"
 msgstr "在前面的表达式中循环"
 
-#: ../src/interface.cc:1013 ../src/interface.cc:3925
+#: ../src/interface.cc:1029 ../src/interface.cc:3994
 msgid "Move cursor left or right"
 msgstr "向左或向右移动光标"
 
-#: ../src/interface.cc:1013 ../src/interface.cc:3925
+#: ../src/interface.cc:1029 ../src/interface.cc:3994
 msgid "Move cursor to beginning or end"
 msgstr "将光标移动到开头或末尾"
 
-#: ../src/interface.cc:1016 ../src/interface.cc:3927
+#: ../src/interface.cc:1032 ../src/interface.cc:3996
 msgid "Uncertainty/interval"
 msgstr "不确定度/区间"
 
-#: ../src/interface.cc:1016 ../src/interface.cc:3927
+#: ../src/interface.cc:1032 ../src/interface.cc:3996
 msgid "Relative error"
 msgstr "相对误差"
 
-#: ../src/interface.cc:1017 ../src/interface.cc:3928
+#: ../src/interface.cc:1033 ../src/interface.cc:3997
 msgid "Argument separator"
 msgstr "参数分隔符"
 
-#: ../src/interface.cc:1017 ../src/interface.cc:1032 ../src/interface.cc:3928
-#: ../src/interface.cc:3942
+#: ../src/interface.cc:1033 ../src/interface.cc:1048 ../src/interface.cc:3997
+#: ../src/interface.cc:4011
 msgid "Blank space"
 msgstr "空白处"
 
-#: ../src/interface.cc:1017 ../src/interface.cc:1032 ../src/interface.cc:3928
-#: ../src/interface.cc:3942
+#: ../src/interface.cc:1033 ../src/interface.cc:1048 ../src/interface.cc:3997
+#: ../src/interface.cc:4011
 msgid "New line"
 msgstr "新建行"
 
-#: ../src/interface.cc:1018 ../src/interface.cc:3929
+#: ../src/interface.cc:1034 ../src/interface.cc:3998
 msgid "Smart parentheses"
 msgstr "智能括号"
 
-#: ../src/interface.cc:1018 ../src/interface.cc:3929
+#: ../src/interface.cc:1034 ../src/interface.cc:3998
 msgid "Vector brackets"
 msgstr "向量括号"
 
-#: ../src/interface.cc:1020 ../src/interface.cc:3930
+#: ../src/interface.cc:1036 ../src/interface.cc:3999
 msgid "Left parenthesis"
 msgstr "左括号"
 
-#: ../src/interface.cc:1020 ../src/interface.cc:3930
+#: ../src/interface.cc:1036 ../src/interface.cc:3999
 msgid "Left vector bracket"
 msgstr "左向量括号"
 
-#: ../src/interface.cc:1021 ../src/interface.cc:3931
+#: ../src/interface.cc:1037 ../src/interface.cc:4000
 msgid "Right parenthesis"
 msgstr "右括号"
 
-#: ../src/interface.cc:1021 ../src/interface.cc:3931
+#: ../src/interface.cc:1037 ../src/interface.cc:4000
 msgid "Right vector bracket"
 msgstr "右向量括号"
 
-#: ../src/interface.cc:1032 ../src/interface.cc:3942
+#: ../src/interface.cc:1048 ../src/interface.cc:4011
 msgid "Decimal point"
 msgstr "小数点"
 
-#: ../src/interface.cc:1047
+#: ../src/interface.cc:1063
 msgid "Raise (Ctrl+*)"
 msgstr "幂(Ctrl+*)"
 
-#: ../src/interface.cc:1075 ../src/interface.cc:3949
+#: ../src/interface.cc:1091 ../src/interface.cc:4018
 msgid "Add"
 msgstr "加"
 
-#: ../src/interface.cc:1075 ../src/interface.cc:3949 ../src/callbacks.cc:3593
-#: ../src/callbacks.cc:6199 ../src/callbacks.cc:27509
+#: ../src/interface.cc:1091 ../src/interface.cc:4018 ../src/callbacks.cc:3610
+#: ../src/callbacks.cc:6216 ../src/callbacks.cc:27594
 msgid "M+ (memory plus)"
 msgstr "M+(存值加上)"
 
-#: ../src/interface.cc:1080 ../src/interface.cc:3953 ../src/callbacks.cc:3587
-#: ../src/callbacks.cc:6196 ../src/callbacks.cc:27506
+#: ../src/interface.cc:1096 ../src/interface.cc:4022 ../src/callbacks.cc:3604
+#: ../src/callbacks.cc:6213 ../src/callbacks.cc:27591
 msgid "MC (memory clear)"
 msgstr "MC(存值清除)"
 
-#: ../src/interface.cc:1081 ../src/interface.cc:3954
+#: ../src/interface.cc:1097 ../src/interface.cc:4023
 msgid "Backspace"
 msgstr "退格键"
 
-#: ../src/interface.cc:1081 ../src/interface.cc:3954 ../src/callbacks.cc:3596
-#: ../src/callbacks.cc:6200 ../src/callbacks.cc:27510
+#: ../src/interface.cc:1097 ../src/interface.cc:4023 ../src/callbacks.cc:3613
+#: ../src/callbacks.cc:6217 ../src/callbacks.cc:27595
 msgid "M− (memory minus)"
 msgstr "M−(存值减去)"
 
-#: ../src/interface.cc:1082 ../src/interface.cc:3955
+#: ../src/interface.cc:1098 ../src/interface.cc:4024
 msgid "Previous result (static)"
 msgstr "前一个结果(静态)"
 
-#: ../src/interface.cc:1090 ../src/interface.cc:3956 ../src/callbacks.cc:1457
-#: ../src/callbacks.cc:14037
+#: ../src/interface.cc:1106 ../src/interface.cc:4025 ../src/callbacks.cc:1462
+#: ../src/callbacks.cc:14056
 msgid "Calculate expression"
 msgstr "计算表达式"
 
-#: ../src/interface.cc:1090 ../src/interface.cc:3956 ../src/callbacks.cc:6197
-#: ../src/callbacks.cc:27507
+#: ../src/interface.cc:1106 ../src/interface.cc:4025 ../src/callbacks.cc:6214
+#: ../src/callbacks.cc:27592
 msgid "MR (memory recall)"
 msgstr "MR(存值读取)"
 
-#: ../src/interface.cc:1090 ../src/interface.cc:3956 ../src/callbacks.cc:3590
-#: ../src/callbacks.cc:6198 ../src/callbacks.cc:27508
+#: ../src/interface.cc:1106 ../src/interface.cc:4025 ../src/callbacks.cc:3607
+#: ../src/callbacks.cc:6215 ../src/callbacks.cc:27593
 msgid "MS (memory store)"
 msgstr "MS(存值存入)"
 
-#: ../src/interface.cc:1273 ../src/callbacks.cc:6163
+#: ../src/interface.cc:1289 ../src/callbacks.cc:6180
 msgid "Set unknowns"
 msgstr "设置未知数"
 
 #. Show further items in a submenu
-#: ../src/interface.cc:1321 ../src/interface.cc:1409 ../src/interface.cc:1412
-#: ../src/callbacks.cc:6504 ../src/callbacks.cc:6591 ../src/callbacks.cc:22597
-#: ../src/callbacks.cc:27192 ../src/callbacks.cc:27195
-#: ../src/callbacks.cc:27219
+#: ../src/interface.cc:1337 ../src/interface.cc:1425 ../src/interface.cc:1428
+#: ../src/callbacks.cc:6522 ../src/callbacks.cc:6609 ../src/callbacks.cc:22679
+#: ../src/callbacks.cc:27277 ../src/callbacks.cc:27280
+#: ../src/callbacks.cc:27304
 msgid "more"
 msgstr "更多"
 
-#: ../src/interface.cc:1471
+#: ../src/interface.cc:1487
 msgid "Logical AND"
 msgstr "逻辑与"
 
-#: ../src/interface.cc:1472
+#: ../src/interface.cc:1488
 msgid "Logical OR"
 msgstr "逻辑或"
 
-#: ../src/interface.cc:1473
+#: ../src/interface.cc:1489
 msgid "Logical NOT"
 msgstr "逻辑非"
 
-#: ../src/interface.cc:1475 ../src/interface.cc:1476 ../src/interface.cc:1477
-#: ../src/interface.cc:1478
+#: ../src/interface.cc:1491 ../src/interface.cc:1492 ../src/interface.cc:1493
+#: ../src/interface.cc:1494
 msgid "Toggle Result Base"
 msgstr "切换结果进制"
 
-#: ../src/interface.cc:1480
+#: ../src/interface.cc:1496
 msgid "Open menu with stored variables"
 msgstr "打开存储变量的菜单"
 
-#: ../src/interface.cc:2052 ../src/interface.cc:2102
+#: ../src/interface.cc:2073 ../src/interface.cc:2123
 msgid "Index"
 msgstr "索引"
 
 #. RPN Enter (calculate and add to stack)
-#: ../src/interface.cc:2119 ../src/callbacks.cc:14009
+#: ../src/interface.cc:2140 ../src/callbacks.cc:14028
 msgid "ENTER"
 msgstr "ENTER"
 
-#: ../src/interface.cc:2120 ../src/interface.cc:2121 ../src/callbacks.cc:1457
-#: ../src/callbacks.cc:14010
+#: ../src/interface.cc:2141 ../src/interface.cc:2142 ../src/callbacks.cc:1462
+#: ../src/callbacks.cc:14029
 msgid "Calculate expression and add to stack"
 msgstr "计算表达式并添加到栈"
 
-#: ../src/interface.cc:2197 ../src/interface.cc:2395
+#: ../src/interface.cc:2218 ../src/interface.cc:2436
 msgid "Flag"
 msgstr "标志"
 
-#: ../src/interface.cc:2973 ../src/callbacks.cc:17542 ../src/callbacks.cc:27622
+#: ../src/interface.cc:3022 ../src/callbacks.cc:17566 ../src/callbacks.cc:27707
 msgid "Matrices"
 msgstr "矩阵"
 
-#: ../src/interface.cc:3513
+#: ../src/interface.cc:3570
 msgid "Gregorian"
 msgstr "格里高利历(公历/阳历)"
 
-#: ../src/interface.cc:3514
+#: ../src/interface.cc:3571
 msgid "Revised Julian (Milanković)"
 msgstr "修订儒略历(Milanković)"
 
-#: ../src/interface.cc:3515
+#: ../src/interface.cc:3572
 msgid "Julian"
 msgstr "儒略历"
 
-#: ../src/interface.cc:3516
+#: ../src/interface.cc:3573
 msgid "Islamic (Hijri)"
 msgstr "伊斯兰历(回历/Hijri)"
 
-#: ../src/interface.cc:3517
+#: ../src/interface.cc:3574
 msgid "Hebrew"
 msgstr "希伯来历(犹太历)"
 
-#: ../src/interface.cc:3518
+#: ../src/interface.cc:3575
 msgid "Chinese"
 msgstr "中国历(农历/阴历)"
 
-#: ../src/interface.cc:3519
+#: ../src/interface.cc:3576
 msgid "Persian (Solar Hijri)"
 msgstr "波斯历(Solar Hijri)"
 
-#: ../src/interface.cc:3520
+#: ../src/interface.cc:3577
 msgid "Coptic"
 msgstr "科普特历(Coptic)"
 
-#: ../src/interface.cc:3521
+#: ../src/interface.cc:3578
 msgid "Ethiopian"
 msgstr "埃塞俄比亚历(Ethiopian)"
 
-#: ../src/interface.cc:3522
+#: ../src/interface.cc:3579
 msgid "Indian (National)"
 msgstr "印度历(国立)"
 
-#: ../src/interface.cc:3830 ../src/interface.cc:3852 ../src/interface.cc:4013
+#: ../src/interface.cc:3894 ../src/interface.cc:3916 ../src/interface.cc:4082
 msgid "Action"
 msgstr "动作"
 
-#: ../src/interface.cc:3838
+#: ../src/interface.cc:3902
 msgid "Key combination"
 msgstr "组合键"
 
-#: ../src/interface.cc:3946
+#: ../src/interface.cc:4015
 msgid "Raise"
 msgstr "幂"
 
-#: ../src/callbacks.cc:466
+#: ../src/callbacks.cc:467
 msgid "History Answer Value"
 msgstr "历史答案"
 
-#: ../src/callbacks.cc:468 ../src/callbacks.cc:491
+#: ../src/callbacks.cc:469 ../src/callbacks.cc:492
 msgid "History Index(es)"
 msgstr "历史索引"
 
-#: ../src/callbacks.cc:479 ../src/callbacks.cc:502
+#: ../src/callbacks.cc:480 ../src/callbacks.cc:503
 #, c-format
 msgid "History index %s does not exist."
 msgstr "历史索引 %s 不存在。"
 
-#: ../src/callbacks.cc:489 ../src/callbacks.cc:490 ../src/callbacks.cc:16945
+#: ../src/callbacks.cc:490 ../src/callbacks.cc:491 ../src/callbacks.cc:16967
 msgid "expression"
 msgstr "expression"
 
-#: ../src/callbacks.cc:489
+#: ../src/callbacks.cc:490
 msgid "History Parsed Expression"
 msgstr "已解析表达式"
 
-#: ../src/callbacks.cc:512
+#: ../src/callbacks.cc:513
 msgid "Set Window Title"
 msgstr "设置窗口标题"
 
-#: ../src/callbacks.cc:1034 ../src/callbacks.cc:13947 ../src/callbacks.cc:31821
+#: ../src/callbacks.cc:1035 ../src/callbacks.cc:13966 ../src/callbacks.cc:31913
 #, c-format
 msgid ""
 "Failed to open %s.\n"
@@ -3814,11 +3814,11 @@ msgstr ""
 "无法打开 %s 。\n"
 "%s"
 
-#: ../src/callbacks.cc:1051
+#: ../src/callbacks.cc:1053
 msgid "Could not display help for Qalculate!."
 msgstr "无法显示 Qalculate! 的帮助。"
 
-#: ../src/callbacks.cc:1146
+#: ../src/callbacks.cc:1150
 #, c-format
 msgid ""
 "Could not display help for Qalculate!.\n"
@@ -3827,106 +3827,106 @@ msgstr ""
 "无法显示 Qalculate! 的帮助。\n"
 "%s"
 
-#: ../src/callbacks.cc:1177 ../src/callbacks.cc:7645 ../src/callbacks.cc:9915
-#: ../src/callbacks.cc:10270 ../src/callbacks.cc:10315
-#: ../src/callbacks.cc:10612 ../src/callbacks.cc:11180
-#: ../src/callbacks.cc:11235 ../src/callbacks.cc:14496
-#: ../src/callbacks.cc:25406 ../src/searchprovider.cc:119
+#: ../src/callbacks.cc:1182 ../src/callbacks.cc:7663 ../src/callbacks.cc:9933
+#: ../src/callbacks.cc:10288 ../src/callbacks.cc:10333
+#: ../src/callbacks.cc:10630 ../src/callbacks.cc:11198
+#: ../src/callbacks.cc:11253 ../src/callbacks.cc:14515
+#: ../src/callbacks.cc:25488 ../src/searchprovider.cc:119
 #: ../src/searchprovider.cc:120 ../src/searchprovider.cc:203
 msgid "approx."
 msgstr "约"
 
-#: ../src/callbacks.cc:1439
+#: ../src/callbacks.cc:1444
 msgid "Stop process"
 msgstr "停止进程"
 
-#: ../src/callbacks.cc:1450 ../src/callbacks.cc:23890
+#: ../src/callbacks.cc:1455 ../src/callbacks.cc:23972
 msgid "Clear expression"
 msgstr "清除表达式"
 
-#: ../src/callbacks.cc:1951
+#: ../src/callbacks.cc:1958
 msgid "EXACT"
 msgstr "EXACT"
 
-#: ../src/callbacks.cc:1954
+#: ../src/callbacks.cc:1961
 msgid "APPROX"
 msgstr "APPROX"
 
-#: ../src/callbacks.cc:1958
+#: ../src/callbacks.cc:1965
 msgid "RPN"
 msgstr "RPN"
 
 #. Chain mode
-#: ../src/callbacks.cc:1963
+#: ../src/callbacks.cc:1970
 msgid "CHN"
 msgstr "CHN"
 
-#: ../src/callbacks.cc:1991
+#: ../src/callbacks.cc:1998
 msgid "ROMAN"
 msgstr "ROMAN"
 
-#: ../src/callbacks.cc:2043
+#: ../src/callbacks.cc:2050
 msgid "DEG"
 msgstr "DEG"
 
-#: ../src/callbacks.cc:2048
+#: ../src/callbacks.cc:2055
 msgid "RAD"
 msgstr "RAD"
 
-#: ../src/callbacks.cc:2053
+#: ../src/callbacks.cc:2060
 msgid "GRA"
 msgstr "GRA"
 
-#: ../src/callbacks.cc:2060
+#: ../src/callbacks.cc:2067
 msgid "PREC"
 msgstr "PREC"
 
-#: ../src/callbacks.cc:2065
+#: ../src/callbacks.cc:2072
 msgid "FUNC"
 msgstr "FUNC"
 
-#: ../src/callbacks.cc:2071
+#: ../src/callbacks.cc:2078
 msgid "UNIT"
 msgstr "UNIT"
 
-#: ../src/callbacks.cc:2077
+#: ../src/callbacks.cc:2084
 msgid "VAR"
 msgstr "VAR"
 
-#: ../src/callbacks.cc:2083
+#: ../src/callbacks.cc:2090
 msgid "INF"
 msgstr "INF"
 
-#: ../src/callbacks.cc:2089
+#: ../src/callbacks.cc:2096
 msgid "CPLX"
 msgstr "CPLX"
 
-#: ../src/callbacks.cc:2115
+#: ../src/callbacks.cc:2122
 msgid "Do you wish to update the exchange rates now?"
 msgstr "您想现在更新汇率吗？"
 
-#: ../src/callbacks.cc:2116
+#: ../src/callbacks.cc:2124
 #, c-format
 msgid "It has been %s day since the exchange rates last were updated."
 msgid_plural "It has been %s days since the exchange rates last were updated."
 msgstr[0] "距上次更新汇率已过了%s天。"
 
-#: ../src/callbacks.cc:2117
+#: ../src/callbacks.cc:2125
 msgid "Do not ask again"
 msgstr "不再询问"
 
-#: ../src/callbacks.cc:2170 ../src/callbacks.cc:34371 ../src/callbacks.cc:34381
-#: ../src/callbacks.cc:34390
+#: ../src/callbacks.cc:2179 ../src/callbacks.cc:34478 ../src/callbacks.cc:34489
+#: ../src/callbacks.cc:34499
 msgid "It took too long to generate the plot data."
 msgstr "生成绘图数据的时间太长。"
 
-#: ../src/callbacks.cc:2170
+#: ../src/callbacks.cc:2179
 msgid ""
 "It took too long to generate the plot data. Please decrease the sampling "
 "rate or increase the time limit in preferences."
 msgstr "生成绘图数据的时间太长。 请降低采样率或增加首选项中的时间限制。"
 
-#: ../src/callbacks.cc:2254
+#: ../src/callbacks.cc:2263
 msgid ""
 "When errors, warnings and other information are generated during "
 "calculation, the icon in the upper right corner of the expression entry "
@@ -3936,15 +3936,15 @@ msgstr ""
 "当计算过程中产生错误、警告和其他信息时，表达式框右上角的图标会发生变化以反"
 "映。此时可以长按鼠标或点击图标来显示信息。"
 
-#: ../src/callbacks.cc:2332
+#: ../src/callbacks.cc:2342
 msgid "Path of executable not found."
 msgstr "未找到可执行文件的路径。"
 
-#: ../src/callbacks.cc:2341
+#: ../src/callbacks.cc:2352
 msgid "curl not found."
 msgstr "未找到 curl。"
 
-#: ../src/callbacks.cc:2398
+#: ../src/callbacks.cc:2410
 #, c-format
 msgid ""
 "Failed to run update script.\n"
@@ -3953,15 +3953,15 @@ msgstr ""
 "运行更新脚本失败。\n"
 "%s"
 
-#: ../src/callbacks.cc:2417
+#: ../src/callbacks.cc:2430
 msgid "Failed to check for updates."
 msgstr "无法检查更新。"
 
-#: ../src/callbacks.cc:2417
+#: ../src/callbacks.cc:2430
 msgid "No updates found."
 msgstr "无更新。"
 
-#: ../src/callbacks.cc:2435
+#: ../src/callbacks.cc:2450
 #, c-format
 msgid ""
 "A new version of %s is available at %s.\n"
@@ -3972,7 +3972,7 @@ msgstr ""
 "\n"
 "是否要更新到版本 %s 。"
 
-#: ../src/callbacks.cc:2437
+#: ../src/callbacks.cc:2452
 #, c-format
 msgid ""
 "A new version of %s is available.\n"
@@ -3983,20 +3983,20 @@ msgstr ""
 "\n"
 "您可以在 %s 获取。"
 
-#: ../src/callbacks.cc:2473
+#: ../src/callbacks.cc:2488
 #, c-format
 msgid "Too many arguments for %s()."
 msgstr "%s()的参数太多。"
 
-#: ../src/callbacks.cc:2500 ../src/callbacks.cc:4516 ../src/callbacks.cc:5741
+#: ../src/callbacks.cc:2515 ../src/callbacks.cc:4533 ../src/callbacks.cc:5758
 msgid "argument"
 msgstr "参数"
 
-#: ../src/callbacks.cc:2670
+#: ../src/callbacks.cc:2685
 msgid "Temperature Calculation Mode"
 msgstr "温度计算模式"
 
-#: ../src/callbacks.cc:2679
+#: ../src/callbacks.cc:2695
 msgid ""
 "The expression is ambiguous.\n"
 "Please select temperature calculation mode\n"
@@ -4006,11 +4006,11 @@ msgstr ""
 "请选择温度计算模式\n"
 "(以后可以在偏好设置中更改)。"
 
-#: ../src/callbacks.cc:2758
+#: ../src/callbacks.cc:2774
 msgid "Interpretation of dots"
 msgstr ""
 
-#: ../src/callbacks.cc:2767
+#: ../src/callbacks.cc:2784
 #, fuzzy
 msgid ""
 "Please select interpretation of dots (\".\")\n"
@@ -4020,268 +4020,268 @@ msgstr ""
 "请选择温度计算模式\n"
 "(以后可以在偏好设置中更改)。"
 
-#: ../src/callbacks.cc:2770
+#: ../src/callbacks.cc:2787
 #, fuzzy
 msgid "Both dot and comma as decimal separators"
 msgstr "将逗号作为小数分隔符"
 
-#: ../src/callbacks.cc:2777
+#: ../src/callbacks.cc:2794
 msgid "Dot as thousands separator"
 msgstr ""
 
-#: ../src/callbacks.cc:2784
+#: ../src/callbacks.cc:2801
 #, fuzzy
 msgid "Only dot as decimal separator"
 msgstr "将逗号作为小数分隔符"
 
-#: ../src/callbacks.cc:2847 ../src/callbacks.cc:4382 ../src/callbacks.cc:4383
-#: ../src/callbacks.cc:4439 ../src/callbacks.cc:4745 ../src/callbacks.cc:4746
-#: ../src/callbacks.cc:4865 ../src/callbacks.cc:5002 ../src/callbacks.cc:5003
-#: ../src/callbacks.cc:5106 ../src/callbacks.cc:5249 ../src/callbacks.cc:5250
-#: ../src/callbacks.cc:5251 ../src/callbacks.cc:5510 ../src/callbacks.cc:13918
-#: ../src/callbacks.cc:15435 ../src/callbacks.cc:15809
-#: ../src/callbacks.cc:16124 ../src/callbacks.cc:16343
-#: ../src/callbacks.cc:16630
+#: ../src/callbacks.cc:2864 ../src/callbacks.cc:4399 ../src/callbacks.cc:4400
+#: ../src/callbacks.cc:4456 ../src/callbacks.cc:4762 ../src/callbacks.cc:4763
+#: ../src/callbacks.cc:4882 ../src/callbacks.cc:5019 ../src/callbacks.cc:5020
+#: ../src/callbacks.cc:5123 ../src/callbacks.cc:5266 ../src/callbacks.cc:5267
+#: ../src/callbacks.cc:5268 ../src/callbacks.cc:5527 ../src/callbacks.cc:13937
+#: ../src/callbacks.cc:15455 ../src/callbacks.cc:15829
+#: ../src/callbacks.cc:16146 ../src/callbacks.cc:16365
+#: ../src/callbacks.cc:16652
 msgid "Uncategorized"
 msgstr "未分类"
 
-#: ../src/callbacks.cc:3028 ../src/callbacks.cc:3759 ../src/callbacks.cc:13237
+#: ../src/callbacks.cc:3045 ../src/callbacks.cc:3776 ../src/callbacks.cc:13256
 msgid "hexadecimal"
 msgstr "十六进制"
 
-#: ../src/callbacks.cc:3031 ../src/callbacks.cc:3761 ../src/callbacks.cc:13240
+#: ../src/callbacks.cc:3048 ../src/callbacks.cc:3778 ../src/callbacks.cc:13259
 msgid "octal"
 msgstr "八进制"
 
-#: ../src/callbacks.cc:3034 ../src/callbacks.cc:3763 ../src/callbacks.cc:13243
+#: ../src/callbacks.cc:3051 ../src/callbacks.cc:3780 ../src/callbacks.cc:13262
 msgid "decimal"
 msgstr "十进制"
 
-#: ../src/callbacks.cc:3037 ../src/callbacks.cc:3765 ../src/callbacks.cc:13246
+#: ../src/callbacks.cc:3054 ../src/callbacks.cc:3782 ../src/callbacks.cc:13265
 msgid "duodecimal"
 msgstr "十二进制"
 
-#: ../src/callbacks.cc:3040 ../src/callbacks.cc:3767 ../src/callbacks.cc:13249
+#: ../src/callbacks.cc:3057 ../src/callbacks.cc:3784 ../src/callbacks.cc:13268
 msgid "binary"
 msgstr "二进制"
 
-#: ../src/callbacks.cc:3043 ../src/callbacks.cc:3769 ../src/callbacks.cc:13252
+#: ../src/callbacks.cc:3060 ../src/callbacks.cc:3786 ../src/callbacks.cc:13271
 msgid "roman"
 msgstr "罗马"
 
-#: ../src/callbacks.cc:3046 ../src/callbacks.cc:3771 ../src/callbacks.cc:13255
+#: ../src/callbacks.cc:3063 ../src/callbacks.cc:3788 ../src/callbacks.cc:13274
 msgid "bijective"
 msgstr "双射"
 
-#: ../src/callbacks.cc:3049 ../src/callbacks.cc:3052 ../src/callbacks.cc:3055
-#: ../src/callbacks.cc:3773 ../src/callbacks.cc:13258 ../src/callbacks.cc:13261
-#: ../src/callbacks.cc:13264
+#: ../src/callbacks.cc:3066 ../src/callbacks.cc:3069 ../src/callbacks.cc:3072
+#: ../src/callbacks.cc:3790 ../src/callbacks.cc:13277 ../src/callbacks.cc:13280
+#: ../src/callbacks.cc:13283
 msgid "sexagesimal"
 msgstr "六十进制"
 
-#: ../src/callbacks.cc:3058 ../src/callbacks.cc:3061 ../src/callbacks.cc:3775
-#: ../src/callbacks.cc:3776 ../src/callbacks.cc:13267 ../src/callbacks.cc:13270
+#: ../src/callbacks.cc:3075 ../src/callbacks.cc:3078 ../src/callbacks.cc:3792
+#: ../src/callbacks.cc:3793 ../src/callbacks.cc:13286 ../src/callbacks.cc:13289
 msgid "latitude"
 msgstr "纬度"
 
-#: ../src/callbacks.cc:3064 ../src/callbacks.cc:3067 ../src/callbacks.cc:3777
-#: ../src/callbacks.cc:3778 ../src/callbacks.cc:13273 ../src/callbacks.cc:13276
+#: ../src/callbacks.cc:3081 ../src/callbacks.cc:3084 ../src/callbacks.cc:3794
+#: ../src/callbacks.cc:3795 ../src/callbacks.cc:13292 ../src/callbacks.cc:13295
 msgid "longitude"
 msgstr "经度"
 
-#: ../src/callbacks.cc:3085 ../src/callbacks.cc:3789 ../src/callbacks.cc:13294
+#: ../src/callbacks.cc:3102 ../src/callbacks.cc:3806 ../src/callbacks.cc:13313
 msgid "time"
 msgstr "时间"
 
-#: ../src/callbacks.cc:3136 ../src/callbacks.cc:3793 ../src/callbacks.cc:13371
+#: ../src/callbacks.cc:3153 ../src/callbacks.cc:3810 ../src/callbacks.cc:13390
 msgid "bases"
 msgstr "进制"
 
-#: ../src/callbacks.cc:3138 ../src/callbacks.cc:3795 ../src/callbacks.cc:3796
-#: ../src/callbacks.cc:13381
+#: ../src/callbacks.cc:3155 ../src/callbacks.cc:3812 ../src/callbacks.cc:3813
+#: ../src/callbacks.cc:13400
 msgid "calendars"
 msgstr "日历"
 
-#: ../src/callbacks.cc:3140 ../src/callbacks.cc:3809 ../src/callbacks.cc:13391
+#: ../src/callbacks.cc:3157 ../src/callbacks.cc:3826 ../src/callbacks.cc:13410
 msgid "rectangular"
 msgstr "矩形"
 
-#: ../src/callbacks.cc:3140 ../src/callbacks.cc:3809 ../src/callbacks.cc:13391
+#: ../src/callbacks.cc:3157 ../src/callbacks.cc:3826 ../src/callbacks.cc:13410
 msgid "cartesian"
 msgstr "笛卡尔"
 
-#: ../src/callbacks.cc:3144 ../src/callbacks.cc:3811 ../src/callbacks.cc:13403
+#: ../src/callbacks.cc:3161 ../src/callbacks.cc:3828 ../src/callbacks.cc:13422
 msgid "exponential"
 msgstr "指数型"
 
-#: ../src/callbacks.cc:3148 ../src/callbacks.cc:3813 ../src/callbacks.cc:13415
+#: ../src/callbacks.cc:3165 ../src/callbacks.cc:3830 ../src/callbacks.cc:13434
 msgid "polar"
 msgstr "极坐标"
 
-#: ../src/callbacks.cc:3156 ../src/callbacks.cc:3817 ../src/callbacks.cc:13441
+#: ../src/callbacks.cc:3173 ../src/callbacks.cc:3834 ../src/callbacks.cc:13460
 msgid "angle"
 msgstr "角度"
 
-#: ../src/callbacks.cc:3156 ../src/callbacks.cc:3819 ../src/callbacks.cc:13441
+#: ../src/callbacks.cc:3173 ../src/callbacks.cc:3836 ../src/callbacks.cc:13460
 msgid "phasor"
 msgstr "相量"
 
-#: ../src/callbacks.cc:3160 ../src/callbacks.cc:3797 ../src/callbacks.cc:13453
+#: ../src/callbacks.cc:3177 ../src/callbacks.cc:3814 ../src/callbacks.cc:13472
 msgid "optimal"
 msgstr "最优"
 
-#: ../src/callbacks.cc:3165 ../src/callbacks.cc:3184 ../src/callbacks.cc:3799
-#: ../src/callbacks.cc:3874 ../src/callbacks.cc:13465 ../src/callbacks.cc:13515
+#: ../src/callbacks.cc:3182 ../src/callbacks.cc:3201 ../src/callbacks.cc:3816
+#: ../src/callbacks.cc:3891 ../src/callbacks.cc:13484 ../src/callbacks.cc:13534
 msgid "base"
 msgstr "基本"
 
-#: ../src/callbacks.cc:3170 ../src/callbacks.cc:3801 ../src/callbacks.cc:13477
+#: ../src/callbacks.cc:3187 ../src/callbacks.cc:3818 ../src/callbacks.cc:13496
 msgid "mixed"
 msgstr "混合"
 
-#: ../src/callbacks.cc:3175 ../src/callbacks.cc:3803 ../src/callbacks.cc:3804
-#: ../src/callbacks.cc:13492
+#: ../src/callbacks.cc:3192 ../src/callbacks.cc:3820 ../src/callbacks.cc:3821
+#: ../src/callbacks.cc:13511
 msgid "fraction"
 msgstr "分数"
 
-#: ../src/callbacks.cc:3178 ../src/callbacks.cc:3805 ../src/callbacks.cc:3806
-#: ../src/callbacks.cc:13495
+#: ../src/callbacks.cc:3195 ../src/callbacks.cc:3822 ../src/callbacks.cc:3823
+#: ../src/callbacks.cc:13514
 msgid "factors"
 msgstr "因子"
 
-#: ../src/callbacks.cc:3181 ../src/callbacks.cc:3807 ../src/callbacks.cc:13505
+#: ../src/callbacks.cc:3198 ../src/callbacks.cc:3824 ../src/callbacks.cc:13524
 msgid "partial fraction"
 msgstr "部分分式"
 
-#: ../src/callbacks.cc:3212 ../src/callbacks.cc:3603 ../src/callbacks.cc:3605
-#: ../src/callbacks.cc:13558 ../src/searchprovider.cc:161
+#: ../src/callbacks.cc:3229 ../src/callbacks.cc:3620 ../src/callbacks.cc:3622
+#: ../src/callbacks.cc:13577 ../src/searchprovider.cc:161
 msgid "factorize"
 msgstr "分解"
 
-#: ../src/callbacks.cc:3215 ../src/callbacks.cc:3606 ../src/callbacks.cc:3608
-#: ../src/callbacks.cc:13561 ../src/searchprovider.cc:161
+#: ../src/callbacks.cc:3232 ../src/callbacks.cc:3623 ../src/callbacks.cc:3625
+#: ../src/callbacks.cc:13580 ../src/searchprovider.cc:161
 msgid "expand"
 msgstr "展开"
 
-#: ../src/callbacks.cc:3760 ../src/callbacks.cc:3870
+#: ../src/callbacks.cc:3777 ../src/callbacks.cc:3887
 msgid "hexadecimal number"
 msgstr "十六进制数"
 
-#: ../src/callbacks.cc:3762
+#: ../src/callbacks.cc:3779
 msgid "octal number"
 msgstr "八进制数"
 
-#: ../src/callbacks.cc:3764
+#: ../src/callbacks.cc:3781
 msgid "decimal number"
 msgstr "十进制数"
 
-#: ../src/callbacks.cc:3766
+#: ../src/callbacks.cc:3783
 msgid "duodecimal number"
 msgstr "十二进制数"
 
-#: ../src/callbacks.cc:3768 ../src/callbacks.cc:3864
+#: ../src/callbacks.cc:3785 ../src/callbacks.cc:3881
 msgid "binary number"
 msgstr "二进制数"
 
-#: ../src/callbacks.cc:3770
+#: ../src/callbacks.cc:3787
 msgid "roman numerals"
 msgstr "罗马数字"
 
-#: ../src/callbacks.cc:3772
+#: ../src/callbacks.cc:3789
 msgid "bijective base-26"
 msgstr "双射基-26"
 
-#: ../src/callbacks.cc:3774
+#: ../src/callbacks.cc:3791
 msgid "sexagesimal number"
 msgstr "六进制数"
 
-#: ../src/callbacks.cc:3780
+#: ../src/callbacks.cc:3797
 msgid "32-bit floating point"
 msgstr "32位浮点"
 
-#: ../src/callbacks.cc:3782
+#: ../src/callbacks.cc:3799
 msgid "64-bit floating point"
 msgstr "64位浮点"
 
-#: ../src/callbacks.cc:3784
+#: ../src/callbacks.cc:3801
 msgid "16-bit floating point"
 msgstr "16位浮点"
 
-#: ../src/callbacks.cc:3786
+#: ../src/callbacks.cc:3803
 msgid "80-bit (x86) floating point"
 msgstr "80位(x86)浮点"
 
-#: ../src/callbacks.cc:3788
+#: ../src/callbacks.cc:3805
 msgid "128-bit floating point"
 msgstr "128位浮点"
 
-#: ../src/callbacks.cc:3790
+#: ../src/callbacks.cc:3807
 msgid "time format"
 msgstr "时间格式"
 
-#: ../src/callbacks.cc:3794
+#: ../src/callbacks.cc:3811
 msgid "number bases"
 msgstr "数字进制"
 
-#: ../src/callbacks.cc:3798
+#: ../src/callbacks.cc:3815
 msgid "optimal unit"
 msgstr "最优单位"
 
-#: ../src/callbacks.cc:3800
+#: ../src/callbacks.cc:3817
 msgid "base units"
 msgstr "基本单位"
 
-#: ../src/callbacks.cc:3802
+#: ../src/callbacks.cc:3819
 msgid "mixed units"
 msgstr "混合单位"
 
-#: ../src/callbacks.cc:3808
+#: ../src/callbacks.cc:3825
 msgid "expanded partial fractions"
 msgstr "已展开部分分式"
 
-#: ../src/callbacks.cc:3810
+#: ../src/callbacks.cc:3827
 msgid "complex rectangular form"
 msgstr "复矩形形式"
 
-#: ../src/callbacks.cc:3812
+#: ../src/callbacks.cc:3829
 msgid "complex exponential form"
 msgstr "复指数形式"
 
-#: ../src/callbacks.cc:3814
+#: ../src/callbacks.cc:3831
 msgid "complex polar form"
 msgstr "复极坐标形式"
 
-#: ../src/callbacks.cc:3816
+#: ../src/callbacks.cc:3833
 msgid "complex cis form"
 msgstr "复纯虚数指数(cis)形式"
 
-#: ../src/callbacks.cc:3818
+#: ../src/callbacks.cc:3835
 msgid "complex angle notation"
 msgstr "复角记号"
 
-#: ../src/callbacks.cc:3820
+#: ../src/callbacks.cc:3837
 msgid "complex phasor notation"
 msgstr "复相量记号"
 
-#: ../src/callbacks.cc:3822 ../src/callbacks.cc:7265
+#: ../src/callbacks.cc:3839 ../src/callbacks.cc:7283
 msgid "UTC time zone"
 msgstr "UTC时区"
 
-#: ../src/callbacks.cc:3875
+#: ../src/callbacks.cc:3892
 #, c-format
 msgid "number base %s"
 msgstr "数字进制 %s"
 
-#: ../src/callbacks.cc:4391 ../src/callbacks.cc:4392 ../src/callbacks.cc:4441
-#: ../src/callbacks.cc:4754 ../src/callbacks.cc:4755 ../src/callbacks.cc:4867
-#: ../src/callbacks.cc:5010 ../src/callbacks.cc:5011 ../src/callbacks.cc:5108
-#: ../src/callbacks.cc:15433 ../src/callbacks.cc:15807
-#: ../src/callbacks.cc:16122 ../src/callbacks.cc:16341
-#: ../src/callbacks.cc:16628
+#: ../src/callbacks.cc:4408 ../src/callbacks.cc:4409 ../src/callbacks.cc:4458
+#: ../src/callbacks.cc:4771 ../src/callbacks.cc:4772 ../src/callbacks.cc:4884
+#: ../src/callbacks.cc:5027 ../src/callbacks.cc:5028 ../src/callbacks.cc:5125
+#: ../src/callbacks.cc:15453 ../src/callbacks.cc:15827
+#: ../src/callbacks.cc:16144 ../src/callbacks.cc:16363
+#: ../src/callbacks.cc:16650
 msgid "Inactive"
 msgstr "不常用"
 
-#: ../src/callbacks.cc:4543
+#: ../src/callbacks.cc:4560
 #, c-format
 msgid ""
 "Retrieves data from the %s data set for a given object and property. If "
@@ -4291,504 +4291,509 @@ msgstr ""
 "从 %s 数据集中检索与所给对象和属性相关的数据。若将“info”键入为属性，则会弹出"
 "一个包含该对象的所有属性的对话框窗口。"
 
-#: ../src/callbacks.cc:4555 ../src/callbacks.cc:14980
+#: ../src/callbacks.cc:4572 ../src/callbacks.cc:15000
 msgid "Example:"
 msgstr "示例:"
 
-#: ../src/callbacks.cc:4569
+#: ../src/callbacks.cc:4586
 msgid "Arguments"
 msgstr "参数"
 
 #. optional argument
-#: ../src/callbacks.cc:4594 ../src/callbacks.cc:14852 ../src/callbacks.cc:14863
+#: ../src/callbacks.cc:4611 ../src/callbacks.cc:14872 ../src/callbacks.cc:14883
 msgid "optional"
 msgstr "可选"
 
 #. argument default, in description
-#: ../src/callbacks.cc:4598
+#: ../src/callbacks.cc:4615
 msgid "default: "
 msgstr "默认值:"
 
-#: ../src/callbacks.cc:4613
+#: ../src/callbacks.cc:4630
 msgid "Requirement"
 msgstr "要求"
 
 #. indicating that the property is a data set key
-#: ../src/callbacks.cc:4647 ../src/callbacks.cc:5696 ../src/callbacks.cc:16951
+#: ../src/callbacks.cc:4664 ../src/callbacks.cc:5713 ../src/callbacks.cc:16973
 msgid "key"
 msgstr "键"
 
-#: ../src/callbacks.cc:4668 ../src/callbacks.cc:4929 ../src/callbacks.cc:5179
+#: ../src/callbacks.cc:4685 ../src/callbacks.cc:4946 ../src/callbacks.cc:5196
 msgid "Acti_vate"
 msgstr "激活(_v)"
 
-#: ../src/callbacks.cc:4772 ../src/callbacks.cc:6985
+#: ../src/callbacks.cc:4789 ../src/callbacks.cc:7003
 msgid "a previous result"
 msgstr "一个先前的结果"
 
-#: ../src/callbacks.cc:4797 ../src/callbacks.cc:6994
+#: ../src/callbacks.cc:4814 ../src/callbacks.cc:7012
 msgid "matrix"
 msgstr "矩阵"
 
-#: ../src/callbacks.cc:4799 ../src/callbacks.cc:6996
+#: ../src/callbacks.cc:4816 ../src/callbacks.cc:7014
 msgid "vector"
 msgstr "向量"
 
-#: ../src/callbacks.cc:4809 ../src/callbacks.cc:7007
+#: ../src/callbacks.cc:4826 ../src/callbacks.cc:7025
 msgid "positive"
 msgstr "正数"
 
-#: ../src/callbacks.cc:4810 ../src/callbacks.cc:7008
+#: ../src/callbacks.cc:4827 ../src/callbacks.cc:7026
 msgid "non-positive"
 msgstr "非正数"
 
-#: ../src/callbacks.cc:4811 ../src/callbacks.cc:7009
+#: ../src/callbacks.cc:4828 ../src/callbacks.cc:7027
 msgid "negative"
 msgstr "负数"
 
-#: ../src/callbacks.cc:4812 ../src/callbacks.cc:7010
+#: ../src/callbacks.cc:4829 ../src/callbacks.cc:7028
 msgid "non-negative"
 msgstr "非负数"
 
-#: ../src/callbacks.cc:4813 ../src/callbacks.cc:7011
+#: ../src/callbacks.cc:4830 ../src/callbacks.cc:7029
 msgid "non-zero"
 msgstr "非零"
 
-#: ../src/callbacks.cc:4818 ../src/callbacks.cc:7016
+#: ../src/callbacks.cc:4835 ../src/callbacks.cc:7034
 msgid "boolean"
 msgstr "布尔值"
 
-#: ../src/callbacks.cc:4819 ../src/callbacks.cc:7017
+#: ../src/callbacks.cc:4836 ../src/callbacks.cc:7035
 msgid "integer"
 msgstr "整数"
 
-#: ../src/callbacks.cc:4820 ../src/callbacks.cc:7018
+#: ../src/callbacks.cc:4837 ../src/callbacks.cc:7036
 msgid "rational"
 msgstr "有理数"
 
-#: ../src/callbacks.cc:4821 ../src/callbacks.cc:7019
+#: ../src/callbacks.cc:4838 ../src/callbacks.cc:7037
 msgid "real"
 msgstr "实数"
 
-#: ../src/callbacks.cc:4822 ../src/callbacks.cc:7020
+#: ../src/callbacks.cc:4839 ../src/callbacks.cc:7038
 msgid "complex"
 msgstr "复数"
 
-#: ../src/callbacks.cc:4823 ../src/callbacks.cc:7021 ../src/callbacks.cc:16937
+#: ../src/callbacks.cc:4840 ../src/callbacks.cc:7039 ../src/callbacks.cc:16959
 msgid "number"
 msgstr "数"
 
-#: ../src/callbacks.cc:4824 ../src/callbacks.cc:7022
+#: ../src/callbacks.cc:4841 ../src/callbacks.cc:7040
 msgid "(not matrix)"
 msgstr "(非矩阵)"
 
-#: ../src/callbacks.cc:4827 ../src/callbacks.cc:7025
+#: ../src/callbacks.cc:4844 ../src/callbacks.cc:7043
 msgid "unknown"
 msgstr "未知"
 
-#: ../src/callbacks.cc:4829 ../src/callbacks.cc:7027
+#: ../src/callbacks.cc:4846 ../src/callbacks.cc:7045
 msgid "default assumptions"
 msgstr "默认假设"
 
-#: ../src/callbacks.cc:4913 ../src/callbacks.cc:15044 ../src/callbacks.cc:15053
-#: ../src/callbacks.cc:16144 ../src/callbacks.cc:30051
-#: ../src/callbacks.cc:30066 ../src/callbacks.cc:30084
-#: ../src/callbacks.cc:30117
+#: ../src/callbacks.cc:4930 ../src/callbacks.cc:15064 ../src/callbacks.cc:15073
+#: ../src/callbacks.cc:16166 ../src/callbacks.cc:30139
+#: ../src/callbacks.cc:30154 ../src/callbacks.cc:30172
+#: ../src/callbacks.cc:30205
 msgid "Variable does not exist anymore."
 msgstr "变量不再存在。"
 
-#: ../src/callbacks.cc:5712
+#: ../src/callbacks.cc:5729
 msgid "Data Retrieval Function"
 msgstr "数据检索函数"
 
-#: ../src/callbacks.cc:6145
+#: ../src/callbacks.cc:6162
 msgid "Insert function"
 msgstr "插入函数"
 
-#: ../src/callbacks.cc:6146
+#: ../src/callbacks.cc:6163
 msgid "Insert function (dialog)"
 msgstr "插入函数(对话框)"
 
-#: ../src/callbacks.cc:6147
+#: ../src/callbacks.cc:6164
 msgid "Insert variable"
 msgstr "插入变量"
 
-#: ../src/callbacks.cc:6148
+#: ../src/callbacks.cc:6165
 msgid "Insert unit"
 msgstr "插入单位"
 
-#: ../src/callbacks.cc:6149
+#: ../src/callbacks.cc:6166
 msgid "Insert text"
 msgstr "插入文本"
 
-#: ../src/callbacks.cc:6150
+#: ../src/callbacks.cc:6167
 msgid "Insert date"
 msgstr "插入日期"
 
-#: ../src/callbacks.cc:6151
+#: ../src/callbacks.cc:6168
 msgid "Insert vector"
 msgstr "插入向量"
 
-#: ../src/callbacks.cc:6152
+#: ../src/callbacks.cc:6169
 msgid "Insert matrix"
 msgstr "插入矩阵"
 
-#: ../src/callbacks.cc:6153
+#: ../src/callbacks.cc:6170
 msgid "Insert smart parentheses"
 msgstr "插入智能括号"
 
-#: ../src/callbacks.cc:6154
+#: ../src/callbacks.cc:6171
 msgid "Convert to unit"
 msgstr "换算为单位"
 
-#: ../src/callbacks.cc:6155
+#: ../src/callbacks.cc:6172
 msgid "Convert to unit (entry)"
 msgstr "换算为单位(输入框)"
 
-#: ../src/callbacks.cc:6156
+#: ../src/callbacks.cc:6173
 msgid "Convert to optimal unit"
 msgstr "换算为最优单位"
 
-#: ../src/callbacks.cc:6157
+#: ../src/callbacks.cc:6174
 msgid "Convert to base units"
 msgstr "换算为基本单位"
 
-#: ../src/callbacks.cc:6158
+#: ../src/callbacks.cc:6175
 msgid "Convert to optimal prefix"
 msgstr "换算为最优前缀"
 
-#: ../src/callbacks.cc:6159
+#: ../src/callbacks.cc:6176
 msgid "Convert to number base"
 msgstr "换算为数字进制"
 
-#: ../src/callbacks.cc:6160
+#: ../src/callbacks.cc:6177
 msgid "Factorize result"
 msgstr "分解结果"
 
-#: ../src/callbacks.cc:6161
+#: ../src/callbacks.cc:6178
 msgid "Expand result"
 msgstr "展开结果"
 
-#: ../src/callbacks.cc:6162
+#: ../src/callbacks.cc:6179
 msgid "Expand partial fractions"
 msgstr "展开部分分式"
 
-#: ../src/callbacks.cc:6164
+#: ../src/callbacks.cc:6181
 msgid "RPN: down"
 msgstr "RPN: 向下"
 
-#: ../src/callbacks.cc:6165
+#: ../src/callbacks.cc:6182
 msgid "RPN: up"
 msgstr "RPN: 向上"
 
-#: ../src/callbacks.cc:6166
+#: ../src/callbacks.cc:6183
 msgid "RPN: swap"
 msgstr "RPN: 交换"
 
-#: ../src/callbacks.cc:6167
+#: ../src/callbacks.cc:6184
 msgid "RPN: copy"
 msgstr "RPN: 复制"
 
-#: ../src/callbacks.cc:6168
+#: ../src/callbacks.cc:6185
 msgid "RPN: lastx"
 msgstr "RPN: lastx"
 
-#: ../src/callbacks.cc:6169
+#: ../src/callbacks.cc:6186
 msgid "RPN: delete register"
 msgstr "RPN: 删除寄存器"
 
-#: ../src/callbacks.cc:6170
+#: ../src/callbacks.cc:6187
 msgid "RPN: clear stack"
 msgstr "RPN: 清空栈"
 
-#: ../src/callbacks.cc:6171
+#: ../src/callbacks.cc:6188
 msgid "Load meta mode"
 msgstr "加载元模式"
 
-#: ../src/callbacks.cc:6172
+#: ../src/callbacks.cc:6189
 msgid "Set expression base"
 msgstr "设置表达式进制"
 
-#: ../src/callbacks.cc:6173
+#: ../src/callbacks.cc:6190
 msgid "Set result base"
 msgstr "设置结果进制"
 
-#: ../src/callbacks.cc:6174
+#: ../src/callbacks.cc:6191
 msgid "Toggle exact mode"
 msgstr "切换精确模式"
 
-#: ../src/callbacks.cc:6175
+#: ../src/callbacks.cc:6192
 msgid "Set angle unit to degrees"
 msgstr "将角度单位设为度"
 
-#: ../src/callbacks.cc:6176
+#: ../src/callbacks.cc:6193
 msgid "Set angle unit to radians"
 msgstr "将角度单位设为弧度"
 
-#: ../src/callbacks.cc:6177
+#: ../src/callbacks.cc:6194
 msgid "Set angle unit to gradians"
 msgstr "将角度单位设为梯度"
 
-#: ../src/callbacks.cc:6178
+#: ../src/callbacks.cc:6195
 msgid "Toggle simple fractions"
 msgstr "切换简单分数"
 
-#: ../src/callbacks.cc:6179
+#: ../src/callbacks.cc:6196
 msgid "Toggle mixed fractions"
 msgstr "切换混合分数"
 
-#: ../src/callbacks.cc:6180
+#: ../src/callbacks.cc:6197
 msgid "Toggle scientific notation"
 msgstr "切换科学记数"
 
-#: ../src/callbacks.cc:6181
+#: ../src/callbacks.cc:6198
 msgid "Toggle simple notation"
 msgstr "切换简单记数"
 
-#: ../src/callbacks.cc:6182
+#: ../src/callbacks.cc:6199
 msgid "Toggle RPN mode"
 msgstr "切换RPN模式"
 
-#: ../src/callbacks.cc:6183
+#: ../src/callbacks.cc:6200
 msgid "Toggle calculate as you type"
 msgstr "切换键入时计算"
 
-#: ../src/callbacks.cc:6184
+#: ../src/callbacks.cc:6201
 msgid "Toggle programming keypad"
 msgstr "切换编程键盘"
 
-#: ../src/callbacks.cc:6185
+#: ../src/callbacks.cc:6202
 msgid "Show keypad"
 msgstr "显示键盘"
 
-#: ../src/callbacks.cc:6186
+#: ../src/callbacks.cc:6203
 msgid "Show history"
 msgstr "显示历史记录"
 
-#: ../src/callbacks.cc:6187
+#: ../src/callbacks.cc:6204
 msgid "Search history"
 msgstr "搜索历史记录"
 
-#: ../src/callbacks.cc:6188
+#: ../src/callbacks.cc:6205
 msgid "Show conversion"
 msgstr "显示换算"
 
-#: ../src/callbacks.cc:6189
+#: ../src/callbacks.cc:6206
 msgid "Show RPN stack"
 msgstr "显示RPN栈"
 
-#: ../src/callbacks.cc:6191
+#: ../src/callbacks.cc:6208
 msgid "Manage variables"
 msgstr "管理变量"
 
-#: ../src/callbacks.cc:6192
+#: ../src/callbacks.cc:6209
 msgid "Manage functions"
 msgstr "管理函数"
 
-#: ../src/callbacks.cc:6194
+#: ../src/callbacks.cc:6211
 msgid "Manage data sets"
 msgstr "管理数据集"
 
-#: ../src/callbacks.cc:6201
+#: ../src/callbacks.cc:6218
 msgid "New variable"
 msgstr "新建变量"
 
-#: ../src/callbacks.cc:6202
+#: ../src/callbacks.cc:6219
 msgid "New function"
 msgstr "新建函数"
 
-#: ../src/callbacks.cc:6203
+#: ../src/callbacks.cc:6220
 msgid "Open plot functions/data"
 msgstr "打开函数/数据作图"
 
-#: ../src/callbacks.cc:6204
+#: ../src/callbacks.cc:6221
 msgid "Open convert number bases"
 msgstr "打开进制换算"
 
-#: ../src/callbacks.cc:6205
+#: ../src/callbacks.cc:6222
 msgid "Open floating point conversion"
 msgstr "打开浮点换算"
 
-#: ../src/callbacks.cc:6206
+#: ../src/callbacks.cc:6223
 msgid "Open calender conversion"
 msgstr "打开日历换算"
 
-#: ../src/callbacks.cc:6207
+#: ../src/callbacks.cc:6224
 msgid "Open percentage calculation tool"
 msgstr "打开百分比计算"
 
-#: ../src/callbacks.cc:6208
+#: ../src/callbacks.cc:6225
 msgid "Open periodic table"
 msgstr "打开元素周期表"
 
-#: ../src/callbacks.cc:6209
+#: ../src/callbacks.cc:6226
 msgid "Update exchange rates"
 msgstr "更新汇率"
 
-#: ../src/callbacks.cc:6210
+#: ../src/callbacks.cc:6227
 msgid "Copy result"
 msgstr "复制结果"
 
-#: ../src/callbacks.cc:6211
+#: ../src/callbacks.cc:6228
+#, fuzzy
+msgid "Insert result"
+msgstr "插入文本"
+
+#: ../src/callbacks.cc:6229
 msgid "Save result image"
 msgstr "保存结果图像"
 
-#: ../src/callbacks.cc:6212
+#: ../src/callbacks.cc:6230
 msgid "Help"
 msgstr "帮助"
 
-#: ../src/callbacks.cc:6213
+#: ../src/callbacks.cc:6231
 msgid "Quit"
 msgstr "退出"
 
-#: ../src/callbacks.cc:6214
+#: ../src/callbacks.cc:6232
 msgid "Toggle chain mode"
 msgstr "切换链式模式"
 
-#: ../src/callbacks.cc:6215
+#: ../src/callbacks.cc:6233
 #, fuzzy
 msgid "Toggle keep above"
 msgstr "切换精确模式"
 
-#: ../src/callbacks.cc:6216
+#: ../src/callbacks.cc:6234
 #, fuzzy
 msgid "Show/hide completion"
 msgstr "无补全"
 
-#: ../src/callbacks.cc:6217
+#: ../src/callbacks.cc:6235
 msgid "Perform completion (activate first item)"
 msgstr ""
 
-#: ../src/callbacks.cc:6536
+#: ../src/callbacks.cc:6554
 msgid "Prefixes"
 msgstr "前缀"
 
-#: ../src/callbacks.cc:6758
+#: ../src/callbacks.cc:6776
 msgid "No Prefix"
 msgstr "无前缀"
 
-#: ../src/callbacks.cc:6759
+#: ../src/callbacks.cc:6777
 msgid "Optimal Prefix"
 msgstr "最优前缀"
 
-#: ../src/callbacks.cc:7182 ../src/callbacks.cc:7186 ../src/callbacks.cc:7190
+#: ../src/callbacks.cc:7200 ../src/callbacks.cc:7204 ../src/callbacks.cc:7208
 msgid "Prefix"
 msgstr "前缀"
 
-#: ../src/callbacks.cc:7203
+#: ../src/callbacks.cc:7221
 msgid "Complex angle/phasor notation"
 msgstr "复角/相量记号"
 
-#: ../src/callbacks.cc:7205 ../src/callbacks.cc:27071
+#: ../src/callbacks.cc:7223 ../src/callbacks.cc:27156
 msgid "Number bases"
 msgstr "数字进制"
 
-#: ../src/callbacks.cc:7207 ../src/callbacks.cc:27121
+#: ../src/callbacks.cc:7225 ../src/callbacks.cc:27206
 msgid "Base units"
 msgstr "基本单位"
 
-#: ../src/callbacks.cc:7213
+#: ../src/callbacks.cc:7231
 msgid "Binary number"
 msgstr "二进制数"
 
-#: ../src/callbacks.cc:7215 ../src/callbacks.cc:27065
+#: ../src/callbacks.cc:7233 ../src/callbacks.cc:27150
 msgid "Calendars"
 msgstr "日历"
 
-#: ../src/callbacks.cc:7217
+#: ../src/callbacks.cc:7235
 msgid "Complex cis form"
 msgstr "复纯虚数指数形式"
 
-#: ../src/callbacks.cc:7219
+#: ../src/callbacks.cc:7237
 msgid "Decimal number"
 msgstr "十进制数"
 
-#: ../src/callbacks.cc:7221
+#: ../src/callbacks.cc:7239
 msgid "Duodecimal number"
 msgstr "十二进制数"
 
-#: ../src/callbacks.cc:7223
+#: ../src/callbacks.cc:7241
 msgid "Complex exponential form"
 msgstr "复指数形式"
 
-#: ../src/callbacks.cc:7225 ../src/callbacks.cc:27081 ../src/callbacks.cc:27085
+#: ../src/callbacks.cc:7243 ../src/callbacks.cc:27166 ../src/callbacks.cc:27170
 msgid "Factors"
 msgstr "因子"
 
-#: ../src/callbacks.cc:7227
+#: ../src/callbacks.cc:7245
 msgid "16-bit floating point binary format"
 msgstr "16位浮点二进制格式"
 
-#: ../src/callbacks.cc:7229
+#: ../src/callbacks.cc:7247
 msgid "32-bit floating point binary format"
 msgstr "32位浮点二进制格式"
 
-#: ../src/callbacks.cc:7231
+#: ../src/callbacks.cc:7249
 msgid "64-bit floating point binary format"
 msgstr "64位浮点二进制格式"
 
-#: ../src/callbacks.cc:7233
+#: ../src/callbacks.cc:7251
 msgid "80-bit (x86) floating point binary format"
 msgstr "80位(x86)浮点二进制格式"
 
-#: ../src/callbacks.cc:7235
+#: ../src/callbacks.cc:7253
 msgid "128-bit floating point binary format"
 msgstr "128位浮点二进制格式"
 
-#: ../src/callbacks.cc:7239
+#: ../src/callbacks.cc:7257
 msgid "Hexadecimal number"
 msgstr "十六进制数"
 
-#: ../src/callbacks.cc:7241
+#: ../src/callbacks.cc:7259
 msgid "Latitude"
 msgstr "纬度"
 
-#: ../src/callbacks.cc:7243
+#: ../src/callbacks.cc:7261
 msgid "Longitude"
 msgstr "经度"
 
-#: ../src/callbacks.cc:7245
+#: ../src/callbacks.cc:7263
 msgid "Mixed units"
 msgstr "混合单位"
 
-#: ../src/callbacks.cc:7247
+#: ../src/callbacks.cc:7265
 msgid "Octal number"
 msgstr "八进制数"
 
-#: ../src/callbacks.cc:7249
+#: ../src/callbacks.cc:7267
 msgid "Optimal units"
 msgstr "最优单位"
 
-#: ../src/callbacks.cc:7251
+#: ../src/callbacks.cc:7269
 msgid "Expanded partial fractions"
 msgstr "展开部分分式"
 
-#: ../src/callbacks.cc:7253
+#: ../src/callbacks.cc:7271
 msgid "Complex polar form"
 msgstr "复极坐标形式"
 
-#: ../src/callbacks.cc:7255
+#: ../src/callbacks.cc:7273
 msgid "Complex rectangular form"
 msgstr "复矩形形式"
 
-#: ../src/callbacks.cc:7259
+#: ../src/callbacks.cc:7277
 msgid "Sexagesimal number"
 msgstr "六十进制数"
 
-#: ../src/callbacks.cc:8829
+#: ../src/callbacks.cc:8847
 msgid "and"
 msgstr "且"
 
-#: ../src/callbacks.cc:8832 ../src/callbacks.cc:10418 ../src/callbacks.cc:10437
-#: ../src/callbacks.cc:10438
+#: ../src/callbacks.cc:8850 ../src/callbacks.cc:10436 ../src/callbacks.cc:10455
+#: ../src/callbacks.cc:10456
 msgid "or"
 msgstr "或"
 
-#: ../src/callbacks.cc:9832
+#: ../src/callbacks.cc:9850
 msgid "undefined"
 msgstr "未定义"
 
-#: ../src/callbacks.cc:10158 ../src/callbacks.cc:32885
+#: ../src/callbacks.cc:10176 ../src/callbacks.cc:32983
 msgid ""
 "result is too long\n"
 "see history"
@@ -4796,107 +4801,107 @@ msgstr ""
 "结果太长 \n"
 "查看历史记录 "
 
-#: ../src/callbacks.cc:10183 ../src/callbacks.cc:32906
+#: ../src/callbacks.cc:10201 ../src/callbacks.cc:33004
 msgid "calculation was aborted"
 msgstr "计算已中止"
 
-#: ../src/callbacks.cc:10855 ../src/callbacks.cc:25375
+#: ../src/callbacks.cc:10873 ../src/callbacks.cc:25457
 msgid "RPN Register Moved"
 msgstr "RPN寄存器已移动"
 
-#: ../src/callbacks.cc:10863 ../src/callbacks.cc:13806
-#: ../src/callbacks.cc:25381
+#: ../src/callbacks.cc:10881 ../src/callbacks.cc:13825
+#: ../src/callbacks.cc:25463
 msgid "RPN Operation"
 msgstr "RPN操作"
 
-#: ../src/callbacks.cc:11069
+#: ../src/callbacks.cc:11087
 msgid "Processing…"
 msgstr "处理中…"
 
-#: ../src/callbacks.cc:11089 ../src/callbacks.cc:32885
+#: ../src/callbacks.cc:11107 ../src/callbacks.cc:32983
 msgid "result processing was aborted"
 msgstr "结果处理已中止"
 
-#: ../src/callbacks.cc:11503
+#: ../src/callbacks.cc:11521
 msgid "Factorizing…"
 msgstr "分解中…"
 
-#: ../src/callbacks.cc:11507
+#: ../src/callbacks.cc:11525
 msgid "Expanding partial fractions…"
 msgstr "展开部分分式…"
 
-#: ../src/callbacks.cc:11511
+#: ../src/callbacks.cc:11529
 msgid "Expanding…"
 msgstr "展开中…"
 
-#: ../src/callbacks.cc:11516 ../src/callbacks.cc:13738
+#: ../src/callbacks.cc:11534 ../src/callbacks.cc:13757
 msgid "Calculating…"
 msgstr "计算中…"
 
-#: ../src/callbacks.cc:11520
+#: ../src/callbacks.cc:11538
 msgid "Converting…"
 msgstr "换算中…"
 
-#: ../src/callbacks.cc:11623
+#: ../src/callbacks.cc:11641
 msgid "Fetching exchange rates."
 msgstr "获取汇率。"
 
-#: ../src/callbacks.cc:13346
+#: ../src/callbacks.cc:13365
 msgid "Time zone parsing failed."
 msgstr "时区分析失败。"
 
-#: ../src/callbacks.cc:14643
+#: ../src/callbacks.cc:14663
 msgid "Keep open"
 msgstr "保持打开状态"
 
 #. RPN Enter (calculate and add to stack)
-#: ../src/callbacks.cc:14652
+#: ../src/callbacks.cc:14672
 msgid "Enter"
 msgstr "开始"
 
-#: ../src/callbacks.cc:14652
+#: ../src/callbacks.cc:14672
 msgid "C_alculate"
 msgstr "计算(_a)"
 
-#: ../src/callbacks.cc:14655
+#: ../src/callbacks.cc:14675
 msgid "Apply to Stack"
 msgstr "应用于栈"
 
-#: ../src/callbacks.cc:14708
+#: ../src/callbacks.cc:14728
 msgid "Argument"
 msgstr "参数"
 
-#: ../src/callbacks.cc:14768
+#: ../src/callbacks.cc:14788
 msgid "True"
 msgstr "真"
 
-#: ../src/callbacks.cc:14770
+#: ../src/callbacks.cc:14790
 msgid "False"
 msgstr "假"
 
-#: ../src/callbacks.cc:14815
+#: ../src/callbacks.cc:14835
 msgid "Info"
 msgstr "信息"
 
-#: ../src/callbacks.cc:15181
+#: ../src/callbacks.cc:15201
 msgid "Edit Unit (global)"
 msgstr "编辑单位(全局)"
 
-#: ../src/callbacks.cc:15183
+#: ../src/callbacks.cc:15203
 msgid "New Unit"
 msgstr "新建单位"
 
-#: ../src/callbacks.cc:15307 ../src/callbacks.cc:15726
-#: ../src/callbacks.cc:15882 ../src/callbacks.cc:16077
-#: ../src/callbacks.cc:16289 ../src/callbacks.cc:16544
-#: ../src/callbacks.cc:17022 ../src/callbacks.cc:17173
-#: ../src/callbacks.cc:17287 ../src/callbacks.cc:18929
-#: ../src/callbacks.cc:33415
+#: ../src/callbacks.cc:15327 ../src/callbacks.cc:15746
+#: ../src/callbacks.cc:15902 ../src/callbacks.cc:16099
+#: ../src/callbacks.cc:16311 ../src/callbacks.cc:16566
+#: ../src/callbacks.cc:17044 ../src/callbacks.cc:17195
+#: ../src/callbacks.cc:17309 ../src/callbacks.cc:18957
+#: ../src/callbacks.cc:33518
 msgid "Empty name field."
 msgstr "名称字段为空。"
 
 #. unit with the same name exists -- overwrite or open the dialog again
-#: ../src/callbacks.cc:15312
+#: ../src/callbacks.cc:15332
 msgid ""
 "A variable or unit with the same name already exists.\n"
 "Do you want to overwrite it?"
@@ -4904,36 +4909,36 @@ msgstr ""
 "已存在同名的变量或单位。 \n"
 "是否要覆盖它？ "
 
-#: ../src/callbacks.cc:15336 ../src/callbacks.cc:15388
+#: ../src/callbacks.cc:15356 ../src/callbacks.cc:15408
 msgid "Base unit does not exist."
 msgstr "基本单位不存在。"
 
-#: ../src/callbacks.cc:15644
+#: ../src/callbacks.cc:15664
 msgid "Edit Function (global)"
 msgstr "编辑函数(全局)"
 
-#: ../src/callbacks.cc:15646 ../src/callbacks.cc:15851
+#: ../src/callbacks.cc:15666 ../src/callbacks.cc:15871
 msgid "New Function"
 msgstr "新建函数"
 
-#: ../src/callbacks.cc:15697 ../src/callbacks.cc:33174
-#: ../src/callbacks.cc:33186
+#: ../src/callbacks.cc:15717 ../src/callbacks.cc:33277
+#: ../src/callbacks.cc:33289
 msgid "Yes"
 msgstr "是"
 
-#: ../src/callbacks.cc:15699 ../src/callbacks.cc:33176
-#: ../src/callbacks.cc:33188
+#: ../src/callbacks.cc:15719 ../src/callbacks.cc:33279
+#: ../src/callbacks.cc:33291
 msgid "No"
 msgstr "否"
 
-#: ../src/callbacks.cc:15742 ../src/callbacks.cc:15902
+#: ../src/callbacks.cc:15762 ../src/callbacks.cc:15922
 msgid "Empty expression field."
 msgstr "表达式字段为空。"
 
 #. function with the same name exists -- overwrite or open the dialog again
 #. dataset with the same name exists -- overwrite or open the dialog again
-#: ../src/callbacks.cc:15750 ../src/callbacks.cc:15906
-#: ../src/callbacks.cc:17183
+#: ../src/callbacks.cc:15770 ../src/callbacks.cc:15926
+#: ../src/callbacks.cc:17205
 msgid ""
 "A function with the same name already exists.\n"
 "Do you want to overwrite the function?"
@@ -4941,22 +4946,22 @@ msgstr ""
 "已存在同名函数。 \n"
 "是否要覆盖函数？ "
 
-#: ../src/callbacks.cc:15966 ../src/callbacks.cc:15980
+#: ../src/callbacks.cc:15986 ../src/callbacks.cc:16001
 msgid "Unit does not exist"
 msgstr "单位不存在"
 
-#: ../src/callbacks.cc:16009
+#: ../src/callbacks.cc:16031
 msgid "Edit Unknown Variable (global)"
 msgstr "编辑未知变量(全局)"
 
-#: ../src/callbacks.cc:16011
+#: ../src/callbacks.cc:16033
 msgid "New Unknown Variable"
 msgstr "新建未知变量"
 
 #. unknown with the same name exists -- overwrite or open dialog again
 #. variable with the same name exists -- overwrite or open dialog again
-#: ../src/callbacks.cc:16082 ../src/callbacks.cc:16299
-#: ../src/callbacks.cc:16549 ../src/callbacks.cc:17291
+#: ../src/callbacks.cc:16104 ../src/callbacks.cc:16321
+#: ../src/callbacks.cc:16571 ../src/callbacks.cc:17313
 msgid ""
 "An unit or variable with the same name already exists.\n"
 "Do you want to overwrite it?"
@@ -4964,83 +4969,83 @@ msgstr ""
 "已存在同名的单位或变量。 \n"
 "是否要覆盖它？ "
 
-#: ../src/callbacks.cc:16193
+#: ../src/callbacks.cc:16215
 msgid "Edit Variable (global)"
 msgstr "编辑变量(全局)"
 
-#: ../src/callbacks.cc:16195
+#: ../src/callbacks.cc:16217
 msgid "New Variable"
 msgstr "新建变量"
 
-#: ../src/callbacks.cc:16295
+#: ../src/callbacks.cc:16317
 msgid "Empty value field."
 msgstr "值字段为空。"
 
-#: ../src/callbacks.cc:16396
+#: ../src/callbacks.cc:16418
 msgid "Edit Vector"
 msgstr "编辑向量"
 
-#: ../src/callbacks.cc:16398
+#: ../src/callbacks.cc:16420
 msgid "Edit Vector (global)"
 msgstr "编辑向量(全局)"
 
-#: ../src/callbacks.cc:16400
+#: ../src/callbacks.cc:16422
 msgid "New Vector"
 msgstr "新建向量"
 
-#: ../src/callbacks.cc:16407
+#: ../src/callbacks.cc:16429
 msgid "Edit Matrix (global)"
 msgstr "编辑矩阵(全局)"
 
-#: ../src/callbacks.cc:16409
+#: ../src/callbacks.cc:16431
 msgid "New Matrix"
 msgstr "新建矩阵"
 
-#: ../src/callbacks.cc:16670
+#: ../src/callbacks.cc:16692
 msgid "Vector Result"
 msgstr "向量结果"
 
-#: ../src/callbacks.cc:16672
+#: ../src/callbacks.cc:16694
 msgid "Matrix Result"
 msgstr "矩阵结果"
 
-#: ../src/callbacks.cc:16827
+#: ../src/callbacks.cc:16849
 msgid "New Data Object"
 msgstr "新建数据对象"
 
-#: ../src/callbacks.cc:16929
+#: ../src/callbacks.cc:16951
 msgid "text"
 msgstr "文本"
 
-#: ../src/callbacks.cc:16934 ../src/callbacks.cc:16942
+#: ../src/callbacks.cc:16956 ../src/callbacks.cc:16964
 msgid "approximate"
 msgstr "近似"
 
-#: ../src/callbacks.cc:17102
+#: ../src/callbacks.cc:17124
 msgid "Edit Data Set (global)"
 msgstr "编辑数据集(全局)"
 
-#: ../src/callbacks.cc:17104
+#: ../src/callbacks.cc:17126
 msgid "New Data Set"
 msgstr "新建数据集"
 
-#: ../src/callbacks.cc:17121
+#: ../src/callbacks.cc:17143
 msgid "info"
 msgstr "信息"
 
-#: ../src/callbacks.cc:17212
+#: ../src/callbacks.cc:17234
 msgid "Property"
 msgstr "属性"
 
-#: ../src/callbacks.cc:17279 ../src/callbacks.cc:17365
+#: ../src/callbacks.cc:17301 ../src/callbacks.cc:17388
 msgid "No file name entered."
 msgstr "未输入文件名。"
 
-#: ../src/callbacks.cc:17321 ../src/callbacks.cc:17394
+#: ../src/callbacks.cc:17343 ../src/callbacks.cc:17417
 msgid "No delimiter selected."
 msgstr "未选择分隔符。"
 
-#: ../src/callbacks.cc:17326
+#: ../src/callbacks.cc:17348
 #, c-format
 msgid ""
 "Could not import from file \n"
@@ -5049,15 +5054,15 @@ msgstr ""
 "无法从文件导入 \n"
 "%s "
 
-#: ../src/callbacks.cc:17407
+#: ../src/callbacks.cc:17430
 msgid "No variable name entered."
 msgstr "未输入变量名。"
 
-#: ../src/callbacks.cc:17419
+#: ../src/callbacks.cc:17442
 msgid "No known variable with entered name found."
 msgstr "未找到所输入名称的已知变量。"
 
-#: ../src/callbacks.cc:17426
+#: ../src/callbacks.cc:17449
 #, c-format
 msgid ""
 "Could not export to file \n"
@@ -5066,77 +5071,77 @@ msgstr ""
 "无法导出到文件 \n"
 "%s "
 
-#: ../src/callbacks.cc:17526 ../src/callbacks.cc:17534
-#: ../src/callbacks.cc:23111 ../src/callbacks.cc:27616
-#: ../src/callbacks.cc:27619
+#: ../src/callbacks.cc:17550 ../src/callbacks.cc:17558
+#: ../src/callbacks.cc:23193 ../src/callbacks.cc:27701
+#: ../src/callbacks.cc:27704
 msgid "My Variables"
 msgstr "我的变量"
 
-#: ../src/callbacks.cc:18065
+#: ../src/callbacks.cc:18091
 msgid "Couldn't write definitions"
 msgstr "无法写入定义"
 
-#: ../src/callbacks.cc:18142 ../src/callbacks.cc:19131
+#: ../src/callbacks.cc:18169 ../src/callbacks.cc:19160
 msgid "Preset"
 msgstr "预置"
 
-#: ../src/callbacks.cc:18381
+#: ../src/callbacks.cc:18408
 msgid "Abort"
 msgstr "中止"
 
-#: ../src/callbacks.cc:18384
+#: ../src/callbacks.cc:18411
 msgid "Undo"
 msgstr "撤消"
 
-#: ../src/callbacks.cc:18387
+#: ../src/callbacks.cc:18414
 msgid "Redo"
 msgstr "重做"
 
-#: ../src/callbacks.cc:18392
+#: ../src/callbacks.cc:18419
 msgid "Completion Mode"
 msgstr "补全模式"
 
-#: ../src/callbacks.cc:18405
+#: ../src/callbacks.cc:18432
 msgid "Limited strict completion"
 msgstr "有限严格补全"
 
-#: ../src/callbacks.cc:18406
+#: ../src/callbacks.cc:18433
 msgid "Strict completion"
 msgstr "严格补全"
 
-#: ../src/callbacks.cc:18407
+#: ../src/callbacks.cc:18434
 msgid "Limited full completion"
 msgstr "有限全面补全"
 
-#: ../src/callbacks.cc:18408
+#: ../src/callbacks.cc:18435
 msgid "Full completion"
 msgstr "全面补全"
 
-#: ../src/callbacks.cc:18409
+#: ../src/callbacks.cc:18436
 msgid "No completion"
 msgstr "无补全"
 
-#: ../src/callbacks.cc:18418
+#: ../src/callbacks.cc:18445
 msgid "Delayed completion"
 msgstr "延迟补全"
 
-#: ../src/callbacks.cc:18420
+#: ../src/callbacks.cc:18447
 msgid "Customize completion…"
 msgstr "自定义补全…"
 
-#: ../src/callbacks.cc:18906
+#: ../src/callbacks.cc:18933
 msgid "Save Mode"
 msgstr "保存模式"
 
-#: ../src/callbacks.cc:18933
+#: ../src/callbacks.cc:18961
 msgid "Preset mode cannot be overwritten."
 msgstr "无法覆盖预设模式。"
 
-#: ../src/callbacks.cc:18961
+#: ../src/callbacks.cc:18989
 msgid "Delete Mode"
 msgstr "删除模式"
 
-#: ../src/callbacks.cc:20228
+#: ../src/callbacks.cc:20264
 #, c-format
 msgid ""
 "Couldn't write preferences to\n"
@@ -5145,46 +5150,46 @@ msgstr ""
 "无法将首选项写入 \n"
 "%s "
 
-#: ../src/callbacks.cc:21626 ../src/callbacks.cc:21639
+#: ../src/callbacks.cc:21707 ../src/callbacks.cc:21720
 msgid "never"
 msgstr "从不"
 
-#: ../src/callbacks.cc:21627 ../src/callbacks.cc:21641
+#: ../src/callbacks.cc:21708 ../src/callbacks.cc:21722
 msgid "ask"
 msgstr "询问"
 
-#: ../src/callbacks.cc:21635
+#: ../src/callbacks.cc:21716
 #, c-format
 msgid "%i day"
 msgid_plural "%i days"
 msgstr[0] "%i天"
 
 #. Result was copied
-#: ../src/callbacks.cc:22929
+#: ../src/callbacks.cc:23011
 msgid "Copied"
 msgstr "已复制"
 
-#: ../src/callbacks.cc:25054
+#: ../src/callbacks.cc:25136
 msgid "log10 function not found."
 msgstr "未找到函数log10。"
 
-#: ../src/callbacks.cc:25932
+#: ../src/callbacks.cc:26014
 msgid "Search"
 msgstr "搜索"
 
-#: ../src/callbacks.cc:25932
+#: ../src/callbacks.cc:26014
 msgid "_Search"
 msgstr "搜索(_S)"
 
-#: ../src/callbacks.cc:25952 ../src/callbacks.cc:26203
+#: ../src/callbacks.cc:26035 ../src/callbacks.cc:26287
 msgid "Remove Bookmark"
 msgstr "删除书签"
 
-#: ../src/callbacks.cc:26006
+#: ../src/callbacks.cc:26089
 msgid "Add Bookmark"
 msgstr "添加书签"
 
-#: ../src/callbacks.cc:26031
+#: ../src/callbacks.cc:26115
 msgid ""
 "A bookmark with the selected name already exists.\n"
 "Do you want to overwrite it?"
@@ -5192,151 +5197,155 @@ msgstr ""
 "已存在同名的书签。 \n"
 "是否要覆盖它？ "
 
-#: ../src/callbacks.cc:26222
+#: ../src/callbacks.cc:26306
 msgid "No items found"
 msgstr "未找到条目"
 
-#: ../src/callbacks.cc:26483 ../src/callbacks.cc:33075
+#: ../src/callbacks.cc:26567 ../src/callbacks.cc:33175
 msgid "Select date"
 msgstr "选择日期"
 
-#: ../src/callbacks.cc:27101
+#: ../src/callbacks.cc:27186
 msgid "Rectangular form"
 msgstr "矩形形式"
 
-#: ../src/callbacks.cc:27102
+#: ../src/callbacks.cc:27187
 msgid "Exponential form"
 msgstr "指数形式"
 
-#: ../src/callbacks.cc:27103
+#: ../src/callbacks.cc:27188
 msgid "Polar form"
 msgstr "极坐标形式"
 
-#: ../src/callbacks.cc:27104
+#: ../src/callbacks.cc:27189
 msgid "Angle/phasor notation"
 msgstr "角/相量记号"
 
-#: ../src/callbacks.cc:27122
+#: ../src/callbacks.cc:27207
 msgid "Optimal unit"
 msgstr "最优单位"
 
-#: ../src/callbacks.cc:27123
+#: ../src/callbacks.cc:27208
 msgid "Optimal prefix"
 msgstr "最优前缀"
 
-#: ../src/callbacks.cc:27359
+#: ../src/callbacks.cc:27444
 msgid "All functions"
 msgstr "所有函数"
 
-#: ../src/callbacks.cc:27411
+#: ../src/callbacks.cc:27496
 msgid "All variables"
 msgstr "所有变量"
 
-#: ../src/callbacks.cc:27716
+#: ../src/callbacks.cc:27801
 msgid "Select definitions file"
 msgstr "选择定义文件"
 
-#: ../src/callbacks.cc:27716
+#: ../src/callbacks.cc:27801
 msgid "_Import"
 msgstr "导入(_I)"
 
-#: ../src/callbacks.cc:27735
+#: ../src/callbacks.cc:27821
 #, c-format
 msgid "Could not copy %s to %s."
 msgstr "无法将%s复制到%s。"
 
-#: ../src/callbacks.cc:27743
+#: ../src/callbacks.cc:27829
 #, c-format
 msgid "Could not read %s."
 msgstr "无法读取 %s 。"
 
-#: ../src/callbacks.cc:27751
+#: ../src/callbacks.cc:27837
 #, c-format
 msgid "Could not copy file to %s."
 msgstr "无法将文件复制到 %s 。"
 
-#: ../src/callbacks.cc:28355 ../src/callbacks.cc:28435
-#: ../src/callbacks.cc:28515 ../src/callbacks.cc:28562
-#: ../src/callbacks.cc:33748 ../src/callbacks.cc:33947
-#: ../src/callbacks.cc:34102
+#: ../src/callbacks.cc:28441 ../src/callbacks.cc:28521
+#: ../src/callbacks.cc:28601 ../src/callbacks.cc:28648
+#: ../src/callbacks.cc:33853 ../src/callbacks.cc:34053
+#: ../src/callbacks.cc:34209
 msgid "Unsupported base."
 msgstr "不支持该进制。"
 
-#: ../src/callbacks.cc:28761
+#: ../src/callbacks.cc:28847
 msgid "The selected Chinese year does not exist."
 msgstr "所选的农历年份不存在。"
 
-#: ../src/callbacks.cc:28773
+#: ../src/callbacks.cc:28859
 msgid "Conversion to Gregorian calendar failed."
 msgstr "换算为公历失败。"
 
-#: ../src/callbacks.cc:28798
+#: ../src/callbacks.cc:28884
 #, c-format
 msgid "Calendar conversion failed for: %s."
 msgstr "日历换算失败: %s。"
 
-#: ../src/callbacks.cc:28833
+#: ../src/callbacks.cc:28919
 msgid "Gnuplot was not found."
 msgstr "未找到gnuplot。"
 
-#: ../src/callbacks.cc:28834
+#: ../src/callbacks.cc:28921
 #, c-format
 msgid ""
 "%s (%s) needs to be installed separately, and found in the executable search "
 "path, for plotting to work."
 msgstr "%s (%s) 需要单独安装，并在可执行的搜索路径中找到，才能进行绘图。"
 
-#: ../src/callbacks.cc:29424
+#: ../src/callbacks.cc:29511
 msgid "Select file to save PNG image to"
 msgstr "将PNG图像保存为"
 
-#: ../src/callbacks.cc:29427 ../src/callbacks.cc:34301
+#: ../src/callbacks.cc:29515 ../src/callbacks.cc:34408
 msgid "Allowed File Types"
 msgstr "允许的文件类型"
 
-#: ../src/callbacks.cc:29432 ../src/callbacks.cc:34312
+#: ../src/callbacks.cc:29520 ../src/callbacks.cc:34419
 msgid "All Files"
 msgstr "所有文件"
 
 #. do not delete units that are used by other units
-#: ../src/callbacks.cc:30005
+#: ../src/callbacks.cc:30093
 msgid "Cannot delete unit as it is needed by other units."
 msgstr "无法删除单位，因为它被其他单位依赖。"
 
-#: ../src/callbacks.cc:30460 ../src/callbacks.cc:30689
+#: ../src/callbacks.cc:30548 ../src/callbacks.cc:30777
 msgid "none"
 msgstr "无"
 
-#: ../src/callbacks.cc:30960 ../src/callbacks.cc:30961
-#: ../src/callbacks.cc:30962 ../src/callbacks.cc:30963
-#: ../src/callbacks.cc:30975
+#: ../src/callbacks.cc:31048 ../src/callbacks.cc:31049
+#: ../src/callbacks.cc:31050 ../src/callbacks.cc:31051
+#: ../src/callbacks.cc:31063
 msgid "result is too long"
 msgstr "结果过长"
 
-#: ../src/callbacks.cc:32195 ../src/callbacks.cc:33737
-#: ../src/callbacks.cc:33936 ../src/callbacks.cc:34091
+#: ../src/callbacks.cc:31887
+msgid "translator-credits"
+msgstr "tuberry <orzun@foxmail.com>, 2021"
+
+#: ../src/callbacks.cc:32288 ../src/callbacks.cc:33842
+#: ../src/callbacks.cc:34042 ../src/callbacks.cc:34198
 msgid "Mode not found."
 msgstr "未找到模式。"
 
-#: ../src/callbacks.cc:32996 ../src/callbacks.cc:33004
-#: ../src/callbacks.cc:33012 ../src/callbacks.cc:33020
+#: ../src/callbacks.cc:33094 ../src/callbacks.cc:33102
+#: ../src/callbacks.cc:33110 ../src/callbacks.cc:33118
 msgid "Elements (in horizontal order)"
 msgstr "元素(按水平顺序)"
 
-#: ../src/callbacks.cc:33033 ../src/callbacks.cc:33118
+#: ../src/callbacks.cc:33131 ../src/callbacks.cc:33219
 msgid "Select file to import"
 msgstr "选择要导入的文件"
 
-#: ../src/callbacks.cc:33033 ../src/callbacks.cc:33058
-#: ../src/callbacks.cc:33118
+#: ../src/callbacks.cc:33131 ../src/callbacks.cc:33157
+#: ../src/callbacks.cc:33219
 msgid "_Open"
 msgstr "打开(_O)"
 
-#: ../src/callbacks.cc:33058
+#: ../src/callbacks.cc:33157
 msgid "Select file to export to"
 msgstr "选择导出到文件"
 
-#: ../src/callbacks.cc:33426 ../src/callbacks.cc:33456
+#: ../src/callbacks.cc:33529 ../src/callbacks.cc:33559
 msgid ""
 "A conflicting object with the same name exists. If you proceed and save "
 "changes, the conflicting object will be overwritten or deactivated.\n"
@@ -5345,12 +5354,12 @@ msgstr ""
 "存在同名的冲突对象。 若继续并保存更改，冲突对象将被覆盖或停用。 \n"
 "你想继续吗？ "
 
-#: ../src/callbacks.cc:33638
+#: ../src/callbacks.cc:33742
 msgid "Set key combination"
 msgstr "设置组合键"
 
 #. Make the line reasonably long, but not to short (at least around 40 characters)
-#: ../src/callbacks.cc:33642
+#: ../src/callbacks.cc:33746
 msgid ""
 "Press the key combination you wish to use for the action\n"
 "(press Escape to cancel)."
@@ -5358,31 +5367,31 @@ msgstr ""
 "按要用于操作的组合键 \n"
 "(按Escape取消)。 "
 
-#: ../src/callbacks.cc:33652
+#: ../src/callbacks.cc:33756
 msgid "No keys"
 msgstr "未按键"
 
-#: ../src/callbacks.cc:33697 ../src/callbacks.cc:33896
-#: ../src/callbacks.cc:34051
+#: ../src/callbacks.cc:33802 ../src/callbacks.cc:34002
+#: ../src/callbacks.cc:34158
 msgid "Empty value."
 msgstr "值为空。"
 
-#: ../src/callbacks.cc:33707 ../src/callbacks.cc:33906
-#: ../src/callbacks.cc:34061
+#: ../src/callbacks.cc:33812 ../src/callbacks.cc:34012
+#: ../src/callbacks.cc:34168
 msgid "Function not found."
 msgstr "未找到函数。"
 
-#: ../src/callbacks.cc:33715 ../src/callbacks.cc:33914
-#: ../src/callbacks.cc:34069
+#: ../src/callbacks.cc:33820 ../src/callbacks.cc:34020
+#: ../src/callbacks.cc:34176
 msgid "Variable not found."
 msgstr "未找到变量。"
 
-#: ../src/callbacks.cc:33723 ../src/callbacks.cc:33922
-#: ../src/callbacks.cc:34077
+#: ../src/callbacks.cc:33828 ../src/callbacks.cc:34028
+#: ../src/callbacks.cc:34184
 msgid "Unit not found."
 msgstr "未找到单位。"
 
-#: ../src/callbacks.cc:33764 ../src/callbacks.cc:33823
+#: ../src/callbacks.cc:33869 ../src/callbacks.cc:33928
 msgid ""
 "The key combination is already in use.\n"
 "Do you wish to replace the current action?"
@@ -5390,75 +5399,75 @@ msgstr ""
 "组合键已被占用。 \n"
 "是否要替换当前操作？ "
 
-#: ../src/callbacks.cc:34298
+#: ../src/callbacks.cc:34404
 msgid "Select file to export"
 msgstr "选择要导出的文件"
 
-#: ../src/callbacks.cc:34411 ../src/callbacks.cc:34456
+#: ../src/callbacks.cc:34521 ../src/callbacks.cc:34566
 msgid "Empty expression."
 msgstr "表达式为空。"
 
-#: ../src/callbacks.cc:34425 ../src/callbacks.cc:34470
+#: ../src/callbacks.cc:34535 ../src/callbacks.cc:34580
 msgid "Empty x variable."
 msgstr "x变量为空。"
 
-#: ../src/callbacks.cc:34664
+#: ../src/callbacks.cc:34775
 msgid "Element Data"
 msgstr "元素数据"
 
-#: ../src/callbacks.cc:34702
+#: ../src/callbacks.cc:34813
 msgid "Classification"
 msgstr "分类"
 
-#: ../src/callbacks.cc:34707
+#: ../src/callbacks.cc:34818
 msgid "Alkali Metal"
 msgstr "碱金属"
 
-#: ../src/callbacks.cc:34708
+#: ../src/callbacks.cc:34819
 msgid "Alkaline-Earth Metal"
 msgstr "碱土金属"
 
-#: ../src/callbacks.cc:34709
+#: ../src/callbacks.cc:34820
 msgid "Lanthanide"
 msgstr "镧系元素"
 
-#: ../src/callbacks.cc:34710
+#: ../src/callbacks.cc:34821
 msgid "Actinide"
 msgstr "锕系"
 
-#: ../src/callbacks.cc:34711
+#: ../src/callbacks.cc:34822
 msgid "Transition Metal"
 msgstr "过渡金属"
 
-#: ../src/callbacks.cc:34712
+#: ../src/callbacks.cc:34823
 msgid "Metal"
 msgstr "金属"
 
-#: ../src/callbacks.cc:34713
+#: ../src/callbacks.cc:34824
 msgid "Metalloid"
 msgstr "类金属"
 
-#: ../src/callbacks.cc:34714
+#: ../src/callbacks.cc:34825
 msgid "Polyatomic Non-Metal"
 msgstr "多原子非金属"
 
-#: ../src/callbacks.cc:34715
+#: ../src/callbacks.cc:34826
 msgid "Diatomic Non-Metal"
 msgstr "双原子非金属"
 
-#: ../src/callbacks.cc:34716
+#: ../src/callbacks.cc:34827
 msgid "Noble Gas"
 msgstr "惰性气体"
 
-#: ../src/callbacks.cc:34717
+#: ../src/callbacks.cc:34828
 msgid "Unknown chemical properties"
 msgstr "未知化学性质"
 
-#: ../src/callbacks.cc:34813
+#: ../src/callbacks.cc:34924
 msgid "No unknowns in result."
 msgstr "结果中没有未知数。"
 
-#: ../src/callbacks.cc:34819
+#: ../src/callbacks.cc:34930
 msgid "Set Unknowns"
 msgstr "设置未知数"
 

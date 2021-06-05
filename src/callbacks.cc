@@ -31884,7 +31884,9 @@ void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = gtk_about_dialog_new();
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(dialog), authors);
-	gtk_about_dialog_set_translator_credits(GTK_ABOUT_DIALOG(dialog), _("translator-credits"));
+	if(_("translator-credits") != "translator-credits") {
+		gtk_about_dialog_set_translator_credits(GTK_ABOUT_DIALOG(dialog), _("translator-credits"));
+	}
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), _("Powerful and easy to use calculator"));
 	gtk_about_dialog_set_license_type(GTK_ABOUT_DIALOG(dialog), GTK_LICENSE_GPL_2_0);
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016-2021 Hanna Knutsson");
