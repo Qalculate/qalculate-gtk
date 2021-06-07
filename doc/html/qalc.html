@@ -1,0 +1,302 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+ "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<title>QALC man page</title>
+<meta name="generator" content="roffit-0.8">
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+<style type="text/css">
+div.level0 {
+ padding-left: 2em;
+}
+
+div.level1 {
+ padding-left: 4em;
+}
+
+div.level2 {
+ padding-left: 6em;
+}
+
+span.emphasis {
+ font-style: italic;
+}
+
+span.bold {
+ font-weight: bold;
+}
+
+span.manpage {
+ font-weight: bold;
+}
+
+h2.nroffsh {
+ background-color: #e0e0e0;
+}
+
+h3.nroffsh {
+ background-color: #eeeded;
+}
+span.nroffip {
+ font-weight: bold;
+ font-size: 120%;
+ font-family: monospace;
+}
+
+p.roffit {
+ text-align: center;
+ font-size: 80%;
+}
+</style>
+</head><body>
+<h1>QALC man page</h1>
+
+<div class="level0"></div><h2 class="nroffsh" id="NAME">NAME</h2>
+<div class="level0">qalc - Powerful and easy to use command line calculator </div><h2 class="nroffsh" id="SYNOPSIS">SYNOPSIS</h2>
+<div class="level0"><span Class="bold">qalc</span> [options] [expression] </div><h2 class="nroffsh" id="DESCRIPTION">DESCRIPTION</h2>
+<div class="level0">Qalculate! is a multi-purpose cross-platform desktop calculator. It is simple to use but provides power and versatility normally reserved for complicated math packages, as well as useful tools for everyday needs (such as currency conversion and percent calculation). Features include a large library of customizable functions, unit calculations and conversion, physical constants, symbolic calculations (including integrals and equations), arbitrary precision, uncertainty propagation, interval arithmetic, plotting, and a user-friendly interface. qalc is the command line interface of Qalculate!. </div><h2 class="nroffsh" id="OPTIONS">OPTIONS</h2>
+<div class="level0"><p/></div>
+<div class="level0"><span Class="bold">-b, --base base</span> set the number base for results and, optionally, expressions <p/></div>
+<div class="level0"><span Class="bold">-c, --color</span> use colors to highlight different elements of expressions and results <p/></div>
+<div class="level0"><span Class="bold">-e, --exrates</span> update exchange rates <p/></div>
+<div class="level0"><span Class="bold">-f, --file file</span> execute commands from a file first <p/></div>
+<div class="level0"><span Class="bold">-h, --help</span> display this help and exits <p/></div>
+<div class="level0"><span Class="bold">-i, --interactive</span> start in interactive mode <p/></div>
+<div class="level0"><span Class="bold">-l, --list [search term]</span> displays a list of all user-defined or matching variables, functions, units, and prefixes. <p/></div>
+<div class="level0"><span Class="bold">--list-functions [search term]</span> displays a list of all or matching functions. <p/></div>
+<div class="level0"><span Class="bold">--list-prefixes [search term]</span> displays a list of all or matching prefixes. <p/></div>
+<div class="level0"><span Class="bold">--list-units [search term]</span> displays a list of all or matching units. <p/></div>
+<div class="level0"><span Class="bold">--list-variables [search term]</span> displays a list of all or matching variables. <p/></div>
+<div class="level0"><span Class="bold">-m, --time milliseconds</span> terminate calculation and display of result after specified amount of time <p/></div>
+<div class="level0"><span Class="bold">-n, --nodefs</span> do not load any functions, units, or variables from file <p/></div>
+<div class="level0"><span Class="bold">--nocurrencies</span> do not load any global currencies from file <p/></div>
+<div class="level0"><span Class="bold">--nodatasets</span> do not load any global data sets from file <p/></div>
+<div class="level0"><span Class="bold">--nofunctions</span> do not load any global functions from file <p/></div>
+<div class="level0"><span Class="bold">--nounits</span> do not load any global units from file <p/></div>
+<div class="level0"><span Class="bold">--novariables</span> do not load any global variables from file <p/></div>
+<div class="level0"><span Class="bold">-p [base]</span> start in programming mode (same as -b "base base" -s "xor^", with base conversion) <p/></div>
+<div class="level0"><span Class="bold">-s, --set \(dqoption value\(dq</span> as set command in interactive program session (ex. --set "base 16") <p/></div>
+<div class="level0"><span Class="bold">-t, --terse</span> reduce output to just the result of the input expression <p/></div>
+<div class="level0"><span Class="bold">-/+u8</span> switch unicode support on/off <p/></div>
+<div class="level0"><span Class="bold">-v, --version</span> show application version and exit <p/>The program will start in interactive mode if no expression and no file is specified (or interactive mode is explicitly selected). </div><h2 class="nroffsh" id="COMMANDS">COMMANDS</h2>
+<div class="level0"><p/></div>
+<div class="level0"><span Class="bold">approximate</span> Equivalent to set approximation try exact. <p/></div>
+<div class="level0"><span Class="bold">assume assumptions</span> Set default assumptions for unknown variables (unknown, non-zero, positive, negative, non-positive, non-negative + number, real, rational, integer, boolean). <p/></div>
+<div class="level0"><span Class="bold">base base</span> Sets the result number base (equivalent to set base). <p/></div>
+<div class="level0"><span Class="bold">delete name</span> Removes the user-defined variable or function with the specified name. <br>Example: delete var1. <p/></div>
+<div class="level0"><span Class="bold">exact</span> Equivalent to set approximation exact. <p/></div>
+<div class="level0"><span Class="bold">expand</span> Expands the current result. <p/></div>
+<div class="level0"><span Class="bold">exrates</span> Downloads current exchange rates from the Internet. <p/></div>
+<div class="level0"><span Class="bold">factor</span> Factorizes the current result. <p/></div>
+<div class="level0"><span Class="bold">find, list [name]</span> Displays a list of variables, functions and units. Enter with argument 'currencies', 'functions', 'variables', 'units', or 'prefixes' to show a list of all currencies, functions, variables, units, or prefixes. Enter a search term to find matching variables, functions, units, and/or prefixes. If command is called with no argument all user-definied objects are listed. <br>Example: list functions. <br>Example: find dinar. <br>Example: find variables planck. <p/></div>
+<div class="level0"><span Class="bold">function name expression</span> Creates a function with the specified name and expression. Use '\x', '\y', '\z', '\a', etc. for arguments in the expression. <br>Example: function func1 5*\x. <p/></div>
+<div class="level0"><span Class="bold">help [command]</span> <p/></div>
+<div class="level0"><span Class="bold">info</span> Displays information about a function, variable, unit, or prefix. <br>Example: info sin. <p/></div>
+<div class="level0"><span Class="bold">MC/MS/M+/M-</span> Memory operations (memory clear, memory store, memory plus, memory minus). Recall the memory using the MR/MRC variable. <p/></div>
+<div class="level0"><span Class="bold">mode</span> Displays the current mode. <p/></div>
+<div class="level0"><span Class="bold">partial fraction</span> Applies partial fraction decomposition to the current result. <p/></div>
+<div class="level0"><span Class="bold">save, store name [category] [title]</span> Saves the current result in a variable with the specified name. You may optionally also provide a category (default "Temporary") and a title. If name equals "mode" or "definitions", the current mode and definitions, respectively, will be saved. <br>Example: store var1. <p/></div>
+<div class="level0"><span Class="bold">save definitions</span> <p/></div>
+<div class="level0"><span Class="bold">save mode</span> <p/></div>
+<div class="level0"><span Class="bold">set option value</span> <p/></div>
+<div class="level0"><span Class="bold">to, convert, -&gt; unit/to-command</span> Converts the previous result. Equivalent to using "to" at the end of an expression. Example: to m/s <br>Example: to bin <p/></div>
+<div class="level0"><span Class="bold">variable name expression</span> Create a variable with the specified name and expression. <br>Example: variable var1 pi / 2. <p/></div>
+<div class="level0"><span Class="bold">quit/exit</span> Terminates the program. <p/>Commands for RPN mode: <p/></div>
+<div class="level0"><span Class="bold">rpn state</span> (De)activates the Reverse Polish Notation stack and syntax. "syntax" activates only the RPN syntax and "stack" enables the RPN stack. <p/></div>
+<div class="level0"><span Class="bold">stack</span> Displays the RPN stack. <p/></div>
+<div class="level0"><span Class="bold">clear stack</span> Clears the entire RPN stack. <p/></div>
+<div class="level0"><span Class="bold">copy [index]</span> Duplicates a value on the RPN stack to the top of the stack. If no index is specified, the top of the stack is duplicated. Index 1 is the top of stack and negative index values count from the bottom of the stack. <p/></div>
+<div class="level0"><span Class="bold">move index 1 index 2</span> Changes the position of a value on the RPN stack. Index 1 is the top of stack and negative index values count from the bottom of the stack. <br>Example: move 2 4 <p/></div>
+<div class="level0"><span Class="bold">pop [index]</span> Removes the top of the RPN stack or the value at the specified index. Index 1 is the top of stack and negative index values count from the bottom of the stack. <p/></div>
+<div class="level0"><span Class="bold">rotate [direction]</span> Rotates the RPN stack up (default) or down. <p/></div>
+<div class="level0"><span Class="bold">swap [index 1] [index 2]</span> Swaps position of values on the RPN stack. If no index is specified, the values on the top of the stack (index 1 and index 2) will be swapped and if only one index is specified, the value at this index will be swapped with the top value. Index 1 is the top of stack and negative index values count from the bottom of the stack. <br>Example: swap 2 4 <p/>When a line begins with '/', the text that follows is always interpreted as a command. </div><h2 class="nroffsh" id="KEYBINDINGS">KEYBINDINGS</h2>
+<div class="level0"><p/></div>
+<div class="level0"><span Class="bold">Tab</span> shows a list of functions, variables, and units that matches the last object in the current expression <p/></div>
+<div class="level0"><span Class="bold">Ctrl+D</span> terminates the program <p/></div>
+<div class="level0"><span Class="bold">Ctrl+E</span> switches between approximation modes (exact, try exact, auto) <p/></div>
+<div class="level0"><span Class="bold">Ctrl+F</span> switches between fraction modes (simple, decimal, auto) <p/></div>
+<div class="level0"><span Class="bold">Ctrl+A</span> saves the current result in a temporary variable </div><h2 class="nroffsh" id="SETTINGS">SETTINGS</h2>
+<div class="level0">These settings are changed using the set command (e.g. set base 16) or the -s, --set command line option (e.g. qalc -s "base 16"). Possible values are shown in parenthesis. 1 and 0 can be used instead of on and off. If the value is left out, a value of 1 is generally assumed. The default value is marked with '*'. <p/>Algebraic mode: <p/></div>
+<div class="level0"><span Class="bold">algebra mode, alg (1* = expand, 2 = factorize)</span> Determines if the expression is factorized or not after calculation. <p/></div>
+<div class="level0"><span Class="bold">assume nonzero denominators, nzd (on*, off)</span> Determines if unknown values will be assumed non-zero (x/x=1). <p/></div>
+<div class="level0"><span Class="bold">warn nonzero denominators, warnnzd (on*, off)</span> Display a message after a value has been assumed non-zero. <p/></div>
+<div class="level0"><span Class="bold">assumptions, ass (unknown*, non-zero, positive, negative, non-positive, non-negative + number, real*, rational, integer, boolean)</span> Default assumptions for unknown variables. <p/>Calculation: <p/></div>
+<div class="level0"><span Class="bold">angle unit, angle (0 = none, 1* = radians, 2 = degrees, 3 = gradians)</span> Default angle unit for trigonometric functions. <p/></div>
+<div class="level0"><span Class="bold">approximation, appr (-1* = auto, 0 = exact, 1 = try exact, 2 = approximate, 3 = dual)</span> How approximate variables and calculations are handled. In exact mode approximate values will not be calculated. <p/></div>
+<div class="level0"><span Class="bold">interval arithmetic, ia (on*, off)</span> If activated, interval arithmetic determines the final precision of calculations (avoids wrong results after loss of significance) with approximate functions and/or irrational numbers. <p/></div>
+<div class="level0"><span Class="bold">interval calculation, ic (1* = variance formula, 2 = interval arithmetic)</span> Determines the method used for interval calculation / uncertainty propagation. <p/></div>
+<div class="level0"><span Class="bold">precision, prec (&gt; 0) 10*</span> Specifies the default number of significant digits displayed and determines the precision used for approximate calculations. <p/>Enabled objects: <p/></div>
+<div class="level0"><span Class="bold">calculate functions, calcfunc (on*, off)</span> <p/></div>
+<div class="level0"><span Class="bold">calculate variables, calcvar (on*, off)</span> <p/></div>
+<div class="level0"><span Class="bold">complex numbers, cplx (on*, off)</span> <p/></div>
+<div class="level0"><span Class="bold">functions, func (on*, off)</span> <p/></div>
+<div class="level0"><span Class="bold">infinite numbers, inf (on*, off)</span> <p/></div>
+<div class="level0"><span Class="bold">units (on*, off)</span> <p/></div>
+<div class="level0"><span Class="bold">unknowns (on, off*)</span> Interpret undefined symbols in expressions as unknown variables. <p/></div>
+<div class="level0"><span Class="bold">variables, var (on*, off)</span> <p/></div>
+<div class="level0"><span Class="bold">variable units, varunit (on*, off)</span> If activated physical constants include units (e.g. c = 299 792 458 m∕s). <p/>Generic display options: <p/></div>
+<div class="level0"><span Class="bold">abbreviations, abbr (on*, off)</span> Use abbreviated names for units and variables. <p/></div>
+<div class="level0"><span Class="bold">color (0 = off, 1* = default, 2 = light)</span> Use colors to highlight different elements of expressions and results. <p/></div>
+<div class="level0"><span Class="bold">division sign, divsign (0* = /, 1 = division slash, 2 = division sign)</span> <p/></div>
+<div class="level0"><span Class="bold">excessive parentheses, expar (on, off*)</span> <p/></div>
+<div class="level0"><span Class="bold">minus last, minlast (on, off*)</span> Always place negative values last. <p/></div>
+<div class="level0"><span Class="bold">multiplication sign, mulsign (0 = *, 1 = multiplication dot, 2* = multiplication x, 3 = middle dot)</span> <p/></div>
+<div class="level0"><span Class="bold">short multiplication, shortmul (on*, off)</span> <p/></div>
+<div class="level0"><span Class="bold">spacious, space (on*, off)</span> Add extra space around operators. <p/></div>
+<div class="level0"><span Class="bold">spell out logical, spellout (on*, off)</span> <p/></div>
+<div class="level0"><span Class="bold">unicode, uni (on*, off)</span> Display Unicode characters. <p/>Numerical display: <p/></div>
+<div class="level0"><span Class="bold">base (-1114112 - 1114112, bin, oct, dec*, hex, sexa, time, roman)</span> <p/></div>
+<div class="level0"><span Class="bold">base display, basedisp (0 = none, 1* = normal, 2 = alternative)</span> <p/></div>
+<div class="level0"><span Class="bold">complex form, cplxform (0* = rectangular, 1 = exponential, 2 = polar, 3 = cis, 4 = angle)</span> <p/></div>
+<div class="level0"><span Class="bold">decimal comma (locale*, off, on)</span> Determines the default decimal separator. <p/></div>
+<div class="level0"><span Class="bold">digit grouping, group (0* = off, 1 = standard, 2 = locale)</span> <p/></div>
+<div class="level0"><span Class="bold">fractions, fr (-1* = auto, 0 = off, 1 = exact, 2 = on, 3 = mixed, 4 = long, 5 = dual)</span> Determines how rational numbers are displayed (e.g. 5/4 = 1 + 1/4 = 1.25). 'long' removes limits on the size of the numerator and denonimator. <p/></div>
+<div class="level0"><span Class="bold">hexadecimal two's, hextwos (on, off*)</span> Enables two's complement representation for display of negative hexadecimal numbers. <p/></div>
+<div class="level0"><span Class="bold">imaginary j, imgj (on, off*)</span> Use 'j' (instead of 'i') as default symbol for the imaginary unit. <p/></div>
+<div class="level0"><span Class="bold">interval display, ivdisp (0* = adaptive, 1 = significant, 2 = interval, 3 = plusminus, 4 = midpoint, 5 = upper, 6 = lower)</span> <p/></div>
+<div class="level0"><span Class="bold">lowercase e, lowe (on, off*)</span> Use lowercase e for E-notation (5e2 = 5 * 10^2). <p/></div>
+<div class="level0"><span Class="bold">lowercase numbers, lownum (on, off*)</span> Use lowercase letters for number bases &gt; 10. <p/></div>
+<div class="level0"><span Class="bold">max decimals, maxdeci (off*, &gt;= 0)</span> <p/></div>
+<div class="level0"><span Class="bold">min decimals, mindeci (off*, &gt;= 0)</span> <p/></div>
+<div class="level0"><span Class="bold">round to even, rndeven (on, off*)</span> Determines whether halfway numbers are rounded upwards or towards the nearest even integer. <p/></div>
+<div class="level0"><span Class="bold">scientific notation, exp (0 = off, -1 = auto*, -3 = engineering, 1 = pure, 3 = scientific, &gt;= 0)</span> Determines how scientific notation is used (e.g. 5 543 000 = 5.543E6). <p/></div>
+<div class="level0"><span Class="bold">show ending zeroes, zeroes (on*, off)</span> If actived, zeroes are kept at the end of approximate numbers. <p/></div>
+<div class="level0"><span Class="bold">two's complement, twos (on*, off)</span> Enables two's complement representation for display of negative binary numbers. <p/>Parsing: <p/></div>
+<div class="level0"><span Class="bold">caret as xor, xor^ (on, off*)</span> Use ^ as bitwise exclusive OR operator. <p/></div>
+<div class="level0"><span Class="bold">decimal comma (locale*, off, on)</span> Determines the default decimal separator. <p/></div>
+<div class="level0"><span Class="bold">ignore comma (on, off*)</span> Allows use of ',' as thousands separator. <p/></div>
+<div class="level0"><span Class="bold">ignore dot (on, off*)</span> Allows use of '.' as thousands separator. <p/></div>
+<div class="level0"><span Class="bold">imaginary j, imgj (on, off*)</span> Use 'j' (instead of 'i') as default symbol for the imaginary unit. <p/></div>
+<div class="level0"><span Class="bold">input base, inbase (-1114112 - 1114112, bin, oct, dec*, hex, roman)</span> <p/></div>
+<div class="level0"><span Class="bold">limit implicit multiplication, limimpl (on, off*)</span> <p/></div>
+<div class="level0"><span Class="bold">parsing mode, syntax (0* = adaptive, 1 = implicit first, 2 = conventional, 3 = chain, 4 = rpn)</span> See syntax section. <p/></div>
+<div class="level0"><span Class="bold">read precision, readprec (0* = off, 1 = always, 2 = when decimals)</span> If activated, numbers are interpreted as approximate with precision equal to the number of significant digits (3.20 = 3.20+/-0.005). <p/>Units: <p/></div>
+<div class="level0"><span Class="bold">all prefixes, allpref (on, off*)</span> Enables automatic use of hecto, deca, deci, and centi. <p/></div>
+<div class="level0"><span Class="bold">autoconversion, conv (none, optimal*, base, optimalsi, mixed)</span> Controls automatic unit conversion of the result. 'optimalsi' always converts non-SI units, while 'optimal' only converts to more optimal unit expressions, with less units and exponents. <p/></div>
+<div class="level0"><span Class="bold">binary prefixes, binpref (on, off*)</span> If activated, binary prefixes are used by default for information units. <p/></div>
+<div class="level0"><span Class="bold">currency conversion, curconv (on*, off)</span> Enables automatic conversion to the local currency when optimal unit conversion is enabled. <p/></div>
+<div class="level0"><span Class="bold">denominator prefixes, denpref (on*, off)</span> Enables automatic use of prefixes in the denominator of unit expressions. <p/></div>
+<div class="level0"><span Class="bold">place units separately, unitsep (on*, off)</span> If activated, units are separated from variables at the end of the result. <p/></div>
+<div class="level0"><span Class="bold">prefixes, pref (on*, off)</span> Enables automatic use of prefixes in the result. <p/></div>
+<div class="level0"><span Class="bold">show negative exponents, negexp (on, off*)</span> Use negative exponents instead of division for units in result (m/s = m*s^-1). <p/></div>
+<div class="level0"><span Class="bold">sync units, sync (on*, off)</span> <p/></div>
+<div class="level0"><span Class="bold">temperature units, temp (hybrid*, absolute, relative)</span> Determines how expressions with temperature units are calculated (hybrid acts as absolute if the expression contains different temperature units, otherwise as relative). <p/></div>
+<div class="level0"><span Class="bold">update exchange rates, upxrates (-1 = ask*, 0 = never, &gt; 0 = days)</span> <p/>Other: <p/></div>
+<div class="level0"><span Class="bold">ignore locale (yes, no*)</span> Ignore system language and use English (requires restart). <p/></div>
+<div class="level0"><span Class="bold">rpn (on, off*)</span> Activates the Reverse Polish Notation stack. <p/></div>
+<div class="level0"><span Class="bold">save definitions (yes*, no)</span> Save functions, units, and variables on exit. <p/></div>
+<div class="level0"><span Class="bold">save mode (yes*, no)</span> Save settings on exit. </div><h2 class="nroffsh" id="SYNTAX">SYNTAX</h2>
+<div class="level0">Mathematical entities: </div>
+<div class="level1"><p/><span Class="bold">Numbers</span> <br>These are the regular numbers composed by digits 0-9 and a decimal sign — a dot, or a comma if it is the default decimal point in the locale/language used. If comma is used as decimal sign, the dot is still kept as an alternative decimal sign, if not explicitely deactivated. Numbers include integers, real numbers, and complex numbers. The imaginary part of complex numbers are written with as regular number followed by the special variable "i" (can be changed to a "j"), which represents the square root of -1. Spaces between digits are ignored ("5  5 = 55"). "E" (or "e") can be considered as a shortcut for writing many zeroes and is equivalent to multiplication by 10 raised to the power of the right-hand value (e.g. "5E3 = 5000"). Sexagesimal numbers (and time) can be entered directly using colons (e.g. "5:30 = 5.5"). A number immediately preceeded "0b", "0o", "0d" or "0x" are interpreted as a number with base 2, 8, 12 or 16, respectively (e.g. "0x3f = 63"). <p/><span Class="bold">Intervals</span> <br>A number interval can be entered using the interval() function, the uncertainty() function, or using "±" or "+/-" (e.g. 5±1 = uncertainty(5, 0.2) = interval(4, 6)). If the read precision option is activated, decimal numbers are interpreted as an interval between the numbers that are normally rounded to the entered number (e.g. 1.1 = 1.1±0.05). If interval calculation using variance formula is activated (default), the interval represents the standard uncertainty (deviation) of the value. <p/><span Class="bold">Vectors and Matrices</span> <br>A matrix is a two-dimensional rectangular array of mathematical objects. Vectors are matrices with only one row or column, and thus one-dimensional sequences of objects. Vectors and matrices are generated by various functions, or using syntax in the form of [1, 2, 3, 4] and [[1, 2], [3, 4]]. <p/><span Class="bold">Variables/Constants</span> <br>See the list of variables in the GUI manual or using the command .I list variables <p/><span Class="bold">Functions</span> <br>See the list of functions in the GUI manual or using the command .I list functions <p/><span Class="bold">Units and Prefixes</span> <br>See the list of units and prefixes in the GUI manual or using the command .I list units. Abbreviated, plural and singular forms of unit names and prefixes are generally allowed. Prefixes must be put immediately before the unit to be interpreted as prefixes (eg. 5 mm = 0.005 m, but 5 m m = 5 m^2). For convenience units allow the power operator to be left out (e.g. 5 m2 = 5 m^2), with currencies excluded. <p/><span Class="bold">Unknowns</span> <br>Unknowns are text strings without any associated value. These are temporary unknown variables with default assumptions. Unknowns can also be explicitly entered by placing a backslash (\) before a single character (e.g. 5\a + 2\b) or using quotation mark before and after a text string (e.g. 5 "apples" + 2 "bananas"). If unknowns are activated characters without any associated variable, function or unit in an expression, will be regarded as an unknown variable. <p/><span Class="bold">Date and Time</span> <br>Date/time values are specified using quoted text string (quotation marks are not needed for function arguments), using standard date and time format (YYYY-MM-DDTHH:MM:SS). Some local formats are also supported, but not recommended. The local time zone are used, unless a time zone is specified at the end of the time string (Z/UTC/GMT or +/-HH:MM). Date/time supports a small subset of arithmetic operations. The time units represents calender time, instead of average values, when added or subtracted to a date. <p/><span Class="bold">Text</span> <br>This category represent a number of different function argument types, such as regular text and file names. They can, but do not need to be put in quotes except when containing the argument separator. <p/><span Class="bold">Comments</span> <br>All text after a hashtag (e.g. (5*2)/2 #calculating triangle area) is treated as a comment, which are added to the history. </div>
+<div class="level0"><p/>Operations and operators (word operators such as AND must be surrounded by space): </div>
+<div class="level1"><p/><span Class="bold">Addition (+)</span> <p/><span Class="bold">Subtraction (-)</span> <p/><span Class="bold">Multiplication (*)</span> <p/><span Class="bold">Division (/)</span> <p/><span Class="bold">Modulo (%, mod)</span> <br>Returns the remainder after division. <p/><span Class="bold">Integer Division (//, div)</span> <br>Rounds the result of division towards zero. <p/><span Class="bold">Exponentiation (^, **)</span> <br>Note that x^y^z equals x^(y^z), and not (x^y)^z. Note also that for non-integer exponents with negative bases, the principal root is returned and not the real root ((-8)^(1/3) equals 1 + 1.73i, and not -2). To calculate the real root for negative values, use the cbrt() and root() functions. <p/><span Class="bold">10^x (E)</span> <p/><span Class="bold">Parenthesis ((, ))</span> <p/><span Class="bold">Logical operators (!, ||, OR, &&, AND)</span> <br>Primarily used in conjunction with comparisons. <p/><span Class="bold">Bitwise operators (~, |, &, &lt;&lt;, &gt;&gt;, XOR)</span> <p/><span Class="bold">Comparison operators (=, !=, &lt;, &lt;=, &gt;, &gt;=)</span> <br>Returns 1 if expression is true and 0 if false. The x variable is isolated if the expression does not evaluate as true or false. Primarily used for equations and inequalities. </div>
+<div class="level0"><p/><span Class="bold">Evaluation priority order:</span> parenthesis, 10^x, exponentiation, functions, bitwise NOT, logical NOT, multiplication/division/modulo, addition/subtraction, bitwise NOT, bitwise shift, comparisons, bitwise AND, bitwise XOR, bitwise OR, logical AND, logical OR. <p/>The evaluation of short/implicit multiplication without any multiplication sign (e.g. 5x, 5(2+3)), differs depending on the parsing mode. In the conventional mode implicit multiplication does not differ from explicit multiplication (12/2(1+2) = 12/2*3 = 18, 5x/5y = 5 * x/5 * y = xy). In the parse implicit multiplication first mode, implicit multiplication is parsed before explicit multiplication (12/2(1+2) = 12/(2 * 3) = 2, 5x/5y = (5 * x)/(5 * y) = x/y). The default adaptive mode works as the parse implicit multiplication first mode, unless spaces are found (1/5x = 1/(5 * x), but 1/5 x = (1/5) * x). In the adaptive mode unit expressions are parsed separately (5 m/5 m/s = (5 * m)/(5 * (m/s)) = 1 s). Function arguments without parentheses are an exception, where implicit multiplication in front of variables and units is parsed first regardless of mode (sqrt 2x = sqrt(2x)). <p/>In chain mode, expressions are calculated from left to right, ignoring standard order of operations, like the immediate execution mode of a traditional calculator (1+2*3 = (1+2)*3 = 9). <p/>The "to"-operator is used for unit conversion and manipulation of how the result is presented. Place " to " or a right arrow (e.g. "-&gt;") followed by one of expressions/commands the below, at the end of an expression. <p/></div>
+<div class="level0"><span Class="bold">Unit conversion</span> - a unit or unit expression (e.g. meter or km/h) <br>prepend with ? to request the optimal prefix <br>prepend with b? to request the optimal binary prefix <br>prepend with + or - to force/disable use of mixed units <br>- a variable or physical constant (e.g. c) <br>- base (convert to base units) <br>- optimal (convert to optimal unit) <br>- mixed (convert to mixed units, e.g. hours + minutes) <p/></div>
+<div class="level0"><span Class="bold">Number base conversion</span> - bin, binary (show as binary number) <br>- bin# (show as binary number with specified number of bits) <br>- oct, octal (show as octal number) <br>- duo, duodecimal (show as duodecimal number) <br>- hex, hexadecimal (show as hexadecimal number) <br>- hex# (show as hexadecimal number with specified number of bits) <br>- sex, sexa2, sexa3, sexagesimal (show as sexagesimal number; sexa2 hides and sexa3 rounds arcseconds) <br>- latitude, latitude2, longitude, longitude2 (show as sexagesimal latitude/longitude; latitude2 and longitude2 hide arcseconds) <br>- bijective (shown in bijective base-26) <br>- fp16, fp32, fp64, fp80, fp128 (show in binary floating-point format) <br>- roman (show as roman numerals) <br>- time (show in time format) <br>- unicode <br>- base # (show in specified number base) <br>- bases (show as binary, octal, decimal and hexadecimal number) <br><p/></div>
+<div class="level0"><span Class="bold">Complex format</span> - rectangular, cartesian (show complex numbers in rectangular form) <br>- exponential (show complex numbers in exponential form) <br>- polar (show complex numbers in polar form) <br>- cis (show complex numbers in cis form) <br>- angle, phasor (show complex numbers in angle/phasor notation) <p/></div>
+<div class="level0"><span Class="bold">Time and date conversion</span> - UTC (show date and time in UTC time zone) <br>- UTC+/-hh[:mm] (show date and time in specified time zone) <br>- calendars <p/></div>
+<div class="level0"><span Class="bold">Other conversion commands</span> - fraction (show result as mixed fraction) <br>- factors (factorize result) <p/>Similarily where (or alternatively "/.") can be used at the end (but before "to"), for variable assignments, function replacements, etc. (e.g. "x+y where x=1 and y=2", "x^2=4 where x&gt;0", and "sin(5) where sin()=cos()"). </div><h2 class="nroffsh" id="EXAMPLES">EXAMPLES</h2>
+<div class="level0">Note that semicolon can be replaced with comma, if comma is not used as decimal or thousands separator. <p/><span Class="bold">Basic functions and operators</span> <p/></div>
+<div class="level0">sqrt 4 = sqrt(4) <br>= 4^(0.5) <br>= 4^(1/2) <br>= 2 <p/></div>
+<div class="level0">sqrt(25; 16; 9; 4) = [5; 4; 3; 2] <p/></div>
+<div class="level0">sqrt(32) = 4 * sqrt(2) (in exact mode) <p/></div>
+<div class="level0">cbrt(-27) = root(-27; 3) <br>= -3 (real root) <p/></div>
+<div class="level0">(-27)^(1/3) = 1.5 + 2.5980762i (principal root) <p/></div>
+<div class="level0">ln 25 = log(25; e) <br>= 3.2188758 <p/></div>
+<div class="level0">log2(4)/log10(100) = log(4; 2)/log(100; 10) <br>= 1 <p/></div>
+<div class="level0">5! = 1 * 2 * 3 * 4 * 5 <br>= 120 <p/></div>
+<div class="level0">5\2 (integer division) = 5//2 <br>= trunc(5/2) <br>= 2 <p/></div>
+<div class="level0">5 mod 3 = mod(5; 3) <br>= 2 <p/></div>
+<div class="level0">52 to factors = 2^2 * 13 <p/></div>
+<div class="level0">25/4 * 3/5 to fraction = 3 + 3/4 <p/></div>
+<div class="level0">gcd(63; 27) = 9 <p/></div>
+<div class="level0">sin(pi/2) - cos(pi) = sin(90 deg) - cos(180 deg) <br>= 2 <p/></div>
+<div class="level0">sum(x; 1; 5) = 1 + 2 + 3 + 4 + 5 = 15 <p/></div>
+<div class="level0">sum(i^2+sin(i); 1; 5; i) = 1^2 + sin(1) + 2^2 + sin(2) + ... = 55.176162 <p/></div>
+<div class="level0">product(x; 1; 5) = 1 * 2 * 3 * 4 * 5 = 120 <p/></div>
+<div class="level0">var1:=5 store value 5 in variable var1 <p/></div>
+<div class="level0">5^2 #this is a comment = 25 <p/></div>
+<div class="level0">sinh(0.5) where sinh()=cosh() = cosh(0.5) = 1.1276260 <p/><p/></div>
+<div class="level0">plot(x^2; -5; 5) plots the function y=x^2 from -5 to 5 <p/><span Class="bold">Units</span> <p/></div>
+<div class="level0">5 dm3 to L = 25 dm^3 to L <br>= 5 L <p/></div>
+<div class="level0">20 miles / 2h to km/h = 16.09344 km/h <p/></div>
+<div class="level0">1.74 to ft = 1.74 m to ft = 5 ft + 8.5039370 in <p/></div>
+<div class="level0">1.74 m to -ft = 5.7086614 ft <p/></div>
+<div class="level0">100 lbf * 60 mph to hp = 16 hp <p/></div>
+<div class="level0">50 Ω * 2 A = 100 V <p/></div>
+<div class="level0">50 Ω * 2 A to base  = 100 kg*m^2*s^-3*A^-1 <p/></div>
+<div class="level0">10 N / 5 Pa = (10 N)/(5 Pa) = 2 m^2 <p/></div>
+<div class="level0">5 m/s to s/m = 0.2 s/m <p/></div>
+<div class="level0">500 EUR - 20% to USD = 451.04 USD <p/></div>
+<div class="level0">500 megabit/s * 2 h to b?byte = 419.09516 gibibytes <p/><span Class="bold">Physical constants</span> <p/></div>
+<div class="level0">k_e / G * a_0 = (coulombs_constant / newtonian_constant) * bohr_radius  <br>= 7.126e9 kg*H*m^-1 <p/></div>
+<div class="level0">planck ∕ (compton_wavelength * c) = 9.1093837e-31 kg <p/></div>
+<div class="level0">5 ns * rydberg to c = 6.0793194E-8c <p/></div>
+<div class="level0">atom(Hg; weight) + atom(C; weight) * 4 to g = 4.129e-22 g <p/></div>
+<div class="level0">(G * planet(earth; mass) * planet(mars; mass))/(54.6e6 km)^2 = 8.58e16 N (gravitational attraction between earth and mars) <p/><span Class="bold">Uncertainty and interval arithmetic</span> <br><span Class="emphasis">result with interval arithmetic activated is shown in parenthesis</span> <p/></div>
+<div class="level0">sin(5+/-0.2)^2/2+/-0.3 = 0.460±0.088 (0.46+/-0.12) <p/></div>
+<div class="level0">(2+/-0.02 J)/(523+/-5 W) = 3.824+/-0.053 ms (3.82+/-±0.075 ms) <p/></div>
+<div class="level0">interval(-2; 5)^2 = intervall(-8.2500000; 12.750000) (intervall(0; 25)) <p/><span Class="bold">Algebra</span> <p/></div>
+<div class="level0">(5x^2 + 2)/(x - 3) = 5x + 15 + 47/(x - 3) <p/></div>
+<div class="level0">(\a + \b)(\a - \b) = ("a" + "b")("a" - "b") = 'a'^2 - 'b'^2 <p/></div>
+<div class="level0">(x + 2)(x - 3)^3 = x^4 - 7x^3 + 9x^2 + 27x - 54 <p/></div>
+<div class="level0">factorize x^4 - 7x^3 + 9x^2 + 27x - 54 = x^4 - 7x^3 + 9x^2 + 27x - 54 to factors <br>= (x + 2)(x - 3)^3 <p/></div>
+<div class="level0">cos(x)+3y^2 where x=pi and y=2 = 11 <p/></div>
+<div class="level0">gcd(25x; 5x^2) = 5x <p/></div>
+<div class="level0">1/(x^2+2x-3) to partial fraction = 1/(4x - 4) - 1/(4x + 12) <p/></div>
+<div class="level0">x+x^2+4 = 16<br>x = 3 or x = -4 <p/></div>
+<div class="level0">x^2/(5 m) - hypot(x; 4 m) = 2 m where x &gt; 0<br>x = 7.1340411 m <p/></div>
+<div class="level0">cylinder(20cm; x) = 20L<br>x = (1 / (2pi)) m <br>x = 16 cm (height of 20 L cylinder with radius 20 cm) <p/></div>
+<div class="level0">asin(sqrt(x)) = 0.2<br>x = sin(0.2)^2 <br>x = 0.039469503 <p/></div>
+<div class="level0">x^2 &gt; 25x<br>= x &gt; 25 or x &lt; 0 <p/></div>
+<div class="level0">solve(x = y+ln(y); y) = lambertw(e^x) <p/></div>
+<div class="level0">solve2(5x=2y^2; sqrt(y)=2; x; y) = 32/5 <p/></div>
+<div class="level0">multisolve([5x=2y+32; y=2z; z=2x]; [x; y; z]) = [-32/3; -128/3; -64/3] <p/></div>
+<div class="level0">dsolve(diff(y; x) - 2y = 4x; 5) = 6e^(2x) - 2x - 1 <p/><span Class="bold">Calculus</span> <p/></div>
+<div class="level0">diff(6x^2) = 12x <p/></div>
+<div class="level0">diff(sinh(x^2)/(5x) + 3xy/sqrt(x)) = (2/5) * cosh(x^2) - sinh(x^2)/(5x^2) + (3y)/(2 * sqrt(x)) <p/></div>
+<div class="level0">integrate(6x^2) = 2x^3 + C <p/></div>
+<div class="level0">integrate(6x^2; 1; 5) = 248 <p/></div>
+<div class="level0">integrate(sinh(x^2)/(5x) + 3xy/sqrt(x)) = 2x * sqrt(x) * y + Shi(x^2) / 10 + C <p/></div>
+<div class="level0">integrate(sinh(x^2)/(5x) + 3xy/sqrt(x); 1; 2) = 3.6568542y + 0.87600760 <p/></div>
+<div class="level0">limit(ln(1 + 4x)/(3^x - 1); 0) = 4 / ln(3) <p/><span Class="bold">Matrices and vectors</span> <p/></div>
+<div class="level0">((1; 2; 3); (4; 5; 6)) = [[1; 2; 3]; [4; 5; 6]] (2x3 matrix) <p/></div>
+<div class="level0">(1; 2; 3) * 2 - 2 = [1 * 2 - 2; 2 * 2 - 2; 3 * 2 - 2] <br>= [0; 2; 4] <p/></div>
+<div class="level0">(1; 2; 3).(4; 5; 6) = dot((1; 2; 3); (4; 5; 6)) <br>= 32 (dot product) <p/></div>
+<div class="level0">cross((1; 2; 3); (4; 5; 6)) = [-3; 6; -3] (cross product) <p/></div>
+<div class="level0">hadamard([[1; 2; 3]; [4; 5; 6]]; [[7; 8; 9]; [10; 11; 12]]) = [[7; 16; 27]; [40; 55; 72]] (hadamard product) <p/></div>
+<div class="level0">((1; 2; 3); (4; 5; 6)) * ((7; 8); (9; 10); (11; 12)) = [[58; 64]; [139; 154]] (matrix multiplication) <p/></div>
+<div class="level0">((1; 2); (3; 4))^-1 = inverse([[1; 2]; [3; 4]]) <br>= [[-2; 1]; [1.5; -0.5]] <p/><span Class="bold">Statistics</span> <p/></div>
+<div class="level0">mean(5; 6; 4; 2; 3; 7) = 4.5 <p/></div>
+<div class="level0">stdev(5; 6; 4; 2; 3; 7) = 1.87 <p/></div>
+<div class="level0">quartile((5; 6; 4; 2; 3; 7); 1) = percentile([5; 6; 4; 2; 3; 7]; 25) <br>= 2.9166667 <p/></div>
+<div class="level0">normdist(7; 5) = 0.053990967 <p/></div>
+<div class="level0">spearman(column(load(test.csv); 1); column(load(test.csv); 2))  = -0.33737388 (depends on the data in the CSV file) <p/><span Class="bold">Time and date</span> <p/></div>
+<div class="level0">10:31 + 8:30 to time = 19:01 <p/></div>
+<div class="level0">10h 31min + 8h 30min to time = 19:01 <p/></div>
+<div class="level0">now to utc = "2020-07-10T07:50:40Z" <p/></div>
+<div class="level0">"2020-07-10T07:50CET" to utc+8 = "2020-07-10T14:50:00+08:00" <p/></div>
+<div class="level0">"2020-05-20" + 523d = addDays(2020-05-20; 523) <br>= "2021-10-25" <p/></div>
+<div class="level0">today - 5 days = "2020-07-05" <p/></div>
+<div class="level0">"2020-10-05" - today = days(today; 2020-10-05) <br>= 87 <p/></div>
+<div class="level0">timestamp(2020-05-20) = 1 589 925 600 <p/></div>
+<div class="level0">stamptodate(1 589 925 600) = "2020-05-20T00:00:00" <p/></div>
+<div class="level0">"2020-05-20" to calendars returns date in Hebrew, Islamic, Persian, Indian, Chinese, Julian, Coptic, and Ethiopian calendars <p/><span Class="bold">Number bases</span> <p/></div>
+<div class="level0">52 to bin = 0011 0100 <p/></div>
+<div class="level0">52 to bin16 = 0000 0000 0011 0100 <p/></div>
+<div class="level0">52 to oct = 064 <p/></div>
+<div class="level0">52 to hex = 0x34 <p/></div>
+<div class="level0">0x34 = hex(34) <br>= base(34; 16)  <br>= 52 <p/></div>
+<div class="level0">523&lt;&lt;2&250 to bin = 0010 1000 <p/></div>
+<div class="level0">52.345 to float = 0100 0010 0101 0001 0110 0001 0100 1000 <p/></div>
+<div class="level0">float(01000010010100010110000101001000) = 1715241/32768 <br>= 52.345001 <p/></div>
+<div class="level0">floatError(52.345) = 1.2207031e-6 <p/></div>
+<div class="level0">52.34 to sexa = 52°20'24" <p/></div>
+<div class="level0">1978 to roman = MCMLXXVIII <p/></div>
+<div class="level0">52 to base 32 = 1K <p/></div>
+<div class="level0">sqrt(32) to base sqrt(2) = 100000 </div><h2 class="nroffsh" id="SEE">SEE ALSO</h2>
+<div class="level0">The manual of the graphical user interface at <span Class="emphasis">https://qalculate.github.io/manual/index.html</span> (includes more details about the syntax and elements supported in mathematical expressions, and various options, and includes a complete list of functions, variables, and units) </div><h2 class="nroffsh" id="BUGS">BUGS</h2>
+<div class="level0">Please report any bugs at  <span Class="emphasis">https://github.com/Qalculate/libqalculate/issues</span> </div><h2 class="nroffsh" id="AUTHORS">AUTHORS</h2>
+<div class="level0">Hanna Knutsson &lt;hanna.knutsson@protonmail.com&gt;. </div><div class="roffit" align="middle">
+ This HTML page was made with <a href="https://github.com/aaly/roffit">roffit 0.8</a>.
+</div>
+</body></html>
