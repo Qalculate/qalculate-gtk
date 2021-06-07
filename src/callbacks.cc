@@ -2447,7 +2447,7 @@ void check_for_new_version(bool do_not_show_again) {
 		gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox);
 		GtkWidget *label = gtk_label_new(NULL);
 #ifdef AUTO_UPDATE
-		gchar *gstr = g_strdup_printf(_("A new version of %s is available at %s.\n\nDo you wish to update to version %s."), "Qalculate!", "<a href=\"http://qalculate.github.io/downloads.html\">qalculate.github.io</a>", new_version.c_str());
+		gchar *gstr = g_strdup_printf(_("A new version of %s is available at %s.\n\nDo you wish to update to version %s?"), "Qalculate!", "<a href=\"http://qalculate.github.io/downloads.html\">qalculate.github.io</a>", new_version.c_str());
 #else
 		gchar *gstr = g_strdup_printf(_("A new version of %s is available.\n\nYou can get version %s at %s."), "Qalculate!", new_version.c_str(), "<a href=\"http://qalculate.github.io/downloads.html\">qalculate.github.io</a>");
 #endif
