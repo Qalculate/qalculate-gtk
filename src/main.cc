@@ -85,7 +85,7 @@ bool do_imaginary_j = false;
 QalculateDateTime last_version_check_date;
 
 static GOptionEntry options[] = {
-	{"file", 'f', 0, G_OPTION_ARG_STRING, NULL, N_("Execute expressions and commands from a file"), NULL},
+	{"file", 'f', 0, G_OPTION_ARG_STRING, NULL, N_("Execute expressions and commands from a file"), N_("FILE")},
 	{"new-instance", 'n', 0, G_OPTION_ARG_NONE, NULL, N_("Start a new instance of the application"), NULL},
 	{"version", 'v', 0, G_OPTION_ARG_NONE, NULL, N_("Display the application version"), NULL},
 	{"title", 0, 0, G_OPTION_ARG_STRING, NULL, N_("Specify the window title"), N_("TITLE")},

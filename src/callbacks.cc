@@ -617,8 +617,12 @@ bool equalsIgnoreCase(const string &str1, const string &str2, size_t i2, size_t 
 			}
 			if(!isequal) {
 				char *gstr1 = utf8_strdown(str1.c_str() + (sizeof(char) * i1), iu1);
+				if(!gstr1) return false;
 				char *gstr2 = utf8_strdown(str2.c_str() + (sizeof(char) * i2), iu2);
-				if(!gstr1 || !gstr2) return false;
+				if(!gstr2) {
+					free(gstr1);
+					return false;
+				}
 				bool b = strcmp(gstr1, gstr2) == 0;
 				free(gstr1);
 				free(gstr2);
@@ -7300,11 +7304,11 @@ void update_fmenu() {
 
 
 string get_value_string(const MathStructure &mstruct_, bool rlabel = false, Prefix *prefix = NULL) {
-	printops.allow_non_usable = rlabel;
-	printops.prefix = prefix;
-	string str = CALCULATOR->print(mstruct_, 100, printops);
-	printops.allow_non_usable = false;
-	printops.prefix = NULL;
+	PrintOptions po = printops;
+	po.allow_non_usable = rlabel;
+	po.prefix = prefix;
+	po.base = 10;
+	string str = CALCULATOR->print(mstruct_, 100, po);
 	return str;
 }
 
@@ -7677,7 +7681,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
 				bool multiline = false;
 				int base = po.base;
-				if(base <= BASE_FP16 && base >= BASE_FP80) base =  BASE_BINARY;
+				if(base <= BASE_FP16 && base >= BASE_FP80) base = BASE_BINARY;
 				for(int try_i = 0; try_i <= 2; try_i++) {
 					if(try_i == 1) {
 						value_str_bak = value_str;
@@ -10776,7 +10780,7 @@ bool update_window_title(const char *str, bool is_result) {
 		default: {
 			if(is_result) return false;
 			if(str) gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (string("Qalculate! ") + str).c_str());
-			else gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), _("Qalculate!"));
+			else gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), "Qalculate!");
 		}
 	}
 	return true;
@@ -16067,7 +16071,7 @@ void edit_unknown(const char *category, Variable *var, GtkWidget *win) {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_sign")), TRUE);
 
 		//fill in default values
-		string v_name = CALCULATOR->getName();
+		string v_name;
 		int i = 1;
 		do {
 			v_name = "v"; v_name += i2s(i);
@@ -21249,6 +21253,7 @@ void set_current_object() {
 		do {
 			CALCULATOR->separateToExpression(str, str_to, evalops, true, !auto_calculate);
 			if(b_first && str.empty()) {
+				if(current_from_struct) current_from_struct->unref();
 				current_from_struct = mstruct;
 				if(current_from_struct) {
 					current_from_struct->ref();
@@ -23636,8 +23641,8 @@ void do_completion() {
 			}
 		}
 		if(!arg) {
-			string str2, str3, str4;
-			Prefix *p2 = NULL, *p3 = NULL, *p4 = NULL;
+			vector<string> pstr;
+			vector<Prefix*> prefixes;
 			if(str.length() > (size_t) completion_min) {
 				for(size_t pi = 1; ; pi++) {
 					Prefix *prefix = CALCULATOR->getPrefix(pi);
@@ -23653,9 +23658,8 @@ void do_completion() {
 								}
 							}
 							if(pmatch) {
-								if(str2.empty()) {p2 = prefix; str2 = str.substr(pname->length());}
-								else if(str3.empty()) {p3 = prefix; str3 = str.substr(pname->length());}
-								else if(str4.empty()) {p4 = prefix; str4 = str.substr(pname->length());}
+								prefixes.push_back(prefix);
+								pstr.push_back(str.substr(pname->length()));
 							}
 						}
 					}
@@ -23715,16 +23719,14 @@ void do_completion() {
 								if(item->isHidden() && (item->type() != TYPE_UNIT || !((Unit*) item)->isCurrency()) && ename) {
 									b_match = (ename->name == str) ? 1 : 0;
 								} else {
-									for(size_t icmp = 0; icmp < 4; icmp++) {
-										if(icmp == 1 && (item->type() != TYPE_UNIT || str2.empty() || (cu && !prefix) || (!cu && !((Unit*) item)->useWithPrefixesByDefault()))) break;
+									for(size_t icmp = 0; icmp <= prefixes.size(); icmp++) {
+										if(icmp == 1 && (item->type() != TYPE_UNIT || (cu && !prefix) || (!cu && !((Unit*) item)->useWithPrefixesByDefault()))) break;
 										if(cu && prefix) {
-											if(icmp == 0 || (icmp == 1 && prefix != p2) || (icmp == 2 && prefix != p3) || (icmp == 3 && prefix != p3)) continue;
+											if(icmp == 0 || prefix != prefixes[icmp - 1]) continue;
 										}
 										const string *cmpstr;
 										if(icmp == 0) cmpstr = &str;
-										else if(icmp == 1) cmpstr = &str2;
-										else if(icmp == 2) cmpstr = &str3;
-										else cmpstr = &str4;
+										else cmpstr = &pstr[icmp - 1];
 										if(cmpstr->empty()) break;
 										if(cmpstr->length() <= ename->name.length()) {
 											b_match = 2;
@@ -23737,9 +23739,7 @@ void do_completion() {
 											if(b_match && (!cu || (exp == 1 && cu->countUnits() == 1)) && ((!ename->case_sensitive && equalsIgnoreCase(ename->name, *cmpstr)) || (ename->case_sensitive && ename->name == *cmpstr))) b_match = 1;
 											if(b_match) {
 												if(icmp > 0 && !cu) {
-													if(icmp == 1) prefix = p2;
-													else if(icmp == 2) prefix = p3;
-													else if(icmp == 3) prefix = p4;
+													prefix = prefixes[icmp - 1];
 													i_match = str.length() - cmpstr->length();
 												} else if(b_match > 1 && !editing_to_expression && item->isHidden() && str.length() == 1) {
 													b_match = 4;
@@ -23753,23 +23753,19 @@ void do_completion() {
 							}
 						}
 						if(item && ((!cu && b_match >= 2) || (exp == 1 && cu->countUnits() == 1 && b_match == 2)) && item->countNames() > 1) {
-							for(size_t icmp = 0; icmp < 4 && b_match > 1; icmp++) {
-								if(icmp == 1 && (item->type() != TYPE_UNIT || str2.empty() || (cu && !prefix) || (!cu && !((Unit*) item)->useWithPrefixesByDefault()))) break;
+							for(size_t icmp = 0; icmp <= prefixes.size() && b_match > 1; icmp++) {
+								if(icmp == 1 && (item->type() != TYPE_UNIT  || (cu && !prefix) || (!cu && !((Unit*) item)->useWithPrefixesByDefault()))) break;
 								if(cu && prefix) {
-									if(icmp == 0 || (icmp == 1 && prefix != p2) || (icmp == 2 && prefix != p3) || (icmp == 3 && prefix != p3)) continue;
+									if(icmp == 0 || prefix != prefixes[icmp - 1]) continue;
 								}
 								const string *cmpstr;
 								if(icmp == 0) cmpstr = &str;
-								else if(icmp == 1) cmpstr = &str2;
-								else if(icmp == 2) cmpstr = &str3;
-								else cmpstr = &str4;
+								else cmpstr = &pstr[icmp - 1];
 								if(cmpstr->empty()) break;
 								for(size_t name_i = 1; name_i <= item->countNames(); name_i++) {
 									if(item->getName(name_i).name == *cmpstr) {
 										if(!cu) {
-											if(icmp == 1) prefix = p2;
-											else if(icmp == 2) prefix = p3;
-											else if(icmp == 3) prefix = p4;
+											if(icmp > 0) prefix = prefixes[icmp - 1];
 											else prefix = NULL;
 										}
 										b_match = 1; break;
@@ -32712,6 +32708,22 @@ return TRUE;}
 			}
 			overwrite_expression_selection(input_xor ? " xor " : "^");
 			return TRUE;
+		}
+		case GDK_KEY_parenright: {
+			if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
+				brace_wrap();
+				return true;
+			}
+			GtkTextMark *mpos = gtk_text_buffer_get_insert(expressionbuffer);
+			if(mpos) {
+				GtkTextIter ipos;
+				gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mpos);
+				if(gtk_text_iter_is_start(&ipos)) {
+					brace_wrap();
+					return true;
+				}
+			}
+			break;
 		}
 		case GDK_KEY_slash: {}
 		case GDK_KEY_KP_Divide: {
