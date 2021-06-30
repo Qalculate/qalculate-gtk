@@ -1795,7 +1795,6 @@ void set_unicode_buttons() {
 	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_add")), w, h);
 }
 
-
 bool string_is_less(string str1, string str2) {
 	size_t i = 0;
 	bool b_uni = false;
@@ -2324,6 +2323,7 @@ gboolean on_display_errors_timeout(gpointer) {
 	if(block_error_timeout > 0) return TRUE;
 	if(CALCULATOR->checkSaveFunctionCalled()) {
 		update_vmenu();
+		update_fmenu();
 	}
 	display_errors();
 	return TRUE;
@@ -4657,6 +4657,8 @@ void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 							if(!dp->title(false).empty()) {
 								str = dp->title();
 								str += ": ";
+							} else {
+								str = "";
 							}
 							for(size_t i = 1; i <= dp->countNames(); i++) {
 								if(i > 1) str += ", ";
@@ -12730,8 +12732,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			} else if(equalsIgnoreCase(scom, "save") || equalsIgnoreCase(scom, "store")) {
 				str = str.substr(ispace + 1, slen - (ispace + 1));
 				remove_blank_ends(str);
-				if(equalsIgnoreCase(str, "mode")) save_mode();
-				else if(equalsIgnoreCase(str, "definitions")) save_defs();
+				if(equalsIgnoreCase(str, "mode")) {save_mode(); clear_expression_text();}
+				else if(equalsIgnoreCase(str, "definitions")) {save_defs(); clear_expression_text();}
 				else {
 					string name = str, cat, title;
 					if(str[0] == '\"') {
@@ -12800,6 +12802,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 								CALCULATOR->addVariable(new KnownVariable(cat, name, *mstruct, title));
 							}
 							update_vmenu();
+							clear_expression_text();
 						}
 					}
 				}
@@ -12853,6 +12856,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 						CALCULATOR->addVariable(new KnownVariable("", name, expr));
 					}
 					update_vmenu();
+					clear_expression_text();
 				}
 			} else if(equalsIgnoreCase(scom, "function")) {
 				str = str.substr(ispace + 1, slen - (ispace + 1));
@@ -12908,6 +12912,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 						CALCULATOR->addFunction(new UserFunction("", name, expr));
 					}
 					update_fmenu();
+					clear_expression_text();
 				}
 			} else if(equalsIgnoreCase(scom, "delete")) {
 				str = str.substr(ispace + 1, slen - (ispace + 1));
@@ -12916,11 +12921,13 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				if(v && v->isLocal()) {
 					v->destroy();
 					update_vmenu();
+					clear_expression_text();
 				} else {
 					MathFunction *f = CALCULATOR->getActiveFunction(str);
 					if(f && f->isLocal()) {
 						f->destroy();
 						update_fmenu();
+						clear_expression_text();
 					} else {
 						CALCULATOR->error(true, "No user-defined variable or function with the specified name (%s) exist.", str.c_str(), NULL);
 					}
@@ -13174,12 +13181,16 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 							}
 							gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variables_builder, "variables_entry_search")), str.c_str());
 						}
+						clear_expression_text();
 					} else {
 						CALCULATOR->error(true, "No function, variable, or unit with the specified name (%s) was found.", str.c_str(), NULL);
 					}
+				} else {
+					clear_expression_text();
 				}
 			} else if(equalsIgnoreCase(str, "quit") || equalsIgnoreCase(str, "exit")) {
 				on_gcalc_exit(NULL, NULL, NULL);
+				return;
 			} else {
 				CALCULATOR->error(true, "Unknown command: %s.", str.c_str(), NULL);
 			}
@@ -13738,9 +13749,9 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				} else {
 					CALCULATOR->RPNStackEnter(str2, 0, evalops, parsed_mstruct, parsed_tostruct);
 				}
-				if(do_mathoperation) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_lastx")), TRUE);
-				else lastx = lastx_bak;
 			}
+			if(do_mathoperation) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_lastx")), TRUE);
+			else lastx = lastx_bak;
 		}
 	} else {
 		CALCULATOR->calculate(mstruct, CALCULATOR->unlocalizeExpression(execute_str.empty() ? str : execute_str, evalops.parse_options), 0, evalops, parsed_mstruct, parsed_tostruct);
@@ -24049,6 +24060,12 @@ gboolean on_math_entry_key_press_event(GtkWidget *o, GdkEventKey *event, gpointe
 	if(strlen(key) > 0) entry_insert_text(o, key);
 	return TRUE;
 }
+gboolean on_function_entry_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
+	const gchar *key = key_press_get_symbol(event);
+	if(!key || strlen(key) == 0) return FALSE;
+	entry_insert_text(o, key);
+	return TRUE;
+}
 gboolean on_unit_entry_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 	const gchar *key = key_press_get_symbol(event, false, true);
 	if(!key) return FALSE;
@@ -33228,7 +33245,7 @@ void on_type_label_matrix_clicked(GtkButton *w, gpointer user_data) {
 	insert_matrix(str.empty() ? NULL : &mstruct_m, gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW), FALSE, false, false, entry);
 }
 void on_type_label_file_clicked(GtkButton*, gpointer user_data) {
-	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file to import"), GTK_WINDOW(gtk_builder_get_object(csvimport_builder, "csv_import_dialog")), GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT, NULL);
+	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file"), NULL, GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT, NULL);
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 	string filestr = gtk_entry_get_text(GTK_ENTRY(user_data));
 	remove_blank_ends(filestr);
@@ -34350,13 +34367,13 @@ bool generate_plot(PlotParameters &pp, vector<MathStructure> &y_vectors, vector<
 		for(int i = 0; i < count; i++) {
 			PlotDataParameters *pdp = new PlotDataParameters();
 			pdp->title = gstr1;
-			if(count > 1) {
-				pdp->title += " :";
-				pdp->title += i2s(i + 1);
-			}
 			remove_blank_ends(pdp->title);
 			if(pdp->title.empty()) {
 				pdp->title = gstr2;
+			}
+			if(count > 1) {
+				pdp->title += " :";
+				pdp->title += i2s(i + 1);
 			}
 			pdp->test_continuous = type != 1 && type != 2;
 			switch(smoothing) {
@@ -34504,6 +34521,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 			gtk_widget_destroy(d);
 			display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
 			block_error_timeout--;
+			CALCULATOR->endTemporaryStopIntervalArithmetic();
 			return;
 		}
 		MathStructure max;
@@ -34514,6 +34532,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 			gtk_widget_destroy(d);
 			display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
 			block_error_timeout--;
+			CALCULATOR->endTemporaryStopIntervalArithmetic();
 			return;
 		}
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_radiobutton_step")))) {
