@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qalculate-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-05 11:17+0200\n"
+"POT-Creation-Date: 2021-07-01 09:41+0700\n"
 "PO-Revision-Date: 2021-05-28 08:29+0700\n"
 "Last-Translator: Damir Islamov <damir@secretlaboratory.ru>\n"
 "Language-Team: Russian <kde-russian@lists.kde.ru>\n"
@@ -18,8 +18,8 @@ msgstr ""
 "%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Lokalize 20.12.0\n"
 
-#: ../data/qalculate-gtk.desktop.in.h:1 ../src/callbacks.cc:10757
-#: ../src/callbacks.cc:10764 ../src/callbacks.cc:10779
+#: ../data/qalculate-gtk.desktop.in.h:1 ../src/callbacks.cc:10763
+#: ../src/callbacks.cc:10770
 msgid "Qalculate!"
 msgstr "Qalculate!"
 
@@ -28,7 +28,7 @@ msgid "Calculator"
 msgstr "Калькулятор"
 
 #: ../data/qalculate-gtk.desktop.in.h:3
-#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/callbacks.cc:31888
+#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/callbacks.cc:31901
 msgid "Powerful and easy to use calculator"
 msgstr "Мощный и простой в использовании калькулятор"
 
@@ -75,14 +75,14 @@ msgstr "Правила для аргументов"
 #: ../data/matrixedit.ui.h:3 ../data/shortcuts.ui.h:7
 #: ../data/simplefunctionedit.ui.h:3 ../data/unitedit.ui.h:3
 #: ../data/unknownedit.ui.h:3 ../data/variableedit.ui.h:3
-#: ../src/callbacks.cc:2439 ../src/callbacks.cc:16697 ../src/callbacks.cc:17683
-#: ../src/callbacks.cc:17802 ../src/callbacks.cc:18933
-#: ../src/callbacks.cc:18989 ../src/callbacks.cc:26089
-#: ../src/callbacks.cc:26567 ../src/callbacks.cc:27801
-#: ../src/callbacks.cc:29511 ../src/callbacks.cc:33131
-#: ../src/callbacks.cc:33157 ../src/callbacks.cc:33175
-#: ../src/callbacks.cc:33219 ../src/callbacks.cc:34404
-#: ../src/callbacks.cc:34930
+#: ../src/callbacks.cc:2443 ../src/callbacks.cc:16712 ../src/callbacks.cc:17698
+#: ../src/callbacks.cc:17817 ../src/callbacks.cc:18948
+#: ../src/callbacks.cc:19004 ../src/callbacks.cc:26102
+#: ../src/callbacks.cc:26580 ../src/callbacks.cc:27814
+#: ../src/callbacks.cc:29524 ../src/callbacks.cc:33160
+#: ../src/callbacks.cc:33186 ../src/callbacks.cc:33204
+#: ../src/callbacks.cc:33248 ../src/callbacks.cc:34433
+#: ../src/callbacks.cc:34961
 msgid "_Cancel"
 msgstr "О_тмена"
 
@@ -96,10 +96,10 @@ msgstr "Не сохранять изменения"
 #: ../data/matrixedit.ui.h:5 ../data/shortcuts.ui.h:8
 #: ../data/simplefunctionedit.ui.h:5 ../data/unitedit.ui.h:5
 #: ../data/unknownedit.ui.h:5 ../data/variableedit.ui.h:5
-#: ../src/callbacks.cc:2439 ../src/callbacks.cc:2685 ../src/callbacks.cc:2774
-#: ../src/callbacks.cc:17683 ../src/callbacks.cc:17802
-#: ../src/callbacks.cc:26089 ../src/callbacks.cc:26567
-#: ../src/callbacks.cc:33175 ../src/callbacks.cc:34930
+#: ../src/callbacks.cc:2443 ../src/callbacks.cc:2689 ../src/callbacks.cc:2778
+#: ../src/callbacks.cc:17698 ../src/callbacks.cc:17817
+#: ../src/callbacks.cc:26102 ../src/callbacks.cc:26580
+#: ../src/callbacks.cc:33204 ../src/callbacks.cc:34961
 msgid "_OK"
 msgstr "_OK"
 
@@ -161,9 +161,9 @@ msgstr "Клавиатурные комбинации"
 #: ../data/namesedit.ui.h:2 ../data/nbases.ui.h:2 ../data/percentage.ui.h:5
 #: ../data/plot.ui.h:5 ../data/precision.ui.h:2 ../data/preferences.ui.h:2
 #: ../data/setbase.ui.h:2 ../data/shortcuts.ui.h:2 ../data/units.ui.h:2
-#: ../data/variables.ui.h:2 ../src/callbacks.cc:2441 ../src/callbacks.cc:14668
-#: ../src/callbacks.cc:16689 ../src/callbacks.cc:26014
-#: ../src/callbacks.cc:34772
+#: ../data/variables.ui.h:2 ../src/callbacks.cc:2445 ../src/callbacks.cc:14683
+#: ../src/callbacks.cc:16704 ../src/callbacks.cc:26027
+#: ../src/callbacks.cc:34803
 msgid "_Close"
 msgstr "В_ыход"
 
@@ -193,7 +193,7 @@ msgstr "Действие клавиши"
 
 #: ../data/buttonsedit.ui.h:11 ../data/shortcuts.ui.h:9
 #: ../data/variableedit.ui.h:9 ../src/interface.cc:2130
-#: ../src/interface.cc:2370 ../src/interface.cc:3898 ../src/callbacks.cc:14726
+#: ../src/interface.cc:2370 ../src/interface.cc:3898 ../src/callbacks.cc:14741
 msgid "Value"
 msgstr "Значение"
 
@@ -272,7 +272,7 @@ msgid "Import as"
 msgstr "Импортировать как"
 
 #: ../data/csvimport.ui.h:10 ../data/functionedit.ui.h:33 ../data/main.ui.h:21
-#: ../data/matrix.ui.h:1 ../data/matrixedit.ui.h:18 ../src/callbacks.cc:16702
+#: ../data/matrix.ui.h:1 ../data/matrixedit.ui.h:18 ../src/callbacks.cc:16717
 msgid "Matrix"
 msgstr "Матрица"
 
@@ -280,8 +280,8 @@ msgstr "Матрица"
 msgid "If a matrix shall be generated from the contents of the file"
 msgstr "Если матрица должна быть создана из содержимого файла"
 
-#: ../data/csvimport.ui.h:12 ../src/callbacks.cc:17573
-#: ../src/callbacks.cc:27710
+#: ../data/csvimport.ui.h:12 ../src/callbacks.cc:17588
+#: ../src/callbacks.cc:27723
 msgid "Vectors"
 msgstr "Векторы"
 
@@ -295,7 +295,7 @@ msgstr "Если векторы должны быть созданы из сод
 #: ../data/unitedit.ui.h:7 ../data/unknownedit.ui.h:7
 #: ../data/variableedit.ui.h:6 ../src/interface.cc:2221
 #: ../src/interface.cc:2439 ../src/interface.cc:2838 ../src/interface.cc:3101
-#: ../src/interface.cc:3140 ../src/callbacks.cc:18940 ../src/callbacks.cc:26096
+#: ../src/interface.cc:3140 ../src/callbacks.cc:18955 ../src/callbacks.cc:26109
 msgid "Name"
 msgstr "Имя"
 
@@ -369,7 +369,7 @@ msgstr "Имя, используемое для ссылки"
 #: ../data/datasetedit.ui.h:8 ../data/functionedit.ui.h:9
 #: ../data/matrixedit.ui.h:10 ../data/unitedit.ui.h:9
 #: ../data/unknownedit.ui.h:9 ../data/variableedit.ui.h:8
-#: ../src/callbacks.cc:4645 ../src/callbacks.cc:5695
+#: ../src/callbacks.cc:4649 ../src/callbacks.cc:5701
 msgid "Properties"
 msgstr "Свойства"
 
@@ -391,7 +391,7 @@ msgid "Value Type"
 msgstr "Тип значения"
 
 #: ../data/datasetedit.ui.h:14 ../data/functionedit.ui.h:30
-#: ../src/callbacks.cc:26020
+#: ../src/callbacks.cc:26033
 msgid "Text"
 msgstr "Текст"
 
@@ -430,7 +430,7 @@ msgstr "Значение использует скобки"
 msgid "Unit expression"
 msgstr "Выражение единицы измерения"
 
-#: ../data/datasetedit.ui.h:23 ../src/callbacks.cc:17122
+#: ../data/datasetedit.ui.h:23 ../src/callbacks.cc:17137
 msgid "Edit Data Set"
 msgstr "Изменить набор данных"
 
@@ -476,7 +476,7 @@ msgstr "_Правка"
 
 #: ../data/datasetedit.ui.h:33 ../data/functionedit.ui.h:53
 #: ../data/functions.ui.h:9 ../data/units.ui.h:11 ../data/variables.ui.h:9
-#: ../src/callbacks.cc:18989
+#: ../src/callbacks.cc:19004
 msgid "_Delete"
 msgstr "_Удалить"
 
@@ -501,7 +501,7 @@ msgstr "Свойство по умолчанию"
 msgid "Function"
 msgstr "Функция"
 
-#: ../data/datasets.ui.h:1 ../src/callbacks.cc:16847
+#: ../data/datasets.ui.h:1 ../src/callbacks.cc:16862
 msgid "Edit Data Object"
 msgstr "Изменить объект данных"
 
@@ -514,7 +514,7 @@ msgid "Accept the creation/modification of this data object"
 msgstr "Принять создание/изменение этого объекта данных"
 
 #. new dataset
-#: ../data/datasets.ui.h:6 ../src/callbacks.cc:17219
+#: ../data/datasets.ui.h:6 ../src/callbacks.cc:17234
 msgid "Data Sets"
 msgstr "Наборы данных"
 
@@ -591,60 +591,48 @@ msgstr "Преобразование числа с плавающей запят
 msgid "Decimal value"
 msgstr "Десятичное значение"
 
-#: ../data/floatingpoint.ui.h:4 ../data/nbases.ui.h:6
-msgid "Binary value"
-msgstr "Двоичное значение"
-
-#: ../data/floatingpoint.ui.h:5 ../data/nbases.ui.h:8
-msgid "Octal value"
-msgstr "Восьмеричное значение"
-
-#: ../data/floatingpoint.ui.h:6
+#: ../data/floatingpoint.ui.h:4
 msgid "Hexadecimal representation"
 msgstr "Шестнадцатеричное представление"
 
-#: ../data/floatingpoint.ui.h:7
+#: ../data/floatingpoint.ui.h:5
 msgid "Conversion error"
 msgstr "Ошибка преобразования"
 
-#: ../data/floatingpoint.ui.h:8
+#: ../data/floatingpoint.ui.h:6
 msgid "Binary representation"
 msgstr "Двоичное представление"
 
-#: ../data/floatingpoint.ui.h:9
+#: ../data/floatingpoint.ui.h:7
 msgid "Floating point value"
 msgstr "Значение числа с плавающей запятой"
 
-#: ../data/floatingpoint.ui.h:10
+#: ../data/floatingpoint.ui.h:8
 msgid "Format"
 msgstr "Формат"
 
-#: ../data/floatingpoint.ui.h:11
+#: ../data/floatingpoint.ui.h:9
 msgid "16-bit (half precision)"
 msgstr "128-битное (половинная точность)"
 
-#: ../data/floatingpoint.ui.h:12
+#: ../data/floatingpoint.ui.h:10
 msgid "32-bit (single precision)"
 msgstr "32-битное (одинарная точность)"
 
-#: ../data/floatingpoint.ui.h:13
+#: ../data/floatingpoint.ui.h:11
 msgid "64-bit (double precision)"
 msgstr "64-битное (двойная точность)"
 
-#: ../data/floatingpoint.ui.h:14
+#: ../data/floatingpoint.ui.h:12
 msgid "80-bit (x86 extended format)"
 msgstr "80-битное (x86 расширенный формат)"
 
-#: ../data/floatingpoint.ui.h:15
+#: ../data/floatingpoint.ui.h:13
 msgid "128-bit (quadruple precision)"
 msgstr "128 -битное (четырехкратная точность)"
 
-#: ../data/floatingpoint.ui.h:16 ../data/nbases.ui.h:12
-msgid "Hexadecimal value"
-msgstr "Шестнадцатеричное значение"
-
-#: ../data/functionedit.ui.h:1 ../src/callbacks.cc:15662
-#: ../src/callbacks.cc:15867
+#: ../data/functionedit.ui.h:1 ../src/callbacks.cc:15677
+#: ../src/callbacks.cc:15882
 msgid "Edit Function"
 msgstr "Изменить функцию"
 
@@ -732,7 +720,7 @@ msgid "Date"
 msgstr "Дата"
 
 #: ../data/functionedit.ui.h:32 ../data/main.ui.h:22 ../data/matrix.ui.h:11
-#: ../data/matrixedit.ui.h:20 ../src/callbacks.cc:16700
+#: ../data/matrixedit.ui.h:20 ../src/callbacks.cc:16715
 msgid "Vector"
 msgstr "Вектор"
 
@@ -765,7 +753,7 @@ msgstr "Неотрицательное целое"
 msgid "Boolean"
 msgstr "Логическое"
 
-#: ../data/functionedit.ui.h:41 ../src/callbacks.cc:17227
+#: ../data/functionedit.ui.h:41 ../src/callbacks.cc:17242
 msgid "Object"
 msgstr "Объект"
 
@@ -782,7 +770,7 @@ msgstr "Переменная"
 msgid "Angle"
 msgstr "Угол"
 
-#: ../data/functionedit.ui.h:47 ../src/callbacks.cc:23593
+#: ../data/functionedit.ui.h:47 ../src/callbacks.cc:23609
 msgid "Data object"
 msgstr "Объект данных"
 
@@ -799,7 +787,7 @@ msgid "Add entered argument definition"
 msgstr "Добавить введённое определение аргумента"
 
 #: ../data/functionedit.ui.h:51 ../data/functions.ui.h:13 ../data/plot.ui.h:35
-#: ../src/callbacks.cc:34930
+#: ../src/callbacks.cc:34961
 msgid "_Apply"
 msgstr "П_рименить"
 
@@ -856,7 +844,7 @@ msgid "Edit the selected function"
 msgstr "Изменить выбранную функцию"
 
 #: ../data/functions.ui.h:7 ../data/matrix.ui.h:4 ../data/units.ui.h:7
-#: ../data/variables.ui.h:7 ../src/callbacks.cc:14675
+#: ../data/variables.ui.h:7 ../src/callbacks.cc:14690
 msgid "_Insert"
 msgstr "_Вставить"
 
@@ -873,7 +861,7 @@ msgid "(De)activate the selected function"
 msgstr "(Де)активировать выбранную функцию"
 
 #: ../data/functions.ui.h:12 ../data/units.ui.h:14 ../data/variables.ui.h:12
-#: ../src/callbacks.cc:4683 ../src/callbacks.cc:4944 ../src/callbacks.cc:5194
+#: ../src/callbacks.cc:4689 ../src/callbacks.cc:4950 ../src/callbacks.cc:5200
 msgid "Deacti_vate"
 msgstr "_Деактивировать"
 
@@ -909,7 +897,7 @@ msgstr "Грады"
 msgid "Default assumptions"
 msgstr "Предположения по умолчанию"
 
-#: ../data/main.ui.h:5 ../data/unknownedit.ui.h:18 ../src/callbacks.cc:34829
+#: ../data/main.ui.h:5 ../data/unknownedit.ui.h:18 ../src/callbacks.cc:34860
 msgid "Unknown"
 msgstr "Неизвестное"
 
@@ -1041,13 +1029,13 @@ msgstr "Управление единицами измерения"
 msgid "Manage Data Sets"
 msgstr "Управление наборами данных"
 
-#: ../data/main.ui.h:50 ../src/interface.cc:1294 ../src/callbacks.cc:1696
-#: ../src/callbacks.cc:27676
+#: ../data/main.ui.h:50 ../src/interface.cc:1294 ../src/callbacks.cc:1700
+#: ../src/callbacks.cc:27689
 msgid "Factorize"
 msgstr "Разложить на множители"
 
-#: ../data/main.ui.h:51 ../src/interface.cc:1292 ../src/callbacks.cc:1699
-#: ../src/callbacks.cc:27689
+#: ../data/main.ui.h:51 ../src/interface.cc:1292 ../src/callbacks.cc:1703
+#: ../src/callbacks.cc:27702
 msgid "Expand"
 msgstr "Раскрывать"
 
@@ -1083,15 +1071,15 @@ msgstr "Преобразовать в базовые единицы измере
 msgid "Convert to Optimal Unit"
 msgstr "Преобразовать в оптимальные единицы измерения"
 
-#: ../data/main.ui.h:60 ../src/callbacks.cc:18485
+#: ../data/main.ui.h:60 ../src/callbacks.cc:18500
 msgid "Insert Date…"
 msgstr "Вставить дату…"
 
-#: ../data/main.ui.h:61 ../src/callbacks.cc:18486
+#: ../data/main.ui.h:61 ../src/callbacks.cc:18501
 msgid "Insert Matrix…"
 msgstr "Вставить матрицу…"
 
-#: ../data/main.ui.h:62 ../src/callbacks.cc:18487
+#: ../data/main.ui.h:62 ../src/callbacks.cc:18502
 msgid "Insert Vector…"
 msgstr "Вставить вектор…"
 
@@ -1111,7 +1099,7 @@ msgstr "_Параметры"
 msgid "_Mode"
 msgstr "_Режим"
 
-#: ../data/main.ui.h:68 ../src/callbacks.cc:18459
+#: ../data/main.ui.h:68 ../src/callbacks.cc:18474
 msgid "Number Base"
 msgstr "Основание системы счисления"
 
@@ -1120,41 +1108,41 @@ msgid "Select Result and Expression Base…"
 msgstr "Выбрать основание системы счисления результата и выражения…"
 
 #: ../data/main.ui.h:70 ../data/nbases.ui.h:4 ../data/setbase.ui.h:3
-#: ../src/interface.cc:1491 ../src/callbacks.cc:18462 ../src/callbacks.cc:27157
-#: ../src/callbacks.cc:31082 ../src/callbacks.cc:31122
+#: ../src/interface.cc:1491 ../src/callbacks.cc:18477 ../src/callbacks.cc:27170
+#: ../src/callbacks.cc:31095 ../src/callbacks.cc:31135
 msgid "Binary"
 msgstr "Двоичное"
 
 #: ../data/main.ui.h:71 ../data/nbases.ui.h:5 ../data/setbase.ui.h:4
-#: ../src/interface.cc:1492 ../src/callbacks.cc:18463 ../src/callbacks.cc:27158
-#: ../src/callbacks.cc:31083 ../src/callbacks.cc:31123
+#: ../src/interface.cc:1492 ../src/callbacks.cc:18478 ../src/callbacks.cc:27171
+#: ../src/callbacks.cc:31096 ../src/callbacks.cc:31136
 msgid "Octal"
 msgstr "Восьмеричное"
 
 #: ../data/main.ui.h:72 ../data/nbases.ui.h:3 ../data/setbase.ui.h:5
-#: ../src/interface.cc:1493 ../src/callbacks.cc:18464 ../src/callbacks.cc:27159
-#: ../src/callbacks.cc:31084 ../src/callbacks.cc:31124
+#: ../src/interface.cc:1493 ../src/callbacks.cc:18479 ../src/callbacks.cc:27172
+#: ../src/callbacks.cc:31097 ../src/callbacks.cc:31137
 msgid "Decimal"
 msgstr "Десятичное"
 
 #: ../data/main.ui.h:73 ../data/nbases.ui.h:10 ../data/setbase.ui.h:6
-#: ../src/callbacks.cc:18465 ../src/callbacks.cc:27160
-#: ../src/callbacks.cc:31085 ../src/callbacks.cc:31125
+#: ../src/callbacks.cc:18480 ../src/callbacks.cc:27173
+#: ../src/callbacks.cc:31098 ../src/callbacks.cc:31138
 msgid "Duodecimal"
 msgstr "Двенадцатеричное"
 
 #: ../data/main.ui.h:74 ../data/nbases.ui.h:11 ../data/setbase.ui.h:7
-#: ../src/interface.cc:1494 ../src/callbacks.cc:18466 ../src/callbacks.cc:27161
-#: ../src/callbacks.cc:31086 ../src/callbacks.cc:31126
+#: ../src/interface.cc:1494 ../src/callbacks.cc:18481 ../src/callbacks.cc:27174
+#: ../src/callbacks.cc:31099 ../src/callbacks.cc:31139
 msgid "Hexadecimal"
 msgstr "Шестнадцатеричное"
 
-#: ../data/main.ui.h:75 ../src/callbacks.cc:18468
+#: ../data/main.ui.h:75 ../src/callbacks.cc:18483
 msgid "Other…"
 msgstr "Другое…"
 
-#: ../data/main.ui.h:76 ../data/setbase.ui.h:8 ../src/callbacks.cc:27172
-#: ../src/callbacks.cc:27203
+#: ../data/main.ui.h:76 ../data/setbase.ui.h:8 ../src/callbacks.cc:27185
+#: ../src/callbacks.cc:27216
 msgid "Sexagesimal"
 msgstr "Шестидесятеричное"
 
@@ -1162,7 +1150,7 @@ msgstr "Шестидесятеричное"
 msgid "Time Format"
 msgstr "Формат времени"
 
-#: ../data/main.ui.h:78 ../src/callbacks.cc:18467
+#: ../data/main.ui.h:78 ../src/callbacks.cc:18482
 msgid "Roman Numerals"
 msgstr "Римские цифры"
 
@@ -1351,7 +1339,8 @@ msgstr "Использовать префиксы для всех единиц �
 
 #: ../data/main.ui.h:124
 msgid ""
-"Enables automatic use of hekto, deka, deci and centi when prefixes is enabled"
+"Enables automatic use of hekto, deka, deci and centi when prefixes are "
+"enabled"
 msgstr ""
 "Включает автоматическое использование гекто, дека, деци и санти, когда "
 "префиксы включены"
@@ -1478,7 +1467,7 @@ msgstr "Всегда точно"
 msgid "Try Exact"
 msgstr "Попробуй точно"
 
-#: ../data/main.ui.h:156 ../src/callbacks.cc:16891
+#: ../data/main.ui.h:156 ../src/callbacks.cc:16906
 msgid "Approximate"
 msgstr "Приблизительно"
 
@@ -1531,7 +1520,7 @@ msgstr "Предупреждать, когда неизвестные знаме
 msgid "Warn About Denominators Assumed Non-Zero"
 msgstr "Предупреждать о предположениях о  ненулевых знаменателях"
 
-#: ../data/main.ui.h:169 ../src/callbacks.cc:18449
+#: ../data/main.ui.h:169 ../src/callbacks.cc:18464
 msgid "Parsing Mode"
 msgstr "Режим анализа"
 
@@ -1609,11 +1598,11 @@ msgstr "Активировать стек ПОЛИЗ"
 msgid "RPN Mode"
 msgstr "Режим ПОЛИЗ"
 
-#: ../data/main.ui.h:189 ../src/callbacks.cc:18470
+#: ../data/main.ui.h:189 ../src/callbacks.cc:18485
 msgid "Meta Modes"
 msgstr "Мета-режимы"
 
-#: ../data/main.ui.h:190 ../src/callbacks.cc:18482
+#: ../data/main.ui.h:190 ../src/callbacks.cc:18497
 msgid "Save Mode…"
 msgstr "Сохранить режим…"
 
@@ -1653,7 +1642,7 @@ msgstr "Проверить обновления"
 msgid "_About"
 msgstr "_О программе"
 
-#: ../data/main.ui.h:201 ../src/callbacks.cc:6207
+#: ../data/main.ui.h:201 ../src/callbacks.cc:6213
 msgid "Toggle minimal window"
 msgstr "Переключить в минимальное окно"
 
@@ -1757,30 +1746,30 @@ msgstr "Вычислить квадратный корень из верхнег
 msgid "Calculate the sum of all values"
 msgstr "Рассчитать сумму всех значений"
 
-#: ../data/main.ui.h:227 ../src/callbacks.cc:6302
+#: ../data/main.ui.h:227 ../src/callbacks.cc:6308
 msgid "Rotate the stack or move selected register up"
 msgstr "Повернуть стек или переместить выбранный регистр вверх"
 
-#: ../data/main.ui.h:228 ../src/callbacks.cc:6310
+#: ../data/main.ui.h:228 ../src/callbacks.cc:6316
 msgid "Rotate the stack or move selected register down"
 msgstr "Повернуть стек или переместить выбранный регистр вниз"
 
-#: ../data/main.ui.h:229 ../src/callbacks.cc:6318
+#: ../data/main.ui.h:229 ../src/callbacks.cc:6324
 msgid ""
 "Swap the two top values or move the selected value to the top of the stack"
 msgstr ""
 "Поменять местами два верхних значения или переместить выбранное значение в "
 "вершину стека."
 
-#: ../data/main.ui.h:230 ../src/callbacks.cc:6326
+#: ../data/main.ui.h:230 ../src/callbacks.cc:6332
 msgid "Copy the selected or top value to the top of the stack"
 msgstr "Скопировать выбранное или верхнее значение в вершину стека"
 
-#: ../data/main.ui.h:231 ../src/callbacks.cc:6334
+#: ../data/main.ui.h:231 ../src/callbacks.cc:6340
 msgid "Enter the top value from before the last numeric operation"
 msgstr "Введите верхнее значение перед последней числовой операцией"
 
-#: ../data/main.ui.h:232 ../src/callbacks.cc:6342
+#: ../data/main.ui.h:232 ../src/callbacks.cc:6348
 msgid "Delete the top or selected value"
 msgstr "Удалить верхнее или выбранное значение"
 
@@ -1788,7 +1777,7 @@ msgstr "Удалить верхнее или выбранное значение
 msgid "Edit the selected value"
 msgstr "Изменить выбранное значение"
 
-#: ../data/main.ui.h:234 ../src/callbacks.cc:6350
+#: ../data/main.ui.h:234 ../src/callbacks.cc:6356
 msgid "Clear the RPN stack"
 msgstr "Очистить стек ПОЛИЗ"
 
@@ -1818,11 +1807,11 @@ msgstr "Добавить префикс"
 
 #: ../data/main.ui.h:242
 msgid ""
-"If unit expression does not contain any prefixes, use optimal prefix. \n"
+"If unit expression does not contain any prefixes, use optimal prefix.\n"
 "\n"
 "This can be overridden by prepending the unit expression with \"?\" or \"0\"."
 msgstr ""
-"Если выражение единицы измерения не содержит префиксов, использовать "
+"Если выражение единицы измерения не содержит ни одного префикса, использовать "
 "оптимальный префикс.\n"
 "\n"
 "Это можно изменить, добавив к выражению единицы измерения «?» или «0»."
@@ -1831,15 +1820,15 @@ msgstr ""
 msgid "Conversion"
 msgstr "Преобразование"
 
-#: ../data/main.ui.h:246 ../src/callbacks.cc:6382
+#: ../data/main.ui.h:246 ../src/callbacks.cc:6388
 msgid "Show/hide programming keypad"
 msgstr "Показать/скрыть клавиатуру программирования"
 
-#: ../data/main.ui.h:247 ../src/callbacks.cc:16892
+#: ../data/main.ui.h:247 ../src/callbacks.cc:16907
 msgid "Exact"
 msgstr "Точно"
 
-#: ../data/main.ui.h:248 ../src/callbacks.cc:7255 ../src/callbacks.cc:27181
+#: ../data/main.ui.h:248 ../src/callbacks.cc:7261 ../src/callbacks.cc:27194
 msgid "Fraction"
 msgstr "Дробь"
 
@@ -1851,16 +1840,16 @@ msgstr "Отображение чисел"
 msgid "Pure"
 msgstr "Упрощённое научное"
 
-#: ../data/main.ui.h:251 ../src/callbacks.cc:7227
+#: ../data/main.ui.h:251 ../src/callbacks.cc:7233
 msgid "Number base"
 msgstr "Основание системы счисления"
 
-#: ../data/main.ui.h:252 ../data/setbase.ui.h:9 ../src/callbacks.cc:7279
-#: ../src/callbacks.cc:27173
+#: ../data/main.ui.h:252 ../data/setbase.ui.h:9 ../src/callbacks.cc:7285
+#: ../src/callbacks.cc:27186
 msgid "Time format"
 msgstr "Формат времени"
 
-#: ../data/main.ui.h:253 ../src/callbacks.cc:27163
+#: ../data/main.ui.h:253 ../src/callbacks.cc:27176
 msgid "Roman"
 msgstr "Римские"
 
@@ -1921,7 +1910,7 @@ msgstr "Преобразование между основаниями сист�
 msgid "Imaginary unit i (√-1)"
 msgstr "Мнимая единица i (√-1)"
 
-#: ../data/main.ui.h:270 ../src/callbacks.cc:6210
+#: ../data/main.ui.h:270 ../src/callbacks.cc:6216
 msgid "Manage units"
 msgstr "Управление единицами измерения"
 
@@ -1943,7 +1932,7 @@ msgstr "Дополнительный код для вывода"
 
 #: ../data/main.ui.h:277 ../data/nbases.ui.h:25 ../src/interface.cc:1090
 #: ../src/interface.cc:1172 ../src/interface.cc:1498 ../src/interface.cc:1499
-#: ../src/interface.cc:4017 ../src/callbacks.cc:21896 ../src/callbacks.cc:21897
+#: ../src/interface.cc:4017 ../src/callbacks.cc:21912 ../src/callbacks.cc:21913
 msgid "Bitwise Exclusive OR"
 msgstr "Побитовое исключающее ИЛИ"
 
@@ -2035,7 +2024,7 @@ msgstr "Копировать полный текст"
 msgid "Search…"
 msgstr "Поиск…"
 
-#: ../data/main.ui.h:302 ../src/callbacks.cc:26288
+#: ../data/main.ui.h:302 ../src/callbacks.cc:26301
 msgid "Add Bookmark…"
 msgstr "Добавить закладку…"
 
@@ -2219,7 +2208,7 @@ msgstr "Очистить стек"
 msgid "Select Number Base…"
 msgstr "Выбрать основание системы счисления…"
 
-#: ../data/main.ui.h:348 ../src/callbacks.cc:6212
+#: ../data/main.ui.h:348 ../src/callbacks.cc:6218
 msgid "Store result"
 msgstr "Сохранить результат"
 
@@ -2257,9 +2246,9 @@ msgstr "Количество столбцов в этой матрице (сто
 msgid "If this is a matrix or vector"
 msgstr "Если это матрица или вектор"
 
-#: ../data/matrix.ui.h:12 ../data/matrixedit.ui.h:21 ../src/callbacks.cc:33092
-#: ../src/callbacks.cc:33100 ../src/callbacks.cc:33108
-#: ../src/callbacks.cc:33116
+#: ../data/matrix.ui.h:12 ../data/matrixedit.ui.h:21 ../src/callbacks.cc:33121
+#: ../src/callbacks.cc:33129 ../src/callbacks.cc:33137
+#: ../src/callbacks.cc:33145
 msgid "Elements"
 msgstr "Компоненты"
 
@@ -2267,7 +2256,7 @@ msgstr "Компоненты"
 msgid "Current element:"
 msgstr "Текущий элемент:"
 
-#: ../data/matrixedit.ui.h:1 ../src/callbacks.cc:16427
+#: ../data/matrixedit.ui.h:1 ../src/callbacks.cc:16442
 msgid "Edit Matrix"
 msgstr "Изменить матрицу"
 
@@ -2308,7 +2297,7 @@ msgstr "Удалить выбранное имя"
 msgid "Abbreviation"
 msgstr "Сокращение"
 
-#: ../data/namesedit.ui.h:8 ../src/callbacks.cc:3809 ../src/callbacks.cc:7281
+#: ../data/namesedit.ui.h:8 ../src/callbacks.cc:3813 ../src/callbacks.cc:7287
 msgid "Unicode"
 msgstr "Юникод"
 
@@ -2340,16 +2329,28 @@ msgstr "Только завершение"
 msgid "Number Bases"
 msgstr "Основания систем счисления"
 
-#: ../data/nbases.ui.h:9 ../data/setbase.ui.h:10 ../src/callbacks.cc:7275
-#: ../src/callbacks.cc:31087 ../src/callbacks.cc:31127
+#: ../data/nbases.ui.h:6
+msgid "Binary value"
+msgstr "Двоичное значение"
+
+#: ../data/nbases.ui.h:8
+msgid "Octal value"
+msgstr "Восьмеричное значение"
+
+#: ../data/nbases.ui.h:9 ../data/setbase.ui.h:10 ../src/callbacks.cc:7281
+#: ../src/callbacks.cc:31100 ../src/callbacks.cc:31140
 msgid "Roman numerals"
 msgstr "Римские цифры"
 
-#: ../data/nbases.ui.h:13 ../src/callbacks.cc:1978
+#: ../data/nbases.ui.h:12
+msgid "Hexadecimal value"
+msgstr "Шестнадцатеричное значение"
+
+#: ../data/nbases.ui.h:13 ../src/callbacks.cc:1981
 msgid "BIN"
 msgstr "ДВ"
 
-#: ../data/nbases.ui.h:14 ../src/callbacks.cc:1983
+#: ../data/nbases.ui.h:14 ../src/callbacks.cc:1986
 msgid "OCT"
 msgstr "ВОСМ"
 
@@ -2357,11 +2358,11 @@ msgstr "ВОСМ"
 msgid "DEC"
 msgstr "ДЕС"
 
-#: ../data/nbases.ui.h:16 ../src/callbacks.cc:1988
+#: ../data/nbases.ui.h:16 ../src/callbacks.cc:1991
 msgid "DUO"
 msgstr "ДВЕН"
 
-#: ../data/nbases.ui.h:17 ../src/callbacks.cc:1993
+#: ../data/nbases.ui.h:17 ../src/callbacks.cc:1996
 msgid "HEX"
 msgstr "ШЕСТ"
 
@@ -2396,7 +2397,7 @@ msgid "Bitwise NOT"
 msgstr "Побитовое НЕ"
 
 #: ../data/nbases.ui.h:29 ../data/percentage.ui.h:4 ../src/interface.cc:1096
-#: ../src/interface.cc:4022 ../src/callbacks.cc:18403
+#: ../src/interface.cc:4022 ../src/callbacks.cc:18418
 msgid "Clear"
 msgstr "Очистить"
 
@@ -2444,8 +2445,8 @@ msgstr "Изменение от 2 к 1"
 msgid "Plot"
 msgstr "График"
 
-#: ../data/plot.ui.h:3 ../src/callbacks.cc:18933 ../src/callbacks.cc:29511
-#: ../src/callbacks.cc:34404
+#: ../data/plot.ui.h:3 ../src/callbacks.cc:18948 ../src/callbacks.cc:29524
+#: ../src/callbacks.cc:34433
 msgid "_Save"
 msgstr "_Сохранить"
 
@@ -2703,7 +2704,7 @@ msgstr "Разрешить несколько экземпляров"
 #: ../data/preferences.ui.h:9
 msgid ""
 "Allow multiple instances of the Qalculate! main window to be open at the "
-"same time. \n"
+"same time.\n"
 "\n"
 "Note that only the mode, history and definitions of the last closed instance "
 "will be saved."
@@ -2711,8 +2712,8 @@ msgstr ""
 "Разрешить одновременное открытие нескольких экземпляров главного окна "
 "Qalculate!.\n"
 "\n"
-"Обратите внимание, что будут сохранены режим, история и определения только "
-"последнего закрытого экземпляра."
+"Обратите внимание, что режим, история и определения будут сохранены только "
+"для последнего закрытого экземпляра."
 
 #: ../data/preferences.ui.h:12
 msgid "Notify when a new version is available"
@@ -2808,7 +2809,7 @@ msgstr "Результат"
 msgid "Application name + result"
 msgstr "Имя приложения + результат"
 
-#: ../data/preferences.ui.h:33 ../src/callbacks.cc:18996
+#: ../data/preferences.ui.h:33 ../src/callbacks.cc:19011
 msgid "Mode"
 msgstr "Режим"
 
@@ -2820,9 +2821,9 @@ msgstr "Имя приложения + режим"
 msgid "Window title"
 msgstr "Заголовок окна"
 
-#: ../data/preferences.ui.h:36 ../src/callbacks.cc:16890
-#: ../src/callbacks.cc:18169 ../src/callbacks.cc:19161
-#: ../src/callbacks.cc:34130
+#: ../data/preferences.ui.h:36 ../src/callbacks.cc:16905
+#: ../src/callbacks.cc:18184 ../src/callbacks.cc:19176
+#: ../src/callbacks.cc:34159
 msgid "Default"
 msgstr "По умолчанию"
 
@@ -2953,7 +2954,7 @@ msgstr "Использовать «j» для мнимой единицы"
 #: ../data/preferences.ui.h:64
 msgid ""
 "Use 'j' (instead of 'i') as default symbol for the imaginary unit, and place "
-"it in front the imaginary part."
+"it in front of the imaginary part."
 msgstr ""
 "Использовать «j» (вместо «i») в качестве символа по умолчанию для мнимой "
 "единицы и помещать его перед мнимой частью."
@@ -2976,7 +2977,7 @@ msgstr "Игнорировать запятую в числах"
 
 #: ../data/preferences.ui.h:68
 msgid ""
-"Allow commas, ',',  to be used as thousands separator instead of as an "
+"Allow commas, ',', to be used as thousands separator instead of as an "
 "function argument separator"
 msgstr ""
 "Разрешить использование запятых «,» в качестве разделителя тысяч вместо "
@@ -2987,47 +2988,55 @@ msgid "Ignore dots in numbers"
 msgstr "Игнорировать точки в числах"
 
 #: ../data/preferences.ui.h:70
+msgid ""
+"Allow dots, '.', to be used as thousands separator instead of as an "
+"alternative decimal sign"
+msgstr ""
+"Разрешить использование точек «.» в качестве разделителя тысяч вместо "
+"альтернативного десятичного знака"
+
+#: ../data/preferences.ui.h:71
 msgid "Digit grouping"
 msgstr "Группировка цифр"
 
-#: ../data/preferences.ui.h:71
+#: ../data/preferences.ui.h:72
 msgid "off"
 msgstr "выкл."
 
-#: ../data/preferences.ui.h:72
+#: ../data/preferences.ui.h:73
 msgid "standard"
 msgstr "стандарт"
 
-#: ../data/preferences.ui.h:73
+#: ../data/preferences.ui.h:74
 msgid "local"
 msgstr "локаль"
 
-#: ../data/preferences.ui.h:74
+#: ../data/preferences.ui.h:75
 msgid "Multiplication sign"
 msgstr "Знак умножения"
 
-#: ../data/preferences.ui.h:75
+#: ../data/preferences.ui.h:76
 msgid "Division sign"
 msgstr "Знак деления"
 
-#: ../data/preferences.ui.h:76
+#: ../data/preferences.ui.h:77
 msgid "Copy digit separator"
 msgstr "Копировать разделитель цифр"
 
-#: ../data/preferences.ui.h:77
+#: ../data/preferences.ui.h:78
 msgid "Deactivate to remove digit separator when copying result"
 msgstr ""
 "Деактивировать, чтобы удалять разделитель цифр при копировании результата"
 
-#: ../data/preferences.ui.h:78
+#: ../data/preferences.ui.h:79
 msgid "Numbers & Operators"
 msgstr "Числа и операторы"
 
-#: ../data/preferences.ui.h:79
+#: ../data/preferences.ui.h:80
 msgid "Use binary prefixes for information units"
 msgstr "Использовать двоичные префиксы для информационных единиц"
 
-#: ../data/preferences.ui.h:80
+#: ../data/preferences.ui.h:81
 msgid ""
 "Use binary, instead of decimal, prefixes by default for information units (e."
 "g. bytes)."
@@ -3035,11 +3044,11 @@ msgstr ""
 "По умолчанию использовать двоичные префиксы вместо десятичных для "
 "информационных единиц (например, байтов)."
 
-#: ../data/preferences.ui.h:81
+#: ../data/preferences.ui.h:82
 msgid "Conversion to local currency"
 msgstr "Преобразование в местную валюту"
 
-#: ../data/preferences.ui.h:82
+#: ../data/preferences.ui.h:83
 msgid ""
 "Automatically convert to the local currency when optimal unit conversion is "
 "activated."
@@ -3047,11 +3056,11 @@ msgstr ""
 "Автоматическое преобразование в местную валюту при включении оптимального "
 "преобразования единиц измерения."
 
-#: ../data/preferences.ui.h:83
+#: ../data/preferences.ui.h:84
 msgid "Update exchange rates on start"
 msgstr "Обновлять курсы валют при запуске"
 
-#: ../data/preferences.ui.h:84
+#: ../data/preferences.ui.h:85
 msgid ""
 "If current exchange rates shall be downloaded from the internet at program "
 "start"
@@ -3059,63 +3068,63 @@ msgstr ""
 "Если текущие курсы валют должны быть загружены из Интернета при запуске "
 "программы"
 
-#: ../data/preferences.ui.h:85
+#: ../data/preferences.ui.h:86
 msgid "Exchange rates updates"
 msgstr "Обновления курсов валют"
 
-#: ../data/preferences.ui.h:86
+#: ../data/preferences.ui.h:87
 msgid "Temperature calculation mode:"
 msgstr "Режим расчёта температуры"
 
-#: ../data/preferences.ui.h:87 ../src/callbacks.cc:2698
+#: ../data/preferences.ui.h:88 ../src/callbacks.cc:2702
 msgid "Absolute"
 msgstr "Абсолютный"
 
-#: ../data/preferences.ui.h:88 ../src/callbacks.cc:2705
+#: ../data/preferences.ui.h:89 ../src/callbacks.cc:2709
 msgid "Relative"
 msgstr "Относительный"
 
-#: ../data/preferences.ui.h:89 ../src/callbacks.cc:2712
+#: ../data/preferences.ui.h:90 ../src/callbacks.cc:2716
 msgid "Hybrid"
 msgstr "Гибридный"
 
-#: ../data/preferences.ui.h:90
+#: ../data/preferences.ui.h:91
 msgid "Units & Currencies"
 msgstr "Единицы измерения и валюты"
 
-#: ../data/preferences.ui.h:91
+#: ../data/preferences.ui.h:92
 msgid "Show expression completion suggestions"
 msgstr "Показать варианты завершения выражения"
 
-#: ../data/preferences.ui.h:92
+#: ../data/preferences.ui.h:93
 msgid "Search titles and countries"
 msgstr "Искать в заголовках и странах"
 
-#: ../data/preferences.ui.h:93
+#: ../data/preferences.ui.h:94
 msgid "Minimum characters"
 msgstr "Минимальное количество символов"
 
-#: ../data/preferences.ui.h:94
+#: ../data/preferences.ui.h:95
 msgid "Popup delay (ms)"
 msgstr "Задержка всплывающего окна (мс)"
 
-#: ../data/preferences.ui.h:95
+#: ../data/preferences.ui.h:96
 msgid "Completion"
 msgstr "Завершение"
 
-#: ../data/preferences.ui.h:96
+#: ../data/preferences.ui.h:97
 msgid "Status warning color"
 msgstr "Цвет состояния предупреждения"
 
-#: ../data/preferences.ui.h:97
+#: ../data/preferences.ui.h:98
 msgid "Status error color"
 msgstr "Цвет состояния ошибки"
 
-#: ../data/preferences.ui.h:98
+#: ../data/preferences.ui.h:99
 msgid "Custom status font"
 msgstr "Шрифт состояния"
 
-#: ../data/preferences.ui.h:99
+#: ../data/preferences.ui.h:100
 msgid ""
 "If you want to use a font other than the default in the status display below "
 "the expression entry"
@@ -3123,53 +3132,53 @@ msgstr ""
 "Если вы хотите использовать шрифт, отличный от шрифта по умолчанию, в "
 "отображении состояния под записью выражения"
 
-#: ../data/preferences.ui.h:100
+#: ../data/preferences.ui.h:101
 msgid "Custom expression font"
 msgstr "Шрифт выражения"
 
-#: ../data/preferences.ui.h:101
+#: ../data/preferences.ui.h:102
 msgid ""
 "If you want to use a font other than the default in the expression entry"
 msgstr ""
 "Если вы хотите использовать шрифт, отличный от шрифта по умолчанию, в записи "
 "выражения"
 
-#: ../data/preferences.ui.h:102
+#: ../data/preferences.ui.h:103
 msgid "Custom result font"
 msgstr "Шрифт результатов"
 
-#: ../data/preferences.ui.h:103
+#: ../data/preferences.ui.h:104
 msgid "If you want to use a font other than the default in the result display"
 msgstr ""
 "Если вы хотите использовать шрифт, отличный от шрифта по умолчанию, в "
 "отображении результатов"
 
-#: ../data/preferences.ui.h:104
+#: ../data/preferences.ui.h:105
 msgid "Custom keypad font"
 msgstr "Шрифт клавиатуры"
 
-#: ../data/preferences.ui.h:105
+#: ../data/preferences.ui.h:106
 msgid "If you want to use a font other than the default in the keypad"
 msgstr ""
 "Если вы хотите использовать шрифт, отличный от шрифта по умолчанию на "
 "клавиатуре"
 
-#: ../data/preferences.ui.h:106
+#: ../data/preferences.ui.h:107
 msgid "Custom application font"
 msgstr "Шрифт приложения"
 
-#: ../data/preferences.ui.h:107
+#: ../data/preferences.ui.h:108
 msgid ""
 "If you want to use a font other than the default for the whole application"
 msgstr ""
 "Если вы хотите использовать шрифт, отличный от шрифта по умолчанию для всего "
 "приложения"
 
-#: ../data/preferences.ui.h:108
+#: ../data/preferences.ui.h:109
 msgid "Text color"
 msgstr "Цвет текста"
 
-#: ../data/preferences.ui.h:109
+#: ../data/preferences.ui.h:110
 msgid "Fonts & Colors"
 msgstr "Шрифты и цвета"
 
@@ -3178,10 +3187,10 @@ msgid "Other:"
 msgstr "Другое:"
 
 #: ../data/setbase.ui.h:12 ../src/interface.cc:3296 ../src/interface.cc:3373
-#: ../src/callbacks.cc:7229 ../src/callbacks.cc:28139 ../src/callbacks.cc:28279
-#: ../src/callbacks.cc:28414 ../src/callbacks.cc:28421
-#: ../src/callbacks.cc:28501 ../src/callbacks.cc:28586
-#: ../src/callbacks.cc:28625 ../src/callbacks.cc:28633
+#: ../src/callbacks.cc:7235 ../src/callbacks.cc:28152 ../src/callbacks.cc:28292
+#: ../src/callbacks.cc:28427 ../src/callbacks.cc:28434
+#: ../src/callbacks.cc:28514 ../src/callbacks.cc:28599
+#: ../src/callbacks.cc:28638 ../src/callbacks.cc:28646
 msgid "Bijective base-26"
 msgstr "Биективное основание-26"
 
@@ -3198,7 +3207,7 @@ msgid "New Keyboard Shortcut"
 msgstr "Новая клавиатурная комбинация"
 
 #: ../data/simplefunctionedit.ui.h:1 ../data/variableedit.ui.h:1
-#: ../src/callbacks.cc:16213
+#: ../src/callbacks.cc:16228
 msgid "Edit Variable"
 msgstr "Изменить переменную"
 
@@ -3232,7 +3241,7 @@ msgstr ""
 "соответственно. Это позволяет избежать потенциальных конфликтов с "
 "переменными, функциями и единицами измерения."
 
-#: ../data/unitedit.ui.h:1 ../src/callbacks.cc:15199
+#: ../data/unitedit.ui.h:1 ../src/callbacks.cc:15214
 msgid "Edit Unit"
 msgstr "Изменить единицу измерения"
 
@@ -3306,7 +3315,7 @@ msgstr "Основная(ые) единица(ы) измерения"
 #: ../data/unitedit.ui.h:27
 msgid ""
 "Unit (for named derived unit) or unit expression (for unnamed derived unit) "
-"that this unit as defined in relation to"
+"that this unit is defined in relation to"
 msgstr ""
 "Единица измерения (для именованной производной единицы измерения) или "
 "выражение единицы измерения (для безымянной производной единицы измерения), "
@@ -3441,7 +3450,7 @@ msgstr "Значение, которое нужно преобразовать"
 msgid "Type anywhere"
 msgstr "Печатать где угодно"
 
-#: ../data/unknownedit.ui.h:1 ../src/callbacks.cc:16029
+#: ../data/unknownedit.ui.h:1 ../src/callbacks.cc:16044
 msgid "Edit Unknown Variable"
 msgstr "Изменить переменную неизвестного"
 
@@ -3531,6 +3540,10 @@ msgstr "_Переменная"
 msgid "Execute expressions and commands from a file"
 msgstr "Выполнить выражения и команды из файла"
 
+#: ../src/main.cc:88
+msgid "FILE"
+msgstr "ФАЙЛ"
+
 #: ../src/main.cc:89
 msgid "Start a new instance of the application"
 msgstr "Запустить новый экземпляр приложения"
@@ -3555,7 +3568,7 @@ msgstr "Выражение для вычисления"
 msgid "[EXPRESSION]"
 msgstr "[ВЫРАЖЕНИЕ]"
 
-#: ../src/main.cc:215 ../src/callbacks.cc:33079
+#: ../src/main.cc:215 ../src/callbacks.cc:33108
 msgid ""
 "Type a mathematical expression above, e.g. \"5 + 2 / 3\",\n"
 "and press the enter key."
@@ -3602,10 +3615,10 @@ msgstr "Не удалось загрузить глобальные опреде
 
 #. if no category has been selected (previously selected has been renamed/deleted), select "All"
 #: ../src/main.cc:287 ../src/main.cc:290 ../src/main.cc:293
-#: ../src/callbacks.cc:4354 ../src/callbacks.cc:4415 ../src/callbacks.cc:4454
-#: ../src/callbacks.cc:4715 ../src/callbacks.cc:4778 ../src/callbacks.cc:4880
-#: ../src/callbacks.cc:4975 ../src/callbacks.cc:5035 ../src/callbacks.cc:5121
-#: ../src/callbacks.cc:5220 ../src/callbacks.cc:5275 ../src/callbacks.cc:5525
+#: ../src/callbacks.cc:4358 ../src/callbacks.cc:4419 ../src/callbacks.cc:4458
+#: ../src/callbacks.cc:4721 ../src/callbacks.cc:4784 ../src/callbacks.cc:4886
+#: ../src/callbacks.cc:4981 ../src/callbacks.cc:5041 ../src/callbacks.cc:5127
+#: ../src/callbacks.cc:5226 ../src/callbacks.cc:5281 ../src/callbacks.cc:5531
 msgid "All"
 msgstr "Все"
 
@@ -3618,7 +3631,7 @@ msgid ""
 "(variables, functions, etc.), mode, preferences, and history of the last "
 "closed window will be saved.\n"
 "\n"
-"Do you, despite this, want to change the default bahvior and allow multiple "
+"Do you, despite this, want to change the default behavior and allow multiple "
 "simultaneous instances?"
 msgstr ""
 "По умолчанию разрешён только один экземпляр (одно главное окно) %s.\n"
@@ -3715,13 +3728,13 @@ msgstr "Возведение в степень (Ctrl+*)"
 msgid "Add"
 msgstr "Сложение"
 
-#: ../src/interface.cc:1091 ../src/interface.cc:4018 ../src/callbacks.cc:3610
-#: ../src/callbacks.cc:6216 ../src/callbacks.cc:27594
+#: ../src/interface.cc:1091 ../src/interface.cc:4018 ../src/callbacks.cc:3614
+#: ../src/callbacks.cc:6222 ../src/callbacks.cc:27607
 msgid "M+ (memory plus)"
 msgstr "M+ (прибавить к значению в памяти)"
 
-#: ../src/interface.cc:1096 ../src/interface.cc:4022 ../src/callbacks.cc:3604
-#: ../src/callbacks.cc:6213 ../src/callbacks.cc:27591
+#: ../src/interface.cc:1096 ../src/interface.cc:4022 ../src/callbacks.cc:3608
+#: ../src/callbacks.cc:6219 ../src/callbacks.cc:27604
 msgid "MC (memory clear)"
 msgstr "MC (отчистить память)"
 
@@ -3729,8 +3742,8 @@ msgstr "MC (отчистить память)"
 msgid "Backspace"
 msgstr "Обратное перемещение"
 
-#: ../src/interface.cc:1097 ../src/interface.cc:4023 ../src/callbacks.cc:3613
-#: ../src/callbacks.cc:6217 ../src/callbacks.cc:27595
+#: ../src/interface.cc:1097 ../src/interface.cc:4023 ../src/callbacks.cc:3617
+#: ../src/callbacks.cc:6223 ../src/callbacks.cc:27608
 msgid "M− (memory minus)"
 msgstr "M− (отнять от значения в памяти)"
 
@@ -3738,30 +3751,30 @@ msgstr "M− (отнять от значения в памяти)"
 msgid "Previous result (static)"
 msgstr "Предыдущий результат (статический)"
 
-#: ../src/interface.cc:1106 ../src/interface.cc:4025 ../src/callbacks.cc:1462
-#: ../src/callbacks.cc:14056
+#: ../src/interface.cc:1106 ../src/interface.cc:4025 ../src/callbacks.cc:1466
+#: ../src/callbacks.cc:14071
 msgid "Calculate expression"
 msgstr "Вычислить выражение"
 
-#: ../src/interface.cc:1106 ../src/interface.cc:4025 ../src/callbacks.cc:6214
-#: ../src/callbacks.cc:27592
+#: ../src/interface.cc:1106 ../src/interface.cc:4025 ../src/callbacks.cc:6220
+#: ../src/callbacks.cc:27605
 msgid "MR (memory recall)"
 msgstr "MR (вызвать из памяти)"
 
-#: ../src/interface.cc:1106 ../src/interface.cc:4025 ../src/callbacks.cc:3607
-#: ../src/callbacks.cc:6215 ../src/callbacks.cc:27593
+#: ../src/interface.cc:1106 ../src/interface.cc:4025 ../src/callbacks.cc:3611
+#: ../src/callbacks.cc:6221 ../src/callbacks.cc:27606
 msgid "MS (memory store)"
 msgstr "MS (сохранить в памяти)"
 
-#: ../src/interface.cc:1289 ../src/callbacks.cc:6180
+#: ../src/interface.cc:1289 ../src/callbacks.cc:6186
 msgid "Set unknowns"
 msgstr "Установить неизвестные"
 
 #. Show further items in a submenu
 #: ../src/interface.cc:1337 ../src/interface.cc:1425 ../src/interface.cc:1428
-#: ../src/callbacks.cc:6522 ../src/callbacks.cc:6609 ../src/callbacks.cc:22679
-#: ../src/callbacks.cc:27277 ../src/callbacks.cc:27280
-#: ../src/callbacks.cc:27304
+#: ../src/callbacks.cc:6528 ../src/callbacks.cc:6615 ../src/callbacks.cc:22695
+#: ../src/callbacks.cc:27290 ../src/callbacks.cc:27293
+#: ../src/callbacks.cc:27317
 msgid "more"
 msgstr "ещё"
 
@@ -3791,12 +3804,12 @@ msgid "Index"
 msgstr "Индекс"
 
 #. RPN Enter (calculate and add to stack)
-#: ../src/interface.cc:2140 ../src/callbacks.cc:14028
+#: ../src/interface.cc:2140 ../src/callbacks.cc:14043
 msgid "ENTER"
 msgstr "ВВОД"
 
-#: ../src/interface.cc:2141 ../src/interface.cc:2142 ../src/callbacks.cc:1462
-#: ../src/callbacks.cc:14029
+#: ../src/interface.cc:2141 ../src/interface.cc:2142 ../src/callbacks.cc:1466
+#: ../src/callbacks.cc:14044
 msgid "Calculate expression and add to stack"
 msgstr "Вычислить выражение и добавить в стек"
 
@@ -3804,7 +3817,7 @@ msgstr "Вычислить выражение и добавить в стек"
 msgid "Flag"
 msgstr "Флаг"
 
-#: ../src/interface.cc:3022 ../src/callbacks.cc:17566 ../src/callbacks.cc:27707
+#: ../src/interface.cc:3022 ../src/callbacks.cc:17581 ../src/callbacks.cc:27720
 msgid "Matrices"
 msgstr "Матрицы"
 
@@ -3873,7 +3886,7 @@ msgstr "Индекс(ы) истории"
 msgid "History index %s does not exist."
 msgstr "Индекс истории %s не существует."
 
-#: ../src/callbacks.cc:490 ../src/callbacks.cc:491 ../src/callbacks.cc:16967
+#: ../src/callbacks.cc:490 ../src/callbacks.cc:491 ../src/callbacks.cc:16982
 msgid "expression"
 msgstr "выражение"
 
@@ -3885,7 +3898,7 @@ msgstr "Анализированное выражения в истории"
 msgid "Set Window Title"
 msgstr "Установить заголовок окна"
 
-#: ../src/callbacks.cc:1035 ../src/callbacks.cc:13966 ../src/callbacks.cc:31913
+#: ../src/callbacks.cc:1039 ../src/callbacks.cc:13981 ../src/callbacks.cc:31926
 #, c-format
 msgid ""
 "Failed to open %s.\n"
@@ -3894,11 +3907,11 @@ msgstr ""
 "Не удалось открыть %s.\n"
 "%s"
 
-#: ../src/callbacks.cc:1053
+#: ../src/callbacks.cc:1057
 msgid "Could not display help for Qalculate!."
 msgstr "Не удалось отобразить справку по Qalculate!."
 
-#: ../src/callbacks.cc:1150
+#: ../src/callbacks.cc:1154
 #, c-format
 msgid ""
 "Could not display help for Qalculate!.\n"
@@ -3907,85 +3920,85 @@ msgstr ""
 "Не удалось отобразить справку по Qalculate!.\n"
 "%s"
 
-#: ../src/callbacks.cc:1182 ../src/callbacks.cc:7663 ../src/callbacks.cc:9933
-#: ../src/callbacks.cc:10288 ../src/callbacks.cc:10333
-#: ../src/callbacks.cc:10630 ../src/callbacks.cc:11198
-#: ../src/callbacks.cc:11253 ../src/callbacks.cc:14515
-#: ../src/callbacks.cc:25488 ../src/searchprovider.cc:119
+#: ../src/callbacks.cc:1186 ../src/callbacks.cc:7669 ../src/callbacks.cc:9939
+#: ../src/callbacks.cc:10294 ../src/callbacks.cc:10339
+#: ../src/callbacks.cc:10636 ../src/callbacks.cc:11204
+#: ../src/callbacks.cc:11259 ../src/callbacks.cc:14530
+#: ../src/callbacks.cc:25501 ../src/searchprovider.cc:119
 #: ../src/searchprovider.cc:120 ../src/searchprovider.cc:203
 msgid "approx."
 msgstr "прибл."
 
-#: ../src/callbacks.cc:1444
+#: ../src/callbacks.cc:1448
 msgid "Stop process"
 msgstr "Остановить процесс"
 
-#: ../src/callbacks.cc:1455 ../src/callbacks.cc:23972
+#: ../src/callbacks.cc:1459 ../src/callbacks.cc:23979
 msgid "Clear expression"
 msgstr "Отчистить выражение"
 
-#: ../src/callbacks.cc:1958
+#: ../src/callbacks.cc:1961
 msgid "EXACT"
 msgstr "ТОЧНО"
 
-#: ../src/callbacks.cc:1961
+#: ../src/callbacks.cc:1964
 msgid "APPROX"
 msgstr "ПРИБЛ"
 
-#: ../src/callbacks.cc:1965
+#: ../src/callbacks.cc:1968
 msgid "RPN"
 msgstr "ПОЛИЗ"
 
 #. Chain mode
-#: ../src/callbacks.cc:1970
+#: ../src/callbacks.cc:1973
 msgid "CHN"
 msgstr "ЦЕПЬ"
 
-#: ../src/callbacks.cc:1998
+#: ../src/callbacks.cc:2001
 msgid "ROMAN"
 msgstr "РИМСКИЕ"
 
-#: ../src/callbacks.cc:2050
+#: ../src/callbacks.cc:2053
 msgid "DEG"
 msgstr "ГРД"
 
-#: ../src/callbacks.cc:2055
+#: ../src/callbacks.cc:2058
 msgid "RAD"
 msgstr "РАД"
 
-#: ../src/callbacks.cc:2060
+#: ../src/callbacks.cc:2063
 msgid "GRA"
 msgstr "ГРА"
 
-#: ../src/callbacks.cc:2067
+#: ../src/callbacks.cc:2070
 msgid "PREC"
 msgstr "ТОЧН"
 
-#: ../src/callbacks.cc:2072
+#: ../src/callbacks.cc:2075
 msgid "FUNC"
 msgstr "ФУНК"
 
-#: ../src/callbacks.cc:2078
+#: ../src/callbacks.cc:2081
 msgid "UNIT"
 msgstr "ЕД. ИЗМ"
 
-#: ../src/callbacks.cc:2084
+#: ../src/callbacks.cc:2087
 msgid "VAR"
 msgstr "ПЕР"
 
-#: ../src/callbacks.cc:2090
+#: ../src/callbacks.cc:2093
 msgid "INF"
 msgstr "БЕСК"
 
-#: ../src/callbacks.cc:2096
+#: ../src/callbacks.cc:2099
 msgid "CPLX"
 msgstr "КМКС"
 
-#: ../src/callbacks.cc:2122
+#: ../src/callbacks.cc:2125
 msgid "Do you wish to update the exchange rates now?"
 msgstr "Вы хотите обновить курсы обмена сейчас?"
 
-#: ../src/callbacks.cc:2124
+#: ../src/callbacks.cc:2127
 #, c-format
 msgid "It has been %s day since the exchange rates last were updated."
 msgid_plural "It has been %s days since the exchange rates last were updated."
@@ -3994,16 +4007,16 @@ msgstr[1] "Прошло %s дня с момента последнего обн�
 msgstr[2] "Прошло %s дней с момента последнего обновления курсов обмена."
 msgstr[3] "Прошёл целый день с момента последнего обновления курсов обмена."
 
-#: ../src/callbacks.cc:2125
+#: ../src/callbacks.cc:2128
 msgid "Do not ask again"
 msgstr "Не спрашивать снова"
 
-#: ../src/callbacks.cc:2179 ../src/callbacks.cc:34478 ../src/callbacks.cc:34489
-#: ../src/callbacks.cc:34499
+#: ../src/callbacks.cc:2182 ../src/callbacks.cc:34507 ../src/callbacks.cc:34518
+#: ../src/callbacks.cc:34529
 msgid "It took too long to generate the plot data."
 msgstr "Создание графика для данных заняло слишком много времени."
 
-#: ../src/callbacks.cc:2179
+#: ../src/callbacks.cc:2182
 msgid ""
 "It took too long to generate the plot data. Please decrease the sampling "
 "rate or increase the time limit in preferences."
@@ -4011,7 +4024,7 @@ msgstr ""
 "Создание графика для данных заняло слишком много времени. Уменьшите частоту "
 "дискретизации или увеличьте ограничение по времени в настройках."
 
-#: ../src/callbacks.cc:2263
+#: ../src/callbacks.cc:2266
 msgid ""
 "When errors, warnings and other information are generated during "
 "calculation, the icon in the upper right corner of the expression entry "
@@ -4023,15 +4036,15 @@ msgstr ""
 "отразить это. Если удерживать указатель мыши или щелкнуть на значок, будет "
 "показано сообщение."
 
-#: ../src/callbacks.cc:2342
+#: ../src/callbacks.cc:2346
 msgid "Path of executable not found."
 msgstr "Путь к исполняемому файлу не найден."
 
-#: ../src/callbacks.cc:2352
+#: ../src/callbacks.cc:2356
 msgid "curl not found."
 msgstr "Программа curl не найдена."
 
-#: ../src/callbacks.cc:2410
+#: ../src/callbacks.cc:2414
 #, c-format
 msgid ""
 "Failed to run update script.\n"
@@ -4040,26 +4053,26 @@ msgstr ""
 "Не удалось запустить скрипт обновления.\n"
 "%s"
 
-#: ../src/callbacks.cc:2430
+#: ../src/callbacks.cc:2434
 msgid "Failed to check for updates."
 msgstr "Не удалось проверить наличие обновлений."
 
-#: ../src/callbacks.cc:2430
+#: ../src/callbacks.cc:2434
 msgid "No updates found."
 msgstr "Обновлений не найдено."
 
-#: ../src/callbacks.cc:2450
+#: ../src/callbacks.cc:2454
 #, c-format
 msgid ""
 "A new version of %s is available at %s.\n"
 "\n"
-"Do you wish to update to version %s."
+"Do you wish to update to version %s?"
 msgstr ""
 "Новая версия %s доступна на %s.\n"
 "\n"
 "Вы хотите обновиться до версии %s?"
 
-#: ../src/callbacks.cc:2452
+#: ../src/callbacks.cc:2456
 #, c-format
 msgid ""
 "A new version of %s is available.\n"
@@ -4070,20 +4083,20 @@ msgstr ""
 "\n"
 "Вы можете получить версию %s на %s."
 
-#: ../src/callbacks.cc:2488
+#: ../src/callbacks.cc:2492
 #, c-format
 msgid "Too many arguments for %s()."
 msgstr "Слишком много аргументов для %s()."
 
-#: ../src/callbacks.cc:2515 ../src/callbacks.cc:4533 ../src/callbacks.cc:5758
+#: ../src/callbacks.cc:2519 ../src/callbacks.cc:4537 ../src/callbacks.cc:5764
 msgid "argument"
 msgstr "аргумент"
 
-#: ../src/callbacks.cc:2685
+#: ../src/callbacks.cc:2689
 msgid "Temperature Calculation Mode"
 msgstr "Режим расчёта температуры"
 
-#: ../src/callbacks.cc:2695
+#: ../src/callbacks.cc:2699
 msgid ""
 "The expression is ambiguous.\n"
 "Please select temperature calculation mode\n"
@@ -4093,11 +4106,11 @@ msgstr ""
 "Выберите режим расчёта температуры\n"
 "(режим позже можно изменить в настройках)."
 
-#: ../src/callbacks.cc:2774
+#: ../src/callbacks.cc:2778
 msgid "Interpretation of dots"
 msgstr "Использование точки"
 
-#: ../src/callbacks.cc:2784
+#: ../src/callbacks.cc:2788
 msgid ""
 "Please select interpretation of dots (\".\")\n"
 "(this can later be changed in preferences)."
@@ -4105,266 +4118,266 @@ msgstr ""
 "Выберите использование точки («.»)\n"
 "(позже это можно изменить в настройках)."
 
-#: ../src/callbacks.cc:2787
+#: ../src/callbacks.cc:2791
 msgid "Both dot and comma as decimal separators"
 msgstr "Точка и запятая в качестве десятичных разделителей"
 
-#: ../src/callbacks.cc:2794
+#: ../src/callbacks.cc:2798
 msgid "Dot as thousands separator"
 msgstr "Точка как разделитель тысяч"
 
-#: ../src/callbacks.cc:2801
+#: ../src/callbacks.cc:2805
 msgid "Only dot as decimal separator"
 msgstr "Только точка в качестве десятичного разделителя"
 
-#: ../src/callbacks.cc:2864 ../src/callbacks.cc:4399 ../src/callbacks.cc:4400
-#: ../src/callbacks.cc:4456 ../src/callbacks.cc:4762 ../src/callbacks.cc:4763
-#: ../src/callbacks.cc:4882 ../src/callbacks.cc:5019 ../src/callbacks.cc:5020
-#: ../src/callbacks.cc:5123 ../src/callbacks.cc:5266 ../src/callbacks.cc:5267
-#: ../src/callbacks.cc:5268 ../src/callbacks.cc:5527 ../src/callbacks.cc:13937
-#: ../src/callbacks.cc:15455 ../src/callbacks.cc:15829
-#: ../src/callbacks.cc:16146 ../src/callbacks.cc:16365
-#: ../src/callbacks.cc:16652
+#: ../src/callbacks.cc:2868 ../src/callbacks.cc:4403 ../src/callbacks.cc:4404
+#: ../src/callbacks.cc:4460 ../src/callbacks.cc:4768 ../src/callbacks.cc:4769
+#: ../src/callbacks.cc:4888 ../src/callbacks.cc:5025 ../src/callbacks.cc:5026
+#: ../src/callbacks.cc:5129 ../src/callbacks.cc:5272 ../src/callbacks.cc:5273
+#: ../src/callbacks.cc:5274 ../src/callbacks.cc:5533 ../src/callbacks.cc:13952
+#: ../src/callbacks.cc:15470 ../src/callbacks.cc:15844
+#: ../src/callbacks.cc:16161 ../src/callbacks.cc:16380
+#: ../src/callbacks.cc:16667
 msgid "Uncategorized"
 msgstr "Без категорий"
 
-#: ../src/callbacks.cc:3045 ../src/callbacks.cc:3776 ../src/callbacks.cc:13256
+#: ../src/callbacks.cc:3049 ../src/callbacks.cc:3780 ../src/callbacks.cc:13271
 msgid "hexadecimal"
 msgstr "шестнадцатеричное"
 
-#: ../src/callbacks.cc:3048 ../src/callbacks.cc:3778 ../src/callbacks.cc:13259
+#: ../src/callbacks.cc:3052 ../src/callbacks.cc:3782 ../src/callbacks.cc:13274
 msgid "octal"
 msgstr "восьмеричное"
 
-#: ../src/callbacks.cc:3051 ../src/callbacks.cc:3780 ../src/callbacks.cc:13262
+#: ../src/callbacks.cc:3055 ../src/callbacks.cc:3784 ../src/callbacks.cc:13277
 msgid "decimal"
 msgstr "десятеричное"
 
-#: ../src/callbacks.cc:3054 ../src/callbacks.cc:3782 ../src/callbacks.cc:13265
+#: ../src/callbacks.cc:3058 ../src/callbacks.cc:3786 ../src/callbacks.cc:13280
 msgid "duodecimal"
 msgstr "двенадцатеричное"
 
-#: ../src/callbacks.cc:3057 ../src/callbacks.cc:3784 ../src/callbacks.cc:13268
+#: ../src/callbacks.cc:3061 ../src/callbacks.cc:3788 ../src/callbacks.cc:13283
 msgid "binary"
 msgstr "двоичное"
 
-#: ../src/callbacks.cc:3060 ../src/callbacks.cc:3786 ../src/callbacks.cc:13271
+#: ../src/callbacks.cc:3064 ../src/callbacks.cc:3790 ../src/callbacks.cc:13286
 msgid "roman"
 msgstr "римское число"
 
-#: ../src/callbacks.cc:3063 ../src/callbacks.cc:3788 ../src/callbacks.cc:13274
+#: ../src/callbacks.cc:3067 ../src/callbacks.cc:3792 ../src/callbacks.cc:13289
 msgid "bijective"
 msgstr "биективное"
 
-#: ../src/callbacks.cc:3066 ../src/callbacks.cc:3069 ../src/callbacks.cc:3072
-#: ../src/callbacks.cc:3790 ../src/callbacks.cc:13277 ../src/callbacks.cc:13280
-#: ../src/callbacks.cc:13283
+#: ../src/callbacks.cc:3070 ../src/callbacks.cc:3073 ../src/callbacks.cc:3076
+#: ../src/callbacks.cc:3794 ../src/callbacks.cc:13292 ../src/callbacks.cc:13295
+#: ../src/callbacks.cc:13298
 msgid "sexagesimal"
 msgstr "шестидесятеричное"
 
-#: ../src/callbacks.cc:3075 ../src/callbacks.cc:3078 ../src/callbacks.cc:3792
-#: ../src/callbacks.cc:3793 ../src/callbacks.cc:13286 ../src/callbacks.cc:13289
+#: ../src/callbacks.cc:3079 ../src/callbacks.cc:3082 ../src/callbacks.cc:3796
+#: ../src/callbacks.cc:3797 ../src/callbacks.cc:13301 ../src/callbacks.cc:13304
 msgid "latitude"
 msgstr "широта"
 
-#: ../src/callbacks.cc:3081 ../src/callbacks.cc:3084 ../src/callbacks.cc:3794
-#: ../src/callbacks.cc:3795 ../src/callbacks.cc:13292 ../src/callbacks.cc:13295
+#: ../src/callbacks.cc:3085 ../src/callbacks.cc:3088 ../src/callbacks.cc:3798
+#: ../src/callbacks.cc:3799 ../src/callbacks.cc:13307 ../src/callbacks.cc:13310
 msgid "longitude"
 msgstr "долгота"
 
-#: ../src/callbacks.cc:3102 ../src/callbacks.cc:3806 ../src/callbacks.cc:13313
+#: ../src/callbacks.cc:3106 ../src/callbacks.cc:3810 ../src/callbacks.cc:13328
 msgid "time"
 msgstr "время"
 
-#: ../src/callbacks.cc:3153 ../src/callbacks.cc:3810 ../src/callbacks.cc:13390
+#: ../src/callbacks.cc:3157 ../src/callbacks.cc:3814 ../src/callbacks.cc:13405
 msgid "bases"
 msgstr "основания"
 
-#: ../src/callbacks.cc:3155 ../src/callbacks.cc:3812 ../src/callbacks.cc:3813
-#: ../src/callbacks.cc:13400
+#: ../src/callbacks.cc:3159 ../src/callbacks.cc:3816 ../src/callbacks.cc:3817
+#: ../src/callbacks.cc:13415
 msgid "calendars"
 msgstr "календари"
 
-#: ../src/callbacks.cc:3157 ../src/callbacks.cc:3826 ../src/callbacks.cc:13410
+#: ../src/callbacks.cc:3161 ../src/callbacks.cc:3830 ../src/callbacks.cc:13425
 msgid "rectangular"
 msgstr "прямоугоная"
 
-#: ../src/callbacks.cc:3157 ../src/callbacks.cc:3826 ../src/callbacks.cc:13410
+#: ../src/callbacks.cc:3161 ../src/callbacks.cc:3830 ../src/callbacks.cc:13425
 msgid "cartesian"
 msgstr "декартова"
 
-#: ../src/callbacks.cc:3161 ../src/callbacks.cc:3828 ../src/callbacks.cc:13422
+#: ../src/callbacks.cc:3165 ../src/callbacks.cc:3832 ../src/callbacks.cc:13437
 msgid "exponential"
 msgstr "экспоненциальная"
 
-#: ../src/callbacks.cc:3165 ../src/callbacks.cc:3830 ../src/callbacks.cc:13434
+#: ../src/callbacks.cc:3169 ../src/callbacks.cc:3834 ../src/callbacks.cc:13449
 msgid "polar"
 msgstr "полярная"
 
-#: ../src/callbacks.cc:3173 ../src/callbacks.cc:3834 ../src/callbacks.cc:13460
+#: ../src/callbacks.cc:3177 ../src/callbacks.cc:3838 ../src/callbacks.cc:13475
 msgid "angle"
 msgstr "угловая"
 
-#: ../src/callbacks.cc:3173 ../src/callbacks.cc:3836 ../src/callbacks.cc:13460
+#: ../src/callbacks.cc:3177 ../src/callbacks.cc:3840 ../src/callbacks.cc:13475
 msgid "phasor"
 msgstr "фазовая"
 
-#: ../src/callbacks.cc:3177 ../src/callbacks.cc:3814 ../src/callbacks.cc:13472
+#: ../src/callbacks.cc:3181 ../src/callbacks.cc:3818 ../src/callbacks.cc:13487
 msgid "optimal"
 msgstr "оптимально"
 
-#: ../src/callbacks.cc:3182 ../src/callbacks.cc:3201 ../src/callbacks.cc:3816
-#: ../src/callbacks.cc:3891 ../src/callbacks.cc:13484 ../src/callbacks.cc:13534
+#: ../src/callbacks.cc:3186 ../src/callbacks.cc:3205 ../src/callbacks.cc:3820
+#: ../src/callbacks.cc:3895 ../src/callbacks.cc:13499 ../src/callbacks.cc:13549
 msgid "base"
 msgstr "основание"
 
-#: ../src/callbacks.cc:3187 ../src/callbacks.cc:3818 ../src/callbacks.cc:13496
+#: ../src/callbacks.cc:3191 ../src/callbacks.cc:3822 ../src/callbacks.cc:13511
 msgid "mixed"
 msgstr "смешано"
 
-#: ../src/callbacks.cc:3192 ../src/callbacks.cc:3820 ../src/callbacks.cc:3821
-#: ../src/callbacks.cc:13511
+#: ../src/callbacks.cc:3196 ../src/callbacks.cc:3824 ../src/callbacks.cc:3825
+#: ../src/callbacks.cc:13526
 msgid "fraction"
 msgstr "дробь"
 
-#: ../src/callbacks.cc:3195 ../src/callbacks.cc:3822 ../src/callbacks.cc:3823
-#: ../src/callbacks.cc:13514
+#: ../src/callbacks.cc:3199 ../src/callbacks.cc:3826 ../src/callbacks.cc:3827
+#: ../src/callbacks.cc:13529
 msgid "factors"
 msgstr "множители"
 
-#: ../src/callbacks.cc:3198 ../src/callbacks.cc:3824 ../src/callbacks.cc:13524
+#: ../src/callbacks.cc:3202 ../src/callbacks.cc:3828 ../src/callbacks.cc:13539
 msgid "partial fraction"
 msgstr "частичная дробь"
 
-#: ../src/callbacks.cc:3229 ../src/callbacks.cc:3620 ../src/callbacks.cc:3622
-#: ../src/callbacks.cc:13577 ../src/searchprovider.cc:161
+#: ../src/callbacks.cc:3233 ../src/callbacks.cc:3624 ../src/callbacks.cc:3626
+#: ../src/callbacks.cc:13592 ../src/searchprovider.cc:161
 msgid "factorize"
 msgstr "разложить на множители"
 
-#: ../src/callbacks.cc:3232 ../src/callbacks.cc:3623 ../src/callbacks.cc:3625
-#: ../src/callbacks.cc:13580 ../src/searchprovider.cc:161
+#: ../src/callbacks.cc:3236 ../src/callbacks.cc:3627 ../src/callbacks.cc:3629
+#: ../src/callbacks.cc:13595 ../src/searchprovider.cc:161
 msgid "expand"
 msgstr "раскрывать"
 
-#: ../src/callbacks.cc:3777 ../src/callbacks.cc:3887
+#: ../src/callbacks.cc:3781 ../src/callbacks.cc:3891
 msgid "hexadecimal number"
 msgstr "шестнадцатеричное число"
 
-#: ../src/callbacks.cc:3779
+#: ../src/callbacks.cc:3783
 msgid "octal number"
 msgstr "восьмеричное число"
 
-#: ../src/callbacks.cc:3781
+#: ../src/callbacks.cc:3785
 msgid "decimal number"
 msgstr "десятичное число"
 
-#: ../src/callbacks.cc:3783
+#: ../src/callbacks.cc:3787
 msgid "duodecimal number"
 msgstr "двенадцатеричное число"
 
-#: ../src/callbacks.cc:3785 ../src/callbacks.cc:3881
+#: ../src/callbacks.cc:3789 ../src/callbacks.cc:3885
 msgid "binary number"
 msgstr "двоичное число"
 
-#: ../src/callbacks.cc:3787
+#: ../src/callbacks.cc:3791
 msgid "roman numerals"
 msgstr "римские цифры"
 
-#: ../src/callbacks.cc:3789
+#: ../src/callbacks.cc:3793
 msgid "bijective base-26"
 msgstr "биективное основание-26"
 
-#: ../src/callbacks.cc:3791
+#: ../src/callbacks.cc:3795
 msgid "sexagesimal number"
 msgstr "шестидесятеричное число"
 
-#: ../src/callbacks.cc:3797
+#: ../src/callbacks.cc:3801
 msgid "32-bit floating point"
 msgstr "32-битное с плавающей запятой"
 
-#: ../src/callbacks.cc:3799
+#: ../src/callbacks.cc:3803
 msgid "64-bit floating point"
 msgstr "64-битное с плавающей запятой"
 
-#: ../src/callbacks.cc:3801
+#: ../src/callbacks.cc:3805
 msgid "16-bit floating point"
 msgstr "16-битное с плавающей запятой"
 
-#: ../src/callbacks.cc:3803
+#: ../src/callbacks.cc:3807
 msgid "80-bit (x86) floating point"
 msgstr "80-битное (x86) с плавающей запятой"
 
-#: ../src/callbacks.cc:3805
+#: ../src/callbacks.cc:3809
 msgid "128-bit floating point"
 msgstr "128-битное с плавающей запятой"
 
-#: ../src/callbacks.cc:3807
+#: ../src/callbacks.cc:3811
 msgid "time format"
 msgstr "формат времени"
 
-#: ../src/callbacks.cc:3811
+#: ../src/callbacks.cc:3815
 msgid "number bases"
 msgstr "основания систем счисления"
 
-#: ../src/callbacks.cc:3815
+#: ../src/callbacks.cc:3819
 msgid "optimal unit"
 msgstr "оптимальные единицы измерения"
 
-#: ../src/callbacks.cc:3817
+#: ../src/callbacks.cc:3821
 msgid "base units"
 msgstr "основные единицы измерения"
 
-#: ../src/callbacks.cc:3819
+#: ../src/callbacks.cc:3823
 msgid "mixed units"
 msgstr "смешанные единицы"
 
-#: ../src/callbacks.cc:3825
+#: ../src/callbacks.cc:3829
 msgid "expanded partial fractions"
 msgstr "расширенные дробные числа"
 
-#: ../src/callbacks.cc:3827
+#: ../src/callbacks.cc:3831
 msgid "complex rectangular form"
 msgstr "прямоугольная форма комплексных чисел"
 
-#: ../src/callbacks.cc:3829
+#: ../src/callbacks.cc:3833
 msgid "complex exponential form"
 msgstr "экспоненциальная форма комплексных чисел"
 
-#: ../src/callbacks.cc:3831
+#: ../src/callbacks.cc:3835
 msgid "complex polar form"
 msgstr "полярная форма комплексных чисел"
 
-#: ../src/callbacks.cc:3833
+#: ../src/callbacks.cc:3837
 msgid "complex cis form"
 msgstr "сисоидная форма комплексных чисел"
 
-#: ../src/callbacks.cc:3835
+#: ../src/callbacks.cc:3839
 msgid "complex angle notation"
 msgstr "комплексные числа в обозначении угла"
 
-#: ../src/callbacks.cc:3837
+#: ../src/callbacks.cc:3841
 msgid "complex phasor notation"
 msgstr "Комплексные числа в обозначении вектора"
 
-#: ../src/callbacks.cc:3839 ../src/callbacks.cc:7283
+#: ../src/callbacks.cc:3843 ../src/callbacks.cc:7289
 msgid "UTC time zone"
 msgstr "Часовой пояс UTC"
 
-#: ../src/callbacks.cc:3892
+#: ../src/callbacks.cc:3896
 #, c-format
 msgid "number base %s"
 msgstr "основание системы счисления %s"
 
-#: ../src/callbacks.cc:4408 ../src/callbacks.cc:4409 ../src/callbacks.cc:4458
-#: ../src/callbacks.cc:4771 ../src/callbacks.cc:4772 ../src/callbacks.cc:4884
-#: ../src/callbacks.cc:5027 ../src/callbacks.cc:5028 ../src/callbacks.cc:5125
-#: ../src/callbacks.cc:15453 ../src/callbacks.cc:15827
-#: ../src/callbacks.cc:16144 ../src/callbacks.cc:16363
-#: ../src/callbacks.cc:16650
+#: ../src/callbacks.cc:4412 ../src/callbacks.cc:4413 ../src/callbacks.cc:4462
+#: ../src/callbacks.cc:4777 ../src/callbacks.cc:4778 ../src/callbacks.cc:4890
+#: ../src/callbacks.cc:5033 ../src/callbacks.cc:5034 ../src/callbacks.cc:5131
+#: ../src/callbacks.cc:15468 ../src/callbacks.cc:15842
+#: ../src/callbacks.cc:16159 ../src/callbacks.cc:16378
+#: ../src/callbacks.cc:16665
 msgid "Inactive"
 msgstr "Неактивный"
 
-#: ../src/callbacks.cc:4560
+#: ../src/callbacks.cc:4564
 #, c-format
 msgid ""
 "Retrieves data from the %s data set for a given object and property. If "
@@ -4375,506 +4388,506 @@ msgstr ""
 "«инфо» введено как свойство, появится диалоговое окно со всеми свойствами "
 "объекта."
 
-#: ../src/callbacks.cc:4572 ../src/callbacks.cc:15000
+#: ../src/callbacks.cc:4576 ../src/callbacks.cc:15015
 msgid "Example:"
 msgstr "Пример:"
 
-#: ../src/callbacks.cc:4586
+#: ../src/callbacks.cc:4590
 msgid "Arguments"
 msgstr "Аргументы"
 
 #. optional argument
-#: ../src/callbacks.cc:4611 ../src/callbacks.cc:14872 ../src/callbacks.cc:14883
+#: ../src/callbacks.cc:4615 ../src/callbacks.cc:14887 ../src/callbacks.cc:14898
 msgid "optional"
 msgstr "необязательный"
 
 #. argument default, in description
-#: ../src/callbacks.cc:4615
+#: ../src/callbacks.cc:4619
 msgid "default: "
 msgstr "по умолчанию: "
 
-#: ../src/callbacks.cc:4630
+#: ../src/callbacks.cc:4634
 msgid "Requirement"
 msgstr "Требование"
 
 #. indicating that the property is a data set key
-#: ../src/callbacks.cc:4664 ../src/callbacks.cc:5713 ../src/callbacks.cc:16973
+#: ../src/callbacks.cc:4670 ../src/callbacks.cc:5719 ../src/callbacks.cc:16988
 msgid "key"
 msgstr "ключ"
 
-#: ../src/callbacks.cc:4685 ../src/callbacks.cc:4946 ../src/callbacks.cc:5196
+#: ../src/callbacks.cc:4691 ../src/callbacks.cc:4952 ../src/callbacks.cc:5202
 msgid "Acti_vate"
 msgstr "Акти_вировать"
 
-#: ../src/callbacks.cc:4789 ../src/callbacks.cc:7003
+#: ../src/callbacks.cc:4795 ../src/callbacks.cc:7009
 msgid "a previous result"
 msgstr "предыдущий результат"
 
-#: ../src/callbacks.cc:4814 ../src/callbacks.cc:7012
+#: ../src/callbacks.cc:4820 ../src/callbacks.cc:7018
 msgid "matrix"
 msgstr "матрица"
 
-#: ../src/callbacks.cc:4816 ../src/callbacks.cc:7014
+#: ../src/callbacks.cc:4822 ../src/callbacks.cc:7020
 msgid "vector"
 msgstr "вектор"
 
-#: ../src/callbacks.cc:4826 ../src/callbacks.cc:7025
+#: ../src/callbacks.cc:4832 ../src/callbacks.cc:7031
 msgid "positive"
 msgstr "положительное"
 
-#: ../src/callbacks.cc:4827 ../src/callbacks.cc:7026
+#: ../src/callbacks.cc:4833 ../src/callbacks.cc:7032
 msgid "non-positive"
 msgstr "не положительное"
 
-#: ../src/callbacks.cc:4828 ../src/callbacks.cc:7027
+#: ../src/callbacks.cc:4834 ../src/callbacks.cc:7033
 msgid "negative"
 msgstr "отрицательное"
 
-#: ../src/callbacks.cc:4829 ../src/callbacks.cc:7028
+#: ../src/callbacks.cc:4835 ../src/callbacks.cc:7034
 msgid "non-negative"
 msgstr "неотрицательное"
 
-#: ../src/callbacks.cc:4830 ../src/callbacks.cc:7029
+#: ../src/callbacks.cc:4836 ../src/callbacks.cc:7035
 msgid "non-zero"
 msgstr "ненулевое"
 
-#: ../src/callbacks.cc:4835 ../src/callbacks.cc:7034
+#: ../src/callbacks.cc:4841 ../src/callbacks.cc:7040
 msgid "boolean"
 msgstr "логическое"
 
-#: ../src/callbacks.cc:4836 ../src/callbacks.cc:7035
+#: ../src/callbacks.cc:4842 ../src/callbacks.cc:7041
 msgid "integer"
 msgstr "целое"
 
-#: ../src/callbacks.cc:4837 ../src/callbacks.cc:7036
+#: ../src/callbacks.cc:4843 ../src/callbacks.cc:7042
 msgid "rational"
 msgstr "рациональное"
 
-#: ../src/callbacks.cc:4838 ../src/callbacks.cc:7037
+#: ../src/callbacks.cc:4844 ../src/callbacks.cc:7043
 msgid "real"
 msgstr "вещественное"
 
-#: ../src/callbacks.cc:4839 ../src/callbacks.cc:7038
+#: ../src/callbacks.cc:4845 ../src/callbacks.cc:7044
 msgid "complex"
 msgstr "комплексное"
 
-#: ../src/callbacks.cc:4840 ../src/callbacks.cc:7039 ../src/callbacks.cc:16959
+#: ../src/callbacks.cc:4846 ../src/callbacks.cc:7045 ../src/callbacks.cc:16974
 msgid "number"
 msgstr "число"
 
-#: ../src/callbacks.cc:4841 ../src/callbacks.cc:7040
+#: ../src/callbacks.cc:4847 ../src/callbacks.cc:7046
 msgid "(not matrix)"
 msgstr "(не матрица)"
 
-#: ../src/callbacks.cc:4844 ../src/callbacks.cc:7043
+#: ../src/callbacks.cc:4850 ../src/callbacks.cc:7049
 msgid "unknown"
 msgstr "неизвестное"
 
-#: ../src/callbacks.cc:4846 ../src/callbacks.cc:7045
+#: ../src/callbacks.cc:4852 ../src/callbacks.cc:7051
 msgid "default assumptions"
 msgstr "предположения по умолчанию"
 
-#: ../src/callbacks.cc:4930 ../src/callbacks.cc:15064 ../src/callbacks.cc:15073
-#: ../src/callbacks.cc:16166 ../src/callbacks.cc:30139
-#: ../src/callbacks.cc:30154 ../src/callbacks.cc:30172
-#: ../src/callbacks.cc:30205
+#: ../src/callbacks.cc:4936 ../src/callbacks.cc:15079 ../src/callbacks.cc:15088
+#: ../src/callbacks.cc:16181 ../src/callbacks.cc:30152
+#: ../src/callbacks.cc:30167 ../src/callbacks.cc:30185
+#: ../src/callbacks.cc:30218
 msgid "Variable does not exist anymore."
 msgstr "Переменной больше не существует."
 
-#: ../src/callbacks.cc:5729
+#: ../src/callbacks.cc:5735
 msgid "Data Retrieval Function"
 msgstr "Функция поиска данных"
 
-#: ../src/callbacks.cc:6162
+#: ../src/callbacks.cc:6168
 msgid "Insert function"
 msgstr "Вставить функцию"
 
-#: ../src/callbacks.cc:6163
+#: ../src/callbacks.cc:6169
 msgid "Insert function (dialog)"
 msgstr "Вставить функцию (диаорг)"
 
-#: ../src/callbacks.cc:6164
+#: ../src/callbacks.cc:6170
 msgid "Insert variable"
 msgstr "Вставить переменную"
 
-#: ../src/callbacks.cc:6165
+#: ../src/callbacks.cc:6171
 msgid "Insert unit"
 msgstr "Вставить единицу измерения"
 
-#: ../src/callbacks.cc:6166
+#: ../src/callbacks.cc:6172
 msgid "Insert text"
 msgstr "Вставить текст"
 
-#: ../src/callbacks.cc:6167
+#: ../src/callbacks.cc:6173
 msgid "Insert date"
 msgstr "Вставить дату"
 
-#: ../src/callbacks.cc:6168
+#: ../src/callbacks.cc:6174
 msgid "Insert vector"
 msgstr "Вставить вектор"
 
-#: ../src/callbacks.cc:6169
+#: ../src/callbacks.cc:6175
 msgid "Insert matrix"
 msgstr "Вставить матрицу"
 
-#: ../src/callbacks.cc:6170
+#: ../src/callbacks.cc:6176
 msgid "Insert smart parentheses"
 msgstr "Вставить умные скобки"
 
-#: ../src/callbacks.cc:6171
+#: ../src/callbacks.cc:6177
 msgid "Convert to unit"
 msgstr "Преобразовать к единице измерения"
 
-#: ../src/callbacks.cc:6172
+#: ../src/callbacks.cc:6178
 msgid "Convert to unit (entry)"
 msgstr "Преобразовать к единице измерения (запись)"
 
-#: ../src/callbacks.cc:6173
+#: ../src/callbacks.cc:6179
 msgid "Convert to optimal unit"
 msgstr "Преобразовать в оптимальную единицу измерения"
 
-#: ../src/callbacks.cc:6174
+#: ../src/callbacks.cc:6180
 msgid "Convert to base units"
 msgstr "Преобразовать в базовые единицы измерения"
 
-#: ../src/callbacks.cc:6175
+#: ../src/callbacks.cc:6181
 msgid "Convert to optimal prefix"
 msgstr "Преобразовать в оптимальный префикс"
 
-#: ../src/callbacks.cc:6176
+#: ../src/callbacks.cc:6182
 msgid "Convert to number base"
 msgstr "Преобразовать к основанию систем счисления"
 
-#: ../src/callbacks.cc:6177
+#: ../src/callbacks.cc:6183
 msgid "Factorize result"
 msgstr "Разложить результат на множители"
 
-#: ../src/callbacks.cc:6178
+#: ../src/callbacks.cc:6184
 msgid "Expand result"
 msgstr "Развернуть результат"
 
-#: ../src/callbacks.cc:6179
+#: ../src/callbacks.cc:6185
 msgid "Expand partial fractions"
 msgstr "Развернуть частичные дроби"
 
-#: ../src/callbacks.cc:6181
+#: ../src/callbacks.cc:6187
 msgid "RPN: down"
 msgstr "ПОЛИЗ: вниз"
 
-#: ../src/callbacks.cc:6182
+#: ../src/callbacks.cc:6188
 msgid "RPN: up"
 msgstr "ПОЛИЗ: вверх"
 
-#: ../src/callbacks.cc:6183
+#: ../src/callbacks.cc:6189
 msgid "RPN: swap"
 msgstr "ПОЛИЗ: обменять"
 
-#: ../src/callbacks.cc:6184
+#: ../src/callbacks.cc:6190
 msgid "RPN: copy"
 msgstr "ПОЛИЗ: копировать"
 
-#: ../src/callbacks.cc:6185
+#: ../src/callbacks.cc:6191
 msgid "RPN: lastx"
 msgstr "ПОЛИЗ: последний x"
 
-#: ../src/callbacks.cc:6186
+#: ../src/callbacks.cc:6192
 msgid "RPN: delete register"
 msgstr "ПОЛИЗ: удалить"
 
-#: ../src/callbacks.cc:6187
+#: ../src/callbacks.cc:6193
 msgid "RPN: clear stack"
 msgstr "ПОЛИЗ: очистить стек"
 
-#: ../src/callbacks.cc:6188
+#: ../src/callbacks.cc:6194
 msgid "Load meta mode"
 msgstr "Загрузить мета-режим"
 
-#: ../src/callbacks.cc:6189
+#: ../src/callbacks.cc:6195
 msgid "Set expression base"
 msgstr "Установить основание для выражения"
 
-#: ../src/callbacks.cc:6190
+#: ../src/callbacks.cc:6196
 msgid "Set result base"
 msgstr "Установить основание для результата"
 
-#: ../src/callbacks.cc:6191
+#: ../src/callbacks.cc:6197
 msgid "Toggle exact mode"
 msgstr "В(ы)ключить точный режим"
 
-#: ../src/callbacks.cc:6192
+#: ../src/callbacks.cc:6198
 msgid "Set angle unit to degrees"
 msgstr "Установить угловую единицу измерения в градусы"
 
-#: ../src/callbacks.cc:6193
+#: ../src/callbacks.cc:6199
 msgid "Set angle unit to radians"
 msgstr "Установить угловую единицу измерения в радианы"
 
-#: ../src/callbacks.cc:6194
+#: ../src/callbacks.cc:6200
 msgid "Set angle unit to gradians"
 msgstr "Установить угловую единицу измерения в грады"
 
-#: ../src/callbacks.cc:6195
+#: ../src/callbacks.cc:6201
 msgid "Toggle simple fractions"
 msgstr "В(ы)ключить простые дроби"
 
-#: ../src/callbacks.cc:6196
+#: ../src/callbacks.cc:6202
 msgid "Toggle mixed fractions"
 msgstr "В(ы)ключить смешанные дроби"
 
-#: ../src/callbacks.cc:6197
+#: ../src/callbacks.cc:6203
 msgid "Toggle scientific notation"
 msgstr "В(ы)ключить научную запись"
 
-#: ../src/callbacks.cc:6198
+#: ../src/callbacks.cc:6204
 msgid "Toggle simple notation"
 msgstr "В(ы)ключить простую запись"
 
-#: ../src/callbacks.cc:6199
+#: ../src/callbacks.cc:6205
 msgid "Toggle RPN mode"
 msgstr "В(ы)ключить режим ПОЛИЗ"
 
-#: ../src/callbacks.cc:6200
+#: ../src/callbacks.cc:6206
 msgid "Toggle calculate as you type"
 msgstr "В(ы)ключить режим расчёта по мере ввода"
 
-#: ../src/callbacks.cc:6201
+#: ../src/callbacks.cc:6207
 msgid "Toggle programming keypad"
 msgstr "В(ы)ключить клавиатуру программирования"
 
-#: ../src/callbacks.cc:6202
+#: ../src/callbacks.cc:6208
 msgid "Show keypad"
 msgstr "Показать клавиатура"
 
-#: ../src/callbacks.cc:6203
+#: ../src/callbacks.cc:6209
 msgid "Show history"
 msgstr "Показать историю"
 
-#: ../src/callbacks.cc:6204
+#: ../src/callbacks.cc:6210
 msgid "Search history"
 msgstr "Искать в истории"
 
-#: ../src/callbacks.cc:6205
+#: ../src/callbacks.cc:6211
 msgid "Show conversion"
 msgstr "Показать панель преобразования"
 
-#: ../src/callbacks.cc:6206
+#: ../src/callbacks.cc:6212
 msgid "Show RPN stack"
 msgstr "Показать стек ПОЛИЗ"
 
-#: ../src/callbacks.cc:6208
+#: ../src/callbacks.cc:6214
 msgid "Manage variables"
 msgstr "Управление переменными"
 
-#: ../src/callbacks.cc:6209
+#: ../src/callbacks.cc:6215
 msgid "Manage functions"
 msgstr "Управление функциями"
 
-#: ../src/callbacks.cc:6211
+#: ../src/callbacks.cc:6217
 msgid "Manage data sets"
 msgstr "Управление наборами данных"
 
-#: ../src/callbacks.cc:6218
+#: ../src/callbacks.cc:6224
 msgid "New variable"
 msgstr "Новая переменная"
 
-#: ../src/callbacks.cc:6219
+#: ../src/callbacks.cc:6225
 msgid "New function"
 msgstr "Новая функция"
 
-#: ../src/callbacks.cc:6220
+#: ../src/callbacks.cc:6226
 msgid "Open plot functions/data"
 msgstr "Открыть график функций/данных"
 
-#: ../src/callbacks.cc:6221
+#: ../src/callbacks.cc:6227
 msgid "Open convert number bases"
 msgstr "Открыть преобразование между основаниями систем счисления"
 
-#: ../src/callbacks.cc:6222
+#: ../src/callbacks.cc:6228
 msgid "Open floating point conversion"
 msgstr "Открыть окно преобразования чисел с плавающей запятой"
 
-#: ../src/callbacks.cc:6223
+#: ../src/callbacks.cc:6229
 msgid "Open calender conversion"
 msgstr "Открыть окно преобразования календарей"
 
-#: ../src/callbacks.cc:6224
+#: ../src/callbacks.cc:6230
 msgid "Open percentage calculation tool"
 msgstr "Открыть окно инструмента расчёта процентов"
 
-#: ../src/callbacks.cc:6225
+#: ../src/callbacks.cc:6231
 msgid "Open periodic table"
 msgstr "Открыть окно с периодической таблицей"
 
-#: ../src/callbacks.cc:6226
+#: ../src/callbacks.cc:6232
 msgid "Update exchange rates"
 msgstr "Обновить курсы валют"
 
-#: ../src/callbacks.cc:6227
+#: ../src/callbacks.cc:6233
 msgid "Copy result"
 msgstr "Скопировать результат"
 
-#: ../src/callbacks.cc:6228
+#: ../src/callbacks.cc:6234
 msgid "Insert result"
 msgstr "Вставить результат"
 
-#: ../src/callbacks.cc:6229
+#: ../src/callbacks.cc:6235
 msgid "Save result image"
 msgstr "Сохранить изображение с результатом"
 
-#: ../src/callbacks.cc:6230
+#: ../src/callbacks.cc:6236
 msgid "Help"
 msgstr "Справка"
 
-#: ../src/callbacks.cc:6231
+#: ../src/callbacks.cc:6237
 msgid "Quit"
 msgstr "В_ыход"
 
-#: ../src/callbacks.cc:6232
+#: ../src/callbacks.cc:6238
 msgid "Toggle chain mode"
 msgstr "В(ы)ключить режим цепочки"
 
-#: ../src/callbacks.cc:6233
+#: ../src/callbacks.cc:6239
 msgid "Toggle keep above"
 msgstr "Поддерживать поверх других"
 
-#: ../src/callbacks.cc:6234
+#: ../src/callbacks.cc:6240
 msgid "Show/hide completion"
 msgstr "Показать/скрыть завершение"
 
-#: ../src/callbacks.cc:6235
+#: ../src/callbacks.cc:6241
 msgid "Perform completion (activate first item)"
 msgstr "Выполнять завершение (активировать первый пункт)"
 
-#: ../src/callbacks.cc:6554
+#: ../src/callbacks.cc:6560
 msgid "Prefixes"
 msgstr "Префиксы"
 
-#: ../src/callbacks.cc:6776
+#: ../src/callbacks.cc:6782
 msgid "No Prefix"
 msgstr "Без префикса"
 
-#: ../src/callbacks.cc:6777
+#: ../src/callbacks.cc:6783
 msgid "Optimal Prefix"
 msgstr "Оптимальный префикс"
 
-#: ../src/callbacks.cc:7200 ../src/callbacks.cc:7204 ../src/callbacks.cc:7208
+#: ../src/callbacks.cc:7206 ../src/callbacks.cc:7210 ../src/callbacks.cc:7214
 msgid "Prefix"
 msgstr "Префикс"
 
-#: ../src/callbacks.cc:7221
+#: ../src/callbacks.cc:7227
 msgid "Complex angle/phasor notation"
 msgstr "Комплексные числа в обозначении угла/вектора"
 
-#: ../src/callbacks.cc:7223 ../src/callbacks.cc:27156
+#: ../src/callbacks.cc:7229 ../src/callbacks.cc:27169
 msgid "Number bases"
 msgstr "Основания систем счисления"
 
-#: ../src/callbacks.cc:7225 ../src/callbacks.cc:27206
+#: ../src/callbacks.cc:7231 ../src/callbacks.cc:27219
 msgid "Base units"
 msgstr "Основные единицы измерения"
 
-#: ../src/callbacks.cc:7231
+#: ../src/callbacks.cc:7237
 msgid "Binary number"
 msgstr "Двоичное число"
 
-#: ../src/callbacks.cc:7233 ../src/callbacks.cc:27150
+#: ../src/callbacks.cc:7239 ../src/callbacks.cc:27163
 msgid "Calendars"
 msgstr "Календари"
 
-#: ../src/callbacks.cc:7235
+#: ../src/callbacks.cc:7241
 msgid "Complex cis form"
 msgstr "Сисоидная форма комплексных чисел"
 
-#: ../src/callbacks.cc:7237
+#: ../src/callbacks.cc:7243
 msgid "Decimal number"
 msgstr "Десятичное число"
 
-#: ../src/callbacks.cc:7239
+#: ../src/callbacks.cc:7245
 msgid "Duodecimal number"
 msgstr "Двенадцатеричное число"
 
-#: ../src/callbacks.cc:7241
+#: ../src/callbacks.cc:7247
 msgid "Complex exponential form"
 msgstr "Экспоненциальная форма комплексных чисел"
 
-#: ../src/callbacks.cc:7243 ../src/callbacks.cc:27166 ../src/callbacks.cc:27170
+#: ../src/callbacks.cc:7249 ../src/callbacks.cc:27179 ../src/callbacks.cc:27183
 msgid "Factors"
 msgstr "Множители"
 
-#: ../src/callbacks.cc:7245
+#: ../src/callbacks.cc:7251
 msgid "16-bit floating point binary format"
 msgstr "16-битное в двоичном формате с плавающей запятой"
 
-#: ../src/callbacks.cc:7247
+#: ../src/callbacks.cc:7253
 msgid "32-bit floating point binary format"
 msgstr "32-битное в двоичном формате с плавающей запятой"
 
-#: ../src/callbacks.cc:7249
+#: ../src/callbacks.cc:7255
 msgid "64-bit floating point binary format"
 msgstr "64-битное в двоичном формате с плавающей запятой"
 
-#: ../src/callbacks.cc:7251
+#: ../src/callbacks.cc:7257
 msgid "80-bit (x86) floating point binary format"
 msgstr "80-битное (x86) в двоичном формате с плавающей запятой"
 
-#: ../src/callbacks.cc:7253
+#: ../src/callbacks.cc:7259
 msgid "128-bit floating point binary format"
 msgstr "128-битное в двоичном формате с плавающей запятой"
 
-#: ../src/callbacks.cc:7257
+#: ../src/callbacks.cc:7263
 msgid "Hexadecimal number"
 msgstr "Шестнадцатеричное число"
 
-#: ../src/callbacks.cc:7259
+#: ../src/callbacks.cc:7265
 msgid "Latitude"
 msgstr "Широта"
 
-#: ../src/callbacks.cc:7261
+#: ../src/callbacks.cc:7267
 msgid "Longitude"
 msgstr "Долгота"
 
-#: ../src/callbacks.cc:7263
+#: ../src/callbacks.cc:7269
 msgid "Mixed units"
 msgstr "Смешанные единицы измерения"
 
-#: ../src/callbacks.cc:7265
+#: ../src/callbacks.cc:7271
 msgid "Octal number"
 msgstr "Восьмеричное число"
 
-#: ../src/callbacks.cc:7267
+#: ../src/callbacks.cc:7273
 msgid "Optimal units"
 msgstr "Оптимальные единицы измерения"
 
-#: ../src/callbacks.cc:7269
+#: ../src/callbacks.cc:7275
 msgid "Expanded partial fractions"
 msgstr "Расширенные дробные числа"
 
-#: ../src/callbacks.cc:7271
+#: ../src/callbacks.cc:7277
 msgid "Complex polar form"
 msgstr "Полярная форма комплексных чисел"
 
-#: ../src/callbacks.cc:7273
+#: ../src/callbacks.cc:7279
 msgid "Complex rectangular form"
 msgstr "Прямоугольная форма комплексных чисел"
 
-#: ../src/callbacks.cc:7277
+#: ../src/callbacks.cc:7283
 msgid "Sexagesimal number"
 msgstr "Шестидесятеричное число"
 
-#: ../src/callbacks.cc:8847
+#: ../src/callbacks.cc:8853
 msgid "and"
 msgstr "и"
 
-#: ../src/callbacks.cc:8850 ../src/callbacks.cc:10436 ../src/callbacks.cc:10455
-#: ../src/callbacks.cc:10456
+#: ../src/callbacks.cc:8856 ../src/callbacks.cc:10442 ../src/callbacks.cc:10461
+#: ../src/callbacks.cc:10462
 msgid "or"
 msgstr "или"
 
-#: ../src/callbacks.cc:9850
+#: ../src/callbacks.cc:9856
 msgid "undefined"
 msgstr "не определено"
 
-#: ../src/callbacks.cc:10176 ../src/callbacks.cc:32983
+#: ../src/callbacks.cc:10182 ../src/callbacks.cc:33012
 msgid ""
 "result is too long\n"
 "see history"
@@ -4882,107 +4895,107 @@ msgstr ""
 "результат слишком длинный\n"
 "смотрите историю"
 
-#: ../src/callbacks.cc:10201 ../src/callbacks.cc:33004
+#: ../src/callbacks.cc:10207 ../src/callbacks.cc:33033
 msgid "calculation was aborted"
 msgstr "расчёт был прерван"
 
-#: ../src/callbacks.cc:10873 ../src/callbacks.cc:25457
+#: ../src/callbacks.cc:10879 ../src/callbacks.cc:25470
 msgid "RPN Register Moved"
 msgstr "Регистр ПОЛИЗ перемещён"
 
-#: ../src/callbacks.cc:10881 ../src/callbacks.cc:13825
-#: ../src/callbacks.cc:25463
+#: ../src/callbacks.cc:10887 ../src/callbacks.cc:13840
+#: ../src/callbacks.cc:25476
 msgid "RPN Operation"
 msgstr "ПОЛИЗ операция"
 
-#: ../src/callbacks.cc:11087
+#: ../src/callbacks.cc:11093
 msgid "Processing…"
 msgstr "Обработка…"
 
-#: ../src/callbacks.cc:11107 ../src/callbacks.cc:32983
+#: ../src/callbacks.cc:11113 ../src/callbacks.cc:33012
 msgid "result processing was aborted"
 msgstr "обработка результатов была прервана"
 
-#: ../src/callbacks.cc:11521
+#: ../src/callbacks.cc:11527
 msgid "Factorizing…"
 msgstr "Факторизация…"
 
-#: ../src/callbacks.cc:11525
+#: ../src/callbacks.cc:11531
 msgid "Expanding partial fractions…"
 msgstr "Расширение дробных чисел…"
 
-#: ../src/callbacks.cc:11529
+#: ../src/callbacks.cc:11535
 msgid "Expanding…"
 msgstr "Расширение…"
 
-#: ../src/callbacks.cc:11534 ../src/callbacks.cc:13757
+#: ../src/callbacks.cc:11540 ../src/callbacks.cc:13772
 msgid "Calculating…"
 msgstr "Расчёт…"
 
-#: ../src/callbacks.cc:11538
+#: ../src/callbacks.cc:11544
 msgid "Converting…"
 msgstr "Преобразование…"
 
-#: ../src/callbacks.cc:11641
+#: ../src/callbacks.cc:11647
 msgid "Fetching exchange rates."
 msgstr "Получение курсов валют."
 
-#: ../src/callbacks.cc:13365
+#: ../src/callbacks.cc:13380
 msgid "Time zone parsing failed."
 msgstr "Не удалось выполнить синтаксический анализ часового пояса."
 
-#: ../src/callbacks.cc:14663
+#: ../src/callbacks.cc:14678
 msgid "Keep open"
 msgstr "Держать открытым"
 
 #. RPN Enter (calculate and add to stack)
-#: ../src/callbacks.cc:14672
+#: ../src/callbacks.cc:14687
 msgid "Enter"
 msgstr "Ввод"
 
-#: ../src/callbacks.cc:14672
+#: ../src/callbacks.cc:14687
 msgid "C_alculate"
 msgstr "_Рассчитать"
 
-#: ../src/callbacks.cc:14675
+#: ../src/callbacks.cc:14690
 msgid "Apply to Stack"
 msgstr "Применить к стеку"
 
-#: ../src/callbacks.cc:14728
+#: ../src/callbacks.cc:14743
 msgid "Argument"
 msgstr "Аргумент"
 
-#: ../src/callbacks.cc:14788
+#: ../src/callbacks.cc:14803
 msgid "True"
 msgstr "Истина"
 
-#: ../src/callbacks.cc:14790
+#: ../src/callbacks.cc:14805
 msgid "False"
 msgstr "Ложь"
 
-#: ../src/callbacks.cc:14835
+#: ../src/callbacks.cc:14850
 msgid "Info"
 msgstr "Инфо"
 
-#: ../src/callbacks.cc:15201
+#: ../src/callbacks.cc:15216
 msgid "Edit Unit (global)"
 msgstr "Изменить единицу измерения (глобальную)"
 
-#: ../src/callbacks.cc:15203
+#: ../src/callbacks.cc:15218
 msgid "New Unit"
 msgstr "Новая единица измерения"
 
-#: ../src/callbacks.cc:15327 ../src/callbacks.cc:15746
-#: ../src/callbacks.cc:15902 ../src/callbacks.cc:16099
-#: ../src/callbacks.cc:16311 ../src/callbacks.cc:16566
-#: ../src/callbacks.cc:17044 ../src/callbacks.cc:17195
-#: ../src/callbacks.cc:17309 ../src/callbacks.cc:18957
-#: ../src/callbacks.cc:33518
+#: ../src/callbacks.cc:15342 ../src/callbacks.cc:15761
+#: ../src/callbacks.cc:15917 ../src/callbacks.cc:16114
+#: ../src/callbacks.cc:16326 ../src/callbacks.cc:16581
+#: ../src/callbacks.cc:17059 ../src/callbacks.cc:17210
+#: ../src/callbacks.cc:17324 ../src/callbacks.cc:18972
+#: ../src/callbacks.cc:33547
 msgid "Empty name field."
 msgstr "Введите имя поля"
 
 #. unit with the same name exists -- overwrite or open the dialog again
-#: ../src/callbacks.cc:15332
+#: ../src/callbacks.cc:15347
 msgid ""
 "A variable or unit with the same name already exists.\n"
 "Do you want to overwrite it?"
@@ -4990,36 +5003,36 @@ msgstr ""
 "Переменная или единица измерения с таким именем уже существует.\n"
 "Вы хотите её перезаписать?"
 
-#: ../src/callbacks.cc:15356 ../src/callbacks.cc:15408
+#: ../src/callbacks.cc:15371 ../src/callbacks.cc:15423
 msgid "Base unit does not exist."
 msgstr "Основная единица измерения не существует"
 
-#: ../src/callbacks.cc:15664
+#: ../src/callbacks.cc:15679
 msgid "Edit Function (global)"
 msgstr "Изменить функцию (глобальную)"
 
-#: ../src/callbacks.cc:15666 ../src/callbacks.cc:15871
+#: ../src/callbacks.cc:15681 ../src/callbacks.cc:15886
 msgid "New Function"
 msgstr "Новая функция"
 
-#: ../src/callbacks.cc:15717 ../src/callbacks.cc:33277
-#: ../src/callbacks.cc:33289
+#: ../src/callbacks.cc:15732 ../src/callbacks.cc:33306
+#: ../src/callbacks.cc:33318
 msgid "Yes"
 msgstr "Да"
 
-#: ../src/callbacks.cc:15719 ../src/callbacks.cc:33279
-#: ../src/callbacks.cc:33291
+#: ../src/callbacks.cc:15734 ../src/callbacks.cc:33308
+#: ../src/callbacks.cc:33320
 msgid "No"
 msgstr "Нет"
 
-#: ../src/callbacks.cc:15762 ../src/callbacks.cc:15922
+#: ../src/callbacks.cc:15777 ../src/callbacks.cc:15937
 msgid "Empty expression field."
 msgstr "Пустое поле выражения."
 
 #. function with the same name exists -- overwrite or open the dialog again
 #. dataset with the same name exists -- overwrite or open the dialog again
-#: ../src/callbacks.cc:15770 ../src/callbacks.cc:15926
-#: ../src/callbacks.cc:17205
+#: ../src/callbacks.cc:15785 ../src/callbacks.cc:15941
+#: ../src/callbacks.cc:17220
 msgid ""
 "A function with the same name already exists.\n"
 "Do you want to overwrite the function?"
@@ -5027,22 +5040,22 @@ msgstr ""
 "Функция с таким именем уже существует.\n"
 "Хотите перезаписать функцию?"
 
-#: ../src/callbacks.cc:15986 ../src/callbacks.cc:16001
+#: ../src/callbacks.cc:16001 ../src/callbacks.cc:16016
 msgid "Unit does not exist"
 msgstr "Единица измерения не существует"
 
-#: ../src/callbacks.cc:16031
+#: ../src/callbacks.cc:16046
 msgid "Edit Unknown Variable (global)"
 msgstr "Изменить переменную неизвестного (глобальную)"
 
-#: ../src/callbacks.cc:16033
+#: ../src/callbacks.cc:16048
 msgid "New Unknown Variable"
 msgstr "Новая переменная неизвестного"
 
 #. unknown with the same name exists -- overwrite or open dialog again
 #. variable with the same name exists -- overwrite or open dialog again
-#: ../src/callbacks.cc:16104 ../src/callbacks.cc:16321
-#: ../src/callbacks.cc:16571 ../src/callbacks.cc:17313
+#: ../src/callbacks.cc:16119 ../src/callbacks.cc:16336
+#: ../src/callbacks.cc:16586 ../src/callbacks.cc:17328
 msgid ""
 "An unit or variable with the same name already exists.\n"
 "Do you want to overwrite it?"
@@ -5050,83 +5063,83 @@ msgstr ""
 "Единица измерения или переменная или  с таким именем уже существует.\n"
 "Вы хотите её перезаписать?"
 
-#: ../src/callbacks.cc:16215
+#: ../src/callbacks.cc:16230
 msgid "Edit Variable (global)"
 msgstr "Изменить переменную (глобальную)"
 
-#: ../src/callbacks.cc:16217
+#: ../src/callbacks.cc:16232
 msgid "New Variable"
 msgstr "Новая переменная"
 
-#: ../src/callbacks.cc:16317
+#: ../src/callbacks.cc:16332
 msgid "Empty value field."
 msgstr "Пустое поле значения."
 
-#: ../src/callbacks.cc:16418
+#: ../src/callbacks.cc:16433
 msgid "Edit Vector"
 msgstr "Изменить вектор"
 
-#: ../src/callbacks.cc:16420
+#: ../src/callbacks.cc:16435
 msgid "Edit Vector (global)"
 msgstr "Изменить вектор (глобальный)"
 
-#: ../src/callbacks.cc:16422
+#: ../src/callbacks.cc:16437
 msgid "New Vector"
 msgstr "Новый вектор"
 
-#: ../src/callbacks.cc:16429
+#: ../src/callbacks.cc:16444
 msgid "Edit Matrix (global)"
 msgstr "Изменить матрицу (глобальную)"
 
-#: ../src/callbacks.cc:16431
+#: ../src/callbacks.cc:16446
 msgid "New Matrix"
 msgstr "Новая матрица"
 
-#: ../src/callbacks.cc:16692
+#: ../src/callbacks.cc:16707
 msgid "Vector Result"
 msgstr "Векторный результат"
 
-#: ../src/callbacks.cc:16694
+#: ../src/callbacks.cc:16709
 msgid "Matrix Result"
 msgstr "Матричный результат"
 
-#: ../src/callbacks.cc:16849
+#: ../src/callbacks.cc:16864
 msgid "New Data Object"
 msgstr "Новый объект данных"
 
-#: ../src/callbacks.cc:16951
+#: ../src/callbacks.cc:16966
 msgid "text"
 msgstr "текст"
 
-#: ../src/callbacks.cc:16956 ../src/callbacks.cc:16964
+#: ../src/callbacks.cc:16971 ../src/callbacks.cc:16979
 msgid "approximate"
 msgstr "приблизительно"
 
-#: ../src/callbacks.cc:17124
+#: ../src/callbacks.cc:17139
 msgid "Edit Data Set (global)"
 msgstr "Изменить набор данных (глобальный)"
 
-#: ../src/callbacks.cc:17126
+#: ../src/callbacks.cc:17141
 msgid "New Data Set"
 msgstr "Новый набор данных"
 
-#: ../src/callbacks.cc:17143
+#: ../src/callbacks.cc:17158
 msgid "info"
 msgstr "инфо"
 
-#: ../src/callbacks.cc:17234
+#: ../src/callbacks.cc:17249
 msgid "Property"
 msgstr "Свойство"
 
-#: ../src/callbacks.cc:17301 ../src/callbacks.cc:17388
+#: ../src/callbacks.cc:17316 ../src/callbacks.cc:17403
 msgid "No file name entered."
 msgstr "Имя файла не введено."
 
-#: ../src/callbacks.cc:17343 ../src/callbacks.cc:17417
+#: ../src/callbacks.cc:17358 ../src/callbacks.cc:17432
 msgid "No delimiter selected."
 msgstr "Разделитель не выбран."
 
-#: ../src/callbacks.cc:17348
+#: ../src/callbacks.cc:17363
 #, c-format
 msgid ""
 "Could not import from file \n"
@@ -5135,15 +5148,15 @@ msgstr ""
 "Не удалось импортировать из файла \n"
 "%s"
 
-#: ../src/callbacks.cc:17430
+#: ../src/callbacks.cc:17445
 msgid "No variable name entered."
 msgstr "Имя переменной не введено."
 
-#: ../src/callbacks.cc:17442
+#: ../src/callbacks.cc:17457
 msgid "No known variable with entered name found."
 msgstr "Не найдено известных переменных с указанным именем."
 
-#: ../src/callbacks.cc:17449
+#: ../src/callbacks.cc:17464
 #, c-format
 msgid ""
 "Could not export to file \n"
@@ -5152,77 +5165,77 @@ msgstr ""
 "Не удалось экспортировать в файл \n"
 "%s"
 
-#: ../src/callbacks.cc:17550 ../src/callbacks.cc:17558
-#: ../src/callbacks.cc:23193 ../src/callbacks.cc:27701
-#: ../src/callbacks.cc:27704
+#: ../src/callbacks.cc:17565 ../src/callbacks.cc:17573
+#: ../src/callbacks.cc:23209 ../src/callbacks.cc:27714
+#: ../src/callbacks.cc:27717
 msgid "My Variables"
 msgstr "Мои переменные"
 
-#: ../src/callbacks.cc:18091
+#: ../src/callbacks.cc:18106
 msgid "Couldn't write definitions"
 msgstr "Не удалось записать определения"
 
-#: ../src/callbacks.cc:18169 ../src/callbacks.cc:19160
+#: ../src/callbacks.cc:18184 ../src/callbacks.cc:19175
 msgid "Preset"
 msgstr "Предустановка"
 
-#: ../src/callbacks.cc:18408
+#: ../src/callbacks.cc:18423
 msgid "Abort"
 msgstr "Прервать"
 
-#: ../src/callbacks.cc:18411
+#: ../src/callbacks.cc:18426
 msgid "Undo"
 msgstr "Отменить"
 
-#: ../src/callbacks.cc:18414
+#: ../src/callbacks.cc:18429
 msgid "Redo"
 msgstr "Повторить"
 
-#: ../src/callbacks.cc:18419
+#: ../src/callbacks.cc:18434
 msgid "Completion Mode"
 msgstr "Режим завершения"
 
-#: ../src/callbacks.cc:18432
+#: ../src/callbacks.cc:18447
 msgid "Limited strict completion"
 msgstr "Ограниченное строгое завершение"
 
-#: ../src/callbacks.cc:18433
+#: ../src/callbacks.cc:18448
 msgid "Strict completion"
 msgstr "Строгое завершение"
 
-#: ../src/callbacks.cc:18434
+#: ../src/callbacks.cc:18449
 msgid "Limited full completion"
 msgstr "Ограниченное полное завершение"
 
-#: ../src/callbacks.cc:18435
+#: ../src/callbacks.cc:18450
 msgid "Full completion"
 msgstr "Полное завершение"
 
-#: ../src/callbacks.cc:18436
+#: ../src/callbacks.cc:18451
 msgid "No completion"
 msgstr "Без завершения"
 
-#: ../src/callbacks.cc:18445
+#: ../src/callbacks.cc:18460
 msgid "Delayed completion"
 msgstr "Отложенное завершение"
 
-#: ../src/callbacks.cc:18447
+#: ../src/callbacks.cc:18462
 msgid "Customize completion…"
 msgstr "Настроить завершение…"
 
-#: ../src/callbacks.cc:18933
+#: ../src/callbacks.cc:18948
 msgid "Save Mode"
 msgstr "Сохранить режим"
 
-#: ../src/callbacks.cc:18961
+#: ../src/callbacks.cc:18976
 msgid "Preset mode cannot be overwritten."
 msgstr "Предустановленный режим нельзя перезаписать."
 
-#: ../src/callbacks.cc:18989
+#: ../src/callbacks.cc:19004
 msgid "Delete Mode"
 msgstr "Удалить режим"
 
-#: ../src/callbacks.cc:20264
+#: ../src/callbacks.cc:20279
 #, c-format
 msgid ""
 "Couldn't write preferences to\n"
@@ -5231,15 +5244,15 @@ msgstr ""
 "Не удалось записать настройки в\n"
 "%s"
 
-#: ../src/callbacks.cc:21707 ../src/callbacks.cc:21720
+#: ../src/callbacks.cc:21723 ../src/callbacks.cc:21736
 msgid "never"
 msgstr "никогда"
 
-#: ../src/callbacks.cc:21708 ../src/callbacks.cc:21722
+#: ../src/callbacks.cc:21724 ../src/callbacks.cc:21738
 msgid "ask"
 msgstr "спросить"
 
-#: ../src/callbacks.cc:21716
+#: ../src/callbacks.cc:21732
 #, c-format
 msgid "%i day"
 msgid_plural "%i days"
@@ -5249,31 +5262,31 @@ msgstr[2] "%i дней"
 msgstr[3] "%i день"
 
 #. Result was copied
-#: ../src/callbacks.cc:23011
+#: ../src/callbacks.cc:23027
 msgid "Copied"
 msgstr "Скопировано"
 
-#: ../src/callbacks.cc:25136
+#: ../src/callbacks.cc:25149
 msgid "log10 function not found."
 msgstr "Функция log10 не найдена."
 
-#: ../src/callbacks.cc:26014
+#: ../src/callbacks.cc:26027
 msgid "Search"
 msgstr "Поиск"
 
-#: ../src/callbacks.cc:26014
+#: ../src/callbacks.cc:26027
 msgid "_Search"
 msgstr "Пои_ск"
 
-#: ../src/callbacks.cc:26035 ../src/callbacks.cc:26287
+#: ../src/callbacks.cc:26048 ../src/callbacks.cc:26300
 msgid "Remove Bookmark"
 msgstr "Удалить закладку"
 
-#: ../src/callbacks.cc:26089
+#: ../src/callbacks.cc:26102
 msgid "Add Bookmark"
 msgstr "Добавить закладку"
 
-#: ../src/callbacks.cc:26115
+#: ../src/callbacks.cc:26128
 msgid ""
 "A bookmark with the selected name already exists.\n"
 "Do you want to overwrite it?"
@@ -5281,94 +5294,94 @@ msgstr ""
 "Закладка с таким именем уже существует.\n"
 "Вы хотите её перезаписать?"
 
-#: ../src/callbacks.cc:26306
+#: ../src/callbacks.cc:26319
 msgid "No items found"
 msgstr "Ничего не найдено"
 
-#: ../src/callbacks.cc:26567 ../src/callbacks.cc:33175
+#: ../src/callbacks.cc:26580 ../src/callbacks.cc:33204
 msgid "Select date"
 msgstr "Выберать дату"
 
-#: ../src/callbacks.cc:27186
+#: ../src/callbacks.cc:27199
 msgid "Rectangular form"
 msgstr "Прямоугольная форма"
 
-#: ../src/callbacks.cc:27187
+#: ../src/callbacks.cc:27200
 msgid "Exponential form"
 msgstr "Экспоненциальная форма"
 
-#: ../src/callbacks.cc:27188
+#: ../src/callbacks.cc:27201
 msgid "Polar form"
 msgstr "Полярная форма"
 
-#: ../src/callbacks.cc:27189
+#: ../src/callbacks.cc:27202
 msgid "Angle/phasor notation"
 msgstr "В обозначении угла/вектора"
 
-#: ../src/callbacks.cc:27207
+#: ../src/callbacks.cc:27220
 msgid "Optimal unit"
 msgstr "Оптимальная единица измерения"
 
-#: ../src/callbacks.cc:27208
+#: ../src/callbacks.cc:27221
 msgid "Optimal prefix"
 msgstr "Оптимальный префикс"
 
-#: ../src/callbacks.cc:27444
+#: ../src/callbacks.cc:27457
 msgid "All functions"
 msgstr "Все функции"
 
-#: ../src/callbacks.cc:27496
+#: ../src/callbacks.cc:27509
 msgid "All variables"
 msgstr "Все переменные"
 
-#: ../src/callbacks.cc:27801
+#: ../src/callbacks.cc:27814
 msgid "Select definitions file"
 msgstr "Выбрать файл определений"
 
-#: ../src/callbacks.cc:27801
+#: ../src/callbacks.cc:27814
 msgid "_Import"
 msgstr "_Импорт"
 
-#: ../src/callbacks.cc:27821
+#: ../src/callbacks.cc:27834
 #, c-format
 msgid "Could not copy %s to %s."
 msgstr "С удалось скопировать %s в %s."
 
-#: ../src/callbacks.cc:27829
+#: ../src/callbacks.cc:27842
 #, c-format
 msgid "Could not read %s."
 msgstr "С удалось прочитать %s."
 
-#: ../src/callbacks.cc:27837
+#: ../src/callbacks.cc:27850
 #, c-format
 msgid "Could not copy file to %s."
 msgstr "С удалось скопировать файл в %s."
 
-#: ../src/callbacks.cc:28441 ../src/callbacks.cc:28521
-#: ../src/callbacks.cc:28601 ../src/callbacks.cc:28648
-#: ../src/callbacks.cc:33853 ../src/callbacks.cc:34053
-#: ../src/callbacks.cc:34209
+#: ../src/callbacks.cc:28454 ../src/callbacks.cc:28534
+#: ../src/callbacks.cc:28614 ../src/callbacks.cc:28661
+#: ../src/callbacks.cc:33882 ../src/callbacks.cc:34082
+#: ../src/callbacks.cc:34238
 msgid "Unsupported base."
 msgstr "Неподдерживаемое основание."
 
-#: ../src/callbacks.cc:28847
+#: ../src/callbacks.cc:28860
 msgid "The selected Chinese year does not exist."
 msgstr "Выбранный китайский год не существует."
 
-#: ../src/callbacks.cc:28859
+#: ../src/callbacks.cc:28872
 msgid "Conversion to Gregorian calendar failed."
 msgstr "Преобразование в григорианский календарь не удалось."
 
-#: ../src/callbacks.cc:28884
+#: ../src/callbacks.cc:28897
 #, c-format
 msgid "Calendar conversion failed for: %s."
 msgstr "Ошибка преобразования календаря для: %s."
 
-#: ../src/callbacks.cc:28919
+#: ../src/callbacks.cc:28932
 msgid "Gnuplot was not found."
 msgstr "Программа Gnuplot не найдена."
 
-#: ../src/callbacks.cc:28921
+#: ../src/callbacks.cc:28934
 #, c-format
 msgid ""
 "%s (%s) needs to be installed separately, and found in the executable search "
@@ -5377,61 +5390,65 @@ msgstr ""
 "%s (%s) должен быть установлен отдельно и находиться по переменной окружения "
 "PATH, чтобы график работал."
 
-#: ../src/callbacks.cc:29511
+#: ../src/callbacks.cc:29524
 msgid "Select file to save PNG image to"
 msgstr "Выбрать файл для сохранения изображения в формате PNG"
 
-#: ../src/callbacks.cc:29515 ../src/callbacks.cc:34408
+#: ../src/callbacks.cc:29528 ../src/callbacks.cc:34437
 msgid "Allowed File Types"
 msgstr "Разрешить все типы файлов"
 
-#: ../src/callbacks.cc:29520 ../src/callbacks.cc:34419
+#: ../src/callbacks.cc:29533 ../src/callbacks.cc:34448
 msgid "All Files"
 msgstr "Все файлы"
 
 #. do not delete units that are used by other units
-#: ../src/callbacks.cc:30093
+#: ../src/callbacks.cc:30106
 msgid "Cannot delete unit as it is needed by other units."
 msgstr "Невозможно удалить объект, так как он нужен другим объектам."
 
-#: ../src/callbacks.cc:30548 ../src/callbacks.cc:30777
+#: ../src/callbacks.cc:30561 ../src/callbacks.cc:30790
 msgid "none"
 msgstr "ничто"
 
-#: ../src/callbacks.cc:31048 ../src/callbacks.cc:31049
-#: ../src/callbacks.cc:31050 ../src/callbacks.cc:31051
-#: ../src/callbacks.cc:31063
+#: ../src/callbacks.cc:31061 ../src/callbacks.cc:31062
+#: ../src/callbacks.cc:31063 ../src/callbacks.cc:31064
+#: ../src/callbacks.cc:31076
 msgid "result is too long"
 msgstr "результат слишком длинный"
 
-#: ../src/callbacks.cc:31885 ../src/callbacks.cc:31886
+#: ../src/callbacks.cc:31898 ../src/callbacks.cc:31899
 msgid "translator-credits"
 msgstr "Damir Islamov <damir@secretlaboratory.ru>"
 
-#: ../src/callbacks.cc:32288 ../src/callbacks.cc:33842
-#: ../src/callbacks.cc:34042 ../src/callbacks.cc:34198
+#: ../src/callbacks.cc:32301 ../src/callbacks.cc:33871
+#: ../src/callbacks.cc:34071 ../src/callbacks.cc:34227
 msgid "Mode not found."
 msgstr "Режим не найден."
 
-#: ../src/callbacks.cc:33094 ../src/callbacks.cc:33102
-#: ../src/callbacks.cc:33110 ../src/callbacks.cc:33118
+#: ../src/callbacks.cc:33123 ../src/callbacks.cc:33131
+#: ../src/callbacks.cc:33139 ../src/callbacks.cc:33147
 msgid "Elements (in horizontal order)"
 msgstr "Компоненты (в горизонтальном порядке)"
 
-#: ../src/callbacks.cc:33131 ../src/callbacks.cc:33219
+#: ../src/callbacks.cc:33160
 msgid "Select file to import"
 msgstr "Выбрать файл для импорта"
 
-#: ../src/callbacks.cc:33131 ../src/callbacks.cc:33157
-#: ../src/callbacks.cc:33219
+#: ../src/callbacks.cc:33160 ../src/callbacks.cc:33186
+#: ../src/callbacks.cc:33248
 msgid "_Open"
 msgstr "_Открыть"
 
-#: ../src/callbacks.cc:33157
+#: ../src/callbacks.cc:33186
 msgid "Select file to export to"
 msgstr "Выбрать файл, в который экспортировать"
 
-#: ../src/callbacks.cc:33529 ../src/callbacks.cc:33559
+#: ../src/callbacks.cc:33248
+msgid "Select file"
+msgstr "Выбрать файл"
+
+#: ../src/callbacks.cc:33558 ../src/callbacks.cc:33588
 msgid ""
 "A conflicting object with the same name exists. If you proceed and save "
 "changes, the conflicting object will be overwritten or deactivated.\n"
@@ -5442,12 +5459,12 @@ msgstr ""
 "деактивирован.\n"
 "Хотите продолжить?"
 
-#: ../src/callbacks.cc:33742
+#: ../src/callbacks.cc:33771
 msgid "Set key combination"
 msgstr "Назначить комбинацию клавиш"
 
 #. Make the line reasonably long, but not to short (at least around 40 characters)
-#: ../src/callbacks.cc:33746
+#: ../src/callbacks.cc:33775
 msgid ""
 "Press the key combination you wish to use for the action\n"
 "(press Escape to cancel)."
@@ -5455,31 +5472,31 @@ msgstr ""
 "Нажмите комбинацию клавиш, которую хотите использовать для действия\n"
 "(нажмите Escape для отмены)."
 
-#: ../src/callbacks.cc:33756
+#: ../src/callbacks.cc:33785
 msgid "No keys"
 msgstr "Нет"
 
-#: ../src/callbacks.cc:33802 ../src/callbacks.cc:34002
-#: ../src/callbacks.cc:34158
+#: ../src/callbacks.cc:33831 ../src/callbacks.cc:34031
+#: ../src/callbacks.cc:34187
 msgid "Empty value."
 msgstr "Пустое значение."
 
-#: ../src/callbacks.cc:33812 ../src/callbacks.cc:34012
-#: ../src/callbacks.cc:34168
+#: ../src/callbacks.cc:33841 ../src/callbacks.cc:34041
+#: ../src/callbacks.cc:34197
 msgid "Function not found."
 msgstr "Функция не найдена."
 
-#: ../src/callbacks.cc:33820 ../src/callbacks.cc:34020
-#: ../src/callbacks.cc:34176
+#: ../src/callbacks.cc:33849 ../src/callbacks.cc:34049
+#: ../src/callbacks.cc:34205
 msgid "Variable not found."
 msgstr "Переменная не найдена."
 
-#: ../src/callbacks.cc:33828 ../src/callbacks.cc:34028
-#: ../src/callbacks.cc:34184
+#: ../src/callbacks.cc:33857 ../src/callbacks.cc:34057
+#: ../src/callbacks.cc:34213
 msgid "Unit not found."
 msgstr "Единица измерения не найдена."
 
-#: ../src/callbacks.cc:33869 ../src/callbacks.cc:33928
+#: ../src/callbacks.cc:33898 ../src/callbacks.cc:33957
 msgid ""
 "The key combination is already in use.\n"
 "Do you wish to replace the current action?"
@@ -5487,75 +5504,75 @@ msgstr ""
 "Комбинация клавиш уже используется.\n"
 "Вы хотите заменить текущее действие?"
 
-#: ../src/callbacks.cc:34404
+#: ../src/callbacks.cc:34433
 msgid "Select file to export"
 msgstr "Выберите файл для экспорта"
 
-#: ../src/callbacks.cc:34521 ../src/callbacks.cc:34566
+#: ../src/callbacks.cc:34552 ../src/callbacks.cc:34597
 msgid "Empty expression."
 msgstr "Пустое выражение."
 
-#: ../src/callbacks.cc:34535 ../src/callbacks.cc:34580
+#: ../src/callbacks.cc:34566 ../src/callbacks.cc:34611
 msgid "Empty x variable."
 msgstr "Пустая переменная x."
 
-#: ../src/callbacks.cc:34775
+#: ../src/callbacks.cc:34806
 msgid "Element Data"
 msgstr "Данные элемента"
 
-#: ../src/callbacks.cc:34813
+#: ../src/callbacks.cc:34844
 msgid "Classification"
 msgstr "Классификация"
 
-#: ../src/callbacks.cc:34818
+#: ../src/callbacks.cc:34849
 msgid "Alkali Metal"
 msgstr "Щелочной металл"
 
-#: ../src/callbacks.cc:34819
+#: ../src/callbacks.cc:34850
 msgid "Alkaline-Earth Metal"
 msgstr "Щелочноземельный металл"
 
-#: ../src/callbacks.cc:34820
+#: ../src/callbacks.cc:34851
 msgid "Lanthanide"
 msgstr "Лантаноид"
 
-#: ../src/callbacks.cc:34821
+#: ../src/callbacks.cc:34852
 msgid "Actinide"
 msgstr "Актиноид"
 
-#: ../src/callbacks.cc:34822
+#: ../src/callbacks.cc:34853
 msgid "Transition Metal"
 msgstr "Переходный металл"
 
-#: ../src/callbacks.cc:34823
+#: ../src/callbacks.cc:34854
 msgid "Metal"
 msgstr "Металл"
 
-#: ../src/callbacks.cc:34824
+#: ../src/callbacks.cc:34855
 msgid "Metalloid"
 msgstr "Металлоид"
 
-#: ../src/callbacks.cc:34825
+#: ../src/callbacks.cc:34856
 msgid "Polyatomic Non-Metal"
 msgstr "Многоатомный неметалл"
 
-#: ../src/callbacks.cc:34826
+#: ../src/callbacks.cc:34857
 msgid "Diatomic Non-Metal"
 msgstr "Двухатомный неметалл"
 
-#: ../src/callbacks.cc:34827
+#: ../src/callbacks.cc:34858
 msgid "Noble Gas"
 msgstr "Благородный газ"
 
-#: ../src/callbacks.cc:34828
+#: ../src/callbacks.cc:34859
 msgid "Unknown chemical properties"
 msgstr "Неизвестные химические свойства"
 
-#: ../src/callbacks.cc:34924
+#: ../src/callbacks.cc:34955
 msgid "No unknowns in result."
 msgstr "В результате нет неизвестных."
 
-#: ../src/callbacks.cc:34930
+#: ../src/callbacks.cc:34961
 msgid "Set Unknowns"
 msgstr "Установить неизвестные"
 
