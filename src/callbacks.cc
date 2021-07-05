@@ -2943,7 +2943,16 @@ bool test_parsed_comparison_gtk(const MathStructure &m) {
 	}
 	return false;
 }
-
+bool contains_plot_or_save(const string &str) {
+	if(str.find(":=") != string::npos) return true;
+	for(size_t i = 1; i <= CALCULATOR->f_plot->countNames(); i++) {
+		if(str.find(CALCULATOR->f_plot->getName(i).name) != string::npos) return true;
+	}
+	for(size_t i = 1; i <= CALCULATOR->f_save->countNames(); i++) {
+		if(str.find(CALCULATOR->f_save->getName(i).name) != string::npos) return true;
+	}
+	return false;
+}
 void do_auto_calc(bool recalculate = true, string str = string()) {
 	if(block_result_update || block_expression_execution) return;
 	MathStructure mauto;
@@ -2978,7 +2987,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		bool origstr = str.empty();
 		if(origstr) str = get_expression_text();
 		if(origstr) CALCULATOR->parseComments(str, evalops.parse_options);
-		if(str.empty() || (origstr && (str == "MC" || str == "MS" || str == "M+" || str == "M-" || str == "M−"))) {clearresult(); return;}
+		if(str.empty() || (origstr && (str == "MC" || str == "MS" || str == "M+" || str == "M-" || str == "M−" || contains_plot_or_save(str)))) {clearresult(); return;}
 		if(origstr && str.length() > 1 && str[0] == '/') {
 			size_t i = str.find_first_not_of(SPACES, 1);
 			if(i != string::npos && str[i] > 0 && is_not_in(NUMBER_ELEMENTS OPERATORS, str[i])) {
@@ -3683,8 +3692,11 @@ void display_parse_status() {
 		if(!full_parsed) {
 			str_e = CALCULATOR->unlocalizeExpression(text, evalops.parse_options);
 			last_is_space = is_in(SPACES, str_e[str_e.length() - 1]);
-			if(CALCULATOR->separateToExpression(str_e, str_u, evalops, false, !auto_calculate) && !str_e.empty()) {
-				if(!current_from_struct) {
+			bool b_to = CALCULATOR->separateToExpression(str_e, str_u, evalops, false, !auto_calculate);
+			CALCULATOR->separateWhereExpression(str_e, str_w, evalops);
+			if(!str_e.empty()) CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
+			if(b_to && !str_e.empty()) {
+				if(!current_from_struct && !mparse.containsFunction(CALCULATOR->f_save) && !mparse.containsFunction(CALCULATOR->f_plot)) {
 					current_from_struct = new MathStructure;
 					EvaluationOptions eo = evalops;
 					eo.structuring = STRUCTURING_NONE;
@@ -3692,7 +3704,7 @@ void display_parse_status() {
 					eo.auto_post_conversion = POST_CONVERSION_NONE;
 					eo.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
 					eo.expand = -2;
-					if(!CALCULATOR->calculate(current_from_struct, str_e, 20, eo)) current_from_struct->setAborted();
+					if(!CALCULATOR->calculate(current_from_struct, str_w.empty() ? str_e : str_e + "/." + str_w, 20, eo)) current_from_struct->setAborted();
 					current_from_unit = CALCULATOR->findMatchingUnit(*current_from_struct);
 				}
 			} else if(current_from_struct) {
@@ -3700,8 +3712,6 @@ void display_parse_status() {
 				current_from_struct = NULL;
 				current_from_unit = NULL;
 			}
-			CALCULATOR->separateWhereExpression(str_e, str_w, evalops);
-			if(!str_e.empty()) CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
 		}
 		PrintOptions po;
 		po.preserve_format = true;
@@ -16116,7 +16126,7 @@ run_unknown_edit_dialog:
 		}
 
 		//unknown with the same name exists -- overwrite or open dialog again
-		if((!v || !v->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str, v) && !ask_question(_("An unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
+		if((!v || !v->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str, v) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
 			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_name")));
 			goto run_unknown_edit_dialog;
 		}
@@ -16333,7 +16343,7 @@ run_variable_edit_dialog:
 			goto run_variable_edit_dialog;
 		}
 		//variable with the same name exists -- overwrite or open dialog again
-		if((!v || !v->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str, v) && !ask_question(_("An unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
+		if((!v || !v->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str, v) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
 			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")));
 			goto run_variable_edit_dialog;
 		}
@@ -16583,7 +16593,7 @@ run_matrix_edit_dialog:
 		}
 
 		//variable with the same name exists -- overwrite or open dialog again
-		if((!v || !v->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str) && !ask_question(_("An unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
+		if((!v || !v->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
 			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_name")));
 			goto run_matrix_edit_dialog;
 		}
@@ -17325,7 +17335,7 @@ run_csv_import_dialog:
 			goto run_csv_import_dialog;
 		}
 		//variable with the same name exists -- overwrite or open dialog again
-		if(CALCULATOR->variableNameTaken(name_str) && !ask_question(_("An unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
+		if(CALCULATOR->variableNameTaken(name_str) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
 			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(csvimport_builder, "csv_import_entry_name")));
 			goto run_csv_import_dialog;
 		}
@@ -23690,7 +23700,7 @@ void do_completion() {
 				size_t i_match = 0;
 				if(item && to_type < 2) {
 					if((editing_to_expression || !evalops.parse_options.functions_enabled) && item->type() == TYPE_FUNCTION) {}
-					else if(item->type() == TYPE_VARIABLE && (!evalops.parse_options.variables_enabled || (editing_to_expression && (!((Variable*) item)->isKnown() || ((KnownVariable*) item)->unit().empty())))) {}
+					else if(item->type() == TYPE_VARIABLE && (!evalops.parse_options.variables_enabled || (editing_to_expression && !((Variable*) item)->isKnown()))) {}
 					else if(!evalops.parse_options.units_enabled && item->type() == TYPE_UNIT) {}
 					else {
 						CompositeUnit *cu = NULL;
@@ -23853,6 +23863,8 @@ void do_completion() {
 					}
 				} else if(item && to_type == 5) {
 					if(item->type() == TYPE_UNIT && ((Unit*) item)->isCurrency() && (!item->isHidden() || item == CALCULATOR->getLocalCurrency())) b_match = 2;
+				} else if(item && to_type == 2 && str.empty() && current_from_struct) {
+					if(item->type() == TYPE_VARIABLE && (item == CALCULATOR->v_percent || item == CALCULATOR->v_permille) && current_from_struct->isNumber() && !current_from_struct->isInteger()) b_match = 2;
 				} else if(prefix && to_type < 2) {
 					for(size_t name_i = 1; name_i <= prefix->countNames() && !b_match; name_i++) {
 						const string *pname = &prefix->getName(name_i).name;
@@ -23883,7 +23895,7 @@ void do_completion() {
 							} else if((p_type == 294 || (p_type == 292 && to_type == 4)) && current_from_unit) {
 								if(current_from_unit != CALCULATOR->getDegUnit()) b_match = 0;
 							} else if(p_type >= 290 && p_type < 300 && (p_type != 292 || to_type >= 1)) {
-								if(!current_from_struct->isNumber() || (str.empty() && current_from_struct->isInteger())) b_match = 0;
+								if(!current_from_struct->isNumber() || (p_type > 290 && str.empty() && current_from_struct->isInteger())) b_match = 0;
 							} else if(p_type >= 200 && p_type < 290 && (p_type != 200 || to_type == 1 || to_type >= 3)) {
 								if(!current_from_struct->isNumber()) b_match = 0;
 								else if(str.empty() && p_type >= 202 && !current_from_struct->isInteger()) b_match = 0;
