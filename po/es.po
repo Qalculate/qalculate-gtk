@@ -1,4 +1,4 @@
-# Spanish translaytions for Qalculate! package.
+# Spanish translations for Qalculate! package.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the Qalculate! package.
 msgid ""
@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Qalculate!\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-07-03 10:49+0200\n"
-"PO-Revision-Date: 2020-07-22 22:07-0300\n"
+"PO-Revision-Date: 2021-07-09 11:00-0300\n"
 "Last-Translator: VicSanRoPe\n"
 "Language-Team: none\n"
 "Language: es\n"
@@ -184,9 +184,8 @@ msgid "Reset"
 msgstr "Reiniciar"
 
 #: ../data/buttonsedit.ui.h:8
-#, fuzzy
 msgid "Button Action"
-msgstr "Función"
+msgstr "Acción del botón"
 
 #: ../data/buttonsedit.ui.h:11 ../data/shortcuts.ui.h:9
 #: ../data/variableedit.ui.h:9 ../src/interface.cc:2130
@@ -1538,9 +1537,8 @@ msgid "Conventional Parsing"
 msgstr "Análisis convencional"
 
 #: ../data/main.ui.h:173
-#, fuzzy
 msgid "Chain Syntax"
-msgstr "Sintaxis RPN"
+msgstr "Sintaxis de cadena"
 
 #: ../data/main.ui.h:174
 msgid "RPN Syntax"
@@ -1589,9 +1587,8 @@ msgid "Calculate As You Type"
 msgstr "Calcular al escribir"
 
 #: ../data/main.ui.h:186
-#, fuzzy
 msgid "Chain Mode"
-msgstr "Modo de análisis"
+msgstr "Modo de cadena"
 
 #: ../data/main.ui.h:187
 msgid "Activate the RPN stack."
@@ -2217,15 +2214,13 @@ msgstr "Guardar resultado"
 
 #. Add current result to variable value
 #: ../data/main.ui.h:350
-#, fuzzy
 msgid "Add result"
-msgstr "Expandir resultado"
+msgstr "Añadir resultado"
 
 #. Subtruct current result from variable value
 #: ../data/main.ui.h:352
-#, fuzzy
 msgid "Subtract result"
-msgstr "Guardar resultado"
+msgstr "Restar resultado"
 
 #: ../data/matrix.ui.h:5
 msgid "Insert the matrix/vector into the expression"
@@ -2746,13 +2741,12 @@ msgstr ""
 "usando Ctrl+*."
 
 #: ../data/preferences.ui.h:17
-#, fuzzy
 msgid "Add calculate-as-you-type result to history"
-msgstr "Calcular expresión y añadir a la pila"
+msgstr "Añadir el resultado de calcular al escribir al historial"
 
 #: ../data/preferences.ui.h:18
 msgid "Delay:"
-msgstr ""
+msgstr "Retraso:"
 
 #: ../data/preferences.ui.h:19
 msgid "Time limit for plot:"
@@ -2776,30 +2770,33 @@ msgstr "Ignorar idioma del sistema (requiere reinicio)"
 
 #: ../data/preferences.ui.h:24
 msgid "Use system tray icon"
-msgstr ""
+msgstr "Usar ícono de la bandeja del sistema"
 
 #: ../data/preferences.ui.h:25
 msgid "Hides the application in the system tray when the main window is closed"
 msgstr ""
+"Oculta la aplicación en la bandeja del sistema cuando la ventana"
+"principal es cerrada"
 
 #: ../data/preferences.ui.h:26
 msgid "Hide on startup"
-msgstr ""
+msgstr "Ocultarse al inicio"
 
 #: ../data/preferences.ui.h:27
 msgid "Remember window position"
-msgstr ""
+msgstr "Recordar posición de ventana"
 
 #: ../data/preferences.ui.h:28
-#, fuzzy
 msgid "Keep above other windows"
-msgstr "Restaurar la ventana"
+msgstr "Mantener encima de otras ventanas"
 
 #: ../data/preferences.ui.h:29
 msgid ""
 "Keep the main window above other windows (depending on platform and settings "
 "this might not work)"
 msgstr ""
+"Mantener la ventana principal por encima de otras ventanas (dependiendo "
+"de la plataforma y la configuración puede que no funcione)"
 
 #: ../data/preferences.ui.h:30
 msgid "Application name"
@@ -2833,28 +2830,27 @@ msgstr "Predeterminado"
 
 #: ../data/preferences.ui.h:37
 msgid "Light"
-msgstr ""
+msgstr "Claro"
 
 #: ../data/preferences.ui.h:38
 msgid "Dark"
-msgstr ""
+msgstr "Oscuro"
 
 #: ../data/preferences.ui.h:39
 msgid "High contrast"
-msgstr ""
+msgstr "Alto contraste"
 
 #: ../data/preferences.ui.h:40
 msgid "Dark high contrast"
-msgstr ""
+msgstr "Alto contraste oscuro"
 
 #: ../data/preferences.ui.h:41
 msgid "Theme"
-msgstr ""
+msgstr "Tema"
 
 #: ../data/preferences.ui.h:42
-#, fuzzy
 msgid "Button padding"
-msgstr "Función"
+msgstr "Relleno de botón"
 
 #: ../data/preferences.ui.h:43
 msgid "/"
@@ -3068,22 +3064,20 @@ msgid "Exchange rates updates"
 msgstr "Actualizaciones de tasas de cambio"
 
 #: ../data/preferences.ui.h:85
-#, fuzzy
 msgid "Temperature calculation mode:"
-msgstr "Abrir herramienta de cálculo de porcentaje"
+msgstr "Modo de cálculo de temperatura:"
 
 #: ../data/preferences.ui.h:86 ../src/callbacks.cc:2702
 msgid "Absolute"
-msgstr ""
+msgstr "Absoluto"
 
 #: ../data/preferences.ui.h:87 ../src/callbacks.cc:2709
-#, fuzzy
 msgid "Relative"
-msgstr "Relación"
+msgstr "Relativo"
 
 #: ../data/preferences.ui.h:88 ../src/callbacks.cc:2716
 msgid "Hybrid"
-msgstr ""
+msgstr "Híbrido"
 
 #: ../data/preferences.ui.h:89
 msgid "Units & Currencies"
@@ -3281,16 +3275,15 @@ msgid "Class"
 msgstr "Clase"
 
 #: ../data/unitedit.ui.h:22
-#, fuzzy
 msgid ""
 "The class that this unit belongs to. Named derived units are defined in "
 "relation to a single other unit, with an optional exponent, while (unnamed) "
 "derived units are defined by a unit expression with one or multiple units."
 msgstr ""
-"La clase a la que esta unidad pertenece. Las unidades de alias son definidas "
-"en relación a otra unidad, las unidades compuestas son una composición de un "
-"número de otras unidades. Las unidades base no son definidas en relación a "
-"otras unidades"
+"La clase a la que esta unidad pertenece. Las unidades derivadas nombradas "
+"son definidas en relación a una sola otra unidad, con un exponente "
+"opcional, mientras que las unidades derivadas (no nombradas) son definidas "
+"por una expresión con una o múltiples unidades."
 
 #: ../data/unitedit.ui.h:23
 msgid "Base unit"
@@ -3309,13 +3302,12 @@ msgid "Base unit(s)"
 msgstr "Unidad(es) base"
 
 #: ../data/unitedit.ui.h:27
-#, fuzzy
 msgid ""
 "Unit (for named derived unit) or unit expression (for unnamed derived unit) "
 "that this unit is defined in relation to"
 msgstr ""
-"Unidad (para unidad alias) o unidades (para unidades compuestas) con las que "
-"esta unidad está definida"
+"Unidad (para unidad derivada nombrada) o expresión de unidad (para "
+"unidades derivadas no nombradas) con la que se define esta unidad"
 
 #: ../data/unitedit.ui.h:28
 msgid "Exponent"
@@ -3363,7 +3355,7 @@ msgstr ""
 
 #: ../data/unitedit.ui.h:38
 msgid "Mix with base unit"
-msgstr "Combinar con la base unidad"
+msgstr "Combinar con la unidad base"
 
 #: ../data/unitedit.ui.h:39
 msgid ""
@@ -3530,9 +3522,8 @@ msgid "_Variable"
 msgstr "_Variable"
 
 #: ../src/main.cc:88
-#, fuzzy
 msgid "Execute expressions and commands from a file"
-msgstr "Calcular expresión y añadir a la pila"
+msgstr "Ejecutar expresiones y comandos desde un archivo"
 
 #: ../src/main.cc:88
 msgid "FILE"
@@ -3600,7 +3591,7 @@ msgstr "Respuesta 5"
 
 #: ../src/main.cc:255
 msgid "Memory"
-msgstr ""
+msgstr "Memoria"
 
 #: ../src/main.cc:267 ../src/searchprovider.cc:652
 #, c-format
@@ -3691,7 +3682,7 @@ msgstr "Paréntesis inteligentes"
 
 #: ../src/interface.cc:1034 ../src/interface.cc:3998
 msgid "Vector brackets"
-msgstr "Corchetes para vectores"
+msgstr "Paréntesis rectos de vectores"
 
 #: ../src/interface.cc:1036 ../src/interface.cc:3999
 msgid "Left parenthesis"
@@ -3724,12 +3715,12 @@ msgstr "Añadir"
 #: ../src/interface.cc:1091 ../src/interface.cc:4018 ../src/callbacks.cc:3614
 #: ../src/callbacks.cc:6222 ../src/callbacks.cc:27609
 msgid "M+ (memory plus)"
-msgstr ""
+msgstr "M+ (añadir a la memoria)"
 
 #: ../src/interface.cc:1096 ../src/interface.cc:4022 ../src/callbacks.cc:3608
 #: ../src/callbacks.cc:6219 ../src/callbacks.cc:27606
 msgid "MC (memory clear)"
-msgstr ""
+msgstr "MC (limpiar la memoria)"
 
 #: ../src/interface.cc:1097 ../src/interface.cc:4023
 msgid "Backspace"
@@ -3738,7 +3729,7 @@ msgstr "Retroceso"
 #: ../src/interface.cc:1097 ../src/interface.cc:4023 ../src/callbacks.cc:3617
 #: ../src/callbacks.cc:6223 ../src/callbacks.cc:27610
 msgid "M− (memory minus)"
-msgstr ""
+msgstr "M- (quitar de la memoria)"
 
 #: ../src/interface.cc:1098 ../src/interface.cc:4024
 msgid "Previous result (static)"
@@ -3752,12 +3743,12 @@ msgstr "Calcular expresión"
 #: ../src/interface.cc:1106 ../src/interface.cc:4025 ../src/callbacks.cc:6220
 #: ../src/callbacks.cc:27607
 msgid "MR (memory recall)"
-msgstr ""
+msgstr "MR (valor de la memoria)"
 
 #: ../src/interface.cc:1106 ../src/interface.cc:4025 ../src/callbacks.cc:3611
 #: ../src/callbacks.cc:6221 ../src/callbacks.cc:27608
 msgid "MS (memory store)"
-msgstr ""
+msgstr "MS (guardar en la memoria)"
 
 #: ../src/interface.cc:1289 ../src/callbacks.cc:6186
 msgid "Set unknowns"
@@ -4086,9 +4077,8 @@ msgid "argument"
 msgstr "argumento"
 
 #: ../src/callbacks.cc:2689
-#, fuzzy
 msgid "Temperature Calculation Mode"
-msgstr "Herramienta de cálculo de porcentaje"
+msgstr "Modo de cálculo de temperatura"
 
 #: ../src/callbacks.cc:2699
 msgid ""
@@ -4096,30 +4086,33 @@ msgid ""
 "Please select temperature calculation mode\n"
 "(the mode can later be changed in preferences)."
 msgstr ""
+"La expresión es ambigua.\n"
+"Por favor seleccione el modo de cálculo de temperatura\n"
+"(el modo puede ser cambiado después en las preferencias)."
 
 #: ../src/callbacks.cc:2778
 msgid "Interpretation of dots"
-msgstr ""
+msgstr "Interpretación de los puntos"
 
 #: ../src/callbacks.cc:2788
 msgid ""
 "Please select interpretation of dots (\".\")\n"
 "(this can later be changed in preferences)."
 msgstr ""
+"Por favor seleccione la interpretación de los puntos (\".\")\n"
+"(esto puede ser cambiado después en las preferencias)."
 
 #: ../src/callbacks.cc:2791
-#, fuzzy
 msgid "Both dot and comma as decimal separators"
-msgstr "Usar coma como separador decimal"
+msgstr "Ambos punto y coma como separadores decimales"
 
 #: ../src/callbacks.cc:2798
 msgid "Dot as thousands separator"
-msgstr ""
+msgstr "Punto como separador de miles"
 
 #: ../src/callbacks.cc:2805
-#, fuzzy
 msgid "Only dot as decimal separator"
-msgstr "Usar coma como separador decimal"
+msgstr "Solo punto como separador decimal"
 
 #: ../src/callbacks.cc:2868 ../src/callbacks.cc:4403 ../src/callbacks.cc:4404
 #: ../src/callbacks.cc:4460 ../src/callbacks.cc:4768 ../src/callbacks.cc:4769
@@ -4168,14 +4161,13 @@ msgstr "sexagesimal"
 
 #: ../src/callbacks.cc:3079 ../src/callbacks.cc:3082 ../src/callbacks.cc:3796
 #: ../src/callbacks.cc:3797 ../src/callbacks.cc:13301 ../src/callbacks.cc:13304
-#, fuzzy
 msgid "latitude"
-msgstr "Relación"
+msgstr "latitud"
 
 #: ../src/callbacks.cc:3085 ../src/callbacks.cc:3088 ../src/callbacks.cc:3798
 #: ../src/callbacks.cc:3799 ../src/callbacks.cc:13307 ../src/callbacks.cc:13310
 msgid "longitude"
-msgstr ""
+msgstr "longitud"
 
 #: ../src/callbacks.cc:3106 ../src/callbacks.cc:3810 ../src/callbacks.cc:13328
 msgid "time"
@@ -4735,23 +4727,20 @@ msgid "Quit"
 msgstr "Salir"
 
 #: ../src/callbacks.cc:6238
-#, fuzzy
 msgid "Toggle chain mode"
-msgstr "Alternar modo exacto"
+msgstr "Alternar modo de cadena"
 
 #: ../src/callbacks.cc:6239
-#, fuzzy
 msgid "Toggle keep above"
-msgstr "Alternar modo exacto"
+msgstr "Alternar mantener encima"
 
 #: ../src/callbacks.cc:6240
-#, fuzzy
 msgid "Show/hide completion"
-msgstr "Sin completado"
+msgstr "Mostart/ocultar completado"
 
 #: ../src/callbacks.cc:6241
 msgid "Perform completion (activate first item)"
-msgstr ""
+msgstr "Realizar completado (activar primer elemento)"
 
 #: ../src/callbacks.cc:6560
 msgid "Prefixes"
@@ -4835,11 +4824,11 @@ msgstr "Número hexadecimal"
 
 #: ../src/callbacks.cc:7265
 msgid "Latitude"
-msgstr ""
+msgstr "Latitud"
 
 #: ../src/callbacks.cc:7267
 msgid "Longitude"
-msgstr ""
+msgstr "Longitud"
 
 #: ../src/callbacks.cc:7269
 msgid "Mixed units"
@@ -5211,14 +5200,12 @@ msgid "No completion"
 msgstr "Sin completado"
 
 #: ../src/callbacks.cc:18460
-#, fuzzy
 msgid "Delayed completion"
-msgstr "Completado completo"
+msgstr "Completado retrasado"
 
 #: ../src/callbacks.cc:18462
-#, fuzzy
 msgid "Customize completion…"
-msgstr "Sin completado"
+msgstr "Personalizar completado…"
 
 #: ../src/callbacks.cc:18948
 msgid "Save Mode"
@@ -5373,9 +5360,8 @@ msgid "Calendar conversion failed for: %s."
 msgstr "La conversión de calendario falló por: %s."
 
 #: ../src/callbacks.cc:28934
-#, fuzzy
 msgid "Gnuplot was not found."
-msgstr "No se encontró curl."
+msgstr "No se encontró Gnuplot."
 
 #: ../src/callbacks.cc:28936
 #, c-format
@@ -5383,6 +5369,8 @@ msgid ""
 "%s (%s) needs to be installed separately, and found in the executable search "
 "path, for plotting to work."
 msgstr ""
+"%s (%s) tiene que estar instalado por separado, tiene que y encontrarse "
+"en la ruta de búsqueda para que el graficado funcione."
 
 #: ../src/callbacks.cc:29526
 msgid "Select file to save PNG image to"
