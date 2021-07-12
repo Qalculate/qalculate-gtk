@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.1 -->
+<!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkDialog" id="variable_edit_dialog">
@@ -73,7 +73,7 @@
           </packing>
         </child>
         <child>
-          <!-- n-columns=2 n-rows=6 -->
+          <!-- n-columns=2 n-rows=5 -->
           <object class="GtkGrid" id="grid">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
@@ -98,55 +98,15 @@
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Name used to reference this variable in expressions</property>
                 <property name="hexpand">True</property>
+                <property name="secondary-icon-name">document-properties-symbolic</property>
                 <property name="primary-icon-activatable">False</property>
-                <property name="secondary-icon-activatable">False</property>
                 <signal name="changed" handler="on_variable_changed" swapped="no"/>
                 <signal name="changed" handler="on_variable_edit_entry_name_changed" swapped="no"/>
+                <signal name="icon-press" handler="on_variable_edit_button_names_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left-attach">1</property>
                 <property name="top-attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox" id="variable_edit_box_names">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="halign">end</property>
-                <property name="valign">start</property>
-                <property name="margin-bottom">6</property>
-                <property name="spacing">6</property>
-                <child>
-                  <object class="GtkLabel" id="variable_edit_label_names">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton" id="variable_edit_button_names">
-                    <property name="label" translatable="yes">Properties</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="use-underline">True</property>
-                    <signal name="clicked" handler="on_variable_edit_button_names_clicked" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">1</property>
-                <property name="width">2</property>
               </packing>
             </child>
             <child>
@@ -158,7 +118,7 @@
               </object>
               <packing>
                 <property name="left-attach">0</property>
-                <property name="top-attach">2</property>
+                <property name="top-attach">1</property>
               </packing>
             </child>
             <child>
@@ -175,7 +135,7 @@
               </object>
               <packing>
                 <property name="left-attach">1</property>
-                <property name="top-attach">2</property>
+                <property name="top-attach">1</property>
               </packing>
             </child>
             <child>
@@ -195,7 +155,7 @@
               </object>
               <packing>
                 <property name="left-attach">1</property>
-                <property name="top-attach">3</property>
+                <property name="top-attach">2</property>
               </packing>
             </child>
             <child>
@@ -213,7 +173,7 @@
               </object>
               <packing>
                 <property name="left-attach">1</property>
-                <property name="top-attach">4</property>
+                <property name="top-attach">3</property>
               </packing>
             </child>
             <child>
@@ -225,7 +185,7 @@
               </object>
               <packing>
                 <property name="left-attach">0</property>
-                <property name="top-attach">4</property>
+                <property name="top-attach">3</property>
               </packing>
             </child>
             <child>
@@ -239,7 +199,7 @@
               </object>
               <packing>
                 <property name="left-attach">1</property>
-                <property name="top-attach">5</property>
+                <property name="top-attach">4</property>
               </packing>
             </child>
             <child>
@@ -251,7 +211,7 @@
               </object>
               <packing>
                 <property name="left-attach">0</property>
-                <property name="top-attach">5</property>
+                <property name="top-attach">4</property>
               </packing>
             </child>
             <child>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.1 -->
+<!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkDialog" id="dataproperty_edit_dialog">
@@ -89,9 +89,10 @@
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="tooltip-text" translatable="yes">Name used for reference</property>
+                    <property name="secondary-icon-name">document-properties-symbolic</property>
                     <property name="primary-icon-activatable">False</property>
-                    <property name="secondary-icon-activatable">False</property>
                     <signal name="changed" handler="on_dataproperty_changed" swapped="no"/>
+                    <signal name="icon-press" handler="on_dataproperty_edit_button_names_clicked" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -104,46 +105,6 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox" id="hbox114">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="halign">end</property>
-                <property name="valign">start</property>
-                <property name="spacing">6</property>
-                <child>
-                  <object class="GtkLabel" id="dataproperty_edit_label_names">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton" id="dataproperty_edit_button_names">
-                    <property name="label" translatable="yes">Properties</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="use-underline">True</property>
-                    <signal name="clicked" handler="on_dataproperty_edit_button_names_clicked" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
               </packing>
             </child>
             <child>
@@ -872,10 +833,11 @@
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="tooltip-text" translatable="yes">Name used to invoke the function in expressions</property>
+                        <property name="secondary-icon-name">document-properties-symbolic</property>
                         <property name="primary-icon-activatable">False</property>
-                        <property name="secondary-icon-activatable">False</property>
                         <signal name="changed" handler="on_dataset_changed" swapped="no"/>
                         <signal name="changed" handler="on_dataset_edit_entry_name_changed" swapped="no"/>
+                        <signal name="icon-press" handler="on_dataset_edit_button_names_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -888,46 +850,6 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkBox" id="hbox95">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="halign">end</property>
-                    <property name="valign">start</property>
-                    <property name="spacing">6</property>
-                    <child>
-                      <object class="GtkLabel" id="dataset_edit_label_names">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="dataset_edit_button_names">
-                        <property name="label" translatable="yes">Properties</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="receives-default">False</property>
-                        <property name="use-underline">True</property>
-                        <signal name="clicked" handler="on_dataset_edit_button_names_clicked" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
                   </packing>
                 </child>
                 <child>

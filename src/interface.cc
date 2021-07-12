@@ -195,7 +195,7 @@ extern vector<GtkWidget*> popup_result_mode_items;
 
 extern deque<string> expression_undo_buffer;
 
-gint win_height, win_width, win_x, win_y, win_monitor, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
+gint win_height, win_width, win_x, win_y, win_monitor, history_height, variables_width, variables_height, variables_hposition, variables_vposition, units_width, units_height, units_hposition, units_vposition, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
 bool win_monitor_primary;
 extern bool remember_position, always_on_top, aot_changed;
 extern gint minimal_width;
@@ -2356,9 +2356,9 @@ GtkWidget* get_variables_dialog(void) {
 		tVariableCategories = GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_treeview_category"));
 		tVariables = GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_treeview_variable"));
 
-		tVariables_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN);
+		tVariables_store = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN);
 		tVariables_store_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(tVariables_store), NULL);
-		gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(tVariables_store_filter), 3);
+		gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(tVariables_store_filter), 2);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tVariables), GTK_TREE_MODEL(tVariables_store_filter));
 		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariables));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
@@ -2366,14 +2366,8 @@ GtkWidget* get_variables_dialog(void) {
 		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Variable"), renderer, "text", 0, NULL);
 		gtk_tree_view_column_set_sort_column_id(column, 0);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tVariables), column);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Value"), renderer, "text", 1, NULL);
-		//g_object_set(G_OBJECT(renderer), "ellipsize", PANGO_ELLIPSIZE_NONE, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, 1);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tVariables), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tVariables_selection_changed), NULL);
 		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tVariables_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tVariables_store), 1, int_string_sort_func, GINT_TO_POINTER(1), NULL);
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tVariables_store), 0, GTK_SORT_ASCENDING);
 
 		gtk_tree_view_set_enable_search(GTK_TREE_VIEW(tVariables), FALSE);
@@ -2390,8 +2384,16 @@ GtkWidget* get_variables_dialog(void) {
 		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tVariableCategories_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tVariableCategories_store), 0, GTK_SORT_ASCENDING);
 
-		if(variables_width > 0 && variables_height > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")), variables_width, variables_height);
-		if(variables_position > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(variables_builder, "variables_hpaned")), variables_position);
+		GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(variables_builder, "variables_textview_description")));
+		gtk_text_buffer_create_tag(buffer, "bold", "weight", PANGO_WEIGHT_BOLD, NULL);
+		gtk_text_buffer_create_tag(buffer, "italic", "style", PANGO_STYLE_ITALIC, NULL);
+
+		if(variables_width > 0 && variables_height > 0) {
+			gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")), variables_width, variables_height);
+			if(variables_vposition <= 0) variables_vposition = variables_height / 3 * 2;
+		}
+		if(variables_hposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(variables_builder, "variables_hpaned")), variables_hposition);
+		if(variables_vposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(variables_builder, "variables_vpaned")), variables_vposition);
 
 		gtk_builder_connect_signals(variables_builder, NULL);
 
@@ -2425,7 +2427,7 @@ GtkWidget* get_units_dialog(void) {
 		}
 #endif
 
-		tUnits_store = gtk_list_store_new(UNITS_N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_PIXBUF, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
+		tUnits_store = gtk_list_store_new(UNITS_N_COLUMNS, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_PIXBUF, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
 		tUnits_store_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(tUnits_store), NULL);
 		gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(tUnits_store_filter), UNITS_VISIBLE_COLUMN);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tUnits), GTK_TREE_MODEL(tUnits_store_filter));
@@ -2439,18 +2441,8 @@ GtkWidget* get_units_dialog(void) {
 		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", UNITS_TITLE_COLUMN, NULL);
 		gtk_tree_view_column_set_sort_column_id(column, UNITS_TITLE_COLUMN);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tUnits), column);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Unit"), renderer, "text", UNITS_NAMES_COLUMN, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, UNITS_NAMES_COLUMN);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tUnits), column);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Unit"), renderer, "text", UNITS_BASE_COLUMN, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, UNITS_BASE_COLUMN);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tUnits), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tUnits_selection_changed), NULL);
 		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnits_store), UNITS_TITLE_COLUMN, string_sort_func, GINT_TO_POINTER(UNITS_TITLE_COLUMN), NULL);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnits_store), UNITS_NAMES_COLUMN, string_sort_func, GINT_TO_POINTER(UNITS_NAMES_COLUMN), NULL);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnits_store), UNITS_BASE_COLUMN, string_sort_func, GINT_TO_POINTER(UNITS_BASE_COLUMN), NULL);
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnits_store), UNITS_TITLE_COLUMN, GTK_SORT_ASCENDING);
 
 		gtk_tree_view_set_enable_search(GTK_TREE_VIEW(tUnits), FALSE);
@@ -2497,8 +2489,16 @@ GtkWidget* get_units_dialog(void) {
 		gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_to_box")), w + 16, -1);
 #endif
 
-		if(units_width > 0 && units_height > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")), units_width, units_height);
-		if(units_position > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(units_builder, "units_hpaned")), units_position);
+		GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(units_builder, "units_textview_description")));
+		gtk_text_buffer_create_tag(buffer, "bold", "weight", PANGO_WEIGHT_BOLD, NULL);
+		gtk_text_buffer_create_tag(buffer, "italic", "style", PANGO_STYLE_ITALIC, NULL);
+
+		if(units_width > 0 && units_height > 0) {
+			gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")), units_width, units_height);
+			if(units_vposition <= 0) units_vposition = units_height / 3 * 2;
+		}
+		if(units_hposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(units_builder, "units_hpaned")), units_hposition);
+		if(units_vposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(units_builder, "units_vpaned")), units_vposition);
 
 		gtk_builder_connect_signals(units_builder, NULL);
 

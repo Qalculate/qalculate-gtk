@@ -208,9 +208,9 @@ void create_fmenu(void);
 void create_pmenu(GtkWidget *item);
 void create_pmenu2(void);
 
-void update_vmenu();
-void update_fmenu();
-void update_umenu();
+void update_vmenu(bool update_compl = true);
+void update_fmenu(bool update_compl = true);
+void update_umenus(bool update_compl = true);
 
 void update_completion();
 
@@ -752,7 +752,7 @@ void on_dataset_edit_entry_name_changed(GtkEditable *editable, gpointer user_dat
 void on_dataset_edit_button_new_property_clicked(GtkButton *button, gpointer user_data);
 void on_dataset_edit_button_edit_property_clicked(GtkButton *button, gpointer user_data);
 void on_dataset_edit_button_del_property_clicked(GtkButton *button, gpointer user_data);
-void on_dataset_edit_button_names_clicked(GtkButton *button, gpointer user_data);
+void on_dataset_edit_button_names_clicked(GtkWidget *button, gpointer user_data);
 
 void on_datasets_button_newset_clicked(GtkButton *button, gpointer user_data);
 void on_datasets_button_editset_clicked(GtkButton *button, gpointer user_data);
@@ -833,17 +833,15 @@ void on_matrix_radiobutton_vector_toggled(GtkToggleButton *w, gpointer user_data
 void on_csv_import_radiobutton_matrix_toggled(GtkToggleButton *w, gpointer user_data);
 void on_csv_import_radiobutton_vectors_toggled(GtkToggleButton *w, gpointer user_data);
 void on_csv_import_combobox_delimiter_changed(GtkComboBox *w, gpointer user_data);
-void on_csv_import_button_file_clicked(GtkButton *button, gpointer user_data);
 
 void on_csv_export_combobox_delimiter_changed(GtkComboBox *w, gpointer user_data);
-void on_csv_export_button_file_clicked(GtkButton *button, gpointer user_data);
 void on_csv_export_radiobutton_current_toggled(GtkToggleButton *w, gpointer user_data);
 void on_csv_export_radiobutton_matrix_toggled(GtkToggleButton *w, gpointer user_data);
 
-void on_type_label_date_clicked(GtkButton *w, gpointer user_data);
-void on_type_label_file_clicked(GtkButton *w, gpointer user_data);
-void on_type_label_vector_clicked(GtkButton *w, gpointer user_data);
-void on_type_label_matrix_clicked(GtkButton *w, gpointer user_data);
+void on_type_label_date_clicked(GtkEntry *w, gpointer user_data);
+void on_type_label_file_clicked(GtkEntry *w, gpointer user_data);
+void on_type_label_vector_clicked(GtkEntry *w, gpointer user_data);
+void on_type_label_matrix_clicked(GtkEntry *w, gpointer user_data);
 
 void on_functions_button_deactivate_clicked(GtkButton *w, gpointer user_data);
 void on_variables_button_deactivate_clicked(GtkButton *w, gpointer user_data);
@@ -863,11 +861,11 @@ void on_argument_rules_checkbutton_enable_min_toggled(GtkToggleButton *w, gpoint
 void on_argument_rules_checkbutton_enable_max_toggled(GtkToggleButton *w, gpointer user_data);
 void on_argument_rules_checkbutton_enable_condition_toggled(GtkToggleButton *w, gpointer user_data);
 
-void on_variable_edit_button_names_clicked(GtkButton *w, gpointer user_data);
-void on_unknown_edit_button_names_clicked(GtkButton *w, gpointer user_data);
-void on_matrix_edit_button_names_clicked(GtkButton *w, gpointer user_data);
-void on_function_edit_button_names_clicked(GtkButton *w, gpointer user_data);
-void on_unit_edit_button_names_clicked(GtkButton *w, gpointer user_data);
+void on_variable_edit_button_names_clicked(GtkWidget *w, gpointer user_data);
+void on_unknown_edit_button_names_clicked(GtkWidget *w, gpointer user_data);
+void on_matrix_edit_button_names_clicked(GtkWidget *w, gpointer user_data);
+void on_function_edit_button_names_clicked(GtkWidget *w, gpointer user_data);
+void on_unit_edit_button_names_clicked(GtkWidget *w, gpointer user_data);
 
 void on_names_edit_checkbutton_abbreviation_toggled(GtkToggleButton *w, gpointer user_data);
 void on_names_edit_button_add_clicked(GtkButton *w, gpointer user_data);

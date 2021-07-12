@@ -233,7 +233,7 @@ vector<GtkTreeViewColumn*> matrix_edit_columns, matrix_columns;
 
 extern GtkAccelGroup *accel_group;
 
-extern gint win_height, win_width, win_x, win_y, win_monitor, history_height, variables_width, variables_height, variables_position, units_width, units_height, units_position, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2, hidden_x, hidden_y, hidden_monitor;
+extern gint win_height, win_width, win_x, win_y, win_monitor, history_height, variables_width, variables_height, variables_hposition, variables_vposition, units_width, units_height, units_hposition, units_vposition, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2, hidden_x, hidden_y, hidden_monitor;
 extern bool win_monitor_primary, hidden_monitor_primary;
 bool remember_position = false, always_on_top = false, aot_changed = false;
 
@@ -2322,8 +2322,9 @@ gboolean on_display_errors_timeout(gpointer) {
 	if(stop_timeouts) return FALSE;
 	if(block_error_timeout > 0) return TRUE;
 	if(CALCULATOR->checkSaveFunctionCalled()) {
-		update_vmenu();
-		update_fmenu();
+		update_vmenu(false);
+		update_fmenu(false);
+		update_umenus();
 	}
 	display_errors();
 	return TRUE;
@@ -4512,199 +4513,196 @@ void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 		gtk_tree_model_get(model, &iter, 1, &f, -1);
 		//remember the new selection
 		selected_function = f;
-		for(size_t i = 0; i < CALCULATOR->functions.size(); i++) {
-			if(CALCULATOR->functions[i] == selected_function) {
-				GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functions_builder, "functions_textview_description")));
-				gtk_text_buffer_set_text(buffer, "", -1);
-				GtkTextIter iter;
-				f = CALCULATOR->functions[i];
-				Argument *arg;
-				Argument default_arg;
-				string str, str2;
-				const ExpressionName *ename = &f->preferredName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(functions_builder, "functions_textview_description"));
-				str += ename->name;
-				gtk_text_buffer_get_end_iter(buffer, &iter);
-				gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, str.c_str(), -1, "bold", "italic", NULL);
-				str = "";
-				int iargs = f->maxargs();
-				if(iargs < 0) {
-					iargs = f->minargs() + 1;
-				}
-				str += "(";
-				if(iargs != 0) {
-					for(int i2 = 1; i2 <= iargs; i2++) {
-						if(i2 > f->minargs()) {
-							str += "[";
-						}
-						if(i2 > 1) {
-							str += CALCULATOR->getComma();
-							str += " ";
-						}
-						arg = f->getArgumentDefinition(i2);
-						if(arg && !arg->name().empty()) {
-							str2 = arg->name();
-						} else {
-							str2 = _("argument");
-							str2 += " ";
-							str2 += i2s(i2);
-						}
-						str += str2;
-						if(i2 > f->minargs()) {
-							str += "]";
-						}
+		if(CALCULATOR->stillHasFunction(f)) {
+			GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functions_builder, "functions_textview_description")));
+			gtk_text_buffer_set_text(buffer, "", -1);
+			GtkTextIter iter;
+			Argument *arg;
+			Argument default_arg;
+			string str, str2;
+			const ExpressionName *ename = &f->preferredName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(functions_builder, "functions_textview_description"));
+			str += ename->name;
+			gtk_text_buffer_get_end_iter(buffer, &iter);
+			gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, str.c_str(), -1, "bold", "italic", NULL);
+			str = "";
+			int iargs = f->maxargs();
+			if(iargs < 0) {
+				iargs = f->minargs() + 1;
+			}
+			str += "(";
+			if(iargs != 0) {
+				for(int i2 = 1; i2 <= iargs; i2++) {
+					if(i2 > f->minargs()) {
+						str += "[";
 					}
-					if(f->maxargs() < 0) {
+					if(i2 > 1) {
 						str += CALCULATOR->getComma();
-						str += " …";
+						str += " ";
+					}
+					arg = f->getArgumentDefinition(i2);
+					if(arg && !arg->name().empty()) {
+						str2 = arg->name();
+					} else {
+						str2 = _("argument");
+						str2 += " ";
+						str2 += i2s(i2);
+					}
+					str += str2;
+					if(i2 > f->minargs()) {
+						str += "]";
 					}
 				}
-				str += ")";
-				for(size_t i2 = 1; i2 <= f->countNames(); i2++) {
-					if(&f->getName(i2) != ename) {
-						str += "\n";
-						str += f->getName(i2).name;
-					}
+				if(f->maxargs() < 0) {
+					str += CALCULATOR->getComma();
+					str += " …";
 				}
-				gtk_text_buffer_get_end_iter(buffer, &iter);
-				gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, str.c_str(), -1, "italic", NULL);
-				str = "";
+			}
+			str += ")";
+			for(size_t i2 = 1; i2 <= f->countNames(); i2++) {
+				if(&f->getName(i2) != ename) {
+					str += "\n";
+					str += f->getName(i2).name;
+				}
+			}
+			gtk_text_buffer_get_end_iter(buffer, &iter);
+			gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, str.c_str(), -1, "italic", NULL);
+			str = "";
+			str += "\n";
+			if(f->subtype() == SUBTYPE_DATA_SET) {
 				str += "\n";
-				if(f->subtype() == SUBTYPE_DATA_SET) {
-					str += "\n";
-					gchar *gstr = g_strdup_printf(_("Retrieves data from the %s data set for a given object and property. If \"info\" is typed as property, a dialog window will pop up with all properties of the object."), f->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext).c_str());
-					str += gstr;
-					g_free(gstr);
-					str += "\n";
-				}
-				if(!f->description().empty()) {
-					str += "\n";
-					str += f->description();
-					str += "\n";
-				}
-				if(!f->example(true).empty()) {
-					str += "\n";
-					str += _("Example:");
-					str += " ";
-					str += f->example(false, ename->name);
-					str += "\n";
-				}
-				if(f->subtype() == SUBTYPE_DATA_SET && !((DataSet*) f)->copyright().empty()) {
-					str += "\n";
-					str += ((DataSet*) f)->copyright();
-					str += "\n";
-				}
+				gchar *gstr = g_strdup_printf(_("Retrieves data from the %s data set for a given object and property. If \"info\" is typed as property, a dialog window will pop up with all properties of the object."), f->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext).c_str());
+				str += gstr;
+				g_free(gstr);
+				str += "\n";
+			}
+			if(!f->description().empty()) {
+				str += "\n";
+				str += f->description();
+				str += "\n";
+			}
+			if(!f->example(true).empty()) {
+				str += "\n";
+				str += _("Example:");
+				str += " ";
+				str += f->example(false, ename->name);
+				str += "\n";
+			}
+			if(f->subtype() == SUBTYPE_DATA_SET && !((DataSet*) f)->copyright().empty()) {
+				str += "\n";
+				str += ((DataSet*) f)->copyright();
+				str += "\n";
+			}
+			gtk_text_buffer_get_end_iter(buffer, &iter);
+			gtk_text_buffer_insert(buffer, &iter, str.c_str(), -1);
+			if(iargs) {
+				str = "\n";
+				str += _("Arguments");
+				str += "\n";
 				gtk_text_buffer_get_end_iter(buffer, &iter);
-				gtk_text_buffer_insert(buffer, &iter, str.c_str(), -1);
-				if(iargs) {
-					str = "\n";
-					str += _("Arguments");
-					str += "\n";
-					gtk_text_buffer_get_end_iter(buffer, &iter);
-					gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, str.c_str(), -1, "bold", NULL);
-					for(int i2 = 1; i2 <= iargs; i2++) {
-						arg = f->getArgumentDefinition(i2);
-						if(arg && !arg->name().empty()) {
-							str = arg->name();
-						} else {
-							str = i2s(i2);
-						}
-						str += ": ";
-						if(arg) {
-							str2 = arg->printlong();
-						} else {
-							str2 = default_arg.printlong();
-						}
-						if(printops.use_unicode_signs) {
-							gsub(">=", SIGN_GREATER_OR_EQUAL, str2);
-							gsub("<=", SIGN_LESS_OR_EQUAL, str2);
-							gsub("!=", SIGN_NOT_EQUAL, str2);
-						}
-						if(i2 > f->minargs()) {
-							str2 += " (";
-							//optional argument
-							str2 += _("optional");
-							if(!f->getDefaultValue(i2).empty() && f->getDefaultValue(i2) != "\"\"") {
-								str2 += ", ";
-								//argument default, in description
-								str2 += _("default: ");
-								ParseOptions pa = evalops.parse_options; pa.base = 10;
-								str2 += CALCULATOR->localizeExpression(f->getDefaultValue(i2), pa);
-							}
-							str2 += ")";
-						}
-						str2 += "\n";
-						gtk_text_buffer_get_end_iter(buffer, &iter);
-						gtk_text_buffer_insert(buffer, &iter, str.c_str(), -1);
-						gtk_text_buffer_get_end_iter(buffer, &iter);
-						gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, str2.c_str(), -1, "italic", NULL);
+				gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, str.c_str(), -1, "bold", NULL);
+				for(int i2 = 1; i2 <= iargs; i2++) {
+					arg = f->getArgumentDefinition(i2);
+					if(arg && !arg->name().empty()) {
+						str = arg->name();
+					} else {
+						str = i2s(i2);
 					}
-				}
-				if(!f->condition().empty()) {
-					str = "\n";
-					str += _("Requirement");
 					str += ": ";
-					str += f->printCondition();
-					if(printops.use_unicode_signs) {
-						gsub(">=", SIGN_GREATER_OR_EQUAL, str);
-						gsub("<=", SIGN_LESS_OR_EQUAL, str);
-						gsub("!=", SIGN_NOT_EQUAL, str);
+					if(arg) {
+						str2 = arg->printlong();
+					} else {
+						str2 = default_arg.printlong();
 					}
-					str += "\n";
+					if(printops.use_unicode_signs) {
+						gsub(">=", SIGN_GREATER_OR_EQUAL, str2);
+						gsub("<=", SIGN_LESS_OR_EQUAL, str2);
+						gsub("!=", SIGN_NOT_EQUAL, str2);
+					}
+					if(i2 > f->minargs()) {
+						str2 += " (";
+						//optional argument
+						str2 += _("optional");
+						if(!f->getDefaultValue(i2).empty() && f->getDefaultValue(i2) != "\"\"") {
+							str2 += ", ";
+							//argument default, in description
+							str2 += _("default: ");
+							ParseOptions pa = evalops.parse_options; pa.base = 10;
+							str2 += CALCULATOR->localizeExpression(f->getDefaultValue(i2), pa);
+						}
+						str2 += ")";
+					}
+					str2 += "\n";
 					gtk_text_buffer_get_end_iter(buffer, &iter);
 					gtk_text_buffer_insert(buffer, &iter, str.c_str(), -1);
-				}
-				if(f->subtype() == SUBTYPE_DATA_SET) {
-					DataSet *ds = (DataSet*) f;
-					str = "\n";
-					str += _("Properties");
-					str += "\n";
 					gtk_text_buffer_get_end_iter(buffer, &iter);
-					gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, str.c_str(), -1, "bold", NULL);
-					DataPropertyIter it;
-					DataProperty *dp = ds->getFirstProperty(&it);
-					while(dp) {
-						if(!dp->isHidden()) {
-							if(!dp->title(false).empty()) {
-								str = dp->title();
-								str += ": ";
-							} else {
-								str = "";
-							}
-							for(size_t i = 1; i <= dp->countNames(); i++) {
-								if(i > 1) str += ", ";
-								str += dp->getName(i);
-							}
-							if(dp->isKey()) {
-								str += " (";
-								//indicating that the property is a data set key
-								str += _("key");
-								str += ")";
-							}
+					gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, str2.c_str(), -1, "italic", NULL);
+				}
+			}
+			if(!f->condition().empty()) {
+				str = "\n";
+				str += _("Requirement");
+				str += ": ";
+				str += f->printCondition();
+				if(printops.use_unicode_signs) {
+					gsub(">=", SIGN_GREATER_OR_EQUAL, str);
+					gsub("<=", SIGN_LESS_OR_EQUAL, str);
+					gsub("!=", SIGN_NOT_EQUAL, str);
+				}
+				str += "\n";
+				gtk_text_buffer_get_end_iter(buffer, &iter);
+				gtk_text_buffer_insert(buffer, &iter, str.c_str(), -1);
+			}
+			if(f->subtype() == SUBTYPE_DATA_SET) {
+				DataSet *ds = (DataSet*) f;
+				str = "\n";
+				str += _("Properties");
+				str += "\n";
+				gtk_text_buffer_get_end_iter(buffer, &iter);
+				gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, str.c_str(), -1, "bold", NULL);
+				DataPropertyIter it;
+				DataProperty *dp = ds->getFirstProperty(&it);
+				while(dp) {
+					if(!dp->isHidden()) {
+						if(!dp->title(false).empty()) {
+							str = dp->title();
+							str += ": ";
+						} else {
+							str = "";
+						}
+						for(size_t i = 1; i <= dp->countNames(); i++) {
+							if(i > 1) str += ", ";
+							str += dp->getName(i);
+						}
+						if(dp->isKey()) {
+							str += " (";
+							//indicating that the property is a data set key
+							str += _("key");
+							str += ")";
+						}
+						str += "\n";
+						gtk_text_buffer_get_end_iter(buffer, &iter);
+						gtk_text_buffer_insert(buffer, &iter, str.c_str(), -1);
+						if(!dp->description().empty()) {
+							str = dp->description();
 							str += "\n";
 							gtk_text_buffer_get_end_iter(buffer, &iter);
-							gtk_text_buffer_insert(buffer, &iter, str.c_str(), -1);
-							if(!dp->description().empty()) {
-								str = dp->description();
-								str += "\n";
-								gtk_text_buffer_get_end_iter(buffer, &iter);
-								gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, str.c_str(), -1, "italic", NULL);
-							}
+							gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, str.c_str(), -1, "italic", NULL);
 						}
-						dp = ds->getNextProperty(&it);
 					}
+					dp = ds->getNextProperty(&it);
 				}
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_edit")), !CALCULATOR->functions[i]->isBuiltin());
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_deactivate")), TRUE);
-				if(CALCULATOR->functions[i]->isActive()) {
-					gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(functions_builder, "functions_buttonlabel_deactivate")), _("Deacti_vate"));
-				} else {
-					gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(functions_builder, "functions_buttonlabel_deactivate")), _("Acti_vate"));
-				}
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_insert")), CALCULATOR->functions[i]->isActive());
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_apply")), CALCULATOR->functions[i]->isActive() && (CALCULATOR->functions[i]->minargs() <= 1 || rpn_mode));
-				//user cannot delete global definitions
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_delete")), CALCULATOR->functions[i]->isLocal());
 			}
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_edit")), !f->isBuiltin());
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_deactivate")), TRUE);
+			if(f->isActive()) {
+				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(functions_builder, "functions_buttonlabel_deactivate")), _("Deacti_vate"));
+			} else {
+				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(functions_builder, "functions_buttonlabel_deactivate")), _("Acti_vate"));
+			}
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_insert")), f->isActive());
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_apply")), f->isActive() && (f->minargs() <= 1 || rpn_mode));
+			//user cannot delete global definitions
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_delete")), f->isLocal());
 		}
 	} else {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_edit")), FALSE);
@@ -4800,69 +4798,7 @@ void update_variables_tree() {
 
 void setVariableTreeItem(GtkTreeIter &iter2, Variable *v) {
 	gtk_list_store_append(tVariables_store, &iter2);
-	string value = "";
-	if(is_answer_variable(v)) {
-		value = _("a previous result");
-	} else if(v->isKnown()) {
-		if(((KnownVariable*) v)->isExpression()) {
-			ParseOptions pa = evalops.parse_options; pa.base = 10;
-			value = CALCULATOR->localizeExpression(((KnownVariable*) v)->expression(), pa);
-			bool is_relative = false;
-			if(!((KnownVariable*) v)->uncertainty(&is_relative).empty()) {
-				if(is_relative) {
-					value.insert(0, "(");
-					value.insert(0, CALCULATOR->f_uncertainty->referenceName());
-					value += CALCULATOR->getComma();
-					value += " ";
-					value += CALCULATOR->localizeExpression(((KnownVariable*) v)->uncertainty(), pa);
-					value += CALCULATOR->getComma();
-					value += " 1)";
-				} else {
-					value += SIGN_PLUSMINUS;
-					value += CALCULATOR->localizeExpression(((KnownVariable*) v)->uncertainty(), pa);
-				}
-			}
-			if(!((KnownVariable*) v)->unit().empty() && ((KnownVariable*) v)->unit() != "auto") {
-				value += " "; value += ((KnownVariable*) v)->unit();
-			}
-		} else {
-			if(((KnownVariable*) v)->get().isMatrix()) {
-				value = _("matrix");
-			} else if(((KnownVariable*) v)->get().isVector()) {
-				value = _("vector");
-			} else {
-				PrintOptions po;
-				po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
-				value = CALCULATOR->print(((KnownVariable*) v)->get(), 30, po);
-			}
-		}
-	} else {
-		if(((UnknownVariable*) v)->assumptions()) {
-			switch(((UnknownVariable*) v)->assumptions()->sign()) {
-				case ASSUMPTION_SIGN_POSITIVE: {value = _("positive"); break;}
-				case ASSUMPTION_SIGN_NONPOSITIVE: {value = _("non-positive"); break;}
-				case ASSUMPTION_SIGN_NEGATIVE: {value = _("negative"); break;}
-				case ASSUMPTION_SIGN_NONNEGATIVE: {value = _("non-negative"); break;}
-				case ASSUMPTION_SIGN_NONZERO: {value = _("non-zero"); break;}
-				default: {}
-			}
-			if(!value.empty() && ((UnknownVariable*) v)->assumptions()->type() != ASSUMPTION_TYPE_NONE) value += " ";
-			switch(((UnknownVariable*) v)->assumptions()->type()) {
-				case ASSUMPTION_TYPE_BOOLEAN: {value += _("boolean"); break;}
-				case ASSUMPTION_TYPE_INTEGER: {value += _("integer"); break;}
-				case ASSUMPTION_TYPE_RATIONAL: {value += _("rational"); break;}
-				case ASSUMPTION_TYPE_REAL: {value += _("real"); break;}
-				case ASSUMPTION_TYPE_COMPLEX: {value += _("complex"); break;}
-				case ASSUMPTION_TYPE_NUMBER: {value += _("number"); break;}
-				case ASSUMPTION_TYPE_NONMATRIX: {value += _("(not matrix)"); break;}
-				default: {}
-			}
-			if(value.empty()) value = _("unknown");
-		} else {
-			value = _("default assumptions");
-		}
-	}
-	gtk_list_store_set(tVariables_store, &iter2, 0, v->title(true).c_str(), 1, value.c_str(), 2, (gpointer) v, 3, TRUE, -1);
+	gtk_list_store_set(tVariables_store, &iter2, 0, v->title(true).c_str(), 1, (gpointer) v, 2, TRUE, -1);
 	GtkTreeIter iter;
 	if(v == selected_variable && gtk_tree_model_filter_convert_child_iter_to_iter(GTK_TREE_MODEL_FILTER(tVariables_store_filter), &iter, &iter2)) {
 		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariables)), &iter);
@@ -4941,7 +4877,7 @@ void on_tVariables_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 	GtkTreeIter iter;
 	if(gtk_tree_selection_get_selected(treeselection, &model, &iter)) {
 		Variable *v;
-		gtk_tree_model_get(model, &iter, 2, &v, -1);
+		gtk_tree_model_get(model, &iter, 1, &v, -1);
 		if(!CALCULATOR->stillHasVariable(v)) {
 			show_message(_("Variable does not exist anymore."), GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_dialog")));
 			selected_variable = NULL;
@@ -4950,20 +4886,96 @@ void on_tVariables_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 		}
 		//remember selection
 		selected_variable = v;
-		for(size_t i = 0; i < CALCULATOR->variables.size(); i++) {
-			if(CALCULATOR->variables[i] == selected_variable) {
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_edit")), !CALCULATOR->variables[i]->isBuiltin() && !is_answer_variable(CALCULATOR->variables[i]) && CALCULATOR->variables[i] != v_memory);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_insert")), CALCULATOR->variables[i]->isActive());
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_deactivate")), !is_answer_variable(CALCULATOR->variables[i]) && CALCULATOR->variables[i] != v_memory);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_export")), CALCULATOR->variables[i]->isKnown());
-				if(CALCULATOR->variables[i]->isActive()) {
-					gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(variables_builder, "variables_buttonlabel_deactivate")), _("Deacti_vate"));
-				} else {
-					gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(variables_builder, "variables_buttonlabel_deactivate")), _("Acti_vate"));
+		if(CALCULATOR->stillHasVariable(v)) {
+			GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(variables_builder, "variables_textview_description")));
+			gtk_text_buffer_set_text(buffer, "", -1);
+			GtkTextIter iter;
+			string str, str2;
+			const ExpressionName *ename = &v->preferredName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(variables_builder, "variables_textview_description"));
+			str += ename->name;
+			gtk_text_buffer_get_end_iter(buffer, &iter);
+			gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, str.c_str(), -1, "bold", NULL);
+			str = "";
+			for(size_t i2 = 1; i2 <= v->countNames(); i2++) {
+				if(&v->getName(i2) != ename) {
+					str += ", ";
+					str += v->getName(i2).name;
 				}
-				//user cannot delete global definitions
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_delete")), CALCULATOR->variables[i]->isLocal() && !is_answer_variable(CALCULATOR->variables[i]) && CALCULATOR->variables[i] != v_memory && CALCULATOR->variables[i] != CALCULATOR->v_x && CALCULATOR->variables[i] != CALCULATOR->v_y && CALCULATOR->variables[i] != CALCULATOR->v_z);
 			}
+			str += "\n\n";
+			if(v->isKnown()) {
+				bool is_approximate = false;
+				if(((KnownVariable*) v)->get().isMatrix() && ((KnownVariable*) v)->get().columns() * ((KnownVariable*) v)->get().rows() > 16) {
+					str += _("a matrix");
+				} else if(((KnownVariable*) v)->get().isVector() && ((KnownVariable*) v)->get().size() > 10) {
+					str += _("a vector");
+				} else {
+					PrintOptions po = printops;
+					po.can_display_unicode_string_arg = (void*) gtk_builder_get_object(variables_builder, "variables_textview_description");
+					po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
+					po.base = 10;
+					po.number_fraction_format = FRACTION_DECIMAL_EXACT;
+					po.allow_non_usable = true;
+					po.is_approximate = &is_approximate;
+					if(v->isApproximate() || is_approximate) {
+						if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, po.can_display_unicode_string_arg))) {
+							str += SIGN_ALMOST_EQUAL " ";
+						} else {
+							str += "= ";
+							str += _("approx.");
+						}
+					} else {
+						str += "= ";
+					}
+					str += CALCULATOR->print(((KnownVariable*) v)->get(), 1000, po);
+				}
+			} else {
+				if(((UnknownVariable*) v)->assumptions()) {
+					string value;
+					if(((UnknownVariable*) v)->assumptions()->type() != ASSUMPTION_TYPE_BOOLEAN) {
+						switch(((UnknownVariable*) v)->assumptions()->sign()) {
+							case ASSUMPTION_SIGN_POSITIVE: {value = _("positive"); break;}
+							case ASSUMPTION_SIGN_NONPOSITIVE: {value = _("non-positive"); break;}
+							case ASSUMPTION_SIGN_NEGATIVE: {value = _("negative"); break;}
+							case ASSUMPTION_SIGN_NONNEGATIVE: {value = _("non-negative"); break;}
+							case ASSUMPTION_SIGN_NONZERO: {value = _("non-zero"); break;}
+							default: {}
+						}
+					}
+					if(!value.empty() && ((UnknownVariable*) v)->assumptions()->type() != ASSUMPTION_TYPE_NONE) value += " ";
+					switch(((UnknownVariable*) v)->assumptions()->type()) {
+						case ASSUMPTION_TYPE_INTEGER: {value += _("integer"); break;}
+						case ASSUMPTION_TYPE_BOOLEAN: {value += _("boolean"); break;}
+						case ASSUMPTION_TYPE_RATIONAL: {value += _("rational"); break;}
+						case ASSUMPTION_TYPE_REAL: {value += _("real"); break;}
+						case ASSUMPTION_TYPE_COMPLEX: {value += _("complex"); break;}
+						case ASSUMPTION_TYPE_NUMBER: {value += _("number"); break;}
+						case ASSUMPTION_TYPE_NONMATRIX: {value += _("not matrix"); break;}
+						default: {}
+					}
+					if(value.empty()) value = _("unknown");
+					str += value;
+				} else {
+					str += _("Default assumptions");
+				}
+			}
+			if(!v->description().empty()) {
+				str += "\n\n";
+				str += v->description();
+			}
+			gtk_text_buffer_get_end_iter(buffer, &iter);
+			gtk_text_buffer_insert(buffer, &iter, str.c_str(), -1);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_edit")), !v->isBuiltin() && !is_answer_variable(v) && v != v_memory);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_insert")), v->isActive());
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_deactivate")), !is_answer_variable(v) && v != v_memory);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_export")), v->isKnown());
+			if(v->isActive()) {
+				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(variables_builder, "variables_buttonlabel_deactivate")), _("Deacti_vate"));
+			} else {
+				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(variables_builder, "variables_buttonlabel_deactivate")), _("Acti_vate"));
+			}
+			//user cannot delete global definitions
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_delete")), v->isLocal() && !is_answer_variable(v) && v != v_memory && v != CALCULATOR->v_x && v != CALCULATOR->v_y && v != CALCULATOR->v_z);
 		}
 	} else {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_edit")), FALSE);
@@ -5057,40 +5069,8 @@ void update_units_tree() {
 
 void setUnitTreeItem(GtkTreeIter &iter2, Unit *u) {
 	gtk_list_store_append(tUnits_store, &iter2);
-	string snames, sbase;
-	//display name, plural name and short name in the second column
-	AliasUnit *au;
-	for(size_t i = 1; i <= u->countNames(); i++) {
-		if(i > 1) snames += " / ";
-		snames += u->getName(i).name;
-	}
-	//depending on unit type display relation to base unit(s)
-	switch(u->subtype()) {
-		case SUBTYPE_COMPOSITE_UNIT: {
-			snames = "";
-			sbase = ((CompositeUnit*) u)->print(false, true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) tUnits);
-			break;
-		}
-		case SUBTYPE_ALIAS_UNIT: {
-			au = (AliasUnit*) u;
-			sbase = au->firstBaseUnit()->preferredDisplayName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) tUnits).name;
-			if(au->firstBaseExponent() != 1) {
-				if(printops.use_unicode_signs && au->firstBaseExponent() == 2) sbase += SIGN_POWER_2;
-				else if(printops.use_unicode_signs && au->firstBaseExponent() == 3) sbase += SIGN_POWER_3;
-				else {
-					sbase += POWER;
-					sbase += i2s(au->firstBaseExponent());
-				}
-			}
-			break;
-		}
-		case SUBTYPE_BASE_UNIT: {
-			sbase = "";
-			break;
-		}
-	}
 	//display descriptive name (title), or name if no title defined
-	gtk_list_store_set(tUnits_store, &iter2, UNITS_TITLE_COLUMN, u->title(true).c_str(), UNITS_NAMES_COLUMN, snames.c_str(), UNITS_BASE_COLUMN, sbase.c_str(), UNITS_POINTER_COLUMN, (gpointer) u, UNITS_VISIBLE_COLUMN, TRUE, UNITS_VISIBLE_COLUMN_CONVERT, TRUE, -1);
+	gtk_list_store_set(tUnits_store, &iter2, UNITS_TITLE_COLUMN, u->title(true).c_str(), UNITS_POINTER_COLUMN, (gpointer) u, UNITS_VISIBLE_COLUMN, TRUE, UNITS_VISIBLE_COLUMN_CONVERT, TRUE, -1);
 	if(u->isCurrency()) {
 		unordered_map<string, GdkPixbuf*>::const_iterator it_flag = flag_images.find(u->referenceName());
 		if(it_flag != flag_images.end()) {
@@ -5196,21 +5176,103 @@ void on_tUnits_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 		Unit *u;
 		gtk_tree_model_get(model, &iter, UNITS_POINTER_COLUMN, &u, -1);
 		selected_unit = u;
-		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
-			if(CALCULATOR->units[i] == selected_unit) {
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_frame_convert")), TRUE);
-				gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(units_builder, "units_label_from_unit")), CALCULATOR->units[i]->print(true, printops.abbreviate_names, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) gtk_builder_get_object(units_builder, "units_label_from_unit")).c_str());
-				//user cannot delete global definitions
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_button_delete")), CALCULATOR->units[i]->isLocal());
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_button_convert_to")), TRUE);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_button_insert")), CALCULATOR->units[i]->isActive());
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_button_edit")), !CALCULATOR->units[i]->isBuiltin());
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_button_deactivate")), TRUE);
-				if(CALCULATOR->units[i]->isActive()) {
-					gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(units_builder, "units_buttonlabel_deactivate")), _("Deacti_vate"));
-				} else {
-					gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(units_builder, "units_buttonlabel_deactivate")), _("Acti_vate"));
+		if(CALCULATOR->stillHasUnit(u)) {
+			GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(units_builder, "units_textview_description")));
+			gtk_text_buffer_set_text(buffer, "", -1);
+			GtkTextIter iter;
+			string str, str2;
+			if(u->subtype() != SUBTYPE_COMPOSITE_UNIT) {
+				const ExpressionName *ename = &u->preferredName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(units_builder, "units_textview_description"));
+				str += ename->name;
+				gtk_text_buffer_get_end_iter(buffer, &iter);
+				gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, str.c_str(), -1, "bold", NULL);
+				str = "";
+				for(size_t i2 = 1; i2 <= u->countNames(); i2++) {
+					if(&u->getName(i2) != ename) {
+						str += ", ";
+						str += u->getName(i2).name;
+					}
 				}
+				str += "\n\n";
+			}
+			bool is_approximate = false;
+			PrintOptions po = printops;
+			po.can_display_unicode_string_arg = (void*) gtk_builder_get_object(units_builder, "units_textview_description");
+			po.is_approximate = &is_approximate;
+			po.allow_non_usable = true;
+			po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
+			po.base = 10;
+			po.number_fraction_format = FRACTION_DECIMAL_EXACT;
+			po.use_unit_prefixes = false;
+			if(u->subtype() == SUBTYPE_ALIAS_UNIT) {
+				AliasUnit *au = (AliasUnit*) u;
+				MathStructure m(1, 1, 0), mexp(1, 1, 0);
+				if(au->hasNonlinearExpression()) {
+					m.set("x");
+					if(au->expression().find("\\y") != string::npos) mexp.set("y");
+					str += "x ";
+					str += u->preferredDisplayName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(units_builder, "units_textview_description")).name;
+					if(au->expression().find("\\y") != string::npos) str += "^y";
+					str += " ";
+				}
+				au->convertToFirstBaseUnit(m, mexp);
+				if(au->firstBaseUnit()->subtype() == SUBTYPE_COMPOSITE_UNIT) m.multiply(((CompositeUnit*) au->firstBaseUnit())->generateMathStructure());
+				else m.multiply(au->firstBaseUnit());
+				if(!mexp.isOne()) m.last() ^= mexp;
+				if(m.isApproximate() || is_approximate) str += SIGN_ALMOST_EQUAL " ";
+				else str += "= ";
+				m.format(po);
+				str += m.print(po);
+				if(au->hasNonlinearExpression() && !au->inverseExpression().empty()) {
+					str += "\n";
+					m.set("x");
+					if(au->inverseExpression().find("\\y") != string::npos) mexp.set("y");
+					else mexp.set(1, 1, 0);
+					str += "x ";
+					bool b_y = au->inverseExpression().find("\\y") != string::npos;
+					if(au->firstBaseUnit()->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+						if(b_y) str += "(";
+						MathStructure m2(((CompositeUnit*) au->firstBaseUnit())->generateMathStructure());
+						m2.format(po);
+						str += m2.print(po);
+						if(b_y) str += ")^y";
+					} else {
+						str += au->firstBaseUnit()->preferredDisplayName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(units_builder, "units_textview_description")).name;
+						if(b_y) str += "^y";
+					}
+					str += " ";
+					au->convertFromFirstBaseUnit(m, mexp);
+					m.multiply(au);
+					if(!mexp.isOne()) m.last() ^= mexp;
+					if(m.isApproximate() || is_approximate) str += SIGN_ALMOST_EQUAL " ";
+					else str += "= ";
+					m.format(po);
+					str += m.print(po);
+				}
+			} else if(u->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+				str += "= ";
+				MathStructure m(((CompositeUnit*) u)->generateMathStructure());
+				m.format(po);
+				str += m.print(po);
+			}
+			if(!u->description().empty()) {
+				str += "\n\n";
+				str += u->description();
+			}
+			gtk_text_buffer_get_end_iter(buffer, &iter);
+			gtk_text_buffer_insert(buffer, &iter, str.c_str(), -1);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_frame_convert")), TRUE);
+			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(units_builder, "units_label_from_unit")), u->print(true, printops.abbreviate_names, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) gtk_builder_get_object(units_builder, "units_label_from_unit")).c_str());
+			//user cannot delete global definitions
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_button_delete")), u->isLocal());
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_button_convert_to")), TRUE);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_button_insert")), u->isActive());
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_button_edit")), !u->isBuiltin());
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_button_deactivate")), TRUE);
+			if(u->isActive()) {
+				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(units_builder, "units_buttonlabel_deactivate")), _("Deacti_vate"));
+			} else {
+				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(units_builder, "units_buttonlabel_deactivate")), _("Acti_vate"));
 			}
 		}
 	} else {
@@ -5360,7 +5422,7 @@ void on_variables_entry_search_changed(GtkEntry *w, gpointer) {
 	do {
 		bool b = str.empty();
 		Variable *u = NULL;
-		if(!b) gtk_tree_model_get(GTK_TREE_MODEL(tVariables_store), &iter, 2, &u, -1);
+		if(!b) gtk_tree_model_get(GTK_TREE_MODEL(tVariables_store), &iter, 1, &u, -1);
 		if(u) {
 			string title = u->title(true);
 			remove_blank_ends(title);
@@ -5388,7 +5450,7 @@ void on_variables_entry_search_changed(GtkEntry *w, gpointer) {
 				}
 			}
 		}
-		gtk_list_store_set(tVariables_store, &iter, 3, b, -1);
+		gtk_list_store_set(tVariables_store, &iter, 2, b, -1);
 	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tVariables_store), &iter));
 	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tVariables_selection_changed, NULL);
 	if(str.empty()) {
@@ -6657,7 +6719,7 @@ void create_umenu2() {
 /*
 	recreate unit menus and update unit manager (when units have changed)
 */
-void update_umenus() {
+void update_umenus(bool update_compl) {
 	gtk_widget_destroy(u_menu);
 	gtk_widget_destroy(u_menu2);
 	generate_units_tree_struct();
@@ -6666,7 +6728,7 @@ void update_umenus() {
 	create_umenu2();
 	update_units_tree();
 	update_unit_selector_tree();
-	update_completion();
+	if(update_compl) update_completion();
 }
 
 /*
@@ -6819,14 +6881,14 @@ void create_pmenu2() {
 /*
 	recreate variables menu and update variable manager (when variables have changed)
 */
-void update_vmenu() {
+void update_vmenu(bool update_compl) {
 	if(variable_cats.items.empty() && variable_cats.objects.empty()) return;
 	gtk_widget_destroy(v_menu);
 	generate_variables_tree_struct();
 	create_vmenu();
 	recreate_recent_variables();
 	update_variables_tree();
-	update_completion();
+	if(update_compl) update_completion();
 	update_mb_sto_menu();
 }
 
@@ -7234,69 +7296,69 @@ void update_completion() {
 #define COMPLETION_CONVERT_STRING(x) str = _(x); if(str != x) {str += " <i>"; str += x; str += "</i>";}
 #define COMPLETION_CONVERT_STRING2(x, y) str = _(x); if(str != x) {str += " <i>"; str += x; str += "</i>";} str2 = _(y);  str += " <i>"; str += str2; str += "</i>"; if(str2 != y) {str += " <i>"; str += y; str += "</i>";}
 	COMPLETION_CONVERT_STRING2("angle", "phasor")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex angle/phasor notation"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 400, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex Angle/Phasor Notation"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 400, -1);
 	COMPLETION_CONVERT_STRING("bases")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Number bases"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 201, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Number Bases"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 201, -1);
 	COMPLETION_CONVERT_STRING("base")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Base units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 101, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Base Units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 101, -1);
 	COMPLETION_CONVERT_STRING("base ")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Number base"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 200, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Number Base"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 200, -1);
 	COMPLETION_CONVERT_STRING("bijective")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Bijective base-26"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 290, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Bijective Base-26"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 290, -1);
 	COMPLETION_CONVERT_STRING("binary") str += " <i>"; str += "bin"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Binary number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 202, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Binary Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 202, -1);
 	COMPLETION_CONVERT_STRING("calendars")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Calendars"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 500, -1);
 	COMPLETION_CONVERT_STRING("cis")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex cis form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 401, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex cis Form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 401, -1);
 	COMPLETION_CONVERT_STRING("decimal") str += " <i>"; str += "dec"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Decimal number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 210, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Decimal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 210, -1);
 	COMPLETION_CONVERT_STRING("duodecimal") str += " <i>"; str += "duo"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Duodecimal number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 212, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Duodecimal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 212, -1);
 	COMPLETION_CONVERT_STRING("exponential")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex exponential form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 402, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex Exponential Form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 402, -1);
 	COMPLETION_CONVERT_STRING("factors")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Factors"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 600, -1);
 	COMPLETION_CONVERT_STRING("fp16") str += " <i>"; str += "binary16"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("16-bit floating point binary format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 310, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("16-bit Floating Point Binary Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 310, -1);
 	COMPLETION_CONVERT_STRING("fp32") str += " <i>"; str += "binary32"; str += "</i>"; str += " <i>"; str += "float"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("32-bit floating point binary format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 311, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("32-bit Floating Point Binary Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 311, -1);
 	COMPLETION_CONVERT_STRING("fp64") str += " <i>"; str += "binary64"; str += "</i>"; str += " <i>"; str += "double"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("64-bit floating point binary format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 312, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("64-bit Floating Point Binary Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 312, -1);
 	COMPLETION_CONVERT_STRING("fp80");
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("80-bit (x86) floating point binary format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 313, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("80-bit (x86) Floating Point Binary Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 313, -1);
 	COMPLETION_CONVERT_STRING("fp128") str += " <i>"; str += "binary128"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("128-bit floating point binary format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 314, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("128-bit Floating Point Binary Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 314, -1);
 	COMPLETION_CONVERT_STRING("fraction")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Fraction"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 300, -1);
 	COMPLETION_CONVERT_STRING("hexadecimal") str += " <i>"; str += "hex"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Hexadecimal number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 216, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Hexadecimal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 216, -1);
 	COMPLETION_CONVERT_STRING("latitude") str += " <i>"; str += "latitude2"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Latitude"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 294, -1);
 	COMPLETION_CONVERT_STRING("longitude") str += " <i>"; str += "longitude2"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Longitude"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 294, -1);
 	COMPLETION_CONVERT_STRING("mixed")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Mixed units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 102, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Mixed Units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 102, -1);
 	COMPLETION_CONVERT_STRING("octal") str += " <i>"; str += "oct"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Octal number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 208, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Octal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 208, -1);
 	COMPLETION_CONVERT_STRING("optimal")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Optimal units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 100, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Optimal Units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 100, -1);
 	COMPLETION_CONVERT_STRING("partial fraction")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Expanded partial fractions"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 601, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Expanded Partial Fractions"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 601, -1);
 	COMPLETION_CONVERT_STRING("polar")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex polar form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 403, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex Polar Form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 403, -1);
 	COMPLETION_CONVERT_STRING2("rectangular", "cartesian")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex rectangular form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 404, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex Rectangular Form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 404, -1);
 	COMPLETION_CONVERT_STRING("roman")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Roman numerals"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 280, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Roman Numerals"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 280, -1);
 	COMPLETION_CONVERT_STRING("sexagesimal") str += " <i>"; str += "sexa"; str += "</i>"; str += " <i>"; str += "sexa2"; str += "</i>"; str += " <i>"; str += "sexa3"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Sexagesimal number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 292, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Sexagesimal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 292, -1);
 	COMPLETION_CONVERT_STRING("time")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Time format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 293, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Time Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 293, -1);
 	COMPLETION_CONVERT_STRING("unicode")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Unicode"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 281, -1);
 	COMPLETION_CONVERT_STRING("utc")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("UTC time zone"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 501, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("UTC Time Zone"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 501, -1);
 	gtk_list_store_append(completion_store, &completion_separator_iter); gtk_list_store_set(completion_store, &completion_separator_iter, 0, "", 1, "", 2, NULL, 3, FALSE, 4, 3, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 0, -1);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_store), GTK_TREE_SORTABLE_UNSORTED_SORT_COLUMN_ID, GTK_SORT_ASCENDING);
 }
@@ -7304,13 +7366,13 @@ void update_completion() {
 /*
 	recreate functions menu and update function manager (when functions have changed)
 */
-void update_fmenu() {
+void update_fmenu(bool update_compl) {
 	if(function_cats.items.empty() && function_cats.objects.empty()) return;
 	gtk_widget_destroy(f_menu);
 	generate_functions_tree_struct();
 	create_fmenu();
 	recreate_recent_functions();
-	update_completion();
+	if(update_compl) update_completion();
 	update_functions_tree();
 }
 
@@ -14717,7 +14779,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 	GtkWidget *table = gtk_grid_new();
 	gtk_grid_set_row_spacing(GTK_GRID(table), 6);
 	gtk_grid_set_column_spacing(GTK_GRID(table), 6);
-	gtk_grid_set_row_homogeneous(GTK_GRID(table), TRUE);
+	gtk_grid_set_row_homogeneous(GTK_GRID(table), FALSE);
 	gtk_container_add(GTK_CONTAINER(vbox_pre), table);
 	gtk_widget_set_hexpand(table, TRUE);
 	fd->label.resize(args, NULL);
@@ -14739,8 +14801,9 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 #endif
 
 	int bindex = 0;
+	int r = 0;
 	string argstr, typestr, defstr;
-	string argtype;
+	string freetype = Argument().printlong();
 	Argument *arg;
 	//create argument entries
 	fd->properties_store = NULL;
@@ -14758,7 +14821,6 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 			argstr = arg->name();
 		}
 		typestr = "";
-		argtype = "";
 		ParseOptions pa = evalops.parse_options; pa.base = 10;
 		defstr = CALCULATOR->localizeExpression(f->getDefaultValue(i + 1), pa);
 		if(arg && (arg->suggestsQuotes() || arg->type() == ARGUMENT_TYPE_TEXT) && defstr.length() >= 2 && defstr[0] == '\"' && defstr[defstr.length() - 1] == '\"') {
@@ -14863,13 +14925,8 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 					}
 				}
 				default: {
-					argtype = arg->print();
-					typestr = "";
-					if(!argtype.empty()) {
-						typestr = "(";
-						typestr += argtype;
-						typestr += ")";
-					}
+					typestr = arg->printlong();
+					if(typestr == freetype) typestr = "";
 					if(i == 1 && f == CALCULATOR->f_ascii && arg->type() == ARGUMENT_TYPE_TEXT) {
 						combo = gtk_combo_box_text_new_with_entry();
 						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "UTF-8");
@@ -14916,24 +14973,26 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 		if(arg && arg->type() == ARGUMENT_TYPE_DATE) {
 			if(defstr == "now") defstr = CALCULATOR->v_now->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) fd->entry[i]).name;
 			else if(defstr == "today") defstr = CALCULATOR->v_today->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) fd->entry[i]).name;
-			typestr = typestr.substr(1, typestr.length() - 2);
-			fd->type_label[i] = gtk_button_new_with_label(typestr.c_str());
-			g_signal_connect(G_OBJECT(fd->type_label[i]), "clicked", G_CALLBACK(on_type_label_date_clicked), (gpointer) fd->entry[i]);
-			gtk_widget_set_halign(fd->type_label[i], GTK_ALIGN_FILL);
+			gtk_entry_set_icon_from_icon_name(GTK_ENTRY(fd->entry[i]), GTK_ENTRY_ICON_SECONDARY, "document-edit-symbolic");
+			g_signal_connect(G_OBJECT(fd->entry[i]), "icon_press", G_CALLBACK(on_type_label_date_clicked), NULL);
 		} else if(arg && arg->type() == ARGUMENT_TYPE_FILE) {
-			typestr = typestr.substr(1, typestr.length() - 2);
-			fd->type_label[i] = gtk_button_new_with_label(typestr.c_str());
-			g_signal_connect(G_OBJECT(fd->type_label[i]), "clicked", G_CALLBACK(on_type_label_file_clicked), (gpointer) fd->entry[i]);
-			gtk_widget_set_halign(fd->type_label[i], GTK_ALIGN_FILL);
+			gtk_entry_set_icon_from_icon_name(GTK_ENTRY(fd->entry[i]), GTK_ENTRY_ICON_SECONDARY, "document-open-symbolic");
+			g_signal_connect(G_OBJECT(fd->entry[i]), "icon_press", G_CALLBACK(on_type_label_file_clicked), NULL);
 		} else if(arg && (arg->type() == ARGUMENT_TYPE_VECTOR || arg->type() == ARGUMENT_TYPE_MATRIX)) {
-			typestr = typestr.substr(1, typestr.length() - 2);
-			fd->type_label[i] = gtk_button_new_with_label(typestr.c_str());
-			if(arg->type() == ARGUMENT_TYPE_VECTOR) g_signal_connect(G_OBJECT(fd->type_label[i]), "clicked", G_CALLBACK(on_type_label_vector_clicked), (gpointer) fd->entry[i]);
-			else g_signal_connect(G_OBJECT(fd->type_label[i]), "clicked", G_CALLBACK(on_type_label_matrix_clicked), (gpointer) fd->entry[i]);
-			gtk_widget_set_halign(fd->type_label[i], GTK_ALIGN_FILL);
+			gtk_entry_set_icon_from_icon_name(GTK_ENTRY(fd->entry[i]), GTK_ENTRY_ICON_SECONDARY, "document-edit-symbolic");
+			g_signal_connect(G_OBJECT(fd->entry[i]), "icon_press", G_CALLBACK(arg->type() == ARGUMENT_TYPE_VECTOR ? on_type_label_vector_clicked : on_type_label_matrix_clicked), NULL);
 		} else if(!typestr.empty()) {
+			gsub("&", "&amp;", typestr);
+			gsub(">", "&gt;", typestr);
+			gsub("<", "&lt;", typestr);
+			gsub(">=", SIGN_GREATER_OR_EQUAL, typestr);
+			gsub("<=", SIGN_LESS_OR_EQUAL, typestr);
+			gsub("!=", SIGN_NOT_EQUAL, typestr);
+			typestr.insert(0, "<i>"); typestr += "</i>";
 			fd->type_label[i] = gtk_label_new(typestr.c_str());
-			gtk_widget_set_halign(fd->type_label[i], GTK_ALIGN_START);
+			gtk_label_set_use_markup(GTK_LABEL(fd->type_label[i]), TRUE);
+			gtk_widget_set_halign(fd->type_label[i], GTK_ALIGN_END);
+			gtk_widget_set_valign(fd->type_label[i], GTK_ALIGN_START);
 		} else {
 			fd->type_label[i] = NULL;
 		}
@@ -15000,12 +15059,14 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 			}
 			g_signal_handlers_unblock_matched((gpointer) fd->entry[i], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
 		}
-		gtk_grid_attach(GTK_GRID(table), fd->label[i], 0, i, 1, 1);
-		if(combo) gtk_grid_attach(GTK_GRID(table), combo, 1, i, 1, 1);
-		else gtk_grid_attach(GTK_GRID(table), fd->entry[i], 1, i, 1, 1);
+		gtk_grid_attach(GTK_GRID(table), fd->label[i], 0, r, 1, 1);
+		if(combo) gtk_grid_attach(GTK_GRID(table), combo, 1, r, 1, 1);
+		else gtk_grid_attach(GTK_GRID(table), fd->entry[i], 1, r, 1, 1);
+		r++;
 		if(fd->type_label[i]) {
 			gtk_widget_set_hexpand(fd->type_label[i], FALSE);
-			gtk_grid_attach(GTK_GRID(table), fd->type_label[i], 2, i, 1, 1);
+			gtk_grid_attach(GTK_GRID(table), fd->type_label[i], 1, r, 1, 1);
+			r++;
 		}
 	}
 
@@ -15160,10 +15221,10 @@ void insert_button_currency(GtkMenuItem*, gpointer user_data) {
 	}
 }
 
-void set_name_label_and_entry(ExpressionItem *item, GtkWidget *entry, GtkWidget *label) {
+void set_name_label_and_entry(ExpressionItem *item, GtkWidget *entry, GtkWidget *label = NULL) {
 	const ExpressionName *ename = &item->getName(1);
 	gtk_entry_set_text(GTK_ENTRY(entry), ename->name.c_str());
-	if(item->countNames() > 1) {
+	if(label && item->countNames() > 1) {
 		string str = "+ ";
 		for(size_t i = 2; i <= item->countNames(); i++) {
 			if(i > 2) str += ", ";
@@ -15240,7 +15301,7 @@ void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), "");
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")), "");
 	gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(unitedit_builder, "unit_edit_combo_system")))), "");
-	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(unitedit_builder, "unit_edit_label_names")), "");
+	//gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(unitedit_builder, "unit_edit_label_names")), "");
 	gtk_text_buffer_set_text(description_buffer, "", -1);
 
 	if(u) {
@@ -15257,7 +15318,7 @@ void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 
 		//gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_combobox_class")), u->isLocal() && !u->isBuiltin());
 
-		set_name_label_and_entry(u, GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_name")), GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_label_names")));
+		set_name_label_and_entry(u, GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_name")));
 
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_name")), !u->isBuiltin());
 
@@ -15696,7 +15757,7 @@ void edit_function(const char *category = "", MathFunction *f = NULL, GtkWidget 
 
 	//clear entries
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")), "");
-	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(functionedit_builder, "function_edit_label_names")), "");
+	//gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(functionedit_builder, "function_edit_label_names")), "");
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_condition")), "");
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_entry_condition")), !f || !f->isBuiltin());
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")), !f || !f->isBuiltin());
@@ -15722,7 +15783,7 @@ void edit_function(const char *category = "", MathFunction *f = NULL, GtkWidget 
 	last_subfunction_index = 0;
 	if(f) {
 		//fill in original paramaters
-		set_name_label_and_entry(f, GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")), GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_label_names")));
+		set_name_label_and_entry(f, GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")));
 		ParseOptions pa = evalops.parse_options; pa.base = 10;
 		if(!f->isBuiltin()) {
 			gtk_text_buffer_set_text(expression_buffer, CALCULATOR->localizeExpression(((UserFunction*) f)->formula(), pa).c_str(), -1);
@@ -16062,7 +16123,7 @@ void edit_unknown(const char *category, Variable *var, GtkWidget *win) {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_unknown_edit_combobox_sign_changed, NULL);
 	if(v) {
 		//fill in original parameters
-		set_name_label_and_entry(v, GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_name")), GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_label_names")));
+		set_name_label_and_entry(v, GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_name")));
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_name")), !v->isBuiltin());
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), !v->isBuiltin());
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), !v->isBuiltin());
@@ -16099,7 +16160,7 @@ void edit_unknown(const char *category, Variable *var, GtkWidget *win) {
 			i++;
 		} while(CALCULATOR->nameTaken(v_name));
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_name")), v_name.c_str());
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(unknownedit_builder, "unknown_edit_label_names")), "");
+		//gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(unknownedit_builder, "unknown_edit_label_names")), "");
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combo_category")))), category);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_desc")), "");
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), CALCULATOR->defaultAssumptions()->type() < ASSUMPTION_TYPE_REAL ? 0 : CALCULATOR->defaultAssumptions()->type() - 3);
@@ -16242,19 +16303,19 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 		gtk_window_set_title(GTK_WINDOW(dialog), _("New Variable"));
 	}
 
-	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(variableedit_builder, "variable_edit_label_names")), "");
+	//gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(variableedit_builder, "variable_edit_label_names")), "");
 
 	gint w;
 	gtk_window_get_size(GTK_WINDOW(dialog), &w, NULL);
 	gtk_window_resize(GTK_WINDOW(dialog), w, 1);
 
 	if(mstruct_) {
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_box_names")));
+		//gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_box_names")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_value")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_label_value")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_checkbutton_exact")));
 	} else {
-		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_box_names")));
+		//gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_box_names")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_value")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_label_value")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_checkbutton_exact")));
@@ -16262,7 +16323,7 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 
 	if(v) {
 		//fill in original parameters
-		set_name_label_and_entry(v, GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")), GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_label_names")));
+		set_name_label_and_entry(v, GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")));
 		string value_str;
 		if(v->isExpression()) {
 			ParseOptions pa = evalops.parse_options; pa.base = 10;
@@ -16308,7 +16369,7 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 			i++;
 		} while(CALCULATOR->nameTaken(v_name));
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")), v_name.c_str());
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(variableedit_builder, "variable_edit_label_names")), "");
+		//gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(variableedit_builder, "variable_edit_label_names")), "");
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_value")), displayed_mstruct ? get_value_string(*mstruct).c_str() : get_expression_text().c_str());
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(variableedit_builder, "variable_edit_combo_category")))), category);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_desc")), "");
@@ -16467,7 +16528,7 @@ void edit_matrix(const char *category, Variable *var, MathStructure *mstruct_, G
 			r = v->get().rows();
 		}
 		//fill in original parameters
-		set_name_label_and_entry(v, GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_name")), GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_label_names")));
+		set_name_label_and_entry(v, GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_name")));
 		//can only change name and value of user variable
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_name")), !v->isBuiltin());
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_spinbutton_rows")), !v->isBuiltin());
@@ -16494,7 +16555,7 @@ void edit_matrix(const char *category, Variable *var, MathStructure *mstruct_, G
 			i++;
 		} while(CALCULATOR->nameTaken(v_name));
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_name")), v_name.c_str());
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(matrixedit_builder, "matrix_edit_label_names")), "");
+		//gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(matrixedit_builder, "matrix_edit_label_names")), "");
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(matrixedit_builder, "matrix_edit_combo_category")))), category);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_desc")), "");
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_button_ok")), TRUE);
@@ -17013,7 +17074,7 @@ bool edit_dataproperty(DataProperty *dp, bool new_property = false) {
 	editing_dataproperty = true;
 
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_entry_name")), dp->getName().c_str());
-	if(dp->countNames() > 1) {
+	/*if(dp->countNames() > 1) {
 		string str = "+ ";
 		for(size_t i = 2; i <= dp->countNames(); i++) {
 			if(i > 2) str += ", ";
@@ -17022,7 +17083,7 @@ bool edit_dataproperty(DataProperty *dp, bool new_property = false) {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_label_names")), str.c_str());
 	} else {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_label_names")), "");
-	}
+	}*/
 
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_entry_title")), dp->title(false).c_str());
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_entry_unit")), dp->getUnitString().c_str());
@@ -17159,7 +17220,7 @@ void edit_dataset(DataSet *ds, GtkWidget *win) {
 
 	//clear entries
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_name")), "");
-	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(datasetedit_builder, "dataset_edit_label_names")), "");
+	//gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(datasetedit_builder, "dataset_edit_label_names")), "");
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_name")), TRUE);
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_desc")), "");
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_file")), "");
@@ -17176,7 +17237,7 @@ void edit_dataset(DataSet *ds, GtkWidget *win) {
 
 	if(ds) {
 		//fill in original paramaters
-		set_name_label_and_entry(ds, GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_name")), GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_label_names")));
+		set_name_label_and_entry(ds, GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_name")));
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_desc")), ds->title(false).c_str());
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_file")), ds->defaultDataFile().c_str());
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_default_property")), ds->defaultProperty().c_str());
@@ -19197,10 +19258,12 @@ void load_preferences() {
 	win_height = -1;
 	variables_width = -1;
 	variables_height = -1;
-	variables_position = -1;
+	variables_hposition = -1;
+	variables_vposition = -1;
 	units_width = -1;
 	units_height = -1;
-	units_position = -1;
+	units_hposition = -1;
+	units_hposition = -1;
 	functions_width = -1;
 	functions_height = -1;
 	functions_hposition = -1;
@@ -19355,13 +19418,21 @@ void load_preferences() {
 				} else if(svar == "variables_height") {
 					variables_height = v;
 				} else if(svar == "variables_panel_position") {
-					variables_position = v;
+					variables_hposition = v;
+				} else if(svar == "variables_vpanel_position") {
+					variables_vposition = v;
+				} else if(svar == "variables_hpanel_position") {
+					variables_hposition = v;
 				} else if(svar == "units_width") {
 					units_width = v;
 				} else if(svar == "units_height") {
 					units_height = v;
 				} else if(svar == "units_panel_position") {
-					units_position = v;
+					units_hposition = v;
+				} else if(svar == "units_hpanel_position") {
+					units_hposition = v;
+				} else if(svar == "units_vpanel_position") {
+					units_vposition = v;
 				} else if(svar == "functions_width") {
 					functions_width = v;
 				} else if(svar == "functions_height") {
@@ -20300,13 +20371,15 @@ void save_preferences(bool mode) {
 		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")), &w, &h);
 		variables_width = w;
 		variables_height = h;
-		variables_position = gtk_paned_get_position(GTK_PANED(gtk_builder_get_object(variables_builder, "variables_hpaned")));
+		variables_hposition = gtk_paned_get_position(GTK_PANED(gtk_builder_get_object(variables_builder, "variables_hpaned")));
+		variables_vposition = gtk_paned_get_position(GTK_PANED(gtk_builder_get_object(variables_builder, "variables_vpaned")));
 	}
 	if(units_builder) {
 		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")), &w, &h);
 		units_width = w;
 		units_height = h;
-		units_position = gtk_paned_get_position(GTK_PANED(gtk_builder_get_object(units_builder, "units_hpaned")));
+		units_hposition = gtk_paned_get_position(GTK_PANED(gtk_builder_get_object(units_builder, "units_hpaned")));
+		units_vposition = gtk_paned_get_position(GTK_PANED(gtk_builder_get_object(units_builder, "units_vpaned")));
 	}
 	if(functions_builder) {
 		gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(functions_builder, "functions_dialog")), &w, &h);
@@ -20378,10 +20451,12 @@ void save_preferences(bool mode) {
 	if(variables_height > -1) fprintf(file, "variables_height=%i\n", variables_height);
 	if(variables_width > -1) fprintf(file, "variables_width=%i\n", variables_width);
 	if(variables_height > -1) fprintf(file, "variables_height=%i\n", variables_height);
-	if(variables_position > -1) fprintf(file, "variables_panel_position=%i\n", variables_position);
+	if(variables_hposition > -1) fprintf(file, "variables_hpanel_position=%i\n", variables_hposition);
+	if(variables_vposition > -1) fprintf(file, "variables_vpanel_position=%i\n", variables_vposition);
 	if(units_width > -1) fprintf(file, "units_width=%i\n", units_width);
 	if(units_height > -1) fprintf(file, "units_height=%i\n", units_height);
-	if(units_position > -1) fprintf(file, "units_panel_position=%i\n", units_position);
+	if(units_hposition > -1) fprintf(file, "units_panel_hposition=%i\n", units_hposition);
+	if(units_vposition > -1) fprintf(file, "units_panel_vposition=%i\n", units_vposition);
 	if(functions_width > -1) fprintf(file, "functions_width=%i\n", functions_width);
 	if(functions_height > -1) fprintf(file, "functions_height=%i\n", functions_height);
 	if(functions_hposition > -1) fprintf(file, "functions_hpanel_position=%i\n", functions_hposition);
@@ -20642,7 +20717,7 @@ void save_preferences(bool mode) {
 			if(i3 == string::npos) {
 				if(!is_protected && inhistory[hi].length() > 5000) {
 					int index = 50;
-					while(index >= 0 && inhistory[hi][index] < 0) index--;
+					while(index >= 0 && inhistory[hi][index] < 0 && (unsigned char) inhistory[hi][index] < 0xC0) index--;
 					fprintf(file, "%s …\n", inhistory[hi].substr(0, index + 1).c_str());
 				} else {
 					fprintf(file, "%s\n", inhistory[hi].c_str());
@@ -27839,8 +27914,8 @@ void on_menu_item_import_definitions_activate(GtkMenuItem*, gpointer) {
 #ifdef _WIN32
 		if(CopyFile(from_file, buildPath(homedir, str).c_str(), false) != 0) {
 			CALCULATOR->loadDefinitions(buildPath(homedir, str).c_str(), false, true);
-			update_fmenu();
-			update_vmenu();
+			update_fmenu(false);
+			update_vmenu(false);
 			update_umenus();
 		} else {
 			GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not copy %s to %s."), from_file, buildPath(homedir, str).c_str());
@@ -27867,8 +27942,8 @@ void on_menu_item_import_definitions_activate(GtkMenuItem*, gpointer) {
 				source.close();
 				dest.close();
 				CALCULATOR->loadDefinitions(buildPath(homedir, str).c_str(), false, true);
-				update_fmenu();
-				update_vmenu();
+				update_fmenu(false);
+				update_vmenu(false);
 				update_umenus();
 			}
 		}
@@ -32931,6 +33006,7 @@ return TRUE;}
 				block_completion();
 				if(expression_history_index == -1 && current_history_expression == get_expression_text()) expression_history_index = 0;
 				if(expression_history_index == -1) set_expression_text(current_history_expression.c_str());
+				else if(expression_history.empty()) expression_history_index = -1;
 				else set_expression_text(expression_history[expression_history_index].c_str());
 				unblock_completion();
 				dont_change_index = false;
@@ -33168,7 +33244,7 @@ void on_csv_import_radiobutton_vectors_toggled(GtkToggleButton*, gpointer) {
 void on_csv_import_combobox_delimiter_changed(GtkComboBox *w, gpointer) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(csvimport_builder, "csv_import_entry_delimiter_other")), gtk_combo_box_get_active(w) == DELIMITER_OTHER);
 }
-void on_csv_import_button_file_clicked(GtkButton*, gpointer) {
+void on_csv_import_button_file_clicked(GtkEntry*, gpointer) {
 	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file to import"), GTK_WINDOW(gtk_builder_get_object(csvimport_builder, "csv_import_dialog")), GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT, NULL);
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 	string filestr = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(csvimport_builder, "csv_import_entry_file")));
@@ -33194,7 +33270,7 @@ void on_csv_import_button_file_clicked(GtkButton*, gpointer) {
 void on_csv_export_combobox_delimiter_changed(GtkComboBox *w, gpointer) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(csvexport_builder, "csv_export_entry_delimiter_other")), gtk_combo_box_get_active(w) == DELIMITER_OTHER);
 }
-void on_csv_export_button_file_clicked(GtkButton*, gpointer) {
+void on_csv_export_button_file_clicked(GtkEntry*, gpointer) {
 	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file to export to"), GTK_WINDOW(gtk_builder_get_object(csvexport_builder, "csv_export_dialog")), GTK_FILE_CHOOSER_ACTION_SAVE, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT, NULL);
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 	string filestr = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(csvexport_builder, "csv_export_entry_file")));
@@ -33212,7 +33288,7 @@ void on_csv_export_radiobutton_matrix_toggled(GtkToggleButton *w, gpointer) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(csvexport_builder, "csv_export_entry_matrix")), gtk_toggle_button_get_active(w));
 }
 
-void on_type_label_date_clicked(GtkButton *w, gpointer user_data) {
+void on_type_label_date_clicked(GtkEntry *w, gpointer) {
 	GtkWidget *d = gtk_dialog_new_with_buttons(_("Select date"), GTK_WINDOW(gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW)), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_CANCEL, _("_OK"), GTK_RESPONSE_OK, NULL);
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 	GtkWidget *date_w = gtk_calendar_new();
@@ -33222,15 +33298,14 @@ void on_type_label_date_clicked(GtkButton *w, gpointer user_data) {
 		guint year = 0, month = 0, day = 0;
 		gtk_calendar_get_date(GTK_CALENDAR(date_w), &year, &month, &day);
 		gchar *gstr = g_strdup_printf("%i-%02i-%02i", year, month + 1, day);
-		gtk_entry_set_text(GTK_ENTRY(user_data), gstr);
+		gtk_entry_set_text(w, gstr);
 		g_free(gstr);
 	}
 	gtk_widget_destroy(d);
 }
-void on_type_label_vector_clicked(GtkButton *w, gpointer user_data) {
+void on_type_label_vector_clicked(GtkEntry *w, gpointer user_data) {
 	MathStructure mstruct_v;
-	GtkEntry *entry = GTK_ENTRY(user_data);
-	string str = gtk_entry_get_text(entry);
+	string str = gtk_entry_get_text(w);
 	remove_blank_ends(str);
 	if(!str.empty()) {
 		if(str[0] != '(' && str[0] != '[') {
@@ -33241,12 +33316,11 @@ void on_type_label_vector_clicked(GtkButton *w, gpointer user_data) {
 		CALCULATOR->parse(&mstruct_v, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), evalops.parse_options);
 		CALCULATOR->endTemporaryStopMessages();
 	}
-	insert_matrix(str.empty() ? NULL : &mstruct_v, gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW), TRUE, false, false, entry);
+	insert_matrix(str.empty() ? NULL : &mstruct_v, gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW), TRUE, false, false, w);
 }
-void on_type_label_matrix_clicked(GtkButton *w, gpointer user_data) {
+void on_type_label_matrix_clicked(GtkEntry *w, gpointer user_data) {
 	MathStructure mstruct_m;
-	GtkEntry *entry = GTK_ENTRY(user_data);
-	string str = gtk_entry_get_text(entry);
+	string str = gtk_entry_get_text(w);
 	remove_blank_ends(str);
 	if(!str.empty()) {
 		CALCULATOR->beginTemporaryStopMessages();
@@ -33254,17 +33328,17 @@ void on_type_label_matrix_clicked(GtkButton *w, gpointer user_data) {
 		CALCULATOR->endTemporaryStopMessages();
 		if(!mstruct_m.isMatrix()) str = "";
 	}
-	insert_matrix(str.empty() ? NULL : &mstruct_m, gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW), FALSE, false, false, entry);
+	insert_matrix(str.empty() ? NULL : &mstruct_m, gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW), FALSE, false, false, w);
 }
-void on_type_label_file_clicked(GtkButton*, gpointer user_data) {
+void on_type_label_file_clicked(GtkEntry *w, gpointer) {
 	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file"), NULL, GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT, NULL);
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
-	string filestr = gtk_entry_get_text(GTK_ENTRY(user_data));
+	string filestr = gtk_entry_get_text(w);
 	remove_blank_ends(filestr);
 	if(!filestr.empty()) gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(d), filestr.c_str());
 	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(d), filestr.c_str());
 	if(gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
-		gtk_entry_set_text(GTK_ENTRY(user_data), gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(d)));
+		gtk_entry_set_text(w, gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(d)));
 	}
 	gtk_widget_destroy(d);
 }
@@ -33527,25 +33601,25 @@ void on_argument_rules_checkbutton_enable_condition_toggled(GtkToggleButton *w, 
 						}\
 					}\
 				}\
-				gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(x, z)), str.c_str());
+				//gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(x, z)), str.c_str());
 
-void on_variable_edit_button_names_clicked(GtkButton*, gpointer) {
+void on_variable_edit_button_names_clicked(GtkWidget*, gpointer) {
 	edit_names(get_edited_variable(), gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name"))), GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog")));
 	SET_NAMES_LE(variableedit_builder, "variable_edit_entry_name", "variable_edit_label_names")
 }
-void on_unknown_edit_button_names_clicked(GtkButton*, gpointer) {
+void on_unknown_edit_button_names_clicked(GtkWidget*, gpointer) {
 	edit_names(get_edited_unknown(), gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_name"))), GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog")));
 	SET_NAMES_LE(unknownedit_builder, "unknown_edit_entry_name", "unknown_edit_label_names")
 }
-void on_matrix_edit_button_names_clicked(GtkButton*, gpointer) {
+void on_matrix_edit_button_names_clicked(GtkWidget*, gpointer) {
 	edit_names(get_edited_matrix(), gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_name"))), GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_dialog")));
 	SET_NAMES_LE(matrixedit_builder, "matrix_edit_entry_name", "matrix_edit_label_names")
 }
-void on_function_edit_button_names_clicked(GtkButton*, gpointer) {
+void on_function_edit_button_names_clicked(GtkWidget*, gpointer) {
 	edit_names(get_edited_function(), gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name"))), GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_dialog")));
 	SET_NAMES_LE(functionedit_builder, "function_edit_entry_name", "function_edit_label_names")
 }
-void on_unit_edit_button_names_clicked(GtkButton*, gpointer) {
+void on_unit_edit_button_names_clicked(GtkWidget*, gpointer) {
 	edit_names(get_edited_unit(), gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_name"))), GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_dialog")));
 	SET_NAMES_LE(unitedit_builder, "unit_edit_entry_name", "unit_edit_label_names")
 }
@@ -34949,12 +35023,12 @@ void on_dataset_edit_button_del_property_clicked(GtkButton*, gpointer) {
 		on_dataset_changed();
 	}
 }
-void on_dataset_edit_button_names_clicked(GtkButton*, gpointer) {
+void on_dataset_edit_button_names_clicked(GtkWidget*, gpointer) {
 	edit_names(get_edited_dataset(), gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_name"))), GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_dialog")));
 	SET_NAMES_LE(datasetedit_builder, "dataset_edit_entry_name", "dataset_edit_label_names")
 }
 
-void on_dataproperty_edit_button_names_clicked(GtkButton*, gpointer) {
+void on_dataproperty_edit_button_names_clicked(GtkWidget*, gpointer) {
 	edit_names(NULL, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_entry_name"))), GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_dialog")), TRUE, get_edited_dataproperty());
 	SET_NAMES_LE(datasetedit_builder, "dataproperty_edit_entry_name", "dataproperty_edit_label_names")
 }
