@@ -3330,6 +3330,9 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 					if(munit->isUnit() && u->referenceName() == "oF") {
 						u = CALCULATOR->getActiveUnit("oC");
 						if(u) mauto.set(CALCULATOR->convert(mauto, u, evalops, true, false));
+					} else if(munit->isUnit() && u->referenceName() == "oC") {
+						u = CALCULATOR->getActiveUnit("oF");
+						if(u) mauto.set(CALCULATOR->convert(mauto, u, evalops, true, false));
 					} else {
 						mauto.set(CALCULATOR->convertToOptimalUnit(mauto, evalops, true));
 					}
@@ -6968,7 +6971,7 @@ string sub_suffix(const ExpressionName *ename) {
 	if(b) {
 		if(is_in(NUMBERS, ename->name[ename->name.length() - 1])) {
 			while(ename->name.length() > i2 + 1 && is_in(NUMBERS, ename->name[ename->name.length() - 1 - i2])) {
-					i2++;
+				i2++;
 			}
 		}
 		str += ename->name.substr(0, ename->name.length() - i2);
@@ -11950,12 +11953,15 @@ int s2b(const string &str) {
 #define SET_BOOL(x)		{int v = s2b(svalue); if(v < 0) {CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);} else if(x != v) {x = v;}}
 
 void set_assumption(const string &str, AssumptionType &at, AssumptionSign &as, bool last_of_two = false) {
-	if(equalsIgnoreCase(str, "unknown") || str == "0") {
+	if(equalsIgnoreCase(str, "none") || str == "0") {
+		as = ASSUMPTION_SIGN_UNKNOWN;
+		at = ASSUMPTION_TYPE_NUMBER;
+	} else if(equalsIgnoreCase(str, "unknown")) {
 		if(!last_of_two) as = ASSUMPTION_SIGN_UNKNOWN;
 		else at = ASSUMPTION_TYPE_NUMBER;
 	} else if(equalsIgnoreCase(str, "real")) {
 		at = ASSUMPTION_TYPE_REAL;
-	} else if(equalsIgnoreCase(str, "number") || str == "num") {
+	} else if(equalsIgnoreCase(str, "number") || equalsIgnoreCase(str, "complex") || str == "num" || str == "cplx") {
 		at = ASSUMPTION_TYPE_NUMBER;
 	} else if(equalsIgnoreCase(str, "rational") || str == "rat") {
 		at = ASSUMPTION_TYPE_RATIONAL;
@@ -12087,7 +12093,7 @@ void set_option(string str) {
 				result_format_updated();
 			}
 		}
-	} else if(equalsIgnoreCase(svar, "assumptions") || svar == "ass") {
+	} else if(equalsIgnoreCase(svar, "assumptions") || svar == "ass" || svar == "asm") {
 		size_t i = svalue.find_first_of(SPACES);
 		AssumptionType at = CALCULATOR->defaultAssumptions()->type();
 		AssumptionSign as = CALCULATOR->defaultAssumptions()->sign();
@@ -14604,7 +14610,7 @@ void on_insert_function_exec(GtkWidget*, gpointer p) {
 		}
 		str += " <span font-weight=\"bold\">";
 		str += fix_history_string(result_text);
-		str += "</span> ";
+		str += "</span>";
 		gtk_label_set_markup(GTK_LABEL(fd->w_result), str.c_str());
 		gtk_widget_grab_focus(fd->entry[0]);
 	} else {
@@ -14778,7 +14784,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 
 	GtkWidget *table = gtk_grid_new();
 	gtk_grid_set_row_spacing(GTK_GRID(table), 6);
-	gtk_grid_set_column_spacing(GTK_GRID(table), 6);
+	gtk_grid_set_column_spacing(GTK_GRID(table), 12);
 	gtk_grid_set_row_homogeneous(GTK_GRID(table), FALSE);
 	gtk_container_add(GTK_CONTAINER(vbox_pre), table);
 	gtk_widget_set_hexpand(table, TRUE);
@@ -14788,6 +14794,11 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 	fd->boolean_index.resize(args, 0);
 
 	fd->w_result = gtk_label_new("");
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
+	gtk_widget_set_margin_end(fd->w_result, 6);
+#else
+	gtk_widget_set_margin_right(fd->w_result, 6);
+#endif
 	gtk_widget_set_margin_bottom(fd->w_result, 6);
 	gtk_label_set_max_width_chars(GTK_LABEL(fd->w_result), 20);
 	gtk_label_set_ellipsize(GTK_LABEL(fd->w_result), PANGO_ELLIPSIZE_MIDDLE);
@@ -14829,11 +14840,6 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 		fd->label[i] = gtk_label_new(argstr.c_str());
 		gtk_widget_set_halign(fd->label[i], GTK_ALIGN_END);
 		gtk_widget_set_hexpand(fd->label[i], FALSE);
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
-		gtk_widget_set_margin_end(fd->label[i], 6);
-#else
-		gtk_widget_set_margin_right(fd->label[i], 6);
-#endif
 		GtkWidget *combo = NULL;
 		if(arg) {
 			switch(arg->type()) {
@@ -14982,14 +14988,21 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 			gtk_entry_set_icon_from_icon_name(GTK_ENTRY(fd->entry[i]), GTK_ENTRY_ICON_SECONDARY, "document-edit-symbolic");
 			g_signal_connect(G_OBJECT(fd->entry[i]), "icon_press", G_CALLBACK(arg->type() == ARGUMENT_TYPE_VECTOR ? on_type_label_vector_clicked : on_type_label_matrix_clicked), NULL);
 		} else if(!typestr.empty()) {
+			if(printops.use_unicode_signs) {
+				gsub(">=", SIGN_GREATER_OR_EQUAL, typestr);
+				gsub("<=", SIGN_LESS_OR_EQUAL, typestr);
+				gsub("!=", SIGN_NOT_EQUAL, typestr);
+			}
 			gsub("&", "&amp;", typestr);
 			gsub(">", "&gt;", typestr);
 			gsub("<", "&lt;", typestr);
-			gsub(">=", SIGN_GREATER_OR_EQUAL, typestr);
-			gsub("<=", SIGN_LESS_OR_EQUAL, typestr);
-			gsub("!=", SIGN_NOT_EQUAL, typestr);
 			typestr.insert(0, "<i>"); typestr += "</i>";
 			fd->type_label[i] = gtk_label_new(typestr.c_str());
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
+			gtk_widget_set_margin_end(fd->type_label[i], 6);
+#else
+			gtk_widget_set_margin_right(fd->type_label[i], 6);
+#endif
 			gtk_label_set_use_markup(GTK_LABEL(fd->type_label[i]), TRUE);
 			gtk_widget_set_halign(fd->type_label[i], GTK_ALIGN_END);
 			gtk_widget_set_valign(fd->type_label[i], GTK_ALIGN_START);
@@ -15114,7 +15127,8 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 		if(h < 100) h = 100;
 		gtk_widget_set_size_request(descr_frame, -1, h);
 	} else {
-		gtk_grid_attach(GTK_GRID(table), fd->w_result, 0, args, 2, 1);
+		gtk_widget_set_margin_top(fd->w_result, 6);
+		gtk_grid_attach(GTK_GRID(table), fd->w_result, 0, r, 2, 1);
 	}
 
 	g_signal_connect(G_OBJECT(fd->b_exec), "clicked", G_CALLBACK(on_insert_function_exec), (gpointer) f);
@@ -19263,7 +19277,7 @@ void load_preferences() {
 	units_width = -1;
 	units_height = -1;
 	units_hposition = -1;
-	units_hposition = -1;
+	units_vposition = -1;
 	functions_width = -1;
 	functions_height = -1;
 	functions_hposition = -1;
@@ -19366,7 +19380,7 @@ void load_preferences() {
 
 	size_t bookmark_index = 0;
 
-	int version_numbers[] = {3, 19, 0};
+	int version_numbers[] = {3, 20, 0};
 	bool old_history_format = false;
 
 	if(file) {
@@ -20418,6 +20432,7 @@ void save_preferences(bool mode) {
 			GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(mainwindow));
 			win_monitor = 1;
 			win_monitor_primary = false;
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 			GdkMonitor *monitor = gdk_display_get_monitor_at_window(display, gtk_widget_get_window(mainwindow));
 			if(monitor) {
 				int n = gdk_display_get_n_monitors(display);
@@ -20435,6 +20450,20 @@ void save_preferences(bool mode) {
 				win_y -= area.y;
 				win_monitor_primary = gdk_monitor_is_primary(monitor);
 			}
+#else
+			GdkScreen *screen = gtk_window_get_screen(GTK_WINDOW(mainwindow));
+			if(screen) {
+				int i = gdk_screen_get_monitor_at_window(screen, gtk_widget_get_window(mainwindow));
+				if(i >= 0) {
+					win_monitor_primary = (i == gdk_screen_get_primary_monitor(screen));
+					GdkRectangle area;
+					gdk_screen_get_monitor_workarea(screen, i, &area);
+					win_monitor = i + 1;
+					win_x -= area.x;
+					win_y -= area.y;
+				}
+			}
+#endif
 			fprintf(file, "monitor=%i\n", win_monitor);
 			fprintf(file, "monitor_primary=%i\n", win_monitor_primary);
 			fprintf(file, "x=%i\n", win_x);
@@ -20455,8 +20484,8 @@ void save_preferences(bool mode) {
 	if(variables_vposition > -1) fprintf(file, "variables_vpanel_position=%i\n", variables_vposition);
 	if(units_width > -1) fprintf(file, "units_width=%i\n", units_width);
 	if(units_height > -1) fprintf(file, "units_height=%i\n", units_height);
-	if(units_hposition > -1) fprintf(file, "units_panel_hposition=%i\n", units_hposition);
-	if(units_vposition > -1) fprintf(file, "units_panel_vposition=%i\n", units_vposition);
+	if(units_hposition > -1) fprintf(file, "units_hpanel_position=%i\n", units_hposition);
+	if(units_vposition > -1) fprintf(file, "units_vpanel_position=%i\n", units_vposition);
 	if(functions_width > -1) fprintf(file, "functions_width=%i\n", functions_width);
 	if(functions_height > -1) fprintf(file, "functions_height=%i\n", functions_height);
 	if(functions_hposition > -1) fprintf(file, "functions_hpanel_position=%i\n", functions_hposition);
@@ -21717,6 +21746,7 @@ void on_main_window_close(GtkWidget *w, GdkEvent *event, gpointer user_data) {
 		gtk_window_get_position(GTK_WINDOW(w), &hidden_x, &hidden_y);
 		hidden_monitor = 1;
 		hidden_monitor_primary = false;
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 		GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(mainwindow));
 		int n = gdk_display_get_n_monitors(display);
 		GdkMonitor *monitor = gdk_display_get_monitor_at_window(display, gtk_widget_get_window(mainwindow));
@@ -21735,6 +21765,20 @@ void on_main_window_close(GtkWidget *w, GdkEvent *event, gpointer user_data) {
 			hidden_y -= area.y;
 			hidden_monitor_primary = gdk_monitor_is_primary(monitor);
 		}
+#else
+		GdkScreen *screen = gtk_window_get_screen(GTK_WINDOW(mainwindow));
+		if(screen) {
+			int i = gdk_screen_get_monitor_at_window(screen, gtk_widget_get_window(mainwindow));
+			if(i >= 0) {
+				hidden_monitor_primary = (i == gdk_screen_get_primary_monitor(screen));
+				GdkRectangle area;
+				gdk_screen_get_monitor_workarea(screen, i, &area);
+				hidden_monitor = i + 1;
+				hidden_x -= area.x;
+				hidden_y -= area.y;
+			}
+		}
+#endif
 		gtk_widget_hide(w);
 		clear_expression_text();
 	} else {

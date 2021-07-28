@@ -48,6 +48,34 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="3.20.0" date="2021-07-28">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Updated insert function dialog layout</li>
+      <li>Add description field to variables and units dialogs</li>
+      <li>Add customizable keyboard shortcut for insert result</li>
+      <li>Insert "smart parentheses" with right parenthesis key if expression has selection or text cursor is at start</li>
+      <li>Add language option to configuration file</li>
+      <li>Fix background color of expression entry in inactive window</li>
+      <li>Add translator credits to about dialog</li>
+      <li>Catalan translation</li>
+      <li>Add support for function creation in save() function and with associated operator (e.g. func1():=x*y^2)</li>
+      <li>Add operators (.', .*, ./, .^) and functions (replace multiply(), divide(), and pow()) for transpose and element-wise multiplication, division, and power</li>
+      <li>Fix norm() and magnitude(), and add second argument, p, to norm() function</li>
+      <li>New text operators: dot, cross, comb, and perm</li>
+      <li>Add support for ^^ as XOR operator</li>
+      <li>Fixes and improvements in multisolve() function</li>
+      <li>Always return exact result in base() function, in exact mode</li>
+      <li>Improve parsing of functions without parentheses</li>
+      <li>Do not try to load data objects from global definitions dir if data set is local</li>
+      <li>Interpret "±" at end of expression as "±0"</li>
+      <li>Convert Celsius to Fahrenheit if no calculation was performed</li>
+      <li>Add support for QALCULATE_USER_DIR environment variable</li>
+      <li>Minor bug fixes and feature improvements</li>
+     </ul>
+   </description>
+  </release>
   <release version="3.19.0" date="2021-05-24">
    <description>
     <p>Changes:</p>
