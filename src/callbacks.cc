@@ -2946,8 +2946,10 @@ bool test_parsed_comparison_gtk(const MathStructure &m) {
 }
 bool contains_plot_or_save(const string &str) {
 	if(str.find(":=") != string::npos) return true;
-	for(size_t i = 1; i <= CALCULATOR->f_plot->countNames(); i++) {
-		if(str.find(CALCULATOR->f_plot->getName(i).name) != string::npos) return true;
+	if(CALCULATOR->f_plot) {
+		for(size_t i = 1; i <= CALCULATOR->f_plot->countNames(); i++) {
+			if(str.find(CALCULATOR->f_plot->getName(i).name) != string::npos) return true;
+		}
 	}
 	for(size_t i = 1; i <= CALCULATOR->f_save->countNames(); i++) {
 		if(str.find(CALCULATOR->f_save->getName(i).name) != string::npos) return true;
@@ -3700,7 +3702,7 @@ void display_parse_status() {
 			CALCULATOR->separateWhereExpression(str_e, str_w, evalops);
 			if(!str_e.empty()) CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
 			if(b_to && !str_e.empty()) {
-				if(!current_from_struct && !mparse.containsFunction(CALCULATOR->f_save) && !mparse.containsFunction(CALCULATOR->f_plot)) {
+				if(!current_from_struct && !mparse.containsFunction(CALCULATOR->f_save) && (!CALCULATOR->f_plot || !mparse.containsFunction(CALCULATOR->f_plot))) {
 					current_from_struct = new MathStructure;
 					EvaluationOptions eo = evalops;
 					eo.structuring = STRUCTURING_NONE;
