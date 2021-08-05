@@ -2,11 +2,11 @@
 
 <a href="https://github.com/Qalculate/qalculate-gtk/raw/master/data/qalculate-gtk-appdata-1.png"><img src="https://github.com/Qalculate/qalculate-gtk/raw/master/data/qalculate-gtk-appdata-1.png" width="510"></a>
 
-Qalculate! is a multi-purpose cross-platform desktop calculator. It is simple to use but provides power and versatility normally reserved for complicated math packages, as well as useful tools for everyday needs (such as currency conversion and percent calculation). Features include a large library of customizable functions, unit calculations and conversion, symbolic calculations (including integrals and equations), arbitrary precision, uncertainty propagation, interval arithmetic, plotting, and a user-friendly interface (GTK and CLI).
+Qalculate! is a multi-purpose cross-platform desktop calculator. It is simple to use but provides power and versatility normally reserved for complicated math packages, as well as useful tools for everyday needs (such as currency conversion and percent calculation). Features include a large library of customizable functions, unit calculations and conversion, symbolic calculations (including integrals and equations), arbitrary precision, uncertainty propagation, interval arithmetic, plotting, and a user-friendly interface (GTK, Qt, and CLI).
 
 ## Requirements
 * GTK (>= 3.10)
-* libqalculate (>= 3.19.0)
+* libqalculate (>= 3.20.0)
 
 ## Installation
 Instructions and download links for installers, binaries packages, and the source code of released versions of Qalculate! are available at https://qalculate.github.io/downloads.html.

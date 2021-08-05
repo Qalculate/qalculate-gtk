@@ -356,12 +356,22 @@ static void qalculate_activate(GtkApplication *app) {
 		if(hidden_x >= 0) {
 			gtk_widget_show(GTK_WIDGET(list->data));
 			GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(list->data));
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 			GdkMonitor *monitor = NULL;
 			if(hidden_monitor_primary) monitor = gdk_display_get_primary_monitor(display);
 			if(!monitor && hidden_monitor > 0) gdk_display_get_monitor(display, hidden_monitor - 1);
 			if(monitor) {
 				GdkRectangle area;
 				gdk_monitor_get_workarea(monitor, &area);
+#else
+			GdkScreen *screen = gdk_display_get_default_screen(display);
+			int i = -1;
+			if(hidden_monitor_primary) i = gdk_screen_get_primary_monitor(screen);
+			if(i < 0 && hidden_monitor > 0 && hidden_monitor < gdk_screen_get_n_monitors(screen)) i = hidden_monitor;
+			if(i >= 0) {
+				GdkRectangle area;
+				gdk_screen_get_monitor_workarea(screen, i, &area);
+#endif
 				gint w = 0, h = 0;
 				gtk_window_get_size(GTK_WINDOW(list->data), &w, &h);
 				if(hidden_x + w > area.width) hidden_x = area.width - w;
@@ -485,12 +495,22 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 		if(hidden_x >= 0) {
 			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 			GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 			GdkMonitor *monitor = NULL;
 			if(hidden_monitor_primary) monitor = gdk_display_get_primary_monitor(display);
 			if(!monitor && hidden_monitor > 0) gdk_display_get_monitor(display, hidden_monitor - 1);
 			if(monitor) {
 				GdkRectangle area;
 				gdk_monitor_get_workarea(monitor, &area);
+#else
+			GdkScreen *screen = gdk_display_get_default_screen(display);
+			int i = -1;
+			if(hidden_monitor_primary) i = gdk_screen_get_primary_monitor(screen);
+			if(i < 0 && hidden_monitor > 0 && hidden_monitor < gdk_screen_get_n_monitors(screen)) i = hidden_monitor;
+			if(i >= 0) {
+				GdkRectangle area;
+				gdk_screen_get_monitor_workarea(screen, i, &area);
+#endif
 				gint w = 0, h = 0;
 				gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
 				if(hidden_x + w > area.width) hidden_x = area.width - w;
@@ -558,7 +578,13 @@ int main (int argc, char *argv[]) {
 			} else if(strncmp(line, "language=", 9) == 0) {
 				lang = line + sizeof(char) * 9;
 				remove_blank_ends(lang);
-				if(!lang.empty()) setenv("LANG", lang.c_str(), 1);
+				if(!lang.empty()) {
+#	ifdef _WIN32
+					_putenv_s("LANG", lang.c_str());
+#	else
+					setenv("LANG", lang.c_str(), 1);
+#	endif
+				}
 				break;
 			}
 		}

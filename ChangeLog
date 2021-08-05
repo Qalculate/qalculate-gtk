@@ -1,3 +1,41 @@
+2021-07-29 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix segfault without gnuplot
+
+2021-07-27 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Set minimum height for names and sub function lists
+	* Convert Celsius to Fahrenheit if no calculation was performed
+
+2021-07-10 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Use entry icons instead of buttons for matrices, dates, and files in insert function dialog, for name in objects edit dialogs, and for file in csv dialogs
+	* Show full argument description below the entry, instead of short to the right, in insert function dialog
+	* Add description to units and variables windows (as in functions window)
+	* Capitalize non-object completion item titles
+
+2021-07-05 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Do not use calculate-as-you-type for expressions containing save() or plot() function
+
+2021-06-16 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Insert "smart parentheses" with right parenthesis key if expression has selection or text cursor is at start
+
+2021-06-05 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Use minus sign instead of function name when applying neg() to expression using keypad button
+
+2021-06-05 Damir Islamov <damir@secretlaboratory.ru>
+
+	* Add translator credits to About dialog
+
+2021-05-27 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add customizable keyboard shortcut for insert result
+	* Add language option to configuration file
+	* Fix background color of expression entry in inactive window
+
 2021-05-23 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Preserve supernumerary function argument definitions
