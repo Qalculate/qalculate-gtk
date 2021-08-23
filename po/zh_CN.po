@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Qalculate 3.16\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-07-28 15:47+0200\n"
-"PO-Revision-Date: 2021-04-17 20:14+0800\n"
+"PO-Revision-Date: 2021-08-23 16:48+0800\n"
 "Last-Translator: tuberry <orzun@foxmail.com>\n"
 "Language-Team: Chinese (Simplified) <orzun@foxmail.com>\n"
 "Language: zh_CHS\n"
@@ -48,9 +48,8 @@ msgid ""
 "complicated math packages, as well as useful tools for everyday needs (such "
 "as currency conversion and percent calculation)."
 msgstr ""
-"Qalculate!是一款多功能的跨平台桌面计算器。它简单易用，但却具有通常复杂的数学"
-"软件包所需的强大功能和多样性，以及满足日常所需的实用工具(如货币换算和百分比计"
-"算)。"
+"Qalculate!是一款多功能的跨平台桌面计算器。它既简单易用又能提供复杂数学软件通"
+"常所具有的功用，以及满足日常所需的实用工具(如货币换算和百分比计算)。"
 
 #: ../data/qalculate-gtk.appdata.xml.in.h:4
 msgid ""
@@ -59,8 +58,8 @@ msgid ""
 "(including integrals and equations), arbitrary precision, uncertainty "
 "propagation, interval arithmetic, plotting, and a user-friendly interface."
 msgstr ""
-"功能包括大量可定制函数库、单位计算与换算、物理常数、符号计算(包括积分和方"
-"程)、高精度计算、误差传递、区间运算、绘图和用户友好的界面。"
+"功能包括庞大的可定制函数库、单位计算与换算、物理常数、符号计算(包含积分和方"
+"程)、高精度计算、误差传递、区间运算、作图和用户友好的界面。"
 
 #: ../data/argumentrules.ui.h:1
 msgid "Argument Rules"
@@ -2722,13 +2721,13 @@ msgstr "记住窗口位置"
 
 #: ../data/preferences.ui.h:28
 msgid "Keep above other windows"
-msgstr ""
+msgstr "窗口置顶"
 
 #: ../data/preferences.ui.h:29
 msgid ""
 "Keep the main window above other windows (depending on platform and settings "
 "this might not work)"
-msgstr ""
+msgstr "保持主窗口置顶(在有的系统及设置下可能不起作用)"
 
 #: ../data/preferences.ui.h:30
 msgid "Application name"
@@ -2762,32 +2761,31 @@ msgstr "默认值"
 
 #: ../data/preferences.ui.h:37
 msgid "Light"
-msgstr ""
+msgstr "浅色"
 
 #: ../data/preferences.ui.h:38
 msgid "Dark"
-msgstr ""
+msgstr "深色"
 
 #: ../data/preferences.ui.h:39
 msgid "High contrast"
-msgstr ""
+msgstr "高对比度"
 
 #: ../data/preferences.ui.h:40
 msgid "Dark high contrast"
-msgstr ""
+msgstr "深色高对比度"
 
 #: ../data/preferences.ui.h:41
 msgid "Theme"
-msgstr ""
+msgstr "主题"
 
 #: ../data/preferences.ui.h:42
-#, fuzzy
 msgid "Button padding"
-msgstr "按钮动作"
+msgstr "按钮填充"
 
 #: ../data/preferences.ui.h:43
 msgid "/"
-msgstr ""
+msgstr "/"
 
 #: ../data/preferences.ui.h:44
 msgid "Number of expression lines"
@@ -2854,7 +2852,7 @@ msgstr "拼出逻辑运算符"
 
 #: ../data/preferences.ui.h:58
 msgid "If logical and/or shall be displayed as \"&&\"/\"||\" or \"and\"/\"or\""
-msgstr "若要逻辑与/或应显示为 &&/|| 或 and/or"
+msgstr "若要逻辑与/或显示为“&&/||”或“and/or”"
 
 #: ../data/preferences.ui.h:59
 msgid "If \"e\" shall be used instead of \"E\" in numbers"
@@ -3082,7 +3080,7 @@ msgstr "其他:"
 #: ../src/callbacks.cc:28645 ../src/callbacks.cc:28730
 #: ../src/callbacks.cc:28769 ../src/callbacks.cc:28777
 msgid "Bijective base-26"
-msgstr "Bijective base-26"
+msgstr "双射基-26"
 
 #: ../data/setbase.ui.h:13
 msgid "<b>Result Base</b>"
@@ -3199,13 +3197,11 @@ msgid "Base unit(s)"
 msgstr "基本单位"
 
 #: ../data/unitedit.ui.h:26
-#, fuzzy
 msgid ""
 "Unit (for named derived unit) or unit expression (for unnamed derived unit) "
 "that this unit is defined in relation to"
 msgstr ""
-"该单位(对于命名派生单位)或单位表达式(对于未命名派生单位)的定义所关联(基于)的"
-"单位"
+"该单位定义所关联的单位(对于命名派生单位)或单位表达式(对于未命名派生单位)"
 
 #: ../data/unitedit.ui.h:27
 msgid "Exponent"
@@ -3229,8 +3225,8 @@ msgid ""
 msgstr ""
 "与基本单位的关系。 对于线性关系，这应该只是一个数字。\n"
 "\n"
-"对于非线性关系，用\\x表示因子，用\\y表示指数(例如，“\\x + 273.15”表示摄氏度和"
-"开尔文之间的关系)。"
+"对于非线性关系，以\\x表示因子，\\y表示指数(例如，“\\x + 273.15”表示摄氏度和开"
+"尔文之间的关系)。"
 
 #: ../data/unitedit.ui.h:33
 msgid "Relation is exact"
@@ -3970,31 +3966,27 @@ msgstr ""
 
 #: ../src/callbacks.cc:2779
 msgid "Interpretation of dots"
-msgstr ""
+msgstr "点号解释"
 
 #: ../src/callbacks.cc:2789
-#, fuzzy
 msgid ""
 "Please select interpretation of dots (\".\")\n"
 "(this can later be changed in preferences)."
 msgstr ""
-"表达方式有歧义。\n"
-"请选择温度计算模式\n"
+"请选择对点号(”.“)的解释\n"
 "(以后可以在偏好设置中更改)。"
 
 #: ../src/callbacks.cc:2792
-#, fuzzy
 msgid "Both dot and comma as decimal separators"
-msgstr "将逗号作为小数分隔符"
+msgstr "将点号和逗号均作为小数分隔符"
 
 #: ../src/callbacks.cc:2799
 msgid "Dot as thousands separator"
-msgstr ""
+msgstr "将点号作为千位分隔符"
 
 #: ../src/callbacks.cc:2806
-#, fuzzy
 msgid "Only dot as decimal separator"
-msgstr "将逗号作为小数分隔符"
+msgstr "仅将逗号作为小数分隔符"
 
 #: ../src/callbacks.cc:2869 ../src/callbacks.cc:4417 ../src/callbacks.cc:4418
 #: ../src/callbacks.cc:4474 ../src/callbacks.cc:4779 ../src/callbacks.cc:4780
@@ -4292,14 +4284,12 @@ msgid "Variable does not exist anymore."
 msgstr "变量不再存在。"
 
 #: ../src/callbacks.cc:4912
-#, fuzzy
 msgid "a matrix"
-msgstr "矩阵"
+msgstr "一个矩阵"
 
 #: ../src/callbacks.cc:4914
-#, fuzzy
 msgid "a vector"
-msgstr "向量"
+msgstr "一个向量"
 
 #: ../src/callbacks.cc:4940 ../src/callbacks.cc:7106
 msgid "positive"
@@ -4346,9 +4336,8 @@ msgid "number"
 msgstr "数"
 
 #: ../src/callbacks.cc:4956
-#, fuzzy
 msgid "not matrix"
-msgstr "(非矩阵)"
+msgstr "非矩阵"
 
 #: ../src/callbacks.cc:4959 ../src/callbacks.cc:7124
 msgid "unknown"
@@ -4587,9 +4576,8 @@ msgid "Copy result"
 msgstr "复制结果"
 
 #: ../src/callbacks.cc:6309
-#, fuzzy
 msgid "Insert result"
-msgstr "插入文本"
+msgstr "插入结果"
 
 #: ../src/callbacks.cc:6310
 msgid "Save result image"
@@ -4608,18 +4596,16 @@ msgid "Toggle chain mode"
 msgstr "切换链式模式"
 
 #: ../src/callbacks.cc:6314
-#, fuzzy
 msgid "Toggle keep above"
-msgstr "切换精确模式"
+msgstr "切换窗口置顶"
 
 #: ../src/callbacks.cc:6315
-#, fuzzy
 msgid "Show/hide completion"
-msgstr "无补全"
+msgstr "显示/隐藏补全"
 
 #: ../src/callbacks.cc:6316
 msgid "Perform completion (activate first item)"
-msgstr ""
+msgstr "执行补全(激活首项)"
 
 #: ../src/callbacks.cc:6635
 msgid "Prefixes"
@@ -4658,17 +4644,14 @@ msgid "Prefix"
 msgstr "前缀"
 
 #: ../src/callbacks.cc:7306
-#, fuzzy
 msgid "Base Units"
 msgstr "基本单位"
 
 #: ../src/callbacks.cc:7310
-#, fuzzy
 msgid "Bijective Base-26"
-msgstr "Bijective base-26"
+msgstr "双射基-26"
 
 #: ../src/callbacks.cc:7312
-#, fuzzy
 msgid "Binary Number"
 msgstr "二进制数"
 
@@ -4677,17 +4660,14 @@ msgid "Calendars"
 msgstr "日历"
 
 #: ../src/callbacks.cc:7316
-#, fuzzy
 msgid "Complex cis Form"
 msgstr "复纯虚数指数形式"
 
 #: ../src/callbacks.cc:7318
-#, fuzzy
 msgid "Decimal Number"
 msgstr "十进制数"
 
 #: ../src/callbacks.cc:7320
-#, fuzzy
 msgid "Duodecimal Number"
 msgstr "十二进制数"
 
@@ -4696,32 +4676,26 @@ msgid "Factors"
 msgstr "因子"
 
 #: ../src/callbacks.cc:7326
-#, fuzzy
 msgid "16-bit Floating Point Binary Format"
 msgstr "16位浮点二进制格式"
 
 #: ../src/callbacks.cc:7328
-#, fuzzy
 msgid "32-bit Floating Point Binary Format"
 msgstr "32位浮点二进制格式"
 
 #: ../src/callbacks.cc:7330
-#, fuzzy
 msgid "64-bit Floating Point Binary Format"
 msgstr "64位浮点二进制格式"
 
 #: ../src/callbacks.cc:7332
-#, fuzzy
 msgid "80-bit (x86) Floating Point Binary Format"
 msgstr "80位(x86)浮点二进制格式"
 
 #: ../src/callbacks.cc:7334
-#, fuzzy
 msgid "128-bit Floating Point Binary Format"
 msgstr "128位浮点二进制格式"
 
 #: ../src/callbacks.cc:7338
-#, fuzzy
 msgid "Hexadecimal Number"
 msgstr "十六进制数"
 
@@ -4734,32 +4708,26 @@ msgid "Longitude"
 msgstr "经度"
 
 #: ../src/callbacks.cc:7344
-#, fuzzy
 msgid "Mixed Units"
 msgstr "混合单位"
 
 #: ../src/callbacks.cc:7346
-#, fuzzy
 msgid "Octal Number"
 msgstr "八进制数"
 
 #: ../src/callbacks.cc:7348
-#, fuzzy
 msgid "Optimal Units"
 msgstr "最优单位"
 
 #: ../src/callbacks.cc:7350
-#, fuzzy
 msgid "Expanded Partial Fractions"
 msgstr "展开部分分式"
 
 #: ../src/callbacks.cc:7358
-#, fuzzy
 msgid "Sexagesimal Number"
 msgstr "六十进制数"
 
 #: ../src/callbacks.cc:7364
-#, fuzzy
 msgid "UTC Time Zone"
 msgstr "UTC时区"
 
@@ -5412,7 +5380,7 @@ msgstr "元素数据"
 
 #: ../src/callbacks.cc:34974
 msgid "Classification"
-msgstr "分类"
+msgstr "类别"
 
 #: ../src/callbacks.cc:34979
 msgid "Alkali Metal"
@@ -5424,7 +5392,7 @@ msgstr "碱土金属"
 
 #: ../src/callbacks.cc:34981
 msgid "Lanthanide"
-msgstr "镧系元素"
+msgstr "镧系"
 
 #: ../src/callbacks.cc:34982
 msgid "Actinide"
