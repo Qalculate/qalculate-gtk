@@ -49,6 +49,7 @@ struct mode_struct {
 	bool autocalc;
 	bool chain_mode;
 	bool complex_angle_form;
+	bool implicit_question_asked;
 };
 
 enum {

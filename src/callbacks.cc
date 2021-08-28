@@ -279,7 +279,7 @@ bool stop_timeouts = false;
 PrintOptions printops, parse_printops, displayed_printops;
 bool displayed_caf = false;
 EvaluationOptions evalops;
-bool dot_question_asked = false;
+bool dot_question_asked = false, implicit_question_asked = false;
 
 bool rpn_mode, rpn_keys;
 bool adaptive_interval_display;
@@ -2160,7 +2160,7 @@ bool check_exchange_rates(GtkWidget *win = NULL, bool set_result = false) {
 /*
 	display errors generated under calculation
 */
-bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inhistory_index = NULL, int type = 0) {
+bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inhistory_index = NULL, int type = 0, bool *implicit_warning = NULL) {
 	if(!CALCULATOR->message()) return false;
 	int index = 0;
 	MessageType mtype, mtype_highest = MESSAGE_INFORMATION;
@@ -2168,71 +2168,75 @@ bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 	GtkTreeIter history_iter;
 	int inhistory_added = 0;
 	while(true) {
-		mtype = CALCULATOR->message()->type();
-		if(mtype == MESSAGE_INFORMATION && (type == 1 || type == 2) && win && CALCULATOR->message()->message().find("-------------------------------------\n") == 0) {
-			GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(win),GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, "%s", CALCULATOR->message()->message().c_str());
-			if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
-			gtk_dialog_run(GTK_DIALOG(edialog));
-			gtk_widget_destroy(edialog);
+		if(CALCULATOR->message()->category() == MESSAGE_CATEGORY_IMPLICIT_MULTIPLICATION && (implicit_question_asked || implicit_warning)) {
+			if(!implicit_question_asked) *implicit_warning = true;
 		} else {
-			if(index > 0) {
-				if(index == 1) str = "• " + str;
-				str += "\n• ";
-			}
-			if(win != NULL && plot_builder && win == GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")) && CALCULATOR->message()->message() == _("It took too long to generate the plot data.")) str += _("It took too long to generate the plot data. Please decrease the sampling rate or increase the time limit in preferences.");
-			else str += CALCULATOR->message()->message();
-			if(mtype == MESSAGE_ERROR || (mtype_highest != MESSAGE_ERROR && mtype == MESSAGE_WARNING)) {
-				mtype_highest = mtype;
-			}
-			if(history_index_p && inhistory_index && *inhistory_index >= 0) {
-				if(mtype == MESSAGE_ERROR) {
-					inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
-					inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_ERROR);
-					inhistory_protected.insert(inhistory_protected.begin() + *inhistory_index, false);
-					inhistory_value.insert(inhistory_value.begin() + *inhistory_index, nr_of_new_expressions);
-					string history_message = "- ";
-					history_message += CALCULATOR->message()->message();
-					add_line_breaks(history_message, false, 2);
-					string history_str = "<span foreground=\"";
-					history_str += history_error_color;
-					history_str += "\">";
-					history_str += fix_history_string(history_message);
-					history_str += "</span>";
-					(*history_index_p)++;
-					gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, 3, nr_of_new_expressions, 4, 0, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
-				} else if(mtype == MESSAGE_WARNING) {
-					inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
-					inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_WARNING);
-					inhistory_protected.insert(inhistory_protected.begin() + *inhistory_index, false);
-					inhistory_value.insert(inhistory_value.begin() + *inhistory_index, nr_of_new_expressions);
-					string history_message = "- ";
-					history_message += CALCULATOR->message()->message();
-					add_line_breaks(history_message, false, 2);
-					string history_str = "<span foreground=\"";
-					history_str += history_warning_color;
-					history_str += "\">";
-					history_str += fix_history_string(history_message);
-					history_str += "</span>";
-					(*history_index_p)++;
-					gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, 3, nr_of_new_expressions, 4, 0, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
-				} else {
-					inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
-					inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_MESSAGE);
-					inhistory_protected.insert(inhistory_protected.begin() + *inhistory_index, false);
-					inhistory_value.insert(inhistory_value.begin() + *inhistory_index, nr_of_new_expressions);
-					string history_message = "- ";
-					history_message += CALCULATOR->message()->message();
-					add_line_breaks(history_message, false, 2);
-					string history_str = "<i>";
-					history_str += fix_history_string(history_message);
-					history_str += "</i>";
-					(*history_index_p)++;
-					gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, 3, nr_of_new_expressions, 4, 0, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
+			mtype = CALCULATOR->message()->type();
+			if(mtype == MESSAGE_INFORMATION && (type == 1 || type == 2) && win && CALCULATOR->message()->message().find("-------------------------------------\n") == 0) {
+				GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(win),GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, "%s", CALCULATOR->message()->message().c_str());
+				if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
+				gtk_dialog_run(GTK_DIALOG(edialog));
+				gtk_widget_destroy(edialog);
+			} else {
+				if(index > 0) {
+					if(index == 1) str = "• " + str;
+					str += "\n• ";
 				}
-				inhistory_added++;
+				if(win != NULL && plot_builder && win == GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")) && CALCULATOR->message()->message() == _("It took too long to generate the plot data.")) str += _("It took too long to generate the plot data. Please decrease the sampling rate or increase the time limit in preferences.");
+				else str += CALCULATOR->message()->message();
+				if(mtype == MESSAGE_ERROR || (mtype_highest != MESSAGE_ERROR && mtype == MESSAGE_WARNING)) {
+					mtype_highest = mtype;
+				}
+				if(history_index_p && inhistory_index && *inhistory_index >= 0) {
+					if(mtype == MESSAGE_ERROR) {
+						inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
+						inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_ERROR);
+						inhistory_protected.insert(inhistory_protected.begin() + *inhistory_index, false);
+						inhistory_value.insert(inhistory_value.begin() + *inhistory_index, nr_of_new_expressions);
+						string history_message = "- ";
+						history_message += CALCULATOR->message()->message();
+						add_line_breaks(history_message, false, 2);
+						string history_str = "<span foreground=\"";
+						history_str += history_error_color;
+						history_str += "\">";
+						history_str += fix_history_string(history_message);
+						history_str += "</span>";
+						(*history_index_p)++;
+						gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, 3, nr_of_new_expressions, 4, 0, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
+					} else if(mtype == MESSAGE_WARNING) {
+						inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
+						inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_WARNING);
+						inhistory_protected.insert(inhistory_protected.begin() + *inhistory_index, false);
+						inhistory_value.insert(inhistory_value.begin() + *inhistory_index, nr_of_new_expressions);
+						string history_message = "- ";
+						history_message += CALCULATOR->message()->message();
+						add_line_breaks(history_message, false, 2);
+						string history_str = "<span foreground=\"";
+						history_str += history_warning_color;
+						history_str += "\">";
+						history_str += fix_history_string(history_message);
+						history_str += "</span>";
+						(*history_index_p)++;
+						gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, 3, nr_of_new_expressions, 4, 0, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
+					} else {
+						inhistory.insert(inhistory.begin() + *inhistory_index, CALCULATOR->message()->message());
+						inhistory_type.insert(inhistory_type.begin() + *inhistory_index, QALCULATE_HISTORY_MESSAGE);
+						inhistory_protected.insert(inhistory_protected.begin() + *inhistory_index, false);
+						inhistory_value.insert(inhistory_value.begin() + *inhistory_index, nr_of_new_expressions);
+						string history_message = "- ";
+						history_message += CALCULATOR->message()->message();
+						add_line_breaks(history_message, false, 2);
+						string history_str = "<i>";
+						history_str += fix_history_string(history_message);
+						history_str += "</i>";
+						(*history_index_p)++;
+						gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, 3, nr_of_new_expressions, 4, 0, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
+					}
+					inhistory_added++;
+				}
 			}
+			index++;
 		}
-		index++;
 		if(!CALCULATOR->nextMessage()) break;
 	}
 	if(inhistory_added > 0) {
@@ -2842,6 +2846,59 @@ bool ask_dot() {
 	}
 	gtk_widget_destroy(dialog);
 	return das != evalops.parse_options.dot_as_separator;
+}
+
+bool ask_implicit() {
+	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Parsing Mode"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_OK"), GTK_RESPONSE_ACCEPT, NULL);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+	gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT);
+	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
+	GtkWidget *grid = gtk_grid_new();
+	gtk_grid_set_row_spacing(GTK_GRID(grid), 12);
+	gtk_grid_set_column_spacing(GTK_GRID(grid), 12);
+	gtk_container_set_border_width(GTK_CONTAINER(grid), 6);
+	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), grid);
+	gtk_widget_show(grid);
+	GtkWidget *label = gtk_label_new(_("The expression is ambiguous.\nPlease select interpretation of expressions with implicit multiplication\n(this can later be changed in preferences)."));
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), label, 0, 0, 2, 1);
+	GtkWidget *w_implicitfirst = gtk_radio_button_new_with_label(NULL, _("Implicit multiplication first"));
+	if(evalops.parse_options.parsing_mode == PARSING_MODE_IMPLICIT_MULTIPLICATION_FIRST) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w_implicitfirst), TRUE);
+	gtk_widget_set_valign(w_implicitfirst, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), w_implicitfirst, 0, 1, 1, 1);
+	label = gtk_label_new("<i>1/2x = 1/(2x)</i>");
+	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), label, 1, 1, 1, 1);
+	GtkWidget *w_conventional = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(w_implicitfirst), _("Conventional"));
+	if(evalops.parse_options.parsing_mode == PARSING_MODE_CONVENTIONAL) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w_conventional), TRUE);
+	gtk_widget_set_valign(w_conventional, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), w_conventional, 0, 2, 1, 1);
+	label = gtk_label_new("<i>1/2x = (1/2)x</i>");
+	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), label, 1, 2, 1, 1);
+	GtkWidget *w_adaptive = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(w_implicitfirst), _("Adaptive"));
+	if(evalops.parse_options.parsing_mode == PARSING_MODE_ADAPTIVE) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w_adaptive), TRUE);
+	gtk_widget_set_valign(w_adaptive, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), w_adaptive, 0, 3, 1, 1);
+	label = gtk_label_new("<i>1/2x = 1/(2x); 1/2 x = (1/2)x</i>");
+	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), label, 1, 3, 1, 1);
+	gtk_widget_show_all(grid);
+	gtk_dialog_run(GTK_DIALOG(dialog));
+	implicit_question_asked = true;
+	ParsingMode pm_bak = evalops.parse_options.parsing_mode;
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w_implicitfirst))) {
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_ignore_whitespace")), TRUE);
+	} else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w_conventional))) {
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_no_special_implicit_multiplication")), TRUE);
+	} else {
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_adaptive_parsing")), TRUE);
+	}
+	gtk_widget_destroy(dialog);
+	return pm_bak = evalops.parse_options.parsing_mode;
 }
 
 vector<CalculatorMessage> autocalc_messages;
@@ -3966,7 +4023,7 @@ void display_parse_status() {
 		size_t message_n = 0;
 		while(CALCULATOR->message()) {
 			MessageType mtype = CALCULATOR->message()->type();
-			if(mtype == MESSAGE_ERROR || mtype == MESSAGE_WARNING) {
+			if((mtype == MESSAGE_ERROR || mtype == MESSAGE_WARNING) && (!implicit_question_asked || CALCULATOR->message()->category() != MESSAGE_CATEGORY_IMPLICIT_MULTIPLICATION)) {
 				if(mtype == MESSAGE_ERROR) had_errors = true;
 				else had_warnings = true;
 				if(message_n > 0) {
@@ -11248,12 +11305,13 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		current_inhistory_index = 0;
 	}
 	bool do_scroll = false;
+	bool implicit_warning = false;
 	if(stack_index != 0) {
 		if(result_text.length() > 500000) {
 			result_text = "(…)";
 		}
 		RPNRegisterChanged(result_text, stack_index);
-		error_icon = display_errors(NULL, supress_dialog ? NULL : GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), NULL, supress_dialog ? 2 : 0);
+		error_icon = display_errors(NULL, supress_dialog ? NULL : GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), NULL, supress_dialog ? 2 : 0, NULL);
 	} else if(update_history) {
 		if(result_text.length() > 500000) {
 			result_text = "(…)";
@@ -11318,7 +11376,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			g_free(expr_str);
 		}
 		int history_index_bak = history_index;
-		error_icon = display_errors(&history_index, supress_dialog ? NULL : GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &inhistory_index, 1);
+		error_icon = display_errors(&history_index, supress_dialog ? NULL : GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &inhistory_index, 1, !supress_dialog && update_parse && evalops.parse_options.parsing_mode <= PARSING_MODE_CONVENTIONAL ? &implicit_warning : NULL);
 		if(rpn_mode && !register_moved) {
 			RPNRegisterChanged(result_text, stack_index);
 		}
@@ -11399,7 +11457,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		do_scroll = true;
 	} else {
 		int history_index_bak = history_index;
-		error_icon = display_errors(&history_index, supress_dialog ? NULL : GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &inhistory_index, 1);
+		error_icon = display_errors(&history_index, supress_dialog ? NULL : GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &inhistory_index, 1, supress_dialog ? NULL : &implicit_warning);
 		do_scroll = (history_index != history_index_bak);
 	}
 	if(do_to) {
@@ -11442,6 +11500,8 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	}
 
 	if(!error_icon && (update_parse || stack_index != 0)) update_expression_icons(rpn_mode ? 0 : EXPRESSION_CLEAR);
+
+	if(implicit_warning) ask_implicit();
 
 	block_error_timeout--;
 
@@ -18224,6 +18284,7 @@ void set_saved_mode() {
 	modes[1].custom_output_base = CALCULATOR->customOutputBase();
 	modes[1].custom_input_base = CALCULATOR->customInputBase();
 	modes[1].complex_angle_form = complex_angle_form;
+	modes[1].implicit_question_asked = implicit_question_asked;
 }
 
 size_t save_mode_as(string name, bool *new_mode = NULL) {
@@ -18257,6 +18318,7 @@ size_t save_mode_as(string name, bool *new_mode = NULL) {
 	modes[index].custom_output_base = CALCULATOR->customOutputBase();
 	modes[index].custom_input_base = CALCULATOR->customInputBase();
 	modes[index].complex_angle_form = complex_angle_form;
+	modes[index].implicit_question_asked = implicit_question_asked;
 	return index;
 }
 
@@ -18274,6 +18336,7 @@ void load_mode(const mode_struct &mode) {
 	CALCULATOR->setCustomOutputBase(mode.custom_output_base);
 	CALCULATOR->setCustomInputBase(mode.custom_input_base);
 	set_mode_items(mode.po, mode.eo, mode.at, mode.as, mode.rpn_mode, mode.precision, mode.interval, mode.variable_units_enabled, mode.adaptive_interval_display, mode.keypad, mode.autocalc, mode.chain_mode, mode.complex_angle_form, false);
+	implicit_question_asked = mode.implicit_question_asked;
 	evalops.approximation = mode.eo.approximation;
 	block_result_update--;
 	block_expression_execution--;
@@ -19196,6 +19259,7 @@ void load_preferences() {
 	evalops.warn_about_denominators_assumed_nonzero = true;
 	evalops.parse_options.limit_implicit_multiplication = false;
 	evalops.parse_options.parsing_mode = PARSING_MODE_ADAPTIVE;
+	implicit_question_asked = false;
 	evalops.parse_options.angle_unit = ANGLE_UNIT_RADIANS;
 	evalops.parse_options.dot_as_separator = CALCULATOR->default_dot_as_separator;
 	dot_question_asked = false;
@@ -19897,6 +19961,9 @@ void load_preferences() {
 							modes[mode_index].eo.parse_options.parsing_mode = (ParsingMode) v;
 						}
 					}
+				} else if(svar == "implicit_question_asked") {
+					if(mode_index == 1) implicit_question_asked = v;
+					else modes[mode_index].implicit_question_asked = v;
 				} else if(svar == "default_assumption_type") {
 					if(v >= ASSUMPTION_TYPE_NONE && v <= ASSUMPTION_TYPE_BOOLEAN) {
 						if(v < ASSUMPTION_TYPE_NUMBER && version_numbers[0] < 1) v = ASSUMPTION_TYPE_NUMBER;
@@ -20961,6 +21028,7 @@ void save_preferences(bool mode) {
 		fprintf(file, "chain_mode=%i\n", modes[i].chain_mode);
 		fprintf(file, "limit_implicit_multiplication=%i\n", modes[i].eo.parse_options.limit_implicit_multiplication);
 		fprintf(file, "parsing_mode=%i\n", modes[i].eo.parse_options.parsing_mode);
+		if(modes[i].implicit_question_asked) fprintf(file, "implicit_question_asked=%i\n", modes[i].implicit_question_asked);
 		fprintf(file, "spacious=%i\n", modes[i].po.spacious);
 		fprintf(file, "excessive_parenthesis=%i\n", modes[i].po.excessive_parenthesis);
 		fprintf(file, "visible_keypad=%i\n", modes[i].keypad);
@@ -27908,6 +27976,7 @@ void on_menu_item_ignore_whitespace_activate(GtkMenuItem *w, gpointer) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_ignore_whitespace")), TRUE);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_ignore_whitespace"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_status_ignore_whitespace_activate, NULL);
 	evalops.parse_options.parsing_mode = PARSING_MODE_IMPLICIT_MULTIPLICATION_FIRST;
+	implicit_question_asked = true;
 	expression_format_updated(true);
 }
 void on_menu_item_no_special_implicit_multiplication_activate(GtkMenuItem *w, gpointer) {
@@ -27916,6 +27985,7 @@ void on_menu_item_no_special_implicit_multiplication_activate(GtkMenuItem *w, gp
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_no_special_implicit_multiplication")), TRUE);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_no_special_implicit_multiplication"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_status_no_special_implicit_multiplication_activate, NULL);
 	evalops.parse_options.parsing_mode = PARSING_MODE_CONVENTIONAL;
+	implicit_question_asked = true;
 	expression_format_updated(true);
 }
 void on_menu_item_chain_syntax_activate(GtkMenuItem *w, gpointer) {
@@ -31236,17 +31306,19 @@ void update_nbases_entries(const MathStructure &value, int base) {
 		int index = 0;
 		MessageType mtype_highest = MESSAGE_INFORMATION;
 		while(true) {
-			MessageType mtype = CALCULATOR->message()->type();
-			if(index > 0) {
-				if(index == 1) sfull = "• " + sfull;
-				sfull += "\n• ";
-			}
-			sfull += CALCULATOR->message()->message();
-			if(mtype > mtype_highest) {
-				mtype_highest = mtype;
+			if(!implicit_question_asked || CALCULATOR->message()->category() != MESSAGE_CATEGORY_IMPLICIT_MULTIPLICATION) {
+				MessageType mtype = CALCULATOR->message()->type();
+				if(index > 0) {
+					if(index == 1) sfull = "• " + sfull;
+					sfull += "\n• ";
+				}
+				sfull += CALCULATOR->message()->message();
+				if(mtype > mtype_highest) {
+					mtype_highest = mtype;
+				}
+				index++;
 			}
 			if(!CALCULATOR->nextMessage()) break;
-			index++;
 		}
 		if(base == 2) gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_label_binary")), sfull.c_str());
 		else if(base == 8) gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_label_octal")), sfull.c_str());
