@@ -2456,9 +2456,9 @@ void check_for_new_version(bool do_not_show_again) {
 		gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox);
 		GtkWidget *label = gtk_label_new(NULL);
 #ifdef AUTO_UPDATE
-		gchar *gstr = g_strdup_printf(_("A new version of %s is available at %s.\n\nDo you wish to update to version %s?"), "Qalculate!", "<a href=\"http://qalculate.github.io/downloads.html\">qalculate.github.io</a>", new_version.c_str());
+		gchar *gstr = g_strdup_printf(_("A new version of %s is available at %s.\n\nDo you wish to update to version %s?"), "Qalculate!", "<a href=\"https://qalculate.github.io/downloads.html\">qalculate.github.io</a>", new_version.c_str());
 #else
-		gchar *gstr = g_strdup_printf(_("A new version of %s is available.\n\nYou can get version %s at %s."), "Qalculate!", new_version.c_str(), "<a href=\"http://qalculate.github.io/downloads.html\">qalculate.github.io</a>");
+		gchar *gstr = g_strdup_printf(_("A new version of %s is available.\n\nYou can get version %s at %s."), "Qalculate!", new_version.c_str(), "<a href=\"https://qalculate.github.io/downloads.html\">qalculate.github.io</a>");
 #endif
 		gtk_label_set_markup(GTK_LABEL(label), gstr);
 		g_free(gstr);
@@ -2898,7 +2898,7 @@ bool ask_implicit() {
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_adaptive_parsing")), TRUE);
 	}
 	gtk_widget_destroy(dialog);
-	return pm_bak = evalops.parse_options.parsing_mode;
+	return pm_bak != evalops.parse_options.parsing_mode;
 }
 
 vector<CalculatorMessage> autocalc_messages;
@@ -11376,7 +11376,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			g_free(expr_str);
 		}
 		int history_index_bak = history_index;
-		error_icon = display_errors(&history_index, supress_dialog ? NULL : GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &inhistory_index, 1, !supress_dialog && update_parse && evalops.parse_options.parsing_mode <= PARSING_MODE_CONVENTIONAL ? &implicit_warning : NULL);
+		error_icon = display_errors(&history_index, supress_dialog ? NULL : GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &inhistory_index, 1, !supress_dialog && update_parse && update_history && evalops.parse_options.parsing_mode <= PARSING_MODE_CONVENTIONAL ? &implicit_warning : NULL);
 		if(rpn_mode && !register_moved) {
 			RPNRegisterChanged(result_text, stack_index);
 		}
@@ -19446,7 +19446,7 @@ void load_preferences() {
 
 	size_t bookmark_index = 0;
 
-	int version_numbers[] = {3, 20, 0};
+	int version_numbers[] = {3, 21, 0};
 	bool old_history_format = false;
 
 	if(file) {
@@ -19957,8 +19957,10 @@ void load_preferences() {
 					if((evalops.parse_options.parsing_mode != PARSING_MODE_RPN || version_numbers[0] > 3 || (version_numbers[0] == 3 && version_numbers[1] > 15)) && v >= PARSING_MODE_ADAPTIVE && v <= PARSING_MODE_RPN) {
 						if(mode_index == 1) {
 							evalops.parse_options.parsing_mode = (ParsingMode) v;
+							if(evalops.parse_options.parsing_mode == PARSING_MODE_CONVENTIONAL || evalops.parse_options.parsing_mode == PARSING_MODE_IMPLICIT_MULTIPLICATION_FIRST) implicit_question_asked = true;
 						} else {
 							modes[mode_index].eo.parse_options.parsing_mode = (ParsingMode) v;
+							if(modes[mode_index].eo.parse_options.parsing_mode == PARSING_MODE_CONVENTIONAL || modes[mode_index].eo.parse_options.parsing_mode == PARSING_MODE_IMPLICIT_MULTIPLICATION_FIRST) implicit_question_asked = true;
 						}
 					}
 				} else if(svar == "implicit_question_asked") {
@@ -24281,7 +24283,9 @@ gboolean reenable_tooltip(GtkWidget *w, gpointer) {
 }
 
 void memory_recall() {
+	bool b_exec = !rpn_mode && !auto_calculate && (expression_is_empty() || !expression_has_changed);
 	insert_var(v_memory);
+	if(b_exec) execute_expression(true);
 }
 void memory_store() {
 	if(expression_has_changed && !rpn_mode && !auto_calculate) execute_expression(true);

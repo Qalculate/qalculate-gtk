@@ -48,6 +48,21 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="3.21.0" date="2021-10-13">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Ask (once) for correct interpretation of ambiguous implicit multiplication</li>
+      <li>Improved simplification of radical expressions</li>
+      <li>Improved Im(), Re(), and arg() functions</li>
+      <li>Improved output of complex forms (other than the default rectangular) in exact mode</li>
+      <li>Function for drill bit size conversion</li>
+      <li>Fixes for equations with complex inverse trigonometric and hyperbolic functions with no solution</li>
+      <li>Fixes for complex x^(ax)=b</li>
+      <li>Minor bug fixes and feature improvements</li>
+     </ul>
+   </description>
+  </release>
   <release version="3.20.0" date="2021-07-28">
    <description>
     <p>Changes:</p>

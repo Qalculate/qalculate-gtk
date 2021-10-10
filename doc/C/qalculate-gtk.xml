@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "3.20.0">
-  <!ENTITY manrevision "3.20.0">
-  <!ENTITY date "July 2021">
+  <!ENTITY appversion "3.21.0">
+  <!ENTITY manrevision "3.21.0">
+  <!ENTITY date "October 2021">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -1033,7 +1033,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			</row>
 			<row valign="top">
 				<entry><para>Interval Display</para></entry>
-				<entry><para>Submenu with options that determines how intervals and results with associated uncertainty are shown. The adaptive option is the same as significant digits display unless an interval has been explicitely specified in the expression.</para></entry>
+				<entry><para>Submenu with options that determines how intervals and results with associated uncertainty are shown. The adaptive option is the same as significant digits display unless an interval has been explicitly specified in the expression.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Unit Display</para></entry>
@@ -1288,8 +1288,8 @@ In &app; mathematical entities, such as numbers and variables, are referred to a
 	<varlistentry>
 		<term>Numbers</term>
 		<listitem><para>
-		These are the regular numbers composed by digits 0-9 and a decimal sign — a dot, or a comma if it is the default decimal point in the locale/language used. If comma is used as decimal sign, the dot is still kept as an alternative decimal sign, if not explicitely turned off in the preferences dialog with <guibutton>Ignore dots in number</guibutton> (to allow it to be used as thousand separator instead). Numbers include integers, real numbers, and complex numbers. The imaginary part of complex numbers are written with as regular number followed by the special variable <quote>i</quote> (can be changed to a <quote>j</quote>, placed in front of the imaginary part, in the preferences dialog), which represents the square root of -1 (e.g. <quote>2 + 3i</quote>). Spaces between digits are ignored (<quote>5  5 = 55</quote>). <quote>E</quote> (or <quote>e</quote>) can be considered as a shortcut for writing many zeroes and is equivalent to multiplication by 10 raised to the power of the right-hand value (e.g. <quote>5E3 = 5000</quote>).</para>
-		<para>Sexagesimal numbers (and time) can be entered directly using colons (e.g. <quote>5:30 = 5.5</quote>). A number immediately preceeded <quote>0b</quote>, <quote>0o</quote>, <quote>0d</quote> or <quote>0x</quote> are interpreted as a number with base 2, 8, 12 or 16, respectively (if the default base is 10, e.g. <quote>0x3f = 63</quote>). The number base in can also be selected, either by using the <command>base()</command>, <command>bin()</command>, <command>oct()</command>, <command>hex()</command> and <command>roman()</command> functions, or by setting the base used for all numbers in the whole expression from <menuchoice><guimenu>Mode</guimenu><guisubmenu>Number Base</guisubmenu><guimenuitem>Select Result and Expression Base...</guimenuitem></menuchoice>. For details about supported number bases see <xref linkend="qalculate-TBL-number-bases"/>.
+		These are the regular numbers composed by digits 0-9 and a decimal sign — a dot, or a comma if it is the default decimal point in the locale/language used. If comma is used as decimal sign, the dot is still kept as an alternative decimal sign, if not explicitly turned off in the preferences dialog with <guibutton>Ignore dots in number</guibutton> (to allow it to be used as thousand separator instead). Numbers include integers, real numbers, and complex numbers. The imaginary part of complex numbers are written with as regular number followed by the special variable <quote>i</quote> (can be changed to a <quote>j</quote>, placed in front of the imaginary part, in the preferences dialog), which represents the square root of -1 (e.g. <quote>2 + 3i</quote>). Spaces between digits are ignored (<quote>5  5 = 55</quote>). <quote>E</quote> (or <quote>e</quote>) can be considered as a shortcut for writing many zeroes and is equivalent to multiplication by 10 raised to the power of the right-hand value (e.g. <quote>5E3 = 5000</quote>).</para>
+		<para>Sexagesimal numbers (and time) can be entered directly using colons (e.g. <quote>5:30 = 5.5</quote>). A number immediately preceded <quote>0b</quote>, <quote>0o</quote>, <quote>0d</quote> or <quote>0x</quote> are interpreted as a number with base 2, 8, 12 or 16, respectively (if the default base is 10, e.g. <quote>0x3f = 63</quote>). The number base in can also be selected, either by using the <command>base()</command>, <command>bin()</command>, <command>oct()</command>, <command>hex()</command> and <command>roman()</command> functions, or by setting the base used for all numbers in the whole expression from <menuchoice><guimenu>Mode</guimenu><guisubmenu>Number Base</guisubmenu><guimenuitem>Select Result and Expression Base...</guimenuitem></menuchoice>. For details about supported number bases see <xref linkend="qalculate-TBL-number-bases"/>.
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -1331,7 +1331,7 @@ In &app; mathematical entities, such as numbers and variables, are referred to a
 	<varlistentry>
 		<term>Date and Time</term>
 		<listitem><para>
-		Date/time values are specified using quoted text string (quotation marks are not needed for function arguments), using standard date and time format (YYYY-MM-DDTHH:MM:SS). Some local formats are also supported, but not recommended. The local time zone are used, unless a time zone is specified at the end of the time string (Z/UTC/GMT or +/-HH:MM). Date/time supports a small subset of arithmetic operations. The time units represents calender time, instead of average values, when added or subtracted to a date.
+		Date/time values are specified using quoted text string (quotation marks are not needed for function arguments), using standard date and time format (YYYY-MM-DDTHH:MM:SS). Some local formats are also supported, but not recommended. The local time zone is used, unless a time zone is specified at the end of the time string (Z/UTC/GMT or +/-HH:MM). Date/time supports a small subset of arithmetic operations. The time units represents calendar time, instead of average values, when added or subtracted to a date.
 		</para></listitem>
 	</varlistentry>	
 	<varlistentry>
@@ -1821,7 +1821,7 @@ Putting <quote> to </quote> (or a right arrow, e.g. <quote>-></quote>) followed 
 If <quote>to</quote> is not preceded by an expression, the previous result will be converted.
 </para>
 <para>
-Similarily <quote>where</quote> (or alternatively <quote>/.</quote>) can be used at the end (but before <quote>to</quote>), for variable assignments, function replacements, etc. (e.g. <quote>x+y where x=1 and y=2</quote>, <quote>x^2=4 where x>0</quote>, and <quote>sin(5) where sin()=cos()</quote>).
+Similarly <quote>where</quote> (or alternatively <quote>/.</quote>) can be used at the end (but before <quote>to</quote>), for variable assignments, function replacements, etc. (e.g. <quote>x+y where x=1 and y=2</quote>, <quote>x^2=4 where x>0</quote>, and <quote>sin(5) where sin()=cos()</quote>).
 </para>
 </sect1>
 </chapter>
@@ -2421,7 +2421,7 @@ The final way to convert the result to another unit is to use <menuchoice><guime
 It is also possible to let &app; automagically convert the result to appropriate units with <menuchoice><guimenu>Edit</guimenu><guisubmenu>Convert To Optimal Unit</guisubmenu></menuchoice> or <menuchoice><guimenu>Edit</guimenu><guisubmenu>Convert To Base Units</guisubmenu></menuchoice> (or the corresponding options in the result context menu). If instead the corresponding choice is selected from <menuchoice><guimenu>Mode</guimenu><guimenu>Unit Display</guimenu></menuchoice> (or the result context menu), each result will automatically be converted until the choice is deactivated (<menuchoice><guimenu>Mode</guimenu><guimenu>Unit Display</guimenu><guisubmenu>No Automatic Conversion</guisubmenu></menuchoice>).
 </para>
 <para>
-By default (controlled by <menuchoice><guimenu>Mode</guimenu><guisubmenu>Unit Display</guisubmenu><guimenuitem>Convert To Mixed Units</guimenuitem></menuchoice>) certain units, such as time units and many imperial/U.S. customary units, are automatically converted to mixed units (e.g. <quote>60.2 minutes = 1 hour to 12 seconds</quote>). When explicitely converting to a specific unit the integer value of the selected unit is preserved (<quote>1.51 h to min = 90 min + 36 s</quote>) and mixed units is not used if otherwise the unit would not be present in the result (<quote>6 in to ft = 0.5 ft</quote>). This behavior can be modified by prepending the unit with a plus or minus sign (e.g. <quote>174 cm to +in ≈ 5 ft + 8,5 in</quote>, <quote>1.51 h to -min = 90.6 min</quote>).
+By default (controlled by <menuchoice><guimenu>Mode</guimenu><guisubmenu>Unit Display</guisubmenu><guimenuitem>Convert To Mixed Units</guimenuitem></menuchoice>) certain units, such as time units and many imperial/U.S. customary units, are automatically converted to mixed units (e.g. <quote>60.2 minutes = 1 hour to 12 seconds</quote>). When explicitly converting to a specific unit the integer value of the selected unit is preserved (<quote>1.51 h to min = 90 min + 36 s</quote>) and mixed units is not used if otherwise the unit would not be present in the result (<quote>6 in to ft = 0.5 ft</quote>). This behavior can be modified by prepending the unit with a plus or minus sign (e.g. <quote>174 cm to +in ≈ 5 ft + 8,5 in</quote>, <quote>1.51 h to -min = 90.6 min</quote>).
 </para>
 </sect1>
 <sect1 id="qalculate-unit-creation">
