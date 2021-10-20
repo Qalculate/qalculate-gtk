@@ -2087,7 +2087,10 @@ void create_main_window(void) {
 	g_object_set(G_OBJECT(history_index_renderer), "ypad", 0, "yalign", 0.0, "xalign", 0.5, "foreground-rgba", &c_gray, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(historyview), history_index_column);
 	history_renderer = gtk_cell_renderer_text_new();
-	history_column = gtk_tree_view_column_new_with_attributes(_("History"), history_renderer, "markup", 0, "ypad", 4, "xpad", 5, "xalign", 6, "alignment", 7, NULL);
+	g_signal_connect((gpointer) history_renderer, "edited", G_CALLBACK(on_historyview_item_edited), NULL);
+	g_signal_connect((gpointer) history_renderer, "editing-started", G_CALLBACK(on_historyview_item_editing_started), NULL);
+	g_signal_connect((gpointer) history_renderer, "editing-canceled", G_CALLBACK(on_historyview_item_editing_canceled), NULL);
+	history_column = gtk_tree_view_column_new_with_attributes(_("History"), history_renderer, "editable", true, "markup", 0, "ypad", 4, "xpad", 5, "xalign", 6, "alignment", 7, NULL);
 	gtk_tree_view_column_set_expand(history_column, TRUE);
 	GtkWidget *scrollbar = gtk_scrolled_window_get_vscrollbar(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "historyscrolled")));
 	if(scrollbar) gtk_widget_get_preferred_width(scrollbar, NULL, &history_scroll_width);

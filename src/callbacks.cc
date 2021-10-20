@@ -262,7 +262,7 @@ string default_plot_variable = "x";
 bool default_plot_color = true;
 int max_plot_time = 5;
 
-bool b_editing_stack = false;
+bool b_editing_stack = false, b_editing_history = false;
 
 string status_error_color, status_warning_color, text_color;
 
@@ -26523,8 +26523,20 @@ void update_historyview_popup() {
 	}
 	if(history_bookmarks.empty()) {MENU_NO_ITEMS(_("No items found"))}
 }
+void on_historyview_item_edited(GtkCellRendererText*, gchar*, gchar*, gpointer) {
+	b_editing_history = false;
+}
+void on_historyview_item_editing_started(GtkCellRenderer*, GtkCellEditable *editable, gchar*, gpointer) {
+	gtk_editable_set_editable(GTK_EDITABLE(editable), FALSE);
+	b_editing_history = true;
+}
+void on_historyview_item_editing_canceled(GtkCellRenderer*, gpointer) {
+	b_editing_history = false;
+}
+void on_historyview_row_activated(GtkTreeView*, GtkTreePath *path, GtkTreeViewColumn *column, gpointer);
 gboolean on_historyview_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
 	GtkTreePath *path = NULL;
+	GtkTreeViewColumn *column = NULL;
 	GtkTreeSelection *select = NULL;
 	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
 		if(b_busy) return TRUE;
@@ -26543,6 +26555,12 @@ gboolean on_historyview_button_press_event(GtkWidget*, GdkEventButton *event, gp
 		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_historyview")), NULL, NULL, NULL, NULL, event->button, event->time);
 #endif
 		return TRUE;
+	} else if(event->type == GDK_2BUTTON_PRESS) {
+		if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(historyview), event->x, event->y, &path, &column, NULL, NULL)) {
+			on_historyview_row_activated(GTK_TREE_VIEW(historyview), path, column, NULL);
+			gtk_tree_path_free(path);
+			return TRUE;
+		}
 	}
 	return FALSE;
 }
@@ -32781,7 +32799,7 @@ gboolean on_key_release_event(GtkWidget*, GdkEventKey*, gpointer) {
 }
 gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 	if(block_input && (event->keyval == GDK_KEY_q || event->keyval == GDK_KEY_Q) && !(event->state & GDK_CONTROL_MASK)) {block_input = false; return TRUE;}
-	if(gtk_widget_has_focus(expressiontext) || b_editing_stack) return FALSE;
+	if(gtk_widget_has_focus(expressiontext) || b_editing_stack || b_editing_history) return FALSE;
 	if(!b_busy && gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "mb_to"))) && !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "mb_to"))) && (event->keyval == GDK_KEY_Return || event->keyval == GDK_KEY_ISO_Enter || event->keyval == GDK_KEY_KP_Enter || event->keyval == GDK_KEY_space)) {update_mb_to_menu(); gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "mb_to")));}
 	if(do_keyboard_shortcut(event)) return TRUE;
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_unit")))) {

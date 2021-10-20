@@ -707,6 +707,9 @@ void on_stackstore_row_inserted(GtkTreeModel *model, GtkTreePath *path, GtkTreeI
 void on_stackstore_row_deleted(GtkTreeModel *model, GtkTreePath *path, gpointer user_data);
 
 void on_historyview_selection_changed(GtkTreeSelection *select, gpointer);
+void on_historyview_item_edited(GtkCellRendererText*, gchar*, gchar*, gpointer);
+void on_historyview_item_editing_started(GtkCellRenderer*, GtkCellEditable*, gchar*, gpointer);
+void on_historyview_item_editing_canceled(GtkCellRenderer*, gpointer);
 
 void on_unit_edit_entry_name_changed(GtkEditable *editable, gpointer user_data);
 void on_unit_edit_combobox_class_changed(GtkComboBox *om, gpointer user_data);
