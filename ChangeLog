@@ -1,4 +1,24 @@
-2021-09-10 Hanna Knutsson <hanna.knutsson@protonmail.com>
+2021-11-05 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Use editable combo box for data object argument in insert function dialog
+	* Use small text size and use line wrap for argument description in insert function dialog
+	* Replace *, /, - with corresponding operator symbols, and vice versa, in more cases (e.g. in edit dialogs)
+	* Disable name edit dialog for composite units
+	* Do not show overwrite question for replacement of temporary functions, units, and variables
+	* Replace occurences of old unit when a unit is edited and switched to a different class
+	* (Un)localize subfunction expressions in function edit dialog
+	* Localize variable uncertainty value in variable edit dialog
+	* Use PACKAGE_LOCALE_DIR instead of getPackageLocaleDir() (from libqalculate), except on Windows
+
+2021-10-20 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Make history text somewhat selectable (single click on selected item edits cell with non-editable entry)
+
+2021-10-12 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix compilation in separate directory
+
+2021-10-10 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Immediately return memory on MR clicked if entire expression was unchanged (or empty)
 

@@ -1405,6 +1405,37 @@ const char *expression_divide_sign() {
 	if(printops.division_sign == DIVISION_SIGN_DIVISION) return sdiv.c_str();
 	return sslash.c_str();
 }
+const char *sub_sign() {
+	if(!printops.use_unicode_signs) return "-";
+	return sminus_o.c_str();
+}
+const char *times_sign(bool unit_expression = false) {
+	if(printops.use_unicode_signs && printops.multiplication_sign == MULTIPLICATION_SIGN_DOT) return sdot_o.c_str();
+	else if(printops.use_unicode_signs && (printops.multiplication_sign == MULTIPLICATION_SIGN_ALTDOT || (unit_expression && printops.multiplication_sign == MULTIPLICATION_SIGN_X))) return saltdot_o.c_str();
+	else if(printops.use_unicode_signs && printops.multiplication_sign == MULTIPLICATION_SIGN_X) return stimes_o.c_str();
+	return "*";
+}
+const char *divide_sign() {
+	if(!printops.use_unicode_signs) return "/";
+	if(printops.division_sign == DIVISION_SIGN_DIVISION) return sdiv_o.c_str();
+	return sslash_o.c_str();
+}
+
+string localize_expression(string str, bool unit_expression = false) {
+	ParseOptions pa = evalops.parse_options; pa.base = 10;
+	str = CALCULATOR->localizeExpression(str, pa);
+	gsub("*", times_sign(unit_expression), str);
+	gsub("/", divide_sign(), str);
+	gsub("-", sub_sign(), str);
+	return str;
+}
+
+string unlocalize_expression(string str) {
+	ParseOptions pa = evalops.parse_options; pa.base = 10;
+	str = CALCULATOR->localizeExpression(str, pa);
+	CALCULATOR->parseSigns(str);
+	return str;
+}
 
 GtkWidget *prev_eb = NULL;
 bool prev_ebv = false;
@@ -4688,8 +4719,7 @@ void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 							str2 += ", ";
 							//argument default, in description
 							str2 += _("default: ");
-							ParseOptions pa = evalops.parse_options; pa.base = 10;
-							str2 += CALCULATOR->localizeExpression(f->getDefaultValue(i2), pa);
+							str2 += localize_expression(f->getDefaultValue(i2));
 						}
 						str2 += ")";
 					}
@@ -7143,8 +7173,7 @@ void update_completion() {
 					title = _("a previous result");
 				} else if(v->isKnown()) {
 					if(((KnownVariable*) v)->isExpression()) {
-						ParseOptions pa = evalops.parse_options; pa.base = 10;
-						title = CALCULATOR->localizeExpression(((KnownVariable*) v)->expression(), pa);
+						title = localize_expression(((KnownVariable*) v)->expression());
 						if(title.length() > 30) {title = title.substr(0, 30); title += "…";}
 						else if(!((KnownVariable*) v)->unit().empty() && ((KnownVariable*) v)->unit() != "auto") {title += " "; title += ((KnownVariable*) v)->unit();}
 					} else {
@@ -14546,8 +14575,7 @@ void insert_function_do(MathFunction *f, FunctionDialog *fd) {
 	int argcount = fd->args;
 	if(f->maxargs() > 0 && f->minargs() < f->maxargs() && argcount > f->minargs()) {
 		while(true) {
-			ParseOptions pa = evalops.parse_options; pa.base = 10;
-			string defstr = CALCULATOR->localizeExpression(f->getDefaultValue(argcount), pa);
+			string defstr = localize_expression(f->getDefaultValue(argcount));
 			remove_blank_ends(defstr);
 			if(f->getArgumentDefinition(argcount) && f->getArgumentDefinition(argcount)->type() == ARGUMENT_TYPE_BOOLEAN) {
 				if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fd->boolean_buttons[fd->boolean_index[argcount - 1]]))) {
@@ -14894,8 +14922,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 			argstr = arg->name();
 		}
 		typestr = "";
-		ParseOptions pa = evalops.parse_options; pa.base = 10;
-		defstr = CALCULATOR->localizeExpression(f->getDefaultValue(i + 1), pa);
+		defstr = localize_expression(f->getDefaultValue(i + 1));
 		if(arg && (arg->suggestsQuotes() || arg->type() == ARGUMENT_TYPE_TEXT) && defstr.length() >= 2 && defstr[0] == '\"' && defstr[defstr.length() - 1] == '\"') {
 			defstr = defstr.substr(1, defstr.length() - 2);
 		}
@@ -14995,7 +15022,20 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 				default: {
 					typestr = arg->printlong();
 					if(typestr == freetype) typestr = "";
-					if(i == 1 && f == CALCULATOR->f_ascii && arg->type() == ARGUMENT_TYPE_TEXT) {
+					if(arg->type() == ARGUMENT_TYPE_DATA_OBJECT && f->subtype() == SUBTYPE_DATA_SET && ((DataSet*) f)->getPrimaryKeyProperty()) {
+						combo = gtk_combo_box_text_new_with_entry();
+						DataObjectIter it;
+						DataSet *ds = (DataSet*) f;
+						DataObject *obj = ds->getFirstObject(&it);
+						DataProperty *dp = ds->getProperty("name");
+						if(!dp || !dp->isKey()) dp = ds->getPrimaryKeyProperty();
+						while(obj) {
+							gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), obj->getPropertyInputString(dp).c_str());
+							obj = ds->getNextObject(&it);
+						}
+						fd->entry[i] = gtk_bin_get_child(GTK_BIN(combo));
+						gtk_entry_set_text(GTK_ENTRY(fd->entry[i]), "");
+					} else if(i == 1 && f == CALCULATOR->f_ascii && arg->type() == ARGUMENT_TYPE_TEXT) {
 						combo = gtk_combo_box_text_new_with_entry();
 						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "UTF-8");
 						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "UTF-16");
@@ -15058,7 +15098,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 			gsub("&", "&amp;", typestr);
 			gsub(">", "&gt;", typestr);
 			gsub("<", "&lt;", typestr);
-			typestr.insert(0, "<i>"); typestr += "</i>";
+			typestr.insert(0, "<i><small>"); typestr += "</small></i>";
 			fd->type_label[i] = gtk_label_new(typestr.c_str());
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
 			gtk_widget_set_margin_end(fd->type_label[i], 6);
@@ -15066,6 +15106,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 			gtk_widget_set_margin_right(fd->type_label[i], 6);
 #endif
 			gtk_label_set_use_markup(GTK_LABEL(fd->type_label[i]), TRUE);
+			gtk_label_set_line_wrap(GTK_LABEL(fd->type_label[i]), TRUE);
 			gtk_widget_set_halign(fd->type_label[i], GTK_ALIGN_END);
 			gtk_widget_set_valign(fd->type_label[i], GTK_ALIGN_START);
 		} else {
@@ -15311,6 +15352,10 @@ void set_name_label_and_entry(ExpressionItem *item, GtkWidget *entry, GtkWidget 
 }
 void set_edited_names(ExpressionItem *item, string str) {
 	if(item->isBuiltin() && !(item->type() == TYPE_FUNCTION && item->subtype() == SUBTYPE_DATA_SET)) return;
+	if(item->type() == TYPE_UNIT && item->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+		names_edited = false;
+		item->clearNames();
+	}
 	if(names_edited) {
 		item->clearNames();
 		GtkTreeIter iter;
@@ -15330,13 +15375,15 @@ void set_edited_names(ExpressionItem *item, string str) {
 				if(!gtk_tree_model_iter_next(GTK_TREE_MODEL(tNames_store), &iter)) break;
 			}
 		} else {
-			item->addName(str);
+			ExpressionName ename(str);
+			ename.reference = true;
+			item->addName(ename);
 		}
 	} else {
 		if(item->countNames() == 0) {
 			ExpressionName ename(str);
 			ename.reference = true;
-			item->setName(ename, 1);
+			item->addName(ename);
 		} else {
 			item->setName(str, 1);
 		}
@@ -15416,27 +15463,26 @@ void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 		switch(u->subtype()) {
 			case SUBTYPE_ALIAS_UNIT: {
 				AliasUnit *au = (AliasUnit*) u;
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")), ((CompositeUnit*) (au->firstBaseUnit()))->preferredDisplayName(printops.abbreviate_names, true, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")).name.c_str());
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")), au->firstBaseUnit()->preferredDisplayName(printops.abbreviate_names, true, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")).name.c_str());
 				gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp")), au->firstBaseExponent());
 				if(au->firstBaseExponent() != 1) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_frame_mix")), FALSE);
 				bool is_relative = false;
-				ParseOptions pa = evalops.parse_options; pa.base = 10;
 				if(au->uncertainty(&is_relative).empty()) {
-					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), CALCULATOR->localizeExpression(au->expression(), pa).c_str());
+					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), localize_expression(au->expression()).c_str());
 				} else if(is_relative) {
 					string value = CALCULATOR->f_uncertainty->referenceName();
 					value += "(";
 					value += au->expression();
 					value += CALCULATOR->getComma();
 					value += " ";
-					value += CALCULATOR->localizeExpression(au->uncertainty(), pa);
+					value += localize_expression(au->uncertainty());
 					value += CALCULATOR->getComma();
 					value += " 1)";
-					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), CALCULATOR->localizeExpression(value, pa).c_str());
+					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), localize_expression(value).c_str());
 				} else {
-					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), CALCULATOR->localizeExpression(au->expression() + SIGN_PLUSMINUS + au->uncertainty(), pa).c_str());
+					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), localize_expression(au->expression() + SIGN_PLUSMINUS + au->uncertainty()).c_str());
 				}
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")), CALCULATOR->localizeExpression(au->inverseExpression(), pa).c_str());
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")), localize_expression(au->inverseExpression()).c_str());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_box_reversed")), au->hasNonlinearExpression());
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact")), !au->isApproximate());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), !u->isBuiltin());
@@ -15491,12 +15537,16 @@ run_unit_edit_dialog:
 		}
 
 		//unit with the same name exists -- overwrite or open the dialog again
-		if((!u || !u->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->unitNameTaken(str, u) && !ask_question(_("A variable or unit with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
-			gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(unitedit_builder, "unit_edit_tabs")), 0);
-			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_name")));
-			goto run_unit_edit_dialog;
+		if((!u || !u->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->unitNameTaken(str, u)) {
+			Unit *unit = CALCULATOR->getActiveUnit(str);
+			if((!unit || unit->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
+				gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(unitedit_builder, "unit_edit_tabs")), 0);
+				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_name")));
+				goto run_unit_edit_dialog;
+			}
 		}
 		bool add_unit = false;
+		Unit *old_u = u;
 		if(u) {
 			//edited an existing unit -- update unit
 			u->setLocal(true);
@@ -15512,16 +15562,15 @@ run_unit_edit_dialog:
 						AliasUnit *au = (AliasUnit*) u;
 						Unit *bu = CALCULATOR->getUnit(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base"))));
 						if(!bu) bu = CALCULATOR->getCompositeUnit(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base"))));
-						if(!bu) {
+						if(!bu || bu == u) {
 							gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(unitedit_builder, "unit_edit_tabs")), 1);
 							gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")));
 							show_message(_("Base unit does not exist."), dialog);
 							goto run_unit_edit_dialog;
 						}
 						au->setBaseUnit(bu);
-						ParseOptions pa = evalops.parse_options; pa.base = 10;
-						au->setExpression(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation"))), pa));
-						au->setInverseExpression(au->hasNonlinearExpression() ? CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed"))), pa) : "");
+						au->setExpression(unlocalize_expression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")))));
+						au->setInverseExpression(au->hasNonlinearExpression() ? unlocalize_expression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")))) : "");
 						au->setExponent(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp"))));
 						au->setApproximate(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact"))));
 						if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")))) {
@@ -15540,7 +15589,7 @@ run_unit_edit_dialog:
 						break;
 					}
 					if(!u->isBuiltin()) {
-						((CompositeUnit*) u)->setBaseExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base"))));
+						((CompositeUnit*) u)->setBaseExpression(unlocalize_expression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")))));
 					}
 					break;
 				}
@@ -15570,8 +15619,7 @@ run_unit_edit_dialog:
 						show_message(_("Base unit does not exist."), dialog);
 						goto run_unit_edit_dialog;
 					}
-					ParseOptions pa = evalops.parse_options; pa.base = 10;
-					u = new AliasUnit(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(unitedit_builder, "unit_edit_combo_category"))), "", "", "", gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_desc"))), bu, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation"))), pa), gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp"))), CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed"))), pa), true);
+					u = new AliasUnit(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(unitedit_builder, "unit_edit_combo_category"))), "", "", "", gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_desc"))), bu, unlocalize_expression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")))), gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp"))), unlocalize_expression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")))), true);
 					((AliasUnit*) u)->setApproximate(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact"))));
 					if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")))) {
 						((AliasUnit*) u)->setMixWithBase(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_priority"))));
@@ -15580,13 +15628,28 @@ run_unit_edit_dialog:
 					break;
 				}
 				case UNIT_CLASS_COMPOSITE_UNIT: {
-					CompositeUnit *cu = new CompositeUnit(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(unitedit_builder, "unit_edit_combo_category"))), "", gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_desc"))), gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base"))), true);
+					CompositeUnit *cu = new CompositeUnit(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(unitedit_builder, "unit_edit_combo_category"))), "", gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_desc"))), unlocalize_expression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")))), true);
 					u = cu;
 					break;
 				}
 				default: {
 					u = new Unit(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(unitedit_builder, "unit_edit_combo_category"))), "", "", "", gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_desc"))), true);
 					break;
+				}
+			}
+			if(old_u) {
+				for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
+					if(CALCULATOR->units[i]->subtype() == SUBTYPE_ALIAS_UNIT && ((AliasUnit*) CALCULATOR->units[i])->firstBaseUnit() == old_u) {
+						((AliasUnit*) CALCULATOR->units[i])->setBaseUnit(u);
+					} else if(CALCULATOR->units[i]->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+						size_t i2 = ((CompositeUnit*) CALCULATOR->units[i])->find(old_u);
+						if(i2 > 0) {
+							int exp = 1; Prefix *p = NULL;
+							((CompositeUnit*) CALCULATOR->units[i])->get(i2, &exp, &p);
+							((CompositeUnit*) CALCULATOR->units[i])->del(i2);
+							((CompositeUnit*) CALCULATOR->units[i])->add(u, exp, p);
+						}
+					}
 				}
 			}
 			add_unit = true;
@@ -15642,8 +15705,7 @@ bool edit_argument(Argument *arg) {
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_enable_test")), arg->tests());
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_allow_matrix")), arg->matrixAllowed());
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_allow_matrix")), TRUE);
-	ParseOptions pa = evalops.parse_options; pa.base = 10;
-	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(argumentrules_builder, "argument_rules_entry_condition")), CALCULATOR->localizeExpression(arg->getCustomCondition(), pa).c_str());
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(argumentrules_builder, "argument_rules_entry_condition")), localize_expression(arg->getCustomCondition()).c_str());
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_enable_condition")), !arg->getCustomCondition().empty());
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_entry_condition")), !arg->getCustomCondition().empty());
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_forbid_zero")), arg->zeroForbidden());
@@ -15731,7 +15793,7 @@ bool edit_argument(Argument *arg) {
 		arg->setZeroForbidden(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_forbid_zero"))));
 		arg->setHandleVector(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_handle_vector"))));
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_enable_condition")))) {
-			arg->setCustomCondition(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(argumentrules_builder, "argument_rules_entry_condition"))));
+			arg->setCustomCondition(unlocalize_expression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(argumentrules_builder, "argument_rules_entry_condition")))));
 		} else {
 			arg->setCustomCondition("");
 		}
@@ -15860,13 +15922,12 @@ void edit_function(const char *category = "", MathFunction *f = NULL, GtkWidget 
 	if(f) {
 		//fill in original paramaters
 		set_name_label_and_entry(f, GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")));
-		ParseOptions pa = evalops.parse_options; pa.base = 10;
 		if(!f->isBuiltin()) {
-			gtk_text_buffer_set_text(expression_buffer, CALCULATOR->localizeExpression(((UserFunction*) f)->formula(), pa).c_str(), -1);
+			gtk_text_buffer_set_text(expression_buffer, localize_expression(((UserFunction*) f)->formula()).c_str(), -1);
 		}
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(functionedit_builder, "function_edit_combo_category")))), f->category().c_str());
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_desc")), f->title(false).c_str());
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_condition")), CALCULATOR->localizeExpression(f->condition(), pa).c_str());
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_condition")), localize_expression(f->condition()).c_str());
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(functionedit_builder, "function_edit_checkbutton_hidden")), f->isHidden());
 		gtk_text_buffer_set_text(description_buffer, f->description().c_str(), -1);
 
@@ -15882,7 +15943,7 @@ void edit_function(const char *category = "", MathFunction *f = NULL, GtkWidget 
 				}
 				str2 = "\\";
 				str2 += i2s(i);
-				gtk_list_store_set(tSubfunctions_store, &iter, 0, str2.c_str(), 1, ((UserFunction*) f)->getSubfunction(i).c_str(), 2, str.c_str(), 3, i, 4, ((UserFunction*) f)->subfunctionPrecalculated(i), -1);
+				gtk_list_store_set(tSubfunctions_store, &iter, 0, str2.c_str(), 1, localize_expression(((UserFunction*) f)->getSubfunction(i)).c_str(), 2, str.c_str(), 3, i, 4, ((UserFunction*) f)->subfunctionPrecalculated(i), -1);
 				last_subfunction_index = i;
 			}
 		}
@@ -15912,11 +15973,9 @@ run_function_edit_dialog:
 		gtk_text_buffer_get_start_iter(expression_buffer, &e_iter_s);
 		gtk_text_buffer_get_end_iter(expression_buffer, &e_iter_e);
 		gchar *gstr = gtk_text_buffer_get_text(expression_buffer, &e_iter_s, &e_iter_e, FALSE);
-		ParseOptions pa = evalops.parse_options; pa.base = 10;
-		string str2 = CALCULATOR->unlocalizeExpression(gstr, pa);
+		string str2 = unlocalize_expression(gstr);
 		g_free(gstr);
 		remove_blank_ends(str2);
-		gsub("\n", " ", str2);
 		if(!(f && f->isBuiltin()) && str2.empty()) {
 			//no expression/relation -- open dialog again
 			gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(functionedit_builder, "function_edit_tabs")), 1);
@@ -15929,10 +15988,13 @@ run_function_edit_dialog:
 		gtk_text_buffer_get_end_iter(description_buffer, &d_iter_e);
 		gchar *gstr_descr = gtk_text_buffer_get_text(description_buffer, &d_iter_s, &d_iter_e, FALSE);
 		//function with the same name exists -- overwrite or open the dialog again
-		if((!f || !f->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->functionNameTaken(str, f) && !ask_question(_("A function with the same name already exists.\nDo you want to overwrite the function?"), dialog)) {
-			gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(functionedit_builder, "function_edit_tabs")), 0);
-			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")));
-			goto run_function_edit_dialog;
+		if((!f || !f->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->functionNameTaken(str, f)) {
+			MathFunction *func = CALCULATOR->getActiveFunction(str);
+			if((!func || func->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A function with the same name already exists.\nDo you want to overwrite the function?"), dialog)) {
+				gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(functionedit_builder, "function_edit_tabs")), 0);
+				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")));
+				goto run_function_edit_dialog;
+			}
 		}
 		bool add_func = false;
 		if(f) {
@@ -15951,7 +16013,7 @@ run_function_edit_dialog:
 		}
 		g_free(gstr_descr);
 		if(f) {
-			f->setCondition(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_condition"))), pa));
+			f->setCondition(unlocalize_expression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_condition")))));
 			GtkTreeIter iter;
 			bool b = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tFunctionArguments_store), &iter);
 			int i = 1;
@@ -15974,7 +16036,7 @@ run_function_edit_dialog:
 					gchar *gstr;
 					gboolean g_b = FALSE;
 					gtk_tree_model_get(GTK_TREE_MODEL(tSubfunctions_store), &iter, 1, &gstr, 4, &g_b, -1);
-					((UserFunction*) f)->addSubfunction(gstr, g_b);
+					((UserFunction*) f)->addSubfunction(unlocalize_expression(gstr), g_b);
 					b = gtk_tree_model_iter_next(GTK_TREE_MODEL(tSubfunctions_store), &iter);
 					g_free(gstr);
 				}
@@ -16041,8 +16103,7 @@ void edit_function_simple(const char *category = "", MathFunction *f = NULL, Gtk
 
 	if(f) {
 		//fill in original paramaters
-		ParseOptions pa = evalops.parse_options; pa.base = 10;
-		gtk_text_buffer_set_text(expression_buffer, CALCULATOR->localizeExpression(((UserFunction*) f)->formula(), pa).c_str(), -1);
+		gtk_text_buffer_set_text(expression_buffer, localize_expression(((UserFunction*) f)->formula()).c_str(), -1);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_entry_name")), f->getName(1).name.c_str());
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_radiobutton_slash")), TRUE);
 	} else {
@@ -16068,8 +16129,7 @@ run_simple_function_edit_dialog:
 		gtk_text_buffer_get_start_iter(expression_buffer, &e_iter_s);
 		gtk_text_buffer_get_end_iter(expression_buffer, &e_iter_e);;
 		gchar *gstr = gtk_text_buffer_get_text(expression_buffer, &e_iter_s, &e_iter_e, FALSE);
-		ParseOptions pa = evalops.parse_options; pa.base = 10;
-		string str2 = CALCULATOR->unlocalizeExpression(gstr, pa);
+		string str2 = unlocalize_expression(gstr);
 		g_free(gstr);
 		remove_blank_ends(str2);
 		gsub("\n", " ", str2);
@@ -16085,9 +16145,12 @@ run_simple_function_edit_dialog:
 			goto run_simple_function_edit_dialog;
 		}
 		//function with the same name exists -- overwrite or open the dialog again
-		if((!f || !f->hasName(str)) && CALCULATOR->functionNameTaken(str, f) && !ask_question(_("A function with the same name already exists.\nDo you want to overwrite the function?"), dialog)) {
-			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_entry_name")));
-			goto run_simple_function_edit_dialog;
+		if((!f || !f->hasName(str)) && CALCULATOR->functionNameTaken(str, f)) {
+			MathFunction *func = CALCULATOR->getActiveFunction(str);
+			if((!func || func->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A function with the same name already exists.\nDo you want to overwrite the function?"), dialog)) {
+				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_entry_name")));
+				goto run_simple_function_edit_dialog;
+			}
 		}
 		if(f) {
 			//edited an existing function
@@ -16263,9 +16326,12 @@ run_unknown_edit_dialog:
 		}
 
 		//unknown with the same name exists -- overwrite or open dialog again
-		if((!v || !v->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str, v) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
-			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_name")));
-			goto run_unknown_edit_dialog;
+		if((!v || !v->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str, v)) {
+			Variable *var = CALCULATOR->getActiveVariable(str);
+			if((!var || var->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
+				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_name")));
+				goto run_unknown_edit_dialog;
+			}
 		}
 		if(!v) {
 			//no need to create a new unknown when a unknown with the same name exists
@@ -16402,24 +16468,30 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 		set_name_label_and_entry(v, GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")));
 		string value_str;
 		if(v->isExpression()) {
-			ParseOptions pa = evalops.parse_options; pa.base = 10;
-			value_str = CALCULATOR->localizeExpression(v->expression(), pa);
+			value_str = localize_expression(v->expression());
 			bool is_relative = false;
+			if((!v->uncertainty(&is_relative).empty() || !v->unit().empty()) && !is_relative && v->expression().find_first_not_of(NUMBER_ELEMENTS) != string::npos) {
+				value_str.insert(0, 1, '(');
+				value_str += ')';
+			}
 			if(!v->uncertainty(&is_relative).empty()) {
 				if(is_relative) {
 					value_str.insert(0, "(");
 					value_str.insert(0, CALCULATOR->f_uncertainty->referenceName());
 					value_str += CALCULATOR->getComma();
 					value_str += " ";
-					value_str += v->uncertainty();
+					value_str += localize_expression(v->uncertainty());
 					value_str += CALCULATOR->getComma();
 					value_str += " 1)";
 				} else {
 					value_str += SIGN_PLUSMINUS;
-					value_str += v->uncertainty();
+					value_str += localize_expression(v->uncertainty());
 				}
 			}
-			if(!v->unit().empty() && v->unit() != "auto") {value_str += " "; value_str += v->unit();}
+			if(!v->unit().empty() && v->unit() != "auto") {
+				value_str += " ";
+				value_str += localize_expression(v->unit(), true);
+			}
 		} else {
 			value_str = get_value_string(v->get(), false, NULL);
 		}
@@ -16462,8 +16534,7 @@ run_variable_edit_dialog:
 	if(response == GTK_RESPONSE_OK) {
 		//clicked "OK"
 		string str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")));
-		ParseOptions pa = evalops.parse_options; pa.base = 10;
-		string str2 = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_value"))), pa);
+		string str2 = unlocalize_expression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_value"))));
 		remove_blank_ends(str);
 		remove_blank_ends(str2);
 		GtkTreeIter iter;
@@ -16480,9 +16551,12 @@ run_variable_edit_dialog:
 			goto run_variable_edit_dialog;
 		}
 		//variable with the same name exists -- overwrite or open dialog again
-		if((!v || !v->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str, v) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
-			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")));
-			goto run_variable_edit_dialog;
+		if((!v || !v->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str, v)) {
+			Variable *var = CALCULATOR->getActiveVariable(str);
+			if((!var || var->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
+				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")));
+				goto run_variable_edit_dialog;
+			}
 		}
 		if(!v) {
 			//no need to create a new variable when a variable with the same name exists
@@ -16730,9 +16804,12 @@ run_matrix_edit_dialog:
 		}
 
 		//variable with the same name exists -- overwrite or open dialog again
-		if((!v || !v->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
-			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_name")));
-			goto run_matrix_edit_dialog;
+		if((!v || !v->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str)) {
+			Variable *var = CALCULATOR->getActiveVariable(str);
+			if((!var || var->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
+				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_name")));
+				goto run_matrix_edit_dialog;
+			}
 		}
 		if(!v) {
 			//no need to create a new variable when a variable with the same name exists
@@ -17040,7 +17117,7 @@ void edit_dataobject(DataSet *ds, DataObject *o, GtkWidget *win) {
 		value_entries.push_back(entry);
 		int iapprox = -1;
 		if(o) {
-			gtk_entry_set_text(GTK_ENTRY(entry), CALCULATOR->localizeExpression(o->getProperty(dp, &iapprox), evalops.parse_options).c_str());
+			gtk_entry_set_text(GTK_ENTRY(entry), localize_expression(o->getProperty(dp, &iapprox)).c_str());
 		}
 		gtk_grid_attach(GTK_GRID(ptable), entry, 1, rows - 1, 1, 1);
 
@@ -17075,7 +17152,7 @@ void edit_dataobject(DataSet *ds, DataObject *o, GtkWidget *win) {
 		size_t i = 0;
 		string val;
 		while(dp) {
-			val = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(value_entries[i])), evalops.parse_options);
+			val = unlocalize_expression(gtk_entry_get_text(GTK_ENTRY(value_entries[i])));
 			remove_blank_ends(val);
 			if(!val.empty()) {
 				o->setProperty(dp, val, gtk_combo_box_get_active(GTK_COMBO_BOX(approx_menus[i])) - 1);
@@ -17472,9 +17549,12 @@ run_csv_import_dialog:
 			goto run_csv_import_dialog;
 		}
 		//variable with the same name exists -- overwrite or open dialog again
-		if(CALCULATOR->variableNameTaken(name_str) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
-			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(csvimport_builder, "csv_import_entry_name")));
-			goto run_csv_import_dialog;
+		if(CALCULATOR->variableNameTaken(name_str)) {
+			Variable *var = CALCULATOR->getActiveVariable(str);
+			if((!var || var->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
+				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(csvimport_builder, "csv_import_entry_name")));
+				goto run_csv_import_dialog;
+			}
 		}
 		string delimiter = "";
 		switch(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(csvimport_builder, "csv_import_combobox_delimiter")))) {
@@ -24230,21 +24310,15 @@ const gchar *key_press_get_symbol(GdkEventKey *event, bool do_caret_as_xor = tru
 		}
 		case GDK_KEY_KP_Multiply: {}
 		case GDK_KEY_asterisk: {
-			if(printops.use_unicode_signs && printops.multiplication_sign == MULTIPLICATION_SIGN_DOT) return sdot_o.c_str();
-			else if(printops.use_unicode_signs && (printops.multiplication_sign == MULTIPLICATION_SIGN_ALTDOT || (unit_expression && printops.multiplication_sign == MULTIPLICATION_SIGN_X))) return saltdot_o.c_str();
-			else if(printops.use_unicode_signs && printops.multiplication_sign == MULTIPLICATION_SIGN_X) return stimes_o.c_str();
-			return "*";
+			return times_sign(unit_expression);
 		}
 		case GDK_KEY_KP_Divide: {}
 		case GDK_KEY_slash: {
-			if(!printops.use_unicode_signs) return "/";
-			if(printops.division_sign == DIVISION_SIGN_DIVISION) return sdiv_o.c_str();
-			return sslash_o.c_str();
+			return divide_sign();
 		}
 		case GDK_KEY_KP_Subtract: {}
 		case GDK_KEY_minus: {
-			if(!printops.use_unicode_signs) return "-";
-			return sminus_o.c_str();
+			return sub_sign();
 		}
 		case GDK_KEY_KP_Add: {}
 		case GDK_KEY_plus: {
@@ -30223,6 +30297,7 @@ void on_unit_edit_entry_name_changed(GtkEditable *editable, gpointer) {
 */
 void on_unit_edit_combobox_class_changed(GtkComboBox *om, gpointer) {
 
+	gtk_entry_set_icon_sensitive(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_name")), GTK_ENTRY_ICON_SECONDARY, gtk_combo_box_get_active(om) != UNIT_CLASS_COMPOSITE_UNIT);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_label_base")), gtk_combo_box_get_active(om) != UNIT_CLASS_BASE_UNIT);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")), gtk_combo_box_get_active(om) != UNIT_CLASS_BASE_UNIT);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_use_prefixes")), gtk_combo_box_get_active(om) != UNIT_CLASS_COMPOSITE_UNIT);
@@ -33722,7 +33797,6 @@ void on_argument_rules_checkbutton_enable_condition_toggled(GtkToggleButton *w, 
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_entry_condition")), gtk_toggle_button_get_active(w));
 }
 #define SET_NAMES_LE(x,y,z)	GtkTreeIter iter;\
-				string str;\
 				if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) {\
 					gchar *gstr;\
 					gtk_tree_model_get(GTK_TREE_MODEL(tNames_store), &iter, NAMES_NAME_COLUMN, &gstr, -1);\
@@ -33730,18 +33804,7 @@ void on_argument_rules_checkbutton_enable_condition_toggled(GtkToggleButton *w, 
 						gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(x, y)), gstr);\
 					}\
 					g_free(gstr);\
-					if(gtk_tree_model_iter_next(GTK_TREE_MODEL(tNames_store), &iter)) {\
-						str += "+ ";\
-						while(true) {\
-							gtk_tree_model_get(GTK_TREE_MODEL(tNames_store), &iter, NAMES_NAME_COLUMN, &gstr, -1);\
-							str += gstr;\
-							g_free(gstr);\
-							if(!gtk_tree_model_iter_next(GTK_TREE_MODEL(tNames_store), &iter)) break;\
-							str += ", ";\
-						}\
-					}\
 				}\
-				//gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(x, z)), str.c_str());
 
 void on_variable_edit_button_names_clicked(GtkWidget*, gpointer) {
 	edit_names(get_edited_variable(), gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name"))), GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog")));

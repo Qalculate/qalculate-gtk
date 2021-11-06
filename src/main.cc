@@ -591,7 +591,11 @@ int main (int argc, char *argv[]) {
 		fclose(file);
 	}
 	if(!ignore_locale) {
+#	ifdef WIN32
 		bindtextdomain(GETTEXT_PACKAGE, getPackageLocaleDir().c_str());
+#	else
+		bindtextdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
+#	endif
 		bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
 		textdomain(GETTEXT_PACKAGE);
 	}
