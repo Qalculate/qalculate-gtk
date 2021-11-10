@@ -757,6 +757,7 @@ void on_dataset_edit_button_new_property_clicked(GtkButton *button, gpointer use
 void on_dataset_edit_button_edit_property_clicked(GtkButton *button, gpointer user_data);
 void on_dataset_edit_button_del_property_clicked(GtkButton *button, gpointer user_data);
 void on_dataset_edit_button_names_clicked(GtkWidget *button, gpointer user_data);
+void on_dataproperty_edit_combobox_type_changed(GtkComboBox *om, gpointer);
 
 void on_datasets_button_newset_clicked(GtkButton *button, gpointer user_data);
 void on_datasets_button_editset_clicked(GtkButton *button, gpointer user_data);

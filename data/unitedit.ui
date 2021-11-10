@@ -100,187 +100,95 @@
             <property name="can-focus">True</property>
             <property name="border-width">6</property>
             <child>
-              <object class="GtkBox" id="unit_edit_vbox_name">
+              <!-- n-columns=2 n-rows=7 -->
+              <object class="GtkGrid" id="grid">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="border-width">12</property>
-                <property name="orientation">vertical</property>
-                <property name="spacing">6</property>
+                <property name="row-spacing">6</property>
+                <property name="column-spacing">12</property>
                 <child>
-                  <object class="GtkBox" id="hbox19">
+                  <object class="GtkLabel" id="unit_edit_label_name">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="spacing">6</property>
-                    <property name="homogeneous">True</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Name</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="unit_edit_label_category">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Category</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="unit_edit_label_desc">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Descriptive name</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label25">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">System</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label49">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Description</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">5</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow" id="scrolledwindow5">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
+                    <property name="shadow-type">in</property>
                     <child>
-                      <object class="GtkLabel" id="unit_edit_label_name">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">Name</property>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkEntry" id="unit_edit_entry_name">
+                      <object class="GtkTextView" id="unit_edit_textview_description">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="tooltip-text" translatable="yes">Singular form of this unit's name</property>
-                        <property name="secondary-icon-name">document-properties-symbolic</property>
-                        <property name="primary-icon-activatable">False</property>
-                        <signal name="changed" handler="on_unit_changed" swapped="no"/>
-                        <signal name="changed" handler="on_unit_edit_entry_name_changed" swapped="no"/>
-                        <signal name="icon-press" handler="on_unit_edit_button_names_clicked" swapped="no"/>
+                        <property name="tooltip-text" translatable="yes">Description of this function</property>
+                        <property name="wrap-mode">word</property>
+                        <property name="left-margin">3</property>
+                        <property name="right-margin">3</property>
                       </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkBox" id="hbox22">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="spacing">6</property>
-                    <property name="homogeneous">True</property>
-                    <child>
-                      <object class="GtkLabel" id="unit_edit_label_category">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">Category</property>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkComboBoxText" id="unit_edit_combo_category">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="has-entry">True</property>
-                        <child internal-child="entry">
-                          <object class="GtkEntry" id="unit_edit_entry_category">
-                            <property name="can-focus">False</property>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkBox" id="hbox27">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="spacing">6</property>
-                    <property name="homogeneous">True</property>
-                    <child>
-                      <object class="GtkLabel" id="unit_edit_label_desc">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">Descriptive name</property>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkEntry" id="unit_edit_entry_desc">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="tooltip-text" translatable="yes">Title displayed in menus and in unit manager</property>
-                        <property name="primary-icon-activatable">False</property>
-                        <property name="secondary-icon-activatable">False</property>
-                        <signal name="changed" handler="on_unit_changed" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkBox" id="hbox56">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="spacing">6</property>
-                    <property name="homogeneous">True</property>
-                    <child>
-                      <object class="GtkLabel" id="label25">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">System</property>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkComboBoxText" id="unit_edit_combo_system">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="has-entry">True</property>
-                        <items>
-                          <item>SI</item>
-                          <item>CGS</item>
-                          <item translatable="yes">Imperial</item>
-                          <item translatable="yes">US Survey</item>
-                        </items>
-                        <signal name="changed" handler="on_unit_edit_combo_system_changed" swapped="no"/>
-                        <child internal-child="entry">
-                          <object class="GtkEntry" id="unit_edit_entry_system">
-                            <property name="can-focus">False</property>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">5</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">6</property>
+                    <property name="width">2</property>
                   </packing>
                 </child>
                 <child>
@@ -296,45 +204,86 @@
                     <signal name="toggled" handler="on_unit_changed" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">5</property>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">4</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="label49">
+                  <object class="GtkComboBoxText" id="unit_edit_combo_system">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="label" translatable="yes">Description</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">7</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkScrolledWindow" id="scrolledwindow5">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="shadow-type">in</property>
-                    <child>
-                      <object class="GtkTextView" id="unit_edit_textview_description">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="tooltip-text" translatable="yes">Description of this function</property>
-                        <property name="wrap-mode">word</property>
-                        <property name="left-margin">3</property>
-                        <property name="right-margin">3</property>
+                    <property name="has-entry">True</property>
+                    <items>
+                      <item>SI</item>
+                      <item>CGS</item>
+                      <item translatable="yes">Imperial</item>
+                      <item translatable="yes">US Survey</item>
+                    </items>
+                    <signal name="changed" handler="on_unit_edit_combo_system_changed" swapped="no"/>
+                    <child internal-child="entry">
+                      <object class="GtkEntry">
+                        <property name="can-focus">False</property>
                       </object>
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">8</property>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">3</property>
                   </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="unit_edit_entry_desc">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="tooltip-text" translatable="yes">Title displayed in menus and in unit manager</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="secondary-icon-activatable">False</property>
+                    <signal name="changed" handler="on_unit_changed" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkComboBoxText" id="unit_edit_combo_category">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="has-entry">True</property>
+                    <child internal-child="entry">
+                      <object class="GtkEntry">
+                        <property name="can-focus">False</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="unit_edit_entry_name">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="tooltip-text" translatable="yes">Singular form of this unit's name</property>
+                    <property name="hexpand">True</property>
+                    <property name="width-chars">20</property>
+                    <property name="secondary-icon-name">document-properties-symbolic</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <signal name="changed" handler="on_unit_changed" swapped="no"/>
+                    <signal name="changed" handler="on_unit_edit_entry_name_changed" swapped="no"/>
+                    <signal name="icon-press" handler="on_unit_edit_button_names_clicked" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
                 </child>
               </object>
             </child>
@@ -349,398 +298,252 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="unit_edit_vbox_alias">
+              <!-- n-columns=2 n-rows=10 -->
+              <object class="GtkGrid" id="grid2">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="valign">start</property>
                 <property name="border-width">12</property>
-                <property name="orientation">vertical</property>
-                <property name="spacing">6</property>
+                <property name="row-spacing">6</property>
+                <property name="column-spacing">12</property>
                 <child>
-                  <object class="GtkBox" id="hbox18">
+                  <object class="GtkLabel" id="unit_edit_label_class">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
+                    <property name="halign">start</property>
                     <property name="margin-bottom">6</property>
-                    <property name="spacing">6</property>
-                    <property name="homogeneous">True</property>
-                    <child>
-                      <object class="GtkLabel" id="unit_edit_label_class">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">Class</property>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkComboBoxText" id="unit_edit_combobox_class">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="tooltip-text" translatable="yes">The class that this unit belongs to. Named derived units are defined in relation to a single other unit, with an optional exponent, while (unnamed) derived units are defined by a unit expression with one or multiple units.</property>
-                        <property name="active">0</property>
-                        <items>
-                          <item translatable="yes">Base unit</item>
-                          <item translatable="yes">Named derived unit</item>
-                          <item translatable="yes">Derived unit</item>
-                        </items>
-                        <signal name="changed" handler="on_unit_changed" swapped="no"/>
-                        <signal name="changed" handler="on_unit_edit_combobox_class_changed" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
+                    <property name="label" translatable="yes">Class</property>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="hbox28">
+                  <object class="GtkComboBoxText" id="unit_edit_combobox_class">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="spacing">6</property>
-                    <property name="homogeneous">True</property>
-                    <child>
-                      <object class="GtkLabel" id="unit_edit_label_base">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">Base unit(s)</property>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkEntry" id="unit_edit_entry_base">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="tooltip-text" translatable="yes">Unit (for named derived unit) or unit expression (for unnamed derived unit) that this unit is defined in relation to</property>
-                        <property name="primary-icon-activatable">False</property>
-                        <property name="secondary-icon-activatable">False</property>
-                        <signal name="changed" handler="on_unit_changed" swapped="no"/>
-                        <signal name="key-press-event" handler="on_unit_entry_key_press_event" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
+                    <property name="tooltip-text" translatable="yes">The class that this unit belongs to. Named derived units are defined in relation to a single other unit, with an optional exponent, while (unnamed) derived units are defined by a unit expression with one or multiple units.</property>
+                    <property name="margin-bottom">6</property>
+                    <property name="hexpand">True</property>
+                    <property name="active">0</property>
+                    <items>
+                      <item translatable="yes">Base unit</item>
+                      <item translatable="yes">Named derived unit</item>
+                      <item translatable="yes">Derived unit</item>
+                    </items>
+                    <signal name="changed" handler="on_unit_changed" swapped="no"/>
+                    <signal name="changed" handler="on_unit_edit_combobox_class_changed" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="hbox31">
+                  <object class="GtkLabel" id="unit_edit_label_base">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="spacing">6</property>
-                    <property name="homogeneous">True</property>
-                    <child>
-                      <object class="GtkLabel" id="unit_edit_label_exp">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">Exponent</property>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSpinButton" id="unit_edit_spinbutton_exp">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="tooltip-text" translatable="yes">Exponent of the base unit</property>
-                        <property name="primary-icon-activatable">False</property>
-                        <property name="secondary-icon-activatable">False</property>
-                        <property name="adjustment">adjustment1</property>
-                        <property name="climb-rate">1</property>
-                        <property name="value">1</property>
-                        <signal name="changed" handler="on_unit_changed" swapped="no"/>
-                        <signal name="value-changed" handler="on_unit_edit_spinbutton_exp_value_changed" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Base unit(s)</property>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="vbox23">
+                  <object class="GtkLabel" id="unit_edit_label_exp">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="orientation">vertical</property>
-                    <property name="spacing">6</property>
-                    <child>
-                      <object class="GtkBox" id="hbox29">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="spacing">6</property>
-                        <property name="homogeneous">True</property>
-                        <child>
-                          <object class="GtkLabel" id="unit_edit_label_relation">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="halign">start</property>
-                            <property name="label" translatable="yes">Relation</property>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkEntry" id="unit_edit_entry_relation">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="tooltip-text" translatable="yes">Relation to the base unit. For linear relations this should just be a number.
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Exponent</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="unit_edit_label_relation">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Relation</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="unit_edit_checkbutton_exact">
+                    <property name="label" translatable="yes">Relation is exact</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If the relation is precise</property>
+                    <property name="halign">end</property>
+                    <property name="valign">start</property>
+                    <property name="margin-bottom">6</property>
+                    <property name="use-underline">True</property>
+                    <property name="active">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_unit_changed" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="unit_edit_label_reversed">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Inverse relation</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">5</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="unit_edit_checkbutton_mix">
+                    <property name="label" translatable="yes">Mix with base unit</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="margin-top">6</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_unit_changed" swapped="no"/>
+                    <signal name="toggled" handler="on_unit_edit_checkbutton_mix_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">6</property>
+                    <property name="width">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="unit_edit_label_mix_priority">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Priority</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">7</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="unit_edit_label_mix_min">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Minimum base unit number</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">8</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSpinButton" id="unit_edit_spinbutton_mix_priority">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="secondary-icon-activatable">False</property>
+                    <property name="adjustment">adjustment2</property>
+                    <property name="climb-rate">1</property>
+                    <property name="value">1</property>
+                    <signal name="changed" handler="on_unit_changed" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">7</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSpinButton" id="unit_edit_spinbutton_mix_min">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="secondary-icon-activatable">False</property>
+                    <property name="adjustment">adjustment3</property>
+                    <property name="climb-rate">1</property>
+                    <property name="value">1</property>
+                    <signal name="changed" handler="on_unit_changed" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">8</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSpinButton" id="unit_edit_spinbutton_exp">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="tooltip-text" translatable="yes">Exponent of the base unit</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="secondary-icon-activatable">False</property>
+                    <property name="adjustment">adjustment1</property>
+                    <property name="climb-rate">1</property>
+                    <property name="value">1</property>
+                    <signal name="changed" handler="on_unit_changed" swapped="no"/>
+                    <signal name="value-changed" handler="on_unit_edit_spinbutton_exp_value_changed" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="unit_edit_entry_base">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="tooltip-text" translatable="yes">Unit (for named derived unit) or unit expression (for unnamed derived unit) that this unit is defined in relation to</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="secondary-icon-activatable">False</property>
+                    <signal name="changed" handler="on_unit_changed" swapped="no"/>
+                    <signal name="key-press-event" handler="on_unit_entry_key_press_event" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="unit_edit_entry_relation">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="tooltip-text" translatable="yes">Relation to the base unit. For linear relations this should just be a number.
 
 For non-linear relations use \x for the factor and \y for the exponent (e.g. "\x + 273.15" for the relation between degrees Celsius and Kelvin).</property>
-                            <property name="primary-icon-activatable">False</property>
-                            <property name="secondary-icon-activatable">False</property>
-                            <signal name="changed" handler="on_unit_changed" swapped="no"/>
-                            <signal name="changed" handler="on_unit_edit_entry_relation_changed" swapped="no"/>
-                            <signal name="key-press-event" handler="on_math_entry_key_press_event" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkCheckButton" id="unit_edit_checkbutton_exact">
-                        <property name="label" translatable="yes">Relation is exact</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="receives-default">False</property>
-                        <property name="tooltip-text" translatable="yes">If the relation is precise</property>
-                        <property name="halign">end</property>
-                        <property name="valign">start</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="use-underline">True</property>
-                        <property name="active">True</property>
-                        <property name="draw-indicator">True</property>
-                        <signal name="toggled" handler="on_unit_changed" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="secondary-icon-activatable">False</property>
+                    <signal name="changed" handler="on_unit_changed" swapped="no"/>
+                    <signal name="changed" handler="on_unit_edit_entry_relation_changed" swapped="no"/>
+                    <signal name="key-press-event" handler="on_math_entry_key_press_event" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">3</property>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">3</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="vbox24">
+                  <object class="GtkEntry" id="unit_edit_entry_reversed">
                     <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="orientation">vertical</property>
-                    <child>
-                      <object class="GtkBox" id="unit_edit_box_reversed">
-                        <property name="visible">True</property>
-                        <property name="sensitive">False</property>
-                        <property name="can-focus">False</property>
-                        <property name="spacing">6</property>
-                        <property name="homogeneous">True</property>
-                        <child>
-                          <object class="GtkLabel" id="unit_edit_label_reversed">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="halign">start</property>
-                            <property name="label" translatable="yes">Inverse relation</property>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkEntry" id="unit_edit_entry_reversed">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="tooltip-text" translatable="yes">Specify for non-linear relation, for conversion back to the base unit.</property>
-                            <property name="primary-icon-activatable">False</property>
-                            <property name="secondary-icon-activatable">False</property>
-                            <signal name="changed" handler="on_unit_changed" swapped="no"/>
-                            <signal name="key-press-event" handler="on_math_entry_key_press_event" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
+                    <property name="can-focus">True</property>
+                    <property name="tooltip-text" translatable="yes">Specify for non-linear relation, for conversion back to the base unit.</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="secondary-icon-activatable">False</property>
+                    <signal name="changed" handler="on_unit_changed" swapped="no"/>
+                    <signal name="key-press-event" handler="on_math_entry_key_press_event" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkBox" id="unit_edit_frame_mix">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="orientation">vertical</property>
-                    <property name="spacing">6</property>
-                    <child>
-                      <object class="GtkCheckButton" id="unit_edit_checkbutton_mix">
-                        <property name="label" translatable="yes">Mix with base unit</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="receives-default">False</property>
-                        <property name="margin-top">6</property>
-                        <property name="draw-indicator">True</property>
-                        <signal name="toggled" handler="on_unit_changed" swapped="no"/>
-                        <signal name="toggled" handler="on_unit_edit_checkbutton_mix_toggled" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="hbox1">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="tooltip-text" translatable="yes">- Decides which units the base unit is mixed with if multple options exist.
-- The original unit will not be mixed with units with lower priority.
-- A lower value means higher priority.</property>
-                        <property name="spacing">6</property>
-                        <property name="homogeneous">True</property>
-                        <child>
-                          <object class="GtkLabel" id="unit_edit_label_mix_priority">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="halign">start</property>
-                            <property name="label" translatable="yes">Priority</property>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSpinButton" id="unit_edit_spinbutton_mix_priority">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="primary-icon-activatable">False</property>
-                            <property name="secondary-icon-activatable">False</property>
-                            <property name="adjustment">adjustment2</property>
-                            <property name="climb-rate">1</property>
-                            <property name="value">1</property>
-                            <signal name="changed" handler="on_unit_changed" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="hbox2">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="spacing">6</property>
-                        <property name="homogeneous">True</property>
-                        <child>
-                          <object class="GtkLabel" id="unit_edit_label_mix_min">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="halign">start</property>
-                            <property name="label" translatable="yes">Minimum base unit number</property>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSpinButton" id="unit_edit_spinbutton_mix_min">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="primary-icon-activatable">False</property>
-                            <property name="secondary-icon-activatable">False</property>
-                            <property name="adjustment">adjustment3</property>
-                            <property name="climb-rate">1</property>
-                            <property name="value">1</property>
-                            <signal name="changed" handler="on_unit_changed" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">2</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">5</property>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">5</property>
                   </packing>
                 </child>
                 <child>
@@ -755,15 +558,17 @@ For non-linear relations use \x for the factor and \y for the exponent (e.g. "\x
                     <signal name="toggled" handler="on_unit_changed" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">6</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">9</property>
+                    <property name="width">2</property>
                   </packing>
+                </child>
+                <child>
+                  <placeholder/>
                 </child>
               </object>
               <packing>
                 <property name="position">1</property>
-                <property name="tab-fill">False</property>
               </packing>
             </child>
             <child type="tab">

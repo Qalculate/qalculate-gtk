@@ -159,6 +159,7 @@ Unit *edited_unit = NULL;
 DataSet *edited_dataset = NULL;
 DataProperty *edited_dataproperty = NULL;
 bool editing_variable = false, editing_unknown = false, editing_matrix = false, editing_unit = false, editing_function = false, editing_dataset = false, editing_dataproperty = false;
+bool auto_dataset_name = false, auto_dataset_file = false;
 size_t selected_subfunction;
 size_t last_subfunction_index;
 Argument *selected_argument;
@@ -15457,15 +15458,22 @@ void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 		gtk_text_buffer_set_text(description_buffer, u->description().c_str(), -1);
 
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), FALSE);
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_priority")), 1);
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_min")), 1);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_label_mix_priority")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_label_mix_min")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_priority")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_min")), FALSE);
 
 		switch(u->subtype()) {
 			case SUBTYPE_ALIAS_UNIT: {
 				AliasUnit *au = (AliasUnit*) u;
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")), au->firstBaseUnit()->preferredDisplayName(printops.abbreviate_names, true, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")).name.c_str());
 				gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp")), au->firstBaseExponent());
-				if(au->firstBaseExponent() != 1) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_frame_mix")), FALSE);
+				if(au->firstBaseExponent() == 1 && !u->isBuiltin()) {
+					gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), TRUE);
+				}
 				bool is_relative = false;
 				if(au->uncertainty(&is_relative).empty()) {
 					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), localize_expression(au->expression()).c_str());
@@ -15483,19 +15491,23 @@ void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 					gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), localize_expression(au->expression() + SIGN_PLUSMINUS + au->uncertainty()).c_str());
 				}
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")), localize_expression(au->inverseExpression()).c_str());
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_box_reversed")), au->hasNonlinearExpression());
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_label_reversed")), au->hasNonlinearExpression());
+				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")), au->hasNonlinearExpression());
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact")), !au->isApproximate());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), !u->isBuiltin());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")), !u->isBuiltin());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact")), !u->isBuiltin());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp")), !u->isBuiltin());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")), !u->isBuiltin());
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_frame_mix")), !u->isBuiltin());
 				if(au->mixWithBase() > 0) {
 					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), TRUE);
 					gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_priority")), au->mixWithBase());
 					gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_min")), au->mixWithBaseMinimum() > 1 ? au->mixWithBaseMinimum() : 1);
 					on_unit_edit_checkbutton_mix_toggled(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), NULL);
+					gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_label_mix_priority")), !u->isBuiltin());
+					gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_label_mix_min")), !u->isBuiltin());
+					gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_priority")), !u->isBuiltin());
+					gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_min")), !u->isBuiltin());
 				}
 				break;
 			}
@@ -15503,15 +15515,14 @@ void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")), ((CompositeUnit*) u)->print(false, printops.abbreviate_names, true, &can_display_unicode_string_function, (void*) gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")).c_str());
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")), !u->isBuiltin());
 			}
-			default: {
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_frame_mix")), FALSE);
-			}
+			default: {}
 		}
 	} else {
 		//default values
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_hidden")), false);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact")), TRUE);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_box_reversed")), false);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_label_reversed")), false);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")), false);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unitedit_builder, "unit_edit_combobox_class")), UNIT_CLASS_BASE_UNIT);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")), "1");
 		on_unit_edit_combobox_class_changed(GTK_COMBO_BOX(gtk_builder_get_object(unitedit_builder, "unit_edit_combobox_class")), NULL);
@@ -15519,6 +15530,8 @@ void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 	}
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_button_ok")), FALSE);
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_name")));
+
+	gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(unitedit_builder, "unit_edit_tabs")), 0);
 
 run_unit_edit_dialog:
 	gint response = gtk_dialog_run(GTK_DIALOG(dialog));
@@ -16270,14 +16283,18 @@ void edit_unknown(const char *category, Variable *var, GtkWidget *win) {
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_desc")), v->title(false).c_str());
 		if(v->assumptions()) {
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unknownedit_builder, "unknown_edit_checkbutton_custom_assumptions")), TRUE);
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_type")), TRUE);
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_sign")), TRUE);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), TRUE);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), TRUE);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_label_type")), TRUE);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_label_sign")), TRUE);
 			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")),  v->assumptions()->type() < ASSUMPTION_TYPE_REAL ? 0 : v->assumptions()->type() - 3);
 			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), v->assumptions()->sign());
 		} else {
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unknownedit_builder, "unknown_edit_checkbutton_custom_assumptions")), FALSE);
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_type")), FALSE);
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_sign")), FALSE);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), FALSE);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), FALSE);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_label_type")), FALSE);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_label_sign")), FALSE);
 			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), CALCULATOR->defaultAssumptions()->type() < ASSUMPTION_TYPE_REAL ? 0 : CALCULATOR->defaultAssumptions()->type() - 3);
 			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), CALCULATOR->defaultAssumptions()->sign());
 		}
@@ -16288,8 +16305,10 @@ void edit_unknown(const char *category, Variable *var, GtkWidget *win) {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), TRUE);
 
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unknownedit_builder, "unknown_edit_checkbutton_custom_assumptions")), TRUE);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_type")), TRUE);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_sign")), TRUE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), TRUE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), TRUE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_label_type")), TRUE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_label_sign")), TRUE);
 
 		//fill in default values
 		string v_name;
@@ -17119,22 +17138,24 @@ void edit_dataobject(DataSet *ds, DataObject *o, GtkWidget *win) {
 		if(o) {
 			gtk_entry_set_text(GTK_ENTRY(entry), localize_expression(o->getProperty(dp, &iapprox)).c_str());
 		}
+		g_signal_connect(entry, "changed", G_CALLBACK(on_dataobject_changed), NULL);
 		gtk_grid_attach(GTK_GRID(ptable), entry, 1, rows - 1, 1, 1);
 
-		label = gtk_label_new(dp->getUnitString().c_str()); gtk_widget_set_halign(label, GTK_ALIGN_START);
+		label = gtk_label_new(localize_expression(dp->getUnitString(), true).c_str()); gtk_widget_set_halign(label, GTK_ALIGN_START);
 		gtk_grid_attach(GTK_GRID(ptable), label, 2, rows - 1, 1, 1);
 
-		om = gtk_combo_box_text_new();
-		approx_menus.push_back(om);
-		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(om), NULL, _("Default"));
-		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(om), NULL, _("Approximate"));
-		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(om), NULL, _("Exact"));
-		gtk_combo_box_set_active(GTK_COMBO_BOX(om), iapprox + 1);
-
-		g_signal_connect(entry, "changed", G_CALLBACK(on_dataobject_changed), NULL);
-		g_signal_connect(om, "changed", G_CALLBACK(on_dataobject_changed), NULL);
-
-		gtk_grid_attach(GTK_GRID(ptable), om, 3, rows - 1, 1, 1);
+		if(dp->propertyType() == PROPERTY_STRING) {
+			approx_menus.push_back(NULL);
+		} else {
+			om = gtk_combo_box_text_new();
+			approx_menus.push_back(om);
+			gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(om), NULL, _("Default"));
+			gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(om), NULL, _("Approximate"));
+			gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(om), NULL, _("Exact"));
+			gtk_combo_box_set_active(GTK_COMBO_BOX(om), iapprox + 1);
+			g_signal_connect(om, "changed", G_CALLBACK(on_dataobject_changed), NULL);
+			gtk_grid_attach(GTK_GRID(ptable), om, 3, rows - 1, 1, 1);
+		}
 
 		rows++;
 		dp = ds->getNextProperty(&it);
@@ -17155,7 +17176,7 @@ void edit_dataobject(DataSet *ds, DataObject *o, GtkWidget *win) {
 			val = unlocalize_expression(gtk_entry_get_text(GTK_ENTRY(value_entries[i])));
 			remove_blank_ends(val);
 			if(!val.empty()) {
-				o->setProperty(dp, val, gtk_combo_box_get_active(GTK_COMBO_BOX(approx_menus[i])) - 1);
+				o->setProperty(dp, val, approx_menus[i] ? gtk_combo_box_get_active(GTK_COMBO_BOX(approx_menus[i])) - 1 : -1);
 			} else if(!new_object) {
 				o->eraseProperty(dp);
 			}
@@ -17223,23 +17244,14 @@ bool edit_dataproperty(DataProperty *dp, bool new_property = false) {
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(datasetedit_builder, "dataset_edit_dialog")));
 
 	edited_dataproperty = dp;
+	bool names_edited_bak = names_edited;
 	names_edited = false;
 	editing_dataproperty = true;
 
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_entry_name")), dp->getName().c_str());
-	/*if(dp->countNames() > 1) {
-		string str = "+ ";
-		for(size_t i = 2; i <= dp->countNames(); i++) {
-			if(i > 2) str += ", ";
-			str += dp->getName(i);
-		}
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_label_names")), str.c_str());
-	} else {
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_label_names")), "");
-	}*/
 
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_entry_title")), dp->title(false).c_str());
-	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_entry_unit")), dp->getUnitString().c_str());
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_entry_unit")), localize_expression(dp->getUnitString(), true).c_str());
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_checkbutton_hide")), dp->isHidden());
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_checkbutton_key")), dp->isKey());
@@ -17265,6 +17277,8 @@ bool edit_dataproperty(DataProperty *dp, bool new_property = false) {
 		}
 	}
 
+	on_dataproperty_edit_combobox_type_changed(GTK_COMBO_BOX(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_combobox_type")), NULL);
+
 	bool return_val = false;
 
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_button_ok")), new_property);
@@ -17285,7 +17299,7 @@ bool edit_dataproperty(DataProperty *dp, bool new_property = false) {
 		}
 
 		dp->setTitle(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_entry_title"))));
-		dp->setUnit(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_entry_unit"))));
+		dp->setUnit(unlocalize_expression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_entry_unit")))));
 
 		dp->setHidden(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_checkbutton_hide"))));
 		dp->setKey(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_checkbutton_key"))));
@@ -17329,15 +17343,27 @@ bool edit_dataproperty(DataProperty *dp, bool new_property = false) {
 			} else {
 				dp->addName(str);
 			}
+		} else if(dp->countNames() == 0) {
+			dp->setName(str, true);
 		} else {
-			dp->setName(str, 1);
+			vector<string> names;
+			vector<bool> name_refs;
+			for(size_t i = 1; i <= dp->countNames(); i++) {
+				if(i == 1) names.push_back(str);
+				else names.push_back(dp->getName(i));
+				name_refs.push_back(dp->nameIsReference(i));
+			}
+			dp->clearNames();
+			for(size_t i = 0; i < names.size(); i++) {
+				dp->addName(names[i], name_refs[i]);
+			}
 		}
 
 		return_val = true;
 
 	}
 
-	names_edited = false;
+	names_edited = names_edited_bak;
 	editing_dataproperty = false;
 	edited_dataproperty = NULL;
 
@@ -17365,6 +17391,9 @@ void edit_dataset(DataSet *ds, GtkWidget *win) {
 		gtk_window_set_title(GTK_WINDOW(dialog), _("New Data Set"));
 	}
 
+	auto_dataset_name = false;
+	auto_dataset_file = false;
+
 	GtkTextBuffer *description_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(datasetedit_builder, "dataset_edit_textview_description")));
 	GtkTextBuffer *copyright_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(datasetedit_builder, "dataset_edit_textview_copyright")));
 
@@ -17379,7 +17408,7 @@ void edit_dataset(DataSet *ds, GtkWidget *win) {
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_file")), "");
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_object_name")), "");
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_property_name")), "");
-	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_default_property")), _("info"));
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_default_property")), "info");
 	gtk_text_buffer_set_text(description_buffer, "", -1);
 	gtk_text_buffer_set_text(copyright_buffer, "", -1);
 
@@ -17411,8 +17440,11 @@ void edit_dataset(DataSet *ds, GtkWidget *win) {
 			tmp_props_orig.push_back(dp);
 			dp = ds->getNextProperty(&it);
 		}
-
+	} else {
+		auto_dataset_name = true;
+		auto_dataset_file = true;
 	}
+
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_button_ok")), FALSE);
 
 	update_dataset_property_list(ds);
@@ -17455,7 +17487,8 @@ void edit_dataset(DataSet *ds, GtkWidget *win) {
 			ds->setDescription(gstr_descr);
 		} else {
 			//new dataset
-			ds = new DataSet(_("Data Sets"), "", gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_file"))), gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_desc"))), gstr_descr, true);
+			DataSet *ds_atom = CALCULATOR->getDataSet("atom");
+			ds = new DataSet(ds_atom ? ds_atom->category() : _("Data Sets"), "", gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_file"))), gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_desc"))), gstr_descr, true);
 			add_func = true;
 		}
 		g_free(gstr_descr);
@@ -30252,7 +30285,8 @@ gboolean on_stackview_popup_menu(GtkWidget*, gpointer) {
 
 void on_unit_edit_entry_relation_changed(GtkEditable *w, gpointer) {
 	string str = gtk_entry_get_text(GTK_ENTRY(w));
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_box_reversed")), str.find("\\x") != string::npos);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_label_reversed")), str.find("\\x") != string::npos);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")), str.find("\\x") != string::npos);
 }
 
 void correct_name_entry(GtkEditable *editable, ExpressionItemType etype, gpointer function) {
@@ -30308,12 +30342,14 @@ void on_unit_edit_combobox_class_changed(GtkComboBox *om, gpointer) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_exact")), gtk_combo_box_get_active(om) == UNIT_CLASS_ALIAS_UNIT);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_label_reversed")), gtk_combo_box_get_active(om) == UNIT_CLASS_ALIAS_UNIT);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")), gtk_combo_box_get_active(om) == UNIT_CLASS_ALIAS_UNIT);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_frame_mix")), gtk_combo_box_get_active(om) == UNIT_CLASS_ALIAS_UNIT && gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp"))) == 1);
-	if(gtk_combo_box_get_active(om) != UNIT_CLASS_ALIAS_UNIT) {
+	if(gtk_combo_box_get_active(om) != UNIT_CLASS_ALIAS_UNIT || gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp"))) != 1) {
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), FALSE);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), FALSE);
-		on_unit_edit_checkbutton_mix_toggled(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), NULL);
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp")), 1);
+	} else {
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), TRUE);
 	}
+	on_unit_edit_checkbutton_mix_toggled(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), NULL);
 }
 
 void on_unit_edit_checkbutton_mix_toggled(GtkToggleButton *w, gpointer) {
@@ -30327,9 +30363,13 @@ void on_unit_edit_spinbutton_exp_value_changed(GtkSpinButton *w, gpointer) {
 	if(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unitedit_builder, "unit_edit_combobox_class"))) != UNIT_CLASS_ALIAS_UNIT) return;
 	if(gtk_spin_button_get_value_as_int(w) != 1) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), FALSE);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_frame_mix")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_label_mix_priority")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_label_mix_min")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_priority")), FALSE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_mix_min")), FALSE);
 	} else {
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_frame_mix")), TRUE);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), TRUE);
 	}
 }
 
@@ -30662,34 +30702,34 @@ void on_variable_edit_entry_name_changed(GtkEditable *editable, gpointer) {
 }
 
 void on_variable_changed() {
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_button_ok")), TRUE);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_button_ok")), strlen(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")))) > 0);
 }
 void on_function_changed() {
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_ok")), TRUE);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_ok")), strlen(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")))) > 0);
 }
 void on_simple_function_changed() {
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_button_ok")), TRUE);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_button_ok")), strlen(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_entry_name")))) > 0);
 }
 void on_argument_changed() {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_button_ok")), TRUE);
 }
 void on_unit_changed() {
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_button_ok")), TRUE);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_button_ok")), strlen(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_name")))) > 0);
 }
 void on_dataset_changed() {
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_button_ok")), TRUE);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_button_ok")), strlen(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_name")))) > 0);
 }
 void on_dataobject_changed() {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasets_builder, "dataobject_edit_button_ok")), TRUE);
 }
 void on_dataproperty_changed() {
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_button_ok")), TRUE);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_button_ok")), strlen(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_entry_name")))) > 0);
 }
 void on_matrix_changed() {
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_button_ok")), TRUE);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_button_ok")), strlen(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_name")))) > 0);
 }
 void on_unknown_changed() {
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_button_ok")), TRUE);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_button_ok")), strlen(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_name")))) > 0);
 }
 
 void on_tMatrixEdit_edited(GtkCellRendererText *cell, gchar *path_string, gchar *new_text, gpointer model) {
@@ -32271,8 +32311,10 @@ void on_decimals_dialog_checkbutton_min_toggled(GtkToggleButton *w, gpointer) {
 }
 
 void on_unknown_edit_checkbutton_custom_assumptions_toggled(GtkToggleButton *w, gpointer) {
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_type")), gtk_toggle_button_get_active(w));
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_hbox_sign")), gtk_toggle_button_get_active(w));
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), gtk_toggle_button_get_active(w));
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), gtk_toggle_button_get_active(w));
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_label_type")), gtk_toggle_button_get_active(w));
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_label_sign")), gtk_toggle_button_get_active(w));
 }
 void on_unknown_edit_combobox_type_changed(GtkComboBox *om, gpointer) {
 	if((gtk_combo_box_get_active(om) == 0 && (AssumptionSign) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"))) != ASSUMPTION_SIGN_NONZERO && gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"))) != ASSUMPTION_SIGN_UNKNOWN) || ((AssumptionType) gtk_combo_box_get_active(om) + 3 == ASSUMPTION_TYPE_BOOLEAN && (AssumptionSign) gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign"))) != ASSUMPTION_SIGN_UNKNOWN)) {
@@ -35188,6 +35230,26 @@ void on_element_button_clicked(GtkButton*, gpointer user_data) {
 
 void on_dataset_edit_entry_name_changed(GtkEditable *editable, gpointer) {
 	correct_name_entry(editable, TYPE_FUNCTION,  (gpointer) on_dataset_edit_entry_name_changed);
+	auto_dataset_name = false;
+}
+void on_dataset_edit_entry_file_changed(GtkEditable*, gpointer) {
+	auto_dataset_file = false;
+}
+void on_dataset_edit_entry_desc_changed(GtkEditable *w, gpointer) {
+	if(auto_dataset_file) {
+		string str = gtk_entry_get_text(GTK_ENTRY(w));
+		remove_blank_ends(str);
+		gsub(" ", "_", str);
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_file")), str.c_str());
+		auto_dataset_file = true;
+	}
+	if(auto_dataset_name) {
+		string str = gtk_entry_get_text(GTK_ENTRY(w));
+		remove_blank_ends(str);
+		gsub(" ", "_", str);
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_name")), str.c_str());
+		auto_dataset_name = true;
+	}
 }
 void on_dataset_edit_button_new_property_clicked(GtkButton*, gpointer) {
 	DataProperty *dp = new DataProperty(edited_dataset);
@@ -35213,6 +35275,7 @@ void on_dataset_edit_button_del_property_clicked(GtkButton*, gpointer) {
 	if(edited_dataset && selected_dataproperty && selected_dataproperty->isUserModified()) {
 		for(size_t i = 0; i < tmp_props.size(); i++) {
 			if(tmp_props[i] == selected_dataproperty) {
+				delete tmp_props[i];
 				if(tmp_props_orig[i]) {
 					tmp_props[i] = NULL;
 				} else {
@@ -35234,6 +35297,12 @@ void on_dataset_edit_button_names_clicked(GtkWidget*, gpointer) {
 void on_dataproperty_edit_button_names_clicked(GtkWidget*, gpointer) {
 	edit_names(NULL, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_entry_name"))), GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_dialog")), TRUE, get_edited_dataproperty());
 	SET_NAMES_LE(datasetedit_builder, "dataproperty_edit_entry_name", "dataproperty_edit_label_names")
+}
+void on_dataproperty_edit_combobox_type_changed(GtkComboBox *om, gpointer) {
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_checkbutton_key")), gtk_combo_box_get_active(om) != 2);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_checkbutton_case")), gtk_combo_box_get_active(om) == 0);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_checkbutton_approximate")), gtk_combo_box_get_active(om) != 0);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_checkbutton_brackets")), gtk_combo_box_get_active(om) != 0);
 }
 
 void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {

@@ -77,138 +77,95 @@
             <property name="can-focus">True</property>
             <property name="border-width">6</property>
             <child>
-              <object class="GtkBox" id="vbox28">
+              <!-- n-columns=2 n-rows=6 -->
+              <object class="GtkGrid" id="grid1">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="border-width">12</property>
-                <property name="orientation">vertical</property>
-                <property name="spacing">6</property>
+                <property name="row-spacing">6</property>
+                <property name="column-spacing">12</property>
                 <child>
-                  <object class="GtkBox" id="hbox35">
+                  <object class="GtkLabel" id="label33">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="spacing">6</property>
-                    <property name="homogeneous">True</property>
-                    <child>
-                      <object class="GtkLabel" id="label33">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">Name</property>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkEntry" id="function_edit_entry_name">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="tooltip-text" translatable="yes">Name used to invoke this function in expressions</property>
-                        <property name="secondary-icon-name">document-properties-symbolic</property>
-                        <property name="primary-icon-activatable">False</property>
-                        <signal name="changed" handler="on_function_changed" swapped="no"/>
-                        <signal name="changed" handler="on_function_edit_entry_name_changed" swapped="no"/>
-                        <signal name="icon-press" handler="on_function_edit_button_names_clicked" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Name</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="hbox41">
+                  <object class="GtkEntry" id="function_edit_entry_name">
                     <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="spacing">6</property>
-                    <property name="homogeneous">True</property>
-                    <child>
-                      <object class="GtkLabel" id="label40">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">Category</property>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkComboBoxText" id="function_edit_combo_category">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="has-entry">True</property>
-                        <child internal-child="entry">
-                          <object class="GtkEntry" id="entry_category">
-                            <property name="can-focus">True</property>
-                            <signal name="changed" handler="on_function_changed" swapped="no"/>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
+                    <property name="can-focus">True</property>
+                    <property name="tooltip-text" translatable="yes">Name used to invoke this function in expressions</property>
+                    <property name="hexpand">True</property>
+                    <property name="width-chars">20</property>
+                    <property name="secondary-icon-name">document-properties-symbolic</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <signal name="changed" handler="on_function_changed" swapped="no"/>
+                    <signal name="changed" handler="on_function_edit_entry_name_changed" swapped="no"/>
+                    <signal name="icon-press" handler="on_function_edit_button_names_clicked" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="hbox38">
+                  <object class="GtkLabel" id="label40">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="spacing">6</property>
-                    <property name="homogeneous">True</property>
-                    <child>
-                      <object class="GtkLabel" id="label36">
-                        <property name="visible">True</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Category</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkComboBoxText" id="function_edit_combo_category">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="has-entry">True</property>
+                    <child internal-child="entry">
+                      <object class="GtkEntry">
                         <property name="can-focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">Descriptive name</property>
                       </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkEntry" id="function_edit_entry_desc">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="tooltip-text" translatable="yes">Title displayed in menus and in function manager</property>
-                        <property name="primary-icon-activatable">False</property>
-                        <property name="secondary-icon-activatable">False</property>
-                        <signal name="changed" handler="on_function_changed" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">3</property>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label36">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Descriptive name</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="function_edit_entry_desc">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="tooltip-text" translatable="yes">Title displayed in menus and in function manager</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="secondary-icon-activatable">False</property>
+                    <signal name="changed" handler="on_function_changed" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">2</property>
                   </packing>
                 </child>
                 <child>
@@ -224,59 +181,51 @@
                     <signal name="toggled" handler="on_function_changed" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">4</property>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">3</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="vbox54">
+                  <object class="GtkLabel" id="label49">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="orientation">vertical</property>
-                    <property name="spacing">6</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Description</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow" id="scrolledwindow5">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
+                    <property name="shadow-type">in</property>
                     <child>
-                      <object class="GtkLabel" id="label49">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">Description</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkScrolledWindow" id="scrolledwindow5">
-                        <property name="height-request">100</property>
+                      <object class="GtkTextView" id="function_edit_textview_description">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="shadow-type">in</property>
-                        <child>
-                          <object class="GtkTextView" id="function_edit_textview_description">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="tooltip-text" translatable="yes">Description of this function</property>
-                            <property name="wrap-mode">word</property>
-                            <property name="left-margin">3</property>
-                            <property name="right-margin">3</property>
-                          </object>
-                        </child>
+                        <property name="tooltip-text" translatable="yes">Description of this function</property>
+                        <property name="wrap-mode">word</property>
+                        <property name="left-margin">3</property>
+                        <property name="right-margin">3</property>
                       </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">5</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">5</property>
+                    <property name="width">2</property>
                   </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
                 </child>
               </object>
             </child>
@@ -296,7 +245,7 @@
                 <property name="can-focus">False</property>
                 <property name="border-width">12</property>
                 <property name="orientation">vertical</property>
-                <property name="spacing">6</property>
+                <property name="spacing">12</property>
                 <child>
                   <object class="GtkBox" id="vbox55">
                     <property name="visible">True</property>
@@ -342,48 +291,6 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id="hbox92">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="spacing">6</property>
-                        <property name="homogeneous">True</property>
-                        <child>
-                          <object class="GtkLabel" id="label80">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="halign">start</property>
-                            <property name="label" translatable="yes">Condition</property>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkEntry" id="function_edit_entry_condition">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="tooltip-text" translatable="yes">Condition that must be true for the function (e.g. if the second argument must be greater than the first: "\y &gt; \x")</property>
-                            <property name="primary-icon-activatable">False</property>
-                            <property name="secondary-icon-activatable">False</property>
-                            <signal name="changed" handler="on_function_changed" swapped="no"/>
-                            <signal name="key-press-event" handler="on_math_entry_key_press_event" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">2</property>
-                      </packing>
-                    </child>
-                    <child>
                       <object class="GtkButton" id="function_edit_button_subfunctions">
                         <property name="label" translatable="yes">Sub-Functions</property>
                         <property name="visible">True</property>
@@ -396,7 +303,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">3</property>
+                        <property name="position">2</property>
                       </packing>
                     </child>
                   </object>
@@ -404,6 +311,47 @@
                     <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="hbox92">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkLabel" id="label80">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Condition</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="function_edit_entry_condition">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="tooltip-text" translatable="yes">Condition that must be true for the function (e.g. if the second argument must be greater than the first: "\y &gt; \x")</property>
+                        <property name="primary-icon-activatable">False</property>
+                        <property name="secondary-icon-activatable">False</property>
+                        <signal name="changed" handler="on_function_changed" swapped="no"/>
+                        <signal name="key-press-event" handler="on_math_entry_key_press_event" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
                   </packing>
                 </child>
                 <child>
@@ -417,7 +365,7 @@
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">start</property>
-                        <property name="label" translatable="yes">Arguments:</property>
+                        <property name="label" translatable="yes">Arguments</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -458,6 +406,7 @@
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="tooltip-text" translatable="yes">Argument name</property>
+                            <property name="width-chars">20</property>
                             <property name="primary-icon-activatable">False</property>
                             <property name="secondary-icon-activatable">False</property>
                             <signal name="activate" handler="on_function_edit_entry_argument_name_activate" swapped="no"/>
@@ -516,7 +465,6 @@
                       <object class="GtkBox" id="box91b">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="hexpand">True</property>
                         <property name="spacing">6</property>
                         <child>
                           <object class="GtkBox" id="hbox91">
@@ -580,8 +528,8 @@
                             </style>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
@@ -596,8 +544,9 @@
                             <signal name="clicked" handler="on_function_edit_button_rules_clicked" swapped="no"/>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="pack-type">end</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
@@ -612,7 +561,7 @@
                   <packing>
                     <property name="expand">True</property>
                     <property name="fill">True</property>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
               </object>
@@ -737,6 +686,7 @@
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="has-focus">True</property>
+                    <property name="width-chars">30</property>
                     <property name="primary-icon-activatable">False</property>
                     <property name="secondary-icon-activatable">False</property>
                     <signal name="activate" handler="on_function_edit_entry_subexpression_activate" swapped="no"/>

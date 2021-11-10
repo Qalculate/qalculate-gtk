@@ -94,228 +94,71 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="vbox49">
+          <!-- n-columns=2 n-rows=9 -->
+          <object class="GtkGrid" id="grid">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="border-width">6</property>
-            <property name="orientation">vertical</property>
-            <property name="spacing">6</property>
+            <property name="row-spacing">6</property>
+            <property name="column-spacing">12</property>
             <child>
-              <object class="GtkBox" id="hbox66">
+              <object class="GtkLabel" id="label63">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="spacing">6</property>
-                <property name="homogeneous">True</property>
-                <child>
-                  <object class="GtkLabel" id="label63">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="label" translatable="yes">Name</property>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="matrix_edit_entry_name">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="tooltip-text" translatable="yes">Name used to reference this variable in expressions</property>
-                    <property name="secondary-icon-name">document-properties-symbolic</property>
-                    <property name="primary-icon-activatable">False</property>
-                    <signal name="changed" handler="on_matrix_changed" swapped="no"/>
-                    <signal name="changed" handler="on_variable_edit_entry_name_changed" swapped="no"/>
-                    <signal name="icon-press" handler="on_matrix_edit_button_names_clicked" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Name</property>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="hbox68">
+              <object class="GtkLabel" id="label65">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="spacing">6</property>
-                <property name="homogeneous">True</property>
-                <child>
-                  <object class="GtkLabel" id="label65">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="label" translatable="yes">Category</property>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkComboBoxText" id="matrix_edit_combo_category">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="has-entry">True</property>
-                    <child internal-child="entry">
-                      <object class="GtkEntry" id="entry_category">
-                        <property name="can-focus">True</property>
-                        <signal name="changed" handler="on_matrix_changed" swapped="no"/>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Category</property>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="hbox69">
+              <object class="GtkLabel" id="label66">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="spacing">6</property>
-                <property name="homogeneous">True</property>
-                <child>
-                  <object class="GtkLabel" id="label66">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="label" translatable="yes">Descriptive name</property>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="matrix_edit_entry_desc">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="tooltip-text" translatable="yes">Title displayed in menus and in variable manager</property>
-                    <property name="primary-icon-activatable">False</property>
-                    <property name="secondary-icon-activatable">False</property>
-                    <signal name="changed" handler="on_matrix_changed" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Descriptive name</property>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">3</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">2</property>
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="hbox70">
+              <object class="GtkLabel" id="label67">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="spacing">6</property>
-                <property name="homogeneous">True</property>
-                <child>
-                  <object class="GtkLabel" id="label67">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="label" translatable="yes">Rows</property>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSpinButton" id="matrix_edit_spinbutton_rows">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="tooltip-text" translatable="yes">Number of rows in this matrix (rows displayed for vectors)</property>
-                    <property name="primary-icon-activatable">False</property>
-                    <property name="secondary-icon-activatable">False</property>
-                    <property name="adjustment">adjustment1</property>
-                    <property name="climb-rate">1</property>
-                    <property name="numeric">True</property>
-                    <signal name="value-changed" handler="on_matrix_changed" swapped="no"/>
-                    <signal name="value-changed" handler="on_matrix_edit_spinbutton_rows_value_changed" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Rows</property>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">4</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">3</property>
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="hbox71">
+              <object class="GtkLabel" id="label68">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="spacing">6</property>
-                <property name="homogeneous">True</property>
-                <child>
-                  <object class="GtkLabel" id="label68">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="label" translatable="yes">Columns</property>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSpinButton" id="matrix_edit_spinbutton_columns">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="tooltip-text" translatable="yes">Number of columns in this matrix (columns displayed for vectors)</property>
-                    <property name="primary-icon-activatable">False</property>
-                    <property name="secondary-icon-activatable">False</property>
-                    <property name="adjustment">adjustment2</property>
-                    <property name="climb-rate">1</property>
-                    <property name="numeric">True</property>
-                    <signal name="value-changed" handler="on_matrix_changed" swapped="no"/>
-                    <signal name="value-changed" handler="on_matrix_edit_spinbutton_columns_value_changed" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Columns</property>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">5</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">4</property>
               </packing>
             </child>
             <child>
@@ -364,9 +207,8 @@
                 </child>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">6</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">5</property>
               </packing>
             </child>
             <child>
@@ -377,15 +219,15 @@
                 <property name="label" translatable="yes">Elements</property>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">7</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">6</property>
               </packing>
             </child>
             <child>
               <object class="GtkScrolledWindow" id="scrolledwindow1">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
+                <property name="vexpand">True</property>
                 <property name="shadow-type">in</property>
                 <child>
                   <object class="GtkTreeView" id="matrix_edit_view">
@@ -398,15 +240,52 @@
                     <signal name="cursor-changed" handler="on_tMatrixEdit_cursor_changed" swapped="no"/>
                     <signal name="key-press-event" handler="on_tMatrixEdit_key_press_event" swapped="no"/>
                     <child internal-child="selection">
-                      <object class="GtkTreeSelection" id="selection_matrix"/>
+                      <object class="GtkTreeSelection"/>
                     </child>
                   </object>
                 </child>
               </object>
               <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">8</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">7</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="matrix_edit_entry_name">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Name used to reference this variable in expressions</property>
+                <property name="hexpand">True</property>
+                <property name="width-chars">20</property>
+                <property name="secondary-icon-name">document-properties-symbolic</property>
+                <property name="primary-icon-activatable">False</property>
+                <signal name="changed" handler="on_matrix_changed" swapped="no"/>
+                <signal name="changed" handler="on_variable_edit_entry_name_changed" swapped="no"/>
+                <signal name="icon-press" handler="on_matrix_edit_button_names_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="matrix_edit_spinbutton_rows">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Number of rows in this matrix (rows displayed for vectors)</property>
+                <property name="primary-icon-activatable">False</property>
+                <property name="secondary-icon-activatable">False</property>
+                <property name="adjustment">adjustment1</property>
+                <property name="climb-rate">1</property>
+                <property name="numeric">True</property>
+                <property name="value">1</property>
+                <signal name="value-changed" handler="on_matrix_changed" swapped="no"/>
+                <signal name="value-changed" handler="on_matrix_edit_spinbutton_rows_value_changed" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">3</property>
               </packing>
             </child>
             <child>
@@ -424,7 +303,7 @@
                   </object>
                   <packing>
                     <property name="expand">False</property>
-                    <property name="fill">False</property>
+                    <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
@@ -441,14 +320,69 @@
                 </child>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">9</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">8</property>
+                <property name="width">2</property>
               </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="matrix_edit_spinbutton_columns">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Number of columns in this matrix (columns displayed for vectors)</property>
+                <property name="primary-icon-activatable">False</property>
+                <property name="secondary-icon-activatable">False</property>
+                <property name="adjustment">adjustment2</property>
+                <property name="climb-rate">1</property>
+                <property name="numeric">True</property>
+                <property name="value">1</property>
+                <signal name="value-changed" handler="on_matrix_changed" swapped="no"/>
+                <signal name="value-changed" handler="on_matrix_edit_spinbutton_columns_value_changed" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="matrix_edit_entry_desc">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Title displayed in menus and in variable manager</property>
+                <property name="primary-icon-activatable">False</property>
+                <property name="secondary-icon-activatable">False</property>
+                <signal name="changed" handler="on_matrix_changed" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="matrix_edit_combo_category">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="has-entry">True</property>
+                <child internal-child="entry">
+                  <object class="GtkEntry">
+                    <property name="can-focus">False</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
             </child>
           </object>
           <packing>
-            <property name="expand">True</property>
+            <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
