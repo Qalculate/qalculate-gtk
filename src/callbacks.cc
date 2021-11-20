@@ -5811,8 +5811,8 @@ void on_tDatasets_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 	GtkTreeModel *model, *model2;
 	GtkTreeIter iter, iter2;
 	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tDataObjects));
-	gtk_tree_selection_unselect_all(select);
 	g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tDataObjects_selection_changed, NULL);
+	gtk_tree_selection_unselect_all(select);
 	gtk_list_store_clear(tDataObjects_store);
 	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tDataObjects_selection_changed, NULL);
 	if(gtk_tree_selection_get_selected(treeselection, &model, &iter)) {
@@ -17185,12 +17185,13 @@ void edit_dataobject(DataSet *ds, DataObject *o, GtkWidget *win) {
 		}
 		o->setUserModified();
 		selected_dataobject = o;
+		GtkAdjustment *adj = gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(tDataObjects));
+		gdouble pos = 0;
+		if(adj) pos = gtk_adjustment_get_value(adj);
 		update_dataobjects();
+		while(gtk_events_pending()) gtk_main_iteration();
+		if(adj) gtk_adjustment_set_value(adj, pos);
 	}
-	/*for(size_t i = 0; i < approx_menus.size(); i++) {
-		menu = gtk_option_menu_get_menu(GTK_OPTION_MENU(approx_menus[i]));
-		gtk_widget_destroy(menu);
-	}*/
 	gtk_widget_hide(dialog);
 }
 
@@ -17789,6 +17790,7 @@ void edit_names(ExpressionItem *item, const gchar *namestr, GtkWidget *win, bool
 				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, namestr, NAMES_ABBREVIATION_STRING_COLUMN, "-", NAMES_PLURAL_STRING_COLUMN, "-", NAMES_REFERENCE_STRING_COLUMN, b2yn(true), NAMES_ABBREVIATION_COLUMN, FALSE, NAMES_PLURAL_COLUMN, FALSE, NAMES_UNICODE_COLUMN, FALSE, NAMES_REFERENCE_COLUMN, TRUE, NAMES_SUFFIX_COLUMN, FALSE, NAMES_AVOID_INPUT_COLUMN, FALSE, NAMES_CASE_SENSITIVE_COLUMN, FALSE, NAMES_COMPLETION_ONLY_COLUMN, FALSE, -1);
 			} else {
 				ExpressionName ename(namestr);
+				ename.reference = true;
 				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, ename.name.c_str(), NAMES_ABBREVIATION_STRING_COLUMN, b2yn(ename.abbreviation), NAMES_PLURAL_STRING_COLUMN, b2yn(ename.plural), NAMES_REFERENCE_STRING_COLUMN, b2yn(ename.reference), NAMES_ABBREVIATION_COLUMN, ename.abbreviation, NAMES_PLURAL_COLUMN, ename.plural, NAMES_UNICODE_COLUMN, ename.unicode, NAMES_REFERENCE_COLUMN, ename.reference, NAMES_SUFFIX_COLUMN, ename.suffix, NAMES_AVOID_INPUT_COLUMN, ename.avoid_input, NAMES_CASE_SENSITIVE_COLUMN, ename.case_sensitive, NAMES_COMPLETION_ONLY_COLUMN, ename.completion_only, -1);
 			}
 		}
@@ -25512,7 +25514,7 @@ void process_history_selection(vector<size_t> *selected_rows, vector<size_t> *se
 		if(hindex >= 0) {
 			if(selected_rows) selected_rows->push_back((size_t) hindex);
 			if(selected_indeces && (index <= 0 || !evalops.parse_options.functions_enabled || evalops.parse_options.base > BASE_DECIMAL || evalops.parse_options.base < 0)) {
-				if(HISTORY_NOT_MESSAGE(hindex) && (hindex < 1 || inhistory_type[hindex] != QALCULATE_HISTORY_TRANSFORMATION || inhistory_type[hindex - 1] == QALCULATE_HISTORY_RESULT || inhistory_type[hindex - 1] == QALCULATE_HISTORY_RESULT_APPROXIMATE)) {
+				if(HISTORY_NOT_MESSAGE(hindex) && inhistory_type[hindex] != QALCULATE_HISTORY_BOOKMARK && (hindex < 1 || inhistory_type[hindex] != QALCULATE_HISTORY_TRANSFORMATION || inhistory_type[hindex - 1] == QALCULATE_HISTORY_RESULT || inhistory_type[hindex - 1] == QALCULATE_HISTORY_RESULT_APPROXIMATE)) {
 					selected_indeces->push_back((size_t) hindex);
 					selected_index_type->push_back(INDEX_TYPE_TXT);
 				}
@@ -26104,6 +26106,14 @@ void on_popup_menu_item_history_delete_activate(GtkMenuItem*, gpointer) {
 	}
 	for(size_t i = indexes.size() - 1; ; i--) {
 		hindex = indexes[i];
+		if(inhistory_type[hindex] == QALCULATE_HISTORY_BOOKMARK) {
+			for(vector<string>::iterator it = history_bookmarks.begin(); it != history_bookmarks.end(); ++it) {
+				if(equalsIgnoreCase(inhistory[hindex], *it)) {
+					history_bookmarks.erase(it);
+					break;
+				}
+			}
+		}
 		inhistory.erase(inhistory.begin() + hindex);
 		inhistory_protected.erase(inhistory_protected.begin() + hindex);
 		inhistory_type.erase(inhistory_type.begin() + hindex);
@@ -26156,6 +26166,9 @@ void goto_history_bookmark(GtkMenuItem *w, gpointer) {
 	if(find_history_bookmark(str, &iter)) {
 		GtkTreePath *path = gtk_tree_model_get_path(GTK_TREE_MODEL(historystore), &iter);
 		gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(historyview), path, history_index_column, TRUE, 0.0, 0.0);
+		GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
+		gtk_tree_selection_unselect_all(select);
+		gtk_tree_selection_select_iter(select, &iter);
 		gtk_tree_path_free(path);
 	}
 }
