@@ -953,7 +953,7 @@
                       <object class="GtkMenuItem" id="menu_item_manage_variables">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Manage Variables</property>
+                        <property name="label" translatable="yes">Variables</property>
                         <property name="use-underline">True</property>
                         <signal name="activate" handler="on_menu_item_manage_variables_activate" swapped="no"/>
                       </object>
@@ -962,7 +962,7 @@
                       <object class="GtkMenuItem" id="menu_item_manage_functions">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Manage Functions</property>
+                        <property name="label" translatable="yes">Functions</property>
                         <property name="use-underline">True</property>
                         <signal name="activate" handler="on_menu_item_manage_functions_activate" swapped="no"/>
                       </object>
@@ -971,7 +971,7 @@
                       <object class="GtkMenuItem" id="menu_item_manage_units">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Manage Units</property>
+                        <property name="label" translatable="yes">Units</property>
                         <property name="use-underline">True</property>
                         <signal name="activate" handler="on_menu_item_manage_units_activate" swapped="no"/>
                       </object>
@@ -980,7 +980,7 @@
                       <object class="GtkMenuItem" id="menu_item_datasets">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Manage Data Sets</property>
+                        <property name="label" translatable="yes">Data Sets</property>
                         <property name="use-underline">True</property>
                         <signal name="activate" handler="on_menu_item_datasets_activate" swapped="no"/>
                       </object>
@@ -6633,7 +6633,403 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                             <property name="can-focus">False</property>
                             <property name="spacing">6</property>
                             <child>
-                              <object class="GtkBox" id="box_custom_buttons">
+                              <object class="GtkBox" id="box_custom_buttons4">
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                                <property name="spacing">2</property>
+                                <child>
+                                  <object class="GtkButton" id="button_c16">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="use-underline">True</property>
+                                    <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="clicked" handler="on_button_c16_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkLabel" id="label_c16">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label">C16</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="button_c17">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="use-underline">True</property>
+                                    <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="clicked" handler="on_button_c17_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkLabel" id="label_c17">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label">C17</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="button_c18">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="use-underline">True</property>
+                                    <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="clicked" handler="on_button_c18_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkLabel" id="label_c18">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label">C18</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="button_c19">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="use-underline">True</property>
+                                    <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="clicked" handler="on_button_c19_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkLabel" id="label_c19">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label">C19</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="button_c20">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="use-underline">True</property>
+                                    <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="clicked" handler="on_button_c20_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkLabel" id="label_c20">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label">C20</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">4</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkBox" id="box_custom_buttons3">
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                                <property name="spacing">2</property>
+                                <child>
+                                  <object class="GtkButton" id="button_c11">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="use-underline">True</property>
+                                    <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="clicked" handler="on_button_c11_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkLabel" id="label_c11">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label">C11</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="button_c12">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="use-underline">True</property>
+                                    <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="clicked" handler="on_button_c12_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkLabel" id="label_c12">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label">C12</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="button_c13">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="use-underline">True</property>
+                                    <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="clicked" handler="on_button_c13_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkLabel" id="label_c13">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label">C13</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="button_c14">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="use-underline">True</property>
+                                    <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="clicked" handler="on_button_c14_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkLabel" id="label_c14">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label">C14</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="button_c15">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="use-underline">True</property>
+                                    <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="clicked" handler="on_button_c15_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkLabel" id="label_c15">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label">C15</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">4</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkBox" id="box_custom_buttons2">
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                                <property name="spacing">2</property>
+                                <child>
+                                  <object class="GtkButton" id="button_c6">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="use-underline">True</property>
+                                    <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="clicked" handler="on_button_c6_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkLabel" id="label_c6">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label">C6</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="button_c7">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="use-underline">True</property>
+                                    <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="clicked" handler="on_button_c7_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkLabel" id="label_c7">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label">C7</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="button_c8">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="use-underline">True</property>
+                                    <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="clicked" handler="on_button_c8_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkLabel" id="label_c8">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label">C8</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="button_c9">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="use-underline">True</property>
+                                    <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="clicked" handler="on_button_c9_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkLabel" id="label_c9">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label">C9</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="button_c10">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="use-underline">True</property>
+                                    <signal name="button-press-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
+                                    <signal name="clicked" handler="on_button_c10_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkLabel" id="label_c10">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label">C10</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">4</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkBox" id="box_custom_buttons1">
                                 <property name="can-focus">False</property>
                                 <property name="orientation">vertical</property>
                                 <property name="spacing">2</property>
@@ -6761,7 +7157,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="position">0</property>
+                                <property name="position">3</property>
                               </packing>
                             </child>
                             <child>
@@ -7545,7 +7941,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="position">1</property>
+                                <property name="position">4</property>
                               </packing>
                             </child>
                           </object>

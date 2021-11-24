@@ -240,7 +240,7 @@
                     <signal name="cursor-changed" handler="on_tMatrixEdit_cursor_changed" swapped="no"/>
                     <signal name="key-press-event" handler="on_tMatrixEdit_key_press_event" swapped="no"/>
                     <child internal-child="selection">
-                      <object class="GtkTreeSelection"/>
+                      <object class="GtkTreeSelection" id="selection1"/>
                     </child>
                   </object>
                 </child>
@@ -364,7 +364,7 @@
                 <property name="can-focus">False</property>
                 <property name="has-entry">True</property>
                 <child internal-child="entry">
-                  <object class="GtkEntry">
+                  <object class="GtkEntry" id="ientry1">
                     <property name="can-focus">False</property>
                   </object>
                 </child>

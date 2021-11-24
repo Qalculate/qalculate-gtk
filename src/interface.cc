@@ -1120,18 +1120,102 @@ void update_custom_buttons(int index) {
 	SET_LABEL_AND_TOOLTIP_3C(31, "label_c3", "button_c3", "C3")
 	SET_LABEL_AND_TOOLTIP_3C(32, "label_c4", "button_c4", "C4")
 	SET_LABEL_AND_TOOLTIP_3C(33, "label_c5", "button_c5", "C5")
-	if(index >= 29) {
-		bool b_show = (custom_buttons[29].type[0] >= 0 || custom_buttons[29].type[1] >= 0 || custom_buttons[29].type[2] >= 0 || custom_buttons[30].type[0] >= 0 || custom_buttons[30].type[1] >= 0 || custom_buttons[30].type[2] >= 0 || custom_buttons[31].type[0] >= 0 || custom_buttons[31].type[1] >= 0 || custom_buttons[31].type[2] >= 0 || custom_buttons[32].type[0] >= 0 || custom_buttons[32].type[1] >= 0 || custom_buttons[32].type[2] >= 0 || custom_buttons[33].type[0] >= 0 || custom_buttons[33].type[1] >= 0 || custom_buttons[33].type[2] >= 0);
-		if(b_show != gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons")))) {
+	SET_LABEL_AND_TOOLTIP_3C(34, "label_c6", "button_c6", "C6")
+	SET_LABEL_AND_TOOLTIP_3C(35, "label_c7", "button_c7", "C7")
+	SET_LABEL_AND_TOOLTIP_3C(36, "label_c8", "button_c8", "C8")
+	SET_LABEL_AND_TOOLTIP_3C(37, "label_c9", "button_c9", "C9")
+	SET_LABEL_AND_TOOLTIP_3C(38, "label_c10", "button_c10", "C10")
+	SET_LABEL_AND_TOOLTIP_3C(39, "label_c11", "button_c11", "C11")
+	SET_LABEL_AND_TOOLTIP_3C(40, "label_c12", "button_c12", "C12")
+	SET_LABEL_AND_TOOLTIP_3C(41, "label_c13", "button_c13", "C13")
+	SET_LABEL_AND_TOOLTIP_3C(42, "label_c14", "button_c14", "C14")
+	SET_LABEL_AND_TOOLTIP_3C(43, "label_c15", "button_c15", "C15")
+	SET_LABEL_AND_TOOLTIP_3C(44, "label_c16", "button_c16", "C16")
+	SET_LABEL_AND_TOOLTIP_3C(45, "label_c17", "button_c17", "C17")
+	SET_LABEL_AND_TOOLTIP_3C(46, "label_c18", "button_c18", "C18")
+	SET_LABEL_AND_TOOLTIP_3C(47, "label_c19", "button_c19", "C19")
+	SET_LABEL_AND_TOOLTIP_3C(48, "label_c20", "button_c20", "C20")
+	if(index >= 29 && index <= 33) {
+		bool b_show = false;
+		for(size_t i = 29; i <= 33; i++) {
+			if(custom_buttons[i].type[0] >= 0 || custom_buttons[i].type[1] >= 0 || custom_buttons[i].type[2] >= 0) {
+				b_show = true;
+				break;
+			}
+		}
+		if(b_show != gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons1")))) {
 			if(!b_show && gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad)) && !minimal_mode) {
-				gint w_c = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons"))) + 6;
-				gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons")), b_show);
+				gint w_c = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons1"))) + 6;
+				gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons1")), b_show);
 				while(gtk_events_pending()) gtk_main_iteration();
 				gint w, h;
 				gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
 				gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), w - w_c, h);
 			} else {
-				gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons")), b_show);
+				gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons1")), b_show);
+			}
+		}
+	}
+	if(index >= 34 && index <= 38) {
+		bool b_show = false;
+		for(size_t i = 34; i <= 38; i++) {
+			if(custom_buttons[i].type[0] >= 0 || custom_buttons[i].type[1] >= 0 || custom_buttons[i].type[2] >= 0) {
+				b_show = true;
+				break;
+			}
+		}
+		if(b_show != gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons2")))) {
+			if(!b_show && gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad)) && !minimal_mode) {
+				gint w_c = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons2"))) + 6;
+				gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons2")), b_show);
+				while(gtk_events_pending()) gtk_main_iteration();
+				gint w, h;
+				gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
+				gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), w - w_c, h);
+			} else {
+				gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons2")), b_show);
+			}
+		}
+	}
+	if(index >= 39 && index <= 43) {
+		bool b_show = false;
+		for(size_t i = 39; i <= 43; i++) {
+			if(custom_buttons[i].type[0] >= 0 || custom_buttons[i].type[1] >= 0 || custom_buttons[i].type[2] >= 0) {
+				b_show = true;
+				break;
+			}
+		}
+		if(b_show != gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons3")))) {
+			if(!b_show && gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad)) && !minimal_mode) {
+				gint w_c = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons3"))) + 6;
+				gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons3")), b_show);
+				while(gtk_events_pending()) gtk_main_iteration();
+				gint w, h;
+				gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
+				gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), w - w_c, h);
+			} else {
+				gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons3")), b_show);
+			}
+		}
+	}
+	if(index >= 44 && index <= 48) {
+		bool b_show = false;
+		for(size_t i = 44; i <= 48; i++) {
+			if(custom_buttons[i].type[0] >= 0 || custom_buttons[i].type[1] >= 0 || custom_buttons[i].type[2] >= 0) {
+				b_show = true;
+				break;
+			}
+		}
+		if(b_show != gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons4")))) {
+			if(!b_show && gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad)) && !minimal_mode) {
+				gint w_c = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons4"))) + 6;
+				gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons4")), b_show);
+				while(gtk_events_pending()) gtk_main_iteration();
+				gint w, h;
+				gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
+				gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), w - w_c, h);
+			} else {
+				gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons4")), b_show);
 			}
 		}
 	}
@@ -1942,7 +2026,10 @@ void create_main_window(void) {
 	GList *list, *list2;
 	GObject *obj;
 	CHILDREN_SET_FOCUS_ON_CLICK_2("table_buttons", "grid_numbers")
-	CHILDREN_SET_FOCUS_ON_CLICK("box_custom_buttons")
+	CHILDREN_SET_FOCUS_ON_CLICK("box_custom_buttons1")
+	CHILDREN_SET_FOCUS_ON_CLICK("box_custom_buttons2")
+	CHILDREN_SET_FOCUS_ON_CLICK("box_custom_buttons3")
+	CHILDREN_SET_FOCUS_ON_CLICK("box_custom_buttons4")
 	CHILDREN_SET_FOCUS_ON_CLICK("grid_numbers")
 	CHILDREN_SET_FOCUS_ON_CLICK("grid_programmers_buttons")
 	CHILDREN_SET_FOCUS_ON_CLICK("box_bases")
@@ -1978,7 +2065,7 @@ void create_main_window(void) {
 	button_padding_provider = NULL;
 	update_button_padding(true);
 
-	if(themestr.substr(0, 7) == "Adwaita" || themestr.substr(0, 6) == "ooxmox" || themestr == "Breeze" || themestr == "Breeze-Dark" || themestr.substr(0, 4) == "Yaru") {
+	if(themestr.substr(0, 7) == "Adwaita" || themestr.substr(0, 5) == "oomox" || themestr.substr(0, 6) == "themix" || themestr == "Breeze" || themestr == "Breeze-Dark" || themestr.substr(0, 4) == "Yaru") {
 
 		GtkCssProvider *link_style_top = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_top, "* {border-bottom-left-radius: 0; border-bottom-right-radius: 0;}", -1, NULL);
 		GtkCssProvider *link_style_bot = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_bot, "* {border-top-left-radius: 0; border-top-right-radius: 0;}", -1, NULL);
@@ -2058,7 +2145,34 @@ void create_main_window(void) {
 		}
 	}
 
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons")), custom_buttons[29].type[0] >= 0 || custom_buttons[29].type[1] >= 0 || custom_buttons[29].type[2] >= 0 || custom_buttons[30].type[0] >= 0 || custom_buttons[30].type[1] >= 0 || custom_buttons[30].type[2] >= 0 || custom_buttons[31].type[0] >= 0 || custom_buttons[31].type[1] >= 0 || custom_buttons[31].type[2] >= 0 || custom_buttons[32].type[0] >= 0 || custom_buttons[32].type[1] >= 0 || custom_buttons[32].type[2] >= 0 || custom_buttons[33].type[0] >= 0 || custom_buttons[33].type[1] >= 0 || custom_buttons[33].type[2] >= 0);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons1")), FALSE);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons2")), FALSE);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons3")), FALSE);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons4")), FALSE);
+	for(size_t i = 29; i <= 33; i++) {
+		if(custom_buttons[i].type[0] >= 0 || custom_buttons[i].type[1] >= 0 || custom_buttons[i].type[2] >= 0) {
+			gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons1")), TRUE);
+			break;
+		}
+	}
+	for(size_t i = 34; i <= 38; i++) {
+		if(custom_buttons[i].type[0] >= 0 || custom_buttons[i].type[1] >= 0 || custom_buttons[i].type[2] >= 0) {
+			gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons2")), TRUE);
+			break;
+		}
+	}
+	for(size_t i = 39; i <= 43; i++) {
+		if(custom_buttons[i].type[0] >= 0 || custom_buttons[i].type[1] >= 0 || custom_buttons[i].type[2] >= 0) {
+			gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons3")), TRUE);
+			break;
+		}
+	}
+	for(size_t i = 44; i <= 48; i++) {
+		if(custom_buttons[i].type[0] >= 0 || custom_buttons[i].type[1] >= 0 || custom_buttons[i].type[2] >= 0) {
+			gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_custom_buttons4")), TRUE);
+			break;
+		}
+	}
 
 	if(!gtk_icon_theme_has_icon(gtk_icon_theme_get_default(), "document-edit-symbolic")) {
 		gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_edit")), "gtk-edit", GTK_ICON_SIZE_BUTTON);
@@ -2106,7 +2220,7 @@ void create_main_window(void) {
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
 
 	// Fix for breeze-gtk and Ubuntu theme
-	if(themestr.substr(0, 7) != "Adwaita" && themestr.substr(0, 6) != "ooxmox" && themestr != "Yaru") {
+	if(themestr.substr(0, 7) != "Adwaita" && themestr.substr(0, 5) != "oomox" && themestr.substr(0, 6) != "themix" && themestr != "Yaru") {
 		GtkCssProvider *historyview_provider = gtk_css_provider_new();
 		gtk_tree_view_set_grid_lines(GTK_TREE_VIEW(historyview), GTK_TREE_VIEW_GRID_LINES_NONE);
 		gtk_style_context_add_provider(gtk_widget_get_style_context(historyview), GTK_STYLE_PROVIDER(historyview_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
@@ -3473,7 +3587,7 @@ GtkWidget* get_nbases_dialog(void) {
 			g_free(theme_name);
 		}
 
-		if(themestr.substr(0, 7) == "Adwaita" || themestr.substr(0, 6) == "ooxmox" || themestr == "Breeze" || themestr == "Breeze-Dark" || themestr == "Yaru") {
+		if(themestr.substr(0, 7) == "Adwaita" || themestr.substr(0, 5) == "oomox" || themestr.substr(0, 6) == "themix" || themestr == "Breeze" || themestr == "Breeze-Dark" || themestr == "Yaru") {
 			GtkCssProvider *link_style_top = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_top, "* {border-bottom-left-radius: 0; border-bottom-right-radius: 0}", -1, NULL);
 			GtkCssProvider *link_style_bot = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_bot, "* {border-top-left-radius: 0; border-top-right-radius: 0}", -1, NULL);
 			GtkCssProvider *link_style_tl = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_tl, "* {border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-top-right-radius: 0;}", -1, NULL);
@@ -4052,6 +4166,21 @@ void update_custom_buttons_edit(int index, bool update_label_entry) {
 		else if(i == 31 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C3")
 		else if(i == 32 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C4")
 		else if(i == 33 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C5")
+		else if(i == 34 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C6")
+		else if(i == 35 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C7")
+		else if(i == 36 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C8")
+		else if(i == 37 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C9")
+		else if(i == 38 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C10")
+		else if(i == 39 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C11")
+		else if(i == 40 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C12")
+		else if(i == 41 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C13")
+		else if(i == 42 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C14")
+		else if(i == 43 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C15")
+		else if(i == 44 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C16")
+		else if(i == 45 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C17")
+		else if(i == 46 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C18")
+		else if(i == 47 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C19")
+		else if(i == 48 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C20")
 	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tButtonsEdit_store), &iter));
 	on_tButtonsEdit_update_selection(gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEdit)), update_label_entry);
 }
@@ -4084,11 +4213,15 @@ GtkWidget* get_buttons_edit_dialog(void) {
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tButtonsEdit_selection_changed), NULL);
 
 		GtkTreeIter iter;
-		for(int i = 29; i < 34; i++) {
+		for(int i = 29; i <= 33; i++) {
 			gtk_list_store_append(tButtonsEdit_store, &iter);
 			gtk_list_store_set(tButtonsEdit_store, &iter, 0, i, -1);
 		}
 		for(int i = 0; i < 20; i++) {
+			gtk_list_store_append(tButtonsEdit_store, &iter);
+			gtk_list_store_set(tButtonsEdit_store, &iter, 0, i, -1);
+		}
+		for(int i = 34; i <= 48; i++) {
 			gtk_list_store_append(tButtonsEdit_store, &iter);
 			gtk_list_store_set(tButtonsEdit_store, &iter, 0, i, -1);
 		}

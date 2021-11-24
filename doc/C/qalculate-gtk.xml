@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "3.21.0">
-  <!ENTITY manrevision "3.21.0">
-  <!ENTITY date "October 2021">
+  <!ENTITY appversion "3.22.0">
+  <!ENTITY manrevision "3.22.0">
+  <!ENTITY date "November 2021">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -174,7 +174,7 @@ Operators will be placed after any selected text (except bitwise and logical NOT
 The mathematical functions accessed using keypad buttons (and menus) behave differently depending on the current edited expression. If the cursor is at the end of the expression and there is no operator or parenthesis immediately to left of the cursor (at the end of expression), the whole expression is used as function argument and the expression is immediately calculated using the function (if you type <quote>5 + 2</quote> and then click <guibutton>sin</guibutton>, <quote>sin(5 + 2)</quote> will be calculated). If text in the expression is selected, the selection will be used as the function argument. If the whole expression was selected the resulting expression will immediately be calculated. Functions that requires more than one argument do not follow these rules and in many cases opens a separate dialog for argument input. In RPN mode the function will always be applied to the register(s) at the top of stack, if the current expression is empty and there are enough registers for functions that require more one argument.
 </para>
 <para>
-All actions and labels of the buttons on the right can be customed using <menuchoice><guimenu>Edit</guimenu><guimenuitem>Customize Keypad Buttons</guimenuitem></menuchoice> (it is also possible to add an additional column of buttons). The default buttons, and associated actions, are listed below.
+All actions and labels of the buttons on the right can be customed using <menuchoice><guimenu>Edit</guimenu><guimenuitem>Customize Keypad Buttons</guimenuitem></menuchoice> (it is also possible to add additional columns of buttons). The default buttons, and associated actions, are listed below.
 <table id="qalculate-TBL-keypad-right" frame="topbot" colsep="1">
 	<title>Right Keypad</title> 
 	<tgroup cols="2" colsep="1" rowsep="0">
@@ -998,7 +998,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			</row>
 			<row valign="top">
 				<entry><para>Customize Keypad Buttons</para></entry>
-				<entry><para>Opens a dialog for customizing the labels and actions for the the keypad buttons on the right side, and optionally adding another column of buttons.</para></entry>
+				<entry><para>Opens a dialog for customizing the labels and actions for the the keypad buttons on the right side, and optionally adding additional columns of buttons.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Preferences</para></entry>
@@ -1462,6 +1462,13 @@ The following operators are defined in &app; and may be used in expressions. Wor
 				<entry align="right"><para>10</para></entry>
 			</row>
 			<row valign="top">
+				<entry><para>Parallel sum</para></entry>
+				<entry align="center"><para>∥, ||</para></entry>
+				<entry><para>Returns the the reciprocal value of a sum of reciprocal values. || is interpreted as parallel if units are used, otherwise as logical OR.</para></entry>
+				<entry align="center"><para>10 Ω || 6 Ω</para></entry>
+				<entry align="right"><para>3.75 Ω</para></entry>
+			</row>
+			<row valign="top">
 				<entry><para>Equals</para></entry>
 				<entry align="center"><para>=</para></entry>
 				<entry><para>Returns true if the left value equals the right value. Unknown variables (e.g. x) are isolated if the expression does not evaluate as true or false.</para></entry>
@@ -1667,6 +1674,7 @@ Usually, mathematical expressions are written as normally expected. Standard ope
 	<listitem><para>Logical NOT (!)</para></listitem>
 	<listitem><para>Element-wise operations, and cross and dot products (.*, ./, .^, ., ⨯)</para></listitem>
 	<listitem><para>Multiplication, division, integer divison, remainder, modulo (*, /, //, %, %%)</para></listitem>
+	<listitem><para>Parallel sum (∥)</para></listitem>
 	<listitem><para>Addition and subtraction (+, −)</para></listitem>
 	<listitem><para>Bitwise NOT (~)</para></listitem>
 	<listitem><para>&lt;&lt; and &gt;&gt;</para></listitem>

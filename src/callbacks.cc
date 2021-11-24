@@ -11669,11 +11669,35 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 		}
 	}
 
-	bool title_set = false, was_busy = false;
+	bool title_set = false, was_busy = false, update_parse = false;
 
 	int i = 0;
 
 	MathStructure *mfactor = new MathStructure(*mstruct);
+
+	if((command_type == COMMAND_CONVERT_UNIT || command_type == COMMAND_CONVERT_STRING) && !mfactor->containsType(STRUCT_UNIT) && parsed_mstruct) {
+		MathStructure to_struct;
+		if(command_type == COMMAND_CONVERT_UNIT) {
+			to_struct.set(u);
+		} else {
+			CALCULATOR->convert(MathStructure(), ceu_str, evalops, &to_struct);
+		}
+		to_struct.unformat(evalops);
+		to_struct = CALCULATOR->convertToOptimalUnit(to_struct, evalops, true);
+		fix_to_struct_gtk(to_struct);
+		if(!to_struct.isZero()) {
+			mfactor->multiply(to_struct);
+			PrintOptions po = printops;
+			po.negative_exponents = false;
+			to_struct.format(po);
+			if(to_struct.isMultiplication() && to_struct.size() >= 2) {
+				if(to_struct[0].isOne()) to_struct.delChild(1, true);
+				else if(to_struct[1].isOne()) to_struct.delChild(2, true);
+			}
+			parsed_mstruct->multiply(to_struct);
+			update_parse = true;
+		}
+	}
 
 	rerun_command:
 
@@ -11784,7 +11808,7 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 			}
 		}
 		if(show_result) {
-			setResult(NULL, true, false, true, command_type == COMMAND_TRANSFORM ? ceu_str : "");
+			setResult(NULL, true, update_parse, true, command_type == COMMAND_TRANSFORM ? ceu_str : "");
 			surface_result_bak = NULL;
 		}
 	}
@@ -19531,8 +19555,8 @@ void load_preferences() {
 	default_shortcuts = true;
 	keyboard_shortcuts.clear();
 
-	custom_buttons.resize(34);
-	for(size_t i = 0; i < 34; i++) {
+	custom_buttons.resize(49);
+	for(size_t i = 0; i < 49; i++) {
 		custom_buttons[i].type[0] = -1;
 		custom_buttons[i].type[1] = -1;
 		custom_buttons[i].type[2] = -1;
@@ -19561,7 +19585,7 @@ void load_preferences() {
 
 	size_t bookmark_index = 0;
 
-	int version_numbers[] = {3, 21, 0};
+	int version_numbers[] = {3, 22, 0};
 	bool old_history_format = false;
 
 	if(file) {
@@ -24440,6 +24464,8 @@ void hide_tooltip(GtkWidget *w) {
 		return TRUE;\
 	}
 
+#define DO_CUSTOM_BUTTONS_CX(i) DO_CUSTOM_BUTTONS(28 + i)
+
 gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 	hide_tooltip(w);
 	if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_ac"))) {
@@ -24623,15 +24649,45 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 		insert_text("!");
 		return TRUE;
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c1"))) {
-		DO_CUSTOM_BUTTONS(29)
+		DO_CUSTOM_BUTTONS_CX(1)
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c2"))) {
-		DO_CUSTOM_BUTTONS(30)
+		DO_CUSTOM_BUTTONS_CX(2)
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c3"))) {
-		DO_CUSTOM_BUTTONS(31)
+		DO_CUSTOM_BUTTONS_CX(3)
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c4"))) {
-		DO_CUSTOM_BUTTONS(32)
+		DO_CUSTOM_BUTTONS_CX(4)
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c5"))) {
-		DO_CUSTOM_BUTTONS(33)
+		DO_CUSTOM_BUTTONS_CX(5)
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c6"))) {
+		DO_CUSTOM_BUTTONS_CX(6)
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c7"))) {
+		DO_CUSTOM_BUTTONS_CX(7)
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c8"))) {
+		DO_CUSTOM_BUTTONS_CX(8)
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c9"))) {
+		DO_CUSTOM_BUTTONS_CX(9)
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c10"))) {
+		DO_CUSTOM_BUTTONS_CX(10)
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c11"))) {
+		DO_CUSTOM_BUTTONS_CX(11)
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c12"))) {
+		DO_CUSTOM_BUTTONS_CX(12)
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c13"))) {
+		DO_CUSTOM_BUTTONS_CX(13)
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c14"))) {
+		DO_CUSTOM_BUTTONS_CX(14)
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c15"))) {
+		DO_CUSTOM_BUTTONS_CX(15)
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c16"))) {
+		DO_CUSTOM_BUTTONS_CX(16)
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c17"))) {
+		DO_CUSTOM_BUTTONS_CX(17)
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c18"))) {
+		DO_CUSTOM_BUTTONS_CX(18)
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c19"))) {
+		DO_CUSTOM_BUTTONS_CX(19)
+	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c20"))) {
+		DO_CUSTOM_BUTTONS_CX(20)
 	} else {
 		int i = 0;
 		if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_zero"))) i = 0;
@@ -24973,6 +25029,8 @@ gboolean on_keypad_menu_button_button_event(GtkWidget *w, GdkEventButton *event,
 		return;\
 	}
 
+#define DO_CUSTOM_BUTTON_CX1(i) DO_CUSTOM_BUTTON_1(28 + i)
+
 /*
 	Button clicked -- insert text (1,2,3,... +,-,...)
 */
@@ -25017,19 +25075,64 @@ void on_button_nine_clicked(GtkButton*, gpointer) {
 	insert_text("9");
 }
 void on_button_c1_clicked(GtkButton*, gpointer) {
-	DO_CUSTOM_BUTTON_1(29)
+	DO_CUSTOM_BUTTON_CX1(1)
 }
 void on_button_c2_clicked(GtkButton*, gpointer) {
-	DO_CUSTOM_BUTTON_1(30)
+	DO_CUSTOM_BUTTON_CX1(2)
 }
 void on_button_c3_clicked(GtkButton*, gpointer) {
-	DO_CUSTOM_BUTTON_1(31)
+	DO_CUSTOM_BUTTON_CX1(3)
 }
 void on_button_c4_clicked(GtkButton*, gpointer) {
-	DO_CUSTOM_BUTTON_1(32)
+	DO_CUSTOM_BUTTON_CX1(4)
 }
 void on_button_c5_clicked(GtkButton*, gpointer) {
-	DO_CUSTOM_BUTTON_1(33)
+	DO_CUSTOM_BUTTON_CX1(5)
+}
+void on_button_c6_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_CX1(6)
+}
+void on_button_c7_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_CX1(7)
+}
+void on_button_c8_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_CX1(8)
+}
+void on_button_c9_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_CX1(9)
+}
+void on_button_c10_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_CX1(10)
+}
+void on_button_c11_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_CX1(11)
+}
+void on_button_c12_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_CX1(12)
+}
+void on_button_c13_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_CX1(13)
+}
+void on_button_c14_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_CX1(14)
+}
+void on_button_c15_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_CX1(15)
+}
+void on_button_c16_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_CX1(16)
+}
+void on_button_c17_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_CX1(17)
+}
+void on_button_c18_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_CX1(18)
+}
+void on_button_c19_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_CX1(19)
+}
+void on_button_c20_clicked(GtkButton*, gpointer) {
+	DO_CUSTOM_BUTTON_CX1(20)
 }
 void on_button_a_clicked(GtkButton*, gpointer) {
 	insert_text(printops.lower_case_numbers ? "a" : "A");

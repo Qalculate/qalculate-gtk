@@ -48,6 +48,29 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="3.22.0" date="2021-11-29">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Minor improvements and fixes in data set, function, unit, and variable edit dialogs</li>
+      <li>Avoid division by zero in percentage calculation dialog</li>
+      <li>Use editable combo box for data object argument in insert function dialog</li>
+      <li>Remove associated bookmark from menu when removing history item, and select the history row on go to bookmark</li>
+      <li>Somewhat selectable history text (single click on selected item edits cell with non-editable entry)</li>
+      <li>Increase the number of optional custom buttons from 5 to 20</li>
+      <li>New functions: linearfit(), quadraticfit(), cubicfit(), ramlatency(), parallel()</li>
+      <li>Improved and extended parallel operator (|| is interpreted as parallel if units are used)</li>
+      <li>Allow nested subfunctions</li>
+      <li>Solve x^(x^(-a))=b</li>
+      <li>Improved simplification: Im(-x)=-Im(x), Re(-x)=-Re(x)</li>
+      <li>Fix pearson() and spearman()</li>
+      <li>Fix display of incompletely solved equation with dual approximation in some cases</li>
+      <li>Fix genvector() when step size requires evaluation</li>
+      <li>Fix a%%-b (interpret %% as mod, not percent)</li>
+      <li>Minor bug fixes and feature improvements</li>
+     </ul>
+   </description>
+  </release>
   <release version="3.21.0" date="2021-10-13">
    <description>
     <p>Changes:</p>
