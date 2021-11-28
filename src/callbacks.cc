@@ -2988,6 +2988,7 @@ void set_result_bases(const MathStructure &m) {
 		}
 		nr.round(printops.round_halfway_to_even);
 		PrintOptions po = printops;
+		po.is_approximate = NULL;
 		po.show_ending_zeroes = false;
 		po.base_display = BASE_DISPLAY_NORMAL;
 		po.min_exp = 0;
@@ -7471,6 +7472,7 @@ void update_fmenu(bool update_compl) {
 
 string get_value_string(const MathStructure &mstruct_, bool rlabel = false, Prefix *prefix = NULL) {
 	PrintOptions po = printops;
+	po.is_approximate = NULL;
 	po.allow_non_usable = rlabel;
 	po.prefix = prefix;
 	po.base = 10;
@@ -11859,6 +11861,7 @@ void FetchExchangeRatesThread::run() {
 
 void update_message_print_options() {
 	PrintOptions message_printoptions = printops;
+	message_printoptions.is_approximate = NULL;
 	message_printoptions.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
 	message_printoptions.show_ending_zeroes = false;
 	message_printoptions.base = 10;
@@ -28640,6 +28643,7 @@ void output_base_updated_from_menu() {
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
 				PrintOptions po = printops;
+				po.is_approximate = NULL;
 				po.number_fraction_format = FRACTION_DECIMAL_EXACT;
 				po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
 				po.preserve_precision = true;
@@ -28745,6 +28749,7 @@ void input_base_updated_from_menu() {
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
 				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
 				PrintOptions po = printops;
+				po.is_approximate = NULL;
 				po.number_fraction_format = FRACTION_DECIMAL_EXACT;
 				po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
 				po.preserve_precision = true;
@@ -31489,6 +31494,7 @@ void update_percentage_entries() {
 		if(!m1.isZero()) CALCULATOR->calculate(&m6, 500, eo);
 		if(!m2.isZero()) CALCULATOR->calculate(&m7, 500, eo);
 		PrintOptions po = printops;
+		po.is_approximate = NULL;
 		po.base = 10;
 		po.number_fraction_format = FRACTION_DECIMAL;
 		po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
@@ -35034,9 +35040,9 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 			return;
 		}
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_radiobutton_step")))) {
-			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(str, min, max, CALCULATOR->calculate(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_step"))), eo.parse_options), eo), *x_vector, str_x, eo.parse_options, max_plot_time * 1000));
+			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(CALCULATOR->unlocalizeExpression(str, eo.parse_options), min, max, CALCULATOR->calculate(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_step"))), eo.parse_options), eo), *x_vector, str_x, eo.parse_options, max_plot_time * 1000));
 		} else {
-			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(str, min, max, gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_steps"))), *x_vector, str_x, eo.parse_options, max_plot_time * 1000));
+			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(CALCULATOR->unlocalizeExpression(str, eo.parse_options), min, max, gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_steps"))), *x_vector, str_x, eo.parse_options, max_plot_time * 1000));
 		}
 	}
 	CALCULATOR->endTemporaryStopIntervalArithmetic();
@@ -35073,12 +35079,45 @@ void on_plot_button_add_clicked(GtkButton*, gpointer) {
 			title = v->title(false);
 		}
 	}
+	rows = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_checkbutton_rows")));
 	MathStructure *x_vector, *y_vector;
 	generate_plot_series(&x_vector, &y_vector, type, expression, str_x);
-	rows = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_checkbutton_rows")));
 	GtkTreeIter iter;
-	gtk_list_store_append(tPlotFunctions_store, &iter);
-	gtk_list_store_set(tPlotFunctions_store, &iter, 0, title.c_str(), 1, expression.c_str(), 2, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_style"))), 3, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_smoothing"))), 4, type, 5, axis, 6, rows, 7, x_vector, 8, y_vector, 9, str_x.c_str(), -1);
+	if(type != 1 && type != 2 && y_vector->isMatrix()) {
+		EvaluationOptions eo;
+		eo.approximation = APPROXIMATION_APPROXIMATE;
+		eo.parse_options = evalops.parse_options;
+		eo.parse_options.base = 10;
+		eo.parse_options.read_precision = DONT_READ_PRECISION;
+		eo.interval_calculation = INTERVAL_CALCULATION_NONE;
+		MathStructure mfunc = CALCULATOR->parse(expression, eo.parse_options);
+		if(!mfunc.isVector()) {
+			CALCULATOR->beginTemporaryStopIntervalArithmetic();
+			CALCULATOR->beginTemporaryStopMessages();
+			mfunc.eval(eo);
+			CALCULATOR->endTemporaryStopMessages();
+			CALCULATOR->endTemporaryStopIntervalArithmetic();
+		}
+		string str;
+		PrintOptions po = printops;
+		po.can_display_unicode_string_arg = (void*) gtk_builder_get_object(plot_builder, "plot_entry_expression");
+		po.base = 10;
+		po.is_approximate = NULL;
+		po.allow_non_usable = false;
+		for(size_t i = 0; i < y_vector->columns(); i++) {
+			MathStructure *m = new MathStructure();
+			y_vector->columnToVector(i + 1, *m);
+			gtk_list_store_append(tPlotFunctions_store, &iter);
+			if(mfunc.isVector() && i < mfunc.size()) str = mfunc[i].print(po);
+			else str = expression;
+			gtk_list_store_set(tPlotFunctions_store, &iter, 0, title.c_str(), 1, str.c_str(), 2, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_style"))), 3, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_smoothing"))), 4, type, 5, axis, 6, rows, 7, new MathStructure(*x_vector), 8, m, 9, str_x.c_str(), -1);
+		}
+		x_vector->unref();
+		y_vector->unref();
+	} else {
+		gtk_list_store_append(tPlotFunctions_store, &iter);
+		gtk_list_store_set(tPlotFunctions_store, &iter, 0, title.c_str(), 1, expression.c_str(), 2, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_style"))), 3, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_smoothing"))), 4, type, 5, axis, 6, rows, 7, x_vector, 8, y_vector, 9, str_x.c_str(), -1);
+	}
 	gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tPlotFunctions)), &iter);
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_entry_expression")));
 	update_plot();
