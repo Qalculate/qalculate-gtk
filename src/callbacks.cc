@@ -1433,7 +1433,7 @@ string localize_expression(string str, bool unit_expression = false) {
 
 string unlocalize_expression(string str) {
 	ParseOptions pa = evalops.parse_options; pa.base = 10;
-	str = CALCULATOR->localizeExpression(str, pa);
+	str = CALCULATOR->unlocalizeExpression(str, pa);
 	CALCULATOR->parseSigns(str);
 	return str;
 }
@@ -35111,14 +35111,18 @@ void on_plot_button_add_clicked(GtkButton*, gpointer) {
 			if(mfunc.isVector() && i < mfunc.size()) str = mfunc[i].print(po);
 			else str = expression;
 			gtk_list_store_set(tPlotFunctions_store, &iter, 0, title.c_str(), 1, str.c_str(), 2, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_style"))), 3, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_smoothing"))), 4, type, 5, axis, 6, rows, 7, new MathStructure(*x_vector), 8, m, 9, str_x.c_str(), -1);
+			if(i == 0) {
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_expression")), str.c_str());
+				gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tPlotFunctions)), &iter);
+			}
 		}
-		x_vector->unref();
-		y_vector->unref();
+		delete y_vector;
+		delete x_vector;
 	} else {
 		gtk_list_store_append(tPlotFunctions_store, &iter);
 		gtk_list_store_set(tPlotFunctions_store, &iter, 0, title.c_str(), 1, expression.c_str(), 2, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_style"))), 3, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_smoothing"))), 4, type, 5, axis, 6, rows, 7, x_vector, 8, y_vector, 9, str_x.c_str(), -1);
+		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tPlotFunctions)), &iter);
 	}
-	gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tPlotFunctions)), &iter);
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_entry_expression")));
 	update_plot();
 }
@@ -35158,14 +35162,50 @@ void on_plot_button_modify_clicked(GtkButton*, gpointer) {
 			}
 		}
 		MathStructure *x_vector, *y_vector;
-		gtk_tree_model_get(GTK_TREE_MODEL(tPlotFunctions_store), &iter, 7, &x_vector, 8, &y_vector, -1);
+		gchar *old_expression;
+		gtk_tree_model_get(GTK_TREE_MODEL(tPlotFunctions_store), &iter, 1, &old_expression, 7, &x_vector, 8, &y_vector, -1);
 		if(x_vector) delete x_vector;
 		if(y_vector) delete y_vector;
 		x_vector = NULL;
 		y_vector = NULL;
 		generate_plot_series(&x_vector, &y_vector, type, expression, str_x);
 		rows = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_checkbutton_rows")));
-		gtk_list_store_set(tPlotFunctions_store, &iter, 0, title.c_str(), 1, expression.c_str(), 2, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_style"))), 3, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_smoothing"))), 4, type, 5, axis, 6, rows, 7, x_vector, 8, y_vector, 9, str_x.c_str(), -1);
+		if(type != 1 && type != 2 && y_vector->isMatrix() && expression != old_expression) {
+			EvaluationOptions eo;
+			eo.approximation = APPROXIMATION_APPROXIMATE;
+			eo.parse_options = evalops.parse_options;
+			eo.parse_options.base = 10;
+			eo.parse_options.read_precision = DONT_READ_PRECISION;
+			eo.interval_calculation = INTERVAL_CALCULATION_NONE;
+			MathStructure mfunc = CALCULATOR->parse(expression, eo.parse_options);
+			if(!mfunc.isVector()) {
+				CALCULATOR->beginTemporaryStopIntervalArithmetic();
+				CALCULATOR->beginTemporaryStopMessages();
+				mfunc.eval(eo);
+				CALCULATOR->endTemporaryStopMessages();
+				CALCULATOR->endTemporaryStopIntervalArithmetic();
+			}
+			string str;
+			PrintOptions po = printops;
+			po.can_display_unicode_string_arg = (void*) gtk_builder_get_object(plot_builder, "plot_entry_expression");
+			po.base = 10;
+			po.is_approximate = NULL;
+			po.allow_non_usable = false;
+			for(size_t i = 0; i < y_vector->columns(); i++) {
+				MathStructure *m = new MathStructure();
+				y_vector->columnToVector(i + 1, *m);
+				if(i != 0) gtk_list_store_append(tPlotFunctions_store, &iter);
+				if(mfunc.isVector() && i < mfunc.size()) str = mfunc[i].print(po);
+				else str = expression;
+				if(i == 0) gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_expression")), str.c_str());
+				gtk_list_store_set(tPlotFunctions_store, &iter, 0, title.c_str(), 1, str.c_str(), 2, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_style"))), 3, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_smoothing"))), 4, type, 5, axis, 6, rows, 7, new MathStructure(*x_vector), 8, m, 9, str_x.c_str(), -1);
+			}
+			delete x_vector;
+			delete y_vector;
+		} else {
+			gtk_list_store_set(tPlotFunctions_store, &iter, 0, title.c_str(), 1, expression.c_str(), 2, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_style"))), 3, gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_smoothing"))), 4, type, 5, axis, 6, rows, 7, x_vector, 8, y_vector, 9, str_x.c_str(), -1);
+		}
+		g_free(old_expression);
 		gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_entry_expression")));
 		update_plot();
 	}
