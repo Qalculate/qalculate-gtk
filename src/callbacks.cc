@@ -1558,9 +1558,19 @@ PangoCoverageLevel get_least_coverage(const gchar *gstr, GtkWidget *widget) {
 
 }
 
+unordered_map<void*, unordered_map<const char*, bool> > coverage_map;
+
 bool can_display_unicode_string_function(const char *str, void *w) {
 	if(!w) w = (void*) historyview;
-	return get_least_coverage(str, (GtkWidget*) w) >= PANGO_COVERAGE_APPROXIMATE;
+	unordered_map<void*, unordered_map<const char*, bool> >::iterator it1 = coverage_map.find(w);
+	if(it1 == coverage_map.end()) {
+		coverage_map[w] = unordered_map<const char*, bool>();
+	} else {
+		unordered_map<const char*, bool>::iterator it = it1->second.find(str);
+		if(it != it1->second.end()) return it->second;
+	}
+	coverage_map[w][str] = get_least_coverage(str, (GtkWidget*) w) >= PANGO_COVERAGE_APPROXIMATE;
+	return coverage_map[w][str];
 }
 bool can_display_unicode_string_function_exact(const char *str, void *w) {
 	if(!w) w = (void*) historyview;
@@ -10954,6 +10964,23 @@ bool update_window_title(const char *str, bool is_result) {
 	return true;
 }
 
+std::string ellipsize_result(const std::string &result_text, size_t length) {
+	length /= 2;
+	size_t index1 = result_text.find(SPACE, length);
+	if(index1 == std::string::npos || index1 > length * 1.2) index1 = result_text.find(THIN_SPACE, length);
+	if(index1 == std::string::npos || index1 > length * 1.2) {
+		index1 = length;
+		while(index1 > 0 && result_text[index1] < 0 && (unsigned char) result_text[index1 + 1] < 0xC0) index1--;
+	}
+	size_t index2 = result_text.find(SPACE, result_text.length() - length);
+	if(index2 == std::string::npos || index2 > result_text.length() - length * 0.8) index2 = result_text.find(THIN_SPACE, result_text.length() - length);
+	if(index2 == std::string::npos || index2 > result_text.length() - length * 0.8) {
+		index2 = result_text.length() - length;
+		while(index2 > index1 && result_text[index2] < 0 && (unsigned char) result_text[index2 + 1] < 0xC0) index2--;
+	}
+	return result_text.substr(0, index1) + " (…) " + result_text.substr(index2, result_text.length() - index2);
+}
+
 /*
 	set result in result widget and add to history widget
 */
@@ -11340,16 +11367,24 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	bool implicit_warning = false;
 	if(stack_index != 0) {
 		if(result_text.length() > 500000) {
-			result_text = "(…)";
+			if(mstruct->isMatrix()) {
+				result_text = "matrix ("; result_text += i2s(mstruct->rows()); result_text += SIGN_MULTIPLICATION; result_text += i2s(mstruct->columns()); result_text += ")";
+			} else {
+				result_text = ellipsize_result(result_text, 5000);
+			}
 		}
 		RPNRegisterChanged(result_text, stack_index);
 		error_icon = display_errors(NULL, supress_dialog ? NULL : GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), NULL, supress_dialog ? 2 : 0, NULL);
 	} else if(update_history) {
 		if(result_text.length() > 500000) {
-			result_text = "(…)";
+			if(mstruct->isMatrix()) {
+				result_text = "matrix ("; result_text += i2s(mstruct->rows()); result_text += SIGN_MULTIPLICATION; result_text += i2s(mstruct->columns()); result_text += ")";
+			} else {
+				result_text = ellipsize_result(result_text, 5000);
+			}
 		}
 		if(parsed_text.length() > 500000) {
-			parsed_text = "(…)";
+			parsed_text = ellipsize_result(parsed_text, 5000);
 		}
 		if(update_parse) {
 			gchar *expr_str = NULL;
