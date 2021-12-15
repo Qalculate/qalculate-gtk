@@ -179,7 +179,7 @@ bool save_custom_result_font = false, save_custom_expression_font = false, save_
 string custom_result_font, custom_expression_font, custom_status_font, custom_keypad_font, custom_app_font;
 int scale_n = 0;
 bool hyp_is_on, inv_is_on;
-bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad, minimal_mode;
+bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad, minimal_mode, show_bases_keypad;
 bool copy_separator;
 bool caret_as_xor = false;
 extern bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message;
@@ -218,6 +218,7 @@ int programming_inbase = 0, programming_outbase = 0;
 bool title_modified = false;
 string current_mode;
 int vertical_button_padding = -1, horizontal_button_padding = -1;
+int rounding_mode = 0;
 
 bool cursor_has_moved = false;
 
@@ -2996,7 +2997,8 @@ void set_result_bases(const MathStructure &m) {
 			nr = m[0].number();
 			nr.negate();
 		}
-		nr.round(printops.round_halfway_to_even);
+		if(rounding_mode == 2) nr.trunc();
+		else nr.round(printops.round_halfway_to_even);
 		PrintOptions po = printops;
 		po.is_approximate = NULL;
 		po.show_ending_zeroes = false;
@@ -3140,7 +3142,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 				evalops.auto_post_conversion = save_auto_post_conversion;
 				evalops.parse_options.units_enabled = b_units_saved;
 				evalops.mixed_units_conversion = save_mixed_units_conversion;
-				printops.custom_time_zone = 0;
+				printops.custom_time_zone = (rounding_mode == 2 ? -21586 : 0);
 				printops.time_zone = TIME_ZONE_LOCAL;
 				return;
 			}
@@ -3631,7 +3633,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		evalops.auto_post_conversion = save_auto_post_conversion;
 		evalops.parse_options.units_enabled = b_units_saved;
 		evalops.mixed_units_conversion = save_mixed_units_conversion;
-		printops.custom_time_zone = 0;
+		printops.custom_time_zone = (rounding_mode == 2 ? -21586 : 0);
 		printops.time_zone = TIME_ZONE_LOCAL;
 	}
 	
@@ -9148,268 +9150,152 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 				ips_n.depth++;
 
-				if(m.isMatrix()) {
-					if(m[0].size() == 0) {
-						PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-						string str;
-						TTBP(str)
-						str += "[ ]";
-						TTE(str)
-						pango_layout_set_markup(layout, str.c_str(), -1);
-						pango_layout_get_pixel_size(layout, &w, &h);
-						w += 1;
-						central_point = h / 2;
-						surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-						cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-						cr = cairo_create(surface);
-						gdk_cairo_set_source_rgba(cr, color);
-						cairo_move_to(cr, 1, 0);
-						pango_cairo_show_layout(cr, layout);
-						g_object_unref(layout);
-						break;
-					}
-					gint wtmp, htmp, ctmp = 0, w = 0, h = 0;
-					CALCULATE_SPACE_W
-					vector<gint> col_w;
-					vector<gint> row_h;
-					vector<gint> row_uh;
-					vector<gint> row_dh;
-					vector<vector<gint> > element_w;
-					vector<vector<gint> > element_h;
-					vector<vector<gint> > element_c;
-					vector<vector<cairo_surface_t*> > surface_elements;
-					element_w.resize(m.size());
-					element_h.resize(m.size());
-					element_c.resize(m.size());
-					surface_elements.resize(m.size());
-					PangoLayout *layout_comma = gtk_widget_create_pango_layout(resultview, NULL);
+				bool b_matrix = m.isMatrix();
+				if(m.size() == 0 || (b_matrix && m[0].size() == 0)) {
+					PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
 					string str;
-					gint comma_w = 0, comma_h = 0;
-					TTP(str, po.comma())
-					pango_layout_set_markup(layout_comma, str.c_str(), -1);
-					pango_layout_get_pixel_size(layout_comma, &comma_w, &comma_h);
-					for(size_t index_r = 0; index_r < m.size(); index_r++) {
-						for(size_t index_c = 0; index_c < m[index_r].size(); index_c++) {
-							ctmp = 0;
-							ips_n.wrap = m[index_r][index_c].needsParenthesis(po, ips_n, m, index_r + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-							surface_elements[index_r].push_back(draw_structure(m[index_r][index_c], po, caf, ips_n, &ctmp, scaledown, color));
-							if(CALCULATOR->aborted()) {
-								break;
-							}
-							wtmp = cairo_image_surface_get_width(surface_elements[index_r][index_c]) / scalefactor;
-							htmp = cairo_image_surface_get_height(surface_elements[index_r][index_c]) / scalefactor;
-							element_w[index_r].push_back(wtmp);
-							element_h[index_r].push_back(htmp);
-							element_c[index_r].push_back(ctmp);
-							if(index_r == 0) {
-								col_w.push_back(wtmp);
-							} else if(wtmp > col_w[index_c]) {
-								col_w[index_c] = wtmp;
-							}
-							if(index_c == 0) {
-								row_uh.push_back(htmp - ctmp);
-								row_dh.push_back(ctmp);
-							} else {
-								if(ctmp > row_dh[index_r]) {
-									row_dh[index_r] = ctmp;
-								}
-								if(htmp - ctmp > row_uh[index_r]) {
-									row_uh[index_r] = htmp - ctmp;
-								}
-							}
-						}
-						if(CALCULATOR->aborted()) {
-							break;
-						}
-						row_h.push_back(row_uh[index_r] + row_dh[index_r]);
-						h += row_h[index_r];
-						if(index_r != 0) {
-							h += 4;
-						}
-					}
-					h += 4;
-					for(size_t i = 0; i < col_w.size(); i++) {
-						w += col_w[i];
-						if(i != 0) {
-							w += space_w * 2;
-						}
-					}
-
-					gint wlr, wll;
-					wll = 10;
-					wlr = 10;
-
-					w += wlr + 1;
-					w += wll + 3;
+					TTBP(str)
+					str += "[ ]";
+					TTE(str)
+					pango_layout_set_markup(layout, str.c_str(), -1);
+					pango_layout_get_pixel_size(layout, &w, &h);
+					w += 1;
 					central_point = h / 2;
 					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
 					cr = cairo_create(surface);
 					gdk_cairo_set_source_rgba(cr, color);
-					w = 1;
-					cairo_move_to(cr, w, 1);
-					cairo_line_to(cr, w, h - 1);
-					cairo_move_to(cr, w, 1);
-					cairo_line_to(cr, w + 7, 1);
-					cairo_move_to(cr, w, h - 1);
-					cairo_line_to(cr, w + 7, h - 1);
-					cairo_set_line_width(cr, 2);
-					cairo_stroke(cr);
-					h = 2;
-					for(size_t index_r = 0; index_r < surface_elements.size(); index_r++) {
-						if(!CALCULATOR->aborted()) {
-							gdk_cairo_set_source_rgba(cr, color);
-							w = wll + 1;
-						}
-						for(size_t index_c = 0; index_c < surface_elements[index_r].size(); index_c++) {
-							if(!CALCULATOR->aborted()) {
-								cairo_set_source_surface(cr, surface_elements[index_r][index_c], w + (col_w[index_c] - element_w[index_r][index_c]), h + row_uh[index_r] - (element_h[index_r][index_c] - element_c[index_r][index_c]));
-								cairo_paint(cr);
-								w += col_w[index_c];
-								if(index_c != m[index_r].size() - 1) {
-									w += space_w * 2;
-								}
-							}
-							if(surface_elements[index_r][index_c]) {
-								cairo_surface_destroy(surface_elements[index_r][index_c]);
-							}
-						}
-						if(!CALCULATOR->aborted()) {
-							h += row_h[index_r];
-							h += 4;
-						}
-					}
-					h -= 4;
-					h += 2;
-					w += wll - 7;
-					gdk_cairo_set_source_rgba(cr, color);
-					cairo_move_to(cr, w + 7, 1);
-					cairo_line_to(cr, w + 7, h - 1);
-					cairo_move_to(cr, w, 1);
-					cairo_line_to(cr, w + 7, 1);
-					cairo_move_to(cr, w, h - 1);
-					cairo_line_to(cr, w + 7, h - 1);
-					cairo_set_line_width(cr, 2);
-					cairo_stroke(cr);
-					g_object_unref(layout_comma);
+					cairo_move_to(cr, 1, 0);
+					pango_cairo_show_layout(cr, layout);
+					g_object_unref(layout);
 					break;
 				}
-
-				gint comma_w, comma_h, uh = 0, dh = 0, h = 0, w = 0, ctmp, htmp, wtmp, arc_w, arc_h, xtmp;
-				vector<cairo_surface_t*> surface_args;
-				vector<gint> hpa, cpa, wpa, xpa;
-
+				gint wtmp, htmp, ctmp = 0, w = 0, h = 0;
 				CALCULATE_SPACE_W
+				vector<gint> col_w;
+				vector<gint> row_h;
+				vector<gint> row_uh;
+				vector<gint> row_dh;
+				vector<vector<gint> > element_w;
+				vector<vector<gint> > element_h;
+				vector<vector<gint> > element_c;
+				vector<vector<cairo_surface_t*> > surface_elements;
+				element_w.resize(b_matrix ? m.size() : 1);
+				element_h.resize(b_matrix ? m.size() : 1);
+				element_c.resize(b_matrix ? m.size() : 1);
+				surface_elements.resize(b_matrix ? m.size() : 1);
 				PangoLayout *layout_comma = gtk_widget_create_pango_layout(resultview, NULL);
-				string str, func_str;
-				TTP(str, CALCULATOR->getComma())
+				string str;
+				gint comma_w = 0, comma_h = 0;
+				TTP(str, po.comma())
 				pango_layout_set_markup(layout_comma, str.c_str(), -1);
 				pango_layout_get_pixel_size(layout_comma, &comma_w, &comma_h);
-
-				if(m.size() == 0) {
-					PangoLayout *layout_one = gtk_widget_create_pango_layout(resultview, NULL);
-					TTP(str, "1")
-					pango_layout_set_markup(layout_one, str.c_str(), -1);
-					pango_layout_get_pixel_size(layout_one, &w, &h);
-					uh = h / 2 + h % 2;
-					dh = h / 2;
-					w = 2;
-					g_object_unref(layout_one);
-				}
-				for(size_t index = 0; index < m.size(); index++) {
-					ips_n.wrap = m[index].needsParenthesis(po, ips_n, m, index + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-					surface_args.push_back(draw_structure(m[index], po, caf, ips_n, &ctmp, scaledown, color, &xtmp));
-					if(CALCULATOR->aborted()) {
-						for(size_t i = 0; i < surface_args.size(); i++) {
-							if(surface_args[i]) cairo_surface_destroy(surface_args[i]);
+				for(size_t index_r = 0; index_r < m.size(); index_r++) {
+					for(size_t index_c = 0; index_c < (b_matrix ? m[index_r].size() : m.size()); index_c++) {
+						ctmp = 0;
+						if(b_matrix) ips_n.wrap = m[index_r][index_c].needsParenthesis(po, ips_n, m, index_r + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+						else ips_n.wrap = m[index_c].needsParenthesis(po, ips_n, m, index_r + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
+						surface_elements[index_r].push_back(draw_structure(b_matrix ? m[index_r][index_c] : m[index_c], po, caf, ips_n, &ctmp, scaledown, color));
+						if(CALCULATOR->aborted()) {
+							break;
 						}
-						g_object_unref(layout_comma);
-						return NULL;
+						wtmp = cairo_image_surface_get_width(surface_elements[index_r][index_c]) / scalefactor;
+						htmp = cairo_image_surface_get_height(surface_elements[index_r][index_c]) / scalefactor;
+						element_w[index_r].push_back(wtmp);
+						element_h[index_r].push_back(htmp);
+						element_c[index_r].push_back(ctmp);
+						if(index_r == 0) {
+							col_w.push_back(wtmp);
+						} else if(wtmp > col_w[index_c]) {
+							col_w[index_c] = wtmp;
+						}
+						if(index_c == 0) {
+							row_uh.push_back(htmp - ctmp);
+							row_dh.push_back(ctmp);
+						} else {
+							if(ctmp > row_dh[index_r]) {
+								row_dh[index_r] = ctmp;
+							}
+							if(htmp - ctmp > row_uh[index_r]) {
+								row_uh[index_r] = htmp - ctmp;
+							}
+						}
 					}
-					if(index == 0) xtmp = 0;
-					wtmp = cairo_image_surface_get_width(surface_args[index]) / scalefactor;
-					htmp = cairo_image_surface_get_height(surface_args[index]) / scalefactor;
-					hpa.push_back(htmp);
-					cpa.push_back(ctmp);
-					wpa.push_back(wtmp);
-					xpa.push_back(xtmp);
-					if(index > 0) {
-						w += comma_w;
-						w += space_w;
+					if(CALCULATOR->aborted()) {
+						break;
 					}
-					w += wtmp;
-					w -= xtmp;
-					if(ctmp > dh) {
-						dh = ctmp;
+					row_h.push_back(row_uh[index_r] + row_dh[index_r]);
+					h += row_h[index_r];
+					if(index_r != 0) {
+						h += 4;
 					}
-					if(htmp - ctmp > uh) {
-						uh = htmp - ctmp;
+					if(!b_matrix) break;
+				}
+				h += 4;
+				for(size_t i = 0; i < col_w.size(); i++) {
+					w += col_w[i];
+					if(i != 0) {
+						w += space_w * 2;
 					}
 				}
 
-				if(dh > uh) uh = dh;
-				else if(uh > dh) dh = uh;
-				h = uh + dh;
-				central_point = dh;
-				arc_h = h;
-				arc_w = PAR_WIDTH;
-				w += arc_w * 2;
-				w += 1;
-				if(ips.depth > 0) w += ips.power_depth > 0 ? 2 : 3;
+				gint wlr, wll;
+				wll = 10;
+				wlr = 10;
 
-				int x1 = 0, x2 = 0;
-				if(surface_args.size() == 1) {
-					get_image_blank_width(surface_args[0], &x1, &x2);
-					x1 /= scalefactor;
-					x1++;
-					x2 = ::ceil(x2 / scalefactor);
-					w -= wpa[0];
-					wpa[0] = x2 - x1;
-					w += wpa[0];
-				} else if(surface_args.size() > 1) {
-					get_image_blank_width(surface_args[0], &x1, NULL);
-					x1 /= scalefactor;
-					x1++;
-					w -= x1;
-					wpa[0] -= x1;
-					int i_last = surface_args.size() - 1;
-					get_image_blank_width(surface_args[i_last], NULL, &x2);
-					x2 = ::ceil(x2 / scalefactor);
-					w -= wpa[i_last] - x2;
-					wpa[i_last] -= wpa[i_last] - x2;
-				}
-
+				w += wlr + 1;
+				w += wll + 3;
+				central_point = h / 2;
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
 				cr = cairo_create(surface);
-
-				if(ips.depth > 0) w = ips.power_depth > 0 ? 2 : 3;
-				else w = 0;
-				cairo_set_source_surface(cr, get_left_parenthesis(arc_w, arc_h, scaledown, color), w, (h - arc_h) / 2);
-				cairo_paint(cr);
-				w += arc_w;
-				if(m.size() == 0) w += 2;
-				for(size_t index = 0; index < surface_args.size(); index++) {
+				gdk_cairo_set_source_rgba(cr, color);
+				w = 1;
+				cairo_move_to(cr, w, 1);
+				cairo_line_to(cr, w, h - 1);
+				cairo_move_to(cr, w, 1);
+				cairo_line_to(cr, w + 7, 1);
+				cairo_move_to(cr, w, h - 1);
+				cairo_line_to(cr, w + 7, h - 1);
+				cairo_set_line_width(cr, 2);
+				cairo_stroke(cr);
+				h = 2;
+				for(size_t index_r = 0; index_r < surface_elements.size(); index_r++) {
 					if(!CALCULATOR->aborted()) {
 						gdk_cairo_set_source_rgba(cr, color);
-						if(index > 0) {
-							cairo_move_to(cr, w, uh - comma_h / 2 - comma_h % 2);
-							pango_cairo_show_layout(cr, layout_comma);
-							w += comma_w;
-							w += space_w;
-						}
-						w -= xpa[index];
-						cairo_set_source_surface(cr, surface_args[index], index == 0 ? w - x1 : w, uh - (hpa[index] - cpa[index]));
-						cairo_paint(cr);
-						w += wpa[index];
+						w = wll + 1;
 					}
-					cairo_surface_destroy(surface_args[index]);
+					for(size_t index_c = 0; index_c < surface_elements[index_r].size(); index_c++) {
+						if(!CALCULATOR->aborted()) {
+							cairo_set_source_surface(cr, surface_elements[index_r][index_c], w + (col_w[index_c] - element_w[index_r][index_c]), h + row_uh[index_r] - (element_h[index_r][index_c] - element_c[index_r][index_c]));
+							cairo_paint(cr);
+							w += col_w[index_c];
+							if(index_c != (b_matrix ?m[index_r].size() - 1 : m.size() - 1)) {
+								w += space_w * 2;
+							}
+						}
+						if(surface_elements[index_r][index_c]) {
+							cairo_surface_destroy(surface_elements[index_r][index_c]);
+						}
+					}
+					if(!CALCULATOR->aborted()) {
+						h += row_h[index_r];
+						h += 4;
+					}
 				}
-				cairo_set_source_surface(cr, get_right_parenthesis(arc_w, arc_h, scaledown, color), w, (h - arc_h) / 2);
-				cairo_paint(cr);
-
+				h -= 4;
+				h += 2;
+				w += wll - 7;
+				gdk_cairo_set_source_rgba(cr, color);
+				cairo_move_to(cr, w + 7, 1);
+				cairo_line_to(cr, w + 7, h - 1);
+				cairo_move_to(cr, w, 1);
+				cairo_line_to(cr, w + 7, 1);
+				cairo_move_to(cr, w, h - 1);
+				cairo_line_to(cr, w + 7, h - 1);
+				cairo_set_line_width(cr, 2);
+				cairo_stroke(cr);
 				g_object_unref(layout_comma);
-
 				break;
 			}
 			case STRUCT_UNIT: {
@@ -12301,8 +12187,29 @@ void set_option(string str) {
 				}
 			}
 		}
-	} else if(equalsIgnoreCase(svar, "round to even") || svar == "rndeven") SET_BOOL_MENU("menu_item_round_halfway_to_even")
-	else if(equalsIgnoreCase(svar, "rpn syntax") || svar == "rpnsyn") {
+	} else if(equalsIgnoreCase(svar, "round to even") || svar == "rndeven") {
+		bool b = printops.round_halfway_to_even;
+		SET_BOOL(b)
+		if(b != printops.round_halfway_to_even || rounding_mode == 2) {
+			if(b) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_round_halfway_to_even")), TRUE);
+			else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_round_halfway_up")), TRUE);
+		}
+	} else if(equalsIgnoreCase(svar, "rounding")) {
+		int v = -1;
+		if(equalsIgnoreCase(svalue, "even") || equalsIgnoreCase(svalue, "round to even")) v = 1;
+		else if(equalsIgnoreCase(svalue, "standard")) v = 0;
+		else if(equalsIgnoreCase(svalue, "truncate")) v = 2;
+		else if(svalue.find_first_not_of(SPACES NUMBERS) == string::npos) {
+			v = s2i(svalue);
+		}
+		if(v < 0 || v > 2) {
+			CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
+		} else if(v != rounding_mode) {
+			if(v == 1) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_round_halfway_to_even")), TRUE);
+			else if(v == 2) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_truncate_numbers")), TRUE);
+			else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_round_halfway_up")), TRUE);
+		}
+	} else if(equalsIgnoreCase(svar, "rpn syntax") || svar == "rpnsyn") {
 		bool b = (evalops.parse_options.parsing_mode == PARSING_MODE_RPN);
 		SET_BOOL(b)
 		if(b != (evalops.parse_options.parsing_mode == PARSING_MODE_RPN)) {
@@ -13569,7 +13476,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					b_busy = false;
 					b_busy_expression = false;
 					setResult(NULL, true, false, false); set_previous_expression();
-					printops.custom_time_zone = 0;
 					printops.time_zone = TIME_ZONE_LOCAL;
 					return;
 				}
@@ -13617,7 +13523,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					b_busy = false;
 					b_busy_expression = false;
 					setResult(NULL, true, false, false); set_previous_expression();
-					printops.custom_time_zone = 0;
+					printops.custom_time_zone = (rounding_mode == 2 ? -21586 : 0);
 					printops.time_zone = TIME_ZONE_LOCAL;
 					return;
 				}
@@ -13629,7 +13535,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					b_busy = false;
 					b_busy_expression = false;
 					setResult(NULL, true, false, false); set_previous_expression();
-					printops.custom_time_zone = 0;
+					printops.custom_time_zone = (rounding_mode == 2 ? -21586 : 0);
 					printops.time_zone = TIME_ZONE_LOCAL;
 					return;
 				}
@@ -14129,7 +14035,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		evalops.auto_post_conversion = save_auto_post_conversion;
 		evalops.parse_options.units_enabled = b_units_saved;
 		evalops.mixed_units_conversion = save_mixed_units_conversion;
-		printops.custom_time_zone = 0;
+		printops.custom_time_zone = (rounding_mode == 2 ? -21586 : 0);
 		printops.time_zone = TIME_ZONE_LOCAL;
 		return;
 	}
@@ -14173,7 +14079,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	evalops.auto_post_conversion = save_auto_post_conversion;
 	evalops.parse_options.units_enabled = b_units_saved;
 	evalops.mixed_units_conversion = save_mixed_units_conversion;
-	printops.custom_time_zone = 0;
+	printops.custom_time_zone = (rounding_mode == 2 ? -21586 : 0);
 	printops.time_zone = TIME_ZONE_LOCAL;
 
 	if(stack_index == 0) {
@@ -16987,6 +16893,47 @@ run_matrix_edit_dialog:
 	gtk_widget_hide(dialog);
 }
 
+bool element_needs_parenthesis(const string &str_e) {
+	bool in_cit1 = false, in_cit2 = false;
+	int pars = 0, brackets = 0;
+	for(size_t i = 0; i < str_e.size(); i++) {
+		switch(str_e[i]) {
+			case LEFT_VECTOR_WRAP_CH: {
+				if(!in_cit1 && !in_cit2) brackets++;
+				break;
+			}
+			case RIGHT_VECTOR_WRAP_CH: {
+				if(!in_cit1 && !in_cit2 && brackets > 0) brackets--;
+				break;
+			}
+			case LEFT_PARENTHESIS_CH: {
+				if(brackets == 0 && !in_cit1 && !in_cit2) pars++;
+				break;
+			}
+			case RIGHT_PARENTHESIS_CH: {
+				if(brackets == 0 && !in_cit1 && !in_cit2 && pars > 0) pars--;
+				break;
+			}
+			case '\"': {
+				if(in_cit1) in_cit1 = false;
+				else if(!in_cit2) in_cit1 = true;
+				break;
+			}
+			case '\'': {
+				if(in_cit2) in_cit2 = false;
+				else if(!in_cit1) in_cit1 = true;
+				break;
+			}
+			default: {
+				if(!in_cit1 && !in_cit2 && brackets == 0 && pars == 0 && (str_e[i] == ' ' || str_e[i] == '\n' || str_e[i] == '\t' || str_e[i] == ',' || str_e[i] == ';' || ((unsigned char) str_e[i] == 0xE2 && i + 2 < str_e.size() && (unsigned char) str_e[i + 1] == 0x80 && (unsigned char) str_e[i + 2] == 0x89))) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
 void insert_matrix(const MathStructure *initial_value, GtkWidget *win, gboolean create_vector, bool is_text_struct, bool is_result, GtkEntry *entry) {
 
 	GtkWidget *dialog = get_matrix_dialog();
@@ -17108,12 +17055,17 @@ void insert_matrix(const MathStructure *initial_value, GtkWidget *win, gboolean 
 					remove_blank_ends(str);
 					if(!str.empty()) {
 						if(b1) {
-							matrixstr += CALCULATOR->getComma();
 							matrixstr += " ";
 						} else {
 							b1 = true;
 						}
-						matrixstr += str;
+						if(element_needs_parenthesis(str)) {
+							matrixstr += "(";
+							matrixstr += str;
+							matrixstr += ")";
+						} else {
+							matrixstr += str;
+						}
 					}
 				}
 				b = gtk_tree_model_iter_next(GTK_TREE_MODEL(tMatrix_store), &iter);
@@ -17124,16 +17076,13 @@ void insert_matrix(const MathStructure *initial_value, GtkWidget *win, gboolean 
 			bool b1 = false;
 			for(size_t index_r = 0; index_r < (size_t) r && b; index_r++) {
 				if(b1) {
-					matrixstr += CALCULATOR->getComma();
-					matrixstr += " ";
+					matrixstr += "; ";
 				} else {
 					b1 = true;
 				}
-				matrixstr += "[";
 				bool b2 = false;
 				for(size_t index_c = 0; index_c < (size_t) c; index_c++) {
 					if(b2) {
-						matrixstr += CALCULATOR->getComma();
 						matrixstr += " ";
 					} else {
 						b2 = true;
@@ -17142,9 +17091,14 @@ void insert_matrix(const MathStructure *initial_value, GtkWidget *win, gboolean 
 					str = gstr;
 					remove_blank_ends(str);
 					g_free(gstr);
-					matrixstr += str;
+					if(element_needs_parenthesis(str)) {
+						matrixstr += "(";
+						matrixstr += str;
+						matrixstr += ")";
+					} else {
+						matrixstr += str;
+					}
 				}
-				matrixstr += "]";
 				b = gtk_tree_model_iter_next(GTK_TREE_MODEL(tMatrix_store), &iter);
 			}
 			matrixstr += "]";
@@ -18454,6 +18408,7 @@ void set_saved_mode() {
 	modes[1].eo = evalops;
 	modes[1].at = CALCULATOR->defaultAssumptions()->type();
 	modes[1].as = CALCULATOR->defaultAssumptions()->sign();
+	modes[1].rounding_mode = rounding_mode;
 	modes[1].rpn_mode = rpn_mode;
 	modes[1].autocalc = auto_calculate;
 	modes[1].chain_mode = chain_mode;
@@ -18488,6 +18443,7 @@ size_t save_mode_as(string name, bool *new_mode = NULL) {
 	modes[index].at = CALCULATOR->defaultAssumptions()->type();
 	modes[index].as = CALCULATOR->defaultAssumptions()->sign();
 	modes[index].name = name;
+	modes[index].rounding_mode = rounding_mode;
 	modes[index].rpn_mode = rpn_mode;
 	modes[index].autocalc = auto_calculate;
 	modes[index].chain_mode = chain_mode;
@@ -18512,6 +18468,7 @@ void load_mode(const mode_struct &mode) {
 	update_window_title();
 	CALCULATOR->setCustomOutputBase(mode.custom_output_base);
 	CALCULATOR->setCustomInputBase(mode.custom_input_base);
+	rounding_mode = mode.rounding_mode;
 	set_mode_items(mode.po, mode.eo, mode.at, mode.as, mode.rpn_mode, mode.precision, mode.interval, mode.variable_units_enabled, mode.adaptive_interval_display, mode.keypad, mode.autocalc, mode.chain_mode, mode.complex_angle_form, false);
 	implicit_question_asked = mode.implicit_question_asked;
 	evalops.approximation = mode.eo.approximation;
@@ -19397,6 +19354,7 @@ void load_preferences() {
 	printops.indicate_infinite_series = false;
 	printops.show_ending_zeroes = true;
 	printops.round_halfway_to_even = false;
+	rounding_mode = 0;
 	printops.number_fraction_format = FRACTION_DECIMAL;
 	printops.restrict_fraction_length = false;
 	printops.abbreviate_names = true;
@@ -19568,6 +19526,7 @@ void load_preferences() {
 	show_convert = false;
 	persistent_keypad = false;
 	minimal_mode = false;
+	show_bases_keypad = true;
 	continuous_conversion = true;
 	set_missing_prefixes = false;
 	load_global_defs = true;
@@ -19755,6 +19714,8 @@ void load_preferences() {
 					persistent_keypad = v;
 				} else if(svar == "minimal_mode") {
 					minimal_mode = v;
+				} else if(svar == "show_bases_keypad") {
+					show_bases_keypad = v;
 				} else if(svar == "continuous_conversion") {
 					continuous_conversion = v;
 				} else if(svar == "set_missing_prefixes") {
@@ -20083,10 +20044,29 @@ void load_preferences() {
 					if(v >= DIGIT_GROUPING_NONE && v <= DIGIT_GROUPING_LOCALE) {
 						printops.digit_grouping = (DigitGrouping) v;
 					}
-				} else if(svar == "round_halfway_to_even") {
-					if(mode_index == 1) printops.round_halfway_to_even = v;
-					else modes[mode_index].po.round_halfway_to_even = v;
-				} else if(svar == "always_exact") {		//obsolete
+				} else if(svar == "round_halfway_to_even") {//obsolete
+					if(mode_index == 1) {
+						rounding_mode = (v ? 1 : 0);
+						printops.round_halfway_to_even = v;
+						printops.custom_time_zone = 0;
+					} else {
+						modes[mode_index].rounding_mode = (v ? 1 : 0);
+						modes[mode_index].po.round_halfway_to_even = v;
+						modes[mode_index].po.custom_time_zone = 0;
+					}
+				} else if(svar == "rounding_mode") {
+					if(v >= 0 && v <= 2) {
+						if(mode_index == 1) {
+							rounding_mode = v;
+							printops.custom_time_zone = (v == 2 ? -21586 : 0);
+							printops.round_halfway_to_even = (v == 1);
+						} else if(mode_index == 1) {
+							modes[mode_index].rounding_mode = v;
+							modes[mode_index].po.custom_time_zone = (v == 2 ? -21586 : 0);
+							modes[mode_index].po.round_halfway_to_even = (v == 1);
+						}
+					}
+				} else if(svar == "always_exact") {//obsolete
 					if(mode_index == 1) {
 						evalops.approximation = APPROXIMATION_EXACT;
 					} else {
@@ -20776,6 +20756,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "show_convert=%i\n", (rpn_mode && show_convert && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)));
 	fprintf(file, "persistent_keypad=%i\n", persistent_keypad);
 	fprintf(file, "minimal_mode=%i\n", minimal_mode);
+	fprintf(file, "show_bases_keypad=%i\n", show_bases_keypad);
 	fprintf(file, "continuous_conversion=%i\n", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion"))));
 	fprintf(file, "set_missing_prefixes=%i\n", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes"))));
 	fprintf(file, "rpn_keys=%i\n", rpn_keys);
@@ -21199,7 +21180,7 @@ void save_preferences(bool mode) {
 		fprintf(file, "allow_infinite=%i\n", modes[i].eo.allow_infinite);
 		fprintf(file, "indicate_infinite_series=%i\n", modes[i].po.indicate_infinite_series);
 		fprintf(file, "show_ending_zeroes=%i\n", modes[i].po.show_ending_zeroes);
-		fprintf(file, "round_halfway_to_even=%i\n", modes[i].po.round_halfway_to_even);
+		fprintf(file, "rounding_mode=%i\n", modes[i].rounding_mode);
 		fprintf(file, "approximation=%i\n", modes[i].eo.approximation);
 		fprintf(file, "interval_calculation=%i\n", modes[i].eo.interval_calculation);
 		fprintf(file, "calculate_as_you_type=%i\n", modes[i].autocalc);
@@ -23464,6 +23445,24 @@ void on_button_programmers_keypad_toggled(GtkToggleButton *w, gpointer) {
 		update_result_bases();
 	}
 	focus_keeping_selection();
+}
+
+gboolean on_nbases_event_hide_buttons_button_release_event(GtkWidget*, GdkEventButton *event, gpointer) {
+	if(event->type == GDK_BUTTON_RELEASE && event->button == 1) {
+		show_bases_keypad = !gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "box_keypad")));
+		if(show_bases_keypad) {
+			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "box_keypad")));
+		} else {
+			gint w, h;
+			gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(nbases_builder, "nbases_dialog")), &w, &h);
+			w -= gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "box_keypad")));
+			w--;
+			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "box_keypad")));
+			gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(nbases_builder, "nbases_dialog")), w, h);
+		}
+		return TRUE;
+	}
+	return FALSE;
 }
 
 gboolean on_hide_left_buttons_button_release_event(GtkWidget*, GdkEventButton *event, gpointer) {
@@ -29789,7 +29788,24 @@ void on_menu_item_show_ending_zeroes_activate(GtkMenuItem *w, gpointer) {
 	result_format_updated();
 }
 void on_menu_item_round_halfway_to_even_activate(GtkMenuItem *w, gpointer) {
-	printops.round_halfway_to_even = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	printops.round_halfway_to_even = true;
+	printops.custom_time_zone = 0;
+	rounding_mode = 1;
+	result_format_updated();
+}
+void on_menu_item_round_halfway_up_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	printops.round_halfway_to_even = false;
+	printops.custom_time_zone = 0;
+	rounding_mode = 0;
+	result_format_updated();
+}
+void on_menu_item_truncate_numbers_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	printops.round_halfway_to_even = false;
+	printops.custom_time_zone = -21586;
+	rounding_mode = 2;
 	result_format_updated();
 }
 void on_menu_item_negative_exponents_activate(GtkMenuItem *w, gpointer) {
@@ -31616,7 +31632,9 @@ void update_nbases_entries(const MathStructure &value, int base) {
 		} else if(!value.isNumber() || !value.number().isReal() || !(value.number() <= 9999) || !(value.number() >= -9999)) {
 			gtk_entry_set_text(GTK_ENTRY(w_roman), "-");
 		} else {
-			Number nr = value.number(); nr.round(printops.round_halfway_to_even);
+			Number nr = value.number();
+			if(rounding_mode == 2) nr.trunc();
+			else nr.round(printops.round_halfway_to_even);
 			po.base = BASE_ROMAN_NUMERALS;
 			gtk_entry_set_text(GTK_ENTRY(w_roman), nr.print(po).c_str());
 		}

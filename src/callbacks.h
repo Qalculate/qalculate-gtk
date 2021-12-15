@@ -50,6 +50,7 @@ struct mode_struct {
 	bool chain_mode;
 	bool complex_angle_form;
 	bool implicit_question_asked;
+	int rounding_mode;
 };
 
 enum {
@@ -649,6 +650,8 @@ void on_menu_item_display_prefixes_for_all_units_activate(GtkMenuItem *w, gpoint
 void on_menu_item_indicate_infinite_series_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_show_ending_zeroes_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_round_halfway_to_even_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_round_halfway_up_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_round_truncate_numbers_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_negative_exponents_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_sort_minus_last_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_fraction_decimal_activate(GtkMenuItem *w, gpointer user_data);
