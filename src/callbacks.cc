@@ -8758,8 +8758,9 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 					hetmp = 0;
 					ips_n.wrap = m[0][1].needsParenthesis(po, ips_n, m[0], 2, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-					surface_terms.push_back(draw_structure(m[0][1], po, caf, ips_n, &hetmp, scaledown, color));
+					surface_terms.push_back(draw_structure(m[0][1], po, caf, ips_n, &hetmp, scaledown, color, &offset_x, NULL));
 					if(CALCULATOR->aborted()) {
+						cairo_surface_destroy(surface_terms[0]);
 						return NULL;
 					}
 					wtmp = cairo_image_surface_get_width(surface_terms[0]) / scalefactor;
@@ -8767,6 +8768,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					hpt.push_back(htmp);
 					cpt.push_back(hetmp);
 					wpt.push_back(wtmp);
+					xpt.push_back(0);
 					w += wtmp;
 					if(htmp - hetmp > uh) {
 						uh = htmp - hetmp;
@@ -8776,9 +8778,10 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					}
 					hetmp = 0;
 					ips_n.wrap = m[0][0].needsParenthesis(po, ips_n, m[0], 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-					surface_terms.push_back(draw_structure(m[0][0], po, caf, ips_n, &hetmp, scaledown, color, &offset_x, NULL));
+					surface_terms.push_back(draw_structure(m[0][0], po, caf, ips_n, &hetmp, scaledown, color, &xtmp, NULL));
 					if(CALCULATOR->aborted()) {
 						cairo_surface_destroy(surface_terms[0]);
+						cairo_surface_destroy(surface_terms[1]);
 						return NULL;
 					}
 					wtmp = cairo_image_surface_get_width(surface_terms[1]) / scalefactor;
@@ -8786,7 +8789,8 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					hpt.push_back(htmp);
 					cpt.push_back(hetmp);
 					wpt.push_back(wtmp);
-					xpt.push_back(0);
+					xpt.push_back(xtmp);
+					w -= xtmp;
 					w += wtmp;
 					if(htmp - hetmp > uh) {
 						uh = htmp - hetmp;
@@ -8800,6 +8804,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					if(CALCULATOR->aborted()) {
 						cairo_surface_destroy(surface_terms[0]);
 						cairo_surface_destroy(surface_terms[1]);
+						cairo_surface_destroy(surface_terms[2]);
 						return NULL;
 					}
 					wtmp = cairo_image_surface_get_width(surface_terms[2]) / scalefactor;
