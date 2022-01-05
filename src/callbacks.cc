@@ -596,15 +596,15 @@ bool equalsIgnoreCase(const string &str1, const string &str2, size_t i2, size_t 
 			return i1 >= str1.length();
 		}
 		if(i1 >= str1.length()) break;
-		if((str1[i1] < 0 && i1 + 1 < str1.length()) || (str2[i2] < 0 && i2 + 1 < str2.length())) {
+		if(((signed char) str1[i1] < 0 && i1 + 1 < str1.length()) || ((signed char) str2[i2] < 0 && i2 + 1 < str2.length())) {
 			size_t iu1 = 1, iu2 = 1;
-			if(str1[i1] < 0) {
-				while(iu1 + i1 < str1.length() && str1[i1 + iu1] < 0) {
+			if((signed char) str1[i1] < 0) {
+				while(iu1 + i1 < str1.length() && (signed char) str1[i1 + iu1] < 0) {
 					iu1++;
 				}
 			}
-			if(str2[i2] < 0) {
-				while(iu2 + i2 < str2.length() && str2[i2 + iu2] < 0) {
+			if((signed char) str2[i2] < 0) {
+				while(iu2 + i2 < str2.length() && (signed char) str2[i2 + iu2] < 0) {
 					iu2++;
 				}
 			}
@@ -1199,9 +1199,9 @@ void improve_result_text(string &resstr) {
 		}
 
 		if(i1 > 1 && resstr[i1 - 1] == ' ' && (i_equals == string::npos || i1 != i_equals + 1) && (is_in(NUMBERS, resstr[i1 - 2]) || i1 == i_prev + 1)) {
-			if(resstr[i1 - 2] < 0) {
+			if((signed char) resstr[i1 - 2] < 0) {
 				i3 = i1 - 2;
-				while(i3 > 0 && resstr[i3] < 0 && (unsigned char) resstr[i3] < 0xC0) i3--;
+				while(i3 > 0 && (signed char) resstr[i3] < 0 && (unsigned char) resstr[i3] < 0xC0) i3--;
 				string str = resstr.substr(i3, i1 - i3 - 1);
 				if(str != SIGN_DIVISION && str != SIGN_DIVISION_SLASH && str != SIGN_MULTIPLICATION && str != SIGN_MULTIDOT && str != SIGN_SMALLCIRCLE && str != SIGN_MULTIBULLET && str != SIGN_MINUS && str != SIGN_PLUS && str != SIGN_NOT_EQUAL && str != SIGN_GREATER_OR_EQUAL && str != SIGN_LESS_OR_EQUAL && str != SIGN_ALMOST_EQUAL && str != printops.comma()) {
 					resstr.replace(i1 - 1, 2, "<i>");
@@ -1535,7 +1535,7 @@ PangoCoverageLevel get_least_coverage(const gchar *gstr, GtkWidget *widget) {
 	PangoFontset *fontset = pango_context_load_fontset(context, font_desc, language);
 	pango_font_description_free(font_desc);
 	while(gstr[0] != '\0') {
-		if(gstr[0] < 0) {
+		if((signed char) gstr[0] < 0) {
 			gunichar gu = g_utf8_get_char_validated(gstr, -1);
 			if(gu != (gunichar) -1 && gu != (gunichar) -2) {
 				PangoFont *font = pango_fontset_get_font(fontset, (guint) gu);
@@ -1843,7 +1843,7 @@ bool string_is_less(string str1, string str2) {
 	bool b_uni = false;
 	while(i < str1.length() && i < str2.length()) {
 		if(str1[i] == str2[i]) i++;
-		else if(str1[i] < 0 || str2[i] < 0) {b_uni = true; break;}
+		else if((signed char) str1[i] < 0 || (signed char) str2[i] < 0) {b_uni = true; break;}
 		else return str1[i] < str2[i];
 	}
 	if(b_uni) return g_utf8_collate(str1.c_str(), str2.c_str()) < 0;
@@ -2638,12 +2638,12 @@ void fix_to_struct_gtk(MathStructure &m);
 bool last_is_operator(string str, bool allow_exp = false) {
 	remove_blank_ends(str);
 	if(str.empty()) return false;
-	if(str[str.length() - 1] > 0) {
+	if((signed char) str[str.length() - 1] > 0) {
 		if(is_in(OPERATORS "\\" LEFT_PARENTHESIS LEFT_VECTOR_WRAP, str[str.length() - 1]) && (str[str.length() - 1] != '!' || str.length() == 1)) return true;
 		if(allow_exp && is_in(EXP, str[str.length() - 1])) return true;
 		if(str.length() >= 3 && str[str.length() - 1] == 'r' && str[str.length() - 2] == 'o' && str[str.length() - 3] == 'x') return true;
 	} else {
-		if(str.length() >= 3 && str[str.length() - 2] < 0) {
+		if(str.length() >= 3 && (signed char) str[str.length() - 2] < 0) {
 			str = str.substr(str.length() - 3);
 			if(str == "∧" || str == "∨" || str == "⊻" || str == "≤" || str == "≥" || str == "≠" || str == "∠" || str == expression_times_sign() || str == expression_divide_sign() || str == expression_add_sign() || str == expression_sub_sign()) {
 				return true;
@@ -3095,7 +3095,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		if(str.empty() || (origstr && (str == "MC" || str == "MS" || str == "M+" || str == "M-" || str == "M−" || contains_plot_or_save(str)))) {clearresult(); return;}
 		if(origstr && str.length() > 1 && str[0] == '/') {
 			size_t i = str.find_first_not_of(SPACES, 1);
-			if(i != string::npos && str[i] > 0 && is_not_in(NUMBER_ELEMENTS OPERATORS, str[i])) {
+			if(i != string::npos && (signed char) str[i] > 0 && is_not_in(NUMBER_ELEMENTS OPERATORS, str[i])) {
 				clearresult(); return;
 			}
 		}
@@ -3605,7 +3605,6 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			CALCULATOR->endTemporaryStopMessages();
 			clearresult();
 		}
-
 		printops.can_display_unicode_string_arg = NULL;
 		printops.allow_non_usable = false;
 
@@ -3717,7 +3716,7 @@ void display_parse_status() {
 	}
 	if(text[0] == '/' && text.length() > 1) {
 		size_t i = text.find_first_not_of(SPACES, 1);
-		if(i != string::npos && text[i] > 0 && is_not_in(NUMBER_ELEMENTS OPERATORS, text[i])) {
+		if(i != string::npos && (signed char) text[i] > 0 && is_not_in(NUMBER_ELEMENTS OPERATORS, text[i])) {
 			set_status_text("qalc command", true, false, false);
 			return;
 		}
@@ -7892,7 +7891,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 								}
 								if(i >= value_str.length()) i = string::npos;
 							}
-							while(value_str[i] < 0) {
+							while((signed char) value_str[i] < 0) {
 								i++;
 								if(i >= value_str.length()) {i = string::npos; break;}
 							}
@@ -10512,12 +10511,12 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 			if(str[i] == ' ') {
 				str.erase(i, 1);
 				if(i >= str.length()) i = str.length() - 1;
-			} else if(str[i] == -30 && i + 2 < str.length() && str[i + 1] == -128 && str[i + 2] == -119) {
+			} else if((signed char) str[i] == -30 && i + 2 < str.length() && (signed char) str[i + 1] == -128 && (signed char) str[i + 2] == -119) {
 				str.erase(i, 3);
 				if(i >= str.length()) i = str.length() - 1;
 			}
 		}
-		if(str[i] > 0 || (unsigned char) str[i] >= 0xC0 || i == str.length() - 1) {
+		if((signed char) str[i] > 0 || (unsigned char) str[i] >= 0xC0 || i == str.length() - 1) {
 			if(str[i] == '\n') {
 				r++;
 				i_row = i + 1;
@@ -10553,7 +10552,7 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 								}
 								if(cbreak) {
 									while(true) {
-										while(teststr[teststr.length() - 1] <= 0 && (unsigned char) teststr[teststr.length() - 1] < 0xC0) {
+										while((signed char) teststr[teststr.length() - 1] <= 0 && (unsigned char) teststr[teststr.length() - 1] < 0xC0) {
 											i--;
 											teststr.erase(teststr.length() - 1, 1);
 											if(i == i_row) return;
@@ -10567,9 +10566,9 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 											i++;
 											if(str[i - 1] == ' ') {
 												i--;
-											} else if(str[i - 1] == -30 && i + 1 < str.length() && str[i] == -128 && str[i + 1] == -119) {
+											} else if((signed char) str[i - 1] == -30 && i + 1 < str.length() && (signed char) str[i] == -128 && (signed char) str[i + 1] == -119) {
 												i--;
-											} else if(i > 3 && str[i - 1] == -119 && str[i - 2] == -128 && str[i - 3] == -30) {
+											} else if(i > 3 && (signed char) str[i - 1] == -119 && (signed char) str[i - 2] == -128 && (signed char) str[i - 3] == -30) {
 												i -= 3;
 											} else if(i > 3 && str[i] <= '9' && str[i] >= '0' && str[i - 1] <= '9' && str[i - 1] >= '0') {
 												if(str[i - 2] == ' ' && str[i - 3] <= '9' && str[i - 3] >= '0') i -= 2;
@@ -10607,8 +10606,8 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 						}
 					} else if(i + 1 == str.length() || (c >= 50 && c % 50 == 0)) {
 						string teststr;
-						if(str[i] <= 0) {
-							while(i + 1 < str.length() && str[i + 1] <= 0 && (unsigned char) str[i + 1] < 0xC0) i++;
+						if((signed char) str[i] <= 0) {
+							while(i + 1 < str.length() && (signed char) str[i + 1] <= 0 && (unsigned char) str[i + 1] < 0xC0) i++;
 						}
 						if(i + 1 == str.length()) teststr = str.substr(i_row);
 						else teststr = str.substr(i_row, i - i_row + 1);
@@ -10629,7 +10628,7 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 							}
 							if(cbreak) {
 								while(true) {
-									while(teststr[teststr.length() - 1] <= 0 && (unsigned char) teststr[teststr.length() - 1] < 0xC0) {
+									while((signed char) teststr[teststr.length() - 1] <= 0 && (unsigned char) teststr[teststr.length() - 1] < 0xC0) {
 										i--;
 										teststr.erase(teststr.length() - 1, 1);
 										if(i == i_row) return;
@@ -10643,9 +10642,9 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 										i++;
 										if(str[i - 1] == ' ') {
 											i--;
-										} else if(str[i - 1] == -30 && i + 1 < str.length() && str[i] == -128 && str[i + 1] == -119) {
+										} else if((signed char) str[i - 1] == -30 && i + 1 < str.length() && (signed char) str[i] == -128 && (signed char) str[i + 1] == -119) {
 											i--;
-										} else if(i > 3 && str[i - 1] == -119 && str[i - 2] == -128 && str[i - 3] == -30) {
+										} else if(i > 3 && (signed char) str[i - 1] == -119 && (signed char) str[i - 2] == -128 && (signed char) str[i - 3] == -30) {
 											i -= 3;
 										} else if(i > 3 && str[i] <= '9' && str[i] >= '0' && str[i - 1] <= '9' && str[i - 1] >= '0') {
 											if(str[i - 2] == ' ' && str[i - 3] <= '9' && str[i - 3] >= '0') i -= 2;
@@ -10861,13 +10860,13 @@ std::string ellipsize_result(const std::string &result_text, size_t length) {
 	if(index1 == std::string::npos || index1 > length * 1.2) index1 = result_text.find(THIN_SPACE, length);
 	if(index1 == std::string::npos || index1 > length * 1.2) {
 		index1 = length;
-		while(index1 > 0 && result_text[index1] < 0 && (unsigned char) result_text[index1 + 1] < 0xC0) index1--;
+		while(index1 > 0 && (signed char) result_text[index1] < 0 && (unsigned char) result_text[index1 + 1] < 0xC0) index1--;
 	}
 	size_t index2 = result_text.find(SPACE, result_text.length() - length);
 	if(index2 == std::string::npos || index2 > result_text.length() - length * 0.8) index2 = result_text.find(THIN_SPACE, result_text.length() - length);
 	if(index2 == std::string::npos || index2 > result_text.length() - length * 0.8) {
 		index2 = result_text.length() - length;
-		while(index2 > index1 && result_text[index2] < 0 && (unsigned char) result_text[index2 + 1] < 0xC0) index2--;
+		while(index2 > index1 && (signed char) result_text[index2] < 0 && (unsigned char) result_text[index2 + 1] < 0xC0) index2--;
 	}
 	return result_text.substr(0, index1) + " (…) " + result_text.substr(index2, result_text.length() - index2);
 }
@@ -12832,7 +12831,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		bool b_command = false;
 		if(str[0] == '/' && str.length() > 1) {
 			size_t i = str.find_first_not_of(SPACES, 1);
-			if(i != string::npos && str[i] > 0 && is_not_in(NUMBER_ELEMENTS OPERATORS, str[i])) {
+			if(i != string::npos && (signed char) str[i] > 0 && is_not_in(NUMBER_ELEMENTS OPERATORS, str[i])) {
 				b_command = true;
 			}
 		}
@@ -16930,7 +16929,7 @@ bool element_needs_parenthesis(const string &str_e) {
 				break;
 			}
 			default: {
-				if(!in_cit1 && !in_cit2 && brackets == 0 && pars == 0 && (str_e[i] == ' ' || str_e[i] == '\n' || str_e[i] == '\t' || str_e[i] == ',' || str_e[i] == ';' || ((unsigned char) str_e[i] == 0xE2 && i + 2 < str_e.size() && (unsigned char) str_e[i + 1] == 0x80 && (unsigned char) str_e[i + 2] == 0x89))) {
+				if(!in_cit1 && !in_cit2 && brackets == 0 && pars == 0 && (str_e[i] == ' ' || str_e[i] == '\n' || str_e[i] == '\t' || (str_e[i] == ',' && printops.decimalpoint() != ",") || str_e[i] == ';' || ((unsigned char) str_e[i] == 0xE2 && i + 2 < str_e.size() && (unsigned char) str_e[i + 1] == 0x80 && (unsigned char) str_e[i + 2] == 0x89))) {
 					return true;
 				}
 			}
@@ -17935,10 +17934,10 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 					}
 					nr_of_p++;
 				} else if(nr_of_p == 0) {
-					if(p[0] < 0) {
+					if((signed char) p[0] < 0) {
 						for(size_t i = 0; p + i < prev_p; i++) str += p[i];
 						CALCULATOR->parseSigns(str);
-						if(!str.empty() && str[0] > 0) {
+						if(!str.empty() && (signed char) str[0] > 0) {
 							if(is_in("+-", str[0])) {
 								prev_plusminus = true;
 							} else if(is_in("*/&|=><^", str[0])) {
@@ -20980,7 +20979,7 @@ void save_preferences(bool mode) {
 			if(i3 == string::npos) {
 				if(!is_protected && inhistory[hi].length() > 5000) {
 					int index = 50;
-					while(index >= 0 && inhistory[hi][index] < 0 && (unsigned char) inhistory[hi][index] < 0xC0) index--;
+					while(index >= 0 && (signed char) inhistory[hi][index] < 0 && (unsigned char) inhistory[hi][index] < 0xC0) index--;
 					fprintf(file, "%s …\n", inhistory[hi].substr(0, index + 1).c_str());
 				} else {
 					fprintf(file, "%s\n", inhistory[hi].c_str());
