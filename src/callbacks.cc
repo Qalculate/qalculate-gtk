@@ -3560,6 +3560,8 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		displayed_mstruct_pre->format(printops);
 		displayed_mstruct_pre->removeDefaultAngleUnit(evalops);
 		tmp_surface = draw_structure(*displayed_mstruct_pre, printops, complex_angle_form, top_ips, NULL, 0);
+		printops.can_display_unicode_string_arg = NULL;
+		printops.allow_non_usable = false;
 		if(tmp_surface && CALCULATOR->aborted()) {
 			CALCULATOR->endTemporaryStopMessages();
 			cairo_surface_destroy(tmp_surface);
@@ -3592,7 +3594,8 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			gtk_widget_queue_draw(resultview);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), true);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), true);
-			result_text = "";
+			if(autocalc_history_timeout_id == 0) result_text = displayed_mstruct->print(printops);
+			else result_text = "";
 			result_text_long = "";
 			gtk_widget_set_tooltip_text(resultview, "");
 			if(!display_errors(NULL, NULL, NULL, 1)) update_expression_icons(EXPRESSION_CLEAR);
@@ -3605,8 +3608,6 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			CALCULATOR->endTemporaryStopMessages();
 			clearresult();
 		}
-		printops.can_display_unicode_string_arg = NULL;
-		printops.allow_non_usable = false;
 
 		CALCULATOR->stopControl();
 	} else {
