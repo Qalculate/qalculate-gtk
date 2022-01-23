@@ -1935,6 +1935,10 @@ void create_main_window(void) {
 		}
 	}
 
+	GtkCssProvider *historyview_provider = gtk_css_provider_new();
+	gtk_style_context_add_provider(gtk_widget_get_style_context(historyview), GTK_STYLE_PROVIDER(historyview_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_css_provider_load_from_data(historyview_provider, "* {font-size: 1.05rem;}", -1, NULL);
+
 	update_status_text();
 
 	update_colors(true);
