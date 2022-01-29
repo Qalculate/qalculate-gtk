@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.36.0 -->
+<!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkDialog" id="nbases_dialog">
-    <property name="can_focus">False</property>
-    <property name="border_width">6</property>
+    <property name="can-focus">False</property>
+    <property name="border-width">6</property>
     <property name="title" translatable="yes">Number Bases</property>
-    <property name="type_hint">normal</property>
+    <property name="type-hint">normal</property>
     <signal name="delete-event" handler="gtk_widget_hide" object="nbases_dialog" swapped="yes"/>
     <signal name="destroy-event" handler="gtk_widget_hide" object="nbases_dialog" swapped="yes"/>
     <signal name="key-press-event" handler="on_nbases_dialog_key_press_event" swapped="no"/>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox5">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="dialog-action_area5">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
+            <property name="can-focus">False</property>
+            <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="nbases_button_close">
                 <property name="label" translatable="yes">_Close</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_underline">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="use-underline">True</property>
                 <signal name="clicked" handler="gtk_widget_hide" object="nbases_dialog" swapped="yes"/>
               </object>
               <packing>
@@ -39,196 +39,197 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="pack_type">end</property>
+            <property name="pack-type">end</property>
             <property name="position">0</property>
           </packing>
         </child>
         <child>
           <object class="GtkBox" id="grid_nbases">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="border_width">6</property>
-            <property name="spacing">18</property>
+            <property name="can-focus">False</property>
+            <property name="border-width">6</property>
+            <property name="spacing">1</property>
             <child>
+              <!-- n-columns=2 n-rows=6 -->
               <object class="GtkGrid" id="grid_values">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="row_spacing">6</property>
-                <property name="column_spacing">12</property>
-                <property name="row_homogeneous">True</property>
+                <property name="can-focus">False</property>
+                <property name="row-spacing">6</property>
+                <property name="column-spacing">12</property>
+                <property name="row-homogeneous">True</property>
                 <child>
                   <object class="GtkLabel" id="nbases_label_decimal">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="halign">end</property>
                     <property name="label" translatable="yes">Decimal</property>
-                    <property name="use_markup">True</property>
+                    <property name="use-markup">True</property>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">0</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="nbases_label_binary">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="halign">end</property>
                     <property name="label" translatable="yes">Binary</property>
-                    <property name="use_markup">True</property>
+                    <property name="use-markup">True</property>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">1</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="nbases_label_octal">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="halign">end</property>
                     <property name="label" translatable="yes">Octal</property>
-                    <property name="use_markup">True</property>
+                    <property name="use-markup">True</property>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">2</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkEntry" id="nbases_entry_binary">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="tooltip_text" translatable="yes">Binary value</property>
+                    <property name="can-focus">True</property>
+                    <property name="tooltip-text" translatable="yes">Binary value</property>
                     <property name="hexpand">True</property>
-                    <property name="primary_icon_activatable">False</property>
-                    <property name="secondary_icon_activatable">False</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="secondary-icon-activatable">False</property>
                     <signal name="changed" handler="on_nbases_entry_binary_changed" swapped="no"/>
                     <signal name="focus-in-event" handler="on_nbases_entry_binary_focus_in_event" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">1</property>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkEntry" id="nbases_entry_decimal">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="tooltip_text" translatable="yes">Decimal value</property>
+                    <property name="can-focus">True</property>
+                    <property name="tooltip-text" translatable="yes">Decimal value</property>
                     <property name="hexpand">True</property>
-                    <property name="primary_icon_activatable">False</property>
-                    <property name="secondary_icon_activatable">False</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="secondary-icon-activatable">False</property>
                     <signal name="changed" handler="on_nbases_entry_decimal_changed" swapped="no"/>
                     <signal name="focus-in-event" handler="on_nbases_entry_decimal_focus_in_event" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">0</property>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkEntry" id="nbases_entry_octal">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="tooltip_text" translatable="yes">Octal value</property>
+                    <property name="can-focus">True</property>
+                    <property name="tooltip-text" translatable="yes">Octal value</property>
                     <property name="hexpand">True</property>
-                    <property name="primary_icon_activatable">False</property>
-                    <property name="secondary_icon_activatable">False</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="secondary-icon-activatable">False</property>
                     <signal name="changed" handler="on_nbases_entry_octal_changed" swapped="no"/>
                     <signal name="focus-in-event" handler="on_nbases_entry_octal_focus_in_event" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">2</property>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">2</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="nbases_label_roman">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="halign">end</property>
                     <property name="label" translatable="yes">Roman numerals</property>
-                    <property name="use_markup">True</property>
+                    <property name="use-markup">True</property>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">5</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">5</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkEntry" id="nbases_entry_roman">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="tooltip_text" translatable="yes">Octal value</property>
+                    <property name="can-focus">True</property>
+                    <property name="tooltip-text" translatable="yes">Octal value</property>
                     <property name="hexpand">True</property>
-                    <property name="width_chars">25</property>
-                    <property name="primary_icon_activatable">False</property>
-                    <property name="secondary_icon_activatable">False</property>
+                    <property name="width-chars">25</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="secondary-icon-activatable">False</property>
                     <signal name="changed" handler="on_nbases_entry_roman_changed" swapped="no"/>
                     <signal name="focus-in-event" handler="on_nbases_entry_roman_focus_in_event" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">5</property>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">5</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="nbases_label_duodecimal">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="halign">end</property>
                     <property name="label" translatable="yes">Duodecimal</property>
-                    <property name="use_markup">True</property>
+                    <property name="use-markup">True</property>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">3</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">3</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkEntry" id="nbases_entry_duo">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="tooltip_text" translatable="yes">Octal value</property>
+                    <property name="can-focus">True</property>
+                    <property name="tooltip-text" translatable="yes">Octal value</property>
                     <property name="hexpand">True</property>
-                    <property name="primary_icon_activatable">False</property>
-                    <property name="secondary_icon_activatable">False</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="secondary-icon-activatable">False</property>
                     <signal name="changed" handler="on_nbases_entry_duo_changed" swapped="no"/>
                     <signal name="focus-in-event" handler="on_nbases_entry_duo_focus_in_event" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">3</property>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">3</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="nbases_label_hexadecimal">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="halign">end</property>
                     <property name="label" translatable="yes">Hexadecimal</property>
-                    <property name="use_markup">True</property>
+                    <property name="use-markup">True</property>
                   </object>
                   <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">4</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">4</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkEntry" id="nbases_entry_hexadecimal">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="tooltip_text" translatable="yes">Hexadecimal value</property>
+                    <property name="can-focus">True</property>
+                    <property name="tooltip-text" translatable="yes">Hexadecimal value</property>
                     <property name="hexpand">True</property>
-                    <property name="primary_icon_activatable">False</property>
-                    <property name="secondary_icon_activatable">False</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="secondary-icon-activatable">False</property>
                     <signal name="changed" handler="on_nbases_entry_hexadecimal_changed" swapped="no"/>
                     <signal name="focus-in-event" handler="on_nbases_entry_hexadecimal_focus_in_event" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">4</property>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">4</property>
                   </packing>
                 </child>
               </object>
@@ -239,22 +240,48 @@
               </packing>
             </child>
             <child>
+              <object class="GtkEventBox" id="nbases_event_hide_buttons">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <property name="tooltip-text" translatable="yes">Show/hide keypad</property>
+                <property name="visible-window">False</property>
+                <property name="above-child">True</property>
+                <signal name="button-release-event" handler="on_nbases_event_hide_buttons_button_release_event" swapped="no"/>
+                <child>
+                  <object class="GtkImage" id="nbases_image_hide_buttons">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="valign">center</property>
+                    <property name="margin-top">6</property>
+                    <property name="margin-bottom">6</property>
+                    <property name="icon-name">pan-start-symbolic</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkBox" id="box_keypad">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <child>
                   <object class="GtkBox" id="box_base">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="homogeneous">True</property>
                     <child>
                       <object class="GtkToggleButton" id="nbases_button_bin">
                         <property name="label" translatable="yes">BIN</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
                         <signal name="toggled" handler="on_nbases_button_bin_toggled" swapped="no"/>
                       </object>
                       <packing>
@@ -267,8 +294,8 @@
                       <object class="GtkToggleButton" id="nbases_button_oct">
                         <property name="label" translatable="yes">OCT</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
                         <signal name="toggled" handler="on_nbases_button_oct_toggled" swapped="no"/>
                       </object>
                       <packing>
@@ -281,8 +308,8 @@
                       <object class="GtkToggleButton" id="nbases_button_dec">
                         <property name="label" translatable="yes">DEC</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
                         <signal name="toggled" handler="on_nbases_button_dec_toggled" swapped="no"/>
                       </object>
                       <packing>
@@ -295,8 +322,8 @@
                       <object class="GtkToggleButton" id="nbases_button_duo">
                         <property name="label" translatable="yes">DUO</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
                         <property name="active">True</property>
                         <signal name="toggled" handler="on_nbases_button_duo_toggled" swapped="no"/>
                       </object>
@@ -310,8 +337,8 @@
                       <object class="GtkToggleButton" id="nbases_button_hex">
                         <property name="label" translatable="yes">HEX</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
                         <signal name="toggled" handler="on_nbases_button_hex_toggled" swapped="no"/>
                       </object>
                       <packing>
@@ -324,8 +351,8 @@
                       <object class="GtkToggleButton" id="nbases_button_rom">
                         <property name="label" translatable="yes">ROM</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
                         <signal name="toggled" handler="on_nbases_button_rom_toggled" swapped="no"/>
                       </object>
                       <packing>
@@ -345,366 +372,368 @@
                   </packing>
                 </child>
                 <child>
+                  <!-- n-columns=7 n-rows=4 -->
                   <object class="GtkGrid" id="table3">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="vexpand">True</property>
-                    <property name="row_spacing">2</property>
-                    <property name="column_spacing">6</property>
-                    <property name="row_homogeneous">True</property>
-                    <property name="column_homogeneous">True</property>
+                    <property name="row-spacing">2</property>
+                    <property name="column-spacing">6</property>
+                    <property name="row-homogeneous">True</property>
+                    <property name="column-homogeneous">True</property>
                     <child>
+                      <!-- n-columns=4 n-rows=4 -->
                       <object class="GtkGrid" id="grid_buttons">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="row_spacing">2</property>
-                        <property name="column_spacing">2</property>
-                        <property name="row_homogeneous">True</property>
-                        <property name="column_homogeneous">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="row-spacing">2</property>
+                        <property name="column-spacing">2</property>
+                        <property name="row-homogeneous">True</property>
+                        <property name="column-homogeneous">True</property>
                         <child>
                           <object class="GtkButton" id="nbases_button_d">
                             <property name="visible">True</property>
                             <property name="sensitive">False</property>
-                            <property name="can_focus">True</property>
-                            <property name="focus_on_click">False</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="focus-on-click">False</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
                             <signal name="clicked" handler="on_nbases_button_d_clicked" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="nbases_label_d">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label">D</property>
                               </object>
                             </child>
                           </object>
                           <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">0</property>
+                            <property name="left-attach">1</property>
+                            <property name="top-attach">0</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="nbases_button_e">
                             <property name="visible">True</property>
                             <property name="sensitive">False</property>
-                            <property name="can_focus">True</property>
-                            <property name="focus_on_click">False</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="focus-on-click">False</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
                             <signal name="clicked" handler="on_nbases_button_e_clicked" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="nbases_label_e">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label">E</property>
                               </object>
                             </child>
                           </object>
                           <packing>
-                            <property name="left_attach">2</property>
-                            <property name="top_attach">0</property>
+                            <property name="left-attach">2</property>
+                            <property name="top-attach">0</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="nbases_button_f">
                             <property name="visible">True</property>
                             <property name="sensitive">False</property>
-                            <property name="can_focus">True</property>
-                            <property name="focus_on_click">False</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="focus-on-click">False</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
                             <signal name="clicked" handler="on_nbases_button_f_clicked" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="nbases_label_f">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label">F</property>
                               </object>
                             </child>
                           </object>
                           <packing>
-                            <property name="left_attach">3</property>
-                            <property name="top_attach">0</property>
+                            <property name="left-attach">3</property>
+                            <property name="top-attach">0</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="nbases_button_nine">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="focus_on_click">False</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="focus-on-click">False</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
                             <signal name="clicked" handler="on_nbases_button_nine_clicked" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="nbases_label_nine">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label">9</property>
                               </object>
                             </child>
                           </object>
                           <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">1</property>
+                            <property name="left-attach">1</property>
+                            <property name="top-attach">1</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="nbases_button_a">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="focus_on_click">False</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="focus-on-click">False</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
                             <signal name="clicked" handler="on_nbases_button_a_clicked" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="nbases_label_a">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label">↋</property>
                               </object>
                             </child>
                           </object>
                           <packing>
-                            <property name="left_attach">2</property>
-                            <property name="top_attach">1</property>
+                            <property name="left-attach">2</property>
+                            <property name="top-attach">1</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="nbases_button_b">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="focus_on_click">False</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="focus-on-click">False</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
                             <signal name="clicked" handler="on_nbases_button_b_clicked" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="nbases_label_b">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label">↊</property>
                               </object>
                             </child>
                           </object>
                           <packing>
-                            <property name="left_attach">3</property>
-                            <property name="top_attach">1</property>
+                            <property name="left-attach">3</property>
+                            <property name="top-attach">1</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="nbases_button_five">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="focus_on_click">False</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="focus-on-click">False</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
                             <signal name="clicked" handler="on_nbases_button_five_clicked" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="nbases_label_five">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label">5</property>
                               </object>
                             </child>
                           </object>
                           <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">2</property>
+                            <property name="left-attach">1</property>
+                            <property name="top-attach">2</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="nbases_button_six">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="focus_on_click">False</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="focus-on-click">False</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
                             <signal name="clicked" handler="on_nbases_button_six_clicked" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="nbases_label_six">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label">6</property>
                               </object>
                             </child>
                           </object>
                           <packing>
-                            <property name="left_attach">2</property>
-                            <property name="top_attach">2</property>
+                            <property name="left-attach">2</property>
+                            <property name="top-attach">2</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="nbases_button_seven">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="focus_on_click">False</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="focus-on-click">False</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
                             <signal name="clicked" handler="on_nbases_button_seven_clicked" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="nbases_label_seven">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label">7</property>
                               </object>
                             </child>
                           </object>
                           <packing>
-                            <property name="left_attach">3</property>
-                            <property name="top_attach">2</property>
+                            <property name="left-attach">3</property>
+                            <property name="top-attach">2</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="nbases_button_one">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="focus_on_click">False</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="focus-on-click">False</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
                             <signal name="clicked" handler="on_nbases_button_one_clicked" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="nbases_label_one">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label">1</property>
                               </object>
                             </child>
                           </object>
                           <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">3</property>
+                            <property name="left-attach">1</property>
+                            <property name="top-attach">3</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="nbases_button_two">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="focus_on_click">False</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="focus-on-click">False</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
                             <signal name="clicked" handler="on_nbases_button_two_clicked" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="nbases_label_two">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label">2</property>
                               </object>
                             </child>
                           </object>
                           <packing>
-                            <property name="left_attach">2</property>
-                            <property name="top_attach">3</property>
+                            <property name="left-attach">2</property>
+                            <property name="top-attach">3</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="nbases_button_three">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="focus_on_click">False</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="focus-on-click">False</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
                             <signal name="clicked" handler="on_nbases_button_three_clicked" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="nbases_label_three">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label">3</property>
                               </object>
                             </child>
                           </object>
                           <packing>
-                            <property name="left_attach">3</property>
-                            <property name="top_attach">3</property>
+                            <property name="left-attach">3</property>
+                            <property name="top-attach">3</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="nbases_button_c">
                             <property name="visible">True</property>
                             <property name="sensitive">False</property>
-                            <property name="can_focus">True</property>
-                            <property name="focus_on_click">False</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="focus-on-click">False</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
                             <signal name="clicked" handler="on_nbases_button_c_clicked" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="nbases_label_c">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label">C</property>
                               </object>
                             </child>
                           </object>
                           <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">0</property>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">0</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="nbases_button_eight">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="focus_on_click">False</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="focus-on-click">False</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
                             <signal name="clicked" handler="on_nbases_button_eight_clicked" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="nbases_label_eight">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label">8</property>
                               </object>
                             </child>
                           </object>
                           <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">1</property>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">1</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="nbases_button_four">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="focus_on_click">False</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="focus-on-click">False</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
                             <signal name="clicked" handler="on_nbases_button_four_clicked" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="nbases_label_four">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label">4</property>
                               </object>
                             </child>
                           </object>
                           <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">2</property>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">2</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="nbases_button_zero">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="focus_on_click">False</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="focus-on-click">False</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
                             <signal name="clicked" handler="on_nbases_button_zero_clicked" swapped="no"/>
                             <child>
                               <object class="GtkLabel" id="nbases_label_zero">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label">0</property>
                               </object>
                             </child>
                           </object>
                           <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">3</property>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">3</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">0</property>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">0</property>
                         <property name="width">4</property>
                         <property name="height">4</property>
                       </packing>
@@ -712,265 +741,265 @@
                     <child>
                       <object class="GtkButton" id="nbases_button_add">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="focus_on_click">False</property>
-                        <property name="receives_default">False</property>
-                        <property name="tooltip_text" translatable="yes" context="Keypad">Add</property>
-                        <property name="use_underline">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="focus-on-click">False</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text" translatable="yes" context="Keypad">Add</property>
+                        <property name="use-underline">True</property>
                         <signal name="clicked" handler="on_nbases_button_add_clicked" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="nbases_label_add">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label">+</property>
                           </object>
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">4</property>
-                        <property name="top_attach">3</property>
+                        <property name="left-attach">4</property>
+                        <property name="top-attach">3</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkButton" id="nbases_button_sub">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="focus_on_click">False</property>
-                        <property name="receives_default">False</property>
-                        <property name="tooltip_text" translatable="yes">Subtract</property>
-                        <property name="use_underline">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="focus-on-click">False</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text" translatable="yes">Subtract</property>
+                        <property name="use-underline">True</property>
                         <signal name="clicked" handler="on_nbases_button_sub_clicked" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="nbases_label_sub">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label">-</property>
                           </object>
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">4</property>
-                        <property name="top_attach">2</property>
+                        <property name="left-attach">4</property>
+                        <property name="top-attach">2</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkButton" id="nbases_button_times">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="focus_on_click">False</property>
-                        <property name="receives_default">False</property>
-                        <property name="tooltip_text" translatable="yes">Multiply</property>
-                        <property name="use_underline">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="focus-on-click">False</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text" translatable="yes">Multiply</property>
+                        <property name="use-underline">True</property>
                         <signal name="clicked" handler="on_nbases_button_times_clicked" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="nbases_label_times">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label">*</property>
                           </object>
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">4</property>
-                        <property name="top_attach">1</property>
+                        <property name="left-attach">4</property>
+                        <property name="top-attach">1</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkButton" id="nbases_button_divide">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="focus_on_click">False</property>
-                        <property name="receives_default">False</property>
-                        <property name="tooltip_text" translatable="yes">Divide</property>
-                        <property name="use_underline">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="focus-on-click">False</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text" translatable="yes">Divide</property>
+                        <property name="use-underline">True</property>
                         <signal name="clicked" handler="on_nbases_button_divide_clicked" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="nbases_label_divide">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label">/</property>
                           </object>
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">4</property>
-                        <property name="top_attach">0</property>
+                        <property name="left-attach">4</property>
+                        <property name="top-attach">0</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkButton" id="nbases_button_and">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="focus_on_click">False</property>
-                        <property name="receives_default">False</property>
-                        <property name="tooltip_text" translatable="yes">Bitwise AND</property>
-                        <property name="use_underline">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="focus-on-click">False</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text" translatable="yes">Bitwise AND</property>
+                        <property name="use-underline">True</property>
                         <signal name="clicked" handler="on_nbases_button_and_clicked" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="nbases_label_and">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label">AND</property>
                           </object>
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">5</property>
-                        <property name="top_attach">0</property>
+                        <property name="left-attach">5</property>
+                        <property name="top-attach">0</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkButton" id="nbases_button_or">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="focus_on_click">False</property>
-                        <property name="receives_default">False</property>
-                        <property name="tooltip_text" translatable="yes">Bitwise OR</property>
-                        <property name="use_underline">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="focus-on-click">False</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text" translatable="yes">Bitwise OR</property>
+                        <property name="use-underline">True</property>
                         <signal name="clicked" handler="on_nbases_button_or_clicked" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="nbases_label_or">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label">OR</property>
                           </object>
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">5</property>
-                        <property name="top_attach">1</property>
+                        <property name="left-attach">5</property>
+                        <property name="top-attach">1</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkButton" id="nbases_button_xor">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="focus_on_click">False</property>
-                        <property name="receives_default">False</property>
-                        <property name="tooltip_text" translatable="yes">Bitwise Exclusive OR</property>
-                        <property name="use_underline">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="focus-on-click">False</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text" translatable="yes">Bitwise Exclusive OR</property>
+                        <property name="use-underline">True</property>
                         <signal name="clicked" handler="on_nbases_button_xor_clicked" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="nbases_label_xor">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label">XOR</property>
                           </object>
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">5</property>
-                        <property name="top_attach">2</property>
+                        <property name="left-attach">5</property>
+                        <property name="top-attach">2</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkButton" id="nbases_button_not">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="focus_on_click">False</property>
-                        <property name="receives_default">False</property>
-                        <property name="tooltip_text" translatable="yes">Bitwise NOT</property>
-                        <property name="use_underline">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="focus-on-click">False</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text" translatable="yes">Bitwise NOT</property>
+                        <property name="use-underline">True</property>
                         <signal name="clicked" handler="on_nbases_button_not_clicked" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="nbases_label_not">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label">NOT</property>
                           </object>
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">5</property>
-                        <property name="top_attach">3</property>
+                        <property name="left-attach">5</property>
+                        <property name="top-attach">3</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkButton" id="nbases_button_del">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="focus_on_click">False</property>
-                        <property name="receives_default">False</property>
-                        <property name="tooltip_text" translatable="yes">Delete</property>
-                        <property name="use_underline">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="focus-on-click">False</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text" translatable="yes">Delete</property>
+                        <property name="use-underline">True</property>
                         <signal name="clicked" handler="on_nbases_button_del_clicked" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label_del">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">DEL</property>
                           </object>
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">6</property>
-                        <property name="top_attach">2</property>
+                        <property name="left-attach">6</property>
+                        <property name="top-attach">2</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkButton" id="nbases_button_ac">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="focus_on_click">False</property>
-                        <property name="receives_default">False</property>
-                        <property name="tooltip_text" translatable="yes">Clear</property>
-                        <property name="use_underline">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="focus-on-click">False</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text" translatable="yes">Clear</property>
+                        <property name="use-underline">True</property>
                         <signal name="clicked" handler="on_nbases_button_ac_clicked" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label_ac">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">AC</property>
                           </object>
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">6</property>
-                        <property name="top_attach">3</property>
+                        <property name="left-attach">6</property>
+                        <property name="top-attach">3</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkButton" id="nbases_button_left_shift">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="focus_on_click">False</property>
-                        <property name="receives_default">False</property>
-                        <property name="tooltip_text" translatable="yes">Bitwise Left Shift</property>
-                        <property name="use_underline">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="focus-on-click">False</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text" translatable="yes">Bitwise Left Shift</property>
+                        <property name="use-underline">True</property>
                         <signal name="clicked" handler="on_nbases_button_left_shift_clicked" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label_left_shift">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label">&lt;&lt;</property>
                           </object>
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">6</property>
-                        <property name="top_attach">0</property>
+                        <property name="left-attach">6</property>
+                        <property name="top-attach">0</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkButton" id="nbases_button_right_shift">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="focus_on_click">False</property>
-                        <property name="receives_default">False</property>
-                        <property name="tooltip_text" translatable="yes">Bitwise Right Shift</property>
-                        <property name="use_underline">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="focus-on-click">False</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text" translatable="yes">Bitwise Right Shift</property>
+                        <property name="use-underline">True</property>
                         <signal name="clicked" handler="on_nbases_button_right_shift_clicked" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label_right_shift">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label">&gt;&gt;</property>
                           </object>
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">6</property>
-                        <property name="top_attach">1</property>
+                        <property name="left-attach">6</property>
+                        <property name="top-attach">1</property>
                       </packing>
                     </child>
                   </object>
@@ -984,7 +1013,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">1</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>
@@ -995,9 +1024,6 @@
           </packing>
         </child>
       </object>
-    </child>
-    <child type="titlebar">
-      <placeholder/>
     </child>
   </object>
 </interface>

@@ -1374,17 +1374,6 @@ On: 1/7 = 0.142857 142857...</property>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkCheckMenuItem" id="menu_item_round_halfway_to_even">
-                                <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                                <property name="tooltip-text" translatable="yes">Off: 2.5 ≈ 3,  1.5 ≈ 2
-On: 2.5 ≈ 2, 1.5 ≈ 2</property>
-                                <property name="label" translatable="yes">Round Halfway Numbers to Even</property>
-                                <property name="use-underline">True</property>
-                                <signal name="activate" handler="on_menu_item_round_halfway_to_even_activate" swapped="no"/>
-                              </object>
-                            </child>
-                            <child>
                               <object class="GtkCheckMenuItem" id="menu_item_sort_minus_last">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
@@ -1393,6 +1382,45 @@ On: y - x</property>
                                 <property name="label" translatable="yes">Sort Minus Last</property>
                                 <property name="use-underline">True</property>
                                 <signal name="activate" handler="on_menu_item_sort_minus_last_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkSeparatorMenuItem" id="separator_919">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_round_halfway_up">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="tooltip-text">2.5 ≈ 3, 1.5 ≈ 2</property>
+                                <property name="label" translatable="yes">Round Halfway Numbers Upwards</property>
+                                <property name="use-underline">True</property>
+                                <property name="draw-as-radio">True</property>
+                                <signal name="activate" handler="on_menu_item_round_halfway_up_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_round_halfway_to_even">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="tooltip-text">2.5 ≈ 2, 1.5 ≈ 2</property>
+                                <property name="label" translatable="yes">Round Halfway Numbers to Even</property>
+                                <property name="use-underline">True</property>
+                                <property name="group">menu_item_round_halfway_up</property>
+                                <signal name="activate" handler="on_menu_item_round_halfway_to_even_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_truncate_numbers">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="tooltip-text">2.5 ≈ 2, 1.5 ≈ 1</property>
+                                <property name="label" translatable="yes">Truncate Numbers</property>
+                                <property name="use-underline">True</property>
+                                <property name="group">menu_item_round_halfway_up</property>
+                                <signal name="activate" handler="on_menu_item_truncate_numbers_activate" swapped="no"/>
                               </object>
                             </child>
                             <child>

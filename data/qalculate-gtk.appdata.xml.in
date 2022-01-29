@@ -48,7 +48,7 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
-  <release version="3.22.0" date="2021-11-29">
+  <release version="3.22.0" date="2021-12-01">
    <description>
     <p>Changes:</p>
      <ul>
@@ -58,15 +58,14 @@
       <li>Remove associated bookmark from menu when removing history item, and select the history row on go to bookmark</li>
       <li>Somewhat selectable history text (single click on selected item edits cell with non-editable entry)</li>
       <li>Increase the number of optional custom buttons from 5 to 20</li>
+      <li>Fix plot expression with localized decimal separator, add as multiple functions if plot expression results in matrix, and handle units unit plot data</li>
       <li>New functions: linearfit(), quadraticfit(), cubicfit(), ramlatency(), parallel()</li>
       <li>Improved and extended parallel operator (|| is interpreted as parallel if units are used)</li>
+      <li>Merged inv() and inverse() functions</li>
       <li>Allow nested subfunctions</li>
       <li>Solve x^(x^(-a))=b</li>
-      <li>Improved simplification: Im(-x)=-Im(x), Re(-x)=-Re(x)</li>
       <li>Fix pearson() and spearman()</li>
-      <li>Fix display of incompletely solved equation with dual approximation in some cases</li>
-      <li>Fix genvector() when step size requires evaluation</li>
-      <li>Fix a%%-b (interpret %% as mod, not percent)</li>
+      <li>Fix a*sin(x)+b*cos(x)=c</li>
       <li>Minor bug fixes and feature improvements</li>
      </ul>
    </description>

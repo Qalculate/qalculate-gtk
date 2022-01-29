@@ -222,7 +222,8 @@
                     <signal name="changed" handler="on_unit_edit_combo_system_changed" swapped="no"/>
                     <child internal-child="entry">
                       <object class="GtkEntry" id="ientry1">
-                        <property name="can-focus">False</property>
+                        <property name="can-focus">True</property>
+                        <signal name="changed" handler="on_unit_changed" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -252,7 +253,8 @@
                     <property name="has-entry">True</property>
                     <child internal-child="entry">
                       <object class="GtkEntry" id="ientry2">
-                        <property name="can-focus">False</property>
+                        <property name="can-focus">True</property>
+                        <signal name="changed" handler="on_unit_changed" swapped="no"/>
                       </object>
                     </child>
                   </object>

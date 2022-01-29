@@ -158,7 +158,7 @@ gint history_scroll_width = 16;
 
 GtkCssProvider *topframe_provider, *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider, *app_provider_theme, *statusframe_provider, *button_padding_provider, *color_provider;
 
-extern bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad, minimal_mode;
+extern bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad, minimal_mode, show_bases_keypad;
 extern bool save_mode_on_exit, save_defs_on_exit, load_global_defs, hyp_is_on, inv_is_on, fetch_exchange_rates_at_startup, clear_history_on_exit;
 extern int allow_multiple_instances;
 extern int title_type;
@@ -783,7 +783,10 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_indicate_infinite_series")), po.indicate_infinite_series);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_show_ending_zeroes")), po.show_ending_zeroes);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_round_halfway_to_even")), po.round_halfway_to_even);
+	if(po.custom_time_zone == -21586) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_truncate_numbers")), TRUE);
+	else if(po.round_halfway_to_even) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_round_halfway_to_even")), TRUE);
+	else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_round_halfway_up")), TRUE);
+
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_negative_exponents")), po.negative_exponents);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sort_minus_last")), po.sort_options.minus_last);
 
@@ -1931,6 +1934,10 @@ void create_main_window(void) {
 			pango_font_description_free(font_desc);
 		}
 	}
+
+	GtkCssProvider *historyview_provider = gtk_css_provider_new();
+	gtk_style_context_add_provider(gtk_widget_get_style_context(historyview), GTK_STYLE_PROVIDER(historyview_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_css_provider_load_from_data(historyview_provider, "* {font-size: 1.05rem;}", -1, NULL);
 
 	update_status_text();
 
@@ -3570,6 +3577,19 @@ GtkWidget* get_nbases_dialog(void) {
 		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_hexadecimal")), 1.0);
 		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_duo")), 1.0);
 		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_roman")), 1.0);
+
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 14
+		if(!gtk_icon_theme_has_icon(gtk_icon_theme_get_default(), "pan-start-symbolic")) {
+			GtkWidget *arrow_left = gtk_arrow_new(GTK_ARROW_RIGHT, GTK_SHADOW_OUT);
+			gtk_widget_set_size_request(GTK_WIDGET(arrow_left), 18, 18);
+			gtk_widget_show(arrow_left);
+			gtk_widget_destroy(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_image_hide_buttons")));
+			gtk_container_add(GTK_CONTAINER(gtk_builder_get_object(nbases_builder, "nbases_event_hide_buttons")), arrow_left);
+		}
+		gtk_box_set_spacing(GTK_GRID(gtk_builder_get_object(nbases_builder, "grid_nbases")), 0);
+#endif
+
+		if(!show_bases_keypad) gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "box_keypad")));
 
 		if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_sub"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_sub")), SIGN_MINUS);
 		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_sub")), MINUS);

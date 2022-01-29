@@ -207,7 +207,8 @@
                 <property name="has-entry">True</property>
                 <child internal-child="entry">
                   <object class="GtkEntry" id="ientry1">
-                    <property name="can-focus">False</property>
+                    <property name="can-focus">True</property>
+                    <signal name="changed" handler="on_unknown_changed" swapped="no"/>
                   </object>
                 </child>
               </object>
