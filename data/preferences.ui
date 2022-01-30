@@ -1568,7 +1568,7 @@ Note that only the mode, history and definitions of the last closed instance wil
               </packing>
             </child>
             <child>
-              <!-- n-columns=2 n-rows=13 -->
+              <!-- n-columns=2 n-rows=15 -->
               <object class="GtkGrid" id="grid_fonts">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -1577,56 +1577,6 @@ Note that only the mode, history and definitions of the last closed instance wil
                 <property name="border-width">18</property>
                 <property name="row-spacing">6</property>
                 <property name="column-spacing">12</property>
-                <child>
-                  <object class="GtkLabel" id="label2">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="label" translatable="yes">Status warning color</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">12</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkColorButton" id="colorbutton_status_warning_color">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="hexpand">True</property>
-                    <signal name="color-set" handler="on_colorbutton_status_warning_color_color_set" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">12</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label1">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="label" translatable="yes">Status error color</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">11</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkColorButton" id="colorbutton_status_error_color">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="hexpand">True</property>
-                    <signal name="color-set" handler="on_colorbutton_status_error_color_color_set" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">11</property>
-                  </packing>
-                </child>
                 <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_custom_status_font">
                     <property name="label" translatable="yes">Custom status font</property>
@@ -1767,21 +1717,78 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="preferences_checkbutton_custom_app_font">
-                    <property name="label" translatable="yes">Custom application font</property>
+                  <object class="GtkLabel" id="label2">
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">If you want to use a font other than the default for the whole application</property>
-                    <property name="margin-top">6</property>
-                    <property name="use-underline">True</property>
-                    <property name="draw-indicator">True</property>
-                    <signal name="toggled" handler="on_preferences_checkbutton_custom_app_font_toggled" swapped="no"/>
+                    <property name="can-focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Status warning color</property>
                   </object>
                   <packing>
                     <property name="left-attach">0</property>
-                    <property name="top-attach">8</property>
-                    <property name="width">2</property>
+                    <property name="top-attach">14</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label1">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Status error color</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">13</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label3">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Text color</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">12</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkColorButton" id="colorbutton_status_warning_color">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="hexpand">True</property>
+                    <signal name="color-set" handler="on_colorbutton_status_warning_color_color_set" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">14</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkColorButton" id="colorbutton_status_error_color">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="hexpand">True</property>
+                    <signal name="color-set" handler="on_colorbutton_status_error_color_color_set" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">13</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkColorButton" id="colorbutton_text_color">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="hexpand">True</property>
+                    <signal name="color-set" handler="on_colorbutton_text_color_color_set" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">12</property>
                   </packing>
                 </child>
                 <child>
@@ -1798,33 +1805,62 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </object>
                   <packing>
                     <property name="left-attach">0</property>
+                    <property name="top-attach">11</property>
+                    <property name="width">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkFontButton" id="preferences_button_history_font">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="margin-bottom">12</property>
+                    <property name="font">Sans 12</property>
+                    <property name="preview-text">1+2−3×4/√(π)²</property>
+                    <property name="use-font">True</property>
+                    <property name="use-size">True</property>
+                    <signal name="font-set" handler="on_preferences_button_history_font_font_set" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
                     <property name="top-attach">9</property>
                     <property name="width">2</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="label3">
+                  <object class="GtkCheckButton" id="preferences_checkbutton_custom_app_font">
+                    <property name="label" translatable="yes">Custom application font</property>
                     <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="label" translatable="yes">Text color</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If you want to use a font other than the default for the whole application</property>
+                    <property name="margin-top">6</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_custom_app_font_toggled" swapped="no"/>
                   </object>
                   <packing>
                     <property name="left-attach">0</property>
                     <property name="top-attach">10</property>
+                    <property name="width">2</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkColorButton" id="colorbutton_text_color">
+                  <object class="GtkCheckButton" id="preferences_checkbutton_custom_history_font">
+                    <property name="label" translatable="yes">Custom history font</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="hexpand">True</property>
-                    <signal name="color-set" handler="on_colorbutton_text_color_color_set" swapped="no"/>
+                    <property name="tooltip-text" translatable="yes">If you want to use a font other than the default for the whole application</property>
+                    <property name="margin-top">6</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_custom_history_font_toggled" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">10</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">8</property>
+                    <property name="width">2</property>
                   </packing>
                 </child>
               </object>

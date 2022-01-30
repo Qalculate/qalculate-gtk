@@ -2336,6 +2336,17 @@ On: 1/2*pi = 0.5 pi</property>
                               </object>
                             </child>
                             <child>
+                              <object class="GtkCheckMenuItem" id="menu_item_simplified_percentage">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="tooltip-text" translatable="yes">Off: 100 + 20% = 100 +  20/100 = 100.2
+On: 100 + 20% = 100 × 120% = 120</property>
+                                <property name="label" translatable="yes">Simplified Percentage</property>
+                                <property name="use-underline">True</property>
+                                <signal name="activate" handler="on_menu_item_simplified_percentage_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
                               <object class="GtkCheckMenuItem" id="menu_item_limit_implicit_multiplication">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
@@ -2355,12 +2366,6 @@ Off: 1.1 * 1.1 = 1.21
 On: 1.1 * 1.1 ≈ 1.2</property>
                                 <property name="label" translatable="yes">Read Precision</property>
                                 <signal name="activate" handler="on_menu_item_read_precision_activate" swapped="no"/>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkSeparatorMenuItem" id="separator_parse_mode2">
-                                <property name="visible">True</property>
-                                <property name="can-focus">False</property>
                               </object>
                             </child>
                           </object>

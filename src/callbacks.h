@@ -51,6 +51,7 @@ struct mode_struct {
 	bool complex_angle_form;
 	bool implicit_question_asked;
 	int rounding_mode;
+	bool simplified_percentage;
 };
 
 enum {
