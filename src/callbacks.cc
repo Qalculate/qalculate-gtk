@@ -10552,6 +10552,8 @@ void reload_history(gint from_index) {
 }
 
 void add_line_breaks(string &str, int expr, size_t first_i) {
+	int history_width = (expr == 2 ? history_width_a : history_width_e);
+	if(history_width == 0) return;
 	string str_bak;
 	bool markup = str.find('<') != string::npos;
 	if(markup) str_bak = str;
@@ -10568,7 +10570,6 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 	size_t lb_point = string::npos;
 	size_t c = 0;
 	int b_or = 0;
-	int history_width = (expr == 2 ? history_width_a : history_width_e);
 	if(expr > 1 && str.find("||") != string::npos) b_or = 2;
 	else if(expr > 1 && str.find(_("or")) != string::npos) b_or = 1;
 	for(size_t i = first_i; i < str.length(); i++) {
