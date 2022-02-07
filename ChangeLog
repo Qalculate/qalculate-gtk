@@ -1,3 +1,41 @@
+2022-02-04 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix loading of keyboard shortcuts and custom buttons with space in value or label
+
+2022-01-29 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add option to disable "simplified" percentage calculations (e.g. intepret 100 + 20% as 100 + 0.2 instead of 100 * 120%)
+
+2022-01-23 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Use HTML formatting in history view
+
+2022-01-21 Jakub Jirutka <jakub@jirutka.cz>
+
+	* Install search provider to libexecdir instead of libdir
+	* Do not rewrite -Os to -O2
+
+2022-01-05 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix copy result when calculate-as-you-type result is not automatically added to history
+	* Do not assume that char is signed
+
+2021-12-31 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Iconify activated window first to bring it to the front with input focus
+
+2021-12-15 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix output of −3 ≤ x ≤ 5 (on Windows, and possibly other platforms)
+	* Make keypad in number bases dialog hidable
+	* Add truncate numbers rounding option
+	* Updates for new matrix syntax
+
+2021-12-05 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Omit characters in the middle (ellipsize) of very long results (> 500 000 characters) instead of just showing an ellipsis, and show matrix dimension instead of result for very large matrixes
+	* Cache character coverage (fixes pontential segfault)
+
 2021-11-28 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Add as multiple functions if plot expression results in matrix (e.g. root(x, [3,4,5]))

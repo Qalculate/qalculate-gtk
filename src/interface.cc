@@ -3602,7 +3602,7 @@ GtkWidget* get_nbases_dialog(void) {
 			gtk_widget_destroy(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_image_hide_buttons")));
 			gtk_container_add(GTK_CONTAINER(gtk_builder_get_object(nbases_builder, "nbases_event_hide_buttons")), arrow_left);
 		}
-		gtk_box_set_spacing(GTK_GRID(gtk_builder_get_object(nbases_builder, "grid_nbases")), 0);
+		gtk_box_set_spacing(GTK_BOX(gtk_builder_get_object(nbases_builder, "grid_nbases")), 0);
 #endif
 
 		if(!show_bases_keypad) gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "box_keypad")));

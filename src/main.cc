@@ -65,6 +65,7 @@ extern bool minimal_mode;
 extern gint hidden_x, hidden_y, hidden_monitor;
 extern bool hidden_monitor_primary;
 bool check_version = false;
+extern int unformatted_history;
 string custom_title;
 
 MathFunction *f_answer;
@@ -280,6 +281,11 @@ void create_application(GtkApplication *app) {
 		ename.reference = false;
 		CALCULATOR->v_i->addName(ename, 1, true);
 		CALCULATOR->v_i->setChanged(false);
+	}
+
+	if(unformatted_history == 1) {
+		unformatted_history = 2;
+		reload_history();
 	}
 
 	//reset

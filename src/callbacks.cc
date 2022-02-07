@@ -293,7 +293,7 @@ bool tc_set = false;
 bool use_systray_icon = false, hide_on_startup = false;
 
 extern Thread *view_thread, *command_thread;
-bool exit_in_progress = false, command_aborted = false, display_aborted = false, result_too_long = false;
+bool exit_in_progress = false, command_aborted = false, display_aborted = false, result_too_long = false, result_display_overflow = false;
 
 vector<mode_struct> modes;
 vector<GtkWidget*> mode_items;
@@ -305,6 +305,7 @@ deque<string> inhistory;
 deque<bool> inhistory_protected;
 deque<int> inhistory_type;
 deque<int> inhistory_value;
+int unformatted_history = 0;
 vector<MathStructure*> history_parsed;
 vector<MathStructure*> history_answer;
 
@@ -547,6 +548,7 @@ int has_information_unit_gtk(const MathStructure &m, bool top = true) {
 }
 
 void replace_lower_case_e(string &str) {
+	if(str.empty()) return;
 	size_t i = 0;
 	while(true) {
 		i = str.find('e', i + 1);
@@ -561,7 +563,7 @@ string unhtmlize(string str) {
 	size_t i = 0, i2;
 	while(true) {
 		i = str.find("<", i);
-		if(i == string::npos) break;
+		if(i == string::npos || i == str.length() - 1) break;
 		i2 = str.find(">", i + 1);
 		if(i2 == string::npos) break;
 		if((i2 - i == 3 && str.substr(i + 1, 2) == "br") || (i2 - i == 4 && str.substr(i + 1, 3) == "/tr")) {
@@ -1231,6 +1233,11 @@ void show_help(const char *file, GObject *parent) {
 #endif
 }
 
+string fix_history_string_new(const string &str2) {
+	string str = str2;
+	gsub("<sub class=\"nous\">", "<sub>", str);
+	return str;
+}
 void fix_history_string2(string &str) {
 	gsub("&", "&amp;", str);
 	gsub(">", "&gt;", str);
@@ -1306,8 +1313,8 @@ void improve_result_text(string &resstr) {
 			if(i3 == string::npos) i3 = resstr.length();
 			ExpressionItem *item = CALCULATOR->getActiveExpressionItem(resstr.substr(i2, i3 - i2));
 			if(item) {
-				i2 = item->hasName(resstr.substr(i2, i3 - i2), true);
-				if(i2 > 0 && item->getName(i2).suffix) {
+				size_t index = item->hasName(resstr.substr(i2, i3 - i2), true);
+				if(index > 0 && item->getName(index).suffix) {
 					resstr.replace(i2, i3 - i2, sub_suffix(resstr.substr(i2, i3 - i2), "<sub>", "</sub>"));
 					i1 = i3 + 10;
 				} else {
@@ -9376,11 +9383,11 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					} else {
 						str += ename->name.substr(0, i);
 					}
-					if(b || i + 5 != ename->name.length() || ename->name.substr(ename->name.length() - 4, 4) != "unit") {
+					if(b || i + 5 != ename->name.length() || ename->name.substr(ename->name.length() - 4, 4) != "unit" || !CALCULATOR->getActiveVariable(ename->name.substr(0, i))) {
 						TTBP_SMALL(str);
 						str += "<sub>";
 						if(b) str += ename->name.substr(ename->name.length() - i2, i2);
-						else if(i + 5 < ename->name.length() && ename->name.substr(ename->name.length() - 4, 4) == "unit") {str += ename->name.substr(i + 1, ename->name.length() - (i + 1) - 4);}
+						else if(i + 5 < ename->name.length() && ename->name.substr(ename->name.length() - 4, 4) == "unit" && CALCULATOR->getActiveVariable(ename->name.substr(0, ename->name.length() - 4))) {str += ename->name.substr(i + 1, ename->name.length() - (i + 1) - 4);}
 						else str += ename->name.substr(i + 1, ename->name.length() - (i + 1));
 						str += "</sub>";
 						TTE(str);
@@ -9450,11 +9457,11 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					} else {
 						str += ename->name.substr(0, i);
 					}
-					if(!b || i + 9 != ename->name.length() || ename->name.substr(ename->name.length() - 8, 8) != "constant") {
+					if(b || i + 9 != ename->name.length() || ename->name.substr(ename->name.length() - 8, 8) != "constant" || !CALCULATOR->getActiveUnit(ename->name.substr(0, i))) {
 						TTBP_SMALL(str);
 						str += "<sub>";
 						if(b) str += ename->name.substr(ename->name.length() - i2, i2);
-						else if(i + 9 < ename->name.length() && ename->name.substr(ename->name.length() - 8, 8) == "constant") str += ename->name.substr(i + 1, ename->name.length() - (i + 1) - 8);
+						else if(i + 9 < ename->name.length() && ename->name.substr(ename->name.length() - 8, 8) == "constant" && CALCULATOR->getActiveUnit(ename->name.substr(0, ename->name.length() - 8))) str += ename->name.substr(i + 1, ename->name.length() - (i + 1) - 8);
 						else str += ename->name.substr(i + 1, ename->name.length() - (i + 1));
 						str += "</sub>";
 						TTE(str);
@@ -9800,7 +9807,6 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 				const ExpressionName *ename = &m.function()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
 				if(ename->suffix && ename->name.length() > 1) {
-
 					size_t i = ename->name.rfind('_');
 					bool b = i == string::npos || i == ename->name.length() - 1 || i == 0;
 					size_t i2 = 1;
@@ -10131,6 +10137,9 @@ void clearresult() {
 		if(!surface_result) gtk_widget_queue_draw(resultview);
 	}
 	result_autocalculated = false;
+	result_too_long = false;
+	display_aborted = false;
+	result_display_overflow = false;
 	date_map.clear();
 	number_map.clear();
 	number_base_map.clear();
@@ -10308,6 +10317,7 @@ void ViewThread::run() {
 		printops.can_display_unicode_string_arg = NULL;
 
 		result_too_long = false;
+		result_display_overflow = false;
 		if(!b_stack && unhtmlize(result_text).length() > 900) {
 			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
 			result_too_long = true;
@@ -10330,10 +10340,8 @@ void ViewThread::run() {
 			cairo_destroy(cr);
 			g_object_unref(layout);
 			*printops.is_approximate = false;
-			if(displayed_mstruct) {
-				displayed_mstruct->unref();
-				displayed_mstruct = NULL;
-			}
+			if(displayed_mstruct) displayed_mstruct->unref();
+			displayed_mstruct = new MathStructure(m);
 		} else if(!b_stack && m.isAborted()) {
 			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
 			pango_layout_set_markup(layout, _("calculation was aborted"), -1);
@@ -10411,6 +10419,10 @@ void reload_history(gint from_index) {
 		switch(inhistory_type[i]) {
 			case QALCULATE_HISTORY_RESULT_APPROXIMATE: {}
 			case QALCULATE_HISTORY_RESULT: {
+				if(unformatted_history == 2) {
+					fix_history_string2(inhistory[i]);
+					improve_result_text(inhistory[i]);
+				}
 				history_str = "";
 				size_t trans_l = 0;
 				if(i + 1 < inhistory.size()  && inhistory_type[i + 1] == QALCULATE_HISTORY_TRANSFORMATION) {
@@ -10430,7 +10442,7 @@ void reload_history(gint from_index) {
 				}
 				history_str += " ";
 				size_t history_expr_i = history_str.length();
-				history_str += inhistory[i];
+				history_str += fix_history_string_new(inhistory[i]);
 				add_line_breaks(history_str, 2, history_expr_i);
 				if(trans_l > 0) {
 					trans_l = history_str.find(":  ");
@@ -10446,6 +10458,9 @@ void reload_history(gint from_index) {
 			}
 			case QALCULATE_HISTORY_PARSE_APPROXIMATE: {}
 			case QALCULATE_HISTORY_PARSE: {
+				if(unformatted_history == 2) {
+					fix_history_string2(inhistory[i]);
+				}
 				if(i + 1 < inhistory.size() && (inhistory_type[i + 1] == QALCULATE_HISTORY_EXPRESSION || inhistory_type[i + 1] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[i + 1] == QALCULATE_HISTORY_REGISTER_MOVED)) {
 					if(i + 2 >= inhistory.size() || inhistory_type[i + 2] != QALCULATE_HISTORY_BOOKMARK) {
 						if(i < inhistory.size() - 2) {gtk_list_store_insert_with_values(historystore, &history_iter, from_index < 0 ? -1 : pos, 1, -1, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1); pos++;}
@@ -10471,7 +10486,7 @@ void reload_history(gint from_index) {
 						}
 						history_str += str2;
 						history_str += " ";
-						history_str += inhistory[i];
+						history_str += fix_history_string_new(inhistory[i]);
 						history_str += "</span>";
 						PangoLayout *layout = gtk_widget_create_pango_layout(historyview, "");
 						pango_layout_set_markup(layout, history_str.c_str(), -1);
@@ -10549,6 +10564,7 @@ void reload_history(gint from_index) {
 		}
 	}
 	if(inhistory.size() != 0) {gtk_list_store_insert_with_values(historystore, &history_iter, from_index < 0 ? -1 : pos, 1, -1, 2, "   ", 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1); pos++;}
+	if(unformatted_history == 2) unformatted_history = 0;
 }
 
 void add_line_breaks(string &str, int expr, size_t first_i) {
@@ -10591,7 +10607,7 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 				size_t i2 = str.find('>', i + 1);
 				if(i2 != string::npos) {
 					size_t i3 = str.find(str.substr(i + 1, i2 - i - 1), i2 + 1);
-					if(i3 == string::npos) return;
+					if(i3 == string::npos) break;
 					c += i3 - i2 - 1;
 					i = i3 + (i2 - i - 1) - 1;
 				}
@@ -10634,7 +10650,11 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 										while((signed char) teststr[teststr.length() - 1] <= 0 && (unsigned char) teststr[teststr.length() - 1] < 0xC0) {
 											i--;
 											teststr.erase(teststr.length() - 1, 1);
-											if(i < i_row) return;
+											if(i < i_row) {
+												g_object_unref(layout);
+												if(font_desc) pango_font_description_free(font_desc);
+												return;
+											}
 										}
 										if(teststr[teststr.length() - 1] == '>') {
 											size_t i2 = teststr.rfind('/', teststr.length() - 2);
@@ -10655,8 +10675,10 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 										}
 										i--;
 										teststr.erase(teststr.length() - 1, 1);
-										if(i < i_row) {
-											if(markup) {
+										if(i <= i_row) {
+											g_object_unref(layout);
+											if(font_desc) pango_font_description_free(font_desc);
+											if(i < i_row && markup) {
 												str = unhtmlize(str_bak);
 												fix_history_string2(str);
 												add_line_breaks(str, expr, first_i);
@@ -10735,7 +10757,11 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 									while((signed char) teststr[teststr.length() - 1] <= 0 && (unsigned char) teststr[teststr.length() - 1] < 0xC0) {
 										i--;
 										teststr.erase(teststr.length() - 1, 1);
-										if(i < i_row) return;
+										if(i < i_row) {
+											g_object_unref(layout);
+											if(font_desc) pango_font_description_free(font_desc);
+											return;
+										}
 									}
 									if(teststr[teststr.length() - 1] == '>') {
 										size_t i2 = teststr.rfind('/', teststr.length() - 2);
@@ -10756,8 +10782,10 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 									}
 									i--;
 									teststr.erase(teststr.length() - 1, 1);
-									if(i < i_row) {
-										if(markup) {
+									if(i <= i_row) {
+										g_object_unref(layout);
+										if(font_desc) pango_font_description_free(font_desc);
+										if(i < i_row && markup) {
 											str = unhtmlize(str_bak);
 											fix_history_string2(str);
 											add_line_breaks(str, expr, first_i);
@@ -11366,8 +11394,8 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), -1, h);
 			}
 			gtk_widget_queue_draw(resultview);
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), displayed_mstruct && !display_aborted);
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), displayed_mstruct && !display_aborted);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), displayed_mstruct && !result_too_long && !display_aborted);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), displayed_mstruct && !result_too_long && !display_aborted);
 		}
 		if(!update_window_title(unhtmlize(result_text).c_str(), true) && title_set) update_window_title();
 	}
@@ -11427,7 +11455,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			}
 			str += str2;
 			str += " ";
-			str += parsed_text;
+			str += fix_history_string_new(parsed_text);
 			str += "</span>";
 			inhistory.insert(inhistory.begin() + inhistory_index, parsed_text);
 			if(nr_of_new_expressions > 0 && parsed_mstruct && !history_parsed[nr_of_new_expressions - 1]) {
@@ -11442,7 +11470,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				add_line_breaks(str, 1, 0);
 				str2 += " ";
 				size_t history_expr_i = str2.length();
-				str2 += parsed_text;
+				str2 += fix_history_string_new(parsed_text);
 				add_line_breaks(str2, 3, history_expr_i);
 				str += '\n';
 				str += "<span font-style=\"italic\" foreground=\"";
@@ -11484,7 +11512,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		history_str += str;
 		history_str += " ";
 		size_t history_expr_i = history_str.length();
-		history_str += result_text;
+		history_str += fix_history_string_new(result_text);
 		add_line_breaks(history_str, 2, history_expr_i);
 		if(trans_l > 0) {
 			trans_l = history_str.find(":  ");
@@ -11564,7 +11592,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		gtk_tree_path_free(path);
 	}
 
-	if(!register_moved && stack_index == 0 && mstruct->isMatrix() && mstruct->rows() > 3 && matrix_mstruct->isMatrix() && matrix_mstruct->columns() < 200) {
+	if(!register_moved && stack_index == 0 && mstruct->isMatrix() && matrix_mstruct->isMatrix() && matrix_mstruct->columns() < 200 && (result_too_long || result_display_overflow)) {
 		while(gtk_events_pending()) gtk_main_iteration();
 		if(!gtk_widget_is_focus(expressiontext)) gtk_widget_grab_focus(expressiontext);
 		if(update_history && update_parse && force) {
@@ -12320,6 +12348,7 @@ void set_option(string str) {
 			else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_adaptive_parsing")), TRUE);
 		}
 	} else if(equalsIgnoreCase(svar, "rpn") && svalue.find(" ") == string::npos) SET_BOOL_MENU("menu_item_rpn_mode")
+	else if(equalsIgnoreCase(svar, "simplified percentage") || svar == "percent") SET_BOOL_MENU("menu_item_simplified_percentage")
 	else if(equalsIgnoreCase(svar, "short multiplication") || svar == "shortmul") SET_BOOL_D(printops.short_multiplication)
 	else if(equalsIgnoreCase(svar, "lowercase e") || svar == "lowe") SET_BOOL_PREF("preferences_checkbutton_lower_case_e")
 	else if(equalsIgnoreCase(svar, "lowercase numbers") || svar == "lownum") SET_BOOL_PREF("preferences_checkbutton_lower_case_numbers")
@@ -16593,7 +16622,7 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 		} while(CALCULATOR->nameTaken(v_name));
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")), v_name.c_str());
 		//gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(variableedit_builder, "variable_edit_label_names")), "");
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_value")), displayed_mstruct ? get_value_string(*mstruct).c_str() : get_expression_text().c_str());
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_value")), displayed_mstruct && !result_too_long && !display_aborted ? get_value_string(*mstruct).c_str() : get_expression_text().c_str());
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(variableedit_builder, "variable_edit_combo_category")))), category);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_desc")), "");
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(variableedit_builder, "variable_edit_checkbutton_exact")), !mstruct_ || !mstruct_->isApproximate());
@@ -19679,8 +19708,9 @@ void load_preferences() {
 
 	size_t bookmark_index = 0;
 
-	int version_numbers[] = {3, 22, 0};
+	int version_numbers[] = {4, 0, 0};
 	bool old_history_format = false;
+	unformatted_history = 0;
 
 	if(file) {
 		char line[1000000L];
@@ -19700,6 +19730,7 @@ void load_preferences() {
 				if(svar == "version") {
 					parse_qalculate_version(svalue, version_numbers);
 					old_history_format = (version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] <= 4)));
+					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 22) || (version_numbers[0] == 3 && version_numbers[1] == 22 && version_numbers[2] < 1)) unformatted_history = 1;
 				} else if(svar == "allow_multiple_instances") {
 					if(v == 0 && version_numbers[0] < 3) v = -1;
 					allow_multiple_instances = v;
@@ -20458,16 +20489,17 @@ void load_preferences() {
 				} else if(svar == "custom_button_label") {
 					unsigned int index = 0;
 					char str[svalue.length()];
-					int n = sscanf(svalue.c_str(), "%u:%s", &index, str);
+					int n = sscanf(svalue.c_str(), "%u:%[^\n]", &index, str);
 					if(n >= 2 && index < custom_buttons.size()) {
 						custom_buttons[index].text = str;
+						remove_blank_ends(custom_buttons[index].text);
 					}
 				} else if(svar == "custom_button") {
 					unsigned int index = 0;
 					unsigned int bi = 0;
 					char str[svalue.length()];
 					int type = -1;
-					int n = sscanf(svalue.c_str(), "%u:%u:%i:%s", &index, &bi, &type, str);
+					int n = sscanf(svalue.c_str(), "%u:%u:%i:%[^\n]", &index, &bi, &type, str);
 					if(n >= 3 && index < custom_buttons.size()) {
 						if(bi <= 2) {
 							custom_buttons[index].type[bi] = type;
@@ -20479,7 +20511,7 @@ void load_preferences() {
 					default_shortcuts = false;
 					char str[svalue.length()];
 					keyboard_shortcut ks;
-					int n = sscanf(svalue.c_str(), "%u:%u:%i:%s", &ks.key, &ks.modifier, &ks.type, str);
+					int n = sscanf(svalue.c_str(), "%u:%u:%i:%[^\n]", &ks.key, &ks.modifier, &ks.type, str);
 					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 9) || (version_numbers[0] == 3 && version_numbers[1] == 9 && version_numbers[2] < 1)) {
 						if(ks.type >= SHORTCUT_TYPE_DEGREES) ks.type += 3;
 					}
@@ -20496,7 +20528,7 @@ void load_preferences() {
 						if(ks.type >= SHORTCUT_TYPE_FLOATING_POINT) ks.type++;
 					}
 					if(n >= 3 && ks.type >= SHORTCUT_TYPE_FUNCTION && ks.type <= LAST_SHORTCUT_TYPE) {
-						if(n == 4) ks.value = str;
+						if(n == 4) {ks.value = str; remove_blank_ends(ks.value);}
 						keyboard_shortcuts[(guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier] = ks;
 					}
 				} else if(svar == "expression_history") {
@@ -20527,27 +20559,16 @@ void load_preferences() {
 					inhistory_protected.push_front(false);
 					inhistory_value.push_front(0);
 				} else if(svar == "history_result") {
-					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 22) || (version_numbers[0] == 3 && version_numbers[1] == 22 && version_numbers[2] < 1)) {
-						fix_history_string2(svalue);
-						improve_result_text(svalue);
-					}
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_RESULT);
 					inhistory_protected.push_front(false);
 					inhistory_value.push_front(0);
 				} else if(svar == "history_result_approximate") {
-					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 22) || (version_numbers[0] == 3 && version_numbers[1] == 22 && version_numbers[2] < 1)) {
-						fix_history_string2(svalue);
-						improve_result_text(svalue);
-					}
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_RESULT_APPROXIMATE);
 					inhistory_protected.push_front(false);
 					inhistory_value.push_front(0);
 				} else if(svar == "history_parse") {
-					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 22) || (version_numbers[0] == 3 && version_numbers[1] == 22 && version_numbers[2] < 1)) {
-						fix_history_string2(svalue);
-					}
 					inhistory.push_front(svalue);
 					if(old_history_format) inhistory_type.push_front(QALCULATE_HISTORY_PARSE_WITHEQUALS);
 					else inhistory_type.push_front(QALCULATE_HISTORY_PARSE);
@@ -20756,7 +20777,7 @@ void save_preferences(bool mode) {
 		datasets_vposition2 = gtk_paned_get_position(GTK_PANED(gtk_builder_get_object(datasets_builder, "datasets_vpaned2")));
 	}
 	fprintf(file, "\n[General]\n");
-	fprintf(file, "version=%s\n", "3.22.1");
+	fprintf(file, "version=%s\n", VERSION);
 	fprintf(file, "allow_multiple_instances=%i\n", allow_multiple_instances);
 	if(title_type != TITLE_APP) fprintf(file, "window_title_mode=%i\n", title_type);
 	if(minimal_width > 0 && minimal_mode) {
@@ -29413,7 +29434,7 @@ void convert_number_bases(const gchar *initial_expression, bool b_result) {
 	gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
 }
 void on_menu_item_convert_number_bases_activate(GtkMenuItem*, gpointer) {
-	if(displayed_mstruct && !result_text_empty()) return convert_number_bases(((mstruct->isNumber() && !mstruct->number().hasImaginaryPart()) || mstruct->isUndefined()) ? get_result_text().c_str() : "", true);
+	if(displayed_mstruct && !result_text_empty() && !result_too_long) return convert_number_bases(((mstruct->isNumber() && !mstruct->number().hasImaginaryPart()) || mstruct->isUndefined()) ? get_result_text().c_str() : "", true);
 	string str = get_selected_expression_text(true), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	remove_blank_ends(str);
@@ -29443,7 +29464,7 @@ void convert_floatingpoint(const gchar *initial_expression, bool b_result) {
 	gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
 }
 void on_menu_item_convert_floatingpoint_activate(GtkMenuItem*, gpointer) {
-	if(displayed_mstruct && !result_text_empty()) return convert_floatingpoint(((mstruct->isNumber() && !mstruct->number().hasImaginaryPart()) || mstruct->isUndefined()) ? get_result_text().c_str() : "", true);
+	if(displayed_mstruct && !result_text_empty() && !result_too_long) return convert_floatingpoint(((mstruct->isNumber() && !mstruct->number().hasImaginaryPart()) || mstruct->isUndefined()) ? get_result_text().c_str() : "", true);
 	string str = get_selected_expression_text(true), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	remove_blank_ends(str);
@@ -33721,12 +33742,13 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 	if(exit_in_progress) return TRUE;
 	gint scalefactor = gtk_widget_get_scale_factor(widget);
 	gtk_render_background(gtk_widget_get_style_context(widget), cr, 0, 0, gtk_widget_get_allocated_width(widget), gtk_widget_get_allocated_height(widget));
+	result_display_overflow = false;
 	if(surface_result) {
 		gint w = 0, h = 0;
 		if(!first_draw_of_result) {
 			if(b_busy) {
 				if(b_busy_result) return TRUE;
-			} else if(display_aborted || (!displayed_mstruct && result_too_long)) {
+			} else if(display_aborted || result_too_long) {
 				PangoLayout *layout = gtk_widget_create_pango_layout(widget, NULL);
 				pango_layout_set_markup(layout, display_aborted ? _("result processing was aborted") : _("result is too long\nsee history"), -1);
 				pango_layout_get_pixel_size(layout, &w, &h);
@@ -33785,7 +33807,7 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 		gint rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - 12;
 		if(first_draw_of_result || (!b_busy && result_font_updated)) {
 			gint margin = 24;
-			while(displayed_mstruct && !display_aborted && scale_n < 3 && (w > rw || (w > rw - sbw ? h + margin / 1.5 > rh - sbh : h + margin > rh))) {
+			while(displayed_mstruct && !display_aborted && !result_too_long && scale_n < 3 && (w > rw || (w > rw - sbw ? h + margin / 1.5 > rh - sbh : h + margin > rh))) {
 				int scroll_diff = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport")));
 				double scale_div = (double) h / (gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport"))) + scroll_diff);
 				if(scale_div > 1.44) {
@@ -33808,6 +33830,7 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 		}
 		gtk_widget_set_size_request(widget, w, h);
 		if(h > sbh) rw -= sbw;
+		result_display_overflow = w > rw || h > rh;
 		if(rw >= w) {
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
 			// compensate for overlay scrollbars

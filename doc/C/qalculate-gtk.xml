@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "3.22.0">
-  <!ENTITY manrevision "3.22.0">
-  <!ENTITY date "December 2021">
+  <!ENTITY appversion "4.0.0">
+  <!ENTITY manrevision "4.0.0">
+  <!ENTITY date "February 2022">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -15,7 +15,7 @@
 <title>&app; Manual v&manrevision;</title>
 <bookinfo>
 	<copyright>
-		<year>2005-2007, 2016-2021</year>
+		<year>2005-2007, 2016-2022</year>
 		<holder>Hanna Knutsson</holder>
 	</copyright>
 	<publisher> 
@@ -1902,7 +1902,7 @@ Similarly <quote>where</quote> (or alternatively <quote>/.</quote>) can be used 
 	<varlistentry>
 		<term>Numerical Display</term>
 		<listitem><para>
-				These modes mainly control when numbers are displayed exponentially (e.g. <quote>2.62E3</quote> which equals <quote>2620</quote>). In the default normal mode, numbers are displayed in exponential format if the exponent will be greater than the current precision. In scientific mode the lowest exponent is 3. In simple numerical mode the exponential format is never used and it is always used in purely scientific mode. In the engineering mode, the exponent is always a multiple of three. This is naturally equivalently true for numbers less than one and negative exponents. When the scientific modes are selected in the keypad (not from the menubar), negative exponents are automatically activated and sort minus last deactivated, while normal and simple modes do the opposite.
+			These modes mainly control when numbers are displayed exponentially (e.g. <quote>2.62E3</quote> which equals <quote>2620</quote>). In the default normal mode, numbers are displayed in exponential format if the exponent will be greater than the current precision. In scientific mode the lowest exponent is 3. In simple numerical mode the exponential format is never used and it is always used in purely scientific mode. In the engineering mode, the exponent is always a multiple of three. This is naturally equivalently true for numbers less than one and negative exponents. When the scientific modes are selected in the keypad (not from the menubar), negative exponents are automatically activated and sort minus last deactivated, while normal and simple modes do the opposite.
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -1912,15 +1912,15 @@ Similarly <quote>where</quote> (or alternatively <quote>/.</quote>) can be used 
 			</para></listitem>
 	</varlistentry>
 	<varlistentry>
-		<term>Round Halfway Number To Even</term>
+		<term>Rounding</term>
 		<listitem><para>
-			With this option, halfway numbers will be rounded to even instead of upwards (e.g. 2.65 is then rounded to 2.6 instead of 2.7). Note that this behavior is always applied in the <command>round()</command> function.
+			By default approximately displayed numbers are rounded towards nearest decimal (e.g. <quote>2.64 ≈ 2.6</quote>, <quote>2.67 ≈ 2.7</quote>), and away from zero if the number is halfway between two values (e.g. <quote>2.65 ≈ 2.7</quote>, <quote>−2.65 ≈ −2.7</quote>). This can be changed by activating <guimenuitem>Round Halfway Numbers to Even</guimenuitem> (e.g. <quote>2.55 ≈ 2.6</quote>, <quote>2.65 ≈ 2.6</quote>) or <guimenuitem>Truncate Numbers</guimenuitem> (if activated, numbers are always rounded towards zero, e.g. <quote>2.67 ≈ 2.6</quote>).
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
 		<term>Show Ending Zeroes</term>
 		<listitem><para>
-			if this option is on, approximate numbers in the result will be appended with zeroes, so that the number of digits (after preceding zeroes) will equal the precision.
+			If this option is on, approximate numbers in the result will be appended with zeroes, so that the number of digits (after preceding zeroes) will equal the precision.
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -2305,7 +2305,7 @@ A category for functions that do not fit elsewhere.
 <varlistentry>
 <term>Number Theory</term>
 <listitem><para>
-Contains subcategories arithmetic, number bases, and rounding, in addition to functions such as <command>abs()</command>, which returns the absolute value of a number (<quote>|</quote> can also be used; e.g. <quote>|-5| = abs(-5) = 5</quote>, and <command>gcd()</command>, the greatest common divisor. <command>round()</command> is the standard rounding function (note that halfway numbers are rounded to even). The functions for number bases translates a text string, representing an expression with numbers in a different base, to a decimal number. Includes <command>bin()</command> for binary numbers, <command>hex()</command> for hexadecimal numbers, <command>oct()</command> for octal numbers and <command>base()</command> for numbers in a any other base.
+Contains subcategories arithmetic, number bases, and rounding, in addition to functions such as <command>abs()</command>, which returns the absolute value of a number (<quote>|</quote> can also be used; e.g. <quote>|-5| = abs(-5) = 5</quote>, and <command>gcd()</command>, the greatest common divisor. <command>round()</command> is the standard rounding function. The functions for number bases translates a text string, representing an expression with numbers in a different base, to a decimal number. Includes <command>bin()</command> for binary numbers, <command>hex()</command> for hexadecimal numbers, <command>oct()</command> for octal numbers and <command>base()</command> for numbers in a any other base.
 </para></listitem>
 </varlistentry>
 <varlistentry>

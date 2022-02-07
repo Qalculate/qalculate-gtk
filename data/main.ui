@@ -1395,7 +1395,7 @@ On: y - x</property>
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="tooltip-text">2.5 ≈ 3, 1.5 ≈ 2</property>
-                                <property name="label" translatable="yes">Round Halfway Numbers Upwards</property>
+                                <property name="label" translatable="yes">Round Halfway Numbers Away from Zero</property>
                                 <property name="use-underline">True</property>
                                 <property name="draw-as-radio">True</property>
                                 <signal name="activate" handler="on_menu_item_round_halfway_up_activate" swapped="no"/>
@@ -1416,8 +1416,8 @@ On: y - x</property>
                               <object class="GtkRadioMenuItem" id="menu_item_truncate_numbers">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="tooltip-text">2.5 ≈ 2, 1.5 ≈ 1</property>
-                                <property name="label" translatable="yes">Truncate Numbers</property>
+                                <property name="tooltip-text">2.7 ≈ 2, −1.7 ≈ −1</property>
+                                <property name="label" translatable="yes">Truncate All Numbers</property>
                                 <property name="use-underline">True</property>
                                 <property name="group">menu_item_round_halfway_up</property>
                                 <signal name="activate" handler="on_menu_item_truncate_numbers_activate" swapped="no"/>
@@ -1547,8 +1547,8 @@ On: y - x</property>
                               <object class="GtkRadioMenuItem" id="menu_item_interval_adaptive">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="tooltip-text" translatable="yes">Off: 1/2*pi ≈ 1.5707963
-On: 1/2*pi = 0.5 pi</property>
+                                <property name="tooltip-text" translatable="yes">Off: 1/2 × pi ≈ 1.5707963
+On: 1/2 × pi = 0.5 pi</property>
                                 <property name="label" translatable="yes">Adaptive</property>
                                 <signal name="activate" handler="on_menu_item_interval_adaptive_activate" swapped="no"/>
                               </object>
@@ -1671,7 +1671,7 @@ On: 1/2*pi = 0.5 pi</property>
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="tooltip-text" translatable="yes">Off: J / K
-On: J * K^-1</property>
+On: J·K^-1</property>
                                 <property name="label" translatable="yes">Negative Exponents</property>
                                 <signal name="activate" handler="on_menu_item_negative_exponents_activate" swapped="no"/>
                               </object>
@@ -1889,8 +1889,8 @@ On: 2 (m/s)</property>
                               <object class="GtkRadioMenuItem" id="menu_item_always_exact">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="tooltip-text" translatable="yes">Off: 1/2*pi ≈ 1.5707963
-On: 1/2*pi = 0.5 pi</property>
+                                <property name="tooltip-text" translatable="yes">Off: 1/2 × pi ≈ 1.5707963
+On: 1/2 × pi = 0.5 pi</property>
                                 <property name="label" translatable="yes">Always Exact</property>
                                 <property name="use-underline">True</property>
                                 <signal name="activate" handler="on_menu_item_always_exact_activate" swapped="no"/>
@@ -2341,7 +2341,7 @@ On: 1/2*pi = 0.5 pi</property>
                                 <property name="can-focus">False</property>
                                 <property name="tooltip-text" translatable="yes">Off: 100 + 20% = 100 +  20/100 = 100.2
 On: 100 + 20% = 100 × 120% = 120</property>
-                                <property name="label" translatable="yes">Simplified Percentage</property>
+                                <property name="label" translatable="yes">Simplified Percentage Calculation</property>
                                 <property name="use-underline">True</property>
                                 <signal name="activate" handler="on_menu_item_simplified_percentage_activate" swapped="no"/>
                               </object>
@@ -2350,8 +2350,8 @@ On: 100 + 20% = 100 × 120% = 120</property>
                               <object class="GtkCheckMenuItem" id="menu_item_limit_implicit_multiplication">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="tooltip-text" translatable="yes">Off: xy = x*y
-On: xy != x*y</property>
+                                <property name="tooltip-text" translatable="yes">Off: xy = x × y
+On: xy != x × y</property>
                                 <property name="label" translatable="yes">Limit Implicit Multiplication</property>
                                 <signal name="activate" handler="on_menu_item_limit_implicit_multiplication_activate" swapped="no"/>
                               </object>
@@ -2362,8 +2362,8 @@ On: xy != x*y</property>
                                 <property name="can-focus">False</property>
                                 <property name="tooltip-text" translatable="yes">Parse decimal numbers as approximate with precision equal to the number of digits.
 
-Off: 1.1 * 1.1 = 1.21
-On: 1.1 * 1.1 ≈ 1.2</property>
+Off: 1.1 × 1.1 = 1.21
+On: 1.1 × 1.1 ≈ 1.2</property>
                                 <property name="label" translatable="yes">Read Precision</property>
                                 <signal name="activate" handler="on_menu_item_read_precision_activate" swapped="no"/>
                               </object>
