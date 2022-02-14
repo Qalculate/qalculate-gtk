@@ -389,7 +389,7 @@ static void qalculate_activate(GtkApplication *app) {
 			hidden_x = -1;
 		}
 #ifdef _WIN32
-		gtk_window_iconify(GTK_WINDOW(list->data), GDK_CURRENT_TIME);
+		gtk_window_iconify(GTK_WINDOW(list->data));
 		while(gtk_events_pending()) gtk_main_iteration();
 		gtk_window_present_with_time(GTK_WINDOW(list->data), GDK_CURRENT_TIME);
 #endif
@@ -531,7 +531,7 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 			hidden_x = -1;
 		}
 #ifdef _WIN32
-		gtk_window_iconify(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GDK_CURRENT_TIME);
+		gtk_window_iconify(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 		while(gtk_events_pending()) gtk_main_iteration();
 		gtk_window_present_with_time(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GDK_CURRENT_TIME);
 #endif

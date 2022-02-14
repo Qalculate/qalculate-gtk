@@ -365,6 +365,7 @@ bool scientific_noprefix = true;
 int auto_prefix = 0;
 
 bool ignore_locale = false;
+string custom_lang;
 
 bool hexadecimal_twos_complement_in = false, twos_complement_in = false;
 
@@ -1631,23 +1632,31 @@ PangoCoverageLevel get_least_coverage(const gchar *gstr, GtkWidget *widget) {
 
 }
 
-unordered_map<void*, unordered_map<const char*, bool> > coverage_map;
+unordered_map<void*, unordered_map<const char*, int> > coverage_map;
 
 bool can_display_unicode_string_function(const char *str, void *w) {
 	if(!w) w = (void*) historyview;
-	unordered_map<void*, unordered_map<const char*, bool> >::iterator it1 = coverage_map.find(w);
+	unordered_map<void*, unordered_map<const char*, int> >::iterator it1 = coverage_map.find(w);
 	if(it1 == coverage_map.end()) {
-		coverage_map[w] = unordered_map<const char*, bool>();
+		coverage_map[w] = unordered_map<const char*, int>();
 	} else {
-		unordered_map<const char*, bool>::iterator it = it1->second.find(str);
+		unordered_map<const char*, int>::iterator it = it1->second.find(str);
 		if(it != it1->second.end()) return it->second;
 	}
-	coverage_map[w][str] = get_least_coverage(str, (GtkWidget*) w) >= PANGO_COVERAGE_APPROXIMATE;
-	return coverage_map[w][str];
+	coverage_map[w][str] = get_least_coverage(str, (GtkWidget*) w);
+	return coverage_map[w][str] >= PANGO_COVERAGE_APPROXIMATE;
 }
 bool can_display_unicode_string_function_exact(const char *str, void *w) {
 	if(!w) w = (void*) historyview;
-	return get_least_coverage(str, (GtkWidget*) w) >= PANGO_COVERAGE_EXACT;
+	unordered_map<void*, unordered_map<const char*, int> >::iterator it1 = coverage_map.find(w);
+	if(it1 == coverage_map.end()) {
+		coverage_map[w] = unordered_map<const char*, int>();
+	} else {
+		unordered_map<const char*, int>::iterator it = it1->second.find(str);
+		if(it != it1->second.end()) return it->second;
+	}
+	coverage_map[w][str] = get_least_coverage(str, (GtkWidget*) w);
+	return coverage_map[w][str] >= PANGO_COVERAGE_EXACT;
 }
 
 double par_width = 6.0;
@@ -19672,6 +19681,7 @@ void load_preferences() {
 	twos_complement_in = false;
 	expression_lines = -1;
 	gtk_theme = -1;
+	custom_lang = "";
 
 	CALCULATOR->setPrecision(10);
 
@@ -19813,11 +19823,12 @@ void load_preferences() {
 					clear_history_on_exit = v;
 				} else if(svar == "ignore_locale") {
 					ignore_locale = v;
+				} else if(svar == "language") {
+					custom_lang = v;
 				} else if(svar == "window_title_mode") {
 					if(v >= 0 && v <= 4) title_type = v;
 				} else if(svar == "fetch_exchange_rates_at_startup") {
 					if(auto_update_exchange_rates < 0 && v) auto_update_exchange_rates = 1;
-					//fetch_exchange_rates_at_startup = v;
 				} else if(svar == "auto_update_exchange_rates") {
 					auto_update_exchange_rates = v;
 				} else if(svar == "check_version") {
@@ -20870,6 +20881,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "save_definitions_on_exit=%i\n", save_defs_on_exit);
 	fprintf(file, "clear_history_on_exit=%i\n", clear_history_on_exit);
 	fprintf(file, "ignore_locale=%i\n", ignore_locale);
+	if(!custom_lang.empty()) fprintf(file, "language=%s\n", custom_lang.c_str());
 	fprintf(file, "load_global_definitions=%i\n", load_global_defs);
 	//fprintf(file, "fetch_exchange_rates_at_startup=%i\n", fetch_exchange_rates_at_startup);
 	fprintf(file, "auto_update_exchange_rates=%i\n", auto_update_exchange_rates);
@@ -32637,7 +32649,7 @@ void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
 	}
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), _("Powerful and easy to use calculator"));
 	gtk_about_dialog_set_license_type(GTK_ABOUT_DIALOG(dialog), GTK_LICENSE_GPL_2_0);
-	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016-2021 Hanna Knutsson");
+	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016-2022 Hanna Knutsson");
 	gtk_about_dialog_set_logo_icon_name(GTK_ABOUT_DIALOG(dialog), "qalculate");
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(dialog), "Qalculate! (GTK)");
 	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dialog), VERSION);
