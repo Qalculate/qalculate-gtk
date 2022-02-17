@@ -10417,6 +10417,29 @@ gboolean on_event(GtkWidget*, GdkEvent *e, gpointer) {
 	return TRUE;
 }
 
+string remove_italic(string str) {
+	gsub("<i>", "", str);
+	gsub("</i>", "", str);
+	gsub("<i class=\"symbol\">", "", str);
+	gsub("<sup>2</sup>", SIGN_POWER_2, str);
+	gsub("<sup>3</sup>", SIGN_POWER_3, str);
+	gsub("<sup>4</sup>", SIGN_POWER_4, str);
+	gsub("<sup>5</sup>", SIGN_POWER_5, str);
+	gsub("<sup>6</sup>", SIGN_POWER_6, str);
+	gsub("<sup>7</sup>", SIGN_POWER_7, str);
+	gsub("<sup>8</sup>", SIGN_POWER_8, str);
+	gsub("<sup>9</sup>", SIGN_POWER_9, str);
+	gsub(" " SIGN_DIVISION_SLASH " ", "/", str);
+	gsub("&amp;", "&", str);
+	gsub("&gt;", ">", str);
+	gsub("&lt;", "<", str);
+	gsub("&quot;", "\"", str);
+	gsub("&hairsp;", "", str);
+	gsub("&nbsp;", " ", str);
+	gsub("&thinsp;", THIN_SPACE, str);
+	return str;
+}
+
 void reload_history(gint from_index) {
 	if(from_index < 0) gtk_list_store_clear(historystore);
 	string history_str;
@@ -10480,23 +10503,26 @@ void reload_history(gint from_index) {
 						else if(inhistory_type[i + 1] == QALCULATE_HISTORY_REGISTER_MOVED) expr_str = ("RPN Register Moved");
 						else expr_str = inhistory[i + 1];
 						history_str = fix_history_string(expr_str);
-						history_str += "<span font-style=\"italic\" foreground=\"";
-						history_str += history_parse_color;
-						history_str += "\">  ";
 						string str2;
-						if(inhistory_type[i] == QALCULATE_HISTORY_PARSE) {
-							str2 = "=";
-						} else {
-							if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_ALMOST_EQUAL, (void*) historyview)) {
-								str2 = SIGN_ALMOST_EQUAL;
+						bool b_parse = (history_str != remove_italic(inhistory[i]));
+						if(b_parse) {
+							history_str += "<span font-style=\"italic\" foreground=\"";
+							history_str += history_parse_color;
+							history_str += "\">  ";
+							if(inhistory_type[i] == QALCULATE_HISTORY_PARSE) {
+								str2 = "=";
 							} else {
-								str2 = _("approx.");
+								if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_ALMOST_EQUAL, (void*) historyview)) {
+									str2 = SIGN_ALMOST_EQUAL;
+								} else {
+									str2 = _("approx.");
+								}
 							}
+							history_str += str2;
+							history_str += " ";
+							history_str += fix_history_string_new(inhistory[i]);
+							history_str += "</span>";
 						}
-						history_str += str2;
-						history_str += " ";
-						history_str += fix_history_string_new(inhistory[i]);
-						history_str += "</span>";
 						PangoLayout *layout = gtk_widget_create_pango_layout(historyview, "");
 						pango_layout_set_markup(layout, history_str.c_str(), -1);
 						gint w = 0;
@@ -10504,16 +10530,18 @@ void reload_history(gint from_index) {
 						if(w > history_width_e) {
 							history_str = fix_history_string(expr_str);
 							add_line_breaks(history_str, 1, 0);
-							str2 += " ";
-							size_t history_expr_i = str2.length();
-							str2 += inhistory[i];
-							add_line_breaks(str2, 3, history_expr_i);
-							history_str += '\n';
-							history_str += "<span font-style=\"italic\" foreground=\"";
-							history_str += history_parse_color;
-							history_str += "\">";
-							history_str += str2;
-							history_str += "</span>";
+							if(b_parse) {
+								str2 += " ";
+								size_t history_expr_i = str2.length();
+								str2 += inhistory[i];
+								add_line_breaks(str2, 3, history_expr_i);
+								history_str += '\n';
+								history_str += "<span font-style=\"italic\" foreground=\"";
+								history_str += history_parse_color;
+								history_str += "\">";
+								history_str += str2;
+								history_str += "</span>";
+							}
 						}
 						if(inhistory_protected[i + 1] || (i + 2 < inhistory.size() && inhistory_type[i + 2] == QALCULATE_HISTORY_BOOKMARK)) {
 							if(can_display_unicode_string_function_exact("🔒", historyview)) history_str += "<span size=\"small\"><sup> 🔒</sup></span>";
@@ -11443,9 +11471,6 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			gchar *expr_str = NULL;
 			gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
 			string str = expr_str;
-			str += "<span font-style=\"italic\" foreground=\"";
-			str += history_parse_color;
-			str += "\">  ";
 			string str2;
 			if(!parsed_approx) {
 				str2 = "=";
@@ -11462,10 +11487,16 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				inhistory_protected.insert(inhistory_protected.begin() + inhistory_index, false);
 				inhistory_value.insert(inhistory_value.begin() + inhistory_index, nr_of_new_expressions);
 			}
-			str += str2;
-			str += " ";
-			str += fix_history_string_new(parsed_text);
-			str += "</span>";
+			bool b_parse = (expr_str != remove_italic(parsed_text));
+			if(b_parse) {
+				str += "<span font-style=\"italic\" foreground=\"";
+				str += history_parse_color;
+				str += "\">  ";
+				str += str2;
+				str += " ";
+				str += fix_history_string_new(parsed_text);
+				str += "</span>";
+			}
 			inhistory.insert(inhistory.begin() + inhistory_index, parsed_text);
 			if(nr_of_new_expressions > 0 && parsed_mstruct && !history_parsed[nr_of_new_expressions - 1]) {
 				history_parsed[nr_of_new_expressions - 1] = new MathStructure(*parsed_mstruct);
@@ -11477,16 +11508,18 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			if(w > history_width_e) {
 				str = expr_str;
 				add_line_breaks(str, 1, 0);
-				str2 += " ";
-				size_t history_expr_i = str2.length();
-				str2 += fix_history_string_new(parsed_text);
-				add_line_breaks(str2, 3, history_expr_i);
-				str += '\n';
-				str += "<span font-style=\"italic\" foreground=\"";
-				str += history_parse_color;
-				str += "\">";
-				str += str2;
-				str += "</span>";
+				if(b_parse) {
+					str2 += " ";
+					size_t history_expr_i = str2.length();
+					str2 += fix_history_string_new(parsed_text);
+					add_line_breaks(str2, 3, history_expr_i);
+					str += '\n';
+					str += "<span font-style=\"italic\" foreground=\"";
+					str += history_parse_color;
+					str += "\">";
+					str += str2;
+					str += "</span>";
+				}
 			}
 			gtk_list_store_set(historystore, &history_iter, 0, str.c_str(), -1);
 			g_object_unref(layout);
