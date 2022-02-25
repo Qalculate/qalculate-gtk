@@ -24083,6 +24083,7 @@ bool contains_related_unit(const MathStructure &m, Unit *u) {
 void do_completion() {
 	if(!enable_completion) {gtk_widget_hide(completion_window); return;}
 	set_current_object();
+	gint cos_bak = current_object_start, coe_bak = current_object_end;
 	string str;
 	int to_type = 0;
 	if(editing_to_expression && current_from_struct && current_from_struct->isDateTime()) to_type = 3;
@@ -24505,6 +24506,7 @@ void do_completion() {
 		if(show_separator1 && show_separator2) matches++;
 		completion_ignore_enter = TRUE;
 		completion_resize_popup(matches);
+		if(cos_bak != current_object_start || current_object_end != coe_bak) return;
 		if(!gtk_widget_is_visible(completion_window)) {
 			gtk_window_set_transient_for(GTK_WINDOW(completion_window), GTK_WINDOW(mainwindow));
 			gtk_window_group_add_window(gtk_window_get_group(GTK_WINDOW(mainwindow)), GTK_WINDOW(completion_window));
