@@ -28502,14 +28502,22 @@ void on_menu_item_save_defs_activate(GtkMenuItem*, gpointer) {
 	save_defs();
 }
 void on_menu_item_import_definitions_activate(GtkMenuItem*, gpointer) {
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+	GtkFileChooserNative *d = gtk_file_chooser_native_new(_("Select definitions file"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_FILE_CHOOSER_ACTION_OPEN, _("_Import"), _("_Cancel"));
+#else
 	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select definitions file"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Import"), GTK_RESPONSE_ACCEPT, NULL);
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
-	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(d), TRUE);
+#endif
 	GtkFileFilter *filter = gtk_file_filter_new();
-	//gtk_file_filter_set_name(filter, _("XML Files"));
+	gtk_file_filter_set_name(filter, _("XML Files"));
 	gtk_file_filter_add_mime_type(filter, "text/xml");
+	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(d), TRUE);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(d), filter);
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+	if(gtk_native_dialog_run(GTK_NATIVE_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
+#else
 	if(gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
+#endif
 		GFile *file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(d));
 		char *str = g_file_get_basename(file);
 		char *from_file = g_file_get_path(file);
@@ -28556,7 +28564,11 @@ void on_menu_item_import_definitions_activate(GtkMenuItem*, gpointer) {
 		g_free(from_file);
 		g_object_unref(file);
 	}
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+	g_object_unref(d);
+#else
 	gtk_widget_destroy(d);
+#endif
 }
 void on_menu_item_save_mode_activate(GtkMenuItem*, gpointer) {
 	save_mode();
@@ -30231,8 +30243,12 @@ void on_menu_item_save_activate(GtkMenuItem*, gpointer) {
 }
 void on_menu_item_save_image_activate(GtkMenuItem*, gpointer) {
 	if(display_aborted || !displayed_mstruct) return;
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+	GtkFileChooserNative *d = gtk_file_chooser_native_new(_("Select file to save PNG image to"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_FILE_CHOOSER_ACTION_SAVE, _("_Save"), _("_Cancel"));
+#else
 	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file to save PNG image to"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_FILE_CHOOSER_ACTION_SAVE, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Save"), GTK_RESPONSE_ACCEPT, NULL);
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+#endif
 	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(d), TRUE);
 	GtkFileFilter *filter = gtk_file_filter_new();
 	gtk_file_filter_set_name(filter, _("Allowed File Types"));
@@ -30243,7 +30259,11 @@ void on_menu_item_save_image_activate(GtkMenuItem*, gpointer) {
 	gtk_file_filter_set_name(filter_all, _("All Files"));
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(d), filter_all);
 	gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(d), "qalculate.png");
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+	if(gtk_native_dialog_run(GTK_NATIVE_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
+#else
 	if(gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
+#endif
 		GdkRGBA color;
 		color.red = 0.0;
 		color.green = 0.0;
@@ -30256,7 +30276,11 @@ void on_menu_item_save_image_activate(GtkMenuItem*, gpointer) {
 			cairo_surface_destroy(s);
 		}
 	}
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+	g_object_unref(d);
+#else
 	gtk_widget_destroy(d);
+#endif
 }
 void on_menu_item_copy_activate(GtkMenuItem*, gpointer) {
 	string copy_text = get_result_text();
@@ -33944,12 +33968,20 @@ void on_csv_import_combobox_delimiter_changed(GtkComboBox *w, gpointer) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(csvimport_builder, "csv_import_entry_delimiter_other")), gtk_combo_box_get_active(w) == DELIMITER_OTHER);
 }
 void on_csv_import_button_file_clicked(GtkEntry*, gpointer) {
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+	GtkFileChooserNative *d = gtk_file_chooser_native_new(_("Select file to import"), GTK_WINDOW(gtk_builder_get_object(csvimport_builder, "csv_import_dialog")), GTK_FILE_CHOOSER_ACTION_OPEN, _("_Open"), _("_Cancel"));
+#else
 	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file to import"), GTK_WINDOW(gtk_builder_get_object(csvimport_builder, "csv_import_dialog")), GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT, NULL);
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+#endif
 	string filestr = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(csvimport_builder, "csv_import_entry_file")));
 	remove_blank_ends(filestr);
 	if(!filestr.empty()) gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(d), filestr.c_str());
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+	if(gtk_native_dialog_run(GTK_NATIVE_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
+#else
 	if(gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
+#endif
 		const gchar *file_str = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(d));
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(csvimport_builder, "csv_import_entry_file")), file_str);
 		string name_str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(csvimport_builder, "csv_import_entry_name")));
@@ -33963,22 +33995,38 @@ void on_csv_import_button_file_clicked(GtkEntry*, gpointer) {
 			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(csvimport_builder, "csv_import_entry_name")), name_str.c_str());
 		}
 	}
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+	g_object_unref(d);
+#else
 	gtk_widget_destroy(d);
+#endif
 }
 
 void on_csv_export_combobox_delimiter_changed(GtkComboBox *w, gpointer) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(csvexport_builder, "csv_export_entry_delimiter_other")), gtk_combo_box_get_active(w) == DELIMITER_OTHER);
 }
 void on_csv_export_button_file_clicked(GtkEntry*, gpointer) {
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+	GtkFileChooserNative *d = gtk_file_chooser_native_new(_("Select file to export to"), GTK_WINDOW(gtk_builder_get_object(csvexport_builder, "csv_export_dialog")), GTK_FILE_CHOOSER_ACTION_SAVE, _("_Open"), _("_Cancel"));
+#else
 	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file to export to"), GTK_WINDOW(gtk_builder_get_object(csvexport_builder, "csv_export_dialog")), GTK_FILE_CHOOSER_ACTION_SAVE, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT, NULL);
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+#endif
 	string filestr = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(csvexport_builder, "csv_export_entry_file")));
 	remove_blank_ends(filestr);
 	if(!filestr.empty()) gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(d), filestr.c_str());
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+	if(gtk_native_dialog_run(GTK_NATIVE_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
+#else
 	if(gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
+#endif
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(csvexport_builder, "csv_export_entry_file")), gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(d)));
 	}
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+	g_object_unref(d);
+#else
 	gtk_widget_destroy(d);
+#endif
 }
 void on_csv_export_radiobutton_current_toggled(GtkToggleButton *w, gpointer) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(csvexport_builder, "csv_export_entry_matrix")), !gtk_toggle_button_get_active(w));
@@ -34030,16 +34078,28 @@ void on_type_label_matrix_clicked(GtkEntry *w, gpointer user_data) {
 	insert_matrix(str.empty() ? NULL : &mstruct_m, gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW), FALSE, false, false, w);
 }
 void on_type_label_file_clicked(GtkEntry *w, gpointer) {
-	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file"), NULL, GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT, NULL);
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+	GtkFileChooserNative *d = gtk_file_chooser_native_new(_("Select file"), GTK_WINDOW(gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW)), GTK_FILE_CHOOSER_ACTION_OPEN, _("_Open"), _("_Cancel"));
+#else
+	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file"), GTK_WINDOW(gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW)), GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT, NULL);
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+#endif
 	string filestr = gtk_entry_get_text(w);
 	remove_blank_ends(filestr);
 	if(!filestr.empty()) gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(d), filestr.c_str());
 	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(d), filestr.c_str());
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+	if(gtk_native_dialog_run(GTK_NATIVE_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
+#else
 	if(gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
+#endif
 		gtk_entry_set_text(w, gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(d)));
 	}
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+	g_object_unref(d);
+#else
 	gtk_widget_destroy(d);
+#endif
 }
 
 void on_functions_button_deactivate_clicked(GtkButton*, gpointer) {
@@ -35203,8 +35263,12 @@ void on_plot_button_help_clicked(GtkButton, gpointer) {
 	show_help("qalculate-plotting.html", gtk_builder_get_object(plot_builder, "plot_dialog"));
 }
 void on_plot_button_save_clicked(GtkButton*, gpointer) {
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+	GtkFileChooserNative *d = gtk_file_chooser_native_new(_("Select file to export"), GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), GTK_FILE_CHOOSER_ACTION_SAVE, _("_Save"), _("_Cancel"));
+#else
 	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file to export"), GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), GTK_FILE_CHOOSER_ACTION_SAVE, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Save"), GTK_RESPONSE_ACCEPT, NULL);
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+#endif
 	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(d), TRUE);
 	GtkFileFilter *filter = gtk_file_filter_new();
 	gtk_file_filter_set_name(filter, _("Allowed File Types"));
@@ -35227,7 +35291,11 @@ void on_plot_button_save_clicked(GtkButton*, gpointer) {
 		title += ".png";
 		gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(d), title.c_str());
 	}
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+	if(gtk_native_dialog_run(GTK_NATIVE_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
+#else
 	if(gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
+#endif
 		vector<MathStructure> y_vectors;
 		vector<MathStructure> x_vectors;
 		vector<PlotDataParameters*> pdps;
@@ -35244,7 +35312,11 @@ void on_plot_button_save_clicked(GtkButton*, gpointer) {
 			}
 		}
 	}
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+	g_object_unref(d);
+#else
 	gtk_widget_destroy(d);
+#endif
 }
 void update_plot() {
 	vector<MathStructure> y_vectors;
