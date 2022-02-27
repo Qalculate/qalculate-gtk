@@ -1,3 +1,20 @@
+2022-02-27 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add option to only show parsed or entered expression in history
+	* Do not add duplicate results to history
+	* Only apply (disabled) copy separator to single numbers and also replace Unicode minus symbol, and disable copy separator by default
+	* Set text/html, UTF8_STRING, and STRING clipboard targets when copying text
+	* Replace operators in pasted expression
+
+2022-02-25 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix completion visible after expression cleared with key repetition (stop updating completion if expression has changed during popup resize)
+	* Use GtkFileChooserNative
+
+2022-02-17 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Do not show parsed value in history if the same as entered expression
+
 2022-02-13 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Keep custom language setting (manually set in configuration file)

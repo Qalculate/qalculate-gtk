@@ -67,6 +67,9 @@
 #	define unordered_map Sgi::hash_map
 #endif
 
+#define VERSION_BEFORE(i1, i2, i3) (version_numbers[0] < i1 || (version_numbers[0] == i1 && (version_numbers[1] < i2 || (version_numbers[1] == i2 && version_numbers[2] < i3))))
+#define VERSION_AFTER(i1, i2, i3) (version_numbers[0] > i1 || (version_numbers[0] == i1 && (version_numbers[1] > i2 || (version_numbers[1] == i2 && version_numbers[2] > i3))))
+
 using std::string;
 using std::cout;
 using std::vector;
@@ -173,6 +176,7 @@ extern Unit *selected_to_unit;
 bool save_mode_on_exit;
 bool save_defs_on_exit;
 bool clear_history_on_exit = false;
+int history_expression_type = 2;
 int gtk_theme = -1;
 bool use_custom_result_font, use_custom_expression_font, use_custom_status_font, use_custom_keypad_font, use_custom_app_font, use_custom_history_font;
 bool save_custom_result_font = false, save_custom_expression_font = false, save_custom_status_font = false, save_custom_keypad_font = false, save_custom_app_font = false, save_custom_history_font = false;
@@ -560,7 +564,7 @@ void replace_lower_case_e(string &str) {
 	}
 }
 
-string unhtmlize(string str) {
+string unhtmlize(string str, bool b_ascii = false) {
 	size_t i = 0, i2;
 	while(true) {
 		i = str.find("<", i);
@@ -575,8 +579,8 @@ string unhtmlize(string str) {
 				size_t i3 = str.find("</sup>", i2 + 1);
 				if(i3 != string::npos) {
 					string str2 = unhtmlize(str.substr(i + 5, i3 - i - 5));
-					if(str2.length() == 1 && str2[0] == '2') str.replace(i, i3 - i + 6, SIGN_POWER_2);
-					else if(str2.length() == 1 && str2[0] == '3') str.replace(i, i3 - i + 6, SIGN_POWER_3);
+					if(!b_ascii && str2.length() == 1 && str2[0] == '2') str.replace(i, i3 - i + 6, SIGN_POWER_2);
+					else if(!b_ascii && str2.length() == 1 && str2[0] == '3') str.replace(i, i3 - i + 6, SIGN_POWER_3);
 					else if(str.length() == i3 + 6 && (unicode_length(str2) == 1 || str2.find_first_not_of(NUMBERS) == string::npos)) str.replace(i, i3 - i + 6, string("^") + str2);
 					else str.replace(i, i3 - i + 6, string("^(") + str2 + ")");
 					continue;
@@ -592,7 +596,7 @@ string unhtmlize(string str) {
 		} else if(i2 - i == 17 && str.substr(i + 1, 16) == "i class=\"symbol\"") {
 			size_t i3 = str.find("</i>", i2 + 1);
 			if(i3 != string::npos) {
-				string name = unhtmlize(str.substr(i2 + 1, i3 - i2 - 1));
+				string name = unhtmlize(str.substr(i2 + 1, i3 - i2 - 1), b_ascii);
 				if(name.length() == 1 && ((name[0] >= 'a' && name[0] <= 'z') || (name[0] >= 'A' && name[0] <= 'Z'))) {
 					name.insert(0, 1, '\\');
 				} else {
@@ -613,6 +617,43 @@ string unhtmlize(string str) {
 	gsub("&hairsp;", "", str);
 	gsub("&nbsp;", " ", str);
 	gsub("&thinsp;", THIN_SPACE, str);
+	return str;
+}
+
+void remove_separator(string &copy_text) {
+	for(size_t i = ((CALCULATOR->local_digit_group_separator.empty() || CALCULATOR->local_digit_group_separator == " ") ? 1 : 0); i < 3; i++) {
+		string str_sep;
+		if(i == 0) str_sep = CALCULATOR->local_digit_group_separator;
+		else if(i == 1) str_sep = THIN_SPACE;
+		else str_sep = " ";
+		size_t index = copy_text.find(str_sep);
+		while(index != string::npos) {
+			if(index > 0 && index + str_sep.length() < copy_text.length() && copy_text[index - 1] >= '0' && copy_text[index - 1] <= '9' && copy_text[index + str_sep.length()] >= '0' && copy_text[index + str_sep.length()] <= '9') {
+				copy_text.erase(index, str_sep.length());
+			} else {
+				index++;
+			}
+			index = copy_text.find(str_sep, index);
+		}
+	}
+}
+
+string unformat(const string &str_pre, bool single_number) {
+	string str = str_pre;
+	remove_separator(str);
+	gsub(SIGN_MINUS, "-", str);
+	if(single_number) {
+		if(str.find_first_not_of(MINUS NUMBERS COMMA DOT) != string::npos) return str_pre;
+	} else {
+		gsub(SIGN_MULTIPLICATION, "*", str);
+		gsub(SIGN_MULTIDOT, "*", str);
+		gsub(SIGN_MIDDLEDOT, "*", str);
+		gsub(THIN_SPACE, "", str);
+		gsub(SIGN_DIVISION, "/", str);
+		gsub(SIGN_DIVISION_SLASH, "/", str);
+		gsub(SIGN_SQRT, "sqrt", str);
+		gsub("Ω", "ohm", str);
+	}
 	return str;
 }
 
@@ -810,22 +851,14 @@ int completion_names_match(string name, const string &str, size_t minlength = 0,
 	return (b_match ? 2 : 0);
 }
 
-void remove_separator(string &copy_text) {
-	for(size_t i = ((CALCULATOR->local_digit_group_separator.empty() || CALCULATOR->local_digit_group_separator == " ") ? 1 : 0); i < 3; i++) {
-		string str_sep;
-		if(i == 0) str_sep = CALCULATOR->local_digit_group_separator;
-		else if(i == 1) str_sep = THIN_SPACE;
-		else str_sep = " ";
-		size_t index = copy_text.find(str_sep);
-		while(index != string::npos) {
-			if(index > 0 && index + str_sep.length() < copy_text.length() && copy_text[index - 1] >= '0' && copy_text[index - 1] <= '9' && copy_text[index + str_sep.length()] >= '0' && copy_text[index + str_sep.length()] <= '9') {
-				copy_text.erase(index, str_sep.length());
-			} else {
-				index++;
-			}
-			index = copy_text.find(str_sep, index);
-		}
-	}
+string copy_text;
+
+void end_cb(GtkClipboard*, gpointer) {}
+void get_cb(GtkClipboard* cb, GtkSelectionData* sd, guint info, gpointer) {
+	if(info == 1) gtk_selection_data_set(sd, gtk_selection_data_get_target(sd), 8, reinterpret_cast<const guchar*>(copy_text.c_str()), copy_text.length());
+	else if(info == 2) gtk_selection_data_set_text(sd, unhtmlize(copy_text).c_str(), -1);
+	else if(info == 4) gtk_selection_data_set_text(sd, unformat(unhtmlize(copy_text, true), false).c_str(), -1);
+	else gtk_selection_data_set_text(sd, unformat(unhtmlize(copy_text), true).c_str(), -1);
 }
 
 gint help_width = -1, help_height = -1;
@@ -10502,9 +10535,10 @@ void reload_history(gint from_index) {
 						if(inhistory_type[i + 1] == QALCULATE_HISTORY_RPN_OPERATION) expr_str = ("RPN Operation");
 						else if(inhistory_type[i + 1] == QALCULATE_HISTORY_REGISTER_MOVED) expr_str = ("RPN Register Moved");
 						else expr_str = inhistory[i + 1];
-						history_str = fix_history_string(expr_str);
+						if(history_expression_type == 0 && !inhistory[i].empty()) history_str = fix_history_string_new(inhistory[i]);
+						else history_str = fix_history_string(expr_str);
 						string str2;
-						bool b_parse = (history_str != remove_italic(inhistory[i]));
+						bool b_parse = history_expression_type > 1 && (history_str != remove_italic(inhistory[i]));
 						if(b_parse) {
 							history_str += "<span font-style=\"italic\" foreground=\"";
 							history_str += history_parse_color;
@@ -10528,7 +10562,8 @@ void reload_history(gint from_index) {
 						gint w = 0;
 						pango_layout_get_pixel_size(layout, &w, NULL);
 						if(w > history_width_e) {
-							history_str = fix_history_string(expr_str);
+							if(history_expression_type == 0 && !inhistory[i].empty()) history_str = fix_history_string_new(inhistory[i]);
+							else history_str = fix_history_string(expr_str);
 							add_line_breaks(history_str, 1, 0);
 							if(b_parse) {
 								str2 += " ";
@@ -11148,6 +11183,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	GtkTreeIter history_iter;
 
 	bool b_rpn_operation = false;
+	int history_index_bak = history_index;
 
 	if(update_history) {
 		if(update_parse || register_moved || current_inhistory_index < 0) {
@@ -11464,13 +11500,54 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				result_text = ellipsize_result(result_text, 5000);
 			}
 		}
-		if(parsed_text.length() > 500000) {
+		if(update_parse && parsed_text.length() > 500000) {
 			parsed_text = fix_history_string(ellipsize_result(unhtmlize(parsed_text), 5000));
 		}
+		bool b_approx = result_text_approximate || mstruct->isApproximate();
+		if((!update_parse || (!rpn_mode && !register_moved && !b_rpn_operation && nr_of_new_expressions > 1)) && current_inhistory_index >= 0 && stack_index == 0 && transformation.empty() && !CALCULATOR->message() && inhistory[current_inhistory_index] == result_text && inhistory_type[current_inhistory_index] == (b_approx ? QALCULATE_HISTORY_RESULT_APPROXIMATE : QALCULATE_HISTORY_RESULT)) {
+			if(update_parse) {
+				int b = 0;
+				for(size_t i = current_inhistory_index; i < inhistory.size(); i++) {
+					if(b == 1 && inhistory_type[i] == QALCULATE_HISTORY_EXPRESSION) {
+						if(inhistory[i] == inhistory[inhistory_index - 1]) {
+							b = 2;
+						}
+						break;
+					} else if(b == 1) {
+						break;
+					} else if(inhistory_type[i] == QALCULATE_HISTORY_PARSE || inhistory_type[i] == QALCULATE_HISTORY_PARSE_APPROXIMATE) {
+						if((inhistory_type[i] == QALCULATE_HISTORY_PARSE_APPROXIMATE) == parsed_approx && inhistory[i] == parsed_text) {
+							b = 1;
+						} else {
+							break;
+						}
+					}
+				}
+				if(b == 2) {
+					nr_of_new_expressions--;
+					update_history = false;
+					history_index = history_index_bak;
+					gtk_list_store_remove(historystore, &history_iter);
+					inhistory_type.pop_back();
+					inhistory_protected.pop_back();
+					inhistory.pop_back();
+					inhistory_value.pop_back();
+					history_parsed.pop_back();
+					history_answer.pop_back();
+				}
+			} else {
+				update_history = false;
+				history_index = history_index_bak;
+			}
+		}
+	}
+	if(stack_index == 0 && update_history) {
 		if(update_parse) {
 			gchar *expr_str = NULL;
 			gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 0, &expr_str, -1);
-			string str = expr_str;
+			string str;
+			if(history_expression_type == 0 && !parsed_text.empty()) str = fix_history_string_new(parsed_text);
+			else str = expr_str;
 			string str2;
 			if(!parsed_approx) {
 				str2 = "=";
@@ -11487,7 +11564,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				inhistory_protected.insert(inhistory_protected.begin() + inhistory_index, false);
 				inhistory_value.insert(inhistory_value.begin() + inhistory_index, nr_of_new_expressions);
 			}
-			bool b_parse = (expr_str != remove_italic(parsed_text));
+			bool b_parse = history_expression_type > 1 && (expr_str != remove_italic(parsed_text));
 			if(b_parse) {
 				str += "<span font-style=\"italic\" foreground=\"";
 				str += history_parse_color;
@@ -11506,7 +11583,8 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			gint w = 0;
 			pango_layout_get_pixel_size(layout, &w, NULL);
 			if(w > history_width_e) {
-				str = expr_str;
+				if(history_expression_type == 0 && !parsed_text.empty()) str = fix_history_string_new(parsed_text);
+				else str = expr_str;
 				add_line_breaks(str, 1, 0);
 				if(b_parse) {
 					str2 += " ";
@@ -11603,7 +11681,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			gtk_widget_set_tooltip_text(resultview, str.length() < 1000 ? str.c_str() : "");
 		}
 		do_scroll = true;
-	} else {
+	} else if(stack_index == 0) {
 		int history_index_bak = history_index;
 		error_icon = display_errors(&history_index, supress_dialog ? NULL : GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), &inhistory_index, 1, supress_dialog ? NULL : &implicit_warning);
 		do_scroll = (history_index != history_index_bak);
@@ -19608,7 +19686,7 @@ void load_preferences() {
 
 	keep_function_dialog_open = false;
 
-	copy_separator = true;
+	copy_separator = false;
 
 	use_e_notation = false;
 
@@ -19668,6 +19746,7 @@ void load_preferences() {
 	save_mode_on_exit = true;
 	save_defs_on_exit = true;
 	clear_history_on_exit = false;
+	history_expression_type = 2;
 	hyp_is_on = false;
 	inv_is_on = false;
 	use_custom_result_font = false;
@@ -19854,6 +19933,8 @@ void load_preferences() {
 					save_defs_on_exit = v;
 				} else if(svar == "clear_history_on_exit") {
 					clear_history_on_exit = v;
+				} else if(svar == "history_expression_type") {
+					history_expression_type = v;
 				} else if(svar == "ignore_locale") {
 					ignore_locale = v;
 				} else if(svar == "language") {
@@ -20350,7 +20431,9 @@ void load_preferences() {
 				} else if(svar == "caret_as_xor") {
 					caret_as_xor = v;
 				} else if(svar == "copy_separator") {
-					copy_separator = v;
+					if(VERSION_AFTER(4, 0, 0)) {
+						copy_separator = v;
+					}
 				} else if(svar == "decimal_comma") {
 					b_decimal_comma = v;
 					if(v == 0) CALCULATOR->useDecimalPoint(evalops.parse_options.comma_as_separator);
@@ -20913,6 +20996,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "save_mode_on_exit=%i\n", save_mode_on_exit);
 	fprintf(file, "save_definitions_on_exit=%i\n", save_defs_on_exit);
 	fprintf(file, "clear_history_on_exit=%i\n", clear_history_on_exit);
+	fprintf(file, "history_expression_type=%i\n", history_expression_type);
 	fprintf(file, "ignore_locale=%i\n", ignore_locale);
 	if(!custom_lang.empty()) fprintf(file, "language=%s\n", custom_lang.c_str());
 	fprintf(file, "load_global_definitions=%i\n", load_global_defs);
@@ -22390,6 +22474,10 @@ void on_preferences_combo_title_changed(GtkComboBox *w, gpointer) {
 	title_type = gtk_combo_box_get_active(w);
 	title_modified = false;
 	update_window_title();
+}
+void on_preferences_combo_history_expression_changed(GtkComboBox *w, gpointer) {
+	history_expression_type = gtk_combo_box_get_active(w);
+	reload_history();
 }
 void on_preferences_checkbutton_copy_separator_toggled(GtkToggleButton *w, gpointer) {
 	copy_separator = gtk_toggle_button_get_active(w);
@@ -24526,6 +24614,7 @@ gboolean do_completion_timeout(gpointer) {
 	completion_timeout_id = 0;
 	return FALSE;
 }
+
 void on_expressionbuffer_changed(GtkTextBuffer *o, gpointer) {
 	if(completion_timeout_id != 0) {
 		g_source_remove(completion_timeout_id);
@@ -24553,6 +24642,62 @@ void on_expressionbuffer_changed(GtkTextBuffer *o, gpointer) {
 	if(result_text.empty() && !autocalc_history_timeout_id && (!chain_mode || auto_calculate)) return;
 	if(!dont_change_index) expression_history_index = -1;
 	if((!o || !auto_calculate) && !rpn_mode) clearresult();
+}
+
+void on_expressionbuffer_paste_done(GtkTextBuffer*, GtkClipboard *cb, gpointer) {
+	if(!printops.use_unicode_signs || expression_undo_buffer.size() < 2) return;
+	gchar *cb_gtext = gtk_clipboard_wait_for_text(cb);
+	if(!cb_gtext) return;
+	string cb_text = cb_gtext;
+	if(cb_text.empty() || cb_text.length() == 1) {
+		g_free(cb_gtext);
+		return;
+	}
+	gsub("*", expression_times_sign(), cb_text);
+	gsub("/", expression_divide_sign(), cb_text);
+	gsub("*", expression_sub_sign(), cb_text);
+	if(cb_text == cb_gtext) {
+		g_free(cb_gtext);
+		return;
+	}
+	GtkTextIter istart, iend;
+	gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
+	GtkTextIter ipos;
+	gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, gtk_text_buffer_get_insert(expressionbuffer));
+	gint index = gtk_text_iter_get_offset(&ipos);
+	gint pos = unicode_length(cb_gtext);
+	bool b = false;
+	string text = expression_undo_buffer[expression_undo_buffer.size() - 2];
+	string test_text = text;
+	for(size_t i = 0; i < text.length(); i++) {
+		if(pos == index) {
+			test_text.insert(i, cb_gtext);
+			text.insert(i, cb_text);
+			b = true;
+			break;
+		}
+		while(i + 1 < text.length() && text[i + 1] < 0 && (signed char) text[i + 1] < 0 && (unsigned char) text[i + 1] < 0xC0) {
+			i++;
+		}
+		pos++;
+	}
+	if(!b) {
+		text += cb_text;
+		test_text += cb_gtext;
+	}
+	if(test_text != get_expression_text()) {
+		g_free(cb_gtext);
+		return;
+	}
+	block_add_to_undo++;
+	gtk_text_buffer_set_text(expressionbuffer, text.c_str(), -1);
+	gtk_text_buffer_get_iter_at_offset(expressionbuffer, &ipos, index);
+	if(gtk_text_buffer_get_has_selection(expressionbuffer)) gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
+	else gtk_text_buffer_place_cursor(expressionbuffer, &ipos);
+	block_add_to_undo--;
+	expression_undo_buffer.pop_back();
+	expression_undo_buffer.push_back(text);
+	g_free(cb_gtext);
 }
 
 void on_convert_entry_unit_changed(GtkEditable *w, gpointer) {
@@ -26101,11 +26246,14 @@ void history_copy(bool full_text) {
 		int index = selected_rows[0];
 		if(index > 0 && ((inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION && (inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT || inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT_APPROXIMATE)) || inhistory_type[index] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[index] == QALCULATE_HISTORY_REGISTER_MOVED)) index--;
 		else if((size_t) index < inhistory_type.size() - 1 && (inhistory_type[index] == QALCULATE_HISTORY_PARSE || inhistory_type[index] == QALCULATE_HISTORY_PARSE_WITHEQUALS || inhistory_type[index] == QALCULATE_HISTORY_PARSE_APPROXIMATE) && inhistory_type[index + 1] == QALCULATE_HISTORY_EXPRESSION) index++;
-		string copy_text = unhtmlize(inhistory[index]);
-		if(!copy_separator) {
-			remove_separator(copy_text);
+		copy_text = inhistory[index];
+		if(inhistory_type[index] == QALCULATE_HISTORY_PARSE || inhistory_type[index] == QALCULATE_HISTORY_PARSE_APPROXIMATE || inhistory_type[index] == QALCULATE_HISTORY_RESULT || inhistory_type[index] == QALCULATE_HISTORY_RESULT_APPROXIMATE) {
+			GtkTargetEntry targets[] = {{(gchar*) "text/html", 0, 1}, {(gchar*) "UTF8_STRING", 0, (guint) (copy_separator ? 2 : 3)}, {(gchar*) "STRING", 0, 4}};
+			gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 3, &get_cb, &end_cb, NULL);
+		} else {
+			GtkTargetEntry targets[] = {{(gchar*) "UTF8_STRING", 0, (guint) (copy_separator ? 2 : 3)}, {(gchar*) "STRING", 0, 4}};
+			gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 2, &get_cb, &end_cb, NULL);
 		}
-		gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), copy_text.c_str(), -1);
 	} else {
 		string str;
 		int hindex = 0;
@@ -26118,7 +26266,7 @@ void history_copy(bool full_text) {
 			switch(inhistory_type[hindex]) {
 				case QALCULATE_HISTORY_EXPRESSION: {
 					if(i > 0) str += '\n';
-					str += inhistory[hindex];
+					str += fix_history_string(inhistory[hindex]);
 					add_parse = true;
 					break;
 				}
@@ -26135,7 +26283,7 @@ void history_copy(bool full_text) {
 					break;
 				}
 				case QALCULATE_HISTORY_TRANSFORMATION: {
-					str += inhistory[hindex];
+					str += fix_history_string(inhistory[hindex]);
 					str += ": ";
 					if(hindex > 0 && (inhistory_type[hindex - 1] == QALCULATE_HISTORY_RESULT || inhistory_type[hindex - 1] == QALCULATE_HISTORY_RESULT_APPROXIMATE)) {
 						hindex--;
@@ -26146,7 +26294,7 @@ void history_copy(bool full_text) {
 				case QALCULATE_HISTORY_PARSE: {str += " ";}
 				case QALCULATE_HISTORY_RESULT: {
 					str += "= ";
-					str += unhtmlize(inhistory[hindex]);
+					str += inhistory[hindex];
 					break;
 				}
 				case QALCULATE_HISTORY_PARSE_APPROXIMATE: {str += " ";}
@@ -26158,19 +26306,19 @@ void history_copy(bool full_text) {
 						str += _("approx.");
 						str += " ";
 					}
-					str += unhtmlize(inhistory[hindex]);
+					str += inhistory[hindex];
 					break;
 				}
 				case QALCULATE_HISTORY_PARSE_WITHEQUALS: {
 					str += " ";
-					str += inhistory[hindex];
+					str += fix_history_string(inhistory[hindex]);
 					break;
 				}
 				case QALCULATE_HISTORY_MESSAGE: {}
 				case QALCULATE_HISTORY_WARNING: {}
 				case QALCULATE_HISTORY_ERROR: {}
 				case QALCULATE_HISTORY_OLD: {
-					str += inhistory[hindex];
+					str += fix_history_string(inhistory[hindex]);
 					break;
 				}
 				case QALCULATE_HISTORY_BOOKMARK: {break;}
@@ -26180,10 +26328,9 @@ void history_copy(bool full_text) {
 				goto on_button_history_copy_add_hindex;
 			}
 		}
-		if(!copy_separator) {
-			remove_separator(str);
-		}
-		gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), str.c_str(), -1);
+		copy_text = str;
+		GtkTargetEntry targets[] = {{(gchar*) "text/html", 0, 1}, {(gchar*) "UTF8_STRING", 0, (guint) (copy_separator ? 2 : 3)}, {(gchar*) "STRING", 0, 4}};
+		gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 3, &get_cb, &end_cb, NULL);
 	}
 	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)));
 }
@@ -30284,12 +30431,11 @@ void on_menu_item_save_image_activate(GtkMenuItem*, gpointer) {
 	gtk_widget_destroy(d);
 #endif
 }
+
 void on_menu_item_copy_activate(GtkMenuItem*, gpointer) {
-	string copy_text = get_result_text();
-	if(!copy_separator) {
-		remove_separator(copy_text);
-	}
-	gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), copy_text.c_str(), -1);
+	copy_text = result_text;
+	GtkTargetEntry targets[] = {{(gchar*) "text/html", 0, 1}, {(gchar*) "UTF8_STRING", 0, (guint) (copy_separator ? 2 : 3)}, {(gchar*) "STRING", 0, 4}};
+	gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 3, &get_cb, &end_cb, NULL);
 }
 void on_menu_item_precision_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = get_precision_dialog();
@@ -30562,7 +30708,9 @@ void on_popup_menu_item_stack_copytext_activate(GtkMenuItem*, gpointer) {
 	if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), &model, &iter)) return;
 	gchar *gstr;
 	gtk_tree_model_get(model, &iter, 1, &gstr, -1);
-	gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), gstr, -1);
+	copy_text = gstr;
+	GtkTargetEntry targets[] = {{(gchar*) "UTF8_STRING", 0, (guint) (copy_separator ? 2 : 3)}, {(gchar*) "STRING", 0, 4}};
+	gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 2, &get_cb, &end_cb, NULL);
 	g_free(gstr);
 }
 void on_popup_menu_item_stack_inserttext_activate(GtkMenuItem*, gpointer) {

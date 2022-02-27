@@ -162,6 +162,7 @@ extern bool show_keypad, show_history, show_stack, show_convert, continuous_conv
 extern bool save_mode_on_exit, save_defs_on_exit, load_global_defs, hyp_is_on, inv_is_on, fetch_exchange_rates_at_startup, clear_history_on_exit;
 extern int allow_multiple_instances;
 extern int title_type;
+extern int history_expression_type;
 extern bool display_expression_status;
 extern int expression_lines;
 extern int gtk_theme;
@@ -2768,6 +2769,7 @@ GtkWidget* get_preferences_dialog(void) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_keep_above")), always_on_top);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_persistent_keypad")), persistent_keypad);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_title")), title_type);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_history_expression")), history_expression_type);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_unicode_signs")), printops.use_unicode_signs);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_copy_separator")), copy_separator);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_lower_case_numbers")), printops.lower_case_numbers);

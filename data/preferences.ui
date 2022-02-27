@@ -117,23 +117,6 @@
                 <property name="orientation">vertical</property>
                 <property name="spacing">12</property>
                 <child>
-                  <object class="GtkCheckButton" id="preferences_checkbutton_save_mode">
-                    <property name="label" translatable="yes">Save mode on exit</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">If the mode of the calculator shall be restored</property>
-                    <property name="use-underline">True</property>
-                    <property name="draw-indicator">True</property>
-                    <signal name="toggled" handler="on_preferences_checkbutton_save_mode_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_save_defs">
                     <property name="label" translatable="yes">Save definitions on exit</property>
                     <property name="visible">True</property>
@@ -147,7 +130,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">1</property>
+                    <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
@@ -163,7 +146,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">2</property>
+                    <property name="position">1</property>
                   </packing>
                 </child>
                 <child>
@@ -182,7 +165,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">3</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
                 <child>
@@ -194,6 +177,23 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="use-underline">True</property>
                     <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_check_version_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_save_mode">
+                    <property name="label" translatable="yes">Save mode on exit</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If the mode of the calculator shall be restored</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_save_mode_toggled" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -216,7 +216,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">9</property>
+                    <property name="position">5</property>
                   </packing>
                 </child>
                 <child>
@@ -234,7 +234,50 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">10</property>
+                    <property name="position">6</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="box_history_expression">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="spacing">12</property>
+                    <child>
+                      <object class="GtkLabel" id="label_history_expression">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Expression in history</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBoxText" id="preferences_combo_history_expression">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="hexpand">True</property>
+                        <items>
+                          <item translatable="yes">Parsed</item>
+                          <item translatable="yes">Entered</item>
+                          <item translatable="yes">Entered + parsed</item>
+                        </items>
+                        <signal name="changed" handler="on_preferences_combo_history_expression_changed" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">7</property>
                   </packing>
                 </child>
                 <child>
@@ -291,7 +334,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">11</property>
+                    <property name="position">8</property>
                   </packing>
                 </child>
                 <child>
@@ -331,7 +374,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">12</property>
+                    <property name="position">9</property>
                   </packing>
                 </child>
               </object>

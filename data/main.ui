@@ -53,6 +53,7 @@
   <object class="GtkTextBuffer" id="expressionbuffer">
     <signal name="changed" handler="on_expressionbuffer_changed" swapped="no"/>
     <signal name="notify::cursor-position" handler="on_expressionbuffer_cursor_position_notify" swapped="no"/>
+    <signal name="paste-done" handler="on_expressionbuffer_paste_done" swapped="no"/>
   </object>
   <object class="GtkMenu" id="menu_bases">
     <property name="visible">True</property>
