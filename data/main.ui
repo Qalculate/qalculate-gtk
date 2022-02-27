@@ -1121,6 +1121,15 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkMenuItem" id="menu_item_copy_ascii">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Copy Result as ASCII</property>
+                        <property name="use-underline">True</property>
+                        <signal name="activate" handler="on_menu_item_copy_ascii_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkSeparatorMenuItem" id="separator24">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
@@ -8121,6 +8130,15 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       </object>
     </child>
     <child>
+      <object class="GtkMenuItem" id="popup_menu_item_history_copy_ascii">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="label" translatable="yes">Copy ASCII</property>
+        <property name="use-underline">True</property>
+        <signal name="activate" handler="on_popup_menu_item_history_copy_ascii_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
       <object class="GtkMenuItem" id="popup_menu_item_history_copy_full_text">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
@@ -8241,6 +8259,15 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
         <property name="label" translatable="yes">_Copy</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_menu_item_copy_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_copy_ascii">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="label" translatable="yes">Copy ASCII</property>
+        <property name="use-underline">True</property>
+        <signal name="activate" handler="on_menu_item_copy_ascii_activate" swapped="no"/>
       </object>
     </child>
     <child>

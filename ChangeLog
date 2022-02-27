@@ -2,8 +2,9 @@
 
 	* Add option to only show parsed or entered expression in history
 	* Do not add duplicate results to history
-	* Only apply (disabled) copy separator to single numbers and also replace Unicode minus symbol, and disable copy separator by default
-	* Set text/html, UTF8_STRING, and STRING clipboard targets when copying text
+	* Add copy ASCII menu items and replace copy separator with copy ASCII by default option
+	* Replace first Unicode minus with hyphen-minus when copying result, not using menu item, if text string does not contains other operators or Unicode symbols
+	* Set text/html, text/rtf, UTF8_STRING, and STRING clipboard targets when copying text
 	* Replace operators in pasted expression
 
 2022-02-25 Hanna Knutsson <hanna.knutsson@protonmail.com>

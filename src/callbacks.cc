@@ -184,7 +184,7 @@ string custom_result_font, custom_expression_font, custom_status_font, custom_ke
 int scale_n = 0;
 bool hyp_is_on, inv_is_on;
 bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad, minimal_mode, show_bases_keypad;
-bool copy_separator;
+bool copy_ascii;
 bool caret_as_xor = false;
 extern bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message;
 extern int allow_multiple_instances;
@@ -638,22 +638,28 @@ void remove_separator(string &copy_text) {
 	}
 }
 
-string unformat(const string &str_pre, bool single_number) {
-	string str = str_pre;
+string replace_first_minus(const string &str) {
+	if(str.find(SIGN_MINUS) == 0 && str.find_first_of(OPERATORS) == string::npos) {
+		for(size_t i = strlen(SIGN_MINUS); i < str.length(); i++) {
+			if((signed char) str[i] < 0) return str;
+		}
+		string str_new = str;
+		str_new.replace(0, strlen(SIGN_MINUS), "-");
+		return str_new;
+	}
+	return str;
+}
+string unformat(string str) {
 	remove_separator(str);
 	gsub(SIGN_MINUS, "-", str);
-	if(single_number) {
-		if(str.find_first_not_of(MINUS NUMBERS COMMA DOT) != string::npos) return str_pre;
-	} else {
-		gsub(SIGN_MULTIPLICATION, "*", str);
-		gsub(SIGN_MULTIDOT, "*", str);
-		gsub(SIGN_MIDDLEDOT, "*", str);
-		gsub(THIN_SPACE, "", str);
-		gsub(SIGN_DIVISION, "/", str);
-		gsub(SIGN_DIVISION_SLASH, "/", str);
-		gsub(SIGN_SQRT, "sqrt", str);
-		gsub("Ω", "ohm", str);
-	}
+	gsub(SIGN_MULTIPLICATION, "*", str);
+	gsub(SIGN_MULTIDOT, "*", str);
+	gsub(SIGN_MIDDLEDOT, "*", str);
+	gsub(THIN_SPACE, "", str);
+	gsub(SIGN_DIVISION, "/", str);
+	gsub(SIGN_DIVISION_SLASH, "/", str);
+	gsub(SIGN_SQRT, "sqrt", str);
+	gsub("Ω", "ohm", str);
 	return str;
 }
 
@@ -856,9 +862,10 @@ string copy_text;
 void end_cb(GtkClipboard*, gpointer) {}
 void get_cb(GtkClipboard* cb, GtkSelectionData* sd, guint info, gpointer) {
 	if(info == 1) gtk_selection_data_set(sd, gtk_selection_data_get_target(sd), 8, reinterpret_cast<const guchar*>(copy_text.c_str()), copy_text.length());
+	else if(info == 4) gtk_selection_data_set(sd, gtk_selection_data_get_target(sd), 8, reinterpret_cast<const guchar*>(unhtmlize(copy_text).c_str()), copy_text.length());
+	else if(info == 3) gtk_selection_data_set_text(sd, replace_first_minus(unhtmlize(copy_text)).c_str(), -1);
 	else if(info == 2) gtk_selection_data_set_text(sd, unhtmlize(copy_text).c_str(), -1);
-	else if(info == 4) gtk_selection_data_set_text(sd, unformat(unhtmlize(copy_text, true), false).c_str(), -1);
-	else gtk_selection_data_set_text(sd, unformat(unhtmlize(copy_text), true).c_str(), -1);
+	else gtk_selection_data_set_text(sd, unformat(unhtmlize(copy_text)).c_str(), -1);
 }
 
 gint help_width = -1, help_height = -1;
@@ -1368,6 +1375,16 @@ void block_completion() {
 }
 void unblock_completion() {
 	completion_blocked--;
+}
+
+void copy_result(int ascii = -1) {
+	if(ascii > 0 || (ascii < 0 && copy_ascii)) {
+		gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), unformat(unhtmlize(result_text, true)).c_str(), -1);
+	} else {
+		copy_text = result_text;
+		GtkTargetEntry targets[] = {{(gchar*) "text/html", 0, 1}, {(gchar*) "text/rtf", 0, 4}, {(gchar*) "UTF8_STRING", 0, (guint) (ascii < 0 ? 3 : 2)}, {(gchar*) "STRING", 0, 5}};
+		gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 4, &get_cb, &end_cb, NULL);
+	}
 }
 
 gboolean do_autocalc_history_timeout(gpointer);
@@ -6743,7 +6760,8 @@ void update_accels() {
 				break;
 			}
 			case SHORTCUT_TYPE_COPY_RESULT: {
-				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_copy")))), it->second.key, (GdkModifierType) it->second.modifier);
+				if(!copy_ascii) gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_copy")))), it->second.key, (GdkModifierType) it->second.modifier);
+				else gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_copy_ascii")))), it->second.key, (GdkModifierType) it->second.modifier);
 				break;
 			}
 			case SHORTCUT_TYPE_SAVE_IMAGE: {
@@ -19686,7 +19704,7 @@ void load_preferences() {
 
 	keep_function_dialog_open = false;
 
-	copy_separator = false;
+	copy_ascii = false;
 
 	use_e_notation = false;
 
@@ -20431,9 +20449,9 @@ void load_preferences() {
 				} else if(svar == "caret_as_xor") {
 					caret_as_xor = v;
 				} else if(svar == "copy_separator") {
-					if(VERSION_AFTER(4, 0, 0)) {
-						copy_separator = v;
-					}
+					copy_ascii = !v;
+				} else if(svar == "copy_ascii") {
+					copy_ascii = v;
 				} else if(svar == "decimal_comma") {
 					b_decimal_comma = v;
 					if(v == 0) CALCULATOR->useDecimalPoint(evalops.parse_options.comma_as_separator);
@@ -21057,7 +21075,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "spell_out_logical_operators=%i\n", printops.spell_out_logical_operators);
 	fprintf(file, "caret_as_xor=%i\n", caret_as_xor);
 	fprintf(file, "digit_grouping=%i\n", printops.digit_grouping);
-	fprintf(file, "copy_separator=%i\n", copy_separator);
+	fprintf(file, "copy_ascii=%i\n", copy_ascii);
 	fprintf(file, "decimal_comma=%i\n", b_decimal_comma);
 	fprintf(file, "dot_as_separator=%i\n", dot_question_asked ? evalops.parse_options.dot_as_separator : -1);
 	fprintf(file, "comma_as_separator=%i\n", evalops.parse_options.comma_as_separator);
@@ -22479,8 +22497,8 @@ void on_preferences_combo_history_expression_changed(GtkComboBox *w, gpointer) {
 	history_expression_type = gtk_combo_box_get_active(w);
 	reload_history();
 }
-void on_preferences_checkbutton_copy_separator_toggled(GtkToggleButton *w, gpointer) {
-	copy_separator = gtk_toggle_button_get_active(w);
+void on_preferences_checkbutton_copy_ascii_toggled(GtkToggleButton *w, gpointer) {
+	copy_ascii = gtk_toggle_button_get_active(w);
 }
 void on_preferences_checkbutton_lower_case_numbers_toggled(GtkToggleButton *w, gpointer) {
 	printops.lower_case_numbers = gtk_toggle_button_get_active(w);
@@ -23670,7 +23688,7 @@ gboolean on_resultview_button_press_event(GtkWidget*, GdkEventButton *event, gpo
 		return TRUE;
 	}
 	if(event->button == 1 && surface_result && event->x >= gtk_widget_get_allocated_width(resultview) - cairo_image_surface_get_width(surface_result) - 20) {
-		on_menu_item_copy_activate(NULL, NULL);
+		copy_result(-1);
 		// Result was copied
 		show_notification(_("Copied"));
 	}
@@ -24655,7 +24673,7 @@ void on_expressionbuffer_paste_done(GtkTextBuffer*, GtkClipboard *cb, gpointer) 
 	}
 	gsub("*", expression_times_sign(), cb_text);
 	gsub("/", expression_divide_sign(), cb_text);
-	gsub("*", expression_sub_sign(), cb_text);
+	gsub("-", expression_sub_sign(), cb_text);
 	if(cb_text == cb_gtext) {
 		g_free(cb_gtext);
 		return;
@@ -26237,7 +26255,7 @@ void on_button_history_insert_parsed_text_clicked(GtkButton*, gpointer) {
 	insert_text(unhtmlize(inhistory[index]).c_str());
 	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)));
 }
-void history_copy(bool full_text) {
+void history_copy(bool full_text, int ascii = -1) {
 	if(b_busy) return;
 	vector<size_t> selected_rows;
 	process_history_selection(&selected_rows, NULL, NULL);
@@ -26247,11 +26265,13 @@ void history_copy(bool full_text) {
 		if(index > 0 && ((inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION && (inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT || inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT_APPROXIMATE)) || inhistory_type[index] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[index] == QALCULATE_HISTORY_REGISTER_MOVED)) index--;
 		else if((size_t) index < inhistory_type.size() - 1 && (inhistory_type[index] == QALCULATE_HISTORY_PARSE || inhistory_type[index] == QALCULATE_HISTORY_PARSE_WITHEQUALS || inhistory_type[index] == QALCULATE_HISTORY_PARSE_APPROXIMATE) && inhistory_type[index + 1] == QALCULATE_HISTORY_EXPRESSION) index++;
 		copy_text = inhistory[index];
-		if(inhistory_type[index] == QALCULATE_HISTORY_PARSE || inhistory_type[index] == QALCULATE_HISTORY_PARSE_APPROXIMATE || inhistory_type[index] == QALCULATE_HISTORY_RESULT || inhistory_type[index] == QALCULATE_HISTORY_RESULT_APPROXIMATE) {
-			GtkTargetEntry targets[] = {{(gchar*) "text/html", 0, 1}, {(gchar*) "UTF8_STRING", 0, (guint) (copy_separator ? 2 : 3)}, {(gchar*) "STRING", 0, 4}};
-			gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 3, &get_cb, &end_cb, NULL);
+		if(ascii > 0 || (ascii < 0 && copy_ascii)) {
+			gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), unformat(unhtmlize(copy_text, true)).c_str(), -1);
+		} else if(inhistory_type[index] == QALCULATE_HISTORY_PARSE || inhistory_type[index] == QALCULATE_HISTORY_PARSE_APPROXIMATE || inhistory_type[index] == QALCULATE_HISTORY_RESULT || inhistory_type[index] == QALCULATE_HISTORY_RESULT_APPROXIMATE) {
+			GtkTargetEntry targets[] = {{(gchar*) "text/html", 0, 1}, {(gchar*) "text/rtf", 0, 4}, {(gchar*) "UTF8_STRING", 0, (guint) (ascii < 0 ? 3 : 2)}, {(gchar*) "STRING", 0, 5}};
+			gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 4, &get_cb, &end_cb, NULL);
 		} else {
-			GtkTargetEntry targets[] = {{(gchar*) "UTF8_STRING", 0, (guint) (copy_separator ? 2 : 3)}, {(gchar*) "STRING", 0, 4}};
+			GtkTargetEntry targets[] = {{(gchar*) "UTF8_STRING", 0, (guint) (ascii < 0 ? 3 : 2)}, {(gchar*) "STRING", 0, 5}};
 			gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 2, &get_cb, &end_cb, NULL);
 		}
 	} else {
@@ -26329,13 +26349,17 @@ void history_copy(bool full_text) {
 			}
 		}
 		copy_text = str;
-		GtkTargetEntry targets[] = {{(gchar*) "text/html", 0, 1}, {(gchar*) "UTF8_STRING", 0, (guint) (copy_separator ? 2 : 3)}, {(gchar*) "STRING", 0, 4}};
-		gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 3, &get_cb, &end_cb, NULL);
+		if(ascii > 0 || (ascii < 0 && copy_ascii)) {
+			gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), unformat(unhtmlize(copy_text, true)).c_str(), -1);
+		} else {
+			GtkTargetEntry targets[] = {{(gchar*) "text/html", 0, 1}, {(gchar*) "text/rtf", 0, 4}, {(gchar*) "UTF8_STRING", 0, (guint) (ascii < 0 ? 3 : 2)}, {(gchar*) "STRING", 0, 5}};
+			gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 4, &get_cb, &end_cb, NULL);
+		}
 	}
 	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)));
 }
 void on_button_history_copy_clicked(GtkButton*, gpointer) {
-	history_copy(false);
+	history_copy(false, -1);
 }
 bool history_protected_by_bookmark(size_t hi);
 bool history_protected(size_t hi);
@@ -26630,10 +26654,13 @@ void on_popup_menu_item_history_insert_parsed_text_activate(GtkMenuItem*, gpoint
 	on_button_history_insert_parsed_text_clicked(NULL, NULL);
 }
 void on_popup_menu_item_history_copy_text_activate(GtkMenuItem*, gpointer) {
-	history_copy(false);
+	history_copy(false, 0);
+}
+void on_popup_menu_item_history_copy_ascii_activate(GtkMenuItem*, gpointer) {
+	history_copy(false, 1);
 }
 void on_popup_menu_item_history_copy_full_text_activate(GtkMenuItem*, gpointer) {
-	history_copy(true);
+	history_copy(true, 0);
 }
 bool find_history_bookmark(string str, GtkTreeIter *iter2) {
 	GtkTreeIter iter;
@@ -27093,6 +27120,7 @@ void update_historyview_popup() {
 	}
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_value")), selected_indeces.size() > 0 && selected_index_type[0] != INDEX_TYPE_TXT && selected_index_type.back() != INDEX_TYPE_TXT);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_text")), selected_indeces.size() == 1 && inhistory_type[hi] != QALCULATE_HISTORY_BOOKMARK);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_ascii")), selected_indeces.size() == 1 && inhistory_type[hi] != QALCULATE_HISTORY_BOOKMARK);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_full_text")), !selected_rows.empty());
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_movetotop")), !selected_rows.empty());
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_delete")), !selected_rows.empty());
@@ -30433,9 +30461,10 @@ void on_menu_item_save_image_activate(GtkMenuItem*, gpointer) {
 }
 
 void on_menu_item_copy_activate(GtkMenuItem*, gpointer) {
-	copy_text = result_text;
-	GtkTargetEntry targets[] = {{(gchar*) "text/html", 0, 1}, {(gchar*) "UTF8_STRING", 0, (guint) (copy_separator ? 2 : 3)}, {(gchar*) "STRING", 0, 4}};
-	gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 3, &get_cb, &end_cb, NULL);
+	copy_result(0);
+}
+void on_menu_item_copy_ascii_activate(GtkMenuItem*, gpointer) {
+	copy_result(1);
 }
 void on_menu_item_precision_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = get_precision_dialog();
@@ -30709,8 +30738,12 @@ void on_popup_menu_item_stack_copytext_activate(GtkMenuItem*, gpointer) {
 	gchar *gstr;
 	gtk_tree_model_get(model, &iter, 1, &gstr, -1);
 	copy_text = gstr;
-	GtkTargetEntry targets[] = {{(gchar*) "UTF8_STRING", 0, (guint) (copy_separator ? 2 : 3)}, {(gchar*) "STRING", 0, 4}};
-	gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 2, &get_cb, &end_cb, NULL);
+	if(copy_ascii) {
+		gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), unformat(unhtmlize(copy_text, true)).c_str(), -1);
+	} else {
+		GtkTargetEntry targets[] = {{(gchar*) "UTF8_STRING", 0, 3}, {(gchar*) "STRING", 0, 5}};
+		gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 2, &get_cb, &end_cb, NULL);
+	}
 	g_free(gstr);
 }
 void on_popup_menu_item_stack_inserttext_activate(GtkMenuItem*, gpointer) {
@@ -33428,7 +33461,7 @@ bool do_shortcut(int type, string value) {
 			return true;
 		}
 		case SHORTCUT_TYPE_COPY_RESULT: {
-			on_menu_item_copy_activate(NULL, NULL);
+			copy_result();
 			return true;
 		}
 		case SHORTCUT_TYPE_INSERT_RESULT: {
