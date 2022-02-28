@@ -3206,6 +3206,8 @@ On: 1.1 × 1.1 ≈ 1.2</property>
                                 <property name="show-expanders">False</property>
                                 <property name="enable-grid-lines">vertical</property>
                                 <signal name="button-press-event" handler="on_historyview_button_press_event" swapped="no"/>
+                                <signal name="button-release-event" handler="on_historyview_button_release_event" swapped="no"/>
+                                <signal name="key-press-event" handler="on_historyview_key_press_event" swapped="no"/>
                                 <signal name="popup-menu" handler="on_historyview_popup_menu" swapped="no"/>
                                 <signal name="row-activated" handler="on_historyview_row_activated" swapped="no"/>
                                 <child internal-child="selection">

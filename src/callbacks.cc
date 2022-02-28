@@ -26154,7 +26154,7 @@ void history_operator(string str_sign) {
 	gtk_text_buffer_set_text(expressionbuffer, "", -1);
 	block_add_to_undo--;
 	insert_text(str.c_str());
-	if(!only_one_value) {
+	if(!only_one_value && !auto_calculate) {
 		execute_expression();
 	} else if(rpn_mode) {
 		execute_expression();
@@ -27190,7 +27190,56 @@ void on_historyview_item_editing_canceled(GtkCellRenderer*, gpointer) {
 	b_editing_history = false;
 }
 void on_historyview_row_activated(GtkTreeView*, GtkTreePath *path, GtkTreeViewColumn *column, gpointer);
+bool do_history_edit = false;
+guint historyedit_timeout_id = 0;
+GtkTreePath *historyedit_path = NULL;
+gboolean do_historyedit_timeout(gpointer) {
+	historyedit_timeout_id = 0;
+	if(gtk_tree_selection_path_is_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)), historyedit_path)) gtk_tree_view_set_cursor(GTK_TREE_VIEW(historyview), historyedit_path, gtk_tree_view_get_column(GTK_TREE_VIEW(historyview), 1), TRUE);
+	gtk_tree_path_free(historyedit_path);
+	historyedit_path = NULL;
+	return FALSE;
+}
+gboolean on_historyview_button_release_event(GtkWidget*, GdkEventButton *event, gpointer) {
+	if(event->button != 1 || !do_history_edit || b_editing_history) return FALSE;
+	if(historyedit_timeout_id) {g_source_remove(historyedit_timeout_id); historyedit_timeout_id = 0; gtk_tree_path_free(historyedit_path); historyedit_path = NULL;}
+	historyedit_timeout_id = 0;
+	GtkTreePath *path = NULL;
+	GtkTreeViewColumn *column = NULL;
+	GtkTreeSelection *select = NULL;
+	if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(historyview), event->x, event->y, &path, &column, NULL, NULL)) {
+		select = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
+		if(column == gtk_tree_view_get_column(GTK_TREE_VIEW(historyview), 1) && gtk_tree_selection_path_is_selected(select, path)) {
+			historyedit_path = path;
+			historyedit_timeout_id = g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 250, do_historyedit_timeout, NULL, NULL);
+		} else {
+			gtk_tree_path_free(path);
+		}
+	}
+	return FALSE;
+}
+gboolean on_historyview_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
+	guint state = event->state & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK);
+	state = state & ~GDK_SHIFT_MASK;
+#else
+	guint state = event->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SUPER_MASK | GDK_HYPER_MASK | GDK_META_MASK);
+#endif
+	if(state == 0 && event->keyval == GDK_KEY_F2) {
+		GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
+		if(gtk_tree_selection_count_selected_rows(select) == 1) {
+			GList *selected_list = gtk_tree_selection_get_selected_rows(select, NULL);
+			if(historyedit_timeout_id) {g_source_remove(historyedit_timeout_id); historyedit_timeout_id = 0; gtk_tree_path_free(historyedit_path); historyedit_path = NULL;}
+			gtk_tree_view_set_cursor(GTK_TREE_VIEW(historyview), (GtkTreePath*) selected_list->data, gtk_tree_view_get_column(GTK_TREE_VIEW(historyview), 1), TRUE);
+			g_list_free_full(selected_list, (GDestroyNotify) gtk_tree_path_free);
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
 gboolean on_historyview_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
+	do_history_edit = false;
+	if(historyedit_timeout_id) {g_source_remove(historyedit_timeout_id); historyedit_timeout_id = 0; gtk_tree_path_free(historyedit_path); historyedit_path = NULL;}
 	GtkTreePath *path = NULL;
 	GtkTreeViewColumn *column = NULL;
 	GtkTreeSelection *select = NULL;
@@ -27216,6 +27265,16 @@ gboolean on_historyview_button_press_event(GtkWidget*, GdkEventButton *event, gp
 			on_historyview_row_activated(GTK_TREE_VIEW(historyview), path, column, NULL);
 			gtk_tree_path_free(path);
 			return TRUE;
+		}
+	} else {
+		if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(historyview), event->x, event->y, &path, NULL, NULL, NULL)) {
+			select = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
+			if(gtk_tree_selection_path_is_selected(select, path)) {
+				gtk_tree_path_free(path);
+				do_history_edit = true;
+				return TRUE;
+			}
+			gtk_tree_path_free(path);
 		}
 	}
 	return FALSE;
@@ -27336,6 +27395,8 @@ gboolean on_historyview_popup_menu(GtkWidget*, gpointer) {
 	return TRUE;
 }
 void on_historyview_selection_changed(GtkTreeSelection*, gpointer) {
+	do_history_edit = false;
+	if(historyedit_timeout_id) {g_source_remove(historyedit_timeout_id); historyedit_timeout_id = 0; gtk_tree_path_free(historyedit_path); historyedit_path = NULL;}
 	vector<size_t> selected_rows;
 	vector<size_t> selected_indeces;
 	vector<int> selected_index_type;
@@ -33607,6 +33668,7 @@ gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 			return FALSE;
 		}
 	}
+	if(gtk_widget_has_focus(historyview) && event->keyval == GDK_KEY_F2) return FALSE;
 	if(event->keyval > GDK_KEY_Hyper_R || event->keyval < GDK_KEY_Shift_L) {
 		GtkWidget *w = gtk_window_get_focus(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 		if(gtk_bindings_activate_event(G_OBJECT(o), event)) return TRUE;
