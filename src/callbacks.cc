@@ -453,6 +453,8 @@ PangoLayout *status_layout = NULL;
 #define ITEM_IS_EXPRESSION(x) (HISTORY_IS_EXPRESSION(x) || ((size_t) x < inhistory_type.size() - 1 && HISTORY_IS_PARSE(x) && HISTORY_IS_EXPRESSION(x + 1)) || ((size_t) x < inhistory_type.size() - 2 && HISTORY_IS_MESSAGE(x) && HISTORY_IS_PARSE(x + 1) && HISTORY_IS_EXPRESSION(x + 2) && inhistory[x + 1].empty()))
 #define ITEM_NOT_EXPRESSION(x) (HISTORY_NOT_EXPRESSION(x) && ((size_t) x >= inhistory_type.size() - 1 || HISTORY_NOT_PARSE(x) || HISTORY_NOT_EXPRESSION(x + 1)) && ((size_t) x >= inhistory_type.size() - 2 || HISTORY_NOT_MESSAGE(x) || HISTORY_NOT_PARSE(x + 1) || HISTORY_NOT_EXPRESSION(x + 2) || !inhistory[x + 1].empty()))
 
+#define USE_QUOTES(arg, f) (arg && (arg->suggestsQuotes() || arg->type() == ARGUMENT_TYPE_TEXT) && f->id() != FUNCTION_ID_BASE && f->id() != FUNCTION_ID_BIN && f->id() != FUNCTION_ID_OCT && f->id() != FUNCTION_ID_DEC && f->id() != FUNCTION_ID_HEX)
+
 enum {
 	TITLE_APP,
 	TITLE_RESULT,
@@ -863,7 +865,7 @@ void end_cb(GtkClipboard*, gpointer) {}
 void get_cb(GtkClipboard* cb, GtkSelectionData* sd, guint info, gpointer) {
 	if(info == 1) gtk_selection_data_set(sd, gtk_selection_data_get_target(sd), 8, reinterpret_cast<const guchar*>(copy_text.c_str()), copy_text.length());
 	else if(info == 4) gtk_selection_data_set(sd, gtk_selection_data_get_target(sd), 8, reinterpret_cast<const guchar*>(unhtmlize(copy_text).c_str()), copy_text.length());
-	else if(info == 3) gtk_selection_data_set_text(sd, replace_first_minus(unhtmlize(copy_text)).c_str(), -1);
+	else if(info == 3) gtk_selection_data_set_text(sd, unhtmlize(copy_text).c_str(), -1);
 	else if(info == 2) gtk_selection_data_set_text(sd, unhtmlize(copy_text).c_str(), -1);
 	else gtk_selection_data_set_text(sd, unformat(unhtmlize(copy_text)).c_str(), -1);
 }
@@ -9848,13 +9850,13 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 							argcount--;
 						} else if(argcount > 1 && arg && arg->type() == ARGUMENT_TYPE_SYMBOLIC && ((argcount > 1 && defstr == "undefined" && m[argcount - 1] == m[0].find_x_var()) || (defstr == "\"\"" && m[argcount - 1] == ""))) {
 							argcount--;
-						} else if(m[argcount - 1].isVariable() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr == m[argcount - 1].variable()->referenceName()) {
+						} else if(m[argcount - 1].isVariable() && (!arg || (arg->type() != ARGUMENT_TYPE_TEXT && !arg->suggestsQuotes())) && defstr == m[argcount - 1].variable()->referenceName()) {
 							argcount--;
-						} else if(m[argcount - 1].isInteger() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr.find_first_not_of(NUMBERS, defstr[0] == '-' && defstr.length() > 1 ? 1 : 0) == string::npos && m[argcount - 1].number() == s2i(defstr)) {
+						} else if(m[argcount - 1].isInteger() && (!arg || (arg->type() != ARGUMENT_TYPE_TEXT && !arg->suggestsQuotes())) && defstr.find_first_not_of(NUMBERS, defstr[0] == '-' && defstr.length() > 1 ? 1 : 0) == string::npos && m[argcount - 1].number() == s2i(defstr)) {
 							argcount--;
-						} else if(defstr[0] == '-' && m[argcount - 1].isNegate() && m[argcount - 1][0].isInteger() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr.find_first_not_of(NUMBERS, 1) == string::npos && m[argcount - 1][0].number() == -s2i(defstr)) {
+						} else if(defstr[0] == '-' && m[argcount - 1].isNegate() && m[argcount - 1][0].isInteger() && (!arg || (arg->type() != ARGUMENT_TYPE_TEXT && !arg->suggestsQuotes())) && defstr.find_first_not_of(NUMBERS, 1) == string::npos && m[argcount - 1][0].number() == -s2i(defstr)) {
 							argcount--;
-						} else if(defstr[0] == '-' && m[argcount - 1].isMultiplication() && m[argcount - 1].size() == 2 && (m[argcount - 1][0].isMinusOne() || (m[argcount - 1][0].isNegate() && m[argcount - 1][0][0].isOne())) && m[argcount - 1][1].isInteger() && (!arg || arg->type() != ARGUMENT_TYPE_TEXT) && defstr.find_first_not_of(NUMBERS, 1) == string::npos && m[argcount - 1][1].number() == -s2i(defstr)) {
+						} else if(defstr[0] == '-' && m[argcount - 1].isMultiplication() && m[argcount - 1].size() == 2 && (m[argcount - 1][0].isMinusOne() || (m[argcount - 1][0].isNegate() && m[argcount - 1][0][0].isOne())) && m[argcount - 1][1].isInteger() && (!arg || (arg->type() != ARGUMENT_TYPE_TEXT && !arg->suggestsQuotes())) && defstr.find_first_not_of(NUMBERS, 1) == string::npos && m[argcount - 1][1].number() == -s2i(defstr)) {
 							argcount--;
 						} else if(m[argcount - 1].isSymbolic() && arg && arg->type() == ARGUMENT_TYPE_TEXT && (m[argcount - 1].symbol() == defstr || (defstr == "\"\"" && m[argcount - 1].symbol().empty()))) {
 							argcount--;
@@ -14825,7 +14827,7 @@ void insert_function_do(MathFunction *f, FunctionDialog *fd) {
 				str2 = gtk_entry_get_text(GTK_ENTRY(fd->entry[argcount - 1]));
 				remove_blank_ends(str2);
 			}
-			if(!str2.empty() && f->getArgumentDefinition(argcount) && (f->getArgumentDefinition(argcount)->suggestsQuotes() || (f->getArgumentDefinition(argcount)->type() == ARGUMENT_TYPE_TEXT && str2.find(CALCULATOR->getComma()) == string::npos))) {
+			if(!str2.empty() && USE_QUOTES(f->getArgumentDefinition(argcount), f) && str2.find(CALCULATOR->getComma()) == string::npos) {
 				if(str2.length() < 1 || (str2[0] != '\"' && str[0] != '\'')) {
 					str2.insert(0, "\"");
 					str2 += "\"";
@@ -14871,7 +14873,7 @@ void insert_function_do(MathFunction *f, FunctionDialog *fd) {
 			str2 = gtk_entry_get_text(GTK_ENTRY(fd->entry[i]));
 			remove_blank_ends(str2);
 		}
-		if((i < f->minargs() || !str2.empty()) && f->getArgumentDefinition(i + 1) && (f->getArgumentDefinition(i + 1)->suggestsQuotes() || (f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_TEXT && str2.find(CALCULATOR->getComma()) == string::npos))) {
+		if((i < f->minargs() || !str2.empty()) && USE_QUOTES(f->getArgumentDefinition(i + 1), f) && str2.find(CALCULATOR->getComma()) == string::npos) {
 			if(str2.length() < 1 || (str2[0] != '\"' && str[0] != '\'')) {
 				str2.insert(0, "\"");
 				str2 += "\"";
@@ -15147,7 +15149,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 		}
 		typestr = "";
 		defstr = localize_expression(f->getDefaultValue(i + 1));
-		if(arg && (arg->suggestsQuotes() || arg->type() == ARGUMENT_TYPE_TEXT) && defstr.length() >= 2 && defstr[0] == '\"' && defstr[defstr.length() - 1] == '\"') {
+		if(USE_QUOTES(arg, f) && defstr.length() >= 2 && defstr[0] == '\"' && defstr[defstr.length() - 1] == '\"') {
 			defstr = defstr.substr(1, defstr.length() - 2);
 		}
 		fd->label[i] = gtk_label_new(argstr.c_str());
@@ -15286,7 +15288,7 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 						gtk_entry_set_placeholder_text(GTK_ENTRY(fd->entry[i]), _("optional"));
 					}
 					gtk_entry_set_alignment(GTK_ENTRY(fd->entry[i]), 1.0);
-					g_signal_connect(G_OBJECT(fd->entry[i]), "key-press-event", G_CALLBACK(on_math_entry_key_press_event), NULL);
+					if(!USE_QUOTES(arg, f) && arg->type() != ARGUMENT_TYPE_TEXT) g_signal_connect(G_OBJECT(fd->entry[i]), "key-press-event", G_CALLBACK(on_math_entry_key_press_event), NULL);
 					g_signal_connect(G_OBJECT(fd->entry[i]), "changed", G_CALLBACK(on_insert_function_changed), (gpointer) f);
 					g_signal_connect(G_OBJECT(fd->entry[i]), "activate", G_CALLBACK(on_insert_function_entry_activated), (gpointer) f);
 				}
@@ -18154,8 +18156,8 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 	const ExpressionName *ename = &f->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
 	Argument *arg = f->getArgumentDefinition(1);
 	Argument *arg2 = f->getArgumentDefinition(2);
-	bool b_text = (arg && arg->type() == ARGUMENT_TYPE_TEXT);
-	bool b_text2 = (arg2 && arg2->type() == ARGUMENT_TYPE_TEXT);
+	bool b_text = USE_QUOTES(arg, f);
+	bool b_text2 = USE_QUOTES(arg2, f);
 	GtkTextIter istart, iend, ipos;
 	gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
 	gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
@@ -24663,7 +24665,7 @@ void on_expressionbuffer_changed(GtkTextBuffer *o, gpointer) {
 }
 
 void on_expressionbuffer_paste_done(GtkTextBuffer*, GtkClipboard *cb, gpointer) {
-	if(!printops.use_unicode_signs || expression_undo_buffer.size() < 2) return;
+	if(!printops.use_unicode_signs || expression_undo_buffer.size() < 2 || gtk_text_buffer_get_has_selection(expressionbuffer)) return;
 	gchar *cb_gtext = gtk_clipboard_wait_for_text(cb);
 	if(!cb_gtext) return;
 	string cb_text = cb_gtext;
@@ -24671,21 +24673,37 @@ void on_expressionbuffer_paste_done(GtkTextBuffer*, GtkClipboard *cb, gpointer) 
 		g_free(cb_gtext);
 		return;
 	}
-	gsub("*", expression_times_sign(), cb_text);
-	gsub("/", expression_divide_sign(), cb_text);
-	gsub("-", expression_sub_sign(), cb_text);
+	GtkTextIter ipos;
+	gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, gtk_text_buffer_get_insert(expressionbuffer));
+	gint index = gtk_text_iter_get_offset(&ipos);
+	string text = expression_undo_buffer[expression_undo_buffer.size() - 2];
+	bool in_cit1 = false, in_cit2 = false;
+	gint iu = unicode_length(cb_text);
+	for(size_t i = 0; iu < index && i < text.length(); i++) {
+		if(!in_cit2 && text[i] == '\"') {
+			in_cit1 = !in_cit1;
+		} else if(!in_cit1 && text[i] == '\'') {
+			in_cit2 = !in_cit2;
+		}
+		if((signed char) text[i] > 0 || (unsigned char) text[i] > 0xC0) iu++;
+	}
+	for(size_t i = 0; i < cb_text.length(); i++) {
+		if(!in_cit2 && cb_text[i] == '\"') {
+			in_cit1 = !in_cit1;
+		} else if(!in_cit1 && cb_text[i] == '\'') {
+			in_cit2 = !in_cit2;
+		} else if(!in_cit1 && !in_cit2) {
+			if(cb_text[i] == '*') cb_text.replace(i, 1, expression_times_sign());
+			else if(cb_text[i] == '/') cb_text.replace(i, 1, expression_divide_sign());
+			else if(cb_text[i] == '-') cb_text.replace(i, 1, expression_sub_sign());
+		}
+	}
 	if(cb_text == cb_gtext) {
 		g_free(cb_gtext);
 		return;
 	}
-	GtkTextIter istart, iend;
-	gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
-	GtkTextIter ipos;
-	gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, gtk_text_buffer_get_insert(expressionbuffer));
-	gint index = gtk_text_iter_get_offset(&ipos);
 	gint pos = unicode_length(cb_gtext);
 	bool b = false;
-	string text = expression_undo_buffer[expression_undo_buffer.size() - 2];
 	string test_text = text;
 	for(size_t i = 0; i < text.length(); i++) {
 		if(pos == index) {
@@ -24710,8 +24728,7 @@ void on_expressionbuffer_paste_done(GtkTextBuffer*, GtkClipboard *cb, gpointer) 
 	block_add_to_undo++;
 	gtk_text_buffer_set_text(expressionbuffer, text.c_str(), -1);
 	gtk_text_buffer_get_iter_at_offset(expressionbuffer, &ipos, index);
-	if(gtk_text_buffer_get_has_selection(expressionbuffer)) gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
-	else gtk_text_buffer_place_cursor(expressionbuffer, &ipos);
+	gtk_text_buffer_place_cursor(expressionbuffer, &ipos);
 	block_add_to_undo--;
 	expression_undo_buffer.pop_back();
 	expression_undo_buffer.push_back(text);
@@ -33599,6 +33616,27 @@ gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 	return FALSE;
 }
 
+bool expression_in_quotes() {
+	GtkTextIter ipos, istart;
+	if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
+		gtk_text_buffer_get_selection_bounds(expressionbuffer, &ipos, &istart);
+	} else {
+		gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, gtk_text_buffer_get_insert(expressionbuffer));
+	}
+	gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
+	gchar *gtext = gtk_text_buffer_get_text(expressionbuffer, &istart, &ipos, FALSE);
+	bool in_cit1 = false, in_cit2 = false;
+	for(size_t i = 0; i < strlen(gtext); i++) {
+		if(!in_cit2 && gtext[i] == '\"') {
+			in_cit1 = !in_cit1;
+		} else if(!in_cit1 && gtext[i] == '\'') {
+			in_cit2 = !in_cit2;
+		}
+	}
+	g_free(gtext);
+	return in_cit1 || in_cit2;
+}
+
 gboolean on_expressiontext_focus_out_event(GtkWidget*, GdkEvent*, gpointer) {
 	gtk_widget_hide(completion_window);
 	return FALSE;
@@ -33743,6 +33781,7 @@ return TRUE;}
 				calculateRPN(OPERATION_DIVIDE);
 				return TRUE;
 			}
+			if(expression_in_quotes()) break;
 			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
 				if(do_chain_mode(expression_divide_sign())) return TRUE;
 				wrap_expression_selection();
@@ -33756,6 +33795,7 @@ return TRUE;}
 				calculateRPN(OPERATION_ADD);
 				return TRUE;
 			}
+			if(expression_in_quotes()) break;
 			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
 				if(do_chain_mode(expression_add_sign())) return TRUE;
 				wrap_expression_selection();
@@ -33773,6 +33813,7 @@ return TRUE;}
 				calculateRPN(OPERATION_SUBTRACT);
 				return TRUE;
 			}
+			if(expression_in_quotes()) break;
 			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
 				if(do_chain_mode(expression_sub_sign())) return TRUE;
 				wrap_expression_selection();
@@ -33798,6 +33839,7 @@ return TRUE;}
 				calculateRPN(OPERATION_MULTIPLY);
 				return TRUE;
 			}
+			if(expression_in_quotes()) break;
 			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
 				if(do_chain_mode(expression_times_sign())) return TRUE;
 				wrap_expression_selection();
@@ -33980,6 +34022,7 @@ return TRUE;}
 		}
 		case GDK_KEY_braceleft: {}
 		case GDK_KEY_braceright: {
+			if(expression_in_quotes()) break;
 			return TRUE;
 		}
 	}

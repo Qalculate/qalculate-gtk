@@ -1,9 +1,13 @@
+2022-02-28 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Do not replace *, -, / with Unicode operators if cursor is within quotation marks
+	* Refine use of quotation marks for function arguments
+
 2022-02-27 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Add option to only show parsed or entered expression in history
 	* Do not add duplicate results to history
 	* Add copy ASCII menu items and replace copy separator with copy ASCII by default option
-	* Replace first Unicode minus with hyphen-minus when copying result, not using menu item, if text string does not contains other operators or Unicode symbols
 	* Set text/html, text/rtf, UTF8_STRING, and STRING clipboard targets when copying text
 	* Replace operators in pasted expression
 

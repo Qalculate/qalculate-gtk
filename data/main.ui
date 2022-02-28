@@ -1124,7 +1124,7 @@
                       <object class="GtkMenuItem" id="menu_item_copy_ascii">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Copy Result as ASCII</property>
+                        <property name="label" translatable="yes">Copy Result as Unformatted ASCII</property>
                         <property name="use-underline">True</property>
                         <signal name="activate" handler="on_menu_item_copy_ascii_activate" swapped="no"/>
                       </object>
@@ -8133,7 +8133,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       <object class="GtkMenuItem" id="popup_menu_item_history_copy_ascii">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="yes">Copy ASCII</property>
+        <property name="label" translatable="yes">Copy Unformatted ASCII</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_popup_menu_item_history_copy_ascii_activate" swapped="no"/>
       </object>
@@ -8265,7 +8265,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
       <object class="GtkMenuItem" id="popup_menu_item_copy_ascii">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="yes">Copy ASCII</property>
+        <property name="label" translatable="yes">Copy Unformatted ASCII</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_menu_item_copy_ascii_activate" swapped="no"/>
       </object>
