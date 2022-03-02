@@ -615,7 +615,7 @@ string unhtmlize(string str, bool b_ascii = false) {
 	gsub("&lt;", "<", str);
 	gsub("&quot;", "\"", str);
 	gsub("&hairsp;", "", str);
-	gsub("&nbsp;", " ", str);
+	gsub("&nbsp;", NBSP, str);
 	gsub("&thinsp;", THIN_SPACE, str);
 	gsub("&#8239;", NNBSP, str);
 	return str;
@@ -657,8 +657,9 @@ string unformat(string str) {
 	gsub(SIGN_MULTIPLICATION, "*", str);
 	gsub(SIGN_MULTIDOT, "*", str);
 	gsub(SIGN_MIDDLEDOT, "*", str);
-	gsub(THIN_SPACE, "", str);
-	gsub(NNBSP, "", str);
+	gsub(THIN_SPACE, " ", str);
+	gsub(NNBSP, " ", str);
+	gsub(NBSP, " ", str);
 	gsub(SIGN_DIVISION, "/", str);
 	gsub(SIGN_DIVISION_SLASH, "/", str);
 	gsub(SIGN_SQRT, "sqrt", str);
@@ -865,10 +866,61 @@ string copy_text;
 void end_cb(GtkClipboard*, gpointer) {}
 void get_cb(GtkClipboard* cb, GtkSelectionData* sd, guint info, gpointer) {
 	if(info == 1) gtk_selection_data_set(sd, gtk_selection_data_get_target(sd), 8, reinterpret_cast<const guchar*>(copy_text.c_str()), copy_text.length());
-	else if(info == 4) gtk_selection_data_set(sd, gtk_selection_data_get_target(sd), 8, reinterpret_cast<const guchar*>(unhtmlize(copy_text).c_str()), copy_text.length());
-	else if(info == 3) gtk_selection_data_set_text(sd, unhtmlize(copy_text).c_str(), -1);
-	else if(info == 2) gtk_selection_data_set_text(sd, unhtmlize(copy_text).c_str(), -1);
+	else if(info == 2 || info == 3) gtk_selection_data_set_text(sd, unhtmlize(copy_text).c_str(), -1);
 	else gtk_selection_data_set_text(sd, unformat(unhtmlize(copy_text)).c_str(), -1);
+}
+
+void set_clipboard(string str, int ascii, bool html) {
+	if(ascii > 0 || (ascii < 0 && copy_ascii)) {
+		gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), unformat(unhtmlize(str, true)).c_str(), -1);
+	} else {
+#ifdef _WIN32
+		OpenClipboard(0);
+		EmptyClipboard();
+		string copy_str = "Version:1.0\nStartHTML:0000000101\nEndHTML:";
+		for(size_t i = i2s(139 + str.length()).length(); i < 10; i++) copy_str += '0';
+		copy_str += i2s(139 + str.length());
+		copy_str += "\nStartFragment:0000000121\nEndFragment:";
+		for(size_t i = i2s(121 + str.length()).length(); i < 10; i++) copy_str += '0';
+		copy_str += i2s(121 + str.length());
+		copy_str += "\n\n<!--StartFragment-->";
+		copy_str += str;
+		copy_str += "<!--EndFragment-->";
+		HGLOBAL hMem =  GlobalAlloc(GMEM_MOVEABLE, copy_str.length() + 1);
+		memcpy(GlobalLock(hMem), copy_str.c_str(), copy_str.length() + 1);
+		GlobalUnlock(hMem);
+		SetClipboardData(RegisterClipboardFormat("HTML Format"), hMem);
+		copy_str = unhtmlize(str, true);
+		::std::wstring wstr;
+		int l = MultiByteToWideChar(CP_UTF8, 0, copy_str.c_str(), (int) copy_str.length(), NULL, 0);
+		if(l > 0) {
+			wstr.resize(l + 10);
+			l = MultiByteToWideChar(CP_UTF8, 0, copy_str.c_str(), (int) copy_str.length(), &wstr[0], (int) wstr.size());
+		}
+		if(l > 0) {
+			hMem = GlobalAlloc(GMEM_DDESHARE, sizeof(WCHAR) * (wcslen(wstr.data()) + 1));
+			WCHAR* pchData = (WCHAR*) GlobalLock(hMem);
+			wcscpy(pchData, wstr.data());
+			GlobalUnlock(hMem);
+			SetClipboardData(CF_UNICODETEXT, hMem);
+		}
+		copy_str = unformat(copy_str);
+		hMem =  GlobalAlloc(GMEM_MOVEABLE, copy_str.length() + 1);
+		memcpy(GlobalLock(hMem), copy_str.c_str(), copy_str.length() + 1);
+		GlobalUnlock(hMem);
+		SetClipboardData(CF_TEXT, hMem);
+		CloseClipboard();
+#else
+		copy_text = str;
+		if(html) {
+			GtkTargetEntry targets[] = {{(gchar*) "text/html", 0, 1}, {(gchar*) "UTF8_STRING", 0, (guint) (ascii < 0 ? 3 : 2)}, {(gchar*) "STRING", 0, 5}};
+			gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 3, &get_cb, &end_cb, NULL);
+		} else {
+			GtkTargetEntry targets[] = {{(gchar*) "UTF8_STRING", 0, (guint) (ascii < 0 ? 3 : 2)}, {(gchar*) "STRING", 0, 5}};
+			gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 2, &get_cb, &end_cb, NULL);
+		}
+#endif
+	}
 }
 
 gint help_width = -1, help_height = -1;
@@ -1382,13 +1434,7 @@ void unblock_completion() {
 }
 
 void copy_result(int ascii = -1) {
-	if(ascii > 0 || (ascii < 0 && copy_ascii)) {
-		gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), unformat(unhtmlize(result_text, true)).c_str(), -1);
-	} else {
-		copy_text = result_text;
-		GtkTargetEntry targets[] = {{(gchar*) "text/html", 0, 1}, {(gchar*) "text/rtf", 0, 4}, {(gchar*) "UTF8_STRING", 0, (guint) (ascii < 0 ? 3 : 2)}, {(gchar*) "STRING", 0, 5}};
-		gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 4, &get_cb, &end_cb, NULL);
-	}
+	set_clipboard(result_text, ascii, true);
 }
 
 gboolean do_autocalc_history_timeout(gpointer);
@@ -10689,6 +10735,9 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 				if(i >= str.length()) i = str.length() - 1;
 			} else if((signed char) str[i] == -30 && i + 2 < str.length() && (signed char) str[i + 1] == -128 && ((signed char) str[i + 2] == -119 || (signed char) str[i + 2] == -81)) {
 				str.erase(i, 3);
+				if(i >= str.length()) i = str.length() - 1;
+			} else if((signed char) str[i] == -62 && i + 1 < str.length() && (signed char) str[i + 1] == -96) {
+				str.erase(i, 2);
 				if(i >= str.length()) i = str.length() - 1;
 			}
 		}
@@ -26343,16 +26392,7 @@ void history_copy(bool full_text, int ascii = -1) {
 		int index = selected_rows[0];
 		if(index > 0 && ((inhistory_type[index] == QALCULATE_HISTORY_TRANSFORMATION && (inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT || inhistory_type[index - 1] == QALCULATE_HISTORY_RESULT_APPROXIMATE)) || inhistory_type[index] == QALCULATE_HISTORY_RPN_OPERATION || inhistory_type[index] == QALCULATE_HISTORY_REGISTER_MOVED)) index--;
 		else if((size_t) index < inhistory_type.size() - 1 && (inhistory_type[index] == QALCULATE_HISTORY_PARSE || inhistory_type[index] == QALCULATE_HISTORY_PARSE_WITHEQUALS || inhistory_type[index] == QALCULATE_HISTORY_PARSE_APPROXIMATE) && inhistory_type[index + 1] == QALCULATE_HISTORY_EXPRESSION) index++;
-		copy_text = inhistory[index];
-		if(ascii > 0 || (ascii < 0 && copy_ascii)) {
-			gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), unformat(unhtmlize(copy_text, true)).c_str(), -1);
-		} else if(inhistory_type[index] == QALCULATE_HISTORY_PARSE || inhistory_type[index] == QALCULATE_HISTORY_PARSE_APPROXIMATE || inhistory_type[index] == QALCULATE_HISTORY_RESULT || inhistory_type[index] == QALCULATE_HISTORY_RESULT_APPROXIMATE) {
-			GtkTargetEntry targets[] = {{(gchar*) "text/html", 0, 1}, {(gchar*) "text/rtf", 0, 4}, {(gchar*) "UTF8_STRING", 0, (guint) (ascii < 0 ? 3 : 2)}, {(gchar*) "STRING", 0, 5}};
-			gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 4, &get_cb, &end_cb, NULL);
-		} else {
-			GtkTargetEntry targets[] = {{(gchar*) "UTF8_STRING", 0, (guint) (ascii < 0 ? 3 : 2)}, {(gchar*) "STRING", 0, 5}};
-			gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 2, &get_cb, &end_cb, NULL);
-		}
+		set_clipboard(inhistory[index], ascii, inhistory_type[index] == QALCULATE_HISTORY_PARSE || inhistory_type[index] == QALCULATE_HISTORY_PARSE_APPROXIMATE || inhistory_type[index] == QALCULATE_HISTORY_RESULT || inhistory_type[index] == QALCULATE_HISTORY_RESULT_APPROXIMATE);
 	} else {
 		string str;
 		int hindex = 0;
@@ -26427,13 +26467,7 @@ void history_copy(bool full_text, int ascii = -1) {
 				goto on_button_history_copy_add_hindex;
 			}
 		}
-		copy_text = str;
-		if(ascii > 0 || (ascii < 0 && copy_ascii)) {
-			gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), unformat(unhtmlize(copy_text, true)).c_str(), -1);
-		} else {
-			GtkTargetEntry targets[] = {{(gchar*) "text/html", 0, 1}, {(gchar*) "text/rtf", 0, 4}, {(gchar*) "UTF8_STRING", 0, (guint) (ascii < 0 ? 3 : 2)}, {(gchar*) "STRING", 0, 5}};
-			gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 4, &get_cb, &end_cb, NULL);
-		}
+		set_clipboard(str, ascii, true);
 	}
 	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)));
 }
@@ -30877,13 +30911,7 @@ void on_popup_menu_item_stack_copytext_activate(GtkMenuItem*, gpointer) {
 	if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), &model, &iter)) return;
 	gchar *gstr;
 	gtk_tree_model_get(model, &iter, 1, &gstr, -1);
-	copy_text = gstr;
-	if(copy_ascii) {
-		gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), unformat(unhtmlize(copy_text, true)).c_str(), -1);
-	} else {
-		GtkTargetEntry targets[] = {{(gchar*) "UTF8_STRING", 0, 3}, {(gchar*) "STRING", 0, 5}};
-		gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 2, &get_cb, &end_cb, NULL);
-	}
+	set_clipboard(gstr, copy_ascii ? 1 : 0, false);
 	g_free(gstr);
 }
 void on_popup_menu_item_stack_inserttext_activate(GtkMenuItem*, gpointer) {
