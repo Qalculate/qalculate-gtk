@@ -150,6 +150,10 @@ static gboolean on_sigterm_received(gpointer) {
 
 void create_application(GtkApplication *app) {
 
+#ifdef _WIN32
+	AllowSetForegroundWindow(0);
+#endif
+
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 14
 	gtk_icon_theme_add_resource_path(gtk_icon_theme_get_default(), "/qalculate-gtk/icons");
 #endif
@@ -389,8 +393,6 @@ static void qalculate_activate(GtkApplication *app) {
 			hidden_x = -1;
 		}
 #ifdef _WIN32
-		gtk_window_iconify(GTK_WINDOW(list->data));
-		while(gtk_events_pending()) gtk_main_iteration();
 		gtk_window_present_with_time(GTK_WINDOW(list->data), GDK_CURRENT_TIME);
 #endif
 		if(expressiontext) gtk_widget_grab_focus(expressiontext);
@@ -467,6 +469,9 @@ static gint qalculate_handle_local_options(GtkApplication *app, GVariantDict *op
 	}
 	g_free(gstr_file);
 	if(allow_multiple_instances > 0) g_application_set_flags(G_APPLICATION(app), G_APPLICATION_NON_UNIQUE);
+#ifdef _WIN32
+	else AllowSetForegroundWindow(ASFW_ANY);
+#endif
 	return -1;
 }
 
@@ -531,8 +536,6 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 			hidden_x = -1;
 		}
 #ifdef _WIN32
-		gtk_window_iconify(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
-		while(gtk_events_pending()) gtk_main_iteration();
 		gtk_window_present_with_time(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GDK_CURRENT_TIME);
 #endif
 		if(expressiontext) gtk_widget_grab_focus(expressiontext);
