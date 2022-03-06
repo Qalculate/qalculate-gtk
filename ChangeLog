@@ -1,3 +1,8 @@
+2022-03-06 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Use rounding mode and simplified percentage options from qalculate-gtk in search provider
+	* Clear convert unit on unit list deselect
+
 2022-02-28 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Do not replace *, -, / with Unicode operators if cursor is within quotation marks
@@ -17,7 +22,7 @@
 2022-02-25 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Fix completion visible after expression cleared with key repetition (stop updating completion if expression has changed during popup resize)
-	* Use GtkFileChooserNative
+	* Use GtkFileChooserNative (on platforms other than Windows)
 
 2022-02-17 Hanna Knutsson <hanna.knutsson@protonmail.com>
 

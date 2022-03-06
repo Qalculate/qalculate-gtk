@@ -394,6 +394,8 @@ void load_preferences_search() {
 	search_ignore_locale = false;
 	search_adaptive_interval_display = true;
 
+	bool simplified_percentage = true;
+
 	CALCULATOR->useIntervalArithmetic(true);
 	CALCULATOR->useBinaryPrefixes(0);
 	CALCULATOR->setPrecision(10);
@@ -462,6 +464,8 @@ void load_preferences_search() {
 					if(v >= PARSING_MODE_ADAPTIVE && v <= PARSING_MODE_CONVENTIONAL) {
 						search_eo.parse_options.parsing_mode = (ParsingMode) v;
 					}
+				} else if(svar == "simplified_percentage") {
+					simplified_percentage = v;
 				} else if(svar == "place_units_separately") {
 					search_po.place_units_separately = v;
 				} else if(svar == "variable_units_enabled") {
@@ -583,8 +587,12 @@ void load_preferences_search() {
 					if(v >= DIGIT_GROUPING_NONE && v <= DIGIT_GROUPING_LOCALE) {
 						search_po.digit_grouping = (DigitGrouping) v;
 					}
-				} else if(svar == "round_halfway_to_even") {
+				} else if(svar == "round_halfway_to_even") {//obsolete
 					search_po.round_halfway_to_even = v;
+					search_po.custom_time_zone = 0;
+				} else if(svar == "rounding_mode") {
+					search_po.custom_time_zone = (v == 2 ? -21586 : 0);
+					search_po.round_halfway_to_even = (v == 1);
 				/*} else if(svar == "approximation") {
 					if(v >= APPROXIMATION_EXACT && v <= APPROXIMATION_APPROXIMATE) {
 						search_eo.approximation = (ApproximationMode) v;
@@ -608,6 +616,7 @@ void load_preferences_search() {
 		}
 		fclose(file);
 	}
+	if(simplified_percentage) search_eo.parse_options.parsing_mode = (ParsingMode) (search_eo.parse_options.parsing_mode | PARSE_PERCENT_AS_ORDINARY_CONSTANT);
 }
 
 
