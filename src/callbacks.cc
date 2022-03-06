@@ -27350,7 +27350,9 @@ guint historyedit_timeout_id = 0;
 GtkTreePath *historyedit_path = NULL;
 gboolean do_historyedit_timeout(gpointer) {
 	historyedit_timeout_id = 0;
-	if(gtk_tree_selection_path_is_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)), historyedit_path)) gtk_tree_view_set_cursor(GTK_TREE_VIEW(historyview), historyedit_path, gtk_tree_view_get_column(GTK_TREE_VIEW(historyview), 1), TRUE);
+	if(gtk_tree_selection_path_is_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview)), historyedit_path)) {
+		gtk_tree_view_set_cursor(GTK_TREE_VIEW(historyview), historyedit_path, history_column, TRUE);
+	}
 	gtk_tree_path_free(historyedit_path);
 	historyedit_path = NULL;
 	return FALSE;
@@ -27364,7 +27366,7 @@ gboolean on_historyview_button_release_event(GtkWidget*, GdkEventButton *event, 
 	GtkTreeSelection *select = NULL;
 	if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(historyview), event->x, event->y, &path, &column, NULL, NULL)) {
 		select = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
-		if(column == gtk_tree_view_get_column(GTK_TREE_VIEW(historyview), 1) && gtk_tree_selection_path_is_selected(select, path)) {
+		if(column == history_column && gtk_tree_selection_path_is_selected(select, path)) {
 			historyedit_path = path;
 			historyedit_timeout_id = g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 250, do_historyedit_timeout, NULL, NULL);
 		} else {
@@ -27389,6 +27391,18 @@ gboolean on_historyview_key_press_event(GtkWidget*, GdkEventKey *event, gpointer
 			g_list_free_full(selected_list, (GDestroyNotify) gtk_tree_path_free);
 			return TRUE;
 		}
+	} else if(state == 0 && (event->keyval == GDK_KEY_KP_Enter || event->keyval == GDK_KEY_Return)) {
+		GtkTreeViewColumn *column = NULL;
+		GtkTreePath *path = NULL;
+		gtk_tree_view_get_cursor(GTK_TREE_VIEW(historyview), &path, &column);
+		if(path) {
+			on_historyview_row_activated(GTK_TREE_VIEW(historyview), path, column, NULL);
+			gtk_tree_path_free(path);
+			return TRUE;
+		}
+	} else if(state == GDK_CONTROL_MASK && event->keyval == GDK_KEY_c) {
+		history_copy(false);
+		return TRUE;
 	}
 	return FALSE;
 }
@@ -33811,6 +33825,17 @@ gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 			return FALSE;
 		}
 	}
+	if(gtk_widget_has_focus(historyview)) {
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
+		guint state = event->state & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK);
+		state = state & ~GDK_SHIFT_MASK;
+#else
+		guint state = event->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SUPER_MASK | GDK_HYPER_MASK | GDK_META_MASK);
+#endif
+		if((state == 0 && (event->keyval == GDK_KEY_F2 || event->keyval == GDK_KEY_KP_Enter || event->keyval == GDK_KEY_Return)) || (state == GDK_CONTROL_MASK && event->keyval == GDK_KEY_c)) {
+			return FALSE;
+		}
+	}
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_treeview_category")))) {
 		if(!(event->keyval >= GDK_KEY_KP_Multiply && event->keyval <= GDK_KEY_KP_9) && !(event->keyval >= GDK_KEY_parenleft && event->keyval <= GDK_KEY_A)) {
 			return FALSE;
@@ -33819,8 +33844,8 @@ gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 	if(gtk_widget_has_focus(historyview) && event->keyval == GDK_KEY_F2) return FALSE;
 	if(event->keyval > GDK_KEY_Hyper_R || event->keyval < GDK_KEY_Shift_L) {
 		GtkWidget *w = gtk_window_get_focus(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
-		if(gtk_bindings_activate_event(G_OBJECT(o), event)) return TRUE;
 		if(w && gtk_bindings_activate_event(G_OBJECT(w), event)) return TRUE;
+		if(gtk_bindings_activate_event(G_OBJECT(o), event)) return TRUE;
 		focus_keeping_selection();
 	}
 	return FALSE;
@@ -34236,6 +34261,10 @@ return TRUE;}
 			if(expression_in_quotes()) break;
 			return TRUE;
 		}
+	}
+	if(event->state & GDK_CONTROL_MASK && event->keyval == GDK_KEY_c && !gtk_text_buffer_get_has_selection(expressionbuffer)) {
+		copy_result();
+		return TRUE;
 	}
 	if(event->state & GDK_CONTROL_MASK && (event->keyval == GDK_KEY_z || event->keyval == GDK_KEY_Z)) {
 		if(event->state & GDK_SHIFT_MASK || event->keyval == GDK_KEY_Z) expression_redo();
