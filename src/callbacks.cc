@@ -453,6 +453,13 @@ PangoLayout *status_layout = NULL;
 
 #define USE_QUOTES(arg, f) (arg && (arg->suggestsQuotes() || arg->type() == ARGUMENT_TYPE_TEXT) && f->id() != FUNCTION_ID_BASE && f->id() != FUNCTION_ID_BIN && f->id() != FUNCTION_ID_OCT && f->id() != FUNCTION_ID_DEC && f->id() != FUNCTION_ID_HEX)
 
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
+#	define CLEAN_MODIFIERS(x) (x & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK))
+#else
+#	define CLEAN_MODIFIERS(x) (x & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SUPER_MASK | GDK_HYPER_MASK | GDK_META_MASK))
+#endif
+
+
 enum {
 	TITLE_APP,
 	TITLE_RESULT,
@@ -6602,8 +6609,11 @@ const gchar *shortcut_type_text(int type, bool return_null) {
 	if(return_null) return NULL;
 	return "-";
 }
-void update_accels() {
+void update_accels(int type) {
+	bool b = false;
 	for(unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.begin(); it != keyboard_shortcuts.end(); ++it) {
+		if(type >= 0 && it->second.type != type) continue;
+		b = true;
 		switch(it->second.type) {
 			case SHORTCUT_TYPE_DATE: {
 				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_insert_date")))), it->second.key, (GdkModifierType) it->second.modifier);
@@ -6623,14 +6633,18 @@ void update_accels() {
 					if(gstr) {
 						string str = gstr;
 						g_free(gstr);
+						string str2 = _("Smart parentheses");
+						str2 += " (";
+						str2 += shortcut_to_text(it->second.key, it->second.modifier);
+						str2 += ")";
 						size_t i = str.find("\n");
-						if(i != string::npos && str.rfind("(", i) == string::npos) {
-							string str2 = " (";
-							str2 += shortcut_to_text(it->second.key, it->second.modifier);
-							str2 += ")";
-							str.insert(i, str2);
-							gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_wrap")), str.c_str());
+						if(i == string::npos) {
+							str = str2;
+						} else {
+							str.erase(0, i);
+							str.insert(0, str2);
 						}
+						gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_wrap")), str.c_str());
 					}
 				}
 				break;
@@ -6812,8 +6826,21 @@ void update_accels() {
 				break;
 			}
 			case SHORTCUT_TYPE_COPY_RESULT: {
-				if(!copy_ascii) gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_copy")))), it->second.key, (GdkModifierType) it->second.modifier);
-				else gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_copy_ascii")))), it->second.key, (GdkModifierType) it->second.modifier);
+				if(!copy_ascii) {
+					gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_copy")))), it->second.key, (GdkModifierType) it->second.modifier);
+					gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_copy")))), it->second.key, (GdkModifierType) it->second.modifier);
+					if(type >= 0) {
+						gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_copy_ascii")))), 0, (GdkModifierType) 0);
+						gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_copy_ascii")))), 0, (GdkModifierType) 0);
+					}
+				} else {
+					gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_copy_ascii")))), it->second.key, (GdkModifierType) it->second.modifier);
+					gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_copy_ascii")))), it->second.key, (GdkModifierType) it->second.modifier);
+					if(type >= 0) {
+						gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_copy")))), 0, (GdkModifierType) 0);
+						gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_copy")))), 0, (GdkModifierType) 0);
+					}
+				}
 				break;
 			}
 			case SHORTCUT_TYPE_SAVE_IMAGE: {
@@ -6832,6 +6859,79 @@ void update_accels() {
 				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_chain_mode")))), it->second.key, (GdkModifierType) it->second.modifier);
 				break;
 			}
+		}
+		if(type >= 0) break;
+	}
+	if(!b) {
+		switch(type) {
+			case SHORTCUT_TYPE_DATE: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_insert_date")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_VECTOR: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_insert_vector")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_MATRIX: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_insert_matrix")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_SMART_PARENTHESES: {
+				if(custom_buttons[5].type[0] == -1) {
+					gchar *gstr = gtk_widget_get_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_wrap")));
+					if(gstr) {
+						string str = gstr;
+						g_free(gstr);
+						size_t i = str.find("\n");
+						if(i == string::npos) {
+							str = _("Smart parentheses");
+						} else {
+							str.erase(0, i);
+							str.insert(0, _("Smart parentheses"));
+						}
+						gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_wrap")), str.c_str());
+					}
+				}
+				break;
+			}
+			case SHORTCUT_TYPE_CONVERT_ENTRY: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_convert_to_custom_unit")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_OPTIMAL_UNIT: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_convert_to_best_unit")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_BASE_UNITS: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_convert_to_base_units")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_FACTORIZE: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_factorize")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_EXPAND: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_simplify")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_PARTIAL_FRACTIONS: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_expand_partial_fractions")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_SET_UNKNOWNS: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_set_unknowns")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_RPN_UP: {gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), _("Rotate the stack or move selected register up")); break;}
+			case SHORTCUT_TYPE_RPN_DOWN: {gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerdown")), _("Rotate the stack or move selected register down")); break;}
+			case SHORTCUT_TYPE_RPN_SWAP: {gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), _("Swap the two top values or move the selected value to the top of the stack")); break;}
+			case SHORTCUT_TYPE_RPN_COPY: {gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_copyregister")), _("Copy the selected or top value to the top of the stack")); break;}
+			case SHORTCUT_TYPE_RPN_LASTX: {gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_lastx")), _("Enter the top value from before the last numeric operation")); break;}
+			case SHORTCUT_TYPE_RPN_DELETE: {gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_deleteregister")), _("Delete the top or selected value")); break;}
+			case SHORTCUT_TYPE_RPN_CLEAR: {gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), _("Clear the RPN stack")); break;}
+			case SHORTCUT_TYPE_DEGREES: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_degrees")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_RADIANS: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_radians")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_GRADIANS: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_gradians")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_RPN_MODE: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_rpn_mode")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_AUTOCALC: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_autocalc")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_HISTORY_SEARCH: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_search")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_PROGRAMMING: {gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_programmers_keypad")), _("Show/hide programming keypad")); break;}
+			case SHORTCUT_TYPE_MINIMAL: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_minimal_mode")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_MANAGE_VARIABLES: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_manage_variables")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_MANAGE_FUNCTIONS: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_manage_functions")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_MANAGE_UNITS: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_manage_units")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_MANAGE_DATA_SETS: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_datasets")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_STORE: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_save")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_NEW_VARIABLE: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_new_variable")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_NEW_FUNCTION: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_new_function_simple")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_PLOT: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_plot_functions")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_NUMBER_BASES: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_convert_number_bases")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_FLOATING_POINT: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_convert_floatingpoint")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_CALENDARS: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_show_calendarconversion_dialog")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_PERCENTAGE_TOOL: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_show_percentage_dialog")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_PERIODIC_TABLE: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_periodic_table")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_UPDATE_EXRATES: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_fetch_exchange_rates")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_COPY_RESULT: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_copy")))), 0, (GdkModifierType) 0);
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_copy_ascii")))), 0, (GdkModifierType) 0);
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_copy")))), 0, (GdkModifierType) 0);
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_copy_ascii")))), 0, (GdkModifierType) 0);
+				break;
+			}
+			case SHORTCUT_TYPE_SAVE_IMAGE: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_save_image")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_HELP: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_help")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_QUIT: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_quit")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_CHAIN_MODE: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_chain_mode")))), 0, (GdkModifierType) 0); break;}
 		}
 	}
 }
@@ -19090,6 +19190,8 @@ void on_expressiontext_populate_popup(GtkTextView*, GtkMenu *menu, gpointer) {
 	MENU_ITEM(_("Clear"), on_popup_menu_item_clear_activate)
 	gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(item))), GDK_KEY_Escape, (GdkModifierType) 0);
 	if(expression_is_empty()) gtk_widget_set_sensitive(item, FALSE);
+	MENU_ITEM(_("Clear History"), on_popup_menu_item_clear_history_activate)
+	if(expression_history.empty()) gtk_widget_set_sensitive(item, FALSE);
 	MENU_SEPARATOR
 	if(b_busy) {
 		MENU_ITEM(_("Abort"), on_popup_menu_item_abort_activate)
@@ -22626,6 +22728,14 @@ void on_preferences_combo_history_expression_changed(GtkComboBox *w, gpointer) {
 }
 void on_preferences_checkbutton_copy_ascii_toggled(GtkToggleButton *w, gpointer) {
 	copy_ascii = gtk_toggle_button_get_active(w);
+	update_accels(SHORTCUT_TYPE_COPY_RESULT);
+	if(copy_ascii) {
+		gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_ascii")))), GDK_KEY_c, GDK_CONTROL_MASK);
+		gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_text")))), 0, (GdkModifierType) 0);
+	} else {
+		gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_text")))), GDK_KEY_c, GDK_CONTROL_MASK);
+		gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_ascii")))), 0, (GdkModifierType) 0);
+	}
 }
 void on_preferences_checkbutton_lower_case_numbers_toggled(GtkToggleButton *w, gpointer) {
 	printops.lower_case_numbers = gtk_toggle_button_get_active(w);
@@ -24878,12 +24988,8 @@ void entry_insert_text(GtkWidget *w, const gchar *text) {
 bool block_input = false;
 const gchar *key_press_get_symbol(GdkEventKey *event, bool do_caret_as_xor = true, bool unit_expression = false) {
 	if(block_input && (event->keyval == GDK_KEY_q || event->keyval == GDK_KEY_Q) && !(event->state & GDK_CONTROL_MASK)) {block_input = false; return "";}
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
-	guint state = event->state & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK);
+	guint state = CLEAN_MODIFIERS(event->state);
 	state = state & ~GDK_SHIFT_MASK;
-#else
-	guint state = event->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SUPER_MASK | GDK_HYPER_MASK | GDK_META_MASK);
-#endif
 	if(state == GDK_CONTROL_MASK) {
 		switch(event->keyval) {
 			case GDK_KEY_asciicircum: {}
@@ -27291,6 +27397,9 @@ void update_historyview_popup() {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_parsed_text")), FALSE);
 	}
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_value")), selected_indeces.size() > 0 && selected_index_type[0] != INDEX_TYPE_TXT && selected_index_type.back() != INDEX_TYPE_TXT);
+	bool default_insert_value = selected_indeces.size() > 0 && selected_index_type[0] != INDEX_TYPE_TXT && selected_index_type.back() != INDEX_TYPE_TXT && (selected_indeces.size() >= 2 || selected_index_type[0] == INDEX_TYPE_ANS);
+	gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_value")))), default_insert_value ? GDK_KEY_Return : 0, (GdkModifierType) 0);
+	gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_insert_text")))), (!default_insert_value && selected_rows.size() > 0) ? GDK_KEY_Return : 0, (GdkModifierType) 0);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_text")), selected_indeces.size() == 1 && inhistory_type[hi] != QALCULATE_HISTORY_BOOKMARK);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_ascii")), selected_indeces.size() == 1 && inhistory_type[hi] != QALCULATE_HISTORY_BOOKMARK);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_full_text")), !selected_rows.empty());
@@ -27358,9 +27467,10 @@ gboolean do_historyedit_timeout(gpointer) {
 	return FALSE;
 }
 gboolean on_historyview_button_release_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(event->button != 1 || !do_history_edit || b_editing_history) return FALSE;
 	if(historyedit_timeout_id) {g_source_remove(historyedit_timeout_id); historyedit_timeout_id = 0; gtk_tree_path_free(historyedit_path); historyedit_path = NULL;}
-	historyedit_timeout_id = 0;
+	if(!do_history_edit) return FALSE;
+	do_history_edit = false;
+	if(event->button != 1 || b_editing_history || CLEAN_MODIFIERS(event->state) != 0) return FALSE;
 	GtkTreePath *path = NULL;
 	GtkTreeViewColumn *column = NULL;
 	GtkTreeSelection *select = NULL;
@@ -27376,12 +27486,7 @@ gboolean on_historyview_button_release_event(GtkWidget*, GdkEventButton *event, 
 	return FALSE;
 }
 gboolean on_historyview_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
-	guint state = event->state & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK);
-	state = state & ~GDK_SHIFT_MASK;
-#else
-	guint state = event->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SUPER_MASK | GDK_HYPER_MASK | GDK_META_MASK);
-#endif
+	guint state = CLEAN_MODIFIERS(event->state);
 	if(state == 0 && event->keyval == GDK_KEY_F2) {
 		GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
 		if(gtk_tree_selection_count_selected_rows(select) == 1) {
@@ -27392,16 +27497,28 @@ gboolean on_historyview_key_press_event(GtkWidget*, GdkEventKey *event, gpointer
 			return TRUE;
 		}
 	} else if(state == 0 && (event->keyval == GDK_KEY_KP_Enter || event->keyval == GDK_KEY_Return)) {
-		GtkTreeViewColumn *column = NULL;
-		GtkTreePath *path = NULL;
-		gtk_tree_view_get_cursor(GTK_TREE_VIEW(historyview), &path, &column);
-		if(path) {
-			on_historyview_row_activated(GTK_TREE_VIEW(historyview), path, column, NULL);
-			gtk_tree_path_free(path);
-			return TRUE;
+		vector<size_t> selected_rows;
+		vector<size_t> selected_indeces;
+		vector<int> selected_index_type;
+		process_history_selection(&selected_rows, &selected_indeces, &selected_index_type);
+		if(selected_rows.empty()) return FALSE;
+		if(selected_indeces.size() > 0 && selected_index_type[0] != INDEX_TYPE_TXT && selected_index_type.back() != INDEX_TYPE_TXT && (selected_indeces.size() >= 2 || selected_index_type[0] == INDEX_TYPE_ANS)) {
+			on_button_history_insert_value_clicked(NULL, NULL);
+		} else {
+			GtkTreeViewColumn *column = NULL;
+			GtkTreePath *path = NULL;
+			gtk_tree_view_get_cursor(GTK_TREE_VIEW(historyview), &path, &column);
+			if(path) {
+				on_historyview_row_activated(GTK_TREE_VIEW(historyview), path, column, NULL);
+				gtk_tree_path_free(path);
+			}
 		}
+		return TRUE;
 	} else if(state == GDK_CONTROL_MASK && event->keyval == GDK_KEY_c) {
 		history_copy(false);
+		return TRUE;
+	} else if(state == GDK_SHIFT_MASK && event->keyval == GDK_KEY_Delete) {
+		on_popup_menu_item_history_delete_activate(NULL, NULL);
 		return TRUE;
 	}
 	return FALSE;
@@ -27409,6 +27526,7 @@ gboolean on_historyview_key_press_event(GtkWidget*, GdkEventKey *event, gpointer
 gboolean on_historyview_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
 	do_history_edit = false;
 	if(historyedit_timeout_id) {g_source_remove(historyedit_timeout_id); historyedit_timeout_id = 0; gtk_tree_path_free(historyedit_path); historyedit_path = NULL;}
+	guint state = CLEAN_MODIFIERS(event->state);
 	GtkTreePath *path = NULL;
 	GtkTreeViewColumn *column = NULL;
 	GtkTreeSelection *select = NULL;
@@ -27428,6 +27546,7 @@ gboolean on_historyview_button_press_event(GtkWidget*, GdkEventButton *event, gp
 #else
 		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_historyview")), NULL, NULL, NULL, NULL, event->button, event->time);
 #endif
+		gtk_widget_grab_focus(historyview);
 		return TRUE;
 	} else if(event->type == GDK_2BUTTON_PRESS) {
 		if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(historyview), event->x, event->y, &path, &column, NULL, NULL)) {
@@ -27440,8 +27559,20 @@ gboolean on_historyview_button_press_event(GtkWidget*, GdkEventButton *event, gp
 			select = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
 			if(gtk_tree_selection_path_is_selected(select, path)) {
 				gtk_tree_path_free(path);
+				if(state != 0) return FALSE;
 				do_history_edit = true;
 				return TRUE;
+			} else if(state == 0) {
+				GtkTreePath *path2;
+				gtk_tree_view_get_cursor(GTK_TREE_VIEW(historyview), &path2, &column);
+				if(path2 && gtk_tree_path_compare(path, path2) == 0) {
+					gtk_tree_selection_unselect_all(select);
+					gtk_tree_selection_select_path(select, path);
+					gtk_tree_path_free(path);
+					gtk_tree_path_free(path2);
+					return TRUE;
+				}
+				if(path2) gtk_tree_path_free(path2);
 			}
 			gtk_tree_path_free(path);
 		}
@@ -30203,6 +30334,10 @@ void on_popup_menu_item_abort_activate(GtkMenuItem*, gpointer) {
 void on_popup_menu_item_clear_activate(GtkMenuItem*, gpointer) {
 	clear_expression_text();
 	focus_keeping_selection();
+}
+void on_popup_menu_item_clear_history_activate(GtkMenuItem*, gpointer) {
+	expression_history.clear();
+	expression_history_index = -1;
 }
 void on_popup_menu_item_display_normal_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
@@ -33766,11 +33901,7 @@ bool do_shortcut(int type, string value) {
 	return false;
 }
 bool do_keyboard_shortcut(GdkEventKey *event) {
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
-	guint state = event->state & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK);
-#else
-	guint state = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SUPER_MASK | GDK_HYPER_MASK | GDK_META_MASK);
-#endif
+	guint state = CLEAN_MODIFIERS(event->state);
 	unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find((guint64) event->keyval + (guint64) G_MAXUINT32 * (guint64) state);
 	if(it == keyboard_shortcuts.end() && event->keyval == GDK_KEY_KP_Delete) it = keyboard_shortcuts.find((guint64) GDK_KEY_Delete + (guint64) G_MAXUINT32 * (guint64) state);
 	if(it != keyboard_shortcuts.end()) {
@@ -33826,13 +33957,8 @@ gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 		}
 	}
 	if(gtk_widget_has_focus(historyview)) {
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
-		guint state = event->state & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK);
-		state = state & ~GDK_SHIFT_MASK;
-#else
-		guint state = event->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SUPER_MASK | GDK_HYPER_MASK | GDK_META_MASK);
-#endif
-		if((state == 0 && (event->keyval == GDK_KEY_F2 || event->keyval == GDK_KEY_KP_Enter || event->keyval == GDK_KEY_Return)) || (state == GDK_CONTROL_MASK && event->keyval == GDK_KEY_c)) {
+		guint state = CLEAN_MODIFIERS(event->state);
+		if((state == 0 && (event->keyval == GDK_KEY_F2 || event->keyval == GDK_KEY_KP_Enter || event->keyval == GDK_KEY_Return)) || (state == GDK_CONTROL_MASK && event->keyval == GDK_KEY_c) || (state == GDK_SHIFT_MASK && event->keyval == GDK_KEY_Delete)) {
 			return FALSE;
 		}
 	}
@@ -35036,11 +35162,7 @@ void on_tButtonsEditType_selection_changed(GtkTreeSelection *treeselection, gpoi
 
 GtkWidget *shortcut_label = NULL;
 gboolean on_shortcut_key_released(GtkWidget *w, GdkEventKey *event, gpointer) {
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
-	guint state = event->state & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK);
-#else
-	guint state = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SUPER_MASK | GDK_HYPER_MASK | GDK_META_MASK);
-#endif
+	guint state = CLEAN_MODIFIERS(event->state);
 	if(event->keyval == 0 || (event->keyval >= GDK_KEY_Shift_L && event->keyval <= GDK_KEY_Hyper_R)) return FALSE;
 	if(state == 0 && event->keyval == GDK_KEY_Escape) {
 		gtk_dialog_response(GTK_DIALOG(w), GTK_RESPONSE_CANCEL);
@@ -35053,11 +35175,7 @@ gboolean on_shortcut_key_released(GtkWidget *w, GdkEventKey *event, gpointer) {
 	return TRUE;
 }
 gboolean on_shortcut_key_pressed(GtkWidget *w, GdkEventKey *event, gpointer) {
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
-	guint state = event->state & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK);
-#else
-	guint state = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SUPER_MASK | GDK_HYPER_MASK | GDK_META_MASK);
-#endif
+	guint state = CLEAN_MODIFIERS(event->state);
 	string str = "<span size=\"large\">";
 	str += shortcut_to_text(event->keyval, state);
 	str += "</span>";
@@ -35209,13 +35327,16 @@ void on_shortcuts_button_new_clicked(GtkButton*, gpointer) {
 						}
 					} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tShortcuts_store), &iter));
 				}
+				int type = it->second.type;
 				keyboard_shortcuts.erase(id);
+				update_accels(type);
 			}
 			default_shortcuts = false;
 			GtkTreeIter iter;
 			gtk_list_store_append(tShortcuts_store, &iter);
 			gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_type_text(ks.type), 1, ks.value.c_str(), 2, shortcut_to_text(ks.key, ks.modifier).c_str(), 3, id, -1);
 			keyboard_shortcuts[id] = ks;
+			update_accels(ks.type);
 			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")), "");
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_remove")), FALSE);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_edit")), FALSE);
@@ -35231,7 +35352,11 @@ void on_shortcuts_button_remove_clicked(GtkButton*, gpointer) {
 	if(gtk_tree_selection_get_selected(select, &model, &iter)) {
 		guint64 id = 0;
 		gtk_tree_model_get(GTK_TREE_MODEL(tShortcuts_store), &iter, 3, &id, -1);
+		unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find(id);
+		int type = -1;
+		if(it != keyboard_shortcuts.end()) type = it->second.type;
 		keyboard_shortcuts.erase(id);
+		if(type >= 0) update_accels(type);
 		gtk_list_store_remove(tShortcuts_store, &iter);
 		default_shortcuts = false;
 	}
@@ -35253,10 +35378,12 @@ void on_shortcuts_button_edit_clicked(GtkButton*, gpointer) {
 			id = (guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier;
 			unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find(id);
 			bool b_replace = false;
+			int old_type = -1;
 			if(it != keyboard_shortcuts.end()) {
 				if(it == it_old || !ask_question(_("The key combination is already in use.\nDo you wish to replace the current action?"), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")))) {
 					return;
 				}
+				old_type = it->second.type;
 				b_replace = true;
 			}
 			keyboard_shortcuts.erase(it_old);
@@ -35276,9 +35403,11 @@ void on_shortcuts_button_edit_clicked(GtkButton*, gpointer) {
 						}
 					} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tShortcuts_store), &iter));
 				}
+				update_accels(old_type);
 				keyboard_shortcuts.erase(id);
 			}
 			keyboard_shortcuts[id] = ks;
+			update_accels(ks.type);
 			gtk_list_store_append(tShortcuts_store, &iter);
 			gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_type_text(ks.type), 1, ks.value.c_str(), 2, shortcut_to_text(ks.key, ks.modifier).c_str(), 3, id, -1);
 			gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcuts)), &iter);
@@ -35388,8 +35517,11 @@ void on_shortcuts_treeview_row_activated(GtkTreeView *w, GtkTreePath *path, GtkT
 		} else {
 			ks.value = "";
 		}
+		int old_type = it->second.type;
 		it->second.type = ks.type;
 		it->second.value = ks.value;
+		update_accels(old_type);
+		update_accels(ks.type);
 		gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_type_text(ks.type), 1, ks.value.c_str(), -1);
 	}
 	gtk_widget_hide(d);

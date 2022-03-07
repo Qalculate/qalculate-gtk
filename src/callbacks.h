@@ -165,7 +165,7 @@ struct custom_button {
 
 std::string shortcut_to_text(guint key, guint state);
 const gchar *shortcut_type_text(int type, bool return_null = false);
-void update_accels();
+void update_accels(int type = -1);
 
 DECLARE_BUILTIN_FUNCTION(AnswerFunction, 0)
 DECLARE_BUILTIN_FUNCTION(ExpressionFunction, 0)
@@ -602,6 +602,7 @@ void on_popup_menu_item_exact_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_assume_nonzero_denominators_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_abort_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_clear_activate(GtkMenuItem *w, gpointer user_data);
+void on_popup_menu_item_clear_history_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_display_normal_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_display_engineering_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_display_scientific_activate(GtkMenuItem *w, gpointer user_data);
