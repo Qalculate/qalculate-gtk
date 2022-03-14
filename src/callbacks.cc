@@ -184,7 +184,7 @@ string custom_result_font, custom_expression_font, custom_status_font, custom_ke
 int scale_n = 0;
 bool hyp_is_on, inv_is_on;
 bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad, minimal_mode, show_bases_keypad;
-bool copy_ascii;
+bool copy_ascii = false;
 bool caret_as_xor = false;
 extern bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message;
 extern int allow_multiple_instances;
@@ -224,6 +224,7 @@ string current_mode;
 int vertical_button_padding = -1, horizontal_button_padding = -1;
 int rounding_mode = 0;
 bool simplified_percentage = true;
+int version_numbers[3];
 
 bool cursor_has_moved = false;
 
@@ -585,7 +586,7 @@ string unhtmlize(string str, bool b_ascii = false) {
 			if(str.substr(i + 1, 3) == "sup") {
 				size_t i3 = str.find("</sup>", i2 + 1);
 				if(i3 != string::npos) {
-					string str2 = unhtmlize(str.substr(i + 5, i3 - i - 5));
+					string str2 = unhtmlize(str.substr(i + 5, i3 - i - 5), b_ascii);
 					if(!b_ascii && str2.length() == 1 && str2[0] == '2') str.replace(i, i3 - i + 6, SIGN_POWER_2);
 					else if(!b_ascii && str2.length() == 1 && str2[0] == '3') str.replace(i, i3 - i + 6, SIGN_POWER_3);
 					else if(str.length() == i3 + 6 && (unicode_length(str2) == 1 || str2.find_first_not_of(NUMBERS) == string::npos)) str.replace(i, i3 - i + 6, string("^") + str2);
@@ -596,7 +597,7 @@ string unhtmlize(string str, bool b_ascii = false) {
 				size_t i3 = str.find("</sub>", i + 4);
 				if(i3 != string::npos) {
 					if(i3 - i2 > 16 && str.substr(i2 + 1, 7) == "<small>" && str.substr(i3 - 8, 8) == "</small>") str.erase(i, i3 - i + 6);
-					else str.replace(i, i3 - i + 6, string("_") + unhtmlize(str.substr(i + 5, i3 - i - 5)));
+					else str.replace(i, i3 - i + 6, string("_") + unhtmlize(str.substr(i + 5, i3 - i - 5), b_ascii));
 					continue;
 				}
 			}
@@ -647,17 +648,6 @@ void remove_separator(string &copy_text) {
 	}
 }
 
-string replace_first_minus(const string &str) {
-	if(str.find(SIGN_MINUS) == 0 && str.find_first_of(OPERATORS) == string::npos) {
-		for(size_t i = strlen(SIGN_MINUS); i < str.length(); i++) {
-			if((signed char) str[i] < 0) return str;
-		}
-		string str_new = str;
-		str_new.replace(0, strlen(SIGN_MINUS), "-");
-		return str_new;
-	}
-	return str;
-}
 string unformat(string str) {
 	remove_separator(str);
 	gsub(SIGN_MINUS, "-", str);
@@ -873,8 +863,8 @@ string copy_text;
 void end_cb(GtkClipboard*, gpointer) {}
 void get_cb(GtkClipboard* cb, GtkSelectionData* sd, guint info, gpointer) {
 	if(info == 1) gtk_selection_data_set(sd, gtk_selection_data_get_target(sd), 8, reinterpret_cast<const guchar*>(copy_text.c_str()), copy_text.length());
-	else if(info == 2 || info == 3) gtk_selection_data_set_text(sd, unhtmlize(copy_text).c_str(), -1);
-	else gtk_selection_data_set_text(sd, unformat(unhtmlize(copy_text)).c_str(), -1);
+	else if(info == 3) gtk_selection_data_set_text(sd, unformat(unhtmlize(copy_text, true)).c_str(), -1);
+	else gtk_selection_data_set_text(sd, unhtmlize(copy_text).c_str(), -1);
 }
 
 void set_clipboard(string str, int ascii, bool html) {
@@ -920,10 +910,10 @@ void set_clipboard(string str, int ascii, bool html) {
 #else
 		copy_text = str;
 		if(html) {
-			GtkTargetEntry targets[] = {{(gchar*) "text/html", 0, 1}, {(gchar*) "UTF8_STRING", 0, (guint) (ascii < 0 ? 3 : 2)}, {(gchar*) "STRING", 0, 5}};
+			GtkTargetEntry targets[] = {{(gchar*) "text/html", 0, 1}, {(gchar*) "UTF8_STRING", 0, (guint) 2}, {(gchar*) "STRING", 0, 3}};
 			gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 3, &get_cb, &end_cb, NULL);
 		} else {
-			GtkTargetEntry targets[] = {{(gchar*) "UTF8_STRING", 0, (guint) (ascii < 0 ? 3 : 2)}, {(gchar*) "STRING", 0, 5}};
+			GtkTargetEntry targets[] = {{(gchar*) "UTF8_STRING", 0, (guint) 2}, {(gchar*) "STRING", 0, 3}};
 			gtk_clipboard_set_with_data(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), targets, 2, &get_cb, &end_cb, NULL);
 		}
 #endif
@@ -3747,7 +3737,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		} else if(tmp_surface) {
 			CALCULATOR->endTemporaryStopMessages(true);
 			scale_n = 0;
-			showing_first_time_message = FALSE;
+			showing_first_time_message = false;
 			if(surface_result) cairo_surface_destroy(surface_result);
 			if(displayed_mstruct) displayed_mstruct->unref();
 			displayed_mstruct = displayed_mstruct_pre;
@@ -3757,7 +3747,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			result_autocalculated = true;
 			display_aborted = false;
 			surface_result = tmp_surface;
-			first_draw_of_result = TRUE;
+			first_draw_of_result = true;
 			if(minimal_mode && !gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")))) {
 				gint h = -1;
 				gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h);
@@ -7896,7 +7886,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 	cairo_t *cr = NULL;
 	GdkRGBA rgba;
 	if(!color) {
-		gtk_style_context_get_color(gtk_widget_get_style_context(resultview), gtk_widget_get_state_flags(resultview), &rgba);
+		gtk_style_context_get_color(gtk_widget_get_style_context(resultview), GTK_STATE_FLAG_NORMAL, &rgba);
 		color = &rgba;
 	}
 	gint w, h;
@@ -11687,8 +11677,8 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		if(visible_keypad & PROGRAMMING_KEYPAD) update_result_bases();
 		surface_result = NULL;
 		if(tmp_surface) {
-			showing_first_time_message = FALSE;
-			first_draw_of_result = TRUE;
+			showing_first_time_message = false;
+			first_draw_of_result = false;
 			surface_result = tmp_surface;
 			if(minimal_mode && !gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")))) {
 				gint h = -1;
@@ -15042,15 +15032,13 @@ void insert_function_do(MathFunction *f, FunctionDialog *fd) {
 				str2 = gtk_entry_get_text(GTK_ENTRY(fd->entry[argcount - 1]));
 				remove_blank_ends(str2);
 			}
-			if(!str2.empty() && USE_QUOTES(f->getArgumentDefinition(argcount), f) && (unicode_length(str2) <= 2 || (str2.find_first_of(LEFT_PARENTHESIS LEFT_VECTOR_WRAP) == string::npos && str2.find(CALCULATOR->getComma()) == string::npos))) {
-				if(str2.length() <= 1 || (str2[0] != '\"' && str[0] != '\'')) {
-					if(str2.length() == 1 && str2[0] == '\"') {
-						str2.insert(0, "\'");
-						str2 += "\'";
-					} else {
-						str2.insert(0, "\"");
-						str2 += "\"";
-					}
+			if(!str2.empty() && USE_QUOTES(f->getArgumentDefinition(argcount), f) && (unicode_length(str2) <= 2 || str2.find_first_of("\"\'") == string::npos)) {
+				if(str2.find("\"") != string::npos) {
+					str2.insert(0, "\'");
+					str2 += "\'";
+				} else {
+					str2.insert(0, "\"");
+					str2 += "\"";
 				}
 			}
 			if(str2.empty() || str2 == defstr) argcount--;
@@ -15093,15 +15081,13 @@ void insert_function_do(MathFunction *f, FunctionDialog *fd) {
 			str2 = gtk_entry_get_text(GTK_ENTRY(fd->entry[i]));
 			remove_blank_ends(str2);
 		}
-		if((i < f->minargs() || !str2.empty()) && USE_QUOTES(f->getArgumentDefinition(i + 1), f) && (unicode_length(str2) <= 2 || (str2.find_first_of(LEFT_PARENTHESIS LEFT_VECTOR_WRAP) == string::npos && str2.find(CALCULATOR->getComma()) == string::npos))) {
-			if(str2.length() <= 1 || (str2[0] != '\"' && str[0] != '\'')) {
-				if(str2.length() == 1 && str2[0] == '\"') {
-					str2.insert(0, "\'");
-					str2 += "\'";
-				} else {
-					str2.insert(0, "\"");
-					str2 += "\"";
-				}
+		if((i < f->minargs() || !str2.empty()) && USE_QUOTES(f->getArgumentDefinition(i + 1), f) && (unicode_length(str2) <= 2 || str2.find_first_of("\"\'") == string::npos)) {
+			if(str2.find("\"") != string::npos) {
+				str2.insert(0, "\'");
+				str2 += "\'";
+			} else {
+				str2.insert(0, "\"");
+				str2 += "\"";
 			}
 		}
 		if(i > 0) {
@@ -17407,7 +17393,7 @@ bool element_needs_parenthesis(const string &str_e) {
 				break;
 			}
 			default: {
-				if(!in_cit1 && !in_cit2 && brackets == 0 && pars == 0 && (str_e[i] == ' ' || str_e[i] == '\n' || str_e[i] == '\t' || (str_e[i] == ',' && printops.decimalpoint() != ",") || str_e[i] == ';' || ((unsigned char) str_e[i] == 0xE2 && i + 2 < str_e.size() && (unsigned char) str_e[i + 1] == 0x80 && (unsigned char) str_e[i + 2] == 0x89))) {
+				if(!in_cit1 && !in_cit2 && brackets == 0 && pars == 0 && (str_e[i] == ' ' || str_e[i] == '\n' || str_e[i] == '\t' || (str_e[i] == ',' && printops.decimalpoint() != ",") || str_e[i] == ';' || ((unsigned char) str_e[i] == 0xE2 && i + 2 < str_e.size() && (unsigned char) str_e[i + 1] == 0x80 && ((unsigned char) str_e[i + 2] == 0x89 || (unsigned char) str_e[i + 2] == 0xAF)))) {
 					return true;
 				}
 			}
@@ -18639,7 +18625,8 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 		string str = gstr;
 		remove_blank_ends(str);
 		gchar *gstr2;
-		if(b_text && str.length() > 0 && (str[0] == '\"' || str[0] == '\'')) b_text = false;
+		if(b_text && str.length() > 2 && str.find_first_of("\"\'") != string::npos) b_text = false;
+		if(b_text2 && str2.length() > 2 && str2.find_first_of("\"\'") != string::npos) b_text2 = false;
 		if(f->minargs() > 1 || !str2.empty()) {
 			if(b_text2) {
 				if(index == 1) gstr2 = g_strdup_printf(b_text ? "%s(\"%s\"%s \"%s\")" : "%s(%s%s \"%s\")", ename->name.c_str(), str2.c_str(), CALCULATOR->getComma().c_str(), gstr);
@@ -18663,6 +18650,7 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 		g_free(gstr2);
 	} else {
 		if(f->minargs() > 1 || !str2.empty()) {
+			if(b_text && str2.length() > 2 && str2.find_first_of("\"\'") != string::npos) b_text = false;
 			gchar *gstr2;
 			if(index == 1) gstr2 = g_strdup_printf(b_text ? "%s(\"%s\"%s )" : "%s(%s%s )", ename->name.c_str(), str2.c_str(), CALCULATOR->getComma().c_str());
 			else gstr2 = g_strdup_printf(b_text ? "%s(\"\"%s %s)" : "%s(%s %s)", ename->name.c_str(), CALCULATOR->getComma().c_str(), str2.c_str());
@@ -20077,7 +20065,10 @@ void load_preferences() {
 
 	size_t bookmark_index = 0;
 
-	int version_numbers[] = {4, 0, 0};
+	version_numbers[0] = 4;
+	version_numbers[1] = 1;
+	version_numbers[2] = 0;
+
 	bool old_history_format = false;
 	unformatted_history = 0;
 
@@ -22525,6 +22516,7 @@ void on_main_window_close(GtkWidget *w, GdkEvent *event, gpointer user_data) {
 #endif
 		gtk_widget_hide(w);
 		clear_expression_text();
+		if(displayed_mstruct) clearresult();
 	} else {
 		on_gcalc_exit(w, event, user_data);
 	}
@@ -34506,14 +34498,24 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 		cairo_paint(cr);
 		first_draw_of_result = FALSE;
 	} else if(showing_first_time_message) {
-		PangoLayout *layout = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview")), NULL);
+		/*PangoLayout *layout = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview")), NULL);
 		GdkRGBA rgba;
 		pango_layout_set_markup(layout, (string("<span size=\"smaller\">") + string(_("Type a mathematical expression above, e.g. \"5 + 2 / 3\",\nand press the enter key.")) + "</span>").c_str(), -1);
 		gtk_style_context_get_color(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), gtk_widget_get_state_flags(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), &rgba);
 		cairo_move_to(cr, 6, 6);
 		gdk_cairo_set_source_rgba(cr, &rgba);
 		pango_cairo_show_layout(cr, layout);
-		g_object_unref(layout);
+		g_object_unref(layout);*/
+		gint h = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
+		gint w = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
+		gint uah_h = 16, uah_w = 24;
+		if(h >= 48) {uah_h = 32; uah_w = 48;}
+		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_resource_at_scale("/qalculate-gtk/flags/UAH.png", uah_w, uah_h, TRUE, NULL);
+		cairo_surface_t *s = gdk_cairo_surface_create_from_pixbuf(pixbuf, 1, NULL);
+		cairo_set_source_surface(cr, s, (w - uah_w) / 2, (h - uah_h) / 2);
+		cairo_paint(cr);
+		g_object_unref(pixbuf);
+		cairo_surface_destroy(s);
 	} else {
 		gtk_widget_set_size_request(widget, -1, -1);
 	}

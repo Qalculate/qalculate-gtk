@@ -48,6 +48,29 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="4.1.0" date="2022-03-14">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Add option to only show parsed or entered expression in history</li>
+      <li>Add option to clear expression history</li>
+      <li>Do not add duplicate results to history</li>
+      <li>Improved result copying, with proper html format and ASCII option</li>
+      <li>Do not replace *, -, / with Unicode operators if cursor is within quotation marks (apply same principles on paste)</li>
+      <li>Improvements and fixes for interaction with history</li>
+      <li>Do not change result color when window loses focus</li>
+      <li>Do not perform automatic (continuous) conversion, from conversion view, if result contains no unit</li>
+      <li>Use non-breaking narrow space as digit separator in reasonably short numbers, and between quantity and unit</li>
+      <li>Update value of austronomical unit</li>
+      <li>Fix display of result with quoted symbol in history</li>
+      <li>Fix completion visible after expression cleared with key repetition</li>
+      <li>Fix segfault with local digit grouping when separator is empty (e.g. with ignore locale)</li>
+      <li>Fix freezes and crashes with extrememly large vectors and matrices</li>
+      <li>Fix segfault in matrix multiplication</li>
+      <li>Minor bug fixes and feature improvements</li>
+     </ul>
+   </description>
+  </release>
   <release version="4.0.0" date="2022-02-14">
    <description>
     <p>Changes:</p>

@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "4.0.0">
-  <!ENTITY manrevision "4.0.0">
-  <!ENTITY date "February 2022">
+  <!ENTITY appversion "4.1.0">
+  <!ENTITY manrevision "4.1.0">
+  <!ENTITY date "Mars 2022">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -991,6 +991,10 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			<row valign="top">
 				<entry><para>Copy Result (<keycombo><keycap>Ctrl</keycap><keycap>Alt</keycap><keycap>C</keycap></keycombo>)</para></entry>
 				<entry><para>Copies the current result to the clipboard.</para></entry>
+			</row>
+			<row valign="top">
+				<entry><para>Copy Result as Unformatted ASCII</para></entry>
+				<entry><para>Copies the current result with formatting removed and Unicode symbols replaced with corresponding ASCII characters.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Keyboard Shortcuts</para></entry>
