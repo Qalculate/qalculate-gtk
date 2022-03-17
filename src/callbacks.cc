@@ -19004,7 +19004,7 @@ void on_popup_menu_item_completion_delay_toggled(GtkCheckMenuItem *w, gpointer) 
 }
 void on_popup_menu_item_custom_completion_activated(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = get_preferences_dialog();
-	gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(preferences_builder, "preferences_tabs")), 3);
+	gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(preferences_builder, "preferences_tabs")), 4);
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")));
 	gtk_widget_show(dialog);
 }
