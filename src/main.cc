@@ -210,35 +210,38 @@ void create_application(GtkApplication *app) {
 	showing_first_time_message = first_time || version_numbers[0] != 4 || version_numbers[1] != 1;
 
 	if(calc_arg.empty() && showing_first_time_message && file_arg.empty()) {
+		GdkWindow *w = gtk_widget_get_window(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview")));
+		if(w) {
 #if GDK_MAJOR_VERSION > 3 || GDK_MINOR_VERSION >= 22
-		GdkDrawingContext *gdc = gdk_window_begin_draw_frame(gtk_widget_get_window(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), cairo_region_create());
-		cairo_t *cr = gdk_drawing_context_get_cairo_context(gdc);
+			GdkDrawingContext *gdc = gdk_window_begin_draw_frame(w, cairo_region_create());
+			cairo_t *cr = gdk_drawing_context_get_cairo_context(gdc);
 #else
-		cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))));
+			cairo_t *cr = gdk_cairo_create(w);
 #endif
-		/*PangoLayout *layout = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview")), NULL);
-		GdkRGBA rgba;
-		pango_layout_set_markup(layout, (string("<span size=\"smaller\">") + string(_("Type a mathematical expression above, e.g. \"5 + 2 / 3\",\nand press the enter key.")) + "</span>").c_str(), -1);
-		gtk_style_context_get_color(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), gtk_widget_get_state_flags(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), &rgba);
-		cairo_move_to(cr, 6, 6);
-		gdk_cairo_set_source_rgba(cr, &rgba);
-		pango_cairo_show_layout(cr, layout);
-		g_object_unref(layout);*/
-		gint h = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
-		gint w = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
-		gint uah_h = 16, uah_w = 24;
-		if(h >= 48) {uah_h = 32; uah_w = 48;}
-		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_resource_at_scale("/qalculate-gtk/flags/UAH.png", uah_w, uah_h, TRUE, NULL);
-		cairo_surface_t *s = gdk_cairo_surface_create_from_pixbuf(pixbuf, 1, NULL);
-		cairo_set_source_surface(cr, s, (w - uah_w) / 2, (h - uah_h) / 2);
-		cairo_paint(cr);
-		g_object_unref(pixbuf);
-		cairo_surface_destroy(s);
+			/*PangoLayout *layout = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview")), NULL);
+			GdkRGBA rgba;
+			pango_layout_set_markup(layout, (string("<span size=\"smaller\">") + string(_("Type a mathematical expression above, e.g. \"5 + 2 / 3\",\nand press the enter key.")) + "</span>").c_str(), -1);
+			gtk_style_context_get_color(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), gtk_widget_get_state_flags(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), &rgba);
+			cairo_move_to(cr, 6, 6);
+			gdk_cairo_set_source_rgba(cr, &rgba);
+			pango_cairo_show_layout(cr, layout);
+			g_object_unref(layout);*/
+			gint h = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
+			gint w = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
+			gint uah_h = 16, uah_w = 24;
+			if(h >= 48) {uah_h = 32; uah_w = 48;}
+			GdkPixbuf *pixbuf = gdk_pixbuf_new_from_resource_at_scale("/qalculate-gtk/flags/UAH.png", uah_w, uah_h, TRUE, NULL);
+			cairo_surface_t *s = gdk_cairo_surface_create_from_pixbuf(pixbuf, 1, NULL);
+			cairo_set_source_surface(cr, s, (w - uah_w) / 2, (h - uah_h) / 2);
+			cairo_paint(cr);
+			g_object_unref(pixbuf);
+			cairo_surface_destroy(s);
 #if GDK_MAJOR_VERSION > 3 || GDK_MINOR_VERSION >= 22
-		gdk_window_end_draw_frame(gtk_widget_get_window(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), gdc);
+			gdk_window_end_draw_frame(gtk_widget_get_window(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), gdc);
 #else
-		cairo_destroy(cr);
+			cairo_destroy(cr);
 #endif
+		}
 	}
 
 	while(gtk_events_pending()) gtk_main_iteration();
