@@ -11751,6 +11751,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 					update_history = false;
 					history_index = history_index_bak;
 					gtk_list_store_remove(historystore, &history_iter);
+					gtk_list_store_remove(historystore, &history_iter);
 					inhistory_type.pop_back();
 					inhistory_protected.pop_back();
 					inhistory.pop_back();
