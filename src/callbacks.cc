@@ -24094,6 +24094,9 @@ gboolean on_gcalc_exit(GtkWidget*, GdkEvent*, gpointer) {
 		view_thread->write(NULL);
 	}
 	CALCULATOR->terminateThreads();
+#ifdef _WIN32
+	if(use_systray_icon) destroy_systray_icon();
+#endif
 	g_application_quit(g_application_get_default());
 	return TRUE;
 }
