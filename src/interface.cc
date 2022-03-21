@@ -508,7 +508,7 @@ void update_colors(bool initial) {
 			gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(color_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		}
 
-		if(initial) gtk_style_context_get_color(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, &c);
+		gtk_style_context_get_color(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, &c);
 
 		if(!status_error_color_set) {
 			GdkRGBA c_err = c;
@@ -1816,6 +1816,10 @@ void create_main_window(void) {
 	gtk_css_provider_load_from_data(statusframe_provider, topframe_css.c_str(), -1, NULL);
 
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
+	GtkCssProvider *result_color_provider = gtk_css_provider_new();
+	gtk_css_provider_load_from_data(result_color_provider, "* {color: @theme_text_color;}", -1, NULL);
+	gtk_style_context_add_provider(gtk_widget_get_style_context(resultview), GTK_STYLE_PROVIDER(result_color_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION - 1);
+
 	if(gtk_theme < 0) {
 		app_provider_theme = NULL;
 	} else {
@@ -1873,7 +1877,9 @@ void create_main_window(void) {
 		if(custom_app_font.empty()) {
 			PangoFontDescription *font_desc;
 			gtk_style_context_get(gtk_widget_get_style_context(mainwindow), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-			custom_app_font = pango_font_description_to_string(font_desc);
+			char *gstr = pango_font_description_to_string(font_desc);
+			custom_app_font = gstr;
+			g_free(gstr);
 			pango_font_description_free(font_desc);
 		}
 	}
@@ -1886,7 +1892,9 @@ void create_main_window(void) {
 		if(custom_result_font.empty()) {
 			PangoFontDescription *font_desc;
 			gtk_style_context_get(gtk_widget_get_style_context(resultview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-			custom_result_font = pango_font_description_to_string(font_desc);
+			char *gstr = pango_font_description_to_string(font_desc);
+			custom_result_font = gstr;
+			g_free(gstr);
 			pango_font_description_free(font_desc);
 		}
 	}
@@ -1899,17 +1907,40 @@ void create_main_window(void) {
 		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
-		gtk_css_provider_load_from_data(expression_provider, "textview.view {font-size: larger;}", -1, NULL);
+#ifdef _WIN32
+		PangoFontDescription *font_desc;
+		gtk_style_context_get(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+		if(custom_expression_font.empty()) {
+			char *gstr = pango_font_description_to_string(font_desc);
+			custom_expression_font = gstr;
+			g_free(gstr);
+		}
+		pango_font_description_set_size(font_desc, pango_font_description_get_size(font_desc) * 1.2);
+		char *gstr_l = pango_font_description_to_string(font_desc);
+		pango_font_description_free(font_desc);
+#	if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+		gchar *gstr = font_name_to_css(gstr_l, "textview.view");
+#	else
+		gchar *gstr = font_name_to_css(gstr_l);
+#	endif
+		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
+		g_free(gstr);
+		g_free(gstr_l);
 #else
+#	if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+		gtk_css_provider_load_from_data(expression_provider, "textview.view {font-size: larger;}", -1, NULL);
+#	else
 		gtk_css_provider_load_from_data(expression_provider, "* {font-size: larger;}", -1, NULL);
-#endif
+#	endif
 		if(custom_expression_font.empty()) {
 			PangoFontDescription *font_desc;
 			gtk_style_context_get(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-			custom_expression_font = pango_font_description_to_string(font_desc);
+			char *gstr = pango_font_description_to_string(font_desc);
+			custom_expression_font = gstr;
+			g_free(gstr);
 			pango_font_description_free(font_desc);
 		}
+#endif
 	}
 	if(use_custom_status_font) {
 		gchar *gstr = font_name_to_css(custom_status_font.c_str());
@@ -1922,7 +1953,9 @@ void create_main_window(void) {
 		if(custom_status_font.empty()) {
 			PangoFontDescription *font_desc;
 			gtk_style_context_get(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-			custom_status_font = pango_font_description_to_string(font_desc);
+			char *gstr = pango_font_description_to_string(font_desc);
+			custom_status_font = gstr;
+			g_free(gstr);
 			pango_font_description_free(font_desc);
 		}
 	}
@@ -1935,7 +1968,9 @@ void create_main_window(void) {
 		if(custom_keypad_font.empty()) {
 			PangoFontDescription *font_desc;
 			gtk_style_context_get(gtk_widget_get_style_context(keypad), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-			custom_keypad_font = pango_font_description_to_string(font_desc);
+			char *gstr = pango_font_description_to_string(font_desc);
+			custom_keypad_font = gstr;
+			g_free(gstr);
 			pango_font_description_free(font_desc);
 		}
 	}
@@ -1948,7 +1983,9 @@ void create_main_window(void) {
 		if(custom_history_font.empty()) {
 			PangoFontDescription *font_desc;
 			gtk_style_context_get(gtk_widget_get_style_context(historyview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-			custom_history_font = pango_font_description_to_string(font_desc);
+			char *gstr = pango_font_description_to_string(font_desc);
+			custom_history_font = gstr;
+			g_free(gstr);
 			pango_font_description_free(font_desc);
 		}
 	}

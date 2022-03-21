@@ -22939,6 +22939,21 @@ void on_preferences_checkbutton_custom_expression_font_toggled(GtkToggleButton *
 #else
 		gtk_css_provider_load_from_data(expression_provider, "* {font-size: larger;}", -1, NULL);
 #endif
+#ifdef _WIN32
+		PangoFontDescription *font_desc;
+		gtk_style_context_get(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+		pango_font_description_set_size(font_desc, pango_font_description_get_size(font_desc) * 1.2);
+		char *gstr_l = pango_font_description_to_string(font_desc);
+		pango_font_description_free(font_desc);
+#	if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+		gchar *gstr = font_name_to_css(gstr_l, "textview.view");
+#	else
+		gchar *gstr = font_name_to_css(gstr_l);
+#	endif
+		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
+		g_free(gstr);
+		g_free(gstr_l);
+#endif
 	}
 	expression_font_modified();
 	gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h_new);
