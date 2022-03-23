@@ -333,7 +333,8 @@ unordered_map<void*, bool> number_approx_map;
 unordered_map<void*, string> number_exp_map;
 unordered_map<void*, bool> number_exp_minus_map;
 
-unordered_map<string, GdkPixbuf*> flag_images;
+unordered_map<string, cairo_surface_t*> flag_surfaces;
+extern int flagheight;
 
 extern MathFunction *f_answer;
 extern MathFunction *f_expression;
@@ -661,6 +662,7 @@ string unformat(string str) {
 	gsub(SIGN_DIVISION_SLASH, "/", str);
 	gsub(SIGN_SQRT, "sqrt", str);
 	gsub("Ω", "ohm", str);
+	gsub("µ", "u", str);
 	return str;
 }
 
@@ -5354,8 +5356,8 @@ void setUnitTreeItem(GtkTreeIter &iter2, Unit *u) {
 	//display descriptive name (title), or name if no title defined
 	gtk_list_store_set(tUnits_store, &iter2, UNITS_TITLE_COLUMN, u->title(true).c_str(), UNITS_POINTER_COLUMN, (gpointer) u, UNITS_VISIBLE_COLUMN, TRUE, UNITS_VISIBLE_COLUMN_CONVERT, TRUE, -1);
 	if(u->isCurrency()) {
-		unordered_map<string, GdkPixbuf*>::const_iterator it_flag = flag_images.find(u->referenceName());
-		if(it_flag != flag_images.end()) {
+		unordered_map<string, cairo_surface_t*>::const_iterator it_flag = flag_surfaces.find(u->referenceName());
+		if(it_flag != flag_surfaces.end()) {
 			gtk_list_store_set(tUnits_store, &iter2, UNITS_FLAG_COLUMN, it_flag->second, -1);
 		}
 	}
@@ -5852,8 +5854,8 @@ void setUnitSelectorTreeItem(GtkTreeIter &iter2, Unit *u) {
 	gtk_list_store_append(tUnitSelector_store, &iter2);
 	string snames, sbase;
 	if(u->isCurrency()) {
-		unordered_map<string, GdkPixbuf*>::const_iterator it_flag = flag_images.find(u->referenceName());
-		gtk_list_store_set(tUnitSelector_store, &iter2, 0, u->title(true).c_str(), 1, (gpointer) u, 2, it_flag == flag_images.end() ? NULL : it_flag->second, 3, TRUE, -1);
+		unordered_map<string, cairo_surface_t*>::const_iterator it_flag = flag_surfaces.find(u->referenceName());
+		gtk_list_store_set(tUnitSelector_store, &iter2, 0, u->title(true).c_str(), 1, (gpointer) u, 2, it_flag == flag_surfaces.end() ? NULL : it_flag->second, 3, TRUE, -1);
 	} else {
 		gtk_list_store_set(tUnitSelector_store, &iter2, 0, u->title(true).c_str(), 1, (gpointer) u, 3, TRUE, -1);
 	}
@@ -7519,10 +7521,10 @@ void update_completion() {
 					str = sub_suffix(ename_r);
 					b = true;
 				}
-				unordered_map<string, GdkPixbuf*>::const_iterator it_flag = flag_images.end();
+				unordered_map<string, cairo_surface_t*>::const_iterator it_flag = flag_surfaces.end();
 				title = u->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
 				if(u->isCurrency()) {
-					it_flag = flag_images.find(u->referenceName());
+					it_flag = flag_surfaces.find(u->referenceName());
 				} else if(u->isSIUnit() && !u->category().empty() && title[title.length() - 1] != ')') {
 					size_t i_slash = string::npos;
 					if(u->category().length() > 1) i_slash = u->category().rfind("/", u->category().length() - 2);
@@ -7534,8 +7536,8 @@ void update_completion() {
 						title += ")";
 					}
 				}
-				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_images.end() ? NULL : it_flag->second, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
-				else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, title.c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_images.end() ? NULL : it_flag->second, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
+				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_surfaces.end() ? NULL : it_flag->second, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
+				else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, title.c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_surfaces.end() ? NULL : it_flag->second, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
 			} else if(!u->isHidden()) {
 				CompositeUnit *cu = (CompositeUnit*) u;
 				Prefix *prefix = NULL;
@@ -8705,10 +8707,8 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						flag_i = 1;
 					}
 					string imagefile = "/qalculate-gtk/flags/"; imagefile += m[i_unit].unit()->referenceName(); imagefile += ".png";
-					GdkPixbuf *pixbuf = NULL;
 					h = hpt[flag_i];
-					if(h < 48) pixbuf = gdk_pixbuf_new_from_resource_at_scale(imagefile.c_str(), -1, h / 3, TRUE, NULL);
-					else pixbuf = gdk_pixbuf_new_from_resource(imagefile.c_str(), NULL);
+					GdkPixbuf *pixbuf = gdk_pixbuf_new_from_resource_at_scale(imagefile.c_str(), -1, h / 2.5 * scalefactor, TRUE, NULL);
 					if(pixbuf) {
 						flag_s = gdk_cairo_surface_create_from_pixbuf(pixbuf, 1, NULL);
 						flag_width = cairo_image_surface_get_width(flag_s);
@@ -9565,7 +9565,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				const ExpressionName *ename = &m.unit()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, m.isPlural(), po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
 
 				if(m.prefix()) {
-					str += m.prefix()->preferredDisplayName(po.abbreviate_names && ename->abbreviation && (ename->suffix || ename->name.find("_") == string::npos), po.use_unicode_signs, m.isPlural(), po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg).name;
+					str += m.prefix()->preferredDisplayName(ename->abbreviation && (ename->suffix || ename->name.find("_") == string::npos), po.use_unicode_signs, m.isPlural(), po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg).name;
 				}
 				if(ename->suffix && ename->name.length() > 1) {
 					size_t i = ename->name.rfind('_');
@@ -22474,7 +22474,7 @@ void on_menu_item_quit_activate(GtkMenuItem*, gpointer user_data) {
 	on_gcalc_exit(NULL, NULL, user_data);
 }
 
-void on_main_window_close(GtkWidget *w, GdkEvent *event, gpointer user_data) {
+gboolean on_main_window_close(GtkWidget *w, GdkEvent *event, gpointer user_data) {
 	if(has_systray_icon()) {
 		if(save_mode_on_exit) save_mode();
 		else save_preferences();
@@ -22516,11 +22516,14 @@ void on_main_window_close(GtkWidget *w, GdkEvent *event, gpointer user_data) {
 		}
 #endif
 		gtk_widget_hide(w);
-		clear_expression_text();
-		if(displayed_mstruct) clearresult();
+		if(!b_busy) {
+			if(expression_is_empty()) clearresult();
+			else clear_expression_text();
+		}
 	} else {
 		on_gcalc_exit(w, event, user_data);
 	}
+	return TRUE;
 }
 
 /*
@@ -23557,9 +23560,9 @@ void update_resultview_popup() {
 		Unit *u_result = NULL;
 		if(displayed_mstruct) u_result = find_exact_matching_unit(*displayed_mstruct);
 		bool b_exact = (u_result != NULL);
-		if(!u_result) u_result = CALCULATOR->findMatchingUnit(*mstruct);
+		if(!u_result && mstruct) u_result = CALCULATOR->findMatchingUnit(*mstruct);
 		bool b_prefix = false;
-		if(b_exact && u_result && u_result->subtype() != SUBTYPE_COMPOSITE_UNIT) b_prefix = has_prefix(*displayed_mstruct);
+		if(b_exact && u_result && u_result->subtype() != SUBTYPE_COMPOSITE_UNIT) b_prefix = has_prefix(displayed_mstruct ? *displayed_mstruct : *mstruct);
 		vector<Unit*> to_us;
 		if(u_result && u_result->isCurrency()) {
 			Unit *u_local_currency = CALCULATOR->getLocalCurrency();
@@ -24063,13 +24066,6 @@ gboolean on_units_entry_to_val_focus_out_event(GtkEntry*, GdkEventFocus*, gpoint
 	return FALSE;
 }
 
-/*
-	enter in expression entry does the same as clicking "Execute" button
-*/
-void on_expression_activate(GtkEntry*, gpointer) {
-	execute_expression();
-}
-
 void on_convert_entry_unit_icon_release(GtkEntry *entry, GtkEntryIconPosition icon_pos, GdkEvent*, gpointer) {
 	switch(icon_pos) {
 		case GTK_ENTRY_ICON_PRIMARY: {
@@ -24088,30 +24084,25 @@ void on_convert_entry_unit_icon_release(GtkEntry *entry, GtkEntryIconPosition ic
 gboolean on_gcalc_exit(GtkWidget*, GdkEvent*, gpointer) {
 	stop_timeouts = true;
 	exit_in_progress = true;
-	CALCULATOR->abort();
 	if(plot_builder && gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")))) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
 	}
-	if(save_mode_on_exit) {
-		save_mode();
-	} else {
-		save_preferences();
-	}
-	if(save_defs_on_exit) {
-		save_defs();
-	}
+	CALCULATOR->abort();
+	if(save_mode_on_exit) save_mode();
+	else save_preferences();
+	if(save_defs_on_exit) save_defs();
+#ifdef _WIN32
+	if(use_systray_icon) destroy_systray_icon();
+#endif
 	for(size_t i = 0; i < history_parsed.size(); i++) {
 		if(history_parsed[i]) history_parsed[i]->unref();
 		if(history_answer[i]) history_answer[i]->unref();
 	}
 	if(view_thread->running) {
-		view_thread->write(0);
+		view_thread->write((int) 0);
 		view_thread->write(NULL);
 	}
 	CALCULATOR->terminateThreads();
-#ifdef _WIN32
-	if(use_systray_icon) destroy_systray_icon();
-#endif
 	g_application_quit(g_application_get_default());
 	return TRUE;
 }
@@ -28457,10 +28448,10 @@ void update_mb_to_menu() {
 	Unit *u_result = NULL;
 	if(displayed_mstruct) u_result = find_exact_matching_unit(*displayed_mstruct);
 	bool b_exact = (u_result != NULL);
-	if(!u_result) u_result = CALCULATOR->findMatchingUnit(*mstruct);
+	if(!u_result && mstruct) u_result = CALCULATOR->findMatchingUnit(*mstruct);
 	if(u_result) s_cat = u_result->category();
 	bool b_prefix = false;
-	if(b_exact && u_result && u_result->subtype() != SUBTYPE_COMPOSITE_UNIT) b_prefix = has_prefix(*displayed_mstruct);
+	if(b_exact && u_result && u_result->subtype() != SUBTYPE_COMPOSITE_UNIT) b_prefix = has_prefix(displayed_mstruct ? *displayed_mstruct : *mstruct);
 	vector<Unit*> to_us;
 	size_t i_added = 0;
 	if(u_result && displayed_printops.base != BASE_SEXAGESIMAL && u_result == CALCULATOR->getDegUnit()) {
@@ -34102,7 +34093,7 @@ return TRUE;}
 					return TRUE;
 				}
 			}
-			execute_expression();
+			if(!expression_is_empty()) execute_expression();
 			return TRUE;
 		}
 		case GDK_KEY_dead_circumflex: {
@@ -34525,12 +34516,14 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 		gdk_cairo_set_source_rgba(cr, &rgba);
 		pango_cairo_show_layout(cr, layout);
 		g_object_unref(layout);*/
+		GdkRGBA rgba;
+		gtk_style_context_get_color(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), GTK_STATE_FLAG_NORMAL, &rgba);
 		gint h = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
 		gint w = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
-		gint uah_h = 16, uah_w = 24;
-		if(h >= 48) {uah_h = 32; uah_w = 48;}
-		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_resource_at_scale("/qalculate-gtk/flags/UAH.png", uah_w, uah_h, TRUE, NULL);
+		gint uah_h = h / 2, uah_w = h / 2;
+		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_resource_at_scale(rgba.red + rgba.green + rgba.blue > 1.5 ? "/qalculate-gtk/flags/peace-sign-white.svg" : "/qalculate-gtk/flags/peace-sign-black.svg", uah_w * scalefactor, uah_h * scalefactor, TRUE, NULL);
 		cairo_surface_t *s = gdk_cairo_surface_create_from_pixbuf(pixbuf, 1, NULL);
+		cairo_surface_set_device_scale(s, scalefactor, scalefactor);
 		cairo_set_source_surface(cr, s, (w - uah_w) / 2, (h - uah_h) / 2);
 		cairo_paint(cr);
 		g_object_unref(pixbuf);

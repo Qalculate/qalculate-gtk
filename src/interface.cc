@@ -20,6 +20,7 @@
 
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
+#include <cairo/cairo-gobject.h>
 
 #include "support.h"
 #include "callbacks.h"
@@ -214,7 +215,8 @@ gchar history_warning_color[8];
 gchar history_parse_color[8];
 gchar history_bookmark_color[8];
 
-extern unordered_map<string, GdkPixbuf*> flag_images;
+extern unordered_map<string, cairo_surface_t*> flag_surfaces;
+int flagheight;
 
 extern unordered_map<guint64, keyboard_shortcut> keyboard_shortcuts;
 extern vector<custom_button> custom_buttons;
@@ -1694,12 +1696,25 @@ void create_main_window(void) {
 
 	char **flags_r = g_resources_enumerate_children("/qalculate-gtk/flags", G_RESOURCE_LOOKUP_FLAGS_NONE, NULL);
 	if(flags_r) {
+		PangoFontDescription *font_desc;
+		gtk_style_context_get(gtk_widget_get_style_context(mainwindow), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+		PangoFontset *fontset = pango_context_load_fontset(gtk_widget_get_pango_context(mainwindow), font_desc, pango_context_get_language(gtk_widget_get_pango_context(mainwindow)));
+		PangoFontMetrics *metrics = pango_fontset_get_metrics(fontset);
+		flagheight = (pango_font_metrics_get_ascent(metrics) + pango_font_metrics_get_descent(metrics)) / PANGO_SCALE;
+		pango_font_metrics_unref(metrics);
+		g_object_unref(fontset);
+		pango_font_description_free(font_desc);
+		gint scalefactor = gtk_widget_get_scale_factor(mainwindow);
 		for(size_t i = 0; flags_r[i] != NULL; i++) {
 			string flag_s = flags_r[i];
 			size_t i_ext = flag_s.find(".", 1);
 			if(i_ext != string::npos) {
-				GdkPixbuf *flagbuf = gdk_pixbuf_new_from_resource((string("/qalculate-gtk/flags/") + flag_s).c_str(), NULL);
-				if(flagbuf) flag_images[flag_s.substr(0, i_ext)] = flagbuf;
+				GdkPixbuf *flagbuf = gdk_pixbuf_new_from_resource_at_scale((string("/qalculate-gtk/flags/") + flag_s).c_str(), -1, flagheight * scalefactor, TRUE, NULL);
+				if(flagbuf) {
+					cairo_surface_t *s = gdk_cairo_surface_create_from_pixbuf(flagbuf, scalefactor, NULL);
+					flag_surfaces[flag_s.substr(0, i_ext)] = s;
+					g_object_unref(flagbuf);
+				}
 			}
 		}
 		g_strfreev(flags_r);
@@ -2262,7 +2277,8 @@ void create_main_window(void) {
 	g_signal_connect((gpointer) history_renderer, "edited", G_CALLBACK(on_historyview_item_edited), NULL);
 	g_signal_connect((gpointer) history_renderer, "editing-started", G_CALLBACK(on_historyview_item_editing_started), NULL);
 	g_signal_connect((gpointer) history_renderer, "editing-canceled", G_CALLBACK(on_historyview_item_editing_canceled), NULL);
-	history_column = gtk_tree_view_column_new_with_attributes(_("History"), history_renderer, "editable", true, "markup", 0, "ypad", 4, "xpad", 5, "xalign", 6, "alignment", 7, NULL);
+	g_object_set(G_OBJECT(history_renderer), "editable", true, NULL);
+	history_column = gtk_tree_view_column_new_with_attributes(_("History"), history_renderer, "markup", 0, "ypad", 4, "xpad", 5, "xalign", 6, "alignment", 7, NULL);
 	gtk_tree_view_column_set_expand(history_column, TRUE);
 	GtkWidget *scrollbar = gtk_scrolled_window_get_vscrollbar(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "historyscrolled")));
 	if(scrollbar) gtk_widget_get_preferred_width(scrollbar, NULL, &history_scroll_width);
@@ -2346,7 +2362,7 @@ void create_main_window(void) {
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "completionview"))), GTK_STYLE_PROVIDER(completion_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_css_provider_load_from_data(completion_provider, "* {font-size: medium;}", -1, NULL);
 #endif
-	completion_store = gtk_list_store_new(9, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN, G_TYPE_INT, GDK_TYPE_PIXBUF, G_TYPE_INT, G_TYPE_UINT, G_TYPE_INT);
+	completion_store = gtk_list_store_new(9, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN, G_TYPE_INT, CAIRO_GOBJECT_TYPE_SURFACE, G_TYPE_INT, G_TYPE_UINT, G_TYPE_INT);
 	completion_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(completion_store), NULL);
 	gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(completion_filter), 3);
 	completion_sort = gtk_tree_model_sort_new_with_model(completion_filter);
@@ -2363,7 +2379,7 @@ void create_main_window(void) {
 	renderer = gtk_cell_renderer_pixbuf_new();
 	gtk_cell_renderer_set_padding(renderer, 2, 0);
 	gtk_cell_area_box_pack_end(GTK_CELL_AREA_BOX(area), renderer, FALSE, TRUE, TRUE);
-	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(area), renderer, "pixbuf", 5, NULL);
+	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(area), renderer, "surface", 5, NULL);
 	renderer = gtk_cell_renderer_text_new();
 	g_object_set(G_OBJECT(renderer), "style", PANGO_STYLE_ITALIC, NULL);
 	gtk_cell_area_box_pack_end(GTK_CELL_AREA_BOX(area), renderer, FALSE, TRUE, TRUE);
@@ -2395,7 +2411,7 @@ void create_main_window(void) {
 	tUnitSelectorCategories = GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_treeview_category"));
 	tUnitSelector = GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_treeview_unit"));
 
-	tUnitSelector_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_PIXBUF, G_TYPE_BOOLEAN);
+	tUnitSelector_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_POINTER, CAIRO_GOBJECT_TYPE_SURFACE, G_TYPE_BOOLEAN);
 	tUnitSelector_store_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(tUnitSelector_store), NULL);
 	gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(tUnitSelector_store_filter), 3);
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnitSelector_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
@@ -2405,7 +2421,7 @@ void create_main_window(void) {
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 	renderer = gtk_cell_renderer_pixbuf_new();
 	gtk_cell_renderer_set_padding(renderer, 4, 0);
-	flag_column = gtk_tree_view_column_new_with_attributes(_("Flag"), renderer, "pixbuf", 2, NULL);
+	flag_column = gtk_tree_view_column_new_with_attributes(_("Flag"), renderer, "surface", 2, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(tUnitSelector), flag_column);
 	renderer = gtk_cell_renderer_text_new();
 	column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", 0, NULL);
@@ -2627,7 +2643,7 @@ GtkWidget* get_units_dialog(void) {
 		}
 #endif
 
-		tUnits_store = gtk_list_store_new(UNITS_N_COLUMNS, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_PIXBUF, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
+		tUnits_store = gtk_list_store_new(UNITS_N_COLUMNS, G_TYPE_STRING, G_TYPE_POINTER, CAIRO_GOBJECT_TYPE_SURFACE, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
 		tUnits_store_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(tUnits_store), NULL);
 		gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(tUnits_store_filter), UNITS_VISIBLE_COLUMN);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tUnits), GTK_TREE_MODEL(tUnits_store_filter));
@@ -2635,7 +2651,7 @@ GtkWidget* get_units_dialog(void) {
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 		GtkCellRenderer *renderer = gtk_cell_renderer_pixbuf_new();
 		gtk_cell_renderer_set_padding(renderer, 4, 0);
-		units_flag_column = gtk_tree_view_column_new_with_attributes(_("Flag"), renderer, "pixbuf", UNITS_FLAG_COLUMN, NULL);
+		units_flag_column = gtk_tree_view_column_new_with_attributes(_("Flag"), renderer, "surface", UNITS_FLAG_COLUMN, NULL);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tUnits), units_flag_column);
 		renderer = gtk_cell_renderer_text_new();
 		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", UNITS_TITLE_COLUMN, NULL);

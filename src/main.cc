@@ -182,7 +182,7 @@ void create_application(GtkApplication *app) {
 	load_preferences();
 
 	mstruct = new MathStructure();
-	displayed_mstruct = new MathStructure();
+	displayed_mstruct = NULL;
 	parsed_mstruct = new MathStructure();
 	parsed_tostruct = new MathStructure();
 	parsed_tostruct->setUndefined();

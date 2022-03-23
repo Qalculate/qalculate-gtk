@@ -461,7 +461,6 @@ void on_radiobutton_degrees_toggled(GtkToggleButton *togglebutton, gpointer user
 void on_radiobutton_gradians_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 void on_radiobutton_no_default_angle_unit_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 gboolean on_gcalc_exit(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-void on_expression_activate(GtkEntry *entry, gpointer user_data);
 void on_button_execute_clicked(GtkButton *button, gpointer user_data);
 void on_button_del_clicked(GtkButton *w, gpointer user_data);
 void on_button_ac_clicked(GtkButton *w, gpointer user_data);
