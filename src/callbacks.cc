@@ -7885,7 +7885,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 	if(ips.depth == 0 && po.is_approximate) *po.is_approximate = false;
 
 	cairo_surface_t *surface = NULL;
-	cairo_t *cr = NULL;
+
 	GdkRGBA rgba;
 	if(!color) {
 		gtk_style_context_get_color(gtk_widget_get_style_context(resultview), GTK_STATE_FLAG_NORMAL, &rgba);
@@ -7962,7 +7962,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 		if(ips.power_depth >= 1) divider = 1.5;
 		surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 		cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-		cr = cairo_create(surface);
+		cairo_t *cr = cairo_create(surface);
 		w = 0;
 		for(size_t i = 0; i < surface_terms.size(); i++) {
 			if(!CALCULATOR->aborted()) {
@@ -7990,6 +7990,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 			cairo_surface_destroy(surface_terms[i]);
 		}
 		if(layout_sign) g_object_unref(layout_sign);
+		cairo_destroy(cr);
 	} else {
 		switch(m.type()) {
 			case STRUCT_NUMBER: {
@@ -8291,7 +8292,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				}
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
+				cairo_t *cr = cairo_create(surface);
 				gdk_cairo_set_source_rgba(cr, color);
 				cairo_move_to(cr, offset_x, rect.y < 0 ? -rect.y : 0);
 				pango_cairo_show_layout(cr, layout);
@@ -8301,6 +8302,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					g_object_unref(pos_nr[i]);
 				}
 				g_object_unref(layout);
+				cairo_destroy(cr);
 				break;
 			}
 			case STRUCT_ABORTED: {}
@@ -8334,11 +8336,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				if(rect.y < 0) h -= rect.y;
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
+				cairo_t *cr = cairo_create(surface);
 				gdk_cairo_set_source_rgba(cr, color);
 				cairo_move_to(cr, offset_x, rect.y < 0 ? -rect.y : 0);
 				pango_cairo_show_layout(cr, layout);
 				g_object_unref(layout);
+				cairo_destroy(cr);
 				break;
 			}
 			case STRUCT_DATETIME: {
@@ -8383,11 +8386,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				if(rect.y < 0) h -= rect.y;
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
+				cairo_t *cr = cairo_create(surface);
 				gdk_cairo_set_source_rgba(cr, color);
 				cairo_move_to(cr, offset_x, rect.y < 0 ? -rect.y : 0);
 				pango_cairo_show_layout(cr, layout);
 				g_object_unref(layout);
+				cairo_destroy(cr);
 				break;
 			}
 			case STRUCT_ADDITION: {
@@ -8469,7 +8473,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				h = dh + uh;
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
+				cairo_t *cr = cairo_create(surface);
 				w = 0;
 				for(size_t i = 0; i < surface_terms.size(); i++) {
 					if(!CALCULATOR->aborted()) {
@@ -8496,6 +8500,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				}
 				g_object_unref(layout_minus);
 				g_object_unref(layout_plus);
+				cairo_destroy(cr);
 				break;
 			}
 			case STRUCT_NEGATE: {
@@ -8546,7 +8551,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
+				cairo_t *cr = cairo_create(surface);
 
 				w = offset_x;
 				gdk_cairo_set_source_rgba(cr, color);
@@ -8558,6 +8563,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				cairo_surface_destroy(surface_arg);
 
 				g_object_unref(layout_minus);
+				cairo_destroy(cr);
 				break;
 			}
 			case STRUCT_MULTIPLICATION: {
@@ -8720,7 +8726,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				h = dh + uh;
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
+				cairo_t *cr = cairo_create(surface);
 				w = 0;
 				for(size_t i = 0; i < surface_terms.size(); i++) {
 					if(!CALCULATOR->aborted()) {
@@ -8779,6 +8785,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				}
 				if(layout_mul) g_object_unref(layout_mul);
 				if(layout_altmul) g_object_unref(layout_altmul);
+				cairo_destroy(cr);
 				break;
 			}
 			case STRUCT_INVERSE: {}
@@ -8873,7 +8880,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					central_point = dh;
 					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-					cr = cairo_create(surface);
+					cairo_t *cr = cairo_create(surface);
 					gdk_cairo_set_source_rgba(cr, color);
 					w = 0;
 					cairo_set_source_surface(cr, num_surface, w, uh - num_uh);
@@ -8889,6 +8896,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					cairo_set_source_surface(cr, den_surface, w, uh - den_uh);
 					cairo_paint(cr);
 					g_object_unref(layout_div);
+					cairo_destroy(cr);
 				} else {
 					num_w = num_w - xtmp1 - wotmp1;
 					den_w = den_w - xtmp2 - wotmp2;
@@ -8925,7 +8933,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					w += w_extra * 2;
 					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-					cr = cairo_create(surface);
+					cairo_t *cr = cairo_create(surface);
 					gdk_cairo_set_source_rgba(cr, color);
 					w = w_extra;
 					cairo_set_source_surface(cr, num_surface, w + num_pos - xtmp1, -y1n);
@@ -8939,6 +8947,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					cairo_paint(cr);
 					offset_x = 0;
 					offset_w = 0;
+					cairo_destroy(cr);
 				}
 				if(num_surface) cairo_surface_destroy(num_surface);
 				if(den_surface) cairo_surface_destroy(den_surface);
@@ -8987,7 +8996,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
+				cairo_t *cr = cairo_create(surface);
 				gdk_cairo_set_source_rgba(cr, color);
 				w = 0;
 				cairo_set_source_surface(cr, surface_base, w, h - base_h);
@@ -8998,6 +9007,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				cairo_set_source_surface(cr, surface_exp, w, 0);
 				cairo_paint(cr);
 				cairo_surface_destroy(surface_exp);
+				cairo_destroy(cr);
 
 				break;
 			}
@@ -9165,7 +9175,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					h = dh + uh;
 					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-					cr = cairo_create(surface);
+					cairo_t *cr = cairo_create(surface);
 					w = 0;
 					for(size_t i = 0; i < surface_terms.size(); i++) {
 						gdk_cairo_set_source_rgba(cr, color);
@@ -9190,6 +9200,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					}
 					g_object_unref(layout_sign);
 					g_object_unref(layout_sign2);
+					cairo_destroy(cr);
 					break;
 				}
 			}
@@ -9319,7 +9330,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				h = dh + uh;
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
+				cairo_t *cr = cairo_create(surface);
 				w = 0;
 				for(size_t i = 0; i < surface_terms.size(); i++) {
 					if(!CALCULATOR->aborted()) {
@@ -9339,6 +9350,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					cairo_surface_destroy(surface_terms[i]);
 				}
 				g_object_unref(layout_sign);
+				cairo_destroy(cr);
 				break;
 			}
 			case STRUCT_LOGICAL_NOT: {}
@@ -9391,7 +9403,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
+				cairo_t *cr = cairo_create(surface);
 
 				w = 0;
 				gdk_cairo_set_source_rgba(cr, color);
@@ -9403,6 +9415,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				cairo_surface_destroy(surface_arg);
 
 				g_object_unref(layout_not);
+				cairo_destroy(cr);
 				break;
 			}
 			case STRUCT_VECTOR: {
@@ -9422,11 +9435,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					central_point = h / 2;
 					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-					cr = cairo_create(surface);
+					cairo_t *cr = cairo_create(surface);
 					gdk_cairo_set_source_rgba(cr, color);
 					cairo_move_to(cr, 1, 0);
 					pango_cairo_show_layout(cr, layout);
 					g_object_unref(layout);
+					cairo_destroy(cr);
 					break;
 				}
 				gint wtmp, htmp, ctmp = 0, w = 0, h = 0;
@@ -9507,7 +9521,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				central_point = h / 2;
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
+				cairo_t *cr = cairo_create(surface);
 				gdk_cairo_set_source_rgba(cr, color);
 				w = 1;
 				cairo_move_to(cr, w, 1);
@@ -9555,6 +9569,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				cairo_set_line_width(cr, 2);
 				cairo_stroke(cr);
 				g_object_unref(layout_comma);
+				cairo_destroy(cr);
 				break;
 			}
 			case STRUCT_UNIT: {
@@ -9623,11 +9638,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				if(rect.y < 0) h -= rect.y;
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
+				cairo_t *cr = cairo_create(surface);
 				gdk_cairo_set_source_rgba(cr, color);
 				cairo_move_to(cr, offset_x, rect.y < 0 ? -rect.y : 0);
 				pango_cairo_show_layout(cr, layout);
 				g_object_unref(layout);
+				cairo_destroy(cr);
 				break;
 			}
 			case STRUCT_VARIABLE: {
@@ -9699,11 +9715,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				if(rect.y < 0) h -= rect.y;
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
+				cairo_t *cr = cairo_create(surface);
 				gdk_cairo_set_source_rgba(cr, color);
 				cairo_move_to(cr, offset_x, rect.y < 0 ? -rect.y : 0);
 				pango_cairo_show_layout(cr, layout);
 				g_object_unref(layout);
+				cairo_destroy(cr);
 				break;
 			}
 			case STRUCT_FUNCTION: {
@@ -9747,7 +9764,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					central_point = dh;
 					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-					cr = cairo_create(surface);
+					cairo_t *cr = cairo_create(surface);
 					gdk_cairo_set_source_rgba(cr, color);
 					w = 0;
 					cairo_set_source_surface(cr, mid_surface, w, uh - mid_uh);
@@ -9762,6 +9779,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					g_object_unref(layout_pm);
 					cairo_surface_destroy(mid_surface);
 					cairo_surface_destroy(unc_surface);
+					cairo_destroy(cr);
 					break;
 				} else if(SHOW_WITH_ROOT_SIGN(m)) {
 
@@ -9818,7 +9836,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-					cr = cairo_create(surface);
+					cairo_t *cr = cairo_create(surface);
 					gdk_cairo_set_source_rgba(cr, color);
 
 					cairo_move_to(cr, 0, h / 2.0 + h / 15.0);
@@ -9843,6 +9861,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 					cairo_surface_destroy(surface_arg);
 					g_object_unref(layout_root);
+					cairo_destroy(cr);
 
 					break;
 
@@ -9878,7 +9897,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-					cr = cairo_create(surface);
+					cairo_t *cr = cairo_create(surface);
 					gdk_cairo_set_source_rgba(cr, color);
 
 					cairo_move_to(cr, (extra_space / divider), line_space);
@@ -9905,6 +9924,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					cairo_paint(cr);
 
 					cairo_surface_destroy(surface_arg);
+					cairo_destroy(cr);
 
 					break;
 				} else if(m.function() == CALCULATOR->f_diff && (m.size() == 3 || (m.size() == 4 && m[3].isUndefined())) && (m[1].isVariable() || m[1].isSymbolic()) && m[2].isInteger()) {
@@ -9943,7 +9963,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					h = dh + uh;
 					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-					cr = cairo_create(surface);
+					cairo_t *cr = cairo_create(surface);
 					gdk_cairo_set_source_rgba(cr, color);
 					cairo_set_source_surface(cr, surface_term1, 0, uh - (hpt1 - cpt1));
 					cairo_paint(cr);
@@ -9952,6 +9972,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					cairo_paint(cr);
 					cairo_surface_destroy(surface_term1);
 					cairo_surface_destroy(surface_term2);
+					cairo_destroy(cr);
 
 					break;
 				}
@@ -10147,7 +10168,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
+				cairo_t *cr = cairo_create(surface);
 
 				w = 0;
 				gdk_cairo_set_source_rgba(cr, color);
@@ -10179,6 +10200,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 				g_object_unref(layout_comma);
 				g_object_unref(layout_function);
+				cairo_destroy(cr);
 
 				break;
 			}
@@ -10208,11 +10230,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				if(rect.y < 0) h -= rect.y;
 				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cr = cairo_create(surface);
+				cairo_t *cr = cairo_create(surface);
 				gdk_cairo_set_source_rgba(cr, color);
 				cairo_move_to(cr, offset_x, rect.y < 0 ? -rect.y : 0);
 				pango_cairo_show_layout(cr, layout);
 				g_object_unref(layout);
+				cairo_destroy(cr);
 				break;
 			}
 			default: {}
@@ -10239,10 +10262,9 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 		w += arc_base_w * 2;
 		w += ips.power_depth > 0 ? 2 : 3;
 		cairo_surface_t *surface_old = surface;
-		cairo_destroy(cr);
 		surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
 		cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-		cr = cairo_create(surface);
+		cairo_t *cr = cairo_create(surface);
 		gdk_cairo_set_source_rgba(cr, color);
 		w = ips.power_depth > 0 ? 2 : 3;
 		cairo_set_source_surface(cr, get_left_parenthesis(arc_base_w, arc_base_h, scaledown, color), w, (h - arc_base_h) / 2);
@@ -10254,6 +10276,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 		w += base_w;
 		cairo_set_source_surface(cr, get_right_parenthesis(arc_base_w, arc_base_h, scaledown, color), w, (h - arc_base_h) / 2);
 		cairo_paint(cr);
+		cairo_destroy(cr);
 	}
 	if(ips.depth == 0 && !(m.isComparison() && (!((po.is_approximate && *po.is_approximate) || m.isApproximate()) || (m.comparisonType() == COMPARISON_EQUALS && po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, po.can_display_unicode_string_arg))))) && surface) {
 		gint w, h, wle, hle, w_new, h_new;
@@ -10289,7 +10312,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 		h_new = h;
 		surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w_new * scalefactor, h_new * scalefactor);
 		cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-		cr = cairo_create(surface);
+		cairo_t *cr = cairo_create(surface);
 		gdk_cairo_set_source_rgba(cr, color);
 		cairo_move_to(cr, offset_x, h - central_point - hle / 2 - hle % 2);
 		pango_cairo_show_layout(cr, layout_equals);
@@ -10297,13 +10320,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 		cairo_paint(cr);
 		cairo_surface_destroy(surface_old);
 		g_object_unref(layout_equals);
+		cairo_destroy(cr);
 	}
 	if(!surface) {
 		surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 1 * scalefactor, 1 * scalefactor);
 		cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-		cr = cairo_create(surface);
 	}
-	if(cr) cairo_destroy(cr);
 	if(point_central) *point_central = central_point;
 	if(x_offset) *x_offset = offset_x;
 	if(w_offset) *w_offset = offset_w;
@@ -12059,6 +12081,7 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 	if(run == 1) {
 	
 		if(expression_has_changed && !rpn_mode && command_type != COMMAND_TRANSFORM) {
+			if(get_expression_text().find_first_not_of(SPACES) != string::npos) return;
 			execute_expression();
 		}
 
@@ -20925,11 +20948,13 @@ void load_preferences() {
 					inhistory_protected.push_front(false);
 					inhistory_value.push_front(0);
 				} else if(svar == "history_result") {
+					if(VERSION_BEFORE(4, 1, 1) && svalue.length() > 20 && svalue.substr(svalue.length() - 4, 4) == " …" && (unsigned char) svalue[svalue.length() - 5] >= 0xC0) svalue.erase(svalue.length() - 5, 1);
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_RESULT);
 					inhistory_protected.push_front(false);
 					inhistory_value.push_front(0);
 				} else if(svar == "history_result_approximate") {
+					if(VERSION_BEFORE(4, 1, 1) && svalue.length() > 20 && svalue.substr(svalue.length() - 4, 4) == " …" && (unsigned char) svalue[svalue.length() - 5] >= 0xC0) svalue.erase(svalue.length() - 5, 1);
 					inhistory.push_front(svalue);
 					inhistory_type.push_front(QALCULATE_HISTORY_RESULT_APPROXIMATE);
 					inhistory_protected.push_front(false);
@@ -21483,7 +21508,7 @@ void save_preferences(bool mode) {
 			if(i3 == string::npos) {
 				if(!is_protected && inhistory[hi].length() > 5000) {
 					int index = 50;
-					while(index >= 0 && (signed char) inhistory[hi][index] < 0 && (unsigned char) inhistory[hi][index] < 0xC0) index--;
+					while(index > 0 && (signed char) inhistory[hi][index] < 0 && (unsigned char) inhistory[hi][index + 1] < 0xC0) index--;
 					fprintf(file, "%s …\n", fix_history_string(unhtmlize(inhistory[hi].substr(0, index + 1))).c_str());
 				} else {
 					fprintf(file, "%s\n", inhistory[hi].c_str());
@@ -34458,6 +34483,7 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 					tmp_surface = draw_structure(*displayed_mstruct, displayed_printops, displayed_caf, top_ips, NULL, scale_n, NULL, NULL, NULL, rw);
 					displayed_printops.can_display_unicode_string_arg = NULL;
 				}
+				cairo_surface_destroy(surface_result);
 				surface_result = tmp_surface;
 			}
 		}
