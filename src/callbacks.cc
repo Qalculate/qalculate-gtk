@@ -6584,7 +6584,7 @@ const gchar *shortcut_type_text(int type, bool return_null) {
 		case SHORTCUT_TYPE_PLOT: {return _("Open plot functions/data"); break;}
 		case SHORTCUT_TYPE_NUMBER_BASES: {return _("Open convert number bases"); break;}
 		case SHORTCUT_TYPE_FLOATING_POINT: {return _("Open floating point conversion"); break;}
-		case SHORTCUT_TYPE_CALENDARS: {return _("Open calender conversion"); break;}
+		case SHORTCUT_TYPE_CALENDARS: {return _("Open calendar conversion"); break;}
 		case SHORTCUT_TYPE_PERCENTAGE_TOOL: {return _("Open percentage calculation tool"); break;}
 		case SHORTCUT_TYPE_PERIODIC_TABLE: {return _("Open periodic table"); break;}
 		case SHORTCUT_TYPE_UPDATE_EXRATES: {return _("Update exchange rates"); break;}
