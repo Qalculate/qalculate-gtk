@@ -482,8 +482,10 @@ void string_strdown(const string &str, string &strnew) {
 	}
 }
 
-AnswerFunction::AnswerFunction() : MathFunction(_("answer"), 1, 1, CALCULATOR->f_warning->category(), _("History Answer Value")) {
-	if(strcmp(_("answer"), "answer")) addName("answer");
+AnswerFunction::AnswerFunction() : MathFunction("answer", 1, 1, CALCULATOR->f_warning->category(), _("History Answer Value")) {
+	ExpressionName name(_("answer"));
+	if(name.name[0] <= 'Z' && name.name[0] >= 'A') name.name[0] += 32;
+	if(name.name != "answer") addName(name, 1);
 	VectorArgument *arg = new VectorArgument(_("History Index(es)"));
 	arg->addArgument(new IntegerArgument("", ARGUMENT_MIN_MAX_NONZERO, true, true, INTEGER_TYPE_SINT));
 	setArgumentDefinition(1, arg);
@@ -505,8 +507,10 @@ int AnswerFunction::calculate(MathStructure &mstruct, const MathStructure &vargs
 	}
 	return 1;
 }
-ExpressionFunction::ExpressionFunction() : MathFunction(_("expression"), 1, 1, CALCULATOR->f_warning->category(), _("History Parsed Expression")) {
-	if(strcmp(_("expression"), "expression")) addName("expression");
+ExpressionFunction::ExpressionFunction() : MathFunction("expression", 1, 1, CALCULATOR->f_warning->category(), _("History Parsed Expression")) {
+	ExpressionName name(_("expression"));
+	if(name.name[0] <= 'Z' && name.name[0] >= 'A') name.name[0] += 32;
+	if(name.name != "expression") addName(name, 1);
 	VectorArgument *arg = new VectorArgument(_("History Index(es)"));
 	arg->addArgument(new IntegerArgument("", ARGUMENT_MIN_MAX_NONZERO, true, true, INTEGER_TYPE_SINT));
 	setArgumentDefinition(1, arg);
@@ -8716,7 +8720,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					h = hpt[flag_i];
 					GdkPixbuf *pixbuf = gdk_pixbuf_new_from_resource_at_scale(imagefile.c_str(), -1, h / 2.5 * scalefactor, TRUE, NULL);
 					if(pixbuf) {
-						flag_s = gdk_cairo_surface_create_from_pixbuf(pixbuf, 1, NULL);
+						flag_s = gdk_cairo_surface_create_from_pixbuf(pixbuf, scalefactor, NULL);
 						flag_width = cairo_image_surface_get_width(flag_s);
 						w += flag_width + 2;
 						g_object_unref(pixbuf);
@@ -20091,7 +20095,7 @@ void load_preferences() {
 
 	version_numbers[0] = 4;
 	version_numbers[1] = 1;
-	version_numbers[2] = 0;
+	version_numbers[2] = 1;
 
 	bool old_history_format = false;
 	unformatted_history = 0;
@@ -22962,12 +22966,6 @@ void on_preferences_checkbutton_custom_expression_font_toggled(GtkToggleButton *
 		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
-		gtk_css_provider_load_from_data(expression_provider, "textview.view {font-size: larger;}", -1, NULL);
-#else
-		gtk_css_provider_load_from_data(expression_provider, "* {font-size: larger;}", -1, NULL);
-#endif
-#ifdef _WIN32
 		PangoFontDescription *font_desc;
 		gtk_style_context_get(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
 		pango_font_description_set_size(font_desc, pango_font_description_get_size(font_desc) * 1.2);
@@ -22981,7 +22979,6 @@ void on_preferences_checkbutton_custom_expression_font_toggled(GtkToggleButton *
 		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
 		g_free(gstr);
 		g_free(gstr_l);
-#endif
 	}
 	expression_font_modified();
 	gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h_new);
@@ -34534,26 +34531,14 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 		cairo_paint(cr);
 		first_draw_of_result = FALSE;
 	} else if(showing_first_time_message) {
-		/*PangoLayout *layout = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview")), NULL);
+		PangoLayout *layout = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview")), NULL);
 		GdkRGBA rgba;
 		pango_layout_set_markup(layout, (string("<span size=\"smaller\">") + string(_("Type a mathematical expression above, e.g. \"5 + 2 / 3\",\nand press the enter key.")) + "</span>").c_str(), -1);
 		gtk_style_context_get_color(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), gtk_widget_get_state_flags(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), &rgba);
 		cairo_move_to(cr, 6, 6);
 		gdk_cairo_set_source_rgba(cr, &rgba);
 		pango_cairo_show_layout(cr, layout);
-		g_object_unref(layout);*/
-		GdkRGBA rgba;
-		gtk_style_context_get_color(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), GTK_STATE_FLAG_NORMAL, &rgba);
-		gint h = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
-		gint w = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
-		gint uah_h = h / 2, uah_w = h / 2;
-		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_resource_at_scale(rgba.red + rgba.green + rgba.blue > 1.5 ? "/qalculate-gtk/flags/peace-sign-white.svg" : "/qalculate-gtk/flags/peace-sign-black.svg", uah_w * scalefactor, uah_h * scalefactor, TRUE, NULL);
-		cairo_surface_t *s = gdk_cairo_surface_create_from_pixbuf(pixbuf, 1, NULL);
-		cairo_surface_set_device_scale(s, scalefactor, scalefactor);
-		cairo_set_source_surface(cr, s, (w - uah_w) / 2, (h - uah_h) / 2);
-		cairo_paint(cr);
-		g_object_unref(pixbuf);
-		cairo_surface_destroy(s);
+		g_object_unref(layout);
 	} else {
 		gtk_widget_set_size_request(widget, -1, -1);
 	}

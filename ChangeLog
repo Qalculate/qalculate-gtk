@@ -1,6 +1,38 @@
+2022-03-26 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix memory leak when updating result display
+	* Fix Unicode handling when ellipsizing during saving of long result
+	* Do not convert empty expression
+
+2022-03-25 h-h-h-h <13482553+h-h-h-h@users.noreply.github.com>
+
+	* Update of German translation
+
+2022-03-23 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix close to systrem tray for 32-bit (and potentially 64-bit) Windows binaries
+	* Do nothing when Enter is pressed if expression is empty
+	* Increase original size of flag images, use font size to determine appropriate image size, and use cairo surface instead of GdkPixmap to improve scaling
+	* Replace micro symbol for ASCII copy
+	* Always display abbreviated unit name (symbol) with abbreviated prefix (when unit only has short name)
+
+2022-03-21 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix small dot visible when expression is empty with some default fonts
+	* Do not change result color when window loses focus
+
+2022-03-19 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Remove system tray icon before exit
+	* Do not add separator line if history duplicate was prevented
+
+2022-03-17 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix "Customize completion…" item in expression popup menu
+	* Fix segfault if result widget is not realized when first drawing
+
 2022-03-12 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
-	* Do not change result color when window loses focus
 	* Fix result display inconsistency when reopening from tray icon
 
 2022-03-07 Hanna Knutsson <hanna.knutsson@protonmail.com>

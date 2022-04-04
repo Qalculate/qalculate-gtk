@@ -48,6 +48,27 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="4.1.1" date="2022-04-04">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Improve resolution and sizing of flag images</li>
+      <li>Do not change result color when window loses focus</li>
+      <li>Do not add separator line if history duplicate was prevented</li>
+      <li>Do nothing when Enter is pressed if expression is empty and do not convert empty expression</li>
+      <li>Restrict use of reciprocal in unit conversion, e.g. invert in "5m/s to s/m" (= 0.2 s/m) but not in "500/lb to g" (= 1.1/g)</li>
+      <li>New mHg unit (allows use with prefixes other than milli)</li>
+      <li>Always display abbreviated unit name (symbol) with abbreviated prefix (when unit only has short name)</li>
+      <li>Minor improvements to automatic unit conversion</li>
+      <li>Fix display of (1 + f(x))/n</li>
+      <li>Fix memory leak when updating result display</li>
+      <li>Fix small dot visible when expression is empty with some default fonts</li>
+      <li>Fix segfault if result widget is not realized when first drawing</li>
+      <li>Fix Unicode handling when ellipsizing during saving of long result</li>
+      <li>Fix "Customize completion…" item in expression popup menu</li>
+     </ul>
+   </description>
+  </release>
   <release version="4.1.0" date="2022-03-14">
    <description>
     <p>Changes:</p>
