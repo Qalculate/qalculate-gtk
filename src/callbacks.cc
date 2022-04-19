@@ -261,6 +261,7 @@ string default_plot_max = "10";
 string default_plot_step = "1";
 int default_plot_sampling_rate = 100;
 int default_plot_linewidth = 2;
+int default_plot_complex = -1;
 bool default_plot_use_sampling_rate = true;
 bool default_plot_rows = false;
 int default_plot_type = 0;
@@ -19842,6 +19843,7 @@ void load_preferences() {
 	default_plot_variable = "x";
 	default_plot_color = true;
 	default_plot_use_sampling_rate = true;
+	default_plot_complex = -1;
 	max_plot_time = 5;
 
 	printops.multiplication_sign = MULTIPLICATION_SIGN_X;
@@ -20865,6 +20867,8 @@ void load_preferences() {
 					default_plot_sampling_rate = v;
 				} else if(svar == "plot_use_sampling_rate") {
 					default_plot_use_sampling_rate = v;
+				} else if(svar == "plot_complex") {
+					default_plot_complex = v;
 				} else if(svar == "plot_variable") {
 					default_plot_variable = svalue;
 				} else if(svar == "plot_rows") {
@@ -21745,6 +21749,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "plot_step=%s\n", default_plot_step.c_str());
 	fprintf(file, "plot_sampling_rate=%i\n", default_plot_sampling_rate);
 	fprintf(file, "plot_use_sampling_rate=%i\n", default_plot_use_sampling_rate);
+	if(default_plot_complex >= 0) fprintf(file, "plot_complex=%i\n", default_plot_complex);
 	fprintf(file, "plot_variable=%s\n", default_plot_variable.c_str());
 	fprintf(file, "plot_rows=%i\n", default_plot_rows);
 	fprintf(file, "plot_type=%i\n", default_plot_type);
@@ -27096,7 +27101,14 @@ GtkWidget *history_search_entry = NULL;
 void on_history_search_response(GtkDialog *w, gint reponse_id, gpointer) {
 	if(reponse_id == GTK_RESPONSE_ACCEPT) {
 		if(inhistory.empty()) return;
-		string str = gtk_entry_get_text(GTK_ENTRY(history_search_entry));
+		char *cstr = utf8_strdown(gtk_entry_get_text(GTK_ENTRY(history_search_entry)));
+		string str;
+		if(cstr) {
+			str = cstr;
+			free(cstr);
+		} else {
+			str = gtk_entry_get_text(GTK_ENTRY(history_search_entry));
+		}
 		GtkTreeIter iter;
 		GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
 		GList *selected_list = gtk_tree_selection_get_selected_rows(select, NULL);
@@ -27121,10 +27133,19 @@ void on_history_search_response(GtkDialog *w, gint reponse_id, gpointer) {
 				return;
 			}
 		}
+		string str2;
 		for(gint i = hi_first; ; i--) {
 			if(b_wrap == 1 && i == hi_first) {
 				break;
-			} else if(inhistory[(size_t) i].find(str) != string::npos) {
+			}
+			cstr = utf8_strdown(inhistory[(size_t) i].c_str());
+			if(cstr) {
+				str2 = cstr;
+				free(cstr);
+			} else {
+				str2 = inhistory[(size_t) i];
+			}
+			if(str2.find(str) != string::npos) {
 				do {
 					gint hi = -1;
 					gtk_tree_model_get(GTK_TREE_MODEL(historystore), &iter, 1, &hi, -1);
@@ -27175,10 +27196,9 @@ void on_popup_menu_item_history_search_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
 	gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
 	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(history_search_dialog))), hbox);
-	GtkWidget *label = gtk_label_new(_("Text"));
-	gtk_widget_set_halign(label, GTK_ALIGN_START);
-	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, TRUE, 0);
 	history_search_entry = gtk_entry_new();
+	gtk_entry_set_icon_from_icon_name(GTK_ENTRY(history_search_entry), GTK_ENTRY_ICON_PRIMARY, "edit-find");
+	gtk_entry_set_icon_activatable(GTK_ENTRY(history_search_entry), GTK_ENTRY_ICON_PRIMARY, FALSE);
 	gtk_entry_set_width_chars(GTK_ENTRY(history_search_entry), 35);
 	gtk_box_pack_end(GTK_BOX(hbox), history_search_entry, TRUE, TRUE, 0);
 	gtk_widget_set_sensitive(gtk_dialog_get_widget_for_response(GTK_DIALOG(history_search_dialog), GTK_RESPONSE_ACCEPT), FALSE);
@@ -36006,9 +36026,9 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 			return;
 		}
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(plot_builder, "plot_radiobutton_step")))) {
-			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(CALCULATOR->unlocalizeExpression(str, eo.parse_options), min, max, CALCULATOR->calculate(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_step"))), eo.parse_options), eo), *x_vector, str_x, eo.parse_options, max_plot_time * 1000));
+			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(CALCULATOR->unlocalizeExpression(str, eo.parse_options), min, max, CALCULATOR->calculate(CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_step"))), eo.parse_options), eo), default_plot_complex >= 0 ? default_plot_complex : evalops.allow_complex, *x_vector, str_x, eo.parse_options, max_plot_time * 1000));
 		} else {
-			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(CALCULATOR->unlocalizeExpression(str, eo.parse_options), min, max, gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_steps"))), *x_vector, str_x, eo.parse_options, max_plot_time * 1000));
+			*y_vector = new MathStructure(CALCULATOR->expressionToPlotVector(CALCULATOR->unlocalizeExpression(str, eo.parse_options), min, max, gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_steps"))), default_plot_complex >= 0 ? default_plot_complex : evalops.allow_complex, *x_vector, str_x, eo.parse_options, max_plot_time * 1000));
 		}
 	}
 	CALCULATOR->endTemporaryStopIntervalArithmetic();
