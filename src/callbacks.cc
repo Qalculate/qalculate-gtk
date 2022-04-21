@@ -7473,7 +7473,7 @@ void update_completion() {
 					if(ename->suffix && ename->name.length() > 1) {
 						str += sub_suffix(ename);
 					} else if(ename->name.find('_') != string::npos) {
-						str = capitalize_name(ename->name);
+						str += capitalize_name(ename->name);
 					} else {
 						str += ename->name;
 					}
@@ -7507,7 +7507,7 @@ void update_completion() {
 					if(ename->suffix && ename->name.length() > 1) {
 						str += sub_suffix(ename);
 					} else if(ename->name.find('_') != string::npos) {
-						str = capitalize_name(ename->name);
+						str += capitalize_name(ename->name);
 					} else {
 						str += ename->name;
 					}
@@ -7596,7 +7596,7 @@ void update_completion() {
 					}
 				}
 				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
-				else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, title.c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
+				else if(ename_r) gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, title.c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
 			}
 		}
 	}
@@ -7625,7 +7625,7 @@ void update_completion() {
 						if(ename->suffix && ename->name.length() > 1) {
 							str += sub_suffix(ename);
 						} else if(ename->name.find('_') != string::npos) {
-							str = capitalize_name(ename->name);
+							str += capitalize_name(ename->name);
 						} else {
 							str += ename->name;
 						}
@@ -7637,6 +7637,7 @@ void update_completion() {
 					b = true;
 				} else if(!b && ename_r->name.find('_') != string::npos) {
 					str = capitalize_name(ename_r->name);
+					b = true;
 				} else {
 					ellipsize_completion_names(str);
 				}
