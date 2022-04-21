@@ -294,7 +294,7 @@ bool rpn_mode, rpn_keys;
 bool adaptive_interval_display;
 bool use_e_notation;
 
-bool tc_set = false;
+bool tc_set = false, sinc_set = false;
 
 bool use_systray_icon = false, hide_on_startup = false;
 
@@ -2996,7 +2996,49 @@ bool ask_tc() {
 	}
 	return false;
 }
-
+bool test_ask_sinc(MathStructure &m) {
+	return !sinc_set && m.containsFunctionId(FUNCTION_ID_SINC);
+}
+bool ask_sinc() {
+	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Sinc Function"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_OK"), GTK_RESPONSE_ACCEPT, NULL);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+	gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT);
+	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
+	GtkWidget *grid = gtk_grid_new();
+	gtk_grid_set_row_spacing(GTK_GRID(grid), 12);
+	gtk_grid_set_column_spacing(GTK_GRID(grid), 12);
+	gtk_container_set_border_width(GTK_CONTAINER(grid), 6);
+	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), grid);
+	gtk_widget_show(grid);
+	GtkWidget *label = gtk_label_new(_("Please select desired variant of the sinc function."));
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), label, 0, 0, 2, 1);
+	GtkWidget *w_1 = gtk_radio_button_new_with_label(NULL, _("Unnormalized"));
+	gtk_widget_set_valign(w_1, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), w_1, 0, 1, 1, 1);
+	label = gtk_label_new("<i>sinc(x) = sinc(x)/x</i>");
+	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), label, 1, 1, 1, 1);
+	GtkWidget *w_pi = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(w_1), _("Normalized"));
+	gtk_widget_set_valign(w_pi, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), w_pi, 0, 2, 1, 1);
+	label = gtk_label_new("<i>sinc(x) = sinc(πx)/(πx)</i>");
+	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), label, 1, 2, 1, 1);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w_1), TRUE);
+	gtk_widget_show_all(grid);
+	gtk_dialog_run(GTK_DIALOG(dialog));
+	bool b_pi = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w_pi));
+	gtk_widget_destroy(dialog);
+	sinc_set = true;
+	if(b_pi) {
+		CALCULATOR->getFunctionById(FUNCTION_ID_SINC)->setDefaultValue(2, "pi");
+		return true;
+	}
+	return false;
+}
 bool test_ask_dot(const string &str) {
 	if(dot_question_asked || CALCULATOR->getDecimalPoint() == DOT) return false;
 	size_t i = 0;
@@ -3136,7 +3178,7 @@ vector<CalculatorMessage> autocalc_messages;
 gboolean do_autocalc_history_timeout(gpointer) {
 	autocalc_history_timeout_id = 0;
 	if(stop_timeouts || !result_autocalculated || rpn_mode) return FALSE;
-	if((test_ask_tc(*parsed_mstruct) && ask_tc()) || (test_ask_dot(result_text) && ask_dot()) || check_exchange_rates(NULL, true)) {
+	if((test_ask_tc(*parsed_mstruct) && ask_tc()) || (test_ask_dot(result_text) && ask_dot()) || ((test_ask_sinc(*parsed_mstruct) || test_ask_sinc(*mstruct)) && ask_sinc()) || check_exchange_rates(NULL, true)) {
 		execute_expression(true, false, OPERATION_ADD, NULL, false, 0, "", "", false);
 		return FALSE;
 	}
@@ -7351,6 +7393,57 @@ string sub_suffix(const ExpressionName *ename) {
 
 GtkTreeIter completion_separator_iter;
 
+bool ellipsize_completion_names(string &str) {
+	if(str.length() < 50) return false;
+	size_t l = 0, l_insub = 0, first_i = 0;
+	bool insub = false;
+	for(size_t i = 0; i < str.length(); i++) {
+		if(str[i] == '<') {
+			if(i + 1 == str.length()) break;
+			if(str[i + 1] == 's') {insub = true; l_insub = l;}
+			else if(insub && str[i + 1] == '/') {insub = false; l -= ((l - l_insub) * 6) / 10;}
+			else if(first_i == 0 && str[i + 1] == 'i') first_i = i;
+			i = str.find('>', i + 1);
+			if(i == string::npos) break;
+		} else if((signed char) str[i] > 0 || (unsigned char) str[i] >= 0xC0) {
+			if(first_i > 0 && l >= 35 && (!insub || l - ((l - l_insub) * 6) / 10 >= 35) && i < str.length() - 2 && str[i + 1] != '<' && str[i + 1] != ')' && str[i + 1] != '(') {
+				str = str.substr(0, i);
+				str += "…";
+				if(insub) str += "</sub>";
+				str += "</i>";
+				return true;
+			}
+			l++;
+		}
+	}
+	return false;
+}
+string capitalize_name(const string &str) {
+	if(str.length() <= 2 || (signed char) str[1] < 0 || str[str.length() - 1] == '_' || (printops.use_unicode_signs && str.find("_to_") != string::npos)) return str;
+	size_t i = str.find('_');
+	if(i < 3) return str;
+	string name = str;
+	bool b_first = true;
+	while(true) {
+		if(i == string::npos) break;
+		if(b_first && i == name.length() - 2 && (name[name.length() - 1] < '0' || name[name.length() - 1] > '9') && ((signed char) name[i - 1] >= 0 || CALCULATOR->getPrefix(name.substr(0, i)))) return str;
+		name.erase(i, 1);
+		if(name[i] >= 'a' && name[i] <= 'z') {
+			name[i] -= ('a' - 'A');
+		} else if((signed char) name[i + 1] < 0) {
+			return str;
+		}
+		if(b_first) {
+			if(name[0] >= 'a' && name[0] <= 'z') {
+				name[0] -= ('a' - 'A');
+			}
+		}
+		b_first = false;
+		i = name.find('_', i + 1);
+	}
+	return name;
+}
+
 void update_completion() {
 
 	GtkTreeIter iter;
@@ -7367,6 +7460,8 @@ void update_completion() {
 			ename_r = &CALCULATOR->functions[i]->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
 			if(ename_r->suffix && ename_r->name.length() > 1) {
 				str = sub_suffix(ename_r);
+			} else if(ename_r->name.find('_') != string::npos) {
+				str = capitalize_name(ename_r->name);
 			} else {
 				str = ename_r->name;
 			}
@@ -7377,12 +7472,15 @@ void update_completion() {
 					str += " <i>";
 					if(ename->suffix && ename->name.length() > 1) {
 						str += sub_suffix(ename);
+					} else if(ename->name.find('_') != string::npos) {
+						str = capitalize_name(ename->name);
 					} else {
 						str += ename->name;
 					}
 					str += "()</i>";
 				}
 			}
+			ellipsize_completion_names(str);
 			gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, CALCULATOR->functions[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext).c_str(), 2, CALCULATOR->functions[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
 		}
 	}
@@ -7398,6 +7496,8 @@ void update_completion() {
 					if(!b) {
 						if(ename_r->suffix && ename_r->name.length() > 1) {
 							str = sub_suffix(ename_r);
+						} else if(ename_r->name.find('_') != string::npos) {
+							str = capitalize_name(ename_r->name);
 						} else {
 							str = ename_r->name;
 						}
@@ -7406,6 +7506,8 @@ void update_completion() {
 					str += " <i>";
 					if(ename->suffix && ename->name.length() > 1) {
 						str += sub_suffix(ename);
+					} else if(ename->name.find('_') != string::npos) {
+						str = capitalize_name(ename->name);
 					} else {
 						str += ename->name;
 					}
@@ -7414,6 +7516,9 @@ void update_completion() {
 			}
 			if(!b && ename_r->suffix && ename_r->name.length() > 1) {
 				str = sub_suffix(ename_r);
+				b = true;
+			} else if(!b && ename_r->name.find('_') != string::npos) {
+				str = capitalize_name(ename_r->name);
 				b = true;
 			}
 			if(printops.use_unicode_signs && can_display_unicode_string_function("→", (void*) expressiontext)) {
@@ -7438,6 +7543,7 @@ void update_completion() {
 					}
 				}
 			}
+			ellipsize_completion_names(str);
 			if(!CALCULATOR->variables[i]->title(false).empty()) {
 				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, CALCULATOR->variables[i]->title().c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
 				else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, CALCULATOR->variables[i]->title().c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
@@ -7508,6 +7614,8 @@ void update_completion() {
 						if(!b) {
 							if(ename_r->suffix && ename_r->name.length() > 1) {
 								str = sub_suffix(ename_r);
+							} else if(ename_r->name.find('_') != string::npos) {
+								str = capitalize_name(ename_r->name);
 							} else {
 								str = ename_r->name;
 							}
@@ -7516,6 +7624,8 @@ void update_completion() {
 						str += " <i>";
 						if(ename->suffix && ename->name.length() > 1) {
 							str += sub_suffix(ename);
+						} else if(ename->name.find('_') != string::npos) {
+							str = capitalize_name(ename->name);
 						} else {
 							str += ename->name;
 						}
@@ -7525,6 +7635,10 @@ void update_completion() {
 				if(!b && ename_r->suffix && ename_r->name.length() > 1) {
 					str = sub_suffix(ename_r);
 					b = true;
+				} else if(!b && ename_r->name.find('_') != string::npos) {
+					str = capitalize_name(ename_r->name);
+				} else {
+					ellipsize_completion_names(str);
 				}
 				unordered_map<string, cairo_surface_t*>::const_iterator it_flag = flag_surfaces.end();
 				title = u->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
@@ -7564,6 +7678,7 @@ void update_completion() {
 							if(b_italic) str += "</i>";
 						}
 					}
+					ellipsize_completion_names(str);
 				} else {
 					str = cu->print(false, true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
 					size_t i_pow = str.find("^");
@@ -7637,6 +7752,8 @@ void update_completion() {
 		if(!b && ename_r->suffix && ename_r->name.length() > 1) {
 			str = sub_suffix(ename_r);
 			b = true;
+		} else {
+			ellipsize_completion_names(str);
 		}
 		gchar *gstr = NULL;
 		switch(p->type()) {
@@ -11324,25 +11441,25 @@ bool update_window_title(const char *str, bool is_result) {
 	return true;
 }
 
-std::string ellipsize_result(const std::string &result_text, size_t length) {
+string ellipsize_result(const string &result_text, size_t length) {
 	length /= 2;
 	size_t index1 = result_text.find(SPACE, length);
-	if(index1 == std::string::npos || index1 > length * 1.2) {
+	if(index1 == string::npos || index1 > length * 1.2) {
 		index1 = result_text.find(THIN_SPACE, length);
 		size_t index1b = result_text.find(NNBSP, length);
 		if(index1b != string::npos && (index1 == string::npos || index1b < index1)) index1 = index1b;
 	}
-	if(index1 == std::string::npos || index1 > length * 1.2) {
+	if(index1 == string::npos || index1 > length * 1.2) {
 		index1 = length;
 		while(index1 > 0 && (signed char) result_text[index1] < 0 && (unsigned char) result_text[index1 + 1] < 0xC0) index1--;
 	}
 	size_t index2 = result_text.find(SPACE, result_text.length() - length);
-	if(index2 == std::string::npos || index2 > result_text.length() - length * 0.8) {
+	if(index2 == string::npos || index2 > result_text.length() - length * 0.8) {
 		index2 = result_text.find(THIN_SPACE, result_text.length() - length);
 		size_t index2b = result_text.find(NNBSP, result_text.length() - length);
 		if(index2b != string::npos && (index2 == string::npos || index2b < index2)) index2 = index2b;
 	}
-	if(index2 == std::string::npos || index2 > result_text.length() - length * 0.8) {
+	if(index2 == string::npos || index2 > result_text.length() - length * 0.8) {
 		index2 = result_text.length() - length;
 		while(index2 > index1 && (signed char) result_text[index2] < 0 && (unsigned char) result_text[index2 + 1] < 0xC0) index2--;
 	}
@@ -12691,6 +12808,21 @@ void set_option(string str) {
 					break;
 				}
 			}
+		}
+	} else if(svar == "sinc")  {
+		int v = -1;
+		if(equalsIgnoreCase(svalue, "unnormalized")) v = 0;
+		else if(equalsIgnoreCase(svalue, "normalized")) v = 1;
+		else if(svalue.find_first_not_of(SPACES NUMBERS) == string::npos) {
+			v = s2i(svalue);
+		}
+		if(v < 0 || v > 1) {
+				CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
+		} else {
+			if(v == 0) CALCULATOR->getFunctionById(FUNCTION_ID_SINC)->setDefaultValue(2, "");
+			else CALCULATOR->getFunctionById(FUNCTION_ID_SINC)->setDefaultValue(2, "pi");
+			sinc_set = true;
+			expression_calculation_updated();
 		}
 	} else if(equalsIgnoreCase(svar, "round to even") || svar == "rndeven") {
 		bool b = printops.round_halfway_to_even;
@@ -14518,7 +14650,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		}
 	}
 
-	if(!do_mathoperation && ((test_ask_tc(*parsed_mstruct) && ask_tc()) || (check_exrates && check_exchange_rates(NULL, stack_index == 0 && !do_bases && !do_calendars && !do_pfe && !do_factors && !do_expand)))) {
+	if(!do_mathoperation && ((test_ask_tc(*parsed_mstruct) && ask_tc()) || ((test_ask_sinc(*parsed_mstruct) || test_ask_sinc(*mstruct)) && ask_sinc()) || (check_exrates && check_exchange_rates(NULL, stack_index == 0 && !do_bases && !do_calendars && !do_pfe && !do_factors && !do_expand)))) {
 		execute_expression(force, do_mathoperation, op, f, rpn_mode, stack_index, saved_execute_str, str, false);
 		evalops.complex_number_form = cnf_bak;
 		evalops.auto_post_conversion = save_auto_post_conversion;
@@ -19961,6 +20093,7 @@ void load_preferences() {
 
 	CALCULATOR->setTemperatureCalculationMode(TEMPERATURE_CALCULATION_HYBRID);
 	tc_set = false;
+	sinc_set = false;
 
 	CALCULATOR->useBinaryPrefixes(0);
 
@@ -20512,6 +20645,13 @@ void load_preferences() {
 				} else if(svar == "temperature_calculation") {
 					CALCULATOR->setTemperatureCalculationMode((TemperatureCalculationMode) v);
 					tc_set = true;
+				} else if(svar == "sinc_function") {
+					if(v == 1) {
+						CALCULATOR->getFunctionById(FUNCTION_ID_SINC)->setDefaultValue(2, "pi");
+						sinc_set = true;
+					} else if(v == 0) {
+						sinc_set = true;
+					}
 				} else if(svar == "unknownvariables_enabled") {
 					if(mode_index == 1) evalops.parse_options.unknowns_enabled = v;
 					else modes[mode_index].eo.parse_options.unknowns_enabled = v;
@@ -21360,6 +21500,7 @@ void save_preferences(bool mode) {
 	if(!scientific_notminuslast) fprintf(file, "scientific_mode_sort_minus_last=%i\n", true);
 	if(!scientific_negexp) fprintf(file, "scientific_mode_negative_exponents=%i\n", false);
 	if(tc_set) fprintf(file, "temperature_calculation=%i\n", CALCULATOR->getTemperatureCalculationMode());
+	if(sinc_set) fprintf(file, "sinc_function=%i\n", CALCULATOR->getFunctionById(FUNCTION_ID_SINC)->getDefaultValue(2) == "pi" ? 1 : 0);
 	for(unsigned int i = 0; i < custom_buttons.size(); i++) {
 		if(!custom_buttons[i].text.empty()) fprintf(file, "custom_button_label=%u:%s\n", i, custom_buttons[i].text.c_str());
 		for(unsigned int bi = 0; bi <= 2; bi++) {
@@ -22259,7 +22400,8 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 				str = prefix->preferredInputName(ename->abbreviation, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name;
 				str += ename->name;
 			} else {
-				str = ename->name;
+				if(ename->name.find('_') != string::npos) str = capitalize_name(ename->name);
+				else str = ename->name;
 			}
 		} else if(cu && prefix) {
 			gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &object_start, &object_end, FALSE);
@@ -22392,7 +22534,8 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 			if(!ename || ename->completion_only) ename = ename_r;
 			g_free(gstr_pre);
 			if(!ename) return;
-			str = ename->name;
+			if(ename->name.find('_') != string::npos && capitalize_name(ename->name).substr(0, strlen(gstr2)) == gstr2) str = capitalize_name(ename->name);
+			else str = ename->name;
 		}
 	} else if(prefix) {
 		gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &object_start, &object_end, FALSE);
