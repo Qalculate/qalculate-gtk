@@ -1234,15 +1234,18 @@ void set_custom_buttons() {
 		latest_button_unit = CALCULATOR->getActiveUnit(latest_button_unit_pre);
 		if(!latest_button_unit) latest_button_unit = CALCULATOR->getCompositeUnit(latest_button_unit_pre);
 	}
+	PrintOptions po = printops;
+	po.is_approximate = NULL;
+	po.can_display_unicode_string_arg = (void*) expressiontext;
+	po.abbreviate_names = true;
 	if(latest_button_unit) {
 		string si_label_str;
 		if(latest_button_unit->subtype() == SUBTYPE_COMPOSITE_UNIT) {
-			si_label_str = ((CompositeUnit*) latest_button_unit)->print(false, true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
+			si_label_str = ((CompositeUnit*) latest_button_unit)->print(po, true, TAG_TYPE_HTML, false, false);
 		} else {
-
-			si_label_str = latest_button_unit->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name;
+			si_label_str = latest_button_unit->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).formattedName(STRUCT_UNIT, true, true);
 		}
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_si")), si_label_str.c_str());
+		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_si")), si_label_str.c_str());
 		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_si")), latest_button_unit->title(true).c_str());
 	}
 	Unit *u_local_currency = CALCULATOR->getLocalCurrency();
@@ -1253,12 +1256,11 @@ void set_custom_buttons() {
 	if(!latest_button_currency) latest_button_currency = CALCULATOR->u_euro;
 	string unit_label_str;
 	if(latest_button_currency->subtype() == SUBTYPE_COMPOSITE_UNIT) {
-		unit_label_str = ((CompositeUnit*) latest_button_currency)->print(false, true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
+		unit_label_str = ((CompositeUnit*) latest_button_currency)->print(po, true, TAG_TYPE_HTML, false, false);
 	} else {
-
-		unit_label_str = latest_button_currency->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name;
+		unit_label_str = latest_button_currency->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).formattedName(STRUCT_UNIT, true, true);
 	}
-	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_euro")), unit_label_str.c_str());
+	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_euro")), unit_label_str.c_str());
 	gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_euro")), latest_button_currency->title(true).c_str());
 }
 
@@ -1924,19 +1926,15 @@ void create_main_window(void) {
 	} else {
 		PangoFontDescription *font_desc;
 		gtk_style_context_get(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-		if(custom_expression_font.empty()) {
-			char *gstr = pango_font_description_to_string(font_desc);
-			custom_expression_font = gstr;
-			g_free(gstr);
-		}
 		pango_font_description_set_size(font_desc, pango_font_description_get_size(font_desc) * 1.2);
 		char *gstr_l = pango_font_description_to_string(font_desc);
+		if(custom_expression_font.empty()) custom_expression_font = gstr_l;
 		pango_font_description_free(font_desc);
-#	if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
 		gchar *gstr = font_name_to_css(gstr_l, "textview.view");
-#	else
+#else
 		gchar *gstr = font_name_to_css(gstr_l);
-#	endif
+#endif
 		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
 		g_free(gstr);
 		g_free(gstr_l);
@@ -2428,6 +2426,7 @@ void create_main_window(void) {
 
 	set_result_size_request();
 	set_expression_size_request();
+	set_status_size_request();
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), FALSE);
 
 	if(win_height <= 0) gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), NULL, &win_height);
