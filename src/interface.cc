@@ -1976,7 +1976,6 @@ void create_main_window(void) {
 		gtk_css_provider_load_from_data(history_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
-		gtk_css_provider_load_from_data(history_provider, "* {font-size: 105%;}", -1, NULL);
 		if(custom_history_font.empty()) {
 			PangoFontDescription *font_desc;
 			gtk_style_context_get(gtk_widget_get_style_context(historyview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);

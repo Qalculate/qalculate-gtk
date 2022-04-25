@@ -2444,7 +2444,7 @@ bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 						history_message += CALCULATOR->message()->message();
 						fix_history_string2(history_message);
 						add_line_breaks(history_message, false, 2);
-						string history_str = "<span foreground=\"";
+						string history_str = "<span font_size=\"90%\" foreground=\"";
 						history_str += history_error_color;
 						history_str += "\">";
 						history_str += history_message;
@@ -2460,7 +2460,7 @@ bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 						history_message += CALCULATOR->message()->message();
 						fix_history_string2(history_message);
 						add_line_breaks(history_message, false, 2);
-						string history_str = "<span foreground=\"";
+						string history_str = "<span font_size=\"90%\" foreground=\"";
 						history_str += history_warning_color;
 						history_str += "\">";
 						history_str += history_message;
@@ -2476,9 +2476,9 @@ bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 						history_message += CALCULATOR->message()->message();
 						fix_history_string2(history_message);
 						add_line_breaks(history_message, false, 2);
-						string history_str = "<i>";
+						string history_str = "<span font_size=\"90%\"><i>";
 						history_str += history_message;
-						history_str += "</i>";
+						history_str += "</i></span>";
 						(*history_index_p)++;
 						gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, 3, nr_of_new_expressions, 4, 0, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
 					}
@@ -10633,7 +10633,7 @@ void reload_history(gint from_index) {
 				}
 				history_str = "";
 				size_t trans_l = 0;
-				if(i + 1 < inhistory.size()  && inhistory_type[i + 1] == QALCULATE_HISTORY_TRANSFORMATION) {
+				if(i + 1 < inhistory.size() && inhistory_type[i + 1] == QALCULATE_HISTORY_TRANSFORMATION) {
 					history_str = fix_history_string(inhistory[i + 1]);
 					history_str += ":  ";
 					trans_l = history_str.length();
@@ -10660,6 +10660,8 @@ void reload_history(gint from_index) {
 						history_str.insert(0, "<span font-style=\"italic\">");
 					}
 				}
+				history_str.insert(0, "<span font_size=\"110%\">");
+				history_str += "</span>";
 				gtk_list_store_insert_with_values(historystore, &history_iter, from_index < 0 ? -1 : pos, 0, history_str.c_str(), 1, i, 3, inhistory_value[i], 4, 0, 5, history_scroll_width, 6, 1.0, 7, PANGO_ALIGN_RIGHT, -1);
 				pos++;
 				break;
@@ -10739,10 +10741,11 @@ void reload_history(gint from_index) {
 				str += inhistory[i];
 				fix_history_string2(str);
 				add_line_breaks(str, false, 2);
+				history_str = "<span font_size=\"90%\">";
 				if(inhistory_type[i] == QALCULATE_HISTORY_MESSAGE) {
-					history_str = "<i>";
+					history_str += "<i>";
 				} else {
-					history_str = "<span foreground=\"";
+					history_str += "<span foreground=\"";
 					if(inhistory_type[i] == QALCULATE_HISTORY_WARNING) history_str += history_warning_color;
 					else history_str += history_error_color;
 					history_str += "\">";
@@ -10750,6 +10753,7 @@ void reload_history(gint from_index) {
 				history_str += str;
 				if(inhistory_type[i] == QALCULATE_HISTORY_MESSAGE) history_str += "</i>";
 				else history_str += "</span>";
+				history_str += "</span>";
 				if(i + 2 < inhistory.size() && inhistory_type[i + 2] == QALCULATE_HISTORY_EXPRESSION && inhistory_protected[i + 2]) {
 					if(can_display_unicode_string_function_exact("🔒", historyview)) history_str += "<span size=\"small\"><sup> 🔒</sup></span>";
 					else history_str += "<span size=\"x-small\"><sup> P</sup></span>";
@@ -11849,6 +11853,8 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				history_str.insert(0, "<span font-style=\"italic\">");
 			}
 		}
+		history_str.insert(0, "<span font_size=\"110%\">");
+		history_str += "</span>";
 		if(!update_parse && current_inhistory_index >= 0 && !transformation.empty() && history_index_bak == history_index) {
 			gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), 1, inhistory_index + 1, -1);
 		} else {
@@ -23044,7 +23050,7 @@ void on_preferences_checkbutton_custom_history_font_toggled(GtkToggleButton *w, 
 		gtk_css_provider_load_from_data(history_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
-		gtk_css_provider_load_from_data(history_provider, "* {font-size: 105%;}", -1, NULL);
+		gtk_css_provider_load_from_data(history_provider, "", -1, NULL);
 	}
 }
 void keypad_font_changed() {
