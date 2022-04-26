@@ -686,7 +686,7 @@ string print_with_evalops(const Number &nr) {
 	if(po.base == BASE_CUSTOM && CALCULATOR->customInputBase().isInteger() && (CALCULATOR->customInputBase() > 1 || CALCULATOR->customInputBase() < -1)) {
 		nr_base = CALCULATOR->customOutputBase();
 		CALCULATOR->setCustomOutputBase(CALCULATOR->customInputBase());
-	} else if((po.base < BASE_CUSTOM && po.base != BASE_UNICODE && po.base != BASE_BIJECTIVE_26) || (po.base == BASE_CUSTOM && CALCULATOR->customInputBase() <= 12 && CALCULATOR->customInputBase() >= -12)) {
+	} else if((po.base < BASE_CUSTOM && po.base != BASE_BINARY_DECIMAL && po.base != BASE_UNICODE && po.base != BASE_BIJECTIVE_26 && po.base != BASE_BINARY_DECIMAL) || (po.base == BASE_CUSTOM && CALCULATOR->customInputBase() <= 12 && CALCULATOR->customInputBase() >= -12)) {
 		po.base = 10;
 		string str = "dec(";
 		str += nr.print(po);
@@ -2253,6 +2253,11 @@ void update_status_text() {
 			str += "B26";
 			break;
 		}
+		case BASE_BINARY_DECIMAL: {
+			STATUS_SPACE
+			str += "BCD";
+			break;
+		}
 		case BASE_CUSTOM: {
 			STATUS_SPACE
 			str += CALCULATOR->customInputBase().print(CALCULATOR->messagePrintOptions());
@@ -2869,6 +2874,7 @@ void base_from_string(string str, int &base, Number &nbase, bool input_base = fa
 	else if(equalsIgnoreCase(str, "roman") || equalsIgnoreCase(str, "roman")) base = BASE_ROMAN_NUMERALS;
 	else if(!input_base && (equalsIgnoreCase(str, "time") || equalsIgnoreCase(str, "time"))) base = BASE_TIME;
 	else if(str == "b26" || str == "B26") base = BASE_BIJECTIVE_26;
+	else if(equalsIgnoreCase(str, "bcd")) base = BASE_BINARY_DECIMAL;
 	else if(equalsIgnoreCase(str, "unicode")) base = BASE_UNICODE;
 	else if(equalsIgnoreCase(str, "supergolden") || equalsIgnoreCase(str, "supergolden ratio") || str == "ψ") base = BASE_SUPER_GOLDEN_RATIO;
 	else if(equalsIgnoreCase(str, "pi") || str == "π") base = BASE_PI;
@@ -3429,6 +3435,9 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "bijective") || equalsIgnoreCase(to_str, _("bijective"))) {
 					to_base = BASE_BIJECTIVE_26;
+					do_to = true;
+				} else if(equalsIgnoreCase(to_str, "bcd")) {
+					to_base = BASE_BINARY_DECIMAL;
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "sexa") || equalsIgnoreCase(to_str, "sexagesimal") || equalsIgnoreCase(to_str, _("sexagesimal"))) {
 					to_base = BASE_SEXAGESIMAL;
@@ -4077,7 +4086,7 @@ void display_parse_status() {
 		if(po.base == BASE_CUSTOM && (CALCULATOR->usesIntervalArithmetic() || CALCULATOR->customInputBase().isRational()) && (CALCULATOR->customInputBase().isInteger() || !CALCULATOR->customInputBase().isNegative()) && (CALCULATOR->customInputBase() > 1 || CALCULATOR->customInputBase() < -1)) {
 			nr_base = CALCULATOR->customOutputBase();
 			CALCULATOR->setCustomOutputBase(CALCULATOR->customInputBase());
-		} else if(po.base == BASE_CUSTOM || (po.base < BASE_CUSTOM && !CALCULATOR->usesIntervalArithmetic() && po.base != BASE_UNICODE && po.base != BASE_BIJECTIVE_26)) {
+		} else if(po.base == BASE_CUSTOM || (po.base < BASE_CUSTOM && !CALCULATOR->usesIntervalArithmetic() && po.base != BASE_UNICODE && po.base != BASE_BIJECTIVE_26 && po.base != BASE_BINARY_DECIMAL)) {
 			po.base = 10;
 			po.min_exp = 6;
 			po.use_max_decimals = true;
@@ -4152,6 +4161,8 @@ void display_parse_status() {
 					parsed_expression += _("roman numerals");
 				} else if(equalsIgnoreCase(str_u, "bijective") || equalsIgnoreCase(str_u, _("bijective"))) {
 					parsed_expression += _("bijective base-26");
+				} else if(equalsIgnoreCase(str_u, "bcd")) {
+					parsed_expression += _("binary-coded decimal");
 				} else if(equalsIgnoreCase(str_u, "sexa") || equalsIgnoreCase(str_u, "sexa2") || equalsIgnoreCase(str_u, "sexa3") || equalsIgnoreCase(str_u, "sexagesimal") || equalsIgnoreCase(str_u, _("sexagesimal")) || EQUALS_IGNORECASE_AND_LOCAL_NR(str_u, "sexagesimal", _("sexagesimal"), "2") || EQUALS_IGNORECASE_AND_LOCAL_NR(str_u, "sexagesimal", _("sexagesimal"), "3")) {
 					parsed_expression += _("sexagesimal number");
 				} else if(equalsIgnoreCase(str_u, "latitude") || equalsIgnoreCase(str_u, _("latitude")) || EQUALS_IGNORECASE_AND_LOCAL_NR(to_str, "latitude", _("latitude"), "2")) {
@@ -7681,6 +7692,7 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Base Units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 101, -1);
 	COMPLETION_CONVERT_STRING("base ")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Number Base"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 200, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, "bcd", 1, _("Binare-Coded Decimal"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 290, -1);
 	COMPLETION_CONVERT_STRING("bijective")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Bijective Base-26"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 290, -1);
 	COMPLETION_CONVERT_STRING("binary") str += " <i>"; str += "bin"; str += "</i>";
@@ -8243,6 +8255,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 								case BASE_SQRT2: {str_base = "√2"; break;}
 								case BASE_UNICODE: {str_base = "Unicode"; break;}
 								case BASE_BIJECTIVE_26: {str_base = "b26"; break;}
+								case BASE_BINARY_DECIMAL: {str_base = "BCD"; break;}
 								case BASE_CUSTOM: {str_base = CALCULATOR->customOutputBase().print(CALCULATOR->messagePrintOptions()); break;}
 								default: {str_base = i2s(base);}
 							}
@@ -10396,7 +10409,7 @@ void ViewThread::run() {
 			if(po.base == BASE_CUSTOM && (CALCULATOR->usesIntervalArithmetic() || CALCULATOR->customInputBase().isRational()) && (CALCULATOR->customInputBase().isInteger() || !CALCULATOR->customInputBase().isNegative()) && (CALCULATOR->customInputBase() > 1 || CALCULATOR->customInputBase() < -1)) {
 				nr_base = CALCULATOR->customOutputBase();
 				CALCULATOR->setCustomOutputBase(CALCULATOR->customInputBase());
-			} else if(po.base == BASE_CUSTOM || (po.base < BASE_CUSTOM && !CALCULATOR->usesIntervalArithmetic() && po.base != BASE_UNICODE && po.base != BASE_BIJECTIVE_26)) {
+			} else if(po.base == BASE_CUSTOM || (po.base < BASE_CUSTOM && !CALCULATOR->usesIntervalArithmetic() && po.base != BASE_UNICODE && po.base != BASE_BIJECTIVE_26 && po.base != BASE_BINARY_DECIMAL)) {
 				po.base = 10;
 				po.min_exp = 6;
 				po.use_max_decimals = true;
@@ -12523,7 +12536,8 @@ void set_option(string str) {
 		bool b_in = equalsIgnoreCase(svar, "input base") || svar == "inbase";
 		bool b_out = equalsIgnoreCase(svar, "output base") || svar == "outbase";
 		if(equalsIgnoreCase(svalue, "roman")) v = BASE_ROMAN_NUMERALS;
-		else if(equalsIgnoreCase(svalue, "bijective") || str == "b26" || str == "B26") v = BASE_BIJECTIVE_26;
+		else if(equalsIgnoreCase(svalue, "bijective") || svalue == "b26" || svalue == "B26") v = BASE_BIJECTIVE_26;
+		else if(equalsIgnoreCase(svalue, "bcd")) v = BASE_BINARY_DECIMAL;
 		else if(equalsIgnoreCase(svalue, "fp32") || equalsIgnoreCase(svalue, "binary32") || equalsIgnoreCase(svalue, "float")) {if(b_in) v = 0; else v = BASE_FP32;}
 		else if(equalsIgnoreCase(svalue, "fp64") || equalsIgnoreCase(svalue, "binary64") || equalsIgnoreCase(svalue, "double")) {if(b_in) v = 0; else v = BASE_FP64;}
 		else if(equalsIgnoreCase(svalue, "fp16") || equalsIgnoreCase(svalue, "binary16")) {if(b_in) v = 0; else v = BASE_FP16;}
@@ -13910,6 +13924,9 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "bijective") || equalsIgnoreCase(to_str, _("bijective"))) {
 				to_base = BASE_BIJECTIVE_26;
+				do_to = true;
+			} else if(equalsIgnoreCase(to_str, "bcd")) {
+				to_base = BASE_BINARY_DECIMAL;
 				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "sexa") || equalsIgnoreCase(to_str, "sexagesimal") || equalsIgnoreCase(to_str, _("sexagesimal"))) {
 				to_base = BASE_SEXAGESIMAL;
@@ -29504,6 +29521,13 @@ void output_base_updated_from_menu() {
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), _("Bijective base-26"));
 				break;
 			}
+			case BASE_BINARY_DECIMAL: {
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "BCD");
+				break;
+			}
 			case BASE_FP16: {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_output_other_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
@@ -29645,6 +29669,13 @@ void input_base_updated_from_menu() {
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), _("Bijective base-26"));
 				break;
 			}
+			case BASE_BINARY_DECIMAL: {
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "BCD");
+				break;
+			}
 			case BASE_CUSTOM: {
 				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_radiobutton_input_other_toggled, NULL);
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
@@ -29778,7 +29809,7 @@ void on_menu_item_time_format_activate(GtkMenuItem *w, gpointer) {
 void on_set_base_combo_output_other_changed(GtkComboBox*, gpointer) {
 	string str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")));
 	remove_blank_ends(str);
-	if(str == "φ" || str == "ψ" || str == "π" || str == "√2" || str == "e" || str == "-3" || str == "-2" || str == "-10" || str == "20" || str == "36" || str == "62" || str == "Unicode" || str == _("Bijective base-26") || str == "fp16" || str == "float" || str == "double" || str == "fp80" || str == "fp128") on_set_base_entry_output_other_activate(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), NULL);
+	if(str == "φ" || str == "ψ" || str == "π" || str == "√2" || str == "e" || str == "-3" || str == "-2" || str == "-10" || str == "20" || str == "36" || str == "62" || str == "Unicode" || str == _("Bijective base-26") || str == "BCD" || str == "fp16" || str == "float" || str == "double" || str == "fp80" || str == "fp128") on_set_base_entry_output_other_activate(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), NULL);
 }
 void on_set_base_entry_output_other_activate(GtkEntry *w, gpointer) {
 	string str = gtk_entry_get_text(w);
@@ -29786,6 +29817,7 @@ void on_set_base_entry_output_other_activate(GtkEntry *w, gpointer) {
 	if(str.empty() || str == prev_output_base) {prev_output_base = str; return;}
 	if(equalsIgnoreCase(str, "golden") || equalsIgnoreCase(str, "golden ratio") || str == "φ") {set_output_base_from_dialog(BASE_GOLDEN_RATIO); return;}
 	else if(equalsIgnoreCase(str, "Bijective base-26") || equalsIgnoreCase(str, _("Bijective base-26")) || str == "b26" || str == "B26") {set_output_base_from_dialog(BASE_BIJECTIVE_26); return;}
+	else if(equalsIgnoreCase(str, "BCD")) {set_output_base_from_dialog(BASE_BINARY_DECIMAL); return;}
 	else if(equalsIgnoreCase(str, "unicode")) {set_output_base_from_dialog(BASE_UNICODE); return;}
 	else if(equalsIgnoreCase(str, "fp16") || equalsIgnoreCase(str, "binary16")) {set_output_base_from_dialog(BASE_FP16); return;}
 	else if(equalsIgnoreCase(str, "fp32") || equalsIgnoreCase(str, "binary32") || equalsIgnoreCase(str, "float")) {set_output_base_from_dialog(BASE_FP32); return;}
@@ -29866,6 +29898,7 @@ void on_set_base_radiobutton_output_other_toggled(GtkToggleButton *w, gpointer) 
 	if(str.empty()) {prev_output_base = str; return;}
 	if(equalsIgnoreCase(str, "golden") || equalsIgnoreCase(str, "golden ratio") || str == "φ") {set_output_base_from_dialog(BASE_GOLDEN_RATIO); return;}
 	else if(equalsIgnoreCase(str, "Bijective base-26") || equalsIgnoreCase(str, _("Bijective base-26")) || str == "b26" || str == "B26") {set_output_base_from_dialog(BASE_BIJECTIVE_26); return;}
+	else if(equalsIgnoreCase(str, "bcd")) {set_output_base_from_dialog(BASE_BINARY_DECIMAL); return;}
 	else if(equalsIgnoreCase(str, "unicode")) {set_output_base_from_dialog(BASE_UNICODE); return;}
 	else if(equalsIgnoreCase(str, "fp16") || equalsIgnoreCase(str, "binary16")) {set_output_base_from_dialog(BASE_FP16); return;}
 	else if(equalsIgnoreCase(str, "fp32") || equalsIgnoreCase(str, "binary32") || equalsIgnoreCase(str, "float")) {set_output_base_from_dialog(BASE_FP32); return;}
@@ -29951,6 +29984,7 @@ void on_set_base_radiobutton_input_other_toggled(GtkToggleButton *w, gpointer) {
 	if(str.empty() || str == prev_input_base) {prev_input_base = str; return;}
 	if(equalsIgnoreCase(str, "golden") || equalsIgnoreCase(str, "golden ratio") || str == "φ") {evalops.parse_options.base = BASE_GOLDEN_RATIO;}
 	else if(equalsIgnoreCase(str, "Bijective base-26") || equalsIgnoreCase(str, _("Bijective base-26")) || str == "b26" || str == "B26") {evalops.parse_options.base = BASE_BIJECTIVE_26;}
+	else if(equalsIgnoreCase(str, "bcd")) {evalops.parse_options.base = BASE_BINARY_DECIMAL;}
 	else if(equalsIgnoreCase(str, "unicode")) {evalops.parse_options.base = BASE_UNICODE;}
 	else if(equalsIgnoreCase(str, "supergolden") || equalsIgnoreCase(str, "supergolden ratio") || str == "ψ") {evalops.parse_options.base = BASE_SUPER_GOLDEN_RATIO;}
 	else if(equalsIgnoreCase(str, "pi") || str == "π") {evalops.parse_options.base = BASE_PI;}
@@ -29989,7 +30023,7 @@ void on_set_base_radiobutton_input_other_toggled(GtkToggleButton *w, gpointer) {
 void on_set_base_combo_input_other_changed(GtkComboBox*, gpointer) {
 	string str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")));
 	remove_blank_ends(str);
-	if(str == "φ" || str == "ψ" || str == "π" || str == "√2" || str == "e" || str == "-3" || str == "-2" || str == "-10" || str == "20" || str == "36" || str == "62" || str == "Unicode" || str == _("Bijective base-26")) on_set_base_entry_input_other_activate(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), NULL);
+	if(str == "φ" || str == "ψ" || str == "π" || str == "√2" || str == "e" || str == "-3" || str == "-2" || str == "-10" || str == "20" || str == "36" || str == "62" || str == "Unicode" || str == _("Bijective base-26") || str == "BCD") on_set_base_entry_input_other_activate(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), NULL);
 }
 void on_set_base_entry_input_other_activate(GtkEntry *w, gpointer) {
 	string str = gtk_entry_get_text(w);
@@ -29998,6 +30032,7 @@ void on_set_base_entry_input_other_activate(GtkEntry *w, gpointer) {
 	if(str.empty() || str == prev_input_base) {prev_input_base = str; return;}
 	if(equalsIgnoreCase(str, "golden") || equalsIgnoreCase(str, "golden ratio") || str == "φ") {evalops.parse_options.base = BASE_GOLDEN_RATIO;}
 	else if(equalsIgnoreCase(str, "Bijective base-26") || equalsIgnoreCase(str, _("Bijective base-26")) || str == "b26" || str == "B26") {evalops.parse_options.base = BASE_BIJECTIVE_26;}
+	else if(equalsIgnoreCase(str, "bcd")) {evalops.parse_options.base = BASE_BINARY_DECIMAL;}
 	else if(equalsIgnoreCase(str, "unicode")) {evalops.parse_options.base = BASE_UNICODE;}
 	else if(equalsIgnoreCase(str, "supergolden") || equalsIgnoreCase(str, "supergolden ratio") || str == "ψ") {evalops.parse_options.base = BASE_SUPER_GOLDEN_RATIO;}
 	else if(equalsIgnoreCase(str, "pi") || str == "π") {evalops.parse_options.base = BASE_PI;}
