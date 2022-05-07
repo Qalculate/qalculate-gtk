@@ -26270,6 +26270,27 @@ void on_button_add_clicked(GtkButton*, gpointer) {
 	insert_text(expression_add_sign());
 }
 
+void rpn_subtract_or_minus(bool case_sensitive) {
+	if(!expression_is_empty()) {
+		GtkTextIter icur;
+		if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
+			gtk_text_buffer_get_selection_bounds(expressionbuffer, &icur, NULL);
+		} else {
+			GtkTextMark *mcur = gtk_text_buffer_get_insert(expressionbuffer);
+			if(mcur) gtk_text_buffer_get_iter_at_mark(expressionbuffer, &icur, mcur);
+		}
+		if(gtk_text_iter_backward_char(&icur) && (gtk_text_iter_get_char(&icur) == 'E' || ((!case_sensitive || printops.lower_case_e) && gtk_text_iter_get_char(&icur) == 'e'))) {
+			if(gtk_text_iter_backward_char(&icur)) {
+				if(is_in(NUMBERS, gtk_text_iter_get_char(&icur))) {
+					insert_text(expression_sub_sign());
+					return;
+				}
+			}
+		}
+	}
+	calculateRPN(OPERATION_SUBTRACT);
+}
+
 void on_button_sub_clicked(GtkButton*, gpointer) {
 	DO_CUSTOM_BUTTON_1(24)
 	if(persistent_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_history)) && gtk_tree_selection_count_selected_rows(gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview))) > 0) {
@@ -26277,7 +26298,7 @@ void on_button_sub_clicked(GtkButton*, gpointer) {
 		return;
 	}
 	if(rpn_mode) {
-		calculateRPN(OPERATION_SUBTRACT);
+		rpn_subtract_or_minus(true);
 		return;
 	}
 	if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
@@ -26389,7 +26410,7 @@ void on_button_rpn_add_clicked(GtkButton*, gpointer) {
 	calculateRPN(OPERATION_ADD);
 }
 void on_button_rpn_sub_clicked(GtkButton*, gpointer) {
-	calculateRPN(OPERATION_SUBTRACT);
+	rpn_subtract_or_minus(true);
 }
 void on_button_rpn_times_clicked(GtkButton*, gpointer) {
 	calculateRPN(OPERATION_MULTIPLY);
@@ -34334,7 +34355,7 @@ return TRUE;}
 				return TRUE;
 			}
 			if(rpn_mode && rpn_keys) {
-				calculateRPN(OPERATION_SUBTRACT);
+				rpn_subtract_or_minus(false);
 				return TRUE;
 			}
 			if(expression_in_quotes()) break;
