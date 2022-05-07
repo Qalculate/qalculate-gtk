@@ -2757,6 +2757,7 @@ bool display_function_hint(MathFunction *f, int arg_index = 1) {
 	str += ename->formattedName(TYPE_FUNCTION, true, true);
 	if(iargs < 0) {
 		iargs = f->minargs() + 1;
+		if((int) f->lastArgumentDefinitionIndex() > iargs) iargs = (int) f->lastArgumentDefinitionIndex();
 		if(arg_index > iargs) arg_index = iargs;
 	}
 	if(arg_index > iargs && last_is_vctr) arg_index = iargs;
@@ -2777,8 +2778,10 @@ bool display_function_hint(MathFunction *f, int arg_index = 1) {
 				str2 = arg->name();
 			} else {
 				str2 = _("argument");
-				str2 += " ";
-				str2 += i2s(i2);
+				if(i2 > 1 || f->maxargs() != 1) {
+					str2 += " ";
+					str2 += i2s(i2);
+				}
 			}
 			if(i2 == arg_index) {
 				if(arg) {
@@ -4888,6 +4891,7 @@ void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 			int iargs = f->maxargs();
 			if(iargs < 0) {
 				iargs = f->minargs() + 1;
+				if((int) f->lastArgumentDefinitionIndex() > iargs) iargs = (int) f->lastArgumentDefinitionIndex();
 			}
 			str += "(";
 			if(iargs != 0) {
@@ -4904,8 +4908,10 @@ void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 						str2 = arg->name();
 					} else {
 						str2 = _("argument");
-						str2 += " ";
-						str2 += i2s(i2);
+						if(i2 > 1 || f->maxargs() != 1) {
+							str2 += " ";
+							str2 += i2s(i2);
+						}
 					}
 					str += str2;
 					if(i2 > f->minargs()) {
@@ -4952,6 +4958,12 @@ void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 				str += ((DataSet*) f)->copyright();
 				str += "\n";
 			}
+			if(printops.use_unicode_signs) {
+				gsub(">=", SIGN_GREATER_OR_EQUAL, str);
+				gsub("<=", SIGN_LESS_OR_EQUAL, str);
+				gsub("!=", SIGN_NOT_EQUAL, str);
+				gsub("...", "…", str);
+			}
 			gtk_text_buffer_get_end_iter(buffer, &iter);
 			gtk_text_buffer_insert(buffer, &iter, str.c_str(), -1);
 			if(iargs) {
@@ -4977,6 +4989,7 @@ void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 						gsub(">=", SIGN_GREATER_OR_EQUAL, str2);
 						gsub("<=", SIGN_LESS_OR_EQUAL, str2);
 						gsub("!=", SIGN_NOT_EQUAL, str2);
+						gsub("...", "…", str2);
 					}
 					if(i2 > f->minargs()) {
 						str2 += " (";
@@ -6125,6 +6138,7 @@ void on_tDatasets_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 		int iargs = ds->maxargs();
 		if(iargs < 0) {
 			iargs = ds->minargs() + 1;
+			if((int) ds->lastArgumentDefinitionIndex() > iargs) iargs = (int) ds->lastArgumentDefinitionIndex();
 		}
 		str += "(";
 		if(iargs != 0) {
@@ -6141,8 +6155,10 @@ void on_tDatasets_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 					str2 = arg->name();
 				} else {
 					str2 = _("argument");
-					str2 += " ";
-					str2 += i2s(i2);
+					if(i2 > 1 || ds->maxargs() != 1) {
+						str2 += " ";
+						str2 += i2s(i2);
+					}
 				}
 				str += str2;
 				if(i2 > ds->minargs()) {
@@ -7692,7 +7708,7 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Base Units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 101, -1);
 	COMPLETION_CONVERT_STRING("base ")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Number Base"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 200, -1);
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, "bcd", 1, _("Binare-Coded Decimal"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 290, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, "bcd", 1, _("Binary-Coded Decimal"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 285, -1);
 	COMPLETION_CONVERT_STRING("bijective")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Bijective Base-26"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 290, -1);
 	COMPLETION_CONVERT_STRING("binary") str += " <i>"; str += "bin"; str += "</i>";
@@ -9990,9 +10006,10 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				} else if(m.function() == CALCULATOR->f_integrate && argcount > 3) {
 					if(m[1].isUndefined() && m[2].isUndefined()) argcount = 1;
 					else argcount = 3;
-				} else if(m.function()->maxargs() > 0 && m.function()->minargs() < m.function()->maxargs() && m.size() > (size_t) m.function()->minargs()) {
+				} else if((m.function()->maxargs() < 0 || m.function()->minargs() < m.function()->maxargs()) && m.size() > (size_t) m.function()->minargs()) {
 					while(true) {
 						string defstr = m.function()->getDefaultValue(argcount);
+						if(defstr.empty() && m.function()->maxargs() < 0) break;
 						Argument *arg = m.function()->getArgumentDefinition(argcount);
 						remove_blank_ends(defstr);
 						if(defstr.empty()) break;
@@ -15285,8 +15302,9 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 	if(f->args() > 0) {
 		args = f->args();
 	} else if(f->minargs() > 0) {
-		args = f->minargs() + 1;
-		has_vector = true;
+		args = f->minargs();
+		while(!f->getDefaultValue(args + 1).empty()) args++;
+		args++;
 	} else {
 		args = 1;
 		has_vector = true;
@@ -15375,8 +15393,10 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 				argstr = _("Value");
 			} else {
 				argstr = _("Argument");
-				argstr += " ";
-				argstr += i2s(i + 1);
+				if(i > 0 || f->maxargs() != 1) {
+					argstr += " ";
+					argstr += i2s(i + 1);
+				}
 			}
 		} else {
 			argstr = arg->name();
@@ -15662,6 +15682,12 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 			str += _("Example:");
 			str += " ";
 			str += f->example(false);
+		}
+		if(printops.use_unicode_signs) {
+			gsub(">=", SIGN_GREATER_OR_EQUAL, str);
+			gsub("<=", SIGN_LESS_OR_EQUAL, str);
+			gsub("!=", SIGN_NOT_EQUAL, str);
+			gsub("...", "…", str);
 		}
 		gtk_text_buffer_set_text(buffer, str.c_str(), -1);
 		gtk_container_add(GTK_CONTAINER(descr_frame), descr);
@@ -20874,7 +20900,7 @@ void load_preferences() {
 				} else if(svar == "plot_legend_placement") {
 					if(v >= PLOT_LEGEND_NONE && v <= PLOT_LEGEND_OUTSIDE) default_plot_legend_placement = (PlotLegendPlacement) v;
 				} else if(svar == "plot_style") {
-					if(v >= PLOT_STYLE_LINES && v <= PLOT_STYLE_DOTS) default_plot_style = (PlotStyle) v;
+					if(v >= PLOT_STYLE_LINES && v <= PLOT_STYLE_POLAR) default_plot_style = (PlotStyle) v;
 				} else if(svar == "plot_smoothing") {
 					if(v >= PLOT_SMOOTHING_NONE && v <= PLOT_SMOOTHING_SBEZIER) default_plot_smoothing = (PlotSmoothing) v;
 				} else if(svar == "plot_display_grid") {
@@ -24896,9 +24922,9 @@ void do_completion() {
 								if(to_type == 5 || current_from_struct->containsType(STRUCT_UNIT) <= 0) b_match = 0;
 							} else if((p_type == 294 || (p_type == 292 && to_type == 4)) && current_from_unit) {
 								if(current_from_unit != CALCULATOR->getDegUnit()) b_match = 0;
-							} else if(p_type >= 290 && p_type < 300 && (p_type != 292 || to_type >= 1)) {
+							} else if(p_type > 290 && p_type < 300 && (p_type != 292 || to_type >= 1)) {
 								if(!current_from_struct->isNumber() || (p_type > 290 && str.empty() && current_from_struct->isInteger())) b_match = 0;
-							} else if(p_type >= 200 && p_type < 290 && (p_type != 200 || to_type == 1 || to_type >= 3)) {
+							} else if(p_type >= 200 && p_type <= 290 && (p_type != 200 || to_type == 1 || to_type >= 3)) {
 								if(!current_from_struct->isNumber()) b_match = 0;
 								else if(str.empty() && p_type >= 202 && !current_from_struct->isInteger()) b_match = 0;
 							} else if(p_type >= 300 && p_type < 400) {
@@ -30385,6 +30411,7 @@ void on_menu_item_plot_functions_activate(GtkMenuItem*, gpointer) {
 			case PLOT_STYLE_STEPS: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_style")), PLOTSTYLE_MENU_STEPS); break;}
 			case PLOT_STYLE_CANDLESTICKS: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_style")), PLOTSTYLE_MENU_CANDLESTICKS); break;}
 			case PLOT_STYLE_DOTS: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_style")), PLOTSTYLE_MENU_DOTS); break;}
+			case PLOT_STYLE_POLAR: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_style")), PLOTSTYLE_MENU_POLAR); break;}
 		}
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_steps")), default_plot_sampling_rate);
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_linewidth")), default_plot_linewidth);
@@ -30441,6 +30468,7 @@ void on_plot_dialog_hide(GtkWidget*, gpointer) {
 		case PLOTSTYLE_MENU_STEPS: {default_plot_style = PLOT_STYLE_STEPS; break;}
 		case PLOTSTYLE_MENU_CANDLESTICKS: {default_plot_style = PLOT_STYLE_CANDLESTICKS; break;}
 		case PLOTSTYLE_MENU_DOTS: {default_plot_style = PLOT_STYLE_DOTS; break;}
+		case PLOTSTYLE_MENU_POLAR: {default_plot_style = PLOT_STYLE_POLAR; break;}
 	}
 	default_plot_sampling_rate = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_steps")));
 	default_plot_linewidth = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(plot_builder, "plot_spinbutton_linewidth")));
@@ -35959,6 +35987,7 @@ bool generate_plot(PlotParameters &pp, vector<MathStructure> &y_vectors, vector<
 				case PLOTSTYLE_MENU_HISTEPS: {pdp->style = PLOT_STYLE_HISTOGRAM; break;}
 				case PLOTSTYLE_MENU_STEPS: {pdp->style = PLOT_STYLE_STEPS; break;}
 				case PLOTSTYLE_MENU_CANDLESTICKS: {pdp->style = PLOT_STYLE_CANDLESTICKS; break;}
+				case PLOTSTYLE_MENU_POLAR: {pdp->style = PLOT_STYLE_POLAR; break;}
 			}
 			pdp->yaxis2 = (axis == 2);
 			pdps.push_back(pdp);
