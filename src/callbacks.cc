@@ -34468,6 +34468,7 @@ return TRUE;}
 			return TRUE;
 		}
 		case GDK_KEY_Up: {
+			key_up:
 			if(gtk_widget_get_visible(completion_window)) {
 				GtkTreeIter iter;
 				GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(completion_view));
@@ -34528,6 +34529,11 @@ return TRUE;}
 			}
 			if(event->keyval == GDK_KEY_Up) cursor_has_moved = false;
 			return TRUE;
+		}
+		case GDK_KEY_ISO_Left_Tab: {}
+		case GDK_KEY_Tab: {
+			if(!gtk_widget_get_visible(completion_window)) break;
+			if(event->state & GDK_SHIFT_MASK) goto key_up;
 		}
 		case GDK_KEY_Down: {
 			if(gtk_widget_get_visible(completion_window)) {
