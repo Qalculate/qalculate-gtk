@@ -4273,9 +4273,9 @@ void display_parse_status() {
 					parsed_expression += gstr;
 					g_free(gstr);
 				} else {
-					Variable *v = CALCULATOR->getVariable(str_u);
+					Variable *v = CALCULATOR->getActiveVariable(str_u);
 					if(v && !v->isKnown()) v = NULL;
-					if(v && CALCULATOR->getUnit(str_u)) v = NULL;
+					if(v && CALCULATOR->getActiveUnit(str_u)) v = NULL;
 					if(v) {
 						mparse = v;
 					} else {
@@ -7417,7 +7417,7 @@ bool name_has_formatting(const ExpressionName *ename) {
 }
 string format_name(const ExpressionName *ename, int type) {
 	bool was_capitalized = false;
-	string name = ename->formattedName(type, true, true, false, false, NULL, &was_capitalized);
+	string name = ename->formattedName(type, true, true, 0, false, false, NULL, &was_capitalized);
 	if(was_capitalized) {
 		if(ename->suffix) {
 			string str = name;
@@ -13436,7 +13436,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 							b = false;
 						}
 						Variable *v = NULL;
-						if(b) v = CALCULATOR->getActiveVariable(name);
+						if(b) v = CALCULATOR->getActiveVariable(name, true);
 						if(b && ((!v && CALCULATOR->variableNameTaken(name)) || (v && (!v->isKnown() || !v->isLocal())))) {
 							CALCULATOR->error(true, "A unit or variable with the same name (%s) already exists.", name.c_str(), NULL);
 							b = false;
@@ -13492,7 +13492,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					b = false;
 				}
 				Variable *v = NULL;
-				if(b) v = CALCULATOR->getActiveVariable(name);
+				if(b) v = CALCULATOR->getActiveVariable(name, true);
 				if(b && ((!v && CALCULATOR->variableNameTaken(name)) || (v && (!v->isKnown() || !v->isLocal())))) {
 					CALCULATOR->error(true, "A unit or variable with the same name (%s) already exists.", name.c_str(), NULL);
 					b = false;
@@ -13543,7 +13543,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					CALCULATOR->error(true, "Illegal name: %s.", name.c_str(), NULL);
 					b = false;
 				}
-				MathFunction *f = CALCULATOR->getActiveFunction(name);
+				MathFunction *f = CALCULATOR->getActiveFunction(name, true);
 				if(b && ((!f && CALCULATOR->functionNameTaken(name)) || (f && (!f->isLocal() || f->subtype() != SUBTYPE_USER_FUNCTION)))) {
 					CALCULATOR->error(true, "A function with the same name (%s) already exists.", name.c_str(), NULL);
 					b = false;
@@ -15972,7 +15972,7 @@ void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 		switch(u->subtype()) {
 			case SUBTYPE_ALIAS_UNIT: {
 				AliasUnit *au = (AliasUnit*) u;
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")), au->firstBaseUnit()->preferredDisplayName(printops.abbreviate_names, true, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")).formattedName(STRUCT_UNIT, true).c_str());
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")), au->firstBaseUnit()->preferredDisplayName(printops.abbreviate_names, true, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")).formattedName(TYPE_UNIT, true).c_str());
 				gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp")), au->firstBaseExponent());
 				if(au->firstBaseExponent() == 1 && !u->isBuiltin()) {
 					gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), TRUE);
@@ -16057,7 +16057,7 @@ run_unit_edit_dialog:
 
 		//unit with the same name exists -- overwrite or open the dialog again
 		if((!u || !u->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->unitNameTaken(str, u)) {
-			Unit *unit = CALCULATOR->getActiveUnit(str);
+			Unit *unit = CALCULATOR->getActiveUnit(str, true);
 			if((!u || u != unit) && (!unit || unit->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
 				gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(unitedit_builder, "unit_edit_tabs")), 0);
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_name")));
@@ -16079,7 +16079,8 @@ run_unit_edit_dialog:
 					}
 					if(!u->isBuiltin()) {
 						AliasUnit *au = (AliasUnit*) u;
-						Unit *bu = CALCULATOR->getUnit(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base"))));
+						Unit *bu = CALCULATOR->getActiveUnit(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base"))));
+						if(!bu) bu = CALCULATOR->getUnit(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base"))));
 						if(!bu) bu = CALCULATOR->getCompositeUnit(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base"))));
 						if(!bu || bu == u) {
 							gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(unitedit_builder, "unit_edit_tabs")), 1);
@@ -16130,7 +16131,8 @@ run_unit_edit_dialog:
 			//new unit
 			switch(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(unitedit_builder, "unit_edit_combobox_class")))) {
 				case UNIT_CLASS_ALIAS_UNIT: {
-					Unit *bu = CALCULATOR->getUnit(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base"))));
+					Unit *bu = CALCULATOR->getActiveUnit(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base"))));
+					if(!bu) bu = CALCULATOR->getUnit(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base"))));
 					if(!bu) bu = CALCULATOR->getCompositeUnit(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base"))));
 					if(!bu) {
 						gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(unitedit_builder, "unit_edit_tabs")), 1);
@@ -16508,7 +16510,7 @@ run_function_edit_dialog:
 		gchar *gstr_descr = gtk_text_buffer_get_text(description_buffer, &d_iter_s, &d_iter_e, FALSE);
 		//function with the same name exists -- overwrite or open the dialog again
 		if((!f || !f->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->functionNameTaken(str, f)) {
-			MathFunction *func = CALCULATOR->getActiveFunction(str);
+			MathFunction *func = CALCULATOR->getActiveFunction(str, true);
 			if((!f || f != func) && (!func || func->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A function with the same name already exists.\nDo you want to overwrite the function?"), dialog)) {
 				gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(functionedit_builder, "function_edit_tabs")), 0);
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")));
@@ -16665,7 +16667,7 @@ run_simple_function_edit_dialog:
 		}
 		//function with the same name exists -- overwrite or open the dialog again
 		if((!f || !f->hasName(str)) && CALCULATOR->functionNameTaken(str, f)) {
-			MathFunction *func = CALCULATOR->getActiveFunction(str);
+			MathFunction *func = CALCULATOR->getActiveFunction(str, true);
 			if((!f || f != func) && (!func || func->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A function with the same name already exists.\nDo you want to overwrite the function?"), dialog)) {
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_entry_name")));
 				goto run_simple_function_edit_dialog;
@@ -16852,7 +16854,7 @@ run_unknown_edit_dialog:
 
 		//unknown with the same name exists -- overwrite or open dialog again
 		if((!v || !v->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str, v)) {
-			Variable *var = CALCULATOR->getActiveVariable(str);
+			Variable *var = CALCULATOR->getActiveVariable(str, true);
 			if((!v || v != var) && (!var || var->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_name")));
 				goto run_unknown_edit_dialog;
@@ -16860,7 +16862,7 @@ run_unknown_edit_dialog:
 		}
 		if(!v) {
 			//no need to create a new unknown when a unknown with the same name exists
-			var = CALCULATOR->getActiveVariable(str);
+			var = CALCULATOR->getActiveVariable(str, true);
 			if(var && var->isLocal() && !var->isKnown()) v = (UnknownVariable*) var;
 		}
 		bool add_var = false;
@@ -17077,7 +17079,7 @@ run_variable_edit_dialog:
 		}
 		//variable with the same name exists -- overwrite or open dialog again
 		if((!v || !v->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str, v)) {
-			Variable *var = CALCULATOR->getActiveVariable(str);
+			Variable *var = CALCULATOR->getActiveVariable(str, true);
 			if((!v || v != var) && (!var || var->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")));
 				goto run_variable_edit_dialog;
@@ -17085,7 +17087,7 @@ run_variable_edit_dialog:
 		}
 		if(!v) {
 			//no need to create a new variable when a variable with the same name exists
-			var = CALCULATOR->getActiveVariable(str);
+			var = CALCULATOR->getActiveVariable(str, true);
 			if(var && var->isLocal() && var->isKnown()) v = (KnownVariable*) var;
 		}
 		bool add_var = false;
@@ -17330,7 +17332,7 @@ run_matrix_edit_dialog:
 
 		//variable with the same name exists -- overwrite or open dialog again
 		if((!v || !v->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str)) {
-			Variable *var = CALCULATOR->getActiveVariable(str);
+			Variable *var = CALCULATOR->getActiveVariable(str, true);
 			if((!v || v != var) && (!var || var->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_name")));
 				goto run_matrix_edit_dialog;
@@ -17338,7 +17340,7 @@ run_matrix_edit_dialog:
 		}
 		if(!v) {
 			//no need to create a new variable when a variable with the same name exists
-			var = CALCULATOR->getActiveVariable(str);
+			var = CALCULATOR->getActiveVariable(str, true);
 			if(var && var->isLocal() && var->isKnown()) v = (KnownVariable*) var;
 		}
 		MathStructure mstruct_new;
@@ -17821,7 +17823,7 @@ bool edit_dataproperty(DataProperty *dp, bool new_property = false) {
 		case PROPERTY_STRING: {
 			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_combobox_type")), 0);
 			break;
-		}
+			}
 		case PROPERTY_NUMBER: {
 			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_combobox_type")), 1);
 			break;
@@ -18029,7 +18031,7 @@ void edit_dataset(DataSet *ds, GtkWidget *win) {
 		gtk_text_buffer_get_end_iter(copyright_buffer, &c_iter_e);
 		//dataset with the same name exists -- overwrite or open the dialog again
 		if((!ds || !ds->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->functionNameTaken(str, ds)) {
-			MathFunction *func = CALCULATOR->getActiveFunction(str);
+			MathFunction *func = CALCULATOR->getActiveFunction(str, true);
 			if((!ds || ds != func) && (!func || func->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A function with the same name already exists.\nDo you want to overwrite the function?"), dialog)) {
 				gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(datasetedit_builder, "dataset_edit_tabs")), 2);
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_name")));
@@ -18141,7 +18143,7 @@ run_csv_import_dialog:
 		}
 		//variable with the same name exists -- overwrite or open dialog again
 		if(CALCULATOR->variableNameTaken(name_str)) {
-			Variable *var = CALCULATOR->getActiveVariable(str);
+			Variable *var = CALCULATOR->getActiveVariable(str, true);
 			if((!var || var->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(csvimport_builder, "csv_import_entry_name")));
 				goto run_csv_import_dialog;
@@ -18263,11 +18265,11 @@ run_csv_export_dialog:
 				show_message(_("No variable name entered."), dialog);
 				goto run_csv_export_dialog;
 			}
-			Variable *var = CALCULATOR->getActiveVariable(str2);
+			Variable *var = CALCULATOR->getActiveVariable(str2, true);
 			if(!var || !var->isKnown()) {
 				var = CALCULATOR->getVariable(str2);
 				while(var && !var->isKnown()) {
-					var = CALCULATOR->getVariable(str2);
+					var = CALCULATOR->getActiveVariable(str2, true);
 				}
 			}
 			if(!var || !var->isKnown()) {
@@ -18290,6 +18292,16 @@ run_csv_export_dialog:
 
 }
 
+bool names_edit_name_taken(const gchar *str) {
+	bool name_taken = false;
+	if(editing_variable && CALCULATOR->variableNameTaken(str, get_edited_variable())) name_taken = true;
+	else if(editing_unknown && CALCULATOR->variableNameTaken(str, get_edited_unknown())) name_taken = true;
+	else if(editing_matrix && CALCULATOR->variableNameTaken(str, get_edited_matrix())) name_taken = true;
+	else if(editing_unit && CALCULATOR->unitNameTaken(str, get_edited_unit())) name_taken = true;
+	else if(editing_function && CALCULATOR->functionNameTaken(str, get_edited_function())) name_taken = true;
+	else if(editing_dataset && CALCULATOR->functionNameTaken(str, get_edited_dataset())) name_taken = true;
+	return name_taken;
+}
 void edit_names(ExpressionItem *item, const gchar *namestr, GtkWidget *win, bool is_dp, DataProperty *dp) {
 
 	GtkWidget *dialog = get_names_edit_dialog();
@@ -18329,7 +18341,10 @@ void edit_names(ExpressionItem *item, const gchar *namestr, GtkWidget *win, bool
 				const ExpressionName *ename = &item->getName(i);
 				gtk_list_store_append(tNames_store, &iter);
 				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, ename->name.c_str(), NAMES_ABBREVIATION_STRING_COLUMN, b2yn(ename->abbreviation), NAMES_PLURAL_STRING_COLUMN, b2yn(ename->plural), NAMES_REFERENCE_STRING_COLUMN, b2yn(ename->reference), NAMES_ABBREVIATION_COLUMN, ename->abbreviation, NAMES_PLURAL_COLUMN, ename->plural, NAMES_UNICODE_COLUMN, ename->unicode, NAMES_REFERENCE_COLUMN, ename->reference, NAMES_SUFFIX_COLUMN, ename->suffix, NAMES_AVOID_INPUT_COLUMN, ename->avoid_input, NAMES_CASE_SENSITIVE_COLUMN, ename->case_sensitive, NAMES_COMPLETION_ONLY_COLUMN, ename->completion_only, -1);
-				if(i == 1 && namestr && strlen(namestr) > 0) {
+				if(i == 1 && namestr && strlen(namestr) > 0 && item->getName(1).name != namestr) {
+					if(names_edit_name_taken(namestr)) {
+						show_message(_("A conflicting object with the same name exists. If you proceed and save changes, the conflicting object will be overwritten or deactivated."), win);
+					}
 					gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, namestr, -1);
 				}
 			}
@@ -18346,6 +18361,9 @@ void edit_names(ExpressionItem *item, const gchar *namestr, GtkWidget *win, bool
 			if(is_dp) {
 				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, namestr, NAMES_ABBREVIATION_STRING_COLUMN, "-", NAMES_PLURAL_STRING_COLUMN, "-", NAMES_REFERENCE_STRING_COLUMN, b2yn(true), NAMES_ABBREVIATION_COLUMN, FALSE, NAMES_PLURAL_COLUMN, FALSE, NAMES_UNICODE_COLUMN, FALSE, NAMES_REFERENCE_COLUMN, TRUE, NAMES_SUFFIX_COLUMN, FALSE, NAMES_AVOID_INPUT_COLUMN, FALSE, NAMES_CASE_SENSITIVE_COLUMN, FALSE, NAMES_COMPLETION_ONLY_COLUMN, FALSE, -1);
 			} else {
+				if(names_edit_name_taken(namestr)) {
+					show_message(_("A conflicting object with the same name exists. If you proceed and save changes, the conflicting object will be overwritten or deactivated."), win);
+				}
 				ExpressionName ename(namestr);
 				ename.reference = true;
 				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, ename.name.c_str(), NAMES_ABBREVIATION_STRING_COLUMN, b2yn(ename.abbreviation), NAMES_PLURAL_STRING_COLUMN, b2yn(ename.plural), NAMES_REFERENCE_STRING_COLUMN, b2yn(ename.reference), NAMES_ABBREVIATION_COLUMN, ename.abbreviation, NAMES_PLURAL_COLUMN, ename.plural, NAMES_UNICODE_COLUMN, ename.unicode, NAMES_REFERENCE_COLUMN, ename.reference, NAMES_SUFFIX_COLUMN, ename.suffix, NAMES_AVOID_INPUT_COLUMN, ename.avoid_input, NAMES_CASE_SENSITIVE_COLUMN, ename.case_sensitive, NAMES_COMPLETION_ONLY_COLUMN, ename.completion_only, -1);
@@ -31449,6 +31467,7 @@ void correct_name_entry(GtkEditable *editable, ExpressionItemType etype, gpointe
 */
 void on_unit_edit_entry_name_changed(GtkEditable *editable, gpointer) {
 	correct_name_entry(editable, TYPE_UNIT, (gpointer) on_unit_edit_entry_name_changed);
+	names_edited = false;
 }
 /*
 	selected unit type in edit/new unit dialog has changed
@@ -31819,12 +31838,14 @@ void on_datasets_button_close_clicked(GtkButton*, gpointer) {
 */
 void on_function_edit_entry_name_changed(GtkEditable *editable, gpointer) {
 	correct_name_entry(editable, TYPE_FUNCTION, (gpointer) on_function_edit_entry_name_changed);
+	names_edited = false;
 }
 /*
 	check if entered variable name is valid, if not modify
 */
 void on_variable_edit_entry_name_changed(GtkEditable *editable, gpointer) {
 	correct_name_entry(editable, TYPE_VARIABLE, (gpointer) on_variable_edit_entry_name_changed);
+	names_edited = false;
 }
 
 void on_variable_changed() {
@@ -34128,6 +34149,7 @@ gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 	if(block_input && (event->keyval == GDK_KEY_q || event->keyval == GDK_KEY_Q) && !(event->state & GDK_CONTROL_MASK)) {block_input = false; return TRUE;}
 	if(gtk_widget_has_focus(expressiontext) || b_editing_stack || b_editing_history) return FALSE;
 	if(!b_busy && gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "mb_to"))) && !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "mb_to"))) && (event->keyval == GDK_KEY_Return || event->keyval == GDK_KEY_ISO_Enter || event->keyval == GDK_KEY_KP_Enter || event->keyval == GDK_KEY_space)) {update_mb_to_menu(); gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "mb_to")));}
+	if((event->keyval == GDK_KEY_ISO_Left_Tab || event->keyval == GDK_KEY_Tab) && CLEAN_MODIFIERS(event->state) == 0) return FALSE;
 	if(do_keyboard_shortcut(event)) return TRUE;
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_unit")))) {
 		return FALSE;
@@ -35185,14 +35207,7 @@ void on_names_edit_button_add_clicked(GtkButton*, gpointer) {
 		show_message(_("Empty name field."), GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_dialog")));
 		return;
 	}
-	bool name_taken = false;
-	if(editing_variable && CALCULATOR->variableNameTaken(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name"))), get_edited_variable())) name_taken = true;
-	else if(editing_unknown && CALCULATOR->variableNameTaken(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name"))), get_edited_unknown())) name_taken = true;
-	else if(editing_matrix && CALCULATOR->variableNameTaken(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name"))), get_edited_matrix())) name_taken = true;
-	else if(editing_unit && CALCULATOR->unitNameTaken(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name"))), get_edited_unit())) name_taken = true;
-	else if(editing_function && CALCULATOR->functionNameTaken(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name"))), get_edited_function())) name_taken = true;
-	else if(editing_dataset && CALCULATOR->functionNameTaken(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name"))), get_edited_dataset())) name_taken = true;
-	if(name_taken) {
+	if(names_edit_name_taken(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name"))))) {
 		if(!ask_question(_("A conflicting object with the same name exists. If you proceed and save changes, the conflicting object will be overwritten or deactivated.\nDo you want to proceed?"), GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_dialog")))) {
 			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_entry_name")));
 			return;
@@ -36634,6 +36649,7 @@ void on_element_button_clicked(GtkButton*, gpointer user_data) {
 void on_dataset_edit_entry_name_changed(GtkEditable *editable, gpointer) {
 	correct_name_entry(editable, TYPE_FUNCTION,  (gpointer) on_dataset_edit_entry_name_changed);
 	auto_dataset_name = false;
+	names_edited = false;
 }
 void on_dataset_edit_entry_file_changed(GtkEditable*, gpointer) {
 	auto_dataset_file = false;
