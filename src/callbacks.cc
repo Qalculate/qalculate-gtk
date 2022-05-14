@@ -12112,7 +12112,7 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 	if(run == 1) {
 
 		if(expression_has_changed && !rpn_mode && command_type != COMMAND_TRANSFORM) {
-			if(get_expression_text().find_first_not_of(SPACES) != string::npos) return;
+			if(get_expression_text().find_first_not_of(SPACES) == string::npos) return;
 			execute_expression();
 		}
 
