@@ -1841,8 +1841,8 @@ void set_expression_size_request() {
 	gtk_widget_set_margin_top(GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon")), h);
 }
 void set_status_size_request() {
-	string test_str = "Ä<sub>x</sub>y<sup>2</sup>";
-	PangoLayout *layout_test = gtk_widget_create_pango_layout(expressiontext, test_str.c_str());
+	PangoLayout *layout_test = gtk_widget_create_pango_layout(statuslabel_l, NULL);
+	pango_layout_set_markup(layout_test, "Ä<sub>x</sub>y<sup>2</sup>", -1);
 	gint h;
 	pango_layout_get_pixel_size(layout_test, NULL, &h);
 	g_object_unref(layout_test);
@@ -2450,7 +2450,11 @@ bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 						history_message += CALCULATOR->message()->message();
 						fix_history_string2(history_message);
 						add_line_breaks(history_message, false, 2);
+#if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
 						string history_str = "<span font_size=\"90%\" foreground=\"";
+#else
+						string history_str = "<span foreground=\"";
+#endif
 						history_str += history_error_color;
 						history_str += "\">";
 						history_str += history_message;
@@ -2466,7 +2470,11 @@ bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 						history_message += CALCULATOR->message()->message();
 						fix_history_string2(history_message);
 						add_line_breaks(history_message, false, 2);
+#if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
 						string history_str = "<span font_size=\"90%\" foreground=\"";
+#else
+						string history_str = "<span foreground=\"";
+#endif
 						history_str += history_warning_color;
 						history_str += "\">";
 						history_str += history_message;
@@ -2482,9 +2490,15 @@ bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 						history_message += CALCULATOR->message()->message();
 						fix_history_string2(history_message);
 						add_line_breaks(history_message, false, 2);
+#if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
 						string history_str = "<span font_size=\"90%\"><i>";
 						history_str += history_message;
 						history_str += "</i></span>";
+#else
+						string history_str = "<i>";
+						history_str += history_message;
+						history_str += "</i>";
+#endif
 						(*history_index_p)++;
 						gtk_list_store_insert_with_values(historystore, &history_iter, *history_index_p, 0, history_str.c_str(), 1, *inhistory_index, 3, nr_of_new_expressions, 4, 0, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
 					}
@@ -10692,7 +10706,11 @@ void reload_history(gint from_index) {
 						history_str.insert(0, "<span font-style=\"italic\">");
 					}
 				}
+#if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
 				history_str.insert(0, "<span font_size=\"110%\">");
+#else
+				history_str.insert(0, "<span font_size=\"larger\">");
+#endif
 				history_str += "</span>";
 				gtk_list_store_insert_with_values(historystore, &history_iter, from_index < 0 ? -1 : pos, 0, history_str.c_str(), 1, i, 3, inhistory_value[i], 4, 0, 5, history_scroll_width, 6, 1.0, 7, PANGO_ALIGN_RIGHT, -1);
 				pos++;
@@ -10773,19 +10791,29 @@ void reload_history(gint from_index) {
 				str += inhistory[i];
 				fix_history_string2(str);
 				add_line_breaks(str, false, 2);
-				history_str = "<span font_size=\"90%\">";
 				if(inhistory_type[i] == QALCULATE_HISTORY_MESSAGE) {
-					history_str += "<i>";
+#if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
+					history_str = "<span font_size=\"90%\"><i>";
+#else
+					history_str = "<i>";
+#endif
 				} else {
-					history_str += "<span foreground=\"";
+#if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
+					history_str = "<span font_size=\"90%\" foreground=\"";
+#else
+					history_str = "<span foreground=\"";
+#endif
 					if(inhistory_type[i] == QALCULATE_HISTORY_WARNING) history_str += history_warning_color;
 					else history_str += history_error_color;
 					history_str += "\">";
 				}
 				history_str += str;
 				if(inhistory_type[i] == QALCULATE_HISTORY_MESSAGE) history_str += "</i>";
-				else history_str += "</span>";
+#if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
 				history_str += "</span>";
+#else
+				else history_str += "</span>";
+#endif
 				if(i + 2 < inhistory.size() && inhistory_type[i + 2] == QALCULATE_HISTORY_EXPRESSION && inhistory_protected[i + 2]) {
 					if(can_display_unicode_string_function_exact("🔒", historyview)) history_str += "<span size=\"small\"><sup> 🔒</sup></span>";
 					else history_str += "<span size=\"x-small\"><sup> P</sup></span>";
@@ -11885,7 +11913,11 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				history_str.insert(0, "<span font-style=\"italic\">");
 			}
 		}
+#if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
 		history_str.insert(0, "<span font_size=\"110%\">");
+#else
+		history_str.insert(0, "<span font_size=\"larger\">");
+#endif
 		history_str += "</span>";
 		if(!update_parse && current_inhistory_index >= 0 && !transformation.empty() && history_index_bak == history_index) {
 			gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), 1, inhistory_index + 1, -1);
@@ -12078,7 +12110,7 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 	if(exit_in_progress) return;
 
 	if(run == 1) {
-	
+
 		if(expression_has_changed && !rpn_mode && command_type != COMMAND_TRANSFORM) {
 			if(get_expression_text().find_first_not_of(SPACES) != string::npos) return;
 			execute_expression();
