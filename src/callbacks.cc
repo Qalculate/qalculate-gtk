@@ -278,7 +278,7 @@ string status_error_color, status_warning_color, text_color;
 
 string nbases_error_color, nbases_warning_color;
 
-bool names_edited = false;
+int names_edited = 0;
 
 gint current_object_start = -1, current_object_end = -1;
 MathFunction *current_function = NULL;
@@ -1345,6 +1345,10 @@ string fix_history_string_new(const string &str2) {
 	gsub("<sub class=\"nous\">", "<sub>", str);
 	gsub("<i class=\"symbol\">", "<i>", str);
 	return str;
+}
+void fix_history_string_new2(string &str) {
+	gsub("<sub class=\"nous\">", "<sub>", str);
+	gsub("<i class=\"symbol\">", "<i>", str);
 }
 void fix_history_string2(string &str) {
 	gsub("&", "&amp;", str);
@@ -2449,7 +2453,7 @@ bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 						string history_message = "- ";
 						history_message += CALCULATOR->message()->message();
 						fix_history_string2(history_message);
-						add_line_breaks(history_message, false, 2);
+						add_line_breaks(history_message, false, 4);
 #if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
 						string history_str = "<span font_size=\"90%\" foreground=\"";
 #else
@@ -2469,7 +2473,7 @@ bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 						string history_message = "- ";
 						history_message += CALCULATOR->message()->message();
 						fix_history_string2(history_message);
-						add_line_breaks(history_message, false, 2);
+						add_line_breaks(history_message, false, 4);
 #if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
 						string history_str = "<span font_size=\"90%\" foreground=\"";
 #else
@@ -2489,7 +2493,7 @@ bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 						string history_message = "- ";
 						history_message += CALCULATOR->message()->message();
 						fix_history_string2(history_message);
-						add_line_breaks(history_message, false, 2);
+						add_line_breaks(history_message, false, 4);
 #if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
 						string history_str = "<span font_size=\"90%\"><i>";
 						history_str += history_message;
@@ -3709,6 +3713,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 				}
 			}
 		}
+		if(!parsed_tostruct->isUndefined() && origstr && str_conv.empty() && !mauto.containsType(STRUCT_UNIT, true)) parsed_tostruct->setUndefined();
 		if(!simplified_percentage) evalops.parse_options.parsing_mode = (ParsingMode) (evalops.parse_options.parsing_mode & ~PARSE_PERCENT_AS_ORDINARY_CONSTANT);
 		CALCULATOR->endTemporaryStopMessages(!mauto.isAborted(), &autocalc_messages);
 		if(!mauto.isAborted()) {
@@ -4355,7 +4360,8 @@ void display_parse_status() {
 		block_error_timeout--;
 		parsed_had_errors = had_errors; parsed_had_warnings = had_warnings;
 		if(!str_f.empty()) {str_f += " "; parsed_expression.insert(0, str_f);}
-		fix_history_string_new(parsed_expression);
+		fix_history_string_new2(parsed_expression);
+		gsub("&nbsp;", " ", parsed_expression);
 		if(!b_func) set_status_text(parsed_expression.c_str(), true, had_errors, had_warnings, parsed_expression_tooltip);
 		expression_has_changed2 = false;
 	} else if(!b_func) {
@@ -9642,9 +9648,9 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				const ExpressionName *ename = &m.unit()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, m.isPlural(), po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
 
 				if(m.prefix()) {
-					str += m.prefix()->preferredDisplayName(ename->abbreviation, po.use_unicode_signs, m.isPlural(), po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg).formattedName(-1, false, true, true, true);
+					str += m.prefix()->preferredDisplayName(ename->abbreviation, po.use_unicode_signs, m.isPlural(), po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg).formattedName(-1, false, true, false, true, true);
 				}
-				str += ename->formattedName(TYPE_UNIT, true, true, true, true);
+				str += ename->formattedName(TYPE_UNIT, true, true, false, true, true);
 				size_t i = 0;
 				while(true) {
 					i = str.find("<sub>", i);
@@ -9698,7 +9704,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				bool cursive = m.variable() != CALCULATOR->v_i && ename->name != "%" && ename->name != "‰" && ename->name != "‱" && m.variable()->referenceName() != "true" && m.variable()->referenceName() != "false";
 				if(cursive) str = "<i>";
 				TTBP(str);
-				str += ename->formattedName(TYPE_VARIABLE, true, true, true, true);
+				str += ename->formattedName(TYPE_VARIABLE, true, true, false, true, true);
 				size_t i = 0;
 				while(true) {
 					i = str.find("<sub>", i);
@@ -9954,7 +9960,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					if(!m[2].isOne()) mdx ^= m[2];
 					string s = "d";
 					if(m[1].isSymbolic()) s += m[1].symbol();
-					else s += m[1].variable()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg).formattedName(TYPE_VARIABLE, true, true, true, true);
+					else s += m[1].variable()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg).formattedName(TYPE_VARIABLE, true, true, false, true, true);
 					mdx.transform(STRUCT_DIVISION, s);
 					if(!m[2].isOne()) mdx[1] ^= m[2];
 
@@ -10051,26 +10057,25 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				}
 
 				const ExpressionName *ename = &m.function()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
-				str += ename->formattedName(TYPE_FUNCTION, true, true, true, true);
-				size_t i = str.find("<sub>", 0);
-				if(i != string::npos) {
-					while(true) {
-						string str_s;
-						TTBP_SMALL(str_s);
-						str.insert(i, str_s);
-						i = str.find("</sub>", i);
-						if(i == string::npos) break;
-						str.insert(i + 6, TEXT_TAGS_END);
-						i = str.find("<sub>", i);
-						if(i == string::npos) break;
-					}
-				} else if((m.function() == CALCULATOR->f_lambert_w || m.function() == CALCULATOR->f_logn) && m.size() == 2 && ((m[1].size() == 0 && (!m[1].isNumber() || (m[1].number().isInteger() && m[1].number() < 100 && m[1].number() > -100))) || (m[1].isNegate() && m[1][0].size() == 0 && (!m[1][0].isNumber() || (m[1][0].number().isInteger() && m[1][0].number() < 100 && m[1][0].number() > -100))))) {
+				str += ename->formattedName(TYPE_FUNCTION, true, true, false, true, true);
+				size_t i = 0;
+				bool b_sub = false;
+				while(true) {
+					i = str.find("<sub>", i);
+					if(i == string::npos) break;
+					b_sub = true;
+					string str_s;
+					TTBP_SMALL(str_s);
+					str.insert(i, str_s);
+					i = str.find("</sub>", i);
+					if(i == string::npos) break;
+					str.insert(i + 6, TEXT_TAGS_END);
+				}
+				if(!b_sub && (m.function() == CALCULATOR->f_lambert_w || m.function() == CALCULATOR->f_logn) && m.size() == 2 && ((m[1].size() == 0 && (!m[1].isNumber() || (m[1].number().isInteger() && m[1].number() < 100 && m[1].number() > -100))) || (m[1].isNegate() && m[1][0].size() == 0 && (!m[1][0].isNumber() || (m[1][0].number().isInteger() && m[1][0].number() < 100 && m[1][0].number() > -100))))) {
 					argcount = 1;
-					TTBP_SMALL(str);
 					str += "<sub>";
 					str += m[1].print(po);
 					str += "</sub>";
-					TTE(str);
 				}
 
 				TTE(str);
@@ -10790,7 +10795,7 @@ void reload_history(gint from_index) {
 				string str = "- ";
 				str += inhistory[i];
 				fix_history_string2(str);
-				add_line_breaks(str, false, 2);
+				add_line_breaks(str, false, 4);
 				if(inhistory_type[i] == QALCULATE_HISTORY_MESSAGE) {
 #if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
 					history_str = "<span font_size=\"90%\"><i>";
@@ -10854,9 +10859,18 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 	if(markup) str_bak = str;
 	PangoLayout *layout = gtk_widget_create_pango_layout(historyview, "");
 	PangoFontDescription *font_desc = NULL;
-	if(expr == 3) {
+	if(expr == 3 || expr == 2 || expr == 4) {
 		gtk_style_context_get(gtk_widget_get_style_context(historyview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-		pango_font_description_set_style(font_desc, PANGO_STYLE_ITALIC);
+		gint size = pango_font_description_get_size(font_desc);
+		if(expr == 3) pango_font_description_set_style(font_desc, PANGO_STYLE_ITALIC);
+#if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
+		if(expr == 4) size *= 0.9;
+		else if(expr == 2) size *= 1.1;
+#else
+		if(expr != 4) size *= 1.2;
+#endif
+		if(pango_font_description_get_size_is_absolute(font_desc)) pango_font_description_set_absolute_size(font_desc, size);
+		else pango_font_description_set_size(font_desc, size);
 		pango_layout_set_font_description(layout, font_desc);
 	}
 	int r = 1;
@@ -11725,7 +11739,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		surface_result = NULL;
 		if(tmp_surface) {
 			showing_first_time_message = false;
-			first_draw_of_result = false;
+			first_draw_of_result = true;
 			surface_result = tmp_surface;
 			if(minimal_mode && !gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")))) {
 				gint h = -1;
@@ -12114,6 +12128,8 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 		if(expression_has_changed && !rpn_mode && command_type != COMMAND_TRANSFORM) {
 			if(get_expression_text().find_first_not_of(SPACES) == string::npos) return;
 			execute_expression();
+		} else if(!displayed_mstruct) {
+			return;
 		}
 
 		if(b_busy || b_busy_result || b_busy_expression || b_busy_command) return;
@@ -12727,7 +12743,7 @@ void set_option(string str) {
 			v = s2i(svalue);
 		}
 		if(v < 0 || v > 1) {
-				CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
+			CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
 		} else {
 			if(v == 0) CALCULATOR->getFunctionById(FUNCTION_ID_SINC)->setDefaultValue(2, "");
 			else CALCULATOR->getFunctionById(FUNCTION_ID_SINC)->setDefaultValue(2, "pi");
@@ -14605,6 +14621,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	}
 
 	if(!do_stack) previous_expression = execute_str.empty() ? str : execute_str;
+	if(!parsed_tostruct->isUndefined() && do_ceu && str_conv.empty() && !mstruct->containsType(STRUCT_UNIT, true)) parsed_tostruct->setUndefined();
 	setResult(NULL, true, stack_index == 0, true, "", stack_index);
 	
 	if(do_bases) convert_number_bases(execute_str.c_str());
@@ -15864,9 +15881,8 @@ void insert_button_currency(GtkMenuItem*, gpointer user_data) {
 			po.is_approximate = NULL;
 			po.can_display_unicode_string_arg = (void*) expressiontext;
 			po.abbreviate_names = true;
-			currency_label_str = ((CompositeUnit*) latest_button_currency)->print(po, true, TAG_TYPE_HTML, false);
+			currency_label_str = ((CompositeUnit*) latest_button_currency)->print(po, true, TAG_TYPE_HTML, false, false);
 		} else {
-
 			currency_label_str = latest_button_currency->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).formattedName(TYPE_UNIT, true, true);
 		}
 		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_euro")), currency_label_str.c_str());
@@ -15889,12 +15905,13 @@ void set_name_label_and_entry(ExpressionItem *item, GtkWidget *entry, GtkWidget 
 void set_edited_names(ExpressionItem *item, string str) {
 	if(item->isBuiltin() && !(item->type() == TYPE_FUNCTION && item->subtype() == SUBTYPE_DATA_SET)) return;
 	if(item->type() == TYPE_UNIT && item->subtype() == SUBTYPE_COMPOSITE_UNIT) {
-		names_edited = false;
+		names_edited = 0;
 		item->clearNames();
 	}
 	if(names_edited) {
 		item->clearNames();
 		GtkTreeIter iter;
+		size_t i = 0;
 		if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) {
 			ExpressionName ename;
 			gchar *gstr;
@@ -15902,13 +15919,16 @@ void set_edited_names(ExpressionItem *item, string str) {
 				gboolean abbreviation = FALSE, suffix = FALSE, unicode = FALSE, plural = FALSE;
 				gboolean reference = FALSE, avoid_input = FALSE, case_sensitive = FALSE, completion_only = FALSE;
 				gtk_tree_model_get(GTK_TREE_MODEL(tNames_store), &iter, NAMES_NAME_COLUMN, &gstr, NAMES_ABBREVIATION_COLUMN, &abbreviation, NAMES_SUFFIX_COLUMN, &suffix, NAMES_UNICODE_COLUMN, &unicode, NAMES_PLURAL_COLUMN, &plural, NAMES_REFERENCE_COLUMN, &reference, NAMES_AVOID_INPUT_COLUMN, &avoid_input, NAMES_CASE_SENSITIVE_COLUMN, &case_sensitive, NAMES_COMPLETION_ONLY_COLUMN, &completion_only, -1);
-				ename.name = gstr; ename.abbreviation = abbreviation; ename.suffix = suffix;
+				if(i == 0 && names_edited == 2 && !str.empty()) ename.name = str;
+				else ename.name = gstr;
+				ename.abbreviation = abbreviation; ename.suffix = suffix;
 				ename.unicode = unicode; ename.plural = plural; ename.reference = reference;
 				ename.avoid_input = avoid_input; ename.case_sensitive = case_sensitive;
 				ename.completion_only = completion_only;
 				item->addName(ename);
 				g_free(gstr);
 				if(!gtk_tree_model_iter_next(GTK_TREE_MODEL(tNames_store), &iter)) break;
+				i++;
 			}
 		} else {
 			ExpressionName ename(str);
@@ -15934,7 +15954,7 @@ void set_edited_names(ExpressionItem *item, string str) {
 void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL) {
 
 	edited_unit = u;
-	names_edited = false;
+	names_edited = true;
 	editing_unit = true;
 	GtkWidget *dialog = get_unit_edit_dialog();
 	if(win) gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(win));
@@ -16004,7 +16024,7 @@ void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL)
 		switch(u->subtype()) {
 			case SUBTYPE_ALIAS_UNIT: {
 				AliasUnit *au = (AliasUnit*) u;
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")), au->firstBaseUnit()->preferredDisplayName(printops.abbreviate_names, true, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")).formattedName(TYPE_UNIT, true).c_str());
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")), au->firstBaseUnit()->preferredInputName(printops.abbreviate_names, true, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")).formattedName(TYPE_UNIT, true).c_str());
 				gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp")), au->firstBaseExponent());
 				if(au->firstBaseExponent() == 1 && !u->isBuiltin()) {
 					gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_checkbutton_mix")), TRUE);
@@ -16088,7 +16108,7 @@ run_unit_edit_dialog:
 		}
 
 		//unit with the same name exists -- overwrite or open the dialog again
-		if((!u || !u->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->unitNameTaken(str, u)) {
+		if((!u || !u->hasName(str)) && ((names_edited != 1 && !str.empty()) || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->unitNameTaken(str, u)) {
 			Unit *unit = CALCULATOR->getActiveUnit(str, true);
 			if((!u || u != unit) && (!unit || unit->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
 				gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(unitedit_builder, "unit_edit_tabs")), 0);
@@ -16541,7 +16561,7 @@ run_function_edit_dialog:
 		gtk_text_buffer_get_end_iter(description_buffer, &d_iter_e);
 		gchar *gstr_descr = gtk_text_buffer_get_text(description_buffer, &d_iter_s, &d_iter_e, FALSE);
 		//function with the same name exists -- overwrite or open the dialog again
-		if((!f || !f->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->functionNameTaken(str, f)) {
+		if((!f || !f->hasName(str)) && ((names_edited != 1 && !str.empty()) || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->functionNameTaken(str, f)) {
 			MathFunction *func = CALCULATOR->getActiveFunction(str, true);
 			if((!f || f != func) && (!func || func->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A function with the same name already exists.\nDo you want to overwrite the function?"), dialog)) {
 				gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(functionedit_builder, "function_edit_tabs")), 0);
@@ -16885,7 +16905,7 @@ run_unknown_edit_dialog:
 		}
 
 		//unknown with the same name exists -- overwrite or open dialog again
-		if((!v || !v->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str, v)) {
+		if((!v || !v->hasName(str)) && ((names_edited != 1 && !str.empty()) || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str, v)) {
 			Variable *var = CALCULATOR->getActiveVariable(str, true);
 			if((!v || v != var) && (!var || var->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_name")));
@@ -17110,7 +17130,7 @@ run_variable_edit_dialog:
 			goto run_variable_edit_dialog;
 		}
 		//variable with the same name exists -- overwrite or open dialog again
-		if((!v || !v->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str, v)) {
+		if((!v || !v->hasName(str)) && ((names_edited != 1 && !str.empty()) || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str, v)) {
 			Variable *var = CALCULATOR->getActiveVariable(str, true);
 			if((!v || v != var) && (!var || var->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")));
@@ -17363,7 +17383,7 @@ run_matrix_edit_dialog:
 		}
 
 		//variable with the same name exists -- overwrite or open dialog again
-		if((!v || !v->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str)) {
+		if((!v || !v->hasName(str)) && ((names_edited != 1 && !str.empty()) || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->variableNameTaken(str)) {
 			Variable *var = CALCULATOR->getActiveVariable(str, true);
 			if((!v || v != var) && (!var || var->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_name")));
@@ -17833,7 +17853,7 @@ bool edit_dataproperty(DataProperty *dp, bool new_property = false) {
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(datasetedit_builder, "dataset_edit_dialog")));
 
 	edited_dataproperty = dp;
-	bool names_edited_bak = names_edited;
+	int names_edited_bak = names_edited;
 	names_edited = false;
 	editing_dataproperty = true;
 
@@ -17855,7 +17875,7 @@ bool edit_dataproperty(DataProperty *dp, bool new_property = false) {
 		case PROPERTY_STRING: {
 			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_combobox_type")), 0);
 			break;
-			}
+		}
 		case PROPERTY_NUMBER: {
 			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_combobox_type")), 1);
 			break;
@@ -18062,7 +18082,7 @@ void edit_dataset(DataSet *ds, GtkWidget *win) {
 		gtk_text_buffer_get_start_iter(copyright_buffer, &c_iter_s);
 		gtk_text_buffer_get_end_iter(copyright_buffer, &c_iter_e);
 		//dataset with the same name exists -- overwrite or open the dialog again
-		if((!ds || !ds->hasName(str)) && (!names_edited || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->functionNameTaken(str, ds)) {
+		if((!ds || !ds->hasName(str)) && ((names_edited != 1 && !str.empty()) || !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) && CALCULATOR->functionNameTaken(str, ds)) {
 			MathFunction *func = CALCULATOR->getActiveFunction(str, true);
 			if((!ds || ds != func) && (!func || func->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A function with the same name already exists.\nDo you want to overwrite the function?"), dialog)) {
 				gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(datasetedit_builder, "dataset_edit_tabs")), 2);
@@ -18402,6 +18422,9 @@ void edit_names(ExpressionItem *item, const gchar *namestr, GtkWidget *win, bool
 			}
 		}
 	} else if(namestr && strlen(namestr) > 0) {
+		if(!is_dp && names_edited == 2 && names_edit_name_taken(namestr)) {
+			show_message(_("A conflicting object with the same name exists. If you proceed and save changes, the conflicting object will be overwritten or deactivated."), win);
+		}
 		if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) {
 			gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, namestr, -1);
 		}
@@ -18415,7 +18438,7 @@ void edit_names(ExpressionItem *item, const gchar *namestr, GtkWidget *win, bool
 	}
 
 	gtk_dialog_run(GTK_DIALOG(dialog));
-	names_edited = true;
+	names_edited = 1;
 
 	gtk_widget_hide(dialog);
 }
@@ -20193,8 +20216,8 @@ void load_preferences() {
 	size_t bookmark_index = 0;
 
 	version_numbers[0] = 4;
-	version_numbers[1] = 1;
-	version_numbers[2] = 1;
+	version_numbers[1] = 2;
+	version_numbers[2] = 0;
 
 	bool old_history_format = false;
 	unformatted_history = 0;
@@ -31499,7 +31522,7 @@ void correct_name_entry(GtkEditable *editable, ExpressionItemType etype, gpointe
 */
 void on_unit_edit_entry_name_changed(GtkEditable *editable, gpointer) {
 	correct_name_entry(editable, TYPE_UNIT, (gpointer) on_unit_edit_entry_name_changed);
-	names_edited = false;
+	if(names_edited == 1) names_edited = 2;
 }
 /*
 	selected unit type in edit/new unit dialog has changed
@@ -31870,14 +31893,14 @@ void on_datasets_button_close_clicked(GtkButton*, gpointer) {
 */
 void on_function_edit_entry_name_changed(GtkEditable *editable, gpointer) {
 	correct_name_entry(editable, TYPE_FUNCTION, (gpointer) on_function_edit_entry_name_changed);
-	names_edited = false;
+	if(names_edited == 1) names_edited = 2;
 }
 /*
 	check if entered variable name is valid, if not modify
 */
 void on_variable_edit_entry_name_changed(GtkEditable *editable, gpointer) {
 	correct_name_entry(editable, TYPE_VARIABLE, (gpointer) on_variable_edit_entry_name_changed);
-	names_edited = false;
+	if(names_edited == 1) names_edited = 2;
 }
 
 void on_variable_changed() {
@@ -34750,7 +34773,7 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 				displayed_printops.can_display_unicode_string_arg = NULL;
 				w = cairo_image_surface_get_width(surface_result) / scalefactor;
 				h = cairo_image_surface_get_height(surface_result) / scalefactor;
-				if(scale_n == 0) margin = 18;
+				if(scale_n == 1) margin = 18;
 				else margin = 12;
 			}
 			result_font_updated = FALSE;
@@ -34770,7 +34793,7 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 			else cairo_set_source_surface(cr, surface_result, 0, (h > rh - sbh) ? 0 : (rh - h - sbh) / 2);
 		}
 		cairo_paint(cr);
-		first_draw_of_result = FALSE;
+		first_draw_of_result = false;
 	} else if(showing_first_time_message) {
 		PangoLayout *layout = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview")), NULL);
 		GdkRGBA rgba;
@@ -35199,35 +35222,38 @@ void on_argument_rules_checkbutton_enable_max_toggled(GtkToggleButton *w, gpoint
 void on_argument_rules_checkbutton_enable_condition_toggled(GtkToggleButton *w, gpointer) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_entry_condition")), gtk_toggle_button_get_active(w));
 }
-#define SET_NAMES_LE(x,y,z)	GtkTreeIter iter;\
-				if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) {\
-					gchar *gstr;\
-					gtk_tree_model_get(GTK_TREE_MODEL(tNames_store), &iter, NAMES_NAME_COLUMN, &gstr, -1);\
-					if(strlen(gstr) > 0) {\
-						gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(x, y)), gstr);\
-					}\
-					g_free(gstr);\
-				}\
+#define SET_NAMES_LE(x, y, z, func) \
+	GtkTreeIter iter;\
+	if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) {\
+		gchar *gstr;\
+		gtk_tree_model_get(GTK_TREE_MODEL(tNames_store), &iter, NAMES_NAME_COLUMN, &gstr, -1);\
+		if(strlen(gstr) > 0) {\
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(x, y), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) func, NULL);\
+			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(x, y)), gstr);\
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(x, y), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) func, NULL);\
+		}\
+		g_free(gstr);\
+	}\
 
 void on_variable_edit_button_names_clicked(GtkWidget*, gpointer) {
 	edit_names(get_edited_variable(), gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name"))), GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog")));
-	SET_NAMES_LE(variableedit_builder, "variable_edit_entry_name", "variable_edit_label_names")
+	SET_NAMES_LE(variableedit_builder, "variable_edit_entry_name", "variable_edit_label_names", on_variable_edit_entry_name_changed)
 }
 void on_unknown_edit_button_names_clicked(GtkWidget*, gpointer) {
 	edit_names(get_edited_unknown(), gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_name"))), GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog")));
-	SET_NAMES_LE(unknownedit_builder, "unknown_edit_entry_name", "unknown_edit_label_names")
+	SET_NAMES_LE(unknownedit_builder, "unknown_edit_entry_name", "unknown_edit_label_names", on_variable_edit_entry_name_changed)
 }
 void on_matrix_edit_button_names_clicked(GtkWidget*, gpointer) {
 	edit_names(get_edited_matrix(), gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_name"))), GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_dialog")));
-	SET_NAMES_LE(matrixedit_builder, "matrix_edit_entry_name", "matrix_edit_label_names")
+	SET_NAMES_LE(matrixedit_builder, "matrix_edit_entry_name", "matrix_edit_label_names", on_variable_edit_entry_name_changed)
 }
 void on_function_edit_button_names_clicked(GtkWidget*, gpointer) {
 	edit_names(get_edited_function(), gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name"))), GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_dialog")));
-	SET_NAMES_LE(functionedit_builder, "function_edit_entry_name", "function_edit_label_names")
+	SET_NAMES_LE(functionedit_builder, "function_edit_entry_name", "function_edit_label_names", on_function_edit_entry_name_changed)
 }
 void on_unit_edit_button_names_clicked(GtkWidget*, gpointer) {
 	edit_names(get_edited_unit(), gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_name"))), GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_dialog")));
-	SET_NAMES_LE(unitedit_builder, "unit_edit_entry_name", "unit_edit_label_names")
+	SET_NAMES_LE(unitedit_builder, "unit_edit_entry_name", "unit_edit_label_names", on_unit_edit_entry_name_changed)
 }
 
 void on_names_edit_checkbutton_abbreviation_toggled(GtkToggleButton *w, gpointer) {
@@ -36681,7 +36707,7 @@ void on_element_button_clicked(GtkButton*, gpointer user_data) {
 void on_dataset_edit_entry_name_changed(GtkEditable *editable, gpointer) {
 	correct_name_entry(editable, TYPE_FUNCTION,  (gpointer) on_dataset_edit_entry_name_changed);
 	auto_dataset_name = false;
-	names_edited = false;
+	if(names_edited == 1) names_edited = 2;
 }
 void on_dataset_edit_entry_file_changed(GtkEditable*, gpointer) {
 	auto_dataset_file = false;
@@ -36742,12 +36768,13 @@ void on_dataset_edit_button_del_property_clicked(GtkButton*, gpointer) {
 }
 void on_dataset_edit_button_names_clicked(GtkWidget*, gpointer) {
 	edit_names(get_edited_dataset(), gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_name"))), GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_dialog")));
-	SET_NAMES_LE(datasetedit_builder, "dataset_edit_entry_name", "dataset_edit_label_names")
+	SET_NAMES_LE(datasetedit_builder, "dataset_edit_entry_name", "dataset_edit_label_names", on_dataset_edit_entry_name_changed)
 }
 
 void on_dataproperty_edit_button_names_clicked(GtkWidget*, gpointer) {
 	edit_names(NULL, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_entry_name"))), GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_dialog")), TRUE, get_edited_dataproperty());
-	SET_NAMES_LE(datasetedit_builder, "dataproperty_edit_entry_name", "dataproperty_edit_label_names")
+	SET_NAMES_LE(datasetedit_builder, "dataproperty_edit_entry_name", "dataproperty_edit_label_names", on_dataproperty_changed)
+	on_dataproperty_changed();
 }
 void on_dataproperty_edit_combobox_type_changed(GtkComboBox *om, gpointer) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_checkbutton_key")), gtk_combo_box_get_active(om) != 2);
