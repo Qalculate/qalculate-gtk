@@ -2454,7 +2454,7 @@ bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 						history_message += CALCULATOR->message()->message();
 						fix_history_string2(history_message);
 						add_line_breaks(history_message, false, 4);
-#if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
+#if PANGO_VERSION >= 15000
 						string history_str = "<span font_size=\"90%\" foreground=\"";
 #else
 						string history_str = "<span foreground=\"";
@@ -2474,7 +2474,7 @@ bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 						history_message += CALCULATOR->message()->message();
 						fix_history_string2(history_message);
 						add_line_breaks(history_message, false, 4);
-#if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
+#if PANGO_VERSION >= 15000
 						string history_str = "<span font_size=\"90%\" foreground=\"";
 #else
 						string history_str = "<span foreground=\"";
@@ -2494,7 +2494,7 @@ bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 						history_message += CALCULATOR->message()->message();
 						fix_history_string2(history_message);
 						add_line_breaks(history_message, false, 4);
-#if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
+#if PANGO_VERSION >= 15000
 						string history_str = "<span font_size=\"90%\"><i>";
 						history_str += history_message;
 						history_str += "</i></span>";
@@ -4306,7 +4306,10 @@ void display_parse_status() {
 							CALCULATOR->beginTemporaryStopMessages();
 							MathStructure to_struct(mparse);
 							to_struct.unformat();
+							ApproximationMode abak = evalops.approximation;
+							if(evalops.approximation == APPROXIMATION_EXACT) evalops.approximation = APPROXIMATION_TRY_EXACT;
 							to_struct = CALCULATOR->convertToOptimalUnit(to_struct, evalops, true);
+							evalops.approximation = abak;
 							fix_to_struct_gtk(to_struct);
 							if(!to_struct.isZero()) {
 								mparse2 = new MathStructure();
@@ -10711,7 +10714,7 @@ void reload_history(gint from_index) {
 						history_str.insert(0, "<span font-style=\"italic\">");
 					}
 				}
-#if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
+#if PANGO_VERSION >= 15000
 				history_str.insert(0, "<span font_size=\"110%\">");
 #else
 				history_str.insert(0, "<span font_size=\"larger\">");
@@ -10797,13 +10800,13 @@ void reload_history(gint from_index) {
 				fix_history_string2(str);
 				add_line_breaks(str, false, 4);
 				if(inhistory_type[i] == QALCULATE_HISTORY_MESSAGE) {
-#if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
+#if PANGO_VERSION >= 15000
 					history_str = "<span font_size=\"90%\"><i>";
 #else
 					history_str = "<i>";
 #endif
 				} else {
-#if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
+#if PANGO_VERSION >= 15000
 					history_str = "<span font_size=\"90%\" foreground=\"";
 #else
 					history_str = "<span foreground=\"";
@@ -10814,7 +10817,7 @@ void reload_history(gint from_index) {
 				}
 				history_str += str;
 				if(inhistory_type[i] == QALCULATE_HISTORY_MESSAGE) history_str += "</i>";
-#if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
+#if PANGO_VERSION >= 15000
 				history_str += "</span>";
 #else
 				else history_str += "</span>";
@@ -10863,7 +10866,7 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 		gtk_style_context_get(gtk_widget_get_style_context(historyview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
 		gint size = pango_font_description_get_size(font_desc);
 		if(expr == 3) pango_font_description_set_style(font_desc, PANGO_STYLE_ITALIC);
-#if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
+#if PANGO_VERSION >= 15000
 		if(expr == 4) size *= 0.9;
 		else if(expr == 2) size *= 1.1;
 #else
@@ -11927,7 +11930,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				history_str.insert(0, "<span font-style=\"italic\">");
 			}
 		}
-#if PANGO_MAJOR_VERSION > 2 || PANGO_MINOR_VERSION >= 5
+#if PANGO_VERSION >= 15000
 		history_str.insert(0, "<span font_size=\"110%\">");
 #else
 		history_str.insert(0, "<span font_size=\"larger\">");
@@ -34204,7 +34207,7 @@ gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 	if(block_input && (event->keyval == GDK_KEY_q || event->keyval == GDK_KEY_Q) && !(event->state & GDK_CONTROL_MASK)) {block_input = false; return TRUE;}
 	if(gtk_widget_has_focus(expressiontext) || b_editing_stack || b_editing_history) return FALSE;
 	if(!b_busy && gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "mb_to"))) && !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "mb_to"))) && (event->keyval == GDK_KEY_Return || event->keyval == GDK_KEY_ISO_Enter || event->keyval == GDK_KEY_KP_Enter || event->keyval == GDK_KEY_space)) {update_mb_to_menu(); gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "mb_to")));}
-	if((event->keyval == GDK_KEY_ISO_Left_Tab || event->keyval == GDK_KEY_Tab) && CLEAN_MODIFIERS(event->state) == 0) return FALSE;
+	if((event->keyval == GDK_KEY_ISO_Left_Tab || event->keyval == GDK_KEY_Tab) && (CLEAN_MODIFIERS(event->state) == 0 || CLEAN_MODIFIERS(event->state) == GDK_SHIFT_MASK)) return FALSE;
 	if(do_keyboard_shortcut(event)) return TRUE;
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_unit")))) {
 		return FALSE;
@@ -34607,7 +34610,25 @@ return TRUE;}
 			if(event->keyval == GDK_KEY_Up) cursor_has_moved = false;
 			return TRUE;
 		}
-		case GDK_KEY_ISO_Left_Tab: {}
+		case GDK_KEY_ISO_Left_Tab: {
+			if(tabbed_completion) {
+				GtkTreePath *path = NULL;
+				if(gtk_tree_model_iter_previous(completion_sort, &tabbed_iter)) {
+					path = gtk_tree_model_get_path(completion_sort, &tabbed_iter);
+				} else {
+					gint rows = gtk_tree_model_iter_n_children(completion_sort, NULL);
+					if(rows > 0) {
+						path = gtk_tree_path_new_from_indices(rows - 1, -1);
+					}
+				}
+				if(path) {
+					on_completion_match_selected(GTK_TREE_VIEW(completion_view), path, NULL, NULL);
+					gtk_tree_path_free(path);
+					tabbed_completion = true;
+					return TRUE;
+				}
+			}
+		}
 		case GDK_KEY_Tab: {
 			if(!gtk_widget_get_visible(completion_window)) break;
 			if(event->state & GDK_SHIFT_MASK) goto key_up;
