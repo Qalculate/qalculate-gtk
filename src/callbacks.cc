@@ -2104,8 +2104,10 @@ int wrap_expression_selection(const char *insert_before = NULL, bool return_true
 	GtkTextIter istart, iend;
 	gtk_text_buffer_get_iter_at_mark(expressionbuffer, &istart, mstart);
 	gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iend, mend);
+	gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &istart, &iend, FALSE);
+	string str = gstr;
+	g_free(gstr);
 	if(!insert_before && ((gtk_text_iter_is_start(&iend) && gtk_text_iter_is_end(&istart)) || (gtk_text_iter_is_start(&istart) && gtk_text_iter_is_end(&iend)))) {
-		string str = get_expression_text();
 		if(str.find_first_not_of(NUMBER_ELEMENTS SPACE) == string::npos) {
 			if(gtk_text_iter_is_end(&istart)) gtk_text_buffer_place_cursor(expressionbuffer, &istart);
 			else gtk_text_buffer_place_cursor(expressionbuffer, &iend);
@@ -2113,6 +2115,11 @@ int wrap_expression_selection(const char *insert_before = NULL, bool return_true
 		} else if((str.length() > 1 && str[0] == '/' && str.find_first_not_of(NUMBER_ELEMENTS SPACES, 1) != string::npos) || CALCULATOR->hasToExpression(str, true, evalops) || CALCULATOR->hasWhereExpression(str, evalops)) {
 			return -1;
 		}
+	}
+	CALCULATOR->parseSigns(str);
+	if(is_in(OPERATORS, str[str.length() - 1]) && str[str.length() - 1] != '!') {
+		if(gtk_text_iter_is_start(&iend) || gtk_text_iter_is_start(&istart)) return -1;
+		return false;
 	}
 	bool b_ret = (!return_true_if_whole_selected || (gtk_text_iter_is_start(&istart) && gtk_text_iter_is_end(&iend)) || (gtk_text_iter_is_start(&iend) && gtk_text_iter_is_end(&istart)));
 	if(gtk_text_iter_compare(&istart, &iend) > 0) {
@@ -18504,7 +18511,8 @@ bool last_is_number(const gchar *expr) {
 void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool apply_to_stack = true) {
 	if(!f) return;
 	if(!CALCULATOR->stillHasFunction(f)) return;
-	if(rpn_mode && apply_to_stack && (f->minargs() <= 1 || (int) CALCULATOR->RPNStackSize() >= f->minargs())) {
+	bool b_rootlog = (f == CALCULATOR->f_logn || f == CALCULATOR->f_root) && f->args() > 1;
+	if(rpn_mode && apply_to_stack && ((b_rootlog && CALCULATOR->RPNStackSize() >= 2) || (!b_rootlog && (f->minargs() <= 1 || (int) CALCULATOR->RPNStackSize() >= f->minargs())))) {
 		calculateRPN(f);
 		return;
 	}
@@ -18703,7 +18711,7 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 		default_bits = bits.intValue();
 		default_signed = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w2));
 		gtk_widget_destroy(dialog);
-	} else if(f->minargs() > 1 && ((arg2 && (f == CALCULATOR->f_root || arg2->type() == ARGUMENT_TYPE_INTEGER)) xor (arg && arg->type() == ARGUMENT_TYPE_INTEGER))) {
+	} else if((f->minargs() > 1 || b_rootlog) && ((arg2 && (b_rootlog || arg2->type() == ARGUMENT_TYPE_INTEGER)) xor (arg && arg->type() == ARGUMENT_TYPE_INTEGER))) {
 		if(arg && arg->type() == ARGUMENT_TYPE_INTEGER) {
 			arg2 = arg;
 			index = 1;
@@ -18733,10 +18741,10 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 		gtk_entry_set_alignment(GTK_ENTRY(entry), 1.0);
 		g_signal_connect(G_OBJECT(entry), "key-press-event", G_CALLBACK(on_math_entry_key_press_event), NULL);
 		g_signal_connect(GTK_SPIN_BUTTON(entry), "input", G_CALLBACK(on_function_int_input), NULL);
-		if(!f->getDefaultValue(index).empty()) {
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(entry), s2i(f->getDefaultValue(index)));
-		} else if(f == CALCULATOR->f_root) {
+		if(b_rootlog) {
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(entry), 2);
+		} else if(!f->getDefaultValue(index).empty()) {
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(entry), s2i(f->getDefaultValue(index)));
 		} else if(!arg2->zeroForbidden() && min <= 0 && max >= 0) {
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(entry), 0);
 		} else {
@@ -18768,37 +18776,52 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 	if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
 		gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
 		// execute expression, if the whole expression was selected, no need for additional enter
-		bool do_exec = (!str2.empty() || f->minargs() < 2) && !rpn_mode && ((gtk_text_iter_is_start(&istart) && gtk_text_iter_is_end(&iend)) || (gtk_text_iter_is_start(&iend) && gtk_text_iter_is_end(&istart)));
+		bool do_exec = (!str2.empty() || (f->minargs() < 2 && !b_rootlog)) && !rpn_mode && ((gtk_text_iter_is_start(&istart) && gtk_text_iter_is_end(&iend)) || (gtk_text_iter_is_start(&iend) && gtk_text_iter_is_end(&istart)));
 		//set selection as argument
 		gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &istart, &iend, FALSE);
 		string str = gstr;
 		remove_blank_ends(str);
+		string sto;
+		bool b_to = false;
+		if(((gtk_text_iter_is_start(&istart) && gtk_text_iter_is_end(&iend)) || (gtk_text_iter_is_start(&iend) && gtk_text_iter_is_end(&istart)))) {
+			CALCULATOR->separateToExpression(str, sto, evalops, true, true);
+			if(!sto.empty()) b_to = true;
+			CALCULATOR->separateWhereExpression(str, sto, evalops);
+			if(!sto.empty()) b_to = true;
+		}
 		gchar *gstr2;
 		if(b_text && str.length() > 2 && str.find_first_of("\"\'") != string::npos) b_text = false;
 		if(b_text2 && str2.length() > 2 && str2.find_first_of("\"\'") != string::npos) b_text2 = false;
 		if(f->minargs() > 1 || !str2.empty()) {
 			if(b_text2) {
 				if(index == 1) gstr2 = g_strdup_printf(b_text ? "%s(\"%s\"%s \"%s\")" : "%s(%s%s \"%s\")", ename->formattedName(TYPE_FUNCTION, true).c_str(), str2.c_str(), CALCULATOR->getComma().c_str(), gstr);
-				else gstr2 = g_strdup_printf(b_text ? "%s(\"%s\"%s \"%s\")" : "%s(%s%s \"%s\")", ename->formattedName(TYPE_FUNCTION, true).c_str(), gstr, CALCULATOR->getComma().c_str(), str2.c_str());
+				else gstr2 = g_strdup_printf(b_text ? "%s(\"%s\"%s \"%s\")" : "%s(%s%s \"%s\")", ename->formattedName(TYPE_FUNCTION, true).c_str(), str.c_str(), CALCULATOR->getComma().c_str(), str2.c_str());
 			} else {
 				if(index == 1) gstr2 = g_strdup_printf(b_text ? "%s(\"%s\"%s %s)" : "%s(%s%s %s)", ename->formattedName(TYPE_FUNCTION, true).c_str(), str2.c_str(), CALCULATOR->getComma().c_str(), gstr);
-				else gstr2 = g_strdup_printf(b_text ? "%s(\"%s\"%s %s)" : "%s(%s%s %s)", ename->formattedName(TYPE_FUNCTION, true).c_str(), gstr, CALCULATOR->getComma().c_str(), str2.c_str());
+				else gstr2 = g_strdup_printf(b_text ? "%s(\"%s\"%s %s)" : "%s(%s%s %s)", ename->formattedName(TYPE_FUNCTION, true).c_str(), str.c_str(), CALCULATOR->getComma().c_str(), str2.c_str());
 			}
 		} else {
-			gstr2 = g_strdup_printf(b_text ? "%s(\"%s\")" : "%s(%s)", f->referenceName() == "neg" ? expression_sub_sign() : ename->formattedName(TYPE_FUNCTION, true).c_str(), gstr);
+			gstr2 = g_strdup_printf(b_text ? "%s(\"%s\")" : "%s(%s)", f->referenceName() == "neg" ? expression_sub_sign() : ename->formattedName(TYPE_FUNCTION, true).c_str(), str.c_str());
 		}
-		insert_text(gstr2);
-		if(f->minargs() > 1) {
+		if(b_to) {
+			string sexpr = gstr;
+			sto = sexpr.substr(str.length());
+			insert_text((string(gstr2) + sto).c_str());
+		} else {
+			insert_text(gstr2);
+		}
+		if(str2.empty() && (f->minargs() > 1 || b_rootlog || last_is_operator(str))) {
 			GtkTextIter iter;
 			gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iter, gtk_text_buffer_get_insert(expressionbuffer));
-			gtk_text_iter_backward_chars(&iter, b_text2 ? 2 : 1);
+			gtk_text_iter_backward_chars(&iter, (b_text2 ? 2 : 1) + unicode_length(sto));
 			gtk_text_buffer_place_cursor(expressionbuffer, &iter);
+			do_exec = false;
 		}
 		if(do_exec) execute_expression();
 		g_free(gstr);
 		g_free(gstr2);
 	} else {
-		if(f->minargs() > 1 || !str2.empty()) {
+		if(f->minargs() > 1 || b_rootlog || !str2.empty()) {
 			if(b_text && str2.length() > 2 && str2.find_first_of("\"\'") != string::npos) b_text = false;
 			gchar *gstr2;
 			if(index == 1) gstr2 = g_strdup_printf(b_text ? "%s(\"%s\"%s )" : "%s(%s%s )", ename->formattedName(TYPE_FUNCTION, true).c_str(), str2.c_str(), CALCULATOR->getComma().c_str());
