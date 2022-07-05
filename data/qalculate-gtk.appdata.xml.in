@@ -48,6 +48,41 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="4.2.0" date="2022-05-25">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Use formatted output in status display</li>
+      <li>Do not add separator line if history duplicate was prevented</li>
+      <li>Case-insensitive history search</li>
+      <li>Use different font sizes for expressions, messages, and results in history</li>
+      <li>Ellipsize long completion names list</li>
+      <li>Insert minus instead of executing RPN operation, on key press, when last character is e</li>
+      <li>Updated Tab key behaviour, e.g. cycle through completion items on subsequent tab key presses, and traverse items if tab key is unbound</li>
+      <li>Variable spacing of x values in plot (unless step size is used)</li>
+      <li>Option to plot real and imaginary parts separately (enabled by default)</li>
+      <li>Updated plot() function with arguments for specification of plot options (in any order after the third argument)</li>
+      <li>Polar plot style</li>
+      <li>Ask the user for the desired sinc() variant (unnormalized or normalized)</li>
+      <li>Support for binary-coded decimals (BCD)</li>
+      <li>Show names with underscore capitalized and with underscore removed (with some exceptions)</li>
+      <li>Additional information units</li>
+      <li>Units for volumetric flow rate</li>
+      <li>Tradtional numbers (e.g. dozen, score)</li>
+      <li>Show warning when log() is used with a single argument, and always show second argument of log()</li>
+      <li>Make names with a single character followed by digits case-sensitive with suffix by default</li>
+      <li>Accept more than two arguments in gcd() and lcm()</li>
+      <li>Interpret a single vector argument as a list of arguments if function requires more than one argument</li>
+      <li>Fix action (e.g. conversion, factorization) on uncalculated expression</li>
+      <li>Fix scaling of result (when it does not fit)</li>
+      <li>Fix limit of floor(), ceil(), and trunc()</li>
+      <li>Fix plotting of derivatives and integrals</li>
+      <li>Fix randpoisson()</li>
+      <li>Fix reactivation of object, after object that caused deactivation is removed</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
   <release version="4.1.1" date="2022-04-04">
    <description>
     <p>Changes:</p>

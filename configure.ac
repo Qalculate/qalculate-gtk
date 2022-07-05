@@ -6,7 +6,7 @@ dnl  ----------------------
 dnl | initialize autotools |---------------------------------------------------
 dnl  ----------------------
 
-AC_INIT([Qalculate! (GTK UI)],[4.1.1],[],[qalculate-gtk])
+AC_INIT([Qalculate! (GTK UI)],[4.2.0],[],[qalculate-gtk])
 AC_CONFIG_SRCDIR([src/callbacks.cc])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS(config.h)
@@ -111,7 +111,7 @@ AS_IF([test "x$with_local_help" != "xno"], [
 AM_CONDITIONAL(ENABLE_LOCAL_HELP, [test "x$with_local_help" != "xno"])
 
 PKG_CHECK_MODULES(QALCULATE, [
-	libqalculate >= 4.1.0
+	libqalculate >= 4.2.0
 	])
 AC_SUBST(QALCULATE_CFLAGS)
 AC_SUBST(QALCULATE_LIBS)

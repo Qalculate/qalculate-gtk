@@ -1,50 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.2 -->
+<!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkAdjustment" id="adjustment1">
     <property name="lower">2</property>
     <property name="upper">36</property>
     <property name="value">10</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment2">
     <property name="lower">2</property>
     <property name="upper">36</property>
     <property name="value">10</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
   </object>
   <object class="GtkDialog" id="set_base_dialog">
-    <property name="can_focus">False</property>
-    <property name="border_width">6</property>
+    <property name="can-focus">False</property>
+    <property name="border-width">6</property>
     <property name="title" translatable="yes">Number Bases</property>
     <property name="resizable">False</property>
-    <property name="type_hint">dialog</property>
+    <property name="type-hint">dialog</property>
     <signal name="delete-event" handler="gtk_widget_hide" object="set_base_dialog" swapped="yes"/>
     <signal name="destroy-event" handler="gtk_widget_hide" object="set_base_dialog" swapped="yes"/>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbox62">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="hbuttonbox7">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
+            <property name="can-focus">False</property>
+            <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="button_close">
                 <property name="label" translatable="yes">_Close</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="can_default">True</property>
-                <property name="receives_default">False</property>
-                <property name="use_underline">True</property>
+                <property name="can-focus">True</property>
+                <property name="can-default">True</property>
+                <property name="receives-default">False</property>
+                <property name="use-underline">True</property>
                 <signal name="clicked" handler="gtk_widget_hide" object="set_base_dialog" swapped="yes"/>
               </object>
               <packing>
@@ -57,41 +54,41 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="pack_type">end</property>
+            <property name="pack-type">end</property>
             <property name="position">0</property>
           </packing>
         </child>
         <child>
           <object class="GtkBox" id="hbox1">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="border_width">6</property>
+            <property name="can-focus">False</property>
+            <property name="border-width">6</property>
             <property name="spacing">6</property>
             <child>
               <object class="GtkFrame" id="frame2">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label_xalign">0</property>
-                <property name="shadow_type">none</property>
+                <property name="can-focus">False</property>
+                <property name="label-xalign">0</property>
+                <property name="shadow-type">none</property>
                 <child>
                   <object class="GtkBox" id="vbox64">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="halign">start</property>
                     <property name="valign">start</property>
-                    <property name="margin_left">12</property>
-                    <property name="margin_top">6</property>
+                    <property name="margin-left">12</property>
+                    <property name="margin-top">6</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">6</property>
                     <child>
                       <object class="GtkRadioButton" id="set_base_radiobutton_output_binary">
                         <property name="label" translatable="yes">Binary</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="use-underline">True</property>
                         <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
+                        <property name="draw-indicator">True</property>
                         <signal name="toggled" handler="on_set_base_radiobutton_output_binary_toggled" swapped="no"/>
                       </object>
                       <packing>
@@ -104,10 +101,10 @@
                       <object class="GtkRadioButton" id="set_base_radiobutton_output_octal">
                         <property name="label" translatable="yes">Octal</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
                         <property name="group">set_base_radiobutton_output_binary</property>
                         <signal name="toggled" handler="on_set_base_radiobutton_output_octal_toggled" swapped="no"/>
                       </object>
@@ -121,10 +118,10 @@
                       <object class="GtkRadioButton" id="set_base_radiobutton_output_decimal">
                         <property name="label" translatable="yes">Decimal</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
                         <property name="group">set_base_radiobutton_output_binary</property>
                         <signal name="toggled" handler="on_set_base_radiobutton_output_decimal_toggled" swapped="no"/>
                       </object>
@@ -138,10 +135,10 @@
                       <object class="GtkRadioButton" id="set_base_radiobutton_output_duodecimal">
                         <property name="label" translatable="yes">Duodecimal</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
                         <property name="group">set_base_radiobutton_output_binary</property>
                         <signal name="toggled" handler="on_set_base_radiobutton_output_duodecimal_toggled" swapped="no"/>
                       </object>
@@ -155,10 +152,10 @@
                       <object class="GtkRadioButton" id="set_base_radiobutton_output_hexadecimal">
                         <property name="label" translatable="yes">Hexadecimal</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
                         <property name="group">set_base_radiobutton_output_binary</property>
                         <signal name="toggled" handler="on_set_base_radiobutton_output_hexadecimal_toggled" swapped="no"/>
                       </object>
@@ -172,10 +169,10 @@
                       <object class="GtkRadioButton" id="set_base_radiobutton_output_sexagesimal">
                         <property name="label" translatable="yes">Sexagesimal</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
                         <property name="group">set_base_radiobutton_output_binary</property>
                         <signal name="toggled" handler="on_set_base_radiobutton_output_sexagesimal_toggled" swapped="no"/>
                       </object>
@@ -189,10 +186,10 @@
                       <object class="GtkRadioButton" id="set_base_radiobutton_output_time">
                         <property name="label" translatable="yes">Time format</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
                         <property name="group">set_base_radiobutton_output_binary</property>
                         <signal name="toggled" handler="on_set_base_radiobutton_output_time_toggled" swapped="no"/>
                       </object>
@@ -206,10 +203,10 @@
                       <object class="GtkRadioButton" id="set_base_radiobutton_output_roman">
                         <property name="label" translatable="yes">Roman numerals</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
                         <property name="group">set_base_radiobutton_output_binary</property>
                         <signal name="toggled" handler="on_set_base_radiobutton_output_roman_toggled" swapped="no"/>
                       </object>
@@ -223,10 +220,10 @@
                       <object class="GtkRadioButton" id="set_base_radiobutton_output_other">
                         <property name="label" translatable="yes">Other:</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
                         <property name="group">set_base_radiobutton_output_binary</property>
                         <signal name="toggled" handler="on_set_base_radiobutton_output_other_toggled" swapped="no"/>
                       </object>
@@ -239,8 +236,8 @@
                     <child>
                       <object class="GtkComboBoxText" id="set_base_combo_output_other">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="has_entry">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="has-entry">True</property>
                         <items>
                           <item>-10</item>
                           <item>-3</item>
@@ -260,11 +257,12 @@
                           <item>double</item>
                           <item>fp80</item>
                           <item>fp128</item>
+                          <item>BCD</item>
                         </items>
                         <signal name="changed" handler="on_set_base_combo_output_other_changed" swapped="no"/>
                         <child internal-child="entry">
                           <object class="GtkEntry" id="set_base_entry_output_other">
-                            <property name="can_focus">True</property>
+                            <property name="can-focus">True</property>
                             <signal name="activate" handler="on_set_base_entry_output_other_activate" swapped="no"/>
                             <signal name="focus-out-event" handler="on_set_base_entry_output_other_focus_out_event" swapped="no"/>
                           </object>
@@ -281,9 +279,9 @@
                 <child type="label">
                   <object class="GtkLabel" id="label2">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="label" translatable="yes">&lt;b&gt;Result Base&lt;/b&gt;</property>
-                    <property name="use_markup">True</property>
+                    <property name="use-markup">True</property>
                   </object>
                 </child>
               </object>
@@ -296,7 +294,7 @@
             <child>
               <object class="GtkSeparator" id="separator_setbase">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="orientation">vertical</property>
               </object>
               <packing>
@@ -308,28 +306,28 @@
             <child>
               <object class="GtkFrame" id="frame1">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label_xalign">0</property>
-                <property name="shadow_type">none</property>
+                <property name="can-focus">False</property>
+                <property name="label-xalign">0</property>
+                <property name="shadow-type">none</property>
                 <child>
                   <object class="GtkBox" id="vbox63">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="halign">start</property>
                     <property name="valign">start</property>
-                    <property name="margin_left">12</property>
-                    <property name="margin_top">6</property>
+                    <property name="margin-left">12</property>
+                    <property name="margin-top">6</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">6</property>
                     <child>
                       <object class="GtkRadioButton" id="set_base_radiobutton_input_binary">
                         <property name="label" translatable="yes">Binary</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="use-underline">True</property>
                         <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
+                        <property name="draw-indicator">True</property>
                         <signal name="toggled" handler="on_set_base_radiobutton_input_binary_toggled" swapped="no"/>
                       </object>
                       <packing>
@@ -342,10 +340,10 @@
                       <object class="GtkRadioButton" id="set_base_radiobutton_input_octal">
                         <property name="label" translatable="yes">Octal</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
                         <property name="group">set_base_radiobutton_input_binary</property>
                         <signal name="toggled" handler="on_set_base_radiobutton_input_octal_toggled" swapped="no"/>
                       </object>
@@ -359,10 +357,10 @@
                       <object class="GtkRadioButton" id="set_base_radiobutton_input_decimal">
                         <property name="label" translatable="yes">Decimal</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
                         <property name="group">set_base_radiobutton_input_binary</property>
                         <signal name="toggled" handler="on_set_base_radiobutton_input_decimal_toggled" swapped="no"/>
                       </object>
@@ -376,10 +374,10 @@
                       <object class="GtkRadioButton" id="set_base_radiobutton_input_duodecimal">
                         <property name="label" translatable="yes">Duodecimal</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
                         <property name="group">set_base_radiobutton_input_binary</property>
                         <signal name="toggled" handler="on_set_base_radiobutton_input_duodecimal_toggled" swapped="no"/>
                       </object>
@@ -393,10 +391,10 @@
                       <object class="GtkRadioButton" id="set_base_radiobutton_input_hexadecimal">
                         <property name="label" translatable="yes">Hexadecimal</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
                         <property name="group">set_base_radiobutton_input_binary</property>
                         <signal name="toggled" handler="on_set_base_radiobutton_input_hexadecimal_toggled" swapped="no"/>
                       </object>
@@ -410,10 +408,10 @@
                       <object class="GtkRadioButton" id="set_base_radiobutton_input_roman">
                         <property name="label" translatable="yes">Roman numerals</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
                         <property name="group">set_base_radiobutton_input_binary</property>
                         <signal name="toggled" handler="on_set_base_radiobutton_input_roman_toggled" swapped="no"/>
                       </object>
@@ -427,10 +425,10 @@
                       <object class="GtkRadioButton" id="set_base_radiobutton_input_other">
                         <property name="label" translatable="yes">Other:</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
                         <property name="group">set_base_radiobutton_input_binary</property>
                         <signal name="toggled" handler="on_set_base_radiobutton_input_other_toggled" swapped="no"/>
                       </object>
@@ -443,8 +441,8 @@
                     <child>
                       <object class="GtkComboBoxText" id="set_base_combo_input_other">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="has_entry">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="has-entry">True</property>
                         <items>
                           <item>-10</item>
                           <item>-3</item>
@@ -459,11 +457,12 @@
                           <item>62</item>
                           <item>Unicode</item>
                           <item translatable="yes">Bijective base-26</item>
+                          <item>BCD</item>
                         </items>
                         <signal name="changed" handler="on_set_base_combo_input_other_changed" swapped="no"/>
                         <child internal-child="entry">
                           <object class="GtkEntry" id="set_base_entry_input_other">
-                            <property name="can_focus">True</property>
+                            <property name="can-focus">True</property>
                             <signal name="activate" handler="on_set_base_entry_input_other_activate" swapped="no"/>
                             <signal name="focus-out-event" handler="on_set_base_entry_input_other_focus_out_event" swapped="no"/>
                           </object>
@@ -480,9 +479,9 @@
                 <child type="label">
                   <object class="GtkLabel" id="set_base_label_expression_base">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="label" translatable="yes">&lt;b&gt;Expression Base&lt;/b&gt;</property>
-                    <property name="use_markup">True</property>
+                    <property name="use-markup">True</property>
                   </object>
                 </child>
               </object>

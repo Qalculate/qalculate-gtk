@@ -1,3 +1,55 @@
+2022-05-20 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix scaling of result (when it does not fit)
+
+2022-05-14 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix action (e.g. conversion, factorization) on uncalculated expression
+
+2022-05-12 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Make sure that name conflict warning message is at least shown once for each new name (behaviour was less than optimal when name edit dialog was used)
+
+2022-05-08 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Let tab and shift+tab behave us down/up keys when completion list is visible if tab key is not bound
+	* If completion item was selected using tab, cycle through completion items on subsequent tab key presses
+	* Show completion using tab if completion is disabled (or delayed)
+
+2022-05-07 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Insert minus instead of executing RPN operation, on key press, when last character is e
+	* Do not show number for single unnamed function argument
+	* Updates for revised plot() function and new polar plot style
+
+2022-04-26 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add support for binary-coded decimals (BCD)
+
+2022-04-25 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Use different font sizes for expressions, messages, and results in history (instead of a slightly larger font for all text)
+
+2022-04-24 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Use formatted output in status display
+
+2022-04-21 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Ask the user for the desired sinc() variant (unnormalized or normalized)
+	* Ellipsize long completion names list
+	* Show names with underscore capitalized and with underscore removed (with some exceptions)
+
+2022-04-19 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Case-insensitive history search
+	* Replace history search entry label with icon within entry
+	* Control display of real and imaginary parts in plot using allow complex option
+
+2022-04-09 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix wrong tooltips in completion tab of preferences dialog
+
 2022-03-26 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Fix memory leak when updating result display

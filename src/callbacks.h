@@ -202,6 +202,7 @@ void update_status_text();
 void clearresult();
 
 void set_result_size_request();
+void set_status_size_request();
 void set_expression_size_request();
 
 void create_umenu(void);
