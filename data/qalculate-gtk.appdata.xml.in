@@ -48,6 +48,32 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="4.3.0" date="2022-08-22">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Fix handling of Unicode powers for units in denominator, with adaptive parsing enabled (e.g. parse 10m/s² the same as 10m/s^2)</li>
+      <li>Fix "+" ignored after "E" in number bases where "E" is a digit</li>
+      <li>Fix scientific E notation with sign in argument when function is used without parentheses</li>
+      <li>Fix lambertw() for values very close to zero</li>
+      <li>Fix a*b^x+cx=d when a and c have different signs and d is non-zero</li>
+      <li>Fix a^x+b^x=c when a and b is negative, and c is positive</li>
+      <li>Fix segfaults in some corner cases</li>
+      <li>Fix potential issues in handling of leap seconds (e.g. during subtraction of seconds from date)</li>
+      <li>var=a syntax for variable assignment with calculated expression</li>
+      <li>Replace ounce with fluid ounce during conversion to volume unit</li>
+      <li>Solve a^x+b^x+...=c in more cases</li>
+      <li>Improve remainder/modulus for numerators with large exponents</li>
+      <li>Truncate number in output of parsed expression and end with ellipsis if unable to display all decimals</li>
+      <li>Improved floating point calculation and output speed, particularly for simple expressions with very high precision</li>
+      <li>New functions: clip(), qFormat(), qError()</li>
+      <li>Replace selection (instead of wrap in parentheses) on operator input if selection ends with operator</li>
+      <li>Act as if two arguments are required when applying base-N logarithm to expression</li>
+      <li>When applying function to expression, exclude to/where expression and place cursor before closing parenthesis if operator is last in selection</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
   <release version="4.2.0" date="2022-05-25">
    <description>
     <p>Changes:</p>
