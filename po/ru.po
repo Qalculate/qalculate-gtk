@@ -7,16 +7,16 @@ msgstr ""
 "Project-Id-Version: qalculate-gtk\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-05-25 17:14+0200\n"
-"PO-Revision-Date: 2022-01-29 15:12+0700\n"
+"PO-Revision-Date: 2022-08-23 17:39+0700\n"
 "Last-Translator: Damir Islamov <damir@secretlaboratory.ru>\n"
 "Language-Team: Russian <kde-russian@lists.kde.ru>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : "
-"n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Lokalize 21.08.0\n"
+"Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n"
+"%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Lokalize 21.12.3\n"
 
 #: ../data/qalculate-gtk.desktop.in.h:1 ../src/callbacks.cc:11336
 #: ../src/callbacks.cc:11343
@@ -2729,16 +2729,15 @@ msgstr "Выражение в истории"
 
 #: ../data/preferences.ui.h:18
 msgid "Parsed"
-msgstr ""
+msgstr "Проанализированное"
 
 #: ../data/preferences.ui.h:19
-#, fuzzy
 msgid "Entered"
-msgstr "Ввод"
+msgstr "Введённое"
 
 #: ../data/preferences.ui.h:20
 msgid "Entered + parsed"
-msgstr ""
+msgstr "Введённое + Проанализированное"
 
 #: ../data/preferences.ui.h:21
 msgid "Add calculate-as-you-type result to history"
@@ -2984,7 +2983,7 @@ msgstr ""
 
 #: ../data/preferences.ui.h:73
 msgid "Copy result as unformatted ASCII by default"
-msgstr ""
+msgstr "По умолчанию копировать результат как неформатированный ASCII"
 
 #: ../data/preferences.ui.h:74
 msgid "Digit grouping"
@@ -4066,23 +4065,20 @@ msgstr ""
 "(режим позже можно изменить в настройках)."
 
 #: ../src/callbacks.cc:3050
-#, fuzzy
 msgid "Sinc Function"
-msgstr "Изменить функцию"
+msgstr "Функция sinc"
 
 #: ../src/callbacks.cc:3060
 msgid "Please select desired variant of the sinc function."
-msgstr ""
+msgstr "Выберите нужный вариант функции sinc."
 
 #: ../src/callbacks.cc:3063
-#, fuzzy
 msgid "Unnormalized"
-msgstr "Без категорий"
+msgstr "Ненормированная"
 
 #: ../src/callbacks.cc:3070
-#, fuzzy
 msgid "Normalized"
-msgstr "Обычное"
+msgstr "Нормированная"
 
 #: ../src/callbacks.cc:3103
 msgid "Interpretation of dots"
@@ -4284,9 +4280,8 @@ msgid "bijective base-26"
 msgstr "биективное основание-26"
 
 #: ../src/callbacks.cc:4188
-#, fuzzy
 msgid "binary-coded decimal"
-msgstr "Мин цифр"
+msgstr "двоично-десятичный код"
 
 #: ../src/callbacks.cc:4190
 msgid "sexagesimal number"
@@ -4788,9 +4783,8 @@ msgid "Base Units"
 msgstr "Основные единицы измерения"
 
 #: ../src/callbacks.cc:7736
-#, fuzzy
 msgid "Binary-Coded Decimal"
-msgstr "Мин цифр"
+msgstr "Двоично-десятичный код"
 
 #: ../src/callbacks.cc:7738
 msgid "Bijective Base-26"
@@ -5351,9 +5345,8 @@ msgid "_Import"
 msgstr "_Импорт"
 
 #: ../src/callbacks.cc:29287
-#, fuzzy
 msgid "XML Files"
-msgstr "Все файлы"
+msgstr "XML файлы"
 
 #: ../src/callbacks.cc:29307
 #, c-format
