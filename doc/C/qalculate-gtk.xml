@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "4.2.0">
-  <!ENTITY manrevision "4.2.0">
-  <!ENTITY date "May 2022">
+  <!ENTITY appversion "4.3.0">
+  <!ENTITY manrevision "4.3.0">
+  <!ENTITY date "August 2022">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -1656,9 +1656,9 @@ The following operators are defined in &app; and may be used in expressions. Wor
 			</row>
 			<row valign="top">
 				<entry><para>Save as Variable/Function</para></entry>
-				<entry align="center"><para>:=</para></entry>
-				<entry><para>Saves the value or expression to the right of the operator as a variable or function (as <command>save</command>.</para></entry>
-				<entry align="center"><para>var1:=5</para><para>func1()=x+y</para></entry>
+				<entry align="center"><para>:=, =</para></entry>
+				<entry><para>Saves the value or expression to the right of the operator as a variable or function (as <command>save()</command> function). If colon is omitted, the expression is calculated before it is assigned to the variable.</para></entry>
+				<entry align="center"><para>var1:=5</para><para>func1():=x+y</para><para>var1=ln(5)+2</para></entry>
 				<entry align="right"><para></para></entry>
 			</row>
 		</tbody>
@@ -2119,7 +2119,7 @@ Known variables can also be created from scratch by selecting <menuchoice><guime
 	</screenshot>
 </figure>
 <para>
-Alternatively values can be stored in variables using the <command>save()</command> function or the associated <quote>:=</quote> operator (e.g. <quote>save(v1, 5)</quote> or <quote>v1:=5</quote>).
+Alternatively values can be stored in variables using the <command>save()</command> function, or the associated <quote>:=</quote>/<quote>=</quote> operators (e.g. <quote>save(v1, 5)</quote> or <quote>v1:=5</quote>, <quote>save(v1, ln(5)+2,,,1)</quote> or <quote>v1=ln(5)+2</quote>).
 </para>
 <para>
 The dialog for creation of unknown variables are accessed by selecting <menuchoice><guimenu>File</guimenu><guisubmenu>New</guisubmenu><guimenuitem>Unknown Variable</guimenuitem></menuchoice>. Instead of a value, an assumed type and sign can then be selected.

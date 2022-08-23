@@ -211,20 +211,6 @@ void create_application(GtkApplication *app) {
 
 	showing_first_time_message = first_time;
 
-	if((first_time || VERSION_BEFORE(4, 1, 1)) && QalculateDateTime(2022, 8, 1).isFutureDate()) {
-		gint scalefactor = gtk_widget_get_scale_factor(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
-		GdkPixbuf *flagbuf = gdk_pixbuf_new_from_resource_at_scale("/qalculate-gtk/flags/UAH.png", 16 * scalefactor, 16 * scalefactor, TRUE, NULL);
-		if(flagbuf) {
-			cairo_surface_t *s = gdk_cairo_surface_create_from_pixbuf(flagbuf, scalefactor, NULL);
-			gtk_image_set_from_surface(GTK_IMAGE(gtk_builder_get_object(main_builder, "message_tooltip_icon")), s);
-			gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), TRUE);
-			gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), "Please inform yourself about the war crimes committed against the Ukrainian people.");
-			gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack")), GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon")));
-			cairo_surface_destroy(s);
-			g_object_unref(flagbuf);
-		}
-	}
-
 	if(calc_arg.empty() && showing_first_time_message && file_arg.empty()) {
 		gtk_widget_queue_draw(resultview);
 	}
