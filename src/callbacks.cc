@@ -1450,11 +1450,15 @@ void unblock_completion() {
 	completion_blocked--;
 }
 
+gboolean do_autocalc_history_timeout(gpointer);
 void copy_result(int ascii = -1) {
+	if(autocalc_history_timeout_id) {
+		g_source_remove(autocalc_history_timeout_id);
+		do_autocalc_history_timeout(NULL);
+	}
 	set_clipboard(result_text, ascii, true);
 }
 
-gboolean do_autocalc_history_timeout(gpointer);
 bool result_text_empty() {
 	return result_text.empty() && !autocalc_history_timeout_id;
 }
