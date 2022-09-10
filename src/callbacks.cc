@@ -3199,7 +3199,7 @@ bool ask_implicit() {
 	if(evalops.parse_options.parsing_mode == PARSING_MODE_IMPLICIT_MULTIPLICATION_FIRST) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w_implicitfirst), TRUE);
 	gtk_widget_set_valign(w_implicitfirst, GTK_ALIGN_START);
 	gtk_grid_attach(GTK_GRID(grid), w_implicitfirst, 0, 1, 1, 1);
-	label = gtk_label_new("<i>1/2x = 1/(2x)</i>");
+	label = gtk_label_new("<i>1/2x = 1/(2x)</i>\n<i>5 m/2 s = (5 m)/(2 s)</i>");
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_widget_set_halign(label, GTK_ALIGN_START);
 	gtk_grid_attach(GTK_GRID(grid), label, 1, 1, 1, 1);
@@ -3207,7 +3207,7 @@ bool ask_implicit() {
 	if(evalops.parse_options.parsing_mode == PARSING_MODE_CONVENTIONAL) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w_conventional), TRUE);
 	gtk_widget_set_valign(w_conventional, GTK_ALIGN_START);
 	gtk_grid_attach(GTK_GRID(grid), w_conventional, 0, 2, 1, 1);
-	label = gtk_label_new("<i>1/2x = (1/2)x</i>");
+	label = gtk_label_new("<i>1/2x = (1/2)x</i>\n<i>5 m/2 s = (5 m/2)s</i>");
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_widget_set_halign(label, GTK_ALIGN_START);
 	gtk_grid_attach(GTK_GRID(grid), label, 1, 2, 1, 1);
@@ -3215,7 +3215,7 @@ bool ask_implicit() {
 	if(evalops.parse_options.parsing_mode == PARSING_MODE_ADAPTIVE) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w_adaptive), TRUE);
 	gtk_widget_set_valign(w_adaptive, GTK_ALIGN_START);
 	gtk_grid_attach(GTK_GRID(grid), w_adaptive, 0, 3, 1, 1);
-	label = gtk_label_new("<i>1/2x = 1/(2x); 1/2 x = (1/2)x</i>");
+	label = gtk_label_new("<i>1/2x = 1/(2x); 1/2 x = (1/2)x</i>\n<i>5 m/2 s = (5 m)/(2 s)</i>");
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_widget_set_halign(label, GTK_ALIGN_START);
 	gtk_grid_attach(GTK_GRID(grid), label, 1, 3, 1, 1);
@@ -3985,19 +3985,22 @@ void display_parse_status() {
 	gchar *gtext = gtk_text_buffer_get_text(expressionbuffer, &istart, &iend, FALSE);
 	string text = gtext, str_f;
 	g_free(gtext);
+	bool double_tag = false;
+	string to_str = CALCULATOR->parseComments(text, evalops.parse_options, &double_tag);
+	if(!to_str.empty() && text.empty() && double_tag) {
+		text = CALCULATOR->f_message->referenceName();
+		text += "(";
+		if(to_str.find("\"") == string::npos) {text += "\""; text += to_str; text += "\"";}
+		else if(to_str.find("\'") == string::npos) {text += "\'"; text += to_str; text += "\'";}
+		else text += to_str;
+		text += ")";
+	}
 	if(text.empty()) {
 		set_status_text("", true, false, false);
 		parsed_expression = "";
 		parsed_expression_tooltip = "";
 		expression_has_changed2 = false;
 		return;
-	}
-	string to_str = CALCULATOR->parseComments(text, evalops.parse_options);
-	if(!to_str.empty() && text.empty()) {
-		text = CALCULATOR->f_message->referenceName();
-		text += "(";
-		text += to_str;
-		text += ")";
 	}
 	if(text[0] == '/' && text.length() > 1) {
 		size_t i = text.find_first_not_of(SPACES, 1);
@@ -4018,6 +4021,8 @@ void display_parse_status() {
 		set_status_text(_("M− (memory minus)"), true, false, false);
 		return;
 	}
+	gsub(ID_WRAP_LEFT, LEFT_PARENTHESIS, text);
+	gsub(ID_WRAP_RIGHT, RIGHT_PARENTHESIS, text);
 	remove_duplicate_blanks(text);
 	size_t i = text.find_first_of(SPACES LEFT_PARENTHESIS);
 	if(i != string::npos) {
@@ -12407,8 +12412,13 @@ void result_prefix_changed(Prefix *prefix) {
 		printops.use_unit_prefixes = true;
 		printops.use_prefixes_for_all_units = true;
 	}
-	if(result_autocalculated) print_auto_calc();
-	else setResult(prefix, true, false, true);
+	if(result_autocalculated) {
+		printops.prefix = prefix;
+		print_auto_calc();
+		printops.prefix = NULL;
+	} else {
+		setResult(prefix, true, false, true);
+	}
 	printops.use_unit_prefixes = b_use_unit_prefixes;
 	printops.use_prefixes_for_all_units = b_use_prefixes_for_all_units;
 
@@ -13395,7 +13405,9 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				}
 				execute_str = CALCULATOR->f_message->referenceName();
 				execute_str += "(";
-				execute_str += to_str;
+				if(to_str.find("\"") == string::npos) {execute_str += "\""; execute_str += to_str; execute_str += "\"";}
+				else if(to_str.find("\'") == string::npos) {execute_str += "\'"; execute_str += to_str; execute_str += "\'";}
+				else execute_str += to_str;
 				execute_str += ")";
 			} else {
 				CALCULATOR->message(MESSAGE_INFORMATION, to_str.c_str(), NULL);
@@ -34730,11 +34742,11 @@ return TRUE;}
 			overwrite_expression_selection(CALCULATOR->getDecimalPoint().c_str());
 			return TRUE;
 		}
-		case GDK_KEY_braceleft: {}
+		/*case GDK_KEY_braceleft: {}
 		case GDK_KEY_braceright: {
 			if(expression_in_quotes()) break;
 			return TRUE;
-		}
+		}*/
 	}
 	if(event->state & GDK_CONTROL_MASK && event->keyval == GDK_KEY_c && !gtk_text_buffer_get_has_selection(expressionbuffer)) {
 		copy_result();

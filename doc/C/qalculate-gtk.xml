@@ -61,6 +61,31 @@ Although use of &app; for simple calculations should be natural and self-explana
 </para>
 </chapter>
 
+<chapter id="qalculate-qt">
+<title>Differences in the <quote>new</quote> Qt user interface</title>
+<para>
+This manual describes the <quote>classic</quote> GTK version of &app;. Most of it (particularly from chapter 4 and forward) also applies to the <quote>new</quote> Qt version. There are however some significant differences, particularly in the layout of the main window.
+</para>
+<para>
+In the QT interface the current result is only shown in the history, which is always present below the expression entry. The current result is emphasised with a larger font size, compared to previous results. By default only the parsed expression, and not the entered expressed, are displayed in the history.
+</para>
+<para>
+How the currently edited expression is parsed is displayed (with a slight delay by default) in a tooltip next to the text cursor, instead of below the expression entry. This tooltip also displays the current result of the expression (calculate-as-you-type).
+</para>
+<para>
+The keypad is hidden by default, but can be shown using the second button from the right (the last of the left aligned buttons).
+</para>
+<para>
+Calculator mode options are changed in the menu opened using the top-left button (above the expression entry). Some settings have been moved to the preferences dialog.
+</para>
+<para>
+Conversion (including unit conversion) are primarily applied to the current result or expression using the second button from the left.
+</para>
+<para>
+The contents of the file menu and some of the edit menu in the GTK interface have been moved to the menu accessed using the top-right <quote>hamburger</quote> button.
+</para>
+</chapter>
+
 <chapter id="qalculate-user-interface">
 <title>User Interface</title>
 <sect1 id="qalculate-main-window">
