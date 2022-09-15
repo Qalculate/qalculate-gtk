@@ -6644,6 +6644,7 @@ const gchar *shortcut_type_text(int type, bool return_null) {
 		case SHORTCUT_TYPE_KEYPAD: {return _("Show keypad"); break;}
 		case SHORTCUT_TYPE_HISTORY: {return _("Show history"); break;}
 		case SHORTCUT_TYPE_HISTORY_SEARCH: {return _("Search history"); break;}
+		case SHORTCUT_TYPE_HISTORY_CLEAR: {return _("Clear history"); break;}
 		case SHORTCUT_TYPE_CONVERSION: {return _("Show conversion"); break;}
 		case SHORTCUT_TYPE_STACK: {return _("Show RPN stack"); break;}
 		case SHORTCUT_TYPE_MINIMAL: {return _("Toggle minimal window"); break;}
@@ -6825,6 +6826,10 @@ void update_accels(int type) {
 			}
 			case SHORTCUT_TYPE_HISTORY_SEARCH: {
 				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_search")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_HISTORY_CLEAR: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_clear")))), it->second.key, (GdkModifierType) it->second.modifier);
 				break;
 			}
 			case SHORTCUT_TYPE_PROGRAMMING: {
@@ -7565,8 +7570,13 @@ void update_completion() {
 				} else if(v->isKnown()) {
 					if(((KnownVariable*) v)->isExpression()) {
 						title = localize_expression(((KnownVariable*) v)->expression());
-						if(title.length() > 30) {title = title.substr(0, 30); title += "…";}
-						else if(!((KnownVariable*) v)->unit().empty() && ((KnownVariable*) v)->unit() != "auto") {title += " "; title += ((KnownVariable*) v)->unit();}
+						if(unicode_length(title) > 30) {
+							size_t n = 30;
+							while(n > 0 && (signed char) title[n + 1] < 0 && (unsigned char) title[n + 1] < 0xC0) n--;
+							title = title.substr(0, n); title += "…";
+						} else if(!((KnownVariable*) v)->unit().empty() && ((KnownVariable*) v)->unit() != "auto") {
+							title += " "; title += ((KnownVariable*) v)->unit();
+						}
 					} else {
 						if(((KnownVariable*) v)->get().isMatrix()) {
 							title = _("matrix");
@@ -7576,7 +7586,12 @@ void update_completion() {
 							PrintOptions po;
 							po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 							title = CALCULATOR->print(((KnownVariable*) v)->get(), 30, po);
-							if(title.length() > 30) {title = title.substr(0, 30); title += "…";}
+							if(unicode_length(title) > 30) {
+								size_t n = 30;
+								while(n > 0 && (signed char) title[n + 1] < 0 && (unsigned char) title[n + 1] < 0xC0) n--;
+								title = title.substr(0, n);
+								title += "…";
+							}
 						}
 					}
 				} else {
@@ -13917,6 +13932,11 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				} else {
 					clear_expression_text();
 				}
+			} else if(equalsIgnoreCase(str, "clear history")) {
+				on_popup_menu_item_history_clear_activate(NULL, NULL);
+				on_popup_menu_item_clear_history_activate(NULL, NULL);
+			} else if(equalsIgnoreCase(str, "clear")) {
+				on_popup_menu_item_clear_activate(NULL, NULL);
 			} else if(equalsIgnoreCase(str, "quit") || equalsIgnoreCase(str, "exit")) {
 				on_gcalc_exit(NULL, NULL, NULL);
 				return;
@@ -14721,7 +14741,7 @@ void execute_from_file(string command_file) {
 		ispace = str.find_first_of(SPACES);
 		if(ispace == string::npos) scom = "";
 		else scom = str.substr(0, ispace);
-		if(equalsIgnoreCase(str, "exrates") || equalsIgnoreCase(str, "stack") || equalsIgnoreCase(str, "swap") || equalsIgnoreCase(str, "rotate") || equalsIgnoreCase(str, "copy") || equalsIgnoreCase(str, "clear stack") || equalsIgnoreCase(str, "exact") || equalsIgnoreCase(str, "approximate") || equalsIgnoreCase(str, "approx") || equalsIgnoreCase(str, "factor") || equalsIgnoreCase(str, "partial fraction") || equalsIgnoreCase(str, "simplify") || equalsIgnoreCase(str, "expand") || equalsIgnoreCase(str, "mode") || equalsIgnoreCase(str, "help") || equalsIgnoreCase(str, "?") || equalsIgnoreCase(str, "list") || equalsIgnoreCase(str, "exit") || equalsIgnoreCase(str, "quit") || equalsIgnoreCase(scom, "variable") || equalsIgnoreCase(scom, "function") || equalsIgnoreCase(scom, "set") || equalsIgnoreCase(scom, "save") || equalsIgnoreCase(scom, "store") || equalsIgnoreCase(scom, "swap") || equalsIgnoreCase(scom, "delete") || equalsIgnoreCase(scom, "assume") || equalsIgnoreCase(scom, "base") || equalsIgnoreCase(scom, "rpn") || equalsIgnoreCase(scom, "move") || equalsIgnoreCase(scom, "rotate") || equalsIgnoreCase(scom, "copy") || equalsIgnoreCase(scom, "pop") || equalsIgnoreCase(scom, "convert") || (equalsIgnoreCase(scom, "to") && scom != "to") || equalsIgnoreCase(scom, "list") || equalsIgnoreCase(scom, "find") || equalsIgnoreCase(scom, "info") || equalsIgnoreCase(scom, "help")) str.insert(0, 1, '/');
+		if(equalsIgnoreCase(str, "exrates") || equalsIgnoreCase(str, "stack") || equalsIgnoreCase(str, "swap") || equalsIgnoreCase(str, "rotate") || equalsIgnoreCase(str, "copy") || equalsIgnoreCase(str, "clear stack") || equalsIgnoreCase(str, "exact") || equalsIgnoreCase(str, "approximate") || equalsIgnoreCase(str, "approx") || equalsIgnoreCase(str, "factor") || equalsIgnoreCase(str, "partial fraction") || equalsIgnoreCase(str, "simplify") || equalsIgnoreCase(str, "expand") || equalsIgnoreCase(str, "mode") || equalsIgnoreCase(str, "help") || equalsIgnoreCase(str, "?") || equalsIgnoreCase(str, "list") || equalsIgnoreCase(str, "exit") || equalsIgnoreCase(str, "quit") || equalsIgnoreCase(str, "clear") || equalsIgnoreCase(str, "clear history") || equalsIgnoreCase(scom, "variable") || equalsIgnoreCase(scom, "function") || equalsIgnoreCase(scom, "set") || equalsIgnoreCase(scom, "save") || equalsIgnoreCase(scom, "store") || equalsIgnoreCase(scom, "swap") || equalsIgnoreCase(scom, "delete") || equalsIgnoreCase(scom, "assume") || equalsIgnoreCase(scom, "base") || equalsIgnoreCase(scom, "rpn") || equalsIgnoreCase(scom, "move") || equalsIgnoreCase(scom, "rotate") || equalsIgnoreCase(scom, "copy") || equalsIgnoreCase(scom, "pop") || equalsIgnoreCase(scom, "convert") || (equalsIgnoreCase(scom, "to") && scom != "to") || equalsIgnoreCase(scom, "list") || equalsIgnoreCase(scom, "find") || equalsIgnoreCase(scom, "info") || equalsIgnoreCase(scom, "help")) str.insert(0, 1, '/');
 		if(!str.empty()) execute_expression(true, false, OPERATION_ADD, NULL, false, 0, "", str.c_str(), false);
 	}
 	clear_expression_text();
@@ -23637,7 +23657,7 @@ Unit *find_exact_matching_unit2(const MathStructure &m) {
 			for(size_t i = 1; i <= m.countChildren(); i++) {
 				if(m.getChild(i)->isUnit()) {
 					cu->add(m.getChild(i)->unit(), 1, m.getChild(i)->prefix() && !m.getChild(i)->prefix()->value().isOne() ? m.getChild(i)->prefix() : NULL);
-				} else if(m.getChild(i)->isPower() && m.getChild(i)->base()->isUnit() && m.getChild(i)->exponent()->isNumber() && m.getChild(i)->exponent()->number().isInteger() && m.getChild(i)->exponent()->number() < 10 && m.getChild(i)->exponent()->number() > -10) {
+				} else if(m.getChild(i)->isPower() && m.getChild(i)->base()->isUnit() && m.getChild(i)->exponent()->isInteger() && m.getChild(i)->exponent()->number() < 10 && m.getChild(i)->exponent()->number() > -10) {
 					cu->add(m.getChild(i)->base()->unit(), m.getChild(i)->exponent()->number().intValue(), m.getChild(i)->base()->prefix() && !m.getChild(i)->base()->prefix()->value().isOne() ? m.getChild(i)->base()->prefix() : NULL);
 				} else if(m.getChild(i)->containsType(STRUCT_UNIT, false)) {
 					delete cu;
@@ -34045,6 +34065,11 @@ bool do_shortcut(int type, string value) {
 		}
 		case SHORTCUT_TYPE_HISTORY_SEARCH: {
 			on_popup_menu_item_history_search_activate(NULL, NULL);
+			return true;
+		}
+		case SHORTCUT_TYPE_HISTORY_CLEAR: {
+			on_popup_menu_item_history_clear_activate(NULL, NULL);
+			on_popup_menu_item_clear_history_activate(NULL, NULL);
 			return true;
 		}
 		case SHORTCUT_TYPE_CONVERSION: {

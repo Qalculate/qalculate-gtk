@@ -4153,6 +4153,9 @@ GtkWidget* get_shortcuts_dialog(void) {
 			} else if(i == SHORTCUT_TYPE_COPY_RESULT) {
 				gtk_list_store_append(tShortcutsType_store, &iter);
 				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_INSERT_RESULT), 1, SHORTCUT_TYPE_INSERT_RESULT, -1);
+			} else if(i == SHORTCUT_TYPE_HISTORY_SEARCH) {
+				gtk_list_store_append(tShortcutsType_store, &iter);
+				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_HISTORY_CLEAR), 1, SHORTCUT_TYPE_HISTORY_CLEAR, -1);
 			} else if(i == SHORTCUT_TYPE_MINIMAL) {
 				gtk_list_store_append(tShortcutsType_store, &iter);
 				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_ALWAYS_ON_TOP), 1, SHORTCUT_TYPE_ALWAYS_ON_TOP, -1);
@@ -4339,6 +4342,9 @@ GtkWidget* get_buttons_edit_dialog(void) {
 			} else if(i == SHORTCUT_TYPE_COPY_RESULT) {
 				gtk_list_store_append(tButtonsEditType_store, &iter);
 				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_INSERT_RESULT), 1, SHORTCUT_TYPE_INSERT_RESULT, -1);
+			} else if(i == SHORTCUT_TYPE_HISTORY_SEARCH) {
+				gtk_list_store_append(tButtonsEditType_store, &iter);
+				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_HISTORY_CLEAR), 1, SHORTCUT_TYPE_HISTORY_CLEAR, -1);
 			} else if(i == SHORTCUT_TYPE_MINIMAL) {
 				gtk_list_store_append(tButtonsEditType_store, &iter);
 				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_ALWAYS_ON_TOP), 1, SHORTCUT_TYPE_ALWAYS_ON_TOP, -1);

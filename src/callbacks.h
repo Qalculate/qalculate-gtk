@@ -145,10 +145,11 @@ enum {
 	SHORTCUT_TYPE_ALWAYS_ON_TOP,
 	SHORTCUT_TYPE_DO_COMPLETION,
 	SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION,
-	SHORTCUT_TYPE_INSERT_RESULT
+	SHORTCUT_TYPE_INSERT_RESULT,
+	SHORTCUT_TYPE_HISTORY_CLEAR
 };
 
-#define LAST_SHORTCUT_TYPE SHORTCUT_TYPE_INSERT_RESULT
+#define LAST_SHORTCUT_TYPE SHORTCUT_TYPE_HISTORY_CLEAR
 
 struct keyboard_shortcut {
 	guint key;
@@ -603,6 +604,7 @@ void on_popup_menu_item_assume_nonzero_denominators_activate(GtkMenuItem *w, gpo
 void on_popup_menu_item_abort_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_clear_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_clear_history_activate(GtkMenuItem *w, gpointer user_data);
+void on_popup_menu_item_history_clear_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_display_normal_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_display_engineering_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_display_scientific_activate(GtkMenuItem *w, gpointer user_data);
