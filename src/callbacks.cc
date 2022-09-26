@@ -2431,13 +2431,13 @@ bool check_exchange_rates(GtkWidget *win = NULL, bool set_result = false) {
 	display errors generated under calculation
 */
 bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inhistory_index = NULL, int type = 0, bool *implicit_warning = NULL) {
-	if(!CALCULATOR->message()) return false;
-	int index = 0;
-	MessageType mtype, mtype_highest = MESSAGE_INFORMATION;
+	if(!CALCULATOR->message() && (type != 1 || !inhistory_index || !CALCULATOR->exchangeRatesUsed())) return false;
 	string str = "";
+	MessageType mtype, mtype_highest = MESSAGE_INFORMATION;
+	int index = 0;
 	GtkTreeIter history_iter;
 	int inhistory_added = 0;
-	while(true) {
+	while(CALCULATOR->message()) {
 		if(CALCULATOR->message()->category() == MESSAGE_CATEGORY_IMPLICIT_MULTIPLICATION && (implicit_question_asked || implicit_warning)) {
 			if(!implicit_question_asked) *implicit_warning = true;
 		} else {
@@ -2524,7 +2524,7 @@ bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 			}
 			index++;
 		}
-		if(!CALCULATOR->nextMessage()) break;
+		CALCULATOR->nextMessage();
 	}
 	if(inhistory_added > 0) {
 		GtkTreeIter index_iter = history_iter;
@@ -2538,6 +2538,26 @@ bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 					inhistory_added--;
 					hi_add++;
 				}
+			}
+		}
+	}
+	if(str.empty() && inhistory_index && type == 1) {
+		CALCULATOR->setExchangeRatesUsed(-100);
+		int i = CALCULATOR->exchangeRatesUsed();
+		CALCULATOR->setExchangeRatesUsed(-100);
+		if(i > 0) {
+			int n = 0;
+			if(i & 0b0001) {str += "\n"; str += CALCULATOR->getExchangeRatesUrl(1); n++;}
+			if(i & 0b0010) {str += "\n"; str += CALCULATOR->getExchangeRatesUrl(2); n++;}
+			if(i & 0b0100) {str += "\n"; str += CALCULATOR->getExchangeRatesUrl(3); n++;}
+			if(i & 0b1000) {str += "\n"; str += CALCULATOR->getExchangeRatesUrl(4); n++;}
+			if(n > 0) {
+				str.insert(0, _n("Exchange rate source:", "Exchange rate sources:", n));
+				str += "\n(";
+				gchar *gstr = g_strdup_printf(_("updated %s"), QalculateDateTime(CALCULATOR->getExchangeRatesTime(CALCULATOR->exchangeRatesUsed())).toISOString().c_str());
+				str += gstr;
+				g_free(gstr);
+				str += ")";
 			}
 		}
 	}
