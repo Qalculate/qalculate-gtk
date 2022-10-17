@@ -119,7 +119,7 @@ p.roffit {
 <div class="level0"><span Class="bold">Ctrl+F</span> switches between fraction modes (simple, decimal, auto) <p/></div>
 <div class="level0"><span Class="bold">Ctrl+A</span> saves the current result in a temporary variable <p/></div>
 <div class="level0"><span Class="bold">Ctrl+L</span> clears the screen </div><h2 class="nroffsh" id="SETTINGS">SETTINGS</h2>
-<div class="level0">These settings are changed using the set command (e.g. set base 16) or the -s, --set command line option (e.g. qalc -s "base 16"). Possible values are shown in parenthesis. 1 and 0 can be used instead of on and off. If the value is left out, a value of 1 is generally assumed. The default value is marked with '*'. <p/>Algebraic mode: <p/></div>
+<div class="level0">These settings are changed using the set command (e.g. set base 16) or the -s, --set command line option (e.g. qalc -s "base 16"). Possible values are shown in parenthesis. 1 and 0 can be used instead of on and off, yes and no. If the value is left out, a value of 1 is generally assumed. The default value is marked with '*'. <p/>Algebraic mode: <p/></div>
 <div class="level0"><span Class="bold">algebra mode, alg (1* = expand, 2 = factorize)</span> Determines if the expression is factorized or not after calculation. <p/></div>
 <div class="level0"><span Class="bold">assume nonzero denominators, nzd (on*, off)</span> Determines if unknown values will be assumed non-zero (x/x=1). <p/></div>
 <div class="level0"><span Class="bold">warn nonzero denominators, warnnzd (on*, off)</span> Display a message after a value has been assumed non-zero. <p/></div>
@@ -160,8 +160,8 @@ p.roffit {
 <div class="level0"><span Class="bold">interval display, ivdisp (0* = adaptive, 1 = significant, 2 = interval, 3 = plusminus, 4 = midpoint, 5 = upper, 6 = lower)</span> <p/></div>
 <div class="level0"><span Class="bold">lowercase e, lowe (on, off*)</span> Use lowercase e for E-notation (5e2 = 5 * 10^2). <p/></div>
 <div class="level0"><span Class="bold">lowercase numbers, lownum (on, off*)</span> Use lowercase letters for number bases &gt; 10. <p/></div>
-<div class="level0"><span Class="bold">max decimals, maxdeci (off*, &gt;= 0)</span> <p/></div>
-<div class="level0"><span Class="bold">min decimals, mindeci (off*, &gt;= 0)</span> <p/></div>
+<div class="level0"><span Class="bold">max decimals, maxdeci (-1 = off*, &gt;= 0)</span> <p/></div>
+<div class="level0"><span Class="bold">min decimals, mindeci (-1 = off*, &gt;= 0)</span> <p/></div>
 <div class="level0"><span Class="bold">rounding (0 = standard*, 1 = even, 2 = truncate)</span> Determines whether how approximate numbers are rounded (round halfway numbers away from zero or towards the nearest even digit, or round all numbers towards zero). <p/></div>
 <div class="level0"><span Class="bold">scientific notation, exp (0 = off, -1 = auto*, -3 = engineering, 1 = pure, 3 = scientific, &gt;= 0)</span> Determines how scientific notation is used (e.g. 5 543 000 = 5.543E6). <p/></div>
 <div class="level0"><span Class="bold">show ending zeroes, zeroes (on*, off)</span> If actived, zeroes are kept at the end of approximate numbers. <p/></div>
@@ -176,7 +176,7 @@ p.roffit {
 <div class="level0"><span Class="bold">parsing mode, syntax (0* = adaptive, 1 = implicit first, 2 = conventional, 3 = chain, 4 = rpn)</span> See syntax section. <p/></div>
 <div class="level0"><span Class="bold">read precision, readprec (0* = off, 1 = always, 2 = when decimals)</span> If activated, numbers are interpreted as approximate with precision equal to the number of significant digits (3.20 = 3.20+/-0.005). <p/>Units: <p/></div>
 <div class="level0"><span Class="bold">all prefixes, allpref (on, off*)</span> Enables automatic use of hecto, deca, deci, and centi. <p/></div>
-<div class="level0"><span Class="bold">autoconversion, conv (none, optimal*, base, optimalsi, mixed)</span> Controls automatic unit conversion of the result. 'optimalsi' always converts non-SI units, while 'optimal' only converts to more optimal unit expressions, with less units and exponents. <p/></div>
+<div class="level0"><span Class="bold">autoconversion, conv (0 = none, 1 = optimal*, 2 = base, 3 = optimalsi, 4 = mixed)</span> Controls automatic unit conversion of the result. 'optimalsi' always converts non-SI units, while 'optimal' only converts to more optimal unit expressions, with less units and exponents. <p/></div>
 <div class="level0"><span Class="bold">binary prefixes, binpref (on, off*)</span> If activated, binary prefixes are used by default for information units. <p/></div>
 <div class="level0"><span Class="bold">currency conversion, curconv (on*, off)</span> Enables automatic conversion to the local currency when optimal unit conversion is enabled. <p/></div>
 <div class="level0"><span Class="bold">denominator prefixes, denpref (on*, off)</span> Enables automatic use of prefixes in the denominator of unit expressions. <p/></div>
@@ -184,7 +184,7 @@ p.roffit {
 <div class="level0"><span Class="bold">prefixes, pref (on*, off)</span> Enables automatic use of prefixes in the result. <p/></div>
 <div class="level0"><span Class="bold">show negative exponents, negexp (on, off*)</span> Use negative exponents instead of division for units in result (m/s = m*s^-1). <p/></div>
 <div class="level0"><span Class="bold">sync units, sync (on*, off)</span> <p/></div>
-<div class="level0"><span Class="bold">temperature units, temp (hybrid*, absolute, relative)</span> Determines how expressions with temperature units are calculated (hybrid acts as absolute if the expression contains different temperature units, otherwise as relative). <p/></div>
+<div class="level0"><span Class="bold">temperature units, temp (0 = hybrid*, 1 = absolute, 2 = relative)</span> Determines how expressions with temperature units are calculated (hybrid acts as absolute if the expression contains different temperature units, otherwise as relative). <p/></div>
 <div class="level0"><span Class="bold">update exchange rates, upxrates (-1 = ask*, 0 = never, &gt; 0 = days)</span> <p/>Other: <p/></div>
 <div class="level0"><span Class="bold">clear history (yes, no*)</span> Do not save expression history on exit. <p/></div>
 <div class="level0"><span Class="bold">ignore locale (yes, no*)</span> Ignore system language and use English (requires restart). <p/></div>

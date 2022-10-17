@@ -2289,9 +2289,9 @@ On: 1/2 × pi = 0.5 pi</property>
                               <object class="GtkRadioMenuItem" id="menu_item_adaptive_parsing">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="tooltip-text">1/2x = 1/(2 × x)
-1/2 x = (1/2) × x
-1 m / 1 m/s = (1 m)/(1 m/s)</property>
+                                <property name="tooltip-text">1/2x = 1/(2x)
+1/2 x = (1/2)x
+5 m/2 s = (5 m)/(2 s)</property>
                                 <property name="label" translatable="yes">Adaptive Parsing</property>
                                 <property name="active">True</property>
                                 <signal name="activate" handler="on_menu_item_adaptive_parsing_activate" swapped="no"/>
@@ -2301,7 +2301,8 @@ On: 1/2 × pi = 0.5 pi</property>
                               <object class="GtkRadioMenuItem" id="menu_item_ignore_whitespace">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="tooltip-text">1/2 x = 1/(2 × x)</property>
+                                <property name="tooltip-text">1/2x = 1/(2x)
+5 m/2 s = (5 m)/(2 s)</property>
                                 <property name="label" translatable="yes">Parse Implicit Multiplication First</property>
                                 <property name="group">menu_item_adaptive_parsing</property>
                                 <signal name="activate" handler="on_menu_item_ignore_whitespace_activate" swapped="no"/>
@@ -2311,7 +2312,8 @@ On: 1/2 × pi = 0.5 pi</property>
                               <object class="GtkRadioMenuItem" id="menu_item_no_special_implicit_multiplication">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="tooltip-text">1/2x = 1/2 × x</property>
+                                <property name="tooltip-text">1/2x = (1/2)x
+5 m/2 s = (5 m/2)s</property>
                                 <property name="label" translatable="yes">Conventional Parsing</property>
                                 <property name="group">menu_item_adaptive_parsing</property>
                                 <signal name="activate" handler="on_menu_item_no_special_implicit_multiplication_activate" swapped="no"/>

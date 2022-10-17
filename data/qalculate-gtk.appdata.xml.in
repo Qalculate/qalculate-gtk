@@ -48,6 +48,40 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="4.4.0" date="2022-10-17">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Add "Clear history" to available keyboard shortcut and button actions</li>
+      <li>Show exchange rates source, and update time, for current calculation in tooltip</li>
+      <li>New prime number functions: primePi(), primes(), nthprime(), nextprime(), prevprime(), and isprime()</li>
+      <li>New functions for intervals and uncertainties: upperEndpoint(), lowerEndpoint(), midpoint(), and errorPart()</li>
+      <li>Add meter of water and related pressure units, and more derived flow rate units</li>
+      <li>Support for vectors and matrices in uncertainty propagation calculation</li>
+      <li>Proper support for uncertainty propagation in total(), sum(), product(), and for() functions</li>
+      <li>Simplify display of parsed expression (primarily for quantities with units)</li>
+      <li>Avoid parsing of implicit multiplication as nested multiplication</li>
+      <li>Allow use of curly brackets as alternative parentheses</li>
+      <li>Include +/- statement in function argument without parentheses</li>
+      <li>Return values for approximate variables in exact mode in dimension() and elements()</li>
+      <li>Improve parsing of quotation marks as feet/inch or arcmin/arcsec (e.g. do not parse s" as sin)</li>
+      <li>Partial Georgian translation</li>
+      <li>Fix "Set Prefix" for auto-calculated result</li>
+      <li>Fix copying of result during delay before calculate-as-you-type result is added to history</li>
+      <li>Fix exact calculation of re((a*i)^(n/2)) (wrong sign in some cases)</li>
+      <li>Fix erroneous calculation in some cases with physical constants both outside and inside unit relations when interval calculation is set to interval arithmetic</li>
+      <li>Fix segfault in Calculator destructor</li>
+      <li>Fix segfaults in some corner cases</li>
+      <li>Fix use of random numbers in iterative functions</li>
+      <li>Fix writing beyond end of array during exchange rates check in some cases (results in activation of old style matrices)</li>
+      <li>Fix automatic reactivation of deactivated global object if a function with the same name exists</li>
+      <li>Do not convert function arguments which do not allow units (fixes "arcsin(0.5+/-0.1) to deg")</li>
+      <li>Fix prefix after conversion to optimal unit when the optimal unit includes a prefix</li>
+      <li>Fix exact calculation when function argument is an approximate vector variable (fail)</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
   <release version="4.3.0" date="2022-08-22">
    <description>
     <p>Changes:</p>

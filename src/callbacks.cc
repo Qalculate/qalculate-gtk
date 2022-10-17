@@ -2554,7 +2554,7 @@ bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inh
 			if(n > 0) {
 				str.insert(0, _n("Exchange rate source:", "Exchange rate sources:", n));
 				str += "\n(";
-				gchar *gstr = g_strdup_printf(_("updated %s"), QalculateDateTime(CALCULATOR->getExchangeRatesTime(CALCULATOR->exchangeRatesUsed())).toISOString().c_str());
+				gchar *gstr = g_strdup_printf(_n("updated %s", "updated %s", n), QalculateDateTime(CALCULATOR->getExchangeRatesTime(CALCULATOR->exchangeRatesUsed())).toISOString().c_str());
 				str += gstr;
 				g_free(gstr);
 				str += ")";
@@ -8753,7 +8753,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 							}
 							case MULTIPLICATION_SIGN_OPERATOR_SHORT: {}
 							case MULTIPLICATION_SIGN_OPERATOR: {
-								if(!b_cis && po.place_units_separately && po.multiplication_sign == MULTIPLICATION_SIGN_X && m[i].isUnit_exp() && m[i - 1].isUnit_exp() && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MIDDLEDOT, po.can_display_unicode_string_arg))) {
+								if(!b_cis && po.place_units_separately && po.use_unicode_signs && (po.multiplication_sign == MULTIPLICATION_SIGN_X || po.multiplication_sign == MULTIPLICATION_SIGN_ASTERISK) && m[i].isUnit_exp() && m[i - 1].isUnit_exp() && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MIDDLEDOT, po.can_display_unicode_string_arg))) {
 									if(!layout_altmul) {
 										string str;
 										TTP_SMALL(str, SIGN_MIDDLEDOT);
@@ -20310,7 +20310,7 @@ void load_preferences() {
 	size_t bookmark_index = 0;
 
 	version_numbers[0] = 4;
-	version_numbers[1] = 3;
+	version_numbers[1] = 4;
 	version_numbers[2] = 0;
 
 	bool old_history_format = false;
