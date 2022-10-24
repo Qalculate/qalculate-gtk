@@ -16024,7 +16024,7 @@ void set_edited_names(ExpressionItem *item, string str) {
 void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL) {
 
 	edited_unit = u;
-	names_edited = true;
+	names_edited = false;
 	editing_unit = true;
 	GtkWidget *dialog = get_unit_edit_dialog();
 	if(win) gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(win));
