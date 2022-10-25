@@ -4334,13 +4334,23 @@ void display_parse_status() {
 					if(v) {
 						mparse = v;
 					} else {
-						CompositeUnit cu("", "temporary_composite_parse", "", str_u);
 						bool b_unit = mparse.containsType(STRUCT_UNIT, false, true, true);
-						mparse = cu.generateMathStructure(true);
+						CALCULATOR->beginTemporaryStopMessages();
+						CompositeUnit cu("", evalops.parse_options.limit_implicit_multiplication ? "01" : "00", "", str_u);
+						int i_warn = 0, i_error = CALCULATOR->endTemporaryStopMessages(NULL, &i_warn);
+						if(i_error) {
+							ParseOptions pa = evalops.parse_options;
+							pa.units_enabled = true;
+							CALCULATOR->parse(&mparse, str_u, pa);
+						} else {
+							if(i_warn > 0) had_warnings = true;
+							if(i_error > 0) had_errors = true;
+							mparse = cu.generateMathStructure(true);
+						}
 						mparse.format(po);
-						if(!had_to_conv && !mparse.isZero() && !b_unit && !str_e.empty() && str_w.empty()) {
+						if(!had_to_conv && cu.countUnits() > 0 && !b_unit && !str_e.empty() && str_w.empty()) {
 							CALCULATOR->beginTemporaryStopMessages();
-							MathStructure to_struct(mparse);
+							MathStructure to_struct(&cu);
 							to_struct.unformat();
 							ApproximationMode abak = evalops.approximation;
 							if(evalops.approximation == APPROXIMATION_EXACT) evalops.approximation = APPROXIMATION_TRY_EXACT;
@@ -16013,7 +16023,6 @@ void set_edited_names(ExpressionItem *item, string str) {
 		} else {
 			item->setName(str, 1);
 		}
-
 	}
 }
 
