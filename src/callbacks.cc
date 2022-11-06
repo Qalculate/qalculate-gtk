@@ -203,7 +203,7 @@ extern GtkWidget *resultview;
 extern GtkWidget *historyview;
 extern GtkWidget *stackview;
 extern GtkListStore *stackstore, *historystore;
-extern GtkCellRenderer *register_renderer;
+extern GtkCellRenderer *register_renderer, *register_index_renderer;
 extern GtkTreeViewColumn *register_column, *history_column, *history_index_column, *flag_column, *units_flag_column;
 extern cairo_surface_t *surface_result;
 gint history_width_e = 0, history_width_a = 0;
@@ -23273,9 +23273,14 @@ void on_preferences_checkbutton_custom_history_font_toggled(GtkToggleButton *w, 
 		gchar *gstr = font_name_to_css(custom_history_font.c_str());
 		gtk_css_provider_load_from_data(history_provider, gstr, -1, NULL);
 		g_free(gstr);
+		g_object_set(G_OBJECT(register_renderer), "font", custom_history_font.c_str(), NULL);
+		g_object_set(G_OBJECT(register_index_renderer), "font", custom_history_font.c_str(), NULL);
 	} else {
 		gtk_css_provider_load_from_data(history_provider, "", -1, NULL);
+		g_object_set(G_OBJECT(register_renderer), "font", "", NULL);
+		g_object_set(G_OBJECT(register_index_renderer), "font", "", NULL);
 	}
+	updateRPNIndexes();
 }
 void keypad_font_changed() {
 	set_unicode_buttons();
@@ -23522,6 +23527,9 @@ void on_preferences_button_history_font_font_set(GtkFontButton *w, gpointer) {
 	gchar *gstr = font_name_to_css(custom_history_font.c_str());
 	gtk_css_provider_load_from_data(history_provider, gstr, -1, NULL);
 	g_free(gstr);
+	g_object_set(G_OBJECT(register_renderer), "font", custom_history_font.c_str(), NULL);
+	g_object_set(G_OBJECT(register_index_renderer), "font", custom_history_font.c_str(), NULL);
+	updateRPNIndexes();
 }
 void on_preferences_button_app_font_font_set(GtkFontButton *w, gpointer) {
 	save_custom_app_font = true;

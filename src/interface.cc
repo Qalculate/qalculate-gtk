@@ -140,7 +140,7 @@ GtkWidget *tMatrixEdit, *tMatrix;
 GtkListStore *tMatrixEdit_store, *tMatrix_store;
 extern vector<GtkTreeViewColumn*> matrix_edit_columns, matrix_columns;
 
-GtkCellRenderer *history_renderer, *history_index_renderer, *ans_renderer, *register_renderer;
+GtkCellRenderer *history_renderer, *history_index_renderer, *ans_renderer, *register_renderer, *register_index_renderer;
 GtkTreeViewColumn *register_column, *history_column, *history_index_column, *flag_column, *units_flag_column;
 
 GtkWidget *expressiontext;
@@ -2305,12 +2305,14 @@ void create_main_window(void) {
 	gtk_tree_view_set_model(GTK_TREE_VIEW(stackview), GTK_TREE_MODEL(stackstore));
 	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview));
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
-	g_object_set (G_OBJECT(renderer), "xalign", 0.5, NULL);
-	GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Index"), renderer, "text", 0, NULL);
+	register_index_renderer = gtk_cell_renderer_text_new();
+	g_object_set (G_OBJECT(register_index_renderer), "xalign", 0.5, NULL);
+	if(use_custom_history_font) g_object_set(G_OBJECT(register_index_renderer), "font", custom_history_font.c_str(), NULL);
+	GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Index"), register_index_renderer, "text", 0, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(stackview), column);
 	register_renderer = gtk_cell_renderer_text_new();
 	g_object_set(G_OBJECT(register_renderer), "editable", TRUE, "ellipsize", PANGO_ELLIPSIZE_END, "xalign", 1.0, "mode", GTK_CELL_RENDERER_MODE_EDITABLE, NULL);
+	if(use_custom_history_font) g_object_set(G_OBJECT(register_renderer), "font", custom_history_font.c_str(), NULL);
 	g_signal_connect((gpointer) register_renderer, "edited", G_CALLBACK(on_stackview_item_edited), NULL);
 	g_signal_connect((gpointer) register_renderer, "editing-started", G_CALLBACK(on_stackview_item_editing_started), NULL);
 	g_signal_connect((gpointer) register_renderer, "editing-canceled", G_CALLBACK(on_stackview_item_editing_canceled), NULL);
@@ -2351,7 +2353,7 @@ void create_main_window(void) {
 	gtk_tree_view_set_row_separator_func(GTK_TREE_VIEW(completion_view), completion_row_separator_func, NULL, NULL);
 
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-	renderer = gtk_cell_renderer_text_new();
+	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
 	GtkCellArea *area = gtk_cell_area_box_new();
 	gtk_cell_area_box_set_spacing(GTK_CELL_AREA_BOX(area), 12);
 	column = gtk_tree_view_column_new_with_area(area);
