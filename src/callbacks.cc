@@ -547,7 +547,7 @@ int SetTitleFunction::calculate(MathStructure &mstruct, const MathStructure &var
 	return 1;
 }
 
-void executeCommand(int command_type, bool show_result = true, string ceu_str = "", Unit *u = NULL, int run = 1);
+void executeCommand(int command_type, bool show_result = true, bool force = false, string ceu_str = "", Unit *u = NULL, int run = 1);
 
 int has_information_unit_gtk(const MathStructure &m, bool top = true) {
 	if(m.isUnit_exp()) {
@@ -12183,7 +12183,7 @@ void CommandThread::run() {
 	}
 }
 
-void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u, int run) {
+void executeCommand(int command_type, bool show_result, bool force, string ceu_str, Unit *u, int run) {
 
 	if(exit_in_progress) return;
 
@@ -12192,7 +12192,7 @@ void executeCommand(int command_type, bool show_result, string ceu_str, Unit *u,
 		if(expression_has_changed && !rpn_mode && command_type != COMMAND_TRANSFORM) {
 			if(get_expression_text().find_first_not_of(SPACES) == string::npos) return;
 			execute_expression();
-		} else if(!displayed_mstruct) {
+		} else if(!displayed_mstruct && !force) {
 			return;
 		}
 
@@ -12445,6 +12445,9 @@ bool contains_prefix(const MathStructure &m) {
 	return false;
 }
 void result_prefix_changed(Prefix *prefix) {
+	if((!expression_has_changed || rpn_mode) && !displayed_mstruct) {
+		return;
+	}
 	to_prefix = 0;
 	bool b_use_unit_prefixes = printops.use_unit_prefixes;
 	bool b_use_prefixes_for_all_units = printops.use_prefixes_for_all_units;
@@ -13851,15 +13854,15 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			} else if(equalsIgnoreCase(str, "factor")) {
 				set_previous_expression();
 				expression_has_changed = false;
-				executeCommand(COMMAND_FACTORIZE);
+				executeCommand(COMMAND_FACTORIZE, true, true);
 			} else if(equalsIgnoreCase(str, "partial fraction")) {
 				set_previous_expression();
 				expression_has_changed = false;
-				executeCommand(COMMAND_EXPAND_PARTIAL_FRACTIONS);
+				executeCommand(COMMAND_EXPAND_PARTIAL_FRACTIONS, true, true);
 			} else if(equalsIgnoreCase(str, "simplify") || equalsIgnoreCase(str, "expand")) {
 				set_previous_expression();
 				expression_has_changed = false;
-				executeCommand(COMMAND_EXPAND);
+				executeCommand(COMMAND_EXPAND, true, true);
 			} else if(equalsIgnoreCase(str, "exact")) {
 				set_previous_expression();
 				expression_has_changed = false;
@@ -14210,7 +14213,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				if(from_str.empty()) {
 					b_busy = false;
 					b_busy_expression = false;
-					executeCommand(COMMAND_EVAL);
+					executeCommand(COMMAND_EVAL, true, true);
 					set_previous_expression();
 					evalops.complex_number_form = cnf_bak;
 					return;
@@ -14222,7 +14225,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				if(from_str.empty()) {
 					b_busy = false;
 					b_busy_expression = false;
-					executeCommand(COMMAND_EVAL);
+					executeCommand(COMMAND_EVAL, true, true);
 					set_previous_expression();
 					evalops.complex_number_form = cnf_bak;
 					return;
@@ -14234,7 +14237,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				if(from_str.empty()) {
 					b_busy = false;
 					b_busy_expression = false;
-					executeCommand(COMMAND_EVAL);
+					executeCommand(COMMAND_EVAL, true, true);
 					set_previous_expression();
 					evalops.complex_number_form = cnf_bak;
 					return;
@@ -14248,7 +14251,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				if(from_str.empty()) {
 					b_busy = false;
 					b_busy_expression = false;
-					executeCommand(COMMAND_EVAL);
+					executeCommand(COMMAND_EVAL, true, true);
 					set_previous_expression();
 					evalops.complex_number_form = cnf_bak;
 					return;
@@ -14260,7 +14263,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				if(from_str.empty()) {
 					b_busy = false;
 					b_busy_expression = false;
-					executeCommand(COMMAND_EVAL);
+					executeCommand(COMMAND_EVAL, true, true);
 					set_previous_expression();
 					evalops.complex_number_form = cnf_bak;
 					return;
@@ -14269,7 +14272,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				if(from_str.empty()) {
 					b_busy = false;
 					b_busy_expression = false;
-					executeCommand(COMMAND_CONVERT_OPTIMAL);
+					executeCommand(COMMAND_CONVERT_OPTIMAL, true, true);
 					set_previous_expression();
 					return;
 				}
@@ -14281,7 +14284,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				if(from_str.empty()) {
 					b_busy = false;
 					b_busy_expression = false;
-					executeCommand(COMMAND_CONVERT_BASE);
+					executeCommand(COMMAND_CONVERT_BASE, true, true);
 					set_previous_expression();
 					return;
 				}
@@ -14311,7 +14314,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				if(from_str.empty()) {
 					b_busy = false;
 					b_busy_expression = false;
-					executeCommand(COMMAND_FACTORIZE);
+					executeCommand(COMMAND_FACTORIZE, true, true);
 					set_previous_expression();
 					return;
 				}
@@ -14321,7 +14324,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				if(from_str.empty()) {
 					b_busy = false;
 					b_busy_expression = false;
-					executeCommand(COMMAND_EXPAND_PARTIAL_FRACTIONS);
+					executeCommand(COMMAND_EXPAND_PARTIAL_FRACTIONS, true, true);
 					set_previous_expression();
 					return;
 				}
@@ -14333,7 +14336,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			} else if(from_str.empty()) {
 				b_busy = false;
 				b_busy_expression = false;
-				executeCommand(COMMAND_CONVERT_STRING, true, CALCULATOR->unlocalizeExpression(to_str, evalops.parse_options));
+				executeCommand(COMMAND_CONVERT_STRING, true, true, CALCULATOR->unlocalizeExpression(to_str, evalops.parse_options));
 				set_previous_expression();
 				return;
 			} else {
@@ -14693,10 +14696,10 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		if(do_stack && stack_index != 0) {
 			MathStructure *save_mstruct = mstruct;
 			mstruct = CALCULATOR->getRPNRegister(stack_index + 1);
-			executeCommand(do_pfe ? COMMAND_EXPAND_PARTIAL_FRACTIONS : (do_expand ? COMMAND_EXPAND : COMMAND_FACTORIZE), false);
+			executeCommand(do_pfe ? COMMAND_EXPAND_PARTIAL_FRACTIONS : (do_expand ? COMMAND_EXPAND : COMMAND_FACTORIZE), false, true);
 			mstruct = save_mstruct;
 		} else {
-			executeCommand(do_pfe ? COMMAND_EXPAND_PARTIAL_FRACTIONS  : (do_expand ? COMMAND_EXPAND : COMMAND_FACTORIZE), false);
+			executeCommand(do_pfe ? COMMAND_EXPAND_PARTIAL_FRACTIONS : (do_expand ? COMMAND_EXPAND : COMMAND_FACTORIZE), false, true);
 		}
 	}
 
@@ -16866,7 +16869,7 @@ void convert_to_unit(GtkMenuItem*, gpointer user_data)
 		gtk_widget_destroy(edialog);
 	}
 	//result is stored in MathStructure *mstruct
-	executeCommand(COMMAND_CONVERT_UNIT, true, "", u);
+	executeCommand(COMMAND_CONVERT_UNIT, true, false, "", u);
 	focus_keeping_selection();
 }
 
@@ -16882,7 +16885,7 @@ void convert_to_unit_noprefix(GtkMenuItem*, gpointer user_data)
 	}
 	string ceu_str = u->name();
 	//result is stored in MathStructure *mstruct
-	executeCommand(COMMAND_CONVERT_STRING, true, ceu_str);
+	executeCommand(COMMAND_CONVERT_STRING, true, false, ceu_str);
 	focus_keeping_selection();
 }
 
@@ -31739,7 +31742,7 @@ void on_units_button_convert_to_clicked(GtkButton*, gpointer) {
 	if(b_busy) return;
 	Unit *u = get_selected_unit();
 	if(u) {
-		executeCommand(COMMAND_CONVERT_UNIT, true, "", u);
+		executeCommand(COMMAND_CONVERT_UNIT, true, false, "", u);
 		focus_keeping_selection();
 	}
 }
@@ -33931,7 +33934,7 @@ bool do_shortcut(int type, string value) {
 		}
 		case SHORTCUT_TYPE_CONVERT: {
 			ParseOptions pa = evalops.parse_options; pa.base = 10;
-			executeCommand(COMMAND_CONVERT_STRING, true, CALCULATOR->unlocalizeExpression(value, pa));
+			executeCommand(COMMAND_CONVERT_STRING, true, false, CALCULATOR->unlocalizeExpression(value, pa));
 			return true;
 		}
 		case SHORTCUT_TYPE_CONVERT_ENTRY: {
@@ -36676,7 +36679,7 @@ void convert_from_convert_entry_unit() {
 	to_prefix = 0;
 	printops.use_unit_prefixes = true;
 	block_conversion_category_switch++;
-	executeCommand(COMMAND_CONVERT_STRING, true, ceu_str);
+	executeCommand(COMMAND_CONVERT_STRING, true, false, ceu_str);
 	block_conversion_category_switch--;
 	printops.use_unit_prefixes = b_puup;
 	block_error_timeout--;
@@ -37003,7 +37006,7 @@ void on_menu_item_set_unknowns_activate(GtkMenuItem*, gpointer) {
 					gtk_window_set_modal(GTK_WINDOW(dialog), FALSE);
 					gtk_widget_set_sensitive(GTK_WIDGET(dialog), FALSE);
 				}
-				executeCommand(COMMAND_TRANSFORM, true, result_mod);
+				executeCommand(COMMAND_TRANSFORM, true, false, result_mod);
 			} else if(b1) {
 				b_changed = false;
 				printops.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
