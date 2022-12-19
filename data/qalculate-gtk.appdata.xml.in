@@ -48,6 +48,33 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="4.5.0" date="2022-12-19">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Conversion to any type of expression (e.g. "1000 BTC to million USD")</li>
+      <li>Use current status of limit implicit multiplication setting during parsing of conversion expression</li>
+      <li>New SI prefixes (R, r, Q, q)</li>
+      <li>New units: ounce force (ozf), rack unit (U)</li>
+      <li>Use standard form (sorting) for polynomials</li>
+      <li>Improve consistency of behaviour when global units are replaced</li>
+      <li>More consistent addition of units to expression without units for unit conversion</li>
+      <li>Improvements and fixes for arg() and atan2() functions</li>
+      <li>Use history font for RPN stack list</li>
+      <li>Fix factorization conversion specified in expression, and conversion performed using a separate expression</li>
+      <li>Fix unit names dialog</li>
+      <li>Fix interpretation of Myr (megayear) and Gyr (gigayear)</li>
+      <li>Fix milli- and centimeter of water units</li>
+      <li>Fix genvector() with for negative step size or expression as step size/number of steps</li>
+      <li>Fix randuniform() function</li>
+      <li>Fix automatic/dual fraction format after conversion (e.g. "8 to score")</li>
+      <li>Fix inconsistently displayed parsing of "7d 5h" and similar</li>
+      <li>Fix empty customize keypad buttons dialog when reopened</li>
+      <li>Fixes/improvements for completion menu when opened upwards</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
   <release version="4.4.0" date="2022-10-17">
    <description>
     <p>Changes:</p>
@@ -68,6 +95,7 @@
       <li>Partial Georgian translation</li>
       <li>Fix "Set Prefix" for auto-calculated result</li>
       <li>Fix copying of result during delay before calculate-as-you-type result is added to history</li>
+      <li>Fix opening customize keypad buttons a second time after the window has been closed with method other than using the close button</li>
       <li>Fix exact calculation of re((a*i)^(n/2)) (wrong sign in some cases)</li>
       <li>Fix erroneous calculation in some cases with physical constants both outside and inside unit relations when interval calculation is set to interval arithmetic</li>
       <li>Fix segfault in Calculator destructor</li>

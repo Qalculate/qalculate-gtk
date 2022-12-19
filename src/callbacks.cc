@@ -5143,7 +5143,7 @@ void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(functions_builder, "functions_buttonlabel_deactivate")), _("Acti_vate"));
 			}
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_insert")), f->isActive());
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_apply")), f->isActive() && (f->minargs() <= 1 || rpn_mode));
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_apply")), f->isActive() && ((f->minargs() <= 1 && f != CALCULATOR->f_logn) || rpn_mode));
 			//user cannot delete global definitions
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_delete")), f->isLocal());
 		}
@@ -20322,7 +20322,7 @@ void load_preferences() {
 	size_t bookmark_index = 0;
 
 	version_numbers[0] = 4;
-	version_numbers[1] = 4;
+	version_numbers[1] = 5;
 	version_numbers[2] = 0;
 
 	bool old_history_format = false;
@@ -24617,7 +24617,6 @@ void completion_resize_popup(int matches) {
 	GtkRequisition popup_req;
 	GtkRequisition tree_req;
 	GtkTreePath *path;
-	gboolean above;
 	GtkTreeViewColumn *column;
 
 	GtkTextMark *miter = gtk_text_buffer_get_insert(expressionbuffer);
@@ -24685,7 +24684,6 @@ void completion_resize_popup(int matches) {
 
 	if(y + bufloc.height + popup_req.height <= area.y + area.height || y - area.y < (area.y + area.height) - (y + bufloc.height)) {
 		y += bufloc.height;
-		above = FALSE;
 	} else {
 		path = gtk_tree_path_new_from_indices(matches - 1, -1);
 		gtk_tree_view_get_cell_area(GTK_TREE_VIEW(completion_view), path, column, &rect);
@@ -24696,12 +24694,12 @@ void completion_resize_popup(int matches) {
 		gtk_tree_path_free(path);
 		height -= rect.y;
 		gtk_scrolled_window_set_min_content_height(GTK_SCROLLED_WINDOW(completion_scrolled), height);
+		gtk_widget_get_preferred_size(completion_window, &popup_req, NULL);
 		y -= popup_req.height;
-		above = TRUE;
 	}
 
 	if(matches > 0) {
-		path = gtk_tree_path_new_from_indices(above ? matches - 1 : 0, -1);
+		path = gtk_tree_path_new_from_indices(0, -1);
 		gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(completion_view), path, NULL, FALSE, 0.0, 0.0);
 		gtk_tree_path_free(path);
 	}
