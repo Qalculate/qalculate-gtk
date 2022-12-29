@@ -48,6 +48,17 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="4.5.1" date="2023-01-04">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Fix retrieval of exchange rates from mycurrency.net and add alternative secondary exchange rates sources</li>
+      <li>Align completion list to beginning of word</li>
+      <li>Add m/s³, m/s⁴, m/s⁵, and m/s⁶ as derived units (improves automatic unit conversion)</li>
+      <li>Check that the output of command, in command() function, is a reasonably sane expression</li>
+     </ul>
+   </description>
+  </release>
   <release version="4.5.0" date="2022-12-19">
    <description>
     <p>Changes:</p>

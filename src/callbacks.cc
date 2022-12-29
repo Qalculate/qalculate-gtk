@@ -20323,7 +20323,7 @@ void load_preferences() {
 
 	version_numbers[0] = 4;
 	version_numbers[1] = 5;
-	version_numbers[2] = 0;
+	version_numbers[2] = 1;
 
 	bool old_history_format = false;
 	unformatted_history = 0;
@@ -24619,9 +24619,13 @@ void completion_resize_popup(int matches) {
 	GtkTreePath *path;
 	GtkTreeViewColumn *column;
 
-	GtkTextMark *miter = gtk_text_buffer_get_insert(expressionbuffer);
 	GtkTextIter iter;
-	gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iter, miter);
+	if(current_object_start < 0) {
+		GtkTextMark *miter = gtk_text_buffer_get_insert(expressionbuffer);
+		gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iter, miter);
+	} else {
+		gtk_text_buffer_get_iter_at_offset(expressionbuffer, &iter, current_object_start);
+	}
 	gtk_text_view_get_iter_location(GTK_TEXT_VIEW(expressiontext), &iter, &bufloc);
 	gtk_text_view_buffer_to_window_coords(GTK_TEXT_VIEW(expressiontext), GTK_TEXT_WINDOW_WIDGET, bufloc.x, bufloc.y, &bufloc.x, &bufloc.y);
 	window = gtk_text_view_get_window(GTK_TEXT_VIEW(expressiontext), GTK_TEXT_WINDOW_WIDGET);
