@@ -4862,9 +4862,8 @@ void update_functions_tree() {
 	if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctionCategories)), &model, &iter)) {
 		//if no category has been selected (previously selected has been renamed/deleted), select "All"
 		selected_function_category = _("All");
-		gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tFunctionCategories_store), &iter);
-		EXPAND_ITER(model, tFunctionCategories, iter)
-		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctionCategories)), &iter);
+		EXPAND_ITER(model, tFunctionCategories, iter3)
+		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctionCategories)), &iter3);
 	}
 }
 
@@ -5233,9 +5232,8 @@ void update_variables_tree() {
 	if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariableCategories)), &model, &iter)) {
 		//if no category has been selected (previously selected has been renamed/deleted), select "All"
 		selected_variable_category = _("All");
-		gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tVariableCategories_store), &iter);
-		EXPAND_ITER(model, tVariableCategories, iter)
-		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariableCategories)), &iter);
+		EXPAND_ITER(model, tVariableCategories, iter3)
+		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariableCategories)), &iter3);
 	}
 }
 
@@ -5504,9 +5502,8 @@ void update_units_tree() {
 	if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitCategories)), &model, &iter)) {
 		//if no category has been selected (previously selected has been renamed/deleted), select "All"
 		selected_unit_category = _("All");
-		gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnitCategories_store), &iter);
-		EXPAND_ITER(model, tUnitCategories, iter)
-		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitCategories)), &iter);
+		EXPAND_ITER(model, tUnitCategories, iter3)
+		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitCategories)), &iter3);
 	}
 }
 
@@ -5794,9 +5791,8 @@ void update_unit_selector_tree() {
 	if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelectorCategories)), &model, &iter)) {
 		//if no category has been selected (previously selected has been renamed/deleted), select "All"
 		selected_unit_category = _("All");
-		gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnitSelectorCategories_store), &iter);
-		EXPAND_ITER(model, tUnitSelectorCategories, iter)
-		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelectorCategories)), &iter);
+		EXPAND_ITER(model, tUnitSelectorCategories, iter3)
+		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelectorCategories)), &iter3);
 	}
 }
 
@@ -13917,18 +13913,30 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					} else if(list_type == 'f') {
 						manage_functions();
 						if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tFunctionCategories_store), &iter)) {
+							GtkTreeIter iter2 = iter;
+							while(!gtk_tree_model_iter_has_child(GTK_TREE_MODEL(tFunctionCategories_store), &iter) && gtk_tree_model_iter_next(GTK_TREE_MODEL(tFunctionCategories_store), &iter2)) {
+								iter = iter2;
+							}
 							gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctionCategories)), &iter);
 						}
 						gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functions_builder, "functions_entry_search")), str2.c_str());
 					} else if(list_type == 'v') {
 						manage_variables();
-						if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnitCategories_store), &iter)) {
-							gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitCategories)), &iter);
+						if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tVariableCategories_store), &iter)) {
+							GtkTreeIter iter2 = iter;
+							while(!gtk_tree_model_iter_has_child(GTK_TREE_MODEL(tVariableCategories_store), &iter) && gtk_tree_model_iter_next(GTK_TREE_MODEL(tVariableCategories_store), &iter2)) {
+								iter = iter2;
+							}
+							gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariableCategories)), &iter);
 						}
-						gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_search")), str2.c_str());
+						gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variables_builder, "variables_entry_search")), str2.c_str());
 					} else if(list_type == 'u') {
 						manage_units();
 						if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnitCategories_store), &iter)) {
+							GtkTreeIter iter2 = iter;
+							while(!gtk_tree_model_iter_has_child(GTK_TREE_MODEL(tUnitCategories_store), &iter) && gtk_tree_model_iter_next(GTK_TREE_MODEL(tUnitCategories_store), &iter2)) {
+								iter = iter2;
+							}
 							gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitCategories)), &iter);
 						}
 						gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_search")), str2.c_str());
@@ -13942,18 +13950,30 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 						if(item->type() == TYPE_UNIT) {
 							manage_units();
 							if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnitCategories_store), &iter)) {
+								GtkTreeIter iter2 = iter;
+								while(!gtk_tree_model_iter_has_child(GTK_TREE_MODEL(tUnitCategories_store), &iter) && gtk_tree_model_iter_next(GTK_TREE_MODEL(tUnitCategories_store), &iter2)) {
+									iter = iter2;
+								}
 								gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitCategories)), &iter);
 							}
 							gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_search")), str.c_str());
 						} else if(item->type() == TYPE_FUNCTION) {
 							manage_functions();
 							if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tFunctionCategories_store), &iter)) {
+								GtkTreeIter iter2 = iter;
+								while(!gtk_tree_model_iter_has_child(GTK_TREE_MODEL(tFunctionCategories_store), &iter) && gtk_tree_model_iter_next(GTK_TREE_MODEL(tFunctionCategories_store), &iter2)) {
+									iter = iter2;
+								}
 								gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctionCategories)), &iter);
 							}
 							gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functions_builder, "functions_entry_search")), str.c_str());
 						} else if(item->type() == TYPE_VARIABLE) {
 							manage_variables();
 							if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tVariableCategories_store), &iter)) {
+								GtkTreeIter iter2 = iter;
+								while(!gtk_tree_model_iter_has_child(GTK_TREE_MODEL(tVariableCategories_store), &iter) && gtk_tree_model_iter_next(GTK_TREE_MODEL(tVariableCategories_store), &iter2)) {
+									iter = iter2;
+								}
 								gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariableCategories)), &iter);
 							}
 							gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variables_builder, "variables_entry_search")), str.c_str());
@@ -22005,6 +22025,20 @@ gint string_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpoin
 	gtk_tree_model_get(model, a, cid, &gstr1, -1);
 	gtk_tree_model_get(model, b, cid, &gstr2, -1);
 	retval = g_ascii_strcasecmp(gstr1, gstr2);
+	g_free(gstr1);
+	g_free(gstr2);
+	return retval;
+}
+
+gint category_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer user_data) {
+	gint cid = GPOINTER_TO_INT(user_data);
+	gchar *gstr1, *gstr2;
+	gint retval;
+	gtk_tree_model_get(model, a, cid, &gstr1, -1);
+	gtk_tree_model_get(model, b, cid, &gstr2, -1);
+	if(g_strcmp0(gstr1, _("Inactive"))) retval = 1;
+	else if(g_strcmp0(gstr2, _("Inactive"))) retval = -1;
+	else retval = g_ascii_strcasecmp(gstr1, gstr2);
 	g_free(gstr1);
 	g_free(gstr2);
 	return retval;

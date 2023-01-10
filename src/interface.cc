@@ -2524,7 +2524,7 @@ GtkWidget* get_functions_dialog(void) {
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tFunctionCategories), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tFunctionCategories_selection_changed), NULL);
 		gtk_tree_view_column_set_sort_column_id(column, 0);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tFunctionCategories_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
+		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tFunctionCategories_store), 0, category_sort_func, GINT_TO_POINTER(0), NULL);
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tFunctionCategories_store), 0, GTK_SORT_ASCENDING);
 
 		GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functions_builder, "functions_textview_description")));
@@ -2581,7 +2581,7 @@ GtkWidget* get_variables_dialog(void) {
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tVariableCategories), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tVariableCategories_selection_changed), NULL);
 		gtk_tree_view_column_set_sort_column_id(column, 0);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tVariableCategories_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
+		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tVariableCategories_store), 0, category_sort_func, GINT_TO_POINTER(0), NULL);
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tVariableCategories_store), 0, GTK_SORT_ASCENDING);
 
 		GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(variables_builder, "variables_textview_description")));
@@ -2656,7 +2656,7 @@ GtkWidget* get_units_dialog(void) {
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tUnitCategories), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tUnitCategories_selection_changed), NULL);
 		gtk_tree_view_column_set_sort_column_id(column, 0);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnitCategories_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
+		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnitCategories_store), 0, category_sort_func, GINT_TO_POINTER(0), NULL);
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnitCategories_store), 0, GTK_SORT_ASCENDING);
 
 		units_convert_window = GTK_WIDGET(gtk_builder_get_object(units_builder, "units_convert_window"));
