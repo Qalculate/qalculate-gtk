@@ -418,6 +418,12 @@ PangoLayout *status_layout = NULL;
 
 unordered_map<const ExpressionName*, string> capitalized_names;
 
+bool use_duo_syms = false;
+
+#define RESET_TZ 	printops.custom_time_zone = (rounding_mode == 2 ? TZ_TRUNCATE : 0);\
+			if(use_duo_syms) printops.custom_time_zone += TZ_DOZENAL;\
+			printops.time_zone = TIME_ZONE_LOCAL;
+
 #define EQUALS_IGNORECASE_AND_LOCAL(x,y,z)	(equalsIgnoreCase(x, y) || equalsIgnoreCase(x, z))
 #define EQUALS_IGNORECASE_AND_LOCAL_NR(x,y,z,a)	(equalsIgnoreCase(x, y a) || (x.length() == strlen(z) + strlen(a) && equalsIgnoreCase(x.substr(0, x.length() - strlen(a)), z) && equalsIgnoreCase(x.substr(x.length() - strlen(a)), a)))
 
@@ -3449,8 +3455,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 				evalops.auto_post_conversion = save_auto_post_conversion;
 				evalops.parse_options.units_enabled = b_units_saved;
 				evalops.mixed_units_conversion = save_mixed_units_conversion;
-				printops.custom_time_zone = (rounding_mode == 2 ? -21586 : 0);
-				printops.time_zone = TIME_ZONE_LOCAL;
+				RESET_TZ
 				return;
 			}
 			remove_duplicate_blanks(to_str);
@@ -3478,6 +3483,14 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "duo") || equalsIgnoreCase(to_str, "duodecimal") || equalsIgnoreCase(to_str, _("duodecimal"))) {
 					to_base = BASE_DUODECIMAL;
+					do_to = true;
+				} else if(equalsIgnoreCase(to_str, "doz") || equalsIgnoreCase(to_str, "dozenal")) {
+					to_base = BASE_DUODECIMAL;
+					if(!use_duo_syms && printops.time_zone != TIME_ZONE_CUSTOM) {
+						use_duo_syms = true;
+						RESET_TZ
+						use_duo_syms = false;
+					}
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "bin") || equalsIgnoreCase(to_str, "binary") || equalsIgnoreCase(to_str, _("binary"))) {
 					to_base = BASE_BINARY;
@@ -3937,8 +3950,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		evalops.auto_post_conversion = save_auto_post_conversion;
 		evalops.parse_options.units_enabled = b_units_saved;
 		evalops.mixed_units_conversion = save_mixed_units_conversion;
-		printops.custom_time_zone = (rounding_mode == 2 ? -21586 : 0);
-		printops.time_zone = TIME_ZONE_LOCAL;
+		RESET_TZ
 	}
 	
 	block_error_timeout--;
@@ -4140,6 +4152,8 @@ void display_parse_status() {
 		po.base_display = printops.base_display;
 		po.twos_complement = printops.twos_complement;
 		po.hexadecimal_twos_complement = printops.hexadecimal_twos_complement;
+		po.custom_time_zone = printops.custom_time_zone;
+		po.round_halfway_to_even = printops.round_halfway_to_even;
 		po.base = evalops.parse_options.base;
 		Number nr_base;
 		if(po.base == BASE_CUSTOM && (CALCULATOR->usesIntervalArithmetic() || CALCULATOR->customInputBase().isRational()) && (CALCULATOR->customInputBase().isInteger() || !CALCULATOR->customInputBase().isNegative()) && (CALCULATOR->customInputBase() > 1 || CALCULATOR->customInputBase() < -1)) {
@@ -4213,6 +4227,8 @@ void display_parse_status() {
 				} else if(equalsIgnoreCase(str_u, "dec") || equalsIgnoreCase(str_u, "decimal") || equalsIgnoreCase(str_u, _("decimal"))) {
 					parsed_expression += _("decimal number");
 				} else if(equalsIgnoreCase(str_u, "duo") || equalsIgnoreCase(str_u, "duodecimal") || equalsIgnoreCase(str_u, _("duodecimal"))) {
+					parsed_expression += _("duodecimal number");
+				} else if(equalsIgnoreCase(str_u, "doz") || equalsIgnoreCase(str_u, "dozenal")) {
 					parsed_expression += _("duodecimal number");
 				} else if(equalsIgnoreCase(str_u, "bin") || equalsIgnoreCase(str_u, "binary") || equalsIgnoreCase(str_u, _("binary"))) {
 					parsed_expression += _("binary number");
@@ -4862,9 +4878,8 @@ void update_functions_tree() {
 	if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctionCategories)), &model, &iter)) {
 		//if no category has been selected (previously selected has been renamed/deleted), select "All"
 		selected_function_category = _("All");
-		gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tFunctionCategories_store), &iter);
-		EXPAND_ITER(model, tFunctionCategories, iter)
-		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctionCategories)), &iter);
+		EXPAND_ITER(model, tFunctionCategories, iter3)
+		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctionCategories)), &iter3);
 	}
 }
 
@@ -5233,9 +5248,8 @@ void update_variables_tree() {
 	if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariableCategories)), &model, &iter)) {
 		//if no category has been selected (previously selected has been renamed/deleted), select "All"
 		selected_variable_category = _("All");
-		gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tVariableCategories_store), &iter);
-		EXPAND_ITER(model, tVariableCategories, iter)
-		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariableCategories)), &iter);
+		EXPAND_ITER(model, tVariableCategories, iter3)
+		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariableCategories)), &iter3);
 	}
 }
 
@@ -5504,9 +5518,8 @@ void update_units_tree() {
 	if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitCategories)), &model, &iter)) {
 		//if no category has been selected (previously selected has been renamed/deleted), select "All"
 		selected_unit_category = _("All");
-		gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnitCategories_store), &iter);
-		EXPAND_ITER(model, tUnitCategories, iter)
-		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitCategories)), &iter);
+		EXPAND_ITER(model, tUnitCategories, iter3)
+		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitCategories)), &iter3);
 	}
 }
 
@@ -5794,9 +5807,8 @@ void update_unit_selector_tree() {
 	if(!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelectorCategories)), &model, &iter)) {
 		//if no category has been selected (previously selected has been renamed/deleted), select "All"
 		selected_unit_category = _("All");
-		gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnitSelectorCategories_store), &iter);
-		EXPAND_ITER(model, tUnitSelectorCategories, iter)
-		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelectorCategories)), &iter);
+		EXPAND_ITER(model, tUnitSelectorCategories, iter3)
+		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelectorCategories)), &iter3);
 	}
 }
 
@@ -10503,6 +10515,8 @@ void ViewThread::run() {
 			po.lower_case_e = printops.lower_case_e;
 			po.lower_case_numbers = printops.lower_case_numbers;
 			po.base_display = printops.base_display;
+			po.custom_time_zone = printops.custom_time_zone;
+			po.round_halfway_to_even = printops.round_halfway_to_even;
 			po.twos_complement = printops.twos_complement;
 			po.hexadecimal_twos_complement = printops.hexadecimal_twos_complement;
 			po.base = evalops.parse_options.base;
@@ -12856,6 +12870,7 @@ void set_option(string str) {
 	else if(equalsIgnoreCase(svar, "short multiplication") || svar == "shortmul") SET_BOOL_D(printops.short_multiplication)
 	else if(equalsIgnoreCase(svar, "lowercase e") || svar == "lowe") SET_BOOL_PREF("preferences_checkbutton_lower_case_e")
 	else if(equalsIgnoreCase(svar, "lowercase numbers") || svar == "lownum") SET_BOOL_PREF("preferences_checkbutton_lower_case_numbers")
+	else if(equalsIgnoreCase(svar, "duodecimal symbols") || svar == "duosyms") SET_BOOL_PREF("preferences_checkbutton_duodecimal_symbols")
 	else if(equalsIgnoreCase(svar, "imaginary j") || svar == "imgj") SET_BOOL_PREF("preferences_checkbutton_imaginary_j")
 	else if(equalsIgnoreCase(svar, "base display") || svar == "basedisp") {
 		int v = -1;
@@ -13917,18 +13932,30 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					} else if(list_type == 'f') {
 						manage_functions();
 						if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tFunctionCategories_store), &iter)) {
+							GtkTreeIter iter2 = iter;
+							while(!gtk_tree_model_iter_has_child(GTK_TREE_MODEL(tFunctionCategories_store), &iter) && gtk_tree_model_iter_next(GTK_TREE_MODEL(tFunctionCategories_store), &iter2)) {
+								iter = iter2;
+							}
 							gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctionCategories)), &iter);
 						}
 						gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functions_builder, "functions_entry_search")), str2.c_str());
 					} else if(list_type == 'v') {
 						manage_variables();
-						if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnitCategories_store), &iter)) {
-							gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitCategories)), &iter);
+						if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tVariableCategories_store), &iter)) {
+							GtkTreeIter iter2 = iter;
+							while(!gtk_tree_model_iter_has_child(GTK_TREE_MODEL(tVariableCategories_store), &iter) && gtk_tree_model_iter_next(GTK_TREE_MODEL(tVariableCategories_store), &iter2)) {
+								iter = iter2;
+							}
+							gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariableCategories)), &iter);
 						}
-						gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_search")), str2.c_str());
+						gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variables_builder, "variables_entry_search")), str2.c_str());
 					} else if(list_type == 'u') {
 						manage_units();
 						if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnitCategories_store), &iter)) {
+							GtkTreeIter iter2 = iter;
+							while(!gtk_tree_model_iter_has_child(GTK_TREE_MODEL(tUnitCategories_store), &iter) && gtk_tree_model_iter_next(GTK_TREE_MODEL(tUnitCategories_store), &iter2)) {
+								iter = iter2;
+							}
 							gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitCategories)), &iter);
 						}
 						gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_search")), str2.c_str());
@@ -13942,18 +13969,30 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 						if(item->type() == TYPE_UNIT) {
 							manage_units();
 							if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnitCategories_store), &iter)) {
+								GtkTreeIter iter2 = iter;
+								while(!gtk_tree_model_iter_has_child(GTK_TREE_MODEL(tUnitCategories_store), &iter) && gtk_tree_model_iter_next(GTK_TREE_MODEL(tUnitCategories_store), &iter2)) {
+									iter = iter2;
+								}
 								gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitCategories)), &iter);
 							}
 							gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_search")), str.c_str());
 						} else if(item->type() == TYPE_FUNCTION) {
 							manage_functions();
 							if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tFunctionCategories_store), &iter)) {
+								GtkTreeIter iter2 = iter;
+								while(!gtk_tree_model_iter_has_child(GTK_TREE_MODEL(tFunctionCategories_store), &iter) && gtk_tree_model_iter_next(GTK_TREE_MODEL(tFunctionCategories_store), &iter2)) {
+									iter = iter2;
+								}
 								gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctionCategories)), &iter);
 							}
 							gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functions_builder, "functions_entry_search")), str.c_str());
 						} else if(item->type() == TYPE_VARIABLE) {
 							manage_variables();
 							if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tVariableCategories_store), &iter)) {
+								GtkTreeIter iter2 = iter;
+								while(!gtk_tree_model_iter_has_child(GTK_TREE_MODEL(tVariableCategories_store), &iter) && gtk_tree_model_iter_next(GTK_TREE_MODEL(tVariableCategories_store), &iter2)) {
+									iter = iter2;
+								}
 								gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariableCategories)), &iter);
 							}
 							gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variables_builder, "variables_entry_search")), str.c_str());
@@ -14062,6 +14101,14 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			} else if(equalsIgnoreCase(to_str, "duo") || equalsIgnoreCase(to_str, "duodecimal") || equalsIgnoreCase(to_str, _("duodecimal"))) {
 				to_base = BASE_DUODECIMAL;
 				do_to = true;
+			} else if(equalsIgnoreCase(to_str, "doz") || equalsIgnoreCase(to_str, "dozenal")) {
+				to_base = BASE_DUODECIMAL;
+				if(!use_duo_syms && printops.time_zone != TIME_ZONE_CUSTOM) {
+					use_duo_syms = true;
+					RESET_TZ
+					use_duo_syms = false;
+				}
+				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "bin") || equalsIgnoreCase(to_str, "binary") || equalsIgnoreCase(to_str, _("binary"))) {
 				to_base = BASE_BINARY;
 				do_to = true;
@@ -14169,8 +14216,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					b_busy = false;
 					b_busy_expression = false;
 					setResult(NULL, true, false, false); set_previous_expression();
-					printops.custom_time_zone = (rounding_mode == 2 ? -21586 : 0);
-					printops.time_zone = TIME_ZONE_LOCAL;
+					RESET_TZ
 					return;
 				}
 				do_to = true;
@@ -14181,8 +14227,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					b_busy = false;
 					b_busy_expression = false;
 					setResult(NULL, true, false, false); set_previous_expression();
-					printops.custom_time_zone = (rounding_mode == 2 ? -21586 : 0);
-					printops.time_zone = TIME_ZONE_LOCAL;
+					RESET_TZ
 					return;
 				}
 				do_to = true;
@@ -14668,8 +14713,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		evalops.auto_post_conversion = save_auto_post_conversion;
 		evalops.parse_options.units_enabled = b_units_saved;
 		evalops.mixed_units_conversion = save_mixed_units_conversion;
-		printops.custom_time_zone = (rounding_mode == 2 ? -21586 : 0);
-		printops.time_zone = TIME_ZONE_LOCAL;
+		RESET_TZ
 		if(!simplified_percentage) evalops.parse_options.parsing_mode = (ParsingMode) (evalops.parse_options.parsing_mode & ~PARSE_PERCENT_AS_ORDINARY_CONSTANT);
 		return;
 	}
@@ -14714,8 +14758,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	evalops.auto_post_conversion = save_auto_post_conversion;
 	evalops.parse_options.units_enabled = b_units_saved;
 	evalops.mixed_units_conversion = save_mixed_units_conversion;
-	printops.custom_time_zone = (rounding_mode == 2 ? -21586 : 0);
-	printops.time_zone = TIME_ZONE_LOCAL;
+	RESET_TZ
 	if(!simplified_percentage) evalops.parse_options.parsing_mode = (ParsingMode) (evalops.parse_options.parsing_mode & ~PARSE_PERCENT_AS_ORDINARY_CONSTANT);
 
 	if(stack_index == 0) {
@@ -19197,6 +19240,7 @@ void load_mode(const mode_struct &mode) {
 	CALCULATOR->setCustomOutputBase(mode.custom_output_base);
 	CALCULATOR->setCustomInputBase(mode.custom_input_base);
 	rounding_mode = mode.rounding_mode;
+	RESET_TZ
 	set_mode_items(mode.po, mode.eo, mode.at, mode.as, mode.rpn_mode, mode.precision, mode.interval, mode.variable_units_enabled, mode.adaptive_interval_display, mode.keypad, mode.autocalc, mode.chain_mode, mode.complex_angle_form, mode.simplified_percentage, false);
 	implicit_question_asked = mode.implicit_question_asked;
 	evalops.approximation = mode.eo.approximation;
@@ -20103,6 +20147,7 @@ void load_preferences() {
 	printops.excessive_parenthesis = false;
 	printops.allow_non_usable = false;
 	printops.lower_case_numbers = false;
+	use_duo_syms = false;
 	printops.lower_case_e = false;
 	printops.base_display = BASE_DISPLAY_NORMAL;
 	printops.twos_complement = true;
@@ -20802,7 +20847,7 @@ void load_preferences() {
 					if(mode_index == 1) {
 						rounding_mode = (v ? 1 : 0);
 						printops.round_halfway_to_even = v;
-						printops.custom_time_zone = 0;
+						RESET_TZ
 					} else {
 						modes[mode_index].rounding_mode = (v ? 1 : 0);
 						modes[mode_index].po.round_halfway_to_even = v;
@@ -20812,11 +20857,11 @@ void load_preferences() {
 					if(v >= 0 && v <= 2) {
 						if(mode_index == 1) {
 							rounding_mode = v;
-							printops.custom_time_zone = (v == 2 ? -21586 : 0);
+							RESET_TZ
 							printops.round_halfway_to_even = (v == 1);
 						} else if(mode_index == 1) {
 							modes[mode_index].rounding_mode = v;
-							modes[mode_index].po.custom_time_zone = (v == 2 ? -21586 : 0);
+							modes[mode_index].po.custom_time_zone = (v == 2 ? TZ_TRUNCATE : 0);
 							modes[mode_index].po.round_halfway_to_even = (v == 1);
 						}
 					}
@@ -20911,6 +20956,9 @@ void load_preferences() {
 					printops.use_unicode_signs = v;
 				} else if(svar == "lower_case_numbers") {
 					printops.lower_case_numbers = v;
+				} else if(svar == "duodecimal_symbols") {
+					use_duo_syms = v;
+					RESET_TZ
 				} else if(svar == "lower_case_e") {
 					printops.lower_case_e = v;
 				} else if(svar == "e_notation") {
@@ -21542,6 +21590,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "calculate_as_you_type_history_delay=%i\n", autocalc_history_delay);
 	fprintf(file, "use_unicode_signs=%i\n", printops.use_unicode_signs);
 	fprintf(file, "lower_case_numbers=%i\n", printops.lower_case_numbers);
+	fprintf(file, "duodecimal_symbols=%i\n", use_duo_syms);
 	fprintf(file, "lower_case_e=%i\n", printops.lower_case_e);
 	fprintf(file, "e_notation=%i\n", use_e_notation);
 	fprintf(file, "imaginary_j=%i\n", CALCULATOR->v_i->hasName("j") > 0);
@@ -22005,6 +22054,20 @@ gint string_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpoin
 	gtk_tree_model_get(model, a, cid, &gstr1, -1);
 	gtk_tree_model_get(model, b, cid, &gstr2, -1);
 	retval = g_ascii_strcasecmp(gstr1, gstr2);
+	g_free(gstr1);
+	g_free(gstr2);
+	return retval;
+}
+
+gint category_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer user_data) {
+	gint cid = GPOINTER_TO_INT(user_data);
+	gchar *gstr1, *gstr2;
+	gint retval;
+	gtk_tree_model_get(model, a, cid, &gstr1, -1);
+	gtk_tree_model_get(model, b, cid, &gstr2, -1);
+	if(g_strcmp0(gstr1, _("Inactive"))) retval = 1;
+	else if(g_strcmp0(gstr2, _("Inactive"))) retval = -1;
+	else retval = g_ascii_strcasecmp(gstr1, gstr2);
 	g_free(gstr1);
 	g_free(gstr2);
 	return retval;
@@ -23054,6 +23117,11 @@ void on_preferences_checkbutton_e_notation_toggled(GtkToggleButton *w, gpointer)
 void on_preferences_checkbutton_alternative_base_prefixes_toggled(GtkToggleButton *w, gpointer) {
 	if(gtk_toggle_button_get_active(w)) printops.base_display = BASE_DISPLAY_ALTERNATIVE;
 	else printops.base_display = BASE_DISPLAY_NORMAL;
+	result_format_updated();
+}
+void on_preferences_checkbutton_duodecimal_symbols_toggled(GtkToggleButton *w, gpointer) {
+	use_duo_syms = gtk_toggle_button_get_active(w);
+	RESET_TZ
 	result_format_updated();
 }
 void on_preferences_checkbutton_twos_complement_toggled(GtkToggleButton *w, gpointer) {
@@ -30919,22 +30987,22 @@ void on_menu_item_show_ending_zeroes_activate(GtkMenuItem *w, gpointer) {
 void on_menu_item_round_halfway_to_even_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.round_halfway_to_even = true;
-	printops.custom_time_zone = 0;
 	rounding_mode = 1;
+	RESET_TZ
 	result_format_updated();
 }
 void on_menu_item_round_halfway_up_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.round_halfway_to_even = false;
-	printops.custom_time_zone = 0;
 	rounding_mode = 0;
+	RESET_TZ
 	result_format_updated();
 }
 void on_menu_item_truncate_numbers_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	printops.round_halfway_to_even = false;
-	printops.custom_time_zone = -21586;
 	rounding_mode = 2;
+	RESET_TZ
 	result_format_updated();
 }
 void on_menu_item_negative_exponents_activate(GtkMenuItem *w, gpointer) {
@@ -32768,6 +32836,8 @@ void update_nbases_entries(const MathStructure &value, int base) {
 	po.can_display_unicode_string_arg = (void*) w_dec;
 	po.spell_out_logical_operators = printops.spell_out_logical_operators;
 	po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
+	po.custom_time_zone = printops.custom_time_zone;
+	po.round_halfway_to_even = printops.round_halfway_to_even;
 	string str;
 	if(base != 10) {po.base = 10; str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po); if(str.length() > 1000) {str = _("result is too long");} gtk_entry_set_text(GTK_ENTRY(w_dec), str.c_str());}
 	if(base != 8) {po.base = 8; str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po); if(str.length() > 1000) {str = _("result is too long");} gtk_entry_set_text(GTK_ENTRY(w_oct), str.c_str());}
@@ -33247,10 +33317,10 @@ void on_nbases_button_nine_clicked(GtkToggleButton*, gpointer) {
 	nbases_insert_text(nbases_get_entry(), nbases_get_base() == BASE_ROMAN_NUMERALS ? (can_display_unicode_string_function("Ɔ", (void*) gtk_builder_get_object(nbases_builder, "nbases_entry_roman")) ? "Ɔ" : ")") : "9");
 }
 void on_nbases_button_a_clicked(GtkToggleButton*, gpointer) {
-	nbases_insert_text(nbases_get_entry(), nbases_get_base() == 12 ? (can_display_unicode_string_function("↊", (void*) gtk_builder_get_object(nbases_builder, "nbases_entry_duo")) ? "↊" : "X") : (printops.lower_case_numbers ? "a" : "A"));
+	nbases_insert_text(nbases_get_entry(), nbases_get_base() == 12 && use_duo_syms ? (can_display_unicode_string_function("↊", (void*) gtk_builder_get_object(nbases_builder, "nbases_entry_duo")) ? "↊" : "X") : (printops.lower_case_numbers ? "a" : "A"));
 }
 void on_nbases_button_b_clicked(GtkToggleButton*, gpointer) {
-	nbases_insert_text(nbases_get_entry(), nbases_get_base() == 12 ? (can_display_unicode_string_function("↊", (void*) gtk_builder_get_object(nbases_builder, "nbases_entry_duo")) ? "↋" : "E") : (printops.lower_case_numbers ? "b" : "B"));
+	nbases_insert_text(nbases_get_entry(), nbases_get_base() == 12 && use_duo_syms ? (can_display_unicode_string_function("↊", (void*) gtk_builder_get_object(nbases_builder, "nbases_entry_duo")) ? "↋" : "E") : (printops.lower_case_numbers ? "b" : "B"));
 }
 void on_nbases_button_c_clicked(GtkToggleButton*, gpointer) {
 	nbases_insert_text(nbases_get_entry(), printops.lower_case_numbers ? "c" : "C");
@@ -33368,6 +33438,8 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 		po.use_unicode_signs = printops.use_unicode_signs;
 		po.lower_case_e = printops.lower_case_e;
 		po.lower_case_numbers = printops.lower_case_numbers;
+		po.custom_time_zone = printops.custom_time_zone;
+		po.round_halfway_to_even = printops.round_halfway_to_even;
 		po.base_display = BASE_DISPLAY_NONE;
 		po.abbreviate_names = printops.abbreviate_names;
 		po.digit_grouping = printops.digit_grouping;

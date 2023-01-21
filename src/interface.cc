@@ -185,6 +185,7 @@ extern gint autocalc_history_delay;
 extern int default_fraction_fraction;
 extern bool use_systray_icon, hide_on_startup;
 extern int horizontal_button_padding, vertical_button_padding;
+extern bool use_duo_syms;
 
 extern string nbases_error_color, nbases_warning_color;
 
@@ -2524,7 +2525,7 @@ GtkWidget* get_functions_dialog(void) {
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tFunctionCategories), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tFunctionCategories_selection_changed), NULL);
 		gtk_tree_view_column_set_sort_column_id(column, 0);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tFunctionCategories_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
+		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tFunctionCategories_store), 0, category_sort_func, GINT_TO_POINTER(0), NULL);
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tFunctionCategories_store), 0, GTK_SORT_ASCENDING);
 
 		GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functions_builder, "functions_textview_description")));
@@ -2581,7 +2582,7 @@ GtkWidget* get_variables_dialog(void) {
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tVariableCategories), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tVariableCategories_selection_changed), NULL);
 		gtk_tree_view_column_set_sort_column_id(column, 0);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tVariableCategories_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
+		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tVariableCategories_store), 0, category_sort_func, GINT_TO_POINTER(0), NULL);
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tVariableCategories_store), 0, GTK_SORT_ASCENDING);
 
 		GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(variables_builder, "variables_textview_description")));
@@ -2656,7 +2657,7 @@ GtkWidget* get_units_dialog(void) {
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tUnitCategories), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tUnitCategories_selection_changed), NULL);
 		gtk_tree_view_column_set_sort_column_id(column, 0);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnitCategories_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
+		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnitCategories_store), 0, category_sort_func, GINT_TO_POINTER(0), NULL);
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnitCategories_store), 0, GTK_SORT_ASCENDING);
 
 		units_convert_window = GTK_WIDGET(gtk_builder_get_object(units_builder, "units_convert_window"));
@@ -2814,6 +2815,7 @@ GtkWidget* get_preferences_dialog(void) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_unicode_signs")), printops.use_unicode_signs);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_copy_ascii")), copy_ascii);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_lower_case_numbers")), printops.lower_case_numbers);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_duodecimal_symbols")), use_duo_syms);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_e_notation")), use_e_notation);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_lower_case_e")), printops.lower_case_e);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_imaginary_j")), CALCULATOR->v_i->hasName("j") > 0);

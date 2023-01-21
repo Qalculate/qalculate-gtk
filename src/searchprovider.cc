@@ -553,6 +553,8 @@ void load_preferences_search() {
 					search_po.use_unicode_signs = v;
 				} else if(svar == "lower_case_numbers") {
 					search_po.lower_case_numbers = v;
+				} else if(svar == "duodecimal_symbols") {
+					search_po.custom_time_zone += TZ_DOZENAL;
 				} else if(svar == "lower_case_e") {
 					search_po.lower_case_e = v;
 				} else if(svar == "imaginary_j") {
@@ -589,9 +591,8 @@ void load_preferences_search() {
 					}
 				} else if(svar == "round_halfway_to_even") {//obsolete
 					search_po.round_halfway_to_even = v;
-					search_po.custom_time_zone = 0;
 				} else if(svar == "rounding_mode") {
-					search_po.custom_time_zone = (v == 2 ? -21586 : 0);
+					if(v) search_po.custom_time_zone += TZ_TRUNCATE;
 					search_po.round_halfway_to_even = (v == 1);
 				/*} else if(svar == "approximation") {
 					if(v >= APPROXIMATION_EXACT && v <= APPROXIMATION_APPROXIMATE) {
