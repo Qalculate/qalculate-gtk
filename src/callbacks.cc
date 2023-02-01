@@ -578,12 +578,12 @@ int has_information_unit_gtk(const MathStructure &m, bool top = true) {
 }
 
 void replace_lower_case_e(string &str) {
-	if(str.empty()) return;
+	if(str.empty() || printops.lower_case_e || ((!use_e_notation || printops.base != BASE_DECIMAL) && !BASE_IS_SEXAGESIMAL(printops.base))) return;
 	size_t i = 0;
 	while(true) {
 		i = str.find('e', i + 1);
 		if(i == string::npos || i == str.length() - 1) break;
-		if(str[i - 1] >= '0' && str[i - 1] <= '9' && str[i + 1] >= '0' && str[i + 1] <= '9') {
+		if(str[i - 1] >= '0' && str[i - 1] <= '9' && ((str[i + 1] >= '0' && str[i + 1] <= '9') || (str[i + 1] == '-' && i + 2 < str.length() && (str[i + 2] >= '0' && str[i + 2] <= '9')) || ((unsigned char) str[i + 1] == 0xE2 && i + 4 < str.length() && (unsigned char) str[i + 2] == 0x88 && (unsigned char) str[i + 3] == 0x92 && (str[i + 4] >= '0' && str[i + 4] <= '9')))) {
 			str.replace(i, 1, "<small>E</small>");
 		}
 	}
@@ -3908,7 +3908,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 				po.base_display = BASE_DISPLAY_SUFFIX;
 				po.lower_case_e = use_e_notation;
 				result_text = displayed_mstruct->print(po, true);
-				if(use_e_notation && !printops.lower_case_e) replace_lower_case_e(result_text);
+				replace_lower_case_e(result_text);
 				gsub("&nbsp;", " ", result_text);
 			} else {
 				result_text = "";
@@ -8343,7 +8343,11 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						if(po.lower_case_e) {TTP(str, "e");}
 						else {TTP_SMALL(str, "E");}
 						if(exp_minus) {
-							str += "-";
+							if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MINUS, po.can_display_unicode_string_arg))) {
+								str += SIGN_MINUS;
+							} else {
+								str += "-";
+							}
 						}
 						str += exp;
 					}
@@ -10556,7 +10560,7 @@ void ViewThread::run() {
 				parsed_text += mp.print(po, true);
 				printops.use_unit_prefixes = true;
 			}
-			if(use_e_notation && !printops.lower_case_e) replace_lower_case_e(parsed_text);
+			replace_lower_case_e(parsed_text);
 			gsub("&nbsp;", " ", parsed_text);
 			if(po.base == BASE_CUSTOM) CALCULATOR->setCustomOutputBase(nr_base);
 		}
@@ -10608,7 +10612,7 @@ void ViewThread::run() {
 		po.base_display = BASE_DISPLAY_SUFFIX;
 		po.lower_case_e = use_e_notation;
 		result_text = m.print(po, true);
-		if(use_e_notation && !printops.lower_case_e) replace_lower_case_e(result_text);
+		replace_lower_case_e(result_text);
 		gsub("&nbsp;", " ", result_text);
 		if(complex_angle_form) replace_result_cis_gtk(result_text);
 		result_text_approximate = *printops.is_approximate;
