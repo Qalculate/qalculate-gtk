@@ -578,7 +578,7 @@ int has_information_unit_gtk(const MathStructure &m, bool top = true) {
 }
 
 void replace_lower_case_e(string &str) {
-	if(str.empty() || printops.lower_case_e || ((!use_e_notation || printops.base != BASE_DECIMAL) && !BASE_IS_SEXAGESIMAL(printops.base))) return;
+	if(str.empty() || printops.lower_case_e || ((!use_e_notation || printops.base != BASE_DECIMAL) && !BASE_IS_SEXAGESIMAL(printops.base) && printops.base != BASE_TIME)) return;
 	size_t i = 0;
 	while(true) {
 		i = str.find('e', i + 1);
@@ -8137,13 +8137,15 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 	} else {
 		switch(m.type()) {
 			case STRUCT_NUMBER: {
+				unordered_map<void*, string>::iterator it = number_map.find((void*) &m.number());
 				string str;
 				string exp = "";
 				bool exp_minus = false;
-				ips_n.exp = &exp;
-				ips_n.exp_minus = &exp_minus;
-				unordered_map<void*, string>::iterator it = number_map.find((void*) &m.number());
+				bool base10 = (po.base == BASE_DECIMAL);
+				bool base_without_exp = (po.base != BASE_DECIMAL && !BASE_IS_SEXAGESIMAL(po.base) && po.base != BASE_TIME && ((po.base < BASE_CUSTOM && po.base != BASE_BIJECTIVE_26) || (po.base == BASE_CUSTOM && (!CALCULATOR->customOutputBase().isInteger() || CALCULATOR->customOutputBase() > 62 || CALCULATOR->customOutputBase() < 2))));
 				string value_str;
+				int base = po.base;
+				if(base <= BASE_FP16 && base >= BASE_FP80) base = BASE_BINARY;
 				if(it != number_map.end()) {
 					value_str += it->second;
 					if(number_approx_map.find((void*) &m.number()) != number_approx_map.end()) {
@@ -8153,9 +8155,29 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						exp = number_exp_map[(void*) &m.number()];
 						exp_minus = number_exp_minus_map[(void*) &m.number()];
 					}
+					if(use_e_notation && base_without_exp) {
+						if(!exp.empty()) base10 = true;
+						exp = "";
+						exp_minus = false;
+					}
 				} else {
 					bool was_approx = (po.is_approximate && *po.is_approximate);
 					if(po.is_approximate) *po.is_approximate = false;
+					if(!use_e_notation || base_without_exp || (po.base != BASE_DECIMAL && !BASE_IS_SEXAGESIMAL(po.base) && po.base != BASE_TIME)) {
+						ips_n.exp = &exp;
+						ips_n.exp_minus = &exp_minus;
+						if(use_e_notation && base_without_exp) {
+							m.number().print(po, ips_n);
+							base10 = !exp.empty();
+							exp = "";
+							exp_minus = false;
+							ips_n.exp = NULL;
+							ips_n.exp_minus = NULL;
+						}
+					} else {
+						ips_n.exp = NULL;
+						ips_n.exp_minus = NULL;
+					}
 					value_str = m.number().print(po, ips_n);
 					gsub(NNBSP, THIN_SPACE, value_str);
 					if(po.base == BASE_HEXADECIMAL && po.base_display == BASE_DISPLAY_NORMAL) {
@@ -8177,58 +8199,89 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					number_map[(void*) &m.number()] = value_str;
 					number_exp_map[(void*) &m.number()] = exp;
 					number_exp_minus_map[(void*) &m.number()] = exp_minus;
+					if(!exp.empty() && (base_without_exp || (po.base != BASE_CUSTOM && (po.base < 2 || po.base > 36)) || (po.base == BASE_CUSTOM && (!CALCULATOR->customOutputBase().isInteger() || CALCULATOR->customOutputBase() > 62 || CALCULATOR->customOutputBase() < 2)))) base10 = true;
+					if(po.base != BASE_DECIMAL && (base10 || (!BASE_IS_SEXAGESIMAL(po.base) && po.base != BASE_TIME))) {
+						bool twos = (((po.base == BASE_BINARY && po.twos_complement) || (po.base == BASE_HEXADECIMAL && po.hexadecimal_twos_complement)) && m.number().isNegative() && value_str.find(SIGN_MINUS) == string::npos && value_str.find("-") == string::npos);
+						if(base10) {
+							number_base_map[(void*) &m.number()]  = "10";
+						} else if((twos || po.base_display != BASE_DISPLAY_ALTERNATIVE || (base != BASE_HEXADECIMAL && base != BASE_BINARY && base != BASE_OCTAL)) && (base > 0 || base <= BASE_CUSTOM) && base <= 36) {
+							switch(base) {
+								case BASE_GOLDEN_RATIO: {number_base_map[(void*) &m.number()]  = "<i>φ</i>"; break;}
+								case BASE_SUPER_GOLDEN_RATIO: {number_base_map[(void*) &m.number()]  = "<i>ψ</i>"; break;}
+								case BASE_PI: {number_base_map[(void*) &m.number()]  = "<i>π</i>"; break;}
+								case BASE_E: {number_base_map[(void*) &m.number()]  = "<i>e</i>"; break;}
+								case BASE_SQRT2: {number_base_map[(void*) &m.number()]  = "√2"; break;}
+								case BASE_UNICODE: {number_base_map[(void*) &m.number()]  = "Unicode"; break;}
+								case BASE_BIJECTIVE_26: {number_base_map[(void*) &m.number()]  = "b26"; break;}
+								case BASE_BINARY_DECIMAL: {number_base_map[(void*) &m.number()]  = "BCD"; break;}
+								case BASE_CUSTOM: {number_base_map[(void*) &m.number()]  = CALCULATOR->customOutputBase().print(CALCULATOR->messagePrintOptions()); break;}
+								default: {number_base_map[(void*) &m.number()]  = i2s(base);}
+							}
+							if(twos) number_base_map[(void*) &m.number()] += '-';
+						}
+					} else {
+						number_base_map[(void*) &m.number()] = "";
+					}
 					if(po.is_approximate) {
 						number_approx_map[(void*) &m.number()] = po.is_approximate && *po.is_approximate;
 					} else {
 						number_approx_map[(void*) &m.number()] = FALSE;
 					}
-					number_base_map[(void*) &m.number()] = "";
 					if(po.is_approximate && was_approx) *po.is_approximate = true;
 				}
-				if((!use_e_notation || (po.base != BASE_DECIMAL && po.base >= 2 && po.base <= 36)) && !exp.empty()) {
+				if(!exp.empty()) {
 					if(value_str == "1") {
-						MathStructure mnr(m_one);
+						MathStructure mnr((po.base == BASE_DECIMAL || po.base < 2 || po.base > 36) ? 10 : po.base, 1, 0);
 						mnr.raise(m_one);
-						number_map[(void*) &mnr[0].number()] = (po.base != BASE_DECIMAL && po.base >= 2 && po.base <= 36) ? i2s(po.base) : "10";
+						if(po.base == BASE_DECIMAL || po.base < 2 || po.base > 36) number_map[(void*) &mnr[0].number()] = "10";
+						number_base_map[(void*) &mnr[0].number()] = number_base_map[(void*) &m.number()];
 						if(exp_minus) {
 							mnr[1].transform(STRUCT_NEGATE);
 							number_map[(void*) &mnr[1][0].number()] = exp;
+							number_base_map[(void*) &mnr[1][0].number()] = "";
 						} else {
 							number_map[(void*) &mnr[1].number()] = exp;
+							number_base_map[(void*) &mnr[1].number()] = "";
 						}
 						surface = draw_structure(mnr, po, caf, ips, point_central, scaledown, color, x_offset, w_offset, max_width);
-						if(exp_minus) number_map.erase(&mnr[1][0].number());
-						else number_map.erase(&mnr[1].number());
+						if(exp_minus) {number_map.erase(&mnr[1][0].number()); number_base_map.erase(&mnr[1][0].number());}
+						else {number_map.erase(&mnr[1].number()); number_base_map.erase(&mnr[1].number());}
+						number_base_map.erase(&mnr[0].number());
 						number_map.erase(&mnr[0].number());
 						return surface;
 					} else {
 						MathStructure mnr(m_one);
-						mnr.multiply(m_one);
+						mnr.multiply(Number((po.base == BASE_DECIMAL || po.base < 2 || po.base > 36) ? 10 : po.base, 1, 0));
 						number_map[(void*) &mnr[0].number()] = value_str;
+						if(base_without_exp) number_base_map[(void*) &mnr[0].number()] = "10";
+						number_base_map[(void*) &mnr[0].number()] = number_base_map[(void*) &m.number()];
 						number_approx_map[(void*) &mnr[0].number()] = number_approx_map[(void*) &m.number()];
 						mnr[1].raise(m_one);
-						number_map[(void*) &mnr[1][0].number()] = (po.base != BASE_DECIMAL && po.base >= 2 && po.base <= 36) ? i2s(po.base) : "10";
+						if(po.base == BASE_DECIMAL || po.base < 2 || po.base > 36) number_map[(void*) &mnr[1][0].number()] = "10";
+						number_base_map[(void*) &mnr[1][0].number()] = number_base_map[(void*) &m.number()];
 						if(exp_minus) {
 							mnr[1][1].transform(STRUCT_NEGATE);
 							number_map[(void*) &mnr[1][1][0].number()] = exp;
+							number_base_map[(void*) &mnr[1][1][0].number()] = "";
 						} else {
 							number_map[(void*) &mnr[1][1].number()] = exp;
+							number_base_map[(void*) &mnr[1][1].number()] = "";
 						}
 						surface = draw_structure(mnr, po, caf, ips, point_central, scaledown, color, x_offset, w_offset, max_width);
-						if(exp_minus) number_map.erase(&mnr[1][1][0].number());
-						else number_map.erase(&mnr[1][1].number());
+						if(exp_minus) {number_map.erase(&mnr[1][1][0].number()); number_base_map.erase(&mnr[1][1][0].number());}
+						else {number_map.erase(&mnr[1][1].number()); number_base_map.erase(&mnr[1][1].number());}
 						number_map.erase(&mnr[1][0].number());
 						number_map.erase(&mnr[0].number());
+						number_base_map.erase(&mnr[1][0].number());
+						number_base_map.erase(&mnr[0].number());
 						number_approx_map.erase(&mnr[0].number());
 						return surface;
 					}
 				}
-				if(exp.empty() && (BASE_IS_SEXAGESIMAL(po.base) || po.base == BASE_TIME)) {
+				if(exp.empty() && !po.lower_case_e && ((use_e_notation && po.base == BASE_DECIMAL) || BASE_IS_SEXAGESIMAL(po.base) || po.base == BASE_TIME)) {
 					string estr;
-					if(po.lower_case_e) {TTP(estr, "e");}
-					else {TTP_SMALL(estr, "E");}
-					if(po.lower_case_e) gsub("e", estr, value_str);
-					else gsub("E", estr, value_str);
+					TTP_SMALL(estr, "E");
+					gsub("E", estr, value_str);
 				}
 				string value_str_bak, str_bak;
 				vector<gint> pos_x;
@@ -8261,8 +8314,6 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				}
 				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
 				bool multiline = false;
-				int base = po.base;
-				if(base <= BASE_FP16 && base >= BASE_FP80) base = BASE_BINARY;
 				for(int try_i = 0; try_i <= 2; try_i++) {
 					if(try_i == 1) {
 						value_str_bak = value_str;
@@ -8339,20 +8390,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					}
 					TTBP(str)
 					str += value_str;
-					if(!exp.empty()) {
-						if(po.lower_case_e) {TTP(str, "e");}
-						else {TTP_SMALL(str, "E");}
-						if(exp_minus) {
-							if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MINUS, po.can_display_unicode_string_arg))) {
-								str += SIGN_MINUS;
-							} else {
-								str += "-";
-							}
-						}
-						str += exp;
-					}
-					bool twos = (((po.base == BASE_BINARY && po.twos_complement) || (po.base == BASE_HEXADECIMAL && po.hexadecimal_twos_complement)) && m.number().isNegative() && value_str.find(SIGN_MINUS) == string::npos && value_str.find("-") == string::npos);
-					if(base != BASE_DECIMAL && (twos || po.base_display != BASE_DISPLAY_ALTERNATIVE || (base != BASE_HEXADECIMAL && base != BASE_BINARY && base != BASE_OCTAL)) && (base > 0 || base <= BASE_CUSTOM) && base <= 36) {
+					if(!number_base_map[(void*) &m.number()].empty()) {
 						if(!multiline) {
 							string str2 = str;
 							TTE(str2)
@@ -8361,26 +8399,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						}
 						TTBP_SMALL(str)
 						str += "<sub>";
-						string str_base;
-						if(it != number_map.end()) {
-							str_base = number_base_map[(void*) &m.number()];
-						} else {
-							switch(base) {
-								case BASE_GOLDEN_RATIO: {str_base = "<i>φ</i>"; break;}
-								case BASE_SUPER_GOLDEN_RATIO: {str_base = "<i>ψ</i>"; break;}
-								case BASE_PI: {str_base = "<i>π</i>"; break;}
-								case BASE_E: {str_base = "<i>e</i>"; break;}
-								case BASE_SQRT2: {str_base = "√2"; break;}
-								case BASE_UNICODE: {str_base = "Unicode"; break;}
-								case BASE_BIJECTIVE_26: {str_base = "b26"; break;}
-								case BASE_BINARY_DECIMAL: {str_base = "BCD"; break;}
-								case BASE_CUSTOM: {str_base = CALCULATOR->customOutputBase().print(CALCULATOR->messagePrintOptions()); break;}
-								default: {str_base = i2s(base);}
-							}
-							if(twos) str_base += '-';
-							number_base_map[(void*) &m.number()] = str_base;
-						}
-						str += str_base;
+						str += number_base_map[(void*) &m.number()];
 						str += "</sub>";
 						TTE(str)
 					}
@@ -12569,35 +12588,39 @@ void set_previous_expression() {
 
 void fix_to_struct_gtk(MathStructure &m) {
 	if(m.isPower() && m[0].isUnit()) {
-		if(m[0].prefix() == NULL && m[0].unit()->referenceName() == "g") {
-			m[0].setPrefix(CALCULATOR->getOptimalDecimalPrefix(3));
-		} else if(m[0].unit() == CALCULATOR->u_euro) {
+		if(m[0].unit() == CALCULATOR->u_euro) {
 			Unit *u = CALCULATOR->getLocalCurrency();
 			if(u) m[0].setUnit(u);
 		}
+		if(m[0].prefix() == NULL && m[0].unit()->defaultPrefix() != 0) {
+			m[0].setPrefix(CALCULATOR->getOptimalDecimalPrefix(m[0].unit()->defaultPrefix()));
+		}
 	} else if(m.isUnit()) {
-		if(m.prefix() == NULL && m.unit()->referenceName() == "g") {
-			m.setPrefix(CALCULATOR->getOptimalDecimalPrefix(3));
-		} else if(m.unit() == CALCULATOR->u_euro) {
+		if(m.unit() == CALCULATOR->u_euro) {
 			Unit *u = CALCULATOR->getLocalCurrency();
 			if(u) m.setUnit(u);
+		}
+		if(m.prefix() == NULL && m.unit()->defaultPrefix() != 0) {
+			m.setPrefix(CALCULATOR->getOptimalDecimalPrefix(m.unit()->defaultPrefix()));
 		}
 	} else {
 		for(size_t i = 0; i < m.size();) {
 			if(m[i].isUnit()) {
-				if(m[i].prefix() == NULL && m[i].unit()->referenceName() == "g") {
-					m[i].setPrefix(CALCULATOR->getOptimalDecimalPrefix(3));
-				} else if(m[i].unit() == CALCULATOR->u_euro) {
+				if(m[i].unit() == CALCULATOR->u_euro) {
 					Unit *u = CALCULATOR->getLocalCurrency();
 					if(u) m[i].setUnit(u);
 				}
+				if(m[i].prefix() == NULL && m[i].unit()->defaultPrefix() != 0) {
+					m[i].setPrefix(CALCULATOR->getOptimalDecimalPrefix(m[i].unit()->defaultPrefix()));
+				}
 				i++;
 			} else if(m[i].isPower() && m[i][0].isUnit()) {
-				if(m[i][0].prefix() == NULL && m[i][0].unit()->referenceName() == "g") {
-					m[i][0].setPrefix(CALCULATOR->getOptimalDecimalPrefix(3));
-				} else if(m[i][0].unit() == CALCULATOR->u_euro) {
+				if(m[i][0].unit() == CALCULATOR->u_euro) {
 					Unit *u = CALCULATOR->getLocalCurrency();
 					if(u) m[i][0].setUnit(u);
+				}
+				if(m[i][0].prefix() == NULL && m[i][0].unit()->defaultPrefix() != 0) {
+					m[i][0].setPrefix(CALCULATOR->getOptimalDecimalPrefix(m[i][0].unit()->defaultPrefix()));
 				}
 				i++;
 			} else {
@@ -25051,6 +25074,10 @@ void do_completion() {
 												if(b_match && (!cu || (exp == 1 && cu->countUnits() == 1)) && ((!ename->case_sensitive && equalsIgnoreCase(*namestr, *cmpstr)) || (ename->case_sensitive && *namestr == *cmpstr))) b_match = 1;
 												if(b_match) {
 													if(icmp > 0 && !cu) {
+														if(CALCULATOR->getActiveVariable(str.substr(0, namestr->length() + (str.length() - cmpstr->length()))) || CALCULATOR->getActiveFunction(str.substr(0, namestr->length() + (str.length() - cmpstr->length())))) {
+															b_match = false;
+															continue;
+														}
 														prefix = prefixes[icmp - 1];
 														i_match = str.length() - cmpstr->length();
 													} else if(b_match > 1 && !editing_to_expression && item->isHidden() && str.length() == 1) {
