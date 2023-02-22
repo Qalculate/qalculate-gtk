@@ -591,7 +591,14 @@ int main (int argc, char *argv[]) {
 		fclose(file);
 	}
 	if(!ignore_locale) {
-#	ifdef WIN32
+#	ifdef _WIN32
+		if(lang.empty()) {
+			WCHAR wlocale[LOCALE_NAME_MAX_LENGTH];
+			if(LCIDToLocaleName(LOCALE_CUSTOM_UI_DEFAULT, wlocale, LOCALE_NAME_MAX_LENGTH, 0) != 0) lang = utf8_encode(wlocale);
+			gsub("-", "_", lang);
+			if(lang.length() > 5) lang = lang.substr(0, 5);
+			if(!lang.empty()) _putenv_s("LANG", lang.c_str());
+		}
 		bindtextdomain(GETTEXT_PACKAGE, getPackageLocaleDir().c_str());
 #	else
 		bindtextdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);

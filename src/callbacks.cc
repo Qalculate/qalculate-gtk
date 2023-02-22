@@ -20501,10 +20501,10 @@ void load_preferences() {
 					clear_history_on_exit = v;
 				} else if(svar == "history_expression_type") {
 					history_expression_type = v;
+				} else if(svar == "language") {
+					custom_lang = svalue;
 				} else if(svar == "ignore_locale") {
 					ignore_locale = v;
-				} else if(svar == "language") {
-					custom_lang = v;
 				} else if(svar == "window_title_mode") {
 					if(v >= 0 && v <= 4) title_type = v;
 				} else if(svar == "fetch_exchange_rates_at_startup") {
@@ -21577,8 +21577,8 @@ void save_preferences(bool mode) {
 	fprintf(file, "save_definitions_on_exit=%i\n", save_defs_on_exit);
 	fprintf(file, "clear_history_on_exit=%i\n", clear_history_on_exit);
 	fprintf(file, "history_expression_type=%i\n", history_expression_type);
-	fprintf(file, "ignore_locale=%i\n", ignore_locale);
 	if(!custom_lang.empty()) fprintf(file, "language=%s\n", custom_lang.c_str());
+	fprintf(file, "ignore_locale=%i\n", ignore_locale);
 	fprintf(file, "load_global_definitions=%i\n", load_global_defs);
 	//fprintf(file, "fetch_exchange_rates_at_startup=%i\n", fetch_exchange_rates_at_startup);
 	fprintf(file, "auto_update_exchange_rates=%i\n", auto_update_exchange_rates);
@@ -23090,8 +23090,37 @@ void on_preferences_radiobutton_temp_hybrid_toggled(GtkToggleButton *w, gpointer
 	tc_set = true;
 	expression_calculation_updated();
 }
+void on_preferences_combo_language_changed(GtkComboBox *w, gpointer) {
+	switch(gtk_combo_box_get_active(w)) {
+		case 0: {custom_lang = ""; break;}
+		case 1: {custom_lang = "ca"; break;}
+		case 2: {custom_lang = "de"; break;}
+		case 3: {custom_lang = "en"; break;}
+		case 4: {custom_lang = "es"; break;}
+		case 5: {custom_lang = "fr"; break;}
+		case 6: {custom_lang = "ka"; break;}
+		case 7: {custom_lang = "nl"; break;}
+		case 8: {custom_lang = "pt_BR"; break;}
+		case 9: {custom_lang = "ru"; break;}
+		case 10: {custom_lang = "sl"; break;}
+		case 11: {custom_lang = "sv"; break;}
+		case 12: {custom_lang = "zh_CN"; break;}
+	}
+	if(!custom_lang.empty()) {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_ignore_locale")), false);
+		ignore_locale = false;
+	}
+	show_message(_("Please restart the program for the language change to take effect."), GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_dialog")));
+}
 void on_preferences_checkbutton_ignore_locale_toggled(GtkToggleButton *w, gpointer) {
 	ignore_locale = gtk_toggle_button_get_active(w);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), !ignore_locale);
+	if(ignore_locale) {
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_combo_language"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_combo_language_changed, NULL);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 0);
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_combo_language"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_combo_language_changed, NULL);
+		custom_lang = "";
+	}
 }
 void on_preferences_combo_title_changed(GtkComboBox *w, gpointer) {
 	title_type = gtk_combo_box_get_active(w);

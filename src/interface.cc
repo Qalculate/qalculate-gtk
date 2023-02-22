@@ -167,6 +167,7 @@ extern int history_expression_type;
 extern bool display_expression_status;
 extern int expression_lines;
 extern int gtk_theme;
+extern string custom_lang;
 extern bool use_custom_result_font, use_custom_expression_font, use_custom_status_font, use_custom_keypad_font, use_custom_app_font, use_custom_history_font;
 extern string custom_result_font, custom_expression_font, custom_status_font, custom_keypad_font, custom_app_font, custom_history_font;
 extern string status_error_color, status_warning_color, text_color;
@@ -2947,6 +2948,27 @@ GtkWidget* get_preferences_dialog(void) {
 		gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_plot_time")), 8.91, GTK_POS_BOTTOM, "600 s");
 		nr.set(max_plot_time); nr.log(2);
 		gtk_range_set_value(GTK_RANGE(gtk_builder_get_object(preferences_builder, "preferences_scale_plot_time")), nr.floatValue() - 0.322);
+#ifdef _WIN32
+		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_combo_language")));
+		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_language")));
+#else
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_combo_language")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_language")));
+#endif
+		if(custom_lang == "ca") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 1);
+		else if(custom_lang == "de") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 2);
+		else if(custom_lang == "en") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 3);
+		else if(custom_lang == "es") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 4);
+		else if(custom_lang == "fr") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 5);
+		else if(custom_lang == "ka") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 6);
+		else if(custom_lang == "nl") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 7);
+		else if(custom_lang == "pt_BR") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 8);
+		else if(custom_lang == "ru") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 9);
+		else if(custom_lang == "sl") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 10);
+		else if(custom_lang == "sv") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 11);
+		else if(custom_lang == "zh_CN") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 12);
+		else gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 0);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), !ignore_locale);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_theme")), gtk_theme < 0 ? 0 : gtk_theme + 1);
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_theme")));
