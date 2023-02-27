@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
+<!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkAdjustment" id="adjustment_autocalc_history">
@@ -498,73 +498,12 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
-                  <!-- n-columns=2 n-rows=3 -->
+                  <!-- n-columns=2 n-rows=4 -->
                   <object class="GtkGrid" id="grid_theme">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="row-spacing">12</property>
                     <property name="column-spacing">12</property>
-                    <child>
-                      <object class="GtkComboBoxText" id="preferences_combo_title">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="hexpand">True</property>
-                        <items>
-                          <item translatable="yes">Application name</item>
-                          <item translatable="yes">Result</item>
-                          <item translatable="yes">Application name + result</item>
-                          <item translatable="yes">Mode</item>
-                          <item id="&lt;Ange ID&gt;" translatable="yes">Application name + mode</item>
-                        </items>
-                        <signal name="changed" handler="on_preferences_combo_title_changed" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="left-attach">1</property>
-                        <property name="top-attach">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="label_window_title">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">Window title</property>
-                      </object>
-                      <packing>
-                        <property name="left-attach">0</property>
-                        <property name="top-attach">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkComboBoxText" id="preferences_combo_theme">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <items>
-                          <item translatable="yes">Default</item>
-                          <item translatable="yes">Light</item>
-                          <item translatable="yes">Dark</item>
-                          <item translatable="yes">High contrast</item>
-                          <item id="&lt;Ange ID&gt;" translatable="yes">Dark high contrast</item>
-                        </items>
-                        <signal name="changed" handler="on_preferences_combo_theme_changed" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="left-attach">1</property>
-                        <property name="top-attach">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="preferences_label_theme">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">Theme</property>
-                      </object>
-                      <packing>
-                        <property name="left-attach">0</property>
-                        <property name="top-attach">0</property>
-                      </packing>
-                    </child>
                     <child>
                       <object class="GtkLabel" id="label_pad">
                         <property name="visible">True</property>
@@ -574,7 +513,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
-                        <property name="top-attach">2</property>
+                        <property name="top-attach">3</property>
                       </packing>
                     </child>
                     <child>
@@ -650,7 +589,106 @@ Note that only the mode, history and definitions of the last closed instance wil
                       </object>
                       <packing>
                         <property name="left-attach">1</property>
+                        <property name="top-attach">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBoxText" id="preferences_combo_title">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="hexpand">True</property>
+                        <items>
+                          <item translatable="yes">Application name</item>
+                          <item translatable="yes">Result</item>
+                          <item translatable="yes">Application name + result</item>
+                          <item translatable="yes">Mode</item>
+                          <item id="&lt;Ange ID&gt;" translatable="yes">Application name + mode</item>
+                        </items>
+                        <signal name="changed" handler="on_preferences_combo_title_changed" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
                         <property name="top-attach">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="label_window_title">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Window title</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="preferences_label_theme">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Theme</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBoxText" id="preferences_combo_theme">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <items>
+                          <item translatable="yes">Default</item>
+                          <item translatable="yes">Light</item>
+                          <item translatable="yes">Dark</item>
+                          <item translatable="yes">High contrast</item>
+                          <item id="&lt;Ange ID&gt;" translatable="yes">Dark high contrast</item>
+                        </items>
+                        <signal name="changed" handler="on_preferences_combo_theme_changed" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="preferences_label_language">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Language</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBoxText" id="preferences_combo_language">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <items>
+                          <item translatable="yes">Default</item>
+                          <item>Català</item>
+                          <item>Deutsch</item>
+                          <item>English</item>
+                          <item>Español</item>
+                          <item>Français</item>
+                          <item id="&lt;Ange ID&gt;">ქართული ენა</item>
+                          <item id="&lt;Ange ID&gt;">Nederlands</item>
+                          <item id="&lt;Ange ID&gt;">Português do Brazil</item>
+                          <item>Русский</item>
+                          <item>Slovenščina</item>
+                          <item>Svenska</item>
+                          <item>汉语</item>
+                        </items>
+                        <signal name="changed" handler="on_preferences_combo_language_changed" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">0</property>
                       </packing>
                     </child>
                   </object>
@@ -814,7 +852,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="position">2</property>
                   </packing>
                 </child>
-		<child>
+                <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_duodecimal_symbols">
                     <property name="label" translatable="yes">Use special duodecimal symbols</property>
                     <property name="visible">True</property>
