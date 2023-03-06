@@ -5929,7 +5929,6 @@ void on_units_convert_search_changed(GtkEntry *w, gpointer) {
 
 void on_convert_entry_search_changed(GtkEntry *w, gpointer) {
 	GtkTreeIter iter;
-	int count = 0;
 	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector));
 	g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnitSelector_selection_changed, NULL);
 	if(!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnitSelector_store), &iter)) return;
@@ -5944,7 +5943,6 @@ void on_convert_entry_search_changed(GtkEntry *w, gpointer) {
 			if(!b) b = title_matches(u, str);
 			if(!b) b = country_matches(u, str);
 		}
-		if(b) count++;
 		gtk_list_store_set(tUnitSelector_store, &iter, 3, b, -1);
 	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tUnitSelector_store), &iter));
 	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnitSelector_selection_changed, NULL);
@@ -5994,7 +5992,6 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 	g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnitSelector_selection_changed, NULL);
 	gtk_list_store_clear(tUnitSelector_store);
 	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnitSelector_selection_changed, NULL);
-	int count = 0;
 	if(gtk_tree_selection_get_selected(treeselection, &model, &iter)) {
 		gchar *gstr;
 		gtk_tree_model_get(model, &iter, 1, &gstr, -1);
@@ -6011,7 +6008,6 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 				if(CALCULATOR->units[i]->isActive() && (!CALCULATOR->units[i]->isHidden() || CALCULATOR->units[i]->isCurrency()) && CALCULATOR->units[i]->category().substr(0, selected_unit_selector_category.length() - 1) == str) {
 					if(!b_currencies && CALCULATOR->units[i]->isCurrency()) b_currencies = true;
 					setUnitSelectorTreeItem(iter2, CALCULATOR->units[i]);
-					count++;
 				}
 			}
 		} else {
@@ -6020,7 +6016,6 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 				if(CALCULATOR->units[i]->isActive() && (!CALCULATOR->units[i]->isHidden() || CALCULATOR->units[i]->isCurrency()) && (b_all || (no_cat && CALCULATOR->units[i]->category().empty()) || CALCULATOR->units[i]->category() == selected_unit_selector_category)) {
 					if(!b_currencies && !b_all && !no_cat && CALCULATOR->units[i]->isCurrency()) b_currencies = true;
 					setUnitSelectorTreeItem(iter2, CALCULATOR->units[i]);
-					count++;
 					list_empty = false;
 				}
 			}
@@ -6030,7 +6025,6 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 					if(CALCULATOR->units[i]->isActive() && (!CALCULATOR->units[i]->isHidden() || CALCULATOR->units[i]->isCurrency()) && CALCULATOR->units[i]->category().length() > selected_unit_selector_category.length() && CALCULATOR->units[i]->category()[selected_unit_selector_category.length()] == '/' && CALCULATOR->units[i]->category().substr(0, selected_unit_selector_category.length()) == selected_unit_selector_category) {
 						if(!b_currencies && !b_all && !no_cat && CALCULATOR->units[i]->isCurrency()) b_currencies = true;
 						setUnitSelectorTreeItem(iter2, CALCULATOR->units[i]);
-						count++;
 					}
 				}
 			} else if(!b_all && !no_cat) {
@@ -7610,7 +7604,7 @@ void update_completion() {
 				if(is_answer_variable(v)) {
 					title = _("a previous result");
 				} else if(v->isKnown()) {
-					if(((KnownVariable*) v)->isExpression()) {
+					if(((KnownVariable*) v)->isExpression() && !v->isLocal()) {
 						title = localize_expression(((KnownVariable*) v)->expression());
 						if(unicode_length(title) > 30) {
 							size_t n = 30;
@@ -7625,8 +7619,13 @@ void update_completion() {
 						} else if(((KnownVariable*) v)->get().isVector()) {
 							title = _("vector");
 						} else {
-							PrintOptions po;
-							po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
+							PrintOptions po = printops;
+							po.can_display_unicode_string_arg = (void*) completion_view;
+							po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;;
+							po.base = 10;
+							po.number_fraction_format = FRACTION_DECIMAL_EXACT;
+							po.allow_non_usable = true;
+							po.is_approximate = NULL;
 							title = CALCULATOR->print(((KnownVariable*) v)->get(), 30, po);
 							if(unicode_length(title) > 30) {
 								size_t n = 30;
@@ -12593,7 +12592,7 @@ void fix_to_struct_gtk(MathStructure &m) {
 			if(u) m[0].setUnit(u);
 		}
 		if(m[0].prefix() == NULL && m[0].unit()->defaultPrefix() != 0) {
-			m[0].setPrefix(CALCULATOR->getOptimalDecimalPrefix(m[0].unit()->defaultPrefix()));
+			m[0].setPrefix(CALCULATOR->getExactDecimalPrefix(m[0].unit()->defaultPrefix()));
 		}
 	} else if(m.isUnit()) {
 		if(m.unit() == CALCULATOR->u_euro) {
@@ -12601,7 +12600,7 @@ void fix_to_struct_gtk(MathStructure &m) {
 			if(u) m.setUnit(u);
 		}
 		if(m.prefix() == NULL && m.unit()->defaultPrefix() != 0) {
-			m.setPrefix(CALCULATOR->getOptimalDecimalPrefix(m.unit()->defaultPrefix()));
+			m.setPrefix(CALCULATOR->getExactDecimalPrefix(m.unit()->defaultPrefix()));
 		}
 	} else {
 		for(size_t i = 0; i < m.size();) {
@@ -12611,7 +12610,7 @@ void fix_to_struct_gtk(MathStructure &m) {
 					if(u) m[i].setUnit(u);
 				}
 				if(m[i].prefix() == NULL && m[i].unit()->defaultPrefix() != 0) {
-					m[i].setPrefix(CALCULATOR->getOptimalDecimalPrefix(m[i].unit()->defaultPrefix()));
+					m[i].setPrefix(CALCULATOR->getExactDecimalPrefix(m[i].unit()->defaultPrefix()));
 				}
 				i++;
 			} else if(m[i].isPower() && m[i][0].isUnit()) {
@@ -12620,7 +12619,7 @@ void fix_to_struct_gtk(MathStructure &m) {
 					if(u) m[i][0].setUnit(u);
 				}
 				if(m[i][0].prefix() == NULL && m[i][0].unit()->defaultPrefix() != 0) {
-					m[i][0].setPrefix(CALCULATOR->getOptimalDecimalPrefix(m[i][0].unit()->defaultPrefix()));
+					m[i][0].setPrefix(CALCULATOR->getExactDecimalPrefix(m[i][0].unit()->defaultPrefix()));
 				}
 				i++;
 			} else {
@@ -20394,8 +20393,8 @@ void load_preferences() {
 	size_t bookmark_index = 0;
 
 	version_numbers[0] = 4;
-	version_numbers[1] = 5;
-	version_numbers[2] = 1;
+	version_numbers[1] = 6;
+	version_numbers[2] = 0;
 
 	bool old_history_format = false;
 	unformatted_history = 0;
@@ -33149,7 +33148,7 @@ void update_nbases_keypad(int base) {
 
 	if(base == BASE_ROMAN_NUMERALS && strcmp(gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_one"))), "1") != 0) return;
 
-	if(base == 12) {
+	if(base == 12 && use_duo_syms) {
 		if(strcmp(gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_a"))), "A") == 0) {
 			if(can_display_unicode_string_function("↊", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_a"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_a")), "↊");
 			else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_a")), "X");
@@ -33754,7 +33753,7 @@ void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
 	gtk_about_dialog_set_translator_credits(GTK_ABOUT_DIALOG(dialog), _("translator-credits"));
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), _("Powerful and easy to use calculator"));
 	gtk_about_dialog_set_license_type(GTK_ABOUT_DIALOG(dialog), GTK_LICENSE_GPL_2_0);
-	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016–2022 Hanna Knutsson");
+	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016–2023 Hanna Knutsson");
 	gtk_about_dialog_set_logo_icon_name(GTK_ABOUT_DIALOG(dialog), "qalculate");
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(dialog), "Qalculate! (GTK)");
 	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dialog), VERSION);

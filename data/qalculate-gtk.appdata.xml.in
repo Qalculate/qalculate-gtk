@@ -48,6 +48,32 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="4.6.0" date="2023-03-06">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Do not automatically by default set prefix higher than kilo for meter, gram, higher than 1 (no prefix) for second and litre, or lower than 1 for byte and bit</li>
+      <li>Do not use recently introduced SI prefixes (R, Q, r, q) automatically by default</li>
+      <li>Do not set automatic prefix if resulting multiplier is less than 1 or greater than 1000, with some exceptions (e.g. km)</li>
+      <li>Default prefix unit property (use for gram, and few other units, instead of hard coded value)</li>
+      <li>Option to change symbols used for output of digits 10 and 11 in duodecimal numbers (use A and B as default digits)</li>
+      <li>Allow the same variable left and right of the equals sign (e.g. var=var+2), in variable assignment without colon, if the variable exists and the previous value is known</li>
+      <li>Use Unicode symbol for minus in scientific e notation</li>
+      <li>Do not show multiplier if exactly 1, in HTML output of scientific notation</li>
+      <li>Prefer Nm (torque) over J when the result is a vector with three components</li>
+      <li>Add "amp" abbreviation to ampere unit, and "thou" name for 1/1000 in (mil)</li>
+      <li>Fix unit order for Nm and Ws</li>
+      <li>Fix conversion from ounce (interpreted as fluid ounce) to litre with prefix</li>
+      <li>Fix automatic reactivation of global object after deletion of conflicting object</li>
+      <li>Fix parsing of scientific e notation when the number is extremely large and exponentiation fails because of floating point overflow</li>
+      <li>Fixes for output of scientific notation using number bases other than decimal</li>
+      <li>Fix prefix selection in denominator when multiplier is higher than the value of the largest prefix</li>
+      <li>Fix segfault in multisolve()</li>
+      <li>Fix completion list with a single item for some GTK themes (e.g. Breeze, Ambiance)</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
   <release version="4.5.1" date="2023-01-04">
    <description>
     <p>Changes:</p>
