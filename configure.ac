@@ -93,6 +93,20 @@ AS_IF([test "x$with_webkitgtk" = "xyes"], [
 	AC_SUBST(WEBKITGTK_LIBS)
 ])
 
+AS_IF([test "x$with_webkitgtk" = "x4.0"], [
+	PKG_CHECK_MODULES([WEBKITGTK], [webkit2gtk-4.0])
+	AC_DEFINE([USE_WEBKITGTK], [1], [Use WebKitGTK])
+	AC_SUBST(WEBKITGTK_CFLAGS)
+	AC_SUBST(WEBKITGTK_LIBS)
+])
+
+AS_IF([test "x$with_webkitgtk" = "x4.1"], [
+	PKG_CHECK_MODULES([WEBKITGTK], [webkit2gtk-4.1])
+	AC_DEFINE([USE_WEBKITGTK], [1], [Use WebKitGTK])
+	AC_SUBST(WEBKITGTK_CFLAGS)
+	AC_SUBST(WEBKITGTK_LIBS)
+])
+
 AC_ARG_ENABLE([gnome_search], AS_HELP_STRING([--disable-gnome-search], [disable Gnome shell search provider]))
 if test -z $enable_gnome_search && (test "$build_windows" = "yes" || test "$build_mac" = "yes"); then
 	enable_gnome_search=no
