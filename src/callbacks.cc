@@ -20394,7 +20394,7 @@ void load_preferences() {
 
 	version_numbers[0] = 4;
 	version_numbers[1] = 6;
-	version_numbers[2] = 0;
+	version_numbers[2] = 1;
 
 	bool old_history_format = false;
 	unformatted_history = 0;

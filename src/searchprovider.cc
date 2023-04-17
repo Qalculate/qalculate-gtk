@@ -518,10 +518,10 @@ void load_preferences_search() {
 				} else if(svar == "calculate_functions") {
 					search_eo.calculate_functions = v;
 				} else if(svar == "sync_units") {
-					search_eo.sync_units = v;*/
+					search_eo.sync_units = v;
 				} else if(svar == "unknownvariables_enabled") {
 					search_eo.parse_options.unknowns_enabled = v;
-				/*} else if(svar == "units_enabled") {
+				} else if(svar == "units_enabled") {
 					search_eo.parse_options.units_enabled = v;*/
 				} else if(svar == "allow_complex") {
 					search_eo.allow_complex = v;
