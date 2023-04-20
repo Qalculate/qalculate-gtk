@@ -647,7 +647,7 @@ string unhtmlize(string str, bool b_ascii = false) {
 }
 
 void remove_separator(string &copy_text) {
-	for(size_t i = ((CALCULATOR->local_digit_group_separator.empty() || CALCULATOR->local_digit_group_separator == " ") ? 1 : 0); i < 4; i++) {
+	for(size_t i = ((CALCULATOR->local_digit_group_separator.empty() || CALCULATOR->local_digit_group_separator == " " || CALCULATOR->local_digit_group_separator == printops.decimalpoint()) ? 1 : 0); i < 4; i++) {
 		string str_sep;
 		if(i == 0) str_sep = CALCULATOR->local_digit_group_separator;
 		else if(i == 1) str_sep = THIN_SPACE;
