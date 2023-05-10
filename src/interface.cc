@@ -187,6 +187,7 @@ extern int default_fraction_fraction;
 extern bool use_systray_icon, hide_on_startup;
 extern int horizontal_button_padding, vertical_button_padding;
 extern bool use_duo_syms;
+extern string custom_angle_unit;
 
 extern string nbases_error_color, nbases_warning_color;
 
@@ -569,6 +570,8 @@ void set_assumptions_items(AssumptionType at, AssumptionSign as) {
 	}
 }
 
+extern unordered_map<Unit*, GtkWidget*> angle_unit_items;
+
 void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, AssumptionType at, AssumptionSign as, bool in_rpn_mode, int precision, bool interval, bool variable_units, bool id_adaptive, int keypad, bool autocalc, bool chainmode, bool caf, bool simper, bool initial_update) {
 
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_autocalc")), autocalc && (!initial_update || !in_rpn_mode));
@@ -657,6 +660,19 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 		}
 		case ANGLE_UNIT_GRADIANS: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_gradians")), TRUE);
+			break;
+		}
+		case ANGLE_UNIT_CUSTOM: {
+			Unit *u = initial_update ? NULL : CALCULATOR->getActiveUnit(custom_angle_unit);
+			if(!u) {
+				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_no_default_angle_unit")), TRUE);
+			} else {
+				unordered_map<Unit*, GtkWidget*>::iterator it = angle_unit_items.find(u);
+				if(it != angle_unit_items.end()) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(it->second), TRUE);
+				else if(u->hasName("rad")) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_radians")), TRUE);
+				else if(u->hasName("gra")) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_gradians")), TRUE);
+				else if(u->hasName("deg")) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_degrees")), TRUE);
+			}
 			break;
 		}
 		default: {

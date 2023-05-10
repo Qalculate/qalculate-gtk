@@ -89,6 +89,14 @@
         <signal name="activate" handler="on_menu_item_mb_gradians_activate" swapped="no"/>
       </object>
     </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_cos_other">
+        <property name="visible">False</property>
+        <property name="can-focus">False</property>
+        <property name="label" translatable="no">Other</property>
+        <property name="group">menu_item_cos_degrees</property>
+      </object>
+    </child>
   </object>
   <object class="GtkMenu" id="menu_e">
     <property name="visible">True</property>
@@ -164,6 +172,14 @@
         <signal name="activate" handler="on_menu_item_mb_gradians_activate" swapped="no"/>
       </object>
     </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_sin_other">
+        <property name="visible">False</property>
+        <property name="can-focus">False</property>
+        <property name="label" translatable="no">Other</property>
+        <property name="group">menu_item_sin_degrees</property>
+      </object>
+    </child>
   </object>
   <object class="GtkMenu" id="menu_sqrt">
     <property name="visible">True</property>
@@ -205,6 +221,14 @@
         <property name="label" translatable="yes">Gradians</property>
         <property name="group">menu_item_tan_degrees</property>
         <signal name="activate" handler="on_menu_item_mb_gradians_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_tan_other">
+        <property name="visible">False</property>
+        <property name="can-focus">False</property>
+        <property name="label" translatable="no">Other</property>
+        <property name="group">menu_item_tan_degrees</property>
       </object>
     </child>
   </object>
@@ -9013,6 +9037,14 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
         <property name="label" translatable="yes">Gradians</property>
         <property name="group">menu_item_status_degrees</property>
         <signal name="activate" handler="on_menu_item_mb_gradians_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="menu_item_status_other">
+        <property name="visible">False</property>
+        <property name="can-focus">False</property>
+        <property name="label" translatable="no">Other</property>
+        <property name="group">menu_item_status_degrees</property>
       </object>
     </child>
     <child>

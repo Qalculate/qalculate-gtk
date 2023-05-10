@@ -68,6 +68,8 @@ bool check_version = false;
 extern int version_numbers[3];
 extern int unformatted_history;
 string custom_title;
+extern string custom_angle_unit;
+extern EvaluationOptions evalops;
 
 MathFunction *f_answer;
 MathFunction *f_expression;
@@ -121,6 +123,7 @@ gboolean create_menus_etc(gpointer) {
 	create_umenu();
 	create_umenu2();
 	create_pmenu2();
+	add_custom_angles_to_menus();
 
 	for(int i = ((int) recent_functions_pre.size()) - 1; i >= 0; i--) {
 		function_inserted(CALCULATOR->getActiveFunction(recent_functions_pre[i]));
@@ -263,6 +266,12 @@ void create_application(GtkApplication *app) {
 
 	//load local definitions
 	CALCULATOR->loadLocalDefinitions();
+
+	if(!custom_angle_unit.empty()) {
+		CALCULATOR->setCustomAngleUnit(CALCULATOR->getActiveUnit(custom_angle_unit));
+		if(CALCULATOR->customAngleUnit()) custom_angle_unit = CALCULATOR->customAngleUnit()->referenceName();
+	}
+	if(evalops.parse_options.angle_unit == ANGLE_UNIT_CUSTOM && !CALCULATOR->customAngleUnit()) evalops.parse_options.angle_unit = ANGLE_UNIT_NONE;
 
 	if(do_imaginary_j && CALCULATOR->v_i->hasName("j") == 0) {
 		ExpressionName ename = CALCULATOR->v_i->getName(1);

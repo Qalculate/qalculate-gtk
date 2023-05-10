@@ -231,6 +231,8 @@ bool tabbed_completion = false;
 
 string prev_output_base, prev_input_base;
 
+string custom_angle_unit;
+
 string command_convert_units_string;
 Unit *command_convert_unit;
 
@@ -2906,7 +2908,6 @@ bool display_function_hint(MathFunction *f, int arg_index = 1) {
 
 void replace_interval_with_function(MathStructure &m);
 void update_result_bases();
-void fix_to_struct_gtk(MathStructure &m);
 
 bool last_is_operator(string str, bool allow_exp = false) {
 	remove_blank_ends(str);
@@ -4007,6 +4008,8 @@ bool do_chain_mode(const gchar *op) {
 MathStructure *current_from_struct = NULL;
 Unit *current_from_unit = NULL;
 
+extern MathStructure get_units_for_parsed_expression(const MathStructure *parsed_struct, Unit *to_unit, const EvaluationOptions &eo, const MathStructure *mstruct = NULL);
+
 void display_parse_status() {
 	current_function = NULL;
 	if(!display_expression_status) return;
@@ -4350,29 +4353,12 @@ void display_parse_status() {
 					if(v) {
 						mparse = v;
 					} else {
-						bool b_unit = mparse.containsType(STRUCT_UNIT, false, true, true);
 						CALCULATOR->beginTemporaryStopMessages();
 						CompositeUnit cu("", evalops.parse_options.limit_implicit_multiplication ? "01" : "00", "", str_u);
 						int i_warn = 0, i_error = CALCULATOR->endTemporaryStopMessages(NULL, &i_warn);
-						if(i_error) {
-							ParseOptions pa = evalops.parse_options;
-							pa.units_enabled = true;
-							CALCULATOR->parse(&mparse, str_u, pa);
-						} else {
-							if(i_warn > 0) had_warnings = true;
-							if(i_error > 0) had_errors = true;
-							mparse = cu.generateMathStructure(true);
-						}
-						mparse.format(po);
-						if(!had_to_conv && cu.countUnits() > 0 && !b_unit && !str_e.empty() && str_w.empty()) {
+						if(!had_to_conv && cu.countUnits() > 0 && !str_e.empty() && str_w.empty()) {
 							CALCULATOR->beginTemporaryStopMessages();
-							MathStructure to_struct(&cu);
-							to_struct.unformat();
-							ApproximationMode abak = evalops.approximation;
-							if(evalops.approximation == APPROXIMATION_EXACT) evalops.approximation = APPROXIMATION_TRY_EXACT;
-							to_struct = CALCULATOR->convertToOptimalUnit(to_struct, evalops, true);
-							evalops.approximation = abak;
-							fix_to_struct_gtk(to_struct);
+							MathStructure to_struct = get_units_for_parsed_expression(&mparse, &cu, evalops, current_from_struct && !current_from_struct->isAborted() ? current_from_struct : NULL);
 							if(!to_struct.isZero()) {
 								mparse2 = new MathStructure();
 								CALCULATOR->parse(mparse2, str_e, evalops.parse_options);
@@ -4387,6 +4373,16 @@ void display_parse_status() {
 							}
 							CALCULATOR->endTemporaryStopMessages();
 						}
+						if(i_error) {
+							ParseOptions pa = evalops.parse_options;
+							pa.units_enabled = true;
+							CALCULATOR->parse(&mparse, str_u, pa);
+						} else {
+							if(i_warn > 0) had_warnings = true;
+							if(i_error > 0) had_errors = true;
+							mparse = cu.generateMathStructure(true);
+						}
+						mparse.format(po);
 					}
 					CALCULATOR->beginTemporaryStopMessages();
 					parsed_expression += mparse.print(po, true, false, TAG_TYPE_HTML);
@@ -7215,6 +7211,58 @@ void create_umenu2() {
 	}
 }
 
+unordered_map<Unit*, GtkWidget*> angle_unit_items;
+
+void add_custom_angles_to_menus() {
+	Unit *u_rad = CALCULATOR->getRadUnit();
+	GtkWidget *item;
+	GtkWidget *sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_angle_unit_menu"));
+	GSList *group = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_degrees")));
+	unordered_map<Unit*, bool> angle_unit_item_exists;
+	for(unordered_map<Unit*, GtkWidget*>::iterator it = angle_unit_items.begin(); it != angle_unit_items.end(); ++it) {
+		angle_unit_item_exists[it->first] = false;
+	}
+	int n = 3;
+	bool b_selected = false;
+	for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
+		if(CALCULATOR->units[i]->baseUnit() == u_rad) {
+			Unit *u = CALCULATOR->units[i];
+			if(u != u_rad && !u->isHidden() && u->isActive() && u->baseExponent() == 1 && !u->hasName("gra") && !u->hasName("deg")) {
+				unordered_map<Unit*, GtkWidget*>::iterator it = angle_unit_items.find(u);
+				if(it != angle_unit_items.end()) {
+					item = it->second;
+					gtk_menu_item_set_label(GTK_MENU_ITEM(item), u->title(true).c_str());
+					angle_unit_item_exists[u] = true;
+				} else {
+					item = gtk_radio_menu_item_new_with_label(group, u->title(true).c_str());
+					angle_unit_items[u] = item;
+					g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(on_menu_item_custom_angle_unit_activate), (gpointer) u);
+					gtk_menu_shell_insert(GTK_MENU_SHELL(sub), item, n);
+					gtk_widget_show(item);
+				}
+				if(evalops.parse_options.angle_unit == ANGLE_UNIT_CUSTOM && CALCULATOR->customAngleUnit() == u) {
+					b_selected = true;
+					gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), true);
+				}
+				n++;
+			}
+		}
+	}
+	for(unordered_map<Unit*, bool>::iterator it = angle_unit_item_exists.begin(); it != angle_unit_item_exists.end(); ++it) {
+		if(!it->second) {
+			item = angle_unit_items[it->first];
+			g_signal_handlers_block_matched((gpointer) item, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_custom_angle_unit_activate, NULL);
+			gtk_radio_menu_item_set_group(GTK_RADIO_MENU_ITEM(item), NULL);
+			g_object_ref(G_OBJECT(item));
+			gtk_container_remove(GTK_CONTAINER(sub), item);
+			angle_unit_items.erase(it->first);
+		}
+	}
+	if(!b_selected && evalops.parse_options.angle_unit == ANGLE_UNIT_CUSTOM) {
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_radians")), TRUE);
+	}
+}
+
 /*
 	recreate unit menus and update unit manager (when units have changed)
 */
@@ -7225,6 +7273,7 @@ void update_umenus(bool update_compl) {
 	create_umenu();
 	recreate_recent_units();
 	create_umenu2();
+	add_custom_angles_to_menus();
 	update_units_tree();
 	update_unit_selector_tree();
 	if(update_compl) update_completion();
@@ -12585,52 +12634,6 @@ void set_previous_expression() {
 	}
 }
 
-void fix_to_struct_gtk(MathStructure &m) {
-	if(m.isPower() && m[0].isUnit()) {
-		if(m[0].unit() == CALCULATOR->u_euro) {
-			Unit *u = CALCULATOR->getLocalCurrency();
-			if(u) m[0].setUnit(u);
-		}
-		if(m[0].prefix() == NULL && m[0].unit()->defaultPrefix() != 0) {
-			m[0].setPrefix(CALCULATOR->getExactDecimalPrefix(m[0].unit()->defaultPrefix()));
-		}
-	} else if(m.isUnit()) {
-		if(m.unit() == CALCULATOR->u_euro) {
-			Unit *u = CALCULATOR->getLocalCurrency();
-			if(u) m.setUnit(u);
-		}
-		if(m.prefix() == NULL && m.unit()->defaultPrefix() != 0) {
-			m.setPrefix(CALCULATOR->getExactDecimalPrefix(m.unit()->defaultPrefix()));
-		}
-	} else {
-		for(size_t i = 0; i < m.size();) {
-			if(m[i].isUnit()) {
-				if(m[i].unit() == CALCULATOR->u_euro) {
-					Unit *u = CALCULATOR->getLocalCurrency();
-					if(u) m[i].setUnit(u);
-				}
-				if(m[i].prefix() == NULL && m[i].unit()->defaultPrefix() != 0) {
-					m[i].setPrefix(CALCULATOR->getExactDecimalPrefix(m[i].unit()->defaultPrefix()));
-				}
-				i++;
-			} else if(m[i].isPower() && m[i][0].isUnit()) {
-				if(m[i][0].unit() == CALCULATOR->u_euro) {
-					Unit *u = CALCULATOR->getLocalCurrency();
-					if(u) m[i][0].setUnit(u);
-				}
-				if(m[i][0].prefix() == NULL && m[i][0].unit()->defaultPrefix() != 0) {
-					m[i][0].setPrefix(CALCULATOR->getExactDecimalPrefix(m[i][0].unit()->defaultPrefix()));
-				}
-				i++;
-			} else {
-				m.delChild(i + 1);
-			}
-		}
-		if(m.size() == 0) m.clear();
-		if(m.size() == 1) m.setToChild(1);
-	}
-}
-
 int s2b(const string &str) {
 	if(str.empty()) return -1;
 	if(equalsIgnoreCase(str, "yes")) return 1;
@@ -12964,16 +12967,35 @@ void set_option(string str) {
 		else if(equalsIgnoreCase(svalue, "deg") || equalsIgnoreCase(svalue, "degrees")) v = ANGLE_UNIT_DEGREES;
 		else if(equalsIgnoreCase(svalue, "gra") || equalsIgnoreCase(svalue, "gradians")) v = ANGLE_UNIT_GRADIANS;
 		else if(equalsIgnoreCase(svalue, "none")) v = ANGLE_UNIT_NONE;
+		else if(equalsIgnoreCase(svalue, "custom")) v = ANGLE_UNIT_CUSTOM;
 		else if(!empty_value && svalue.find_first_not_of(SPACES NUMBERS) == string::npos) {
 			v = s2i(svalue);
-		}
-		if(v < 0 || v > 3) {
-			CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
 		} else {
-			if(v == ANGLE_UNIT_DEGREES) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_degrees")), TRUE);
-			else if(v == ANGLE_UNIT_RADIANS) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_radians")), TRUE);
-			else if(v == ANGLE_UNIT_GRADIANS) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_gradians")), TRUE);
-			else if(v == ANGLE_UNIT_NONE) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_no_default_angle_unit")), TRUE);
+			Unit *u = CALCULATOR->getActiveUnit(svalue);
+			if(u && u->baseUnit() == CALCULATOR->getRadUnit() && u->baseExponent() == 1 && u->isActive() && u->isRegistered() && !u->isHidden()) {
+				if(u == CALCULATOR->getRadUnit()) v = ANGLE_UNIT_RADIANS;
+				else if(u == CALCULATOR->getGraUnit()) v = ANGLE_UNIT_GRADIANS;
+				else if(u == CALCULATOR->getDegUnit()) v = ANGLE_UNIT_DEGREES;
+				else {v = ANGLE_UNIT_CUSTOM; CALCULATOR->setCustomAngleUnit(u);}
+			}
+		}
+		if(v < 0 || v > 4) {
+			CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
+		} else if(v == ANGLE_UNIT_CUSTOM && !CALCULATOR->customAngleUnit()) {
+			CALCULATOR->error(true, "Please specify a custom angle unit as argument (e.g. set angle arcsec).", NULL);
+		} else {
+			if(v == ANGLE_UNIT_DEGREES) {
+				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_degrees")), TRUE);
+			} else if(v == ANGLE_UNIT_RADIANS) {
+				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_radians")), TRUE);
+			} else if(v == ANGLE_UNIT_GRADIANS) {
+				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_gradians")), TRUE);
+			} else if(v == ANGLE_UNIT_CUSTOM && CALCULATOR->customAngleUnit()) {
+				unordered_map<Unit*, GtkWidget*>::iterator it = angle_unit_items.find(CALCULATOR->customAngleUnit());
+				if(it != angle_unit_items.end()) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(it->second), TRUE);
+			} else {
+				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_no_default_angle_unit")), TRUE);
+			}
 		}
 	} else if(equalsIgnoreCase(svar, "caret as xor") || equalsIgnoreCase(svar, "xor^")) SET_BOOL_PREF("preferences_checkbutton_caret_as_xor")
 	else if(equalsIgnoreCase(svar, "parsing mode") || svar == "parse" || svar == "syntax") {
@@ -19213,6 +19235,7 @@ void set_saved_mode() {
 	modes[1].complex_angle_form = complex_angle_form;
 	modes[1].implicit_question_asked = implicit_question_asked;
 	modes[1].simplified_percentage = simplified_percentage;
+	modes[1].custom_angle_unit = custom_angle_unit;
 }
 
 size_t save_mode_as(string name, bool *new_mode = NULL) {
@@ -19249,6 +19272,8 @@ size_t save_mode_as(string name, bool *new_mode = NULL) {
 	modes[index].complex_angle_form = complex_angle_form;
 	modes[index].implicit_question_asked = implicit_question_asked;
 	modes[index].simplified_percentage = simplified_percentage;
+	modes[index].custom_angle_unit = "";
+	if(CALCULATOR->customAngleUnit()) modes[index].custom_angle_unit = CALCULATOR->customAngleUnit()->referenceName();
 	return index;
 }
 
@@ -19266,6 +19291,7 @@ void load_mode(const mode_struct &mode) {
 	CALCULATOR->setCustomOutputBase(mode.custom_output_base);
 	CALCULATOR->setCustomInputBase(mode.custom_input_base);
 	rounding_mode = mode.rounding_mode;
+	custom_angle_unit = mode.custom_angle_unit;
 	RESET_TZ
 	set_mode_items(mode.po, mode.eo, mode.at, mode.as, mode.rpn_mode, mode.precision, mode.interval, mode.variable_units_enabled, mode.adaptive_interval_display, mode.keypad, mode.autocalc, mode.chain_mode, mode.complex_angle_form, mode.simplified_percentage, false);
 	implicit_question_asked = mode.implicit_question_asked;
@@ -20200,6 +20226,7 @@ void load_preferences() {
 	evalops.parse_options.parsing_mode = PARSING_MODE_ADAPTIVE;
 	implicit_question_asked = false;
 	evalops.parse_options.angle_unit = ANGLE_UNIT_RADIANS;
+	custom_angle_unit = "";
 	evalops.parse_options.dot_as_separator = CALCULATOR->default_dot_as_separator;
 	dot_question_asked = false;
 	evalops.parse_options.comma_as_separator = false;
@@ -20781,10 +20808,13 @@ void load_preferences() {
 					if(version_numbers[0] == 0 && (version_numbers[1] < 7 || (version_numbers[1] == 7 && version_numbers[2] == 0))) {
 						v++;
 					}
-					if(v >= ANGLE_UNIT_NONE && v <= ANGLE_UNIT_GRADIANS) {
+					if(v >= ANGLE_UNIT_NONE && v <= ANGLE_UNIT_CUSTOM) {
 						if(mode_index == 1) evalops.parse_options.angle_unit = (AngleUnit) v;
 						else modes[mode_index].eo.parse_options.angle_unit = (AngleUnit) v;
 					}
+				} else if(svar == "custom_angle_unit") {
+					if(mode_index == 1) custom_angle_unit = svalue;
+					else modes[mode_index].custom_angle_unit = svalue;
 				} else if(svar == "functions_enabled") {
 					if(mode_index == 1) evalops.parse_options.functions_enabled = v;
 					else modes[mode_index].eo.parse_options.functions_enabled = v;
@@ -21981,6 +22011,8 @@ void save_preferences(bool mode) {
 	fprintf(file, "\n");
 	if(latest_button_unit) fprintf(file, "latest_button_unit=%s\n", latest_button_unit->referenceName().c_str());
 	if(latest_button_currency) fprintf(file, "latest_button_currency=%s\n", latest_button_currency->referenceName().c_str());
+	if(CALCULATOR->customAngleUnit()) custom_angle_unit = CALCULATOR->customAngleUnit()->referenceName();
+	else custom_angle_unit = "";
 	if(mode) set_saved_mode();
 	for(size_t i = 1; i < modes.size(); i++) {
 		if(i == 1) {
@@ -22018,6 +22050,7 @@ void save_preferences(bool mode) {
 		fprintf(file, "warn_about_denominators_assumed_nonzero=%i\n", modes[i].eo.warn_about_denominators_assumed_nonzero);
 		fprintf(file, "structuring=%i\n", modes[i].eo.structuring);
 		fprintf(file, "angle_unit=%i\n", modes[i].eo.parse_options.angle_unit);
+		if(modes[i].eo.parse_options.angle_unit == ANGLE_UNIT_CUSTOM) fprintf(file, "custom_angle_unit=%s\n", modes[i].custom_angle_unit.c_str());
 		fprintf(file, "functions_enabled=%i\n", modes[i].eo.parse_options.functions_enabled);
 		fprintf(file, "variables_enabled=%i\n", modes[i].eo.parse_options.variables_enabled);
 		fprintf(file, "calculate_functions=%i\n", modes[i].eo.calculate_functions);
@@ -29611,6 +29644,17 @@ void on_menu_item_gradians_activate(GtkMenuItem *w, gpointer) {
 		update_mb_angles(evalops.parse_options.angle_unit);
 	}
 }
+void on_menu_item_custom_angle_unit_activate(GtkMenuItem *w, gpointer data) {
+	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {
+		Unit *u = (Unit*) data;
+		if(CALCULATOR->hasUnit(u)) {
+			evalops.parse_options.angle_unit = ANGLE_UNIT_CUSTOM;
+			CALCULATOR->setCustomAngleUnit(u);
+			expression_format_updated(true);
+			update_mb_angles(evalops.parse_options.angle_unit);
+		}
+	}
+}
 void on_menu_item_no_default_angle_unit_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {
 		evalops.parse_options.angle_unit = ANGLE_UNIT_NONE;
@@ -29634,6 +29678,7 @@ void update_mb_angles(AngleUnit angle_unit) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sin_degrees")), angle_unit == ANGLE_UNIT_DEGREES);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sin_gradians")), angle_unit == ANGLE_UNIT_GRADIANS);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sin_radians")), angle_unit == ANGLE_UNIT_RADIANS);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sin_other")), angle_unit == ANGLE_UNIT_NONE || angle_unit == ANGLE_UNIT_CUSTOM);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
@@ -29643,6 +29688,7 @@ void update_mb_angles(AngleUnit angle_unit) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_cos_degrees")), angle_unit == ANGLE_UNIT_DEGREES);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_cos_gradians")), angle_unit == ANGLE_UNIT_GRADIANS);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_cos_radians")), angle_unit == ANGLE_UNIT_RADIANS);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_cos_other")), angle_unit == ANGLE_UNIT_NONE || angle_unit == ANGLE_UNIT_CUSTOM);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
@@ -29652,6 +29698,7 @@ void update_mb_angles(AngleUnit angle_unit) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_tan_degrees")), angle_unit == ANGLE_UNIT_DEGREES);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_tan_gradians")), angle_unit == ANGLE_UNIT_GRADIANS);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_tan_radians")), angle_unit == ANGLE_UNIT_RADIANS);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_tan_other")), angle_unit == ANGLE_UNIT_NONE || angle_unit == ANGLE_UNIT_CUSTOM);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
@@ -29661,6 +29708,7 @@ void update_mb_angles(AngleUnit angle_unit) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_degrees")), angle_unit == ANGLE_UNIT_DEGREES);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_gradians")), angle_unit == ANGLE_UNIT_GRADIANS);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_radians")), angle_unit == ANGLE_UNIT_RADIANS);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_other")), angle_unit == ANGLE_UNIT_NONE || angle_unit == ANGLE_UNIT_CUSTOM);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);

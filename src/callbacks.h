@@ -52,6 +52,7 @@ struct mode_struct {
 	bool implicit_question_asked;
 	int rounding_mode;
 	bool simplified_percentage;
+	std::string custom_angle_unit;
 };
 
 enum {
@@ -216,6 +217,7 @@ void create_pmenu2(void);
 void update_vmenu(bool update_compl = true);
 void update_fmenu(bool update_compl = true);
 void update_umenus(bool update_compl = true);
+void add_custom_angles_to_menus();
 
 void update_completion();
 
@@ -546,6 +548,7 @@ void on_menu_item_edit_prefs_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_degrees_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_radians_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_gradians_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_custom_angle_unit_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_no_default_angle_unit_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_read_precision_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_rpn_syntax_activate(GtkMenuItem *w, gpointer user_data);
