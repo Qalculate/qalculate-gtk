@@ -147,16 +147,20 @@ enum {
 	SHORTCUT_TYPE_DO_COMPLETION,
 	SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION,
 	SHORTCUT_TYPE_INSERT_RESULT,
-	SHORTCUT_TYPE_HISTORY_CLEAR
+	SHORTCUT_TYPE_HISTORY_CLEAR,
+	SHORTCUT_TYPE_PRECISION,
+	SHORTCUT_TYPE_MIN_DECIMALS,
+	SHORTCUT_TYPE_MAX_DECIMALS,
+	SHORTCUT_TYPE_MINMAX_DECIMALS
 };
 
-#define LAST_SHORTCUT_TYPE SHORTCUT_TYPE_HISTORY_CLEAR
+#define LAST_SHORTCUT_TYPE SHORTCUT_TYPE_MINMAX_DECIMALS
 
 struct keyboard_shortcut {
 	guint key;
 	guint modifier;
-	int type;
-	std::string value;
+	std::vector<int> type;
+	std::vector<std::string> value;
 };
 
 struct custom_button {
@@ -167,6 +171,8 @@ struct custom_button {
 
 std::string shortcut_to_text(guint key, guint state);
 const gchar *shortcut_type_text(int type, bool return_null = false);
+std::string shortcut_types_text(const std::vector<int> &type);
+std::string shortcut_values_text(const std::vector<std::string> &value);
 void update_accels(int type = -1);
 
 DECLARE_BUILTIN_FUNCTION(AnswerFunction, 0)

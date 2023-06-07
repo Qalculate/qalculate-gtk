@@ -1337,6 +1337,23 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_copy_ascii_without_units">
+                    <property name="label" translatable="yes">Copy unformatted ASCII without units</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="margin-top">12</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_copy_ascii_without_units_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_local_currency_conversion">
                     <property name="label" translatable="yes">Conversion to local currency</property>
                     <property name="visible">True</property>
@@ -1352,7 +1369,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
                 <child>
@@ -1368,13 +1385,14 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">2</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkBox" id="box_exrates">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
+                    <property name="margin-top">12</property>
                     <property name="spacing">12</property>
                     <child>
                       <object class="GtkLabel" id="label_xrates">
@@ -1409,7 +1427,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">3</property>
+                    <property name="position">4</property>
                   </packing>
                 </child>
                 <child>
@@ -1423,7 +1441,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">4</property>
+                    <property name="position">5</property>
                   </packing>
                 </child>
                 <child>
@@ -1502,7 +1520,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">5</property>
+                    <property name="position">6</property>
                   </packing>
                 </child>
               </object>

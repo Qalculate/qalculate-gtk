@@ -173,7 +173,7 @@ extern string custom_result_font, custom_expression_font, custom_status_font, cu
 extern string status_error_color, status_warning_color, text_color;
 extern bool status_error_color_set, status_warning_color_set, text_color_set;
 extern int auto_update_exchange_rates;
-extern bool copy_ascii;
+extern bool copy_ascii, copy_ascii_without_units;
 extern bool ignore_locale;
 extern bool caret_as_xor;
 extern int visible_keypad;
@@ -188,6 +188,7 @@ extern bool use_systray_icon, hide_on_startup;
 extern int horizontal_button_padding, vertical_button_padding;
 extern bool use_duo_syms;
 extern string custom_angle_unit;
+extern int previous_precision;
 
 extern string nbases_error_color, nbases_warning_color;
 
@@ -912,6 +913,7 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(precision_builder, "precision_dialog_spinbutton_precision")), precision);
 		} else {
 			CALCULATOR->setPrecision(precision);
+			previous_precision = 0;
 		}
 		printops.spacious = po.spacious;
 		printops.short_multiplication = po.short_multiplication;
@@ -2826,6 +2828,7 @@ GtkWidget* get_preferences_dialog(void) {
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_history_expression")), history_expression_type);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_unicode_signs")), printops.use_unicode_signs);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_copy_ascii")), copy_ascii);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_copy_ascii_without_units")), copy_ascii_without_units);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_lower_case_numbers")), printops.lower_case_numbers);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_duodecimal_symbols")), use_duo_syms);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_e_notation")), use_e_notation);
@@ -4200,6 +4203,15 @@ GtkWidget* get_shortcuts_dialog(void) {
 				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_DO_COMPLETION), 1, SHORTCUT_TYPE_DO_COMPLETION, -1);
 				gtk_list_store_append(tShortcutsType_store, &iter);
 				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION), 1, SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION, -1);
+			} else if(i == SHORTCUT_TYPE_SIMPLE_NOTATION) {
+				gtk_list_store_append(tShortcutsType_store, &iter);
+				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_PRECISION), 1, SHORTCUT_TYPE_PRECISION, -1);
+				gtk_list_store_append(tShortcutsType_store, &iter);
+				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_MIN_DECIMALS), 1, SHORTCUT_TYPE_MIN_DECIMALS, -1);
+				gtk_list_store_append(tShortcutsType_store, &iter);
+				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_MAX_DECIMALS), 1, SHORTCUT_TYPE_MAX_DECIMALS, -1);
+				gtk_list_store_append(tShortcutsType_store, &iter);
+				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_MINMAX_DECIMALS), 1, SHORTCUT_TYPE_MINMAX_DECIMALS, -1);
 			}
 			if(i == 0) gtk_tree_selection_select_iter(selection, &iter);
 		}
@@ -4207,7 +4219,7 @@ GtkWidget* get_shortcuts_dialog(void) {
 		for(unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.begin(); it != keyboard_shortcuts.end(); ++it) {
 			GtkTreeIter iter;
 			gtk_list_store_insert(tShortcuts_store, &iter, 0);
-			gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_type_text(it->second.type), 1, it->second.value.c_str(), 2, shortcut_to_text(it->second.key, it->second.modifier).c_str(), 3, (guint64) it->second.key + (guint64) G_MAXUINT32 * (guint64) it->second.modifier, -1);
+			gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_types_text(it->second.type).c_str(), 1, shortcut_values_text(it->second.value).c_str(), 2, shortcut_to_text(it->second.key, it->second.modifier).c_str(), 3, (guint64) it->second.key + (guint64) G_MAXUINT32 * (guint64) it->second.modifier, -1);
 		}
 
 		gtk_builder_connect_signals(shortcuts_builder, NULL);
@@ -4389,6 +4401,15 @@ GtkWidget* get_buttons_edit_dialog(void) {
 				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_DO_COMPLETION), 1, SHORTCUT_TYPE_DO_COMPLETION, -1);
 				gtk_list_store_append(tButtonsEditType_store, &iter);
 				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION), 1, SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION, -1);
+			} else if(i == SHORTCUT_TYPE_SIMPLE_NOTATION) {
+				gtk_list_store_append(tButtonsEditType_store, &iter);
+				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_PRECISION), 1, SHORTCUT_TYPE_PRECISION, -1);
+				gtk_list_store_append(tButtonsEditType_store, &iter);
+				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_MIN_DECIMALS), 1, SHORTCUT_TYPE_MIN_DECIMALS, -1);
+				gtk_list_store_append(tButtonsEditType_store, &iter);
+				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_MAX_DECIMALS), 1, SHORTCUT_TYPE_MAX_DECIMALS, -1);
+				gtk_list_store_append(tButtonsEditType_store, &iter);
+				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_MINMAX_DECIMALS), 1, SHORTCUT_TYPE_MINMAX_DECIMALS, -1);
 			}
 			if(i == 0) gtk_tree_selection_select_iter(selection, &iter);
 		}
