@@ -6,7 +6,7 @@ dnl  ----------------------
 dnl | initialize autotools |---------------------------------------------------
 dnl  ----------------------
 
-AC_INIT([Qalculate! (GTK UI)],[4.5.1],[],[qalculate-gtk])
+AC_INIT([Qalculate! (GTK UI)],[4.6.1],[],[qalculate-gtk])
 AC_CONFIG_SRCDIR([src/callbacks.cc])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS(config.h)
@@ -93,6 +93,20 @@ AS_IF([test "x$with_webkitgtk" = "xyes"], [
 	AC_SUBST(WEBKITGTK_LIBS)
 ])
 
+AS_IF([test "x$with_webkitgtk" = "x4.0"], [
+	PKG_CHECK_MODULES([WEBKITGTK], [webkit2gtk-4.0])
+	AC_DEFINE([USE_WEBKITGTK], [1], [Use WebKitGTK])
+	AC_SUBST(WEBKITGTK_CFLAGS)
+	AC_SUBST(WEBKITGTK_LIBS)
+])
+
+AS_IF([test "x$with_webkitgtk" = "x4.1"], [
+	PKG_CHECK_MODULES([WEBKITGTK], [webkit2gtk-4.1])
+	AC_DEFINE([USE_WEBKITGTK], [1], [Use WebKitGTK])
+	AC_SUBST(WEBKITGTK_CFLAGS)
+	AC_SUBST(WEBKITGTK_LIBS)
+])
+
 AC_ARG_ENABLE([gnome_search], AS_HELP_STRING([--disable-gnome-search], [disable Gnome shell search provider]))
 if test -z $enable_gnome_search && (test "$build_windows" = "yes" || test "$build_mac" = "yes"); then
 	enable_gnome_search=no
@@ -111,7 +125,7 @@ AS_IF([test "x$with_local_help" != "xno"], [
 AM_CONDITIONAL(ENABLE_LOCAL_HELP, [test "x$with_local_help" != "xno"])
 
 PKG_CHECK_MODULES(QALCULATE, [
-	libqalculate >= 4.5.0
+	libqalculate >= 4.6.0
 	])
 AC_SUBST(QALCULATE_CFLAGS)
 AC_SUBST(QALCULATE_LIBS)

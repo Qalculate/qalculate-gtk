@@ -171,15 +171,9 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 		bool result_is_comparison = false;
 		string parsed;
 		string str = CALCULATOR->unlocalizeExpression(expression, search_eo.parse_options);
-#if QALCULATE_MAJOR_VERSION > 3 || QALCULATE_MINOR_VERSION >= 15
 		int max_length = 100 - unicode_length(str);
 		if(max_length < 50) max_length = 50;
 		string result = CALCULATOR->calculateAndPrint(str, 100, search_eo, search_po, AUTOMATIC_FRACTION_AUTO, AUTOMATIC_APPROXIMATION_AUTO, &parsed, max_length, &result_is_comparison);
-#elif QALCULATE_MINOR_VERSION >= 10
-		string result = CALCULATOR->calculateAndPrint(str, 100, search_eo, search_po, &parsed);
-#else
-		string result = CALCULATOR->calculateAndPrint(str, search_eo.parse_options), 100, search_eo, search_po);
-#endif
 		search_po.number_fraction_format = FRACTION_DECIMAL;
 		if(has_error() || result.empty() || parsed.find(CALCULATOR->abortedMessage()) != string::npos || parsed.find(CALCULATOR->timedOutString()) != string::npos) {
 			return;
@@ -211,14 +205,15 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 		}
 	}
 }
-static void qalculate_search_provider_get_initial_result_set(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **terms, gpointer user_data) {
+static gboolean qalculate_search_provider_get_initial_result_set(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **terms, gpointer user_data) {
 	gchar *joined_terms = g_strjoinv(" ", terms);
 	GVariantBuilder builder;
 	handle_terms(joined_terms, builder);
 	g_free(joined_terms);
 	g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
+	return TRUE;
 }
-static void qalculate_search_provider_get_result_metas(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **eqs, gpointer user_data) {
+static gboolean qalculate_search_provider_get_result_metas(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **eqs, gpointer user_data) {
 	gint idx;
 	GVariantBuilder metas;
 	g_variant_builder_init(&metas, G_VARIANT_TYPE ("aa{sv}"));
@@ -246,15 +241,17 @@ static void qalculate_search_provider_get_result_metas(ShellSearchProvider2 *obj
 		}
 	}
 	g_dbus_method_invocation_return_value(invocation, g_variant_new("(aa{sv})", &metas));
+	return TRUE;
 }
-static void qalculate_search_provider_get_subsearch_result_set(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **arg_previous_results, gchar **terms, gpointer user_data) {
+static gboolean qalculate_search_provider_get_subsearch_result_set(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **arg_previous_results, gchar **terms, gpointer user_data) {
 	gchar *joined_terms = g_strjoinv(" ", terms);
 	GVariantBuilder builder;
 	handle_terms(joined_terms, builder);
 	g_free(joined_terms);
 	g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
+	return TRUE;
 }
-static void qalculate_search_provider_launch_search(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **terms, guint timestamp, gpointer user_data) {
+static gboolean qalculate_search_provider_launch_search(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **terms, guint timestamp, gpointer user_data) {
 	gchar *joined_terms = g_strjoinv(" ", terms);
 	string str = "qalculate-gtk \"";
 	str += joined_terms;
@@ -262,6 +259,7 @@ static void qalculate_search_provider_launch_search(ShellSearchProvider2 *object
 	g_free(joined_terms);
 	g_spawn_command_line_async(str.c_str(), NULL);
 	g_dbus_method_invocation_return_value(invocation, NULL);
+	return TRUE;
 }
 
 gboolean qalculate_search_provider_dbus_export(QalculateSearchProvider *self, GDBusConnection *connection, const gchar *object_path, GError **error);
@@ -520,10 +518,10 @@ void load_preferences_search() {
 				} else if(svar == "calculate_functions") {
 					search_eo.calculate_functions = v;
 				} else if(svar == "sync_units") {
-					search_eo.sync_units = v;*/
+					search_eo.sync_units = v;
 				} else if(svar == "unknownvariables_enabled") {
 					search_eo.parse_options.unknowns_enabled = v;
-				/*} else if(svar == "units_enabled") {
+				} else if(svar == "units_enabled") {
 					search_eo.parse_options.units_enabled = v;*/
 				} else if(svar == "allow_complex") {
 					search_eo.allow_complex = v;

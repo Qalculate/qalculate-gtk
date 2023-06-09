@@ -185,6 +185,7 @@ int scale_n = 0;
 bool hyp_is_on, inv_is_on;
 bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad, minimal_mode, show_bases_keypad;
 bool copy_ascii = false;
+bool copy_ascii_without_units = false;
 bool caret_as_xor = false;
 extern bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message;
 extern int allow_multiple_instances;
@@ -230,6 +231,10 @@ bool cursor_has_moved = false;
 bool tabbed_completion = false;
 
 string prev_output_base, prev_input_base;
+
+int previous_precision = 0;
+
+string custom_angle_unit;
 
 string command_convert_units_string;
 Unit *command_convert_unit;
@@ -647,7 +652,7 @@ string unhtmlize(string str, bool b_ascii = false) {
 }
 
 void remove_separator(string &copy_text) {
-	for(size_t i = ((CALCULATOR->local_digit_group_separator.empty() || CALCULATOR->local_digit_group_separator == " ") ? 1 : 0); i < 4; i++) {
+	for(size_t i = ((CALCULATOR->local_digit_group_separator.empty() || CALCULATOR->local_digit_group_separator == " " || CALCULATOR->local_digit_group_separator == printops.decimalpoint()) ? 1 : 0); i < 4; i++) {
 		string str_sep;
 		if(i == 0) str_sep = CALCULATOR->local_digit_group_separator;
 		else if(i == 1) str_sep = THIN_SPACE;
@@ -889,9 +894,35 @@ void get_cb(GtkClipboard* cb, GtkSelectionData* sd, guint info, gpointer) {
 	else gtk_selection_data_set_text(sd, unhtmlize(copy_text).c_str(), -1);
 }
 
+bool is_unit_multiexp(const MathStructure &mstruct);
+
+void fix_test_unit_expression(MathStructure &m) {
+	for(size_t i = 0; i < m.size(); i++) {
+		fix_test_unit_expression(m[i]);
+	}
+}
+
 void set_clipboard(string str, int ascii, bool html) {
 	if(ascii > 0 || (ascii < 0 && copy_ascii)) {
-		gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), unformat(unhtmlize(str, true)).c_str(), -1);
+		str = unformat(unhtmlize(str, true));
+		if(copy_ascii_without_units) {
+			size_t i = str.rfind(" ");
+			if(i != string::npos) {
+				MathStructure m;
+				ParseOptions po;
+				po.preserve_format = true;
+				CALCULATOR->beginTemporaryStopMessages();
+				CALCULATOR->parse(&m, str.substr(i + 1, str.length() - (i + 1)), po);
+				if(is_unit_multiexp(m)) {
+					CALCULATOR->parse(&m, str, po);
+					if(m.isMultiplication() || m.isDivision()) {
+						str = str.substr(0, i);
+					}
+				}
+				CALCULATOR->endTemporaryStopMessages();
+			}
+		}
+		gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), str.c_str(), -1);
 	} else {
 #ifdef _WIN32
 		OpenClipboard(0);
@@ -2906,7 +2937,6 @@ bool display_function_hint(MathFunction *f, int arg_index = 1) {
 
 void replace_interval_with_function(MathStructure &m);
 void update_result_bases();
-void fix_to_struct_gtk(MathStructure &m);
 
 bool last_is_operator(string str, bool allow_exp = false) {
 	remove_blank_ends(str);
@@ -4007,6 +4037,8 @@ bool do_chain_mode(const gchar *op) {
 MathStructure *current_from_struct = NULL;
 Unit *current_from_unit = NULL;
 
+extern MathStructure get_units_for_parsed_expression(const MathStructure *parsed_struct, Unit *to_unit, const EvaluationOptions &eo, const MathStructure *mstruct = NULL);
+
 void display_parse_status() {
 	current_function = NULL;
 	if(!display_expression_status) return;
@@ -4350,29 +4382,12 @@ void display_parse_status() {
 					if(v) {
 						mparse = v;
 					} else {
-						bool b_unit = mparse.containsType(STRUCT_UNIT, false, true, true);
 						CALCULATOR->beginTemporaryStopMessages();
 						CompositeUnit cu("", evalops.parse_options.limit_implicit_multiplication ? "01" : "00", "", str_u);
 						int i_warn = 0, i_error = CALCULATOR->endTemporaryStopMessages(NULL, &i_warn);
-						if(i_error) {
-							ParseOptions pa = evalops.parse_options;
-							pa.units_enabled = true;
-							CALCULATOR->parse(&mparse, str_u, pa);
-						} else {
-							if(i_warn > 0) had_warnings = true;
-							if(i_error > 0) had_errors = true;
-							mparse = cu.generateMathStructure(true);
-						}
-						mparse.format(po);
-						if(!had_to_conv && cu.countUnits() > 0 && !b_unit && !str_e.empty() && str_w.empty()) {
+						if(!had_to_conv && cu.countUnits() > 0 && !str_e.empty() && str_w.empty()) {
 							CALCULATOR->beginTemporaryStopMessages();
-							MathStructure to_struct(&cu);
-							to_struct.unformat();
-							ApproximationMode abak = evalops.approximation;
-							if(evalops.approximation == APPROXIMATION_EXACT) evalops.approximation = APPROXIMATION_TRY_EXACT;
-							to_struct = CALCULATOR->convertToOptimalUnit(to_struct, evalops, true);
-							evalops.approximation = abak;
-							fix_to_struct_gtk(to_struct);
+							MathStructure to_struct = get_units_for_parsed_expression(&mparse, &cu, evalops, current_from_struct && !current_from_struct->isAborted() ? current_from_struct : NULL);
 							if(!to_struct.isZero()) {
 								mparse2 = new MathStructure();
 								CALCULATOR->parse(mparse2, str_e, evalops.parse_options);
@@ -4387,6 +4402,16 @@ void display_parse_status() {
 							}
 							CALCULATOR->endTemporaryStopMessages();
 						}
+						if(i_error) {
+							ParseOptions pa = evalops.parse_options;
+							pa.units_enabled = true;
+							CALCULATOR->parse(&mparse, str_u, pa);
+						} else {
+							if(i_warn > 0) had_warnings = true;
+							if(i_error > 0) had_errors = true;
+							mparse = cu.generateMathStructure(true);
+						}
+						mparse.format(po);
 					}
 					CALCULATOR->beginTemporaryStopMessages();
 					parsed_expression += mparse.print(po, true, false, TAG_TYPE_HTML);
@@ -5929,7 +5954,6 @@ void on_units_convert_search_changed(GtkEntry *w, gpointer) {
 
 void on_convert_entry_search_changed(GtkEntry *w, gpointer) {
 	GtkTreeIter iter;
-	int count = 0;
 	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitSelector));
 	g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnitSelector_selection_changed, NULL);
 	if(!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tUnitSelector_store), &iter)) return;
@@ -5944,7 +5968,6 @@ void on_convert_entry_search_changed(GtkEntry *w, gpointer) {
 			if(!b) b = title_matches(u, str);
 			if(!b) b = country_matches(u, str);
 		}
-		if(b) count++;
 		gtk_list_store_set(tUnitSelector_store, &iter, 3, b, -1);
 	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tUnitSelector_store), &iter));
 	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnitSelector_selection_changed, NULL);
@@ -5994,7 +6017,6 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 	g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnitSelector_selection_changed, NULL);
 	gtk_list_store_clear(tUnitSelector_store);
 	g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tUnitSelector_selection_changed, NULL);
-	int count = 0;
 	if(gtk_tree_selection_get_selected(treeselection, &model, &iter)) {
 		gchar *gstr;
 		gtk_tree_model_get(model, &iter, 1, &gstr, -1);
@@ -6011,7 +6033,6 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 				if(CALCULATOR->units[i]->isActive() && (!CALCULATOR->units[i]->isHidden() || CALCULATOR->units[i]->isCurrency()) && CALCULATOR->units[i]->category().substr(0, selected_unit_selector_category.length() - 1) == str) {
 					if(!b_currencies && CALCULATOR->units[i]->isCurrency()) b_currencies = true;
 					setUnitSelectorTreeItem(iter2, CALCULATOR->units[i]);
-					count++;
 				}
 			}
 		} else {
@@ -6020,7 +6041,6 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 				if(CALCULATOR->units[i]->isActive() && (!CALCULATOR->units[i]->isHidden() || CALCULATOR->units[i]->isCurrency()) && (b_all || (no_cat && CALCULATOR->units[i]->category().empty()) || CALCULATOR->units[i]->category() == selected_unit_selector_category)) {
 					if(!b_currencies && !b_all && !no_cat && CALCULATOR->units[i]->isCurrency()) b_currencies = true;
 					setUnitSelectorTreeItem(iter2, CALCULATOR->units[i]);
-					count++;
 					list_empty = false;
 				}
 			}
@@ -6030,7 +6050,6 @@ void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselectio
 					if(CALCULATOR->units[i]->isActive() && (!CALCULATOR->units[i]->isHidden() || CALCULATOR->units[i]->isCurrency()) && CALCULATOR->units[i]->category().length() > selected_unit_selector_category.length() && CALCULATOR->units[i]->category()[selected_unit_selector_category.length()] == '/' && CALCULATOR->units[i]->category().substr(0, selected_unit_selector_category.length()) == selected_unit_selector_category) {
 						if(!b_currencies && !b_all && !no_cat && CALCULATOR->units[i]->isCurrency()) b_currencies = true;
 						setUnitSelectorTreeItem(iter2, CALCULATOR->units[i]);
-						count++;
 					}
 				}
 			} else if(!b_all && !no_cat) {
@@ -6680,6 +6699,10 @@ const gchar *shortcut_type_text(int type, bool return_null) {
 		case SHORTCUT_TYPE_MIXED_FRACTIONS: {return _("Toggle mixed fractions"); break;}
 		case SHORTCUT_TYPE_SCIENTIFIC_NOTATION: {return _("Toggle scientific notation"); break;}
 		case SHORTCUT_TYPE_SIMPLE_NOTATION: {return _("Toggle simple notation"); break;}
+		case SHORTCUT_TYPE_PRECISION: {return _("Toggle precision");}
+		case SHORTCUT_TYPE_MAX_DECIMALS: {return _("Toggle max decimals");}
+		case SHORTCUT_TYPE_MIN_DECIMALS: {return _("Toggle min decimals");}
+		case SHORTCUT_TYPE_MINMAX_DECIMALS: {return _("Toggle max/min decimals");}
 		case SHORTCUT_TYPE_RPN_MODE: {return _("Toggle RPN mode"); break;}
 		case SHORTCUT_TYPE_AUTOCALC: {return _("Toggle calculate as you type"); break;}
 		case SHORTCUT_TYPE_PROGRAMMING: {return _("Toggle programming keypad"); break;}
@@ -6722,12 +6745,28 @@ const gchar *shortcut_type_text(int type, bool return_null) {
 	if(return_null) return NULL;
 	return "-";
 }
+string shortcut_types_text(const vector<int> &type) {
+	string str;
+	for(size_t i = 0; i < type.size(); i++) {
+		if(!str.empty()) str += ", ";
+		str += shortcut_type_text(type[i]);
+	}
+	return str;
+}
+string shortcut_values_text(const vector<string> &value) {
+	string str;
+	for(size_t i = 0; i < value.size(); i++) {
+		if(!str.empty() && !value[i].empty()) str += ", ";
+		str += value[i];
+	}
+	return str;
+}
 void update_accels(int type) {
 	bool b = false;
 	for(unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.begin(); it != keyboard_shortcuts.end(); ++it) {
-		if(type >= 0 && it->second.type != type) continue;
+		if(it->second.type.size() != 1 || (type >= 0 && it->second.type[0] != type)) continue;
 		b = true;
-		switch(it->second.type) {
+		switch(it->second.type[0]) {
 			case SHORTCUT_TYPE_DATE: {
 				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "menu_item_insert_date")))), it->second.key, (GdkModifierType) it->second.modifier);
 				break;
@@ -7221,6 +7260,58 @@ void create_umenu2() {
 	}
 }
 
+unordered_map<Unit*, GtkWidget*> angle_unit_items;
+
+void add_custom_angles_to_menus() {
+	Unit *u_rad = CALCULATOR->getRadUnit();
+	GtkWidget *item;
+	GtkWidget *sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_angle_unit_menu"));
+	GSList *group = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_degrees")));
+	unordered_map<Unit*, bool> angle_unit_item_exists;
+	for(unordered_map<Unit*, GtkWidget*>::iterator it = angle_unit_items.begin(); it != angle_unit_items.end(); ++it) {
+		angle_unit_item_exists[it->first] = false;
+	}
+	int n = 3;
+	bool b_selected = false;
+	for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
+		if(CALCULATOR->units[i]->baseUnit() == u_rad) {
+			Unit *u = CALCULATOR->units[i];
+			if(u != u_rad && !u->isHidden() && u->isActive() && u->baseExponent() == 1 && !u->hasName("gra") && !u->hasName("deg")) {
+				unordered_map<Unit*, GtkWidget*>::iterator it = angle_unit_items.find(u);
+				if(it != angle_unit_items.end()) {
+					item = it->second;
+					gtk_menu_item_set_label(GTK_MENU_ITEM(item), u->title(true).c_str());
+					angle_unit_item_exists[u] = true;
+				} else {
+					item = gtk_radio_menu_item_new_with_label(group, u->title(true).c_str());
+					angle_unit_items[u] = item;
+					g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(on_menu_item_custom_angle_unit_activate), (gpointer) u);
+					gtk_menu_shell_insert(GTK_MENU_SHELL(sub), item, n);
+					gtk_widget_show(item);
+				}
+				if(evalops.parse_options.angle_unit == ANGLE_UNIT_CUSTOM && CALCULATOR->customAngleUnit() == u) {
+					b_selected = true;
+					gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), true);
+				}
+				n++;
+			}
+		}
+	}
+	for(unordered_map<Unit*, bool>::iterator it = angle_unit_item_exists.begin(); it != angle_unit_item_exists.end(); ++it) {
+		if(!it->second) {
+			item = angle_unit_items[it->first];
+			g_signal_handlers_block_matched((gpointer) item, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_custom_angle_unit_activate, NULL);
+			gtk_radio_menu_item_set_group(GTK_RADIO_MENU_ITEM(item), NULL);
+			g_object_ref(G_OBJECT(item));
+			gtk_container_remove(GTK_CONTAINER(sub), item);
+			angle_unit_items.erase(it->first);
+		}
+	}
+	if(!b_selected && evalops.parse_options.angle_unit == ANGLE_UNIT_CUSTOM) {
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_radians")), TRUE);
+	}
+}
+
 /*
 	recreate unit menus and update unit manager (when units have changed)
 */
@@ -7231,6 +7322,7 @@ void update_umenus(bool update_compl) {
 	create_umenu();
 	recreate_recent_units();
 	create_umenu2();
+	add_custom_angles_to_menus();
 	update_units_tree();
 	update_unit_selector_tree();
 	if(update_compl) update_completion();
@@ -7610,7 +7702,7 @@ void update_completion() {
 				if(is_answer_variable(v)) {
 					title = _("a previous result");
 				} else if(v->isKnown()) {
-					if(((KnownVariable*) v)->isExpression()) {
+					if(((KnownVariable*) v)->isExpression() && !v->isLocal()) {
 						title = localize_expression(((KnownVariable*) v)->expression());
 						if(unicode_length(title) > 30) {
 							size_t n = 30;
@@ -7625,8 +7717,13 @@ void update_completion() {
 						} else if(((KnownVariable*) v)->get().isVector()) {
 							title = _("vector");
 						} else {
-							PrintOptions po;
-							po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
+							PrintOptions po = printops;
+							po.can_display_unicode_string_arg = (void*) completion_view;
+							po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;;
+							po.base = 10;
+							po.number_fraction_format = FRACTION_DECIMAL_EXACT;
+							po.allow_non_usable = true;
+							po.is_approximate = NULL;
 							title = CALCULATOR->print(((KnownVariable*) v)->get(), 30, po);
 							if(unicode_length(title) > 30) {
 								size_t n = 30;
@@ -12586,52 +12683,6 @@ void set_previous_expression() {
 	}
 }
 
-void fix_to_struct_gtk(MathStructure &m) {
-	if(m.isPower() && m[0].isUnit()) {
-		if(m[0].unit() == CALCULATOR->u_euro) {
-			Unit *u = CALCULATOR->getLocalCurrency();
-			if(u) m[0].setUnit(u);
-		}
-		if(m[0].prefix() == NULL && m[0].unit()->defaultPrefix() != 0) {
-			m[0].setPrefix(CALCULATOR->getOptimalDecimalPrefix(m[0].unit()->defaultPrefix()));
-		}
-	} else if(m.isUnit()) {
-		if(m.unit() == CALCULATOR->u_euro) {
-			Unit *u = CALCULATOR->getLocalCurrency();
-			if(u) m.setUnit(u);
-		}
-		if(m.prefix() == NULL && m.unit()->defaultPrefix() != 0) {
-			m.setPrefix(CALCULATOR->getOptimalDecimalPrefix(m.unit()->defaultPrefix()));
-		}
-	} else {
-		for(size_t i = 0; i < m.size();) {
-			if(m[i].isUnit()) {
-				if(m[i].unit() == CALCULATOR->u_euro) {
-					Unit *u = CALCULATOR->getLocalCurrency();
-					if(u) m[i].setUnit(u);
-				}
-				if(m[i].prefix() == NULL && m[i].unit()->defaultPrefix() != 0) {
-					m[i].setPrefix(CALCULATOR->getOptimalDecimalPrefix(m[i].unit()->defaultPrefix()));
-				}
-				i++;
-			} else if(m[i].isPower() && m[i][0].isUnit()) {
-				if(m[i][0].unit() == CALCULATOR->u_euro) {
-					Unit *u = CALCULATOR->getLocalCurrency();
-					if(u) m[i][0].setUnit(u);
-				}
-				if(m[i][0].prefix() == NULL && m[i][0].unit()->defaultPrefix() != 0) {
-					m[i][0].setPrefix(CALCULATOR->getOptimalDecimalPrefix(m[i][0].unit()->defaultPrefix()));
-				}
-				i++;
-			} else {
-				m.delChild(i + 1);
-			}
-		}
-		if(m.size() == 0) m.clear();
-		if(m.size() == 1) m.setToChild(1);
-	}
-}
-
 int s2b(const string &str) {
 	if(str.empty()) return -1;
 	if(equalsIgnoreCase(str, "yes")) return 1;
@@ -12965,16 +13016,35 @@ void set_option(string str) {
 		else if(equalsIgnoreCase(svalue, "deg") || equalsIgnoreCase(svalue, "degrees")) v = ANGLE_UNIT_DEGREES;
 		else if(equalsIgnoreCase(svalue, "gra") || equalsIgnoreCase(svalue, "gradians")) v = ANGLE_UNIT_GRADIANS;
 		else if(equalsIgnoreCase(svalue, "none")) v = ANGLE_UNIT_NONE;
+		else if(equalsIgnoreCase(svalue, "custom")) v = ANGLE_UNIT_CUSTOM;
 		else if(!empty_value && svalue.find_first_not_of(SPACES NUMBERS) == string::npos) {
 			v = s2i(svalue);
-		}
-		if(v < 0 || v > 3) {
-			CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
 		} else {
-			if(v == ANGLE_UNIT_DEGREES) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_degrees")), TRUE);
-			else if(v == ANGLE_UNIT_RADIANS) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_radians")), TRUE);
-			else if(v == ANGLE_UNIT_GRADIANS) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_gradians")), TRUE);
-			else if(v == ANGLE_UNIT_NONE) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_no_default_angle_unit")), TRUE);
+			Unit *u = CALCULATOR->getActiveUnit(svalue);
+			if(u && u->baseUnit() == CALCULATOR->getRadUnit() && u->baseExponent() == 1 && u->isActive() && u->isRegistered() && !u->isHidden()) {
+				if(u == CALCULATOR->getRadUnit()) v = ANGLE_UNIT_RADIANS;
+				else if(u == CALCULATOR->getGraUnit()) v = ANGLE_UNIT_GRADIANS;
+				else if(u == CALCULATOR->getDegUnit()) v = ANGLE_UNIT_DEGREES;
+				else {v = ANGLE_UNIT_CUSTOM; CALCULATOR->setCustomAngleUnit(u);}
+			}
+		}
+		if(v < 0 || v > 4) {
+			CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
+		} else if(v == ANGLE_UNIT_CUSTOM && !CALCULATOR->customAngleUnit()) {
+			CALCULATOR->error(true, "Please specify a custom angle unit as argument (e.g. set angle arcsec).", NULL);
+		} else {
+			if(v == ANGLE_UNIT_DEGREES) {
+				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_degrees")), TRUE);
+			} else if(v == ANGLE_UNIT_RADIANS) {
+				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_radians")), TRUE);
+			} else if(v == ANGLE_UNIT_GRADIANS) {
+				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_gradians")), TRUE);
+			} else if(v == ANGLE_UNIT_CUSTOM && CALCULATOR->customAngleUnit()) {
+				unordered_map<Unit*, GtkWidget*>::iterator it = angle_unit_items.find(CALCULATOR->customAngleUnit());
+				if(it != angle_unit_items.end()) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(it->second), TRUE);
+			} else {
+				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_no_default_angle_unit")), TRUE);
+			}
 		}
 	} else if(equalsIgnoreCase(svar, "caret as xor") || equalsIgnoreCase(svar, "xor^")) SET_BOOL_PREF("preferences_checkbutton_caret_as_xor")
 	else if(equalsIgnoreCase(svar, "parsing mode") || svar == "parse" || svar == "syntax") {
@@ -13235,12 +13305,10 @@ void set_option(string str) {
 		if(v < 1) {
 			CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
 		} else {
-			if(precision_builder) {
-				gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(precision_builder, "precision_dialog_spinbutton_precision")), v);
-			} else {
-				CALCULATOR->setPrecision(v);
-				expression_calculation_updated();
-			}
+			if(precision_builder) gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(precision_builder, "precision_dialog_spinbutton_precision")), v);
+			CALCULATOR->setPrecision(v);
+			previous_precision = 0;
+			expression_calculation_updated();
 		}
 	} else if(equalsIgnoreCase(svar, "interval display") || svar == "ivdisp") {
 		int v = -1;
@@ -19214,6 +19282,7 @@ void set_saved_mode() {
 	modes[1].complex_angle_form = complex_angle_form;
 	modes[1].implicit_question_asked = implicit_question_asked;
 	modes[1].simplified_percentage = simplified_percentage;
+	modes[1].custom_angle_unit = custom_angle_unit;
 }
 
 size_t save_mode_as(string name, bool *new_mode = NULL) {
@@ -19250,6 +19319,8 @@ size_t save_mode_as(string name, bool *new_mode = NULL) {
 	modes[index].complex_angle_form = complex_angle_form;
 	modes[index].implicit_question_asked = implicit_question_asked;
 	modes[index].simplified_percentage = simplified_percentage;
+	modes[index].custom_angle_unit = "";
+	if(CALCULATOR->customAngleUnit()) modes[index].custom_angle_unit = CALCULATOR->customAngleUnit()->referenceName();
 	return index;
 }
 
@@ -19267,6 +19338,7 @@ void load_mode(const mode_struct &mode) {
 	CALCULATOR->setCustomOutputBase(mode.custom_output_base);
 	CALCULATOR->setCustomInputBase(mode.custom_input_base);
 	rounding_mode = mode.rounding_mode;
+	custom_angle_unit = mode.custom_angle_unit;
 	RESET_TZ
 	set_mode_items(mode.po, mode.eo, mode.at, mode.as, mode.rpn_mode, mode.precision, mode.interval, mode.variable_units_enabled, mode.adaptive_interval_display, mode.keypad, mode.autocalc, mode.chain_mode, mode.complex_angle_form, mode.simplified_percentage, false);
 	implicit_question_asked = mode.implicit_question_asked;
@@ -20201,6 +20273,7 @@ void load_preferences() {
 	evalops.parse_options.parsing_mode = PARSING_MODE_ADAPTIVE;
 	implicit_question_asked = false;
 	evalops.parse_options.angle_unit = ANGLE_UNIT_RADIANS;
+	custom_angle_unit = "";
 	evalops.parse_options.dot_as_separator = CALCULATOR->default_dot_as_separator;
 	dot_question_asked = false;
 	evalops.parse_options.comma_as_separator = false;
@@ -20249,6 +20322,7 @@ void load_preferences() {
 	keep_function_dialog_open = false;
 
 	copy_ascii = false;
+	copy_ascii_without_units = false;
 
 	use_e_notation = false;
 
@@ -20359,6 +20433,8 @@ void load_preferences() {
 	custom_lang = "";
 
 	CALCULATOR->setPrecision(10);
+	previous_precision = 0;
+
 
 	default_shortcuts = true;
 	keyboard_shortcuts.clear();
@@ -20394,7 +20470,7 @@ void load_preferences() {
 	size_t bookmark_index = 0;
 
 	version_numbers[0] = 4;
-	version_numbers[1] = 5;
+	version_numbers[1] = 6;
 	version_numbers[2] = 1;
 
 	bool old_history_format = false;
@@ -20584,6 +20660,8 @@ void load_preferences() {
 					if(v == 8 && (version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] <= 12))) v = 10;
 					if(mode_index == 1) CALCULATOR->setPrecision(v);
 					else modes[mode_index].precision = v;
+				} else if(svar == "previous_precision") {
+					previous_precision = v;
 				} else if(svar == "min_exp") {
 					if(mode_index == 1) printops.min_exp = v;
 					else modes[mode_index].po.min_exp = v;
@@ -20782,10 +20860,13 @@ void load_preferences() {
 					if(version_numbers[0] == 0 && (version_numbers[1] < 7 || (version_numbers[1] == 7 && version_numbers[2] == 0))) {
 						v++;
 					}
-					if(v >= ANGLE_UNIT_NONE && v <= ANGLE_UNIT_GRADIANS) {
+					if(v >= ANGLE_UNIT_NONE && v <= ANGLE_UNIT_CUSTOM) {
 						if(mode_index == 1) evalops.parse_options.angle_unit = (AngleUnit) v;
 						else modes[mode_index].eo.parse_options.angle_unit = (AngleUnit) v;
 					}
+				} else if(svar == "custom_angle_unit") {
+					if(mode_index == 1) custom_angle_unit = svalue;
+					else modes[mode_index].custom_angle_unit = svalue;
 				} else if(svar == "functions_enabled") {
 					if(mode_index == 1) evalops.parse_options.functions_enabled = v;
 					else modes[mode_index].eo.parse_options.functions_enabled = v;
@@ -21010,6 +21091,8 @@ void load_preferences() {
 					copy_ascii = !v;
 				} else if(svar == "copy_ascii") {
 					copy_ascii = v;
+				} else if(svar == "copy_ascii_without_units") {
+					copy_ascii_without_units = v;
 				} else if(svar == "decimal_comma") {
 					b_decimal_comma = v;
 					if(v == 0) CALCULATOR->useDecimalPoint(evalops.parse_options.comma_as_separator);
@@ -21215,26 +21298,39 @@ void load_preferences() {
 				} else if(svar == "keyboard_shortcut") {
 					default_shortcuts = false;
 					char str[svalue.length()];
-					keyboard_shortcut ks;
-					int n = sscanf(svalue.c_str(), "%u:%u:%i:%[^\n]", &ks.key, &ks.modifier, &ks.type, str);
+					int type = -1;
+					guint key, modifier;
+					int n = sscanf(svalue.c_str(), "%u:%u:%i:%[^\n]", &key, &modifier, &type, str);
 					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 9) || (version_numbers[0] == 3 && version_numbers[1] == 9 && version_numbers[2] < 1)) {
-						if(ks.type >= SHORTCUT_TYPE_DEGREES) ks.type += 3;
+						if(type >= SHORTCUT_TYPE_DEGREES) type += 3;
 					}
 					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 9) || (version_numbers[0] == 3 && version_numbers[1] == 9 && version_numbers[2] < 2)) {
-						if(ks.type >= SHORTCUT_TYPE_HISTORY_SEARCH) ks.type++;
+						if(type >= SHORTCUT_TYPE_HISTORY_SEARCH) type++;
 					}
 					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 9)) {
-						if(ks.type >= SHORTCUT_TYPE_MINIMAL) ks.type++;
+						if(type >= SHORTCUT_TYPE_MINIMAL) type++;
 					}
 					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && (version_numbers[1] < 13 || (version_numbers[1] == 13 && version_numbers[2] == 0)))) {
-						if(ks.type >= SHORTCUT_TYPE_MEMORY_CLEAR) ks.type += 5;
+						if(type >= SHORTCUT_TYPE_MEMORY_CLEAR) type += 5;
 					}
 					if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 8)) {
-						if(ks.type >= SHORTCUT_TYPE_FLOATING_POINT) ks.type++;
+						if(type >= SHORTCUT_TYPE_FLOATING_POINT) type++;
 					}
-					if(n >= 3 && ks.type >= SHORTCUT_TYPE_FUNCTION && ks.type <= LAST_SHORTCUT_TYPE) {
-						if(n == 4) {ks.value = str; remove_blank_ends(ks.value);}
-						keyboard_shortcuts[(guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier] = ks;
+					if(n >= 3 && type >= SHORTCUT_TYPE_FUNCTION && type <= LAST_SHORTCUT_TYPE) {
+						string value;
+						if(n == 4) {value = str; remove_blank_ends(value);}
+						unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find((guint64) key + (guint64) G_MAXUINT32 * (guint64) modifier);
+						if(it != keyboard_shortcuts.end()) {
+							it->second.type.push_back(type);
+							it->second.value.push_back(value);
+						} else {
+							keyboard_shortcut ks;
+							ks.type.push_back(type);
+							ks.value.push_back(value);
+							ks.key = key;
+							ks.modifier = modifier;
+							keyboard_shortcuts[(guint64) key + (guint64) G_MAXUINT32 * (guint64) modifier] = ks;
+						}
 					}
 				} else if(svar == "expression_history") {
 					expression_history.push_back(svalue);
@@ -21374,7 +21470,9 @@ void load_preferences() {
 	}
 	if(default_shortcuts) {
 		keyboard_shortcut ks;
-#define ADD_SHORTCUT(k, m, t, v) ks.key = k; ks.modifier = m; ks.type = t; ks.value = v; keyboard_shortcuts[(guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier] = ks;
+		ks.type.push_back(0);
+		ks.value.push_back("");
+#define ADD_SHORTCUT(k, m, t, v) ks.key = k; ks.modifier = m; ks.type[0] = t; ks.value[0] = v; keyboard_shortcuts[(guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier] = ks;
 		ADD_SHORTCUT(GDK_KEY_b, GDK_CONTROL_MASK, SHORTCUT_TYPE_NUMBER_BASES, "")
 		ADD_SHORTCUT(GDK_KEY_q, GDK_CONTROL_MASK, SHORTCUT_TYPE_QUIT, "")
 		ADD_SHORTCUT(GDK_KEY_F1, 0, SHORTCUT_TYPE_HELP, "")
@@ -21405,12 +21503,12 @@ void load_preferences() {
 		ADD_SHORTCUT(GDK_KEY_Tab, 0, SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION, "")
 	} else if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 19)) {
 		keyboard_shortcut ks;
-		ks.key = GDK_KEY_Tab; ks.modifier = 0; ks.type = SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION; ks.value = "";
+		ks.key = GDK_KEY_Tab; ks.modifier = 0; ks.type.push_back(SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION); ks.value.push_back("");
 		if(keyboard_shortcuts.find((guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier) == keyboard_shortcuts.end()) {
 			keyboard_shortcuts[(guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier] = ks;
 		}
 		if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 9)) {
-			ks.key = GDK_KEY_space; ks.modifier = GDK_CONTROL_MASK; ks.type = SHORTCUT_TYPE_MINIMAL; ks.value = "";
+			ks.key = GDK_KEY_space; ks.modifier = GDK_CONTROL_MASK; ks.type[0] = SHORTCUT_TYPE_MINIMAL; ks.value[0] = "";
 			if(keyboard_shortcuts.find((guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier) == keyboard_shortcuts.end()) {
 				keyboard_shortcuts[(guint64) ks.key + (guint64) G_MAXUINT32 * (guint64) ks.modifier] = ks;
 			}
@@ -21639,9 +21737,11 @@ void save_preferences(bool mode) {
 	fprintf(file, "caret_as_xor=%i\n", caret_as_xor);
 	fprintf(file, "digit_grouping=%i\n", printops.digit_grouping);
 	fprintf(file, "copy_ascii=%i\n", copy_ascii);
+	fprintf(file, "copy_ascii_without_units=%i\n", copy_ascii_without_units);
 	fprintf(file, "decimal_comma=%i\n", b_decimal_comma);
 	fprintf(file, "dot_as_separator=%i\n", dot_question_asked ? evalops.parse_options.dot_as_separator : -1);
 	fprintf(file, "comma_as_separator=%i\n", evalops.parse_options.comma_as_separator);
+	if(previous_precision > 0) fprintf(file, "previous_precision=%i\n", previous_precision);
 	if(gtk_theme >= 0) fprintf(file, "gtk_theme=%i\n", gtk_theme);
 	fprintf(file, "vertical_button_padding=%i\n", vertical_button_padding);
 	fprintf(file, "horizontal_button_padding=%i\n", horizontal_button_padding);
@@ -21693,8 +21793,10 @@ void save_preferences(bool mode) {
 		}
 		for(size_t i = 0; i < ksv.size(); i++) {
 			unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find(ksv[i]);
-			if(it->second.value.empty()) fprintf(file, "keyboard_shortcut=%u:%u:%i\n", it->second.key, it->second.modifier, it->second.type);
-			else fprintf(file, "keyboard_shortcut=%u:%u:%i:%s\n", it->second.key, it->second.modifier, it->second.type, it->second.value.c_str());
+			for(size_t i2 = 0; i2 < it->second.type.size(); i2++) {
+				if(it->second.value[i2].empty()) fprintf(file, "keyboard_shortcut=%u:%u:%i\n", it->second.key, it->second.modifier, it->second.type[i2]);
+				else fprintf(file, "keyboard_shortcut=%u:%u:%i:%s\n", it->second.key, it->second.modifier, it->second.type[i2], it->second.value[i2].c_str());
+			}
 		}
 	}
 	if(!clear_history_on_exit) {
@@ -21982,6 +22084,8 @@ void save_preferences(bool mode) {
 	fprintf(file, "\n");
 	if(latest_button_unit) fprintf(file, "latest_button_unit=%s\n", latest_button_unit->referenceName().c_str());
 	if(latest_button_currency) fprintf(file, "latest_button_currency=%s\n", latest_button_currency->referenceName().c_str());
+	if(CALCULATOR->customAngleUnit()) custom_angle_unit = CALCULATOR->customAngleUnit()->referenceName();
+	else custom_angle_unit = "";
 	if(mode) set_saved_mode();
 	for(size_t i = 1; i < modes.size(); i++) {
 		if(i == 1) {
@@ -22019,6 +22123,7 @@ void save_preferences(bool mode) {
 		fprintf(file, "warn_about_denominators_assumed_nonzero=%i\n", modes[i].eo.warn_about_denominators_assumed_nonzero);
 		fprintf(file, "structuring=%i\n", modes[i].eo.structuring);
 		fprintf(file, "angle_unit=%i\n", modes[i].eo.parse_options.angle_unit);
+		if(modes[i].eo.parse_options.angle_unit == ANGLE_UNIT_CUSTOM) fprintf(file, "custom_angle_unit=%s\n", modes[i].custom_angle_unit.c_str());
 		fprintf(file, "functions_enabled=%i\n", modes[i].eo.parse_options.functions_enabled);
 		fprintf(file, "variables_enabled=%i\n", modes[i].eo.parse_options.variables_enabled);
 		fprintf(file, "calculate_functions=%i\n", modes[i].eo.calculate_functions);
@@ -23141,6 +23246,9 @@ void on_preferences_checkbutton_copy_ascii_toggled(GtkToggleButton *w, gpointer)
 		gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_text")))), GDK_KEY_c, GDK_CONTROL_MASK);
 		gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_ascii")))), 0, (GdkModifierType) 0);
 	}
+}
+void on_preferences_checkbutton_copy_ascii_without_units_toggled(GtkToggleButton *w, gpointer) {
+	copy_ascii_without_units = gtk_toggle_button_get_active(w);
 }
 void on_preferences_checkbutton_lower_case_numbers_toggled(GtkToggleButton *w, gpointer) {
 	printops.lower_case_numbers = gtk_toggle_button_get_active(w);
@@ -29612,6 +29720,17 @@ void on_menu_item_gradians_activate(GtkMenuItem *w, gpointer) {
 		update_mb_angles(evalops.parse_options.angle_unit);
 	}
 }
+void on_menu_item_custom_angle_unit_activate(GtkMenuItem *w, gpointer data) {
+	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {
+		Unit *u = (Unit*) data;
+		if(CALCULATOR->hasUnit(u)) {
+			evalops.parse_options.angle_unit = ANGLE_UNIT_CUSTOM;
+			CALCULATOR->setCustomAngleUnit(u);
+			expression_format_updated(true);
+			update_mb_angles(evalops.parse_options.angle_unit);
+		}
+	}
+}
 void on_menu_item_no_default_angle_unit_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {
 		evalops.parse_options.angle_unit = ANGLE_UNIT_NONE;
@@ -29635,6 +29754,7 @@ void update_mb_angles(AngleUnit angle_unit) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sin_degrees")), angle_unit == ANGLE_UNIT_DEGREES);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sin_gradians")), angle_unit == ANGLE_UNIT_GRADIANS);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sin_radians")), angle_unit == ANGLE_UNIT_RADIANS);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sin_other")), angle_unit == ANGLE_UNIT_NONE || angle_unit == ANGLE_UNIT_CUSTOM);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
@@ -29644,6 +29764,7 @@ void update_mb_angles(AngleUnit angle_unit) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_cos_degrees")), angle_unit == ANGLE_UNIT_DEGREES);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_cos_gradians")), angle_unit == ANGLE_UNIT_GRADIANS);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_cos_radians")), angle_unit == ANGLE_UNIT_RADIANS);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_cos_other")), angle_unit == ANGLE_UNIT_NONE || angle_unit == ANGLE_UNIT_CUSTOM);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
@@ -29653,6 +29774,7 @@ void update_mb_angles(AngleUnit angle_unit) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_tan_degrees")), angle_unit == ANGLE_UNIT_DEGREES);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_tan_gradians")), angle_unit == ANGLE_UNIT_GRADIANS);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_tan_radians")), angle_unit == ANGLE_UNIT_RADIANS);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_tan_other")), angle_unit == ANGLE_UNIT_NONE || angle_unit == ANGLE_UNIT_CUSTOM);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
@@ -29662,6 +29784,7 @@ void update_mb_angles(AngleUnit angle_unit) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_degrees")), angle_unit == ANGLE_UNIT_DEGREES);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_gradians")), angle_unit == ANGLE_UNIT_GRADIANS);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_radians")), angle_unit == ANGLE_UNIT_RADIANS);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_other")), angle_unit == ANGLE_UNIT_NONE || angle_unit == ANGLE_UNIT_CUSTOM);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
@@ -33149,7 +33272,7 @@ void update_nbases_keypad(int base) {
 
 	if(base == BASE_ROMAN_NUMERALS && strcmp(gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_one"))), "1") != 0) return;
 
-	if(base == 12) {
+	if(base == 12 && use_duo_syms) {
 		if(strcmp(gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_a"))), "A") == 0) {
 			if(can_display_unicode_string_function("↊", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_a"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_a")), "↊");
 			else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_a")), "X");
@@ -33754,7 +33877,7 @@ void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
 	gtk_about_dialog_set_translator_credits(GTK_ABOUT_DIALOG(dialog), _("translator-credits"));
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), _("Powerful and easy to use calculator"));
 	gtk_about_dialog_set_license_type(GTK_ABOUT_DIALOG(dialog), GTK_LICENSE_GPL_2_0);
-	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016–2022 Hanna Knutsson");
+	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016–2023 Hanna Knutsson");
 	gtk_about_dialog_set_logo_icon_name(GTK_ABOUT_DIALOG(dialog), "qalculate");
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(dialog), "Qalculate! (GTK)");
 	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dialog), VERSION);
@@ -33796,9 +33919,11 @@ void on_menu_item_help_activate(GtkMenuItem*, gpointer) {
 */
 void on_precision_dialog_spinbutton_precision_value_changed(GtkSpinButton *w, gpointer) {
 	CALCULATOR->setPrecision(gtk_spin_button_get_value_as_int(w));
+	previous_precision = 0;
 }
 void on_precision_dialog_button_recalculate_clicked(GtkButton*, gpointer) {
 	CALCULATOR->setPrecision(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(precision_builder, "precision_dialog_spinbutton_precision"))));
+	previous_precision = 0;
 	execute_expression(true, false, OPERATION_ADD, NULL, rpn_mode);
 }
 
@@ -34418,6 +34543,69 @@ bool do_shortcut(int type, string value) {
 				return gtk_widget_get_visible(completion_window);
 			}
 		}
+		case SHORTCUT_TYPE_PRECISION: {
+			int v = s2i(value);
+			if(previous_precision > 0 && CALCULATOR->getPrecision() == v) {
+				v = previous_precision;
+				previous_precision = 0;
+			} else {
+				previous_precision = CALCULATOR->getPrecision();
+			}
+			if(precision_builder) gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(precision_builder, "precision_dialog_spinbutton_precision")), v);
+			CALCULATOR->setPrecision(v);
+			expression_calculation_updated();
+			break;
+		}
+		case SHORTCUT_TYPE_MAX_DECIMALS: {
+			int v = s2i(value);
+			if(printops.use_max_decimals && printops.max_decimals == v) v = -1;
+			if(decimals_builder) {
+				gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gtk_builder_get_object(decimals_builder, "decimals_dialog_checkbutton_max")), v >= 0);
+				if(v >= 0) gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(decimals_builder, "decimals_dialog_spinbutton_max")), v);
+			} else {
+				if(v >= 0) printops.max_decimals = v;
+				printops.use_max_decimals = v >= 0;
+				result_format_updated();
+			}
+			break;
+		}
+		case SHORTCUT_TYPE_MIN_DECIMALS: {
+			int v = s2i(value);
+			if(printops.use_min_decimals && printops.min_decimals == v) v = -1;
+			if(decimals_builder) {
+				gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gtk_builder_get_object(decimals_builder, "decimals_dialog_checkbutton_min")), v >= 0);
+				if(v >= 0) gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(decimals_builder, "decimals_dialog_spinbutton_min")), v);
+			} else {
+				if(v >= 0) printops.min_decimals = v;
+				printops.use_min_decimals = v >= 0;
+				result_format_updated();
+			}
+			break;
+		}
+		case SHORTCUT_TYPE_MINMAX_DECIMALS: {
+			int v = s2i(value);
+			if(printops.use_max_decimals && printops.max_decimals == v && printops.use_min_decimals && printops.min_decimals == v) v = -1;
+			if(decimals_builder) {
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(decimals_builder, "decimals_dialog_checkbutton_max"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_decimals_dialog_checkbutton_max_toggled, NULL);
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(decimals_builder, "decimals_dialog_checkbutton_min"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_decimals_dialog_checkbutton_min_toggled, NULL);
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(decimals_builder, "decimals_dialog_spinbutton_max"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_decimals_dialog_spinbutton_max_value_changed, NULL);
+				g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(decimals_builder, "decimals_dialog_spinbutton_min"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_decimals_dialog_spinbutton_min_value_changed, NULL);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(decimals_builder, "decimals_dialog_checkbutton_max")), v >= 0);
+				if(v >= 0) gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(decimals_builder, "decimals_dialog_spinbutton_max")), v);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(decimals_builder, "decimals_dialog_checkbutton_min")), v >= 0);
+				if(v >= 0) gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(decimals_builder, "decimals_dialog_spinbutton_min")), v);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(decimals_builder, "decimals_dialog_checkbutton_max"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_decimals_dialog_checkbutton_max_toggled, NULL);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(decimals_builder, "decimals_dialog_checkbutton_min"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_decimals_dialog_checkbutton_min_toggled, NULL);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(decimals_builder, "decimals_dialog_spinbutton_max"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_decimals_dialog_spinbutton_max_value_changed, NULL);
+				g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(decimals_builder, "decimals_dialog_spinbutton_min"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_decimals_dialog_spinbutton_min_value_changed, NULL);
+			}
+			if(v >= 0) printops.min_decimals = v;
+			printops.use_min_decimals = v >= 0;
+			if(v >= 0) printops.max_decimals = v;
+			printops.use_max_decimals = v >= 0;
+			result_format_updated();
+			break;
+		}
 	}
 	return false;
 }
@@ -34426,7 +34614,11 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 	unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find((guint64) event->keyval + (guint64) G_MAXUINT32 * (guint64) state);
 	if(it == keyboard_shortcuts.end() && event->keyval == GDK_KEY_KP_Delete) it = keyboard_shortcuts.find((guint64) GDK_KEY_Delete + (guint64) G_MAXUINT32 * (guint64) state);
 	if(it != keyboard_shortcuts.end()) {
-		return do_shortcut(it->second.type, it->second.value);
+		bool b = false;
+		for(size_t i = 0; i < it->second.type.size(); i++) {
+			if(do_shortcut(it->second.type[i], it->second.value[i])) b = true;
+		}
+		return b;
 	}
 	return false;
 }
@@ -35668,6 +35860,10 @@ void on_tShortcutsType_selection_changed(GtkTreeSelection *treeselection, gpoint
 			case SHORTCUT_TYPE_CONVERT: {}
 			case SHORTCUT_TYPE_TO_NUMBER_BASE: {}
 			case SHORTCUT_TYPE_META_MODE: {}
+			case SHORTCUT_TYPE_PRECISION: {}
+			case SHORTCUT_TYPE_MIN_DECIMALS: {}
+			case SHORTCUT_TYPE_MAX_DECIMALS: {}
+			case SHORTCUT_TYPE_MINMAX_DECIMALS: {}
 			case SHORTCUT_TYPE_INPUT_BASE: {}
 			case SHORTCUT_TYPE_OUTPUT_BASE: {
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")), TRUE);
@@ -35699,6 +35895,10 @@ void on_tButtonsEditType_selection_changed(GtkTreeSelection *treeselection, gpoi
 			case SHORTCUT_TYPE_CONVERT: {}
 			case SHORTCUT_TYPE_TO_NUMBER_BASE: {}
 			case SHORTCUT_TYPE_META_MODE: {}
+			case SHORTCUT_TYPE_PRECISION: {}
+			case SHORTCUT_TYPE_MIN_DECIMALS: {}
+			case SHORTCUT_TYPE_MAX_DECIMALS: {}
+			case SHORTCUT_TYPE_MINMAX_DECIMALS: {}
 			case SHORTCUT_TYPE_INPUT_BASE: {}
 			case SHORTCUT_TYPE_OUTPUT_BASE: {
 				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")), TRUE);
@@ -35789,28 +35989,31 @@ void on_shortcuts_button_new_clicked(GtkButton*, gpointer) {
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 	gtk_widget_grab_focus(tShortcutsType);
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")), "");
+	int type;
+	string value;
+	keyboard_shortcut ks;
 	run_shortcuts_dialog:
-	if(gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
+	int ret = gtk_dialog_run(GTK_DIALOG(d));
+	if(ret == GTK_RESPONSE_ACCEPT || ret == GTK_RESPONSE_APPLY) {
 		GtkTreeModel *model;
 		GtkTreeIter iter;
 		GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcutsType));
-		keyboard_shortcut ks;
-		if(gtk_tree_selection_get_selected(select, &model, &iter)) gtk_tree_model_get(GTK_TREE_MODEL(tShortcutsType_store), &iter, 1, &ks.type, -1);
+		if(gtk_tree_selection_get_selected(select, &model, &iter)) gtk_tree_model_get(GTK_TREE_MODEL(tShortcutsType_store), &iter, 1, &type, -1);
 		else goto run_shortcuts_dialog;
 		if(gtk_widget_is_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")))) {
-			ks.value = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
-			remove_blank_ends(ks.value);
-			if(ks.value.empty()) {
+			value = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
+			remove_blank_ends(value);
+			if(value.empty()) {
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
 				show_message(_("Empty value."), d);
 				goto run_shortcuts_dialog;
 			}
-			switch(ks.type) {
+			switch(type) {
 				case SHORTCUT_TYPE_FUNCTION: {}
 				case SHORTCUT_TYPE_FUNCTION_WITH_DIALOG: {
-					remove_blanks(ks.value);
-					if(ks.value.length() > 2 && ks.value.substr(ks.value.length() - 2, 2) == "()") ks.value = ks.value.substr(0, ks.value.length() - 2);
-					if(!CALCULATOR->getActiveFunction(ks.value)) {
+					remove_blanks(value);
+					if(value.length() > 2 && value.substr(value.length() - 2, 2) == "()") value = value.substr(0, value.length() - 2);
+					if(!CALCULATOR->getActiveFunction(value)) {
 						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
 						show_message(_("Function not found."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
 						goto run_shortcuts_dialog;
@@ -35818,7 +36021,7 @@ void on_shortcuts_button_new_clicked(GtkButton*, gpointer) {
 					break;
 				}
 				case SHORTCUT_TYPE_VARIABLE: {
-					if(!CALCULATOR->getActiveVariable(ks.value)) {
+					if(!CALCULATOR->getActiveVariable(value)) {
 						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
 						show_message(_("Variable not found."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
 						goto run_shortcuts_dialog;
@@ -35826,7 +36029,7 @@ void on_shortcuts_button_new_clicked(GtkButton*, gpointer) {
 					break;
 				}
 				case SHORTCUT_TYPE_UNIT: {
-					if(!CALCULATOR->getActiveUnit(ks.value)) {
+					if(!CALCULATOR->getActiveUnit(value)) {
 						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
 						show_message(_("Unit not found."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
 						goto run_shortcuts_dialog;
@@ -35836,13 +36039,14 @@ void on_shortcuts_button_new_clicked(GtkButton*, gpointer) {
 				case SHORTCUT_TYPE_META_MODE: {
 					bool b = false;
 					for(size_t i = 0; i < modes.size(); i++) {
-						if(equalsIgnoreCase(modes[i].name, ks.value)) {
+						if(equalsIgnoreCase(modes[i].name, value)) {
 							b = true;
 							break;
 						}
 					}
 					if(!b) {
-						show_message(_("Mode not found."), mainwindow);
+						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
+						show_message(_("Mode not found."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
 						goto run_shortcuts_dialog;
 					}
 					break;
@@ -35851,16 +36055,37 @@ void on_shortcuts_button_new_clicked(GtkButton*, gpointer) {
 				case SHORTCUT_TYPE_INPUT_BASE: {}
 				case SHORTCUT_TYPE_OUTPUT_BASE: {
 					Number nbase; int base;
-					base_from_string(ks.value, base, nbase, ks.type == SHORTCUT_TYPE_INPUT_BASE);
+					base_from_string(value, base, nbase, type == SHORTCUT_TYPE_INPUT_BASE);
 					if(base == BASE_CUSTOM && nbase.isZero()) {
+						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
 						show_message(_("Unsupported base."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
+						goto run_shortcuts_dialog;
+					}
+					break;
+				}
+				case SHORTCUT_TYPE_PRECISION: {}
+				case SHORTCUT_TYPE_MIN_DECIMALS: {}
+				case SHORTCUT_TYPE_MAX_DECIMALS: {}
+				case SHORTCUT_TYPE_MINMAX_DECIMALS: {
+					int v = s2i(value);
+					if(value.find_first_not_of(SPACE NUMBERS) != string::npos || v < -1 || (type == SHORTCUT_TYPE_PRECISION && v < 2)) {
+						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
+						show_message(_("Unsupported value."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
 						goto run_shortcuts_dialog;
 					}
 					break;
 				}
 			}
 		} else {
-			ks.value = "";
+			value = "";
+		}
+		ks.type.push_back(type);
+		ks.value.push_back(value);
+		if(ret == GTK_RESPONSE_APPLY) {
+			gtk_widget_grab_focus(tShortcutsType);
+			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")), "");
+			gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcutsType)));
+			goto run_shortcuts_dialog;
 		}
 		ask_keyboard_shortcut:
 		if(get_keyboard_shortcut(GTK_WINDOW(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog")))) {
@@ -35883,16 +36108,17 @@ void on_shortcuts_button_new_clicked(GtkButton*, gpointer) {
 						}
 					} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tShortcuts_store), &iter));
 				}
-				int type = it->second.type;
+				int type = -1;
+				if(it->second.type.size() == 1) type = it->second.type[0];
 				keyboard_shortcuts.erase(id);
-				update_accels(type);
+				if(type >= 0) update_accels(type);
 			}
 			default_shortcuts = false;
 			GtkTreeIter iter;
 			gtk_list_store_append(tShortcuts_store, &iter);
-			gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_type_text(ks.type), 1, ks.value.c_str(), 2, shortcut_to_text(ks.key, ks.modifier).c_str(), 3, id, -1);
+			gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_types_text(ks.type).c_str(), 1, shortcut_values_text(ks.value).c_str(), 2, shortcut_to_text(ks.key, ks.modifier).c_str(), 3, id, -1);
 			keyboard_shortcuts[id] = ks;
-			update_accels(ks.type);
+			if(ks.type.size() == 1) update_accels(ks.type[0]);
 			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")), "");
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_remove")), FALSE);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_button_edit")), FALSE);
@@ -35910,7 +36136,7 @@ void on_shortcuts_button_remove_clicked(GtkButton*, gpointer) {
 		gtk_tree_model_get(GTK_TREE_MODEL(tShortcuts_store), &iter, 3, &id, -1);
 		unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find(id);
 		int type = -1;
-		if(it != keyboard_shortcuts.end()) type = it->second.type;
+		if(it != keyboard_shortcuts.end() && it->second.type.size() == 1) type = it->second.type[0];
 		keyboard_shortcuts.erase(id);
 		if(type >= 0) update_accels(type);
 		gtk_list_store_remove(tShortcuts_store, &iter);
@@ -35939,12 +36165,11 @@ void on_shortcuts_button_edit_clicked(GtkButton*, gpointer) {
 				if(it == it_old || !ask_question(_("The key combination is already in use.\nDo you wish to replace the current action?"), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")))) {
 					return;
 				}
-				old_type = it->second.type;
+				if(it->second.type.size() == 1) old_type = it->second.type[0];
 				b_replace = true;
 			}
 			keyboard_shortcuts.erase(it_old);
-			g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tShortcuts_selection_changed
-, NULL);
+			g_signal_handlers_block_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tShortcuts_selection_changed, NULL);
 			gtk_list_store_remove(tShortcuts_store, &iter);
 			g_signal_handlers_unblock_matched((gpointer) select, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_tShortcuts_selection_changed, NULL);
 			default_shortcuts = false;
@@ -35963,9 +36188,9 @@ void on_shortcuts_button_edit_clicked(GtkButton*, gpointer) {
 				keyboard_shortcuts.erase(id);
 			}
 			keyboard_shortcuts[id] = ks;
-			update_accels(ks.type);
+			if(ks.type.size() == 1) update_accels(ks.type[0]);
 			gtk_list_store_append(tShortcuts_store, &iter);
-			gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_type_text(ks.type), 1, ks.value.c_str(), 2, shortcut_to_text(ks.key, ks.modifier).c_str(), 3, id, -1);
+			gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_types_text(ks.type).c_str(), 1, shortcut_values_text(ks.value).c_str(), 2, shortcut_to_text(ks.key, ks.modifier).c_str(), 3, id, -1);
 			gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcuts)), &iter);
 		}
 		default_shortcuts = false;
@@ -35981,18 +36206,18 @@ void on_shortcuts_treeview_row_activated(GtkTreeView *w, GtkTreePath *path, GtkT
 	guint64 id;
 	gtk_tree_model_get(GTK_TREE_MODEL(tShortcuts_store), &iter, 3, &id, -1);
 	unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find(id);
-	if(it == keyboard_shortcuts.end()) return;
+	if(it == keyboard_shortcuts.end() && !it->second.type.empty()) return;
 	GtkWidget *d = GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog"));
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 	GtkTreeIter iter2;
 	GtkTreeModel *model;
 	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcutsType));
-	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")), it->second.value.c_str());
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")), it->second.value[0].c_str());
 	if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tShortcutsType_store), &iter2)) {
 		do {
 			int type = 0;
 			gtk_tree_model_get(GTK_TREE_MODEL(tShortcutsType_store), &iter2, 1, &type, -1);
-			if(type == it->second.type) {
+			if(type == it->second.type[0]) {
 				gtk_tree_selection_select_iter(select, &iter2);
 				GtkTreePath *path = gtk_tree_model_get_path(gtk_tree_view_get_model(GTK_TREE_VIEW(tShortcutsType)), &iter2);
 				gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(tShortcutsType), path, NULL, TRUE, 0.5, 0);
@@ -36003,25 +36228,28 @@ void on_shortcuts_treeview_row_activated(GtkTreeView *w, GtkTreePath *path, GtkT
 	}
 	if(column == gtk_tree_view_get_column(w, 1)) gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
 	else gtk_widget_grab_focus(GTK_WIDGET(w));
+	int type;
+	string value;
+	keyboard_shortcut ks;
 	run_shortcuts_dialog:
-	if(gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
-		keyboard_shortcut ks;
-		if(gtk_tree_selection_get_selected(select, &model, &iter2)) gtk_tree_model_get(GTK_TREE_MODEL(tShortcutsType_store), &iter2, 1, &ks.type, -1);
+	int ret = gtk_dialog_run(GTK_DIALOG(d));
+	if(ret == GTK_RESPONSE_ACCEPT || ret == GTK_RESPONSE_APPLY) {
+		if(gtk_tree_selection_get_selected(select, &model, &iter2)) gtk_tree_model_get(GTK_TREE_MODEL(tShortcutsType_store), &iter2, 1, &type, -1);
 		else goto run_shortcuts_dialog;
 		if(gtk_widget_is_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")))) {
-			ks.value = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
-			remove_blank_ends(ks.value);
-			if(ks.value.empty()) {
+			value = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
+			remove_blank_ends(value);
+			if(value.empty()) {
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
 				show_message(_("Empty value."), d);
 				goto run_shortcuts_dialog;
 			}
-			switch(ks.type) {
+			switch(type) {
 				case SHORTCUT_TYPE_FUNCTION: {}
 				case SHORTCUT_TYPE_FUNCTION_WITH_DIALOG: {
-					remove_blanks(ks.value);
-					if(ks.value.length() > 2 && ks.value.substr(ks.value.length() - 2, 2) == "()") ks.value = ks.value.substr(0, ks.value.length() - 2);
-					if(!CALCULATOR->getActiveFunction(ks.value)) {
+					remove_blanks(value);
+					if(value.length() > 2 && value.substr(value.length() - 2, 2) == "()") value = value.substr(0, value.length() - 2);
+					if(!CALCULATOR->getActiveFunction(value)) {
 						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
 						show_message(_("Function not found."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
 						goto run_shortcuts_dialog;
@@ -36029,7 +36257,7 @@ void on_shortcuts_treeview_row_activated(GtkTreeView *w, GtkTreePath *path, GtkT
 					break;
 				}
 				case SHORTCUT_TYPE_VARIABLE: {
-					if(!CALCULATOR->getActiveVariable(ks.value)) {
+					if(!CALCULATOR->getActiveVariable(value)) {
 						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
 						show_message(_("Variable not found."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
 						goto run_shortcuts_dialog;
@@ -36037,7 +36265,7 @@ void on_shortcuts_treeview_row_activated(GtkTreeView *w, GtkTreePath *path, GtkT
 					break;
 				}
 				case SHORTCUT_TYPE_UNIT: {
-					if(!CALCULATOR->getActiveUnit(ks.value)) {
+					if(!CALCULATOR->getActiveUnit(value)) {
 						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
 						show_message(_("Unit not found."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
 						goto run_shortcuts_dialog;
@@ -36047,13 +36275,14 @@ void on_shortcuts_treeview_row_activated(GtkTreeView *w, GtkTreePath *path, GtkT
 				case SHORTCUT_TYPE_META_MODE: {
 					bool b = false;
 					for(size_t i = 0; i < modes.size(); i++) {
-						if(equalsIgnoreCase(modes[i].name, ks.value)) {
+						if(equalsIgnoreCase(modes[i].name, value)) {
 							b = true;
 							break;
 						}
 					}
 					if(!b) {
-						show_message(_("Mode not found."), mainwindow);
+						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
+						show_message(_("Mode not found."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
 						goto run_shortcuts_dialog;
 					}
 					break;
@@ -36062,23 +36291,45 @@ void on_shortcuts_treeview_row_activated(GtkTreeView *w, GtkTreePath *path, GtkT
 				case SHORTCUT_TYPE_INPUT_BASE: {}
 				case SHORTCUT_TYPE_OUTPUT_BASE: {
 					Number nbase; int base;
-					base_from_string(ks.value, base, nbase, ks.type == SHORTCUT_TYPE_INPUT_BASE);
+					base_from_string(value, base, nbase, type == SHORTCUT_TYPE_INPUT_BASE);
 					if(base == BASE_CUSTOM && nbase.isZero()) {
+						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
 						show_message(_("Unsupported base."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
+						goto run_shortcuts_dialog;
+					}
+					break;
+				}
+				case SHORTCUT_TYPE_PRECISION: {}
+				case SHORTCUT_TYPE_MIN_DECIMALS: {}
+				case SHORTCUT_TYPE_MAX_DECIMALS: {}
+				case SHORTCUT_TYPE_MINMAX_DECIMALS: {
+					int v = s2i(value);
+					if(value.find_first_not_of(SPACE NUMBERS) != string::npos || v < -1 || (type == SHORTCUT_TYPE_PRECISION && v < 2)) {
+						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
+						show_message(_("Unsupported value."), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
 						goto run_shortcuts_dialog;
 					}
 					break;
 				}
 			}
 		} else {
-			ks.value = "";
+			value = "";
 		}
-		int old_type = it->second.type;
+		ks.value.push_back(value);
+		ks.type.push_back(type);
+		if(ret == GTK_RESPONSE_APPLY) {
+			gtk_widget_grab_focus(tShortcutsType);
+			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")), "");
+			gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcutsType)));
+			goto run_shortcuts_dialog;
+		}
+		int old_type = -1;
+		if(it->second.type.size() == 1) old_type = it->second.type[0];
 		it->second.type = ks.type;
 		it->second.value = ks.value;
-		update_accels(old_type);
-		update_accels(ks.type);
-		gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_type_text(ks.type), 1, ks.value.c_str(), -1);
+		if(old_type >= 0) update_accels(old_type);
+		if(ks.type.size() == 1) update_accels(ks.type[0]);
+		gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_types_text(ks.type).c_str(), 1, shortcut_values_text(ks.value).c_str(), -1);
 	}
 	gtk_widget_hide(d);
 }
@@ -36212,7 +36463,8 @@ void on_buttonsedit_button_x_clicked(int b_i) {
 						}
 					}
 					if(!b) {
-						show_message(_("Mode not found."), mainwindow);
+						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")));
+						show_message(_("Mode not found."), GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_dialog")));
 						goto run_shortcuts_dialog;
 					}
 					break;
@@ -36223,7 +36475,20 @@ void on_buttonsedit_button_x_clicked(int b_i) {
 					Number nbase; int base;
 					base_from_string(value, base, nbase, type == SHORTCUT_TYPE_INPUT_BASE);
 					if(base == BASE_CUSTOM && nbase.isZero()) {
+						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")));
 						show_message(_("Unsupported base."), GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_dialog")));
+						goto run_shortcuts_dialog;
+					}
+					break;
+				}
+				case SHORTCUT_TYPE_PRECISION: {}
+				case SHORTCUT_TYPE_MIN_DECIMALS: {}
+				case SHORTCUT_TYPE_MAX_DECIMALS: {}
+				case SHORTCUT_TYPE_MINMAX_DECIMALS: {
+					int v = s2i(value);
+					if(value.find_first_not_of(SPACE NUMBERS) != string::npos || v < -1 || (type == SHORTCUT_TYPE_PRECISION && v < 2)) {
+						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")));
+						show_message(_("Unsupported value."), GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_dialog")));
 						goto run_shortcuts_dialog;
 					}
 					break;

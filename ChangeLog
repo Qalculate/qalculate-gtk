@@ -1,7 +1,30 @@
+2023-06-07 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add option to exclude units for unformatted ascii copy
+	* Add toggle precision, and min, max, or min and max decimals to available shortcut and button actions
+	* Allow multiple actions for keyboard shortcuts
+
+2023-05-10 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add support for custom angle units, add all available angle units to the mode menu, and fix selected angle unit in other menus (add hidden item for angle units not available in menu)
+
+2023-04-20 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix copy unformatted ascii when local digit group separator is same as selected decimal separator
+
+2023-04-06 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix Gnome shell search provider segfault, likely related to changes in glib 2.76
+	* Support webkitgtk version in configure options (e.g. --with-webkitgtk=4.1)
+
+2023-02-27 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Show value of local variables using current output options in completion list
+
 2023-02-21 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Language selection in preferences on Windows
-	* Make GUI language consistent with libqalculate language on Windows
+	* Improve detection of default UI language and make GUI language consistent with libqalculate language on Windows
 
 2023-02-19 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
