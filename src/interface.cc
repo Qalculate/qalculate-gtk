@@ -996,6 +996,9 @@ GtkBuilder *getBuilder(const char *filename) {
 
 void set_keypad_tooltip(const gchar *w, const char *s1, const char *s2 = NULL, const char *s3 = NULL, bool b_markup = false, bool b_longpress = true) {
 	string str;
+	if(s1 && strlen(s1) == 0) s1 = NULL;
+	if(s2 && strlen(s2) == 0) s2 = NULL;
+	if(s3 && strlen(s3) == 0) s3 = NULL;
 	if(s1) str += s1;
 	if(s2) {
 		if(s1) str += "\n\n";
@@ -1017,41 +1020,41 @@ void set_keypad_tooltip(const gchar *w, const char *s1, const char *s2 = NULL, c
 #define SET_LABEL_AND_TOOLTIP_2(i, w1, w2, l, t1, t2) \
 	if(index == i || index < 0) {\
 		if(index >= 0 || !custom_buttons[i].text.empty()) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, w1)), custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str()); \
-		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : (custom_buttons[i].value[0].empty() ? shortcut_type_text(custom_buttons[i].type[0], true) : custom_buttons[i].value[0].c_str()), custom_buttons[i].type[1] == -1 ? t2 : (custom_buttons[i].value[1].empty() ? shortcut_type_text(custom_buttons[i].type[1], true) : custom_buttons[i].value[1].c_str()), custom_buttons[i].type[2] == -1 ? (custom_buttons[i].type[1] == -1 ? NULL : t2) : (custom_buttons[i].value[2].empty() ? shortcut_type_text(custom_buttons[i].type[2], true) : custom_buttons[i].value[2].c_str()));\
+		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : button_valuetype_text(custom_buttons[i].type[0], custom_buttons[i].value[0]).c_str(), custom_buttons[i].type[1] == -1 ? t2 : button_valuetype_text(custom_buttons[i].type[1], custom_buttons[i].value[1]).c_str(), custom_buttons[i].type[2] == -1 ? (custom_buttons[i].type[1] == -1 ? NULL : t2) : button_valuetype_text(custom_buttons[i].type[2], custom_buttons[i].value[2]).c_str());\
 	}
 
 #define SET_LABEL_AND_TOOLTIP_2NL(i, w2, t1, t2) \
 	if(index == i || index < 0) {\
-		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : (custom_buttons[i].value[0].empty() ? shortcut_type_text(custom_buttons[i].type[0], true) : custom_buttons[i].value[0].c_str()), custom_buttons[i].type[1] == -1 ? t2 : (custom_buttons[i].value[1].empty() ? shortcut_type_text(custom_buttons[i].type[1], true) : custom_buttons[i].value[1].c_str()), custom_buttons[i].type[2] == -1 ? (custom_buttons[i].type[1] == -1 ? NULL : t2) : (custom_buttons[i].value[2].empty() ? shortcut_type_text(custom_buttons[i].type[2], true) : custom_buttons[i].value[2].c_str()));\
+		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : button_valuetype_text(custom_buttons[i].type[0], custom_buttons[i].value[0]).c_str(), custom_buttons[i].type[1] == -1 ? t2 : button_valuetype_text(custom_buttons[i].type[1], custom_buttons[i].value[1]).c_str(), custom_buttons[i].type[2] == -1 ? (custom_buttons[i].type[1] == -1 ? NULL : t2) : button_valuetype_text(custom_buttons[i].type[2], custom_buttons[i].value[2]).c_str());\
 	}
 
 #define SET_LABEL_AND_TOOLTIP_3(i, w1, w2, l, t1, t2, t3) \
 	if(index == i || index < 0) {\
 		if(index >= 0 || !custom_buttons[i].text.empty()) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, w1)), custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str()); \
-		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : (custom_buttons[i].value[0].empty() ? shortcut_type_text(custom_buttons[i].type[0], true) : custom_buttons[i].value[0].c_str()), custom_buttons[i].type[1] == -1 ? t2 : (custom_buttons[i].value[1].empty() ? shortcut_type_text(custom_buttons[i].type[1], true) : custom_buttons[i].value[1].c_str()), custom_buttons[i].type[2] == -1 ? t3 : (custom_buttons[i].value[2].empty() ? shortcut_type_text(custom_buttons[i].type[2], true) : custom_buttons[i].value[2].c_str()));\
+		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : button_valuetype_text(custom_buttons[i].type[0], custom_buttons[i].value[0]).c_str(), custom_buttons[i].type[1] == -1 ? t2 : button_valuetype_text(custom_buttons[i].type[1], custom_buttons[i].value[1]).c_str(), custom_buttons[i].type[2] == -1 ? t3 : button_valuetype_text(custom_buttons[i].type[2], custom_buttons[i].value[2]).c_str());\
 	}
 
 #define SET_LABEL_AND_TOOLTIP_3NP(i, w1, w2, l, t1, t2, t3) \
 	if(index == i || index < 0) {\
 		if(index >= 0 || !custom_buttons[i].text.empty()) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, w1)), custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str()); \
-		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : (custom_buttons[i].value[0].empty() ? shortcut_type_text(custom_buttons[i].type[0], true) : custom_buttons[i].value[0].c_str()), custom_buttons[i].type[1] == -1 ? t2 : (custom_buttons[i].value[1].empty() ? shortcut_type_text(custom_buttons[i].type[1], true) : custom_buttons[i].value[1].c_str()), custom_buttons[i].type[2] == -1 ? t3 : (custom_buttons[i].value[2].empty() ? shortcut_type_text(custom_buttons[i].type[2], true) : custom_buttons[i].value[2].c_str()), false, custom_buttons[i].type[0] == -1);\
+		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : button_valuetype_text(custom_buttons[i].type[0], custom_buttons[i].value[0]).c_str(), custom_buttons[i].type[1] == -1 ? t2 : button_valuetype_text(custom_buttons[i].type[1], custom_buttons[i].value[1]).c_str(), custom_buttons[i].type[2] == -1 ? t3 :button_valuetype_text(custom_buttons[i].type[2], custom_buttons[i].value[2]).c_str(), false, custom_buttons[i].type[0] == -1);\
 	}
 
 #define SET_LABEL_AND_TOOLTIP_3M(i, w1, w2, l, t1, t2, t3) \
 	if(index == i || index < 0) {\
 		if(index >= 0 || !custom_buttons[i].text.empty()) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, w1)), custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str()); \
-		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : (custom_buttons[i].value[0].empty() ? shortcut_type_text(custom_buttons[i].type[0], true) : custom_buttons[i].value[0].c_str()), custom_buttons[i].type[1] == -1 ? t2 : (custom_buttons[i].value[1].empty() ? shortcut_type_text(custom_buttons[i].type[1], true) : custom_buttons[i].value[1].c_str()), custom_buttons[i].type[2] == -1 ? t3 : (custom_buttons[i].value[2].empty() ? shortcut_type_text(custom_buttons[i].type[2], true) : custom_buttons[i].value[2].c_str()), true);\
+		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : button_valuetype_text(custom_buttons[i].type[0], custom_buttons[i].value[0]).c_str(), custom_buttons[i].type[1] == -1 ? t2 : button_valuetype_text(custom_buttons[i].type[1], custom_buttons[i].value[1]).c_str(), custom_buttons[i].type[2] == -1 ? t3 : button_valuetype_text(custom_buttons[i].type[2], custom_buttons[i].value[2]).c_str(), true);\
 	}
 
 #define SET_LABEL_AND_TOOLTIP_3NL(i, w2, t1, t2, t3) \
 	if(index == i || index < 0) {\
-		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : (custom_buttons[i].value[0].empty() ? shortcut_type_text(custom_buttons[i].type[0], true) : custom_buttons[i].value[0].c_str()), custom_buttons[i].type[1] == -1 ? t2 : (custom_buttons[i].value[1].empty() ? shortcut_type_text(custom_buttons[i].type[1], true) : custom_buttons[i].value[1].c_str()), custom_buttons[i].type[2] == -1 ? t3 : (custom_buttons[i].value[2].empty() ? shortcut_type_text(custom_buttons[i].type[2], true) : custom_buttons[i].value[2].c_str()));\
+		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : button_valuetype_text(custom_buttons[i].type[0], custom_buttons[i].value[0]).c_str(), custom_buttons[i].type[1] == -1 ? t2 : button_valuetype_text(custom_buttons[i].type[1], custom_buttons[i].value[1]).c_str(), custom_buttons[i].type[2] == -1 ? t3 : button_valuetype_text(custom_buttons[i].type[2], custom_buttons[i].value[2]).c_str());\
 	}
 
 #define SET_LABEL_AND_TOOLTIP_3C(i, w1, w2, l) \
 	if(index == i || index < 0) {\
 		if(index >= 0 || !custom_buttons[i].text.empty()) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, w1)), custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str()); \
-		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? NULL : (custom_buttons[i].value[0].empty() ? shortcut_type_text(custom_buttons[i].type[0], true) : custom_buttons[i].value[0].c_str()), custom_buttons[i].type[1] == -1 ? NULL : (custom_buttons[i].value[1].empty() ? shortcut_type_text(custom_buttons[i].type[1], true) : custom_buttons[i].value[1].c_str()), custom_buttons[i].type[2] == -1 ? NULL : (custom_buttons[i].value[2].empty() ? shortcut_type_text(custom_buttons[i].type[2], true) : custom_buttons[i].value[2].c_str()));\
+		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? NULL : button_valuetype_text(custom_buttons[i].type[0], custom_buttons[i].value[0]).c_str(), custom_buttons[i].type[1] == -1 ? NULL : button_valuetype_text(custom_buttons[i].type[1], custom_buttons[i].value[1]).c_str(), custom_buttons[i].type[2] == -1 ? NULL : button_valuetype_text(custom_buttons[i].type[2], custom_buttons[i].value[2]).c_str());\
 	}
 
 void update_custom_buttons(int index) {
@@ -1059,13 +1062,13 @@ void update_custom_buttons(int index) {
 		if(custom_buttons[0].text.empty()) gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_move")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_move")));
 		else gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_move")), GTK_WIDGET(gtk_builder_get_object(main_builder, "label_move")));
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_move")), custom_buttons[0].text.c_str());
-		set_keypad_tooltip("button_move", custom_buttons[0].type[0] == -1 ? _("Cycle through previous expression") : (custom_buttons[0].value[0].empty() ? shortcut_type_text(custom_buttons[0].type[0], true) : custom_buttons[0].value[0].c_str()), custom_buttons[0].type[1] < 0 ? NULL : (custom_buttons[0].value[1].empty() ? shortcut_type_text(custom_buttons[0].type[1], true) : custom_buttons[0].value[1].c_str()), custom_buttons[0].type[2] < 0 ? NULL : (custom_buttons[0].value[2].empty() ? shortcut_type_text(custom_buttons[0].type[2], true) : custom_buttons[0].value[2].c_str()), false, custom_buttons[0].type[0] != -1);
+		set_keypad_tooltip("button_move", custom_buttons[0].type[0] == -1 ? _("Cycle through previous expression") : button_valuetype_text(custom_buttons[0].type[0], custom_buttons[0].value[0]).c_str(), custom_buttons[0].type[1] < 0 ? NULL : button_valuetype_text(custom_buttons[0].type[1], custom_buttons[0].value[1]).c_str(), custom_buttons[0].type[2] < 0 ? NULL : button_valuetype_text(custom_buttons[0].type[0], custom_buttons[0].value[2]).c_str(), false, custom_buttons[0].type[0] != -1);
 	}
 	if(index == 1 || index < 0) {
 		if(custom_buttons[1].text.empty()) gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_move2")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_move2")));
 		else gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_move2")), GTK_WIDGET(gtk_builder_get_object(main_builder, "label_move2")));
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_move2")), custom_buttons[1].text.c_str());
-		set_keypad_tooltip("button_move2", custom_buttons[1].type[0] == -1 ? _("Move cursor left or right") : (custom_buttons[1].value[0].empty() ? shortcut_type_text(custom_buttons[1].type[0], true) : custom_buttons[1].value[0].c_str()), custom_buttons[1].type[1] == -1 ? _("Move cursor to beginning or end") : (custom_buttons[1].value[1].empty() ? shortcut_type_text(custom_buttons[1].type[1], true) : custom_buttons[1].value[1].c_str()), custom_buttons[1].type[2] == -1 ? (custom_buttons[1].type[1] == -1 ? NULL : _("Move cursor to beginning or end")) : (custom_buttons[1].value[2].empty() ? shortcut_type_text(custom_buttons[1].type[2], true) : custom_buttons[1].value[2].c_str()), false, custom_buttons[1].type[0] != -1);
+		set_keypad_tooltip("button_move2", custom_buttons[1].type[0] == -1 ? _("Move cursor left or right") : button_valuetype_text(custom_buttons[1].type[0], custom_buttons[1].value[0]).c_str(), custom_buttons[1].type[1] == -1 ? _("Move cursor to beginning or end") : button_valuetype_text(custom_buttons[1].type[1], custom_buttons[1].value[1]).c_str(), custom_buttons[1].type[2] == -1 ? (custom_buttons[1].type[1] == -1 ? NULL : _("Move cursor to beginning or end")) : button_valuetype_text(custom_buttons[1].type[2], custom_buttons[1].value[2]).c_str(), false, custom_buttons[1].type[0] != -1);
 	}
 	SET_LABEL_AND_TOOLTIP_2(2, "label_percent", "button_percent", "%", CALCULATOR->v_percent->title(true).c_str(), CALCULATOR->v_permille->title(true).c_str())
 	SET_LABEL_AND_TOOLTIP_3(3, "label_plusminus", "button_plusminus", "±", _("Uncertainty/interval"), _("Relative error"), _("Interval"))
@@ -4160,6 +4163,7 @@ GtkWidget* get_shortcuts_dialog(void) {
 		gtk_tree_view_column_set_sort_column_id(column, 0);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tShortcuts), column);
 		renderer = gtk_cell_renderer_text_new();
+		g_object_set(G_OBJECT(renderer), "ellipsize", PANGO_ELLIPSIZE_END, "width-chars", 20, NULL);
 		column = gtk_tree_view_column_new_with_attributes(_("Value"), renderer, "text", 1, NULL);
 		gtk_tree_view_column_set_sort_column_id(column, 1);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tShortcuts), column);
@@ -4219,7 +4223,7 @@ GtkWidget* get_shortcuts_dialog(void) {
 		for(unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.begin(); it != keyboard_shortcuts.end(); ++it) {
 			GtkTreeIter iter;
 			gtk_list_store_insert(tShortcuts_store, &iter, 0);
-			gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_types_text(it->second.type).c_str(), 1, shortcut_values_text(it->second.value).c_str(), 2, shortcut_to_text(it->second.key, it->second.modifier).c_str(), 3, (guint64) it->second.key + (guint64) G_MAXUINT32 * (guint64) it->second.modifier, -1);
+			gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_types_text(it->second.type).c_str(), 1, shortcut_values_text(it->second.value, it->second.type).c_str(), 2, shortcut_to_text(it->second.key, it->second.modifier).c_str(), 3, (guint64) it->second.key + (guint64) G_MAXUINT32 * (guint64) it->second.modifier, -1);
 		}
 
 		gtk_builder_connect_signals(shortcuts_builder, NULL);
@@ -4253,7 +4257,7 @@ GtkWidget* get_floatingpoint_dialog(void) {
 }
 
 #define SET_BUTTONS_EDIT_ITEM_3(l, t1, t2, t3) \
-	{gtk_list_store_set(tButtonsEdit_store, &iter, 1, custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str(), 2, custom_buttons[i].type[0] == -1 ? t1 : (custom_buttons[i].value[0].empty() ? shortcut_type_text(custom_buttons[i].type[0]) : custom_buttons[i].value[0].c_str()), 3, custom_buttons[i].type[1] == -1 ? t2 : (custom_buttons[i].value[1].empty() ? shortcut_type_text(custom_buttons[i].type[1]) : custom_buttons[i].value[1].c_str()), 4, custom_buttons[i].type[2] == -1 ? t3 : (custom_buttons[i].value[2].empty() ? shortcut_type_text(custom_buttons[i].type[2]) : custom_buttons[i].value[2].c_str()), -1);\
+	{gtk_list_store_set(tButtonsEdit_store, &iter, 1, custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str(), 2, custom_buttons[i].type[0] == -1 ? t1 : button_valuetype_text(custom_buttons[i].type[0], custom_buttons[i].value[0]).c_str(), 3, custom_buttons[i].type[1] == -1 ? t2 : button_valuetype_text(custom_buttons[i].type[1], custom_buttons[i].value[1]).c_str(), 4, custom_buttons[i].type[2] == -1 ? t3 : button_valuetype_text(custom_buttons[i].type[2], custom_buttons[i].value[2]).c_str(), -1);\
 	if(index >= 0) break;}
 	
 #define SET_BUTTONS_EDIT_ITEM_3B(l, t1, t2, t3) SET_BUTTONS_EDIT_ITEM_3(gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(main_builder, l))), t1, t2, t3)

@@ -171,8 +171,9 @@ struct custom_button {
 
 std::string shortcut_to_text(guint key, guint state);
 const gchar *shortcut_type_text(int type, bool return_null = false);
+std::string button_valuetype_text(int type, const std::string &value);
 std::string shortcut_types_text(const std::vector<int> &type);
-std::string shortcut_values_text(const std::vector<std::string> &value);
+std::string shortcut_values_text(const std::vector<std::string> &value, const std::vector<int> &type);
 void update_accels(int type = -1);
 
 DECLARE_BUILTIN_FUNCTION(AnswerFunction, 0)

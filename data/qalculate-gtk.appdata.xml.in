@@ -48,6 +48,32 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="4.7.0" date="2023-07-03">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Allow multiple actions for keyboard shortcuts</li>
+      <li>Add toggle precision, and min, max, or min and max decimals to available shortcut and button actions</li>
+      <li>Add option to exclude units for unformatted ASCII copy</li>
+      <li>Add optional value to copy result action, allowing expression copy and formatting selection</li>
+      <li>Fix copy unformatted ASCII when local digit group separator is same as selected decimal separator</li>
+      <li>Support for custom default angle unit, e.g. turn, arcsec, arcmin</li>
+      <li>Append default angle unit (instead of always radians) when converting value without unit to angle unit</li>
+      <li>More consistent addition and removal of angle unit from function arguments</li>
+      <li>Always interpret ./, .*, and .^ as entrywise operators if user intention is unclear</li>
+      <li>Change order of operations to place entrywise and ordinary operators on the same precedence level</li>
+      <li>Add function, kron(), for Kronecker product, and constants for Pauli matrices</li>
+      <li>Add radius to planets dataset and update other properties</li>
+      <li>Support replacement of unknown variables within variable values</li>
+      <li>Fix besselj(0, 0)</li>
+      <li>Fix incomplete calculation in tan() with try exact approximation</li>
+      <li>Fix 0/0=0 equality (do not return true) and output of 2/0 (and similar)</li>
+      <li>Fixes and improvements for newtonsolve() and secantsolve()</li>
+      <li>Fix segfault when MathStructure is deleted after Calculator, and in destructor of calculated DynamicVariable (called from Calculator destructor)</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
   <release version="4.6.1" date="2023-04-17">
    <description>
     <p>Changes:</p>

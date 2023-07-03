@@ -273,14 +273,43 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="shortcuts_entry_value">
+                  <object class="GtkStack" id="shortcuts_stack_value">
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="tooltip-text" translatable="yes">Argument name</property>
-                    <property name="width-chars">30</property>
-                    <property name="primary-icon-activatable">False</property>
-                    <property name="secondary-icon-activatable">False</property>
-                    <signal name="activate" handler="on_shortcuts_entry_value_activate" swapped="no"/>
+                    <property name="can-focus">False</property>
+                    <child>
+                      <object class="GtkEntry" id="shortcuts_entry_value">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="tooltip-text" translatable="yes">Argument name</property>
+                        <property name="width-chars">30</property>
+                        <property name="primary-icon-activatable">False</property>
+                        <property name="secondary-icon-activatable">False</property>
+                        <signal name="activate" handler="on_shortcuts_entry_value_activate" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="name">page0</property>
+                        <property name="title" translatable="yes">page0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBoxText" id="shortcuts_combo_value">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="has-entry">True</property>
+                        <property name="popup-fixed-width">False</property>
+                        <child internal-child="entry">
+                          <object class="GtkEntry" id="shortcuts_combo_value_entry">
+                            <property name="name">shortcuts_combo_value_entry</property>
+                            <property name="can-focus">False</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="name">page1</property>
+                        <property name="title" translatable="yes">page1</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">True</property>

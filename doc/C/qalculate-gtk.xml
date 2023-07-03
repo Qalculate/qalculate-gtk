@@ -4,7 +4,7 @@
   <!ENTITY legal SYSTEM "legal.xml">
   <!ENTITY appversion "4.6.1">
   <!ENTITY manrevision "4.6.1">
-  <!ENTITY date "April 2023">
+  <!ENTITY date "July 2023">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -15,7 +15,7 @@
 <title>&app; Manual v&manrevision;</title>
 <bookinfo>
 	<copyright>
-		<year>2005-2007, 2016-2022</year>
+		<year>2005-2007, 2016-2023</year>
 		<holder>Hanna Knutsson</holder>
 	</copyright>
 	<publisher> 
@@ -1697,16 +1697,15 @@ Usually, mathematical expressions are written as normally expected. Standard ope
 <orderedlist>
 	<listitem><para>Parenthesis</para></listitem>
 	<listitem><para>E (10^x)</para></listitem>
-	<listitem><para>Exponentiation (x^y)</para></listitem>
+	<listitem><para>Exponentiation (^, .^)</para></listitem>
 	<listitem><para>Functions (e.g. <quote>sqrt(2)</quote>)</para></listitem>
 	<listitem><para>Bitwise NOT (~)</para></listitem>
 	<listitem><para>Logical NOT (!)</para></listitem>
-	<listitem><para>Element-wise operations, and cross and dot products (.*, ./, .^, ., ⨯)</para></listitem>
-	<listitem><para>Multiplication, division, integer divison, remainder, modulo (*, /, //, %, %%)</para></listitem>
+	<listitem><para>Multiplication, division, integer divison, remainder, modulo (*, /, //, %, %%, .*, ./, ., ⨯)</para></listitem>
 	<listitem><para>Parallel sum (∥)</para></listitem>
 	<listitem><para>Addition and subtraction (+, −)</para></listitem>
 	<listitem><para>Bitwise NOT (~)</para></listitem>
-	<listitem><para>&lt;&lt; and &gt;&gt;</para></listitem>
+	<listitem><para>Bitwise Shift (&lt;&lt;, &gt;&gt;)</para></listitem>
 	<listitem><para>Comparison (&gt;, &lt;, =, &gt;=, &lt;=)</para></listitem>
 	<listitem><para>Bitwise AND (&amp;)</para></listitem>
 	<listitem><para>Bitwise XOR (⊻)</para></listitem>
