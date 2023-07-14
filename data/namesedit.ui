@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
+<!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkDialog" id="names_edit_dialog">
@@ -51,6 +51,8 @@
             <property name="spacing">6</property>
             <child>
               <object class="GtkScrolledWindow" id="names_edit_scrolled">
+                <property name="width-request">600</property>
+                <property name="height-request">200</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="shadow-type">in</property>
@@ -72,108 +74,56 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="names_edit_editbox1">
+              <object class="GtkBox" id="hbox1">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="spacing">6</property>
+                <property name="halign">end</property>
+                <property name="valign">end</property>
+                <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel" id="label1">
+                  <object class="GtkButton" id="names_edit_button_add">
+                    <property name="label" translatable="yes">_Add</property>
                     <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Name</property>
+                    <property name="can-focus">True</property>
+                    <property name="can-default">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">Add entered argument definition</property>
+                    <property name="use-underline">True</property>
+                    <signal name="clicked" handler="on_names_edit_button_add_clicked" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
-                    <property name="fill">False</property>
+                    <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="names_edit_entry_name">
+                  <object class="GtkButton" id="names_edit_button_modify">
+                    <property name="label" translatable="yes">_Edit</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="has-focus">True</property>
-                    <property name="primary-icon-activatable">False</property>
-                    <property name="secondary-icon-activatable">False</property>
-                    <signal name="activate" handler="on_names_edit_entry_name_activate" swapped="no"/>
-                    <signal name="changed" handler="on_names_edit_entry_name_changed" swapped="no"/>
+                    <property name="can-default">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">Modify selected argument</property>
+                    <property name="use-underline">True</property>
+                    <signal name="clicked" handler="on_names_edit_button_modify_clicked" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
+                    <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="hbox99">
+                  <object class="GtkButton" id="names_edit_button_remove">
+                    <property name="label" translatable="yes">_Remove</property>
                     <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <child>
-                      <object class="GtkButton" id="names_edit_button_add">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="receives-default">False</property>
-                        <property name="tooltip-text" translatable="yes">Add new name</property>
-                        <signal name="clicked" handler="on_names_edit_button_add_clicked" swapped="no"/>
-                        <child>
-                          <object class="GtkImage" id="image1">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="icon-name">document-new</property>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="names_edit_button_modify">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="receives-default">False</property>
-                        <property name="tooltip-text" translatable="yes">Apply changes to the selected name</property>
-                        <signal name="clicked" handler="on_names_edit_button_modify_clicked" swapped="no"/>
-                        <child>
-                          <object class="GtkImage" id="image2">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="icon-name">document-save</property>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="names_edit_button_remove">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="receives-default">False</property>
-                        <property name="tooltip-text" translatable="yes">Remove the selected name</property>
-                        <signal name="clicked" handler="on_names_edit_button_remove_clicked" swapped="no"/>
-                        <child>
-                          <object class="GtkImage" id="image3">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="icon-name">edit-delete</property>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">2</property>
-                      </packing>
-                    </child>
-                    <style>
-                      <class name="linked"/>
-                    </style>
+                    <property name="can-focus">True</property>
+                    <property name="can-default">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">Remove selected argument</property>
+                    <property name="use-underline">True</property>
+                    <signal name="clicked" handler="on_names_edit_button_remove_clicked" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -181,150 +131,14 @@
                     <property name="position">2</property>
                   </packing>
                 </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <!-- n-columns=4 n-rows=3 -->
-              <object class="GtkGrid" id="names_edit_editbox2">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="row-spacing">6</property>
-                <property name="column-spacing">6</property>
-                <child>
-                  <object class="GtkCheckButton" id="names_edit_checkbutton_abbreviation">
-                    <property name="label" translatable="yes">Abbreviation</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="use-underline">True</property>
-                    <property name="draw-indicator">True</property>
-                    <signal name="toggled" handler="on_names_edit_checkbutton_abbreviation_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="names_edit_checkbutton_unicode">
-                    <property name="label" translatable="yes">Unicode</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="use-underline">True</property>
-                    <property name="draw-indicator">True</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="names_edit_checkbutton_plural">
-                    <property name="label" translatable="yes">Plural</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="use-underline">True</property>
-                    <property name="draw-indicator">True</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="names_edit_checkbutton_suffix">
-                    <property name="label" translatable="yes">Suffix</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="use-underline">True</property>
-                    <property name="draw-indicator">True</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="names_edit_checkbutton_reference">
-                    <property name="label" translatable="yes">Reference</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="use-underline">True</property>
-                    <property name="draw-indicator">True</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">2</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="names_edit_checkbutton_avoid_input">
-                    <property name="label" translatable="yes">Avoid input</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="use-underline">True</property>
-                    <property name="draw-indicator">True</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">3</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="names_edit_checkbutton_case_sensitive">
-                    <property name="label" translatable="yes">Case sensitive</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="use-underline">True</property>
-                    <property name="draw-indicator">True</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">2</property>
-                    <property name="top-attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="names_edit_checkbutton_completion_only">
-                    <property name="label" translatable="yes">Completion only</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="use-underline">True</property>
-                    <property name="draw-indicator">True</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">3</property>
-                    <property name="top-attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
+                <style>
+                  <class name="linked"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">2</property>
+                <property name="position">1</property>
               </packing>
             </child>
           </object>

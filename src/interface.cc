@@ -72,7 +72,7 @@ using std::deque;
 extern GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *datasetedit_builder, *datasets_builder, *setbase_builder, *decimals_builder;
 extern GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
 extern GtkBuilder *shortcuts_builder, *preferences_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder, *buttonsedit_builder;
-extern GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_builder, *calendarconversion_builder, *floatingpoint_builder;
+extern GtkBuilder *periodictable_builder, *percentage_builder, *calendarconversion_builder, *floatingpoint_builder;
 extern vector<mode_struct> modes;
 
 GtkWidget *mainwindow;
@@ -113,6 +113,8 @@ GtkListStore *tDataProperties_store;
 
 GtkWidget *tNames;
 GtkListStore *tNames_store;
+GtkCellRenderer *names_edit_name_renderer;
+GtkTreeViewColumn *names_edit_name_column;
 
 GtkWidget *tShortcuts, *tShortcutsType;
 GtkListStore *tShortcuts_store, *tShortcutsType_store;
@@ -3080,11 +3082,15 @@ GtkWidget* get_function_edit_dialog(void) {
 		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctionArguments));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+		g_object_set(G_OBJECT(renderer), "ellipsize", PANGO_ELLIPSIZE_END, NULL);
+		g_object_set(G_OBJECT(renderer), "editable", TRUE, "ellipsize", PANGO_ELLIPSIZE_END, "mode", GTK_CELL_RENDERER_MODE_EDITABLE, NULL);
+		g_signal_connect((gpointer) renderer, "edited", G_CALLBACK(on_function_edit_treeview_arguments_name_edited), NULL);
 		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", 0, NULL);
 		gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
 		gtk_tree_view_column_set_expand(column, TRUE);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tFunctionArguments), column);
 		renderer = gtk_cell_renderer_text_new();
+		g_object_set(G_OBJECT(renderer), "ellipsize", PANGO_ELLIPSIZE_END, NULL);
 		column = gtk_tree_view_column_new_with_attributes(_("Type"), renderer, "text", 1, NULL);
 		gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
 		gtk_tree_view_column_set_expand(column, TRUE);
@@ -3098,30 +3104,32 @@ GtkWidget* get_function_edit_dialog(void) {
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tFunctionArguments_selection_changed), NULL);
 
 		tSubfunctions = GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_treeview_subfunctions"));
-		tSubfunctions_store = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_UINT, G_TYPE_BOOLEAN);
+		tSubfunctions_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_UINT);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tSubfunctions), GTK_TREE_MODEL(tSubfunctions_store));
 		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tSubfunctions));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
+		renderer = gtk_cell_renderer_text_new();
+		g_object_set(G_OBJECT(renderer), "editable", TRUE, "ellipsize", PANGO_ELLIPSIZE_END, "mode", GTK_CELL_RENDERER_MODE_EDITABLE, NULL);
+		g_signal_connect((gpointer) renderer, "edited", G_CALLBACK(on_function_edit_treeview_subfunctions_expression_edited), NULL);
+		column = gtk_tree_view_column_new_with_attributes(_("Expression"), renderer, "text", 1, NULL);
+		gtk_tree_view_column_set_expand(column, TRUE);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(tSubfunctions), column);
+		renderer = gtk_cell_renderer_toggle_new();
+		g_signal_connect((gpointer) renderer, "toggled", G_CALLBACK(on_function_edit_treeview_subfunctions_precalculate_toggled), NULL);
+		column = gtk_tree_view_column_new_with_attributes(_("Precalculate"), renderer, "active", 2, NULL);
+		gtk_tree_view_column_set_expand(column, FALSE);
+		g_object_set(G_OBJECT(renderer), "xalign", 0.5, "activatable", TRUE, NULL);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(tSubfunctions), column);
 		renderer = gtk_cell_renderer_text_new();
 		column = gtk_tree_view_column_new_with_attributes(_("Reference"), renderer, "text", 0, NULL);
 		gtk_tree_view_column_set_expand(column, FALSE);
 		g_object_set(G_OBJECT(renderer), "xalign", 0.5, NULL);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tSubfunctions), column);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Expression"), renderer, "text", 1, NULL);
-		gtk_tree_view_column_set_expand(column, TRUE);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tSubfunctions), column);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Precalculate"), renderer, "text", 2, NULL);
-		gtk_tree_view_column_set_expand(column, FALSE);
-		g_object_set(G_OBJECT(renderer), "xalign", 0.5, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tSubfunctions), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tSubfunctions_selection_changed), NULL);
-
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(functionedit_builder, "function_edit_combobox_argument_type")), 0);
 
 		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_description"))), "changed", G_CALLBACK(on_function_changed), NULL);
 		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_expression"))), "changed", G_CALLBACK(on_function_changed), NULL);
+		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_subexpression"))), "changed", G_CALLBACK(on_subfunction_changed), NULL);
 
 		gtk_builder_connect_signals(functionedit_builder, NULL);
 
@@ -3151,25 +3159,6 @@ GtkWidget* get_function_edit_dialog(void) {
 	return GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_dialog"));
 }
 
-GtkWidget* get_simple_function_edit_dialog(void) {
-
-	if(!simplefunctionedit_builder) {
-
-		simplefunctionedit_builder = getBuilder("simplefunctionedit.ui");
-		g_assert(simplefunctionedit_builder != NULL);
-
-		g_assert(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_dialog") != NULL);
-
-		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_textview_expression"))), "changed", G_CALLBACK(on_simple_function_changed), NULL);
-
-		gtk_builder_connect_signals(simplefunctionedit_builder, NULL);
-
-	}
-
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(simplefunctionedit_builder, "simple_function_edit_dialog"));
-}
-
 GtkWidget* get_variable_edit_dialog(void) {
 
 	if(!variableedit_builder) {
@@ -3177,7 +3166,11 @@ GtkWidget* get_variable_edit_dialog(void) {
 		variableedit_builder = getBuilder("variableedit.ui");
 		g_assert(variableedit_builder != NULL);
 
-		g_assert (gtk_builder_get_object(variableedit_builder, "variable_edit_dialog") != NULL);
+		g_assert(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog") != NULL);
+
+		g_signal_connect(gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(variableedit_builder, "variable_edit_textview_value"))), "changed", G_CALLBACK(on_variables_edit_textview_value_changed), NULL);
+		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(variableedit_builder, "variable_edit_textview_description"))), "changed", G_CALLBACK(on_variable_changed), NULL);
+		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(variableedit_builder, "variable_edit_textview_value"))), "changed", G_CALLBACK(on_variable_changed), NULL);
 
 		gtk_builder_connect_signals(variableedit_builder, NULL);
 
@@ -3222,26 +3215,6 @@ GtkWidget* get_unknown_edit_dialog(void) {
 
 	}
 
-	/* populate combo menu */
-
-	GHashTable *hash = g_hash_table_new(g_str_hash, g_str_equal);
-	GList *items = NULL;
-	for(size_t i = 0; i < CALCULATOR->variables.size(); i++) {
-		if(!CALCULATOR->variables[i]->category().empty()) {
-			//add category if not present
-			if(g_hash_table_lookup(hash, (gconstpointer) CALCULATOR->variables[i]->category().c_str()) == NULL) {
-				items = g_list_insert_sorted(items, (gpointer) CALCULATOR->variables[i]->category().c_str(), (GCompareFunc) compare_categories);
-				//remember added categories
-				g_hash_table_insert(hash, (gpointer) CALCULATOR->variables[i]->category().c_str(), (gpointer) hash);
-			}
-		}
-	}
-	for(GList *l = items; l != NULL; l = l->next) {
-		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combo_category")), (const gchar*) l->data);
-	}
-	g_hash_table_destroy(hash);
-	g_list_free(items);
-
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog"));
 }
@@ -3264,7 +3237,7 @@ GtkWidget* get_matrix_edit_dialog(void) {
 		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tMatrixEdit));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_NONE);
 
-		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(matrixedit_builder, "matrix_edit_combo_category")))), _("Matrices"));
+		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(matrixedit_builder, "matrix_edit_textview_description"))), "changed", G_CALLBACK(on_matrix_changed), NULL);
 
 		gtk_builder_connect_signals(matrixedit_builder, NULL);
 
@@ -3377,26 +3350,36 @@ GtkWidget* get_names_edit_dialog(void) {
 
 		tNames = GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_treeview"));
 
-		tNames_store = gtk_list_store_new(NAMES_N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
+		tNames_store = gtk_list_store_new(NAMES_N_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tNames), GTK_TREE_MODEL(tNames_store));
 		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tNames));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+		names_edit_name_renderer = renderer;
+		g_signal_connect((gpointer) renderer, "edited", G_CALLBACK(on_names_edit_name_edited), NULL);
+		g_object_set(G_OBJECT(renderer), "editable", true, NULL);
 		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", NAMES_NAME_COLUMN, NULL);
+		names_edit_name_column = column;
 		gtk_tree_view_column_set_sort_column_id(column, NAMES_NAME_COLUMN);
 		gtk_tree_view_column_set_expand(column, TRUE);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tNames), column);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Abbreviation"), renderer, "text", NAMES_ABBREVIATION_STRING_COLUMN, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, NAMES_ABBREVIATION_STRING_COLUMN);
+		renderer = gtk_cell_renderer_toggle_new();
+		g_signal_connect((gpointer) renderer, "toggled", G_CALLBACK(on_names_edit_property_toggled), GINT_TO_POINTER(NAMES_ABBREVIATION_COLUMN));
+		g_object_set(G_OBJECT(renderer), "xalign", 0.5, "activatable", TRUE, NULL);
+		column = gtk_tree_view_column_new_with_attributes(_("Abbreviation"), renderer, "active", NAMES_ABBREVIATION_COLUMN, NULL);
+		gtk_tree_view_column_set_sort_column_id(column, NAMES_ABBREVIATION_COLUMN);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tNames), column);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Plural"), renderer, "text", NAMES_PLURAL_STRING_COLUMN, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, NAMES_PLURAL_STRING_COLUMN);
+		renderer = gtk_cell_renderer_toggle_new();
+		g_signal_connect((gpointer) renderer, "toggled", G_CALLBACK(on_names_edit_property_toggled), GINT_TO_POINTER(NAMES_PLURAL_COLUMN));
+		g_object_set(G_OBJECT(renderer), "xalign", 0.5, "activatable", TRUE, NULL);
+		column = gtk_tree_view_column_new_with_attributes(_("Plural"), renderer, "active", NAMES_PLURAL_COLUMN, NULL);
+		gtk_tree_view_column_set_sort_column_id(column, NAMES_PLURAL_COLUMN);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tNames), column);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Reference"), renderer, "text", NAMES_REFERENCE_STRING_COLUMN, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, NAMES_REFERENCE_STRING_COLUMN);
+		renderer = gtk_cell_renderer_toggle_new();
+		column = gtk_tree_view_column_new_with_attributes(_("Reference"), renderer, "active", NAMES_REFERENCE_COLUMN, NULL);
+		g_signal_connect((gpointer) renderer, "toggled", G_CALLBACK(on_names_edit_property_toggled), GINT_TO_POINTER(NAMES_REFERENCE_COLUMN));
+		g_object_set(G_OBJECT(renderer), "xalign", 0.5, "activatable", TRUE, NULL);
+		gtk_tree_view_column_set_sort_column_id(column, NAMES_REFERENCE_COLUMN);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tNames), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tNames_selection_changed), NULL);
 
@@ -3987,7 +3970,9 @@ GtkWidget* get_argument_rules_dialog(void) {
 		argumentrules_builder = getBuilder("argumentrules.ui");
 		g_assert(argumentrules_builder != NULL);
 
-		g_assert (gtk_builder_get_object(argumentrules_builder, "argument_rules_dialog") != NULL);
+		g_assert(gtk_builder_get_object(argumentrules_builder, "argument_rules_dialog") != NULL);
+
+		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(argumentrules_builder, "argument_rules_combobox_type")), 0);
 
 		gtk_builder_connect_signals(argumentrules_builder, NULL);
 

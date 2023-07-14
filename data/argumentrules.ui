@@ -1,46 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.36.0 -->
+<!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkAdjustment" id="adjustment_max">
     <property name="lower">-1000000</property>
     <property name="upper">1000000</property>
     <property name="value">1</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_min">
     <property name="lower">-1000000</property>
     <property name="upper">1000000</property>
     <property name="value">1</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
   </object>
   <object class="GtkDialog" id="argument_rules_dialog">
-    <property name="can_focus">False</property>
-    <property name="border_width">6</property>
+    <property name="can-focus">False</property>
+    <property name="border-width">6</property>
     <property name="title" translatable="yes">Argument Rules</property>
     <property name="modal">True</property>
-    <property name="type_hint">dialog</property>
+    <property name="type-hint">dialog</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbox56">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="hbuttonbox10">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
+            <property name="can-focus">False</property>
+            <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="button6">
                 <property name="label" translatable="yes">_Cancel</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="can_default">True</property>
-                <property name="receives_default">False</property>
-                <property name="tooltip_text" translatable="yes">Do not save modifications</property>
-                <property name="use_underline">True</property>
+                <property name="can-focus">True</property>
+                <property name="can-default">True</property>
+                <property name="receives-default">False</property>
+                <property name="tooltip-text" translatable="yes">Do not save modifications</property>
+                <property name="use-underline">True</property>
                 <child internal-child="accessible">
                   <object class="AtkObject" id="button6-atkobject">
                     <property name="AtkObject::accessible-description" translatable="yes">Do not save modifications</property>
@@ -57,11 +57,11 @@
               <object class="GtkButton" id="argument_rules_button_ok">
                 <property name="label" translatable="yes">_OK</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="can_default">True</property>
-                <property name="receives_default">False</property>
-                <property name="tooltip_text" translatable="yes">Accept the modification of argument rules</property>
-                <property name="use_underline">True</property>
+                <property name="can-focus">True</property>
+                <property name="can-default">True</property>
+                <property name="receives-default">False</property>
+                <property name="tooltip-text" translatable="yes">Accept the modification of argument rules</property>
+                <property name="use-underline">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -73,297 +73,311 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="pack_type">end</property>
+            <property name="pack-type">end</property>
             <property name="position">0</property>
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="vbox57">
+          <!-- n-columns=2 n-rows=11 -->
+          <object class="GtkGrid" id="grid">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="border_width">6</property>
-            <property name="orientation">vertical</property>
-            <property name="spacing">6</property>
+            <property name="can-focus">False</property>
+            <property name="border-width">6</property>
+            <property name="row-spacing">6</property>
+            <property name="column-spacing">12</property>
+            <child>
+              <object class="GtkEntry" id="argument_rules_entry_name">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Argument name</property>
+                <property name="width-chars">20</property>
+                <property name="primary-icon-activatable">False</property>
+                <property name="secondary-icon-activatable">False</property>
+                <signal name="changed" handler="on_argument_changed" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="argument_rules_combobox_type">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="active">0</property>
+                <items>
+                  <item translatable="yes">Free</item>
+                  <item translatable="yes">Number</item>
+                  <item translatable="yes">Integer</item>
+                  <item translatable="yes">Symbol</item>
+                  <item translatable="yes">Text</item>
+                  <item translatable="yes">Date</item>
+                  <item translatable="yes">Vector</item>
+                  <item translatable="yes">Matrix</item>
+                  <item translatable="yes">Positive number</item>
+                  <item translatable="yes">Non-zero number</item>
+                  <item translatable="yes">Non-negative number</item>
+                  <item translatable="yes">Positive integer</item>
+                  <item translatable="yes">Non-zero integer</item>
+                  <item translatable="yes">Non-negative integer</item>
+                  <item translatable="yes">Boolean</item>
+                  <item translatable="yes">Object</item>
+                  <item translatable="yes">Function</item>
+                  <item translatable="yes">Unit</item>
+                  <item translatable="yes">Variable</item>
+                  <item translatable="yes">File</item>
+                  <item translatable="yes">Angle</item>
+                  <item translatable="yes">Data object</item>
+                  <item translatable="yes">Data property</item>
+                </items>
+                <signal name="changed" handler="on_argument_changed" swapped="no"/>
+                <signal name="changed" handler="on_argument_rules_combobox_type_changed" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">1</property>
+              </packing>
+            </child>
             <child>
               <object class="GtkCheckButton" id="argument_rules_checkbutton_enable_test">
                 <property name="label" translatable="yes">Enable rules and type test</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="use_underline">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="margin-top">6</property>
+                <property name="use-underline">True</property>
                 <property name="active">True</property>
-                <property name="draw_indicator">True</property>
+                <property name="draw-indicator">True</property>
                 <signal name="toggled" handler="on_argument_changed" swapped="no"/>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">0</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">2</property>
+                <property name="width">2</property>
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="hbox94">
+              <object class="GtkCheckButton" id="argument_rules_checkbutton_enable_condition">
+                <property name="label" translatable="yes">Custom condition</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="spacing">6</property>
-                <property name="homogeneous">True</property>
-                <child>
-                  <object class="GtkCheckButton" id="argument_rules_checkbutton_enable_condition">
-                    <property name="label" translatable="yes">Custom condition</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
-                    <signal name="toggled" handler="on_argument_changed" swapped="no"/>
-                    <signal name="toggled" handler="on_argument_rules_checkbutton_enable_condition_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="argument_rules_entry_condition">
-                    <property name="visible">True</property>
-                    <property name="sensitive">False</property>
-                    <property name="can_focus">True</property>
-                    <property name="tooltip_text" translatable="yes">For example if argument is a matrix that must have equal number of rows and columns: rows(\x) = columns(\x)</property>
-                    <property name="primary_icon_activatable">False</property>
-                    <property name="secondary_icon_activatable">False</property>
-                    <signal name="changed" handler="on_argument_changed" swapped="no"/>
-                    <signal name="key-press-event" handler="on_math_entry_key_press_event" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="use-underline">True</property>
+                <property name="draw-indicator">True</property>
+                <signal name="toggled" handler="on_argument_changed" swapped="no"/>
+                <signal name="toggled" handler="on_argument_rules_checkbutton_enable_condition_toggled" swapped="no"/>
               </object>
               <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="argument_rules_entry_condition">
+                <property name="visible">True</property>
+                <property name="sensitive">False</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">For example if argument is a matrix that must have equal number of rows and columns: rows(\x) = columns(\x)</property>
+                <property name="primary-icon-activatable">False</property>
+                <property name="secondary-icon-activatable">False</property>
+                <signal name="changed" handler="on_argument_changed" swapped="no"/>
+                <signal name="key-press-event" handler="on_math_entry_key_press_event" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">3</property>
               </packing>
             </child>
             <child>
               <object class="GtkCheckButton" id="argument_rules_checkbutton_allow_matrix">
                 <property name="label" translatable="yes">Allow matrix</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="use_underline">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="use-underline">True</property>
                 <property name="active">True</property>
-                <property name="draw_indicator">True</property>
+                <property name="draw-indicator">True</property>
                 <signal name="toggled" handler="on_argument_changed" swapped="no"/>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">2</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">4</property>
+                <property name="width">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkCheckButton" id="argument_rules_checkbutton_forbid_zero">
                 <property name="label" translatable="yes">Forbid zero</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="use_underline">True</property>
-                <property name="draw_indicator">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="use-underline">True</property>
+                <property name="draw-indicator">True</property>
                 <signal name="toggled" handler="on_argument_changed" swapped="no"/>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">3</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">5</property>
+                <property name="width">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkCheckButton" id="argument_rules_checkbutton_handle_vector">
                 <property name="label" translatable="yes">Handle vector</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="tooltip_text" translatable="yes">Calculate function for each separate element in vector.</property>
-                <property name="use_underline">True</property>
-                <property name="draw_indicator">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="tooltip-text" translatable="yes">Calculate function for each separate element in vector.</property>
+                <property name="use-underline">True</property>
+                <property name="draw-indicator">True</property>
                 <signal name="toggled" handler="on_argument_changed" swapped="no"/>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">4</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">6</property>
+                <property name="width">2</property>
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="argument_rules_box_min">
+              <object class="GtkCheckButton" id="argument_rules_checkbutton_enable_min">
+                <property name="label" translatable="yes">Min</property>
                 <property name="visible">True</property>
-                <property name="sensitive">False</property>
-                <property name="can_focus">False</property>
-                <property name="orientation">vertical</property>
-                <property name="spacing">6</property>
-                <child>
-                  <object class="GtkBox" id="hbox97">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="spacing">6</property>
-                    <property name="homogeneous">True</property>
-                    <child>
-                      <object class="GtkCheckButton" id="argument_rules_checkbutton_enable_min">
-                        <property name="label" translatable="yes">Min</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_argument_changed" swapped="no"/>
-                        <signal name="toggled" handler="on_argument_rules_checkbutton_enable_min_toggled" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSpinButton" id="argument_rules_spinbutton_min">
-                        <property name="visible">True</property>
-                        <property name="sensitive">False</property>
-                        <property name="can_focus">True</property>
-                        <property name="primary_icon_activatable">False</property>
-                        <property name="secondary_icon_activatable">False</property>
-                        <property name="adjustment">adjustment_min</property>
-                        <property name="climb_rate">1</property>
-                        <property name="numeric">True</property>
-                        <signal name="changed" handler="on_argument_changed" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="argument_rules_checkbutton_min_include_equals">
-                    <property name="label" translatable="yes">Include equals</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="halign">end</property>
-                    <property name="valign">start</property>
-                    <property name="use_underline">True</property>
-                    <property name="active">True</property>
-                    <property name="draw_indicator">True</property>
-                    <signal name="toggled" handler="on_argument_changed" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="use-underline">True</property>
+                <property name="draw-indicator">True</property>
+                <signal name="toggled" handler="on_argument_changed" swapped="no"/>
+                <signal name="toggled" handler="on_argument_rules_checkbutton_enable_min_toggled" swapped="no"/>
               </object>
               <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">5</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">7</property>
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="argument_rules_box_max">
+              <object class="GtkCheckButton" id="argument_rules_checkbutton_min_include_equals">
+                <property name="label" translatable="yes">Include equals</property>
                 <property name="visible">True</property>
-                <property name="sensitive">False</property>
-                <property name="can_focus">False</property>
-                <property name="orientation">vertical</property>
-                <property name="spacing">6</property>
-                <child>
-                  <object class="GtkBox" id="hbox98">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="spacing">6</property>
-                    <property name="homogeneous">True</property>
-                    <child>
-                      <object class="GtkCheckButton" id="argument_rules_checkbutton_enable_max">
-                        <property name="label" translatable="yes">Max</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_argument_changed" swapped="no"/>
-                        <signal name="toggled" handler="on_argument_rules_checkbutton_enable_max_toggled" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSpinButton" id="argument_rules_spinbutton_max">
-                        <property name="visible">True</property>
-                        <property name="sensitive">False</property>
-                        <property name="can_focus">True</property>
-                        <property name="primary_icon_activatable">False</property>
-                        <property name="secondary_icon_activatable">False</property>
-                        <property name="adjustment">adjustment_max</property>
-                        <property name="climb_rate">1</property>
-                        <property name="numeric">True</property>
-                        <signal name="changed" handler="on_argument_changed" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="argument_rules_checkbutton_max_include_equals">
-                    <property name="label" translatable="yes">Include equals</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="halign">end</property>
-                    <property name="valign">start</property>
-                    <property name="use_underline">True</property>
-                    <property name="active">True</property>
-                    <property name="draw_indicator">True</property>
-                    <signal name="toggled" handler="on_argument_changed" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="halign">end</property>
+                <property name="valign">start</property>
+                <property name="use-underline">True</property>
+                <property name="active">True</property>
+                <property name="draw-indicator">True</property>
+                <signal name="toggled" handler="on_argument_changed" swapped="no"/>
               </object>
               <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">6</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">8</property>
               </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="argument_rules_spinbutton_min">
+                <property name="visible">True</property>
+                <property name="sensitive">False</property>
+                <property name="can-focus">True</property>
+                <property name="text" translatable="yes">1</property>
+                <property name="primary-icon-activatable">False</property>
+                <property name="secondary-icon-activatable">False</property>
+                <property name="adjustment">adjustment_min</property>
+                <property name="climb-rate">1</property>
+                <property name="numeric">True</property>
+                <property name="value">1</property>
+                <signal name="changed" handler="on_argument_changed" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">7</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkCheckButton" id="argument_rules_checkbutton_enable_max">
+                <property name="label" translatable="yes">Max</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="use-underline">True</property>
+                <property name="draw-indicator">True</property>
+                <signal name="toggled" handler="on_argument_changed" swapped="no"/>
+                <signal name="toggled" handler="on_argument_rules_checkbutton_enable_max_toggled" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">9</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkCheckButton" id="argument_rules_checkbutton_max_include_equals">
+                <property name="label" translatable="yes">Include equals</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="halign">end</property>
+                <property name="valign">start</property>
+                <property name="use-underline">True</property>
+                <property name="active">True</property>
+                <property name="draw-indicator">True</property>
+                <signal name="toggled" handler="on_argument_changed" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">10</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="argument_rules_spinbutton_max">
+                <property name="visible">True</property>
+                <property name="sensitive">False</property>
+                <property name="can-focus">True</property>
+                <property name="text" translatable="yes">1</property>
+                <property name="primary-icon-activatable">False</property>
+                <property name="secondary-icon-activatable">False</property>
+                <property name="adjustment">adjustment_max</property>
+                <property name="climb-rate">1</property>
+                <property name="numeric">True</property>
+                <property name="value">1</property>
+                <signal name="changed" handler="on_argument_changed" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">9</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label80">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Type</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label1">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Name</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
             </child>
           </object>
           <packing>
             <property name="expand">False</property>
-            <property name="fill">False</property>
+            <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
         </child>
@@ -373,8 +387,5 @@
       <action-widget response="-6">button6</action-widget>
       <action-widget response="-5">argument_rules_button_ok</action-widget>
     </action-widgets>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
   </object>
 </interface>

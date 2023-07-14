@@ -339,7 +339,7 @@ void add_as_variable();
 
 void fetch_exchange_rates(int timeout, int n = -1);
 
-bool edit_argument(Argument *arg = NULL);
+Argument *edit_argument(Argument *arg = NULL);
 
 void edit_unknown(const char *category = "", Variable *v = NULL, GtkWidget *win = NULL);
 void edit_variable(const char *category = "", Variable *v = NULL, MathStructure *mstruct_ = NULL, GtkWidget *win = NULL);
@@ -351,7 +351,7 @@ void export_csv_file(KnownVariable *v = NULL, GtkWidget *win = NULL);
 void edit_dataobject(DataSet *ds, DataObject *o = NULL, GtkWidget *win = NULL);
 void edit_dataset(DataSet *ds = NULL, GtkWidget *win = NULL);
 
-void edit_names(ExpressionItem *item = NULL, const gchar *namestr = NULL, GtkWidget *win = NULL, bool is_dp = false, DataProperty *dp = NULL);
+void edit_names(ExpressionItem *item = NULL, const gchar *namestr = NULL, GtkWidget *win = NULL, bool is_unit = false, bool is_dp = false, DataProperty *dp = NULL);
 
 gchar *font_name_to_css(const char *font_name, const char *w = "*");
 
@@ -755,12 +755,13 @@ void on_functions_button_close_clicked(GtkButton *button, gpointer user_data);
 void on_datasets_button_close_clicked(GtkButton *button, gpointer user_data);
 void on_function_edit_entry_name_changed(GtkEditable *editable, gpointer user_data);
 void on_variable_edit_entry_name_changed(GtkEditable *editable, gpointer user_data);
+void on_variables_edit_textview_value_changed(GtkTextBuffer*, gpointer user_data);
 void on_unknown_edit_checkbutton_custom_assumptions_toggled(GtkToggleButton *w, gpointer user_data);
 void on_unknown_edit_combobox_type_changed(GtkComboBox *om, gpointer user_data);
 void on_unknown_edit_combobox_sign_changed(GtkComboBox *om, gpointer user_data);
 
 void on_function_changed();
-void on_simple_function_changed();
+void on_subfunction_changed();
 void on_argument_changed();
 void on_unit_changed();
 void on_variable_changed();
@@ -881,9 +882,13 @@ void on_function_edit_button_remove_argument_clicked(GtkButton *w, gpointer user
 void on_function_edit_button_modify_argument_clicked(GtkButton *w, gpointer user_data);
 void on_function_edit_entry_argument_name_activate(GtkEntry *entry, gpointer user_data);
 void on_function_edit_button_rules_clicked(GtkButton *w, gpointer user_data);
+void on_argument_rules_combobox_type_changed(GtkComboBox *om, gpointer user_data);
 void on_argument_rules_checkbutton_enable_min_toggled(GtkToggleButton *w, gpointer user_data);
 void on_argument_rules_checkbutton_enable_max_toggled(GtkToggleButton *w, gpointer user_data);
 void on_argument_rules_checkbutton_enable_condition_toggled(GtkToggleButton *w, gpointer user_data);
+void on_function_edit_treeview_arguments_name_edited(GtkCellRendererText *renderer, gchar *path, gchar *new_text, gpointer user_data);
+void on_function_edit_treeview_subfunctions_expression_edited(GtkCellRendererText *renderer, gchar *path, gchar *new_text, gpointer user_data);
+void on_function_edit_treeview_subfunctions_precalculate_toggled(GtkCellRendererToggle *renderer, gchar *path, gpointer user_data);
 
 void on_variable_edit_button_names_clicked(GtkWidget *w, gpointer user_data);
 void on_unknown_edit_button_names_clicked(GtkWidget *w, gpointer user_data);
@@ -891,6 +896,8 @@ void on_matrix_edit_button_names_clicked(GtkWidget *w, gpointer user_data);
 void on_function_edit_button_names_clicked(GtkWidget *w, gpointer user_data);
 void on_unit_edit_button_names_clicked(GtkWidget *w, gpointer user_data);
 
+void on_names_edit_property_toggled(GtkCellRendererToggle *renderer, gchar *path, gpointer user_data);
+void on_names_edit_name_edited(GtkCellRendererText *renderer, gchar *path, gchar *new_text, gpointer user_data);
 void on_names_edit_checkbutton_abbreviation_toggled(GtkToggleButton *w, gpointer user_data);
 void on_names_edit_button_add_clicked(GtkButton *w, gpointer user_data);
 void on_names_edit_button_modify_clicked(GtkButton *w, gpointer user_data);
