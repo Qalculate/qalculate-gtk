@@ -191,6 +191,8 @@ extern int horizontal_button_padding, vertical_button_padding;
 extern bool use_duo_syms;
 extern string custom_angle_unit;
 extern int previous_precision;
+extern int tooltips_enabled;
+extern bool toe_changed;
 
 extern string nbases_error_color, nbases_warning_color;
 
@@ -352,6 +354,46 @@ void test_border() {
 		border_tested = true;
 	}
 #endif
+}
+
+void set_tooltips_enabled(GtkWidget *w, bool b) {
+	if(!w) return;
+	if(b) {
+		gchar *gstr = gtk_widget_get_tooltip_text(w);
+		if(gstr) {
+			gtk_widget_set_has_tooltip(w, TRUE);
+			g_free(gstr);
+		} else {
+			gstr = gtk_widget_get_tooltip_markup(w);
+			if(gstr) {
+				gtk_widget_set_has_tooltip(w, TRUE);
+				g_free(gstr);
+			} else if(GTK_IS_ENTRY(w)) {
+				gstr = gtk_entry_get_icon_tooltip_text(GTK_ENTRY(w), GTK_ENTRY_ICON_SECONDARY);
+				if(gstr) {
+					gtk_widget_set_has_tooltip(w, TRUE);
+					g_free(gstr);
+				} else {
+					gstr = gtk_entry_get_icon_tooltip_markup(GTK_ENTRY(w), GTK_ENTRY_ICON_SECONDARY);
+					if(gstr) {
+						gtk_widget_set_has_tooltip(w, TRUE);
+						g_free(gstr);
+					}
+				}
+			}
+		}
+	} else {
+		gtk_widget_set_has_tooltip(w, FALSE);
+	}
+	if(GTK_IS_BIN(w)) {
+		set_tooltips_enabled(gtk_bin_get_child(GTK_BIN(w)), b);
+	} else if(GTK_IS_CONTAINER(w)) {
+		GList *list = gtk_container_get_children(GTK_CONTAINER(w));
+		for(GList *l = list; l != NULL; l = l->next) {
+			if(GTK_IS_WIDGET(l->data)) set_tooltips_enabled(GTK_WIDGET(l->data), b);
+		}
+		g_list_free(list);
+	}
 }
 
 GdkRGBA c_gray;
@@ -1023,40 +1065,47 @@ void set_keypad_tooltip(const gchar *w, const char *s1, const char *s2 = NULL, c
 	if(index == i || index < 0) {\
 		if(index >= 0 || !custom_buttons[i].text.empty()) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, w1)), custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str()); \
 		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : button_valuetype_text(custom_buttons[i].type[0], custom_buttons[i].value[0]).c_str(), custom_buttons[i].type[1] == -1 ? t2 : button_valuetype_text(custom_buttons[i].type[1], custom_buttons[i].value[1]).c_str(), custom_buttons[i].type[2] == -1 ? (custom_buttons[i].type[1] == -1 ? NULL : t2) : button_valuetype_text(custom_buttons[i].type[2], custom_buttons[i].value[2]).c_str());\
+		if(index >= 0 && tooltips_enabled != 1) gtk_widget_set_has_tooltip(GTK_WIDGET(gtk_builder_get_object(main_builder, w2)), FALSE);\
 	}
 
 #define SET_LABEL_AND_TOOLTIP_2NL(i, w2, t1, t2) \
 	if(index == i || index < 0) {\
 		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : button_valuetype_text(custom_buttons[i].type[0], custom_buttons[i].value[0]).c_str(), custom_buttons[i].type[1] == -1 ? t2 : button_valuetype_text(custom_buttons[i].type[1], custom_buttons[i].value[1]).c_str(), custom_buttons[i].type[2] == -1 ? (custom_buttons[i].type[1] == -1 ? NULL : t2) : button_valuetype_text(custom_buttons[i].type[2], custom_buttons[i].value[2]).c_str());\
+		if(index >= 0 && tooltips_enabled != 1) gtk_widget_set_has_tooltip(GTK_WIDGET(gtk_builder_get_object(main_builder, w2)), FALSE);\
 	}
 
 #define SET_LABEL_AND_TOOLTIP_3(i, w1, w2, l, t1, t2, t3) \
 	if(index == i || index < 0) {\
 		if(index >= 0 || !custom_buttons[i].text.empty()) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, w1)), custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str()); \
 		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : button_valuetype_text(custom_buttons[i].type[0], custom_buttons[i].value[0]).c_str(), custom_buttons[i].type[1] == -1 ? t2 : button_valuetype_text(custom_buttons[i].type[1], custom_buttons[i].value[1]).c_str(), custom_buttons[i].type[2] == -1 ? t3 : button_valuetype_text(custom_buttons[i].type[2], custom_buttons[i].value[2]).c_str());\
+		if(index >= 0 && tooltips_enabled != 1) gtk_widget_set_has_tooltip(GTK_WIDGET(gtk_builder_get_object(main_builder, w2)), FALSE);\
 	}
 
 #define SET_LABEL_AND_TOOLTIP_3NP(i, w1, w2, l, t1, t2, t3) \
 	if(index == i || index < 0) {\
 		if(index >= 0 || !custom_buttons[i].text.empty()) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, w1)), custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str()); \
 		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : button_valuetype_text(custom_buttons[i].type[0], custom_buttons[i].value[0]).c_str(), custom_buttons[i].type[1] == -1 ? t2 : button_valuetype_text(custom_buttons[i].type[1], custom_buttons[i].value[1]).c_str(), custom_buttons[i].type[2] == -1 ? t3 :button_valuetype_text(custom_buttons[i].type[2], custom_buttons[i].value[2]).c_str(), false, custom_buttons[i].type[0] == -1);\
+		if(index >= 0 && tooltips_enabled != 1) gtk_widget_set_has_tooltip(GTK_WIDGET(gtk_builder_get_object(main_builder, w2)), FALSE);\
 	}
 
 #define SET_LABEL_AND_TOOLTIP_3M(i, w1, w2, l, t1, t2, t3) \
 	if(index == i || index < 0) {\
 		if(index >= 0 || !custom_buttons[i].text.empty()) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, w1)), custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str()); \
 		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : button_valuetype_text(custom_buttons[i].type[0], custom_buttons[i].value[0]).c_str(), custom_buttons[i].type[1] == -1 ? t2 : button_valuetype_text(custom_buttons[i].type[1], custom_buttons[i].value[1]).c_str(), custom_buttons[i].type[2] == -1 ? t3 : button_valuetype_text(custom_buttons[i].type[2], custom_buttons[i].value[2]).c_str(), true);\
+		if(index >= 0 && tooltips_enabled != 1) gtk_widget_set_has_tooltip(GTK_WIDGET(gtk_builder_get_object(main_builder, w2)), FALSE);\
 	}
 
 #define SET_LABEL_AND_TOOLTIP_3NL(i, w2, t1, t2, t3) \
 	if(index == i || index < 0) {\
 		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? t1 : button_valuetype_text(custom_buttons[i].type[0], custom_buttons[i].value[0]).c_str(), custom_buttons[i].type[1] == -1 ? t2 : button_valuetype_text(custom_buttons[i].type[1], custom_buttons[i].value[1]).c_str(), custom_buttons[i].type[2] == -1 ? t3 : button_valuetype_text(custom_buttons[i].type[2], custom_buttons[i].value[2]).c_str());\
+		if(index >= 0 && tooltips_enabled != 1) gtk_widget_set_has_tooltip(GTK_WIDGET(gtk_builder_get_object(main_builder, w2)), FALSE);\
 	}
 
 #define SET_LABEL_AND_TOOLTIP_3C(i, w1, w2, l) \
 	if(index == i || index < 0) {\
 		if(index >= 0 || !custom_buttons[i].text.empty()) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, w1)), custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str()); \
 		set_keypad_tooltip(w2, custom_buttons[i].type[0] == -1 ? NULL : button_valuetype_text(custom_buttons[i].type[0], custom_buttons[i].value[0]).c_str(), custom_buttons[i].type[1] == -1 ? NULL : button_valuetype_text(custom_buttons[i].type[1], custom_buttons[i].value[1]).c_str(), custom_buttons[i].type[2] == -1 ? NULL : button_valuetype_text(custom_buttons[i].type[2], custom_buttons[i].value[2]).c_str());\
+		if(index >= 0 && tooltips_enabled != 1) gtk_widget_set_has_tooltip(GTK_WIDGET(gtk_builder_get_object(main_builder, w2)), FALSE);\
 	}
 
 void update_custom_buttons(int index) {
@@ -1064,13 +1113,16 @@ void update_custom_buttons(int index) {
 		if(custom_buttons[0].text.empty()) gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_move")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_move")));
 		else gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_move")), GTK_WIDGET(gtk_builder_get_object(main_builder, "label_move")));
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_move")), custom_buttons[0].text.c_str());
-		set_keypad_tooltip("button_move", custom_buttons[0].type[0] == -1 ? _("Cycle through previous expression") : button_valuetype_text(custom_buttons[0].type[0], custom_buttons[0].value[0]).c_str(), custom_buttons[0].type[1] < 0 ? NULL : button_valuetype_text(custom_buttons[0].type[1], custom_buttons[0].value[1]).c_str(), custom_buttons[0].type[2] < 0 ? NULL : button_valuetype_text(custom_buttons[0].type[0], custom_buttons[0].value[2]).c_str(), false, custom_buttons[0].type[0] != -1);
+		set_keypad_tooltip("button_move", custom_buttons[0].type[0] == -1 ? _("Cycle through previous expression") :
+		button_valuetype_text(custom_buttons[0].type[0], custom_buttons[0].value[0]).c_str(), custom_buttons[0].type[1] < 0 ? NULL : button_valuetype_text(custom_buttons[0].type[1], custom_buttons[0].value[1]).c_str(), custom_buttons[0].type[2] < 0 ? NULL : button_valuetype_text(custom_buttons[0].type[0], custom_buttons[0].value[2]).c_str(), false, custom_buttons[0].type[0] != -1);
+		if(index >= 0 && tooltips_enabled != 1) gtk_widget_set_has_tooltip(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move")), FALSE);
 	}
 	if(index == 1 || index < 0) {
 		if(custom_buttons[1].text.empty()) gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_move2")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_move2")));
 		else gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_move2")), GTK_WIDGET(gtk_builder_get_object(main_builder, "label_move2")));
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_move2")), custom_buttons[1].text.c_str());
 		set_keypad_tooltip("button_move2", custom_buttons[1].type[0] == -1 ? _("Move cursor left or right") : button_valuetype_text(custom_buttons[1].type[0], custom_buttons[1].value[0]).c_str(), custom_buttons[1].type[1] == -1 ? _("Move cursor to beginning or end") : button_valuetype_text(custom_buttons[1].type[1], custom_buttons[1].value[1]).c_str(), custom_buttons[1].type[2] == -1 ? (custom_buttons[1].type[1] == -1 ? NULL : _("Move cursor to beginning or end")) : button_valuetype_text(custom_buttons[1].type[2], custom_buttons[1].value[2]).c_str(), false, custom_buttons[1].type[0] != -1);
+		if(index >= 0 && tooltips_enabled != 1) gtk_widget_set_has_tooltip(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move2")), FALSE);
 	}
 	SET_LABEL_AND_TOOLTIP_2(2, "label_percent", "button_percent", "%", CALCULATOR->v_percent->title(true).c_str(), CALCULATOR->v_permille->title(true).c_str())
 	SET_LABEL_AND_TOOLTIP_3(3, "label_plusminus", "button_plusminus", "±", _("Uncertainty/interval"), _("Relative error"), _("Interval"))
@@ -2561,6 +2613,7 @@ GtkWidget* get_functions_dialog(void) {
 
 	}
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(functions_builder, "functions_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_dialog"));
 }
@@ -2621,6 +2674,7 @@ GtkWidget* get_variables_dialog(void) {
 
 	}
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_dialog"));
 }
@@ -2731,6 +2785,7 @@ GtkWidget* get_units_dialog(void) {
 
 	}
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog"));
 }
@@ -2796,13 +2851,13 @@ GtkWidget* get_datasets_dialog(void) {
 		gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(datasets_builder, "vbox2")), 6);
 #endif
 
-
 		gtk_builder_connect_signals(datasets_builder, NULL);
 
 		update_datasets_tree();
 
 	}
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(datasets_builder, "datasets_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(datasets_builder, "datasets_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(datasets_builder, "datasets_dialog"));
 }
@@ -2829,6 +2884,7 @@ GtkWidget* get_preferences_dialog(void) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_remember_position")), remember_position);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_keep_above")), always_on_top);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_persistent_keypad")), persistent_keypad);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_tooltips")), tooltips_enabled == 0 ? 2 : (tooltips_enabled == 1 ? 0 : 1));
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_title")), title_type);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_history_expression")), history_expression_type);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_unicode_signs")), printops.use_unicode_signs);
@@ -3005,6 +3061,7 @@ GtkWidget* get_preferences_dialog(void) {
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_use_systray_icon")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_hide_on_startup")));
 #endif
+
 		gtk_builder_connect_signals(preferences_builder, NULL);
 
 	}
@@ -3024,6 +3081,7 @@ GtkWidget* get_preferences_dialog(void) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay")), enable_completion);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay")), (double) completion_delay);
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(preferences_builder, "preferences_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_dialog"));
 }
@@ -3038,7 +3096,7 @@ GtkWidget* get_unit_edit_dialog(void) {
 		g_assert (gtk_builder_get_object(unitedit_builder, "unit_edit_dialog") != NULL);
 
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unitedit_builder, "unit_edit_combobox_class")), 0);
-		
+
 		gtk_builder_connect_signals(unitedit_builder, NULL);
 
 	}
@@ -3063,6 +3121,7 @@ GtkWidget* get_unit_edit_dialog(void) {
 	g_hash_table_destroy(hash);
 	g_list_free(items);
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(unitedit_builder, "unit_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_dialog"));
 }
@@ -3155,6 +3214,7 @@ GtkWidget* get_function_edit_dialog(void) {
 	g_hash_table_destroy(hash);
 	g_list_free(items);
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(functionedit_builder, "function_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_dialog"));
 }
@@ -3195,6 +3255,7 @@ GtkWidget* get_variable_edit_dialog(void) {
 	g_hash_table_destroy(hash);
 	g_list_free(items);
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog"));
 }
@@ -3215,6 +3276,7 @@ GtkWidget* get_unknown_edit_dialog(void) {
 
 	}
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog"));
 }
@@ -3263,6 +3325,7 @@ GtkWidget* get_matrix_edit_dialog(void) {
 	g_hash_table_destroy(hash);
 	g_list_free(items);
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(matrixedit_builder, "matrix_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_dialog"));
 }
@@ -3288,12 +3351,14 @@ GtkWidget* get_matrix_dialog(void) {
 
 	}
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(matrix_builder, "matrix_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(matrix_builder, "matrix_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(matrix_builder, "matrix_dialog"));
 
 }
 
 GtkWidget* get_dataobject_edit_dialog(void) {
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(datasets_builder, "dataobject_edit_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(datasets_builder, "dataobject_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(datasets_builder, "dataobject_edit_dialog"));
 }
@@ -3330,11 +3395,13 @@ GtkWidget* get_dataset_edit_dialog(void) {
 		gtk_builder_connect_signals(datasetedit_builder, NULL);
 
 	}
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(datasetedit_builder, "dataset_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_dialog"));
 }
 
 GtkWidget* get_dataproperty_edit_dialog(void) {
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_dialog"));
 }
@@ -3387,6 +3454,7 @@ GtkWidget* get_names_edit_dialog(void) {
 
 	}
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(namesedit_builder, "names_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_dialog"));
 }
@@ -3425,6 +3493,7 @@ GtkWidget* get_csv_import_dialog(void) {
 	g_hash_table_destroy(hash);
 	g_list_free(items);
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(csvimport_builder, "csv_import_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(csvimport_builder, "csv_import_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(csvimport_builder, "csv_import_dialog"));
 }
@@ -3444,6 +3513,7 @@ GtkWidget* get_csv_export_dialog(void) {
 
 	}
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(csvexport_builder, "csv_export_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(csvexport_builder, "csv_export_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(csvexport_builder, "csv_export_dialog"));
 
@@ -3652,6 +3722,7 @@ GtkWidget* get_set_base_dialog(void) {
 
 	}
 	prev_output_base = ""; prev_input_base = "";
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(setbase_builder, "set_base_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_dialog"));
 }
@@ -3771,6 +3842,7 @@ GtkWidget* get_nbases_dialog(void) {
 
 	}
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(nbases_builder, "nbases_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_dialog"));
 }
@@ -3803,6 +3875,7 @@ GtkWidget* get_percentage_dialog(void) {
 
 	}
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(percentage_builder, "percentage_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_dialog"));
 }
@@ -3937,6 +4010,7 @@ GtkWidget* get_calendarconversion_dialog(void) {
 
 	}
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog"));
 }
@@ -3978,6 +4052,7 @@ GtkWidget* get_argument_rules_dialog(void) {
 
 	}
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(argumentrules_builder, "argument_rules_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_dialog"));
 }
@@ -3993,6 +4068,7 @@ GtkWidget* get_decimals_dialog(void) {
 
 	}
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(decimals_builder, "decimals_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(decimals_builder, "decimals_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(decimals_builder, "decimals_dialog"));
 }
@@ -4029,6 +4105,7 @@ GtkWidget* get_plot_dialog(void) {
 
 	}
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog"));
 }
@@ -4038,12 +4115,13 @@ GtkWidget* get_precision_dialog(void) {
 		precision_builder = getBuilder("precision.ui");
 		g_assert(precision_builder != NULL);
 
-		g_assert (gtk_builder_get_object(precision_builder, "precision_dialog") != NULL);
+		g_assert(gtk_builder_get_object(precision_builder, "precision_dialog") != NULL);
 
 		gtk_builder_connect_signals(precision_builder, NULL);
 
 	}
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(precision_builder, "precision_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(precision_builder, "precision_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(precision_builder, "precision_dialog"));
 }
@@ -4053,7 +4131,7 @@ GtkWidget* get_periodic_dialog(void) {
 		periodictable_builder = getBuilder("periodictable.ui");
 		g_assert(periodictable_builder != NULL);
 
-		g_assert (gtk_builder_get_object(periodictable_builder, "periodic_dialog") != NULL);
+		g_assert(gtk_builder_get_object(periodictable_builder, "periodic_dialog") != NULL);
 
 		gtk_builder_connect_signals(periodictable_builder, NULL);
 
@@ -4125,6 +4203,7 @@ GtkWidget* get_periodic_dialog(void) {
 		gtk_css_provider_load_from_data(e_style[11], "* {color: #000000; background-image: none;}", -1, NULL);
 	}
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(periodictable_builder, "periodic_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(periodictable_builder, "periodic_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(periodictable_builder, "periodic_dialog"));
 }
@@ -4215,6 +4294,7 @@ GtkWidget* get_shortcuts_dialog(void) {
 
 	}
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog"));
 }
@@ -4237,6 +4317,7 @@ GtkWidget* get_floatingpoint_dialog(void) {
 
 	}
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "floatingpoint_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(floatingpoint_builder, "floatingpoint_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "floatingpoint_dialog"));
 }
@@ -4407,6 +4488,7 @@ GtkWidget* get_buttons_edit_dialog(void) {
 
 	}
 
+	if(!tooltips_enabled || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_dialog")), tooltips_enabled);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_dialog"));
 }

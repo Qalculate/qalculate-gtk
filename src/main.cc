@@ -70,6 +70,7 @@ extern int unformatted_history;
 string custom_title;
 extern string custom_angle_unit;
 extern EvaluationOptions evalops;
+extern int tooltips_enabled;
 
 MathFunction *f_answer;
 MathFunction *f_expression;
@@ -136,6 +137,9 @@ gboolean create_menus_etc(gpointer) {
 		if(!u) u = CALCULATOR->getCompositeUnit(recent_units_pre[i]);
 		unit_inserted(u);
 	}
+
+	if(!tooltips_enabled) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), FALSE);
+	else if(tooltips_enabled > 1) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")), FALSE);
 
 	update_completion();
 	
