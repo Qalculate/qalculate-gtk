@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
+<!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkAdjustment" id="adjustment1">
@@ -112,7 +112,6 @@
             </child>
             <child>
               <object class="GtkLabel" id="label72">
-                <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="halign">start</property>
                 <property name="label" translatable="yes">Descriptive name</property>
@@ -124,7 +123,6 @@
             </child>
             <child>
               <object class="GtkLabel" id="label77">
-                <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="halign">start</property>
                 <property name="label" translatable="yes">Category</property>
@@ -227,7 +225,6 @@
             </child>
             <child>
               <object class="GtkEntry" id="csv_import_entry_desc">
-                <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Title displayed in menus and in variable manager</property>
                 <property name="primary-icon-activatable">False</property>
@@ -319,7 +316,6 @@
             </child>
             <child>
               <object class="GtkComboBoxText" id="csv_import_combo_category">
-                <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="has-entry">True</property>
                 <child internal-child="entry">

@@ -70,7 +70,7 @@ extern int unformatted_history;
 string custom_title;
 extern string custom_angle_unit;
 extern EvaluationOptions evalops;
-extern int tooltips_enabled;
+extern int enable_tooltips;
 
 MathFunction *f_answer;
 MathFunction *f_expression;
@@ -107,18 +107,17 @@ gboolean create_menus_etc(gpointer) {
 
 	test_border();
 
+	generate_units_tree_struct();
+	update_unit_selector_tree();
+	generate_functions_tree_struct();
+	generate_variables_tree_struct();
+
 	//create button menus after definitions have been loaded
 	block_expression_execution++;
 	create_button_menus();
 	block_expression_execution--;
 
 	//create dynamic menus
-	generate_units_tree_struct();
-
-	update_unit_selector_tree();
-
-	generate_functions_tree_struct();
-	generate_variables_tree_struct();
 	create_fmenu();
 	create_vmenu();
 	create_umenu();
@@ -138,8 +137,8 @@ gboolean create_menus_etc(gpointer) {
 		unit_inserted(u);
 	}
 
-	if(!tooltips_enabled) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), FALSE);
-	else if(tooltips_enabled > 1) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")), FALSE);
+	if(!enable_tooltips) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), FALSE);
+	else if(enable_tooltips > 1) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")), FALSE);
 
 	update_completion();
 	
@@ -249,7 +248,7 @@ void create_application(GtkApplication *app) {
 		vans[3]->addName(ans_str + "4");
 		vans[4]->addName(ans_str + "5");
 	}
-	v_memory = new KnownVariable(CALCULATOR->temporaryCategory(), "", m_zero, _("Memory"), true, true);
+	v_memory = new KnownVariable(CALCULATOR->temporaryCategory(), "", m_zero, _("Memory"), false, true);
 	ExpressionName ename;
 	ename.name = "MR";
 	ename.case_sensitive = true;
