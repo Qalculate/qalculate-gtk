@@ -87,7 +87,6 @@
                     <property name="can-focus">True</property>
                     <property name="can-default">True</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">Add entered argument definition</property>
                     <property name="use-underline">True</property>
                     <signal name="clicked" handler="on_names_edit_button_add_clicked" swapped="no"/>
                   </object>
@@ -104,7 +103,6 @@
                     <property name="can-focus">True</property>
                     <property name="can-default">True</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">Modify selected argument</property>
                     <property name="use-underline">True</property>
                     <signal name="clicked" handler="on_names_edit_button_modify_clicked" swapped="no"/>
                   </object>
@@ -121,7 +119,6 @@
                     <property name="can-focus">True</property>
                     <property name="can-default">True</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">Remove selected argument</property>
                     <property name="use-underline">True</property>
                     <signal name="clicked" handler="on_names_edit_button_remove_clicked" swapped="no"/>
                   </object>

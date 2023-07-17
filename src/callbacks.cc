@@ -16200,15 +16200,22 @@ void set_edited_names(ExpressionItem *item, string str) {
 			ExpressionName ename;
 			gchar *gstr;
 			while(true) {
-				gboolean abbreviation = FALSE, suffix = FALSE, unicode = FALSE, plural = FALSE;
+				gboolean abbreviation = FALSE, suffix = FALSE, plural = FALSE;
 				gboolean reference = FALSE, avoid_input = FALSE, case_sensitive = FALSE, completion_only = FALSE;
-				gtk_tree_model_get(GTK_TREE_MODEL(tNames_store), &iter, NAMES_NAME_COLUMN, &gstr, NAMES_ABBREVIATION_COLUMN, &abbreviation, NAMES_SUFFIX_COLUMN, &suffix, NAMES_UNICODE_COLUMN, &unicode, NAMES_PLURAL_COLUMN, &plural, NAMES_REFERENCE_COLUMN, &reference, NAMES_AVOID_INPUT_COLUMN, &avoid_input, NAMES_CASE_SENSITIVE_COLUMN, &case_sensitive, NAMES_COMPLETION_ONLY_COLUMN, &completion_only, -1);
+				gtk_tree_model_get(GTK_TREE_MODEL(tNames_store), &iter, NAMES_NAME_COLUMN, &gstr, NAMES_ABBREVIATION_COLUMN, &abbreviation, NAMES_SUFFIX_COLUMN, &suffix, NAMES_PLURAL_COLUMN, &plural, NAMES_REFERENCE_COLUMN, &reference, NAMES_AVOID_INPUT_COLUMN, &avoid_input, NAMES_CASE_SENSITIVE_COLUMN, &case_sensitive, NAMES_COMPLETION_ONLY_COLUMN, &completion_only, -1);
 				if(i == 0 && names_edited == 2 && !str.empty()) ename.name = str;
 				else ename.name = gstr;
 				ename.abbreviation = abbreviation; ename.suffix = suffix;
-				ename.unicode = unicode; ename.plural = plural; ename.reference = reference;
+				ename.plural = plural; ename.reference = reference;
 				ename.avoid_input = avoid_input; ename.case_sensitive = case_sensitive;
 				ename.completion_only = completion_only;
+				ename.unicode = false;
+				for(size_t i = 0; i < str.length(); i++) {
+					if((unsigned char) str[i] >= 0xC0) {
+						ename.unicode = TRUE;
+						break;
+					}
+				}
 				item->addName(ename);
 				g_free(gstr);
 				if(!gtk_tree_model_iter_next(GTK_TREE_MODEL(tNames_store), &iter)) break;
@@ -16892,7 +16899,7 @@ void edit_function(const char *category = "", MathFunction *f = NULL, GtkWidget 
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(functionedit_builder, "function_edit_combo_category")))), f->category().c_str());
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_desc")), f->title(false).c_str());
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_condition")), localize_expression(f->condition()).c_str());
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_condition")), localize_expression(f->example()).c_str());
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_example")), localize_expression(f->example()).c_str());
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(functionedit_builder, "function_edit_checkbutton_hidden")), f->isHidden());
 		gtk_text_buffer_set_text(description_buffer, f->description().c_str(), -1);
 
@@ -18694,7 +18701,6 @@ void edit_names(ExpressionItem *item, const gchar *namestr, GtkWidget *win, bool
 		gtk_tree_view_column_set_visible(gtk_tree_view_get_column(GTK_TREE_VIEW(tNames), 5), !is_dp);
 		gtk_tree_view_column_set_visible(gtk_tree_view_get_column(GTK_TREE_VIEW(tNames), 6), !is_dp);
 		gtk_tree_view_column_set_visible(gtk_tree_view_get_column(GTK_TREE_VIEW(tNames), 7), !is_dp);
-		gtk_tree_view_column_set_visible(gtk_tree_view_get_column(GTK_TREE_VIEW(tNames), 8), !is_dp);
 
 		gtk_list_store_clear(tNames_store);
 
@@ -18702,7 +18708,7 @@ void edit_names(ExpressionItem *item, const gchar *namestr, GtkWidget *win, bool
 			for(size_t i = 1; i <= item->countNames(); i++) {
 				const ExpressionName *ename = &item->getName(i);
 				gtk_list_store_append(tNames_store, &iter);
-				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, ename->name.c_str(), NAMES_ABBREVIATION_COLUMN, ename->abbreviation, NAMES_PLURAL_COLUMN, ename->plural, NAMES_UNICODE_COLUMN, ename->unicode, NAMES_REFERENCE_COLUMN, ename->reference, NAMES_SUFFIX_COLUMN, ename->suffix, NAMES_AVOID_INPUT_COLUMN, ename->avoid_input, NAMES_CASE_SENSITIVE_COLUMN, ename->case_sensitive, NAMES_COMPLETION_ONLY_COLUMN, ename->completion_only, -1);
+				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, ename->name.c_str(), NAMES_ABBREVIATION_COLUMN, ename->abbreviation, NAMES_PLURAL_COLUMN, ename->plural, NAMES_REFERENCE_COLUMN, ename->reference, NAMES_SUFFIX_COLUMN, ename->suffix, NAMES_AVOID_INPUT_COLUMN, ename->avoid_input, NAMES_CASE_SENSITIVE_COLUMN, ename->case_sensitive, NAMES_COMPLETION_ONLY_COLUMN, ename->completion_only, -1);
 				if(i == 1 && namestr && strlen(namestr) > 0 && item->getName(1).name != namestr) {
 					if(names_edit_name_taken(namestr)) {
 						show_message(_("A conflicting object with the same name exists. If you proceed and save changes, the conflicting object will be overwritten or deactivated."), win);
@@ -18713,7 +18719,7 @@ void edit_names(ExpressionItem *item, const gchar *namestr, GtkWidget *win, bool
 		} else if(is_dp && dp && dp->countNames() > 0) {
 			for(size_t i = 1; i <= dp->countNames(); i++) {
 				gtk_list_store_append(tNames_store, &iter);
-				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, dp->getName(i).c_str(), NAMES_ABBREVIATION_COLUMN, FALSE, NAMES_PLURAL_COLUMN, FALSE, NAMES_UNICODE_COLUMN, FALSE, NAMES_REFERENCE_COLUMN, dp->nameIsReference(i), NAMES_SUFFIX_COLUMN, FALSE, NAMES_AVOID_INPUT_COLUMN, FALSE, NAMES_CASE_SENSITIVE_COLUMN, FALSE, NAMES_COMPLETION_ONLY_COLUMN, FALSE, -1);
+				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, dp->getName(i).c_str(), NAMES_ABBREVIATION_COLUMN, FALSE, NAMES_PLURAL_COLUMN, FALSE, NAMES_REFERENCE_COLUMN, dp->nameIsReference(i), NAMES_SUFFIX_COLUMN, FALSE, NAMES_AVOID_INPUT_COLUMN, FALSE, NAMES_CASE_SENSITIVE_COLUMN, FALSE, NAMES_COMPLETION_ONLY_COLUMN, FALSE, -1);
 				if(i == 1 && namestr && strlen(namestr) > 0) {
 					gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, namestr, -1);
 				}
@@ -18721,14 +18727,14 @@ void edit_names(ExpressionItem *item, const gchar *namestr, GtkWidget *win, bool
 		} else if(namestr && strlen(namestr) > 0) {
 			gtk_list_store_append(tNames_store, &iter);
 			if(is_dp) {
-				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, namestr, NAMES_ABBREVIATION_COLUMN, FALSE, NAMES_PLURAL_COLUMN, FALSE, NAMES_UNICODE_COLUMN, FALSE, NAMES_REFERENCE_COLUMN, TRUE, NAMES_SUFFIX_COLUMN, FALSE, NAMES_AVOID_INPUT_COLUMN, FALSE, NAMES_CASE_SENSITIVE_COLUMN, FALSE, NAMES_COMPLETION_ONLY_COLUMN, FALSE, -1);
+				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, namestr, NAMES_ABBREVIATION_COLUMN, FALSE, NAMES_PLURAL_COLUMN, FALSE, NAMES_REFERENCE_COLUMN, TRUE, NAMES_SUFFIX_COLUMN, FALSE, NAMES_AVOID_INPUT_COLUMN, FALSE, NAMES_CASE_SENSITIVE_COLUMN, FALSE, NAMES_COMPLETION_ONLY_COLUMN, FALSE, -1);
 			} else {
 				if(names_edit_name_taken(namestr)) {
 					show_message(_("A conflicting object with the same name exists. If you proceed and save changes, the conflicting object will be overwritten or deactivated."), win);
 				}
 				ExpressionName ename(namestr);
 				ename.reference = true;
-				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, ename.name.c_str(), NAMES_ABBREVIATION_COLUMN, ename.abbreviation, NAMES_PLURAL_COLUMN, ename.plural, NAMES_UNICODE_COLUMN, ename.unicode, NAMES_REFERENCE_COLUMN, ename.reference, NAMES_SUFFIX_COLUMN, ename.suffix, NAMES_AVOID_INPUT_COLUMN, ename.avoid_input, NAMES_CASE_SENSITIVE_COLUMN, ename.case_sensitive, NAMES_COMPLETION_ONLY_COLUMN, ename.completion_only, -1);
+				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, ename.name.c_str(), NAMES_ABBREVIATION_COLUMN, ename.abbreviation, NAMES_PLURAL_COLUMN, ename.plural, NAMES_REFERENCE_COLUMN, ename.reference, NAMES_SUFFIX_COLUMN, ename.suffix, NAMES_AVOID_INPUT_COLUMN, ename.avoid_input, NAMES_CASE_SENSITIVE_COLUMN, ename.case_sensitive, NAMES_COMPLETION_ONLY_COLUMN, ename.completion_only, -1);
 			}
 		}
 	} else if(namestr && strlen(namestr) > 0) {
@@ -35680,7 +35686,6 @@ void on_function_edit_button_add_subfunction_clicked(GtkButton*, gpointer) {
 		gchar *gstr = gtk_text_buffer_get_text(expression_buffer, &istart, &iend, FALSE);
 		gtk_list_store_set(tSubfunctions_store, &iter, 0, str.c_str(), 1, gstr, 3, last_subfunction_index, 2, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(functionedit_builder, "function_edit_checkbutton_precalculate"))), -1);
 		g_free(gstr);
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_subexpression")), "");
 		on_function_changed();
 	}
 	gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "subfunction_edit_dialog")));
@@ -35897,8 +35902,8 @@ void on_names_edit_property_toggled(GtkCellRendererToggle *renderer, gchar *path
 	if(gtk_tree_model_get_iter_from_string(GTK_TREE_MODEL(tNames_store), &iter, path)) {
 		gboolean g_b;
 		gtk_tree_model_get(GTK_TREE_MODEL(tNames_store), &iter, c, &g_b, -1);
-		gtk_list_store_set(tSubfunctions_store, &iter, c, !g_b, -1);
-		on_function_changed();
+		gtk_list_store_set(tNames_store, &iter, c, !g_b, -1);
+		on_name_changed();
 	}
 }
 void on_names_edit_name_edited(GtkCellRendererText*, gchar *path, gchar *new_text, gpointer) {
@@ -35928,7 +35933,7 @@ void on_names_edit_button_add_clicked(GtkButton*, gpointer) {
 	GtkTreeIter iter;
 	gtk_list_store_append(tNames_store, &iter);
 	GtkTreePath *path = gtk_tree_model_get_path(GTK_TREE_MODEL(tNames_store), &iter);
-	gtk_tree_view_set_cursor_on_cell(GTK_TREE_VIEW(stackview), path, names_edit_name_column, names_edit_name_renderer, TRUE);
+	gtk_tree_view_set_cursor_on_cell(GTK_TREE_VIEW(tNames), path, names_edit_name_column, names_edit_name_renderer, TRUE);
 	gtk_tree_path_free(path);
 	on_name_changed();
 }
@@ -35937,7 +35942,7 @@ void on_names_edit_button_modify_clicked(GtkButton*, gpointer) {
 	GtkTreeIter iter;
 	if(gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(tNames)), &model, &iter)) {
 		GtkTreePath *path = gtk_tree_model_get_path(model, &iter);
-		gtk_tree_view_set_cursor_on_cell(GTK_TREE_VIEW(stackview), path, names_edit_name_column, names_edit_name_renderer, TRUE);
+		gtk_tree_view_set_cursor_on_cell(GTK_TREE_VIEW(tNames), path, names_edit_name_column, names_edit_name_renderer, TRUE);
 		gtk_tree_path_free(path);
 	}
 }

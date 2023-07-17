@@ -195,6 +195,7 @@
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="tooltip-text" translatable="yes">Condition that must be true for the function (e.g. if the second argument must be greater than the first: "\y &gt; \x")</property>
+                    <property name="hexpand">True</property>
                     <property name="primary-icon-activatable">False</property>
                     <property name="secondary-icon-activatable">False</property>
                     <signal name="changed" handler="on_function_changed" swapped="no"/>
@@ -230,7 +231,6 @@
                       <object class="GtkTreeView" id="function_edit_treeview_subfunctions">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="tooltip-text" translatable="yes">Definition of this function's arguments</property>
                         <child internal-child="selection">
                           <object class="GtkTreeSelection"/>
                         </child>
@@ -257,7 +257,6 @@
                         <property name="can-focus">True</property>
                         <property name="can-default">True</property>
                         <property name="receives-default">False</property>
-                        <property name="tooltip-text" translatable="yes">Add entered argument definition</property>
                         <property name="use-underline">True</property>
                         <signal name="clicked" handler="on_function_edit_button_add_subfunction_clicked" swapped="no"/>
                       </object>
@@ -274,7 +273,6 @@
                         <property name="can-focus">True</property>
                         <property name="can-default">True</property>
                         <property name="receives-default">False</property>
-                        <property name="tooltip-text" translatable="yes">Modify selected argument</property>
                         <property name="use-underline">True</property>
                         <signal name="clicked" handler="on_function_edit_button_modify_subfunction_clicked" swapped="no"/>
                       </object>
@@ -291,7 +289,6 @@
                         <property name="can-focus">True</property>
                         <property name="can-default">True</property>
                         <property name="receives-default">False</property>
-                        <property name="tooltip-text" translatable="yes">Remove selected argument</property>
                         <property name="use-underline">True</property>
                         <signal name="clicked" handler="on_function_edit_button_remove_subfunction_clicked" swapped="no"/>
                       </object>
@@ -336,7 +333,6 @@
                       <object class="GtkTreeView" id="function_edit_treeview_arguments">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="tooltip-text" translatable="yes">Definition of this function's arguments</property>
                         <signal name="row-activated" handler="on_function_edit_treeview_arguments_row_activated" swapped="no"/>
                         <child internal-child="selection">
                           <object class="GtkTreeSelection"/>
@@ -364,7 +360,6 @@
                         <property name="can-focus">True</property>
                         <property name="can-default">True</property>
                         <property name="receives-default">False</property>
-                        <property name="tooltip-text" translatable="yes">Add entered argument definition</property>
                         <property name="use-underline">True</property>
                         <signal name="clicked" handler="on_function_edit_button_add_argument_clicked" swapped="no"/>
                       </object>
@@ -381,7 +376,6 @@
                         <property name="can-focus">True</property>
                         <property name="can-default">True</property>
                         <property name="receives-default">False</property>
-                        <property name="tooltip-text" translatable="yes">Modify selected argument</property>
                         <property name="use-underline">True</property>
                         <signal name="clicked" handler="on_function_edit_button_modify_argument_clicked" swapped="no"/>
                       </object>
@@ -398,7 +392,6 @@
                         <property name="can-focus">True</property>
                         <property name="can-default">True</property>
                         <property name="receives-default">False</property>
-                        <property name="tooltip-text" translatable="yes">Remove selected argument</property>
                         <property name="use-underline">True</property>
                         <signal name="clicked" handler="on_function_edit_button_remove_argument_clicked" swapped="no"/>
                       </object>
@@ -510,7 +503,6 @@
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">If this function shall be hidden in menus</property>
                     <property name="halign">end</property>
                     <property name="use-underline">True</property>
                     <property name="draw-indicator">True</property>
@@ -544,7 +536,6 @@
                       <object class="GtkTextView" id="function_edit_textview_description">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="tooltip-text" translatable="yes">Description of this function</property>
                         <property name="wrap-mode">word</property>
                         <property name="left-margin">3</property>
                         <property name="right-margin">3</property>
@@ -573,7 +564,7 @@
                   <object class="GtkEntry" id="function_edit_entry_example">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="tooltip-text" translatable="yes">Title displayed in menus and in function manager</property>
+                    <property name="hexpand">True</property>
                     <property name="primary-icon-activatable">False</property>
                     <property name="secondary-icon-activatable">False</property>
                     <signal name="changed" handler="on_function_changed" swapped="no"/>

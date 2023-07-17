@@ -232,6 +232,7 @@
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="tooltip-text" translatable="yes">Title displayed in menus and in variable manager</property>
+                    <property name="hexpand">True</property>
                     <property name="primary-icon-activatable">False</property>
                     <property name="secondary-icon-activatable">False</property>
                     <signal name="changed" handler="on_variable_changed" swapped="no"/>

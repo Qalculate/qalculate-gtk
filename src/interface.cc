@@ -3417,7 +3417,7 @@ GtkWidget* get_names_edit_dialog(void) {
 
 		tNames = GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_treeview"));
 
-		tNames_store = gtk_list_store_new(NAMES_N_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
+		tNames_store = gtk_list_store_new(NAMES_N_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
 		gtk_tree_view_set_model(GTK_TREE_VIEW(tNames), GTK_TREE_MODEL(tNames_store));
 		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tNames));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
@@ -3447,6 +3447,30 @@ GtkWidget* get_names_edit_dialog(void) {
 		g_signal_connect((gpointer) renderer, "toggled", G_CALLBACK(on_names_edit_property_toggled), GINT_TO_POINTER(NAMES_REFERENCE_COLUMN));
 		g_object_set(G_OBJECT(renderer), "xalign", 0.5, "activatable", TRUE, NULL);
 		gtk_tree_view_column_set_sort_column_id(column, NAMES_REFERENCE_COLUMN);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(tNames), column);
+		renderer = gtk_cell_renderer_toggle_new();
+		column = gtk_tree_view_column_new_with_attributes(_("Avoid input"), renderer, "active", NAMES_AVOID_INPUT_COLUMN, NULL);
+		g_signal_connect((gpointer) renderer, "toggled", G_CALLBACK(on_names_edit_property_toggled), GINT_TO_POINTER(NAMES_AVOID_INPUT_COLUMN));
+		g_object_set(G_OBJECT(renderer), "xalign", 0.5, "activatable", TRUE, NULL);
+		gtk_tree_view_column_set_sort_column_id(column, NAMES_AVOID_INPUT_COLUMN);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(tNames), column);
+		renderer = gtk_cell_renderer_toggle_new();
+		column = gtk_tree_view_column_new_with_attributes(_("Suffix"), renderer, "active", NAMES_SUFFIX_COLUMN, NULL);
+		g_signal_connect((gpointer) renderer, "toggled", G_CALLBACK(on_names_edit_property_toggled), GINT_TO_POINTER(NAMES_SUFFIX_COLUMN));
+		g_object_set(G_OBJECT(renderer), "xalign", 0.5, "activatable", TRUE, NULL);
+		gtk_tree_view_column_set_sort_column_id(column, NAMES_SUFFIX_COLUMN);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(tNames), column);
+		renderer = gtk_cell_renderer_toggle_new();
+		column = gtk_tree_view_column_new_with_attributes(_("Case sensitive"), renderer, "active", NAMES_CASE_SENSITIVE_COLUMN, NULL);
+		g_signal_connect((gpointer) renderer, "toggled", G_CALLBACK(on_names_edit_property_toggled), GINT_TO_POINTER(NAMES_CASE_SENSITIVE_COLUMN));
+		g_object_set(G_OBJECT(renderer), "xalign", 0.5, "activatable", TRUE, NULL);
+		gtk_tree_view_column_set_sort_column_id(column, NAMES_CASE_SENSITIVE_COLUMN);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(tNames), column);
+		renderer = gtk_cell_renderer_toggle_new();
+		column = gtk_tree_view_column_new_with_attributes(_("Completion only"), renderer, "active", NAMES_COMPLETION_ONLY_COLUMN, NULL);
+		g_signal_connect((gpointer) renderer, "toggled", G_CALLBACK(on_names_edit_property_toggled), GINT_TO_POINTER(NAMES_COMPLETION_ONLY_COLUMN));
+		g_object_set(G_OBJECT(renderer), "xalign", 0.5, "activatable", TRUE, NULL);
+		gtk_tree_view_column_set_sort_column_id(column, NAMES_COMPLETION_ONLY_COLUMN);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tNames), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tNames_selection_changed), NULL);
 
