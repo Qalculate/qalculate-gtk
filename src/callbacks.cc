@@ -4705,6 +4705,16 @@ void generate_units_tree_struct() {
 	unit_cats.sort();
 
 }
+
+void remove_old_my_variables_category() {
+	if(VERSION_AFTER(4, 7, 0)) return;
+	for(size_t i = 0; i < CALCULATOR->variables.size(); i++) {
+		if(CALCULATOR->variables[i]->isLocal() && (CALCULATOR->variables[i]->category() == "My Variables" || CALCULATOR->variables[i]->category() == _("My Variables"))) {
+			CALCULATOR->variables[i]->setCategory("");
+		}
+	}
+}
+
 void generate_variables_tree_struct() {
 
 	size_t cat_i, cat_i_prev;
@@ -4744,7 +4754,7 @@ void generate_variables_tree_struct() {
 				if(!b) user_variables.push_back(CALCULATOR->variables[i]);
 			}
 			tree_struct *item = &variable_cats;
-			if(!CALCULATOR->variables[i]->category().empty() && (!CALCULATOR->variables[i]->isLocal() || (CALCULATOR->variables[i]->category() != _("My Variables") && CALCULATOR->variables[i]->category() != "My Variables"))) {
+			if(!CALCULATOR->variables[i]->category().empty()) {
 				cat = CALCULATOR->variables[i]->category();
 				cat_i = cat.find("/"); cat_i_prev = 0;
 				b = false;
@@ -33747,13 +33757,26 @@ unsigned int get_fp_bits() {
 		case 2: return 64;
 		case 3: return 80;
 		case 4: return 128;
+		case 5: return 24;
+		case 6: return 32;
 	}
 	return 32;
+}
+unsigned int get_fp_expbits() {
+	int i = gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(floatingpoint_builder, "fp_combo_bits")));
+	if(i == 5) return 8;
+	return standard_expbits(get_fp_bits());
+}
+unsigned int get_fp_sgnpos() {
+	int i = gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(floatingpoint_builder, "fp_combo_bits")));
+	if(i == 5 || i == 6) return 8;
+	return 0;
 }
 
 void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 	unsigned int bits = get_fp_bits();
-	unsigned int expbits = standard_expbits(bits);
+	unsigned int expbits = get_fp_expbits();
+	unsigned int sgnpos = get_fp_sgnpos();
 	GtkWidget *w_dec, *w_hex, *w_float, *w_value, *w_error;
 	GtkTextBuffer *w_bin;
 	w_dec = GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "fp_entry_dec"));
@@ -33819,7 +33842,7 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 		po.max_decimals = 50;
 		po.use_max_decimals = true;
 		Number value;
-		int ret = from_float(value, sbin, bits, expbits);
+		int ret = from_float(value, sbin, bits, expbits, sgnpos);
 		if(ret <= 0) {
 			gtk_entry_set_text(GTK_ENTRY(w_float), ret < 0 ? "NaN" : "");
 			gtk_entry_set_text(GTK_ENTRY(w_value), ret < 0 ? "NaN" : "");
@@ -33889,7 +33912,8 @@ void on_fp_entry_dec_changed(GtkEditable *editable, gpointer) {
 	if(str.empty()) return;
 	if(last_is_operator(str, true)) return;
 	unsigned int bits = get_fp_bits();
-	unsigned int expbits = standard_expbits(bits);
+	unsigned int expbits = get_fp_expbits();
+	unsigned int sgnpos = get_fp_sgnpos();
 	changing_in_fp_dialog = true;
 	EvaluationOptions eo;
 	eo.parse_options = evalops.parse_options;
@@ -33901,10 +33925,10 @@ void on_fp_entry_dec_changed(GtkEditable *editable, gpointer) {
 	block_error_timeout++;
 	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options), 1500, eo);
 	if(value.isNumber()) {
-		string sbin = to_float(value.number(), bits, expbits);
+		string sbin = to_float(value.number(), bits, expbits, sgnpos);
 		update_fp_entries(sbin, 10, &value.number());
 	} else if(value.isUndefined()) {
-		string sbin = to_float(nr_one_i, bits, expbits);
+		string sbin = to_float(nr_one_i, bits, expbits, sgnpos);
 		update_fp_entries(sbin, 10);
 	} else {
 		update_fp_entries("", 10);

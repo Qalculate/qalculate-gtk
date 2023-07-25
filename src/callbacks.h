@@ -228,6 +228,8 @@ void add_custom_angles_to_menus();
 
 void update_completion();
 
+void remove_old_my_variables_category();
+
 void generate_functions_tree_struct();
 void generate_variables_tree_struct();
 void generate_units_tree_struct();

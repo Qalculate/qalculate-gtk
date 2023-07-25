@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
+<!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkTextBuffer" id="fp_buffer_bin">
@@ -175,6 +175,8 @@
                   <item translatable="yes">64-bit (double precision)</item>
                   <item translatable="yes">80-bit (x86 extended format)</item>
                   <item translatable="yes">128-bit (quadruple precision)</item>
+                  <item translatable="yes">Microchip 24-bit</item>
+                  <item translatable="yes">Microchip 32-bit</item>
                 </items>
                 <signal name="changed" handler="on_fp_combo_bits_changed" swapped="no"/>
               </object>

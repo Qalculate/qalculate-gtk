@@ -269,6 +269,7 @@ void create_application(GtkApplication *app) {
 
 	//load local definitions
 	CALCULATOR->loadLocalDefinitions();
+	remove_old_my_variables_category();
 
 	if(!custom_angle_unit.empty()) {
 		CALCULATOR->setCustomAngleUnit(CALCULATOR->getActiveUnit(custom_angle_unit));
