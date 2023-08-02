@@ -11651,6 +11651,24 @@ string ellipsize_result(const string &result_text, size_t length) {
 	return result_text.substr(0, index1) + " (…) " + result_text.substr(index2, result_text.length() - index2);
 }
 
+int intervals_are_relative(MathStructure &m) {
+	int ret = -1;
+	if(m.isFunction() && m.function()->id() == FUNCTION_ID_UNCERTAINTY && m.size() == 3) {
+		if(m[2].isOne() && m[1].isMultiplication() && m[1].size() > 1 && m[1].last().isVariable() && (m[1].last().variable() == CALCULATOR->getVariableById(VARIABLE_ID_PERCENT) || m[1].last().variable() == CALCULATOR->getVariableById(VARIABLE_ID_PERMILLE) || m[1].last().variable() == CALCULATOR->getVariableById(VARIABLE_ID_PERMYRIAD))) {
+			ret = 1;
+		} else {
+			return 0;
+		}
+	}
+	if(m.isFunction() && m.function()->id() == FUNCTION_ID_INTERVAL) return 0;
+	for(size_t i = 0; i < m.size(); i++) {
+		int ret_i = intervals_are_relative(m[i]);
+		if(ret_i == 0) return 0;
+		else if(ret_i > 0) ret = ret_i;
+	}
+	return ret;
+}
+
 /*
 	set result in result widget and add to history widget
 */
@@ -11761,8 +11779,10 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 					inhistory_value.push_back(nr_of_new_expressions);
 					if(adaptive_interval_display) {
 						string expression_str = get_expression_text();
-						if((parsed_mstruct && parsed_mstruct->containsFunction(CALCULATOR->f_uncertainty)) || expression_str.find("+/-") != string::npos || expression_str.find("+/" SIGN_MINUS) != string::npos || expression_str.find("±") != string::npos) printops.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
-						else if(parsed_mstruct && parsed_mstruct->containsFunction(CALCULATOR->f_interval)) printops.interval_display = INTERVAL_DISPLAY_INTERVAL;
+						if((parsed_mstruct && parsed_mstruct->containsFunction(CALCULATOR->f_uncertainty)) || expression_str.find("+/-") != string::npos || expression_str.find("+/" SIGN_MINUS) != string::npos || expression_str.find("±") != string::npos) {
+							if(parsed_mstruct && intervals_are_relative(*parsed_mstruct) > 0) printops.interval_display = INTERVAL_DISPLAY_RELATIVE;
+							else printops.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
+						} else if(parsed_mstruct && parsed_mstruct->containsFunction(CALCULATOR->f_interval)) printops.interval_display = INTERVAL_DISPLAY_INTERVAL;
 						else printops.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 					}
 				}
@@ -13117,6 +13137,7 @@ void set_option(string str) {
 			}
 		}
 	} else if(equalsIgnoreCase(svar, "caret as xor") || equalsIgnoreCase(svar, "xor^")) SET_BOOL_PREF("preferences_checkbutton_caret_as_xor")
+	else if(equalsIgnoreCase(svar, "concise uncertainty") || equalsIgnoreCase(svar, "concise")) SET_BOOL_MENU("menu_item_concise_uncertainty_input")
 	else if(equalsIgnoreCase(svar, "parsing mode") || svar == "parse" || svar == "syntax") {
 		int v = -1;
 		if(equalsIgnoreCase(svalue, "adaptive")) v = PARSING_MODE_ADAPTIVE;
@@ -13389,6 +13410,8 @@ void set_option(string str) {
 		else if(equalsIgnoreCase(svalue, "midpoint")) v = INTERVAL_DISPLAY_MIDPOINT + 1;
 		else if(equalsIgnoreCase(svalue, "upper")) v = INTERVAL_DISPLAY_UPPER + 1;
 		else if(equalsIgnoreCase(svalue, "lower")) v = INTERVAL_DISPLAY_LOWER + 1;
+		else if(equalsIgnoreCase(svalue, "concise")) v = INTERVAL_DISPLAY_CONCISE + 1;
+		else if(equalsIgnoreCase(svalue, "relative")) v = INTERVAL_DISPLAY_RELATIVE + 1;
 		else if(svalue.find_first_not_of(SPACES NUMBERS) == string::npos) {
 			v = s2i(svalue);
 		}
@@ -13396,14 +13419,17 @@ void set_option(string str) {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_adaptive")), TRUE);
 		} else {
 			v--;
-			if(v < INTERVAL_DISPLAY_SIGNIFICANT_DIGITS || v > INTERVAL_DISPLAY_UPPER) {
+			if(v < INTERVAL_DISPLAY_SIGNIFICANT_DIGITS || v > INTERVAL_DISPLAY_RELATIVE) {
 				CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
 			} else {
 				switch(v) {
 					case INTERVAL_DISPLAY_INTERVAL: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_interval")), TRUE); break;}
 					case INTERVAL_DISPLAY_PLUSMINUS: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_plusminus")), TRUE); break;}
+					case INTERVAL_DISPLAY_CONCISE: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_concise")), TRUE); break;}
+					case INTERVAL_DISPLAY_RELATIVE: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_relative")), TRUE); break;}
 					case INTERVAL_DISPLAY_MIDPOINT: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_midpoint")), TRUE); break;}
-					default: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_significant")), TRUE); break;}
+					case INTERVAL_DISPLAY_LOWER: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_lower")), TRUE); break;}
+					case INTERVAL_DISPLAY_UPPER: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_upper")), TRUE); break;}
 				}
 			}
 		}
@@ -19391,6 +19417,7 @@ void save_mode() {
 void set_saved_mode() {
 	modes[1].precision = CALCULATOR->getPrecision();
 	modes[1].interval = CALCULATOR->usesIntervalArithmetic();
+	modes[1].concise_uncertainty_input = CALCULATOR->conciseUncertaintyInputEnabled();
 	modes[1].adaptive_interval_display = adaptive_interval_display;
 	modes[1].variable_units_enabled = CALCULATOR->variableUnitsEnabled();
 	modes[1].po = printops;
@@ -19434,6 +19461,7 @@ size_t save_mode_as(string name, bool *new_mode = NULL) {
 	modes[index].variable_units_enabled = CALCULATOR->variableUnitsEnabled();
 	modes[index].at = CALCULATOR->defaultAssumptions()->type();
 	modes[index].as = CALCULATOR->defaultAssumptions()->sign();
+	modes[index].concise_uncertainty_input = CALCULATOR->conciseUncertaintyInputEnabled();
 	modes[index].name = name;
 	modes[index].rounding_mode = rounding_mode;
 	modes[index].rpn_mode = rpn_mode;
@@ -19463,6 +19491,7 @@ void load_mode(const mode_struct &mode) {
 	update_window_title();
 	CALCULATOR->setCustomOutputBase(mode.custom_output_base);
 	CALCULATOR->setCustomInputBase(mode.custom_input_base);
+	CALCULATOR->setConciseUncertaintyInputEnabled(mode.concise_uncertainty_input);
 	rounding_mode = mode.rounding_mode;
 	custom_angle_unit = mode.custom_angle_unit;
 	RESET_TZ
@@ -20456,6 +20485,8 @@ void load_preferences() {
 
 	CALCULATOR->useIntervalArithmetic(true);
 
+	CALCULATOR->setConciseUncertaintyInputEnabled(false);
+
 	CALCULATOR->setTemperatureCalculationMode(TEMPERATURE_CALCULATION_HYBRID);
 	tc_set = false;
 	sinc_set = false;
@@ -20811,7 +20842,7 @@ void load_preferences() {
 						else {modes[mode_index].po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS; modes[mode_index].adaptive_interval_display = true;}
 					} else {
 						v--;
-						if(v >= INTERVAL_DISPLAY_SIGNIFICANT_DIGITS && v <= INTERVAL_DISPLAY_UPPER) {
+						if(v >= INTERVAL_DISPLAY_SIGNIFICANT_DIGITS && v <= INTERVAL_DISPLAY_RELATIVE) {
 							if(mode_index == 1) {printops.interval_display = (IntervalDisplay) v; adaptive_interval_display = false;}
 							else {modes[mode_index].po.interval_display = (IntervalDisplay) v; modes[mode_index].adaptive_interval_display = false;}
 						}
@@ -21220,6 +21251,9 @@ void load_preferences() {
 					printops.spell_out_logical_operators = v;
 				} else if(svar == "caret_as_xor") {
 					caret_as_xor = v;
+				} else if(svar == "concise_uncertainty_input") {
+					if(mode_index == 1) CALCULATOR->setConciseUncertaintyInputEnabled(v);
+					else modes[mode_index].concise_uncertainty_input = v;
 				} else if(svar == "copy_separator") {//obsolete
 					copy_ascii = !v;
 				} else if(svar == "copy_ascii") {
@@ -22280,6 +22314,7 @@ void save_preferences(bool mode) {
 		fprintf(file, "rounding_mode=%i\n", modes[i].rounding_mode);
 		fprintf(file, "approximation=%i\n", modes[i].eo.approximation);
 		fprintf(file, "interval_calculation=%i\n", modes[i].eo.interval_calculation);
+		fprintf(file, "concise_uncertainty_input=%i\n", modes[i].concise_uncertainty_input);
 		fprintf(file, "calculate_as_you_type=%i\n", modes[i].autocalc);
 		fprintf(file, "in_rpn_mode=%i\n", modes[i].rpn_mode);
 		fprintf(file, "chain_mode=%i\n", modes[i].chain_mode);
@@ -31386,6 +31421,11 @@ void on_menu_item_interval_arithmetic_activate(GtkMenuItem *w, gpointer) {
 	expression_calculation_updated();
 }
 
+void on_menu_item_concise_uncertainty_input_activate(GtkMenuItem *w, gpointer) {
+	CALCULATOR->setConciseUncertaintyInputEnabled(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
+	expression_format_updated();
+}
+
 void restore_automatic_fraction() {
 	if(automatic_fraction && printops.number_fraction_format == FRACTION_DECIMAL_EXACT) {
 		if(!rpn_mode) block_result_update++;
@@ -31526,10 +31566,34 @@ void on_menu_item_interval_plusminus_activate(GtkMenuItem *w, gpointer) {
 	printops.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
 	result_format_updated();
 }
+void on_menu_item_interval_relative_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	adaptive_interval_display = false;
+	printops.interval_display = INTERVAL_DISPLAY_RELATIVE;
+	result_format_updated();
+}
+void on_menu_item_interval_concise_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	adaptive_interval_display = false;
+	printops.interval_display = INTERVAL_DISPLAY_CONCISE;
+	result_format_updated();
+}
 void on_menu_item_interval_midpoint_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	adaptive_interval_display = false;
 	printops.interval_display = INTERVAL_DISPLAY_MIDPOINT;
+	result_format_updated();
+}
+void on_menu_item_interval_lower_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	adaptive_interval_display = false;
+	printops.interval_display = INTERVAL_DISPLAY_LOWER;
+	result_format_updated();
+}
+void on_menu_item_interval_upper_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	adaptive_interval_display = false;
+	printops.interval_display = INTERVAL_DISPLAY_UPPER;
 	result_format_updated();
 }
 

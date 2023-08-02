@@ -1608,12 +1608,62 @@ On: 1/2 × pi = 0.5 pi</property>
                               </object>
                             </child>
                             <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_interval_relative">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="yes">Relative</property>
+                                <property name="group">menu_item_interval_adaptive</property>
+                                <signal name="activate" handler="on_menu_item_interval_relative_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_interval_concise">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="yes">Concise</property>
+                                <property name="group">menu_item_interval_adaptive</property>
+                                <signal name="activate" handler="on_menu_item_interval_concise_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
                               <object class="GtkRadioMenuItem" id="menu_item_interval_midpoint">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Midpoint</property>
                                 <property name="group">menu_item_interval_adaptive</property>
                                 <signal name="activate" handler="on_menu_item_interval_midpoint_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_interval_lower">
+                                <property name="visible">False</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="no">Lower</property>
+                                <property name="group">menu_item_interval_adaptive</property>
+                                <signal name="activate" handler="on_menu_item_interval_lower_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_interval_upper">
+                                <property name="visible">False</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="no">Upper</property>
+                                <property name="group">menu_item_interval_adaptive</property>
+                                <signal name="activate" handler="on_menu_item_interval_upper_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkSeparatorMenuItem" id="separatorINTVALD">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkCheckMenuItem" id="menu_item_concise_uncertainty_input">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="yes">Allow concise uncertainty input</property>
+                                <signal name="activate" handler="on_menu_item_concise_uncertainty_input_activate" swapped="no"/>
                               </object>
                             </child>
                           </object>

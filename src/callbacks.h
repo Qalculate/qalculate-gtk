@@ -52,6 +52,7 @@ struct mode_struct {
 	bool implicit_question_asked;
 	int rounding_mode;
 	bool simplified_percentage;
+	bool concise_uncertainty_input;
 	std::string custom_angle_unit;
 };
 

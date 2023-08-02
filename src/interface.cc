@@ -938,6 +938,7 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 			default: {}
 		}
 	}
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_concise_uncertainty_input")), CALCULATOR->conciseUncertaintyInputEnabled());
 
 	set_assumptions_items(at, as);
 
@@ -3499,7 +3500,7 @@ GtkWidget* get_csv_import_dialog(void) {
 	}
 
 	/* populate combo menu */
-	/*GHashTable *hash = g_hash_table_new(g_str_hash, g_str_equal);
+	GHashTable *hash = g_hash_table_new(g_str_hash, g_str_equal);
 	GList *items = NULL;
 	for(size_t i = 0; i < CALCULATOR->variables.size(); i++) {
 		if(!CALCULATOR->variables[i]->category().empty()) {
@@ -3515,7 +3516,7 @@ GtkWidget* get_csv_import_dialog(void) {
 		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(csvimport_builder, "csv_import_combo_category")), (const gchar*) l->data);
 	}
 	g_hash_table_destroy(hash);
-	g_list_free(items);*/
+	g_list_free(items);
 
 	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(csvimport_builder, "csv_import_dialog")), enable_tooltips);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(csvimport_builder, "csv_import_dialog")), always_on_top);
