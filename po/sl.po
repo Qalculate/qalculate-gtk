@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-31 16:31+0200\n"
+"POT-Creation-Date: 2023-08-21 11:00+0200\n"
 "PO-Revision-Date: 2020-06-19 16:56+0200\n"
 "Last-Translator: Nejc Bertoncelj <nejc@bertoncelj.eu.org>\n"
 "Language-Team: Slovenian <lugos-slo@lugos.si>\n"
@@ -18,8 +18,8 @@ msgstr ""
 "n%100==4 ? 3 : 0);\n"
 "X-Generator: Lokalize 20.04.2\n"
 
-#: ../data/qalculate-gtk.desktop.in.h:1 ../src/callbacks.cc:11601
-#: ../src/callbacks.cc:11608
+#: ../data/qalculate-gtk.desktop.in.h:1 ../src/callbacks.cc:11605
+#: ../src/callbacks.cc:11612
 msgid "Qalculate!"
 msgstr "Qalculate!"
 
@@ -28,7 +28,7 @@ msgid "Calculator"
 msgstr "Računalo"
 
 #: ../data/qalculate-gtk.desktop.in.h:3
-#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/callbacks.cc:34123
+#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/callbacks.cc:34118
 msgid "Powerful and easy to use calculator"
 msgstr "Zmogljivo računalo, preprosto za uporabo"
 
@@ -73,17 +73,17 @@ msgstr "Pravila za argumente"
 #: ../data/datasets.ui.h:2 ../data/functionedit.ui.h:3 ../data/matrix.ui.h:2
 #: ../data/matrixedit.ui.h:3 ../data/shortcuts.ui.h:7 ../data/unitedit.ui.h:3
 #: ../data/unknownedit.ui.h:3 ../data/variableedit.ui.h:3
-#: ../src/callbacks.cc:2820 ../src/callbacks.cc:17908 ../src/callbacks.cc:18938
-#: ../src/callbacks.cc:19057 ../src/callbacks.cc:20261
-#: ../src/callbacks.cc:20317 ../src/callbacks.cc:27982
-#: ../src/callbacks.cc:28586 ../src/callbacks.cc:29826
-#: ../src/callbacks.cc:29828 ../src/callbacks.cc:31634
-#: ../src/callbacks.cc:31636 ../src/callbacks.cc:35541
-#: ../src/callbacks.cc:35543 ../src/callbacks.cc:35579
-#: ../src/callbacks.cc:35581 ../src/callbacks.cc:35608
-#: ../src/callbacks.cc:35651 ../src/callbacks.cc:35653
-#: ../src/callbacks.cc:37002 ../src/callbacks.cc:37004
-#: ../src/callbacks.cc:37647
+#: ../src/callbacks.cc:2821 ../src/callbacks.cc:17934 ../src/callbacks.cc:18964
+#: ../src/callbacks.cc:19083 ../src/callbacks.cc:20287
+#: ../src/callbacks.cc:20343 ../src/callbacks.cc:28025
+#: ../src/callbacks.cc:28629 ../src/callbacks.cc:29821
+#: ../src/callbacks.cc:29823 ../src/callbacks.cc:31629
+#: ../src/callbacks.cc:31631 ../src/callbacks.cc:35536
+#: ../src/callbacks.cc:35538 ../src/callbacks.cc:35574
+#: ../src/callbacks.cc:35576 ../src/callbacks.cc:35603
+#: ../src/callbacks.cc:35646 ../src/callbacks.cc:35648
+#: ../src/callbacks.cc:36997 ../src/callbacks.cc:36999
+#: ../src/callbacks.cc:37642
 msgid "_Cancel"
 msgstr "_Prekliči"
 
@@ -96,11 +96,11 @@ msgstr "Ne shrani sprememb"
 #: ../data/datasets.ui.h:4 ../data/functionedit.ui.h:4
 #: ../data/matrixedit.ui.h:4 ../data/shortcuts.ui.h:9 ../data/unitedit.ui.h:5
 #: ../data/unknownedit.ui.h:4 ../data/variableedit.ui.h:4
-#: ../src/callbacks.cc:2820 ../src/callbacks.cc:3069 ../src/callbacks.cc:3147
-#: ../src/callbacks.cc:3200 ../src/callbacks.cc:3269 ../src/callbacks.cc:18938
-#: ../src/callbacks.cc:19057 ../src/callbacks.cc:27982
-#: ../src/callbacks.cc:28586 ../src/callbacks.cc:35608
-#: ../src/callbacks.cc:37647
+#: ../src/callbacks.cc:2821 ../src/callbacks.cc:3070 ../src/callbacks.cc:3148
+#: ../src/callbacks.cc:3201 ../src/callbacks.cc:3270 ../src/callbacks.cc:18964
+#: ../src/callbacks.cc:19083 ../src/callbacks.cc:28025
+#: ../src/callbacks.cc:28629 ../src/callbacks.cc:35603
+#: ../src/callbacks.cc:37642
 msgid "_OK"
 msgstr "_Vredu"
 
@@ -140,12 +140,12 @@ msgid "Date"
 msgstr "Datum"
 
 #: ../data/argumentrules.ui.h:13 ../data/main.ui.h:22 ../data/matrix.ui.h:10
-#: ../data/matrixedit.ui.h:13 ../src/callbacks.cc:17911
+#: ../data/matrixedit.ui.h:13 ../src/callbacks.cc:17937
 msgid "Vector"
 msgstr "Vektor"
 
 #: ../data/argumentrules.ui.h:14 ../data/csvimport.ui.h:13 ../data/main.ui.h:21
-#: ../data/matrix.ui.h:1 ../data/matrixedit.ui.h:11 ../src/callbacks.cc:17913
+#: ../data/matrix.ui.h:1 ../data/matrixedit.ui.h:11 ../src/callbacks.cc:17939
 msgid "Matrix"
 msgstr "Matrika"
 
@@ -178,12 +178,12 @@ msgstr "Nenegativno celo število"
 msgid "Boolean"
 msgstr "Logična vrednost"
 
-#: ../data/argumentrules.ui.h:22 ../src/callbacks.cc:18463
+#: ../data/argumentrules.ui.h:22 ../src/callbacks.cc:18489
 msgid "Object"
 msgstr "Objekt"
 
 #: ../data/argumentrules.ui.h:23 ../data/datasetedit.ui.h:35
-#: ../data/main.ui.h:24 ../data/plot.ui.h:9 ../src/interface.cc:2582
+#: ../data/main.ui.h:24 ../data/plot.ui.h:9 ../src/interface.cc:2585
 msgid "Function"
 msgstr "Funkcija"
 
@@ -191,7 +191,7 @@ msgstr "Funkcija"
 msgid "Unit"
 msgstr "Enota"
 
-#: ../data/argumentrules.ui.h:25 ../data/main.ui.h:20 ../src/interface.cc:2640
+#: ../data/argumentrules.ui.h:25 ../data/main.ui.h:20 ../src/interface.cc:2643
 msgid "Variable"
 msgstr "Spremenljivka"
 
@@ -204,7 +204,7 @@ msgstr "Datoteka"
 msgid "Angle"
 msgstr "Kot"
 
-#: ../data/argumentrules.ui.h:28 ../src/callbacks.cc:25257
+#: ../data/argumentrules.ui.h:28 ../src/callbacks.cc:25300
 msgid "Data object"
 msgstr "Podatkovni objekt"
 
@@ -257,16 +257,16 @@ msgid "Max"
 msgstr "Max"
 
 #: ../data/argumentrules.ui.h:40 ../data/unknownedit.ui.h:7
-#: ../src/interface.cc:3154 ../src/interface.cc:3388
+#: ../src/interface.cc:3158 ../src/interface.cc:3392
 msgid "Type"
 msgstr "Vrsta"
 
 #: ../data/argumentrules.ui.h:41 ../data/csvimport.ui.h:8
 #: ../data/datasetedit.ui.h:4 ../data/functionedit.ui.h:5
 #: ../data/matrixedit.ui.h:6 ../data/unitedit.ui.h:7 ../data/unknownedit.ui.h:5
-#: ../data/variableedit.ui.h:5 ../src/interface.cc:2483
-#: ../src/interface.cc:2716 ../src/interface.cc:3148 ../src/interface.cc:3385
-#: ../src/interface.cc:3429 ../src/callbacks.cc:20268 ../src/callbacks.cc:27989
+#: ../data/variableedit.ui.h:5 ../src/interface.cc:2486
+#: ../src/interface.cc:2719 ../src/interface.cc:3152 ../src/interface.cc:3389
+#: ../src/interface.cc:3433 ../src/callbacks.cc:20294 ../src/callbacks.cc:28032
 msgid "Name"
 msgstr "Ime"
 
@@ -279,25 +279,25 @@ msgstr "Prilagodite gumbe na tipkovnici"
 #: ../data/functions.ui.h:2 ../data/namesedit.ui.h:2 ../data/nbases.ui.h:2
 #: ../data/percentage.ui.h:5 ../data/plot.ui.h:5 ../data/precision.ui.h:2
 #: ../data/preferences.ui.h:2 ../data/setbase.ui.h:2 ../data/shortcuts.ui.h:2
-#: ../data/units.ui.h:2 ../data/variables.ui.h:2 ../src/callbacks.cc:2822
-#: ../src/callbacks.cc:15697 ../src/callbacks.cc:17900
-#: ../src/callbacks.cc:27908 ../src/callbacks.cc:37460
+#: ../data/units.ui.h:2 ../data/variables.ui.h:2 ../src/callbacks.cc:2823
+#: ../src/callbacks.cc:15702 ../src/callbacks.cc:17926
+#: ../src/callbacks.cc:27951 ../src/callbacks.cc:37455
 msgid "_Close"
 msgstr "_Zapri"
 
-#: ../data/buttonsedit.ui.h:3 ../src/interface.cc:4436
+#: ../data/buttonsedit.ui.h:3 ../src/interface.cc:4446
 msgid "Label"
 msgstr "Oznaka"
 
-#: ../data/buttonsedit.ui.h:4 ../src/interface.cc:4439
+#: ../data/buttonsedit.ui.h:4 ../src/interface.cc:4449
 msgid "Left-click"
 msgstr "Levi klik"
 
-#: ../data/buttonsedit.ui.h:5 ../src/interface.cc:4442
+#: ../data/buttonsedit.ui.h:5 ../src/interface.cc:4452
 msgid "Right-click"
 msgstr "Desni klik"
 
-#: ../data/buttonsedit.ui.h:6 ../src/interface.cc:4445
+#: ../data/buttonsedit.ui.h:6 ../src/interface.cc:4455
 msgid "Middle-click"
 msgstr "Srednji klik"
 
@@ -311,8 +311,8 @@ msgid "Button Action"
 msgstr "Funkcija"
 
 #: ../data/buttonsedit.ui.h:11 ../data/shortcuts.ui.h:10
-#: ../data/variableedit.ui.h:7 ../src/interface.cc:2392
-#: ../src/interface.cc:4256 ../src/callbacks.cc:15761
+#: ../data/variableedit.ui.h:7 ../src/interface.cc:2395
+#: ../src/interface.cc:4266 ../src/callbacks.cc:15766
 msgid "Value"
 msgstr "Vrednost"
 
@@ -380,8 +380,8 @@ msgstr "Opisno ime"
 
 #: ../data/csvimport.ui.h:10 ../data/functionedit.ui.h:18 ../data/main.ui.h:241
 #: ../data/matrixedit.ui.h:18 ../data/unitedit.ui.h:8
-#: ../data/variableedit.ui.h:11 ../src/interface.cc:2494
-#: ../src/interface.cc:2596 ../src/interface.cc:2654 ../src/interface.cc:2730
+#: ../data/variableedit.ui.h:11 ../src/interface.cc:2497
+#: ../src/interface.cc:2599 ../src/interface.cc:2657 ../src/interface.cc:2733
 msgid "Category"
 msgstr "Kategorija"
 
@@ -476,7 +476,7 @@ msgid "Unit expression"
 msgstr "Izraz enote"
 
 #: ../data/datasetedit.ui.h:16 ../data/functionedit.ui.h:8 ../data/plot.ui.h:8
-#: ../src/interface.cc:3174 ../src/interface.cc:4119
+#: ../src/interface.cc:3178 ../src/interface.cc:4129
 msgid "Expression"
 msgstr "Izraz"
 
@@ -492,7 +492,7 @@ msgstr "Naslov, prikazan v menijih in upravljalniku podatkovnih naborov"
 msgid "Description of this data property"
 msgstr "Opis lastnosti podatka"
 
-#: ../data/datasetedit.ui.h:20 ../src/callbacks.cc:18348
+#: ../data/datasetedit.ui.h:20 ../src/callbacks.cc:18374
 msgid "Edit Data Set"
 msgstr "Uredi podatkovni nabor"
 
@@ -532,12 +532,12 @@ msgid "_Edit"
 msgstr "_Uredi"
 
 #: ../data/datasetedit.ui.h:29 ../data/functions.ui.h:10 ../data/units.ui.h:15
-#: ../data/variables.ui.h:10 ../src/callbacks.cc:20317
+#: ../data/variables.ui.h:10 ../src/callbacks.cc:20343
 msgid "_Delete"
 msgstr "_Izbriši"
 
-#: ../data/datasetedit.ui.h:30 ../src/callbacks.cc:5217
-#: ../src/callbacks.cc:6290
+#: ../data/datasetedit.ui.h:30 ../src/callbacks.cc:5218
+#: ../src/callbacks.cc:6287
 msgid "Properties"
 msgstr "Lastnosti"
 
@@ -557,7 +557,7 @@ msgstr "Privzeta lastnost"
 msgid "Name used to invoke the function in expressions"
 msgstr "Ime za klic funkcije v izrazih"
 
-#: ../data/datasets.ui.h:1 ../src/callbacks.cc:18065
+#: ../data/datasets.ui.h:1 ../src/callbacks.cc:18091
 msgid "Edit Data Object"
 msgstr "Uredi podatkovni objekt"
 
@@ -569,11 +569,11 @@ msgstr "Ne ustvari/uredi tega podatkovnega objekta"
 msgid "Accept the creation/modification of this data object"
 msgstr "Sprejmi izdelavo/urejevanje tega podatkovnega objekta"
 
-#: ../data/datasets.ui.h:6 ../data/main.ui.h:48 ../src/callbacks.cc:18455
+#: ../data/datasets.ui.h:6 ../data/main.ui.h:48 ../src/callbacks.cc:18481
 msgid "Data Sets"
 msgstr "Podatkovni nabori"
 
-#: ../data/datasets.ui.h:8 ../data/main.ui.h:25 ../src/interface.cc:2831
+#: ../data/datasets.ui.h:8 ../data/main.ui.h:25 ../src/interface.cc:2834
 msgid "Data Set"
 msgstr "Podatkovni nabor"
 
@@ -694,7 +694,7 @@ msgstr ""
 msgid "Microchip 32-bit"
 msgstr ""
 
-#: ../data/functionedit.ui.h:1 ../src/callbacks.cc:16897
+#: ../data/functionedit.ui.h:1 ../src/callbacks.cc:16902
 msgid "Edit Function"
 msgstr "Uredi funkcijo"
 
@@ -747,7 +747,7 @@ msgstr "_Dodaj"
 msgid "_Remove"
 msgstr "Odst_rani"
 
-#: ../data/functionedit.ui.h:16 ../src/callbacks.cc:5158
+#: ../data/functionedit.ui.h:16 ../src/callbacks.cc:5159
 msgid "Arguments"
 msgstr "Argumenti"
 
@@ -767,7 +767,7 @@ msgstr "Skrij funkcijo"
 msgid "Example"
 msgstr "Primer"
 
-#: ../data/functionedit.ui.h:26 ../src/interface.cc:3179
+#: ../data/functionedit.ui.h:26 ../src/interface.cc:3183
 msgid "Precalculate"
 msgstr "Izračunaj vnaprej"
 
@@ -808,8 +808,8 @@ msgid "(De)activate the selected function"
 msgstr "O(ne)mogoči izbrano funkcijo"
 
 #: ../data/functions.ui.h:13 ../data/units.ui.h:18 ../data/variables.ui.h:13
-#: ../src/callbacks.cc:5257 ../src/callbacks.cc:5540 ../src/callbacks.cc:5849
-#: ../src/callbacks.cc:19244
+#: ../src/callbacks.cc:5258 ../src/callbacks.cc:5541 ../src/callbacks.cc:5850
+#: ../src/callbacks.cc:19270
 msgid "Deacti_vate"
 msgstr "O_nemogoči"
 
@@ -821,7 +821,7 @@ msgstr "_Izračunaj"
 msgid "Insert (or execute) the selected function into the expression entry"
 msgstr "Vnesi (ali izvrši) izbrano funkcijo v polje za izraz"
 
-#: ../data/functions.ui.h:16 ../data/plot.ui.h:36 ../src/callbacks.cc:37647
+#: ../data/functions.ui.h:16 ../data/plot.ui.h:36 ../src/callbacks.cc:37642
 msgid "_Apply"
 msgstr "_Uporabi"
 
@@ -841,11 +841,11 @@ msgstr "Radiani"
 msgid "Gradians"
 msgstr "Gradiani"
 
-#: ../data/main.ui.h:4 ../src/callbacks.cc:5526
+#: ../data/main.ui.h:4 ../src/callbacks.cc:5527
 msgid "Default assumptions"
 msgstr "Privzete predpostavke"
 
-#: ../data/main.ui.h:5 ../data/unknownedit.ui.h:14 ../src/callbacks.cc:37517
+#: ../data/main.ui.h:5 ../data/unknownedit.ui.h:14 ../src/callbacks.cc:37512
 msgid "Unknown"
 msgstr "Neznano"
 
@@ -965,13 +965,13 @@ msgstr "Spremenljivke"
 msgid "Units"
 msgstr "Enote"
 
-#: ../data/main.ui.h:49 ../src/interface.cc:1477 ../src/callbacks.cc:2019
-#: ../src/callbacks.cc:29695
+#: ../data/main.ui.h:49 ../src/interface.cc:1480 ../src/callbacks.cc:2020
+#: ../src/callbacks.cc:29690
 msgid "Factorize"
 msgstr "Faktoriziraj"
 
-#: ../data/main.ui.h:50 ../src/interface.cc:1475 ../src/callbacks.cc:2022
-#: ../src/callbacks.cc:29709
+#: ../data/main.ui.h:50 ../src/interface.cc:1478 ../src/callbacks.cc:2023
+#: ../src/callbacks.cc:29704
 msgid "Expand"
 msgstr "Razširi"
 
@@ -979,7 +979,7 @@ msgstr "Razširi"
 msgid "Apply partial fraction decomposition to the current result."
 msgstr "Uporabi parcialno dekompozicijo ulomkov v trenutnem rezultatu"
 
-#: ../data/main.ui.h:52 ../src/interface.cc:1479
+#: ../data/main.ui.h:52 ../src/interface.cc:1482
 msgid "Expand Partial Fractions"
 msgstr "Razširi parcialne ulomke"
 
@@ -1007,15 +1007,15 @@ msgstr "Pretvori v osnovne enote"
 msgid "Convert to Optimal Unit"
 msgstr "Pretvori v najustreznejšo enoto"
 
-#: ../data/main.ui.h:59 ../src/callbacks.cc:19813
+#: ../data/main.ui.h:59 ../src/callbacks.cc:19839
 msgid "Insert Date…"
 msgstr "Vnesi datum..."
 
-#: ../data/main.ui.h:60 ../src/callbacks.cc:19814
+#: ../data/main.ui.h:60 ../src/callbacks.cc:19840
 msgid "Insert Matrix…"
 msgstr "Vnesi matriko..."
 
-#: ../data/main.ui.h:61 ../src/callbacks.cc:19815
+#: ../data/main.ui.h:61 ../src/callbacks.cc:19841
 msgid "Insert Vector…"
 msgstr "Vnesi vektor..."
 
@@ -1039,7 +1039,7 @@ msgstr "_Nastavitve"
 msgid "_Mode"
 msgstr "N_ačin"
 
-#: ../data/main.ui.h:68 ../src/callbacks.cc:7969 ../src/callbacks.cc:19787
+#: ../data/main.ui.h:68 ../src/callbacks.cc:7966 ../src/callbacks.cc:19813
 msgid "Number Base"
 msgstr "Številska osnova"
 
@@ -1048,49 +1048,49 @@ msgid "Select Result and Expression Base…"
 msgstr "Nastavi rezultat in osnovo izraza..."
 
 #: ../data/main.ui.h:70 ../data/nbases.ui.h:4 ../data/setbase.ui.h:3
-#: ../src/interface.cc:1674 ../src/callbacks.cc:19790 ../src/callbacks.cc:29176
-#: ../src/callbacks.cc:33292 ../src/callbacks.cc:33334
+#: ../src/interface.cc:1677 ../src/callbacks.cc:19816 ../src/callbacks.cc:29167
+#: ../src/callbacks.cc:33287 ../src/callbacks.cc:33329
 msgid "Binary"
 msgstr "Binarno"
 
 #: ../data/main.ui.h:71 ../data/nbases.ui.h:5 ../data/setbase.ui.h:4
-#: ../src/interface.cc:1675 ../src/callbacks.cc:19791 ../src/callbacks.cc:29177
-#: ../src/callbacks.cc:33293 ../src/callbacks.cc:33335
+#: ../src/interface.cc:1678 ../src/callbacks.cc:19817 ../src/callbacks.cc:29168
+#: ../src/callbacks.cc:33288 ../src/callbacks.cc:33330
 msgid "Octal"
 msgstr "Osmiško"
 
 #: ../data/main.ui.h:72 ../data/nbases.ui.h:3 ../data/setbase.ui.h:5
-#: ../src/interface.cc:1676 ../src/callbacks.cc:19792 ../src/callbacks.cc:29178
-#: ../src/callbacks.cc:33294 ../src/callbacks.cc:33336
+#: ../src/interface.cc:1679 ../src/callbacks.cc:19818 ../src/callbacks.cc:29169
+#: ../src/callbacks.cc:33289 ../src/callbacks.cc:33331
 msgid "Decimal"
 msgstr "Desetiško"
 
 #: ../data/main.ui.h:73 ../data/nbases.ui.h:10 ../data/setbase.ui.h:6
-#: ../src/callbacks.cc:19793 ../src/callbacks.cc:29179
-#: ../src/callbacks.cc:33295 ../src/callbacks.cc:33337
+#: ../src/callbacks.cc:19819 ../src/callbacks.cc:29170
+#: ../src/callbacks.cc:33290 ../src/callbacks.cc:33332
 msgid "Duodecimal"
 msgstr "Dvanajstiško"
 
 #: ../data/main.ui.h:74 ../data/nbases.ui.h:11 ../data/setbase.ui.h:7
-#: ../src/interface.cc:1677 ../src/callbacks.cc:19794 ../src/callbacks.cc:29180
-#: ../src/callbacks.cc:33296 ../src/callbacks.cc:33338
+#: ../src/interface.cc:1680 ../src/callbacks.cc:19820 ../src/callbacks.cc:29171
+#: ../src/callbacks.cc:33291 ../src/callbacks.cc:33333
 msgid "Hexadecimal"
 msgstr "Šestnajstiško"
 
-#: ../data/main.ui.h:75 ../src/callbacks.cc:19796
+#: ../data/main.ui.h:75 ../src/callbacks.cc:19822
 msgid "Other…"
 msgstr "Drugo..."
 
-#: ../data/main.ui.h:76 ../data/setbase.ui.h:8 ../src/callbacks.cc:29191
-#: ../src/callbacks.cc:29222
+#: ../data/main.ui.h:76 ../data/setbase.ui.h:8 ../src/callbacks.cc:29184
+#: ../src/callbacks.cc:29215
 msgid "Sexagesimal"
 msgstr "Šestdesetiško"
 
-#: ../data/main.ui.h:77 ../src/callbacks.cc:8022
+#: ../data/main.ui.h:77 ../src/callbacks.cc:8019
 msgid "Time Format"
 msgstr "Časovna oblika"
 
-#: ../data/main.ui.h:78 ../src/callbacks.cc:8018 ../src/callbacks.cc:19795
+#: ../data/main.ui.h:78 ../src/callbacks.cc:8015 ../src/callbacks.cc:19821
 msgid "Roman Numerals"
 msgstr "Rimske številke"
 
@@ -1160,19 +1160,19 @@ msgstr "Zaokroži polovična števila na soda"
 msgid "Truncate All Numbers"
 msgstr "Osmiško število"
 
-#: ../data/main.ui.h:95 ../src/callbacks.cc:8016
+#: ../data/main.ui.h:95 ../src/callbacks.cc:8013
 msgid "Complex Rectangular Form"
 msgstr "Kompleksna pravokotna oblika"
 
-#: ../data/main.ui.h:96 ../src/callbacks.cc:7984
+#: ../data/main.ui.h:96 ../src/callbacks.cc:7981
 msgid "Complex Exponential Form"
 msgstr "Kompleksna eksponentna oblika"
 
-#: ../data/main.ui.h:97 ../src/callbacks.cc:8014
+#: ../data/main.ui.h:97 ../src/callbacks.cc:8011
 msgid "Complex Polar Form"
 msgstr "Kompleksna polarna oblika"
 
-#: ../data/main.ui.h:98 ../src/callbacks.cc:7963
+#: ../data/main.ui.h:98 ../src/callbacks.cc:7960
 msgid "Complex Angle/Phasor Notation"
 msgstr "Kompleksna kazalčna/fazorska notacija"
 
@@ -1228,7 +1228,7 @@ msgstr ""
 "Izklopljeno: 1/2 × pi ≈ 1,5707963\n"
 "Vklopljeno: 1/2 × pi = 0,5 pi"
 
-#: ../data/main.ui.h:112 ../src/callbacks.cc:3298
+#: ../data/main.ui.h:112 ../src/callbacks.cc:3299
 msgid "Adaptive"
 msgstr "Prilagodljivo"
 
@@ -1244,7 +1244,7 @@ msgstr ""
 msgid "Significant Digits"
 msgstr "Pomembne števke"
 
-#: ../data/main.ui.h:115 ../src/interface.cc:1129 ../src/interface.cc:4368
+#: ../data/main.ui.h:115 ../src/interface.cc:1132 ../src/interface.cc:4378
 msgid "Interval"
 msgstr "Interval"
 
@@ -1252,7 +1252,7 @@ msgstr "Interval"
 msgid "Plus/Minus"
 msgstr "Plus/minus"
 
-#: ../data/main.ui.h:117 ../data/preferences.ui.h:98 ../src/callbacks.cc:3089
+#: ../data/main.ui.h:117 ../data/preferences.ui.h:100 ../src/callbacks.cc:3090
 #, fuzzy
 msgid "Relative"
 msgstr "Razmerje"
@@ -1413,7 +1413,7 @@ msgstr "Vselej točno"
 msgid "Try Exact"
 msgstr "Poskusi točno"
 
-#: ../data/main.ui.h:156 ../src/callbacks.cc:18113
+#: ../data/main.ui.h:156 ../src/callbacks.cc:18139
 msgid "Approximate"
 msgstr "Izračunaj približek"
 
@@ -1437,7 +1437,7 @@ msgstr "Spremeni kotne enote v trigonometričnih funkcijah"
 msgid "Angle Unit"
 msgstr "Kotne enote"
 
-#: ../data/main.ui.h:162 ../data/plot.ui.h:27 ../src/interface.cc:4479
+#: ../data/main.ui.h:162 ../data/plot.ui.h:27 ../src/interface.cc:4489
 msgid "None"
 msgstr "Brez"
 
@@ -1465,7 +1465,7 @@ msgstr "Opozori, ko so neznani imenovalci lahko ničelni"
 msgid "Warn About Denominators Assumed Non-Zero"
 msgstr "Opozori o neničelnih imenovalcih"
 
-#: ../data/main.ui.h:169 ../src/callbacks.cc:3269 ../src/callbacks.cc:19777
+#: ../data/main.ui.h:169 ../src/callbacks.cc:3270 ../src/callbacks.cc:19803
 msgid "Parsing Mode"
 msgstr "Način obdelave"
 
@@ -1559,11 +1559,11 @@ msgstr "Vklopi sklad RPN."
 msgid "RPN Mode"
 msgstr "Način RPN"
 
-#: ../data/main.ui.h:193 ../src/callbacks.cc:19798
+#: ../data/main.ui.h:193 ../src/callbacks.cc:19824
 msgid "Meta Modes"
 msgstr "Metanačini"
 
-#: ../data/main.ui.h:194 ../src/callbacks.cc:19810
+#: ../data/main.ui.h:194 ../src/callbacks.cc:19836
 msgid "Save Mode…"
 msgstr "Shrani način..."
 
@@ -1603,7 +1603,7 @@ msgstr "Preveri za posodobitve"
 msgid "_About"
 msgstr "_O programu"
 
-#: ../data/main.ui.h:205 ../src/callbacks.cc:6707
+#: ../data/main.ui.h:205 ../src/callbacks.cc:6704
 msgid "Toggle minimal window"
 msgstr "Prikaži/skrij majhno okno"
 
@@ -1671,7 +1671,7 @@ msgstr "Potenciraj na potenco izbrane vrednosti"
 msgid "Calculate the square root of the selected value"
 msgstr "Izračunaj kvadratni koren izbranih vrednosti"
 
-#: ../data/main.ui.h:221 ../src/interface.cc:2340
+#: ../data/main.ui.h:221 ../src/interface.cc:2343
 msgid "History"
 msgstr "Zgodovina"
 
@@ -1707,29 +1707,29 @@ msgstr "Izračunaj kvadratni koren vrhnje vrednosti"
 msgid "Calculate the sum of all values"
 msgstr "Izračunaj seštevek vseh vrednosti"
 
-#: ../data/main.ui.h:231 ../src/callbacks.cc:6868 ../src/callbacks.cc:7088
+#: ../data/main.ui.h:231 ../src/callbacks.cc:6865 ../src/callbacks.cc:7085
 msgid "Rotate the stack or move selected register up"
 msgstr "Zavrti sklad ali premakni izbran register gor"
 
-#: ../data/main.ui.h:232 ../src/callbacks.cc:6876 ../src/callbacks.cc:7089
+#: ../data/main.ui.h:232 ../src/callbacks.cc:6873 ../src/callbacks.cc:7086
 msgid "Rotate the stack or move selected register down"
 msgstr "Zavrti sklad ali premakni izbran register dol"
 
-#: ../data/main.ui.h:233 ../src/callbacks.cc:6884 ../src/callbacks.cc:7090
+#: ../data/main.ui.h:233 ../src/callbacks.cc:6881 ../src/callbacks.cc:7087
 msgid ""
 "Swap the two top values or move the selected value to the top of the stack"
 msgstr ""
 "Izmenjaj vrhnji dve vrednosti ali premakni izbrano vrednost na vrh sklada"
 
-#: ../data/main.ui.h:234 ../src/callbacks.cc:6892 ../src/callbacks.cc:7091
+#: ../data/main.ui.h:234 ../src/callbacks.cc:6889 ../src/callbacks.cc:7088
 msgid "Copy the selected or top value to the top of the stack"
 msgstr "Kopiraj izbrano ali vrhnjo vrednost na vrh sklada"
 
-#: ../data/main.ui.h:235 ../src/callbacks.cc:6900 ../src/callbacks.cc:7092
+#: ../data/main.ui.h:235 ../src/callbacks.cc:6897 ../src/callbacks.cc:7089
 msgid "Enter the top value from before the last numeric operation"
 msgstr "Vnesi vrhnjo vrednost na mesto pred zadnjo številsko operacijo"
 
-#: ../data/main.ui.h:236 ../src/callbacks.cc:6908 ../src/callbacks.cc:7093
+#: ../data/main.ui.h:236 ../src/callbacks.cc:6905 ../src/callbacks.cc:7090
 msgid "Delete the top or selected value"
 msgstr "Izbriši vrhnjo ali izbrano vrednost"
 
@@ -1737,7 +1737,7 @@ msgstr "Izbriši vrhnjo ali izbrano vrednost"
 msgid "Edit the selected value"
 msgstr "Uredi izbrano vrednost"
 
-#: ../data/main.ui.h:238 ../src/callbacks.cc:6916 ../src/callbacks.cc:7094
+#: ../data/main.ui.h:238 ../src/callbacks.cc:6913 ../src/callbacks.cc:7091
 msgid "Clear the RPN stack"
 msgstr "Počisti sklad RPN"
 
@@ -1779,15 +1779,16 @@ msgstr ""
 msgid "Conversion"
 msgstr "Pretvorba"
 
-#: ../data/main.ui.h:250 ../src/callbacks.cc:6952 ../src/callbacks.cc:7101
+#: ../data/main.ui.h:250 ../src/callbacks.cc:6949 ../src/callbacks.cc:7098
 msgid "Show/hide programming keypad"
 msgstr "Prikaži/skrij programirno tipkovnico"
 
-#: ../data/main.ui.h:251 ../src/callbacks.cc:18114
+#: ../data/main.ui.h:251 ../src/callbacks.cc:18140
 msgid "Exact"
 msgstr "Točno"
 
-#: ../data/main.ui.h:252 ../src/callbacks.cc:7998 ../src/callbacks.cc:29200
+#: ../data/main.ui.h:252 ../src/callbacks.cc:7995 ../src/callbacks.cc:29161
+#: ../src/callbacks.cc:29213
 msgid "Fraction"
 msgstr "Ulomek"
 
@@ -1803,11 +1804,11 @@ msgstr "Čisto"
 msgid "Number base"
 msgstr "Številska osnova"
 
-#: ../data/main.ui.h:256 ../data/setbase.ui.h:9 ../src/callbacks.cc:29192
+#: ../data/main.ui.h:256 ../data/setbase.ui.h:9 ../src/callbacks.cc:29185
 msgid "Time format"
 msgstr "Časovna oblika"
 
-#: ../data/main.ui.h:257 ../src/callbacks.cc:29182
+#: ../data/main.ui.h:257
 msgid "Roman"
 msgstr "Rimsko"
 
@@ -1851,7 +1852,7 @@ msgstr "mod"
 msgid "mean"
 msgstr "srednja vrednost"
 
-#: ../data/main.ui.h:269 ../src/interface.cc:1679
+#: ../data/main.ui.h:269 ../src/interface.cc:1682
 msgid "Store result as a variable"
 msgstr "Shrani rezultat kot spremenljivko"
 
@@ -1868,7 +1869,7 @@ msgstr "Pretvori številske osnove"
 msgid "Imaginary unit i (√-1)"
 msgstr "Imaginarna enota i (√-1)"
 
-#: ../data/main.ui.h:274 ../src/callbacks.cc:6710
+#: ../data/main.ui.h:274 ../src/callbacks.cc:6707
 msgid "Manage units"
 msgstr "Upravljaj enote"
 
@@ -1888,17 +1889,17 @@ msgstr "Vhod dvojiškega komplementa"
 msgid "Two's complement output"
 msgstr "Izhod dvojiškega komplementa"
 
-#: ../data/main.ui.h:281 ../data/nbases.ui.h:26 ../src/interface.cc:1187
-#: ../src/interface.cc:1355 ../src/interface.cc:1681 ../src/interface.cc:1682
-#: ../src/interface.cc:4389 ../src/callbacks.cc:23506 ../src/callbacks.cc:23507
+#: ../data/main.ui.h:281 ../data/nbases.ui.h:26 ../src/interface.cc:1190
+#: ../src/interface.cc:1358 ../src/interface.cc:1684 ../src/interface.cc:1685
+#: ../src/interface.cc:4399 ../src/callbacks.cc:23537 ../src/callbacks.cc:23538
 msgid "Bitwise Exclusive OR"
 msgstr "Logični ekskluzivni OR"
 
-#: ../data/main.ui.h:282 ../data/nbases.ui.h:32 ../src/interface.cc:1351
+#: ../data/main.ui.h:282 ../data/nbases.ui.h:32 ../src/interface.cc:1354
 msgid "Bitwise Left Shift"
 msgstr "Logični pomik v levo"
 
-#: ../data/main.ui.h:283 ../data/nbases.ui.h:33 ../src/interface.cc:1352
+#: ../data/main.ui.h:283 ../data/nbases.ui.h:33 ../src/interface.cc:1355
 msgid "Bitwise Right Shift"
 msgstr "Logični pomik v desno"
 
@@ -1915,25 +1916,25 @@ msgid "Show/hide right keypad"
 msgstr "Prikaži/skrij desno tipkovnico"
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:288 ../data/nbases.ui.h:29 ../src/interface.cc:1194
+#: ../data/main.ui.h:288 ../data/nbases.ui.h:29 ../src/interface.cc:1197
 msgid "DEL"
 msgstr "DEL"
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:290 ../data/nbases.ui.h:31 ../src/interface.cc:1193
+#: ../data/main.ui.h:290 ../data/nbases.ui.h:31 ../src/interface.cc:1196
 msgid "AC"
 msgstr "AC"
 
-#: ../data/main.ui.h:291 ../src/interface.cc:1195 ../src/interface.cc:4396
+#: ../data/main.ui.h:291 ../src/interface.cc:1198 ../src/interface.cc:4406
 msgid "Previous result"
 msgstr "Prejšnji rezultat"
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:293 ../src/interface.cc:1195
+#: ../data/main.ui.h:293 ../src/interface.cc:1198
 msgid "ANS"
 msgstr "ANS"
 
-#: ../data/main.ui.h:294 ../src/interface.cc:1148
+#: ../data/main.ui.h:294 ../src/interface.cc:1151
 msgid "EXP"
 msgstr "EXP"
 
@@ -1949,8 +1950,8 @@ msgstr "Stalna tipkovnica"
 msgid "Edit"
 msgstr "Uredi"
 
-#: ../data/main.ui.h:298 ../data/nbases.ui.h:28 ../src/interface.cc:1194
-#: ../src/interface.cc:4395
+#: ../data/main.ui.h:298 ../data/nbases.ui.h:28 ../src/interface.cc:1197
+#: ../src/interface.cc:4405
 msgid "Delete"
 msgstr "Izbriši"
 
@@ -1986,7 +1987,7 @@ msgstr "Kopiraj celotno besedilo"
 msgid "Search…"
 msgstr "Išči..."
 
-#: ../data/main.ui.h:307 ../src/callbacks.cc:28185
+#: ../data/main.ui.h:307 ../src/callbacks.cc:28228
 msgid "Add Bookmark…"
 msgstr "Dodaj zaznamek..."
 
@@ -2170,7 +2171,7 @@ msgstr "Počisti sklad"
 msgid "Select Number Base…"
 msgstr "Izberi številsko osnovo..."
 
-#: ../data/main.ui.h:353 ../src/callbacks.cc:6712
+#: ../data/main.ui.h:353 ../src/callbacks.cc:6709
 msgid "Store result"
 msgstr "Shrani rezultat"
 
@@ -2187,7 +2188,7 @@ msgid "Subtract result"
 msgstr "Shrani rezultat"
 
 #: ../data/matrix.ui.h:4 ../data/units.ui.h:19 ../data/variables.ui.h:14
-#: ../src/callbacks.cc:15704
+#: ../src/callbacks.cc:15709
 msgid "_Insert"
 msgstr "_Vnesi"
 
@@ -2195,8 +2196,8 @@ msgstr "_Vnesi"
 msgid "Insert the matrix/vector into the expression"
 msgstr "Vstavi matriko/vektor v izraz"
 
-#: ../data/matrix.ui.h:6 ../data/matrixedit.ui.h:7 ../src/callbacks.cc:35517
-#: ../src/callbacks.cc:35525
+#: ../data/matrix.ui.h:6 ../data/matrixedit.ui.h:7 ../src/callbacks.cc:35512
+#: ../src/callbacks.cc:35520
 msgid "Elements"
 msgstr "Elementi"
 
@@ -2216,7 +2217,7 @@ msgstr "Če je to matrika ali vektor"
 msgid "Current element:"
 msgstr "Trenutni element:"
 
-#: ../data/matrixedit.ui.h:1 ../src/callbacks.cc:17578
+#: ../data/matrixedit.ui.h:1 ../src/callbacks.cc:17601
 msgid "Edit Matrix"
 msgstr "Uredi matriko"
 
@@ -2228,7 +2229,8 @@ msgstr "Sprejmi izdelavo/urejevanje te matrike/vektorja"
 msgid "Name used to reference this variable in expressions"
 msgstr "Ime za klic te spremenljivke v izrazih"
 
-#: ../data/matrixedit.ui.h:15 ../data/variableedit.ui.h:8
+#: ../data/matrixedit.ui.h:15 ../data/unknownedit.ui.h:21
+#: ../data/variableedit.ui.h:8
 msgid "Temporary"
 msgstr "Začasno"
 
@@ -2240,7 +2242,7 @@ msgstr "Skrij spremenljivko"
 msgid "Names"
 msgstr "Imena"
 
-#: ../data/nbases.ui.h:1 ../data/setbase.ui.h:1 ../src/callbacks.cc:7965
+#: ../data/nbases.ui.h:1 ../data/setbase.ui.h:1 ../src/callbacks.cc:7962
 msgid "Number Bases"
 msgstr "Številske osnove"
 
@@ -2252,8 +2254,8 @@ msgstr "Binarna vrednost"
 msgid "Octal value"
 msgstr "Osmiška vrednost"
 
-#: ../data/nbases.ui.h:9 ../data/setbase.ui.h:10 ../src/callbacks.cc:33297
-#: ../src/callbacks.cc:33339
+#: ../data/nbases.ui.h:9 ../data/setbase.ui.h:10 ../src/callbacks.cc:29172
+#: ../src/callbacks.cc:33292 ../src/callbacks.cc:33334
 msgid "Roman numerals"
 msgstr "Rimske številke"
 
@@ -2265,11 +2267,11 @@ msgstr "Šestnajstiška vrednost"
 msgid "Show/hide keypad"
 msgstr "Prikaži/skrij tipkovnico"
 
-#: ../data/nbases.ui.h:14 ../src/callbacks.cc:2311
+#: ../data/nbases.ui.h:14 ../src/callbacks.cc:2312
 msgid "BIN"
 msgstr "BIN"
 
-#: ../data/nbases.ui.h:15 ../src/callbacks.cc:2316
+#: ../data/nbases.ui.h:15 ../src/callbacks.cc:2317
 msgid "OCT"
 msgstr "OCT"
 
@@ -2277,11 +2279,11 @@ msgstr "OCT"
 msgid "DEC"
 msgstr "DEC"
 
-#: ../data/nbases.ui.h:17 ../src/callbacks.cc:2321
+#: ../data/nbases.ui.h:17 ../src/callbacks.cc:2322
 msgid "DUO"
 msgstr "DUO"
 
-#: ../data/nbases.ui.h:18 ../src/callbacks.cc:2326
+#: ../data/nbases.ui.h:18 ../src/callbacks.cc:2327
 msgid "HEX"
 msgstr "HEX"
 
@@ -2289,34 +2291,34 @@ msgstr "HEX"
 msgid "ROM"
 msgstr "ROM"
 
-#: ../data/nbases.ui.h:21 ../src/interface.cc:1191 ../src/interface.cc:4393
+#: ../data/nbases.ui.h:21 ../src/interface.cc:1194 ../src/interface.cc:4403
 msgid "Subtract"
 msgstr "Odštej"
 
-#: ../data/nbases.ui.h:22 ../src/interface.cc:1187 ../src/interface.cc:4389
+#: ../data/nbases.ui.h:22 ../src/interface.cc:1190 ../src/interface.cc:4399
 msgid "Multiply"
 msgstr "Zmnoži"
 
-#: ../data/nbases.ui.h:23 ../src/interface.cc:1186 ../src/interface.cc:4388
+#: ../data/nbases.ui.h:23 ../src/interface.cc:1189 ../src/interface.cc:4398
 msgid "Divide"
 msgstr "Zdeli"
 
-#: ../data/nbases.ui.h:24 ../src/interface.cc:1188 ../src/interface.cc:1353
-#: ../src/interface.cc:1670 ../src/interface.cc:4390
+#: ../data/nbases.ui.h:24 ../src/interface.cc:1191 ../src/interface.cc:1356
+#: ../src/interface.cc:1673 ../src/interface.cc:4400
 msgid "Bitwise AND"
 msgstr "Bitni AND"
 
-#: ../data/nbases.ui.h:25 ../src/interface.cc:1191 ../src/interface.cc:1354
-#: ../src/interface.cc:1671 ../src/interface.cc:4393
+#: ../data/nbases.ui.h:25 ../src/interface.cc:1194 ../src/interface.cc:1357
+#: ../src/interface.cc:1674 ../src/interface.cc:4403
 msgid "Bitwise OR"
 msgstr "Bitni OR"
 
-#: ../data/nbases.ui.h:27 ../src/interface.cc:1356 ../src/interface.cc:1672
+#: ../data/nbases.ui.h:27 ../src/interface.cc:1359 ../src/interface.cc:1675
 msgid "Bitwise NOT"
 msgstr "Bitni NOT"
 
-#: ../data/nbases.ui.h:30 ../data/percentage.ui.h:4 ../src/interface.cc:1193
-#: ../src/interface.cc:4394 ../src/callbacks.cc:19729
+#: ../data/nbases.ui.h:30 ../data/percentage.ui.h:4 ../src/interface.cc:1196
+#: ../src/interface.cc:4404 ../src/callbacks.cc:19755
 msgid "Clear"
 msgstr "Počisti"
 
@@ -2364,9 +2366,9 @@ msgstr "Spremeni iz 2 v 1"
 msgid "Plot"
 msgstr "Izriši"
 
-#: ../data/plot.ui.h:3 ../src/callbacks.cc:20261 ../src/callbacks.cc:31634
-#: ../src/callbacks.cc:31636 ../src/callbacks.cc:37002
-#: ../src/callbacks.cc:37004
+#: ../data/plot.ui.h:3 ../src/callbacks.cc:20287 ../src/callbacks.cc:31629
+#: ../src/callbacks.cc:31631 ../src/callbacks.cc:36997
+#: ../src/callbacks.cc:36999
 msgid "_Save"
 msgstr "S_hrani"
 
@@ -2374,7 +2376,7 @@ msgstr "S_hrani"
 msgid "Save as png, svg, postscript, eps, latex or fig"
 msgstr "Shrani kot png, svg, postscript, eps, latex ali fig"
 
-#: ../data/plot.ui.h:7 ../src/interface.cc:3382 ../src/interface.cc:4116
+#: ../data/plot.ui.h:7 ../src/interface.cc:3386 ../src/interface.cc:4126
 msgid "Title"
 msgstr "Naslov"
 
@@ -2645,18 +2647,27 @@ msgid "If the mode of the calculator shall be restored"
 msgstr "Naj se način računala ohrani"
 
 #: ../data/preferences.ui.h:13
+msgid "Close application with Escape key"
+msgstr ""
+
+#: ../data/preferences.ui.h:14
+msgid ""
+"Close the application with the Escape key if the expression field is empty."
+msgstr ""
+
+#: ../data/preferences.ui.h:15
 msgid "Use keyboard keys for RPN"
 msgstr "Uporabi tipkovnične tipke za RPN"
 
-#: ../data/preferences.ui.h:14
+#: ../data/preferences.ui.h:16
 msgid "Use keyboard operator keys for RPN operations (+-*/^)."
 msgstr "Uporabi tipkovnične tipke za operacije RPN (+-*/^)."
 
-#: ../data/preferences.ui.h:15
+#: ../data/preferences.ui.h:17
 msgid "Use caret for bitwise XOR"
 msgstr "Uporabi strešico za bitni XOR"
 
-#: ../data/preferences.ui.h:16
+#: ../data/preferences.ui.h:18
 msgid ""
 "Input XOR (⊻) using caret (^) on keyboard (otherwise use Ctrl+^). The "
 "exponentiation operator (^) can always be input using Ctrl+*."
@@ -2664,225 +2675,225 @@ msgstr ""
 "Vnesite operacijo XOR (⊻) s strešico (^) na tipkovnici (AltGr+3). "
 "Eksponentni operator (^)  je lahko vnešen kot Ctrl+*."
 
-#: ../data/preferences.ui.h:17
+#: ../data/preferences.ui.h:19
 #, fuzzy
 msgid "Expression in history"
 msgstr "Izraz"
 
-#: ../data/preferences.ui.h:18
+#: ../data/preferences.ui.h:20
 msgid "Parsed"
 msgstr ""
 
-#: ../data/preferences.ui.h:19
+#: ../data/preferences.ui.h:21
 msgid "Entered"
 msgstr ""
 
-#: ../data/preferences.ui.h:20
+#: ../data/preferences.ui.h:22
 msgid "Entered + parsed"
 msgstr ""
 
-#: ../data/preferences.ui.h:21
+#: ../data/preferences.ui.h:23
 #, fuzzy
 msgid "Add calculate-as-you-type result to history"
 msgstr "Izračunaj izraz in dodaj na sklad"
 
-#: ../data/preferences.ui.h:22
+#: ../data/preferences.ui.h:24
 msgid "Delay:"
 msgstr ""
 
-#: ../data/preferences.ui.h:23
+#: ../data/preferences.ui.h:25
 msgid "Time limit for plot:"
 msgstr "Časovna omejitev za izris:"
 
-#: ../data/preferences.ui.h:24
+#: ../data/preferences.ui.h:26
 msgid "Behavior"
 msgstr "Vedenje"
 
-#: ../data/preferences.ui.h:25
+#: ../data/preferences.ui.h:27
 msgid "Enable Unicode symbols"
 msgstr "Omogoči simbole Unicode"
 
-#: ../data/preferences.ui.h:26
+#: ../data/preferences.ui.h:28
 msgid "Disable this if you have problems with some fancy characters"
 msgstr "Onemogočite, če imate težave z nestandardnimi znaki"
 
-#: ../data/preferences.ui.h:27
+#: ../data/preferences.ui.h:29
 msgid "Ignore system language (requires restart)"
 msgstr "Prezri sistemski jezik (zahteva vnovičen zagon)"
 
-#: ../data/preferences.ui.h:28
+#: ../data/preferences.ui.h:30
 msgid "Use system tray icon"
 msgstr ""
 
-#: ../data/preferences.ui.h:29
+#: ../data/preferences.ui.h:31
 msgid "Hides the application in the system tray when the main window is closed"
 msgstr ""
 
-#: ../data/preferences.ui.h:30
+#: ../data/preferences.ui.h:32
 msgid "Hide on startup"
 msgstr ""
 
-#: ../data/preferences.ui.h:31
+#: ../data/preferences.ui.h:33
 msgid "Remember window position"
 msgstr ""
 
-#: ../data/preferences.ui.h:32
+#: ../data/preferences.ui.h:34
 #, fuzzy
 msgid "Keep above other windows"
 msgstr "Obnovi okno"
 
-#: ../data/preferences.ui.h:33
+#: ../data/preferences.ui.h:35
 msgid ""
 "Keep the main window above other windows (depending on platform and settings "
 "this might not work)"
 msgstr ""
 
-#: ../data/preferences.ui.h:34
+#: ../data/preferences.ui.h:36
 #, fuzzy
 msgid "Button padding"
 msgstr "Funkcija"
 
-#: ../data/preferences.ui.h:35 ../src/callbacks.cc:6784
-#: ../src/callbacks.cc:18112 ../src/callbacks.cc:19488
-#: ../src/callbacks.cc:20502 ../src/callbacks.cc:36703
+#: ../data/preferences.ui.h:37 ../src/callbacks.cc:6781
+#: ../src/callbacks.cc:18138 ../src/callbacks.cc:19514
+#: ../src/callbacks.cc:20530 ../src/callbacks.cc:36698
 msgid "Default"
 msgstr "Privzeto"
 
-#: ../data/preferences.ui.h:36
+#: ../data/preferences.ui.h:38
 msgid "/"
 msgstr ""
 
-#: ../data/preferences.ui.h:37
+#: ../data/preferences.ui.h:39
 msgid "Application name"
 msgstr "Ime programa"
 
-#: ../data/preferences.ui.h:38
+#: ../data/preferences.ui.h:40
 msgid "Result"
 msgstr "Rezultat"
 
-#: ../data/preferences.ui.h:39
+#: ../data/preferences.ui.h:41
 msgid "Application name + result"
 msgstr "Ime programa + rezultat"
 
-#: ../data/preferences.ui.h:40 ../src/callbacks.cc:20324
+#: ../data/preferences.ui.h:42 ../src/callbacks.cc:20350
 msgid "Mode"
 msgstr "Način"
 
-#: ../data/preferences.ui.h:41
+#: ../data/preferences.ui.h:43
 msgid "Application name + mode"
 msgstr "Ime programa + način"
 
-#: ../data/preferences.ui.h:42
+#: ../data/preferences.ui.h:44
 msgid "Window title"
 msgstr "Naslov okna"
 
-#: ../data/preferences.ui.h:43
+#: ../data/preferences.ui.h:45
 msgid "Theme"
 msgstr ""
 
-#: ../data/preferences.ui.h:44
+#: ../data/preferences.ui.h:46
 msgid "Light"
 msgstr ""
 
-#: ../data/preferences.ui.h:45
+#: ../data/preferences.ui.h:47
 msgid "Dark"
 msgstr ""
 
-#: ../data/preferences.ui.h:46
+#: ../data/preferences.ui.h:48
 msgid "High contrast"
 msgstr ""
 
-#: ../data/preferences.ui.h:47
+#: ../data/preferences.ui.h:49
 msgid "Dark high contrast"
 msgstr ""
 
-#: ../data/preferences.ui.h:48
+#: ../data/preferences.ui.h:50
 msgid "Language"
 msgstr "Jezik"
 
-#: ../data/preferences.ui.h:49
+#: ../data/preferences.ui.h:51
 msgid "Tooltips"
 msgstr ""
 
-#: ../data/preferences.ui.h:50
+#: ../data/preferences.ui.h:52
 #, fuzzy
 msgid "Show all"
 msgstr "Prikaži tipkovnico"
 
-#: ../data/preferences.ui.h:51
+#: ../data/preferences.ui.h:53
 #, fuzzy
 msgid "Hide in keypad"
 msgstr "Prikaži/skrij desno tipkovnico"
 
-#: ../data/preferences.ui.h:52
+#: ../data/preferences.ui.h:54
 #, fuzzy
 msgid "Hide all"
 msgstr "Skrij"
 
-#: ../data/preferences.ui.h:53
+#: ../data/preferences.ui.h:55
 msgid "Number of expression lines"
 msgstr "Število vrstic izraza"
 
-#: ../data/preferences.ui.h:54
+#: ../data/preferences.ui.h:56
 msgid "Display expression status"
 msgstr "Prikaži stanje izraza"
 
-#: ../data/preferences.ui.h:55
+#: ../data/preferences.ui.h:57
 msgid ""
 "If as-you-type expression status shall be displayed below the expression "
 "entry"
 msgstr "Naj se med vpisovanjem pod izrazom prikazuje njegovo stanje"
 
-#: ../data/preferences.ui.h:56
+#: ../data/preferences.ui.h:58
 msgid "Persistent keypad"
 msgstr "Stalna tipkovnica"
 
-#: ../data/preferences.ui.h:57
+#: ../data/preferences.ui.h:59
 msgid "Look & Feel"
 msgstr "Videz in občutek"
 
-#: ../data/preferences.ui.h:58
+#: ../data/preferences.ui.h:60
 msgid "Binary two's complement representation"
 msgstr "Upodobitev binarnega dvojiškega komplementa"
 
-#: ../data/preferences.ui.h:59
+#: ../data/preferences.ui.h:61
 msgid ""
 "If two's complement representation shall be used for negative binary numbers."
 msgstr "Naj se dvojiški komplement uporabi za negativna dvojiška števila."
 
-#: ../data/preferences.ui.h:60
+#: ../data/preferences.ui.h:62
 msgid "Hexadecimal two's complement representation"
 msgstr "Upodobitev šestnajstiškega dvojiškega komplementa"
 
-#: ../data/preferences.ui.h:61
+#: ../data/preferences.ui.h:63
 msgid ""
 "If two's complement representation shall be used for negative hexadecimal "
 "numbers."
 msgstr "Naj se dvojiški komplement uporabi za negativna šestnajstiška števila."
 
-#: ../data/preferences.ui.h:62
+#: ../data/preferences.ui.h:64
 msgid "Use lower case letters in non-decimal numbers"
 msgstr "Uporabi male črke v nedesetiških številih"
 
-#: ../data/preferences.ui.h:63
+#: ../data/preferences.ui.h:65
 msgid "If lower case letters should be used in numbers with non-decimal base"
 msgstr "Naj se male črke uporabljajo v številih z nedesetiško osnovo"
 
-#: ../data/preferences.ui.h:64
+#: ../data/preferences.ui.h:66
 msgid "Use special duodecimal symbols"
 msgstr ""
 
-#: ../data/preferences.ui.h:65
+#: ../data/preferences.ui.h:67
 msgid ""
 "If ↊ and ↋ (or X and E) shall be used instead of A and B for digits 10 and "
 "11 in numbers with base 12"
 msgstr ""
 
-#: ../data/preferences.ui.h:66
+#: ../data/preferences.ui.h:68
 msgid "Alternative base prefixes"
 msgstr "Alternativne predpone osnov"
 
-#: ../data/preferences.ui.h:67
+#: ../data/preferences.ui.h:69
 msgid ""
 "If hexadecimal numbers shall be displayed with \"0x0\" and binary numbers "
 "with \"0b00\" as prefixes"
@@ -2890,31 +2901,31 @@ msgstr ""
 "Naj se šestnajstiška števila prikazujejo s predpono \"0x0\" in dvojiška s "
 "\"0b00\""
 
-#: ../data/preferences.ui.h:68
+#: ../data/preferences.ui.h:70
 msgid "Spell out logical operators"
 msgstr "Črkuj logične operatorje"
 
-#: ../data/preferences.ui.h:69
+#: ../data/preferences.ui.h:71
 msgid "If logical and/or shall be displayed as \"&&\"/\"||\" or \"and\"/\"or\""
 msgstr "Naj se logična in/ali prikažeta kot \"&&\"/\"||\" ali \"and\"/\"or\""
 
-#: ../data/preferences.ui.h:70
+#: ../data/preferences.ui.h:72
 msgid "If \"e\" shall be used instead of \"E\" in numbers"
 msgstr "Naj se v številih namesto \"E\" uporabi \"e\""
 
-#: ../data/preferences.ui.h:71
+#: ../data/preferences.ui.h:73
 msgid "Use E-notation instead of 10<sup><i>n</i></sup>"
 msgstr "Uporabi E-notacijo namesto 10<sup><i>n</i></sup>"
 
-#: ../data/preferences.ui.h:72
+#: ../data/preferences.ui.h:74
 msgid "Use lower case \"e\" (as in 1e10)"
 msgstr "Uporabi mali \"e\" (kot v 1e10)"
 
-#: ../data/preferences.ui.h:73
+#: ../data/preferences.ui.h:75
 msgid "Use 'j' as imaginary unit"
 msgstr "Uporabi 'j' za imaginarno enoto"
 
-#: ../data/preferences.ui.h:74
+#: ../data/preferences.ui.h:76
 msgid ""
 "Use 'j' (instead of 'i') as default symbol for the imaginary unit, and place "
 "it in front of the imaginary part."
@@ -2922,15 +2933,15 @@ msgstr ""
 "Uporabi 'j' namesto 'i' za privzet simbol imaginarne enote, ki bo postavljen "
 "pred imaginarni del števila."
 
-#: ../data/preferences.ui.h:75
+#: ../data/preferences.ui.h:77
 msgid "Use comma as decimal separator"
 msgstr "Uporabi vejico kot desetiški ločilnik"
 
-#: ../data/preferences.ui.h:76
+#: ../data/preferences.ui.h:78
 msgid "Ignore comma in numbers"
 msgstr "Prezri vejice v številih"
 
-#: ../data/preferences.ui.h:77
+#: ../data/preferences.ui.h:79
 msgid ""
 "Allow commas, ',', to be used as thousands separator instead of as an "
 "function argument separator"
@@ -2938,11 +2949,11 @@ msgstr ""
 "Dovoli, da se vejica uporabi za ločilnik tisočic namesto za ločilnik "
 "funkcijskih argumentov"
 
-#: ../data/preferences.ui.h:78
+#: ../data/preferences.ui.h:80
 msgid "Ignore dots in numbers"
 msgstr "Prezri pike v številih"
 
-#: ../data/preferences.ui.h:79
+#: ../data/preferences.ui.h:81
 msgid ""
 "Allow dots, '.', to be used as thousands separator instead of as an "
 "alternative decimal sign"
@@ -2950,43 +2961,43 @@ msgstr ""
 "Dovoli, da se pika uporabi za ločilnik tisočic namesto za alternativni "
 "decimalni znak."
 
-#: ../data/preferences.ui.h:80
+#: ../data/preferences.ui.h:82
 msgid "Copy result as unformatted ASCII by default"
 msgstr ""
 
-#: ../data/preferences.ui.h:81
+#: ../data/preferences.ui.h:83
 msgid "Digit grouping"
 msgstr "Števke v skupinah"
 
-#: ../data/preferences.ui.h:82
+#: ../data/preferences.ui.h:84
 msgid "off"
 msgstr "izklopljeno"
 
-#: ../data/preferences.ui.h:83
+#: ../data/preferences.ui.h:85
 msgid "standard"
 msgstr "običajno"
 
-#: ../data/preferences.ui.h:84
+#: ../data/preferences.ui.h:86
 msgid "local"
 msgstr "lokalno"
 
-#: ../data/preferences.ui.h:85
+#: ../data/preferences.ui.h:87
 msgid "Multiplication sign"
 msgstr "Znak za množenje"
 
-#: ../data/preferences.ui.h:86
+#: ../data/preferences.ui.h:88
 msgid "Division sign"
 msgstr "Znak za deljenje"
 
-#: ../data/preferences.ui.h:87
+#: ../data/preferences.ui.h:89
 msgid "Numbers & Operators"
 msgstr "Številke & operatorji"
 
-#: ../data/preferences.ui.h:88
+#: ../data/preferences.ui.h:90
 msgid "Use binary prefixes for information units"
 msgstr "Uporabi binarne predpone za informacijske enote"
 
-#: ../data/preferences.ui.h:89
+#: ../data/preferences.ui.h:91
 msgid ""
 "Use binary, instead of decimal, prefixes by default for information units (e."
 "g. bytes)."
@@ -2994,16 +3005,16 @@ msgstr ""
 "Za informacijske enote uporabi dvojiške predpone namesto desetiških (npr. "
 "bajti)"
 
-#: ../data/preferences.ui.h:90
+#: ../data/preferences.ui.h:92
 #, fuzzy
 msgid "Copy unformatted ASCII without units"
 msgstr "Kopiraj neoblikovano ASCII"
 
-#: ../data/preferences.ui.h:91
+#: ../data/preferences.ui.h:93
 msgid "Conversion to local currency"
 msgstr "Pretvorba v krajevno valuto"
 
-#: ../data/preferences.ui.h:92
+#: ../data/preferences.ui.h:94
 msgid ""
 "Automatically convert to the local currency when optimal unit conversion is "
 "activated."
@@ -3011,63 +3022,63 @@ msgstr ""
 "Samodejno pretvori v krajevno valuto, če je omogočena izbira najustreznejše "
 "enote za pretvrobo."
 
-#: ../data/preferences.ui.h:93
+#: ../data/preferences.ui.h:95
 msgid "Update exchange rates on start"
 msgstr "Posodobi menjalna razmerja ob zagonu"
 
-#: ../data/preferences.ui.h:94
+#: ../data/preferences.ui.h:96
 msgid ""
 "If current exchange rates shall be downloaded from the internet at program "
 "start"
 msgstr ""
 "Naj se trenutna menjalna razmerja prenesejo iz Interneta ob zagonu programa"
 
-#: ../data/preferences.ui.h:95
+#: ../data/preferences.ui.h:97
 msgid "Exchange rates updates"
 msgstr "Posodobitve menjalnih razmerij"
 
-#: ../data/preferences.ui.h:96
+#: ../data/preferences.ui.h:98
 #, fuzzy
 msgid "Temperature calculation mode:"
 msgstr "Odpri orodje za izračun odstotkov"
 
-#: ../data/preferences.ui.h:97 ../src/callbacks.cc:3082
+#: ../data/preferences.ui.h:99 ../src/callbacks.cc:3083
 msgid "Absolute"
 msgstr ""
 
-#: ../data/preferences.ui.h:99 ../src/callbacks.cc:3096
+#: ../data/preferences.ui.h:101 ../src/callbacks.cc:3097
 msgid "Hybrid"
 msgstr ""
 
-#: ../data/preferences.ui.h:100
+#: ../data/preferences.ui.h:102
 msgid "Units & Currencies"
 msgstr "Enote & valute"
 
-#: ../data/preferences.ui.h:101
+#: ../data/preferences.ui.h:103
 msgid "Show expression completion suggestions"
 msgstr "Prikaži predloge za dopolnitev izraza"
 
-#: ../data/preferences.ui.h:102
+#: ../data/preferences.ui.h:104
 msgid "Search titles and countries"
 msgstr "Išči naslove in države"
 
-#: ../data/preferences.ui.h:103
+#: ../data/preferences.ui.h:105
 msgid "Minimum characters"
 msgstr "Najmanj znakov"
 
-#: ../data/preferences.ui.h:104
+#: ../data/preferences.ui.h:106
 msgid "Popup delay (ms)"
 msgstr "Zamik prikaza pojavnega okna (ms)"
 
-#: ../data/preferences.ui.h:105
+#: ../data/preferences.ui.h:107
 msgid "Completion"
 msgstr "Dopolnjevanje"
 
-#: ../data/preferences.ui.h:106
+#: ../data/preferences.ui.h:108
 msgid "Custom status font"
 msgstr "Pisava opozorila"
 
-#: ../data/preferences.ui.h:107
+#: ../data/preferences.ui.h:109
 msgid ""
 "If you want to use a font other than the default in the status display below "
 "the expression entry"
@@ -3075,57 +3086,57 @@ msgstr ""
 "Če želite uporabiti neprivzeto pisavo v prikazu stanja pod obrazcem za vnos "
 "izraza"
 
-#: ../data/preferences.ui.h:108
+#: ../data/preferences.ui.h:110
 msgid "Custom expression font"
 msgstr "Pisava izraza"
 
-#: ../data/preferences.ui.h:109
+#: ../data/preferences.ui.h:111
 msgid ""
 "If you want to use a font other than the default in the expression entry"
 msgstr "Če želite uporabiti neprivzeto pisavo v obrazcu za vnos izraza"
 
-#: ../data/preferences.ui.h:110
+#: ../data/preferences.ui.h:112
 msgid "Custom result font"
 msgstr "Pisava rezultata"
 
-#: ../data/preferences.ui.h:111
+#: ../data/preferences.ui.h:113
 msgid "If you want to use a font other than the default in the result display"
 msgstr "Če želite uporabiti neprivzeto pisavo v prikazu rezultata"
 
-#: ../data/preferences.ui.h:112
+#: ../data/preferences.ui.h:114
 msgid "Custom keypad font"
 msgstr "Pisava tipkovnice"
 
-#: ../data/preferences.ui.h:113
+#: ../data/preferences.ui.h:115
 msgid "If you want to use a font other than the default in the keypad"
 msgstr "Če želite uporabiti neprivzeto pisavo na tipkovnici"
 
-#: ../data/preferences.ui.h:114
+#: ../data/preferences.ui.h:116
 msgid "Status warning color"
 msgstr "Barva opozorila o stanju"
 
-#: ../data/preferences.ui.h:115
+#: ../data/preferences.ui.h:117
 msgid "Status error color"
 msgstr "Barva opozorila o napaki"
 
-#: ../data/preferences.ui.h:116
+#: ../data/preferences.ui.h:118
 msgid "Text color"
 msgstr "Barva besedila"
 
-#: ../data/preferences.ui.h:117
+#: ../data/preferences.ui.h:119
 msgid "Custom application font"
 msgstr "Pisava programa"
 
-#: ../data/preferences.ui.h:118
+#: ../data/preferences.ui.h:120
 msgid ""
 "If you want to use a font other than the default for the whole application"
 msgstr "Če želite uporabiti neprivzeto pisavo v celotnem programu"
 
-#: ../data/preferences.ui.h:119
+#: ../data/preferences.ui.h:121
 msgid "Custom history font"
 msgstr "Pisava za zgodovino"
 
-#: ../data/preferences.ui.h:120
+#: ../data/preferences.ui.h:122
 msgid "Fonts & Colors"
 msgstr "Pisave in barve"
 
@@ -3133,11 +3144,12 @@ msgstr "Pisave in barve"
 msgid "Other:"
 msgstr "Drugo:"
 
-#: ../data/setbase.ui.h:12 ../src/interface.cc:3619 ../src/interface.cc:3701
-#: ../src/callbacks.cc:30189 ../src/callbacks.cc:30337
-#: ../src/callbacks.cc:30480 ../src/callbacks.cc:30487
-#: ../src/callbacks.cc:30568 ../src/callbacks.cc:30654
-#: ../src/callbacks.cc:30694 ../src/callbacks.cc:30702
+#: ../data/setbase.ui.h:12 ../src/interface.cc:3623 ../src/interface.cc:3705
+#: ../src/callbacks.cc:29173 ../src/callbacks.cc:30184
+#: ../src/callbacks.cc:30332 ../src/callbacks.cc:30475
+#: ../src/callbacks.cc:30482 ../src/callbacks.cc:30563
+#: ../src/callbacks.cc:30649 ../src/callbacks.cc:30689
+#: ../src/callbacks.cc:30697
 msgid "Bijective base-26"
 msgstr "Bijektivna osnova 26"
 
@@ -3153,12 +3165,12 @@ msgstr "<b>Osnova izraza</b>"
 msgid "New Keyboard Shortcut"
 msgstr "Nova tipkovna bližnjica"
 
-#: ../data/shortcuts.ui.h:8 ../src/callbacks.cc:36275 ../src/callbacks.cc:36374
-#: ../src/callbacks.cc:36529 ../src/callbacks.cc:36625
+#: ../data/shortcuts.ui.h:8 ../src/callbacks.cc:36270 ../src/callbacks.cc:36369
+#: ../src/callbacks.cc:36524 ../src/callbacks.cc:36620
 msgid "Add Action"
 msgstr "Dodaj dejanje"
 
-#: ../data/unitedit.ui.h:1 ../src/callbacks.cc:16289
+#: ../data/unitedit.ui.h:1 ../src/callbacks.cc:16294
 msgid "Edit Unit"
 msgstr "Uredi enoto"
 
@@ -3339,7 +3351,7 @@ msgstr "Pretvori rezultat v izbrano enoto"
 msgid "Type anywhere"
 msgstr "Pišite kamorkoli"
 
-#: ../data/unknownedit.ui.h:1 ../src/callbacks.cc:17149
+#: ../data/unknownedit.ui.h:1 ../src/callbacks.cc:17161
 msgid "Edit Unknown Variable"
 msgstr "Uredi neznano spremenljivko"
 
@@ -3363,7 +3375,7 @@ msgstr "Racionalno število"
 msgid "Name used to reference this unknown variable in expressions"
 msgstr "Ime za klic te neznane spremenljivke v izrazih"
 
-#: ../data/variableedit.ui.h:1 ../src/callbacks.cc:17344
+#: ../data/variableedit.ui.h:1 ../src/callbacks.cc:17365
 msgid "Edit Variable"
 msgstr "Uredi spremenljivko"
 
@@ -3440,7 +3452,7 @@ msgstr "ans"
 msgid "Last Answer"
 msgstr "Zadnji odgovor"
 
-#: ../src/main.cc:236 ../src/callbacks.cc:506
+#: ../src/main.cc:236 ../src/callbacks.cc:507
 msgid "answer"
 msgstr "odgovor"
 
@@ -3471,10 +3483,10 @@ msgstr "Napaka pri nalaganju globalnih definicij!\n"
 
 #. if no category has been selected (previously selected has been renamed/deleted), select "All"
 #: ../src/main.cc:295 ../src/main.cc:298 ../src/main.cc:301
-#: ../src/callbacks.cc:4910 ../src/callbacks.cc:4980 ../src/callbacks.cc:5017
-#: ../src/callbacks.cc:5288 ../src/callbacks.cc:5359 ../src/callbacks.cc:5397
-#: ../src/callbacks.cc:5570 ../src/callbacks.cc:5639 ../src/callbacks.cc:5691
-#: ../src/callbacks.cc:5874 ../src/callbacks.cc:5930 ../src/callbacks.cc:6119
+#: ../src/callbacks.cc:4911 ../src/callbacks.cc:4981 ../src/callbacks.cc:5018
+#: ../src/callbacks.cc:5289 ../src/callbacks.cc:5360 ../src/callbacks.cc:5398
+#: ../src/callbacks.cc:5571 ../src/callbacks.cc:5640 ../src/callbacks.cc:5692
+#: ../src/callbacks.cc:5875 ../src/callbacks.cc:5931 ../src/callbacks.cc:6116
 msgid "All"
 msgstr "Vse"
 
@@ -3497,287 +3509,287 @@ msgstr ""
 "\n"
 "Želite vseeno dovoliti več primerkov programa?"
 
-#: ../src/interface.cc:1050
+#: ../src/interface.cc:1051
 #, c-format
 msgid "Right-click/long press: %s"
 msgstr "Desni klik/dolg klik: %s"
 
-#: ../src/interface.cc:1051
+#: ../src/interface.cc:1052
 #, c-format
 msgid "Right-click: %s"
 msgstr "Desni klik: %s"
 
-#: ../src/interface.cc:1057
+#: ../src/interface.cc:1058
 #, c-format
 msgid "Middle-click: %s"
 msgstr "Srednji klik: %s"
 
-#: ../src/interface.cc:1117 ../src/interface.cc:4365
+#: ../src/interface.cc:1121 ../src/interface.cc:4375
 msgid "Cycle through previous expression"
 msgstr "Kroži med prejšnjimi izrazi"
 
-#: ../src/interface.cc:1125 ../src/interface.cc:4366
+#: ../src/interface.cc:1128 ../src/interface.cc:4376
 msgid "Move cursor left or right"
 msgstr "Premakni kazalko levo ali desno"
 
-#: ../src/interface.cc:1125 ../src/interface.cc:4366
+#: ../src/interface.cc:1128 ../src/interface.cc:4376
 msgid "Move cursor to beginning or end"
 msgstr "Premakni kazalko na začetek ali konec"
 
-#: ../src/interface.cc:1129 ../src/interface.cc:4368
+#: ../src/interface.cc:1132 ../src/interface.cc:4378
 msgid "Uncertainty/interval"
 msgstr "Negotovost/interval"
 
-#: ../src/interface.cc:1129 ../src/interface.cc:4368
+#: ../src/interface.cc:1132 ../src/interface.cc:4378
 msgid "Relative error"
 msgstr "Relativna napaka"
 
-#: ../src/interface.cc:1130 ../src/interface.cc:4369
+#: ../src/interface.cc:1133 ../src/interface.cc:4379
 msgid "Argument separator"
 msgstr "Ločilnik argumentov"
 
-#: ../src/interface.cc:1130 ../src/interface.cc:1145 ../src/interface.cc:4369
-#: ../src/interface.cc:4383
+#: ../src/interface.cc:1133 ../src/interface.cc:1148 ../src/interface.cc:4379
+#: ../src/interface.cc:4393
 msgid "Blank space"
 msgstr "Prazen prostor"
 
-#: ../src/interface.cc:1130 ../src/interface.cc:1145 ../src/interface.cc:4369
-#: ../src/interface.cc:4383
+#: ../src/interface.cc:1133 ../src/interface.cc:1148 ../src/interface.cc:4379
+#: ../src/interface.cc:4393
 msgid "New line"
 msgstr "Nova vrstica"
 
-#: ../src/interface.cc:1131 ../src/interface.cc:4370 ../src/callbacks.cc:6823
-#: ../src/callbacks.cc:7071 ../src/callbacks.cc:7074
+#: ../src/interface.cc:1134 ../src/interface.cc:4380 ../src/callbacks.cc:6820
+#: ../src/callbacks.cc:7068 ../src/callbacks.cc:7071
 msgid "Smart parentheses"
 msgstr "Pametni oklepaji"
 
-#: ../src/interface.cc:1131 ../src/interface.cc:4370
+#: ../src/interface.cc:1134 ../src/interface.cc:4380
 msgid "Vector brackets"
 msgstr "Oklepaji za vektorje"
 
-#: ../src/interface.cc:1133 ../src/interface.cc:4371
+#: ../src/interface.cc:1136 ../src/interface.cc:4381
 msgid "Left parenthesis"
 msgstr "Levi oklepaj"
 
-#: ../src/interface.cc:1133 ../src/interface.cc:4371
+#: ../src/interface.cc:1136 ../src/interface.cc:4381
 msgid "Left vector bracket"
 msgstr "Levi vektorski oklepaj"
 
-#: ../src/interface.cc:1134 ../src/interface.cc:4372
+#: ../src/interface.cc:1137 ../src/interface.cc:4382
 msgid "Right parenthesis"
 msgstr "Desni oklepaj"
 
-#: ../src/interface.cc:1134 ../src/interface.cc:4372
+#: ../src/interface.cc:1137 ../src/interface.cc:4382
 msgid "Right vector bracket"
 msgstr "Desni vektorski oklepaj"
 
-#: ../src/interface.cc:1145 ../src/interface.cc:4383
+#: ../src/interface.cc:1148 ../src/interface.cc:4393
 msgid "Decimal point"
 msgstr "Decimalno mesto"
 
-#: ../src/interface.cc:1160
+#: ../src/interface.cc:1163
 msgid "Raise (Ctrl+*)"
 msgstr "Dvigni (Ctrl+*)"
 
-#: ../src/interface.cc:1188 ../src/interface.cc:4390
+#: ../src/interface.cc:1191 ../src/interface.cc:4400
 msgid "Add"
 msgstr "Dodaj"
 
-#: ../src/interface.cc:1188 ../src/interface.cc:4390 ../src/callbacks.cc:4110
-#: ../src/callbacks.cc:6716 ../src/callbacks.cc:29613
+#: ../src/interface.cc:1191 ../src/interface.cc:4400 ../src/callbacks.cc:4111
+#: ../src/callbacks.cc:6713 ../src/callbacks.cc:29608
 msgid "M+ (memory plus)"
 msgstr ""
 
-#: ../src/interface.cc:1193 ../src/interface.cc:4394 ../src/callbacks.cc:4104
-#: ../src/callbacks.cc:6713 ../src/callbacks.cc:29610
+#: ../src/interface.cc:1196 ../src/interface.cc:4404 ../src/callbacks.cc:4105
+#: ../src/callbacks.cc:6710 ../src/callbacks.cc:29605
 msgid "MC (memory clear)"
 msgstr ""
 
-#: ../src/interface.cc:1194 ../src/interface.cc:4395
+#: ../src/interface.cc:1197 ../src/interface.cc:4405
 msgid "Backspace"
 msgstr "Backspace"
 
-#: ../src/interface.cc:1194 ../src/interface.cc:4395 ../src/callbacks.cc:4113
-#: ../src/callbacks.cc:6717 ../src/callbacks.cc:29614
+#: ../src/interface.cc:1197 ../src/interface.cc:4405 ../src/callbacks.cc:4114
+#: ../src/callbacks.cc:6714 ../src/callbacks.cc:29609
 msgid "M− (memory minus)"
 msgstr ""
 
-#: ../src/interface.cc:1195 ../src/interface.cc:4396
+#: ../src/interface.cc:1198 ../src/interface.cc:4406
 msgid "Previous result (static)"
 msgstr "Prejšnji statični rezultat"
 
-#: ../src/interface.cc:1203 ../src/interface.cc:4397 ../src/callbacks.cc:1752
-#: ../src/callbacks.cc:15078
+#: ../src/interface.cc:1206 ../src/interface.cc:4407 ../src/callbacks.cc:1753
+#: ../src/callbacks.cc:15083
 msgid "Calculate expression"
 msgstr "Izračunaj izraz"
 
-#: ../src/interface.cc:1203 ../src/interface.cc:4397 ../src/callbacks.cc:6714
-#: ../src/callbacks.cc:29611
+#: ../src/interface.cc:1206 ../src/interface.cc:4407 ../src/callbacks.cc:6711
+#: ../src/callbacks.cc:29606
 msgid "MR (memory recall)"
 msgstr ""
 
-#: ../src/interface.cc:1203 ../src/interface.cc:4397 ../src/callbacks.cc:4107
-#: ../src/callbacks.cc:6715 ../src/callbacks.cc:29612
+#: ../src/interface.cc:1206 ../src/interface.cc:4407 ../src/callbacks.cc:4108
+#: ../src/callbacks.cc:6712 ../src/callbacks.cc:29607
 msgid "MS (memory store)"
 msgstr ""
 
-#: ../src/interface.cc:1472 ../src/callbacks.cc:6675
+#: ../src/interface.cc:1475 ../src/callbacks.cc:6672
 msgid "Set unknowns"
 msgstr "Nastavi neznanke"
 
 #. Show further items in a submenu
-#: ../src/interface.cc:1520 ../src/interface.cc:1608 ../src/interface.cc:1611
-#: ../src/callbacks.cc:7181 ../src/callbacks.cc:7275 ../src/callbacks.cc:24330
-#: ../src/callbacks.cc:29296 ../src/callbacks.cc:29299
-#: ../src/callbacks.cc:29323
+#: ../src/interface.cc:1523 ../src/interface.cc:1611 ../src/interface.cc:1614
+#: ../src/callbacks.cc:7178 ../src/callbacks.cc:7272 ../src/callbacks.cc:24369
+#: ../src/callbacks.cc:29291 ../src/callbacks.cc:29294
+#: ../src/callbacks.cc:29318
 msgid "more"
 msgstr "več"
 
-#: ../src/interface.cc:1670
+#: ../src/interface.cc:1673
 msgid "Logical AND"
 msgstr "Logični AND"
 
-#: ../src/interface.cc:1671
+#: ../src/interface.cc:1674
 msgid "Logical OR"
 msgstr "Logični OR"
 
-#: ../src/interface.cc:1672
+#: ../src/interface.cc:1675
 msgid "Logical NOT"
 msgstr "Logični NOT"
 
-#: ../src/interface.cc:1674 ../src/interface.cc:1675 ../src/interface.cc:1676
-#: ../src/interface.cc:1677
+#: ../src/interface.cc:1677 ../src/interface.cc:1678 ../src/interface.cc:1679
+#: ../src/interface.cc:1680
 msgid "Toggle Result Base"
 msgstr "Preklopi osnovo rezultata"
 
-#: ../src/interface.cc:1679
+#: ../src/interface.cc:1682
 msgid "Open menu with stored variables"
 msgstr "Odpri meni s shranjenimi spremenljivkami"
 
-#: ../src/interface.cc:2330 ../src/interface.cc:2384
+#: ../src/interface.cc:2333 ../src/interface.cc:2387
 msgid "Index"
 msgstr "Indeks"
 
 #. RPN Enter (calculate and add to stack)
-#: ../src/interface.cc:2402 ../src/callbacks.cc:15050
+#: ../src/interface.cc:2405 ../src/callbacks.cc:15055
 msgid "ENTER"
 msgstr ""
 
-#: ../src/interface.cc:2403 ../src/interface.cc:2404 ../src/callbacks.cc:1752
-#: ../src/callbacks.cc:15051
+#: ../src/interface.cc:2406 ../src/interface.cc:2407 ../src/callbacks.cc:1753
+#: ../src/callbacks.cc:15056
 msgid "Calculate expression and add to stack"
 msgstr "Izračunaj izraz in dodaj na sklad"
 
-#: ../src/interface.cc:2480 ../src/interface.cc:2713
+#: ../src/interface.cc:2483 ../src/interface.cc:2716
 msgid "Flag"
 msgstr "Zastavica"
 
-#: ../src/interface.cc:3184 ../src/interface.cc:3447
+#: ../src/interface.cc:3188 ../src/interface.cc:3451
 msgid "Reference"
 msgstr "Sklic"
 
-#: ../src/interface.cc:3437
+#: ../src/interface.cc:3441
 msgid "Abbreviation"
 msgstr "Okrajšava"
 
-#: ../src/interface.cc:3443
+#: ../src/interface.cc:3447
 msgid "Plural"
 msgstr "Množina"
 
-#: ../src/interface.cc:3453
+#: ../src/interface.cc:3457
 msgid "Avoid input"
 msgstr "Izogni se vhodu"
 
-#: ../src/interface.cc:3459
+#: ../src/interface.cc:3463
 msgid "Suffix"
 msgstr "Pripona"
 
-#: ../src/interface.cc:3465
+#: ../src/interface.cc:3469
 msgid "Case sensitive"
 msgstr "Razlikuj velikosti črk"
 
-#: ../src/interface.cc:3471
+#: ../src/interface.cc:3475
 msgid "Completion only"
 msgstr "Le dopolnjevanje"
 
-#: ../src/interface.cc:3919
+#: ../src/interface.cc:3923
 msgid "Gregorian"
 msgstr "gregorijansko"
 
-#: ../src/interface.cc:3920
+#: ../src/interface.cc:3924
 msgid "Revised Julian (Milanković)"
 msgstr "popravljeno julijansko (Milanković)"
 
-#: ../src/interface.cc:3921
+#: ../src/interface.cc:3925
 msgid "Julian"
 msgstr "julijansko"
 
-#: ../src/interface.cc:3922
+#: ../src/interface.cc:3926
 msgid "Islamic (Hijri)"
 msgstr "islamsko (Hijri)"
 
-#: ../src/interface.cc:3923
+#: ../src/interface.cc:3927
 msgid "Hebrew"
 msgstr "hebrejsko"
 
-#: ../src/interface.cc:3924
+#: ../src/interface.cc:3928
 msgid "Chinese"
 msgstr "kitajsko"
 
-#: ../src/interface.cc:3925
+#: ../src/interface.cc:3929
 msgid "Persian (Solar Hijri)"
 msgstr "perzijsko (Solar Hijri)"
 
-#: ../src/interface.cc:3926
+#: ../src/interface.cc:3930
 msgid "Coptic"
 msgstr "koptsko"
 
-#: ../src/interface.cc:3927
+#: ../src/interface.cc:3931
 msgid "Ethiopian"
 msgstr "etiopsko"
 
-#: ../src/interface.cc:3928
+#: ../src/interface.cc:3932
 msgid "Indian (National)"
 msgstr "indijsko (nacionalno)"
 
-#: ../src/interface.cc:4251 ../src/interface.cc:4274 ../src/interface.cc:4473
+#: ../src/interface.cc:4261 ../src/interface.cc:4284 ../src/interface.cc:4483
 msgid "Action"
 msgstr "Dejanje"
 
-#: ../src/interface.cc:4260
+#: ../src/interface.cc:4270
 msgid "Key combination"
 msgstr "Tipkovno zaporedje"
 
-#: ../src/interface.cc:4387
+#: ../src/interface.cc:4397
 msgid "Raise"
 msgstr "Dvigni"
 
-#: ../src/callbacks.cc:505
+#: ../src/callbacks.cc:506
 msgid "History Answer Value"
 msgstr "Zgodovinska vrednost odgovora"
 
-#: ../src/callbacks.cc:509 ../src/callbacks.cc:534
+#: ../src/callbacks.cc:510 ../src/callbacks.cc:535
 msgid "History Index(es)"
 msgstr "Zgodovinski indeks(i)"
 
-#: ../src/callbacks.cc:520 ../src/callbacks.cc:545
+#: ../src/callbacks.cc:521 ../src/callbacks.cc:546
 #, c-format
 msgid "History index %s does not exist."
 msgstr "Zgodovinski indeks %s ne obstaja."
 
-#: ../src/callbacks.cc:530
+#: ../src/callbacks.cc:531
 msgid "History Parsed Expression"
 msgstr "Zgodovinsko obdelan izraz"
 
-#: ../src/callbacks.cc:531 ../src/callbacks.cc:18188
+#: ../src/callbacks.cc:532 ../src/callbacks.cc:18214
 msgid "expression"
 msgstr "izraz"
 
-#: ../src/callbacks.cc:555
+#: ../src/callbacks.cc:556
 msgid "Set Window Title"
 msgstr "Nastavi ime okna"
 
-#: ../src/callbacks.cc:1256 ../src/callbacks.cc:14988 ../src/callbacks.cc:34148
+#: ../src/callbacks.cc:1257 ../src/callbacks.cc:14993 ../src/callbacks.cc:34143
 #, c-format
 msgid ""
 "Failed to open %s.\n"
@@ -3786,11 +3798,11 @@ msgstr ""
 "Napaka pri odpiranju datoteke %s.\n"
 "%s"
 
-#: ../src/callbacks.cc:1274
+#: ../src/callbacks.cc:1275
 msgid "Could not display help for Qalculate!."
 msgstr "Napaka pri prikazu pomoči za Qalculate!."
 
-#: ../src/callbacks.cc:1371
+#: ../src/callbacks.cc:1372
 #, c-format
 msgid ""
 "Could not display help for Qalculate!.\n"
@@ -3799,86 +3811,86 @@ msgstr ""
 "Napaka pri prikazu pomoči za Qalculate!.\n"
 "%s"
 
-#: ../src/callbacks.cc:1413 ../src/callbacks.cc:5492 ../src/callbacks.cc:8468
-#: ../src/callbacks.cc:10572 ../src/callbacks.cc:10965
-#: ../src/callbacks.cc:11020 ../src/callbacks.cc:11474
-#: ../src/callbacks.cc:12134 ../src/callbacks.cc:12195
-#: ../src/callbacks.cc:15543 ../src/callbacks.cc:27354
+#: ../src/callbacks.cc:1414 ../src/callbacks.cc:5493 ../src/callbacks.cc:8472
+#: ../src/callbacks.cc:10576 ../src/callbacks.cc:10969
+#: ../src/callbacks.cc:11024 ../src/callbacks.cc:11478
+#: ../src/callbacks.cc:12138 ../src/callbacks.cc:12199
+#: ../src/callbacks.cc:15548 ../src/callbacks.cc:27397
 #: ../src/searchprovider.cc:119 ../src/searchprovider.cc:120
 #: ../src/searchprovider.cc:197
 msgid "approx."
 msgstr "približno"
 
-#: ../src/callbacks.cc:1734
+#: ../src/callbacks.cc:1735
 msgid "Stop process"
 msgstr "Ustavi operacijo"
 
-#: ../src/callbacks.cc:1745 ../src/callbacks.cc:25719
+#: ../src/callbacks.cc:1746 ../src/callbacks.cc:25762
 msgid "Clear expression"
 msgstr "Počisti izraz"
 
-#: ../src/callbacks.cc:2291
+#: ../src/callbacks.cc:2292
 msgid "EXACT"
 msgstr "EXACT"
 
-#: ../src/callbacks.cc:2294
+#: ../src/callbacks.cc:2295
 msgid "APPROX"
 msgstr "APPROX"
 
-#: ../src/callbacks.cc:2298
+#: ../src/callbacks.cc:2299
 msgid "RPN"
 msgstr "RPN"
 
 #. Chain mode
-#: ../src/callbacks.cc:2303
+#: ../src/callbacks.cc:2304
 msgid "CHN"
 msgstr ""
 
-#: ../src/callbacks.cc:2331
+#: ../src/callbacks.cc:2332
 msgid "ROMAN"
 msgstr "ROMAN"
 
-#: ../src/callbacks.cc:2388
+#: ../src/callbacks.cc:2389
 msgid "DEG"
 msgstr "DEG"
 
-#: ../src/callbacks.cc:2393
+#: ../src/callbacks.cc:2394
 msgid "RAD"
 msgstr "RAD"
 
-#: ../src/callbacks.cc:2398
+#: ../src/callbacks.cc:2399
 msgid "GRA"
 msgstr "GRA"
 
-#: ../src/callbacks.cc:2405
+#: ../src/callbacks.cc:2406
 msgid "PREC"
 msgstr "PREC"
 
-#: ../src/callbacks.cc:2410
+#: ../src/callbacks.cc:2411
 msgid "FUNC"
 msgstr "FUNC"
 
-#: ../src/callbacks.cc:2416
+#: ../src/callbacks.cc:2417
 msgid "UNIT"
 msgstr "UNIT"
 
-#: ../src/callbacks.cc:2422
+#: ../src/callbacks.cc:2423
 msgid "VAR"
 msgstr "VAR"
 
-#: ../src/callbacks.cc:2428
+#: ../src/callbacks.cc:2429
 msgid "INF"
 msgstr "INF"
 
-#: ../src/callbacks.cc:2434
+#: ../src/callbacks.cc:2435
 msgid "CPLX"
 msgstr "CPLX"
 
-#: ../src/callbacks.cc:2460
+#: ../src/callbacks.cc:2461
 msgid "Do you wish to update the exchange rates now?"
 msgstr "Želite posodobiti menjalna razmerja zdaj?"
 
-#: ../src/callbacks.cc:2462
+#: ../src/callbacks.cc:2463
 #, c-format
 msgid "It has been %s day since the exchange rates last were updated."
 msgid_plural "It has been %s days since the exchange rates last were updated."
@@ -3887,16 +3899,16 @@ msgstr[1] "Od posodobitve menjalnih razmerij sta minila %s dni."
 msgstr[2] "Od posodobitve menjalnih razmerij so minili %s dnevi."
 msgstr[3] "Od posodobitve menjalnih razmerij je minilo %s dni."
 
-#: ../src/callbacks.cc:2463
+#: ../src/callbacks.cc:2464
 msgid "Do not ask again"
 msgstr "Ne vprašaj znova"
 
-#: ../src/callbacks.cc:2520 ../src/callbacks.cc:37088 ../src/callbacks.cc:37099
-#: ../src/callbacks.cc:37110
+#: ../src/callbacks.cc:2521 ../src/callbacks.cc:37083 ../src/callbacks.cc:37094
+#: ../src/callbacks.cc:37105
 msgid "It took too long to generate the plot data."
 msgstr "Izdelava grafa je trajala predolgo."
 
-#: ../src/callbacks.cc:2520
+#: ../src/callbacks.cc:2521
 msgid ""
 "It took too long to generate the plot data. Please decrease the sampling "
 "rate or increase the time limit in preferences."
@@ -3904,7 +3916,7 @@ msgstr ""
 "Izdelava grafa je trajala predolgo. Prosimo, zmanjšajte hitrost vzorčenja "
 "ali povišajte časovno omejitev v nastavitvah."
 
-#: ../src/callbacks.cc:2620
+#: ../src/callbacks.cc:2621
 #, fuzzy
 msgid "Exchange rate source:"
 msgid_plural "Exchange rate sources:"
@@ -3913,7 +3925,7 @@ msgstr[1] "Posodobitve menjalnih razmerij"
 msgstr[2] "Posodobitve menjalnih razmerij"
 msgstr[3] "Posodobitve menjalnih razmerij"
 
-#: ../src/callbacks.cc:2622
+#: ../src/callbacks.cc:2623
 #, fuzzy, c-format
 msgid "updated %s"
 msgid_plural "updated %s"
@@ -3922,7 +3934,7 @@ msgstr[1] "Posodobi"
 msgstr[2] "Posodobi"
 msgstr[3] "Posodobi"
 
-#: ../src/callbacks.cc:2642
+#: ../src/callbacks.cc:2643
 msgid ""
 "When errors, warnings and other information are generated during "
 "calculation, the icon in the upper right corner of the expression entry "
@@ -3933,15 +3945,15 @@ msgstr ""
 "spremeni ikono desno od izraza. Če miškin kazalec pridržite nad njem ali ga "
 "kliknete, se bo prikazalo sporočilo."
 
-#: ../src/callbacks.cc:2723
+#: ../src/callbacks.cc:2724
 msgid "Path of executable not found."
 msgstr "Pot do zagonske datoteke ni bila najdena."
 
-#: ../src/callbacks.cc:2733
+#: ../src/callbacks.cc:2734
 msgid "curl not found."
 msgstr "Orodje curl ni bilo najdeno."
 
-#: ../src/callbacks.cc:2791
+#: ../src/callbacks.cc:2792
 #, c-format
 msgid ""
 "Failed to run update script.\n"
@@ -3950,15 +3962,15 @@ msgstr ""
 "Napaka pri zagonu posodobitvenega skripta.\n"
 "%s"
 
-#: ../src/callbacks.cc:2811
+#: ../src/callbacks.cc:2812
 msgid "Failed to check for updates."
 msgstr "Napaka pri preverjanju posodobitev."
 
-#: ../src/callbacks.cc:2811
+#: ../src/callbacks.cc:2812
 msgid "No updates found."
 msgstr "Ni novih posodobitev."
 
-#: ../src/callbacks.cc:2831
+#: ../src/callbacks.cc:2832
 #, c-format
 msgid ""
 "A new version of %s is available at %s.\n"
@@ -3969,7 +3981,7 @@ msgstr ""
 "\n"
 "Želite nadgraditi na različico %s?"
 
-#: ../src/callbacks.cc:2833
+#: ../src/callbacks.cc:2834
 #, c-format
 msgid ""
 "A new version of %s is available.\n"
@@ -3980,354 +3992,354 @@ msgstr ""
 "\n"
 "Različico %s lahko pridobite na %s."
 
-#: ../src/callbacks.cc:2869
+#: ../src/callbacks.cc:2870
 #, c-format
 msgid "Too many arguments for %s()."
 msgstr "Preveč argumentov za %s()."
 
-#: ../src/callbacks.cc:2897 ../src/callbacks.cc:5097 ../src/callbacks.cc:6354
+#: ../src/callbacks.cc:2898 ../src/callbacks.cc:5098 ../src/callbacks.cc:6351
 msgid "argument"
 msgstr "argument"
 
-#: ../src/callbacks.cc:3069
+#: ../src/callbacks.cc:3070
 #, fuzzy
 msgid "Temperature Calculation Mode"
 msgstr "Orodje za izračun odstotkov"
 
-#: ../src/callbacks.cc:3079
+#: ../src/callbacks.cc:3080
 msgid ""
 "The expression is ambiguous.\n"
 "Please select temperature calculation mode\n"
 "(the mode can later be changed in preferences)."
 msgstr ""
 
-#: ../src/callbacks.cc:3147
+#: ../src/callbacks.cc:3148
 #, fuzzy
 msgid "Sinc Function"
 msgstr "Uredi funkcijo"
 
-#: ../src/callbacks.cc:3157
+#: ../src/callbacks.cc:3158
 msgid "Please select desired variant of the sinc function."
 msgstr ""
 
-#: ../src/callbacks.cc:3160
+#: ../src/callbacks.cc:3161
 #, fuzzy
 msgid "Unnormalized"
 msgstr "nekategorizirano"
 
-#: ../src/callbacks.cc:3167
+#: ../src/callbacks.cc:3168
 #, fuzzy
 msgid "Normalized"
 msgstr "Običajen"
 
-#: ../src/callbacks.cc:3200
+#: ../src/callbacks.cc:3201
 msgid "Interpretation of dots"
 msgstr ""
 
-#: ../src/callbacks.cc:3210
+#: ../src/callbacks.cc:3211
 msgid ""
 "Please select interpretation of dots (\".\")\n"
 "(this can later be changed in preferences)."
 msgstr ""
 
-#: ../src/callbacks.cc:3213
+#: ../src/callbacks.cc:3214
 #, fuzzy
 msgid "Both dot and comma as decimal separators"
 msgstr "Uporabi vejico kot desetiški ločilnik"
 
-#: ../src/callbacks.cc:3220
+#: ../src/callbacks.cc:3221
 msgid "Dot as thousands separator"
 msgstr ""
 
-#: ../src/callbacks.cc:3227
+#: ../src/callbacks.cc:3228
 #, fuzzy
 msgid "Only dot as decimal separator"
 msgstr "Uporabi vejico kot desetiški ločilnik"
 
-#: ../src/callbacks.cc:3279
+#: ../src/callbacks.cc:3280
 msgid ""
 "The expression is ambiguous.\n"
 "Please select interpretation of expressions with implicit multiplication\n"
 "(this can later be changed in preferences)."
 msgstr ""
 
-#: ../src/callbacks.cc:3282
+#: ../src/callbacks.cc:3283
 msgid "Implicit multiplication first"
 msgstr "Sprva implicitno množenje"
 
-#: ../src/callbacks.cc:3290
+#: ../src/callbacks.cc:3291
 msgid "Conventional"
 msgstr "Običajna"
 
-#: ../src/callbacks.cc:3343 ../src/callbacks.cc:4964 ../src/callbacks.cc:4965
-#: ../src/callbacks.cc:5019 ../src/callbacks.cc:5343 ../src/callbacks.cc:5344
-#: ../src/callbacks.cc:5399 ../src/callbacks.cc:5623 ../src/callbacks.cc:5624
-#: ../src/callbacks.cc:5693 ../src/callbacks.cc:5921 ../src/callbacks.cc:5922
-#: ../src/callbacks.cc:5923 ../src/callbacks.cc:6121 ../src/callbacks.cc:14959
-#: ../src/callbacks.cc:16576 ../src/callbacks.cc:17063
-#: ../src/callbacks.cc:17270 ../src/callbacks.cc:17516
-#: ../src/callbacks.cc:17822
+#: ../src/callbacks.cc:3344 ../src/callbacks.cc:4965 ../src/callbacks.cc:4966
+#: ../src/callbacks.cc:5020 ../src/callbacks.cc:5344 ../src/callbacks.cc:5345
+#: ../src/callbacks.cc:5400 ../src/callbacks.cc:5624 ../src/callbacks.cc:5625
+#: ../src/callbacks.cc:5694 ../src/callbacks.cc:5922 ../src/callbacks.cc:5923
+#: ../src/callbacks.cc:5924 ../src/callbacks.cc:6118 ../src/callbacks.cc:14964
+#: ../src/callbacks.cc:16581 ../src/callbacks.cc:17068
+#: ../src/callbacks.cc:17291 ../src/callbacks.cc:17539
+#: ../src/callbacks.cc:17848
 msgid "Uncategorized"
 msgstr "nekategorizirano"
 
-#: ../src/callbacks.cc:3533 ../src/callbacks.cc:4283 ../src/callbacks.cc:14282
+#: ../src/callbacks.cc:3534 ../src/callbacks.cc:4284 ../src/callbacks.cc:14287
 msgid "hexadecimal"
 msgstr "šestnajstiško"
 
-#: ../src/callbacks.cc:3536 ../src/callbacks.cc:4285 ../src/callbacks.cc:14285
+#: ../src/callbacks.cc:3537 ../src/callbacks.cc:4286 ../src/callbacks.cc:14290
 msgid "octal"
 msgstr "osmiško"
 
-#: ../src/callbacks.cc:3539 ../src/callbacks.cc:4287 ../src/callbacks.cc:14288
+#: ../src/callbacks.cc:3540 ../src/callbacks.cc:4288 ../src/callbacks.cc:14293
 msgid "decimal"
 msgstr "desetiško"
 
-#: ../src/callbacks.cc:3542 ../src/callbacks.cc:4289 ../src/callbacks.cc:14291
+#: ../src/callbacks.cc:3543 ../src/callbacks.cc:4290 ../src/callbacks.cc:14296
 msgid "duodecimal"
 msgstr "dvanajstiško"
 
-#: ../src/callbacks.cc:3553 ../src/callbacks.cc:4293 ../src/callbacks.cc:14302
+#: ../src/callbacks.cc:3554 ../src/callbacks.cc:4294 ../src/callbacks.cc:14307
 msgid "binary"
 msgstr "binarno"
 
-#: ../src/callbacks.cc:3556 ../src/callbacks.cc:4295 ../src/callbacks.cc:14305
+#: ../src/callbacks.cc:3557 ../src/callbacks.cc:4296 ../src/callbacks.cc:14310
 msgid "roman"
 msgstr "rimsko"
 
-#: ../src/callbacks.cc:3559 ../src/callbacks.cc:4297 ../src/callbacks.cc:14308
+#: ../src/callbacks.cc:3560 ../src/callbacks.cc:4298 ../src/callbacks.cc:14313
 msgid "bijective"
 msgstr "bijektivno"
 
-#: ../src/callbacks.cc:3565 ../src/callbacks.cc:3568 ../src/callbacks.cc:3571
-#: ../src/callbacks.cc:4301 ../src/callbacks.cc:14314 ../src/callbacks.cc:14317
-#: ../src/callbacks.cc:14320
+#: ../src/callbacks.cc:3566 ../src/callbacks.cc:3569 ../src/callbacks.cc:3572
+#: ../src/callbacks.cc:4302 ../src/callbacks.cc:14319 ../src/callbacks.cc:14322
+#: ../src/callbacks.cc:14325
 msgid "sexagesimal"
 msgstr "šestdesetiško"
 
-#: ../src/callbacks.cc:3574 ../src/callbacks.cc:3577 ../src/callbacks.cc:4303
-#: ../src/callbacks.cc:4304 ../src/callbacks.cc:14323 ../src/callbacks.cc:14326
+#: ../src/callbacks.cc:3575 ../src/callbacks.cc:3578 ../src/callbacks.cc:4304
+#: ../src/callbacks.cc:4305 ../src/callbacks.cc:14328 ../src/callbacks.cc:14331
 #, fuzzy
 msgid "latitude"
 msgstr "Razmerje"
 
-#: ../src/callbacks.cc:3580 ../src/callbacks.cc:3583 ../src/callbacks.cc:4305
-#: ../src/callbacks.cc:4306 ../src/callbacks.cc:14329 ../src/callbacks.cc:14332
+#: ../src/callbacks.cc:3581 ../src/callbacks.cc:3584 ../src/callbacks.cc:4306
+#: ../src/callbacks.cc:4307 ../src/callbacks.cc:14334 ../src/callbacks.cc:14337
 msgid "longitude"
 msgstr ""
 
-#: ../src/callbacks.cc:3601 ../src/callbacks.cc:4317 ../src/callbacks.cc:14350
+#: ../src/callbacks.cc:3602 ../src/callbacks.cc:4318 ../src/callbacks.cc:14355
 msgid "time"
 msgstr "čas"
 
-#: ../src/callbacks.cc:3652 ../src/callbacks.cc:4321 ../src/callbacks.cc:14424
+#: ../src/callbacks.cc:3653 ../src/callbacks.cc:4322 ../src/callbacks.cc:14429
 msgid "bases"
 msgstr "osnove"
 
-#: ../src/callbacks.cc:3654 ../src/callbacks.cc:4323 ../src/callbacks.cc:4324
-#: ../src/callbacks.cc:14434
+#: ../src/callbacks.cc:3655 ../src/callbacks.cc:4324 ../src/callbacks.cc:4325
+#: ../src/callbacks.cc:14439
 msgid "calendars"
 msgstr "koledarji"
 
-#: ../src/callbacks.cc:3656 ../src/callbacks.cc:4337 ../src/callbacks.cc:14444
+#: ../src/callbacks.cc:3657 ../src/callbacks.cc:4338 ../src/callbacks.cc:14449
 msgid "rectangular"
 msgstr "pravokotno"
 
-#: ../src/callbacks.cc:3656 ../src/callbacks.cc:4337 ../src/callbacks.cc:14444
+#: ../src/callbacks.cc:3657 ../src/callbacks.cc:4338 ../src/callbacks.cc:14449
 msgid "cartesian"
 msgstr "kartezično"
 
-#: ../src/callbacks.cc:3660 ../src/callbacks.cc:4339 ../src/callbacks.cc:14456
+#: ../src/callbacks.cc:3661 ../src/callbacks.cc:4340 ../src/callbacks.cc:14461
 msgid "exponential"
 msgstr "eksponentno"
 
-#: ../src/callbacks.cc:3664 ../src/callbacks.cc:4341 ../src/callbacks.cc:14468
+#: ../src/callbacks.cc:3665 ../src/callbacks.cc:4342 ../src/callbacks.cc:14473
 msgid "polar"
 msgstr "polarno"
 
-#: ../src/callbacks.cc:3672 ../src/callbacks.cc:4345 ../src/callbacks.cc:14494
+#: ../src/callbacks.cc:3673 ../src/callbacks.cc:4346 ../src/callbacks.cc:14499
 msgid "angle"
 msgstr "kot"
 
-#: ../src/callbacks.cc:3672 ../src/callbacks.cc:4347 ../src/callbacks.cc:14494
+#: ../src/callbacks.cc:3673 ../src/callbacks.cc:4348 ../src/callbacks.cc:14499
 msgid "phasor"
 msgstr "fazor"
 
-#: ../src/callbacks.cc:3676 ../src/callbacks.cc:4325 ../src/callbacks.cc:14506
+#: ../src/callbacks.cc:3677 ../src/callbacks.cc:4326 ../src/callbacks.cc:14511
 msgid "optimal"
 msgstr "najustreznejše"
 
-#: ../src/callbacks.cc:3681 ../src/callbacks.cc:3700 ../src/callbacks.cc:4327
-#: ../src/callbacks.cc:4402 ../src/callbacks.cc:14518 ../src/callbacks.cc:14568
+#: ../src/callbacks.cc:3682 ../src/callbacks.cc:3701 ../src/callbacks.cc:4328
+#: ../src/callbacks.cc:4403 ../src/callbacks.cc:14523 ../src/callbacks.cc:14573
 msgid "base"
 msgstr "osnova"
 
-#: ../src/callbacks.cc:3686 ../src/callbacks.cc:4329 ../src/callbacks.cc:14530
+#: ../src/callbacks.cc:3687 ../src/callbacks.cc:4330 ../src/callbacks.cc:14535
 msgid "mixed"
 msgstr "mešano"
 
-#: ../src/callbacks.cc:3691 ../src/callbacks.cc:4331 ../src/callbacks.cc:4332
-#: ../src/callbacks.cc:14545
+#: ../src/callbacks.cc:3692 ../src/callbacks.cc:4332 ../src/callbacks.cc:4333
+#: ../src/callbacks.cc:14550
 msgid "fraction"
 msgstr "ulomek"
 
-#: ../src/callbacks.cc:3694 ../src/callbacks.cc:4333 ../src/callbacks.cc:4334
-#: ../src/callbacks.cc:14548
+#: ../src/callbacks.cc:3695 ../src/callbacks.cc:4334 ../src/callbacks.cc:4335
+#: ../src/callbacks.cc:14553
 msgid "factors"
 msgstr "deleži"
 
-#: ../src/callbacks.cc:3697 ../src/callbacks.cc:4335 ../src/callbacks.cc:14558
+#: ../src/callbacks.cc:3698 ../src/callbacks.cc:4336 ../src/callbacks.cc:14563
 msgid "partial fraction"
 msgstr "parcialni ulomek"
 
-#: ../src/callbacks.cc:3728 ../src/callbacks.cc:4122 ../src/callbacks.cc:4124
-#: ../src/callbacks.cc:14611 ../src/searchprovider.cc:161
+#: ../src/callbacks.cc:3729 ../src/callbacks.cc:4123 ../src/callbacks.cc:4125
+#: ../src/callbacks.cc:14616 ../src/searchprovider.cc:161
 msgid "factorize"
 msgstr "faktoriziraj"
 
-#: ../src/callbacks.cc:3731 ../src/callbacks.cc:4125 ../src/callbacks.cc:4127
-#: ../src/callbacks.cc:14614 ../src/searchprovider.cc:161
+#: ../src/callbacks.cc:3732 ../src/callbacks.cc:4126 ../src/callbacks.cc:4128
+#: ../src/callbacks.cc:14619 ../src/searchprovider.cc:161
 msgid "expand"
 msgstr "razširi"
 
-#: ../src/callbacks.cc:4284 ../src/callbacks.cc:4398
+#: ../src/callbacks.cc:4285 ../src/callbacks.cc:4399
 msgid "hexadecimal number"
 msgstr "šestnajstiško število"
 
-#: ../src/callbacks.cc:4286
+#: ../src/callbacks.cc:4287
 msgid "octal number"
 msgstr "osmiško število"
 
-#: ../src/callbacks.cc:4288
+#: ../src/callbacks.cc:4289
 msgid "decimal number"
 msgstr "desetiško število"
 
-#: ../src/callbacks.cc:4290 ../src/callbacks.cc:4292
+#: ../src/callbacks.cc:4291 ../src/callbacks.cc:4293
 msgid "duodecimal number"
 msgstr "dvanajstiško število"
 
-#: ../src/callbacks.cc:4294 ../src/callbacks.cc:4392
+#: ../src/callbacks.cc:4295 ../src/callbacks.cc:4393
 msgid "binary number"
 msgstr "binarno število"
 
-#: ../src/callbacks.cc:4296
+#: ../src/callbacks.cc:4297
 msgid "roman numerals"
 msgstr "rimske številke"
 
-#: ../src/callbacks.cc:4298
+#: ../src/callbacks.cc:4299
 msgid "bijective base-26"
 msgstr "bijektivna osnova 26"
 
-#: ../src/callbacks.cc:4300
+#: ../src/callbacks.cc:4301
 #, fuzzy
 msgid "binary-coded decimal"
 msgstr "Min. decimalke"
 
-#: ../src/callbacks.cc:4302
+#: ../src/callbacks.cc:4303
 msgid "sexagesimal number"
 msgstr "šestdesetiško število"
 
-#: ../src/callbacks.cc:4308
+#: ../src/callbacks.cc:4309 ../src/callbacks.cc:29187
 msgid "32-bit floating point"
 msgstr "32-bitna plavajoča vejica"
 
-#: ../src/callbacks.cc:4310
+#: ../src/callbacks.cc:4311 ../src/callbacks.cc:29188
 msgid "64-bit floating point"
 msgstr "64-bitna plavajoča vejica"
 
-#: ../src/callbacks.cc:4312
+#: ../src/callbacks.cc:4313 ../src/callbacks.cc:29186
 msgid "16-bit floating point"
 msgstr "16-bitna plavajoča vejica"
 
-#: ../src/callbacks.cc:4314
+#: ../src/callbacks.cc:4315 ../src/callbacks.cc:29189
 msgid "80-bit (x86) floating point"
 msgstr "80-bitna (x86) plavajoča vejica"
 
-#: ../src/callbacks.cc:4316
+#: ../src/callbacks.cc:4317 ../src/callbacks.cc:29190
 msgid "128-bit floating point"
 msgstr "128-bitna plavajoča vejica"
 
-#: ../src/callbacks.cc:4318
+#: ../src/callbacks.cc:4319
 msgid "time format"
 msgstr "časovna oblika"
 
-#: ../src/callbacks.cc:4320 ../src/callbacks.cc:8024
+#: ../src/callbacks.cc:4321 ../src/callbacks.cc:8021
 msgid "Unicode"
 msgstr "Unicode"
 
-#: ../src/callbacks.cc:4322
+#: ../src/callbacks.cc:4323
 msgid "number bases"
 msgstr "številske osnove"
 
-#: ../src/callbacks.cc:4326
+#: ../src/callbacks.cc:4327
 msgid "optimal unit"
 msgstr "najustreznejša enota"
 
-#: ../src/callbacks.cc:4328
+#: ../src/callbacks.cc:4329
 msgid "base units"
 msgstr "osnovne enote"
 
-#: ../src/callbacks.cc:4330
+#: ../src/callbacks.cc:4331
 msgid "mixed units"
 msgstr "mešane enote"
 
-#: ../src/callbacks.cc:4336
+#: ../src/callbacks.cc:4337
 msgid "expanded partial fractions"
 msgstr "razširjeni parcialni ulomki"
 
-#: ../src/callbacks.cc:4338
+#: ../src/callbacks.cc:4339
 msgid "complex rectangular form"
 msgstr "kompleksna pravokotna oblika"
 
-#: ../src/callbacks.cc:4340
+#: ../src/callbacks.cc:4341
 msgid "complex exponential form"
 msgstr "kompleksna eksponentna oblika"
 
-#: ../src/callbacks.cc:4342
+#: ../src/callbacks.cc:4343
 msgid "complex polar form"
 msgstr "kompleksna polarna oblika"
 
-#: ../src/callbacks.cc:4344
+#: ../src/callbacks.cc:4345
 msgid "complex cis form"
 msgstr "kompleksna oblika cis"
 
-#: ../src/callbacks.cc:4346
+#: ../src/callbacks.cc:4347
 msgid "complex angle notation"
 msgstr "kompleksna kazalčna notacija"
 
-#: ../src/callbacks.cc:4348
+#: ../src/callbacks.cc:4349
 msgid "complex phasor notation"
 msgstr "kompleksna fazorska notacija"
 
-#: ../src/callbacks.cc:4350
+#: ../src/callbacks.cc:4351
 msgid "UTC time zone"
 msgstr "časovni pas UTC"
 
-#: ../src/callbacks.cc:4403
+#: ../src/callbacks.cc:4404
 #, c-format
 msgid "number base %s"
 msgstr "številska osnova %s"
 
-#: ../src/callbacks.cc:4712
+#: ../src/callbacks.cc:4713
 msgid "My Variables"
 msgstr "Moje spremenljivke"
 
-#: ../src/callbacks.cc:4955 ../src/callbacks.cc:4956 ../src/callbacks.cc:5023
-#: ../src/callbacks.cc:7617 ../src/callbacks.cc:17061 ../src/callbacks.cc:22379
-#: ../src/callbacks.cc:22380
+#: ../src/callbacks.cc:4956 ../src/callbacks.cc:4957 ../src/callbacks.cc:5024
+#: ../src/callbacks.cc:7614 ../src/callbacks.cc:17066 ../src/callbacks.cc:22410
+#: ../src/callbacks.cc:22411
 msgid "User functions"
 msgstr "Uporabniške funkcije"
 
-#: ../src/callbacks.cc:4973 ../src/callbacks.cc:4974 ../src/callbacks.cc:5021
-#: ../src/callbacks.cc:5352 ../src/callbacks.cc:5353 ../src/callbacks.cc:5401
-#: ../src/callbacks.cc:5631 ../src/callbacks.cc:5632 ../src/callbacks.cc:5695
-#: ../src/callbacks.cc:16572 ../src/callbacks.cc:17059
-#: ../src/callbacks.cc:17266 ../src/callbacks.cc:17512
-#: ../src/callbacks.cc:17818 ../src/callbacks.cc:22381
-#: ../src/callbacks.cc:22382
+#: ../src/callbacks.cc:4974 ../src/callbacks.cc:4975 ../src/callbacks.cc:5022
+#: ../src/callbacks.cc:5353 ../src/callbacks.cc:5354 ../src/callbacks.cc:5402
+#: ../src/callbacks.cc:5632 ../src/callbacks.cc:5633 ../src/callbacks.cc:5696
+#: ../src/callbacks.cc:16577 ../src/callbacks.cc:17064
+#: ../src/callbacks.cc:17287 ../src/callbacks.cc:17535
+#: ../src/callbacks.cc:17844 ../src/callbacks.cc:22412
+#: ../src/callbacks.cc:22413
 msgid "Inactive"
 msgstr "Neaktivno"
 
-#: ../src/callbacks.cc:5126
+#: ../src/callbacks.cc:5127
 #, c-format
 msgid ""
 "Retrieves data from the %s data set for a given object and property. If "
@@ -4337,583 +4349,583 @@ msgstr ""
 "Pridobi podatke iz nabora %s za dan objekt in lastnost. Če je \"info\" "
 "vnešen kot objekt, se bo odprlo pojavno okno z njegovimi lastnostmi."
 
-#: ../src/callbacks.cc:5138 ../src/callbacks.cc:16050
+#: ../src/callbacks.cc:5139 ../src/callbacks.cc:16055
 msgid "Example:"
 msgstr "Primer:"
 
 #. optional argument
-#: ../src/callbacks.cc:5184 ../src/callbacks.cc:15910 ../src/callbacks.cc:15921
+#: ../src/callbacks.cc:5185 ../src/callbacks.cc:15915 ../src/callbacks.cc:15926
 msgid "optional"
 msgstr "neobvezno"
 
 #. argument default, in description
-#: ../src/callbacks.cc:5188
+#: ../src/callbacks.cc:5189
 msgid "default: "
 msgstr "privzeto: "
 
-#: ../src/callbacks.cc:5202
+#: ../src/callbacks.cc:5203
 msgid "Requirement"
 msgstr "Zahteva"
 
 #. indicating that the property is a data set key
-#: ../src/callbacks.cc:5238 ../src/callbacks.cc:6308 ../src/callbacks.cc:18194
+#: ../src/callbacks.cc:5239 ../src/callbacks.cc:6305 ../src/callbacks.cc:18220
 msgid "key"
 msgstr "tipka"
 
-#: ../src/callbacks.cc:5259 ../src/callbacks.cc:5542 ../src/callbacks.cc:5851
-#: ../src/callbacks.cc:19248
+#: ../src/callbacks.cc:5260 ../src/callbacks.cc:5543 ../src/callbacks.cc:5852
+#: ../src/callbacks.cc:19274
 msgid "Acti_vate"
 msgstr "Akti_viraj"
 
-#: ../src/callbacks.cc:5334 ../src/callbacks.cc:5335 ../src/callbacks.cc:5403
-#: ../src/callbacks.cc:7454 ../src/callbacks.cc:17268 ../src/callbacks.cc:17514
-#: ../src/callbacks.cc:17820 ../src/callbacks.cc:22375
-#: ../src/callbacks.cc:22376
+#: ../src/callbacks.cc:5335 ../src/callbacks.cc:5336 ../src/callbacks.cc:5404
+#: ../src/callbacks.cc:7451 ../src/callbacks.cc:17289 ../src/callbacks.cc:17537
+#: ../src/callbacks.cc:17846 ../src/callbacks.cc:22406
+#: ../src/callbacks.cc:22407
 msgid "User variables"
 msgstr "Uporabniške spremenljivke"
 
-#: ../src/callbacks.cc:5449 ../src/callbacks.cc:16121 ../src/callbacks.cc:16130
-#: ../src/callbacks.cc:17290 ../src/callbacks.cc:32283
-#: ../src/callbacks.cc:32298 ../src/callbacks.cc:32316
-#: ../src/callbacks.cc:32349
+#: ../src/callbacks.cc:5450 ../src/callbacks.cc:16126 ../src/callbacks.cc:16135
+#: ../src/callbacks.cc:17311 ../src/callbacks.cc:32278
+#: ../src/callbacks.cc:32293 ../src/callbacks.cc:32311
+#: ../src/callbacks.cc:32344
 msgid "Variable does not exist anymore."
 msgstr "Spremenljivka ne obstaja več."
 
-#: ../src/callbacks.cc:5476
+#: ../src/callbacks.cc:5477
 msgid "a matrix"
 msgstr "matrika"
 
-#: ../src/callbacks.cc:5478
+#: ../src/callbacks.cc:5479
 msgid "a vector"
 msgstr "vektor"
 
-#: ../src/callbacks.cc:5504 ../src/callbacks.cc:7803
+#: ../src/callbacks.cc:5505 ../src/callbacks.cc:7800
 msgid "positive"
 msgstr "pozitivno"
 
-#: ../src/callbacks.cc:5505 ../src/callbacks.cc:7804
+#: ../src/callbacks.cc:5506 ../src/callbacks.cc:7801
 msgid "non-positive"
 msgstr "nepozitivno"
 
-#: ../src/callbacks.cc:5506 ../src/callbacks.cc:7805
+#: ../src/callbacks.cc:5507 ../src/callbacks.cc:7802
 msgid "negative"
 msgstr "negativno"
 
-#: ../src/callbacks.cc:5507 ../src/callbacks.cc:7806
+#: ../src/callbacks.cc:5508 ../src/callbacks.cc:7803
 msgid "non-negative"
 msgstr "nenegativno"
 
-#: ../src/callbacks.cc:5508 ../src/callbacks.cc:7807
+#: ../src/callbacks.cc:5509 ../src/callbacks.cc:7804
 msgid "non-zero"
 msgstr "neničelno"
 
-#: ../src/callbacks.cc:5514 ../src/callbacks.cc:7813
+#: ../src/callbacks.cc:5515 ../src/callbacks.cc:7810
 msgid "integer"
 msgstr "celo število"
 
-#: ../src/callbacks.cc:5515 ../src/callbacks.cc:7812
+#: ../src/callbacks.cc:5516 ../src/callbacks.cc:7809
 msgid "boolean"
 msgstr "logična vrednost"
 
-#: ../src/callbacks.cc:5516 ../src/callbacks.cc:7814
+#: ../src/callbacks.cc:5517 ../src/callbacks.cc:7811
 msgid "rational"
 msgstr "racionalno"
 
-#: ../src/callbacks.cc:5517 ../src/callbacks.cc:7815
+#: ../src/callbacks.cc:5518 ../src/callbacks.cc:7812
 msgid "real"
 msgstr "realno"
 
-#: ../src/callbacks.cc:5518 ../src/callbacks.cc:7816
+#: ../src/callbacks.cc:5519 ../src/callbacks.cc:7813
 msgid "complex"
 msgstr "kompleksno"
 
-#: ../src/callbacks.cc:5519 ../src/callbacks.cc:7817 ../src/callbacks.cc:18180
+#: ../src/callbacks.cc:5520 ../src/callbacks.cc:7814 ../src/callbacks.cc:18206
 msgid "number"
 msgstr "številka"
 
-#: ../src/callbacks.cc:5520
+#: ../src/callbacks.cc:5521
 msgid "not matrix"
 msgstr "ni matrika"
 
-#: ../src/callbacks.cc:5523 ../src/callbacks.cc:7821
+#: ../src/callbacks.cc:5524 ../src/callbacks.cc:7818
 msgid "unknown"
 msgstr "neznano"
 
-#: ../src/callbacks.cc:5615 ../src/callbacks.cc:5616 ../src/callbacks.cc:5697
-#: ../src/callbacks.cc:7212 ../src/callbacks.cc:7306 ../src/callbacks.cc:16574
-#: ../src/callbacks.cc:22377 ../src/callbacks.cc:22378
+#: ../src/callbacks.cc:5616 ../src/callbacks.cc:5617 ../src/callbacks.cc:5698
+#: ../src/callbacks.cc:7209 ../src/callbacks.cc:7303 ../src/callbacks.cc:16579
+#: ../src/callbacks.cc:22408 ../src/callbacks.cc:22409
 msgid "User units"
 msgstr "Uporabniške enote"
 
-#: ../src/callbacks.cc:6324
+#: ../src/callbacks.cc:6321
 msgid "Data Retrieval Function"
 msgstr "Funkcija za pridobitev podatkov"
 
-#: ../src/callbacks.cc:6657
+#: ../src/callbacks.cc:6654
 msgid "Insert function"
 msgstr "Vnesi funkcijo"
 
-#: ../src/callbacks.cc:6658
+#: ../src/callbacks.cc:6655
 msgid "Insert function (dialog)"
 msgstr "Vnesi funkcijo (obrazec)"
 
-#: ../src/callbacks.cc:6659
+#: ../src/callbacks.cc:6656
 msgid "Insert variable"
 msgstr "Vnesi spremenljivko"
 
-#: ../src/callbacks.cc:6660
+#: ../src/callbacks.cc:6657
 msgid "Insert unit"
 msgstr "Vnesi enoto"
 
-#: ../src/callbacks.cc:6661
+#: ../src/callbacks.cc:6658
 msgid "Insert text"
 msgstr "Vnesi besedilo"
 
-#: ../src/callbacks.cc:6662
+#: ../src/callbacks.cc:6659
 msgid "Insert date"
 msgstr "Vnesi datum"
 
-#: ../src/callbacks.cc:6663
+#: ../src/callbacks.cc:6660
 msgid "Insert vector"
 msgstr "Vnesi vektor"
 
-#: ../src/callbacks.cc:6664
+#: ../src/callbacks.cc:6661
 msgid "Insert matrix"
 msgstr "Vnesi matriko"
 
-#: ../src/callbacks.cc:6665
+#: ../src/callbacks.cc:6662
 msgid "Insert smart parentheses"
 msgstr "Vnesi pametne oklepaje"
 
-#: ../src/callbacks.cc:6666
+#: ../src/callbacks.cc:6663
 msgid "Convert to unit"
 msgstr "Pretvori v enoto"
 
-#: ../src/callbacks.cc:6667
+#: ../src/callbacks.cc:6664
 msgid "Convert to unit (entry)"
 msgstr "Pretvori v enoto (vnos)"
 
-#: ../src/callbacks.cc:6668
+#: ../src/callbacks.cc:6665
 msgid "Convert to optimal unit"
 msgstr "Pretvori v najustreznejšo enoto"
 
-#: ../src/callbacks.cc:6669
+#: ../src/callbacks.cc:6666
 msgid "Convert to base units"
 msgstr "Pretvori v osnovne enote"
 
-#: ../src/callbacks.cc:6670
+#: ../src/callbacks.cc:6667
 msgid "Convert to optimal prefix"
 msgstr "Pretvori v najustreznejšo predpono"
 
-#: ../src/callbacks.cc:6671
+#: ../src/callbacks.cc:6668
 msgid "Convert to number base"
 msgstr "Pretvori v številsko osnovo"
 
-#: ../src/callbacks.cc:6672
+#: ../src/callbacks.cc:6669
 msgid "Factorize result"
 msgstr "Faktoriziraj rezultat"
 
-#: ../src/callbacks.cc:6673
+#: ../src/callbacks.cc:6670
 msgid "Expand result"
 msgstr "Razširi rezultat"
 
-#: ../src/callbacks.cc:6674
+#: ../src/callbacks.cc:6671
 msgid "Expand partial fractions"
 msgstr "Razširi parcialne ulomke"
 
-#: ../src/callbacks.cc:6676
+#: ../src/callbacks.cc:6673
 msgid "RPN: down"
 msgstr "RPN: dol"
 
-#: ../src/callbacks.cc:6677
+#: ../src/callbacks.cc:6674
 msgid "RPN: up"
 msgstr "RPN: gor"
 
-#: ../src/callbacks.cc:6678
+#: ../src/callbacks.cc:6675
 msgid "RPN: swap"
 msgstr "RPN: izmenjaj"
 
-#: ../src/callbacks.cc:6679
+#: ../src/callbacks.cc:6676
 msgid "RPN: copy"
 msgstr "RPN: kopiraj"
 
-#: ../src/callbacks.cc:6680
+#: ../src/callbacks.cc:6677
 msgid "RPN: lastx"
 msgstr "RPN: lastx"
 
-#: ../src/callbacks.cc:6681
+#: ../src/callbacks.cc:6678
 msgid "RPN: delete register"
 msgstr "RPN: izbriši register"
 
-#: ../src/callbacks.cc:6682
+#: ../src/callbacks.cc:6679
 msgid "RPN: clear stack"
 msgstr "RPN: počisti sklad"
 
-#: ../src/callbacks.cc:6683
+#: ../src/callbacks.cc:6680
 msgid "Load meta mode"
 msgstr "Naloži metanačin"
 
-#: ../src/callbacks.cc:6684
+#: ../src/callbacks.cc:6681
 msgid "Set expression base"
 msgstr "Nastavi osnovo izraza"
 
-#: ../src/callbacks.cc:6685
+#: ../src/callbacks.cc:6682
 msgid "Set result base"
 msgstr "Nastavi osnovo rezultata"
 
-#: ../src/callbacks.cc:6686
+#: ../src/callbacks.cc:6683
 msgid "Toggle exact mode"
 msgstr "Prikaži/skrij točen način"
 
-#: ../src/callbacks.cc:6687
+#: ../src/callbacks.cc:6684
 msgid "Set angle unit to degrees"
 msgstr "Nastavi kotne enote v stopinje"
 
-#: ../src/callbacks.cc:6688
+#: ../src/callbacks.cc:6685
 msgid "Set angle unit to radians"
 msgstr "Nastavi kotne enote v radiane"
 
-#: ../src/callbacks.cc:6689
+#: ../src/callbacks.cc:6686
 msgid "Set angle unit to gradians"
 msgstr "Nastavi kotne enote v gradiane"
 
-#: ../src/callbacks.cc:6690
+#: ../src/callbacks.cc:6687
 msgid "Toggle simple fractions"
 msgstr "Prikaži/skrij preproste ulomke"
 
-#: ../src/callbacks.cc:6691
+#: ../src/callbacks.cc:6688
 msgid "Toggle mixed fractions"
 msgstr "Prikaži/skrij mešane ulomke"
 
-#: ../src/callbacks.cc:6692
+#: ../src/callbacks.cc:6689
 msgid "Toggle scientific notation"
 msgstr "Prikaži/skrij znanstveno notacijo"
 
-#: ../src/callbacks.cc:6693
+#: ../src/callbacks.cc:6690
 msgid "Toggle simple notation"
 msgstr "Prikaži/skrij preprosto notacijo"
 
-#: ../src/callbacks.cc:6694
+#: ../src/callbacks.cc:6691
 #, fuzzy
 msgid "Toggle precision"
 msgstr "Točnost branja"
 
-#: ../src/callbacks.cc:6695
+#: ../src/callbacks.cc:6692
 #, fuzzy
 msgid "Toggle max decimals"
 msgstr "Maks. decimalke"
 
-#: ../src/callbacks.cc:6696
+#: ../src/callbacks.cc:6693
 #, fuzzy
 msgid "Toggle min decimals"
 msgstr "Min. decimalke"
 
-#: ../src/callbacks.cc:6697
+#: ../src/callbacks.cc:6694
 #, fuzzy
 msgid "Toggle max/min decimals"
 msgstr "Prikaži/skrij točen način"
 
-#: ../src/callbacks.cc:6698
+#: ../src/callbacks.cc:6695
 msgid "Toggle RPN mode"
 msgstr "Prikaži/skrij način RPN"
 
-#: ../src/callbacks.cc:6699
+#: ../src/callbacks.cc:6696
 msgid "Toggle calculate as you type"
 msgstr "Prikaži/skrij izračun med pisanjem"
 
-#: ../src/callbacks.cc:6700
+#: ../src/callbacks.cc:6697
 msgid "Toggle programming keypad"
 msgstr "Prikaži/skrij tipkovnico"
 
-#: ../src/callbacks.cc:6701
+#: ../src/callbacks.cc:6698
 msgid "Show keypad"
 msgstr "Prikaži tipkovnico"
 
-#: ../src/callbacks.cc:6702
+#: ../src/callbacks.cc:6699
 msgid "Show history"
 msgstr "Prikaži zgodovino"
 
-#: ../src/callbacks.cc:6703
+#: ../src/callbacks.cc:6700
 msgid "Search history"
 msgstr "Zgodovina iskanj"
 
-#: ../src/callbacks.cc:6704
+#: ../src/callbacks.cc:6701
 msgid "Clear history"
 msgstr "Počisti zgodovino"
 
-#: ../src/callbacks.cc:6705
+#: ../src/callbacks.cc:6702
 msgid "Show conversion"
 msgstr "Prikaži pretvorbo"
 
-#: ../src/callbacks.cc:6706
+#: ../src/callbacks.cc:6703
 msgid "Show RPN stack"
 msgstr "Prikaži sklad RPN"
 
-#: ../src/callbacks.cc:6708
+#: ../src/callbacks.cc:6705
 msgid "Manage variables"
 msgstr "Upravljaj spremenljivke"
 
-#: ../src/callbacks.cc:6709
+#: ../src/callbacks.cc:6706
 msgid "Manage functions"
 msgstr "Upravljaj funkcije"
 
-#: ../src/callbacks.cc:6711
+#: ../src/callbacks.cc:6708
 msgid "Manage data sets"
 msgstr "Upravljaj nabore podatkov"
 
-#: ../src/callbacks.cc:6718
+#: ../src/callbacks.cc:6715
 msgid "New variable"
 msgstr "Nova spremenljivka"
 
-#: ../src/callbacks.cc:6719
+#: ../src/callbacks.cc:6716
 msgid "New function"
 msgstr "Nova funkcija"
 
-#: ../src/callbacks.cc:6720
+#: ../src/callbacks.cc:6717
 msgid "Open plot functions/data"
 msgstr "Odpri orodje za izris funkcij/podatkov"
 
-#: ../src/callbacks.cc:6721
+#: ../src/callbacks.cc:6718
 msgid "Open convert number bases"
 msgstr "Odpri orodje za pretvorbo številskih osnov"
 
-#: ../src/callbacks.cc:6722
+#: ../src/callbacks.cc:6719
 msgid "Open floating point conversion"
 msgstr "Odpri orodje za pretvorbo plavajoče vejice"
 
-#: ../src/callbacks.cc:6723
+#: ../src/callbacks.cc:6720
 msgid "Open calendar conversion"
 msgstr "Odpri orodje za pretvorbo koledarjev"
 
-#: ../src/callbacks.cc:6724
+#: ../src/callbacks.cc:6721
 msgid "Open percentage calculation tool"
 msgstr "Odpri orodje za izračun odstotkov"
 
-#: ../src/callbacks.cc:6725
+#: ../src/callbacks.cc:6722
 msgid "Open periodic table"
 msgstr "Odpri periodni sistem"
 
-#: ../src/callbacks.cc:6726
+#: ../src/callbacks.cc:6723
 msgid "Update exchange rates"
 msgstr "Posodobi menjalna razmerja"
 
-#: ../src/callbacks.cc:6727
+#: ../src/callbacks.cc:6724
 msgid "Copy result"
 msgstr "Kopiraj rezultat"
 
-#: ../src/callbacks.cc:6728
+#: ../src/callbacks.cc:6725
 msgid "Insert result"
 msgstr "Vnesi rezultat"
 
-#: ../src/callbacks.cc:6729
+#: ../src/callbacks.cc:6726
 msgid "Save result image"
 msgstr "Shrani sliko rezultata"
 
-#: ../src/callbacks.cc:6730
+#: ../src/callbacks.cc:6727
 msgid "Help"
 msgstr "Pomoč"
 
-#: ../src/callbacks.cc:6731
+#: ../src/callbacks.cc:6728
 msgid "Quit"
 msgstr "Izhod"
 
-#: ../src/callbacks.cc:6732
+#: ../src/callbacks.cc:6729
 #, fuzzy
 msgid "Toggle chain mode"
 msgstr "Prikaži/skrij točen način"
 
-#: ../src/callbacks.cc:6733
+#: ../src/callbacks.cc:6730
 #, fuzzy
 msgid "Toggle keep above"
 msgstr "Prikaži/skrij točen način"
 
-#: ../src/callbacks.cc:6734
+#: ../src/callbacks.cc:6731
 #, fuzzy
 msgid "Show/hide completion"
 msgstr "Brez dopolnjevanja"
 
-#: ../src/callbacks.cc:6735
+#: ../src/callbacks.cc:6732
 msgid "Perform completion (activate first item)"
 msgstr ""
 
-#: ../src/callbacks.cc:6776
+#: ../src/callbacks.cc:6773
 #, fuzzy
 msgid "Formatted result"
 msgstr "Shrani rezultat"
 
-#: ../src/callbacks.cc:6777
+#: ../src/callbacks.cc:6774
 #, fuzzy
 msgid "Unformatted ASCII result"
 msgstr "Kopiraj neoblikovano ASCII"
 
-#: ../src/callbacks.cc:6778
+#: ../src/callbacks.cc:6775
 #, fuzzy
 msgid "Unformatted ASCII result without units"
 msgstr "Kopiraj neoblikovano ASCII"
 
-#: ../src/callbacks.cc:6779
+#: ../src/callbacks.cc:6776
 #, fuzzy
 msgid "Formatted expression"
 msgstr "Prazen izraz."
 
-#: ../src/callbacks.cc:6780
+#: ../src/callbacks.cc:6777
 #, fuzzy
 msgid "Unformatted ASCII expression"
 msgstr "Kopiraj neoblikovano ASCII"
 
-#: ../src/callbacks.cc:6781
+#: ../src/callbacks.cc:6778
 #, fuzzy
 msgid "Formatted expression + result"
 msgstr "Prazno polje za izraz."
 
-#: ../src/callbacks.cc:6782
+#: ../src/callbacks.cc:6779
 #, fuzzy
 msgid "Unformatted ASCII expression + result"
 msgstr "Kopiraj neoblikovano ASCII"
 
-#: ../src/callbacks.cc:7220
+#: ../src/callbacks.cc:7217
 msgid "Prefixes"
 msgstr "Predpone"
 
-#: ../src/callbacks.cc:7509
+#: ../src/callbacks.cc:7506
 msgid "No Prefix"
 msgstr "Ni predpone"
 
-#: ../src/callbacks.cc:7510
+#: ../src/callbacks.cc:7507
 msgid "Optimal Prefix"
 msgstr "Najustreznejša predpona"
 
-#: ../src/callbacks.cc:7767
+#: ../src/callbacks.cc:7764
 msgid "a previous result"
 msgstr "prejšnji rezultat"
 
-#: ../src/callbacks.cc:7780
+#: ../src/callbacks.cc:7777
 msgid "matrix"
 msgstr "matrika"
 
-#: ../src/callbacks.cc:7782
+#: ../src/callbacks.cc:7779
 msgid "vector"
 msgstr "vektor"
 
-#: ../src/callbacks.cc:7818
+#: ../src/callbacks.cc:7815
 msgid "(not matrix)"
 msgstr "(ni matrika)"
 
-#: ../src/callbacks.cc:7823
+#: ../src/callbacks.cc:7820
 msgid "default assumptions"
 msgstr "privzete predpostavke"
 
-#: ../src/callbacks.cc:7943 ../src/callbacks.cc:7947 ../src/callbacks.cc:7951
+#: ../src/callbacks.cc:7940 ../src/callbacks.cc:7944 ../src/callbacks.cc:7948
 msgid "Prefix"
 msgstr "Predpona"
 
-#: ../src/callbacks.cc:7967
+#: ../src/callbacks.cc:7964
 msgid "Base Units"
 msgstr "Osnovna enota"
 
-#: ../src/callbacks.cc:7970
+#: ../src/callbacks.cc:7967
 #, fuzzy
 msgid "Binary-Coded Decimal"
 msgstr "Min. decimalke"
 
-#: ../src/callbacks.cc:7972
+#: ../src/callbacks.cc:7969
 msgid "Bijective Base-26"
 msgstr "Bijektivna osnova 26"
 
-#: ../src/callbacks.cc:7974
+#: ../src/callbacks.cc:7971
 msgid "Binary Number"
 msgstr "Binarno število"
 
-#: ../src/callbacks.cc:7976 ../src/callbacks.cc:29169
+#: ../src/callbacks.cc:7973 ../src/callbacks.cc:29156
 msgid "Calendars"
 msgstr "Koledarji"
 
-#: ../src/callbacks.cc:7978
+#: ../src/callbacks.cc:7975
 msgid "Complex cis Form"
 msgstr "Kompleksna oblika cis"
 
-#: ../src/callbacks.cc:7980
+#: ../src/callbacks.cc:7977
 msgid "Decimal Number"
 msgstr "Desetiško število"
 
-#: ../src/callbacks.cc:7982
+#: ../src/callbacks.cc:7979
 msgid "Duodecimal Number"
 msgstr "Dvanajstiško število"
 
-#: ../src/callbacks.cc:7986 ../src/callbacks.cc:29185 ../src/callbacks.cc:29189
+#: ../src/callbacks.cc:7983 ../src/callbacks.cc:29176 ../src/callbacks.cc:29179
 msgid "Factors"
 msgstr "Deleži"
 
-#: ../src/callbacks.cc:7988
+#: ../src/callbacks.cc:7985
 msgid "16-bit Floating Point Binary Format"
 msgstr "16-bitna binarna oblika s plavajočo vejico"
 
-#: ../src/callbacks.cc:7990
+#: ../src/callbacks.cc:7987
 msgid "32-bit Floating Point Binary Format"
 msgstr "32-bitna binarna oblika s plavajočo vejico"
 
-#: ../src/callbacks.cc:7992
+#: ../src/callbacks.cc:7989
 msgid "64-bit Floating Point Binary Format"
 msgstr "64-bitna binarna oblika s plavajočo vejico"
 
-#: ../src/callbacks.cc:7994
+#: ../src/callbacks.cc:7991
 msgid "80-bit (x86) Floating Point Binary Format"
 msgstr "80-bitna (x86) binarna oblika s plavajočo vejico"
 
-#: ../src/callbacks.cc:7996
+#: ../src/callbacks.cc:7993
 msgid "128-bit Floating Point Binary Format"
 msgstr "128-bitna binarna oblika s plavajočo vejico"
 
-#: ../src/callbacks.cc:8000
+#: ../src/callbacks.cc:7997
 msgid "Hexadecimal Number"
 msgstr "Šestnajstiško število"
 
-#: ../src/callbacks.cc:8002
+#: ../src/callbacks.cc:7999 ../src/callbacks.cc:29182
 msgid "Latitude"
 msgstr ""
 
-#: ../src/callbacks.cc:8004
+#: ../src/callbacks.cc:8001 ../src/callbacks.cc:29183
 msgid "Longitude"
 msgstr ""
 
-#: ../src/callbacks.cc:8006
+#: ../src/callbacks.cc:8003
 msgid "Mixed Units"
 msgstr "Mešane enote"
 
-#: ../src/callbacks.cc:8008
+#: ../src/callbacks.cc:8005
 msgid "Octal Number"
 msgstr "Osmiško število"
 
-#: ../src/callbacks.cc:8010
+#: ../src/callbacks.cc:8007
 msgid "Optimal Units"
 msgstr "Najustreznejše enote"
 
-#: ../src/callbacks.cc:8012
+#: ../src/callbacks.cc:8009 ../src/callbacks.cc:29180
 msgid "Expanded Partial Fractions"
 msgstr "Razširjeni parcialni ulomki"
 
-#: ../src/callbacks.cc:8020
+#: ../src/callbacks.cc:8017
 msgid "Sexagesimal Number"
 msgstr "Šestdesetiško število"
 
-#: ../src/callbacks.cc:8026
+#: ../src/callbacks.cc:8023
 msgid "UTC Time Zone"
 msgstr "Časovni pas UTC"
 
-#: ../src/callbacks.cc:9635
+#: ../src/callbacks.cc:9639
 msgid "and"
 msgstr "in"
 
-#: ../src/callbacks.cc:9638 ../src/callbacks.cc:11151 ../src/callbacks.cc:11186
-#: ../src/callbacks.cc:11187
+#: ../src/callbacks.cc:9642 ../src/callbacks.cc:11155 ../src/callbacks.cc:11190
+#: ../src/callbacks.cc:11191
 msgid "or"
 msgstr "ali"
 
-#: ../src/callbacks.cc:10488
+#: ../src/callbacks.cc:10492
 msgid "undefined"
 msgstr "nedefinirano"
 
-#: ../src/callbacks.cc:10828 ../src/callbacks.cc:35400
+#: ../src/callbacks.cc:10832 ../src/callbacks.cc:35395
 msgid ""
 "result is too long\n"
 "see history"
@@ -4921,107 +4933,107 @@ msgstr ""
 "rezultat je predolg\n"
 "poglej zgodovino"
 
-#: ../src/callbacks.cc:10851 ../src/callbacks.cc:35421
+#: ../src/callbacks.cc:10855 ../src/callbacks.cc:35416
 msgid "calculation was aborted"
 msgstr "izračun prekinjen"
 
-#: ../src/callbacks.cc:11761 ../src/callbacks.cc:27323
+#: ../src/callbacks.cc:11765 ../src/callbacks.cc:27366
 msgid "RPN Register Moved"
 msgstr "Register RPN premaknjen"
 
-#: ../src/callbacks.cc:11769 ../src/callbacks.cc:14843
-#: ../src/callbacks.cc:27329
+#: ../src/callbacks.cc:11773 ../src/callbacks.cc:14848
+#: ../src/callbacks.cc:27372
 msgid "RPN Operation"
 msgstr "Operacija RPN"
 
-#: ../src/callbacks.cc:11975
+#: ../src/callbacks.cc:11979
 msgid "Processing…"
 msgstr "Obdelujem..."
 
-#: ../src/callbacks.cc:11995 ../src/callbacks.cc:35400
+#: ../src/callbacks.cc:11999 ../src/callbacks.cc:35395
 msgid "result processing was aborted"
 msgstr "obdelava rezultata je bila prekinjena"
 
-#: ../src/callbacks.cc:12475
+#: ../src/callbacks.cc:12479
 msgid "Factorizing…"
 msgstr "Faktoriziram..."
 
-#: ../src/callbacks.cc:12479
+#: ../src/callbacks.cc:12483
 msgid "Expanding partial fractions…"
 msgstr "Razširjam parcialne ulomke..."
 
-#: ../src/callbacks.cc:12483
+#: ../src/callbacks.cc:12487
 msgid "Expanding…"
 msgstr "Razširjam..."
 
-#: ../src/callbacks.cc:12488 ../src/callbacks.cc:14795
+#: ../src/callbacks.cc:12492 ../src/callbacks.cc:14800
 msgid "Calculating…"
 msgstr "Računam..."
 
-#: ../src/callbacks.cc:12492
+#: ../src/callbacks.cc:12496
 msgid "Converting…"
 msgstr "Pretvarjam..."
 
-#: ../src/callbacks.cc:12596
+#: ../src/callbacks.cc:12600
 msgid "Fetching exchange rates."
 msgstr "Pridobivam menjalna razmerja."
 
-#: ../src/callbacks.cc:14401
+#: ../src/callbacks.cc:14406
 msgid "Time zone parsing failed."
 msgstr "Obdelava časovnega pasu spodletela."
 
-#: ../src/callbacks.cc:15692
+#: ../src/callbacks.cc:15697
 msgid "Keep open"
 msgstr "Obdrži odprto"
 
 #. RPN Enter (calculate and add to stack)
-#: ../src/callbacks.cc:15701
+#: ../src/callbacks.cc:15706
 msgid "Enter"
 msgstr ""
 
-#: ../src/callbacks.cc:15701
+#: ../src/callbacks.cc:15706
 msgid "C_alculate"
 msgstr "Izr_ačunaj"
 
-#: ../src/callbacks.cc:15704
+#: ../src/callbacks.cc:15709
 msgid "Apply to Stack"
 msgstr "Premakni na sklad"
 
-#: ../src/callbacks.cc:15763
+#: ../src/callbacks.cc:15768
 msgid "Argument"
 msgstr "Argument"
 
-#: ../src/callbacks.cc:15818
+#: ../src/callbacks.cc:15823
 msgid "True"
 msgstr "Pravilno"
 
-#: ../src/callbacks.cc:15820
+#: ../src/callbacks.cc:15825
 msgid "False"
 msgstr "Napačno"
 
-#: ../src/callbacks.cc:15865
+#: ../src/callbacks.cc:15870
 msgid "Info"
 msgstr "Info"
 
-#: ../src/callbacks.cc:16291
+#: ../src/callbacks.cc:16296
 msgid "Edit Unit (global)"
 msgstr "Uredi enoto (globalno)"
 
-#: ../src/callbacks.cc:16293
+#: ../src/callbacks.cc:16298
 msgid "New Unit"
 msgstr "Nova enota"
 
-#: ../src/callbacks.cc:16428 ../src/callbacks.cc:16971
-#: ../src/callbacks.cc:17220 ../src/callbacks.cc:17449
-#: ../src/callbacks.cc:17724 ../src/callbacks.cc:18258
-#: ../src/callbacks.cc:18427 ../src/callbacks.cc:18545
-#: ../src/callbacks.cc:20285
+#: ../src/callbacks.cc:16433 ../src/callbacks.cc:16976
+#: ../src/callbacks.cc:17235 ../src/callbacks.cc:17472
+#: ../src/callbacks.cc:17749 ../src/callbacks.cc:18284
+#: ../src/callbacks.cc:18453 ../src/callbacks.cc:18571
+#: ../src/callbacks.cc:20311
 msgid "Empty name field."
 msgstr "Prazno polje za ime."
 
-#: ../src/callbacks.cc:16435 ../src/callbacks.cc:17227
-#: ../src/callbacks.cc:17462 ../src/callbacks.cc:17731
-#: ../src/callbacks.cc:18551
+#: ../src/callbacks.cc:16440 ../src/callbacks.cc:17242
+#: ../src/callbacks.cc:17485 ../src/callbacks.cc:17756
+#: ../src/callbacks.cc:18577
 msgid ""
 "A unit or variable with the same name already exists.\n"
 "Do you want to overwrite it?"
@@ -5029,23 +5041,23 @@ msgstr ""
 "Enota ali spremenljivka s tem imenom že obstaja.\n"
 "Jo želite prepisati?"
 
-#: ../src/callbacks.cc:16462 ../src/callbacks.cc:16514
+#: ../src/callbacks.cc:16467 ../src/callbacks.cc:16519
 msgid "Base unit does not exist."
 msgstr "Osnovna enota ne obstaja."
 
-#: ../src/callbacks.cc:16899
+#: ../src/callbacks.cc:16904
 msgid "Edit Function (global)"
 msgstr "Uredi funkcijo (globalno)"
 
-#: ../src/callbacks.cc:16901
+#: ../src/callbacks.cc:16906
 msgid "New Function"
 msgstr "Nova funkcija"
 
-#: ../src/callbacks.cc:16986
+#: ../src/callbacks.cc:16991
 msgid "Empty expression field."
 msgstr "Prazno polje za izraz."
 
-#: ../src/callbacks.cc:16996 ../src/callbacks.cc:18439
+#: ../src/callbacks.cc:17001 ../src/callbacks.cc:18465
 msgid ""
 "A function with the same name already exists.\n"
 "Do you want to overwrite the function?"
@@ -5053,91 +5065,91 @@ msgstr ""
 "Funkcija s tem imenom že obstaja.\n"
 "Jo želite prepisati?"
 
-#: ../src/callbacks.cc:17106 ../src/callbacks.cc:17121
+#: ../src/callbacks.cc:17119 ../src/callbacks.cc:17133
 msgid "Unit does not exist"
 msgstr "Enota ne obstaja"
 
-#: ../src/callbacks.cc:17151
+#: ../src/callbacks.cc:17163
 msgid "Edit Unknown Variable (global)"
 msgstr "Uredi neznano spremenljivko (globalno)"
 
-#: ../src/callbacks.cc:17153
+#: ../src/callbacks.cc:17165
 msgid "New Unknown Variable"
 msgstr "Nova neznana spremenljivka"
 
-#: ../src/callbacks.cc:17346
+#: ../src/callbacks.cc:17367
 msgid "Edit Variable (global)"
 msgstr "Uredi spremenljivko (globalno)"
 
-#: ../src/callbacks.cc:17348
+#: ../src/callbacks.cc:17369
 msgid "New Variable"
 msgstr "Nova spremenljivka"
 
-#: ../src/callbacks.cc:17456
+#: ../src/callbacks.cc:17479
 msgid "Empty value field."
 msgstr "Prazno polje za vrednost."
 
-#: ../src/callbacks.cc:17569
+#: ../src/callbacks.cc:17592
 msgid "Edit Vector"
 msgstr "Uredi vektor"
 
-#: ../src/callbacks.cc:17571
+#: ../src/callbacks.cc:17594
 msgid "Edit Vector (global)"
 msgstr "Uredi vektor (globalno)"
 
-#: ../src/callbacks.cc:17573
+#: ../src/callbacks.cc:17596
 msgid "New Vector"
 msgstr "Nov vektor"
 
-#: ../src/callbacks.cc:17580
+#: ../src/callbacks.cc:17603
 msgid "Edit Matrix (global)"
 msgstr "Uredi matriko (globalno)"
 
-#: ../src/callbacks.cc:17582
+#: ../src/callbacks.cc:17605
 msgid "New Matrix"
 msgstr "Nova matrika"
 
-#: ../src/callbacks.cc:17903
+#: ../src/callbacks.cc:17929
 msgid "Vector Result"
 msgstr "Vektorski rezultat"
 
-#: ../src/callbacks.cc:17905
+#: ../src/callbacks.cc:17931
 msgid "Matrix Result"
 msgstr "Matrični rezultat"
 
-#: ../src/callbacks.cc:18067
+#: ../src/callbacks.cc:18093
 msgid "New Data Object"
 msgstr "Nov podatkovni objekt"
 
-#: ../src/callbacks.cc:18172
+#: ../src/callbacks.cc:18198
 msgid "text"
 msgstr "besedilo"
 
-#: ../src/callbacks.cc:18177 ../src/callbacks.cc:18185
+#: ../src/callbacks.cc:18203 ../src/callbacks.cc:18211
 msgid "approximate"
 msgstr "približno"
 
-#: ../src/callbacks.cc:18350
+#: ../src/callbacks.cc:18376
 msgid "Edit Data Set (global)"
 msgstr "Uredi podatkovni nabor (globalni)"
 
-#: ../src/callbacks.cc:18352
+#: ../src/callbacks.cc:18378
 msgid "New Data Set"
 msgstr "Nov podatkovni nabor"
 
-#: ../src/callbacks.cc:18470
+#: ../src/callbacks.cc:18496
 msgid "Property"
 msgstr "Lastnost"
 
-#: ../src/callbacks.cc:18537 ../src/callbacks.cc:18637
+#: ../src/callbacks.cc:18563 ../src/callbacks.cc:18663
 msgid "No file name entered."
 msgstr "Ime datoteke ni vnešeno."
 
-#: ../src/callbacks.cc:18582 ../src/callbacks.cc:18666
+#: ../src/callbacks.cc:18608 ../src/callbacks.cc:18692
 msgid "No delimiter selected."
 msgstr "Ločilnik ni izbran."
 
-#: ../src/callbacks.cc:18587
+#: ../src/callbacks.cc:18613
 #, c-format
 msgid ""
 "Could not import from file \n"
@@ -5146,15 +5158,15 @@ msgstr ""
 "Uvoz iz datoteke \n"
 "%s spodletel"
 
-#: ../src/callbacks.cc:18679
+#: ../src/callbacks.cc:18705
 msgid "No variable name entered."
 msgstr "Ime spremenljivke ni vnešeno."
 
-#: ../src/callbacks.cc:18691
+#: ../src/callbacks.cc:18717
 msgid "No known variable with entered name found."
 msgstr "Spremenljivke s takim imenom ne obstajajo."
 
-#: ../src/callbacks.cc:18698
+#: ../src/callbacks.cc:18724
 #, c-format
 msgid ""
 "Could not export to file \n"
@@ -5163,8 +5175,8 @@ msgstr ""
 "Izvoz v datoteko \n"
 "%s spodletel"
 
-#: ../src/callbacks.cc:18749 ../src/callbacks.cc:18768
-#: ../src/callbacks.cc:18777 ../src/callbacks.cc:36013
+#: ../src/callbacks.cc:18775 ../src/callbacks.cc:18794
+#: ../src/callbacks.cc:18803 ../src/callbacks.cc:36008
 msgid ""
 "A conflicting object with the same name exists. If you proceed and save "
 "changes, the conflicting object will be overwritten or deactivated."
@@ -5172,77 +5184,77 @@ msgstr ""
 "Nastal je spor z objetkom z istim imenom. Če nadaljujete in shranite "
 "spremembe, bo obstoječi objekt prepisan ali deaktiviran."
 
-#: ../src/callbacks.cc:19399
+#: ../src/callbacks.cc:19425
 msgid "Couldn't write definitions"
 msgstr "Pisanje definicij neuspešno"
 
-#: ../src/callbacks.cc:19488 ../src/callbacks.cc:20501
+#: ../src/callbacks.cc:19514 ../src/callbacks.cc:20529
 msgid "Preset"
 msgstr "Predloga"
 
-#: ../src/callbacks.cc:19732
+#: ../src/callbacks.cc:19758
 msgid "Clear History"
 msgstr "Počisti zgodovino"
 
-#: ../src/callbacks.cc:19736
+#: ../src/callbacks.cc:19762
 msgid "Abort"
 msgstr "Prekliči"
 
-#: ../src/callbacks.cc:19739
+#: ../src/callbacks.cc:19765
 msgid "Undo"
 msgstr "Razveljavi"
 
-#: ../src/callbacks.cc:19742
+#: ../src/callbacks.cc:19768
 msgid "Redo"
 msgstr "Uveljavi"
 
-#: ../src/callbacks.cc:19747
+#: ../src/callbacks.cc:19773
 msgid "Completion Mode"
 msgstr "Način dopolnjevanja"
 
-#: ../src/callbacks.cc:19760
+#: ../src/callbacks.cc:19786
 msgid "Limited strict completion"
 msgstr "Omejeno strogo dopolnjevanje"
 
-#: ../src/callbacks.cc:19761
+#: ../src/callbacks.cc:19787
 msgid "Strict completion"
 msgstr "Strogo dopolnjevanje"
 
-#: ../src/callbacks.cc:19762
+#: ../src/callbacks.cc:19788
 msgid "Limited full completion"
 msgstr "Omejeno polno dopolnjevanje"
 
-#: ../src/callbacks.cc:19763
+#: ../src/callbacks.cc:19789
 msgid "Full completion"
 msgstr "Polno dopolnjevanje"
 
-#: ../src/callbacks.cc:19764
+#: ../src/callbacks.cc:19790
 msgid "No completion"
 msgstr "Brez dopolnjevanja"
 
-#: ../src/callbacks.cc:19773
+#: ../src/callbacks.cc:19799
 #, fuzzy
 msgid "Delayed completion"
 msgstr "Polno dopolnjevanje"
 
-#: ../src/callbacks.cc:19775
+#: ../src/callbacks.cc:19801
 #, fuzzy
 msgid "Customize completion…"
 msgstr "Brez dopolnjevanja"
 
-#: ../src/callbacks.cc:20261
+#: ../src/callbacks.cc:20287
 msgid "Save Mode"
 msgstr "Shranjevalni način"
 
-#: ../src/callbacks.cc:20289
+#: ../src/callbacks.cc:20315
 msgid "Preset mode cannot be overwritten."
 msgstr "Predložen način ne more biti prepisan."
 
-#: ../src/callbacks.cc:20317
+#: ../src/callbacks.cc:20343
 msgid "Delete Mode"
 msgstr "Brisalni način"
 
-#: ../src/callbacks.cc:21718
+#: ../src/callbacks.cc:21748
 #, c-format
 msgid ""
 "Couldn't write preferences to\n"
@@ -5251,15 +5263,15 @@ msgstr ""
 "Pisanje nastavitev v\n"
 "%s neuspešno"
 
-#: ../src/callbacks.cc:23258 ../src/callbacks.cc:23271
+#: ../src/callbacks.cc:23289 ../src/callbacks.cc:23302
 msgid "never"
 msgstr "nikoli"
 
-#: ../src/callbacks.cc:23259 ../src/callbacks.cc:23273
+#: ../src/callbacks.cc:23290 ../src/callbacks.cc:23304
 msgid "ask"
 msgstr "vprašaj"
 
-#: ../src/callbacks.cc:23267
+#: ../src/callbacks.cc:23298
 #, c-format
 msgid "%i day"
 msgid_plural "%i days"
@@ -5268,36 +5280,36 @@ msgstr[1] "%i dni"
 msgstr[2] "%i dnevi"
 msgstr[3] "%i dni"
 
-#: ../src/callbacks.cc:23409
+#: ../src/callbacks.cc:23440
 msgid "Please restart the program for the language change to take effect."
 msgstr ""
 
 #. Result was copied
-#: ../src/callbacks.cc:24662
+#: ../src/callbacks.cc:24701
 msgid "Copied"
 msgstr ""
 
-#: ../src/callbacks.cc:27006
+#: ../src/callbacks.cc:27049
 msgid "log10 function not found."
 msgstr "Funkcija log10 ni bila najdena."
 
-#: ../src/callbacks.cc:27908
+#: ../src/callbacks.cc:27951
 msgid "Search"
 msgstr "Iskanje"
 
-#: ../src/callbacks.cc:27908
+#: ../src/callbacks.cc:27951
 msgid "_Search"
 msgstr "I_skanje"
 
-#: ../src/callbacks.cc:27928 ../src/callbacks.cc:28184
+#: ../src/callbacks.cc:27971 ../src/callbacks.cc:28227
 msgid "Remove Bookmark"
 msgstr "Odstrani zaznamek"
 
-#: ../src/callbacks.cc:27982
+#: ../src/callbacks.cc:28025
 msgid "Add Bookmark"
 msgstr "Dodaj zaznamek"
 
-#: ../src/callbacks.cc:28008
+#: ../src/callbacks.cc:28051
 msgid ""
 "A bookmark with the selected name already exists.\n"
 "Do you want to overwrite it?"
@@ -5305,153 +5317,158 @@ msgstr ""
 "Zaznamek s tem imenom že obstaja.\n"
 "Ga želite prepisati?"
 
-#: ../src/callbacks.cc:28203
+#: ../src/callbacks.cc:28246
 msgid "No items found"
 msgstr "Ni najdenih elementov"
 
-#: ../src/callbacks.cc:28586 ../src/callbacks.cc:35608
+#: ../src/callbacks.cc:28629 ../src/callbacks.cc:35603
 msgid "Select date"
 msgstr "Izberi datum"
 
-#: ../src/callbacks.cc:29175
+#: ../src/callbacks.cc:29165
 msgid "Number bases"
 msgstr "Številske osnove"
 
-#: ../src/callbacks.cc:29205
+#: ../src/callbacks.cc:29174
+#, fuzzy
+msgid "Binary-coded decimal"
+msgstr "Min. decimalke"
+
+#: ../src/callbacks.cc:29196
 msgid "Rectangular form"
 msgstr "Pravokotna oblika"
 
-#: ../src/callbacks.cc:29206
+#: ../src/callbacks.cc:29197
 msgid "Exponential form"
 msgstr "Eksponentna oblika"
 
-#: ../src/callbacks.cc:29207
+#: ../src/callbacks.cc:29198
 msgid "Polar form"
 msgstr "Polarna oblika"
 
-#: ../src/callbacks.cc:29208
+#: ../src/callbacks.cc:29199
 msgid "Angle/phasor notation"
 msgstr "Kazalčna/fazorska notacija"
 
-#: ../src/callbacks.cc:29225
+#: ../src/callbacks.cc:29220
 msgid "Base units"
 msgstr "Osnovne enote"
 
-#: ../src/callbacks.cc:29226
+#: ../src/callbacks.cc:29221
 msgid "Optimal unit"
 msgstr "Najustreznejša enota"
 
-#: ../src/callbacks.cc:29227
+#: ../src/callbacks.cc:29222
 msgid "Optimal prefix"
 msgstr "Najustreznejša predpona"
 
-#: ../src/callbacks.cc:29463
+#: ../src/callbacks.cc:29458
 msgid "All functions"
 msgstr "Vse funkcije"
 
-#: ../src/callbacks.cc:29515
+#: ../src/callbacks.cc:29510
 msgid "All variables"
 msgstr "Vse spremenljivke"
 
-#: ../src/callbacks.cc:29826 ../src/callbacks.cc:29828
+#: ../src/callbacks.cc:29821 ../src/callbacks.cc:29823
 msgid "Select definitions file"
 msgstr "Izberite definicijsko datoteko"
 
-#: ../src/callbacks.cc:29826 ../src/callbacks.cc:29828
+#: ../src/callbacks.cc:29821 ../src/callbacks.cc:29823
 msgid "_Import"
 msgstr "_Uvozi"
 
-#: ../src/callbacks.cc:29832
+#: ../src/callbacks.cc:29827
 #, fuzzy
 msgid "XML Files"
 msgstr "Vse datoteke"
 
-#: ../src/callbacks.cc:29852
+#: ../src/callbacks.cc:29847
 #, c-format
 msgid "Could not copy %s to %s."
 msgstr "Kopiranje %s v %s ni mogoče."
 
-#: ../src/callbacks.cc:29860
+#: ../src/callbacks.cc:29855
 #, c-format
 msgid "Could not read %s."
 msgstr "Branje %s spodletelo."
 
-#: ../src/callbacks.cc:29868
+#: ../src/callbacks.cc:29863
 #, c-format
 msgid "Could not copy file to %s."
 msgstr "Kopiranje v %s ni mogoče."
 
-#: ../src/callbacks.cc:30508 ../src/callbacks.cc:30589
-#: ../src/callbacks.cc:30670 ../src/callbacks.cc:30718
-#: ../src/callbacks.cc:36348 ../src/callbacks.cc:36599
-#: ../src/callbacks.cc:36793
+#: ../src/callbacks.cc:30503 ../src/callbacks.cc:30584
+#: ../src/callbacks.cc:30665 ../src/callbacks.cc:30713
+#: ../src/callbacks.cc:36343 ../src/callbacks.cc:36594
+#: ../src/callbacks.cc:36788
 msgid "Unsupported base."
 msgstr "Nepodprta osnova."
 
-#: ../src/callbacks.cc:30917
+#: ../src/callbacks.cc:30912
 msgid "The selected Chinese year does not exist."
 msgstr "Izbrano kitajsko leto ne obstaja."
 
-#: ../src/callbacks.cc:30929
+#: ../src/callbacks.cc:30924
 msgid "Conversion to Gregorian calendar failed."
 msgstr "Pretvorba v gregorijanski koledar spodletela."
 
-#: ../src/callbacks.cc:30954
+#: ../src/callbacks.cc:30949
 #, c-format
 msgid "Calendar conversion failed for: %s."
 msgstr "Pretvorba koledarja spodletela: %s"
 
-#: ../src/callbacks.cc:30989
+#: ../src/callbacks.cc:30984
 #, fuzzy
 msgid "Gnuplot was not found."
 msgstr "Orodje curl ni bilo najdeno."
 
-#: ../src/callbacks.cc:30991
+#: ../src/callbacks.cc:30986
 #, c-format
 msgid ""
 "%s (%s) needs to be installed separately, and found in the executable search "
 "path, for plotting to work."
 msgstr ""
 
-#: ../src/callbacks.cc:31634 ../src/callbacks.cc:31636
+#: ../src/callbacks.cc:31629 ../src/callbacks.cc:31631
 msgid "Select file to save PNG image to"
 msgstr "Izberite datoteko za izvoz slike PNG"
 
-#: ../src/callbacks.cc:31641 ../src/callbacks.cc:37009
+#: ../src/callbacks.cc:31636 ../src/callbacks.cc:37004
 msgid "Allowed File Types"
 msgstr "Dovoljene datotečne vrste"
 
-#: ../src/callbacks.cc:31646 ../src/callbacks.cc:37020
+#: ../src/callbacks.cc:31641 ../src/callbacks.cc:37015
 msgid "All Files"
 msgstr "Vse datoteke"
 
 #. do not delete units that are used by other units
-#: ../src/callbacks.cc:32237
+#: ../src/callbacks.cc:32232
 msgid "Cannot delete unit as it is needed by other units."
 msgstr "Brisanje enote neuspešno, saj je potrebovana pri drugih enotah"
 
-#: ../src/callbacks.cc:32699 ../src/callbacks.cc:32930
+#: ../src/callbacks.cc:32694 ../src/callbacks.cc:32925
 msgid "none"
 msgstr "nič"
 
-#: ../src/callbacks.cc:33256 ../src/callbacks.cc:33257
-#: ../src/callbacks.cc:33258 ../src/callbacks.cc:33259
-#: ../src/callbacks.cc:33273
+#: ../src/callbacks.cc:33251 ../src/callbacks.cc:33252
+#: ../src/callbacks.cc:33253 ../src/callbacks.cc:33254
+#: ../src/callbacks.cc:33268
 msgid "result is too long"
 msgstr "rezultat je predolg"
 
-#: ../src/callbacks.cc:34122
+#: ../src/callbacks.cc:34117
 msgid "translator-credits"
 msgstr ""
 "Nejc Bertoncelj <nejc@bertoncelj.eu.org>\n"
 "bertronika <nejc@bertoncelj.eu.org>"
 
-#: ../src/callbacks.cc:34531 ../src/callbacks.cc:36336
-#: ../src/callbacks.cc:36587 ../src/callbacks.cc:36781
+#: ../src/callbacks.cc:34526 ../src/callbacks.cc:36331
+#: ../src/callbacks.cc:36582 ../src/callbacks.cc:36776
 msgid "Mode not found."
 msgstr "Način ni bil najden."
 
-#: ../src/callbacks.cc:35498
+#: ../src/callbacks.cc:35493
 msgid ""
 "Type a mathematical expression above, e.g. \"5 + 2 / 3\",\n"
 "and press the enter key."
@@ -5459,38 +5476,38 @@ msgstr ""
 "Zgoraj vpišite matematičen izraz, npr. \"5 + 2 / 3\",\n"
 "in pritisnite Enter."
 
-#: ../src/callbacks.cc:35519 ../src/callbacks.cc:35527
+#: ../src/callbacks.cc:35514 ../src/callbacks.cc:35522
 msgid "Elements (in horizontal order)"
 msgstr "Elementi (v vodoravnem zaporedju)"
 
-#: ../src/callbacks.cc:35541 ../src/callbacks.cc:35543
+#: ../src/callbacks.cc:35536 ../src/callbacks.cc:35538
 msgid "Select file to import"
 msgstr "Izberite datoteko za uvoz"
 
-#: ../src/callbacks.cc:35541 ../src/callbacks.cc:35543
-#: ../src/callbacks.cc:35579 ../src/callbacks.cc:35581
-#: ../src/callbacks.cc:35651 ../src/callbacks.cc:35653
+#: ../src/callbacks.cc:35536 ../src/callbacks.cc:35538
+#: ../src/callbacks.cc:35574 ../src/callbacks.cc:35576
+#: ../src/callbacks.cc:35646 ../src/callbacks.cc:35648
 msgid "_Open"
 msgstr "_Odpri"
 
-#: ../src/callbacks.cc:35579 ../src/callbacks.cc:35581
+#: ../src/callbacks.cc:35574 ../src/callbacks.cc:35576
 msgid "Select file to export to"
 msgstr "Izberite datoteko za izvoz"
 
-#: ../src/callbacks.cc:35651 ../src/callbacks.cc:35653
+#: ../src/callbacks.cc:35646 ../src/callbacks.cc:35648
 msgid "Select file"
 msgstr "Izberite datoteko"
 
-#: ../src/callbacks.cc:36010
+#: ../src/callbacks.cc:36005
 msgid "Illegal name"
 msgstr ""
 
-#: ../src/callbacks.cc:36226
+#: ../src/callbacks.cc:36221
 msgid "Set key combination"
 msgstr "Nastavi zaporedje tipk"
 
 #. Make the line reasonably long, but not to short (at least around 40 characters)
-#: ../src/callbacks.cc:36230
+#: ../src/callbacks.cc:36225
 msgid ""
 "Press the key combination you wish to use for the action\n"
 "(press Escape to cancel)."
@@ -5498,37 +5515,37 @@ msgstr ""
 "Pritisnite zaporedje tipk, ki ga želite uporabiti za to dejanje\n"
 "(pritisnite Esc za preklic)"
 
-#: ../src/callbacks.cc:36240
+#: ../src/callbacks.cc:36235
 msgid "No keys"
 msgstr "Ni tipk"
 
-#: ../src/callbacks.cc:36296 ../src/callbacks.cc:36547
-#: ../src/callbacks.cc:36740
+#: ../src/callbacks.cc:36291 ../src/callbacks.cc:36542
+#: ../src/callbacks.cc:36735
 msgid "Empty value."
 msgstr "Prazna vrednost."
 
-#: ../src/callbacks.cc:36305 ../src/callbacks.cc:36556
-#: ../src/callbacks.cc:36750
+#: ../src/callbacks.cc:36300 ../src/callbacks.cc:36551
+#: ../src/callbacks.cc:36745
 msgid "Function not found."
 msgstr "Funkcija ni bila najdena."
 
-#: ../src/callbacks.cc:36313 ../src/callbacks.cc:36564
-#: ../src/callbacks.cc:36758
+#: ../src/callbacks.cc:36308 ../src/callbacks.cc:36559
+#: ../src/callbacks.cc:36753
 msgid "Variable not found."
 msgstr "Spremenljivka ni bila najdena."
 
-#: ../src/callbacks.cc:36321 ../src/callbacks.cc:36572
-#: ../src/callbacks.cc:36766
+#: ../src/callbacks.cc:36316 ../src/callbacks.cc:36567
+#: ../src/callbacks.cc:36761
 msgid "Unit not found."
 msgstr "Enota ni bila najdena."
 
-#: ../src/callbacks.cc:36360 ../src/callbacks.cc:36611
-#: ../src/callbacks.cc:36805
+#: ../src/callbacks.cc:36355 ../src/callbacks.cc:36606
+#: ../src/callbacks.cc:36800
 #, fuzzy
 msgid "Unsupported value."
 msgstr "Nepodprta osnova."
 
-#: ../src/callbacks.cc:36388 ../src/callbacks.cc:36456
+#: ../src/callbacks.cc:36383 ../src/callbacks.cc:36451
 msgid ""
 "The key combination is already in use.\n"
 "Do you wish to replace the current action?"
@@ -5536,75 +5553,75 @@ msgstr ""
 "To zaporedje tipk je že v uporabi.\n"
 "Ali ga želite prepisati s tem dejanjem?"
 
-#: ../src/callbacks.cc:37002 ../src/callbacks.cc:37004
+#: ../src/callbacks.cc:36997 ../src/callbacks.cc:36999
 msgid "Select file to export"
 msgstr "Izberite datoteko za izvoz"
 
-#: ../src/callbacks.cc:37133 ../src/callbacks.cc:37216
+#: ../src/callbacks.cc:37128 ../src/callbacks.cc:37211
 msgid "Empty expression."
 msgstr "Prazen izraz."
 
-#: ../src/callbacks.cc:37147 ../src/callbacks.cc:37230
+#: ../src/callbacks.cc:37142 ../src/callbacks.cc:37225
 msgid "Empty x variable."
 msgstr "Prazna spremenljivka x."
 
-#: ../src/callbacks.cc:37463
+#: ../src/callbacks.cc:37458
 msgid "Element Data"
 msgstr "Podatki o elementu"
 
-#: ../src/callbacks.cc:37501
+#: ../src/callbacks.cc:37496
 msgid "Classification"
 msgstr "Klasifikacija"
 
-#: ../src/callbacks.cc:37506
+#: ../src/callbacks.cc:37501
 msgid "Alkali Metal"
 msgstr "Alkalijska kovina"
 
-#: ../src/callbacks.cc:37507
+#: ../src/callbacks.cc:37502
 msgid "Alkaline-Earth Metal"
 msgstr "Zemljoalkalijska kovina"
 
-#: ../src/callbacks.cc:37508
+#: ../src/callbacks.cc:37503
 msgid "Lanthanide"
 msgstr "Lantanoid"
 
-#: ../src/callbacks.cc:37509
+#: ../src/callbacks.cc:37504
 msgid "Actinide"
 msgstr "Aktinoid"
 
-#: ../src/callbacks.cc:37510
+#: ../src/callbacks.cc:37505
 msgid "Transition Metal"
 msgstr "Prehodni element"
 
-#: ../src/callbacks.cc:37511
+#: ../src/callbacks.cc:37506
 msgid "Metal"
 msgstr "Kovina"
 
-#: ../src/callbacks.cc:37512
+#: ../src/callbacks.cc:37507
 msgid "Metalloid"
 msgstr "Polkovina"
 
-#: ../src/callbacks.cc:37513
+#: ../src/callbacks.cc:37508
 msgid "Polyatomic Non-Metal"
 msgstr "Poliatomske nekovine"
 
-#: ../src/callbacks.cc:37514
+#: ../src/callbacks.cc:37509
 msgid "Diatomic Non-Metal"
 msgstr "Dvoatomske nekovine"
 
-#: ../src/callbacks.cc:37515
+#: ../src/callbacks.cc:37510
 msgid "Noble Gas"
 msgstr "Žlahtni plin"
 
-#: ../src/callbacks.cc:37516
+#: ../src/callbacks.cc:37511
 msgid "Unknown chemical properties"
 msgstr "Neznane kemijske lastnosti"
 
-#: ../src/callbacks.cc:37641
+#: ../src/callbacks.cc:37636
 msgid "No unknowns in result."
 msgstr "V rezultatu ni neznank."
 
-#: ../src/callbacks.cc:37647
+#: ../src/callbacks.cc:37642
 msgid "Set Unknowns"
 msgstr "Nastavi neznanke"
 

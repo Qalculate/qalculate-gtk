@@ -148,7 +148,7 @@
                         <signal name="cursor-changed" handler="on_tMatrixEdit_cursor_changed" swapped="no"/>
                         <signal name="key-press-event" handler="on_tMatrixEdit_key_press_event" swapped="no"/>
                         <child internal-child="selection">
-                          <object class="GtkTreeSelection"/>
+                          <object class="GtkTreeSelection" id="matrix_edit_view_selection"/>
                         </child>
                       </object>
                     </child>

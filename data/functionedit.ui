@@ -221,7 +221,7 @@
                 </child>
                 <child>
                   <object class="GtkScrolledWindow" id="function_edit_scrolled_subfunctions">
-                    <property name="height-request">125</property>
+                    <property name="height-request">100</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="hexpand">True</property>
@@ -232,7 +232,7 @@
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <child internal-child="selection">
-                          <object class="GtkTreeSelection"/>
+                          <object class="GtkTreeSelection" id="function_edit_treeview_subfunctions_selection"/>
                         </child>
                       </object>
                     </child>
@@ -323,7 +323,7 @@
                 </child>
                 <child>
                   <object class="GtkScrolledWindow" id="function_edit_scrolled_arguments">
-                    <property name="height-request">125</property>
+                    <property name="height-request">100</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="hexpand">True</property>
@@ -335,7 +335,7 @@
                         <property name="can-focus">True</property>
                         <signal name="row-activated" handler="on_function_edit_treeview_arguments_row_activated" swapped="no"/>
                         <child internal-child="selection">
-                          <object class="GtkTreeSelection"/>
+                          <object class="GtkTreeSelection" id="function_edit_treeview_arguments_selection"/>
                         </child>
                       </object>
                     </child>

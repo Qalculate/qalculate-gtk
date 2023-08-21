@@ -187,6 +187,7 @@ bool show_keypad, show_history, show_stack, show_convert, continuous_conversion,
 bool copy_ascii = false;
 bool copy_ascii_without_units = false;
 bool caret_as_xor = false;
+int close_with_esc = -1;
 extern bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message;
 extern int allow_multiple_instances;
 int b_decimal_comma;
@@ -791,7 +792,7 @@ bool title_matches(ExpressionItem *item, const string &str, size_t minlength = 0
 		if(str[0] == 'a' || str[0] == 'x' || str[0] == 'y' || str[0] == 'X' || str[0] == 'Y') return false;
 		big_A = (str[0] == 'A');
 	}
-	const string &title = item->title(true);
+	const string &title = item->title(false);
 	size_t i = 0;
 	while(true) {
 		while(true) {
@@ -4634,7 +4635,7 @@ void generate_units_tree_struct() {
 			b = false;
 			for(size_t i3 = 0; i3 < ia_units.size(); i3++) {
 				u = (Unit*) ia_units[i3];
-				if(string_is_less(CALCULATOR->units[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext), u->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext))) {
+				if(string_is_less(CALCULATOR->units[i]->title(true, printops.use_unicode_signs), u->title(true, printops.use_unicode_signs))) {
 					b = true;
 					ia_units.insert(ia_units.begin() + i3, (void*) CALCULATOR->units[i]);
 					break;
@@ -4646,7 +4647,7 @@ void generate_units_tree_struct() {
 				b = false;
 				for(size_t i3 = 0; i3 < user_units.size(); i3++) {
 					u = user_units[i3];
-					if(string_is_less(CALCULATOR->units[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext), u->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext))) {
+					if(string_is_less(CALCULATOR->units[i]->title(true, printops.use_unicode_signs), u->title(true, printops.use_unicode_signs))) {
 						b = true;
 						user_units.insert(user_units.begin() + i3, CALCULATOR->units[i]);
 						break;
@@ -4692,7 +4693,7 @@ void generate_units_tree_struct() {
 			b = false;
 			for(size_t i3 = 0; i3 < item->objects.size(); i3++) {
 				u = (Unit*) item->objects[i3];
-				if(string_is_less(CALCULATOR->units[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext), u->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext))) {
+				if(string_is_less(CALCULATOR->units[i]->title(true, printops.use_unicode_signs), u->title(true, printops.use_unicode_signs))) {
 					b = true;
 					item->objects.insert(item->objects.begin() + i3, (void*) CALCULATOR->units[i]);
 					break;
@@ -4733,7 +4734,7 @@ void generate_variables_tree_struct() {
 			b = false;
 			for(size_t i3 = 0; i3 < ia_variables.size(); i3++) {
 				v = (Variable*) ia_variables[i3];
-				if(string_is_less(CALCULATOR->variables[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext), v->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext))) {
+				if(string_is_less(CALCULATOR->variables[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function), v->title(true, printops.use_unicode_signs))) {
 					b = true;
 					ia_variables.insert(ia_variables.begin() + i3, (void*) CALCULATOR->variables[i]);
 					break;
@@ -4745,7 +4746,7 @@ void generate_variables_tree_struct() {
 				b = false;
 				for(size_t i3 = 0; i3 < user_variables.size(); i3++) {
 					v = user_variables[i3];
-					if(string_is_less(CALCULATOR->variables[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext), v->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext))) {
+					if(string_is_less(CALCULATOR->variables[i]->title(true, printops.use_unicode_signs), v->title(true, printops.use_unicode_signs))) {
 						b = true;
 						user_variables.insert(user_variables.begin() + i3, CALCULATOR->variables[i]);
 						break;
@@ -4791,7 +4792,7 @@ void generate_variables_tree_struct() {
 			b = false;
 			for(size_t i3 = 0; i3 < item->objects.size(); i3++) {
 				v = (Variable*) item->objects[i3];
-				if(string_is_less(CALCULATOR->variables[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext), v->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext))) {
+				if(string_is_less(CALCULATOR->variables[i]->title(true, printops.use_unicode_signs), v->title(true, printops.use_unicode_signs))) {
 					b = true;
 					item->objects.insert(item->objects.begin() + i3, (void*) CALCULATOR->variables[i]);
 					break;
@@ -4823,7 +4824,7 @@ void generate_functions_tree_struct() {
 			b = false;
 			for(size_t i3 = 0; i3 < ia_functions.size(); i3++) {
 				f = (MathFunction*) ia_functions[i3];
-				if(string_is_less(CALCULATOR->functions[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext), f->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext))) {
+				if(string_is_less(CALCULATOR->functions[i]->title(true, printops.use_unicode_signs), f->title(true, printops.use_unicode_signs))) {
 					b = true;
 					ia_functions.insert(ia_functions.begin() + i3, (void*) CALCULATOR->functions[i]);
 					break;
@@ -4835,7 +4836,7 @@ void generate_functions_tree_struct() {
 				b = false;
 				for(size_t i3 = 0; i3 < user_functions.size(); i3++) {
 					f = user_functions[i3];
-					if(string_is_less(CALCULATOR->functions[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext), f->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext))) {
+					if(string_is_less(CALCULATOR->functions[i]->title(true, printops.use_unicode_signs), f->title(true, printops.use_unicode_signs))) {
 						b = true;
 						user_functions.insert(user_functions.begin() + i3, CALCULATOR->functions[i]);
 						break;
@@ -4881,7 +4882,7 @@ void generate_functions_tree_struct() {
 			b = false;
 			for(size_t i3 = 0; i3 < item->objects.size(); i3++) {
 				f = (MathFunction*) item->objects[i3];
-				if(string_is_less(CALCULATOR->functions[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext), f->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext))) {
+				if(string_is_less(CALCULATOR->functions[i]->title(true, printops.use_unicode_signs), f->title(true, printops.use_unicode_signs))) {
 					b = true;
 					item->objects.insert(item->objects.begin() + i3, (void*) CALCULATOR->functions[i]);
 					break;
@@ -4984,7 +4985,7 @@ void update_functions_tree() {
 
 void setFunctionTreeItem(GtkTreeIter &iter2, MathFunction *f) {
 	gtk_list_store_append(tFunctions_store, &iter2);
-	gtk_list_store_set(tFunctions_store, &iter2, 0, f->title(true).c_str(), 1, (gpointer) f, 2, TRUE, -1);
+	gtk_list_store_set(tFunctions_store, &iter2, 0, f->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) tFunctions).c_str(), 1, (gpointer) f, 2, TRUE, -1);
 	GtkTreeIter iter;
 	if(f == selected_function && gtk_tree_model_filter_convert_child_iter_to_iter(GTK_TREE_MODEL_FILTER(tFunctions_store_filter), &iter, &iter2)) {
 		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctions)), &iter);
@@ -5123,7 +5124,7 @@ void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 			str += "\n";
 			if(f->subtype() == SUBTYPE_DATA_SET) {
 				str += "\n";
-				gchar *gstr = g_strdup_printf(_("Retrieves data from the %s data set for a given object and property. If \"info\" is typed as property, a dialog window will pop up with all properties of the object."), f->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext).c_str());
+				gchar *gstr = g_strdup_printf(_("Retrieves data from the %s data set for a given object and property. If \"info\" is typed as property, a dialog window will pop up with all properties of the object."), f->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) gtk_builder_get_object(functions_builder, "functions_textview_description")).c_str());
 				str += gstr;
 				g_free(gstr);
 				str += "\n";
@@ -5363,7 +5364,7 @@ void update_variables_tree() {
 
 void setVariableTreeItem(GtkTreeIter &iter2, Variable *v) {
 	gtk_list_store_append(tVariables_store, &iter2);
-	gtk_list_store_set(tVariables_store, &iter2, 0, v->title(true).c_str(), 1, (gpointer) v, 2, TRUE, -1);
+	gtk_list_store_set(tVariables_store, &iter2, 0, v->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) tVariables).c_str(), 1, (gpointer) v, 2, TRUE, -1);
 	GtkTreeIter iter;
 	if(v == selected_variable && gtk_tree_model_filter_convert_child_iter_to_iter(GTK_TREE_MODEL_FILTER(tVariables_store_filter), &iter, &iter2)) {
 		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariables)), &iter);
@@ -5644,7 +5645,7 @@ void update_units_tree() {
 void setUnitTreeItem(GtkTreeIter &iter2, Unit *u) {
 	gtk_list_store_append(tUnits_store, &iter2);
 	//display descriptive name (title), or name if no title defined
-	gtk_list_store_set(tUnits_store, &iter2, UNITS_TITLE_COLUMN, u->title(true).c_str(), UNITS_POINTER_COLUMN, (gpointer) u, UNITS_VISIBLE_COLUMN, TRUE, UNITS_VISIBLE_COLUMN_CONVERT, TRUE, -1);
+	gtk_list_store_set(tUnits_store, &iter2, UNITS_TITLE_COLUMN, u->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) tUnits).c_str(), UNITS_POINTER_COLUMN, (gpointer) u, UNITS_VISIBLE_COLUMN, TRUE, UNITS_VISIBLE_COLUMN_CONVERT, TRUE, -1);
 	if(u->isCurrency()) {
 		unordered_map<string, cairo_surface_t*>::const_iterator it_flag = flag_surfaces.find(u->referenceName());
 		if(it_flag != flag_surfaces.end()) {
@@ -5694,7 +5695,7 @@ void on_tUnitCategories_selection_changed(GtkTreeSelection *treeselection, gpoin
 			no_cat = true;
 		} else if(selected_unit_category == _("Inactive")) {
 			b_inactive = true;
-		} else if(selected_variable_category == _("User units")) {
+		} else if(selected_unit_category == _("User units")) {
 			b_user = true;
 		}
 		if(!b_user && !b_all && !no_cat && !b_inactive && selected_unit_category[0] == '/') {
@@ -6031,9 +6032,7 @@ void on_units_convert_search_changed(GtkEntry *w, gpointer) {
 		Unit *u = NULL;
 		if(!b) gtk_tree_model_get(GTK_TREE_MODEL(tUnits_store), &iter, UNITS_POINTER_COLUMN, &u, -1);
 		if(u) {
-			b = name_matches(u, str);
-			if(!b) b = title_matches(u, str);
-			if(!b) b = country_matches(u, str);
+			b = name_matches(u, str) || title_matches(u, str) || country_matches(u, str);
 		}
 		gtk_list_store_set(tUnits_store, &iter, UNITS_VISIBLE_COLUMN_CONVERT, b, -1);
 	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tUnits_store), &iter));
@@ -6059,9 +6058,7 @@ void on_convert_entry_search_changed(GtkEntry *w, gpointer) {
 		Unit *u = NULL;
 		if(!b) gtk_tree_model_get(GTK_TREE_MODEL(tUnitSelector_store), &iter, 1, &u, -1);
 		if(u) {
-			b = name_matches(u, str);
-			if(!b) b = title_matches(u, str);
-			if(!b) b = country_matches(u, str);
+			b = name_matches(u, str) || title_matches(u, str) || country_matches(u, str);
 		}
 		gtk_list_store_set(tUnitSelector_store, &iter, 3, b, -1);
 	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tUnitSelector_store), &iter));
@@ -6088,9 +6085,9 @@ void setUnitSelectorTreeItem(GtkTreeIter &iter2, Unit *u) {
 	string snames, sbase;
 	if(u->isCurrency()) {
 		unordered_map<string, cairo_surface_t*>::const_iterator it_flag = flag_surfaces.find(u->referenceName());
-		gtk_list_store_set(tUnitSelector_store, &iter2, 0, u->title(true).c_str(), 1, (gpointer) u, 2, it_flag == flag_surfaces.end() ? NULL : it_flag->second, 3, TRUE, -1);
+		gtk_list_store_set(tUnitSelector_store, &iter2, 0, u->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) tUnitSelector).c_str(), 1, (gpointer) u, 2, it_flag == flag_surfaces.end() ? NULL : it_flag->second, 3, TRUE, -1);
 	} else {
-		gtk_list_store_set(tUnitSelector_store, &iter2, 0, u->title(true).c_str(), 1, (gpointer) u, 3, TRUE, -1);
+		gtk_list_store_set(tUnitSelector_store, &iter2, 0, u->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) tUnitSelector).c_str(), 1, (gpointer) u, 3, TRUE, -1);
 	}
 }
 
@@ -7173,8 +7170,8 @@ void create_umenu() {
 				u = (Unit*) titem->objects[i];
 				if(!is_currencies && u->isCurrency()) is_currencies = true;
 				if(u->isActive() && !u->isHidden()) {
-					if(is_currencies) {MENU_ITEM_WITH_POINTER_AND_FLAG(u->title(true).c_str(), insert_unit, u)}
-					else {MENU_ITEM_WITH_POINTER(u->title(true).c_str(), insert_unit, u)}
+					if(is_currencies) {MENU_ITEM_WITH_OBJECT_AND_FLAG(u, insert_unit)}
+					else {MENU_ITEM_WITH_OBJECT(u, insert_unit)}
 				}
 			}
 			if(is_currencies) {
@@ -7182,7 +7179,7 @@ void create_umenu() {
 				for(size_t i = 0; i < titem->objects.size(); i++) {
 					u = (Unit*) titem->objects[i];
 					if(u->isActive() && u->isHidden()) {
-						MENU_ITEM_WITH_POINTER_AND_FLAG(u->title(true).c_str(), insert_unit, u)
+						MENU_ITEM_WITH_OBJECT_AND_FLAG(u, insert_unit)
 					}
 				}
 			}
@@ -7205,13 +7202,13 @@ void create_umenu() {
 	for(size_t i = 0; i < unit_cats.objects.size(); i++) {
 		u = (Unit*) unit_cats.objects[i];
 		if(u->isActive() && !u->isHidden() && !u->isLocal()) {
-			MENU_ITEM_WITH_POINTER(u->title(true).c_str(), insert_unit, u)
+			MENU_ITEM_WITH_OBJECT(u, insert_unit)
 		}
 	}
 	if(!user_units.empty()) {
 		SUBMENU_ITEM_PREPEND(_("User units"), sub)
 		for(size_t i = 0; i < user_units.size(); i++) {
-			MENU_ITEM_WITH_POINTER(user_units[i]->title(true).c_str(), insert_unit, user_units[i]);
+			MENU_ITEM_WITH_OBJECT(user_units[i], insert_unit);
 		}
 	}
 
@@ -7267,8 +7264,8 @@ void create_umenu2() {
 				u = (Unit*) titem->objects[i];
 				if(!is_currencies && u->isCurrency()) is_currencies = true;
 				if(u->isActive() && !u->isHidden()) {
-					if(is_currencies) {MENU_ITEM_WITH_POINTER_AND_FLAG(u->title(true).c_str(), convert_to_unit, u)}
-					else {MENU_ITEM_WITH_POINTER(u->title(true).c_str(), convert_to_unit, u)}
+					if(is_currencies) {MENU_ITEM_WITH_OBJECT_AND_FLAG(u, convert_to_unit)}
+					else {MENU_ITEM_WITH_OBJECT(u, convert_to_unit)}
 				}
 			}
 			if(is_currencies) {
@@ -7276,7 +7273,7 @@ void create_umenu2() {
 				for(size_t i = 0; i < titem->objects.size(); i++) {
 					u = (Unit*) titem->objects[i];
 					if(u->isActive() && u->isHidden()) {
-						MENU_ITEM_WITH_POINTER_AND_FLAG(u->title(true).c_str(), convert_to_unit, u)
+						MENU_ITEM_WITH_OBJECT_AND_FLAG(u, convert_to_unit)
 					}
 				}
 			}
@@ -7299,13 +7296,13 @@ void create_umenu2() {
 	for(size_t i = 0; i < unit_cats.objects.size(); i++) {
 		u = (Unit*) unit_cats.objects[i];
 		if(u->isActive() && !u->isHidden() && !u->isLocal()) {
-			MENU_ITEM_WITH_POINTER(u->title(true).c_str(), convert_to_unit, u)
+			MENU_ITEM_WITH_OBJECT(u, convert_to_unit)
 		}
 	}
 	if(!user_units.empty()) {
 		SUBMENU_ITEM_PREPEND(_("User units"), sub)
 		for(size_t i = 0; i < user_units.size(); i++) {
-			MENU_ITEM_WITH_POINTER(user_units[i]->title(true).c_str(), insert_unit, user_units[i]);
+			MENU_ITEM_WITH_OBJECT(user_units[i], insert_unit);
 		}
 	}
 }
@@ -7330,10 +7327,10 @@ void add_custom_angles_to_menus() {
 				unordered_map<Unit*, GtkWidget*>::iterator it = angle_unit_items.find(u);
 				if(it != angle_unit_items.end()) {
 					item = it->second;
-					gtk_menu_item_set_label(GTK_MENU_ITEM(item), u->title(true).c_str());
+					gtk_menu_item_set_label(GTK_MENU_ITEM(item), u->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) sub).c_str());
 					angle_unit_item_exists[u] = true;
 				} else {
-					item = gtk_radio_menu_item_new_with_label(group, u->title(true).c_str());
+					item = gtk_radio_menu_item_new_with_label(group, u->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) sub).c_str());
 					angle_unit_items[u] = item;
 					g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(on_menu_item_custom_angle_unit_activate), (gpointer) u);
 					gtk_menu_shell_insert(GTK_MENU_SHELL(sub), item, n);
@@ -7423,7 +7420,7 @@ void create_vmenu() {
 			for(size_t i = 0; i < titem->objects.size(); i++) {
 				v = (Variable*) titem->objects[i];
 				if(v->isActive() && !v->isHidden()) {
-					MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_variable, v);
+					MENU_ITEM_WITH_OBJECT(v, insert_variable);
 				}
 			}
 		} else {
@@ -7446,14 +7443,14 @@ void create_vmenu() {
 	for(size_t i = 0; i < variable_cats.objects.size(); i++) {
 		v = (Variable*) variable_cats.objects[i];
 		if(v->isActive() && !v->isHidden() && !v->isLocal()) {
-			MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_variable, v);
+			MENU_ITEM_WITH_OBJECT(v, insert_variable);
 		}
 	}
 
 	if(!user_variables.empty()) {
 		SUBMENU_ITEM_PREPEND(_("User variables"), sub)
 		for(size_t i = 0; i < user_variables.size(); i++) {
-			MENU_ITEM_WITH_POINTER(user_variables[i]->title(true).c_str(), insert_variable, user_variables[i]);
+			MENU_ITEM_WITH_OBJECT(user_variables[i], insert_variable);
 		}
 	}
 
@@ -7586,7 +7583,7 @@ void create_fmenu() {
 			for(size_t i = 0; i < titem->objects.size(); i++) {
 				f = (MathFunction*) titem->objects[i];
 				if(f->isActive() && !f->isHidden()) {
-					MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_function, f)
+					MENU_ITEM_WITH_OBJECT(f, insert_function)
 				}
 			}
 			menus.push(sub);
@@ -7610,13 +7607,13 @@ void create_fmenu() {
 	for(size_t i = 0; i < function_cats.objects.size(); i++) {
 		f = (MathFunction*) function_cats.objects[i];
 		if(f->isActive() && !f->isHidden() && !f->isLocal()) {
-			MENU_ITEM_WITH_POINTER(f->title(true).c_str(), insert_function, f)
+			MENU_ITEM_WITH_OBJECT(f, insert_function)
 		}
 	}
 	if(!user_functions.empty()) {
 		SUBMENU_ITEM_PREPEND(_("User functions"), sub)
 		for(size_t i = 0; i < user_functions.size(); i++) {
-			MENU_ITEM_WITH_POINTER(user_functions[i]->title(true).c_str(), insert_function, user_functions[i]);
+			MENU_ITEM_WITH_OBJECT(user_functions[i], insert_function);
 		}
 	}
 }
@@ -7707,7 +7704,7 @@ void update_completion() {
 				}
 			}
 			ellipsize_completion_names(str);
-			gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, CALCULATOR->functions[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext).c_str(), 2, CALCULATOR->functions[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
+			gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, CALCULATOR->functions[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) completion_view).c_str(), 2, CALCULATOR->functions[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
 		}
 	}
 	for(size_t i = 0; i < CALCULATOR->variables.size(); i++) {
@@ -7861,7 +7858,7 @@ void update_completion() {
 					ellipsize_completion_names(str);
 				}
 				unordered_map<string, cairo_surface_t*>::const_iterator it_flag = flag_surfaces.end();
-				title = u->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
+				title = u->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) completion_view);
 				if(u->isCurrency()) {
 					it_flag = flag_surfaces.find(u->referenceName());
 				} else if(u->isSIUnit() && !u->category().empty() && title[title.length() - 1] != ')') {
@@ -7902,7 +7899,7 @@ void update_completion() {
 				size_t i_slash = string::npos;
 				if(cu->category().length() > 1) i_slash = cu->category().rfind("/", cu->category().length() - 2);
 				if(i_slash != string::npos) i_slash++;
-				title = cu->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext);
+				title = cu->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) completion_view);
 				if(cu->isSIUnit() && !cu->category().empty()) {
 					if(title.length() + cu->category().length() - (i_slash == string::npos ? 0 : i_slash) < 35 && title[title.length() - 1] != ')') {
 						title += " (";
@@ -8446,9 +8443,17 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					}
 				}
 				if(exp.empty() && !po.lower_case_e && ((use_e_notation && po.base == BASE_DECIMAL) || BASE_IS_SEXAGESIMAL(po.base) || po.base == BASE_TIME)) {
-					string estr;
-					TTP_SMALL(estr, "E");
-					gsub("E", estr, value_str);
+					size_t i = 0;
+					while(true) {
+						i = value_str.find("E", i + 1);
+						if(i == string::npos || i == value_str.length() - 1) break;
+						if(value_str[i - 1] >= '0' && value_str[i - 1] <= '9' && value_str[i + 1] >= '0' && value_str[i + 1] <= '9') {
+							string estr;
+							TTP_SMALL(estr, "E");
+							value_str.replace(i, 1, estr);
+							i += estr.length();
+						}
+					}
 				}
 				string value_str_bak, str_bak;
 				vector<gint> pos_x;
@@ -8461,7 +8466,6 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, po.can_display_unicode_string_arg))) {
 							PANGO_TT(layout_equals, SIGN_ALMOST_EQUAL);
 						} else {
-
 							string str;
 							TTB(str);
 							str += "= ";
@@ -12335,7 +12339,7 @@ void CommandThread::run() {
 		int command_type = 0;
 		if(!read(&command_type)) break;
 		void *x = NULL;
-		if(!read(&x)) break;
+		if(!read(&x) || !x) break;
 		CALCULATOR->startControl();
 		switch(command_type) {
 			case COMMAND_FACTORIZE: {
@@ -15208,7 +15212,7 @@ void recreate_recent_functions() {
 				MENU_SEPARATOR_PREPEND
 				b = true;
 			}
-			item = gtk_menu_item_new_with_label(recent_functions[i]->title(true).c_str());
+			item = gtk_menu_item_new_with_label(recent_functions[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) sub).c_str());
 			recent_function_items.push_back(item);
 			gtk_widget_show(item);
 			gtk_menu_shell_prepend(GTK_MENU_SHELL(sub), item);
@@ -15231,7 +15235,7 @@ void recreate_recent_variables() {
 				MENU_SEPARATOR_PREPEND
 				b = true;
 			}
-			item = gtk_menu_item_new_with_label(recent_variables[i]->title(true).c_str());
+			item = gtk_menu_item_new_with_label(recent_variables[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) sub).c_str());
 			recent_variable_items.push_back(item);
 			gtk_widget_show(item);
 			gtk_menu_shell_prepend(GTK_MENU_SHELL(sub), item);
@@ -15254,7 +15258,7 @@ void recreate_recent_units() {
 				MENU_SEPARATOR_PREPEND
 				b = true;
 			}
-			item = gtk_menu_item_new_with_label(recent_units[i]->title(true).c_str());
+			item = gtk_menu_item_new_with_label(recent_units[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) sub).c_str());
 			recent_unit_items.push_back(item);
 			gtk_widget_show(item);
 			gtk_menu_shell_prepend(GTK_MENU_SHELL(sub), item);
@@ -15286,7 +15290,7 @@ void function_inserted(MathFunction *object) {
 		gtk_widget_destroy(recent_function_items[0]);
 		recent_function_items.erase(recent_function_items.begin());
 	}
-	item = gtk_menu_item_new_with_label(object->title(true).c_str());
+	item = gtk_menu_item_new_with_label(object->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) sub).c_str());
 	recent_function_items.push_back(item);
 	recent_functions.push_back(object);
 	gtk_widget_show(item);
@@ -15316,7 +15320,7 @@ void variable_inserted(Variable *object) {
 		gtk_widget_destroy(recent_variable_items[0]);
 		recent_variable_items.erase(recent_variable_items.begin());
 	}
-	item = gtk_menu_item_new_with_label(object->title(true).c_str());
+	item = gtk_menu_item_new_with_label(object->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) sub).c_str());
 	recent_variable_items.push_back(item);
 	recent_variables.push_back(object);
 	gtk_widget_show(item);
@@ -15346,7 +15350,7 @@ void unit_inserted(Unit *object) {
 		gtk_widget_destroy(recent_unit_items[0]);
 		recent_unit_items.erase(recent_unit_items.begin());
 	}
-	item = gtk_menu_item_new_with_label(object->title(true).c_str());
+	item = gtk_menu_item_new_with_label(object->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) sub).c_str());
 	recent_unit_items.push_back(item);
 	recent_units.push_back(object);
 	gtk_widget_show(item);
@@ -15683,8 +15687,8 @@ void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu
 	fd->rpn = rpn_mode && expression_is_empty() && CALCULATOR->RPNStackSize() >= (f->minargs() <= 0 ? 1 : (size_t) f->minargs());
 	fd->add_to_menu = add_to_menu;
 
-	string f_title = f->title(true);
 	fd->dialog = gtk_dialog_new();
+	string f_title = f->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) fd->dialog);
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(fd->dialog), always_on_top);
 	gtk_window_set_title(GTK_WINDOW(fd->dialog), f_title.c_str());
 	gtk_window_set_transient_for(GTK_WINDOW(fd->dialog), GTK_WINDOW(parent));
@@ -16178,7 +16182,7 @@ void insert_button_unit(GtkMenuItem*, gpointer user_data) {
 			si_label_str = latest_button_unit->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).formattedName(TYPE_UNIT, true, true);
 		}
 		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_si")), si_label_str.c_str());
-		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_si")), latest_button_unit->title(true).c_str());
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_si")), latest_button_unit->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) mainwindow).c_str());
 		if(enable_tooltips != 1) gtk_widget_set_has_tooltip(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_si")), FALSE);
 	}
 }
@@ -16205,7 +16209,7 @@ void insert_button_currency(GtkMenuItem*, gpointer user_data) {
 			currency_label_str = latest_button_currency->preferredDisplayName(true, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).formattedName(TYPE_UNIT, true, true);
 		}
 		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_euro")), currency_label_str.c_str());
-		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_euro")), latest_button_currency->title(true).c_str());
+		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_euro")), latest_button_currency->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) mainwindow).c_str());
 		if(enable_tooltips != 1) gtk_widget_set_has_tooltip(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_euro")), FALSE);
 	}
 }
@@ -16246,8 +16250,8 @@ void set_edited_names(ExpressionItem *item, string str) {
 				ename.avoid_input = avoid_input; ename.case_sensitive = case_sensitive;
 				ename.completion_only = completion_only;
 				ename.unicode = false;
-				for(size_t i = 0; i < str.length(); i++) {
-					if((unsigned char) str[i] >= 0xC0) {
+				for(size_t i2 = 0; i2 < str.length(); i2++) {
+					if((unsigned char) str[i2] >= 0xC0) {
 						ename.unicode = TRUE;
 						break;
 					}
@@ -16688,7 +16692,7 @@ Argument *edit_argument(Argument *arg) {
 			gtk_adjustment_set_lower(GTK_ADJUSTMENT(gtk_builder_get_object(argumentrules_builder, "adjustment_min")), INT_MIN);
 			gtk_adjustment_set_upper(GTK_ADJUSTMENT(gtk_builder_get_object(argumentrules_builder, "adjustment_min")), INT_MAX);
 			if(farg->min()) {
-				gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_spinbutton_max")), farg->min()->floatValue());
+				gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_spinbutton_min")), farg->min()->floatValue());
 			} else {
 				gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_spinbutton_min")), 0);
 			}
@@ -16911,7 +16915,7 @@ void edit_function(const char *category = "", MathFunction *f = NULL, GtkWidget 
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_entry_condition")), !f || !f->isBuiltin());
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")), !f || !f->isBuiltin());
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_textview_expression")), !f || !f->isBuiltin());
-	gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(functionedit_builder, "function_edit_combo_category")))), category ? category : NULL);
+	gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(functionedit_builder, "function_edit_combo_category")))), category ? category : "");
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_desc")), "");
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_example")), "");
 	gtk_text_buffer_set_text(description_buffer, "", -1);
@@ -17074,6 +17078,15 @@ run_function_edit_dialog:
 	} else if(response == GTK_RESPONSE_HELP) {
 		show_help("qalculate-functions.html#qalculate-function-creation", gtk_builder_get_object(functionedit_builder, "function_edit_dialog"));
 		goto run_function_edit_dialog;
+	} else {
+		GtkTreeIter iter;
+		bool b = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tFunctionArguments_store), &iter);
+		Argument *arg;
+		while(b) {
+			gtk_tree_model_get(GTK_TREE_MODEL(tFunctionArguments_store), &iter, 2, &arg, -1);
+			if(arg) delete arg;
+			b = gtk_tree_model_iter_next(GTK_TREE_MODEL(tFunctionArguments_store), &iter);
+		}
 	}
 	edited_function = NULL;
 	names_edited = false;
@@ -17099,8 +17112,7 @@ void new_unit(GtkMenuItem*, gpointer)
 /*
 	a unit selected in result menu, convert result
 */
-void convert_to_unit(GtkMenuItem*, gpointer user_data)
-{
+void convert_to_unit(GtkMenuItem*, gpointer user_data) {
 	GtkWidget *edialog;
 	Unit *u = (Unit*) user_data;
 	if(!u) {
@@ -17114,10 +17126,9 @@ void convert_to_unit(GtkMenuItem*, gpointer user_data)
 	focus_keeping_selection();
 }
 
-void convert_to_unit_noprefix(GtkMenuItem*, gpointer user_data)
-{
+void convert_to_unit_noprefix(GtkMenuItem*, gpointer user_data) {
 	GtkWidget *edialog;
-	Unit *u = (Unit*) user_data;
+	ExpressionItem *u = (ExpressionItem*) user_data;
 	if(!u) {
 		edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Unit does not exist"));
 		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
@@ -17159,7 +17170,7 @@ void edit_unknown(const char *category, Variable *var, GtkWidget *win) {
 	if(v) {
 		//fill in original parameters
 		set_name_label_and_entry(v, GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_name")));
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_name")), !v->isBuiltin());
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_name")), !v->isBuiltin() && v->isLocal());
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), !v->isBuiltin());
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), !v->isBuiltin());
 		if(v->assumptions()) {
@@ -17179,6 +17190,8 @@ void edit_unknown(const char *category, Variable *var, GtkWidget *win) {
 			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), CALCULATOR->defaultAssumptions()->type() < ASSUMPTION_TYPE_REAL ? 0 : CALCULATOR->defaultAssumptions()->type() - 3);
 			gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), CALCULATOR->defaultAssumptions()->sign());
 		}
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unknownedit_builder, "unknown_edit_checkbutton_temporary")), v->category() == CALCULATOR->temporaryCategory());
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_checkbutton_temporary")), !v->isBuiltin() && v->isLocal());
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_button_ok")), FALSE);
 	} else {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_name")), TRUE);
@@ -17201,6 +17214,7 @@ void edit_unknown(const char *category, Variable *var, GtkWidget *win) {
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(unknownedit_builder, "unknown_edit_entry_name")), v_name.c_str());
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), CALCULATOR->defaultAssumptions()->type() < ASSUMPTION_TYPE_REAL ? 0 : CALCULATOR->defaultAssumptions()->type() - 3);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), CALCULATOR->defaultAssumptions()->sign());
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unknownedit_builder, "unknown_edit_checkbutton_temporary")), category && CALCULATOR->temporaryCategory() == category);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_button_ok")), TRUE);
 	}
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_unknown_edit_combobox_type_changed, NULL);
@@ -17238,10 +17252,16 @@ run_unknown_edit_dialog:
 		bool add_var = false;
 		if(v) {
 			//update existing unknown
-			v->setLocal(true);
+			if(v->isLocal()) {
+				if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unknownedit_builder, "unknown_edit_checkbutton_temporary")))) {
+					v->setCategory(CALCULATOR->temporaryCategory());
+				} else if(v->category() == CALCULATOR->temporaryCategory()) {
+					v->setCategory(CALCULATOR->getVariableById(VARIABLE_ID_X)->category());
+				}
+			}
 		} else {
 			//new unknown
-			v = new UnknownVariable(CALCULATOR->getVariableById(VARIABLE_ID_X)->category(), "", "", true);
+			v = new UnknownVariable(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(unknownedit_builder, "unknown_edit_checkbutton_temporary"))) ? CALCULATOR->temporaryCategory() : CALCULATOR->getVariableById(VARIABLE_ID_X)->category(), "", "", true);
 			add_var = true;
 		}
 		if(v) {
@@ -17257,7 +17277,7 @@ run_unknown_edit_dialog:
 					v->setAssumptions(NULL);
 				}
 			}
-			set_edited_names(v, str);
+			if(v->isLocal()) set_edited_names(v, str);
 			if(add_var) {
 				CALCULATOR->addVariable(v);
 			}
@@ -17386,6 +17406,8 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 					value_str += SIGN_PLUSMINUS;
 					value_str += localize_expression(v->uncertainty());
 				}
+			} else if(v->isApproximate() && value_str.find(CALCULATOR->getFunctionById(FUNCTION_ID_INTERVAL)->referenceName()) == string::npos && value_str.find("±") == string::npos && value_str.find("+/-") == string::npos) {
+				value_str = get_value_string(v->get(), 2);
 			}
 			if(!v->unit().empty() && v->unit() != "auto") {
 				value_str += " ";
@@ -17585,6 +17607,7 @@ void edit_matrix(const char *category, Variable *var, MathStructure *mstruct_, G
 	}
 
 	GtkTextBuffer *description_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(matrixedit_builder, "matrix_edit_textview_description")));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(matrixedit_builder, "matrix_edit_checkbutton_hidden")), false);
 	gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(matrixedit_builder, "matrix_edit_tabs")), 0);
 	gtk_text_buffer_set_text(description_buffer, "", -1);
 
@@ -17607,6 +17630,7 @@ void edit_matrix(const char *category, Variable *var, MathStructure *mstruct_, G
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_radiobutton_matrix")), !v->isBuiltin());
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_radiobutton_vector")), !v->isBuiltin());
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(matrixedit_builder, "matrix_edit_combo_category")))), v->category().c_str());
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(matrixedit_builder, "matrix_edit_checkbutton_hidden")), v->isHidden());
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(matrixedit_builder, "matrix_edit_checkbutton_temporary")), v->category() == CALCULATOR->temporaryCategory());
 		gtk_text_buffer_set_text(description_buffer, v->description().c_str(), -1);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_desc")), v->title(false).c_str());
@@ -17801,6 +17825,7 @@ run_matrix_edit_dialog:
 			add_var = true;
 		}
 		if(v) {
+			v->setHidden(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(matrixedit_builder, "matrix_edit_checkbutton_hidden"))));
 			v->setCategory(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(matrixedit_builder, "matrix_edit_combo_category"))));
 			v->setTitle(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(matrixedit_builder, "matrix_edit_entry_desc"))));
 			GtkTextIter d_iter_s, d_iter_e;
@@ -18936,7 +18961,7 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 		}
 		if(!arg2 || !arg3 || (b_bitrot && !arg4)) return;
 		gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
-		GtkWidget *dialog = gtk_dialog_new_with_buttons(f->title(true).c_str(), GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_CANCEL, _("_OK"), GTK_RESPONSE_OK, NULL);
+		GtkWidget *dialog = gtk_dialog_new_with_buttons(f->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) mainwindow).c_str(), GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_CANCEL, _("_OK"), GTK_RESPONSE_OK, NULL);
 		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 		gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 		GtkWidget *grid = gtk_grid_new();
@@ -19055,7 +19080,7 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 			index = 1;
 		}
 		gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
-		GtkWidget *dialog = gtk_dialog_new_with_buttons(f->title(true).c_str(), GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_CANCEL, _("_OK"), GTK_RESPONSE_OK, NULL);
+		GtkWidget *dialog = gtk_dialog_new_with_buttons(f->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) mainwindow).c_str(), GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_CANCEL, _("_OK"), GTK_RESPONSE_OK, NULL);
 		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 		gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 		GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
@@ -20465,6 +20490,8 @@ void load_preferences() {
 
 	caret_as_xor = false;
 
+	close_with_esc = -1;
+
 	ignore_locale = false;
 
 	automatic_fraction = false;
@@ -20630,7 +20657,7 @@ void load_preferences() {
 	size_t bookmark_index = 0;
 
 	version_numbers[0] = 4;
-	version_numbers[1] = 7;
+	version_numbers[1] = 8;
 	version_numbers[2] = 0;
 
 	bool old_history_format = false;
@@ -21249,6 +21276,8 @@ void load_preferences() {
 					hexadecimal_twos_complement_in = v;
 				} else if(svar == "spell_out_logical_operators") {
 					printops.spell_out_logical_operators = v;
+				} else if(svar == "close_with_esc") {
+					close_with_esc = v;
 				} else if(svar == "caret_as_xor") {
 					caret_as_xor = v;
 				} else if(svar == "concise_uncertainty_input") {
@@ -21910,6 +21939,7 @@ void save_preferences(bool mode) {
 	if(default_signed >= 0) fprintf(file, "signed_integer=%i\n", default_signed);
 	fprintf(file, "spell_out_logical_operators=%i\n", printops.spell_out_logical_operators);
 	fprintf(file, "caret_as_xor=%i\n", caret_as_xor);
+	fprintf(file, "close_with_esc=%i\n", close_with_esc);
 	fprintf(file, "digit_grouping=%i\n", printops.digit_grouping);
 	fprintf(file, "copy_ascii=%i\n", copy_ascii);
 	fprintf(file, "copy_ascii_without_units=%i\n", copy_ascii_without_units);
@@ -23508,6 +23538,9 @@ void on_preferences_checkbutton_caret_as_xor_toggled(GtkToggleButton *w, gpointe
 	else gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_xor")), _("Bitwise Exclusive OR"));
 	if(enable_tooltips != 1) gtk_widget_set_has_tooltip(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_xor")), FALSE);
 }
+void on_preferences_checkbutton_close_with_esc_toggled(GtkToggleButton *w, gpointer) {
+	close_with_esc = gtk_toggle_button_get_active(w);
+}
 void on_preferences_checkbutton_unicode_signs_toggled(GtkToggleButton *w, gpointer) {
 	printops.use_unicode_signs = gtk_toggle_button_get_active(w);
 	set_operator_symbols();
@@ -23613,6 +23646,11 @@ void on_preferences_checkbutton_use_systray_icon_toggled(GtkToggleButton *w, gpo
 		destroy_systray_icon();
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_hide_on_startup")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_hide_on_startup")), FALSE);
+	}
+	if(close_with_esc < 0) {
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_close_with_esc"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_close_with_esc_toggled, NULL);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_close_with_esc")), use_systray_icon);
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_close_with_esc"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_close_with_esc_toggled, NULL);
 	}
 #endif
 }
@@ -24297,7 +24335,7 @@ void update_resultview_popup() {
 				if(u && (!b_exact || b_prefix || u != u_result) && u->isActive() && u->isCurrency() && (i == 0 || (u != u_local_currency && u != latest_button_currency && !u->isHidden()))) {
 					bool b = false;
 					for(size_t i2 = 0; i2 < to_us.size(); i2++) {
-						if(string_is_less(u->title(true), to_us[i2]->title(true))) {
+						if(string_is_less(u->title(true, printops.use_unicode_signs), to_us[i2]->title(true, printops.use_unicode_signs))) {
 							to_us.insert(to_us.begin() + i2, u);
 							b = true;
 							break;
@@ -24307,7 +24345,7 @@ void update_resultview_popup() {
 				}
 			}
 			for(size_t i = 0; i < to_us.size(); i++) {
-				MENU_ITEM_WITH_POINTER_AND_FLAG(to_us[i]->title(true).c_str(), convert_to_unit, to_us[i])
+				MENU_ITEM_WITH_OBJECT_AND_FLAG(to_us[i], convert_to_unit)
 			}
 			vector<Unit*> to_us2;
 			for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
@@ -24316,7 +24354,7 @@ void update_resultview_popup() {
 					if(u->isActive() && (!b_exact || b_prefix || u != u_result) && u->isHidden() && u != u_local_currency && u != latest_button_currency) {
 						bool b = false;
 						for(int i2 = to_us2.size() - 1; i2 >= 0; i2--) {
-							if(u->title(true) > to_us2[(size_t) i2]->title(true)) {
+							if(u->title(true, printops.use_unicode_signs) > to_us2[(size_t) i2]->title(true, printops.use_unicode_signs)) {
 								if((size_t) i2 == to_us2.size() - 1) to_us2.push_back(u);
 								else to_us2.insert(to_us2.begin() + (size_t) i2 + 1, u);
 								b = true;
@@ -24331,7 +24369,7 @@ void update_resultview_popup() {
 				SUBMENU_ITEM(_("more"), sub);
 				for(size_t i = 0; i < to_us2.size(); i++) {
 					// Show further items in a submenu
-					MENU_ITEM_WITH_POINTER_AND_FLAG(to_us2[i]->title(true).c_str(), convert_to_unit, to_us2[i])
+					MENU_ITEM_WITH_OBJECT_AND_FLAG(to_us2[i], convert_to_unit)
 				}
 			}
 			gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_convert_to")), TRUE);
@@ -24343,7 +24381,7 @@ void update_resultview_popup() {
 					if((!b_exact || b_prefix || u != u_result) && u->isActive() && !u->isHidden()) {
 						bool b = false;
 						for(size_t i2 = 0; i2 < to_us.size(); i2++) {
-							if(string_is_less(u->title(true), to_us[i2]->title(true))) {
+							if(string_is_less(u->title(true, printops.use_unicode_signs), to_us[i2]->title(true, printops.use_unicode_signs))) {
 								to_us.insert(to_us.begin() + i2, u);
 								b = true;
 								break;
@@ -24354,7 +24392,7 @@ void update_resultview_popup() {
 				}
 			}
 			for(size_t i = 0; i < to_us.size(); i++) {
-				MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), convert_to_unit_noprefix, to_us[i])
+				MENU_ITEM_WITH_OBJECT(to_us[i], convert_to_unit_noprefix)
 			}
 			gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_convert_to")), TRUE);
 		}
@@ -24819,6 +24857,10 @@ gboolean on_gcalc_exit(GtkWidget*, GdkEvent*, gpointer) {
 	for(size_t i = 0; i < history_parsed.size(); i++) {
 		if(history_parsed[i]) history_parsed[i]->unref();
 		if(history_answer[i]) history_answer[i]->unref();
+	}
+	if(command_thread->running) {
+		command_thread->write((int) 0);
+		command_thread->write(NULL);
 	}
 	if(view_thread->running) {
 		view_thread->write((int) 0);
@@ -25519,7 +25561,7 @@ void do_completion() {
 				} else if(item && to_type == 5) {
 					if(item->type() == TYPE_UNIT && ((Unit*) item)->isCurrency() && (!item->isHidden() || item == CALCULATOR->getLocalCurrency())) b_match = 2;
 				} else if(item && to_type == 2 && str.empty() && current_from_struct) {
-					if(item->type() == TYPE_VARIABLE && (item == CALCULATOR->v_percent || item == CALCULATOR->v_permille) && current_from_struct->isNumber() && !current_from_struct->isInteger()) b_match = 2;
+					if(item->type() == TYPE_VARIABLE && (item == CALCULATOR->v_percent || item == CALCULATOR->v_permille) && current_from_struct->isNumber() && !current_from_struct->isInteger() && !current_from_struct->number().imaginaryPartIsNonZero()) b_match = 2;
 				} else if(prefix && to_type < 2) {
 					for(size_t name_i = 1; name_i <= prefix->countNames() && !b_match; name_i++) {
 						const string *pname = &prefix->getName(name_i).name;
@@ -25851,7 +25893,7 @@ gboolean on_unit_entry_key_press_event(GtkWidget *o, GdkEventKey *event, gpointe
 }
 
 gboolean reenable_tooltip(GtkWidget *w, gpointer) {
-	if(enable_tooltips != 1) gtk_widget_set_has_tooltip(w, TRUE);
+	if(enable_tooltips == 1) gtk_widget_set_has_tooltip(w, TRUE);
 	g_signal_handlers_disconnect_matched((gpointer) w, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) reenable_tooltip, NULL);
 	return FALSE;
 }
@@ -29044,67 +29086,11 @@ void on_menu_item_z_unknown_activate(GtkMenuItem *w, gpointer) {
 	set_sign("z", ASSUMPTION_SIGN_UNKNOWN);
 }
 
-void menu_to_bin(GtkMenuItem*, gpointer) {
+void menu_to_base(GtkMenuItem*, gpointer data) {
 	int save_base = printops.base;
 	to_base = 0;
 	to_bits = 0;
-	printops.base = BASE_BINARY;
-	result_format_updated();
-	printops.base = save_base;
-}
-void menu_to_oct(GtkMenuItem*, gpointer) {
-	int save_base = printops.base;
-	to_base = 0;
-	to_bits = 0;
-	printops.base = BASE_OCTAL;
-	result_format_updated();
-	printops.base = save_base;
-}
-void menu_to_dec(GtkMenuItem*, gpointer) {
-	int save_base = printops.base;
-	to_base = 0;
-	to_bits = 0;
-	printops.base = BASE_DECIMAL;
-	result_format_updated();
-	printops.base = save_base;
-}
-void menu_to_duo(GtkMenuItem*, gpointer) {
-	int save_base = printops.base;
-	to_base = 0;
-	to_bits = 0;
-	printops.base = 12;
-	result_format_updated();
-	printops.base = save_base;
-}
-void menu_to_hex(GtkMenuItem*, gpointer) {
-	int save_base = printops.base;
-	to_base = 0;
-	to_bits = 0;
-	printops.base = BASE_HEXADECIMAL;
-	result_format_updated();
-	printops.base = save_base;
-}
-void menu_to_sexa(GtkMenuItem*, gpointer) {
-	int save_base = printops.base;
-	to_base = 0;
-	to_bits = 0;
-	printops.base = BASE_SEXAGESIMAL;
-	result_format_updated();
-	printops.base = save_base;
-}
-void menu_to_time(GtkMenuItem*, gpointer) {
-	int save_base = printops.base;
-	to_base = 0;
-	to_bits = 0;
-	printops.base = BASE_TIME;
-	result_format_updated();
-	printops.base = save_base;
-}
-void menu_to_roman(GtkMenuItem*, gpointer) {
-	int save_base = printops.base;
-	to_base = 0;
-	to_bits = 0;
-	printops.base = BASE_ROMAN_NUMERALS;
+	printops.base = GPOINTER_TO_INT(data);
 	result_format_updated();
 	printops.base = save_base;
 }
@@ -29160,53 +29146,58 @@ void update_mb_to_menu() {
 		gtk_widget_destroy(GTK_WIDGET(l->data));
 	}
 	g_list_free(list);
+	bool b_rational = (mstruct && displayed_mstruct && contains_rational_number(*displayed_mstruct));
 	if(!mstruct || !displayed_mstruct || !contains_convertable_unit(*displayed_mstruct)) {
 		bool b_date = (mstruct && displayed_mstruct && mstruct->isDateTime());
 		bool b_number = (mstruct && displayed_mstruct && mstruct->isNumber());
 		bool b_integ = b_number && mstruct->isInteger();
 		bool b_complex = (mstruct && displayed_mstruct && (contains_imaginary_number(*mstruct) || mstruct->containsFunctionId(FUNCTION_ID_CIS)));
-		bool b_rational = (mstruct && displayed_mstruct && contains_rational_number(*displayed_mstruct));
 		if(b_date) {
 			MENU_ITEM(_("Calendars"), on_popup_menu_item_calendarconversion_activate)
 			MENU_ITEM("UTC", menu_to_utc)
 			return;
 		}
-		bool base_sep = false;
+		if(b_rational) {
+			MENU_ITEM(_("Fraction"), menu_to_fraction)
+			MENU_SEPARATOR
+		}
 		if(!b_complex) {
 			MENU_ITEM(_("Number bases"), on_menu_item_convert_number_bases_activate)
-			if(displayed_printops.base != BASE_BINARY) {MENU_ITEM(_("Binary"), menu_to_bin)}
-			if(displayed_printops.base != BASE_OCTAL) {MENU_ITEM(_("Octal"), menu_to_oct)}
-			if(displayed_printops.base != BASE_DECIMAL) {MENU_ITEM(_("Decimal"), menu_to_dec)}
-			if(displayed_printops.base != BASE_DUODECIMAL) {MENU_ITEM(_("Duodecimal"), menu_to_duo)}
-			if(displayed_printops.base != BASE_HEXADECIMAL) {MENU_ITEM(_("Hexadecimal"), menu_to_hex)}
 			if(b_integ) {
-				if(displayed_printops.base != BASE_ROMAN_NUMERALS) {MENU_ITEM(_("Roman"), menu_to_roman)}
+				if(displayed_printops.base != BASE_BINARY) {MENU_ITEM_WITH_INT(_("Binary"), menu_to_base, BASE_BINARY)}
+				if(displayed_printops.base != BASE_OCTAL) {MENU_ITEM_WITH_INT(_("Octal"), menu_to_base, BASE_OCTAL)}
+				if(displayed_printops.base != BASE_DECIMAL) {MENU_ITEM_WITH_INT(_("Decimal"), menu_to_base, BASE_DECIMAL)}
+				if(displayed_printops.base != BASE_DUODECIMAL) {MENU_ITEM_WITH_INT(_("Duodecimal"), menu_to_base, BASE_DUODECIMAL)}
+				if(displayed_printops.base != BASE_HEXADECIMAL) {MENU_ITEM_WITH_INT(_("Hexadecimal"), menu_to_base, BASE_HEXADECIMAL)}
+				if(displayed_printops.base != BASE_ROMAN_NUMERALS) {MENU_ITEM_WITH_INT(_("Roman numerals"), menu_to_base, BASE_ROMAN_NUMERALS)}
+				if(displayed_printops.base != BASE_ROMAN_NUMERALS) {MENU_ITEM_WITH_INT(_("Bijective base-26"), menu_to_base, BASE_BIJECTIVE_26)}
+				if(displayed_printops.base != BASE_ROMAN_NUMERALS) {MENU_ITEM_WITH_INT(_("Binary-coded decimal"), menu_to_base, BASE_BINARY_DECIMAL)}
 				MENU_SEPARATOR
-				base_sep = true;
 				MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)
 			} else if(displayed_mstruct && displayed_mstruct->containsType(STRUCT_ADDITION)) {
 				MENU_SEPARATOR
-				base_sep = true;
 				MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)
+				MENU_ITEM(_("Expanded Partial Fractions"), on_menu_item_expand_partial_fractions_activate)
 			} else if(b_number) {
-				if(displayed_printops.base != BASE_SEXAGESIMAL) {MENU_ITEM(_("Sexagesimal"), menu_to_sexa)}
-				if(displayed_printops.base != BASE_TIME) {MENU_ITEM(_("Time format"), menu_to_time)}
-			}
-		}
-		if(b_rational) {
-			if(!base_sep) {
+				if(displayed_printops.base != BASE_LONGITUDE) {MENU_ITEM_WITH_INT(_("Latitude"), menu_to_base, BASE_LATITUDE)}
+				if(displayed_printops.base != BASE_LONGITUDE) {MENU_ITEM_WITH_INT(_("Longitude"), menu_to_base, BASE_LONGITUDE)}
+				if(displayed_printops.base != BASE_SEXAGESIMAL) {MENU_ITEM_WITH_INT(_("Sexagesimal"), menu_to_base, BASE_SEXAGESIMAL)}
+				if(displayed_printops.base != BASE_TIME) {MENU_ITEM_WITH_INT(_("Time format"), menu_to_base, BASE_TIME)}
+				if(displayed_printops.base != BASE_FP16) {MENU_ITEM_WITH_INT(_("16-bit floating point"), menu_to_base, BASE_FP16)}
+				if(displayed_printops.base != BASE_FP32) {MENU_ITEM_WITH_INT(_("32-bit floating point"), menu_to_base, BASE_FP32)}
+				if(displayed_printops.base != BASE_FP32) {MENU_ITEM_WITH_INT(_("64-bit floating point"), menu_to_base, BASE_FP64)}
+				if(displayed_printops.base != BASE_FP32) {MENU_ITEM_WITH_INT(_("80-bit (x86) floating point"), menu_to_base, BASE_FP80)}
+				if(displayed_printops.base != BASE_FP32) {MENU_ITEM_WITH_INT(_("128-bit floating point"), menu_to_base, BASE_FP128)}
 				MENU_SEPARATOR
-				base_sep = true;
+				MENU_ITEM_WITH_OBJECT(CALCULATOR->v_percent, convert_to_unit_noprefix);
+				MENU_ITEM_WITH_OBJECT(CALCULATOR->v_permille, convert_to_unit_noprefix);
 			}
-			MENU_ITEM(_("Fraction"), menu_to_fraction)
-			if(b_complex) {
-				MENU_SEPARATOR
-			}
+		} else {
+			if(evalops.complex_number_form != COMPLEX_NUMBER_FORM_RECTANGULAR) {MENU_ITEM(_("Rectangular form"), menu_to_rectangular)}
+			if(evalops.complex_number_form != COMPLEX_NUMBER_FORM_EXPONENTIAL) {MENU_ITEM(_("Exponential form"), menu_to_exponential)}
+			if(evalops.complex_number_form != COMPLEX_NUMBER_FORM_POLAR) {MENU_ITEM(_("Polar form"), menu_to_polar)}
+			if(evalops.complex_number_form != COMPLEX_NUMBER_FORM_CIS || !complex_angle_form) {MENU_ITEM(_("Angle/phasor notation"), menu_to_angle)}
 		}
-		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_RECTANGULAR) {MENU_ITEM(_("Rectangular form"), menu_to_rectangular)}
-		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_EXPONENTIAL) {MENU_ITEM(_("Exponential form"), menu_to_exponential)}
-		if(b_complex && evalops.complex_number_form != COMPLEX_NUMBER_FORM_POLAR) {MENU_ITEM(_("Polar form"), menu_to_polar)}
-		if(b_complex && (evalops.complex_number_form != COMPLEX_NUMBER_FORM_CIS || !complex_angle_form)) {MENU_ITEM(_("Angle/phasor notation"), menu_to_angle)}
 		return;
 	}
 	string s_cat;
@@ -29219,8 +29210,11 @@ void update_mb_to_menu() {
 	if(b_exact && u_result && u_result->subtype() != SUBTYPE_COMPOSITE_UNIT) b_prefix = has_prefix(displayed_mstruct ? *displayed_mstruct : *mstruct);
 	vector<Unit*> to_us;
 	size_t i_added = 0;
+	if(b_rational) {MENU_ITEM(_("Fraction"), menu_to_fraction)}
 	if(u_result && displayed_printops.base != BASE_SEXAGESIMAL && u_result == CALCULATOR->getDegUnit()) {
-		MENU_ITEM(_("Sexagesimal"), menu_to_sexa)
+		MENU_ITEM_WITH_INT(_("Sexagesimal"), menu_to_base, BASE_SEXAGESIMAL)
+		MENU_SEPARATOR
+	} else if(b_rational) {
 		MENU_SEPARATOR
 	}
 	MENU_ITEM(_("Base units"), on_menu_item_convert_to_base_units_activate);
@@ -29244,7 +29238,7 @@ void update_mb_to_menu() {
 						b = true;
 						break;
 					}
-					if(string_is_less(u->title(true), to_us[i2]->title(true))) {
+					if(string_is_less(u->title(true, printops.use_unicode_signs), to_us[i2]->title(true, printops.use_unicode_signs))) {
 						to_us.insert(to_us.begin() + i2, u);
 						b = true;
 						break;
@@ -29254,7 +29248,7 @@ void update_mb_to_menu() {
 			}
 		}
 		for(size_t i = 0; i < to_us.size(); i++) {
-			MENU_ITEM_WITH_POINTER_AND_FLAG(to_us[i]->title(true).c_str(), convert_to_unit, to_us[i])
+			MENU_ITEM_WITH_OBJECT_AND_FLAG(to_us[i], convert_to_unit)
 		}
 		i_added = to_us.size();
 		vector<Unit*> to_us2;
@@ -29265,7 +29259,7 @@ void update_mb_to_menu() {
 					bool b = false;
 					if(u->isHidden() && (!b_exact || b_prefix || u != u_result) && u != u_local_currency) {
 						for(int i2 = to_us2.size() - 1; i2 >= 0; i2--) {
-							if(u->title(true) > to_us2[(size_t) i2]->title(true)) {
+							if(u->title(true, printops.use_unicode_signs) > to_us2[(size_t) i2]->title(true, printops.use_unicode_signs)) {
 								if((size_t) i2 == to_us2.size() - 1) to_us2.push_back(u);
 								else to_us2.insert(to_us2.begin() + (size_t) i2 + 1, u);
 								b = true;
@@ -29281,7 +29275,7 @@ void update_mb_to_menu() {
 							}
 						}
 						for(size_t i2 = to_us.size() - 1; !b && i2 >= i_added; i2--) {
-							if(u->title(true) > to_us[i2]->title(true)) {
+							if(u->title(true, printops.use_unicode_signs) > to_us[i2]->title(true, printops.use_unicode_signs)) {
 								if(i2 == to_us.size() - 1) to_us.push_back(u);
 								else to_us.insert(to_us.begin() + i2 + 1, u);
 								b = true;
@@ -29295,12 +29289,12 @@ void update_mb_to_menu() {
 		for(size_t i = i_added; i < to_us.size(); i++) {
 			// Show further items in a submenu
 			if(i == i_added) {SUBMENU_ITEM(_("more"), sub);}
-			MENU_ITEM_WITH_POINTER_AND_FLAG(to_us[i]->title(true).c_str(), convert_to_unit, to_us[i])
+			MENU_ITEM_WITH_OBJECT_AND_FLAG(to_us[i], convert_to_unit)
 		}
 		if(to_us2.size() > 0) {SUBMENU_ITEM(_("more"), sub);}
 		for(size_t i = 0; i < to_us2.size(); i++) {
 			// Show further items in a submenu
-			MENU_ITEM_WITH_POINTER_AND_FLAG(to_us2[i]->title(true).c_str(), convert_to_unit, to_us2[i])
+			MENU_ITEM_WITH_OBJECT_AND_FLAG(to_us2[i], convert_to_unit)
 		}
 	} else if(!s_cat.empty()) {
 		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
@@ -29309,7 +29303,7 @@ void update_mb_to_menu() {
 				if(u->isActive() && (!b_exact || b_prefix || u != u_result) && !u->isHidden()) {
 					bool b = false;
 					for(size_t i2 = 0; i2 < to_us.size(); i2++) {
-						if(string_is_less(u->title(true), to_us[i2]->title(true))) {
+						if(string_is_less(u->title(true, printops.use_unicode_signs), to_us[i2]->title(true, printops.use_unicode_signs))) {
 							to_us.insert(to_us.begin() + i2, u);
 							b = true;
 							break;
@@ -29322,7 +29316,7 @@ void update_mb_to_menu() {
 		}
 		for(size_t i = 0; i < to_us.size(); i++) {
 			if(i + 4 == 10 && i + 1 != to_us.size()) {SUBMENU_ITEM(_("more"), sub);}
-			MENU_ITEM_WITH_POINTER(to_us[i]->title(true).c_str(), convert_to_unit_noprefix, to_us[i])
+			MENU_ITEM_WITH_OBJECT(to_us[i], convert_to_unit_noprefix)
 		}
 	}
 	if(!i_added) {
@@ -29339,7 +29333,7 @@ void update_mb_to_menu() {
 					}
 				}
 				for(size_t i2 = 0; !b && i2 < to_us2.size(); i2++) {
-					if(string_is_less(u->title(true), to_us2[i2]->title(true))) {
+					if(string_is_less(u->title(true, printops.use_unicode_signs), to_us2[i2]->title(true, printops.use_unicode_signs))) {
 						to_us2.insert(to_us2.begin() + i2, u);
 						b = true;
 						i_added++;
@@ -29353,7 +29347,7 @@ void update_mb_to_menu() {
 			}
 		}
 		for(size_t i = 0; i < to_us2.size(); i++) {
-			MENU_ITEM_WITH_POINTER(to_us2[i]->title(true).c_str(), convert_to_unit, to_us2[i])
+			MENU_ITEM_WITH_OBJECT(to_us2[i], convert_to_unit)
 		}
 	}
 }
@@ -29375,14 +29369,14 @@ void update_mb_units_menu() {
 	size_t i_added = 0;
 	for(size_t i = recent_units.size(); i > 0; i--) {
 		if(!recent_units[i - 1]->isLocal() && CALCULATOR->stillHasUnit(recent_units[i - 1])) {
-			MENU_ITEM_WITH_POINTER(recent_units[i - 1]->title(true).c_str(), insert_unit, recent_units[i - 1])
+			MENU_ITEM_WITH_OBJECT(recent_units[i - 1], insert_unit)
 			i_added++;
 		}
 	}
 	for(size_t i = 0; i_added < 5 && i < 5; i++) {
 		Unit * u = CALCULATOR->getActiveUnit(si_units[i]);
 		if(u && !u->isHidden()) {
-			MENU_ITEM_WITH_POINTER(u->title(true).c_str(), insert_unit, u)
+			MENU_ITEM_WITH_OBJECT(u, insert_unit)
 			i_added++;
 		}
 	}
@@ -29446,7 +29440,7 @@ void update_mb_fx_menu() {
 	bool b = false;
 	for(size_t i = 0; i < user_functions.size(); i++) {
 		if(!user_functions[i]->isHidden()) {
-			MENU_ITEM_WITH_POINTER(user_functions[i]->title(true).c_str(), insert_button_function, user_functions[i])
+			MENU_ITEM_WITH_OBJECT(user_functions[i], insert_button_function)
 			g_signal_connect(G_OBJECT(item), "button-press-event", G_CALLBACK(on_menu_fx_button_press), user_functions[i]);
 			g_signal_connect(G_OBJECT(item), "popup-menu", G_CALLBACK(on_menu_fx_popup_menu), (gpointer) user_functions[i]);
 			b = true;
@@ -29457,7 +29451,7 @@ void update_mb_fx_menu() {
 		if(!recent_functions[i - 1]->isLocal() && CALCULATOR->stillHasFunction(recent_functions[i - 1])) {
 			if(!b2 && b) {MENU_SEPARATOR}
 			b2 = true;
-			MENU_ITEM_WITH_POINTER(recent_functions[i - 1]->title(true).c_str(), insert_button_function_save, recent_functions[i - 1])
+			MENU_ITEM_WITH_OBJECT(recent_functions[i - 1], insert_button_function_save)
 		}
 	}
 	if(b2 || b) {MENU_SEPARATOR}
@@ -29478,38 +29472,38 @@ void update_mb_pi_menu() {
 	g_list_free(list);
 
 	Variable *v = CALCULATOR->getActiveVariable("pythagoras");
-	MENU_ITEM(v ? v->title(true).c_str() : SIGN_SQRT "2", insert_button_sqrt2)
-	MENU_ITEM_WITH_POINTER(CALCULATOR->v_euler->title(true).c_str(), insert_button_variable, CALCULATOR->v_euler);
+	MENU_ITEM(v ? v->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) sub).c_str() : SIGN_SQRT "2", insert_button_sqrt2)
+	MENU_ITEM_WITH_OBJECT(CALCULATOR->v_euler, insert_button_variable);
 	v = CALCULATOR->getActiveVariable("golden");
-	if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v);}
+	if(v) {MENU_ITEM_WITH_OBJECT(v, insert_button_variable);}
 	MENU_SEPARATOR
 
 	int i_added = 0;
 	for(size_t i = recent_variables.size(); i > 0; i--) {
 		if(!recent_variables[i - 1]->isLocal() && CALCULATOR->stillHasVariable(recent_variables[i - 1])) {
-			MENU_ITEM_WITH_POINTER(recent_variables[i - 1]->title(true).c_str(), insert_variable, recent_variables[i - 1])
+			MENU_ITEM_WITH_OBJECT(recent_variables[i - 1], insert_variable)
 			i_added++;
 		}
 	}
 	if(i_added < 5)	{
 		v = CALCULATOR->getActiveVariable("c");
-		if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v); i_added++;}
+		if(v) {MENU_ITEM_WITH_OBJECT(v, insert_button_variable); i_added++;}
 	}
 	if(i_added < 5)	{
 		v = CALCULATOR->getActiveVariable("newtonian_constant");
-		if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v); i_added++;}
+		if(v) {MENU_ITEM_WITH_OBJECT(v, insert_button_variable); i_added++;}
 	}
 	if(i_added < 5)	{
 		v = CALCULATOR->getActiveVariable("planck");
-		if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v); i_added++;}
+		if(v) {MENU_ITEM_WITH_OBJECT(v, insert_button_variable); i_added++;}
 	}
 	if(i_added < 5)	{
 		v = CALCULATOR->getActiveVariable("boltzmann");
-		if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v); i_added++;}
+		if(v) {MENU_ITEM_WITH_OBJECT(v, insert_button_variable); i_added++;}
 	}
 	if(i_added < 5)	{
 		v = CALCULATOR->getActiveVariable("avogadro");
-		if(v) {MENU_ITEM_WITH_POINTER(v->title(true).c_str(), insert_button_variable, v); i_added++;}
+		if(v) {MENU_ITEM_WITH_OBJECT(v, insert_button_variable); i_added++;}
 	}
 
 	MENU_SEPARATOR
@@ -29600,7 +29594,7 @@ void update_mb_sto_menu() {
 	bool b = false;
 	for(size_t i = 0; i < user_variables.size(); i++) {
 		if(!user_variables[i]->isHidden()) {
-			MENU_ITEM_WITH_POINTER(user_variables[i]->title(true).c_str(), insert_button_variable, user_variables[i])
+			MENU_ITEM_WITH_OBJECT(user_variables[i], insert_button_variable)
 			g_signal_connect(G_OBJECT(item), "button-press-event", G_CALLBACK(on_menu_sto_button_press), user_variables[i]);
 			g_signal_connect(G_OBJECT(item), "popup-menu", G_CALLBACK(on_menu_sto_popup_menu), (gpointer) user_variables[i]);
 			b = true;
@@ -35020,7 +35014,7 @@ return TRUE;}
 			if(gtk_widget_get_visible(completion_window)) {
 				gtk_widget_hide(completion_window);
 				return TRUE;
-			} else if(has_systray_icon() && expression_is_empty()) {
+			} else if((close_with_esc > 0 || (close_with_esc < 0 && use_systray_icon)) && expression_is_empty()) {
 				on_main_window_close(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), NULL, NULL);
 				return TRUE;
 			} else {
@@ -35801,7 +35795,7 @@ void on_function_edit_button_add_argument_clicked(GtkButton*, gpointer) {
 	if(arg) {
 		GtkTreeIter iter;
 		gtk_list_store_append(tFunctionArguments_store, &iter);
-		gtk_list_store_set(tFunctionArguments_store, &iter, 0, arg->name().c_str(), 1, arg->printlong().c_str(), 2, arg, -1);
+		gtk_list_store_set(tFunctionArguments_store, &iter, 0, arg->name().c_str(), 1, arg->printlong().c_str(), 2, (gpointer) arg, -1);
 		update_argument_refs();
 		on_function_changed();
 	}
@@ -35841,7 +35835,7 @@ void on_function_edit_treeview_arguments_name_edited(GtkCellRendererText*, gchar
 		gtk_tree_model_get(GTK_TREE_MODEL(tFunctionArguments_store), &iter, 2, &arg, -1);
 		if(!arg) arg = new Argument();
 		arg->setName(new_text);
-		gtk_list_store_set(tFunctionArguments_store, &iter, 0, new_text, 2, arg, -1);
+		gtk_list_store_set(tFunctionArguments_store, &iter, 0, new_text, 2, (gpointer) arg, -1);
 		on_function_changed();
 	}
 }

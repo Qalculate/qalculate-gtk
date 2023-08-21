@@ -48,6 +48,28 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="4.8.0" date="2023-08-21">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Update dialogs for editing of variables, functions, units, etc. to match the corresponding dialogs in the Qt UI</li>
+      <li>Show user-defined objects in a separate category in menus and dialogs</li>
+      <li>Add option to disable tooltips in keypad or everywhere</li>
+      <li>Make closing of application with Escape key optional and disabled by default</li>
+      <li>Add Microship (PIC16/17) 24 and 32 bit floating point formats</li>
+      <li>Add support for specifying position of sign bit in floating point functions</li>
+      <li>Concise (e.g. "1.2345(67)") and relative (e.g. "5+/-2%") notation for output and input (disabled by default for concise notation) of interval</li>
+      <li>Optimize rest of unit expression when converting to partial (insufficient) expression (e.g. 18MA×100ns to J = 1.8 J/V)</li>
+      <li>Round high precision intervals enclosing integers for integer arguments</li>
+      <li>New derived units: Debye, C·m, Daraf, F^-1, V/C, N/C, kcal, kcal/g, kJ</li>
+      <li>Use international foot as base unit for rod</li>
+      <li>Fix initial height of list and description in units window</li>
+      <li>Fix fibonacci() for non-integers and recursive use</li>
+      <li>Fix conversion options presented for speed units (and possibly other)</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
   <release version="4.7.0" date="2023-07-03">
    <description>
     <p>Changes:</p>
