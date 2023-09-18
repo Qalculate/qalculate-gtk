@@ -1500,7 +1500,7 @@ void create_button_menus() {
 	vector<Unit*> to_us;
 	size_t si_i = 0;
 	size_t i_added = 0;
-	for(; si_i < 27 && i_added < 12; si_i++) {
+	for(; si_i < 28 && i_added < 12; si_i++) {
 		Unit * u = CALCULATOR->getActiveUnit(si_units[si_i]);
 		if(u && !u->isHidden()) {
 			bool b = false;
@@ -1520,10 +1520,10 @@ void create_button_menus() {
 	}
 
 	// Show further items in a submenu
-	if(si_i < 27) {SUBMENU_ITEM(_("more"), sub);}
+	if(si_i < 28) {SUBMENU_ITEM(_("more"), sub);}
 
 	to_us.clear();
-	for(; si_i < 27; si_i++) {
+	for(; si_i < 28; si_i++) {
 		Unit * u = CALCULATOR->getActiveUnit(si_units[si_i]);
 		if(u && !u->isHidden()) {
 			bool b = false;

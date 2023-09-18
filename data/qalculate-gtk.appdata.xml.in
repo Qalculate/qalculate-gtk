@@ -48,6 +48,18 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="4.8.1" date="2023-09-18">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Fix besselj() and bessely()</li>
+      <li>Fix display of matrices and vectors with complex number form other than rectangular (default)</li>
+      <li>Fix conflict between decibel units (e.g. "0dB") and duodecimal 0d… syntax (now requires at least two digits)</li>
+      <li>Fixes for title options in plot() function</li>
+      <li>Auto-update number bases above programming keypad when entering simple integers, even if calculate-as-you-type is deactivated</li>
+     </ul>
+   </description>
+  </release>
   <release version="4.8.0" date="2023-08-21">
    <description>
     <p>Changes:</p>

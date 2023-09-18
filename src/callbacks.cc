@@ -390,6 +390,7 @@ int default_signed = -1;
 int default_bits = -1;
 
 string result_bin, result_oct, result_dec, result_hex;
+bool result_bases_approx = false;
 Number max_bases, min_bases;
 
 vector<string> history_bookmarks;
@@ -3362,9 +3363,10 @@ gboolean do_autocalc_history_timeout(gpointer) {
 bool auto_calc_stopped_at_operator = false;
 
 void set_result_bases(const MathStructure &m) {
-	result_bin = ""; result_oct = "", result_dec = "", result_hex = "";
+	result_bin = ""; result_oct = "", result_dec = "", result_hex = ""; result_bases_approx = false;
 	if(max_bases.isZero()) {max_bases = 2; max_bases ^= 64; min_bases = -max_bases;}
 	if(!CALCULATOR->aborted() && ((m.isNumber() && m.number() < max_bases && m.number() > min_bases) || (m.isNegate() && m[0].isNumber() && m[0].number() < max_bases && m[0].number() > min_bases))) {
+		result_bases_approx = !m.isInteger() && (!m.isNegate() || !m[0].isInteger());
 		Number nr;
 		if(m.isNumber()) {
 			nr = m.number();
@@ -3430,6 +3432,12 @@ bool contains_plot_or_save(const string &str) {
 	}
 	return false;
 }
+
+void clear_result_bases() {
+	result_bin = ""; result_oct = ""; result_dec = ""; result_hex = ""; result_bases_approx = false;
+	update_result_bases();
+}
+
 void do_auto_calc(bool recalculate = true, string str = string()) {
 	if(block_result_update || block_expression_execution) return;
 	MathStructure mauto;
@@ -3509,7 +3517,7 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		if(origstr && CALCULATOR->separateToExpression(from_str, to_str, evalops, true, false)) {
 			had_to_expression = true;
 			if(from_str.empty()) {
-				clearresult(); 
+				clearresult();
 				evalops.complex_number_form = cnf_bak;
 				evalops.auto_post_conversion = save_auto_post_conversion;
 				evalops.parse_options.units_enabled = b_units_saved;
@@ -4016,6 +4024,31 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 }
 void print_auto_calc() {
 	do_auto_calc(false);
+}
+
+void autocalc_result_bases() {
+	GtkTextIter istart, iend;
+	gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
+	gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
+	gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &istart, &iend, FALSE);
+	string str = CALCULATOR->unlocalizeExpression(gstr, evalops.parse_options);
+	g_free(gstr);
+	CALCULATOR->parseSigns(str);
+	remove_blank_ends(str);
+	if(str.empty()) return;
+	for(size_t i = 0; i < str.length(); i++) {
+		if((str[i] < '0' || str[i] > '9') && (str[i] < 'a' || str[i] > 'z') && (str[i] < 'A' || str[i] > 'Z') && str[i] != ' ' && (i > 0 || str[i] != '-')) return;
+	}
+	CALCULATOR->beginTemporaryStopMessages();
+	ParseOptions pa = evalops.parse_options;
+	pa.preserve_format = true;
+	MathStructure m;
+	CALCULATOR->parse(&m, str, pa);
+	if(!CALCULATOR->endTemporaryStopMessages() && (m.isInteger() || (m.isNegate() && m[0].isInteger()))) {
+		if(m.isNegate()) {m.setToChild(1); m.number().negate();}
+		set_result_bases(m);
+		update_result_bases();
+	}
 }
 
 bool do_chain_mode(const gchar *op) {
@@ -10663,10 +10696,7 @@ void clearresult() {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), FALSE);
 		gtk_widget_queue_draw(resultview);
 	}
-	if(visible_keypad & PROGRAMMING_KEYPAD) {
-		result_bin = ""; result_oct = ""; result_dec = ""; result_hex = "";
-		update_result_bases();
-	}
+	if(visible_keypad & PROGRAMMING_KEYPAD) clear_result_bases();
 	gtk_widget_set_tooltip_text(resultview, "");
 }
 
@@ -11472,7 +11502,6 @@ void create_base_string(string &str1, int b_almost_equal, bool b_small) {
 		str1 += "=";
 	} else if(b_almost_equal == 1) {
 		str1 += SIGN_ALMOST_EQUAL;
-		b_almost_equal = true;
 	} else {
 		str1 += "= ";
 		str1 += _("approx.");
@@ -11515,7 +11544,7 @@ void update_result_bases() {
 	if(!result_hex.empty() || !result_dec.empty() || !result_oct.empty() || !result_bin.empty()) {
 		string str1, str2;
 		int b_almost_equal = -1;
-		if(mstruct->isInteger() || (mstruct->isNegate() && mstruct->getChild(1)->isInteger())) {
+		if(!result_bases_approx) {
 			b_almost_equal = 0;
 		} else if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_ALMOST_EQUAL, (void*) historyview)) {
 			b_almost_equal = 1;
@@ -12710,6 +12739,7 @@ void expression_calculation_updated() {
 			}
 		}
 		if(auto_calculate) do_auto_calc();
+		else if(expression_has_changed && (visible_keypad & PROGRAMMING_KEYPAD)) autocalc_result_bases();
 		else execute_expression(false);
 	}
 	update_status_text();
@@ -12728,6 +12758,7 @@ void expression_format_updated(bool recalculate) {
 	}
 	if(!rpn_mode) {
 		if(auto_calculate) do_auto_calc();
+		else if((!recalculate || expression_has_changed) && (visible_keypad & PROGRAMMING_KEYPAD)) autocalc_result_bases();
 		else if(recalculate) execute_expression(false);
 	}
 	update_status_text();
@@ -15094,6 +15125,7 @@ void set_rpn_mode(bool b) {
 		gtk_list_store_clear(stackstore);
 		g_signal_handlers_unblock_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_deleted, NULL);
 		clearresult();
+
 		if(auto_calculate) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_autocalc")), TRUE);
 		if(chain_mode) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_chain_mode")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_autocalc")), TRUE);
@@ -20658,7 +20690,7 @@ void load_preferences() {
 
 	version_numbers[0] = 4;
 	version_numbers[1] = 8;
-	version_numbers[2] = 0;
+	version_numbers[2] = 1;
 
 	bool old_history_format = false;
 	unformatted_history = 0;
@@ -24743,6 +24775,8 @@ void on_button_programmers_keypad_toggled(GtkToggleButton *w, gpointer) {
 		if(displayed_mstruct) {
 			set_result_bases(*displayed_mstruct);
 			update_result_bases();
+		} else if(!rpn_mode) {
+			autocalc_result_bases();
 		}
 		gtk_stack_set_visible_child_name(GTK_STACK(gtk_builder_get_object(main_builder, "stack_keypad_top")), "page1");
 	} else {
@@ -24756,8 +24790,7 @@ void on_button_programmers_keypad_toggled(GtkToggleButton *w, gpointer) {
 		programming_outbase = printops.base;
 		if(evalops.parse_options.base != 10) clear_expression_text();
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_dec")), TRUE);
-		result_bin = ""; result_oct = ""; result_dec = ""; result_hex = "";
-		update_result_bases();
+		clear_result_bases();
 	}
 	focus_keeping_selection();
 }
@@ -25683,6 +25716,7 @@ void on_expressionbuffer_changed(GtkTextBuffer *o, gpointer) {
 	if(result_text.empty() && !autocalc_history_timeout_id && (!chain_mode || auto_calculate)) return;
 	if(!dont_change_index) expression_history_index = -1;
 	if((!o || !auto_calculate) && !rpn_mode) clearresult();
+	if(o && !rpn_mode && !auto_calculate && (visible_keypad & PROGRAMMING_KEYPAD)) autocalc_result_bases();
 }
 
 void on_expressionbuffer_paste_done(GtkTextBuffer*, GtkClipboard *cb, gpointer) {
