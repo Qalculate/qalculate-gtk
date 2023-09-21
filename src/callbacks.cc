@@ -3480,12 +3480,13 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 			}
 		}
 		if(auto_calculate && evalops.parse_options.base != BASE_UNICODE && (evalops.parse_options.base != BASE_CUSTOM || (CALCULATOR->customInputBase() <= 62 && CALCULATOR->customInputBase() >= -62))) {
-			if(last_is_operator(str, evalops.parse_options.base == 10) && (evalops.parse_options.base != BASE_ROMAN_NUMERALS || str[str.length() - 1] != '|' || str.find('|') == str.length() - 1)) return;
 			GtkTextMark *mark = gtk_text_buffer_get_insert(expressionbuffer);
 			if(mark) {
 				GtkTextIter ipos;
 				gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mark);
-				if(!gtk_text_iter_is_end(&ipos)) {
+				if(gtk_text_iter_is_end(&ipos)) {
+					if(last_is_operator(str, evalops.parse_options.base == 10) && (evalops.parse_options.base != BASE_ROMAN_NUMERALS || str[str.length() - 1] != '|' || str.find('|') == str.length() - 1)) return;
+				} else {
 					GtkTextIter iter = ipos;
 					gtk_text_iter_forward_char(&iter);
 					gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &ipos, &iter, FALSE);
