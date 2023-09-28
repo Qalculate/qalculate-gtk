@@ -3438,7 +3438,10 @@ void clear_result_bases() {
 	update_result_bases();
 }
 
-void do_auto_calc(bool recalculate = true, string str = string()) {
+string prev_autocalc_str;
+MathStructure current_status_struct;
+
+void do_auto_calc(int recalculate = 1, string str = string()) {
 	if(block_result_update || block_expression_execution) return;
 	MathStructure mauto;
 	bool do_factors = false, do_pfe = false, do_expand = false;
@@ -3476,17 +3479,26 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 		if(origstr && str.length() > 1 && str[0] == '/') {
 			size_t i = str.find_first_not_of(SPACES, 1);
 			if(i != string::npos && (signed char) str[i] > 0 && is_not_in(NUMBER_ELEMENTS OPERATORS, str[i])) {
-				clearresult(); return;
+				clearresult();
+				return;
 			}
 		}
-		if(auto_calculate && evalops.parse_options.base != BASE_UNICODE && (evalops.parse_options.base != BASE_CUSTOM || (CALCULATOR->customInputBase() <= 62 && CALCULATOR->customInputBase() >= -62))) {
+		if(recalculate == 2 && gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack"))) != GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon")) && evalops.parse_options.base != BASE_UNICODE && (evalops.parse_options.base != BASE_CUSTOM || (CALCULATOR->customInputBase() <= 62 && CALCULATOR->customInputBase() >= -62))) {
 			GtkTextMark *mark = gtk_text_buffer_get_insert(expressionbuffer);
 			if(mark) {
 				GtkTextIter ipos;
 				gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mark);
+				bool b_to = CALCULATOR->hasToExpression(str, false, evalops) || CALCULATOR->hasWhereExpression(str, evalops);
 				if(gtk_text_iter_is_end(&ipos)) {
-					if(last_is_operator(str, evalops.parse_options.base == 10) && (evalops.parse_options.base != BASE_ROMAN_NUMERALS || str[str.length() - 1] != '|' || str.find('|') == str.length() - 1)) return;
-				} else {
+					if(last_is_operator(str, evalops.parse_options.base == 10) && (evalops.parse_options.base != BASE_ROMAN_NUMERALS || str[str.length() - 1] != '|' || str.find('|') == str.length() - 1)) {
+						size_t n = 1;
+						while(n < str.length() && (char) str[str.length() - n] < 0 && (unsigned char) str[str.length() - n] < 0xC0) n++;
+						if(n == str.length() || (display_expression_status && !b_to && parsed_mstruct->equals(current_status_struct, true, true)) || ((!display_expression_status || b_to) && str.length() - n == prev_autocalc_str.length() && str.substr(0, str.length() - n) == prev_autocalc_str)) {
+							auto_calc_stopped_at_operator = true;
+							return;
+						}
+					}
+				} else if(!b_to && display_expression_status) {
 					GtkTextIter iter = ipos;
 					gtk_text_iter_forward_char(&iter);
 					gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &ipos, &iter, FALSE);
@@ -3502,13 +3514,16 @@ void do_auto_calc(bool recalculate = true, string str = string()) {
 					}
 					if((c2.length() == 1 && is_in("*/^|&<>=)]", c2[0]) && (c2[0] != '|' || evalops.parse_options.base != BASE_ROMAN_NUMERALS)) || (c2.length() > 1 && (c2 == "∧" || c2 == "∨" || c2 == "⊻" || c2 == expression_times_sign() || c2 == expression_divide_sign() || c2 == SIGN_NOT_EQUAL || c2 == SIGN_GREATER_OR_EQUAL || c2 == SIGN_LESS_OR_EQUAL))) {
 						if(c1.empty() || (c1.length() == 1 && is_in(OPERATORS LEFT_PARENTHESIS, c1[0]) && c1[0] != '!' && (c1[0] != '|' || (evalops.parse_options.base != BASE_ROMAN_NUMERALS && c1 != "|")) && (c1[0] != '&' || c2 != "&") && (c1[0] != '/' || (c2 != "/" && c2 != expression_divide_sign())) && (c1[0] != '*' || (c2 != "*" && c2 != expression_times_sign())) && ((c1[0] != '>' && c1[0] != '<') || (c2 != "=" && c2 != c1)) && ((c2 != ">" && c2 == "<") || (c1[0] != '=' && c1 != c2))) || (c1.length() > 1 && (c1 == "∧" || c1 == "∨" || c1 == "⊻" || c1 == SIGN_NOT_EQUAL || c1 == SIGN_GREATER_OR_EQUAL || c1 == SIGN_LESS_OR_EQUAL || (c1 == expression_times_sign() && c2 != "*" && c2 != expression_times_sign()) || (c1 == expression_divide_sign() && c2 != "/" && c2 != expression_divide_sign()) || c1 == expression_add_sign() || c1 == expression_sub_sign()))) {
-							auto_calc_stopped_at_operator = true;
-							return;
+							if(parsed_mstruct->equals(current_status_struct, true, true)) {
+								auto_calc_stopped_at_operator = true;
+								return;
+							}
 						}
 					}
 				}
 			}
 		}
+		prev_autocalc_str = str;
 		if(origstr) {
 			to_caf = -1; to_fraction = false; to_prefix = 0; to_base = 0; to_bits = 0; to_nbase.clear();
 		}
@@ -4076,7 +4091,7 @@ bool do_chain_mode(const gchar *op) {
 			else if(vec_n > 0 && str[i] == RIGHT_VECTOR_WRAP_CH) vec_n--;
 		}
 		if(par_n > 0 || vec_n > 0) return false;
-		if(!auto_calculate) do_auto_calc(true);
+		if(!auto_calculate) do_auto_calc();
 		rpn_mode = true;
 		if(get_expression_text().find_first_not_of(NUMBER_ELEMENTS SPACE) != string::npos && (!parsed_mstruct || ((!parsed_mstruct->isMultiplication() || op != expression_times_sign()) && (!parsed_mstruct->isAddition() || (op != expression_add_sign() && op != expression_sub_sign())) && (!parsed_mstruct->isBitwiseOr() || strcmp(op, BITWISE_OR) != 0) && (!parsed_mstruct->isBitwiseAnd() || strcmp(op, BITWISE_AND) != 0)))) {
 			block_add_to_undo++;
@@ -4104,6 +4119,7 @@ extern MathStructure get_units_for_parsed_expression(const MathStructure *parsed
 
 void display_parse_status() {
 	current_function = NULL;
+	if(auto_calculate && expression_has_changed2) current_status_struct.setAborted();
 	if(!display_expression_status) return;
 	if(block_display_parse) return;
 	GtkTextIter istart, iend, ipos;
@@ -4239,6 +4255,7 @@ void display_parse_status() {
 				current_from_unit = NULL;
 			}
 		}
+		if(auto_calculate) current_status_struct = mparse;
 		PrintOptions po;
 		po.preserve_format = true;
 		po.show_ending_zeroes = evalops.parse_options.read_precision != DONT_READ_PRECISION && !CALCULATOR->usesIntervalArithmetic() && evalops.parse_options.base > BASE_CUSTOM;
@@ -12736,7 +12753,7 @@ void expression_calculation_updated() {
 	if(!rpn_mode) {
 		if(parsed_mstruct) {
 			for(size_t i = 0; i < 5; i++) {
-				if(parsed_mstruct->contains(vans[i])) {update_status_text(); return;}
+				if(parsed_mstruct->contains(vans[i])) return;
 			}
 		}
 		if(auto_calculate) do_auto_calc();
@@ -19572,6 +19589,8 @@ void load_mode(const mode_struct &mode) {
 	gchar *gtext = gtk_text_buffer_get_text(expressionbuffer, &istart, &iend, FALSE);
 	string str = gtext;
 	g_free(gtext);
+	expression_has_changed2 = true;
+	display_parse_status();
 	if(auto_calculate && !rpn_mode) {
 		do_auto_calc();
 	} else if(rpn_mode || expression_has_changed || str.find_first_not_of(SPACES) == string::npos) {
@@ -19579,8 +19598,6 @@ void load_mode(const mode_struct &mode) {
 	} else {
 		execute_expression(false);
 	}
-	expression_has_changed2 = true;
-	display_parse_status();
 }
 void load_mode(string name) {
 	for(size_t i = 0; i < modes.size(); i++) {
@@ -25713,7 +25730,7 @@ void on_expressionbuffer_changed(GtkTextBuffer *o, gpointer) {
 		}
 	}
 	showhide_expression_button();
-	if(o && !rpn_mode && auto_calculate) do_auto_calc();
+	if(o && !rpn_mode && auto_calculate) do_auto_calc(2);
 	if(result_text.empty() && !autocalc_history_timeout_id && (!chain_mode || auto_calculate)) return;
 	if(!dont_change_index) expression_history_index = -1;
 	if((!o || !auto_calculate) && !rpn_mode) clearresult();
@@ -29773,7 +29790,11 @@ void on_menu_item_new_unit_activate(GtkMenuItem*, gpointer) {
 void on_menu_item_autocalc_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)) == auto_calculate) return;
 	auto_calculate = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
-	if(auto_calculate && !rpn_mode) do_auto_calc();
+	if(auto_calculate && !rpn_mode) {
+		current_status_struct.setAborted();
+		prev_autocalc_str = "";
+		do_auto_calc();
+	}
 }
 void on_menu_item_chain_mode_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)) == chain_mode) return;
