@@ -258,6 +258,7 @@ bool remember_position = false, always_on_top = false, aot_changed = false;
 gint minimal_width;
 
 vector<string> expression_history;
+string current_history_expression;
 int expression_history_index = -1;
 bool dont_change_index = false;
 bool result_font_updated = false;
@@ -26326,24 +26327,28 @@ gboolean keypad_long_press_timeout(gpointer data) {
 	} else if(button_press_timeout_w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move")) && button_press_timeout_side) {
 		hide_tooltip(button_press_timeout_w);
 		if(button_press_timeout_side == 2) {
-			if(expression_history_index > -1) {
-				expression_history_index--;
-				dont_change_index = true;
-				block_completion();
-				if(expression_history_index < 0) {
-					clear_expression_text();
-				} else {
-					set_expression_text(expression_history[expression_history_index].c_str());
-				}
-				unblock_completion();
-				dont_change_index = false;
+			if(expression_history_index == -1) current_history_expression = get_expression_text();
+			if(expression_history_index >= -1) expression_history_index--;
+			dont_change_index = true;
+			block_completion();
+			if(expression_history_index < 0) {
+				if(expression_history_index == -1 && current_history_expression != get_expression_text()) set_expression_text(current_history_expression.c_str());
+				else clear_expression_text();
+			} else {
+				set_expression_text(expression_history[expression_history_index].c_str());
 			}
+			unblock_completion();
+			dont_change_index = false;
 		} else {
 			if(expression_history_index + 1 < (int) expression_history.size()) {
+				if(expression_history_index == -1) current_history_expression = get_expression_text();
 				expression_history_index++;
 				dont_change_index = true;
 				block_completion();
-				set_expression_text(expression_history[expression_history_index].c_str());
+				if(expression_history_index == -1 && current_history_expression == get_expression_text()) expression_history_index = 0;
+				if(expression_history_index == -1) set_expression_text(current_history_expression.c_str());
+				else if(expression_history.empty()) expression_history_index = -1;
+				else set_expression_text(expression_history[expression_history_index].c_str());
 				unblock_completion();
 				dont_change_index = false;
 			}
@@ -26496,24 +26501,28 @@ gboolean on_button_move_button_event(GtkWidget *w, GdkEventButton *event, gpoint
 	if(event->type == GDK_BUTTON_RELEASE && event->button == 1) {
 		if(event->window && (event->x < 0 || event->y < 0 || event->x > gdk_window_get_width(event->window) || event->y > gdk_window_get_height(event->window))) return FALSE;
 		if(event->window && event->x > gdk_window_get_width(event->window) / 2) {
-			if(expression_history_index > -1) {
-				expression_history_index--;
-				dont_change_index = true;
-				block_completion();
-				if(expression_history_index < 0) {
-					clear_expression_text();
-				} else {
-					set_expression_text(expression_history[expression_history_index].c_str());
-				}
-				unblock_completion();
-				dont_change_index = false;
+			if(expression_history_index == -1) current_history_expression = get_expression_text();
+			if(expression_history_index >= -1) expression_history_index--;
+			dont_change_index = true;
+			block_completion();
+			if(expression_history_index < 0) {
+				if(expression_history_index == -1 && current_history_expression != get_expression_text()) set_expression_text(current_history_expression.c_str());
+				else clear_expression_text();
+			} else {
+				set_expression_text(expression_history[expression_history_index].c_str());
 			}
+			unblock_completion();
+			dont_change_index = false;
 		} else {
 			if(expression_history_index + 1 < (int) expression_history.size()) {
+				if(expression_history_index == -1) current_history_expression = get_expression_text();
 				expression_history_index++;
 				dont_change_index = true;
 				block_completion();
-				set_expression_text(expression_history[expression_history_index].c_str());
+				if(expression_history_index == -1 && current_history_expression == get_expression_text()) expression_history_index = 0;
+				if(expression_history_index == -1) set_expression_text(current_history_expression.c_str());
+				else if(expression_history.empty()) expression_history_index = -1;
+				else set_expression_text(expression_history[expression_history_index].c_str());
 				unblock_completion();
 				dont_change_index = false;
 			}
@@ -34926,7 +34935,6 @@ gboolean on_resultspinner_button_press_event(GtkWidget *w, GdkEventButton *event
 }
 
 bool disable_history_arrow_keys = false;
-string current_history_expression;
 gboolean on_key_release_event(GtkWidget*, GdkEventKey*, gpointer) {
 	disable_history_arrow_keys = false;
 	return FALSE;
