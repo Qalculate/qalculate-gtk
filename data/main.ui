@@ -1557,6 +1557,157 @@ On: y - x</property>
                                 <signal name="activate" handler="on_menu_item_fraction_combined_activate" swapped="no"/>
                               </object>
                             </child>
+                            <child>
+                              <object class="GtkSeparatorMenuItem" id="separator_fr1">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_fraction_halves">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="no">1/2</property>
+                                <property name="use-underline">True</property>
+                                <property name="group">menu_item_fraction_decimal</property>
+                                <signal name="activate" handler="on_menu_item_fraction_halves_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_fraction_3rds">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="no">1/3</property>
+                                <property name="use-underline">True</property>
+                                <property name="group">menu_item_fraction_decimal</property>
+                                <signal name="activate" handler="on_menu_item_fraction_3rds_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_fraction_4ths">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="no">1/4</property>
+                                <property name="use-underline">True</property>
+                                <property name="group">menu_item_fraction_decimal</property>
+                                <signal name="activate" handler="on_menu_item_fraction_4ths_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_fraction_5ths">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="no">1/5</property>
+                                <property name="use-underline">True</property>
+                                <property name="group">menu_item_fraction_decimal</property>
+                                <signal name="activate" handler="on_menu_item_fraction_5ths_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_fraction_6ths">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="no">1/6</property>
+                                <property name="use-underline">True</property>
+                                <property name="group">menu_item_fraction_decimal</property>
+                                <signal name="activate" handler="on_menu_item_fraction_6ths_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_fraction_8ths">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="no">1/8</property>
+                                <property name="use-underline">True</property>
+                                <property name="group">menu_item_fraction_decimal</property>
+                                <signal name="activate" handler="on_menu_item_fraction_8ths_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_fraction_10ths">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="no">1/10</property>
+                                <property name="use-underline">True</property>
+                                <property name="group">menu_item_fraction_decimal</property>
+                                <signal name="activate" handler="on_menu_item_fraction_10ths_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_fraction_12ths">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="no">1/12</property>
+                                <property name="use-underline">True</property>
+                                <property name="group">menu_item_fraction_decimal</property>
+                                <signal name="activate" handler="on_menu_item_fraction_12ths_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_fraction_16ths">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="no">1/16</property>
+                                <property name="use-underline">True</property>
+                                <property name="group">menu_item_fraction_decimal</property>
+                                <signal name="activate" handler="on_menu_item_fraction_16ths_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_fraction_32ths">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="no">1/32</property>
+                                <property name="use-underline">True</property>
+                                <property name="group">menu_item_fraction_decimal</property>
+                                <signal name="activate" handler="on_menu_item_fraction_32ths_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkCheckMenuItem" id="menu_item_fraction_fixed_combined">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="yes" comments="Mixed fraction">Mixed</property>
+                                <property name="use-underline">True</property>
+                                <signal name="activate" handler="on_menu_item_fraction_fixed_combined_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkSeparatorMenuItem" id="separator_fr2">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_fraction_percent">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="no">Percent</property>
+                                <property name="use-underline">True</property>
+                                <property name="group">menu_item_fraction_decimal</property>
+                                <signal name="activate" handler="on_menu_item_fraction_percent_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_fraction_permille">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="no">Permille</property>
+                                <property name="use-underline">True</property>
+                                <property name="group">menu_item_fraction_decimal</property>
+                                <signal name="activate" handler="on_menu_item_fraction_permille_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="menu_item_fraction_permyriad">
+                                <property name="visible">False</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="no">Permyriad</property>
+                                <property name="use-underline">True</property>
+                                <property name="group">menu_item_fraction_decimal</property>
+                                <signal name="activate" handler="on_menu_item_fraction_permyriad_activate" swapped="no"/>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>
@@ -8669,6 +8820,15 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
         <property name="use-underline">True</property>
         <property name="group">popup_menu_item_fraction_decimal</property>
         <signal name="activate" handler="on_popup_menu_item_fraction_combined_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="popup_menu_item_fraction_other">
+        <property name="visible">False</property>
+        <property name="can-focus">False</property>
+        <property name="label" translatable="no">Other</property>
+        <property name="use-underline">True</property>
+        <property name="group">popup_menu_item_fraction_decimal</property>
       </object>
     </child>
     <child>

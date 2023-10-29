@@ -381,6 +381,7 @@ bool scientific_negexp = true;
 bool scientific_notminuslast = true;
 bool scientific_noprefix = true;
 int auto_prefix = 0;
+bool fraction_fixed_combined = true;
 
 bool ignore_locale = false;
 string custom_lang;
@@ -405,7 +406,8 @@ gint autocalc_history_timeout_id = 0;
 gint autocalc_history_delay = 2000;
 bool chain_mode = false;
 
-bool to_fraction = false;
+int to_fraction = 0;
+long int to_fixed_fraction = 0;
 char to_prefix = 0;
 int to_base = 0;
 int to_caf = -1;
@@ -3450,6 +3452,39 @@ void clear_result_bases() {
 	update_result_bases();
 }
 
+long int get_fixed_denominator_gtk2(const std::string &str, int &to_fraction, char sgn, bool qalc_command) {
+	long int fden = 0;
+	if(!qalc_command && (equalsIgnoreCase(str, "fraction") || equalsIgnoreCase(str, _("fraction")))) {
+		fden = -1;
+	} else {
+		size_t ndiv = strlen(expression_divide_sign());
+		if(str.length() > 2 && str[0] == '1' && str[1] == '/' && str.find_first_not_of(NUMBERS, 2) == string::npos) {
+			fden = s2i(str.substr(2, str.length() - 2));
+		} else if(str.length() > ndiv + 1 && str[0] == '1' && str.rfind(expression_divide_sign(), ndiv + 1) == 1 && str.find_first_not_of(NUMBERS, ndiv + 1) == string::npos) {
+			fden = s2i(str.substr(ndiv + 1, str.length() - (ndiv + 1)));
+		} else if(str == "3rds") {
+			fden = 3;
+		} else if(str == "halves") {
+			fden = 2;
+		} else if(str.length() > 3 && str.find("ths", str.length() - 3) != string::npos && str.find_first_not_of(NUMBERS) == str.length() - 3) {
+			fden = s2i(str.substr(0, str.length() - 3));
+		}
+	}
+	if(fden == 1) fden = 0;
+	if(fden != 0) {
+		if(sgn == '-' || (fden > 0 && !qalc_command && sgn != '+' && !gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fixed_combined"))))) to_fraction = 2;
+		else to_fraction = 1;
+	}
+	return fden;
+}
+long int get_fixed_denominator_gtk(const std::string &str, int &to_fraction, bool qalc_command = false) {
+	size_t n = 0;
+	if(str.rfind(SIGN_MINUS, 2) == 0) n = strlen(SIGN_MINUS);
+	else if(str[0] == '-' || str[0] == '+') n = 1;
+	if(n > 0) return get_fixed_denominator_gtk2(str.substr(n, str.length() - n), to_fraction, n > 1 ? '-' : str[0], qalc_command);
+	return get_fixed_denominator_gtk2(str, to_fraction, 0, qalc_command);
+}
+
 string prev_autocalc_str;
 MathStructure current_status_struct;
 
@@ -3473,6 +3508,7 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 	bool save_all = printops.use_all_prefixes;
 	bool save_den = printops.use_denominator_prefix;
 	int save_bin = CALCULATOR->usesBinaryPrefixes();
+	long int save_fden = CALCULATOR->fixedDenominator();
 	NumberFractionFormat save_format = printops.number_fraction_format;
 	bool save_restrict_fraction_length = printops.restrict_fraction_length;
 	bool do_to = false;
@@ -3537,7 +3573,7 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 		}
 		prev_autocalc_str = str;
 		if(origstr) {
-			to_caf = -1; to_fraction = false; to_prefix = 0; to_base = 0; to_bits = 0; to_nbase.clear();
+			to_caf = -1; to_fraction = 0; to_fixed_fraction = 0; to_prefix = 0; to_base = 0; to_bits = 0; to_nbase.clear();
 		}
 		string from_str = str, to_str, str_conv;
 		bool had_to_expression = false;
@@ -3725,9 +3761,6 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 					evalops.auto_post_conversion = POST_CONVERSION_NONE;
 					evalops.mixed_units_conversion = MIXED_UNITS_CONVERSION_FORCE_INTEGER;
 					do_to = true;
-				} else if(equalsIgnoreCase(to_str, "fraction") || equalsIgnoreCase(to_str, _("fraction"))) {
-					do_to = true;
-					to_fraction = true;
 				} else if(equalsIgnoreCase(to_str, "factors") || equalsIgnoreCase(to_str, _("factors")) || equalsIgnoreCase(to_str, "factor")) {
 					do_factors = true;
 					str = from_str;
@@ -3738,14 +3771,20 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 					base_from_string(to_str2, to_base, to_nbase);
 					do_to = true;
 				} else {
-					if(to_str[0] == '?') {
-						to_prefix = 1;
-					} else if(to_str.length() > 1 && to_str[1] == '?' && (to_str[0] == 'b' || to_str[0] == 'a' || to_str[0] == 'd')) {
-						to_prefix = to_str[0];
-					}
 					do_to = true;
-					if(!str_conv.empty()) str_conv += " to ";
-					str_conv += to_str;
+					long int fden = get_fixed_denominator_gtk(to_str, to_fraction);
+					if(fden != 0) {
+						if(fden < 0) to_fixed_fraction = 0;
+						else to_fixed_fraction = fden;
+					} else {
+						if(to_str[0] == '?') {
+							to_prefix = 1;
+						} else if(to_str.length() > 1 && to_str[1] == '?' && (to_str[0] == 'b' || to_str[0] == 'a' || to_str[0] == 'd')) {
+							to_prefix = to_str[0];
+						}
+						if(!str_conv.empty()) str_conv += " to ";
+						str_conv += to_str;
+					}
 				}
 				if(str_left.empty()) break;
 				to_str = str_left;
@@ -3869,7 +3908,7 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 
 		CALCULATOR->startControl(100);
 
-		if(to_base != 0 || to_fraction || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form)) {
+		if(to_base != 0 || to_fraction > 0 || to_fixed_fraction >= 2 || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form)) {
 			if(to_base != 0 && (to_base != printops.base || to_bits != printops.binary_bits || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()))) {
 				printops.base = to_base;
 				printops.binary_bits = to_bits;
@@ -3880,9 +3919,15 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 				}
 				do_to = true;
 			}
-			if(to_fraction && (printops.restrict_fraction_length || printops.number_fraction_format != FRACTION_COMBINED)) {
+			if(to_fixed_fraction >= 2) {
+				if(to_fraction == 2) printops.number_fraction_format = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
+				else printops.number_fraction_format = FRACTION_COMBINED_FIXED_DENOMINATOR;
+				CALCULATOR->setFixedDenominator(to_fixed_fraction);
+				do_to = true;
+			} else if(to_fraction > 0 && (printops.restrict_fraction_length || printops.number_fraction_format != FRACTION_COMBINED)) {
 				printops.restrict_fraction_length = false;
-				printops.number_fraction_format = FRACTION_COMBINED;
+				if(to_fraction == 2) printops.number_fraction_format = FRACTION_FRACTIONAL;
+				else printops.number_fraction_format = FRACTION_COMBINED;
 				do_to = true;
 			}
 			if(to_caf >= 0 && to_caf != complex_angle_form) {
@@ -4038,6 +4083,7 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 		printops.use_prefixes_for_all_units = save_allu;
 		printops.use_denominator_prefix = save_den;
 		CALCULATOR->useBinaryPrefixes(save_bin);
+		CALCULATOR->setFixedDenominator(save_fden);
 		printops.number_fraction_format = save_format;
 		printops.restrict_fraction_length = save_restrict_fraction_length;
 		complex_angle_form = caf_bak;
@@ -4392,8 +4438,6 @@ void display_parse_status() {
 					parsed_expression += _("base units");
 				} else if(equalsIgnoreCase(str_u, "mixed") || equalsIgnoreCase(str_u, _("mixed"))) {
 					parsed_expression += _("mixed units");
-				} else if(equalsIgnoreCase(str_u, "fraction") || equalsIgnoreCase(str_u, _("fraction"))) {
-					parsed_expression += _("fraction");
 				} else if(equalsIgnoreCase(str_u, "factors") || equalsIgnoreCase(str_u, _("factors")) || equalsIgnoreCase(str_u, "factor")) {
 					parsed_expression += _("factors");
 				} else if(equalsIgnoreCase(str_u, "partial fraction") || equalsIgnoreCase(str_u, _("partial fraction"))) {
@@ -4468,50 +4512,62 @@ void display_parse_status() {
 					parsed_expression += gstr;
 					g_free(gstr);
 				} else {
-					Variable *v = CALCULATOR->getActiveVariable(str_u);
-					if(v && !v->isKnown()) v = NULL;
-					if(v && CALCULATOR->getActiveUnit(str_u)) v = NULL;
-					if(v) {
-						mparse = v;
+					int tofr = 0;
+					long int fden = get_fixed_denominator_gtk(str_u, tofr);
+					if(fden > 0) {
+						parsed_expression += _("fraction");
+						parsed_expression += " (";
+						parsed_expression += "1/";
+						parsed_expression += i2s(fden);
+						parsed_expression += ")";
+					} else if(fden < 0) {
+						parsed_expression += _("fraction");
 					} else {
-						CALCULATOR->beginTemporaryStopMessages();
-						CompositeUnit cu("", evalops.parse_options.limit_implicit_multiplication ? "01" : "00", "", str_u);
-						int i_warn = 0, i_error = CALCULATOR->endTemporaryStopMessages(NULL, &i_warn);
-						if(!had_to_conv && cu.countUnits() > 0 && !str_e.empty() && str_w.empty()) {
-							CALCULATOR->beginTemporaryStopMessages();
-							MathStructure to_struct = get_units_for_parsed_expression(&mparse, &cu, evalops, current_from_struct && !current_from_struct->isAborted() ? current_from_struct : NULL);
-							if(!to_struct.isZero()) {
-								mparse2 = new MathStructure();
-								CALCULATOR->parse(mparse2, str_e, evalops.parse_options);
-								po.preserve_format = false;
-								to_struct.format(po);
-								po.preserve_format = true;
-								if(to_struct.isMultiplication() && to_struct.size() >= 2) {
-									if(to_struct[0].isOne()) to_struct.delChild(1, true);
-									else if(to_struct[1].isOne()) to_struct.delChild(2, true);
-								}
-								mparse2->multiply(to_struct);
-							}
-							CALCULATOR->endTemporaryStopMessages();
-						}
-						if(i_error) {
-							ParseOptions pa = evalops.parse_options;
-							pa.units_enabled = true;
-							CALCULATOR->parse(&mparse, str_u, pa);
+						Variable *v = CALCULATOR->getActiveVariable(str_u);
+						if(v && !v->isKnown()) v = NULL;
+						if(v && CALCULATOR->getActiveUnit(str_u)) v = NULL;
+						if(v) {
+							mparse = v;
 						} else {
-							if(i_warn > 0) had_warnings = true;
-							mparse = cu.generateMathStructure(true);
+							CALCULATOR->beginTemporaryStopMessages();
+							CompositeUnit cu("", evalops.parse_options.limit_implicit_multiplication ? "01" : "00", "", str_u);
+							int i_warn = 0, i_error = CALCULATOR->endTemporaryStopMessages(NULL, &i_warn);
+							if(!had_to_conv && cu.countUnits() > 0 && !str_e.empty() && str_w.empty()) {
+								CALCULATOR->beginTemporaryStopMessages();
+								MathStructure to_struct = get_units_for_parsed_expression(&mparse, &cu, evalops, current_from_struct && !current_from_struct->isAborted() ? current_from_struct : NULL);
+								if(!to_struct.isZero()) {
+									mparse2 = new MathStructure();
+									CALCULATOR->parse(mparse2, str_e, evalops.parse_options);
+									po.preserve_format = false;
+									to_struct.format(po);
+									po.preserve_format = true;
+									if(to_struct.isMultiplication() && to_struct.size() >= 2) {
+										if(to_struct[0].isOne()) to_struct.delChild(1, true);
+										else if(to_struct[1].isOne()) to_struct.delChild(2, true);
+									}
+									mparse2->multiply(to_struct);
+								}
+								CALCULATOR->endTemporaryStopMessages();
+							}
+							if(i_error) {
+								ParseOptions pa = evalops.parse_options;
+								pa.units_enabled = true;
+								CALCULATOR->parse(&mparse, str_u, pa);
+							} else {
+								if(i_warn > 0) had_warnings = true;
+								mparse = cu.generateMathStructure(true);
+							}
+							mparse.format(po);
 						}
-						mparse.format(po);
+						CALCULATOR->beginTemporaryStopMessages();
+						parsed_expression += mparse.print(po, true, false, TAG_TYPE_HTML);
+						CALCULATOR->endTemporaryStopMessages();
+						if(had_to_conv && mparse2) {
+							mparse2->unref();
+							mparse2 = NULL;
+						}
+						had_to_conv = true;
 					}
-					CALCULATOR->beginTemporaryStopMessages();
-					parsed_expression += mparse.print(po, true, false, TAG_TYPE_HTML);
-					CALCULATOR->endTemporaryStopMessages();
-					if(had_to_conv && mparse2) {
-						mparse2->unref();
-						mparse2 = NULL;
-					}
-					had_to_conv = true;
 				}
 				if(str_u2.empty()) break;
 				str_u = str_u2;
@@ -8388,6 +8444,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						exp_minus = false;
 					}
 				} else {
+					if(po.number_fraction_format == FRACTION_FRACTIONAL_FIXED_DENOMINATOR || po.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR) {
+						po.show_ending_zeroes = false;
+						po.number_fraction_format = FRACTION_FRACTIONAL;
+					} else if(po.number_fraction_format == FRACTION_PERCENT || po.number_fraction_format == FRACTION_PERMILLE || po.number_fraction_format == FRACTION_PERMYRIAD) {
+						po.number_fraction_format = FRACTION_DECIMAL;
+					}
 					bool was_approx = (po.is_approximate && *po.is_approximate);
 					if(po.is_approximate) *po.is_approximate = false;
 					if(!use_e_notation || base_without_exp || (po.base != BASE_DECIMAL && !BASE_IS_SEXAGESIMAL(po.base) && po.base != BASE_TIME)) {
@@ -11916,13 +11978,14 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	bool save_all = printops.use_all_prefixes;
 	bool save_den = printops.use_denominator_prefix;
 	int save_bin = CALCULATOR->usesBinaryPrefixes();
+	long int save_fden = CALCULATOR->fixedDenominator();
 	NumberFractionFormat save_format = printops.number_fraction_format;
 	bool save_restrict_fraction_length = printops.restrict_fraction_length;
 	bool do_to = false;
 	bool result_cleared = false;
 
 	if(stack_index == 0) {
-		if(to_base != 0 || to_fraction || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form)) {
+		if(to_base != 0 || to_fraction > 0 || to_fixed_fraction >= 2 || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form)) {
 			if(to_base != 0 && (to_base != printops.base || to_bits != printops.binary_bits || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()))) {
 				printops.base = to_base;
 				printops.binary_bits = to_bits;
@@ -11933,9 +11996,15 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				}
 				do_to = true;
 			}
-			if(to_fraction && (printops.restrict_fraction_length || printops.number_fraction_format != FRACTION_COMBINED)) {
+			if(to_fixed_fraction >= 2) {
+				if(to_fraction == 2) printops.number_fraction_format = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
+				else printops.number_fraction_format = FRACTION_COMBINED_FIXED_DENOMINATOR;
+				CALCULATOR->setFixedDenominator(to_fixed_fraction);
+				do_to = true;
+			} else if(to_fraction > 0 && (printops.restrict_fraction_length || (to_fraction != 2 && printops.number_fraction_format != FRACTION_COMBINED) || (to_fraction == 2 && printops.number_fraction_format != FRACTION_FRACTIONAL))) {
 				printops.restrict_fraction_length = false;
-				printops.number_fraction_format = FRACTION_COMBINED;
+				if(to_fraction == 2) printops.number_fraction_format = FRACTION_FRACTIONAL;
+				else printops.number_fraction_format = FRACTION_COMBINED;
 				do_to = true;
 			}
 			if(to_caf >= 0 && to_caf != complex_angle_form) {
@@ -12339,6 +12408,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		printops.use_prefixes_for_all_units = save_allu;
 		printops.use_denominator_prefix = save_den;
 		CALCULATOR->useBinaryPrefixes(save_bin);
+		CALCULATOR->setFixedDenominator(save_fden);
 		printops.number_fraction_format = save_format;
 		printops.restrict_fraction_length = save_restrict_fraction_length;
 	}
@@ -13562,19 +13632,27 @@ void set_option(string str) {
 		else if(equalsIgnoreCase(svalue, "exact")) v = FRACTION_DECIMAL_EXACT;
 		else if(empty_value || equalsIgnoreCase(svalue, "on")) v = FRACTION_FRACTIONAL;
 		else if(equalsIgnoreCase(svalue, "combined") || equalsIgnoreCase(svalue, "mixed")) v = FRACTION_COMBINED;
-		else if(equalsIgnoreCase(svalue, "long")) v = FRACTION_COMBINED + 1;
-		else if(equalsIgnoreCase(svalue, "dual")) v = FRACTION_COMBINED + 2;
+		else if(equalsIgnoreCase(svalue, "long")) v = FRACTION_COMBINED_FIXED_DENOMINATOR + 1;
+		else if(equalsIgnoreCase(svalue, "dual")) v = FRACTION_COMBINED_FIXED_DENOMINATOR + 2;
 		else if(equalsIgnoreCase(svalue, "auto")) v = -1;
 		else if(svalue.find_first_not_of(SPACES NUMBERS) == string::npos) {
 			v = s2i(svalue);
+		} else {
+			int tofr = 0;
+			long int fden = get_fixed_denominator_gtk(svalue, tofr, true);
+			if(fden != 0) {
+				if(tofr == 1) v = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
+				else v = FRACTION_COMBINED_FIXED_DENOMINATOR;
+				if(fden > 0) CALCULATOR->setFixedDenominator(fden);
+			}
 		}
-		if(v > FRACTION_COMBINED + 2) {
+		if(v > FRACTION_COMBINED_FIXED_DENOMINATOR + 2) {
 			CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
-		} else if(v < 0 || v > FRACTION_COMBINED + 1) {
+		} else if(v < 0 || v > FRACTION_COMBINED_FIXED_DENOMINATOR + 1) {
 			CALCULATOR->error(true, "Unsupported value: %s.", svalue.c_str(), NULL);
 		} else {
 			int dff = default_fraction_fraction;
-			switch(v > FRACTION_COMBINED ? FRACTION_FRACTIONAL : v) {
+			switch(v) {
 				case FRACTION_DECIMAL: {
 					gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
 					break;
@@ -13589,11 +13667,65 @@ void set_option(string str) {
 				}
 				case FRACTION_FRACTIONAL: {
 					gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
-					if(v > FRACTION_COMBINED) {
-						printops.restrict_fraction_length = false;
-						result_format_updated();
-					}
 					break;
+				}
+				default: {
+					if(v == FRACTION_COMBINED_FIXED_DENOMINATOR) {
+						bool b = false;
+						switch(CALCULATOR->fixedDenominator()) {
+							case 3: {
+								gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_3rds")), TRUE);
+								b = true;
+								break;
+							}
+							case 4: {
+								gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_4ths")), TRUE);
+								b = true;
+								break;
+							}
+							case 5: {
+								gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_5ths")), TRUE);
+								b = true;
+								break;
+							}
+							case 6: {
+								gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_6ths")), TRUE);
+								b = true;
+								break;
+							}
+							case 8: {
+								gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_8ths")), TRUE);
+								b = true;
+								break;
+							}
+							case 10: {
+								gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_10ths")), TRUE);
+								b = true;
+								break;
+							}
+							case 16: {
+								gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_16ths")), TRUE);
+								b = true;
+								break;
+							}
+						}
+						if(b) break;
+					}
+					if(v == FRACTION_COMBINED_FIXED_DENOMINATOR) {
+						g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_fraction_combined"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_combined_activate, NULL);
+						gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
+						g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_fraction_combined"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_combined_activate, NULL);
+					} else {
+						g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_fraction_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_fraction_activate, NULL);
+						gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
+						g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_fraction_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_fraction_activate, NULL);
+					}
+					if(v > FRACTION_COMBINED_FIXED_DENOMINATOR) {
+						v = FRACTION_FRACTIONAL;
+						printops.restrict_fraction_length = false;
+					}
+					printops.number_fraction_format = (NumberFractionFormat) v;
+					result_format_updated();
 				}
 			}
 			default_fraction_fraction = dff;
@@ -13707,7 +13839,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	if(!mbak_convert.isUndefined() && stack_index == 0) mbak_convert.setUndefined();
 
 	if(execute_str.empty()) {
-		to_fraction = false; to_prefix = 0; to_base = 0; to_bits = 0; to_nbase.clear(); to_caf = -1;
+		to_fraction = 0; to_fixed_fraction = 0; to_prefix = 0; to_base = 0; to_bits = 0; to_nbase.clear(); to_caf = -1;
 	}
 
 	if(str.empty() && !do_mathoperation) {
@@ -14639,9 +14771,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					return;
 				}
 				do_to = true;
-			} else if(equalsIgnoreCase(to_str, "fraction") || equalsIgnoreCase(to_str, _("fraction"))) {
-				do_to = true;
-				to_fraction = true;
 			} else if(equalsIgnoreCase(to_str, "factors") || equalsIgnoreCase(to_str, _("factors")) || equalsIgnoreCase(to_str, "factor")) {
 				if(from_str.empty()) {
 					b_busy = false;
@@ -14672,15 +14801,21 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				set_previous_expression();
 				return;
 			} else {
-				if(to_str[0] == '?') {
-					to_prefix = 1;
-				} else if(to_str.length() > 1 && to_str[1] == '?' && (to_str[0] == 'b' || to_str[0] == 'a' || to_str[0] == 'd')) {
-					to_prefix = to_str[0];
-
-				}
 				do_to = true;
-				if(!str_conv.empty()) str_conv += " to ";
-				str_conv += to_str;
+				long int fden = get_fixed_denominator_gtk(to_str, to_fraction);
+				if(fden != 0) {
+					if(fden < 0) to_fixed_fraction = 0;
+					else to_fixed_fraction = fden;
+				} else {
+					if(to_str[0] == '?') {
+						to_prefix = 1;
+					} else if(to_str.length() > 1 && to_str[1] == '?' && (to_str[0] == 'b' || to_str[0] == 'a' || to_str[0] == 'd')) {
+						to_prefix = to_str[0];
+
+					}
+					if(!str_conv.empty()) str_conv += " to ";
+					str_conv += to_str;
+				}
 			}
 			if(str_left.empty()) break;
 			to_str = str_left;
@@ -19536,6 +19671,7 @@ void set_saved_mode() {
 	modes[1].precision = CALCULATOR->getPrecision();
 	modes[1].interval = CALCULATOR->usesIntervalArithmetic();
 	modes[1].concise_uncertainty_input = CALCULATOR->conciseUncertaintyInputEnabled();
+	modes[1].fixed_denominator = CALCULATOR->fixedDenominator();
 	modes[1].adaptive_interval_display = adaptive_interval_display;
 	modes[1].variable_units_enabled = CALCULATOR->variableUnitsEnabled();
 	modes[1].po = printops;
@@ -19580,6 +19716,7 @@ size_t save_mode_as(string name, bool *new_mode = NULL) {
 	modes[index].at = CALCULATOR->defaultAssumptions()->type();
 	modes[index].as = CALCULATOR->defaultAssumptions()->sign();
 	modes[index].concise_uncertainty_input = CALCULATOR->conciseUncertaintyInputEnabled();
+	modes[index].fixed_denominator = CALCULATOR->fixedDenominator();
 	modes[index].name = name;
 	modes[index].rounding_mode = rounding_mode;
 	modes[index].rpn_mode = rpn_mode;
@@ -19610,6 +19747,7 @@ void load_mode(const mode_struct &mode) {
 	CALCULATOR->setCustomOutputBase(mode.custom_output_base);
 	CALCULATOR->setCustomInputBase(mode.custom_input_base);
 	CALCULATOR->setConciseUncertaintyInputEnabled(mode.concise_uncertainty_input);
+	CALCULATOR->setFixedDenominator(mode.fixed_denominator);
 	rounding_mode = mode.rounding_mode;
 	custom_angle_unit = mode.custom_angle_unit;
 	RESET_TZ
@@ -20593,6 +20731,7 @@ void load_preferences() {
 	scientific_notminuslast = true;
 	scientific_negexp = true;
 	auto_prefix = 0;
+	fraction_fixed_combined = true;
 
 	keep_function_dialog_open = false;
 
@@ -21057,12 +21196,15 @@ void load_preferences() {
 					if(mode_index == 1) printops.restrict_fraction_length = (printops.number_fraction_format >= FRACTION_FRACTIONAL);
 					else modes[mode_index].po.restrict_fraction_length = (modes[mode_index].po.number_fraction_format >= FRACTION_FRACTIONAL);
 				} else if(svar == "number_fraction_format") {
-					if(v >= FRACTION_DECIMAL && v <= FRACTION_COMBINED) {
+					if(v >= FRACTION_DECIMAL && v <= FRACTION_PERMYRIAD) {
 						if(mode_index == 1) printops.number_fraction_format = (NumberFractionFormat) v;
 						else modes[mode_index].po.number_fraction_format = (NumberFractionFormat) v;
 					}
 					if(mode_index == 1) printops.restrict_fraction_length = (printops.number_fraction_format >= FRACTION_FRACTIONAL);
 					else modes[mode_index].po.restrict_fraction_length = (modes[mode_index].po.number_fraction_format >= FRACTION_FRACTIONAL);
+				} else if(svar == "number_fraction_denominator") {
+					if(mode_index == 1) CALCULATOR->setFixedDenominator(v);
+					else modes[mode_index].fixed_denominator = v;
 				} else if(svar == "automatic_number_fraction_format") {
 					automatic_fraction = v;
 				} else if(svar == "default_number_fraction_fraction") {
@@ -21075,6 +21217,8 @@ void load_preferences() {
 					scientific_notminuslast = !v;
 				} else if(svar == "scientific_mode_negative_exponents") {
 					scientific_negexp = v;
+				} else if(svar == "fraction_fixed_combined") {
+					fraction_fixed_combined = v;
 				} else if(svar == "complex_number_form") {
 					if(v == COMPLEX_NUMBER_FORM_CIS + 1) {
 						if(mode_index == 1) {
@@ -22066,6 +22210,7 @@ void save_preferences(bool mode) {
 	if(!scientific_noprefix) fprintf(file, "scientific_mode_unit_prefixes=%i\n", true);
 	if(!scientific_notminuslast) fprintf(file, "scientific_mode_sort_minus_last=%i\n", true);
 	if(!scientific_negexp) fprintf(file, "scientific_mode_negative_exponents=%i\n", false);
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fixed_combined")))) fprintf(file, "fraction_fixed_combined=%i\n", false);
 	if(tc_set) fprintf(file, "temperature_calculation=%i\n", CALCULATOR->getTemperatureCalculationMode());
 	if(sinc_set) fprintf(file, "sinc_function=%i\n", CALCULATOR->getFunctionById(FUNCTION_ID_SINC)->getDefaultValue(2) == "pi" ? 1 : 0);
 	for(unsigned int i = 0; i < custom_buttons.size(); i++) {
@@ -22402,6 +22547,7 @@ void save_preferences(bool mode) {
 		fprintf(file, "negative_exponents=%i\n", modes[i].po.negative_exponents);
 		fprintf(file, "sort_minus_last=%i\n", modes[i].po.sort_options.minus_last);
 		fprintf(file, "number_fraction_format=%i\n", modes[i].po.number_fraction_format);
+		if(modes[i].po.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR || modes[i].po.number_fraction_format == FRACTION_FRACTIONAL_FIXED_DENOMINATOR) fprintf(file, "number_fraction_denominator=%li\n", modes[i].fixed_denominator);
 		fprintf(file, "complex_number_form=%i\n", (modes[i].complex_angle_form && modes[i].eo.complex_number_form == COMPLEX_NUMBER_FORM_CIS) ? modes[i].eo.complex_number_form + 1 : modes[i].eo.complex_number_form);
 		fprintf(file, "use_prefixes=%i\n", modes[i].po.use_unit_prefixes);
 		fprintf(file, "use_prefixes_for_all_units=%i\n", modes[i].po.use_prefixes_for_all_units);
@@ -24672,6 +24818,10 @@ void update_resultview_popup() {
 		}
 		case FRACTION_FRACTIONAL: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_fraction")), TRUE);
+			break;
+		}
+		default: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_other")), TRUE);
 			break;
 		}
 	}
@@ -29156,12 +29306,31 @@ void menu_to_fraction(GtkMenuItem*, gpointer) {
 	NumberFractionFormat save_format = printops.number_fraction_format;
 	bool save_restrict_fraction_length = printops.restrict_fraction_length;
 	printops.restrict_fraction_length = false;
-	to_fraction = false;
+	to_fraction = 0;
+	to_fixed_fraction = 0;
 	printops.number_fraction_format = FRACTION_COMBINED;
 	result_format_updated();
 	printops.number_fraction_format = save_format;
 	printops.restrict_fraction_length = save_restrict_fraction_length;
 }
+void menu_to_fixed_fraction(long int v) {
+	NumberFractionFormat save_format = printops.number_fraction_format;
+	bool save_restrict_fraction_length = printops.restrict_fraction_length;
+	long int save_fden = CALCULATOR->fixedDenominator();
+	printops.restrict_fraction_length = false;
+	to_fraction = 0;
+	to_fixed_fraction = 0;
+	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fixed_combined")))) printops.number_fraction_format = FRACTION_COMBINED_FIXED_DENOMINATOR;
+	else printops.number_fraction_format = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
+	CALCULATOR->setFixedDenominator(v);
+	result_format_updated();
+	printops.number_fraction_format = save_format;
+	printops.restrict_fraction_length = save_restrict_fraction_length;
+	CALCULATOR->setFixedDenominator(save_fden);
+}
+void menu_to_4ths(GtkMenuItem*, gpointer) {menu_to_fixed_fraction(4);}
+void menu_to_8ths(GtkMenuItem*, gpointer) {menu_to_fixed_fraction(8);}
+void menu_to_16ths(GtkMenuItem*, gpointer) {menu_to_fixed_fraction(16);}
 void menu_to_rectangular(GtkMenuItem*, gpointer) {
 	ComplexNumberForm cnf_bak = evalops.complex_number_form;
 	to_caf = 0;
@@ -29263,12 +29432,19 @@ void update_mb_to_menu() {
 	if(b_exact && u_result && u_result->subtype() != SUBTYPE_COMPOSITE_UNIT) b_prefix = has_prefix(displayed_mstruct ? *displayed_mstruct : *mstruct);
 	vector<Unit*> to_us;
 	size_t i_added = 0;
-	if(b_rational) {MENU_ITEM(_("Fraction"), menu_to_fraction)}
-	if(u_result && displayed_printops.base != BASE_SEXAGESIMAL && u_result == CALCULATOR->getDegUnit()) {
-		MENU_ITEM_WITH_INT(_("Sexagesimal"), menu_to_base, BASE_SEXAGESIMAL)
+	if(u_result && u_result->system().find("Imperial") != string::npos) {
+		MENU_ITEM("1/4", menu_to_4ths)
+		MENU_ITEM("1/8", menu_to_8ths)
+		MENU_ITEM("1/16", menu_to_16ths)
 		MENU_SEPARATOR
 	} else if(b_rational) {
-		MENU_SEPARATOR
+		MENU_ITEM(_("Fraction"), menu_to_fraction)
+		if(u_result && displayed_printops.base != BASE_SEXAGESIMAL && u_result == CALCULATOR->getDegUnit()) {
+			MENU_ITEM_WITH_INT(_("Sexagesimal"), menu_to_base, BASE_SEXAGESIMAL)
+			MENU_SEPARATOR
+		} else if(b_rational) {
+			MENU_SEPARATOR
+		}
 	}
 	MENU_ITEM(_("Base units"), on_menu_item_convert_to_base_units_activate);
 	MENU_ITEM(_("Optimal unit"), on_menu_item_convert_to_best_unit_activate);
@@ -31541,7 +31717,8 @@ void on_menu_item_ic_simple_activate(GtkMenuItem *w, gpointer) {
 
 void on_menu_item_fraction_decimal_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	to_fraction = false;
+	to_fraction = 0;
+	to_fixed_fraction = 0;
 	printops.number_fraction_format = FRACTION_DECIMAL;
 	printops.restrict_fraction_length = false;
 	automatic_fraction = false;
@@ -31554,7 +31731,8 @@ void on_menu_item_fraction_decimal_activate(GtkMenuItem *w, gpointer) {
 }
 void on_menu_item_fraction_decimal_exact_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	to_fraction = false;
+	to_fraction = 0;
+	to_fixed_fraction = 0;
 	printops.number_fraction_format = FRACTION_DECIMAL_EXACT;
 	printops.restrict_fraction_length = false;
 	automatic_fraction = false;
@@ -31567,7 +31745,8 @@ void on_menu_item_fraction_decimal_exact_activate(GtkMenuItem *w, gpointer) {
 }
 void on_menu_item_fraction_combined_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	to_fraction = false;
+	to_fraction = 0;
+	to_fixed_fraction = 0;
 	printops.number_fraction_format = FRACTION_COMBINED;
 	printops.restrict_fraction_length = true;
 	automatic_fraction = false;
@@ -31581,7 +31760,8 @@ void on_menu_item_fraction_combined_activate(GtkMenuItem *w, gpointer) {
 }
 void on_menu_item_fraction_fraction_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	to_fraction = false;
+	to_fraction = 0;
+	to_fixed_fraction = 0;
 	printops.number_fraction_format = FRACTION_FRACTIONAL;
 	printops.restrict_fraction_length = true;
 	automatic_fraction = false;
@@ -31589,6 +31769,120 @@ void on_menu_item_fraction_fraction_activate(GtkMenuItem *w, gpointer) {
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), TRUE);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
+
+	result_format_updated();
+}
+void set_fixed_fraction(long int v) {
+	to_fraction = 0;
+	to_fixed_fraction = 0;
+	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fixed_combined")))) printops.number_fraction_format = FRACTION_COMBINED_FIXED_DENOMINATOR;
+	else printops.number_fraction_format = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
+	CALCULATOR->setFixedDenominator(v);
+	printops.restrict_fraction_length = true;
+	automatic_fraction = false;
+
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), TRUE);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
+
+	result_format_updated();
+}
+void on_menu_item_fraction_halves_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	set_fixed_fraction(2);
+}
+void on_menu_item_fraction_3rds_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	set_fixed_fraction(3);
+}
+void on_menu_item_fraction_4ths_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	set_fixed_fraction(4);
+}
+void on_menu_item_fraction_5ths_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	set_fixed_fraction(5);
+}
+void on_menu_item_fraction_6ths_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	set_fixed_fraction(6);
+}
+void on_menu_item_fraction_8ths_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	set_fixed_fraction(8);
+}
+void on_menu_item_fraction_10ths_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	set_fixed_fraction(10);
+}
+void on_menu_item_fraction_12ths_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	set_fixed_fraction(12);
+}
+void on_menu_item_fraction_16ths_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	set_fixed_fraction(16);
+}
+void on_menu_item_fraction_32ths_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	set_fixed_fraction(32);
+}
+void on_menu_item_fraction_fixed_combined_activate(GtkMenuItem *w, gpointer) {
+	bool b = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
+	if((!b && printops.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR) || (b && printops.number_fraction_format == FRACTION_FRACTIONAL_FIXED_DENOMINATOR)) {
+		to_fraction = 0;
+		to_fixed_fraction = 0;
+		if(b) printops.number_fraction_format = FRACTION_COMBINED_FIXED_DENOMINATOR;
+		else printops.number_fraction_format = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
+		printops.restrict_fraction_length = true;
+		automatic_fraction = false;
+
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), TRUE);
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
+
+		result_format_updated();
+	}
+}
+void on_menu_item_fraction_percent_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	to_fraction = 0;
+	to_fixed_fraction = 0;
+	printops.number_fraction_format = FRACTION_PERCENT;
+	printops.restrict_fraction_length = false;
+	automatic_fraction = false;
+
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), FALSE);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
+
+	result_format_updated();
+}
+void on_menu_item_fraction_permille_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	to_fraction = 0;
+	to_fixed_fraction = 0;
+	printops.number_fraction_format = FRACTION_PERMILLE;
+	printops.restrict_fraction_length = false;
+	automatic_fraction = false;
+
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), FALSE);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
+
+	result_format_updated();
+}
+void on_menu_item_fraction_permyriad_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	to_fraction = 0;
+	to_fixed_fraction = 0;
+	printops.number_fraction_format = FRACTION_PERMYRIAD;
+	printops.restrict_fraction_length = false;
+	automatic_fraction = false;
+
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), FALSE);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
 
 	result_format_updated();

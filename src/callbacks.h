@@ -53,6 +53,7 @@ struct mode_struct {
 	int rounding_mode;
 	bool simplified_percentage;
 	bool concise_uncertainty_input;
+	long int fixed_denominator;
 	std::string custom_angle_unit;
 };
 

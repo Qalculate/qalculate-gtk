@@ -163,6 +163,7 @@ GtkCssProvider *topframe_provider, *expression_provider, *resultview_provider, *
 
 extern bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad, minimal_mode, show_bases_keypad;
 extern bool save_mode_on_exit, save_defs_on_exit, load_global_defs, hyp_is_on, inv_is_on, fetch_exchange_rates_at_startup, clear_history_on_exit;
+extern bool fraction_fixed_combined;
 extern int allow_multiple_instances;
 extern int title_type;
 extern int history_expression_type;
@@ -884,6 +885,7 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_allow_infinite")), eo.allow_infinite);
 	
 	int dff = default_fraction_fraction;
+	if(initial_update) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fixed_combined")), fraction_fixed_combined);
 	switch(po.number_fraction_format) {
 		case FRACTION_DECIMAL: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
@@ -903,6 +905,49 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 		case FRACTION_FRACTIONAL: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
 			if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), TRUE);
+			break;
+		}
+		case FRACTION_COMBINED_FIXED_DENOMINATOR: {}
+		case FRACTION_FRACTIONAL_FIXED_DENOMINATOR: {
+			switch(CALCULATOR->fixedDenominator()) {
+				case 2: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_halves")), TRUE); break;}
+				case 3: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_3rds")), TRUE); break;}
+				case 4: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_4ths")), TRUE); break;}
+				case 5: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_5ths")), TRUE); break;}
+				case 6: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_6ths")), TRUE); break;}
+				case 8: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_8ths")), TRUE); break;}
+				case 10: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_10ths")), TRUE); break;}
+				case 12: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_12ths")), TRUE); break;}
+				case 16: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_16ths")), TRUE); break;}
+				case 32: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_32ths")), TRUE); break;}
+				default: {
+					if(po.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR) {
+						gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
+						printops.number_fraction_format = FRACTION_COMBINED_FIXED_DENOMINATOR;
+					} else {
+						gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
+						printops.number_fraction_format = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
+					}
+					break;
+				}
+			}
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fixed_combined")), po.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR);
+			if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), TRUE);
+			break;
+		}
+		case FRACTION_PERCENT: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_percent")), TRUE);
+			if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), FALSE);
+			break;
+		}
+		case FRACTION_PERMILLE: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_permille")), TRUE);
+			if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), FALSE);
+			break;
+		}
+		case FRACTION_PERMYRIAD: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_permyriad")), TRUE);
+			if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), FALSE);
 			break;
 		}
 	}
@@ -1683,6 +1728,10 @@ void create_button_menus() {
 
 	if(caret_as_xor) set_keypad_tooltip("button_xor", _("Bitwise Exclusive OR"));
 	else set_keypad_tooltip("button_xor", (string(_("Bitwise Exclusive OR")) + " (Ctrl+^)").c_str());
+
+	gtk_menu_item_set_label(GTK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_percent")), CALCULATOR->v_percent->title().c_str());
+	gtk_menu_item_set_label(GTK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_permille")), CALCULATOR->v_permille->title().c_str());
+	gtk_menu_item_set_label(GTK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_permyriad")), CALCULATOR->v_permyriad->title().c_str());
 
 	update_mb_fx_menu();
 	update_mb_sto_menu();
