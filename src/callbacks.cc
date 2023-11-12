@@ -3452,21 +3452,18 @@ void clear_result_bases() {
 	update_result_bases();
 }
 
-long int get_fixed_denominator_gtk2(const std::string &str, int &to_fraction, char sgn, bool qalc_command) {
+long int get_fixed_denominator_gtk2(const string &str, int &to_fraction, char sgn, bool qalc_command) {
 	long int fden = 0;
 	if(!qalc_command && (equalsIgnoreCase(str, "fraction") || equalsIgnoreCase(str, _("fraction")))) {
 		fden = -1;
 	} else {
-		size_t ndiv = strlen(expression_divide_sign());
-		if(str.length() > 2 && str[0] == '1' && str[1] == '/' && str.find_first_not_of(NUMBERS, 2) == string::npos) {
+		if(str.length() > 2 && str[0] == '1' && str[1] == '/' && str.find_first_not_of(NUMBERS SPACES, 2) == string::npos) {
 			fden = s2i(str.substr(2, str.length() - 2));
-		} else if(str.length() > ndiv + 1 && str[0] == '1' && str.rfind(expression_divide_sign(), ndiv + 1) == 1 && str.find_first_not_of(NUMBERS, ndiv + 1) == string::npos) {
-			fden = s2i(str.substr(ndiv + 1, str.length() - (ndiv + 1)));
 		} else if(str == "3rds") {
 			fden = 3;
 		} else if(str == "halves") {
 			fden = 2;
-		} else if(str.length() > 3 && str.find("ths", str.length() - 3) != string::npos && str.find_first_not_of(NUMBERS) == str.length() - 3) {
+		} else if(str.length() > 3 && str.find("ths", str.length() - 3) != string::npos && str.find_first_not_of(NUMBERS SPACES) == str.length() - 3) {
 			fden = s2i(str.substr(0, str.length() - 3));
 		}
 	}
@@ -3477,11 +3474,10 @@ long int get_fixed_denominator_gtk2(const std::string &str, int &to_fraction, ch
 	}
 	return fden;
 }
-long int get_fixed_denominator_gtk(const std::string &str, int &to_fraction, bool qalc_command = false) {
+long int get_fixed_denominator_gtk(const string &str, int &to_fraction, bool qalc_command = false) {
 	size_t n = 0;
-	if(str.rfind(SIGN_MINUS, 2) == 0) n = strlen(SIGN_MINUS);
-	else if(str[0] == '-' || str[0] == '+') n = 1;
-	if(n > 0) return get_fixed_denominator_gtk2(str.substr(n, str.length() - n), to_fraction, n > 1 ? '-' : str[0], qalc_command);
+	if(str[0] == '-' || str[0] == '+') n = 1;
+	if(n > 0) return get_fixed_denominator_gtk2(str.substr(n, str.length() - n), to_fraction, str[0], qalc_command);
 	return get_fixed_denominator_gtk2(str, to_fraction, 0, qalc_command);
 }
 
@@ -3772,7 +3768,7 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 					do_to = true;
 				} else {
 					do_to = true;
-					long int fden = get_fixed_denominator_gtk(to_str, to_fraction);
+					long int fden = get_fixed_denominator_gtk(unlocalize_expression(to_str), to_fraction);
 					if(fden != 0) {
 						if(fden < 0) to_fixed_fraction = 0;
 						else to_fixed_fraction = fden;
@@ -4513,7 +4509,7 @@ void display_parse_status() {
 					g_free(gstr);
 				} else {
 					int tofr = 0;
-					long int fden = get_fixed_denominator_gtk(str_u, tofr);
+					long int fden = get_fixed_denominator_gtk(unlocalize_expression(str_u), tofr);
 					if(fden > 0) {
 						parsed_expression += _("fraction");
 						parsed_expression += " (";
@@ -8112,6 +8108,8 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("128-bit Floating Point Binary Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 314, -1);
 	COMPLETION_CONVERT_STRING("fraction")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Fraction"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 300, -1);
+	COMPLETION_CONVERT_STRING("1/")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, (string(_("Fraction")) + " (1/n)").c_str(), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 301, -1);
 	COMPLETION_CONVERT_STRING("hexadecimal") str += " <i>"; str += "hex"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Hexadecimal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 216, -1);
 	COMPLETION_CONVERT_STRING("latitude") str += " <i>"; str += "latitude2"; str += "</i>";
@@ -11794,6 +11792,14 @@ int intervals_are_relative(MathStructure &m) {
 	return ret;
 }
 
+bool contains_rand_function(const MathStructure &m) {
+	if(m.isFunction() && m.function()->category() == CALCULATOR->getFunctionById(FUNCTION_ID_RAND)->category()) return true;
+	for(size_t i = 0; i < m.size(); i++) {
+		if(contains_rand_function(m[i])) return true;
+	}
+	return false;
+}
+
 /*
 	set result in result widget and add to history widget
 */
@@ -12208,7 +12214,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			parsed_text = fix_history_string(ellipsize_result(unhtmlize(parsed_text), 5000));
 		}
 		bool b_approx = result_text_approximate || mstruct->isApproximate();
-		if((!update_parse || (!rpn_mode && !register_moved && !b_rpn_operation && nr_of_new_expressions > 1)) && current_inhistory_index >= 0 && stack_index == 0 && transformation.empty() && !CALCULATOR->message() && inhistory[current_inhistory_index] == result_text && inhistory_type[current_inhistory_index] == (b_approx ? QALCULATE_HISTORY_RESULT_APPROXIMATE : QALCULATE_HISTORY_RESULT)) {
+		if((!update_parse || (!rpn_mode && !register_moved && !b_rpn_operation && nr_of_new_expressions > 1 && !contains_rand_function(*parsed_mstruct))) && current_inhistory_index >= 0 && stack_index == 0 && transformation.empty() && !CALCULATOR->message() && inhistory[current_inhistory_index] == result_text && inhistory_type[current_inhistory_index] == (b_approx ? QALCULATE_HISTORY_RESULT_APPROXIMATE : QALCULATE_HISTORY_RESULT)) {
 			if(update_parse) {
 				int b = 0;
 				for(size_t i = current_inhistory_index; i < inhistory.size(); i++) {
@@ -13639,7 +13645,7 @@ void set_option(string str) {
 			v = s2i(svalue);
 		} else {
 			int tofr = 0;
-			long int fden = get_fixed_denominator_gtk(svalue, tofr, true);
+			long int fden = get_fixed_denominator_gtk(unlocalize_expression(svalue), tofr, true);
 			if(fden != 0) {
 				if(tofr == 1) v = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
 				else v = FRACTION_COMBINED_FIXED_DENOMINATOR;
@@ -14802,7 +14808,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				return;
 			} else {
 				do_to = true;
-				long int fden = get_fixed_denominator_gtk(to_str, to_fraction);
+				long int fden = get_fixed_denominator_gtk(unlocalize_expression(to_str), to_fraction);
 				if(fden != 0) {
 					if(fden < 0) to_fixed_fraction = 0;
 					else to_fixed_fraction = fden;
@@ -23402,7 +23408,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 	unblock_completion();
 	if(!item && !prefix && editing_to_expression && gtk_text_iter_is_end(&ipos)) {
 		string str = get_expression_text();
-		if(str[str.length() - 1] != ' ') execute_expression();
+		if(str[str.length() - 1] != ' ' && str[str.length() - 1] != '/') execute_expression();
 	}
 }
 
@@ -25843,6 +25849,8 @@ void do_completion() {
 							} else if(p_type >= 300 && p_type < 400) {
 								if(p_type == 300) {
 									if(!contains_rational_number(*current_from_struct)) b_match = 0;
+								} else if(p_type == 301) {
+									if((!current_from_struct->isNumber() || current_from_struct->number().isInteger() || current_from_struct->number().hasImaginaryPart()) && (!current_from_unit || current_from_unit->system().find("Imperial") == string::npos)) b_match = 0;
 								} else {
 									if(!current_from_struct->isNumber()) b_match = 0;
 								}
