@@ -1,3 +1,33 @@
+2023-11-12 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add result to history even if both expression and result are identical if expression contains a function generating a random number
+
+2023-10-29 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Support for specifying a fixed denominator for display of fractions (using menu items or to-conversion, e.g. "to 1/8")
+	* Menu items for percent and permille fraction formats
+
+2023-10-26 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix case insensitive comparison for strings with more than two or more consecutive Unicode characters
+	* Prefer capitalized function name (over name with underscore), when completing function name
+
+2023-10-25 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Apply exact behaviour of PageUp/PageDown keys to keypad up/down button, and fix sefault in some cases with unfinished input when cycling through history both using keyboard and keypad
+
+2023-10-24 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Change order of up and down symbols for cycle through previous expressions keypad button, in order to match keyboard arrow key actions
+
+2023-09-28 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Improve decision to (not) update calculate-as-you-type result when last character is an operator
+
+2023-09-21 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Update calculate-as-you-type result even if last character is an operator, if cursor is not at the end of the expression
+
 2023-09-13 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Auto-update number bases above programming keypad when entering simple integers, even if calculate-as-you-type is deactivated

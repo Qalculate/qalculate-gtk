@@ -6,7 +6,7 @@ Qalculate! is a multi-purpose cross-platform desktop calculator. It is simple to
 
 ## Requirements
 * GTK (>= 3.10)
-* libqalculate (>= 4.8.0)
+* libqalculate (>= 4.9.0)
 
 ## Installation
 Instructions and download links for installers, binaries packages, and the source code of released versions of Qalculate! are available at https://qalculate.github.io/downloads.html.

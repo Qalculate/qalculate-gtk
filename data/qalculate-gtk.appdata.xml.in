@@ -48,6 +48,27 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="4.9.0" date="2023-11-27">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Support for specifying a fixed denominator for display of fractions (e.g. "0.3 ft ➞ 1/8 ≈ (3 + 5/8) in")</li>
+      <li>Always add result to history (even if identical to previous) if expression contains a function generating a random number</li>
+      <li>Prefer capitalized function name (over name with underscore), when completing function name</li>
+      <li>Improve decision to (not) update calculate-as-you-type result when last character is an operator</li>
+      <li>Add percent and permille output options in rational number form menu</li>
+      <li>Return gcd of numerators divided by lcm of denominators in gcd() with non-integer rational numbers, and vice versa for lcm()</li>
+      <li>Add units for mean Gregorian and tropical years</li>
+      <li>Ignore underscore in number</li>
+      <li>Replace defunct exchange rates source and fix bitcoin exchange rate</li>
+      <li>Fix keypad button (up/down) for cycling through expression history</li>
+      <li>Fix asin(x)=a, acos(x)=a, and atan(x)=a, when a contains an angle unit and default angle unit is set</li>
+      <li>Fix output of value converted to unit expression with numerical multiplier in denominator, e.g. "➞ L/(100 km)"</li>
+      <li>Fix segfault when trying to solve "(x*sqrt(x)-y*sqrt(y))/(sqrt(x)-sqrt(y))=x+sqrt(x*y)+y"</li>
+      <li>Fix parsing of case insensitive object name ending with Unicode character when followed by another Unicode character in expression, e.g. "микрометр"</li>
+     </ul>
+   </description>
+  </release>
   <release version="4.8.1" date="2023-09-18">
    <description>
     <p>Changes:</p>

@@ -3459,6 +3459,8 @@ long int get_fixed_denominator_gtk2(const string &str, int &to_fraction, char sg
 	} else {
 		if(str.length() > 2 && str[0] == '1' && str[1] == '/' && str.find_first_not_of(NUMBERS SPACES, 2) == string::npos) {
 			fden = s2i(str.substr(2, str.length() - 2));
+		} else if(str.length() > 1 && str[0] == '/' && str.find_first_not_of(NUMBERS SPACES, 1) == string::npos) {
+			fden = s2i(str.substr(1, str.length() - 1));
 		} else if(str == "3rds") {
 			fden = 3;
 		} else if(str == "halves") {
@@ -3920,7 +3922,7 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 				else printops.number_fraction_format = FRACTION_COMBINED_FIXED_DENOMINATOR;
 				CALCULATOR->setFixedDenominator(to_fixed_fraction);
 				do_to = true;
-			} else if(to_fraction > 0 && (printops.restrict_fraction_length || printops.number_fraction_format != FRACTION_COMBINED)) {
+			} else if(to_fraction > 0 && (printops.restrict_fraction_length || (to_fraction != 2 && printops.number_fraction_format != FRACTION_COMBINED) || (to_fraction == 2 && printops.number_fraction_format != FRACTION_FRACTIONAL))) {
 				printops.restrict_fraction_length = false;
 				if(to_fraction == 2) printops.number_fraction_format = FRACTION_FRACTIONAL;
 				else printops.number_fraction_format = FRACTION_COMBINED;
@@ -13643,6 +13645,10 @@ void set_option(string str) {
 		else if(equalsIgnoreCase(svalue, "auto")) v = -1;
 		else if(svalue.find_first_not_of(SPACES NUMBERS) == string::npos) {
 			v = s2i(svalue);
+			if(v == FRACTION_COMBINED + 1) v = FRACTION_COMBINED_FIXED_DENOMINATOR + 1;
+			else if(v == FRACTION_COMBINED + 2) v = FRACTION_COMBINED_FIXED_DENOMINATOR + 2;
+			else if(v == FRACTION_COMBINED_FIXED_DENOMINATOR + 1) v = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
+			else if(v == FRACTION_COMBINED_FIXED_DENOMINATOR + 2) v = FRACTION_COMBINED_FIXED_DENOMINATOR;
 		} else {
 			int tofr = 0;
 			long int fden = get_fixed_denominator_gtk(unlocalize_expression(svalue), tofr, true);
@@ -13721,10 +13727,12 @@ void set_option(string str) {
 						g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_fraction_combined"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_combined_activate, NULL);
 						gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
 						g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_fraction_combined"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_combined_activate, NULL);
+						printops.restrict_fraction_length = false;
 					} else {
 						g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_fraction_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_fraction_activate, NULL);
 						gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
 						g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_fraction_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_fraction_activate, NULL);
+						printops.restrict_fraction_length = false;
 					}
 					if(v > FRACTION_COMBINED_FIXED_DENOMINATOR) {
 						v = FRACTION_FRACTIONAL;
@@ -20895,8 +20903,8 @@ void load_preferences() {
 	size_t bookmark_index = 0;
 
 	version_numbers[0] = 4;
-	version_numbers[1] = 8;
-	version_numbers[2] = 1;
+	version_numbers[1] = 9;
+	version_numbers[2] = 0;
 
 	bool old_history_format = false;
 	unformatted_history = 0;
@@ -21206,8 +21214,8 @@ void load_preferences() {
 						if(mode_index == 1) printops.number_fraction_format = (NumberFractionFormat) v;
 						else modes[mode_index].po.number_fraction_format = (NumberFractionFormat) v;
 					}
-					if(mode_index == 1) printops.restrict_fraction_length = (printops.number_fraction_format >= FRACTION_FRACTIONAL);
-					else modes[mode_index].po.restrict_fraction_length = (modes[mode_index].po.number_fraction_format >= FRACTION_FRACTIONAL);
+					if(mode_index == 1) printops.restrict_fraction_length = (printops.number_fraction_format == FRACTION_FRACTIONAL || printops.number_fraction_format == FRACTION_COMBINED);
+					else modes[mode_index].po.restrict_fraction_length = (modes[mode_index].po.number_fraction_format == FRACTION_FRACTIONAL || modes[mode_index].po.number_fraction_format == FRACTION_COMBINED);
 				} else if(svar == "number_fraction_denominator") {
 					if(mode_index == 1) CALCULATOR->setFixedDenominator(v);
 					else modes[mode_index].fixed_denominator = v;
@@ -29445,8 +29453,8 @@ void update_mb_to_menu() {
 		MENU_ITEM("1/8", menu_to_8ths)
 		MENU_ITEM("1/16", menu_to_16ths)
 		MENU_SEPARATOR
-	} else if(b_rational) {
-		MENU_ITEM(_("Fraction"), menu_to_fraction)
+	} else {
+		if(b_rational) {MENU_ITEM(_("Fraction"), menu_to_fraction)}
 		if(u_result && displayed_printops.base != BASE_SEXAGESIMAL && u_result == CALCULATOR->getDegUnit()) {
 			MENU_ITEM_WITH_INT(_("Sexagesimal"), menu_to_base, BASE_SEXAGESIMAL)
 			MENU_SEPARATOR
@@ -31787,7 +31795,7 @@ void set_fixed_fraction(long int v) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fixed_combined")))) printops.number_fraction_format = FRACTION_COMBINED_FIXED_DENOMINATOR;
 	else printops.number_fraction_format = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
 	CALCULATOR->setFixedDenominator(v);
-	printops.restrict_fraction_length = true;
+	printops.restrict_fraction_length = false;
 	automatic_fraction = false;
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
@@ -31843,13 +31851,8 @@ void on_menu_item_fraction_fixed_combined_activate(GtkMenuItem *w, gpointer) {
 		to_fixed_fraction = 0;
 		if(b) printops.number_fraction_format = FRACTION_COMBINED_FIXED_DENOMINATOR;
 		else printops.number_fraction_format = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
-		printops.restrict_fraction_length = true;
+		printops.restrict_fraction_length = false;
 		automatic_fraction = false;
-
-		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), TRUE);
-		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_fraction_toggled, NULL);
-
 		result_format_updated();
 	}
 }

@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "4.8.1">
-  <!ENTITY manrevision "4.8.1">
-  <!ENTITY date "September 2023">
+  <!ENTITY appversion "4.9.0">
+  <!ENTITY manrevision "4.9.0">
+  <!ENTITY date "November 2023">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -1828,7 +1828,11 @@ Putting <quote> to </quote> (or a right arrow, e.g. <quote>-></quote>) followed 
 </varlistentry>
 <varlistentry>
 <term>fraction</term>
-<listitem><para>Show as mixed fraction <quote>1.25 to fraction = 1 + 1/4</quote>.</para></listitem>
+<listitem><para>Show as mixed or simple (prepend with <quote>-</quote>) fraction (<quote>1.25 to fraction = 1 + 1/4</quote>).</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>1/#</term>
+<listitem><para>Show as mixed or simple (prepend with <quote>-</quote>) fraction with a specific denominator (<quote>2.7 to 1/3 ≈ 2 + 2/3</quote>, <quote>2.7 to -1/3 ≈ 8/3</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>partial fraction</term>
