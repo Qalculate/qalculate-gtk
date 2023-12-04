@@ -35396,7 +35396,7 @@ return TRUE;}
 					return TRUE;
 				}
 			}
-			if(!expression_is_empty()) execute_expression();
+			if(rpn_mode || !expression_is_empty()) execute_expression();
 			return TRUE;
 		}
 		case GDK_KEY_dead_circumflex: {
