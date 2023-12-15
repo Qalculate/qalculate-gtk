@@ -2162,6 +2162,8 @@ struct tree_struct {
 };
 
 tree_struct function_cats, unit_cats, variable_cats;
+string volume_cat;
+vector<string> alt_volcats;
 vector<void*> ia_units, ia_variables, ia_functions;
 vector<Unit*> user_units;
 vector<Variable*> user_variables;
@@ -3356,6 +3358,9 @@ gboolean do_autocalc_history_timeout(gpointer) {
 		Unit *u = CALCULATOR->findMatchingUnit(*mstruct);
 		if(u && !u->category().empty()) {
 			string s_cat = u->category();
+			for(size_t i = 0; i < alt_volcats.size(); i++) {
+				if(s_cat == alt_volcats[i]) {s_cat = volume_cat; break;}
+			}
 			if(s_cat.empty()) s_cat = _("Uncategorized");
 			if(s_cat != selected_unit_category) {
 				GtkTreeIter iter = convert_category_map[s_cat];
@@ -3472,6 +3477,7 @@ long int get_fixed_denominator_gtk2(const string &str, int &to_fraction, char sg
 	if(fden == 1) fden = 0;
 	if(fden != 0) {
 		if(sgn == '-' || (fden > 0 && !qalc_command && sgn != '+' && !gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fixed_combined"))))) to_fraction = 2;
+		else if(fden > 0 && sgn == 0) to_fraction = -1;
 		else to_fraction = 1;
 	}
 	return fden;
@@ -3481,6 +3487,14 @@ long int get_fixed_denominator_gtk(const string &str, int &to_fraction, bool qal
 	if(str[0] == '-' || str[0] == '+') n = 1;
 	if(n > 0) return get_fixed_denominator_gtk2(str.substr(n, str.length() - n), to_fraction, str[0], qalc_command);
 	return get_fixed_denominator_gtk2(str, to_fraction, 0, qalc_command);
+}
+
+bool contains_fraction_gtk(const MathStructure &m) {
+	if(m.isNumber()) return !m.number().isInteger();
+	for(size_t i = 0; i < m.size(); i++) {
+		if(contains_fraction_gtk(m[i])) return true;
+	}
+	return false;
 }
 
 string prev_autocalc_str;
@@ -3749,6 +3763,10 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 					evalops.auto_post_conversion = POST_CONVERSION_OPTIMAL_SI;
 					str_conv = "";
 					do_to = true;
+				} else if(equalsIgnoreCase(to_str, "prefix") || equalsIgnoreCase(to_str, _("prefix"))) {
+					evalops.parse_options.units_enabled = true;
+					to_prefix = 1;
+					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "base") || equalsIgnoreCase(to_str, _("base"))) {
 					evalops.parse_options.units_enabled = true;
 					evalops.auto_post_conversion = POST_CONVERSION_BASE;
@@ -3918,7 +3936,7 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 				do_to = true;
 			}
 			if(to_fixed_fraction >= 2) {
-				if(to_fraction == 2) printops.number_fraction_format = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
+				if(to_fraction == 2 || (to_fraction < 0 && !contains_fraction_gtk(mauto))) printops.number_fraction_format = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
 				else printops.number_fraction_format = FRACTION_COMBINED_FIXED_DENOMINATOR;
 				CALCULATOR->setFixedDenominator(to_fixed_fraction);
 				do_to = true;
@@ -4432,6 +4450,8 @@ void display_parse_status() {
 					parsed_expression += _("calendars");
 				} else if(equalsIgnoreCase(str_u, "optimal") || equalsIgnoreCase(str_u, _("optimal"))) {
 					parsed_expression += _("optimal unit");
+				} else if(equalsIgnoreCase(str_u, "prefix") || equalsIgnoreCase(str_u, _("prefix")) || str_u == "?") {
+					parsed_expression += _("optimal prefix");
 				} else if(equalsIgnoreCase(str_u, "base") || equalsIgnoreCase(str_u, _("base"))) {
 					parsed_expression += _("base units");
 				} else if(equalsIgnoreCase(str_u, "mixed") || equalsIgnoreCase(str_u, _("mixed"))) {
@@ -4744,6 +4764,10 @@ void generate_units_tree_struct() {
 	unit_cats.items.clear();
 	unit_cats.objects.clear();
 	unit_cats.parent = NULL;
+	alt_volcats.clear();
+	volume_cat = "";
+	u = CALCULATOR->getActiveUnit("L");
+	if(u) volume_cat = u->category();
 	ia_units.clear();
 	user_units.clear();
 	list<tree_struct>::iterator it;
@@ -4797,6 +4821,9 @@ void generate_units_tree_struct() {
 						it = item->items.end();
 						--it;
 						it->parent = item;
+						if(item->item == volume_cat && CALCULATOR->units[i]->baseUnit()->referenceName() == "m" && CALCULATOR->units[i]->baseExponent() == 3) {
+							alt_volcats.push_back(CALCULATOR->units[i]->category());
+						}
 						item = &*it;
 						item->item = cat_sub;
 					}
@@ -7802,7 +7829,7 @@ void update_completion() {
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_store), 1, GTK_SORT_ASCENDING);
 	capitalized_names.clear();
 
-	string str, title;
+	string str, title, title2;
 	for(size_t i = 0; i < CALCULATOR->functions.size(); i++) {
 		if(CALCULATOR->functions[i]->isActive()) {
 			gtk_list_store_append(completion_store, &iter);
@@ -7821,7 +7848,7 @@ void update_completion() {
 				}
 			}
 			ellipsize_completion_names(str);
-			gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, CALCULATOR->functions[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) completion_view).c_str(), 2, CALCULATOR->functions[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
+			gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, CALCULATOR->functions[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) completion_view).c_str(), 2, CALCULATOR->functions[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, NULL, -1);
 		}
 	}
 	for(size_t i = 0; i < CALCULATOR->variables.size(); i++) {
@@ -7872,8 +7899,10 @@ void update_completion() {
 			}
 			ellipsize_completion_names(str);
 			if(!CALCULATOR->variables[i]->title(false).empty()) {
-				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, CALCULATOR->variables[i]->title().c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
-				else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, CALCULATOR->variables[i]->title().c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
+				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, CALCULATOR->variables[i]->title().c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, NULL, -1);
+				else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, CALCULATOR->variables[i]->title().c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, NULL, -1);
+				if(CALCULATOR->variables[i] == CALCULATOR->v_percent) gtk_list_store_set(completion_store, &iter, 9, (CALCULATOR->variables[i]->title() + " (%)").c_str(), -1);
+				else if(CALCULATOR->variables[i] == CALCULATOR->v_permille) gtk_list_store_set(completion_store, &iter, 9, (CALCULATOR->variables[i]->title() + " (‰)").c_str(), -1);
 			} else {
 				Variable *v = CALCULATOR->variables[i];
 				string title;
@@ -7937,8 +7966,8 @@ void update_completion() {
 						title = _("default assumptions");
 					}
 				}
-				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
-				else if(ename_r) gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, title.c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
+				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, NULL, -1);
+				else if(ename_r) gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, title.c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, NULL, -1);
 			}
 		}
 	}
@@ -7975,6 +8004,19 @@ void update_completion() {
 					ellipsize_completion_names(str);
 				}
 				unordered_map<string, cairo_surface_t*>::const_iterator it_flag = flag_surfaces.end();
+				if(!u->title(false).empty()) {
+					title2 = u->title(false);
+					ename = &u->preferredInputName(true, printops.use_unicode_signs, false, u->isCurrency(), &can_display_unicode_string_function, (void*) expressiontext);
+					if(ename->abbreviation) {
+						bool tp = title2[title2.length() - 1] == ')';
+						title2 += " ";
+						if(!tp) title2 += "(";
+						if(name_has_formatting(ename)) title2 += format_name(ename, TYPE_UNIT);
+						else title2 += ename->name;
+						if(!tp) title2 += ")";
+						if(title2.find("_") != string::npos) title2 = "";
+					}
+				}
 				title = u->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) completion_view);
 				if(u->isCurrency()) {
 					it_flag = flag_surfaces.find(u->referenceName());
@@ -7989,12 +8031,17 @@ void update_completion() {
 						title += ")";
 					}
 				}
-				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_surfaces.end() ? NULL : it_flag->second, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
-				else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, title.c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_surfaces.end() ? NULL : it_flag->second, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
+				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_surfaces.end() ? NULL : it_flag->second, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, title2.empty() ? NULL : title2.c_str(), -1);
+				else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, title.c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_surfaces.end() ? NULL : it_flag->second, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, title2.empty() ? NULL : title2.c_str(), -1);
 			} else if(!u->isHidden()) {
 				CompositeUnit *cu = (CompositeUnit*) u;
 				Prefix *prefix = NULL;
 				int exp = 1;
+				title = cu->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) completion_view);
+				title2 = title;
+				bool tp = title2[title2.length() - 1] == ')';
+				title2 += " ";
+				if(!tp) title2 += "(";
 				if(cu->countUnits() == 1 && (u = cu->get(1, &exp, &prefix)) != NULL && prefix != NULL && exp == 1) {
 					str = "";
 					for(size_t name_i = 0; name_i < 2; name_i++) {
@@ -8006,17 +8053,19 @@ void update_completion() {
 							str += ename->formattedName(-1, false, true);
 							str += u->preferredInputName(name_i != 1, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).formattedName(TYPE_UNIT, true, true);
 							if(b_italic) str += "</i>";
+							if(!b_italic) title2 += str;
 						}
 					}
 					ellipsize_completion_names(str);
 				} else {
 					str = cu->print(po, true, TAG_TYPE_HTML, true, false);
+					title2 += str;
 				}
+				if(!tp) title2 += ")";
 				gtk_list_store_append(completion_store, &iter);
 				size_t i_slash = string::npos;
 				if(cu->category().length() > 1) i_slash = cu->category().rfind("/", cu->category().length() - 2);
 				if(i_slash != string::npos) i_slash++;
-				title = cu->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) completion_view);
 				if(cu->isSIUnit() && !cu->category().empty()) {
 					if(title.length() + cu->category().length() - (i_slash == string::npos ? 0 : i_slash) < 35 && title[title.length() - 1] != ')') {
 						title += " (";
@@ -8028,7 +8077,7 @@ void update_completion() {
 						else title = cu->category().substr(i_slash, cu->category().length() - i_slash);
 					}
 				}
-				gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, cu, 3, FALSE, 4, 0, 5, NULL, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, -1);
+				gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, cu, 3, FALSE, 4, 0, 5, NULL, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, title2.c_str(), -1);
 			}
 		}
 	}
@@ -8066,7 +8115,7 @@ void update_completion() {
 				break;
 			}
 		}
-		gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, gstr, 2, p, 3, FALSE, 4, 0, 5, NULL, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 2, -1);
+		gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, gstr, 2, p, 3, FALSE, 4, 0, 5, NULL, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 2, 9, NULL, -1);
 		g_free(gstr);
 	}
 	pango_font_description_free(font_desc);
@@ -8074,73 +8123,75 @@ void update_completion() {
 #define COMPLETION_CONVERT_STRING(x) str = _(x); if(str != x) {str += " <i>"; str += x; str += "</i>";}
 #define COMPLETION_CONVERT_STRING2(x, y) str = _(x); if(str != x) {str += " <i>"; str += x; str += "</i>";} str2 = _(y);  str += " <i>"; str += str2; str += "</i>"; if(str2 != y) {str += " <i>"; str += y; str += "</i>";}
 	COMPLETION_CONVERT_STRING2("angle", "phasor")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex Angle/Phasor Notation"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 400, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex Angle/Phasor Notation"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 400, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("bases")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Number Bases"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 201, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Number Bases"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 201, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("base")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Base Units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 101, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Base Units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 101, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("base ")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Number Base"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 200, -1);
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, "bcd", 1, _("Binary-Coded Decimal"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 285, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Number Base"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 200, 9, NULL, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, "bcd", 1, _("Binary-Coded Decimal"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 285, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("bijective")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Bijective Base-26"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 290, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Bijective Base-26"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 290, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("binary") str += " <i>"; str += "bin"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Binary Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 202, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Binary Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 202, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("calendars")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Calendars"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 500, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Calendars"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 500, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("cis")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex cis Form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 401, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex cis Form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 401, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("decimal") str += " <i>"; str += "dec"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Decimal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 210, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Decimal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 210, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("duodecimal") str += " <i>"; str += "duo"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Duodecimal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 212, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Duodecimal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 212, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("exponential")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex Exponential Form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 402, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex Exponential Form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 402, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("factors")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Factors"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 600, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Factors"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 600, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("fp16") str += " <i>"; str += "binary16"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("16-bit Floating Point Binary Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 310, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("16-bit Floating Point Binary Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 310, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("fp32") str += " <i>"; str += "binary32"; str += "</i>"; str += " <i>"; str += "float"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("32-bit Floating Point Binary Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 311, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("32-bit Floating Point Binary Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 311, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("fp64") str += " <i>"; str += "binary64"; str += "</i>"; str += " <i>"; str += "double"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("64-bit Floating Point Binary Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 312, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("64-bit Floating Point Binary Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 312, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("fp80");
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("80-bit (x86) Floating Point Binary Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 313, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("80-bit (x86) Floating Point Binary Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 313, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("fp128") str += " <i>"; str += "binary128"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("128-bit Floating Point Binary Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 314, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("128-bit Floating Point Binary Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 314, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("fraction")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Fraction"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 300, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Fraction"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 300, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("1/")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, (string(_("Fraction")) + " (1/n)").c_str(), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 301, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, (string(_("Fraction")) + " (1/n)").c_str(), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 301, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("hexadecimal") str += " <i>"; str += "hex"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Hexadecimal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 216, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Hexadecimal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 216, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("latitude") str += " <i>"; str += "latitude2"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Latitude"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 294, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Latitude"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 294, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("longitude") str += " <i>"; str += "longitude2"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Longitude"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 294, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Longitude"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 294, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("mixed")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Mixed Units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 102, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Mixed Units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 102, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("octal") str += " <i>"; str += "oct"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Octal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 208, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Octal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 208, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("optimal")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Optimal Units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 100, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Optimal Units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 100, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("partial fraction")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Expanded Partial Fractions"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 601, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Expanded Partial Fractions"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 601, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("polar")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex Polar Form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 403, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex Polar Form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 403, 9, NULL, -1);
+	COMPLETION_CONVERT_STRING("prefix")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Optimal Prefix"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 103, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING2("rectangular", "cartesian")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex Rectangular Form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 404, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex Rectangular Form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 404, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("roman")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Roman Numerals"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 280, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Roman Numerals"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 280, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("sexagesimal") str += " <i>"; str += "sexa"; str += "</i>"; str += " <i>"; str += "sexa2"; str += "</i>"; str += " <i>"; str += "sexa3"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Sexagesimal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 292, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Sexagesimal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 292, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("time")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Time Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 293, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Time Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 293, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("unicode")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Unicode"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 281, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Unicode"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 281, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("utc")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("UTC Time Zone"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 501, -1);
-	gtk_list_store_append(completion_store, &completion_separator_iter); gtk_list_store_set(completion_store, &completion_separator_iter, 0, "", 1, "", 2, NULL, 3, FALSE, 4, 3, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 0, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("UTC Time Zone"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 501, 9, NULL, -1);
+	gtk_list_store_append(completion_store, &completion_separator_iter); gtk_list_store_set(completion_store, &completion_separator_iter, 0, "", 1, "", 2, NULL, 3, FALSE, 4, 3, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 0, 9, NULL, -1);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_store), GTK_TREE_SORTABLE_UNSORTED_SORT_COLUMN_ID, GTK_SORT_ASCENDING);
 }
 
@@ -12005,7 +12056,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				do_to = true;
 			}
 			if(to_fixed_fraction >= 2) {
-				if(to_fraction == 2) printops.number_fraction_format = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
+				if(to_fraction == 2 || (to_fraction < 0 && !contains_fraction_gtk(*mstruct))) printops.number_fraction_format = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
 				else printops.number_fraction_format = FRACTION_COMBINED_FIXED_DENOMINATOR;
 				CALCULATOR->setFixedDenominator(to_fixed_fraction);
 				do_to = true;
@@ -14758,6 +14809,10 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				evalops.auto_post_conversion = POST_CONVERSION_OPTIMAL_SI;
 				str_conv = "";
 				do_to = true;
+			} else if(equalsIgnoreCase(to_str, "prefix") || equalsIgnoreCase(to_str, _("prefix"))) {
+				evalops.parse_options.units_enabled = true;
+				to_prefix = 1;
+				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "base") || equalsIgnoreCase(to_str, _("base"))) {
 				if(from_str.empty()) {
 					b_busy = false;
@@ -14808,18 +14863,18 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			} else if(equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _("base"))) {
 				base_from_string(to_str2, to_base, to_nbase);
 				do_to = true;
-			} else if(from_str.empty()) {
-				b_busy = false;
-				b_busy_expression = false;
-				executeCommand(COMMAND_CONVERT_STRING, true, true, CALCULATOR->unlocalizeExpression(to_str, evalops.parse_options));
-				set_previous_expression();
-				return;
 			} else {
 				do_to = true;
 				long int fden = get_fixed_denominator_gtk(unlocalize_expression(to_str), to_fraction);
 				if(fden != 0) {
 					if(fden < 0) to_fixed_fraction = 0;
 					else to_fixed_fraction = fden;
+				} else if(from_str.empty()) {
+					b_busy = false;
+					b_busy_expression = false;
+					executeCommand(COMMAND_CONVERT_STRING, true, true, CALCULATOR->unlocalizeExpression(to_str, evalops.parse_options));
+					set_previous_expression();
+					return;
 				} else {
 					if(to_str[0] == '?') {
 						to_prefix = 1;
@@ -15186,7 +15241,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	if(!do_stack) previous_expression = execute_str.empty() ? str : execute_str;
 	if(!parsed_tostruct->isUndefined() && do_ceu && str_conv.empty() && !mstruct->containsType(STRUCT_UNIT, true)) parsed_tostruct->setUndefined();
 	setResult(NULL, true, stack_index == 0, true, "", stack_index);
-	
+
 	if(do_bases) convert_number_bases(execute_str.c_str());
 	if(do_calendars) on_popup_menu_item_calendarconversion_activate(NULL, NULL);
 	
@@ -15202,6 +15257,9 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			Unit *u = CALCULATOR->findMatchingUnit(*mstruct);
 			if(u && !u->category().empty()) {
 				string s_cat = u->category();
+				for(size_t i = 0; i < alt_volcats.size(); i++) {
+					if(s_cat == alt_volcats[i]) {s_cat = volume_cat; break;}
+				}
 				if(s_cat.empty()) s_cat = _("Uncategorized");
 				if(s_cat != selected_unit_category) {
 					GtkTreeIter iter = convert_category_map[s_cat];
@@ -23117,6 +23175,8 @@ void on_units_convert_view_row_activated(GtkTreeView*, GtkTreePath *path, GtkTre
 	gtk_widget_hide(units_convert_window);
 }
 
+bool completion_to_menu = false;
+
 void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewColumn*, gpointer) {
 	GtkTreeIter iter;
 	gtk_tree_model_get_iter(completion_sort, &iter, path);
@@ -23387,6 +23447,16 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 		if(i == string::npos) i = 0;
 		str = str.substr(i, i2 - i);
 		g_free(gstr);
+	}
+	if(completion_to_menu) {
+		str.insert(0, "➞");
+		if(str[str.length() - 1] == ' ' || str[str.length() - 1] == '/') {
+			insert_text(str.c_str());
+		} else {
+			previous_expression = get_expression_text();
+			execute_expression(true, false, OPERATION_ADD, NULL, false, 0, "", str);
+		}
+		return;
 	}
 	block_completion();
 	block_add_to_undo++;
@@ -24473,11 +24543,11 @@ Unit *find_exact_matching_unit(const MathStructure &m) {
 	return find_exact_matching_unit2(m2);
 }
 
-bool contains_convertable_unit(MathStructure &m) {
+bool contains_convertible_unit(MathStructure &m) {
 	if(m.type() == STRUCT_UNIT) return true;
 	for(size_t i = 0; i < m.size(); i++) {
 		if(!m.isFunction() || !m.function()->getArgumentDefinition(i + 1) || m.function()->getArgumentDefinition(i + 1)->type() != ARGUMENT_TYPE_ANGLE) {
-			if(contains_convertable_unit(m[i])) return true;
+			if(contains_convertible_unit(m[i])) return true;
 		}
 	}
 	return false;
@@ -24534,7 +24604,7 @@ void update_resultview_popup() {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_polar"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_polar_activate, NULL);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_angle"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_angle_activate, NULL);
 
-	bool b_unit = displayed_mstruct && contains_convertable_unit(*displayed_mstruct);
+	bool b_unit = displayed_mstruct && contains_convertible_unit(*displayed_mstruct);
 	bool b_date = displayed_mstruct && displayed_mstruct->isDateTime();
 	bool b_complex = displayed_mstruct && mstruct && (contains_imaginary_number(*mstruct) || mstruct->containsFunctionId(FUNCTION_ID_CIS));
 	bool b_rational = displayed_mstruct && mstruct && contains_rational_number(*mstruct);
@@ -25449,9 +25519,28 @@ bool contains_related_unit(const MathStructure &m, Unit *u) {
 	return false;
 }
 
-void do_completion() {
-	if(!enable_completion) {gtk_widget_hide(completion_window); return;}
-	set_current_object();
+void do_completion(bool to_menu = false) {
+	if(!enable_completion && !to_menu) {gtk_widget_hide(completion_window); return;}
+	bool hide_exact_unit = false;
+	if(to_menu) {
+		editing_to_expression = true;
+		editing_to_expression1 = true;
+		current_from_struct = mstruct;
+		current_from_unit = NULL;
+		if(displayed_mstruct) current_from_unit = find_exact_matching_unit(*displayed_mstruct);
+		bool b_exact = (current_from_unit != NULL);
+		if(!current_from_unit && mstruct) current_from_unit = CALCULATOR->findMatchingUnit(*mstruct);
+		bool b_prefix = false;
+		if(b_exact && current_from_unit && current_from_unit->subtype() != SUBTYPE_COMPOSITE_UNIT) b_prefix = has_prefix(displayed_mstruct ? *displayed_mstruct : *mstruct);
+		hide_exact_unit = b_exact && !b_prefix;
+		current_function = NULL;
+		current_object_start = -1;
+		current_object_has_changed = true;
+		completion_to_menu = true;
+	} else {
+		set_current_object();
+		completion_to_menu = false;
+	}
 	gint cos_bak = current_object_start, coe_bak = current_object_end;
 	string str;
 	int to_type = 0;
@@ -25459,7 +25548,7 @@ void do_completion() {
 	if(current_object_start < 0) {
 		if(editing_to_expression && current_from_struct && current_from_unit) {
 			to_type = 4;
-		} else if(editing_to_expression && editing_to_expression1 && current_from_struct && current_from_struct->isNumber()) {
+		} else if(editing_to_expression && editing_to_expression1 && current_from_struct && (to_menu || current_from_struct->isNumber())) {
 			to_type = 2;
 		} else if(current_function && current_function->subtype() == SUBTYPE_DATA_SET && current_function_index > 1) {
 			Argument *arg = current_function->getArgumentDefinition(current_function_index);
@@ -25487,6 +25576,13 @@ void do_completion() {
 		if((current_from_struct->isUnit() && current_from_struct->unit()->isCurrency()) || (current_from_struct->isMultiplication() && current_from_struct->size() == 2 && (*current_from_struct)[0].isNumber() && (*current_from_struct)[1].isUnit() && (*current_from_struct)[1].unit()->isCurrency())) {
 			if(to_type == 4) to_type = 5;
 			else to_type = 1;
+		}
+	}
+	string current_from_category = "";
+	if(to_type == 4) {
+		current_from_category = current_from_unit->category();
+		for(size_t i = 0; i < alt_volcats.size(); i++) {
+			if(current_from_category == alt_volcats[i]) {current_from_category = volume_cat; break;}
 		}
 	}
 	unordered_map<const ExpressionName*, string>::iterator cap_it;
@@ -25555,7 +25651,7 @@ void do_completion() {
 											}
 											dp2 = o->getNextProperty(&it3);
 										}
-										gtk_list_store_append(completion_store, &iter); 										gtk_list_store_set(completion_store, &iter, 0, names.c_str(), 1, title.empty() ? _("Data object") : title.c_str(), 2, NULL, 3, TRUE, 4, b_match, 6, b_match == 1 ? PANGO_WEIGHT_BOLD : (b_match > 3 ? PANGO_WEIGHT_LIGHT : PANGO_WEIGHT_NORMAL), 7, 0, 8, 4, -1);
+										gtk_list_store_append(completion_store, &iter); 										gtk_list_store_set(completion_store, &iter, 0, names.c_str(), 1, title.empty() ? _("Data object") : title.c_str(), 2, NULL, 3, TRUE, 4, b_match, 6, b_match == 1 ? PANGO_WEIGHT_BOLD : (b_match > 3 ? PANGO_WEIGHT_LIGHT : PANGO_WEIGHT_NORMAL), 7, 0, 8, 4, 9, NULL, -1);
 										matches++;
 									}
 									obj = o->getNextObject(&it2);
@@ -25588,7 +25684,7 @@ void do_completion() {
 								}
 								i_match = 0;
 								gtk_list_store_append(completion_store, &iter);
-								gtk_list_store_set(completion_store, &iter, 0, names.c_str(), 1, dp->title().c_str(), 2, NULL, 3, TRUE, 4, b_match, 6, b_match == 1 ? PANGO_WEIGHT_BOLD : (b_match > 3 ? PANGO_WEIGHT_LIGHT : PANGO_WEIGHT_NORMAL), 7, 0, 8, 3, -1);
+								gtk_list_store_set(completion_store, &iter, 0, names.c_str(), 1, dp->title().c_str(), 2, NULL, 3, TRUE, 4, b_match, 6, b_match == 1 ? PANGO_WEIGHT_BOLD : (b_match > 3 ? PANGO_WEIGHT_LIGHT : PANGO_WEIGHT_NORMAL), 7, 0, 8, 3, 9, NULL, -1);
 								if(b_match > highest_match) highest_match = b_match;
 								matches++;
 							}
@@ -25802,22 +25898,30 @@ void do_completion() {
 						if(b_match > highest_match) highest_match = b_match;
 					}
 				} else if(item && to_type == 4) {
-					if(item->type() == TYPE_UNIT && item->category() == current_from_unit->category()) {
-						gchar *gstr;
-						gtk_tree_model_get(GTK_TREE_MODEL(completion_store), &iter, 0, &gstr, -1);
-						if(gstr && strlen(gstr) > 0 && gstr[0] == '<') {
-							string nstr = gstr;
-							size_t i = nstr.find("-) </small>");
-							if(i != string::npos && i > 2) {
-								nstr = nstr.substr(i + 11);
-								gtk_list_store_set(completion_store, &iter, 0, nstr.c_str(), -1);
+					if(item->type() == TYPE_UNIT && (!hide_exact_unit || item != current_from_unit)) {
+						if(item->category() == current_from_category) {
+							b_match = 2;
+						} else if(current_from_category == volume_cat && (((Unit*) item)->system() != "Imperial" || current_from_unit->system().find("Imperial") != string::npos)) {
+							for(size_t i = 0; i < alt_volcats.size(); i++) {
+								if(item->category() == alt_volcats[i]) {b_match = 2; break;}
 							}
 						}
-						if(gstr) g_free(gstr);
-						b_match = 2;
+						if(b_match == 2) {
+							gchar *gstr;
+							gtk_tree_model_get(GTK_TREE_MODEL(completion_store), &iter, 0, &gstr, -1);
+							if(gstr && strlen(gstr) > 0 && gstr[0] == '<') {
+								string nstr = gstr;
+								size_t i = nstr.find("-) </small>");
+								if(i != string::npos && i > 2) {
+									nstr = nstr.substr(i + 11);
+									gtk_list_store_set(completion_store, &iter, 0, nstr.c_str(), -1);
+								}
+							}
+							if(gstr) g_free(gstr);
+						}
 					}
 				} else if(item && to_type == 5) {
-					if(item->type() == TYPE_UNIT && ((Unit*) item)->isCurrency() && (!item->isHidden() || item == CALCULATOR->getLocalCurrency())) b_match = 2;
+					if(item->type() == TYPE_UNIT && ((Unit*) item)->isCurrency() && (to_menu || !item->isHidden() || item == CALCULATOR->getLocalCurrency()) && (!hide_exact_unit || item != current_from_unit)) b_match = 2;
 				} else if(item && to_type == 2 && str.empty() && current_from_struct) {
 					if(item->type() == TYPE_VARIABLE && (item == CALCULATOR->v_percent || item == CALCULATOR->v_permille) && current_from_struct->isNumber() && !current_from_struct->isInteger() && !current_from_struct->number().imaginaryPartIsNonZero()) b_match = 2;
 				} else if(prefix && to_type < 2) {
@@ -25856,9 +25960,9 @@ void do_completion() {
 								else if(str.empty() && p_type >= 202 && !current_from_struct->isInteger()) b_match = 0;
 							} else if(p_type >= 300 && p_type < 400) {
 								if(p_type == 300) {
-									if(!contains_rational_number(*current_from_struct)) b_match = 0;
+									if(!contains_rational_number(to_menu ? *displayed_mstruct : *current_from_struct)) b_match = 0;
 								} else if(p_type == 301) {
-									if((!current_from_struct->isNumber() || current_from_struct->number().isInteger() || current_from_struct->number().hasImaginaryPart()) && (!current_from_unit || current_from_unit->system().find("Imperial") == string::npos)) b_match = 0;
+									if((to_menu || (!current_from_struct->isNumber() || current_from_struct->number().isInteger() || current_from_struct->number().hasImaginaryPart())) && (!to_menu || (!displayed_mstruct->isNumber() || displayed_mstruct->number().isInteger() || displayed_mstruct->number().hasImaginaryPart())) && (!current_from_unit || current_from_unit->system().find("Imperial") == string::npos)) b_match = 0;
 								} else {
 									if(!current_from_struct->isNumber()) b_match = 0;
 								}
@@ -25889,7 +25993,8 @@ void do_completion() {
 			}
 		}
 	}
-	if(matches > 0 && (highest_match != 1 || completion_delay <= 0 || !display_expression_status)) {
+	if(to_menu) current_from_struct = NULL;
+	if(!to_menu && (matches > 0 && (highest_match != 1 || completion_delay <= 0 || !display_expression_status))) {
 		gtk_list_store_set(completion_store, &completion_separator_iter, 3, show_separator1 && show_separator2, 4, 3, -1);
 		if(show_separator1 && show_separator2) matches++;
 		completion_ignore_enter = TRUE;
@@ -29305,295 +29410,107 @@ void on_menu_item_z_unknown_activate(GtkMenuItem *w, gpointer) {
 	set_sign("z", ASSUMPTION_SIGN_UNKNOWN);
 }
 
-void menu_to_base(GtkMenuItem*, gpointer data) {
-	int save_base = printops.base;
-	to_base = 0;
-	to_bits = 0;
-	printops.base = GPOINTER_TO_INT(data);
-	result_format_updated();
-	printops.base = save_base;
+void on_mb_to_activated(GtkMenuItem*, gpointer p) {
+	GtkTreePath *path = gtk_tree_path_new_from_indices(GPOINTER_TO_INT(p), -1);
+	on_completion_match_selected(NULL, path, NULL, NULL);
+	gtk_tree_path_free(path);
 }
-void menu_to_utc(GtkMenuItem*, gpointer) {
-	printops.time_zone = TIME_ZONE_UTC;
-	result_format_updated();
-	printops.time_zone = TIME_ZONE_LOCAL;
-}
-void menu_to_fraction(GtkMenuItem*, gpointer) {
-	NumberFractionFormat save_format = printops.number_fraction_format;
-	bool save_restrict_fraction_length = printops.restrict_fraction_length;
-	printops.restrict_fraction_length = false;
-	to_fraction = 0;
-	to_fixed_fraction = 0;
-	printops.number_fraction_format = FRACTION_COMBINED;
-	result_format_updated();
-	printops.number_fraction_format = save_format;
-	printops.restrict_fraction_length = save_restrict_fraction_length;
-}
-void menu_to_fixed_fraction(long int v) {
-	NumberFractionFormat save_format = printops.number_fraction_format;
-	bool save_restrict_fraction_length = printops.restrict_fraction_length;
-	long int save_fden = CALCULATOR->fixedDenominator();
-	printops.restrict_fraction_length = false;
-	to_fraction = 0;
-	to_fixed_fraction = 0;
-	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fixed_combined")))) printops.number_fraction_format = FRACTION_COMBINED_FIXED_DENOMINATOR;
-	else printops.number_fraction_format = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
-	CALCULATOR->setFixedDenominator(v);
-	result_format_updated();
-	printops.number_fraction_format = save_format;
-	printops.restrict_fraction_length = save_restrict_fraction_length;
-	CALCULATOR->setFixedDenominator(save_fden);
-}
-void menu_to_4ths(GtkMenuItem*, gpointer) {menu_to_fixed_fraction(4);}
-void menu_to_8ths(GtkMenuItem*, gpointer) {menu_to_fixed_fraction(8);}
-void menu_to_16ths(GtkMenuItem*, gpointer) {menu_to_fixed_fraction(16);}
-void menu_to_rectangular(GtkMenuItem*, gpointer) {
-	ComplexNumberForm cnf_bak = evalops.complex_number_form;
-	to_caf = 0;
-	evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
-	executeCommand(COMMAND_EVAL);
-	evalops.complex_number_form = cnf_bak;
-}
-void menu_to_exponential(GtkMenuItem*, gpointer) {
-	ComplexNumberForm cnf_bak = evalops.complex_number_form;
-	to_caf = 0;
-	evalops.complex_number_form = COMPLEX_NUMBER_FORM_EXPONENTIAL;
-	executeCommand(COMMAND_EVAL);
-	evalops.complex_number_form = cnf_bak;
-}
-void menu_to_polar(GtkMenuItem*, gpointer) {
-	ComplexNumberForm cnf_bak = evalops.complex_number_form;
-	to_caf = 0;
-	evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
-	executeCommand(COMMAND_EVAL);
-	evalops.complex_number_form = cnf_bak;
-}
-void menu_to_angle(GtkMenuItem*, gpointer) {
-	ComplexNumberForm cnf_bak = evalops.complex_number_form;
-	to_caf = 1;
-	evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
-	executeCommand(COMMAND_EVAL);
-	evalops.complex_number_form = cnf_bak;
-}
+
+#define ADD_MB_TO_ITEM(i) \
+	gchar *gstr = NULL;\
+	cairo_surface_t *surface = NULL;\
+	gtk_tree_model_get(GTK_TREE_MODEL(completion_sort), &iter, 5, &surface, 9, &gstr, -1);\
+	if(!gstr) gtk_tree_model_get(GTK_TREE_MODEL(completion_sort), &iter, 1, &gstr, -1);\
+	if(gstr) {\
+		if(i > 1 && n2 == 0 && n > 0) {MENU_SEPARATOR}\
+		if(surface) {\
+			MENU_ITEM_MARKUP_WITH_INT_AND_FLAGIMAGE(gstr, surface, on_mb_to_activated, index)\
+			cairo_surface_destroy(surface);\
+		} else {\
+			MENU_ITEM_MARKUP_WITH_INT(gstr, on_mb_to_activated, index)\
+		}\
+		g_free(gstr);\
+		if(i == 1) n++;\
+		else n2++;\
+	}
+
 void update_mb_to_menu() {
-	GtkWidget *sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_to"));
 	if(expression_has_changed && !rpn_mode && !auto_calculate) execute_expression(true);
-	GtkWidget *item;
+	GtkWidget *sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_to"));
 	GList *list = gtk_container_get_children(GTK_CONTAINER(sub));
 	for(GList *l = list; l != NULL; l = l->next) {
 		gtk_widget_destroy(GTK_WIDGET(l->data));
 	}
 	g_list_free(list);
-	bool b_rational = (mstruct && displayed_mstruct && contains_rational_number(*displayed_mstruct));
-	if(!mstruct || !displayed_mstruct || !contains_convertable_unit(*displayed_mstruct)) {
-		bool b_date = (mstruct && displayed_mstruct && mstruct->isDateTime());
-		bool b_number = (mstruct && displayed_mstruct && mstruct->isNumber());
-		bool b_integ = b_number && mstruct->isInteger();
-		bool b_complex = (mstruct && displayed_mstruct && (contains_imaginary_number(*mstruct) || mstruct->containsFunctionId(FUNCTION_ID_CIS)));
-		if(b_date) {
-			MENU_ITEM(_("Calendars"), on_popup_menu_item_calendarconversion_activate)
-			MENU_ITEM("UTC", menu_to_utc)
-			return;
-		}
-		if(b_rational) {
-			MENU_ITEM(_("Fraction"), menu_to_fraction)
-			MENU_SEPARATOR
-		}
-		if(!b_complex) {
-			MENU_ITEM(_("Number bases"), on_menu_item_convert_number_bases_activate)
-			if(b_integ) {
-				if(displayed_printops.base != BASE_BINARY) {MENU_ITEM_WITH_INT(_("Binary"), menu_to_base, BASE_BINARY)}
-				if(displayed_printops.base != BASE_OCTAL) {MENU_ITEM_WITH_INT(_("Octal"), menu_to_base, BASE_OCTAL)}
-				if(displayed_printops.base != BASE_DECIMAL) {MENU_ITEM_WITH_INT(_("Decimal"), menu_to_base, BASE_DECIMAL)}
-				if(displayed_printops.base != BASE_DUODECIMAL) {MENU_ITEM_WITH_INT(_("Duodecimal"), menu_to_base, BASE_DUODECIMAL)}
-				if(displayed_printops.base != BASE_HEXADECIMAL) {MENU_ITEM_WITH_INT(_("Hexadecimal"), menu_to_base, BASE_HEXADECIMAL)}
-				if(displayed_printops.base != BASE_ROMAN_NUMERALS) {MENU_ITEM_WITH_INT(_("Roman numerals"), menu_to_base, BASE_ROMAN_NUMERALS)}
-				if(displayed_printops.base != BASE_ROMAN_NUMERALS) {MENU_ITEM_WITH_INT(_("Bijective base-26"), menu_to_base, BASE_BIJECTIVE_26)}
-				if(displayed_printops.base != BASE_ROMAN_NUMERALS) {MENU_ITEM_WITH_INT(_("Binary-coded decimal"), menu_to_base, BASE_BINARY_DECIMAL)}
-				MENU_SEPARATOR
-				MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)
-			} else if(displayed_mstruct && displayed_mstruct->containsType(STRUCT_ADDITION)) {
-				MENU_SEPARATOR
-				MENU_ITEM(_("Factors"), on_menu_item_factorize_activate)
-				MENU_ITEM(_("Expanded Partial Fractions"), on_menu_item_expand_partial_fractions_activate)
-			} else if(b_number) {
-				if(displayed_printops.base != BASE_LONGITUDE) {MENU_ITEM_WITH_INT(_("Latitude"), menu_to_base, BASE_LATITUDE)}
-				if(displayed_printops.base != BASE_LONGITUDE) {MENU_ITEM_WITH_INT(_("Longitude"), menu_to_base, BASE_LONGITUDE)}
-				if(displayed_printops.base != BASE_SEXAGESIMAL) {MENU_ITEM_WITH_INT(_("Sexagesimal"), menu_to_base, BASE_SEXAGESIMAL)}
-				if(displayed_printops.base != BASE_TIME) {MENU_ITEM_WITH_INT(_("Time format"), menu_to_base, BASE_TIME)}
-				if(displayed_printops.base != BASE_FP16) {MENU_ITEM_WITH_INT(_("16-bit floating point"), menu_to_base, BASE_FP16)}
-				if(displayed_printops.base != BASE_FP32) {MENU_ITEM_WITH_INT(_("32-bit floating point"), menu_to_base, BASE_FP32)}
-				if(displayed_printops.base != BASE_FP32) {MENU_ITEM_WITH_INT(_("64-bit floating point"), menu_to_base, BASE_FP64)}
-				if(displayed_printops.base != BASE_FP32) {MENU_ITEM_WITH_INT(_("80-bit (x86) floating point"), menu_to_base, BASE_FP80)}
-				if(displayed_printops.base != BASE_FP32) {MENU_ITEM_WITH_INT(_("128-bit floating point"), menu_to_base, BASE_FP128)}
-				MENU_SEPARATOR
-				MENU_ITEM_WITH_OBJECT(CALCULATOR->v_percent, convert_to_unit_noprefix);
-				MENU_ITEM_WITH_OBJECT(CALCULATOR->v_permille, convert_to_unit_noprefix);
+	if(!displayed_mstruct) return;
+	do_completion(true);
+	GtkWidget *item;
+	GtkTreeIter iter;
+	if(!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(completion_sort), &iter)) return;
+	bool b_hidden = false;
+	int p_type = 0;
+	void *o = NULL;
+	int n = 0, n2 = 0;
+	gint index = 0;
+	if(contains_convertible_unit(*displayed_mstruct)) {
+		bool b = true;
+		do {
+			gtk_tree_model_get(GTK_TREE_MODEL(completion_sort), &iter, 2, &o, 8, &p_type, -1);
+			if(p_type == 1 && ((ExpressionItem*) o)->type() == TYPE_UNIT) {
+				b = false;
+				break;
 			}
-		} else {
-			if(evalops.complex_number_form != COMPLEX_NUMBER_FORM_RECTANGULAR) {MENU_ITEM(_("Rectangular form"), menu_to_rectangular)}
-			if(evalops.complex_number_form != COMPLEX_NUMBER_FORM_EXPONENTIAL) {MENU_ITEM(_("Exponential form"), menu_to_exponential)}
-			if(evalops.complex_number_form != COMPLEX_NUMBER_FORM_POLAR) {MENU_ITEM(_("Polar form"), menu_to_polar)}
-			if(evalops.complex_number_form != COMPLEX_NUMBER_FORM_CIS || !complex_angle_form) {MENU_ITEM(_("Angle/phasor notation"), menu_to_angle)}
-		}
-		return;
-	}
-	string s_cat;
-	Unit *u_result = NULL;
-	if(displayed_mstruct) u_result = find_exact_matching_unit(*displayed_mstruct);
-	bool b_exact = (u_result != NULL);
-	if(!u_result && mstruct) u_result = CALCULATOR->findMatchingUnit(*mstruct);
-	if(u_result) s_cat = u_result->category();
-	bool b_prefix = false;
-	if(b_exact && u_result && u_result->subtype() != SUBTYPE_COMPOSITE_UNIT) b_prefix = has_prefix(displayed_mstruct ? *displayed_mstruct : *mstruct);
-	vector<Unit*> to_us;
-	size_t i_added = 0;
-	if(u_result && u_result->system().find("Imperial") != string::npos) {
-		MENU_ITEM("1/4", menu_to_4ths)
-		MENU_ITEM("1/8", menu_to_8ths)
-		MENU_ITEM("1/16", menu_to_16ths)
-		MENU_SEPARATOR
-	} else {
-		if(b_rational) {MENU_ITEM(_("Fraction"), menu_to_fraction)}
-		if(u_result && displayed_printops.base != BASE_SEXAGESIMAL && u_result == CALCULATOR->getDegUnit()) {
-			MENU_ITEM_WITH_INT(_("Sexagesimal"), menu_to_base, BASE_SEXAGESIMAL)
-			MENU_SEPARATOR
-		} else if(b_rational) {
-			MENU_SEPARATOR
-		}
-	}
-	MENU_ITEM(_("Base units"), on_menu_item_convert_to_base_units_activate);
-	MENU_ITEM(_("Optimal unit"), on_menu_item_convert_to_best_unit_activate);
-	MENU_ITEM(_("Optimal prefix"), on_menu_item_set_prefix_activate);
-	MENU_SEPARATOR
-	if(u_result && u_result->isCurrency()) {
-		Unit *u_local_currency = CALCULATOR->getLocalCurrency();
-		const char *currency_units[] = {"USD", "GBP", "JPY", "CNY", "INR", "CAD", "BRL"};
-		to_us.clear();
-		if(latest_button_currency && (!b_exact || b_prefix || latest_button_currency != u_result)) to_us.push_back(latest_button_currency);
-		for(size_t i = 0; i < 9 && to_us.size() < 6; i++) {
-			Unit * u;
-			if(i == 0) u = CALCULATOR->u_euro;
-			else if(i == 1) u = u_local_currency;
-			else u = CALCULATOR->getActiveUnit(currency_units[i - 2]);
-			if(u && (!b_exact || b_prefix || u != u_result) && (i == 1 || !u->isHidden())) {
-				bool b = false;
-				for(size_t i2 = 0; i2 < to_us.size(); i2++) {
-					if(u == to_us[i2]) {
-						b = true;
-						break;
-					}
-					if(string_is_less(u->title(true, printops.use_unicode_signs), to_us[i2]->title(true, printops.use_unicode_signs))) {
-						to_us.insert(to_us.begin() + i2, u);
-						b = true;
-						break;
-					}
-				}
-				if(!b) to_us.push_back(u);
-			}
-		}
-		for(size_t i = 0; i < to_us.size(); i++) {
-			MENU_ITEM_WITH_OBJECT_AND_FLAG(to_us[i], convert_to_unit)
-		}
-		i_added = to_us.size();
-		vector<Unit*> to_us2;
-		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
-			if(CALCULATOR->units[i]->isCurrency()) {
-				Unit *u = CALCULATOR->units[i];
-				if(u->isActive()) {
-					bool b = false;
-					if(u->isHidden() && (!b_exact || b_prefix || u != u_result) && u != u_local_currency) {
-						for(int i2 = to_us2.size() - 1; i2 >= 0; i2--) {
-							if(u->title(true, printops.use_unicode_signs) > to_us2[(size_t) i2]->title(true, printops.use_unicode_signs)) {
-								if((size_t) i2 == to_us2.size() - 1) to_us2.push_back(u);
-								else to_us2.insert(to_us2.begin() + (size_t) i2 + 1, u);
-								b = true;
-								break;
-							}
-						}
-						if(!b) to_us2.insert(to_us2.begin(), u);
-					} else {
-						for(size_t i2 = 0; i2 < i_added; i2++) {
-							if(u == to_us[i2]) {
-								b = true;
-								break;
-							}
-						}
-						for(size_t i2 = to_us.size() - 1; !b && i2 >= i_added; i2--) {
-							if(u->title(true, printops.use_unicode_signs) > to_us[i2]->title(true, printops.use_unicode_signs)) {
-								if(i2 == to_us.size() - 1) to_us.push_back(u);
-								else to_us.insert(to_us.begin() + i2 + 1, u);
-								b = true;
-							}
-						}
-						if(!b) to_us.insert(to_us.begin() + i_added, u);
-					}
-				}
-			}
-		}
-		for(size_t i = i_added; i < to_us.size(); i++) {
-			// Show further items in a submenu
-			if(i == i_added) {SUBMENU_ITEM(_("more"), sub);}
-			MENU_ITEM_WITH_OBJECT_AND_FLAG(to_us[i], convert_to_unit)
-		}
-		if(to_us2.size() > 0) {SUBMENU_ITEM(_("more"), sub);}
-		for(size_t i = 0; i < to_us2.size(); i++) {
-			// Show further items in a submenu
-			MENU_ITEM_WITH_OBJECT_AND_FLAG(to_us2[i], convert_to_unit)
-		}
-	} else if(!s_cat.empty()) {
-		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
-			if(CALCULATOR->units[i]->category() == s_cat) {
-				Unit *u = CALCULATOR->units[i];
-				if(u->isActive() && (!b_exact || b_prefix || u != u_result) && !u->isHidden()) {
-					bool b = false;
-					for(size_t i2 = 0; i2 < to_us.size(); i2++) {
-						if(string_is_less(u->title(true, printops.use_unicode_signs), to_us[i2]->title(true, printops.use_unicode_signs))) {
-							to_us.insert(to_us.begin() + i2, u);
-							b = true;
+		} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(completion_sort), &iter));
+		if(b) {
+			gtk_tree_model_get_iter_first(GTK_TREE_MODEL(completion_store), &iter);
+			const char *si_units[] = {"m", "g", "s", "A", "K", "L", "J", "N"};
+			size_t n_si = 8;
+			do {
+				gtk_tree_model_get(GTK_TREE_MODEL(completion_store), &iter, 2, &o, 8, &p_type, -1);
+				if(p_type == 1 && ((ExpressionItem*) o)->type() == TYPE_UNIT && ((Unit*) o)->subtype() != SUBTYPE_COMPOSITE_UNIT && ((Unit*) o)->isSIUnit()) {
+					for(size_t i = 0; i < n_si; i++) {
+						if(((ExpressionItem*) o)->referenceName() == si_units[i]) {
+							gtk_list_store_set(GTK_LIST_STORE(completion_store), &iter, 3, TRUE, -1);
 							break;
 						}
 					}
-					if(!b) to_us.push_back(u);
-					i_added++;
 				}
-			}
+			} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(completion_store), &iter));
 		}
-		for(size_t i = 0; i < to_us.size(); i++) {
-			if(i + 4 == 10 && i + 1 != to_us.size()) {SUBMENU_ITEM(_("more"), sub);}
-			MENU_ITEM_WITH_OBJECT(to_us[i], convert_to_unit_noprefix)
-		}
+		gtk_tree_model_get_iter_first(GTK_TREE_MODEL(completion_sort), &iter);
 	}
-	if(!i_added) {
-		const char *si_units[] = {"m", "g", "s", "A", "K", "L", "J", "N"};
-		vector<Unit*> to_us2;
-		for(size_t i = 0; i < 8 && i_added + 3 < 10; i++) {
-			Unit * u = CALCULATOR->getActiveUnit(si_units[i]);
-			if(!u->isHidden() && (!b_exact || b_prefix || u != u_result)) {
-				bool b = false;
-				for(size_t i2 = 0; i2 < to_us.size(); i2++) {
-					if(u == to_us[i2]) {
-						b = true;
-						break;
-					}
-				}
-				for(size_t i2 = 0; !b && i2 < to_us2.size(); i2++) {
-					if(string_is_less(u->title(true, printops.use_unicode_signs), to_us2[i2]->title(true, printops.use_unicode_signs))) {
-						to_us2.insert(to_us2.begin() + i2, u);
-						b = true;
-						i_added++;
-						break;
-					}
-				}
-				if(!b) {
-					to_us2.push_back(u);
-					i_added++;
-				}
+	do {
+		gtk_tree_model_get(GTK_TREE_MODEL(completion_sort), &iter, 2, &o, 8, &p_type, -1);
+		if(p_type != 1 || ((ExpressionItem*) o)->type() != TYPE_UNIT) {
+			ADD_MB_TO_ITEM(1)
+		}
+		index++;
+	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(completion_sort), &iter));
+	gtk_tree_model_get_iter_first(GTK_TREE_MODEL(completion_sort), &iter);
+	index = 0;
+	Unit *u_local_currency = CALCULATOR->getLocalCurrency();
+	do {
+		gtk_tree_model_get(GTK_TREE_MODEL(completion_sort), &iter, 2, &o, 8, &p_type, -1);
+		if(p_type == 1 && ((ExpressionItem*) o)->type() == TYPE_UNIT) {
+			if(((ExpressionItem*) o)->isHidden() && o != u_local_currency) {
+				b_hidden = true;
+			} else {
+				ADD_MB_TO_ITEM(2)
 			}
 		}
-		for(size_t i = 0; i < to_us2.size(); i++) {
-			MENU_ITEM_WITH_OBJECT(to_us2[i], convert_to_unit)
-		}
+		index++;
+	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(completion_sort), &iter));
+	if(b_hidden) {
+		gtk_tree_model_get_iter_first(GTK_TREE_MODEL(completion_sort), &iter);
+		index = 0;
+		if(n2 > 0) {SUBMENU_ITEM(_("more"), sub);}
+		do {
+			gtk_tree_model_get(GTK_TREE_MODEL(completion_sort), &iter, 2, &o, 8, &p_type, -1);
+			if(p_type == 1 && ((ExpressionItem*) o)->type() == TYPE_UNIT && ((ExpressionItem*) o)->isHidden() && o != u_local_currency) {
+				ADD_MB_TO_ITEM(3)
+			}
+			index++;
+		} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(completion_sort), &iter));
 	}
 }
 gboolean on_mb_to_button_release_event(GtkWidget, GdkEventButton *event, gpointer) {
@@ -31219,7 +31136,9 @@ void on_popup_menu_item_calendarconversion_activate(GtkMenuItem *w, gpointer) {
 	}
 }
 void on_popup_menu_item_to_utc_activate(GtkMenuItem *w, gpointer) {
-	menu_to_utc(w, NULL);
+	printops.time_zone = TIME_ZONE_UTC;
+	result_format_updated();
+	printops.time_zone = TIME_ZONE_LOCAL;
 }
 void on_menu_item_periodic_table_activate(GtkMenuItem*, gpointer) {
 	GtkWidget *dialog = get_periodic_dialog();
