@@ -3786,6 +3786,10 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 				} else if(equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _("base"))) {
 					base_from_string(to_str2, to_base, to_nbase);
 					do_to = true;
+				} else if(equalsIgnoreCase(to_str, "decimals") || equalsIgnoreCase(to_str, _("decimals"))) {
+					to_fixed_fraction = 0;
+					to_fraction = 3;
+					do_to = true;
 				} else {
 					do_to = true;
 					long int fden = get_fixed_denominator_gtk(unlocalize_expression(to_str), to_fraction);
@@ -3940,9 +3944,10 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 				else printops.number_fraction_format = FRACTION_COMBINED_FIXED_DENOMINATOR;
 				CALCULATOR->setFixedDenominator(to_fixed_fraction);
 				do_to = true;
-			} else if(to_fraction > 0 && (printops.restrict_fraction_length || (to_fraction != 2 && printops.number_fraction_format != FRACTION_COMBINED) || (to_fraction == 2 && printops.number_fraction_format != FRACTION_FRACTIONAL))) {
+			} else if(to_fraction > 0 && (printops.restrict_fraction_length || (to_fraction != 2 && printops.number_fraction_format != FRACTION_COMBINED) || (to_fraction == 2 && printops.number_fraction_format != FRACTION_FRACTIONAL) || (to_fraction == 3 && printops.number_fraction_format != FRACTION_DECIMAL))) {
 				printops.restrict_fraction_length = false;
-				if(to_fraction == 2) printops.number_fraction_format = FRACTION_FRACTIONAL;
+				if(to_fraction == 3) printops.number_fraction_format = FRACTION_DECIMAL;
+				else if(to_fraction == 2) printops.number_fraction_format = FRACTION_FRACTIONAL;
 				else printops.number_fraction_format = FRACTION_COMBINED;
 				do_to = true;
 			}
@@ -4700,6 +4705,9 @@ void display_parse_status() {
 					gchar *gstr = g_strdup_printf(_("number base %s"), to_str2.c_str());
 					parsed_expression += gstr;
 					g_free(gstr);
+
+				} else if(equalsIgnoreCase(str_u, "decimals") || equalsIgnoreCase(str_u, _("decimals"))) {
+					parsed_expression += _("decimal fraction");
 				} else {
 					int tofr = 0;
 					long int fden = get_fixed_denominator_gtk(unlocalize_expression(str_u), tofr);
@@ -8349,6 +8357,8 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Fraction"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 300, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("1/")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, (string(_("Fraction")) + " (1/n)").c_str(), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 301, 9, NULL, -1);
+	COMPLETION_CONVERT_STRING("decimals")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Decimal Fraction"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 302, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("hexadecimal") str += " <i>"; str += "hex"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Hexadecimal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 216, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("latitude") str += " <i>"; str += "latitude2"; str += "</i>";
@@ -12248,9 +12258,10 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				else printops.number_fraction_format = FRACTION_COMBINED_FIXED_DENOMINATOR;
 				CALCULATOR->setFixedDenominator(to_fixed_fraction);
 				do_to = true;
-			} else if(to_fraction > 0 && (printops.restrict_fraction_length || (to_fraction != 2 && printops.number_fraction_format != FRACTION_COMBINED) || (to_fraction == 2 && printops.number_fraction_format != FRACTION_FRACTIONAL))) {
+			} else if(to_fraction > 0 && (printops.restrict_fraction_length || (to_fraction != 2 && printops.number_fraction_format != FRACTION_COMBINED) || (to_fraction == 2 && printops.number_fraction_format != FRACTION_FRACTIONAL) || (to_fraction == 3 && printops.number_fraction_format != FRACTION_DECIMAL))) {
 				printops.restrict_fraction_length = false;
-				if(to_fraction == 2) printops.number_fraction_format = FRACTION_FRACTIONAL;
+				if(to_fraction == 3) printops.number_fraction_format = FRACTION_DECIMAL;
+				else if(to_fraction == 2) printops.number_fraction_format = FRACTION_FRACTIONAL;
 				else printops.number_fraction_format = FRACTION_COMBINED;
 				do_to = true;
 			}
@@ -15050,6 +15061,10 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				execute_str = from_str;
 			} else if(equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _("base"))) {
 				base_from_string(to_str2, to_base, to_nbase);
+				do_to = true;
+			} else if(equalsIgnoreCase(to_str, "decimals") || equalsIgnoreCase(to_str, _("decimals"))) {
+				to_fixed_fraction = 0;
+				to_fraction = 3;
 				do_to = true;
 			} else {
 				do_to = true;
@@ -25605,7 +25620,7 @@ void do_completion(bool to_menu = false) {
 	if(current_object_start < 0) {
 		if(editing_to_expression && current_from_struct && !current_from_units.empty()) {
 			to_type = 4;
-		} else if(editing_to_expression && editing_to_expression1 && current_from_struct && (to_menu || current_from_struct->isNumber())) {
+		} else if(editing_to_expression && editing_to_expression1 && current_from_struct) {
 			to_type = 2;
 		} else if(current_function && current_function->subtype() == SUBTYPE_DATA_SET && current_function_index > 1) {
 			Argument *arg = current_function->getArgumentDefinition(current_function_index);
@@ -26036,6 +26051,8 @@ void do_completion(bool to_menu = false) {
 							} else if(p_type >= 300 && p_type < 400) {
 								if(p_type == 300) {
 									if(!contains_rational_number(to_menu ? *displayed_mstruct : *current_from_struct)) b_match = 0;
+								} else if(p_type == 302) {
+									if((to_menu && contains_rational_number(*displayed_mstruct)) || (!to_menu && (printops.number_fraction_format == FRACTION_DECIMAL || !contains_rational_number(*current_from_struct)))) b_match = 0;
 								} else if(p_type == 301) {
 									if((to_menu || (!current_from_struct->isNumber() || current_from_struct->number().isInteger() || current_from_struct->number().hasImaginaryPart())) && (!to_menu || (!displayed_mstruct->isNumber() || displayed_mstruct->number().isInteger() || displayed_mstruct->number().hasImaginaryPart()))) {
 										bool b = false;
