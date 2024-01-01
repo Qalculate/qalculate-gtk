@@ -37261,17 +37261,17 @@ bool generate_plot(PlotParameters &pp, vector<MathStructure> &y_vectors, vector<
 				if(rows) {
 					for(size_t i = 1; i <= y_vector->rows(); i += 2) {
 						y_vectors.push_back(m_undefined);
-						y_vector->rowToVector(i, y_vectors[y_vectors.size() - 1]);
+						y_vector->rowToVector(i + 1, y_vectors[y_vectors.size() - 1]);
 						x_vectors.push_back(m_undefined);
-						y_vector->rowToVector(i + 1, x_vectors[x_vectors.size() - 1]);
+						y_vector->rowToVector(i, x_vectors[x_vectors.size() - 1]);
 						count++;
 					}
 				} else {
 					for(size_t i = 1; i <= y_vector->columns(); i += 2) {
 						y_vectors.push_back(m_undefined);
-						y_vector->columnToVector(i, y_vectors[y_vectors.size() - 1]);
+						y_vector->columnToVector(i + 1, y_vectors[y_vectors.size() - 1]);
 						x_vectors.push_back(m_undefined);
-						y_vector->columnToVector(i + 1, x_vectors[x_vectors.size() - 1]);
+						y_vector->columnToVector(i, x_vectors[x_vectors.size() - 1]);
 						count++;
 					}
 				}
