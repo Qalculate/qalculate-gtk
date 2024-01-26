@@ -221,6 +221,7 @@ vector<DataProperty*> tmp_props_orig;
 bool keep_unit_selection = false;
 int visible_keypad = 0, previous_keypad = 0;
 int programming_inbase = 0, programming_outbase = 0;
+unsigned int programming_bits = 0;
 bool title_modified = false;
 string current_mode;
 int vertical_button_padding = -1, horizontal_button_padding = -1;
@@ -431,6 +432,11 @@ PangoLayout *status_layout = NULL;
 
 unordered_map<const ExpressionName*, string> capitalized_names;
 
+vector<PangoRectangle> binary_rect;
+vector<int> binary_pos;
+int binary_x_diff = 0;
+int binary_y_diff = 0;
+
 bool use_duo_syms = false;
 
 #define RESET_TZ 	printops.custom_time_zone = (rounding_mode == 2 ? TZ_TRUNCATE : 0);\
@@ -450,6 +456,7 @@ bool use_duo_syms = false;
 #define TTB(str)			if(scaledown <= 0) {str += "<span size=\"xx-large\">";} else if(scaledown == 1) {str += "<span size=\"x-large\">";} else if(scaledown == 2) {str += "<span size=\"large\">";} else {str += "<span size=\"medium\">";}
 #define TTB_SMALL(str)			if(scaledown <= 0) {str += "<span size=\"large\">";} else if(scaledown == 1) {str += "<span size=\"medium\">";} else if(scaledown == 2) {str += "<span size=\"small\">";} else {str += "<span size=\"x-small\">";}
 #define TTB_XSMALL(str)			if(scaledown <= 0) {str += "<span size=\"medium\">";} else if(scaledown == 1) {str += "<span size=\"small\">";} else {str += "<span size=\"x-small\">";}
+#define TTB_XXSMALL(str)		if(scaledown <= 0) {str += "<span size=\"x-small\">";} else if(scaledown == 1) {str += "<span size=\"xx-small\">";} else {str += "<span size=\"xx-small\">";}
 #define TTBP(str)			if(ips.power_depth > 1) {TTB_XSMALL(str);} else if(ips.power_depth > 0) {TTB_SMALL(str);} else {TTB(str);}
 #define TTBP_SMALL(str)			if(ips.power_depth > 0) {TTB_XSMALL(str);} else {TTB_SMALL(str);}
 #define TTE(str)			str += "</span>";
@@ -700,6 +707,7 @@ string print_with_evalops(const Number &nr) {
 	po.base = evalops.parse_options.base;
 	po.base_display = BASE_DISPLAY_NONE;
 	po.twos_complement = evalops.parse_options.twos_complement;
+	po.min_exp = EXP_NONE;
 	Number nr_base;
 	if(po.base == BASE_CUSTOM) {
 		nr_base = CALCULATOR->customOutputBase();
@@ -3402,6 +3410,11 @@ void set_result_bases(const MathStructure &m) {
 		po.min_exp = 0;
 		if(printops.base != 2) {
 			po.base = 2;
+			if(!po.twos_complement || !m.number().isNegative()) {
+				po.binary_bits = 0;
+			} else {
+				po.binary_bits = printops.binary_bits;
+			}
 			result_bin = nr.print(po);
 		}
 		if(printops.base != 8) {
@@ -3416,6 +3429,11 @@ void set_result_bases(const MathStructure &m) {
 		}
 		if(printops.base != 16) {
 			po.base = 16;
+			if(!po.hexadecimal_twos_complement || !m.number().isNegative()) {
+				po.binary_bits = 0;
+			} else {
+				po.binary_bits = printops.binary_bits;
+			}
 			result_hex = nr.print(po);
 			gsub("0x", "", result_hex);
 			size_t l = result_hex.length();
@@ -3506,6 +3524,8 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 	bool do_factors = false, do_pfe = false, do_expand = false;
 
 	ComplexNumberForm cnf_bak = evalops.complex_number_form;
+	ComplexNumberForm cnf = evalops.complex_number_form;
+	bool delay_complex = false;
 	bool caf_bak = complex_angle_form;
 	bool b_units_saved = evalops.parse_options.units_enabled;
 	AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
@@ -3740,23 +3760,23 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 					str = from_str;
 				} else if(equalsIgnoreCase(to_str, "rectangular") || equalsIgnoreCase(to_str, "cartesian") || equalsIgnoreCase(to_str, _("rectangular")) || equalsIgnoreCase(to_str, _("cartesian"))) {
 					to_caf = 0;
-					evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
+					cnf = COMPLEX_NUMBER_FORM_RECTANGULAR;
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "exponential") || equalsIgnoreCase(to_str, _("exponential"))) {
 					to_caf = 0;
-					evalops.complex_number_form = COMPLEX_NUMBER_FORM_EXPONENTIAL;
+					cnf = COMPLEX_NUMBER_FORM_EXPONENTIAL;
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "polar") || equalsIgnoreCase(to_str, _("polar"))) {
 					to_caf = 0;
-					evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
+					cnf = COMPLEX_NUMBER_FORM_POLAR;
 					do_to = true;
 				} else if(to_str == "cis") {
 					to_caf = 0;
-					evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
+					cnf = COMPLEX_NUMBER_FORM_CIS;
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "angle") || equalsIgnoreCase(to_str, _("angle")) || equalsIgnoreCase(to_str, "phasor") || equalsIgnoreCase(to_str, _("phasor"))) {
 					to_caf = 1;
-					evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
+					cnf = COMPLEX_NUMBER_FORM_CIS;
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "optimal") || equalsIgnoreCase(to_str, _("optimal"))) {
 					evalops.parse_options.units_enabled = true;
@@ -3802,6 +3822,8 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 						} else if(to_str.length() > 1 && to_str[1] == '?' && (to_str[0] == 'b' || to_str[0] == 'a' || to_str[0] == 'd')) {
 							to_prefix = to_str[0];
 						}
+						Unit *u = CALCULATOR->getActiveUnit(to_str);
+						if(delay_complex != (cnf != COMPLEX_NUMBER_FORM_POLAR && cnf != COMPLEX_NUMBER_FORM_CIS) && u && u->baseUnit() == CALCULATOR->getRadUnit() && u->baseExponent() == 1) delay_complex = !delay_complex;
 						if(!str_conv.empty()) str_conv += " to ";
 						str_conv += to_str;
 					}
@@ -3816,6 +3838,12 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 					str += str_conv;
 				}
 			}
+		}
+		if(!delay_complex || (cnf != COMPLEX_NUMBER_FORM_POLAR && cnf != COMPLEX_NUMBER_FORM_CIS)) {
+			evalops.complex_number_form = cnf;
+			delay_complex = false;
+		} else {
+			evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
 		}
 		if(origstr) {
 			size_t i = str.find_first_of(SPACES LEFT_PARENTHESIS);
@@ -3910,6 +3938,13 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 				}
 			}
 		}
+		if(delay_complex) {
+			CALCULATOR->startControl(100);
+			evalops.complex_number_form = cnf;
+			if(evalops.complex_number_form == COMPLEX_NUMBER_FORM_CIS) mstruct->complexToCisForm(evalops);
+			else if(evalops.complex_number_form == COMPLEX_NUMBER_FORM_POLAR) mstruct->complexToPolarForm(evalops);
+			CALCULATOR->stopControl();
+		}
 		if(!parsed_tostruct->isUndefined() && origstr && str_conv.empty() && !mauto.containsType(STRUCT_UNIT, true)) parsed_tostruct->setUndefined();
 		if(!simplified_percentage) evalops.parse_options.parsing_mode = (ParsingMode) (evalops.parse_options.parsing_mode & ~PARSE_PERCENT_AS_ORDINARY_CONSTANT);
 		CALCULATOR->endTemporaryStopMessages(!mauto.isAborted(), &autocalc_messages);
@@ -3931,7 +3966,7 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 		if(to_base != 0 || to_fraction > 0 || to_fixed_fraction >= 2 || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form)) {
 			if(to_base != 0 && (to_base != printops.base || to_bits != printops.binary_bits || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()))) {
 				printops.base = to_base;
-				printops.binary_bits = to_bits;
+				if(to_bits != printops.binary_bits) printops.binary_bits = to_bits;
 				if(to_base == BASE_CUSTOM) {
 					custom_base_set = true;
 					save_nbase = CALCULATOR->customOutputBase();
@@ -4344,7 +4379,7 @@ void remove_non_units(MathStructure &m) {
 		else if(m.size() == 1) m.setToChild(1);
 	}
 }
-void find_matching_units(const MathStructure &m, vector<Unit*> &v, bool top = true) {
+void find_matching_units(const MathStructure &m, const MathStructure *mparse, vector<Unit*> &v, bool top = true) {
 	Unit *u = CALCULATOR->findMatchingUnit(m);
 	if(u) {
 		for(size_t i = 0; i < v.size(); i++) {
@@ -4354,15 +4389,19 @@ void find_matching_units(const MathStructure &m, vector<Unit*> &v, bool top = tr
 		return;
 	}
 	if(top) {
+		if(mparse && !m.containsType(STRUCT_UNIT, true) && (mparse->containsFunctionId(FUNCTION_ID_ASIN) || mparse->containsFunctionId(FUNCTION_ID_ACOS) || mparse->containsFunctionId(FUNCTION_ID_ATAN))) {
+			v.push_back(CALCULATOR->getRadUnit());
+			return;
+		}
 		MathStructure m2(m);
 		remove_non_units(m2);
 		CALCULATOR->beginTemporaryStopMessages();
 		m2 = CALCULATOR->convertToOptimalUnit(m2, evalops, evalops.auto_post_conversion == POST_CONVERSION_OPTIMAL_SI);
 		CALCULATOR->endTemporaryStopMessages();
-		find_matching_units(m2, v, false);
+		find_matching_units(m2, mparse, v, false);
 	} else {
 		for(size_t i = 0; i < m.size(); i++) {
-			find_matching_units(m[i], v, false);
+			find_matching_units(m[i], mparse, v, false);
 		}
 	}
 }
@@ -4497,7 +4536,7 @@ void display_parse_status() {
 					eo.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
 					eo.expand = -2;
 					if(!CALCULATOR->calculate(current_from_struct, str_w.empty() ? str_e : str_e + "/." + str_w, 20, eo)) current_from_struct->setAborted();
-					find_matching_units(*current_from_struct, current_from_units);
+					find_matching_units(*current_from_struct, &mparse, current_from_units);
 				}
 			} else if(current_from_struct) {
 				current_from_struct->unref();
@@ -8547,7 +8586,12 @@ void get_image_blank_height(cairo_surface_t *surface, int *y1, int *y2) {
 
 #define SHOW_WITH_ROOT_SIGN(x) (x.isFunction() && ((x.function() == CALCULATOR->f_sqrt && x.size() == 1) || (x.function() == CALCULATOR->f_cbrt && x.size() == 1) || (x.function() == CALCULATOR->f_root && x.size() == 2 && x[1].isNumber() && x[1].number().isInteger() && x[1].number().isPositive() && x[1].number().isLessThan(10))))
 
-cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, InternalPrintStruct ips, gint *point_central, int scaledown, GdkRGBA *color, gint *x_offset, gint *w_offset, gint max_width) {
+cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, InternalPrintStruct ips, gint *point_central, int scaledown, GdkRGBA *color, gint *x_offset, gint *w_offset, gint max_width, bool for_result_widget) {
+
+	if(for_result_widget && ips.depth == 0) {
+		binary_rect.clear();
+		binary_pos.clear();
+	}
 
 	if(CALCULATOR->aborted()) return NULL;
 
@@ -8859,7 +8903,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				}
 				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
 				bool multiline = false;
-				for(int try_i = 0; try_i <= 2; try_i++) {
+				for(int try_i = 0; try_i <= 1; try_i++) {
 					if(try_i == 1) {
 						value_str_bak = value_str;
 						size_t i = string::npos, l = 0;
@@ -8894,6 +8938,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 							}
 						}
 						if(i == string::npos) {
+							cout << "A" << endl;
 							break;
 						} else {
 							if(l == 0) value_str.insert(i, 1, '\n');
@@ -8902,36 +8947,6 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 							if(base == BASE_DECIMAL) pango_layout_set_alignment(layout, PANGO_ALIGN_RIGHT);
 							multiline = true;
 						}
-					} else if(try_i == 2) {
-						if(base == BASE_BINARY) {
-							PangoLayoutIter *iter = pango_layout_get_iter(layout);
-							PangoRectangle crect;
-							string str2;
-							size_t n_begin = (value_str.length() + 1) % 20;
-							for(size_t i = 0; i == 0 || pango_layout_iter_next_char(iter); i++) {
-								if((i % 20 == n_begin) || i == value_str.length() - 1) {
-									pango_layout_iter_get_char_extents(iter, &crect);
-									pango_extents_to_pixels(&crect, NULL);
-									PangoLayout *layout_pos = gtk_widget_create_pango_layout(resultview, NULL);
-									str2 = "";
-									TTB_XSMALL(str2);
-									if(i == value_str.length() - 1) str2 += "0";
-									else str2 += i2s(((value_str.length() - n_begin) - (value_str.length() - n_begin) / 5) - ((i - n_begin) - (i - n_begin) / 5) - 1);
-									TTE(str2);
-									pango_layout_set_markup(layout_pos, str2.c_str(), -1);
-									pos_nr.push_back(layout_pos);
-									if(i == value_str.length() - 1) {
-										pango_layout_get_pixel_size(layout_pos, &w, &pos_h);
-										pos_x.push_back(crect.x + (crect.width - w) / 2);
-										break;
-									} else {
-										pos_x.push_back(crect.x);
-									}
-								}
-							}
-							pango_layout_iter_free(iter);
-						}
-						break;
 					}
 					TTBP(str)
 					str += value_str;
@@ -8957,7 +8972,6 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 								str = str_bak;
 								pango_layout_set_markup(layout, str.c_str(), -1);
 								multiline = false;
-								if(base != BASE_BINARY) break;
 							} else {
 								str_bak = str;
 								str = "";
@@ -8968,6 +8982,39 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					} else {
 						break;
 					}
+				}
+
+				if(ips.depth == 0 && base == BASE_BINARY && value_str.find(po.decimalpoint()) == string::npos && value_str.find_first_not_of("10 \n") == string::npos) {
+					PangoLayoutIter *iter = pango_layout_get_iter(layout);
+					PangoRectangle crect;
+					string str2;
+					size_t n_begin = (value_str.length() + 1) % 10;
+					for(size_t i = 0; i == 0 || pango_layout_iter_next_char(iter); i++) {
+						int bin_pos = ((value_str.length() - n_begin) - (value_str.length() - n_begin) / 5) - ((i - n_begin) - (i - n_begin) / 5) - 1;
+						if(bin_pos < 0) break;
+						pango_layout_iter_get_char_extents(iter, &crect);
+						pango_extents_to_pixels(&crect, NULL);
+						if(i % 10 == n_begin && value_str.length() > 20 && bin_pos > 0) {
+							PangoLayout *layout_pos = gtk_widget_create_pango_layout(resultview, NULL);
+							str2 = "";
+							TTB_XXSMALL(str2);
+							str2 += i2s(bin_pos);
+							TTE(str2);
+							pango_layout_set_markup(layout_pos, str2.c_str(), -1);
+							pos_nr.push_back(layout_pos);
+							if(bin_pos < 10) {
+								pango_layout_get_pixel_size(layout_pos, &w, &pos_h);
+								pos_x.push_back(crect.x + (crect.width - w) / 2);
+							} else {
+								pos_x.push_back(crect.x);
+							}
+						}
+						if(for_result_widget && value_str[i] != ' ') {
+							binary_rect.push_back(crect);
+							binary_pos.push_back(bin_pos);
+						}
+					}
+					pango_layout_iter_free(iter);
 				}
 				PangoRectangle rect, lrect;
 				pango_layout_get_pixel_extents(layout, &rect, &lrect);
@@ -8989,6 +9036,13 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				if(multiline) {
 					pango_layout_line_get_pixel_extents(pango_layout_get_line(layout, 0), NULL, &lrect);
 					central_point = h - (lrect.height / 2 + lrect.height % 2);
+					pos_y = h;
+					if(!binary_rect.empty()) {
+						central_point += pos_h;
+						h += pos_h * 2;
+						pos_y += pos_h;
+						for(size_t i = 0; i < binary_rect.size(); i++) binary_rect[i].y += pos_h;
+					}
 				} else if(central_point != 0) {
 					pos_y = central_point;
 					if(pos_h + pos_y > h) h = pos_h + pos_y;
@@ -9006,12 +9060,18 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
 				cairo_t *cr = cairo_create(surface);
 				gdk_cairo_set_source_rgba(cr, color);
-				cairo_move_to(cr, offset_x, rect.y < 0 ? -rect.y : 0);
+				cairo_move_to(cr, offset_x, (multiline && !binary_rect.empty() ? pos_h : 0) + (rect.y < 0 ? -rect.y : 0));
 				pango_cairo_show_layout(cr, layout);
-				for(size_t i = 0; i < pos_nr.size(); i++) {
-					cairo_move_to(cr, pos_x[i], pos_y);
-					pango_cairo_show_layout(cr, pos_nr[i]);
-					g_object_unref(pos_nr[i]);
+				if(!pos_nr.empty()) {
+					GdkRGBA *color2 = gdk_rgba_copy(color);
+					color2->alpha = color2->alpha * 0.7;
+					gdk_cairo_set_source_rgba(cr, color2);
+					for(size_t i = 0; i < pos_nr.size(); i++) {
+						cairo_move_to(cr, pos_x[i], (multiline && i < (pos_nr.size() + 1) / 2) ? 0 : pos_y);
+						pango_cairo_show_layout(cr, pos_nr[i]);
+						g_object_unref(pos_nr[i]);
+					}
+					gdk_rgba_free(color2);
 				}
 				g_object_unref(layout);
 				cairo_destroy(cr);
@@ -10972,6 +11032,9 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 		gdk_cairo_set_source_rgba(cr, color);
 		cairo_move_to(cr, offset_x, h - central_point - hle / 2 - hle % 2);
 		pango_cairo_show_layout(cr, layout_equals);
+		for(size_t i = 0; i < binary_rect.size(); i++) {
+			binary_rect[i].x = binary_rect[i].x + wle + space_w;
+		}
 		cairo_set_source_surface(cr, surface_old, wle + space_w, 0);
 		cairo_paint(cr);
 		cairo_surface_destroy(surface_old);
@@ -12245,7 +12308,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		if(to_base != 0 || to_fraction > 0 || to_fixed_fraction >= 2 || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form)) {
 			if(to_base != 0 && (to_base != printops.base || to_bits != printops.binary_bits || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()))) {
 				printops.base = to_base;
-				printops.binary_bits = to_bits;
+				if(to_bits != printops.binary_bits) printops.binary_bits = to_bits;
 				if(to_base == BASE_CUSTOM) {
 					custom_base_set = true;
 					save_nbase = CALCULATOR->customOutputBase();
@@ -14746,6 +14809,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	}
 
 	ComplexNumberForm cnf_bak = evalops.complex_number_form;
+	ComplexNumberForm cnf = evalops.complex_number_form;
+	bool delay_complex = false;
 	bool b_units_saved = evalops.parse_options.units_enabled;
 	AutoPostConversion save_auto_post_conversion = evalops.auto_post_conversion;
 	MixedUnitsConversion save_mixed_units_conversion = evalops.mixed_units_conversion;
@@ -14935,10 +15000,10 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				do_calendars = true;
 				execute_str = from_str;
 			} else if(equalsIgnoreCase(to_str, "rectangular") || equalsIgnoreCase(to_str, "cartesian") || equalsIgnoreCase(to_str, _("rectangular")) || equalsIgnoreCase(to_str, _("cartesian"))) {
-				evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
 				to_caf = 0;
 				do_to = true;
 				if(from_str.empty()) {
+					evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
 					b_busy = false;
 					b_busy_expression = false;
 					executeCommand(COMMAND_EVAL, true, true);
@@ -14946,11 +15011,12 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					evalops.complex_number_form = cnf_bak;
 					return;
 				}
+				cnf = COMPLEX_NUMBER_FORM_RECTANGULAR;
 			} else if(equalsIgnoreCase(to_str, "exponential") || equalsIgnoreCase(to_str, _("exponential"))) {
-				evalops.complex_number_form = COMPLEX_NUMBER_FORM_EXPONENTIAL;
 				to_caf = 0;
 				do_to = true;
 				if(from_str.empty()) {
+					evalops.complex_number_form = COMPLEX_NUMBER_FORM_EXPONENTIAL;
 					b_busy = false;
 					b_busy_expression = false;
 					executeCommand(COMMAND_EVAL, true, true);
@@ -14958,11 +15024,12 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					evalops.complex_number_form = cnf_bak;
 					return;
 				}
+				cnf = COMPLEX_NUMBER_FORM_EXPONENTIAL;
 			} else if(equalsIgnoreCase(to_str, "polar") || equalsIgnoreCase(to_str, _("polar"))) {
-				evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
 				to_caf = 0;
 				do_to = true;
 				if(from_str.empty()) {
+					evalops.complex_number_form = COMPLEX_NUMBER_FORM_POLAR;
 					b_busy = false;
 					b_busy_expression = false;
 					executeCommand(COMMAND_EVAL, true, true);
@@ -14970,13 +15037,12 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					evalops.complex_number_form = cnf_bak;
 					return;
 				}
-				to_caf = 0;
-				do_to = true;
+				cnf = COMPLEX_NUMBER_FORM_POLAR;
 			} else if(to_str == "cis") {
-				evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
 				to_caf = 0;
 				do_to = true;
 				if(from_str.empty()) {
+					evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
 					b_busy = false;
 					b_busy_expression = false;
 					executeCommand(COMMAND_EVAL, true, true);
@@ -14984,11 +15050,12 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					evalops.complex_number_form = cnf_bak;
 					return;
 				}
+				cnf = COMPLEX_NUMBER_FORM_CIS;
 			} else if(equalsIgnoreCase(to_str, "phasor") || equalsIgnoreCase(to_str, _("phasor")) || equalsIgnoreCase(to_str, "angle") || equalsIgnoreCase(to_str, _("angle"))) {
-				evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
 				to_caf = 1;
 				do_to = true;
 				if(from_str.empty()) {
+					evalops.complex_number_form = COMPLEX_NUMBER_FORM_CIS;
 					b_busy = false;
 					b_busy_expression = false;
 					executeCommand(COMMAND_EVAL, true, true);
@@ -14996,6 +15063,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					evalops.complex_number_form = cnf_bak;
 					return;
 				}
+				cnf = COMPLEX_NUMBER_FORM_CIS;
 			} else if(equalsIgnoreCase(to_str, "optimal") || equalsIgnoreCase(to_str, _("optimal"))) {
 				if(from_str.empty()) {
 					b_busy = false;
@@ -15085,6 +15153,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 						to_prefix = to_str[0];
 
 					}
+					Unit *u = CALCULATOR->getActiveUnit(to_str);
+					if(delay_complex != (cnf != COMPLEX_NUMBER_FORM_POLAR && cnf != COMPLEX_NUMBER_FORM_CIS) && u && u->baseUnit() == CALCULATOR->getRadUnit() && u->baseExponent() == 1) delay_complex = !delay_complex;
 					if(!str_conv.empty()) str_conv += " to ";
 					str_conv += to_str;
 				}
@@ -15107,6 +15177,12 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				}
 			}
 		}
+	}
+	if(!delay_complex || (cnf != COMPLEX_NUMBER_FORM_POLAR && cnf != COMPLEX_NUMBER_FORM_CIS)) {
+		evalops.complex_number_form = cnf;
+		delay_complex = false;
+	} else {
+		evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
 	}
 	if(execute_str.empty()) {
 		size_t i = str.find_first_of(SPACES LEFT_PARENTHESIS);
@@ -15334,6 +15410,22 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 
 	b_busy = false;
 	b_busy_expression = false;
+
+	if(delay_complex) {
+		evalops.complex_number_form = cnf;
+		CALCULATOR->startControl(100);
+		if(!rpn_mode) {
+			if(evalops.complex_number_form == COMPLEX_NUMBER_FORM_CIS) mstruct->complexToCisForm(evalops);
+			else if(evalops.complex_number_form == COMPLEX_NUMBER_FORM_POLAR) mstruct->complexToPolarForm(evalops);
+		} else if(!do_stack) {
+			MathStructure *mreg = CALCULATOR->getRPNRegister(do_stack ? stack_index + 1 : 1);
+			if(mreg) {
+				if(evalops.complex_number_form == COMPLEX_NUMBER_FORM_CIS) mreg->complexToCisForm(evalops);
+				else if(evalops.complex_number_form == COMPLEX_NUMBER_FORM_POLAR) mreg->complexToPolarForm(evalops);
+			}
+		}
+		CALCULATOR->stopControl();
+	}
 
 	if(rpn_mode && stack_index == 0) {
 		mstruct->unref();
@@ -20991,6 +21083,7 @@ void load_preferences() {
 
 	programming_inbase = 0;
 	programming_outbase = 0;
+	programming_bits = 0;
 
 	visible_keypad = 0;
 
@@ -21336,6 +21429,8 @@ void load_preferences() {
 					programming_outbase = v;
 				} else if(svar == "programming_inbase") {
 					programming_inbase = v;
+				} else if(svar == "programming_bits") {
+					programming_bits = v;
 				} else if(svar == "general_exact") {
 					versatile_exact = v;
 				} else if(svar == "bit_width") {
@@ -22444,6 +22539,7 @@ void save_preferences(bool mode) {
 		fprintf(file, "programming_outbase=%i\n", programming_outbase);
 		fprintf(file, "programming_inbase=%i\n", programming_inbase);
 	}
+	if(programming_bits != 0) fprintf(file, "programming_bits=%i\n", programming_bits);
 	if(visible_keypad & PROGRAMMING_KEYPAD && versatile_exact) {
 		fprintf(file, "general_exact=%i\n", versatile_exact);
 	}
@@ -23028,6 +23124,33 @@ void on_button_oct_toggled(GtkToggleButton *w, gpointer);
 void on_button_dec_toggled(GtkToggleButton *w, gpointer);
 void on_button_hex_toggled(GtkToggleButton *w, gpointer);
 
+void on_combobox_bits_changed(GtkComboBox *w, gpointer) {
+	switch(gtk_combo_box_get_active(w)) {
+		case 0: {printops.binary_bits = 0; break;}
+		case 1: {printops.binary_bits = 8; break;}
+		case 2: {printops.binary_bits = 16; break;}
+		case 3: {printops.binary_bits = 32; break;}
+		case 4: {printops.binary_bits = 64; break;}
+		case 5: {printops.binary_bits = 128; break;}
+		case 6: {printops.binary_bits = 256; break;}
+		case 7: {printops.binary_bits = 512; break;}
+		case 8: {printops.binary_bits = 1024; break;}
+	}
+	programming_bits = printops.binary_bits;
+	if(evalops.parse_options.twos_complement) {
+		if(printops.binary_bits == 0) evalops.parse_options.twos_complement = 1;
+		else evalops.parse_options.twos_complement = printops.binary_bits;
+		if(evalops.parse_options.base == 2) expression_format_updated(true);
+	}
+	if(evalops.parse_options.hexadecimal_twos_complement) {
+		if(printops.binary_bits == 0) evalops.parse_options.hexadecimal_twos_complement = 1;
+		else evalops.parse_options.hexadecimal_twos_complement = printops.binary_bits;
+		if(evalops.parse_options.base == 16) expression_format_updated(true);
+	}
+	default_bits = programming_bits;
+	if((evalops.parse_options.base != 2 || !evalops.parse_options.twos_complement) && (evalops.parse_options.base != 16 || !evalops.parse_options.hexadecimal_twos_complement)) result_format_updated();
+}
+
 void on_button_twos_out_toggled(GtkToggleButton *w, gpointer) {
 	if(printops.base == 16) printops.hexadecimal_twos_complement = gtk_toggle_button_get_active(w);
 	else if(printops.base == 2) printops.twos_complement = gtk_toggle_button_get_active(w);
@@ -23037,10 +23160,16 @@ void on_button_twos_out_toggled(GtkToggleButton *w, gpointer) {
 void on_button_twos_in_toggled(GtkToggleButton *w, gpointer) {
 	if(evalops.parse_options.base == 16) {
 		hexadecimal_twos_complement_in = gtk_toggle_button_get_active(w);
-		evalops.parse_options.hexadecimal_twos_complement = hexadecimal_twos_complement_in;
+		if(hexadecimal_twos_complement_in) {
+			if(printops.binary_bits == 0) evalops.parse_options.hexadecimal_twos_complement = 1;
+			else evalops.parse_options.hexadecimal_twos_complement = printops.binary_bits;
+		}
 	} else if(evalops.parse_options.base == 2) {
 		twos_complement_in = gtk_toggle_button_get_active(w);
-		evalops.parse_options.twos_complement = twos_complement_in;
+		if(twos_complement_in) {
+			if(printops.binary_bits == 0) evalops.parse_options.twos_complement = 1;
+			else evalops.parse_options.twos_complement = printops.binary_bits;
+		}
 	}
 	expression_format_updated(true);
 	focus_keeping_selection();
@@ -23083,6 +23212,10 @@ void update_keypad_bases() {
 
 	evalops.parse_options.hexadecimal_twos_complement = hexadecimal_twos_complement_in && evalops.parse_options.base == 16;
 	evalops.parse_options.twos_complement = twos_complement_in && evalops.parse_options.base == 2;
+	if(printops.binary_bits != 0) {
+		if(evalops.parse_options.hexadecimal_twos_complement) evalops.parse_options.hexadecimal_twos_complement = printops.binary_bits;
+		if(evalops.parse_options.twos_complement) evalops.parse_options.twos_complement = printops.binary_bits;
+	}
 
 }
 
@@ -23310,7 +23443,7 @@ void set_current_object() {
 				current_from_struct = mstruct;
 				if(current_from_struct) {
 					current_from_struct->ref();
-					find_matching_units(*current_from_struct, current_from_units);
+					find_matching_units(*current_from_struct, parsed_mstruct, current_from_units);
 				}
 			}
 			b_first = false;
@@ -24596,6 +24729,7 @@ bool contains_polynomial_division(MathStructure &m) {
 }
 bool contains_imaginary_number(MathStructure &m) {
 	if(m.isNumber() && m.number().hasImaginaryPart()) return true;
+	if(m.isFunction() && m.function()->id() == FUNCTION_ID_CIS) return true;
 	for(size_t i = 0; i < m.size(); i++) {
 		if(contains_imaginary_number(m[i])) return true;
 	}
@@ -25079,6 +25213,7 @@ gboolean on_main_window_button_press_event(GtkWidget*, GdkEventButton *event, gp
 	gtk_widget_hide(completion_window);
 	return FALSE;
 }
+guint32 prev_result_press_time = 0;
 gboolean on_resultview_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
 	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
 		if(b_busy) return TRUE;
@@ -25090,10 +25225,48 @@ gboolean on_resultview_button_press_event(GtkWidget*, GdkEventButton *event, gpo
 #endif
 		return TRUE;
 	}
-	if(event->button == 1 && surface_result && event->x >= gtk_widget_get_allocated_width(resultview) - cairo_image_surface_get_width(surface_result) - 20) {
-		copy_result(-1);
-		// Result was copied
-		show_notification(_("Copied"));
+	if(event->button == 1 && event->time > prev_result_press_time + 100 && surface_result && event->x >= gtk_widget_get_allocated_width(resultview) - cairo_image_surface_get_width(surface_result) - 20) {
+		gint x = event->x - binary_x_diff;
+		gint y = event->y - binary_y_diff;
+		if(!binary_rect.empty() && x >= binary_rect[0].x) {
+			for(size_t i = 0; i < binary_rect.size(); i++) {
+				if(x >= binary_rect[i].x && x <= binary_rect[i].x + binary_rect[i].width && y >= binary_rect[i].y && y <= binary_rect[i].y + binary_rect[i].height) {
+					size_t index = result_text.find("<");
+					string new_binary = result_text;
+					if(index != string::npos) new_binary = new_binary.substr(0, index);
+					index = new_binary.length();
+					int n = 0;
+					for(; index > 0; index--) {
+						if(result_text[index - 1] == '0' || result_text[index - 1] == '1') {
+							if(n == binary_pos[i]) break;
+							n++;
+						} else if(result_text[index - 1] != ' ') {
+							index = 0;
+							break;
+						}
+					}
+					prev_result_press_time = event->time;
+					if(index > 0) {
+						index--;
+						if(new_binary[index] == '1') new_binary[index] = '0';
+						else new_binary[index] = '1';
+						ParseOptions po;
+						po.base = BASE_BINARY;
+						po.twos_complement = printops.twos_complement;
+						gsub(SIGN_MINUS, "-", new_binary);
+						Number nr(new_binary, po);
+						set_expression_text(print_with_evalops(nr).c_str());
+						if(rpn_mode || !auto_calculate) execute_expression();
+					}
+					return TRUE;
+				}
+			}
+		} else {
+			prev_result_press_time = event->time;
+			copy_result(-1);
+			// Result was copied
+			show_notification(_("Copied"));
+		}
 	}
 	return FALSE;
 }
@@ -25118,20 +25291,36 @@ void on_button_programmers_keypad_toggled(GtkToggleButton *w, gpointer) {
 		} else {
 			versatile_exact = false;
 		}
+		bool b_expression = false;
+		bool b_result = false;
 		if(programming_inbase > 0 && programming_outbase != 0 && (((programming_inbase != 10 || (programming_outbase != 10 && programming_outbase > 0 && programming_outbase <= 36)) && evalops.parse_options.base == 10 && printops.base == 10) || evalops.parse_options.base < 2 || printops.base < 2 || evalops.parse_options.base > 36 || printops.base > 16)) {
 			if(printops.base != programming_outbase) {
 				printops.base = programming_outbase;
 				set_output_base_from_dialog(programming_outbase);
 				output_base_updated_from_menu();
-				if(evalops.parse_options.base == programming_inbase) result_format_updated();
+				b_result = true;
 			}
 			if(evalops.parse_options.base != programming_inbase) {
 				evalops.parse_options.base = programming_inbase;
 				input_base_updated_from_menu();
 				update_keypad_bases();
-				expression_format_updated();
+				b_expression = true;
 			}
 		}
+		if(programming_bits > 0) {
+			printops.binary_bits = programming_bits;
+			if(evalops.parse_options.twos_complement) {
+				evalops.parse_options.twos_complement = printops.binary_bits;
+				b_expression = true;
+			}
+			if(evalops.parse_options.hexadecimal_twos_complement) {
+				evalops.parse_options.hexadecimal_twos_complement = printops.binary_bits;
+				b_expression = true;
+			}
+			b_result = true;
+		}
+		if(b_expression) expression_format_updated();
+		else if(b_result) result_format_updated();
 		programming_inbase = 0;
 		programming_outbase = 0;
 		gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "programmers_keypad")));
@@ -25151,6 +25340,9 @@ void on_button_programmers_keypad_toggled(GtkToggleButton *w, gpointer) {
 		visible_keypad = visible_keypad & ~PROGRAMMING_KEYPAD;
 		programming_inbase = evalops.parse_options.base;
 		programming_outbase = printops.base;
+		printops.binary_bits = 0;
+		if(evalops.parse_options.twos_complement) evalops.parse_options.twos_complement = 1;
+		if(evalops.parse_options.hexadecimal_twos_complement) evalops.parse_options.hexadecimal_twos_complement = 1;
 		if(evalops.parse_options.base != 10) clear_expression_text();
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_dec")), TRUE);
 		clear_result_bases();
@@ -25603,7 +25795,7 @@ void do_completion(bool to_menu = false) {
 				exact_unit = u;
 			}
 		} else {
-			find_matching_units(*mstruct, current_from_units);
+			find_matching_units(*mstruct, parsed_mstruct, current_from_units);
 		}
 		current_function = NULL;
 		current_object_start = -1;
@@ -32033,7 +32225,7 @@ void on_menu_item_save_image_activate(GtkMenuItem*, gpointer) {
 		color.green = 0.0;
 		color.blue = 0.0;
 		color.alpha = 1.0;
-		cairo_surface_t *s = draw_structure(*displayed_mstruct, displayed_printops, displayed_caf, top_ips, NULL, 1, &color);
+		cairo_surface_t *s = draw_structure(*displayed_mstruct, displayed_printops, displayed_caf, top_ips, NULL, 1, &color, NULL, NULL, -1, false);
 		if(s) {
 			cairo_surface_flush(s);
 			cairo_surface_write_to_png(s, gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(d)));
@@ -33760,6 +33952,7 @@ void on_nbases_entry_binary_changed(GtkEditable *editable, gpointer) {
 	eo.parse_options.read_precision = DONT_READ_PRECISION;
 	eo.parse_options.base = BASE_BINARY;
 	eo.parse_options.twos_complement = twos_complement_in;
+	if(printops.binary_bits != 0 && eo.parse_options.twos_complement) eo.parse_options.twos_complement = printops.binary_bits;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
 	block_error_timeout++;
@@ -33801,6 +33994,7 @@ void on_nbases_entry_hexadecimal_changed(GtkEditable *editable, gpointer) {
 	eo.parse_options.read_precision = DONT_READ_PRECISION;
 	eo.parse_options.base = BASE_HEXADECIMAL;
 	eo.parse_options.hexadecimal_twos_complement = hexadecimal_twos_complement_in;
+	if(printops.binary_bits != 0 && eo.parse_options.hexadecimal_twos_complement) eo.parse_options.hexadecimal_twos_complement = printops.binary_bits;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
 	block_error_timeout++;
@@ -35835,17 +36029,23 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 		gtk_widget_set_size_request(widget, w, h);
 		if(h > sbh) rw -= sbw;
 		result_display_overflow = w > rw || h > rh;
+		gint rx = 0, ry = 0;
 		if(rw >= w) {
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
 			// compensate for overlay scrollbars
-			cairo_set_source_surface(cr, surface_result, rw >= w + 5 ? rw - w - 5 : rw - w - (rw - w) / 2, h < rh ? (rh - h) / 2 : 0);
+			if(rw >= w + 5) rx = rw - w - 5;
 #else
-			cairo_set_source_surface(cr, surface_result, rw >= w ? rw - w : rw - w - (rw - w) / 2, h < rh ? (rh - h) / 2 : 0);
+			if(rw >= w) rx = rw - w;
 #endif
+			else rx = rw - w - (rw - w) / 2;
+			if(h < rh) ry = (rh - h) / 2;
 		} else {
-			if(h + ((rh - h) / 2) < rh - sbh) cairo_set_source_surface(cr, surface_result, 0, (rh - h) / 2);
-			else cairo_set_source_surface(cr, surface_result, 0, (h > rh - sbh) ? 0 : (rh - h - sbh) / 2);
+			if(h + ((rh - h) / 2) < rh - sbh) ry = (rh - h) / 2;
+			else if(h <= rh - sbh) ry = (rh - h - sbh) / 2;
 		}
+		cairo_set_source_surface(cr, surface_result, rx, ry);
+		binary_x_diff = rx;
+		binary_y_diff = ry;
 		cairo_paint(cr);
 		first_draw_of_result = false;
 	} else if(showing_first_time_message) {
