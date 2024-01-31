@@ -34411,12 +34411,13 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 	unsigned int bits = get_fp_bits();
 	unsigned int expbits = get_fp_expbits();
 	unsigned int sgnpos = get_fp_sgnpos();
-	GtkWidget *w_dec, *w_hex, *w_float, *w_value, *w_error;
+	GtkWidget *w_dec, *w_hex, *w_float, *w_floathex, *w_value, *w_error;
 	GtkTextBuffer *w_bin;
 	w_dec = GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "fp_entry_dec"));
 	w_bin = GTK_TEXT_BUFFER(gtk_builder_get_object(floatingpoint_builder, "fp_buffer_bin"));
 	w_hex = GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "fp_entry_hex"));
 	w_float = GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "fp_entry_float"));
+	w_floathex = GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "fp_entry_floathex"));
 	w_value = GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "fp_entry_value"));
 	w_error = GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "fp_entry_error"));
 	g_signal_handlers_block_matched((gpointer) w_dec, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_fp_entry_dec_changed, NULL);
@@ -34427,6 +34428,7 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 		if(base != 16) gtk_entry_set_text(GTK_ENTRY(w_hex), "");
 		if(base != 2) gtk_text_buffer_set_text(w_bin, "", -1);
 		gtk_entry_set_text(GTK_ENTRY(w_float), "");
+		gtk_entry_set_text(GTK_ENTRY(w_floathex), "");
 		gtk_entry_set_text(GTK_ENTRY(w_value), "");
 		gtk_entry_set_text(GTK_ENTRY(w_error), "");
 	} else {
@@ -34479,6 +34481,7 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 		int ret = from_float(value, sbin, bits, expbits, sgnpos);
 		if(ret <= 0) {
 			gtk_entry_set_text(GTK_ENTRY(w_float), ret < 0 ? "NaN" : "");
+			gtk_entry_set_text(GTK_ENTRY(w_floathex), ret < 0 ? "NaN" : "");
 			gtk_entry_set_text(GTK_ENTRY(w_value), ret < 0 ? "NaN" : "");
 			gtk_entry_set_text(GTK_ENTRY(w_error), "");
 			if(base != 10) gtk_entry_set_text(GTK_ENTRY(w_dec), m_undefined.print(po).c_str());
@@ -34491,12 +34494,13 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 			expbias--;
 			bool subnormal = exponent.isZero();
 			exponent -= expbias;
-			string sfloat;
+			string sfloat, sfloathex;
 			bool b_approx = false;
 			po.is_approximate = &b_approx;
 			if(exponent > expbias) {
 				if(sbin[0] != '0') sfloat = nr_minus_inf.print(po);
 				else sfloat = nr_plus_inf.print(po);
+				sfloathex = sfloat;
 			} else {
 				if(subnormal) exponent++;
 				if(subnormal) significand.set(string("0.") + sbin.substr(1 + expbits), pa);
@@ -34512,10 +34516,28 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 					sfloat += "2^";
 					sfloat += exponent.print(po);
 				}
-				po.min_exp = exp_bak;
 				if(b_approx) sfloat.insert(0, SIGN_ALMOST_EQUAL " ");
+				b_approx = false;
+				po.base = 16;
+				po.lower_case_numbers = true;
+				po.decimalpoint_sign = ".";
+				if(significand.isNegative()) {
+					significand.negate();
+					sfloathex = "-";
+				}
+				sfloathex += "0x";
+				sfloathex += significand.print(po);
+				po.base = 10;
+				sfloathex += 'p';
+				if(sfloathex == "0") sfloathex += "-1";
+				else sfloathex += exponent.print(po);
+				if(b_approx) sfloat.insert(0, SIGN_ALMOST_EQUAL " ");
+				po.decimalpoint_sign = printops.decimalpoint_sign;
+				po.lower_case_numbers = false;
+				po.min_exp = exp_bak;
 			}
 			gtk_entry_set_text(GTK_ENTRY(w_float), sfloat.c_str());
+			gtk_entry_set_text(GTK_ENTRY(w_floathex), sfloathex.c_str());
 			b_approx = false;
 			string svalue = value.print(po);
 			if(base != 10) gtk_entry_set_text(GTK_ENTRY(w_dec), svalue.c_str());

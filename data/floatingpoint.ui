@@ -47,7 +47,7 @@
           </packing>
         </child>
         <child>
-          <!-- n-columns=3 n-rows=8 -->
+          <!-- n-columns=3 n-rows=9 -->
           <object class="GtkGrid" id="fp_grid">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
@@ -60,7 +60,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="halign">end</property>
-                <property name="label" translatable="yes">Decimal value</property>
+                <property name="label" translatable="yes">Value</property>
                 <property name="use-markup">True</property>
               </object>
               <packing>
@@ -122,7 +122,7 @@
               </object>
               <packing>
                 <property name="left-attach">0</property>
-                <property name="top-attach">7</property>
+                <property name="top-attach">8</property>
               </packing>
             </child>
             <child>
@@ -221,11 +221,11 @@
               </object>
               <packing>
                 <property name="left-attach">1</property>
-                <property name="top-attach">7</property>
+                <property name="top-attach">8</property>
               </packing>
             </child>
-            <child>
-              <object class="GtkEntry" id="fp_entry_float">
+	    <child>
+              <object class="GtkEntry" id="fp_entry_floathex">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="hexpand">True</property>
@@ -241,6 +241,22 @@
               </packing>
             </child>
             <child>
+              <object class="GtkEntry" id="fp_entry_float">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="hexpand">True</property>
+                <property name="editable">False</property>
+                <property name="width-chars">66</property>
+                <property name="xalign">1</property>
+                <property name="primary-icon-activatable">False</property>
+                <property name="secondary-icon-activatable">False</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">6</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkEntry" id="fp_entry_value">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -252,7 +268,7 @@
               </object>
               <packing>
                 <property name="left-attach">1</property>
-                <property name="top-attach">6</property>
+                <property name="top-attach">7</property>
               </packing>
             </child>
             <child>
