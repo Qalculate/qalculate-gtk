@@ -1414,36 +1414,138 @@ On: y - x</property>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkRadioMenuItem" id="menu_item_round_halfway_up">
+                              <object class="GtkRadioMenuItem" id="menu_item_rounding_half_away_from_zero">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="tooltip-text">2.5 ≈ 3, 1.5 ≈ 2</property>
                                 <property name="label" translatable="yes">Round Halfway Numbers Away from Zero</property>
                                 <property name="use-underline">True</property>
                                 <property name="draw-as-radio">True</property>
-                                <signal name="activate" handler="on_menu_item_round_halfway_up_activate" swapped="no"/>
+                                <signal name="activate" handler="on_menu_item_rounding_half_away_from_zero_activate" swapped="no"/>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkRadioMenuItem" id="menu_item_round_halfway_to_even">
+                              <object class="GtkRadioMenuItem" id="menu_item_rounding_half_to_even">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="tooltip-text">2.5 ≈ 2, 1.5 ≈ 2</property>
                                 <property name="label" translatable="yes">Round Halfway Numbers to Even</property>
                                 <property name="use-underline">True</property>
-                                <property name="group">menu_item_round_halfway_up</property>
-                                <signal name="activate" handler="on_menu_item_round_halfway_to_even_activate" swapped="no"/>
+                                <property name="group">menu_item_rounding_half_away_from_zero</property>
+                                <signal name="activate" handler="on_menu_item_rounding_half_to_even_activate" swapped="no"/>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkRadioMenuItem" id="menu_item_truncate_numbers">
+                              <object class="GtkMenuItem" id="menu_item_other_rounding">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="tooltip-text">2.7 ≈ 2, −1.7 ≈ −1</property>
-                                <property name="label" translatable="yes">Truncate All Numbers</property>
+                                <property name="label" translatable="yes">Other Rounding Methods</property>
                                 <property name="use-underline">True</property>
-                                <property name="group">menu_item_round_halfway_up</property>
-                                <signal name="activate" handler="on_menu_item_truncate_numbers_activate" swapped="no"/>
+                                <child type="submenu">
+                                  <object class="GtkMenu">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <child>
+                                      <object class="GtkRadioMenuItem" id="menu_item_rounding_half_to_odd">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes">Round Halfway Numbers to Odd</property>
+                                        <property name="use-underline">True</property>
+                                        <property name="draw-as-radio">True</property>
+                                        <property name="group">menu_item_rounding_half_away_from_zero</property>
+                                        <signal name="activate" handler="on_menu_item_rounding_half_to_odd_activate" swapped="no"/>
+                                      </object>
+                                    </child>
+				    <child>
+                                      <object class="GtkRadioMenuItem" id="menu_item_rounding_half_toward_zero">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes">Round Halfway Numbers Toward Zero</property>
+                                        <property name="use-underline">True</property>
+                                        <property name="draw-as-radio">True</property>
+                                        <property name="group">menu_item_rounding_half_away_from_zero</property>
+                                        <signal name="activate" handler="on_menu_item_rounding_half_toward_zero_activate" swapped="no"/>
+                                      </object>
+                                    </child>
+				    <child>
+                                      <object class="GtkRadioMenuItem" id="menu_item_rounding_half_random">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes">Round Halfway Numbers to Random</property>
+                                        <property name="use-underline">True</property>
+                                        <property name="draw-as-radio">True</property>
+                                        <property name="group">menu_item_rounding_half_away_from_zero</property>
+                                        <signal name="activate" handler="on_menu_item_rounding_half_random_activate" swapped="no"/>
+                                      </object>
+                                    </child>
+				    <child>
+                                      <object class="GtkRadioMenuItem" id="menu_item_rounding_half_up">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes">Round Halfway Numbers Up</property>
+                                        <property name="use-underline">True</property>
+                                        <property name="draw-as-radio">True</property>
+                                        <property name="group">menu_item_rounding_half_away_from_zero</property>
+                                        <signal name="activate" handler="on_menu_item_rounding_half_up_activate" swapped="no"/>
+                                      </object>
+                                    </child>
+				    <child>
+                                      <object class="GtkRadioMenuItem" id="menu_item_rounding_half_down">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes">Round Halfway Numbers Down</property>
+                                        <property name="use-underline">True</property>
+                                        <property name="draw-as-radio">True</property>
+                                        <property name="group">menu_item_rounding_half_away_from_zero</property>
+                                        <signal name="activate" handler="on_menu_item_rounding_half_down_activate" swapped="no"/>
+                                      </object>
+                                    </child>
+				    <child>
+                                      <object class="GtkRadioMenuItem" id="menu_item_rounding_toward_zero">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes">Round Toward Zero</property>
+                                        <property name="use-underline">True</property>
+                                        <property name="draw-as-radio">True</property>
+                                        <property name="group">menu_item_rounding_half_away_from_zero</property>
+                                        <signal name="activate" handler="on_menu_item_rounding_toward_zero_activate" swapped="no"/>
+                                      </object>
+                                    </child>
+				    <child>
+                                      <object class="GtkRadioMenuItem" id="menu_item_rounding_away_from_zero">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes">Round Away from Zero</property>
+                                        <property name="use-underline">True</property>
+                                        <property name="draw-as-radio">True</property>
+                                        <property name="group">menu_item_rounding_half_away_from_zero</property>
+                                        <signal name="activate" handler="on_menu_item_rounding_away_from_zero_activate" swapped="no"/>
+                                      </object>
+                                    </child>
+				    <child>
+                                      <object class="GtkRadioMenuItem" id="menu_item_rounding_up">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes">Round Up</property>
+                                        <property name="use-underline">True</property>
+                                        <property name="draw-as-radio">True</property>
+                                        <property name="group">menu_item_rounding_half_away_from_zero</property>
+                                        <signal name="activate" handler="on_menu_item_rounding_up_activate" swapped="no"/>
+                                      </object>
+                                    </child>
+				    <child>
+                                      <object class="GtkRadioMenuItem" id="menu_item_rounding_down">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes">Round Down</property>
+                                        <property name="use-underline">True</property>
+                                        <property name="draw-as-radio">True</property>
+                                        <property name="group">menu_item_rounding_half_away_from_zero</property>
+                                        <signal name="activate" handler="on_menu_item_rounding_down_activate" swapped="no"/>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
                               </object>
                             </child>
                             <child>
@@ -6139,7 +6241,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                         <property name="can-focus">False</property>
                                         <property name="active">0</property>
                                         <items>
-                                          <item>? bit</item>
+                                          <item>? bits</item>
                                           <item>8</item>
                                           <item>16</item>
                                           <item>32</item>

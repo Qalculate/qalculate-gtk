@@ -349,6 +349,8 @@ void load_preferences_search() {
 	search_po.use_unicode_signs = true;
 	search_po.digit_grouping = DIGIT_GROUPING_STANDARD;
 	search_po.use_unit_prefixes = true;
+	search_po.exp_display = EXP_BASE10;
+	search_po.duodecimal_symbols = false;
 	search_po.use_prefixes_for_currencies = false;
 	search_po.use_prefixes_for_all_units = false;
 	search_po.spacious = true;
@@ -402,7 +404,7 @@ void load_preferences_search() {
 	gchar *gstr_file = g_build_filename(getLocalDir().c_str(), "qalculate-gtk.cfg", NULL);
 	file = fopen(gstr_file, "r");
 
-	int version_numbers[] = {3, 9, 2};
+	int version_numbers[] = {4, 9, 1};
 
 	if(file) {
 		char line[1000000L];
@@ -552,9 +554,14 @@ void load_preferences_search() {
 				} else if(svar == "lower_case_numbers") {
 					search_po.lower_case_numbers = v;
 				} else if(svar == "duodecimal_symbols") {
-					search_po.custom_time_zone += TZ_DOZENAL;
+					search_po.duodecimal_symbols = v;
 				} else if(svar == "lower_case_e") {
-					search_po.lower_case_e = v;
+					if(v) search_po.exp_display = EXP_LOWERCASE_E;
+				} else if(svar == "e_notation") {
+					if(!v) search_po.exp_display = EXP_BASE10;
+					else if(search_po.exp_display != EXP_LOWERCASE_E) search_po.exp_display = EXP_UPPERCASE_E;
+				} else if(svar == "exp_display") {
+					if(v >= EXP_UPPERCASE_E && v <= EXP_BASE10) search_po.exp_display = (ExpDisplay) v;
 				} else if(svar == "imaginary_j") {
 					search_do_imaginary_j = v;
 				} else if(svar == "base_display") {
@@ -588,10 +595,12 @@ void load_preferences_search() {
 						search_po.digit_grouping = (DigitGrouping) v;
 					}
 				} else if(svar == "round_halfway_to_even") {//obsolete
-					search_po.round_halfway_to_even = v;
+					if(v) search_po.rounding = ROUNDING_HALF_TO_EVEN;
 				} else if(svar == "rounding_mode") {
-					if(v) search_po.custom_time_zone += TZ_TRUNCATE;
-					search_po.round_halfway_to_even = (v == 1);
+					if(v >= ROUNDING_HALF_AWAY_FROM_ZERO && v <= ROUNDING_DOWN) {
+						if(v == 2 && (version_numbers[0] < 4 || (version_numbers[0] == 4 && version_numbers[1] < 9) || (version_numbers[0] == 4 && version_numbers[1] == 9 && version_numbers[2] == 0))) v = ROUNDING_TOWARD_ZERO;
+						search_po.rounding = (RoundingMode) v;
+					}
 				/*} else if(svar == "approximation") {
 					if(v >= APPROXIMATION_EXACT && v <= APPROXIMATION_APPROXIMATE) {
 						search_eo.approximation = (ApproximationMode) v;

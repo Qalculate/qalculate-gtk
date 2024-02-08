@@ -225,7 +225,6 @@ unsigned int programming_bits = 0;
 bool title_modified = false;
 string current_mode;
 int vertical_button_padding = -1, horizontal_button_padding = -1;
-int rounding_mode = 0;
 bool simplified_percentage = true;
 int version_numbers[3];
 
@@ -304,7 +303,6 @@ bool dot_question_asked = false, implicit_question_asked = false;
 
 bool rpn_mode, rpn_keys;
 bool adaptive_interval_display;
-bool use_e_notation;
 
 bool tc_set = false, sinc_set = false;
 
@@ -411,6 +409,7 @@ int to_fraction = 0;
 long int to_fixed_fraction = 0;
 char to_prefix = 0;
 int to_base = 0;
+bool to_duo_syms = false;
 int to_caf = -1;
 unsigned int to_bits = 0;
 Number to_nbase;
@@ -436,12 +435,6 @@ vector<PangoRectangle> binary_rect;
 vector<int> binary_pos;
 int binary_x_diff = 0;
 int binary_y_diff = 0;
-
-bool use_duo_syms = false;
-
-#define RESET_TZ 	printops.custom_time_zone = (rounding_mode == 2 ? TZ_TRUNCATE : 0);\
-			if(use_duo_syms) printops.custom_time_zone += TZ_DOZENAL;\
-			printops.time_zone = TIME_ZONE_LOCAL;
 
 #define EQUALS_IGNORECASE_AND_LOCAL(x,y,z)	(equalsIgnoreCase(x, y) || equalsIgnoreCase(x, z))
 #define EQUALS_IGNORECASE_AND_LOCAL_NR(x,y,z,a)	(equalsIgnoreCase(x, y a) || (x.length() == strlen(z) + strlen(a) && equalsIgnoreCase(x.substr(0, x.length() - strlen(a)), z) && equalsIgnoreCase(x.substr(x.length() - strlen(a)), a)))
@@ -597,18 +590,6 @@ int has_information_unit_gtk(const MathStructure &m, bool top = true) {
 	return 0;
 }
 
-void replace_lower_case_e(string &str) {
-	if(str.empty() || printops.lower_case_e || ((!use_e_notation || printops.base != BASE_DECIMAL) && !BASE_IS_SEXAGESIMAL(printops.base) && printops.base != BASE_TIME)) return;
-	size_t i = 0;
-	while(true) {
-		i = str.find('e', i + 1);
-		if(i == string::npos || i == str.length() - 1) break;
-		if(str[i - 1] >= '0' && str[i - 1] <= '9' && ((str[i + 1] >= '0' && str[i + 1] <= '9') || (str[i + 1] == '-' && i + 2 < str.length() && (str[i + 2] >= '0' && str[i + 2] <= '9')) || ((unsigned char) str[i + 1] == 0xE2 && i + 4 < str.length() && (unsigned char) str[i + 2] == 0x88 && (unsigned char) str[i + 3] == 0x92 && (str[i + 4] >= '0' && str[i + 4] <= '9')))) {
-			str.replace(i, 1, "<small>E</small>");
-		}
-	}
-}
-
 string unhtmlize(string str, bool b_ascii = false) {
 	size_t i = 0, i2;
 	while(true) {
@@ -707,6 +688,8 @@ string print_with_evalops(const Number &nr) {
 	po.base = evalops.parse_options.base;
 	po.base_display = BASE_DISPLAY_NONE;
 	po.twos_complement = evalops.parse_options.twos_complement;
+	po.hexadecimal_twos_complement = evalops.parse_options.hexadecimal_twos_complement;
+	if(po.hexadecimal_twos_complement && nr.isNegative()) po.binary_bits = evalops.parse_options.binary_bits;
 	po.min_exp = EXP_NONE;
 	Number nr_base;
 	if(po.base == BASE_CUSTOM) {
@@ -3401,8 +3384,7 @@ void set_result_bases(const MathStructure &m) {
 			nr = m[0].number();
 			nr.negate();
 		}
-		if(rounding_mode == 2) nr.trunc();
-		else nr.round(printops.round_halfway_to_even);
+		nr.round(printops.rounding);
 		PrintOptions po = printops;
 		po.is_approximate = NULL;
 		po.show_ending_zeroes = false;
@@ -3618,7 +3600,6 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 				evalops.auto_post_conversion = save_auto_post_conversion;
 				evalops.parse_options.units_enabled = b_units_saved;
 				evalops.mixed_units_conversion = save_mixed_units_conversion;
-				RESET_TZ
 				return;
 			}
 			remove_duplicate_blanks(to_str);
@@ -3646,14 +3627,11 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "duo") || equalsIgnoreCase(to_str, "duodecimal") || equalsIgnoreCase(to_str, _("duodecimal"))) {
 					to_base = BASE_DUODECIMAL;
+					to_duo_syms = false;
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "doz") || equalsIgnoreCase(to_str, "dozenal")) {
 					to_base = BASE_DUODECIMAL;
-					if(!use_duo_syms && printops.time_zone != TIME_ZONE_CUSTOM) {
-						use_duo_syms = true;
-						RESET_TZ
-						use_duo_syms = false;
-					}
+					to_duo_syms = true;
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "bin") || equalsIgnoreCase(to_str, "binary") || equalsIgnoreCase(to_str, _("binary"))) {
 					to_base = BASE_BINARY;
@@ -3805,6 +3783,7 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 					str = from_str;
 				} else if(equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _("base"))) {
 					base_from_string(to_str2, to_base, to_nbase);
+					to_duo_syms = false;
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "decimals") || equalsIgnoreCase(to_str, _("decimals"))) {
 					to_fixed_fraction = 0;
@@ -3964,9 +3943,10 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 		CALCULATOR->startControl(100);
 
 		if(to_base != 0 || to_fraction > 0 || to_fixed_fraction >= 2 || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form)) {
-			if(to_base != 0 && (to_base != printops.base || to_bits != printops.binary_bits || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()))) {
+			if(to_base != 0 && (to_base != printops.base || to_bits != printops.binary_bits || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()) || (to_base == BASE_DUODECIMAL && to_duo_syms != printops.duodecimal_symbols))) {
 				printops.base = to_base;
-				if(to_bits != printops.binary_bits) printops.binary_bits = to_bits;
+				printops.duodecimal_symbols = to_duo_syms;
+				printops.binary_bits = to_bits;
 				if(to_base == BASE_CUSTOM) {
 					custom_base_set = true;
 					save_nbase = CALCULATOR->customOutputBase();
@@ -4102,9 +4082,7 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 			if(autocalc_history_timeout_id == 0) {
 				PrintOptions po = printops;
 				po.base_display = BASE_DISPLAY_SUFFIX;
-				po.lower_case_e = use_e_notation;
 				result_text = displayed_mstruct->print(po, true);
-				replace_lower_case_e(result_text);
 				gsub("&nbsp;", " ", result_text);
 			} else {
 				result_text = "";
@@ -4147,7 +4125,7 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 		evalops.auto_post_conversion = save_auto_post_conversion;
 		evalops.parse_options.units_enabled = b_units_saved;
 		evalops.mixed_units_conversion = save_mixed_units_conversion;
-		RESET_TZ
+		printops.time_zone = TIME_ZONE_LOCAL;
 	}
 	
 	block_error_timeout--;
@@ -4548,12 +4526,11 @@ void display_parse_status() {
 		PrintOptions po;
 		po.preserve_format = true;
 		po.show_ending_zeroes = evalops.parse_options.read_precision != DONT_READ_PRECISION && !CALCULATOR->usesIntervalArithmetic() && evalops.parse_options.base > BASE_CUSTOM;
-		po.lower_case_e = printops.lower_case_e;
+		po.exp_display = printops.exp_display;
 		po.lower_case_numbers = printops.lower_case_numbers;
 		po.base_display = printops.base_display;
 		po.twos_complement = printops.twos_complement;
 		po.hexadecimal_twos_complement = printops.hexadecimal_twos_complement;
-		po.custom_time_zone = printops.custom_time_zone;
 		po.round_halfway_to_even = printops.round_halfway_to_even;
 		po.base = evalops.parse_options.base;
 		Number nr_base;
@@ -8731,7 +8708,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						exp = number_exp_map[(void*) &m.number()];
 						exp_minus = number_exp_minus_map[(void*) &m.number()];
 					}
-					if(use_e_notation && base_without_exp) {
+					if(printops.exp_display != EXP_BASE10 && base_without_exp) {
 						if(!exp.empty()) base10 = true;
 						exp = "";
 						exp_minus = false;
@@ -8745,10 +8722,10 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					}
 					bool was_approx = (po.is_approximate && *po.is_approximate);
 					if(po.is_approximate) *po.is_approximate = false;
-					if(!use_e_notation || base_without_exp || (po.base != BASE_DECIMAL && !BASE_IS_SEXAGESIMAL(po.base) && po.base != BASE_TIME)) {
+					if(printops.exp_display == EXP_BASE10 || base_without_exp || (po.base != BASE_DECIMAL && !BASE_IS_SEXAGESIMAL(po.base) && po.base != BASE_TIME)) {
 						ips_n.exp = &exp;
 						ips_n.exp_minus = &exp_minus;
-						if(use_e_notation && base_without_exp) {
+						if(printops.exp_display != EXP_BASE10 && base_without_exp) {
 							m.number().print(po, ips_n);
 							base10 = !exp.empty();
 							exp = "";
@@ -8860,7 +8837,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						return surface;
 					}
 				}
-				if(exp.empty() && !po.lower_case_e && ((use_e_notation && po.base == BASE_DECIMAL) || BASE_IS_SEXAGESIMAL(po.base) || po.base == BASE_TIME)) {
+				if(exp.empty() && printops.exp_display != EXP_LOWERCASE_E && ((printops.exp_display != EXP_BASE10 && po.base == BASE_DECIMAL) || BASE_IS_SEXAGESIMAL(po.base) || po.base == BASE_TIME)) {
 					size_t i = 0;
 					while(true) {
 						i = value_str.find("E", i + 1);
@@ -8998,7 +8975,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 							PangoLayout *layout_pos = gtk_widget_create_pango_layout(resultview, NULL);
 							str2 = "";
 							TTB_XXSMALL(str2);
-							str2 += i2s(bin_pos);
+							str2 += i2s(bin_pos + 1);
 							TTE(str2);
 							pango_layout_set_markup(layout_pos, str2.c_str(), -1);
 							pos_nr.push_back(layout_pos);
@@ -9614,6 +9591,10 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					ips_n.wrap = m[0].needsParenthesis(po, ips_n, m, 2, flat, ips.power_depth > 0);
 					den_surface = draw_structure(m[0], po, caf, ips_n, &den_dh, scaledown, color, &xtmp2, &wotmp2);
 				}
+				if(flat && !ips_n.wrap && m[m.type() == STRUCT_DIVISION ? 1 : 0].isNumber()) {
+					unordered_map<void*, string>::iterator it = number_exp_map.find((void*) &m[m.type() == STRUCT_DIVISION ? 1 : 0].number());
+					if(it != number_exp_map.end() && !it->second.empty()) ips_n.wrap = true;
+				}
 				if(!den_surface) {
 					cairo_surface_destroy(num_surface);
 					return NULL;
@@ -9732,6 +9713,10 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				gint base_w, base_h, exp_w, exp_h, w = 0, h = 0, ctmp = 0;
 				CALCULATE_SPACE_W
 				ips_n.wrap = SHOW_WITH_ROOT_SIGN(m[0]) || m[0].needsParenthesis(po, ips_n, m, 1, ips.division_depth > 0, false);
+				if(!ips_n.wrap && m[0].isNumber()) {
+					unordered_map<void*, string>::iterator it = number_exp_map.find((void*) &m[0].number());
+					if(it != number_exp_map.end() && !it->second.empty()) ips_n.wrap = true;
+				}
 				cairo_surface_t *surface_base = NULL;
 				if(m[0].isUnit() && po.use_unicode_signs && po.abbreviate_names && m[0].unit() == CALCULATOR->getDegUnit()) {
 					PrintOptions po2 = po;
@@ -11140,10 +11125,9 @@ void ViewThread::run() {
 			void *x_to = NULL;
 			if(!read(&x_to)) break;
 			po.show_ending_zeroes = evalops.parse_options.read_precision != DONT_READ_PRECISION && CALCULATOR->usesIntervalArithmetic() && evalops.parse_options.base > BASE_CUSTOM;
-			po.lower_case_e = printops.lower_case_e;
+			po.exp_display = printops.exp_display;
 			po.lower_case_numbers = printops.lower_case_numbers;
 			po.base_display = printops.base_display;
-			po.custom_time_zone = printops.custom_time_zone;
 			po.round_halfway_to_even = printops.round_halfway_to_even;
 			po.twos_complement = printops.twos_complement;
 			po.hexadecimal_twos_complement = printops.hexadecimal_twos_complement;
@@ -11173,7 +11157,6 @@ void ViewThread::run() {
 			po.spell_out_logical_operators = printops.spell_out_logical_operators;
 			po.restrict_to_parent_precision = false;
 			po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
-			po.lower_case_e = use_e_notation;
 			MathStructure mp(*((MathStructure*) x));
 			mp.format(po);
 			parsed_text = mp.print(po, true);
@@ -11184,7 +11167,6 @@ void ViewThread::run() {
 				parsed_text += mp.print(po, true);
 				printops.use_unit_prefixes = true;
 			}
-			replace_lower_case_e(parsed_text);
 			gsub("&nbsp;", " ", parsed_text);
 			if(po.base == BASE_CUSTOM) CALCULATOR->setCustomOutputBase(nr_base);
 		}
@@ -11234,9 +11216,7 @@ void ViewThread::run() {
 		gint64 time1 = g_get_monotonic_time();
 		PrintOptions po = printops;
 		po.base_display = BASE_DISPLAY_SUFFIX;
-		po.lower_case_e = use_e_notation;
 		result_text = m.print(po, true);
-		replace_lower_case_e(result_text);
 		gsub("&nbsp;", " ", result_text);
 		if(complex_angle_form) replace_result_cis_gtk(result_text);
 		result_text_approximate = *printops.is_approximate;
@@ -12306,9 +12286,10 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 
 	if(stack_index == 0) {
 		if(to_base != 0 || to_fraction > 0 || to_fixed_fraction >= 2 || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form)) {
-			if(to_base != 0 && (to_base != printops.base || to_bits != printops.binary_bits || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()))) {
+			if(to_base != 0 && (to_base != printops.base || to_bits != printops.binary_bits || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()) || (to_base == BASE_DUODECIMAL && to_duo_syms != printops.duodecimal_symbols))) {
 				printops.base = to_base;
-				if(to_bits != printops.binary_bits) printops.binary_bits = to_bits;
+				printops.duodecimal_symbols = to_duo_syms;
+				printops.binary_bits = to_bits;
 				if(to_base == BASE_CUSTOM) {
 					custom_base_set = true;
 					save_nbase = CALCULATOR->customOutputBase();
@@ -13278,6 +13259,7 @@ int s2b(const string &str) {
 #define SET_BOOL_D(x)		{int v = s2b(svalue); if(v < 0) {CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);} else if(x != v) {x = v; result_display_updated();}}
 #define SET_BOOL_PREF(x)	{int v = s2b(svalue); if(v < 0) {CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);} else {if(!preferences_builder) {get_preferences_dialog();} gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, x)), v);}}
 #define SET_BOOL_E(x)		{int v = s2b(svalue); if(v < 0) {CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);} else if(x != v) {x = v; expression_calculation_updated();}}
+#define SET_BOOL_PF(x)		{int v = s2b(svalue); if(v < 0) {CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);} else if(x != v) {x = v; expression_format_updated(false);}}
 #define SET_BOOL(x)		{int v = s2b(svalue); if(v < 0) {CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);} else if(x != v) {x = v;}}
 
 void set_assumption(const string &str, AssumptionType &at, AssumptionSign &as, bool last_of_two = false) {
@@ -13494,9 +13476,9 @@ void set_option(string str) {
 	} else if(equalsIgnoreCase(svar, "round to even") || svar == "rndeven") {
 		bool b = printops.round_halfway_to_even;
 		SET_BOOL(b)
-		if(b != printops.round_halfway_to_even || rounding_mode == 2) {
-			if(b) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_round_halfway_to_even")), TRUE);
-			else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_round_halfway_up")), TRUE);
+		if(b != (printops.rounding == ROUNDING_HALF_TO_EVEN)) {
+			if(b) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_half_to_even")), TRUE);
+			else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_half_away_from_zero")), TRUE);
 		}
 	} else if(equalsIgnoreCase(svar, "rounding")) {
 		int v = -1;
@@ -13508,10 +13490,53 @@ void set_option(string str) {
 		}
 		if(v < 0 || v > 2) {
 			CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
-		} else if(v != rounding_mode) {
-			if(v == 1) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_round_halfway_to_even")), TRUE);
-			else if(v == 2) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_truncate_numbers")), TRUE);
-			else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_round_halfway_up")), TRUE);
+		} else if(v != printops.rounding) {
+			switch(v) {
+				case ROUNDING_HALF_AWAY_FROM_ZERO: {
+					gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_half_away_from_zero")), TRUE);
+					break;
+				}
+				case ROUNDING_HALF_TO_EVEN: {
+					gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_half_to_even")), TRUE);
+					break;
+				}
+				case ROUNDING_HALF_TO_ODD: {
+					gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_half_to_odd")), TRUE);
+					break;
+				}
+				case ROUNDING_HALF_TOWARD_ZERO: {
+					gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_half_toward_zero")), TRUE);
+					break;
+				}
+				case ROUNDING_HALF_RANDOM: {
+					gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_half_random")), TRUE);
+					break;
+				}
+				case ROUNDING_HALF_UP: {
+					gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_half_up")), TRUE);
+					break;
+				}
+				case ROUNDING_HALF_DOWN: {
+					gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_half_down")), TRUE);
+					break;
+				}
+				case ROUNDING_TOWARD_ZERO: {
+					gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_toward_zero")), TRUE);
+					break;
+				}
+				case ROUNDING_AWAY_FROM_ZERO: {
+					gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_away_from_zero")), TRUE);
+					break;
+				}
+				case ROUNDING_UP: {
+					gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_up")), TRUE);
+					break;
+				}
+				case ROUNDING_DOWN: {
+					gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_down")), TRUE);
+					break;
+				}
+			}
 		}
 	} else if(equalsIgnoreCase(svar, "rpn syntax") || svar == "rpnsyn") {
 		bool b = (evalops.parse_options.parsing_mode == PARSING_MODE_RPN);
@@ -13523,8 +13548,16 @@ void set_option(string str) {
 	} else if(equalsIgnoreCase(svar, "rpn") && svalue.find(" ") == string::npos) SET_BOOL_MENU("menu_item_rpn_mode")
 	else if(equalsIgnoreCase(svar, "simplified percentage") || svar == "percent") SET_BOOL_MENU("menu_item_simplified_percentage")
 	else if(equalsIgnoreCase(svar, "short multiplication") || svar == "shortmul") SET_BOOL_D(printops.short_multiplication)
-	else if(equalsIgnoreCase(svar, "lowercase e") || svar == "lowe") SET_BOOL_PREF("preferences_checkbutton_lower_case_e")
-	else if(equalsIgnoreCase(svar, "lowercase numbers") || svar == "lownum") SET_BOOL_PREF("preferences_checkbutton_lower_case_numbers")
+	else if(equalsIgnoreCase(svar, "lowercase e") || svar == "lowe") {
+		int v = s2b(svalue);
+		if(v < 0) {
+			CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
+		} else {
+			if(!preferences_builder) {get_preferences_dialog();}
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_lower_case_e")), v);
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_e_notation")), TRUE);
+		}
+	} else if(equalsIgnoreCase(svar, "lowercase numbers") || svar == "lownum") SET_BOOL_PREF("preferences_checkbutton_lower_case_numbers")
 	else if(equalsIgnoreCase(svar, "duodecimal symbols") || svar == "duosyms") SET_BOOL_PREF("preferences_checkbutton_duodecimal_symbols")
 	else if(equalsIgnoreCase(svar, "imaginary j") || svar == "imgj") SET_BOOL_PREF("preferences_checkbutton_imaginary_j")
 	else if(equalsIgnoreCase(svar, "base display") || svar == "basedisp") {
@@ -13543,7 +13576,17 @@ void set_option(string str) {
 		}
 	} else if(equalsIgnoreCase(svar, "two's complement") || svar == "twos") SET_BOOL_PREF("preferences_checkbutton_twos_complement")
 	else if(equalsIgnoreCase(svar, "hexadecimal two's") || svar == "hextwos") SET_BOOL_PREF("preferences_checkbutton_hexadecimal_twos_complement")
-	else if(equalsIgnoreCase(svar, "digit grouping") || svar =="group") {
+	else if(equalsIgnoreCase(svar, "two's complement input") || svar == "twosin") {
+		SET_BOOL_PF(evalops.parse_options.twos_complement)
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_twos_in"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_twos_in_toggled, NULL);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_twos_in")), (evalops.parse_options.base == 16 && hexadecimal_twos_complement_in) || (evalops.parse_options.base == 2 && twos_complement_in));
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_twos_in"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_twos_in_toggled, NULL);
+	} else if(equalsIgnoreCase(svar, "hexadecimal two's input") || svar == "hextwosin") {
+		SET_BOOL_PF(evalops.parse_options.hexadecimal_twos_complement)
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_twos_in"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_twos_in_toggled, NULL);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_twos_in")), (evalops.parse_options.base == 16 && hexadecimal_twos_complement_in) || (evalops.parse_options.base == 2 && twos_complement_in));
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_twos_in"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_twos_in_toggled, NULL);
+	} else if(equalsIgnoreCase(svar, "digit grouping") || svar =="group") {
 		int v = -1;
 		if(equalsIgnoreCase(svalue, "off")) v = DIGIT_GROUPING_NONE;
 		else if(equalsIgnoreCase(svalue, "none")) v = DIGIT_GROUPING_NONE;
@@ -13837,17 +13880,44 @@ void set_option(string str) {
 	} else if(equalsIgnoreCase(svar, "ignore locale")) SET_BOOL_PREF("preferences_checkbutton_ignore_locale")
 	else if(equalsIgnoreCase(svar, "save mode")) SET_BOOL_PREF("preferences_checkbutton_mode")
 	else if(equalsIgnoreCase(svar, "save definitions") || svar == "save defs") SET_BOOL_PREF("preferences_checkbutton_save_defs")
-	else if(equalsIgnoreCase(svar, "scientific notation") || svar == "exp mode" || svar == "exp") {
+	else if(equalsIgnoreCase(svar, "scientific notation") || svar == "exp mode" || svar == "exp" || equalsIgnoreCase(svar, "exp display")) {
 		int v = -1;
+		bool display = (svar == "exp display");
 		bool valid = true;
-		if(equalsIgnoreCase(svalue, "off")) v = EXP_NONE;
-		else if(equalsIgnoreCase(svalue, "auto")) v = EXP_PRECISION;
-		else if(equalsIgnoreCase(svalue, "pure")) v = EXP_PURE;
-		else if(empty_value || equalsIgnoreCase(svalue, "scientific")) v = EXP_SCIENTIFIC;
-		else if(equalsIgnoreCase(svalue, "engineering")) v = EXP_BASE_3;
-		else if(svalue.find_first_not_of(SPACES NUMBERS MINUS) == string::npos) v = s2i(svalue);
-		else valid = false;
-		if(valid) {
+		if(!display && equalsIgnoreCase(svalue, "off")) v = EXP_NONE;
+		else if(!display && equalsIgnoreCase(svalue, "auto")) v = EXP_PRECISION;
+		else if(!display && equalsIgnoreCase(svalue, "pure")) v = EXP_PURE;
+		else if(!display && (empty_value || equalsIgnoreCase(svalue, "scientific"))) v = EXP_SCIENTIFIC;
+		else if(!display && equalsIgnoreCase(svalue, "engineering")) v = EXP_BASE_3;
+		else if(svalue == "E") {v = EXP_UPPERCASE_E; display = 1;}
+		else if(svalue == "e") {v = EXP_LOWERCASE_E; display = 1;}
+		//scientific notation
+		else if(empty_value || (display && svalue == "10") || svalue == "exp" || svalue == "pow" || svalue == "pow10" || equalsIgnoreCase(svalue, "power") || equalsIgnoreCase(svalue, "power of 10")) {
+			v = EXP_BASE10;
+			display = 1;
+		} else if(svalue.find_first_not_of(SPACES NUMBERS MINUS) == string::npos) {
+			v = s2i(svalue);
+			if(display) v++;
+		} else valid = false;
+		if(display && valid && (v >= EXP_UPPERCASE_E && v <= EXP_BASE10)) {
+			if(!preferences_builder) get_preferences_dialog();
+			switch(v) {
+				case EXP_LOWERCASE_E: {
+					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_lower_case_e")), TRUE);
+					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_e_notation")), TRUE);
+					break;
+				}
+				case EXP_UPPERCASE_E: {
+					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_lower_case_e")), FALSE);
+					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_e_notation")), TRUE);
+					break;
+				}
+				case EXP_BASE10: {
+					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_e_notation")), FALSE);
+					break;
+				}
+			}
+		} else if(!display && valid) {
 			switch(v) {
 				case EXP_PRECISION: {
 					gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_normal")), TRUE);
@@ -14452,6 +14522,28 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					update_fmenu();
 					clear_expression_text();
 				}
+			} else if(equalsIgnoreCase(scom, "keep")) {
+				str = str.substr(ispace + 1, slen - (ispace + 1));
+				remove_blank_ends(str);
+				Variable *v = CALCULATOR->getActiveVariable(str);
+				bool b = v && v->isLocal();
+				if(b && v->category() == CALCULATOR->temporaryCategory()) {
+					v->setCategory("");
+					update_fmenu();
+					clear_expression_text();
+				} else {
+					if(str.length() > 2 && str[str.length() - 2] == '(' && str[str.length() - 1] == ')') str = str.substr(0, str.length() - 2);
+					MathFunction *f = CALCULATOR->getActiveFunction(str);
+					if(f && f->isLocal()) {
+						if(f->category() == CALCULATOR->temporaryCategory()) {
+							f->setCategory("");
+							update_fmenu();
+							clear_expression_text();
+						}
+					} else if(!b) {
+						CALCULATOR->error(true, "No user-defined variable or function with the specified name (%s) exist.", str.c_str(), NULL);
+					}
+				}
 			} else if(equalsIgnoreCase(scom, "delete")) {
 				str = str.substr(ispace + 1, slen - (ispace + 1));
 				remove_blank_ends(str);
@@ -14461,6 +14553,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					update_vmenu();
 					clear_expression_text();
 				} else {
+					if(str.length() > 2 && str[str.length() - 2] == '(' && str[str.length() - 1] == ')') str = str.substr(0, str.length() - 2);
 					MathFunction *f = CALCULATOR->getActiveFunction(str);
 					if(f && f->isLocal()) {
 						f->destroy();
@@ -14848,14 +14941,11 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "duo") || equalsIgnoreCase(to_str, "duodecimal") || equalsIgnoreCase(to_str, _("duodecimal"))) {
 				to_base = BASE_DUODECIMAL;
+				to_duo_syms = false;
 				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "doz") || equalsIgnoreCase(to_str, "dozenal")) {
 				to_base = BASE_DUODECIMAL;
-				if(!use_duo_syms && printops.time_zone != TIME_ZONE_CUSTOM) {
-					use_duo_syms = true;
-					RESET_TZ
-					use_duo_syms = false;
-				}
+				to_duo_syms = true;
 				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "bin") || equalsIgnoreCase(to_str, "binary") || equalsIgnoreCase(to_str, _("binary"))) {
 				to_base = BASE_BINARY;
@@ -14964,7 +15054,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					b_busy = false;
 					b_busy_expression = false;
 					setResult(NULL, true, false, false); set_previous_expression();
-					RESET_TZ
+					printops.time_zone = TIME_ZONE_LOCAL;
 					return;
 				}
 				do_to = true;
@@ -14975,7 +15065,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					b_busy = false;
 					b_busy_expression = false;
 					setResult(NULL, true, false, false); set_previous_expression();
-					RESET_TZ
+					printops.time_zone = TIME_ZONE_LOCAL;
 					return;
 				}
 				do_to = true;
@@ -15129,6 +15219,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				execute_str = from_str;
 			} else if(equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _("base"))) {
 				base_from_string(to_str2, to_base, to_nbase);
+				to_duo_syms = false;
 				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "decimals") || equalsIgnoreCase(to_str, _("decimals"))) {
 				to_fixed_fraction = 0;
@@ -15499,7 +15590,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		evalops.auto_post_conversion = save_auto_post_conversion;
 		evalops.parse_options.units_enabled = b_units_saved;
 		evalops.mixed_units_conversion = save_mixed_units_conversion;
-		RESET_TZ
 		if(!simplified_percentage) evalops.parse_options.parsing_mode = (ParsingMode) (evalops.parse_options.parsing_mode & ~PARSE_PERCENT_AS_ORDINARY_CONSTANT);
 		return;
 	}
@@ -15544,7 +15634,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	evalops.auto_post_conversion = save_auto_post_conversion;
 	evalops.parse_options.units_enabled = b_units_saved;
 	evalops.mixed_units_conversion = save_mixed_units_conversion;
-	RESET_TZ
 	if(!simplified_percentage) evalops.parse_options.parsing_mode = (ParsingMode) (evalops.parse_options.parsing_mode & ~PARSE_PERCENT_AS_ORDINARY_CONSTANT);
 
 	if(stack_index == 0) {
@@ -15606,7 +15695,7 @@ void execute_from_file(string command_file) {
 		ispace = str.find_first_of(SPACES);
 		if(ispace == string::npos) scom = "";
 		else scom = str.substr(0, ispace);
-		if(equalsIgnoreCase(str, "exrates") || equalsIgnoreCase(str, "stack") || equalsIgnoreCase(str, "swap") || equalsIgnoreCase(str, "rotate") || equalsIgnoreCase(str, "copy") || equalsIgnoreCase(str, "clear stack") || equalsIgnoreCase(str, "exact") || equalsIgnoreCase(str, "approximate") || equalsIgnoreCase(str, "approx") || equalsIgnoreCase(str, "factor") || equalsIgnoreCase(str, "partial fraction") || equalsIgnoreCase(str, "simplify") || equalsIgnoreCase(str, "expand") || equalsIgnoreCase(str, "mode") || equalsIgnoreCase(str, "help") || equalsIgnoreCase(str, "?") || equalsIgnoreCase(str, "list") || equalsIgnoreCase(str, "exit") || equalsIgnoreCase(str, "quit") || equalsIgnoreCase(str, "clear") || equalsIgnoreCase(str, "clear history") || equalsIgnoreCase(scom, "variable") || equalsIgnoreCase(scom, "function") || equalsIgnoreCase(scom, "set") || equalsIgnoreCase(scom, "save") || equalsIgnoreCase(scom, "store") || equalsIgnoreCase(scom, "swap") || equalsIgnoreCase(scom, "delete") || equalsIgnoreCase(scom, "assume") || equalsIgnoreCase(scom, "base") || equalsIgnoreCase(scom, "rpn") || equalsIgnoreCase(scom, "move") || equalsIgnoreCase(scom, "rotate") || equalsIgnoreCase(scom, "copy") || equalsIgnoreCase(scom, "pop") || equalsIgnoreCase(scom, "convert") || (equalsIgnoreCase(scom, "to") && scom != "to") || equalsIgnoreCase(scom, "list") || equalsIgnoreCase(scom, "find") || equalsIgnoreCase(scom, "info") || equalsIgnoreCase(scom, "help")) str.insert(0, 1, '/');
+		if(equalsIgnoreCase(str, "exrates") || equalsIgnoreCase(str, "stack") || equalsIgnoreCase(str, "swap") || equalsIgnoreCase(str, "rotate") || equalsIgnoreCase(str, "copy") || equalsIgnoreCase(str, "clear stack") || equalsIgnoreCase(str, "exact") || equalsIgnoreCase(str, "approximate") || equalsIgnoreCase(str, "approx") || equalsIgnoreCase(str, "factor") || equalsIgnoreCase(str, "partial fraction") || equalsIgnoreCase(str, "simplify") || equalsIgnoreCase(str, "expand") || equalsIgnoreCase(str, "mode") || equalsIgnoreCase(str, "help") || equalsIgnoreCase(str, "?") || equalsIgnoreCase(str, "list") || equalsIgnoreCase(str, "exit") || equalsIgnoreCase(str, "quit") || equalsIgnoreCase(str, "clear") || equalsIgnoreCase(str, "clear history") || equalsIgnoreCase(scom, "variable") || equalsIgnoreCase(scom, "function") || equalsIgnoreCase(scom, "set") || equalsIgnoreCase(scom, "save") || equalsIgnoreCase(scom, "store") || equalsIgnoreCase(scom, "swap") || equalsIgnoreCase(scom, "delete") || equalsIgnoreCase(scom, "keep") || equalsIgnoreCase(scom, "assume") || equalsIgnoreCase(scom, "base") || equalsIgnoreCase(scom, "rpn") || equalsIgnoreCase(scom, "move") || equalsIgnoreCase(scom, "rotate") || equalsIgnoreCase(scom, "copy") || equalsIgnoreCase(scom, "pop") || equalsIgnoreCase(scom, "convert") || (equalsIgnoreCase(scom, "to") && scom != "to") || equalsIgnoreCase(scom, "list") || equalsIgnoreCase(scom, "find") || equalsIgnoreCase(scom, "info") || equalsIgnoreCase(scom, "help")) str.insert(0, 1, '/');
 		if(!str.empty()) execute_expression(true, false, OPERATION_ADD, NULL, false, 0, "", str.c_str(), false);
 	}
 	clear_expression_text();
@@ -20046,7 +20135,6 @@ void set_saved_mode() {
 	modes[1].eo = evalops;
 	modes[1].at = CALCULATOR->defaultAssumptions()->type();
 	modes[1].as = CALCULATOR->defaultAssumptions()->sign();
-	modes[1].rounding_mode = rounding_mode;
 	modes[1].rpn_mode = rpn_mode;
 	modes[1].autocalc = auto_calculate;
 	modes[1].chain_mode = chain_mode;
@@ -20085,7 +20173,6 @@ size_t save_mode_as(string name, bool *new_mode = NULL) {
 	modes[index].concise_uncertainty_input = CALCULATOR->conciseUncertaintyInputEnabled();
 	modes[index].fixed_denominator = CALCULATOR->fixedDenominator();
 	modes[index].name = name;
-	modes[index].rounding_mode = rounding_mode;
 	modes[index].rpn_mode = rpn_mode;
 	modes[index].autocalc = auto_calculate;
 	modes[index].chain_mode = chain_mode;
@@ -20115,9 +20202,7 @@ void load_mode(const mode_struct &mode) {
 	CALCULATOR->setCustomInputBase(mode.custom_input_base);
 	CALCULATOR->setConciseUncertaintyInputEnabled(mode.concise_uncertainty_input);
 	CALCULATOR->setFixedDenominator(mode.fixed_denominator);
-	rounding_mode = mode.rounding_mode;
 	custom_angle_unit = mode.custom_angle_unit;
-	RESET_TZ
 	set_mode_items(mode.po, mode.eo, mode.at, mode.as, mode.rpn_mode, mode.precision, mode.interval, mode.variable_units_enabled, mode.adaptive_interval_display, mode.keypad, mode.autocalc, mode.chain_mode, mode.complex_angle_form, mode.simplified_percentage, false);
 	implicit_question_asked = mode.implicit_question_asked;
 	evalops.approximation = mode.eo.approximation;
@@ -21008,7 +21093,7 @@ void load_preferences() {
 	printops.indicate_infinite_series = false;
 	printops.show_ending_zeroes = true;
 	printops.round_halfway_to_even = false;
-	rounding_mode = 0;
+	printops.rounding = ROUNDING_HALF_AWAY_FROM_ZERO;
 	printops.number_fraction_format = FRACTION_DECIMAL;
 	printops.restrict_fraction_length = false;
 	printops.abbreviate_names = true;
@@ -21024,7 +21109,8 @@ void load_preferences() {
 	printops.excessive_parenthesis = false;
 	printops.allow_non_usable = false;
 	printops.lower_case_numbers = false;
-	use_duo_syms = false;
+	printops.duodecimal_symbols = false;
+	printops.exp_display = EXP_BASE10;
 	printops.lower_case_e = false;
 	printops.base_display = BASE_DISPLAY_NORMAL;
 	printops.twos_complement = true;
@@ -21105,8 +21191,6 @@ void load_preferences() {
 
 	copy_ascii = false;
 	copy_ascii_without_units = false;
-
-	use_e_notation = false;
 
 	adaptive_interval_display = true;
 
@@ -21750,26 +21834,15 @@ void load_preferences() {
 						printops.digit_grouping = (DigitGrouping) v;
 					}
 				} else if(svar == "round_halfway_to_even") {//obsolete
-					if(mode_index == 1) {
-						rounding_mode = (v ? 1 : 0);
-						printops.round_halfway_to_even = v;
-						RESET_TZ
-					} else {
-						modes[mode_index].rounding_mode = (v ? 1 : 0);
-						modes[mode_index].po.round_halfway_to_even = v;
-						modes[mode_index].po.custom_time_zone = 0;
+					if(v) {
+						if(mode_index == 1) printops.rounding = ROUNDING_HALF_TO_EVEN;
+						else modes[mode_index].po.rounding = ROUNDING_HALF_TO_EVEN;
 					}
 				} else if(svar == "rounding_mode") {
-					if(v >= 0 && v <= 2) {
-						if(mode_index == 1) {
-							rounding_mode = v;
-							RESET_TZ
-							printops.round_halfway_to_even = (v == 1);
-						} else if(mode_index == 1) {
-							modes[mode_index].rounding_mode = v;
-							modes[mode_index].po.custom_time_zone = (v == 2 ? TZ_TRUNCATE : 0);
-							modes[mode_index].po.round_halfway_to_even = (v == 1);
-						}
+					if(v >= ROUNDING_HALF_AWAY_FROM_ZERO && v <= ROUNDING_DOWN) {
+						if(!VERSION_AFTER(4, 9, 0) && v == 2) v = ROUNDING_TOWARD_ZERO;
+						if(mode_index == 1) printops.rounding = (RoundingMode) v;
+						else modes[mode_index].po.rounding = (RoundingMode) v;
 					}
 				} else if(svar == "always_exact") {//obsolete
 					if(mode_index == 1) {
@@ -21863,12 +21936,14 @@ void load_preferences() {
 				} else if(svar == "lower_case_numbers") {
 					printops.lower_case_numbers = v;
 				} else if(svar == "duodecimal_symbols") {
-					use_duo_syms = v;
-					RESET_TZ
+					printops.duodecimal_symbols = v;
 				} else if(svar == "lower_case_e") {
-					printops.lower_case_e = v;
+					if(v) printops.exp_display = EXP_LOWERCASE_E;
 				} else if(svar == "e_notation") {
-					use_e_notation = v;
+					if(!v) printops.exp_display = EXP_BASE10;
+					else if(printops.exp_display != EXP_LOWERCASE_E) printops.exp_display = EXP_UPPERCASE_E;
+				} else if(svar == "exp_display") {
+					if(v >= EXP_UPPERCASE_E && v <= EXP_BASE10) printops.exp_display = (ExpDisplay) v;
 				} else if(svar == "imaginary_j") {
 					do_imaginary_j = v;
 				} else if(svar == "base_display") {
@@ -22526,9 +22601,8 @@ void save_preferences(bool mode) {
 	fprintf(file, "calculate_as_you_type_history_delay=%i\n", autocalc_history_delay);
 	fprintf(file, "use_unicode_signs=%i\n", printops.use_unicode_signs);
 	fprintf(file, "lower_case_numbers=%i\n", printops.lower_case_numbers);
-	fprintf(file, "duodecimal_symbols=%i\n", use_duo_syms);
-	fprintf(file, "lower_case_e=%i\n", printops.lower_case_e);
-	fprintf(file, "e_notation=%i\n", use_e_notation);
+	fprintf(file, "duodecimal_symbols=%i\n", printops.duodecimal_symbols);
+	fprintf(file, "exp_display=%i\n", printops.exp_display);
 	fprintf(file, "imaginary_j=%i\n", CALCULATOR->v_i->hasName("j") > 0);
 	fprintf(file, "base_display=%i\n", printops.base_display);
 	fprintf(file, "twos_complement=%i\n", printops.twos_complement);
@@ -22951,7 +23025,7 @@ void save_preferences(bool mode) {
 		fprintf(file, "allow_infinite=%i\n", modes[i].eo.allow_infinite);
 		fprintf(file, "indicate_infinite_series=%i\n", modes[i].po.indicate_infinite_series);
 		fprintf(file, "show_ending_zeroes=%i\n", modes[i].po.show_ending_zeroes);
-		fprintf(file, "rounding_mode=%i\n", modes[i].rounding_mode);
+		fprintf(file, "rounding_mode=%i\n", modes[i].po.rounding);
 		fprintf(file, "approximation=%i\n", modes[i].eo.approximation);
 		fprintf(file, "interval_calculation=%i\n", modes[i].eo.interval_calculation);
 		fprintf(file, "concise_uncertainty_input=%i\n", modes[i].concise_uncertainty_input);
@@ -23137,18 +23211,11 @@ void on_combobox_bits_changed(GtkComboBox *w, gpointer) {
 		case 8: {printops.binary_bits = 1024; break;}
 	}
 	programming_bits = printops.binary_bits;
-	if(evalops.parse_options.twos_complement) {
-		if(printops.binary_bits == 0) evalops.parse_options.twos_complement = 1;
-		else evalops.parse_options.twos_complement = printops.binary_bits;
-		if(evalops.parse_options.base == 2) expression_format_updated(true);
-	}
-	if(evalops.parse_options.hexadecimal_twos_complement) {
-		if(printops.binary_bits == 0) evalops.parse_options.hexadecimal_twos_complement = 1;
-		else evalops.parse_options.hexadecimal_twos_complement = printops.binary_bits;
-		if(evalops.parse_options.base == 16) expression_format_updated(true);
-	}
+	evalops.parse_options.binary_bits = printops.binary_bits;
 	default_bits = programming_bits;
-	if((evalops.parse_options.base != 2 || !evalops.parse_options.twos_complement) && (evalops.parse_options.base != 16 || !evalops.parse_options.hexadecimal_twos_complement)) result_format_updated();
+	if(evalops.parse_options.twos_complement && evalops.parse_options.base == 2) expression_format_updated(true);
+	else if(evalops.parse_options.hexadecimal_twos_complement && evalops.parse_options.base == 16) expression_format_updated(true);
+	else result_format_updated();
 }
 
 void on_button_twos_out_toggled(GtkToggleButton *w, gpointer) {
@@ -23160,16 +23227,10 @@ void on_button_twos_out_toggled(GtkToggleButton *w, gpointer) {
 void on_button_twos_in_toggled(GtkToggleButton *w, gpointer) {
 	if(evalops.parse_options.base == 16) {
 		hexadecimal_twos_complement_in = gtk_toggle_button_get_active(w);
-		if(hexadecimal_twos_complement_in) {
-			if(printops.binary_bits == 0) evalops.parse_options.hexadecimal_twos_complement = 1;
-			else evalops.parse_options.hexadecimal_twos_complement = printops.binary_bits;
-		}
+		evalops.parse_options.hexadecimal_twos_complement = hexadecimal_twos_complement_in;
 	} else if(evalops.parse_options.base == 2) {
 		twos_complement_in = gtk_toggle_button_get_active(w);
-		if(twos_complement_in) {
-			if(printops.binary_bits == 0) evalops.parse_options.twos_complement = 1;
-			else evalops.parse_options.twos_complement = printops.binary_bits;
-		}
+		evalops.parse_options.twos_complement = twos_complement_in;
 	}
 	expression_format_updated(true);
 	focus_keeping_selection();
@@ -23212,10 +23273,6 @@ void update_keypad_bases() {
 
 	evalops.parse_options.hexadecimal_twos_complement = hexadecimal_twos_complement_in && evalops.parse_options.base == 16;
 	evalops.parse_options.twos_complement = twos_complement_in && evalops.parse_options.base == 2;
-	if(printops.binary_bits != 0) {
-		if(evalops.parse_options.hexadecimal_twos_complement) evalops.parse_options.hexadecimal_twos_complement = printops.binary_bits;
-		if(evalops.parse_options.twos_complement) evalops.parse_options.twos_complement = printops.binary_bits;
-	}
 
 }
 
@@ -24136,8 +24193,11 @@ void on_preferences_checkbutton_lower_case_numbers_toggled(GtkToggleButton *w, g
 	result_format_updated();
 }
 void on_preferences_checkbutton_lower_case_e_toggled(GtkToggleButton *w, gpointer) {
-	printops.lower_case_e = gtk_toggle_button_get_active(w);
-	result_format_updated();
+	if(printops.exp_display != EXP_BASE10) {
+		if(gtk_toggle_button_get_active(w)) printops.exp_display = EXP_LOWERCASE_E;
+		else printops.exp_display = EXP_UPPERCASE_E;
+		result_format_updated();
+	}
 }
 void on_preferences_checkbutton_imaginary_j_toggled(GtkToggleButton *w, gpointer) {
 	if(gtk_toggle_button_get_active(w) != (CALCULATOR->v_i->hasName("j") > 0)) {
@@ -24156,7 +24216,14 @@ void on_preferences_checkbutton_imaginary_j_toggled(GtkToggleButton *w, gpointer
 	}
 }
 void on_preferences_checkbutton_e_notation_toggled(GtkToggleButton *w, gpointer) {
-	use_e_notation = gtk_toggle_button_get_active(w);
+	if(!gtk_toggle_button_get_active(w)) {
+		printops.exp_display = EXP_BASE10;
+	} else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_lower_case_e")))) {
+		printops.exp_display = EXP_LOWERCASE_E;
+	} else {
+		printops.exp_display = EXP_UPPERCASE_E;
+	}
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_lower_case_e")), printops.exp_display != EXP_BASE10);
 	result_format_updated();
 }
 void on_preferences_checkbutton_alternative_base_prefixes_toggled(GtkToggleButton *w, gpointer) {
@@ -24165,8 +24232,7 @@ void on_preferences_checkbutton_alternative_base_prefixes_toggled(GtkToggleButto
 	result_format_updated();
 }
 void on_preferences_checkbutton_duodecimal_symbols_toggled(GtkToggleButton *w, gpointer) {
-	use_duo_syms = gtk_toggle_button_get_active(w);
-	RESET_TZ
+	printops.duodecimal_symbols = gtk_toggle_button_get_active(w);
 	result_format_updated();
 }
 void on_preferences_checkbutton_twos_complement_toggled(GtkToggleButton *w, gpointer) {
@@ -25293,6 +25359,12 @@ void on_button_programmers_keypad_toggled(GtkToggleButton *w, gpointer) {
 		}
 		bool b_expression = false;
 		bool b_result = false;
+		if(programming_bits > 0) {
+			printops.binary_bits = programming_bits;
+			evalops.parse_options.binary_bits = programming_bits;
+			if((evalops.parse_options.base == 16 && evalops.parse_options.hexadecimal_twos_complement) || (evalops.parse_options.base == 2 && evalops.parse_options.twos_complement)) b_expression = true;
+			else b_result = true;
+		}
 		if(programming_inbase > 0 && programming_outbase != 0 && (((programming_inbase != 10 || (programming_outbase != 10 && programming_outbase > 0 && programming_outbase <= 36)) && evalops.parse_options.base == 10 && printops.base == 10) || evalops.parse_options.base < 2 || printops.base < 2 || evalops.parse_options.base > 36 || printops.base > 16)) {
 			if(printops.base != programming_outbase) {
 				printops.base = programming_outbase;
@@ -25306,18 +25378,6 @@ void on_button_programmers_keypad_toggled(GtkToggleButton *w, gpointer) {
 				update_keypad_bases();
 				b_expression = true;
 			}
-		}
-		if(programming_bits > 0) {
-			printops.binary_bits = programming_bits;
-			if(evalops.parse_options.twos_complement) {
-				evalops.parse_options.twos_complement = printops.binary_bits;
-				b_expression = true;
-			}
-			if(evalops.parse_options.hexadecimal_twos_complement) {
-				evalops.parse_options.hexadecimal_twos_complement = printops.binary_bits;
-				b_expression = true;
-			}
-			b_result = true;
 		}
 		if(b_expression) expression_format_updated();
 		else if(b_result) result_format_updated();
@@ -25341,8 +25401,7 @@ void on_button_programmers_keypad_toggled(GtkToggleButton *w, gpointer) {
 		programming_inbase = evalops.parse_options.base;
 		programming_outbase = printops.base;
 		printops.binary_bits = 0;
-		if(evalops.parse_options.twos_complement) evalops.parse_options.twos_complement = 1;
-		if(evalops.parse_options.hexadecimal_twos_complement) evalops.parse_options.hexadecimal_twos_complement = 1;
+		evalops.parse_options.binary_bits = 0;
 		if(evalops.parse_options.base != 10) clear_expression_text();
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_dec")), TRUE);
 		clear_result_bases();
@@ -27619,7 +27678,7 @@ void on_button_exp_clicked(GtkButton*, gpointer) {
 	if((evalops.parse_options.parsing_mode != PARSING_MODE_RPN && wrap_expression_selection() > 0) || (evalops.parse_options.base != 10 && evalops.parse_options.base >= 2)) {
 		insert_text((expression_times_sign() + i2s(evalops.parse_options.base) + "^").c_str());
 	} else {
-		if(printops.lower_case_e) insert_text("e");
+		if(printops.exp_display == EXP_LOWERCASE_E) insert_text("e");
 		else insert_text("E");
 	}
 }
@@ -31819,25 +31878,59 @@ void on_menu_item_show_ending_zeroes_activate(GtkMenuItem *w, gpointer) {
 	printops.show_ending_zeroes = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
 	result_format_updated();
 }
-void on_menu_item_round_halfway_to_even_activate(GtkMenuItem *w, gpointer) {
+void on_menu_item_rounding_half_to_even_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	printops.round_halfway_to_even = true;
-	rounding_mode = 1;
-	RESET_TZ
+	printops.rounding = ROUNDING_HALF_TO_EVEN;
 	result_format_updated();
 }
-void on_menu_item_round_halfway_up_activate(GtkMenuItem *w, gpointer) {
+void on_menu_item_rounding_half_away_from_zero_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	printops.round_halfway_to_even = false;
-	rounding_mode = 0;
-	RESET_TZ
+	printops.rounding = ROUNDING_HALF_AWAY_FROM_ZERO;
 	result_format_updated();
 }
-void on_menu_item_truncate_numbers_activate(GtkMenuItem *w, gpointer) {
+void on_menu_item_rounding_half_to_odd_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	printops.round_halfway_to_even = false;
-	rounding_mode = 2;
-	RESET_TZ
+	printops.rounding = ROUNDING_HALF_TO_ODD;
+	result_format_updated();
+}
+void on_menu_item_rounding_half_toward_zero_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	printops.rounding = ROUNDING_HALF_TOWARD_ZERO;
+	result_format_updated();
+}
+void on_menu_item_rounding_half_random_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	printops.rounding = ROUNDING_HALF_RANDOM;
+	result_format_updated();
+}
+void on_menu_item_rounding_half_up_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	printops.rounding = ROUNDING_HALF_UP;
+	result_format_updated();
+}
+void on_menu_item_rounding_half_down_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	printops.rounding = ROUNDING_HALF_DOWN;
+	result_format_updated();
+}
+void on_menu_item_rounding_toward_zero_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	printops.rounding = ROUNDING_TOWARD_ZERO;
+	result_format_updated();
+}
+void on_menu_item_rounding_away_from_zero_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	printops.rounding = ROUNDING_AWAY_FROM_ZERO;
+	result_format_updated();
+}
+void on_menu_item_rounding_up_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	printops.rounding = ROUNDING_UP;
+	result_format_updated();
+}
+void on_menu_item_rounding_down_activate(GtkMenuItem *w, gpointer) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
+	printops.rounding = ROUNDING_DOWN;
 	result_format_updated();
 }
 void on_menu_item_negative_exponents_activate(GtkMenuItem *w, gpointer) {
@@ -33806,7 +33899,7 @@ void update_nbases_entries(const MathStructure &value, int base) {
 	po.twos_complement = printops.twos_complement;
 	po.hexadecimal_twos_complement = printops.hexadecimal_twos_complement;
 	po.use_unicode_signs = printops.use_unicode_signs;
-	po.lower_case_e = printops.lower_case_e;
+	po.exp_display = printops.exp_display;
 	po.lower_case_numbers = printops.lower_case_numbers;
 	po.base_display = BASE_DISPLAY_NONE;
 	po.abbreviate_names = printops.abbreviate_names;
@@ -33819,7 +33912,6 @@ void update_nbases_entries(const MathStructure &value, int base) {
 	po.can_display_unicode_string_arg = (void*) w_dec;
 	po.spell_out_logical_operators = printops.spell_out_logical_operators;
 	po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
-	po.custom_time_zone = printops.custom_time_zone;
 	po.round_halfway_to_even = printops.round_halfway_to_even;
 	string str;
 	if(base != 10) {po.base = 10; str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po); if(str.length() > 1000) {str = _("result is too long");} gtk_entry_set_text(GTK_ENTRY(w_dec), str.c_str());}
@@ -33833,8 +33925,7 @@ void update_nbases_entries(const MathStructure &value, int base) {
 			gtk_entry_set_text(GTK_ENTRY(w_roman), "-");
 		} else {
 			Number nr = value.number();
-			if(rounding_mode == 2) nr.trunc();
-			else nr.round(printops.round_halfway_to_even);
+			nr.round(printops.rounding);
 			po.base = BASE_ROMAN_NUMERALS;
 			gtk_entry_set_text(GTK_ENTRY(w_roman), nr.print(po).c_str());
 		}
@@ -33952,7 +34043,7 @@ void on_nbases_entry_binary_changed(GtkEditable *editable, gpointer) {
 	eo.parse_options.read_precision = DONT_READ_PRECISION;
 	eo.parse_options.base = BASE_BINARY;
 	eo.parse_options.twos_complement = twos_complement_in;
-	if(printops.binary_bits != 0 && eo.parse_options.twos_complement) eo.parse_options.twos_complement = printops.binary_bits;
+	eo.parse_options.binary_bits = printops.binary_bits;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
 	block_error_timeout++;
@@ -33994,7 +34085,7 @@ void on_nbases_entry_hexadecimal_changed(GtkEditable *editable, gpointer) {
 	eo.parse_options.read_precision = DONT_READ_PRECISION;
 	eo.parse_options.base = BASE_HEXADECIMAL;
 	eo.parse_options.hexadecimal_twos_complement = hexadecimal_twos_complement_in;
-	if(printops.binary_bits != 0 && eo.parse_options.hexadecimal_twos_complement) eo.parse_options.hexadecimal_twos_complement = printops.binary_bits;
+	eo.parse_options.binary_bits = printops.binary_bits;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
 	block_error_timeout++;
@@ -34074,7 +34165,7 @@ void update_nbases_keypad(int base) {
 
 	if(base == BASE_ROMAN_NUMERALS && strcmp(gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_one"))), "1") != 0) return;
 
-	if(base == 12 && use_duo_syms) {
+	if(base == 12 && printops.duodecimal_symbols) {
 		if(strcmp(gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_a"))), "A") == 0) {
 			if(can_display_unicode_string_function("↊", (void*) gtk_builder_get_object(nbases_builder, "nbases_label_a"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_a")), "↊");
 			else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_a")), "X");
@@ -34302,10 +34393,10 @@ void on_nbases_button_nine_clicked(GtkToggleButton*, gpointer) {
 	nbases_insert_text(nbases_get_entry(), nbases_get_base() == BASE_ROMAN_NUMERALS ? (can_display_unicode_string_function("Ɔ", (void*) gtk_builder_get_object(nbases_builder, "nbases_entry_roman")) ? "Ɔ" : ")") : "9");
 }
 void on_nbases_button_a_clicked(GtkToggleButton*, gpointer) {
-	nbases_insert_text(nbases_get_entry(), nbases_get_base() == 12 && use_duo_syms ? (can_display_unicode_string_function("↊", (void*) gtk_builder_get_object(nbases_builder, "nbases_entry_duo")) ? "↊" : "X") : (printops.lower_case_numbers ? "a" : "A"));
+	nbases_insert_text(nbases_get_entry(), nbases_get_base() == 12 && printops.duodecimal_symbols ? (can_display_unicode_string_function("↊", (void*) gtk_builder_get_object(nbases_builder, "nbases_entry_duo")) ? "↊" : "X") : (printops.lower_case_numbers ? "a" : "A"));
 }
 void on_nbases_button_b_clicked(GtkToggleButton*, gpointer) {
-	nbases_insert_text(nbases_get_entry(), nbases_get_base() == 12 && use_duo_syms ? (can_display_unicode_string_function("↊", (void*) gtk_builder_get_object(nbases_builder, "nbases_entry_duo")) ? "↋" : "E") : (printops.lower_case_numbers ? "b" : "B"));
+	nbases_insert_text(nbases_get_entry(), nbases_get_base() == 12 && printops.duodecimal_symbols ? (can_display_unicode_string_function("↊", (void*) gtk_builder_get_object(nbases_builder, "nbases_entry_duo")) ? "↋" : "E") : (printops.lower_case_numbers ? "b" : "B"));
 }
 void on_nbases_button_c_clicked(GtkToggleButton*, gpointer) {
 	nbases_insert_text(nbases_get_entry(), printops.lower_case_numbers ? "c" : "C");
@@ -34436,10 +34527,9 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 		po.number_fraction_format = FRACTION_DECIMAL;
 		po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 		po.use_unicode_signs = printops.use_unicode_signs;
-		po.lower_case_e = printops.lower_case_e;
+		po.exp_display = printops.exp_display;
 		po.lower_case_numbers = printops.lower_case_numbers;
-		po.custom_time_zone = printops.custom_time_zone;
-		po.round_halfway_to_even = printops.round_halfway_to_even;
+		po.rounding = printops.rounding;
 		po.base_display = BASE_DISPLAY_NONE;
 		po.abbreviate_names = printops.abbreviate_names;
 		po.digit_grouping = printops.digit_grouping;
@@ -35772,7 +35862,7 @@ return TRUE;}
 				if((evalops.parse_options.parsing_mode != PARSING_MODE_RPN && wrap_expression_selection() > 0) || (evalops.parse_options.base != 10 && evalops.parse_options.base >= 2)) {
 					insert_text((expression_times_sign() + i2s(evalops.parse_options.base) + "^").c_str());
 				} else {
-					if(printops.lower_case_e) insert_text("e");
+					if(printops.exp_display == EXP_LOWERCASE_E) insert_text("e");
 					else insert_text("E");
 				}
 				return TRUE;

@@ -190,7 +190,6 @@ extern gint autocalc_history_delay;
 extern int default_fraction_fraction;
 extern bool use_systray_icon, hide_on_startup;
 extern int horizontal_button_padding, vertical_button_padding;
-extern bool use_duo_syms;
 extern string custom_angle_unit;
 extern int previous_precision;
 extern int enable_tooltips;
@@ -201,7 +200,7 @@ extern string nbases_error_color, nbases_warning_color;
 extern PrintOptions printops;
 extern EvaluationOptions evalops;
 
-extern bool rpn_mode, rpn_keys, adaptive_interval_display, use_e_notation;
+extern bool rpn_mode, rpn_keys, adaptive_interval_display;
 
 extern vector<GtkWidget*> mode_items;
 extern vector<GtkWidget*> popup_result_mode_items;
@@ -853,9 +852,52 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_indicate_infinite_series")), po.indicate_infinite_series);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_show_ending_zeroes")), po.show_ending_zeroes);
-	if(po.custom_time_zone == -21586) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_truncate_numbers")), TRUE);
-	else if(po.round_halfway_to_even) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_round_halfway_to_even")), TRUE);
-	else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_round_halfway_up")), TRUE);
+	switch(po.rounding) {
+		case ROUNDING_HALF_AWAY_FROM_ZERO: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_half_away_from_zero")), TRUE);
+			break;
+		}
+		case ROUNDING_HALF_TO_EVEN: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_half_to_even")), TRUE);
+			break;
+		}
+		case ROUNDING_HALF_TO_ODD: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_half_to_odd")), TRUE);
+			break;
+		}
+		case ROUNDING_HALF_TOWARD_ZERO: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_half_toward_zero")), TRUE);
+			break;
+		}
+		case ROUNDING_HALF_RANDOM: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_half_random")), TRUE);
+			break;
+		}
+		case ROUNDING_HALF_UP: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_half_up")), TRUE);
+			break;
+		}
+		case ROUNDING_HALF_DOWN: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_half_down")), TRUE);
+			break;
+		}
+		case ROUNDING_TOWARD_ZERO: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_toward_zero")), TRUE);
+			break;
+		}
+		case ROUNDING_AWAY_FROM_ZERO: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_away_from_zero")), TRUE);
+			break;
+		}
+		case ROUNDING_UP: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_up")), TRUE);
+			break;
+		}
+		case ROUNDING_DOWN: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_down")), TRUE);
+			break;
+		}
+	}
 
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_negative_exponents")), po.negative_exponents);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sort_minus_last")), po.sort_options.minus_last);
@@ -1394,6 +1436,15 @@ void create_button_menus() {
 
 	GtkWidget *item, *sub;
 	MathFunction *f;
+
+	Unit *u = CALCULATOR->getActiveUnit("bit");
+	if(u && u->preferredDisplayName(true, printops.use_unicode_signs, true, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(main_builder, "combobox_bits")).formattedName(STRUCT_UNIT, true) != "bits" && unicode_length(u->preferredDisplayName(true, printops.use_unicode_signs, true, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(main_builder, "combobox_bits")).formattedName(STRUCT_UNIT, true)) <= 5) {
+		string str = "? "; str += u->preferredDisplayName(true, printops.use_unicode_signs, true, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(main_builder, "combobox_bits")).formattedName(STRUCT_UNIT, true);
+		gint i = gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_bits")));
+		gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(main_builder, "combobox_bits")), 0);
+		gtk_combo_box_text_prepend_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(main_builder, "combobox_bits")), str.c_str());
+		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_bits")), i);
+	}
 
 	sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_bases"));
 	MENU_ITEM(_("Bitwise Left Shift"), insert_left_shift)
@@ -2010,7 +2061,7 @@ void create_main_window(void) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_right_buttons")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "event_hide_left_buttons")));
 	}
-	
+
 	set_mode_items(printops, evalops, CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign(), rpn_mode, CALCULATOR->getPrecision(), CALCULATOR->usesIntervalArithmetic(), CALCULATOR->variableUnitsEnabled(), adaptive_interval_display, visible_keypad, auto_calculate, chain_mode, complex_angle_form, simplified_percentage, true);
 
 	if(use_custom_app_font) {
@@ -2944,9 +2995,10 @@ GtkWidget* get_preferences_dialog(void) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_copy_ascii")), copy_ascii);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_copy_ascii_without_units")), copy_ascii_without_units);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_lower_case_numbers")), printops.lower_case_numbers);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_duodecimal_symbols")), use_duo_syms);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_e_notation")), use_e_notation);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_lower_case_e")), printops.lower_case_e);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_duodecimal_symbols")), printops.duodecimal_symbols);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_e_notation")), printops.exp_display == EXP_UPPERCASE_E || printops.exp_display == EXP_LOWERCASE_E);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_lower_case_e")), printops.exp_display == EXP_LOWERCASE_E);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_lower_case_e")), printops.exp_display != EXP_BASE10);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_imaginary_j")), CALCULATOR->v_i->hasName("j") > 0);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_alternative_base_prefixes")), printops.base_display == BASE_DISPLAY_ALTERNATIVE);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_twos_complement")), printops.twos_complement);
