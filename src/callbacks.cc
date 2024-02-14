@@ -689,7 +689,7 @@ string print_with_evalops(const Number &nr) {
 	po.base_display = BASE_DISPLAY_NONE;
 	po.twos_complement = evalops.parse_options.twos_complement;
 	po.hexadecimal_twos_complement = evalops.parse_options.hexadecimal_twos_complement;
-	if(po.hexadecimal_twos_complement && nr.isNegative()) po.binary_bits = evalops.parse_options.binary_bits;
+	if(((po.base == 2 && po.twos_complement) || (po.base == 16 && po.hexadecimal_twos_complement)) && nr.isNegative()) po.binary_bits = evalops.parse_options.binary_bits;
 	po.min_exp = EXP_NONE;
 	Number nr_base;
 	if(po.base == BASE_CUSTOM) {
@@ -8708,7 +8708,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						exp = number_exp_map[(void*) &m.number()];
 						exp_minus = number_exp_minus_map[(void*) &m.number()];
 					}
-					if(printops.exp_display != EXP_BASE10 && base_without_exp) {
+					if(printops.exp_display != EXP_POWER_OF_10 && base_without_exp) {
 						if(!exp.empty()) base10 = true;
 						exp = "";
 						exp_minus = false;
@@ -8722,10 +8722,10 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					}
 					bool was_approx = (po.is_approximate && *po.is_approximate);
 					if(po.is_approximate) *po.is_approximate = false;
-					if(printops.exp_display == EXP_BASE10 || base_without_exp || (po.base != BASE_DECIMAL && !BASE_IS_SEXAGESIMAL(po.base) && po.base != BASE_TIME)) {
+					if(printops.exp_display == EXP_POWER_OF_10 || base_without_exp || (po.base != BASE_DECIMAL && !BASE_IS_SEXAGESIMAL(po.base) && po.base != BASE_TIME)) {
 						ips_n.exp = &exp;
 						ips_n.exp_minus = &exp_minus;
-						if(printops.exp_display != EXP_BASE10 && base_without_exp) {
+						if(printops.exp_display != EXP_POWER_OF_10 && base_without_exp) {
 							m.number().print(po, ips_n);
 							base10 = !exp.empty();
 							exp = "";
@@ -8837,7 +8837,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						return surface;
 					}
 				}
-				if(exp.empty() && printops.exp_display != EXP_LOWERCASE_E && ((printops.exp_display != EXP_BASE10 && po.base == BASE_DECIMAL) || BASE_IS_SEXAGESIMAL(po.base) || po.base == BASE_TIME)) {
+				if(exp.empty() && printops.exp_display != EXP_LOWERCASE_E && ((printops.exp_display != EXP_POWER_OF_10 && po.base == BASE_DECIMAL) || BASE_IS_SEXAGESIMAL(po.base) || po.base == BASE_TIME)) {
 					size_t i = 0;
 					while(true) {
 						i = value_str.find("E", i + 1);
@@ -8847,6 +8847,17 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 							TTP_SMALL(estr, "E");
 							value_str.replace(i, 1, estr);
 							i += estr.length();
+						}
+					}
+					if(printops.exp_display == EXP_POWER_OF_10 && ips.power_depth == 0) {
+						i = value_str.find("10^");
+						if(i != string::npos) {
+							i += 2;
+							size_t i2 = value_str.find(")", i);
+							if(i2 != string::npos) {
+								value_str.insert(i2, "</sup>");
+								value_str.replace(i, 1, "<sup>");
+							}
 						}
 					}
 				}
@@ -13586,6 +13597,25 @@ void set_option(string str) {
 		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_twos_in"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_twos_in_toggled, NULL);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_twos_in")), (evalops.parse_options.base == 16 && hexadecimal_twos_complement_in) || (evalops.parse_options.base == 2 && twos_complement_in));
 		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_twos_in"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_twos_in_toggled, NULL);
+	} else if(equalsIgnoreCase(svar, "binary bits") || svar == "bits") {
+		int v = -1;
+		if(empty_value) {
+			v = 0;
+		} else if(svalue.find_first_not_of(SPACES MINUS NUMBERS) == std::string::npos) {
+			v = s2i(svalue);
+			if(v < 0) v = 0;
+		}
+		if(v < 0 || v == 1) {
+			CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
+		} else {
+			printops.binary_bits = v;
+			evalops.parse_options.binary_bits = v;
+			programming_bits = v;
+			default_bits = v;
+			update_keypad_bases();
+			if(evalops.parse_options.twos_complement || evalops.parse_options.hexadecimal_twos_complement) expression_format_updated(true);
+			else result_format_updated();
+		}
 	} else if(equalsIgnoreCase(svar, "digit grouping") || svar =="group") {
 		int v = -1;
 		if(equalsIgnoreCase(svalue, "off")) v = DIGIT_GROUPING_NONE;
@@ -13880,26 +13910,28 @@ void set_option(string str) {
 	} else if(equalsIgnoreCase(svar, "ignore locale")) SET_BOOL_PREF("preferences_checkbutton_ignore_locale")
 	else if(equalsIgnoreCase(svar, "save mode")) SET_BOOL_PREF("preferences_checkbutton_mode")
 	else if(equalsIgnoreCase(svar, "save definitions") || svar == "save defs") SET_BOOL_PREF("preferences_checkbutton_save_defs")
-	else if(equalsIgnoreCase(svar, "scientific notation") || svar == "exp mode" || svar == "exp" || equalsIgnoreCase(svar, "exp display")) {
+	else if(equalsIgnoreCase(svar, "scientific notation") || svar == "exp mode" || svar == "exp" || equalsIgnoreCase(svar, "exp display") || svar == "edisp") {
 		int v = -1;
-		bool display = (svar == "exp display");
+		bool display = (svar == "exp display" || svar == "edisp");
 		bool valid = true;
 		if(!display && equalsIgnoreCase(svalue, "off")) v = EXP_NONE;
 		else if(!display && equalsIgnoreCase(svalue, "auto")) v = EXP_PRECISION;
 		else if(!display && equalsIgnoreCase(svalue, "pure")) v = EXP_PURE;
 		else if(!display && (empty_value || equalsIgnoreCase(svalue, "scientific"))) v = EXP_SCIENTIFIC;
 		else if(!display && equalsIgnoreCase(svalue, "engineering")) v = EXP_BASE_3;
-		else if(svalue == "E") {v = EXP_UPPERCASE_E; display = 1;}
-		else if(svalue == "e") {v = EXP_LOWERCASE_E; display = 1;}
+		else if(svalue == "E" || (display && empty_value && printops.exp_display == EXP_POWER_OF_10)) {v = EXP_UPPERCASE_E; display = true;}
+		else if(svalue == "e") {v = EXP_LOWERCASE_E; display = true;}
 		//scientific notation
-		else if(empty_value || (display && svalue == "10") || svalue == "exp" || svalue == "pow" || svalue == "pow10" || equalsIgnoreCase(svalue, "power") || equalsIgnoreCase(svalue, "power of 10")) {
-			v = EXP_BASE10;
-			display = 1;
+		else if((display && svalue == "10") || (display && empty_value && printops.exp_display != EXP_POWER_OF_10) || svalue == "pow" || svalue == "pow10" || equalsIgnoreCase(svalue, "power") || equalsIgnoreCase(svalue, "power of 10")) {
+			v = EXP_POWER_OF_10;
+			display = true;
 		} else if(svalue.find_first_not_of(SPACES NUMBERS MINUS) == string::npos) {
 			v = s2i(svalue);
 			if(display) v++;
-		} else valid = false;
-		if(display && valid && (v >= EXP_UPPERCASE_E && v <= EXP_BASE10)) {
+		} else {
+			valid = false;
+		}
+		if(display && valid && (v >= EXP_UPPERCASE_E && v <= EXP_POWER_OF_10)) {
 			if(!preferences_builder) get_preferences_dialog();
 			switch(v) {
 				case EXP_LOWERCASE_E: {
@@ -13912,7 +13944,7 @@ void set_option(string str) {
 					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_e_notation")), TRUE);
 					break;
 				}
-				case EXP_BASE10: {
+				case EXP_POWER_OF_10: {
 					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_e_notation")), FALSE);
 					break;
 				}
@@ -21110,7 +21142,7 @@ void load_preferences() {
 	printops.allow_non_usable = false;
 	printops.lower_case_numbers = false;
 	printops.duodecimal_symbols = false;
-	printops.exp_display = EXP_BASE10;
+	printops.exp_display = EXP_POWER_OF_10;
 	printops.lower_case_e = false;
 	printops.base_display = BASE_DISPLAY_NORMAL;
 	printops.twos_complement = true;
@@ -21940,14 +21972,17 @@ void load_preferences() {
 				} else if(svar == "lower_case_e") {
 					if(v) printops.exp_display = EXP_LOWERCASE_E;
 				} else if(svar == "e_notation") {
-					if(!v) printops.exp_display = EXP_BASE10;
+					if(!v) printops.exp_display = EXP_POWER_OF_10;
 					else if(printops.exp_display != EXP_LOWERCASE_E) printops.exp_display = EXP_UPPERCASE_E;
 				} else if(svar == "exp_display") {
-					if(v >= EXP_UPPERCASE_E && v <= EXP_BASE10) printops.exp_display = (ExpDisplay) v;
+					if(v >= EXP_UPPERCASE_E && v <= EXP_POWER_OF_10) printops.exp_display = (ExpDisplay) v;
 				} else if(svar == "imaginary_j") {
 					do_imaginary_j = v;
 				} else if(svar == "base_display") {
 					if(v >= BASE_DISPLAY_NONE && v <= BASE_DISPLAY_ALTERNATIVE) printops.base_display = (BaseDisplay) v;
+				} else if(svar == "binary_bits") {
+					printops.binary_bits = v;
+					evalops.parse_options.binary_bits = v;
 				} else if(svar == "twos_complement") {
 					printops.twos_complement = v;
 				} else if(svar == "hexadecimal_twos_complement") {
@@ -22605,6 +22640,7 @@ void save_preferences(bool mode) {
 	fprintf(file, "exp_display=%i\n", printops.exp_display);
 	fprintf(file, "imaginary_j=%i\n", CALCULATOR->v_i->hasName("j") > 0);
 	fprintf(file, "base_display=%i\n", printops.base_display);
+	if(printops.binary_bits != 0) fprintf(file, "binary_bits=%i\n", printops.binary_bits);
 	fprintf(file, "twos_complement=%i\n", printops.twos_complement);
 	fprintf(file, "hexadecimal_twos_complement=%i\n", printops.hexadecimal_twos_complement);
 	fprintf(file, "twos_complement_input=%i\n", twos_complement_in);
@@ -23213,8 +23249,7 @@ void on_combobox_bits_changed(GtkComboBox *w, gpointer) {
 	programming_bits = printops.binary_bits;
 	evalops.parse_options.binary_bits = printops.binary_bits;
 	default_bits = programming_bits;
-	if(evalops.parse_options.twos_complement && evalops.parse_options.base == 2) expression_format_updated(true);
-	else if(evalops.parse_options.hexadecimal_twos_complement && evalops.parse_options.base == 16) expression_format_updated(true);
+	if(evalops.parse_options.twos_complement || evalops.parse_options.hexadecimal_twos_complement) expression_format_updated(true);
 	else result_format_updated();
 }
 
@@ -23261,6 +23296,20 @@ void update_keypad_bases() {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_twos_in"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_twos_in_toggled, NULL);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_twos_in")), (evalops.parse_options.base == 16 && hexadecimal_twos_complement_in) || (evalops.parse_options.base == 2 && twos_complement_in));
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_twos_in"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_twos_in_toggled, NULL);
+
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_bits"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_bits_changed, NULL);
+	switch(printops.binary_bits) {
+		case 0: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_bits")), 0); break;}
+		case 8: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_bits")), 1); break;}
+		case 16: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_bits")), 2); break;}
+		case 32: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_bits")), 3); break;}
+		case 64: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_bits")), 4); break;}
+		case 128: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_bits")), 5); break;}
+		case 256: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_bits")), 6); break;}
+		case 512: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_bits")), 7); break;}
+		case 1024: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_bits")), 8); break;}
+	}
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_bits"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_bits_changed, NULL);
 
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_a")), evalops.parse_options.base >= 13 || evalops.parse_options.base == 11);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_b")), evalops.parse_options.base >= 13);
@@ -24193,7 +24242,7 @@ void on_preferences_checkbutton_lower_case_numbers_toggled(GtkToggleButton *w, g
 	result_format_updated();
 }
 void on_preferences_checkbutton_lower_case_e_toggled(GtkToggleButton *w, gpointer) {
-	if(printops.exp_display != EXP_BASE10) {
+	if(printops.exp_display != EXP_POWER_OF_10) {
 		if(gtk_toggle_button_get_active(w)) printops.exp_display = EXP_LOWERCASE_E;
 		else printops.exp_display = EXP_UPPERCASE_E;
 		result_format_updated();
@@ -24217,13 +24266,13 @@ void on_preferences_checkbutton_imaginary_j_toggled(GtkToggleButton *w, gpointer
 }
 void on_preferences_checkbutton_e_notation_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(w)) {
-		printops.exp_display = EXP_BASE10;
+		printops.exp_display = EXP_POWER_OF_10;
 	} else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_lower_case_e")))) {
 		printops.exp_display = EXP_LOWERCASE_E;
 	} else {
 		printops.exp_display = EXP_UPPERCASE_E;
 	}
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_lower_case_e")), printops.exp_display != EXP_BASE10);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_lower_case_e")), printops.exp_display != EXP_POWER_OF_10);
 	result_format_updated();
 }
 void on_preferences_checkbutton_alternative_base_prefixes_toggled(GtkToggleButton *w, gpointer) {
@@ -25362,8 +25411,6 @@ void on_button_programmers_keypad_toggled(GtkToggleButton *w, gpointer) {
 		if(programming_bits > 0) {
 			printops.binary_bits = programming_bits;
 			evalops.parse_options.binary_bits = programming_bits;
-			if((evalops.parse_options.base == 16 && evalops.parse_options.hexadecimal_twos_complement) || (evalops.parse_options.base == 2 && evalops.parse_options.twos_complement)) b_expression = true;
-			else b_result = true;
 		}
 		if(programming_inbase > 0 && programming_outbase != 0 && (((programming_inbase != 10 || (programming_outbase != 10 && programming_outbase > 0 && programming_outbase <= 36)) && evalops.parse_options.base == 10 && printops.base == 10) || evalops.parse_options.base < 2 || printops.base < 2 || evalops.parse_options.base > 36 || printops.base > 16)) {
 			if(printops.base != programming_outbase) {
@@ -25378,6 +25425,10 @@ void on_button_programmers_keypad_toggled(GtkToggleButton *w, gpointer) {
 				update_keypad_bases();
 				b_expression = true;
 			}
+		}
+		if(programming_bits > 0) {
+			if(evalops.parse_options.hexadecimal_twos_complement || evalops.parse_options.twos_complement) b_expression = true;
+			else b_result = true;
 		}
 		if(b_expression) expression_format_updated();
 		else if(b_result) result_format_updated();
@@ -36554,7 +36605,7 @@ void on_argument_rules_combobox_type_changed(GtkComboBox *om, gpointer) {
 	}
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_allow_matrix")), argtype != ARGUMENT_TYPE_FREE && argtype != ARGUMENT_TYPE_MATRIX);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_allow_matrix")), argtype == ARGUMENT_TYPE_FREE || argtype == ARGUMENT_TYPE_MATRIX);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_handle_vector")), argtype == ARGUMENT_TYPE_NUMBER || argtype == ARGUMENT_TYPE_INTEGER);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_handle_vector")), argtype == ARGUMENT_TYPE_NUMBER || argtype == ARGUMENT_TYPE_INTEGER || argtype == ARGUMENT_TYPE_TEXT || argtype == ARGUMENT_TYPE_DATE || argtype == ARGUMENT_TYPE_BOOLEAN);
 	if(argtype == ARGUMENT_TYPE_INTEGER || argtype == ARGUMENT_TYPE_NUMBER) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_forbid_zero")), menu_index == MENU_ARGUMENT_TYPE_NONZERO_INTEGER && menu_index == MENU_ARGUMENT_TYPE_NONZERO);
 	}

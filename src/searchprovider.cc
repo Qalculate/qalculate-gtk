@@ -349,7 +349,7 @@ void load_preferences_search() {
 	search_po.use_unicode_signs = true;
 	search_po.digit_grouping = DIGIT_GROUPING_STANDARD;
 	search_po.use_unit_prefixes = true;
-	search_po.exp_display = EXP_BASE10;
+	search_po.exp_display = EXP_POWER_OF_10;
 	search_po.duodecimal_symbols = false;
 	search_po.use_prefixes_for_currencies = false;
 	search_po.use_prefixes_for_all_units = false;
@@ -558,10 +558,10 @@ void load_preferences_search() {
 				} else if(svar == "lower_case_e") {
 					if(v) search_po.exp_display = EXP_LOWERCASE_E;
 				} else if(svar == "e_notation") {
-					if(!v) search_po.exp_display = EXP_BASE10;
+					if(!v) search_po.exp_display = EXP_POWER_OF_10;
 					else if(search_po.exp_display != EXP_LOWERCASE_E) search_po.exp_display = EXP_UPPERCASE_E;
 				} else if(svar == "exp_display") {
-					if(v >= EXP_UPPERCASE_E && v <= EXP_BASE10) search_po.exp_display = (ExpDisplay) v;
+					if(v >= EXP_UPPERCASE_E && v <= EXP_POWER_OF_10) search_po.exp_display = (ExpDisplay) v;
 				} else if(svar == "imaginary_j") {
 					search_do_imaginary_j = v;
 				} else if(svar == "base_display") {
