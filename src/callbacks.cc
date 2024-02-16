@@ -20136,13 +20136,21 @@ void convert_in_wUnits(int toFrom) {
 	save definitions to ~/.conf/qalculate/qalculate.cfg
 	the hard work is done in the Calculator class
 */
-void save_defs() {
+bool save_defs(bool allow_cancel) {
 	if(!CALCULATOR->saveDefinitions()) {
-		GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Couldn't write definitions"));
+		GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_NONE, _("Couldn't write definitions"));
+		if(allow_cancel) {
+			gtk_dialog_add_buttons(GTK_DIALOG(edialog), _("Ignore"), GTK_RESPONSE_CLOSE, _("Cancel"), GTK_RESPONSE_CANCEL, _("Retry"), GTK_RESPONSE_APPLY, NULL);
+		} else {
+			gtk_dialog_add_buttons(GTK_DIALOG(edialog), _("Ignore"), GTK_RESPONSE_CLOSE, _("Retry"), GTK_RESPONSE_APPLY, NULL);
+		}
 		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
-		gtk_dialog_run(GTK_DIALOG(edialog));
+		int ret = gtk_dialog_run(GTK_DIALOG(edialog));
 		gtk_widget_destroy(edialog);
+		if(ret == GTK_RESPONSE_CANCEL) return false;
+		if(ret == GTK_RESPONSE_APPLY) return save_defs(allow_cancel);
 	}
+	return true;
 }
 
 /*
@@ -22455,19 +22463,26 @@ void load_preferences() {
 	set mode to true to save current calculator mode
 */
 
-void save_preferences(bool mode) {
+bool save_preferences(bool mode, bool allow_cancel) {
 	FILE *file = NULL;
 	string homedir = getLocalDir();
 	recursiveMakeDir(homedir);
 	gchar *gstr2 = g_build_filename(homedir.c_str(), "qalculate-gtk.cfg", NULL);
 	file = fopen(gstr2, "w+");
 	if(file == NULL) {
-		GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Couldn't write preferences to\n%s"), gstr2);
+		GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_NONE, _("Couldn't write preferences to\n%s"), gstr2);
+		if(allow_cancel) {
+			gtk_dialog_add_buttons(GTK_DIALOG(edialog), _("Ignore"), GTK_RESPONSE_CLOSE, _("Cancel"), GTK_RESPONSE_CANCEL, _("Retry"), GTK_RESPONSE_APPLY, NULL);
+		} else {
+			gtk_dialog_add_buttons(GTK_DIALOG(edialog), _("Ignore"), GTK_RESPONSE_CLOSE, _("Retry"), GTK_RESPONSE_APPLY, NULL);
+		}
 		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
-		gtk_dialog_run(GTK_DIALOG(edialog));
+		int ret = gtk_dialog_run(GTK_DIALOG(edialog));
 		gtk_widget_destroy(edialog);
 		g_free(gstr2);
-		return;
+		if(ret == GTK_RESPONSE_CANCEL) return false;
+		if(ret == GTK_RESPONSE_APPLY) return save_preferences(mode, allow_cancel);
+		return true;
 	}
 	g_free(gstr2);
 	gtk_revealer_set_reveal_child(GTK_REVEALER(gtk_builder_get_object(main_builder, "message_revealer")), FALSE);
@@ -23099,6 +23114,8 @@ void save_preferences(bool mode) {
 	if(max_plot_time != 5) fprintf(file, "max_plot_time=%i\n", max_plot_time);
 
 	fclose(file);
+
+	return true;
 
 }
 
@@ -25540,15 +25557,27 @@ void on_convert_entry_unit_icon_release(GtkEntry *entry, GtkEntryIconPosition ic
 	save preferences, mode and definitions and then quit
 */
 gboolean on_gcalc_exit(GtkWidget*, GdkEvent*, gpointer) {
-	stop_timeouts = true;
 	exit_in_progress = true;
+	if(autocalc_history_timeout_id != 0) {
+		g_source_remove(autocalc_history_timeout_id);
+		autocalc_history_timeout_id = 0;
+	}
+	block_error_timeout++;
 	if(plot_builder && gtk_widget_get_visible(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")))) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
 	}
 	CALCULATOR->abort();
-	if(save_mode_on_exit) save_mode();
-	else save_preferences();
-	if(save_defs_on_exit) save_defs();
+	if(!save_preferences(save_mode_on_exit, true)) {
+		block_error_timeout--;
+		exit_in_progress = false;
+		return FALSE;
+	}
+	if(save_defs_on_exit && !save_defs(true)) {
+		block_error_timeout--;
+		exit_in_progress = false;
+		return FALSE;
+	}
+	stop_timeouts = true;
 #ifdef _WIN32
 	if(use_systray_icon) destroy_systray_icon();
 #endif

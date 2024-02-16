@@ -295,11 +295,11 @@ void convert_in_wUnits(int toFrom = -1);
 
 void convert_to_unit(GtkMenuItem *w, gpointer user_data);
 
-void save_defs();
+bool save_defs(bool allow_cancel = false);
 void save_mode();
 
 void load_preferences();
-void save_preferences(bool mode = false);
+bool save_preferences(bool mode = false, bool allow_cancel = false);
 void edit_preferences();
 
 gint completion_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer user_data);
