@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "4.9.0">
-  <!ENTITY manrevision "4.9.0">
-  <!ENTITY date "November 2023">
+  <!ENTITY appversion "5.0.0">
+  <!ENTITY manrevision "5.0.0">
+  <!ENTITY date "Mars 2024">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -15,7 +15,7 @@
 <title>&app; Manual v&manrevision;</title>
 <bookinfo>
 	<copyright>
-		<year>2005-2007, 2016-2023</year>
+		<year>2005-2007, 2016-2024</year>
 		<holder>Hanna Knutsson</holder>
 	</copyright>
 	<publisher> 
@@ -1859,7 +1859,7 @@ Putting <quote> to </quote> (or a right arrow, e.g. <quote>-></quote>) followed 
 If <quote>to</quote> is not preceded by an expression, the previous result will be converted.
 </para>
 <para>
-Similarly <quote>where</quote> (or alternatively <quote>/.</quote>) can be used at the end (but before <quote>to</quote>), for variable assignments, function replacements, etc. (e.g. <quote>x+y where x=1 and y=2</quote>, <quote>x^2=4 where x>0</quote>, and <quote>sin(5) where sin()=cos()</quote>).
+Similarly <quote>where</quote> (or alternatively <quote>/.</quote>) can be used at the end (but before <quote>to</quote>), for variable assignments, function replacements, etc. (e.g. <quote>x+y where x=1 and y=2</quote>, <quote>x^2=4 where x>0</quote>, and <quote>sin(5) where sin()=cos()</quote>). Variables assignments can also be placed before the expression, separated by comma, e.g. <quote>x=1, y=2, x+y</quote>, but this syntax is more strict.
 </para>
 <para>
 Note that <quote>to</quote> and <quote>where</quote> can only be applied to the whole expression. Everything before the operator is always treated as the expression to convert (or apply replacement to), and everything after as the conversion/replacement expression, regardless of any parentheses.

@@ -1,7 +1,7 @@
 /*
     Qalculate (GTK UI)
 
-    Copyright (C) 2003-2007, 2008, 2016-2021  Hanna Knutsson (hanna.knutsson@protonmail.com)
+    Copyright (C) 2003-2007, 2008, 2016-2024  Hanna Knutsson (hanna.knutsson@protonmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -484,9 +484,6 @@ int binary_y_diff = 0;
 #	define CLEAN_MODIFIERS(x) (x & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SUPER_MASK | GDK_HYPER_MASK | GDK_META_MASK))
 #endif
 
-extern bool transform_expression_for_equals_save(std::string&, const ParseOptions&);
-extern bool expression_contains_save_function(const std::string&, const ParseOptions&, bool = false);
-
 enum {
 	TITLE_APP,
 	TITLE_RESULT,
@@ -685,6 +682,7 @@ string unformat(string str) {
 
 string print_with_evalops(const Number &nr) {
 	PrintOptions po;
+	po.is_approximate = NULL;
 	po.base = evalops.parse_options.base;
 	po.base_display = BASE_DISPLAY_NONE;
 	po.twos_complement = evalops.parse_options.twos_complement;
@@ -899,8 +897,6 @@ void get_cb(GtkClipboard* cb, GtkSelectionData* sd, guint info, gpointer) {
 	else if(info == 3) gtk_selection_data_set_text(sd, unformat(unhtmlize(copy_text, true)).c_str(), -1);
 	else gtk_selection_data_set_text(sd, unhtmlize(copy_text).c_str(), -1);
 }
-
-extern bool is_unit_multiexp(const MathStructure &mstruct);
 
 void set_clipboard(string str, int ascii, bool html, bool is_result, int copy_without_units = -1) {
 	if(ascii > 0 || (ascii < 0 && copy_ascii)) {
@@ -3443,7 +3439,7 @@ bool test_parsed_comparison_gtk(const MathStructure &m) {
 	return false;
 }
 bool contains_plot_or_save(const string &str) {
-	if(expression_contains_save_function(str, evalops.parse_options, false)) return true;
+	if(expression_contains_save_function(CALCULATOR->unlocalizeExpression(str, evalops.parse_options), evalops.parse_options, false)) return true;
 	if(CALCULATOR->f_plot) {
 		for(size_t i = 1; i <= CALCULATOR->f_plot->countNames(); i++) {
 			if(str.find(CALCULATOR->f_plot->getName(i).name) != string::npos) return true;
@@ -4207,8 +4203,6 @@ bool do_chain_mode(const gchar *op) {
 MathStructure *current_from_struct = NULL;
 vector<Unit*> current_from_units;
 
-extern MathStructure get_units_for_parsed_expression(const MathStructure *parsed_struct, Unit *to_unit, const EvaluationOptions &eo, const MathStructure *mstruct = NULL);
-
 Unit *find_exact_matching_unit2(const MathStructure &m) {
 	switch(m.type()) {
 		case STRUCT_POWER: {
@@ -4447,7 +4441,6 @@ void display_parse_status() {
 			str_f = "";
 		}
 	}
-	transform_expression_for_equals_save(text, evalops.parse_options);
 	GtkTextMark *mark = gtk_text_buffer_get_insert(expressionbuffer);
 	if(mark) gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mark);
 	else ipos = iend;
@@ -4475,6 +4468,7 @@ void display_parse_status() {
 			g_free(gtext);
 		} else {
 			str_e = CALCULATOR->unlocalizeExpression(text, evalops.parse_options);
+			transform_expression_for_equals_save(str_e, evalops.parse_options);
 			bool b = CALCULATOR->separateToExpression(str_e, str_u, evalops, false, !auto_calculate);
 			b = CALCULATOR->separateWhereExpression(str_e, str_w, evalops) || b;
 			if(!b) {
@@ -4500,6 +4494,7 @@ void display_parse_status() {
 		parsed_expression_tooltip = "";
 		if(!full_parsed) {
 			str_e = CALCULATOR->unlocalizeExpression(text, evalops.parse_options);
+			transform_expression_for_equals_save(str_e, evalops.parse_options);
 			last_is_space = is_in(SPACES, str_e[str_e.length() - 1]);
 			bool b_to = CALCULATOR->separateToExpression(str_e, str_u, evalops, true, !auto_calculate);
 			CALCULATOR->separateWhereExpression(str_e, str_w, evalops);
@@ -8761,6 +8756,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					number_exp_map[(void*) &m.number()] = exp;
 					number_exp_minus_map[(void*) &m.number()] = exp_minus;
 					if(!exp.empty() && (base_without_exp || (po.base != BASE_CUSTOM && (po.base < 2 || po.base > 36)) || (po.base == BASE_CUSTOM && (!CALCULATOR->customOutputBase().isInteger() || CALCULATOR->customOutputBase() > 62 || CALCULATOR->customOutputBase() < 2)))) base10 = true;
+					if(!base10 && (BASE_IS_SEXAGESIMAL(po.base) || po.base == BASE_TIME) && value_str.find(po.decimalpoint()) && (value_str.find("+/-") != string::npos || value_str.find(SIGN_PLUSMINUS) != string::npos) && ((po.base == BASE_TIME && value_str.find(":") == string::npos) || (po.base != BASE_TIME && value_str.find("″") == string::npos && value_str.find("′") == string::npos && value_str.find(SIGN_DEGREE) == string::npos && value_str.find_first_of("\'\"o") == string::npos))) base10 = true;
 					if(po.base != BASE_DECIMAL && (base10 || (!BASE_IS_SEXAGESIMAL(po.base) && po.base != BASE_TIME))) {
 						bool twos = (((po.base == BASE_BINARY && po.twos_complement) || (po.base == BASE_HEXADECIMAL && po.hexadecimal_twos_complement)) && m.number().isNegative() && value_str.find(SIGN_MINUS) == string::npos && value_str.find("-") == string::npos);
 						if(base10) {
@@ -13495,11 +13491,21 @@ void set_option(string str) {
 		}
 	} else if(equalsIgnoreCase(svar, "rounding")) {
 		int v = -1;
-		if(equalsIgnoreCase(svalue, "even") || equalsIgnoreCase(svalue, "round to even")) v = 1;
-		else if(equalsIgnoreCase(svalue, "standard")) v = 0;
-		else if(equalsIgnoreCase(svalue, "truncate")) v = 2;
+		if(equalsIgnoreCase(svalue, "even") || equalsIgnoreCase(svalue, "round to even") || equalsIgnoreCase(svalue, "half to even")) v = ROUNDING_HALF_TO_EVEN;
+		else if(equalsIgnoreCase(svalue, "standard") || equalsIgnoreCase(svalue, "half away from zero")) v = ROUNDING_HALF_AWAY_FROM_ZERO;
+		else if(equalsIgnoreCase(svalue, "truncate") || equalsIgnoreCase(svalue, "toward zero")) v = ROUNDING_TOWARD_ZERO;
+		else if(equalsIgnoreCase(svalue, "half to odd")) v = ROUNDING_HALF_TO_ODD;
+		else if(equalsIgnoreCase(svalue, "half toward zero")) v = ROUNDING_HALF_TOWARD_ZERO;
+		else if(equalsIgnoreCase(svalue, "half random")) v = ROUNDING_HALF_RANDOM;
+		else if(equalsIgnoreCase(svalue, "half up")) v = ROUNDING_HALF_UP;
+		else if(equalsIgnoreCase(svalue, "half down")) v = ROUNDING_HALF_DOWN;
+		else if(equalsIgnoreCase(svalue, "up")) v = ROUNDING_UP;
+		else if(equalsIgnoreCase(svalue, "down")) v = ROUNDING_DOWN;
+		else if(equalsIgnoreCase(svalue, "away from zero")) v = ROUNDING_AWAY_FROM_ZERO;
 		else if(svalue.find_first_not_of(SPACES NUMBERS) == string::npos) {
 			v = s2i(svalue);
+			if(v == 2) v = ROUNDING_TOWARD_ZERO;
+			else if(v > 2 && v <= ROUNDING_TOWARD_ZERO) v--;
 		}
 		if(v < 0 || v > 2) {
 			CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
@@ -15322,10 +15328,6 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			}
 		}
 	}
-	if(!do_stack && expression_contains_save_function(execute_str.empty() ? str : execute_str, evalops.parse_options, true)) {
-		if(execute_str.empty()) execute_str = str;
-		transform_expression_for_equals_save(execute_str, evalops.parse_options);
-	}
 
 	size_t stack_size = 0;
 
@@ -15371,6 +15373,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			else CALCULATOR->calculateRPN(op, 0, evalops, parsed_mstruct);
 		} else {
 			string str2 = CALCULATOR->unlocalizeExpression(execute_str.empty() ? str : execute_str, evalops.parse_options);
+			transform_expression_for_equals_save(str2, evalops.parse_options);
 			CALCULATOR->parseSigns(str2);
 			remove_blank_ends(str2);
 			MathStructure lastx_bak(lastx);
@@ -15483,7 +15486,9 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			else lastx = lastx_bak;
 		}
 	} else {
-		CALCULATOR->calculate(mstruct, CALCULATOR->unlocalizeExpression(execute_str.empty() ? str : execute_str, evalops.parse_options), 0, evalops, parsed_mstruct, parsed_tostruct);
+		string str2 = CALCULATOR->unlocalizeExpression(execute_str.empty() ? str : execute_str, evalops.parse_options);
+		transform_expression_for_equals_save(str2, evalops.parse_options);
+		CALCULATOR->calculate(mstruct, str2, 0, evalops, parsed_mstruct, parsed_tostruct);
 		result_autocalculated = false;
 	}
 
@@ -21382,8 +21387,8 @@ void load_preferences() {
 
 	size_t bookmark_index = 0;
 
-	version_numbers[0] = 4;
-	version_numbers[1] = 9;
+	version_numbers[0] = 5;
+	version_numbers[1] = 0;
 	version_numbers[2] = 0;
 
 	bool old_history_format = false;

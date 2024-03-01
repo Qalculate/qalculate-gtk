@@ -1,7 +1,7 @@
 /*
     Qalculate (gnome shell search provider)
 
-    Copyright (C) 2020  Hanna Knutsson (hanna.knutsson@protonmail.com)
+    Copyright (C) 2020, 2024  Hanna Knutsson (hanna.knutsson@protonmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -404,7 +404,7 @@ void load_preferences_search() {
 	gchar *gstr_file = g_build_filename(getLocalDir().c_str(), "qalculate-gtk.cfg", NULL);
 	file = fopen(gstr_file, "r");
 
-	int version_numbers[] = {4, 9, 1};
+	int version_numbers[] = {5, 0, 0};
 
 	if(file) {
 		char line[1000000L];

@@ -1,3 +1,47 @@
+2024-02-16 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add retry and cancel options (and change Ok to Ignore) to error dialog after failure to save preferences or definitions
+
+2024-02-08 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add new rounding methods
+	* Uses parentheses for numbers with scientific notation in more cases
+	* Use 1 as first index in binary number
+
+2024-01-31 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add output of hexadecimal floating-point literals to floating point conversion window
+
+2024-01-26 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Always show binary position numbers in result if numbers of bits are higher than 16, and improve appearance
+	* Click on binary number in result to flip bit
+	* Remove "ALL" button (opened number bases dialog) from programming keypad
+	* Add selection of number of bits (affects input and output of binary and hexadecimal numbers, and default number of bits for "cmp" and "rot") to programming keypad
+	* Fix conversion to angle unit for complex angle, cis and polar forms
+	* Suggest conversion to angle unit when expression contains inverse trigonometric function
+
+2024-01-01 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix x and y are reversed for paired matrix when using plot dialog
+	* Add support for "decimals" "to"-conversion (display as decimal fraction)
+
+2023-12-20 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Place non-object (e.g. "Fraction") items first in completion (with emty "to"-expression) and conversion lists and add separator in conversion menu before object (e.g. units) items
+	* Make suggestions for multiple unit categories, in "to"-conversion completion and menu, if no single matching unit (category) is found for expression
+
+2023-12-15 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Update menu of to-button in keypad (use completion list and add symbol to item title)
+	* Fix category matching (in completion and conversion view) for volume units in subcategories (U.S., imperial, and cooking units)
+	* Convert to simple fraction if value only contains integers, when converting to fixed denominator
+	* Add optimal prefix conversion using "to prefix";
+
+2023-12-04 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add last result to stack when pressing Enter with empty expression (was unintentionally disabled)
+
 2023-11-12 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Add result to history even if both expression and result are identical if expression contains a function generating a random number
