@@ -3551,7 +3551,7 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 					if(last_is_operator(str, evalops.parse_options.base == 10) && (evalops.parse_options.base != BASE_ROMAN_NUMERALS || str[str.length() - 1] != '|' || str.find('|') == str.length() - 1)) {
 						size_t n = 1;
 						while(n < str.length() && (char) str[str.length() - n] < 0 && (unsigned char) str[str.length() - n] < 0xC0) n++;
-						if(n == str.length() || (display_expression_status && !b_to && parsed_mstruct->equals(current_status_struct, true, true)) || ((!display_expression_status || b_to) && str.length() - n == prev_autocalc_str.length() && str.substr(0, str.length() - n) == prev_autocalc_str)) {
+						if((b_to && n == 1 && (str[str.length() - 1] != ' ' || str[str.length() - 1] != '/')) || n == str.length() || (display_expression_status && !b_to && parsed_mstruct->equals(current_status_struct, true, true)) || ((!display_expression_status || b_to) && str.length() - n == prev_autocalc_str.length() && str.substr(0, str.length() - n) == prev_autocalc_str)) {
 							auto_calc_stopped_at_operator = true;
 							return;
 						}
@@ -4075,7 +4075,7 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 			gtk_widget_queue_draw(resultview);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), true);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), true);
-			if(autocalc_history_timeout_id == 0) {
+			if(autocalc_history_timeout_id == 0 || ((printops.base == BASE_BINARY || (printops.base <= BASE_FP16 && printops.base >= BASE_FP80)) && displayed_mstruct->isInteger())) {
 				PrintOptions po = printops;
 				po.base_display = BASE_DISPLAY_SUFFIX;
 				result_text = displayed_mstruct->print(po, true);
@@ -4373,7 +4373,9 @@ void find_matching_units(const MathStructure &m, const MathStructure *mparse, ve
 		find_matching_units(m2, mparse, v, false);
 	} else {
 		for(size_t i = 0; i < m.size(); i++) {
-			find_matching_units(m[i], mparse, v, false);
+			if(!m.isFunction() || !m.function()->getArgumentDefinition(i + 1) || m.function()->getArgumentDefinition(i + 1)->type() != ARGUMENT_TYPE_ANGLE) {
+				find_matching_units(m[i], mparse, v, false);
+			}
 		}
 	}
 }
@@ -8924,7 +8926,6 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 							}
 						}
 						if(i == string::npos) {
-							cout << "A" << endl;
 							break;
 						} else {
 							if(l == 0) value_str.insert(i, 1, '\n');
@@ -13243,6 +13244,7 @@ void set_previous_expression() {
 		gtk_text_buffer_remove_tag(expressionbuffer, expression_par_tag, &istart, &iend);
 	}
 	cursor_has_moved = false;
+	expression_has_changed = false;
 	block_update_expression_icons--;
 	if(gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack"))) != GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon"))) {
 		if(rpn_mode) update_expression_icons();
@@ -13619,7 +13621,7 @@ void set_option(string str) {
 			printops.binary_bits = v;
 			evalops.parse_options.binary_bits = v;
 			programming_bits = v;
-			default_bits = v;
+			default_bits = -1;
 			update_keypad_bases();
 			if(evalops.parse_options.twos_complement || evalops.parse_options.hexadecimal_twos_complement) expression_format_updated(true);
 			else result_format_updated();
@@ -19748,11 +19750,18 @@ void insertButtonFunction(MathFunction *f, bool save_to_recent = false, bool app
 			case 256: {gtk_combo_box_set_active(GTK_COMBO_BOX(w1), 5); break;}
 			case 512: {gtk_combo_box_set_active(GTK_COMBO_BOX(w1), 6); break;}
 			case 1024: {gtk_combo_box_set_active(GTK_COMBO_BOX(w1), 7); break;}
-			default: {gtk_combo_box_set_active(GTK_COMBO_BOX(w1), 2); break;}
+			default: {
+				gint i = gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_bits")));
+				if(i <= 0) i = 2;
+				else i--;
+				gtk_combo_box_set_active(GTK_COMBO_BOX(w1), i);
+				break;
+
+			}
 		}
 		gtk_grid_attach(GTK_GRID(grid), w1, 1, b_bitrot ? 1 : 0, 1, 1);
 		GtkWidget *w2 = gtk_check_button_new_with_label(arg3->name().c_str());
-		if(default_signed > 0 || (default_signed < 0 && b_bitrot)) {
+		if(default_signed > 0 || (default_signed < 0 && (evalops.parse_options.twos_complement || (b_bitrot && printops.twos_complement)))) {
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w2), TRUE);
 		} else {
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w2), FALSE);
@@ -23272,7 +23281,7 @@ void on_combobox_bits_changed(GtkComboBox *w, gpointer) {
 	}
 	programming_bits = printops.binary_bits;
 	evalops.parse_options.binary_bits = printops.binary_bits;
-	default_bits = programming_bits;
+	default_bits = -1;
 	if(evalops.parse_options.twos_complement || evalops.parse_options.hexadecimal_twos_complement) expression_format_updated(true);
 	else result_format_updated();
 }
@@ -23290,6 +23299,7 @@ void on_button_twos_in_toggled(GtkToggleButton *w, gpointer) {
 	} else if(evalops.parse_options.base == 2) {
 		twos_complement_in = gtk_toggle_button_get_active(w);
 		evalops.parse_options.twos_complement = twos_complement_in;
+		if(evalops.parse_options.twos_complement != default_signed) default_signed = -1;
 	}
 	expression_format_updated(true);
 	focus_keeping_selection();
@@ -23915,12 +23925,30 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 		g_free(gstr);
 	}
 	if(completion_to_menu) {
-		str.insert(0, "➞");
 		if(str[str.length() - 1] == ' ' || str[str.length() - 1] == '/') {
+			if(printops.use_unicode_signs && can_display_unicode_string_function("➞", (void*) expressiontext)) {
+				str.insert(0, "➞");
+			} else {
+				if(!auto_calculate) str.insert(0, " ");
+				str.insert(0, CALCULATOR->localToString(auto_calculate));
+			}
+			if(auto_calculate) {
+				GtkTextIter iter;
+				gtk_text_buffer_get_end_iter(expressionbuffer, &iter);
+				gtk_text_buffer_select_range(expressionbuffer, &iter, &iter);
+			}
 			insert_text(str.c_str());
 		} else {
+			str.insert(0, "➞");
+			if(expression_has_changed && result_autocalculated && (autocalc_history_delay < 0 || autocalc_history_timeout_id)) {
+				if(autocalc_history_timeout_id) g_source_remove(autocalc_history_timeout_id);
+				do_autocalc_history_timeout(NULL);
+			}
+			bool ac_bak = auto_calculate;
+			auto_calculate = false;
 			previous_expression = get_expression_text();
 			execute_expression(true, false, OPERATION_ADD, NULL, false, 0, "", str);
+			auto_calculate = ac_bak;
 		}
 		return;
 	}
@@ -24880,6 +24908,23 @@ bool contains_rational_number(MathStructure &m) {
 		if(contains_rational_number(m[i])) {
 			return i != 1 || !m.isPower() || !m[1].isNumber() || m[1].number().denominatorIsGreaterThan(9) || (m[1].number().numeratorIsGreaterThan(9) && !m[1].number().denominatorIsTwo() && !m[0].representsNonNegative(true));
 		}
+	}
+	return false;
+}
+bool contains_fraction(MathStructure &m, bool in_div = false) {
+	if(in_div) {
+		if(m.isInteger()) return true;
+		if(!m.isMultiplication()) in_div = false;
+	}
+	if(!in_div) {
+		if(m.isInverse()) return contains_fraction(m[0], true);
+		if(m.isDivision()) {
+			return contains_fraction(m[1], true) || contains_fraction(m[0], false);
+		}
+		if(m.isPower() && m[1].isNumber() && m[1].number().isMinusOne()) return contains_fraction(m[0], true);
+	}
+	for(size_t i = 0; i < m.size(); i++) {
+		if(contains_fraction(m[i], in_div)) return true;
 	}
 	return false;
 }
@@ -26390,7 +26435,7 @@ void do_completion(bool to_menu = false) {
 								if(p_type == 300) {
 									if(!contains_rational_number(to_menu ? *displayed_mstruct : *current_from_struct)) b_match = 0;
 								} else if(p_type == 302) {
-									if((to_menu && contains_rational_number(*displayed_mstruct)) || (!to_menu && (printops.number_fraction_format == FRACTION_DECIMAL || !contains_rational_number(*current_from_struct)))) b_match = 0;
+									if((to_menu && !contains_fraction(*displayed_mstruct)) || (!to_menu && (printops.number_fraction_format == FRACTION_DECIMAL || !contains_rational_number(*current_from_struct)))) b_match = 0;
 								} else if(p_type == 301) {
 									if((to_menu || (!current_from_struct->isNumber() || current_from_struct->number().isInteger() || current_from_struct->number().hasImaginaryPart())) && (!to_menu || (!displayed_mstruct->isNumber() || displayed_mstruct->number().isInteger() || displayed_mstruct->number().hasImaginaryPart()))) {
 										bool b = false;
@@ -29874,7 +29919,7 @@ void on_mb_to_activated(GtkMenuItem*, gpointer p) {
 	}
 
 void update_mb_to_menu() {
-	if(expression_has_changed && !rpn_mode && !auto_calculate) execute_expression(true);
+	if(expression_has_changed && !rpn_mode && !result_autocalculated) execute_expression(true);
 	GtkWidget *sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_to"));
 	GList *list = gtk_container_get_children(GTK_CONTAINER(sub));
 	for(GList *l = list; l != NULL; l = l->next) {
