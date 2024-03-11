@@ -4080,6 +4080,7 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 				po.base_display = BASE_DISPLAY_SUFFIX;
 				result_text = displayed_mstruct->print(po, true);
 				gsub("&nbsp;", " ", result_text);
+				if(complex_angle_form) replace_result_cis_gtk(result_text);
 			} else {
 				result_text = "";
 			}
@@ -11241,6 +11242,7 @@ void ViewThread::run() {
 			printops_long.short_multiplication = false;
 			printops_long.excessive_parenthesis = true;
 			printops_long.is_approximate = NULL;
+			if(printops_long.use_unicode_signs) printops_long.use_unicode_signs = UNICODE_SIGNS_ONLY_UNIT_EXPONENTS;
 			result_text_long = m.print(printops_long);
 			if(complex_angle_form) replace_result_cis_gtk(result_text_long);
 		} else if(!b_stack) {
