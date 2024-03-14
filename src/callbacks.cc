@@ -34749,6 +34749,7 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 					significand.negate();
 					sfloathex = "-";
 				}
+				po.use_unicode_signs = false;
 				sfloathex += "0x";
 				sfloathex += significand.print(po);
 				po.base = 10;
@@ -34759,6 +34760,7 @@ void update_fp_entries(string sbin, int base, Number *decnum = NULL) {
 				po.decimalpoint_sign = printops.decimalpoint_sign;
 				po.lower_case_numbers = false;
 				po.min_exp = exp_bak;
+				po.use_unicode_signs = printops.use_unicode_signs;
 			}
 			gtk_entry_set_text(GTK_ENTRY(w_float), sfloat.c_str());
 			gtk_entry_set_text(GTK_ENTRY(w_floathex), sfloathex.c_str());
