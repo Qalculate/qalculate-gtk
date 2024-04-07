@@ -2718,7 +2718,7 @@ gboolean on_activate_link(GtkLabel*, gchar *uri, gpointer) {
 }
 
 #ifdef AUTO_UPDATE
-void auto_update(string new_version) {
+void auto_update(string new_version, string url) {
 	char selfpath[1000];
 	ssize_t n = readlink("/proc/self/exe", selfpath, 999);
 	if(n < 0 || n >= 999) {
@@ -2739,25 +2739,32 @@ void auto_update(string new_version) {
 		return;
 	}
 	pclose(pipe);
+	if(url.empty()) {
+		url = "https://github.com/Qalculate/qalculate-gtk/releases/download/v${new_version}/qalculate-";
+		url += new_version;
+		url += "-x86_64.tar.xz";
+	}
 	string tmpdir = getLocalTmpDir();
 	recursiveMakeDir(tmpdir);
 	string script = "#!/bin/sh\n\n";
 	script += "echo \"Updating Qalculate!...\";\n";
 	script += "sleep 1;\n";
 	script += "new_version="; script += new_version; script += ";\n";
+	script += "url=\""; script += url; script += "\";\n";
+	script += "filename=${url##*/};";
 	script += "if cd \""; script += tmpdir; script += "\"; then\n";
-	script += "\tif curl -L -o qalculate-${new_version}-x86_64.tar.xz https://github.com/Qalculate/qalculate-gtk/releases/download/v${new_version}/qalculate-${new_version}-x86_64.tar.xz; then\n";
+	script += "\tif curl -L -o ${filename} ${url}; then\n";
 	script += "\t\techo \"Extracting files...\";\n";
-	script += "\t\tif tar -xJf qalculate-${new_version}-x86_64.tar.xz; then\n";
+	script += "\t\tif tar -xJf ${filename}; then\n";
 	script += "\t\t\tcd  qalculate-${new_version};\n";
 	script += "\t\t\tif cp -f qalculate-gtk \""; script += selfpath; script += "\"; then\n";
 	script += "\t\t\t\tcp -f qalc \""; script += selfdir; script += "/\";\n";
-	script += "\t\t\t\tcd ..;\n\t\t\trm -r qalculate-${new_version};\n\t\t\trm qalculate-${new_version}-x86_64.tar.xz;\n";
+	script += "\t\t\t\tcd ..;\n\t\t\trm -r qalculate-${new_version};\n\t\t\trm ${filename};\n";
 	script += "\t\t\t\texit 0;\n";
 	script += "\t\t\tfi\n";
 	script += "\t\t\tcd ..;\n\t\trm -r qalculate-${new_version};\n";
 	script += "\t\tfi\n";
-	script += "\t\trm qalculate-${new_version}-x86_64.tar.xz;\n";
+	script += "\t\trm ${filename};\n";
 	script += "\tfi\n";
 	script += "fi\n";
 	script += "echo \"Update failed\";\n";
@@ -2803,11 +2810,15 @@ void auto_update(string new_version) {
 #endif
 
 void check_for_new_version(bool do_not_show_again) {
-	string new_version;
+	string new_version, url;
 #ifdef _WIN32
-	int ret = checkAvailableVersion("windows", VERSION, &new_version, do_not_show_again ? 5 : 10);
+	int ret = checkAvailableVersion("windows", VERSION, &new_version, &url, do_not_show_again ? 5 : 10);
 #else
+#	ifdef AUTO_UPDATE
+	int ret = checkAvailableVersion("qalculate-gtk", VERSION, &new_version, &url, do_not_show_again ? 5 : 10);
+#	else
 	int ret = checkAvailableVersion("qalculate-gtk", VERSION, &new_version, do_not_show_again ? 5 : 10);
+#	endif
 #endif
 	if(!do_not_show_again && ret <= 0) {
 		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), (GtkDialogFlags) 0, ret < 0 ? GTK_MESSAGE_ERROR : GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, ret < 0 ? _("Failed to check for updates.") : _("No updates found."));
@@ -2821,7 +2832,13 @@ void check_for_new_version(bool do_not_show_again) {
 #ifdef AUTO_UPDATE
 		GtkWidget *dialog = gtk_dialog_new_with_buttons(NULL, GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_OK"), GTK_RESPONSE_ACCEPT, _("_Cancel"), GTK_RESPONSE_REJECT, NULL);
 #else
+#	ifdef _WIN32
+		GtkWidget *dialog = NULL;
+		if(url.empty()) dialog = gtk_dialog_new_with_buttons(NULL, GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Close"), GTK_RESPONSE_REJECT, NULL);
+		else dialog = gtk_dialog_new_with_buttons(NULL, GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Download"), GTK_RESPONSE_ACCEPT, _("_Close"), GTK_RESPONSE_REJECT, NULL);
+#	else
 		GtkWidget *dialog = gtk_dialog_new_with_buttons(NULL, GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Close"), GTK_RESPONSE_REJECT, NULL);
+#	endif
 #endif
 		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 		gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
@@ -2841,10 +2858,14 @@ void check_for_new_version(bool do_not_show_again) {
 		gtk_widget_show_all(dialog);
 #ifdef AUTO_UPDATE
 		if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
-			auto_update(new_version);
+			auto_update(new_version, url);
 		}
 #else
-		gtk_dialog_run(GTK_DIALOG(dialog));
+		if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT && !url.empty()) {
+#	ifdef _WIN32
+			ShellExecuteA(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
+#	endif
+		}
 #endif
 		gtk_widget_destroy(dialog);
 	}
