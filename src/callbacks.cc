@@ -480,6 +480,11 @@ int binary_y_diff = 0;
 #else
 #	define CLEAN_MODIFIERS(x) (x & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SUPER_MASK | GDK_HYPER_MASK | GDK_META_MASK))
 #endif
+#ifdef _WIN32
+#	define FIX_ALT_GR if(state & GDK_MOD1_MASK && state & GDK_MOD2_MASK && state & GDK_CONTROL_MASK) state &= ~GDK_CONTROL_MASK;
+#else
+#	define FIX_ALT_GR
+#endif
 
 enum {
 	TITLE_APP,
@@ -26671,6 +26676,7 @@ bool block_input = false;
 const gchar *key_press_get_symbol(GdkEventKey *event, bool do_caret_as_xor = true, bool unit_expression = false) {
 	if(block_input && (event->keyval == GDK_KEY_q || event->keyval == GDK_KEY_Q) && !(event->state & GDK_CONTROL_MASK)) {block_input = false; return "";}
 	guint state = CLEAN_MODIFIERS(event->state);
+	FIX_ALT_GR
 	state = state & ~GDK_SHIFT_MASK;
 	if(state == GDK_CONTROL_MASK) {
 		switch(event->keyval) {
@@ -29142,6 +29148,7 @@ gboolean on_historyview_button_release_event(GtkWidget*, GdkEventButton *event, 
 }
 gboolean on_historyview_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
 	guint state = CLEAN_MODIFIERS(event->state);
+	FIX_ALT_GR
 	if(state == 0 && event->keyval == GDK_KEY_F2) {
 		GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
 		if(gtk_tree_selection_count_selected_rows(select) == 1) {
@@ -35704,6 +35711,7 @@ bool do_shortcut(int type, string value) {
 }
 bool do_keyboard_shortcut(GdkEventKey *event) {
 	guint state = CLEAN_MODIFIERS(event->state);
+	FIX_ALT_GR
 	unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find((guint64) event->keyval + (guint64) G_MAXUINT32 * (guint64) state);
 	if(it == keyboard_shortcuts.end() && event->keyval == GDK_KEY_KP_Delete) it = keyboard_shortcuts.find((guint64) GDK_KEY_Delete + (guint64) G_MAXUINT32 * (guint64) state);
 	if(it != keyboard_shortcuts.end()) {
@@ -35764,6 +35772,7 @@ gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 	}
 	if(gtk_widget_has_focus(historyview)) {
 		guint state = CLEAN_MODIFIERS(event->state);
+		FIX_ALT_GR
 		if((state == 0 && (event->keyval == GDK_KEY_F2 || event->keyval == GDK_KEY_KP_Enter || event->keyval == GDK_KEY_Return)) || (state == GDK_CONTROL_MASK && event->keyval == GDK_KEY_c) || (state == GDK_SHIFT_MASK && event->keyval == GDK_KEY_Delete)) {
 			return FALSE;
 		}
@@ -35808,6 +35817,7 @@ gboolean on_expressiontext_focus_out_event(GtkWidget*, GdkEvent*, gpointer) {
 	gtk_widget_hide(completion_window);
 	return FALSE;
 }
+
 gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
 	if(block_input && (event->keyval == GDK_KEY_q || event->keyval == GDK_KEY_Q) && !(event->state & GDK_CONTROL_MASK)) {block_input = false;
 return TRUE;}
@@ -35820,7 +35830,9 @@ return TRUE;}
 		return TRUE;
 	}
 	if(do_keyboard_shortcut(event)) return TRUE;
-	if(rpn_mode && event->state & GDK_CONTROL_MASK) {
+	guint state = event->state;
+	FIX_ALT_GR
+	if(rpn_mode && state & GDK_CONTROL_MASK) {
 		switch(event->keyval) {
 			case GDK_KEY_Up: {
 				on_button_registerup_clicked(NULL, NULL);
@@ -35840,7 +35852,7 @@ return TRUE;}
 			}
 			case GDK_KEY_Delete: {}
 			case GDK_KEY_KP_Delete: {
-				if(event->state & GDK_SHIFT_MASK) {
+				if(state & GDK_SHIFT_MASK) {
 					on_button_clearstack_clicked(NULL, NULL);
 				} else {
 					on_button_deleteregister_clicked(NULL, NULL);
@@ -35848,21 +35860,21 @@ return TRUE;}
 				return TRUE;
 			}
 			case GDK_KEY_C: {
-				if(event->state & GDK_SHIFT_MASK) {
+				if(state & GDK_SHIFT_MASK) {
 					on_button_copyregister_clicked(NULL, NULL);
 					return TRUE;
 				}
 				break;
 			}
 			case GDK_KEY_S: {
-				if(event->state & GDK_SHIFT_MASK) {
+				if(state & GDK_SHIFT_MASK) {
 					on_button_registerswap_clicked(NULL, NULL);
 					return TRUE;
 				}
 				break;
 			}
 			case GDK_KEY_L: {
-				if(event->state & GDK_SHIFT_MASK) {
+				if(state & GDK_SHIFT_MASK) {
 					on_button_lastx_clicked(NULL, NULL);
 					return TRUE;
 				}
@@ -35910,7 +35922,7 @@ return TRUE;}
 #endif
 		}
 		case GDK_KEY_asciicircum: {
-			bool input_xor = (caret_as_xor != ((event->state & GDK_CONTROL_MASK) > 0));
+			bool input_xor = (caret_as_xor != ((state & GDK_CONTROL_MASK) > 0));
 			if(rpn_mode && rpn_keys) {
 				calculateRPN(input_xor ? OPERATION_BITWISE_XOR : OPERATION_RAISE);
 				return TRUE;
@@ -35941,7 +35953,7 @@ return TRUE;}
 		}
 		case GDK_KEY_slash: {}
 		case GDK_KEY_KP_Divide: {
-			if(event->state & GDK_CONTROL_MASK) {
+			if(state & GDK_CONTROL_MASK) {
 				overwrite_expression_selection("/");
 				return TRUE;
 			}
@@ -35973,7 +35985,7 @@ return TRUE;}
 		}
 		case GDK_KEY_minus: {}
 		case GDK_KEY_KP_Subtract: {
-			if(rpn_mode && event->state & GDK_CONTROL_MASK) {
+			if(rpn_mode && state & GDK_CONTROL_MASK) {
 				insertButtonFunction(CALCULATOR->getActiveFunction("neg"));
 				return TRUE;
 			}
@@ -36004,7 +36016,7 @@ return TRUE;}
 		}
 		case GDK_KEY_KP_Multiply: {}
 		case GDK_KEY_asterisk: {
-			if(event->state & GDK_CONTROL_MASK) {
+			if(state & GDK_CONTROL_MASK) {
 				if(rpn_mode && rpn_keys) {
 					calculateRPN(OPERATION_RAISE);
 					return TRUE;
@@ -36029,7 +36041,7 @@ return TRUE;}
 			return TRUE;
 		}
 		case GDK_KEY_E: {
-			if(event->state & GDK_CONTROL_MASK) {
+			if(state & GDK_CONTROL_MASK) {
 				if(rpn_mode && rpn_keys) {
 					calculateRPN(OPERATION_EXP10);
 					return TRUE;
@@ -36045,7 +36057,7 @@ return TRUE;}
 			break;
 		}
 		case GDK_KEY_A: {
-			if(event->state & GDK_CONTROL_MASK) {
+			if(state & GDK_CONTROL_MASK) {
 				insert_angle_symbol();
 				return TRUE;
 			}
@@ -36054,7 +36066,7 @@ return TRUE;}
 		case GDK_KEY_End: {
 			GtkTextIter iend;
 			gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
-			if(event->state & GDK_SHIFT_MASK) {
+			if(state & GDK_SHIFT_MASK) {
 				GtkTextIter iselstart, iselend, ipos;
 				GtkTextMark *mark = gtk_text_buffer_get_insert(expressionbuffer);
 				if(mark) gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mark);
@@ -36069,7 +36081,7 @@ return TRUE;}
 		case GDK_KEY_Home: {
 			GtkTextIter istart;
 			gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
-			if(event->state & GDK_SHIFT_MASK) {
+			if(state & GDK_SHIFT_MASK) {
 				GtkTextIter iselstart, iselend, ipos;
 				GtkTextMark *mark = gtk_text_buffer_get_insert(expressionbuffer);
 				if(mark) gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mark);
@@ -36114,7 +36126,7 @@ return TRUE;}
 				}
 				return TRUE;
 			}
-			if(disable_history_arrow_keys || event->state & GDK_SHIFT_MASK || event->state & GDK_CONTROL_MASK) break;
+			if(disable_history_arrow_keys || state & GDK_SHIFT_MASK || state & GDK_CONTROL_MASK) break;
 			GtkTextIter ipos;
 			GtkTextMark *mark = gtk_text_buffer_get_insert(expressionbuffer);
 			if(mark) {
@@ -36154,7 +36166,7 @@ return TRUE;}
 		}
 		case GDK_KEY_Tab: {
 			if(!gtk_widget_get_visible(completion_window)) break;
-			if(event->state & GDK_SHIFT_MASK) goto key_up;
+			if(state & GDK_SHIFT_MASK) goto key_up;
 		}
 		case GDK_KEY_Down: {
 			if(gtk_widget_get_visible(completion_window)) {
@@ -36182,7 +36194,7 @@ return TRUE;}
 				}
 				return TRUE;
 			}
-			if(disable_history_arrow_keys || event->state & GDK_SHIFT_MASK || event->state & GDK_CONTROL_MASK) break;
+			if(disable_history_arrow_keys || state & GDK_SHIFT_MASK || state & GDK_CONTROL_MASK) break;
 			GtkTextIter ipos;
 			GtkTextMark *mark = gtk_text_buffer_get_insert(expressionbuffer);
 			if(mark) {
@@ -36211,12 +36223,12 @@ return TRUE;}
 			return TRUE;
 		}*/
 	}
-	if(event->state & GDK_CONTROL_MASK && event->keyval == GDK_KEY_c && !gtk_text_buffer_get_has_selection(expressionbuffer)) {
+	if(state & GDK_CONTROL_MASK && event->keyval == GDK_KEY_c && !gtk_text_buffer_get_has_selection(expressionbuffer)) {
 		copy_result();
 		return TRUE;
 	}
-	if(event->state & GDK_CONTROL_MASK && (event->keyval == GDK_KEY_z || event->keyval == GDK_KEY_Z)) {
-		if(event->state & GDK_SHIFT_MASK || event->keyval == GDK_KEY_Z) expression_redo();
+	if(state & GDK_CONTROL_MASK && (event->keyval == GDK_KEY_z || event->keyval == GDK_KEY_Z)) {
+		if(state & GDK_SHIFT_MASK || event->keyval == GDK_KEY_Z) expression_redo();
 		else expression_undo();
 		return TRUE;
 	}
@@ -37043,6 +37055,7 @@ void on_tButtonsEditType_selection_changed(GtkTreeSelection *treeselection, gpoi
 GtkWidget *shortcut_label = NULL;
 gboolean on_shortcut_key_released(GtkWidget *w, GdkEventKey *event, gpointer) {
 	guint state = CLEAN_MODIFIERS(event->state);
+	FIX_ALT_GR
 	if(event->keyval == 0 || (event->keyval >= GDK_KEY_Shift_L && event->keyval <= GDK_KEY_Hyper_R)) return FALSE;
 	if(state == 0 && event->keyval == GDK_KEY_Escape) {
 		gtk_dialog_response(GTK_DIALOG(w), GTK_RESPONSE_CANCEL);
@@ -37056,6 +37069,7 @@ gboolean on_shortcut_key_released(GtkWidget *w, GdkEventKey *event, gpointer) {
 }
 gboolean on_shortcut_key_pressed(GtkWidget *w, GdkEventKey *event, gpointer) {
 	guint state = CLEAN_MODIFIERS(event->state);
+	FIX_ALT_GR
 	string str = "<span size=\"large\">";
 	str += shortcut_to_text(event->keyval, state);
 	str += "</span>";
