@@ -167,7 +167,7 @@ extern bool fraction_fixed_combined;
 extern int allow_multiple_instances;
 extern int title_type;
 extern int history_expression_type;
-extern bool display_expression_status;
+extern bool display_expression_status, parsed_in_result;
 extern int expression_lines;
 extern int gtk_theme;
 extern string custom_lang;
@@ -2974,6 +2974,8 @@ GtkWidget* get_preferences_dialog(void) {
 
 		g_assert(gtk_builder_get_object(preferences_builder, "preferences_dialog") != NULL);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_display_expression_status")), display_expression_status);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result")), parsed_in_result);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result")), display_expression_status);
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_expression_lines_spin_button")), (double) (expression_lines < 1 ? 3 : expression_lines));
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_vertical_padding_combo")), vertical_button_padding > 9 ? 9 : vertical_button_padding + 1);
 		if(horizontal_button_padding > 4) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_horizontal_padding_combo")), horizontal_button_padding > 12 ? 9 : (horizontal_button_padding - 4) / 2 + 4 + 1);
@@ -3114,9 +3116,10 @@ GtkWidget* get_preferences_dialog(void) {
 				break;
 			}
 		}
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_autocalc_history")), autocalc_history_delay >= 0);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_scale_autocalc_history")), autocalc_history_delay >= 0);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "label_autocalc_history")), autocalc_history_delay >= 0);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_autocalc_history")), autocalc_history_delay >= 0 && !parsed_in_result);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_autocalc_history")), !parsed_in_result);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_scale_autocalc_history")), autocalc_history_delay >= 0 && !parsed_in_result);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "label_autocalc_history")), autocalc_history_delay >= 0 && !parsed_in_result);
 		Number nr(autocalc_history_delay); nr.cbrt();
 		gtk_range_set_value(GTK_RANGE(gtk_builder_get_object(preferences_builder, "preferences_scale_autocalc_history")), autocalc_history_delay < 0 ? 12.599 : nr.floatValue());
 		gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_autocalc_history")), 6.3, GTK_POS_BOTTOM, NULL);

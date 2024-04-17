@@ -205,7 +205,7 @@ void set_operator_symbols();
 
 bool update_window_title(const char *str = NULL, bool is_result = false);
 
-cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po = default_print_options, bool caf = false, InternalPrintStruct ips = top_ips, gint *point_central = NULL, int scaledown = 0, GdkRGBA *color = NULL, gint *x_offset = NULL, gint *w_offset = NULL, gint max_width = -1, bool for_result_widget = true);
+cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po = default_print_options, bool caf = false, InternalPrintStruct ips = top_ips, gint *point_central = NULL, int scaledown = 0, GdkRGBA *color = NULL, gint *x_offset = NULL, gint *w_offset = NULL, gint max_width = -1, bool for_result_widget = true, MathStructure *where_struct = NULL, std::vector<MathStructure> *to_structs = NULL);
 
 void update_status_text();
 
@@ -427,6 +427,7 @@ void on_menu_item_meta_mode_delete_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_quit_activate(GtkMenuItem *w, gpointer user_data);
 void on_colorbutton_status_error_color_color_set(GtkColorButton *w, gpointer user_data);
 void on_colorbutton_status_warning_color_color_set(GtkColorButton *w, gpointer user_data);
+void on_preferences_checkbutton_autocalc_history_toggled(GtkToggleButton *w, gpointer user_data);
 void on_preferences_combobox_bits_changed(GtkComboBox *w, gpointer user_data);
 void on_preferences_checkbutton_twos_complement_toggled(GtkToggleButton *w, gpointer user_data);
 void on_preferences_checkbutton_hexadecimal_twos_complement_toggled(GtkToggleButton *w, gpointer user_data);
