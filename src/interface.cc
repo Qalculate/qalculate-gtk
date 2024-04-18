@@ -2423,6 +2423,8 @@ void create_main_window(void) {
 #endif
 	}
 
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_parsed_in_result")), parsed_in_result);
+
 	gtk_builder_connect_signals(main_builder, NULL);
 
 	historystore = gtk_list_store_new(8, G_TYPE_STRING, G_TYPE_INT, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_FLOAT, G_TYPE_INT);
@@ -2974,8 +2976,8 @@ GtkWidget* get_preferences_dialog(void) {
 
 		g_assert(gtk_builder_get_object(preferences_builder, "preferences_dialog") != NULL);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_display_expression_status")), display_expression_status);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result")), parsed_in_result);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result")), display_expression_status);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result")), parsed_in_result && !rpn_mode);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result")), display_expression_status && !rpn_mode);
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_expression_lines_spin_button")), (double) (expression_lines < 1 ? 3 : expression_lines));
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_vertical_padding_combo")), vertical_button_padding > 9 ? 9 : vertical_button_padding + 1);
 		if(horizontal_button_padding > 4) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_horizontal_padding_combo")), horizontal_button_padding > 12 ? 9 : (horizontal_button_padding - 4) / 2 + 4 + 1);

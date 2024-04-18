@@ -2760,6 +2760,21 @@ On: 1.1 × 1.1 ≈ 1.2</property>
                         <property name="can-focus">False</property>
                       </object>
                     </child>
+		    <child>
+                      <object class="GtkCheckMenuItem" id="menu_item_parsed_in_result">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Show Parsed Expression in Result Field (experimental)</property>
+                        <property name="use-underline">True</property>
+                        <signal name="activate" handler="on_menu_item_parsed_in_result_activate" swapped="no"/>
+                      </object>
+                    </child>
+		    <child>
+                      <object class="GtkSeparatorMenuItem" id="separator6b">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                      </object>
+                    </child>
                     <child>
                       <object class="GtkMenuItem" id="item1">
                         <property name="visible">True</property>
@@ -3164,12 +3179,20 @@ On: 1.1 × 1.1 ≈ 1.2</property>
                             <property name="hexpand">True</property>
                             <property name="spacing">6</property>
                             <child>
-                              <object class="GtkLabel" id="label_status_left">
+                              <object class="GtkEventBox" id="status_left_eventbox">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="valign">center</property>
-                                <property name="hexpand">True</property>
-                                <property name="use-markup">True</property>
+                                <property name="events">GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                <property name="visible-window">False</property>
+                                <signal name="button-press-event" handler="on_status_left_button_press_event" swapped="no"/>
+                                <child>
+                                  <object class="GtkLabel" id="label_status_left">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="valign">center</property>
+                                    <property name="use-markup">True</property>
+                                  </object>
+                                </child>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
@@ -8571,12 +8594,45 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
   <object class="GtkMenu" id="popup_menu_resultview">
     <property name="can-focus">False</property>
     <child>
+      <object class="GtkMenuItem" id="result_popup_menu_item_show_parsed">
+        <property name="visible">False</property>
+        <property name="can-focus">False</property>
+        <property name="label" translatable="yes">Show Parsed Expression</property>
+        <property name="use-underline">True</property>
+        <signal name="activate" handler="on_menu_item_show_parsed_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="result_popup_menu_item_show_result">
+        <property name="visible">False</property>
+        <property name="can-focus">False</property>
+        <property name="label" translatable="yes">Show Result</property>
+        <property name="use-underline">True</property>
+        <signal name="activate" handler="on_menu_item_show_result_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkCheckMenuItem" id="result_popup_menu_item_parsed_in_result">
+        <property name="visible">False</property>
+        <property name="can-focus">False</property>
+        <property name="label" translatable="yes">Show Parsed Expression in Result Field</property>
+        <property name="use-underline">True</property>
+        <signal name="activate" handler="on_menu_item_parsed_in_result_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="separator_popup_parsed_in_result">
+        <property name="visible">False</property>
+        <property name="can-focus">False</property>
+      </object>
+    </child>
+    <child>
       <object class="GtkMenuItem" id="popup_menu_item_copy">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
         <property name="label" translatable="yes">_Copy</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menu_item_copy_activate" swapped="no"/>
+        <signal name="activate" handler="on_popup_menu_item_copy_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -8585,7 +8641,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
         <property name="can-focus">False</property>
         <property name="label" translatable="yes">Copy Unformatted ASCII</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menu_item_copy_ascii_activate" swapped="no"/>
+        <signal name="activate" handler="on_popup_menu_item_copy_ascii_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -9442,6 +9498,52 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
         <property name="label" translatable="yes">Select Number Base…</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_menu_item_set_base_activate" swapped="no"/>
+      </object>
+    </child>
+  </object>
+  <object class="GtkMenu" id="popup_menu_status_left">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <child>
+      <object class="GtkCheckMenuItem" id="popup_menu_item_expression_status">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="label" translatable="yes">Display Expression Status</property>
+        <property name="use-underline">True</property>
+        <signal name="activate" handler="on_menu_item_expression_status_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkCheckMenuItem" id="popup_menu_item_parsed_in_result">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="label" translatable="yes">Show Parsed Expression in Result Field</property>
+        <property name="use-underline">True</property>
+        <signal name="activate" handler="on_menu_item_parsed_in_result_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="separator2001">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_copy_status">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="label" translatable="yes">Copy</property>
+        <property name="use-underline">True</property>
+        <signal name="activate" handler="on_menu_item_copy_status_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="popup_menu_item_copy_ascii_status">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="label" translatable="yes">Copy Unformatted ASCII</property>
+        <property name="use-underline">True</property>
+        <signal name="activate" handler="on_menu_item_copy_ascii_status_activate" swapped="no"/>
       </object>
     </child>
   </object>

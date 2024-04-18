@@ -428,6 +428,7 @@ void on_menu_item_quit_activate(GtkMenuItem *w, gpointer user_data);
 void on_colorbutton_status_error_color_color_set(GtkColorButton *w, gpointer user_data);
 void on_colorbutton_status_warning_color_color_set(GtkColorButton *w, gpointer user_data);
 void on_preferences_checkbutton_autocalc_history_toggled(GtkToggleButton *w, gpointer user_data);
+void on_preferences_checkbutton_parsed_in_result_toggled(GtkToggleButton *w, gpointer user_data);
 void on_preferences_combobox_bits_changed(GtkComboBox *w, gpointer user_data);
 void on_preferences_checkbutton_twos_complement_toggled(GtkToggleButton *w, gpointer user_data);
 void on_preferences_checkbutton_hexadecimal_twos_complement_toggled(GtkToggleButton *w, gpointer user_data);
@@ -620,6 +621,8 @@ void on_menu_item_assumptions_nonnegative_activate(GtkMenuItem *w, gpointer user
 void on_menu_item_assumptions_negative_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_assumptions_nonpositive_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_assumptions_unknown_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_expression_status_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_parsed_in_result_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_exact_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_assume_nonzero_denominators_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_abort_activate(GtkMenuItem *w, gpointer user_data);
