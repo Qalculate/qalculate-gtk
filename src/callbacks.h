@@ -50,7 +50,7 @@ struct mode_struct {
 	bool chain_mode;
 	bool complex_angle_form;
 	bool implicit_question_asked;
-	bool simplified_percentage;
+	int simplified_percentage;
 	bool concise_uncertainty_input;
 	long int fixed_denominator;
 	std::string custom_angle_unit;

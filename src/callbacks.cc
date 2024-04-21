@@ -226,7 +226,7 @@ int programming_inbase = 0, programming_outbase = 0;
 bool title_modified = false;
 string current_mode;
 int vertical_button_padding = -1, horizontal_button_padding = -1;
-bool simplified_percentage = true;
+int simplified_percentage = -1;
 int version_numbers[3];
 
 bool cursor_has_moved = false;
@@ -3385,11 +3385,55 @@ bool ask_implicit() {
 	return pm_bak != evalops.parse_options.parsing_mode;
 }
 
+bool test_ask_percent() {
+	return simplified_percentage < 0 && CALCULATOR->simplifiedPercentageUsed();
+}
+bool ask_percent() {
+	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Percentage Interpretation"), GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_OK"), GTK_RESPONSE_ACCEPT, NULL);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+	gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT);
+	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
+	GtkWidget *grid = gtk_grid_new();
+	gtk_grid_set_row_spacing(GTK_GRID(grid), 12);
+	gtk_grid_set_column_spacing(GTK_GRID(grid), 12);
+	gtk_container_set_border_width(GTK_CONTAINER(grid), 6);
+	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), grid);
+	gtk_widget_show(grid);
+	GtkWidget *label = gtk_label_new(_("Please select interpretation of percentage addition."));
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), label, 0, 0, 2, 1);
+	GtkWidget *w_1 = gtk_radio_button_new_with_label(NULL, _("Add percentage of original value"));
+	gtk_widget_set_valign(w_1, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), w_1, 0, 1, 1, 1);
+	string s_eg = "<i>100 + 10% = 100 "; s_eg += times_sign(); s_eg += " 110% = 110</i>)";
+	label = gtk_label_new(s_eg.c_str());
+	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), label, 1, 1, 1, 1);
+	GtkWidget *w_0 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(w_1), _("Add percentage multiplied by 1/100"));
+	gtk_widget_set_valign(w_0, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), w_0, 0, 2, 1, 1);
+	s_eg = "<i>100 + 10% = 100 + (10 "; s_eg += times_sign(); s_eg += " 0.01) = 100.1</i>)";
+	CALCULATOR->localizeExpression(s_eg, evalops.parse_options);
+	label = gtk_label_new(s_eg.c_str());
+	label = gtk_label_new("<i>100 + 10% = 100 + (10 * 0.01) = 100.1</i>");
+	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+	gtk_grid_attach(GTK_GRID(grid), label, 1, 2, 1, 1);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w_1), TRUE);
+	gtk_widget_show_all(grid);
+	gtk_dialog_run(GTK_DIALOG(dialog));
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w_0))) simplified_percentage = 0;
+	else simplified_percentage = 1;
+	gtk_widget_destroy(dialog);
+	return simplified_percentage == 0;
+}
+
 vector<CalculatorMessage> autocalc_messages;
 gboolean do_autocalc_history_timeout(gpointer) {
 	autocalc_history_timeout_id = 0;
 	if(stop_timeouts || !result_autocalculated || rpn_mode) return FALSE;
-	if((test_ask_tc(*parsed_mstruct) && ask_tc()) || (test_ask_dot(result_text) && ask_dot()) || ((test_ask_sinc(*parsed_mstruct) || test_ask_sinc(*mstruct)) && ask_sinc()) || check_exchange_rates(NULL, true)) {
+	if((test_ask_tc(*parsed_mstruct) && ask_tc()) || (test_ask_dot(result_text) && ask_dot()) || ((test_ask_sinc(*parsed_mstruct) || test_ask_sinc(*mstruct)) && ask_sinc()) || (test_ask_percent() && ask_percent()) || check_exchange_rates(NULL, true)) {
 		execute_expression(true, false, OPERATION_ADD, NULL, false, 0, "", "", false);
 		return FALSE;
 	}
@@ -3944,6 +3988,7 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 
 		CALCULATOR->beginTemporaryStopMessages();
 		if(!simplified_percentage) evalops.parse_options.parsing_mode = (ParsingMode) (evalops.parse_options.parsing_mode | PARSE_PERCENT_AS_ORDINARY_CONSTANT);
+		CALCULATOR->setSimplifiedPercentageUsed(false);
 		if(!CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), 100, evalops, parsed_mstruct, parsed_tostruct)) {
 			mauto.setAborted();
 		} else if(do_factors || do_pfe || do_expand) {
@@ -15722,6 +15767,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	}
 	CALCULATOR->resetExchangeRatesUsed();
 	if(!simplified_percentage) evalops.parse_options.parsing_mode = (ParsingMode) (evalops.parse_options.parsing_mode | PARSE_PERCENT_AS_ORDINARY_CONSTANT);
+	CALCULATOR->setSimplifiedPercentageUsed(false);
 	if(do_stack) {
 		stack_size = CALCULATOR->RPNStackSize();
 		if(do_mathoperation && f) {
@@ -15990,7 +16036,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		}
 	}
 
-	if(!do_mathoperation && ((test_ask_tc(*parsed_mstruct) && ask_tc()) || ((test_ask_sinc(*parsed_mstruct) || test_ask_sinc(*mstruct)) && ask_sinc()) || (check_exrates && check_exchange_rates(NULL, stack_index == 0 && !do_bases && !do_calendars && !do_pfe && !do_factors && !do_expand)))) {
+	if(!do_mathoperation && ((test_ask_tc(*parsed_mstruct) && ask_tc()) || ((test_ask_sinc(*parsed_mstruct) || test_ask_sinc(*mstruct)) && ask_sinc()) || (test_ask_percent() && ask_percent()) || (check_exrates && check_exchange_rates(NULL, stack_index == 0 && !do_bases && !do_calendars && !do_pfe && !do_factors && !do_expand)))) {
 		execute_expression(force, do_mathoperation, op, f, rpn_mode, stack_index, saved_execute_str, str, false);
 		evalops.complex_number_form = cnf_bak;
 		evalops.auto_post_conversion = save_auto_post_conversion;
@@ -21593,7 +21639,7 @@ void load_preferences() {
 	evalops.local_currency_conversion = true;
 	evalops.interval_calculation = INTERVAL_CALCULATION_VARIANCE_FORMULA;
 	b_decimal_comma = -1;
-	simplified_percentage = true;
+	simplified_percentage = -1;
 
 	use_systray_icon = false;
 	hide_on_startup = false;
@@ -22346,6 +22392,7 @@ void load_preferences() {
 						}
 					}
 				} else if(svar == "simplified_percentage") {
+					if(v > 0 && (version_numbers[0] < 5 || (version_numbers[0] == 5 && (version_numbers[1] < 1 )))) v = -1;
 					if(mode_index == 1) simplified_percentage = v;
 					else modes[mode_index].simplified_percentage = v;
 				} else if(svar == "implicit_question_asked") {
