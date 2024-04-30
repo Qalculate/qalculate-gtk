@@ -3414,8 +3414,7 @@ bool ask_percent() {
 	gtk_widget_set_valign(w_0, GTK_ALIGN_START);
 	gtk_grid_attach(GTK_GRID(grid), w_0, 0, 2, 1, 1);
 	s_eg = "<i>100 + 10% = 100 + (10 "; s_eg += times_sign(); s_eg += " 0.01) = 100.1</i>)";
-	CALCULATOR->localizeExpression(s_eg, evalops.parse_options);
-	label = gtk_label_new(s_eg.c_str());
+	label = gtk_label_new(CALCULATOR->localizeExpression(s_eg, evalops.parse_options).c_str());
 	label = gtk_label_new("<i>100 + 10% = 100 + (10 * 0.01) = 100.1</i>");
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_widget_set_halign(label, GTK_ALIGN_START);
@@ -3994,6 +3993,7 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 		} else if(do_factors || do_pfe || do_expand) {
 			CALCULATOR->startControl(100);
 			if(do_factors) {
+				if((mauto.isNumber() || mauto.isVector()) && to_fraction == 0 && to_fixed_fraction == 0) to_fraction = 2;
 				if(!mauto.integerFactorize()) {
 					mauto.structure(STRUCTURING_FACTORIZE, evalops, true);
 				}
@@ -4052,7 +4052,7 @@ void do_auto_calc(int recalculate = 1, string str = string()) {
 		CALCULATOR->endTemporaryStopMessages(!mauto.isAborted(), &autocalc_messages);
 		if(!mauto.isAborted()) {
 			mstruct->set(mauto);
-			if(autocalc_history_delay >= 0 && auto_calculate) {
+			if(autocalc_history_delay >= 0 && auto_calculate && !parsed_in_result) {
 				autocalc_history_timeout_id = g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, autocalc_history_delay, do_autocalc_history_timeout, NULL, NULL);
 			}
 		} else {
@@ -5202,7 +5202,7 @@ void on_expressionbuffer_cursor_position_notify() {
 	if(autocalc_history_timeout_id) {
 		g_source_remove(autocalc_history_timeout_id);
 		autocalc_history_timeout_id = 0;
-		if(autocalc_history_delay >= 0) autocalc_history_timeout_id = g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, autocalc_history_delay, do_autocalc_history_timeout, NULL, NULL);
+		if(autocalc_history_delay >= 0 && !parsed_in_result) autocalc_history_timeout_id = g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, autocalc_history_delay, do_autocalc_history_timeout, NULL, NULL);
 	}
 	if(auto_calc_stopped_at_operator) do_auto_calc();
 }
@@ -16068,9 +16068,11 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		if(do_stack && stack_index != 0) {
 			MathStructure *save_mstruct = mstruct;
 			mstruct = CALCULATOR->getRPNRegister(stack_index + 1);
+			if(do_factors && (mstruct->isNumber() || mstruct->isVector()) && to_fraction == 0 && to_fixed_fraction == 0) to_fraction = 2;
 			executeCommand(do_pfe ? COMMAND_EXPAND_PARTIAL_FRACTIONS : (do_expand ? COMMAND_EXPAND : COMMAND_FACTORIZE), false, true);
 			mstruct = save_mstruct;
 		} else {
+			if(do_factors && (mstruct->isNumber() || mstruct->isVector()) && to_fraction == 0 && to_fixed_fraction == 0) to_fraction = 2;
 			executeCommand(do_pfe ? COMMAND_EXPAND_PARTIAL_FRACTIONS : (do_expand ? COMMAND_EXPAND : COMMAND_FACTORIZE), false, true);
 		}
 	}
@@ -21831,7 +21833,7 @@ void load_preferences() {
 	size_t bookmark_index = 0;
 
 	version_numbers[0] = 5;
-	version_numbers[1] = 0;
+	version_numbers[1] = 1;
 	version_numbers[2] = 0;
 
 	bool old_history_format = false;
@@ -22392,7 +22394,7 @@ void load_preferences() {
 						}
 					}
 				} else if(svar == "simplified_percentage") {
-					if(v > 0 && (version_numbers[0] < 5 || (version_numbers[0] == 5 && (version_numbers[1] < 1 )))) v = -1;
+					if(v > 0 && !VERSION_AFTER(5, 0, 0)) v = -1;
 					if(mode_index == 1) simplified_percentage = v;
 					else modes[mode_index].simplified_percentage = v;
 				} else if(svar == "implicit_question_asked") {
@@ -24400,7 +24402,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 			insert_text(str.c_str());
 		} else {
 			str.insert(0, "➞");
-			if(expression_has_changed && result_autocalculated && (autocalc_history_delay < 0 || autocalc_history_timeout_id)) {
+			if(expression_has_changed && result_autocalculated && !parsed_in_result && (autocalc_history_delay < 0 || autocalc_history_timeout_id)) {
 				if(autocalc_history_timeout_id) g_source_remove(autocalc_history_timeout_id);
 				do_autocalc_history_timeout(NULL);
 			}
@@ -24940,6 +24942,28 @@ void on_preferences_checkbutton_display_expression_status_toggled(GtkToggleButto
 	}
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result")), display_expression_status);
 }
+int scale_n_bak = 0;
+void on_menu_item_show_parsed_activate(GtkMenuItem *w, gpointer) {
+	if(autocalc_history_timeout_id) {
+		g_source_remove(autocalc_history_timeout_id);
+		do_autocalc_history_timeout(NULL);
+	}
+	show_parsed_instead_of_result = true;
+	first_draw_of_result = false;
+	scale_n_bak = scale_n;
+	scale_n = 3;
+	if(!parsed_in_result) expression_has_changed2 = true;
+	display_parse_status();
+	if(!parsed_in_result) expression_has_changed2 = false;
+	gtk_widget_queue_draw(resultview);
+}
+void on_menu_item_show_result_activate(GtkMenuItem *w, gpointer) {
+	show_parsed_instead_of_result = false;
+	scale_n = scale_n_bak;
+	first_draw_of_result = false;
+	display_parse_status();
+	gtk_widget_queue_draw(resultview);
+}
 void on_preferences_checkbutton_parsed_in_result_toggled(GtkToggleButton *w, gpointer) {
 	if(gtk_toggle_button_get_active(w)) {
 		parsed_in_result = true;
@@ -24956,13 +24980,25 @@ void on_preferences_checkbutton_parsed_in_result_toggled(GtkToggleButton *w, gpo
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_parsed_in_result"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_parsed_in_result_activate, NULL);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_parsed_in_result")), parsed_in_result);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_parsed_in_result"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_parsed_in_result_activate, NULL);
-	if(parsed_in_result && (expression_has_changed || result_autocalculated)) {
-		clearresult();
-		expression_has_changed2 = true;
-	}
-	if(!parsed_in_result && result_autocalculated) {
+	if(parsed_in_result) {
+		if(autocalc_history_timeout_id) {
+			g_source_remove(autocalc_history_timeout_id);
+			autocalc_history_timeout_id = 0;
+		}
+		if(expression_has_changed || result_autocalculated) {
+			clearresult();
+			expression_has_changed2 = true;
+		} else {
+			parsed_in_result = false;
+			on_menu_item_show_parsed_activate(NULL, NULL);
+			parsed_in_result = true;
+			return;
+		}
+	} else if(result_autocalculated) {
 		result_autocalculated = false;
 		do_auto_calc(2);
+	} else if(show_parsed_instead_of_result) {
+		on_menu_item_show_result_activate(NULL, NULL);
 	}
 	display_parse_status();
 }
@@ -24975,24 +25011,6 @@ void on_menu_item_expression_status_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)) == display_expression_status) return;
 	if(!preferences_builder) get_preferences_dialog();
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_display_expression_status")), !display_expression_status);
-}
-int scale_n_bak = 0;
-void on_menu_item_show_parsed_activate(GtkMenuItem *w, gpointer) {
-	show_parsed_instead_of_result = true;
-	first_draw_of_result = false;
-	scale_n_bak = scale_n;
-	scale_n = 3;
-	if(!parsed_in_result) expression_has_changed2 = true;
-	display_parse_status();
-	if(!parsed_in_result) expression_has_changed2 = false;
-	gtk_widget_queue_draw(resultview);
-}
-void on_menu_item_show_result_activate(GtkMenuItem *w, gpointer) {
-	show_parsed_instead_of_result = false;
-	scale_n = scale_n_bak;
-	first_draw_of_result = false;
-	display_parse_status();
-	gtk_widget_queue_draw(resultview);
 }
 
 void on_preferences_combo_theme_changed(GtkComboBox *w, gpointer) {

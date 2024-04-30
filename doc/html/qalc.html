@@ -60,13 +60,13 @@ p.roffit {
 <div class="level0"><span Class="bold">--defaults</span> load default settings <p/></div>
 <div class="level0"><span Class="bold">-e, --exrates</span> update exchange rates <p/></div>
 <div class="level0"><span Class="bold">-f, --file file</span> execute commands from a file first <p/></div>
-<div class="level0"><span Class="bold">-h, --help</span> display this help and exits <p/></div>
+<div class="level0"><span Class="bold">-h, --help</span> display a list of command line options and exit <p/></div>
 <div class="level0"><span Class="bold">-i, --interactive</span> start in interactive mode <p/></div>
-<div class="level0"><span Class="bold">-l, --list [search term]</span> displays a list of all user-defined or matching variables, functions, units, and prefixes. <p/></div>
-<div class="level0"><span Class="bold">--list-functions [search term]</span> displays a list of all or matching functions. <p/></div>
-<div class="level0"><span Class="bold">--list-prefixes [search term]</span> displays a list of all or matching prefixes. <p/></div>
-<div class="level0"><span Class="bold">--list-units [search term]</span> displays a list of all or matching units. <p/></div>
-<div class="level0"><span Class="bold">--list-variables [search term]</span> displays a list of all or matching variables. <p/></div>
+<div class="level0"><span Class="bold">-l, --list [search term]</span> display a list of all user-defined or matching variables, functions, units, and prefixes, and exit <p/></div>
+<div class="level0"><span Class="bold">--list-functions [search term]</span> display a list of all or matching functions and exit <p/></div>
+<div class="level0"><span Class="bold">--list-prefixes [search term]</span> display a list of all or matching prefixes and exit <p/></div>
+<div class="level0"><span Class="bold">--list-units [search term]</span> display a list of all or matching units and exit <p/></div>
+<div class="level0"><span Class="bold">--list-variables [search term]</span> display a list of all or matching variables and exit <p/></div>
 <div class="level0"><span Class="bold">-m, --time milliseconds</span> terminate calculation and display of result after specified amount of time <p/></div>
 <div class="level0"><span Class="bold">-n, --nodefs</span> do not load any functions, units, or variables from file <p/></div>
 <div class="level0"><span Class="bold">--nocurrencies</span> do not load any global currencies from file <p/></div>
@@ -75,7 +75,7 @@ p.roffit {
 <div class="level0"><span Class="bold">--nounits</span> do not load any global units from file <p/></div>
 <div class="level0"><span Class="bold">--novariables</span> do not load any global variables from file <p/></div>
 <div class="level0"><span Class="bold">-p [base]</span> start in programming mode (same as -b "base base" -s "xor^", with base conversion) <p/></div>
-<div class="level0"><span Class="bold">-s, --set \(dqoption value\(dq</span> as set command in interactive program session (ex. --set "base 16") <p/></div>
+<div class="level0"><span Class="bold">-s, --set "option value"</span> as set command in interactive program session (ex. --set "base 16") <p/></div>
 <div class="level0"><span Class="bold">-t, --terse</span> reduce output to just the result of the input expression <p/></div>
 <div class="level0"><span Class="bold">-/+u8</span> switch unicode support on/off <p/></div>
 <div class="level0"><span Class="bold">-v, --version</span> show application version and exit <p/>The program will start in interactive mode if no expression and no file is specified (or interactive mode is explicitly selected). </div><h2 class="nroffsh" id="COMMANDS">COMMANDS</h2>
@@ -93,7 +93,7 @@ p.roffit {
 <div class="level0"><span Class="bold">find, list [name]</span> Displays a list of variables, functions and units. Enter with argument 'currencies', 'functions', 'variables', 'units', or 'prefixes' to show a list of all currencies, functions, variables, units, or prefixes. Enter a search term to find matching variables, functions, units, and/or prefixes. If command is called with no argument all user-definied objects are listed. <br>Example: list functions. <br>Example: find dinar. <br>Example: find variables planck. <p/></div>
 <div class="level0"><span Class="bold">function name expression</span> Creates a function with the specified name and expression. Use '\x', '\y', '\z', '\a', etc. for arguments in the expression. <br>Example: function func1 5*\x. <p/></div>
 <div class="level0"><span Class="bold">help [command]</span> <p/></div>
-<div class="level0"><span Class="bold">info</span> Displays information about a function, variable, unit, or prefix. <br>Example: info sin. <p/></div>
+<div class="level0"><span Class="bold">info name</span> Displays information about a function, variable, unit, or prefix. <br>Example: info sin. <p/></div>
 <div class="level0"><span Class="bold">keep name</span> Make the temporary user-defined variable or function with the specified name non-temporary. <br>Example: keep var1. <p/></div>
 <div class="level0"><span Class="bold">MC/MS/M+/M-</span> Memory operations (memory clear, memory store, memory plus, memory minus). Recall the memory using the MR/MRC variable. <p/></div>
 <div class="level0"><span Class="bold">mode</span> Displays the current mode. <p/></div>
@@ -109,7 +109,7 @@ p.roffit {
 <div class="level0"><span Class="bold">stack</span> Displays the RPN stack. <p/></div>
 <div class="level0"><span Class="bold">clear stack</span> Clears the entire RPN stack. <p/></div>
 <div class="level0"><span Class="bold">copy [index]</span> Duplicates a value on the RPN stack to the top of the stack. If no index is specified, the top of the stack is duplicated. Index 1 is the top of stack and negative index values count from the bottom of the stack. <p/></div>
-<div class="level0"><span Class="bold">move index 1 index 2</span> Changes the position of a value on the RPN stack. Index 1 is the top of stack and negative index values count from the bottom of the stack. <br>Example: move 2 4 <p/></div>
+<div class="level0"><span Class="bold">move index 1 [index 2]</span> Changes the position of a value on the RPN stack. Index 1 is the top of stack and negative index values count from the bottom of the stack. <br>Example: move 2 4 <p/></div>
 <div class="level0"><span Class="bold">pop [index]</span> Removes the top of the RPN stack or the value at the specified index. Index 1 is the top of stack and negative index values count from the bottom of the stack. <p/></div>
 <div class="level0"><span Class="bold">rotate [direction]</span> Rotates the RPN stack up (default) or down. <p/></div>
 <div class="level0"><span Class="bold">swap [index 1] [index 2]</span> Swaps position of values on the RPN stack. If no index is specified, the values on the top of the stack (index 1 and index 2) will be swapped and if only one index is specified, the value at this index will be swapped with the top value. Index 1 is the top of stack and negative index values count from the bottom of the stack. <br>Example: swap 2 4 <p/>When a line begins with '/', the text that follows is always interpreted as a command. </div><h2 class="nroffsh" id="KEYBINDINGS">KEYBINDINGS</h2>
@@ -125,7 +125,7 @@ p.roffit {
 <div class="level0"><span Class="bold">assume nonzero denominators, nzd (on*, off)</span> Determines if unknown values will be assumed non-zero (x/x=1). <p/></div>
 <div class="level0"><span Class="bold">warn nonzero denominators, warnnzd (on*, off)</span> Display a message after a value has been assumed non-zero. <p/></div>
 <div class="level0"><span Class="bold">assumptions, asm (unknown*, non-zero, positive, negative, non-positive, non-negative + number, real*, rational, integer, boolean)</span> Default assumptions for unknown variables. <p/>Calculation: <p/></div>
-<div class="level0"><span Class="bold">angle unit, angle (0 = none, 1* = radians, 2 = degrees, 3 = gradians)</span> Default angle unit for trigonometric functions. <p/></div>
+<div class="level0"><span Class="bold">angle unit, angle (0 = none, 1* = radians, 2 = degrees, 3 = gradians, 4 = custom)</span> Default angle unit for trigonometric functions. <p/></div>
 <div class="level0"><span Class="bold">approximation, appr (-1* = auto, 0 = exact, 1 = try exact, 2 = approximate, 3 = dual)</span> How approximate variables and calculations are handled. In exact mode approximate values will not be calculated. <p/></div>
 <div class="level0"><span Class="bold">interval arithmetic, ia (on*, off)</span> If activated, interval arithmetic determines the final precision of calculations (avoids wrong results after loss of significance) with approximate functions and/or irrational numbers. <p/></div>
 <div class="level0"><span Class="bold">interval calculation, ic (1* = variance formula, 2 = interval arithmetic)</span> Determines the method used for interval calculation / uncertainty propagation. <p/></div>
@@ -153,6 +153,7 @@ p.roffit {
 <div class="level0"><span Class="bold">vertical space, vspace (on*, off)</span> Add empty lines before and after result. <p/>Numerical display: <p/></div>
 <div class="level0"><span Class="bold">base (-1114112 - 1114112, bin, oct, dec*, hex, sexa, time, roman)</span> <p/></div>
 <div class="level0"><span Class="bold">base display, basedisp (0 = none, 1* = normal, 2 = alternative)</span> <p/></div>
+<div class="level0"><span Class="bold">binary bits, bits (0* = auto, &gt;= 2)</span> <p/></div>
 <div class="level0"><span Class="bold">complex form, cplxform (0* = rectangular, 1 = exponential, 2 = polar, 3 = cis, 4 = angle)</span> <p/></div>
 <div class="level0"><span Class="bold">decimal comma (locale*, off, on)</span> Determines the default decimal separator. <p/></div>
 <div class="level0"><span Class="bold">digit grouping, group (0* = off, 1 = standard, 2 = locale)</span> <p/></div>
@@ -192,7 +193,7 @@ p.roffit {
 <div class="level0"><span Class="bold">prefixes, pref (on*, off)</span> Enables automatic use of prefixes in the result. <p/></div>
 <div class="level0"><span Class="bold">show negative exponents, negexp (on, off*)</span> Use negative exponents instead of division for units in result (m/s = m*s^-1). <p/></div>
 <div class="level0"><span Class="bold">sync units, sync (on*, off)</span> <p/></div>
-<div class="level0"><span Class="bold">temperature units, temp (0* = hybrid, 1 = absolute, 2 = relative)</span> Determines how expressions with temperature units are calculated (hybrid acts as absolute if the expression contains different temperature units, otherwise as relative). <p/></div>
+<div class="level0"><span Class="bold">temperature calculation, temp (0* = hybrid, 1 = absolute, 2 = relative)</span> Determines how expressions with temperature units are calculated (hybrid acts as absolute if the expression contains different temperature units, otherwise as relative). <p/></div>
 <div class="level0"><span Class="bold">update exchange rates, upxrates (-1* = ask, 0 = never, &gt; 0 = days)</span> <p/>Other: <p/></div>
 <div class="level0"><span Class="bold">clear history (yes, no*)</span> Do not save expression history on exit. <p/></div>
 <div class="level0"><span Class="bold">ignore locale (yes, no*)</span> Ignore system language and use English (requires restart). <p/></div>
@@ -209,7 +210,7 @@ p.roffit {
 <div class="level0"><span Class="bold">Number base conversion</span> - bin, binary (show as binary number) <br>- bin# (show as binary number with specified number of bits) <br>- oct, octal (show as octal number) <br>- duo, duodecimal (show as duodecimal number) <br>- hex, hexadecimal (show as hexadecimal number) <br>- hex# (show as hexadecimal number with specified number of bits) <br>- sex, sexa2, sexa3, sexagesimal (show as sexagesimal number; sexa2 hides and sexa3 rounds arcseconds) <br>- latitude, latitude2, longitude, longitude2 (show as sexagesimal latitude/longitude; latitude2 and longitude2 hide arcseconds) <br>- bijective (shown in bijective base-26) <br>- fp16, fp32, fp64, fp80, fp128 (show in binary floating-point format) <br>- bcd (show as binary-coded decimal) <br>- roman (show as roman numerals) <br>- time (show in time format) <br>- unicode <br>- base # (show in specified number base) <br>- bases (show as binary, octal, decimal and hexadecimal number) <br><p/></div>
 <div class="level0"><span Class="bold">Complex format</span> - rectangular, cartesian (show complex numbers in rectangular form) <br>- exponential (show complex numbers in exponential form) <br>- polar (show complex numbers in polar form) <br>- cis (show complex numbers in cis form) <br>- angle, phasor (show complex numbers in angle/phasor notation) <p/></div>
 <div class="level0"><span Class="bold">Time and date conversion</span> - UTC (show date and time in UTC time zone) <br>- UTC+/-hh[:mm] (show date and time in specified time zone) <br>- calendars <p/></div>
-<div class="level0"><span Class="bold">Fractions</span> - fraction (show result as mixed, or simple if prepended with '-', fraction) show as mixed fraction with specified denominator <br>- 1/# (show as mixed, or simple if prepended with '-', fraction with specified denominator) <br>prepend with - to show as simple fraction <p/></div>
+<div class="level0"><span Class="bold">Fractions</span> - fraction (show result as mixed fraction) <br>- decimals (show result as decimal fraction) <br>- 1/# (show as mixed fraction with specified denominator) <br>prepend with - to show as simple fraction <p/></div>
 <div class="level0"><span Class="bold">Other conversion commands</span> - factors (factorize result) <p/>Similarly where (or alternatively "/.") can be used at the end (but before "to"), for variable assignments, function replacements, etc. (e.g. "x+y where x=1 and y=2", "x^2=4 where x&gt;0", and "sin(5) where sin()=cos()"). Variables assignments can also be placed before the expression, separated by comma, e.g. &lt;quote&gt;x=1, y=2, x+y&lt;/quote&gt;, but this syntax is more strict. <p/>Note that to and where can only be applied to the whole expression. Everything before the operator is always treated as the expression to convert (or apply replacement to), and everything after as the conversion/replacement expression, regardless of any parentheses. </div><h2 class="nroffsh" id="EXAMPLES">EXAMPLES</h2>
 <div class="level0">Note that semicolon can be replaced with comma, if comma is not used as decimal or thousands separator. <p/><span Class="bold">Basic functions and operators</span> <p/></div>
 <div class="level0">sqrt 4 = sqrt(4) <br>= 4^(0.5) <br>= 4^(1/2) <br>= 2 <p/></div>
