@@ -50,6 +50,30 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="5.1.0" date="2024-05-06">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Option to show parsed expression in result field</li>
+      <li>Add two's complement input and binary bits to preferences, and preserve these settings when leaving programming keypad</li>
+      <li>Ask for the desired interpretation the first time percent addition is used (e.g. 100 + 10% equals 110 or 100.1)</li>
+      <li>Download button in dialog shown when new version is available, on Windows</li>
+      <li>Support for solving equations containing if() function</li>
+      <li>Support for solving root(a, x)=b (requires rational value for ln(a)/ln(b))</li>
+      <li>New functions: powertower() and multiples()</li>
+      <li>New units for solar radius, mass, and luminosity</li>
+      <li>Use parentheses for exponent using scientific notation (with power of 10)</li>
+      <li>Support integer factorization of integers in matrix/vector, and of numerator and denominator in rational number</li>
+      <li>Relaxed conditions for (x^a)^b = x^(a × b) and x^a × x^b = x^(a + b) when complex numbers are deactivated (fixes segfaults)</li>
+      <li>Portuguese (Portugal) translation</li>
+      <li>Fix AltGr (primarily for input of operators) on Windows</li>
+      <li>Fix (ax + n)^2 > 1, where n is even and a is not 1, returning false</li>
+      <li>Fix setbits() function</li>
+      <li>Fix Number::equals(0, ..., true) when number is infinite (affects replace() function)</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
   <release version="5.0.0" date="2024-03-11">
    <description>
     <p>Changes:</p>

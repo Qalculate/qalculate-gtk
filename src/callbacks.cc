@@ -2799,7 +2799,7 @@ void auto_update(string new_version, string url) {
 	script += "\t\techo \"Extracting files...\";\n";
 	script += "\t\tif tar -xJf ${filename}; then\n";
 	script += "\t\t\tcd  qalculate-${new_version};\n";
-	script += "\t\t\tif cp -f qalculate-gtk \""; script += selfpath; script += "\"; then\n";
+	script += "\t\t\tif cp -f qalculate \""; script += selfpath; script += "\"; then\n";
 	script += "\t\t\t\tcp -f qalc \""; script += selfdir; script += "/\";\n";
 	script += "\t\t\t\tcd ..;\n\t\t\trm -r qalculate-${new_version};\n\t\t\trm ${filename};\n";
 	script += "\t\t\t\texit 0;\n";
