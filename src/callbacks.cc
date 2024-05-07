@@ -34096,7 +34096,7 @@ gboolean on_tMatrixEdit_cursor_changed(GtkTreeView*, gpointer) {
 				matrix_edit_prev_column = i_column;
 				gchar *pos_str;
 				if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(matrixedit_builder, "matrix_edit_radiobutton_matrix")))) {
-					pos_str = g_strdup_printf("(%i, %i)", i_column + 1, gtk_tree_path_get_indices(path)[0] + 1);
+					pos_str = g_strdup_printf("(%i, %i)", gtk_tree_path_get_indices(path)[0] + 1, i_column + 1);
 				} else {
 					pos_str = g_strdup_printf("%i", (int) (i_column + 1 + matrix_edit_columns.size() * gtk_tree_path_get_indices(path)[0]));
 				}
@@ -34327,7 +34327,7 @@ gboolean on_tMatrix_cursor_changed(GtkTreeView*, gpointer) {
 				matrix_prev_column = i_column;
 				gchar *pos_str;
 				if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(matrix_builder, "matrix_radiobutton_matrix")))) {
-					pos_str = g_strdup_printf("(%i, %i)", i_column + 1, gtk_tree_path_get_indices(path)[0] + 1);
+					pos_str = g_strdup_printf("(%i, %i)", gtk_tree_path_get_indices(path)[0] + 1, i_column + 1);
 				} else {
 					pos_str = g_strdup_printf("%i", (int) (i_column + 1 + matrix_columns.size() * gtk_tree_path_get_indices(path)[0]));
 				}
