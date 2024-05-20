@@ -35,6 +35,16 @@ Version=1.0
 Name=Qalculate!
 GenericName=Calculator
 Comment=Powerful and easy to use calculator
+Comment[ca]=Calculadora poderosa i fàcil a usar
+Comment[de]=Leistungsstarker und einfach zu bedienender Taschenrechner
+Comment[es]=Calculadora poderosa y fácil de usar
+Comment[fr]=Une calculatrice puissante et facile d'utilisation
+Comment[nl]=Gemakkelijk te gebruiken rekenmachine met veel mogelijkheden
+Comment[pt_BR]=Calculadora potente e fácil de usar
+Comment[ru]=Мощный и простой в использовании калькулятор
+Comment[sl]=Zmogljivo računalo, preprosto za uporabo
+Comment[sv]=Kraftfull och användarvänlig miniräknare
+Comment[zh_CN]=强大而易用的计算器
 TryExec=$execdir/qalculate
 Exec=$execdir/qalculate
 Icon=qalculate
@@ -44,6 +54,14 @@ StartupNotify=true
 StartupWMClass=qalculate
 Categories=GTK;Utility;Calculator;Education;Science;Math;
 Keywords=calculation;arithmetic;scientific;financial;
+Keywords[ca]=calculation;arithmetic;scientific;financial;
+Keywords[de]=Berechnung;Arithmetik;Wissenschaft;Finanzen;
+Keywords[es]=calculadora;aritmética;científica;financiera;
+Keywords[fr]=calcul;arithmétique;scientifique;financier;
+Keywords[pt_BR]=calculadora;aritmética;científica;financeira;
+Keywords[ru]=расчёт;расчет;арифметика;научный;финансовый
+Keywords[sl]=izračun;aritmetika;znanstveno;finančno;računalo;kalkulator;
+Keywords[zh_CN]=计算;算术;科学;金融;
 " > "$HOME/.local/share/applications/qalculate-gtk.desktop";
 
 echo "Installing icon in $HOME/.local/share/icons";
