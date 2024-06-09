@@ -24287,6 +24287,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 	if(p_type == 1) item = (ExpressionItem*) p;
 	else if(p_type == 2) prefix = (Prefix*) p;
 	else if(p_type >= 100) p_type = 0;
+	gint cos_bak = current_object_start;
 	GtkTextIter object_start, object_end;
 	gtk_text_buffer_get_iter_at_offset(expressionbuffer, &object_start, current_object_start);
 	gtk_text_buffer_get_iter_at_offset(expressionbuffer, &object_end, current_object_end);
@@ -24388,6 +24389,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 			while(i_match > 0) {
 				gtk_text_iter_forward_char(&object_start);
 				gstr2 = g_utf8_next_char(gstr2);
+				current_object_start += strlen(gstr2);
 				if(strlen(gstr_pre) - strlen(gstr2) >= i_match) break;
 			}
 			ename_r = &item->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
@@ -24593,6 +24595,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 		gtk_text_buffer_place_cursor(expressionbuffer, &ipos);
 	}
 	current_object_end = current_object_start + unicode_length(str);
+	current_object_start = cos_bak;
 	gtk_widget_hide(completion_window);
 	unblock_completion();
 	if(!item && !prefix && editing_to_expression && gtk_text_iter_is_end(&ipos)) {
