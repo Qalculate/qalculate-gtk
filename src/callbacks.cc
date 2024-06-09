@@ -490,6 +490,86 @@ int binary_y_diff = 0;
 #	define FIX_ALT_GR
 #endif
 
+bool fix_supsub_status = false, fix_supsub_result = false, fix_supsub_history = false, fix_supsub_completion = false;
+
+#if PANGO_VERSION < 15000
+#	define FIX_SUPSUB_PRE(w_supsub) \
+	string s_sup, s_sub;\
+	if((w_supsub == statuslabel_l && fix_supsub_status) || (w_supsub == resultview && fix_supsub_result) || (w_supsub == historyview && fix_supsub_history) || (w_supsub == completion_view && fix_supsub_completion)) {\
+		PangoFontDescription *font_supsub;\
+		gtk_style_context_get(gtk_widget_get_style_context(w_supsub), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_supsub, NULL);\
+		s_sup = "<span size=\"x-small\" rise=\""; s_sup += i2s(pango_font_description_get_size(font_supsub) * 0.8); s_sup += "\">";\
+		s_sub = "<span size=\"x-small\" rise=\"-"; s_sub += i2s(pango_font_description_get_size(font_supsub) * 0.2); s_sub += "\">";\
+	}
+
+#	define FIX_SUB_RESULT(str) \
+	if(fix_supsub_result) {\
+		PangoFontDescription *font_supsub;\
+		gtk_style_context_get(gtk_widget_get_style_context(resultview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_supsub, NULL);\
+		int s = scaledown;\
+		if(ips.power_depth > 0) s++;\
+		string s_sub;\
+		if(s <= 0) s_sub = "<span size=\"small\" rise=\"-";\
+		else if(s == 1) s_sub = "<span size=\"x-small\" rise=\"-";\
+		else s_sub = "<span size=\"xx-small\" rise=\"-";\
+		s_sub += i2s(pango_font_description_get_size(font_supsub) * 0.2); s_sub += "\">";\
+		if(ips.power_depth > 0) s++;\
+		gsub("<sub>", s_sub, str);\
+		gsub("</sub>", "</span>", str);\
+	}
+
+#	define FIX_SUP_RESULT(str) \
+	if(fix_supsub_result) {\
+		PangoFontDescription *font_supsub;\
+		gtk_style_context_get(gtk_widget_get_style_context(resultview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_supsub, NULL);\
+		int s = scaledown;\
+		if(ips.power_depth > 0) s++;\
+		string s_sup;\
+		if(s <= 0) s_sup = "<span size=\"small\" rise=\"";\
+		else if(s == 1) s_sup = "<span size=\"x-small\" rise=\"";\
+		else s_sup = "<span size=\"xx-small\" rise=\"";\
+		s_sup += i2s(pango_font_description_get_size(font_supsub) * 0.8); s_sup += "\">";\
+		if(ips.power_depth > 0) s++;\
+		gsub("<sup>", s_sup, str);\
+		gsub("</sup>", "</span>", str);\
+	}
+#else
+#	define FIX_SUPSUB_PRE(w_supsub) \
+	string s_sup, s_sub;\
+	if((w_supsub == statuslabel_l && fix_supsub_status) || (w_supsub == resultview && fix_supsub_result) || (w_supsub == historyview && fix_supsub_history) || (w_supsub == completion_view && fix_supsub_completion)) {\
+		s_sup = "<span size=\"60%\" baseline_shift=\"superscript\">";\
+		s_sub = "<span size=\"60%\" baseline_shift=\"subscript\">";\
+	}
+
+#	define FIX_SUB_RESULT(str) \
+	if(fix_supsub_result) {\
+		int s = scaledown;\
+		if(ips.power_depth > 0) s++;\
+		if(s <= 0) gsub("<sub>", "<span size=\"80%\" baseline_shift=\"subscript\">", str);\
+		else if(s == 1) gsub("<sub>", "<span size=\"60%\" baseline_shift=\"subscript\">", str);\
+		else gsub("<sub>", "<span size=\"50%\" baseline_shift=\"subscript\">", str);\
+		gsub("</sub>", "</span>", str);\
+	}
+
+#	define FIX_SUP_RESULT(str) \
+	if(fix_supsub_result) {\
+		int s = scaledown;\
+		if(ips.power_depth > 0) s++;\
+		if(s <= 0) gsub("<sup>", "<span size=\"80%\" baseline_shift=\"superscript\">", str);\
+		else if(s == 1) gsub("<sup>", "<span size=\"60%\" baseline_shift=\"superscript\">", str);\
+		else gsub("<sup>", "<span size=\"50%\" baseline_shift=\"superscript\">", str);\
+		gsub("</sup>", "</span>", str);\
+	}
+#endif
+
+#define FIX_SUPSUB(str) \
+	if(!s_sup.empty()) {\
+		gsub("<sup>", s_sup, str);\
+		gsub("</sup>", "</span>", str);\
+		gsub("<sub>", s_sub, str);\
+		gsub("</sub>", "</span>", str);\
+	}
+
 enum {
 	TITLE_APP,
 	TITLE_RESULT,
@@ -1393,6 +1473,7 @@ void fix_history_string_new2(string &str) {
 	gsub("<sub class=\"nous\">", "<sub>", str);
 	gsub("<i class=\"symbol\">", "<i>", str);
 }
+
 void fix_history_string2(string &str) {
 	gsub("&", "&amp;", str);
 	gsub(">", "&gt;", str);
@@ -1788,6 +1869,7 @@ void update_expression_icons(int id = 0) {
 
 void result_font_modified() {
 	while(gtk_events_pending()) gtk_main_iteration();
+	fix_supsub_result = test_supsub(resultview);
 	set_result_size_request();
 	result_font_updated = TRUE;
 	set_operator_symbols();
@@ -1807,6 +1889,7 @@ void expression_font_modified() {
 }
 void status_font_modified() {
 	while(gtk_events_pending()) gtk_main_iteration();
+	fix_supsub_status = test_supsub(statuslabel_l);
 	set_status_size_request();
 	set_operator_symbols();
 }
@@ -1915,6 +1998,39 @@ void set_result_size_request() {
 	g_object_unref(layout_test);
 }
 
+void get_image_blank_height(cairo_surface_t *surface, int *y1, int *y2);
+bool test_supsub(GtkWidget *w) {
+	return true;
+	PangoLayout *layout_test = gtk_widget_create_pango_layout(w, NULL);
+	pango_layout_set_markup(layout_test, "x", -1);
+	PangoRectangle rect;
+	pango_layout_get_pixel_extents(layout_test, NULL, &rect);
+	cairo_surface_t *tmp_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, rect.width, rect.height);
+	cairo_t *cr = cairo_create(tmp_surface);
+	pango_cairo_show_layout(cr, layout_test);
+	cairo_destroy(cr);
+	int y1, y2;
+	get_image_blank_height(tmp_surface, &y1, &y2);
+	cairo_surface_destroy(tmp_surface);
+	pango_layout_set_markup(layout_test, "x<sup>1</sup>", -1);
+	pango_layout_get_pixel_extents(layout_test, NULL, &rect);
+	tmp_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, rect.width, rect.height);
+	cr = cairo_create(tmp_surface);
+	pango_cairo_show_layout(cr, layout_test);
+	cairo_destroy(cr);
+	int y3, y4;
+	get_image_blank_height(tmp_surface, &y3, &y4);
+	cairo_surface_destroy(tmp_surface);
+	g_object_unref(layout_test);
+	return y2 == y4;
+}
+
+void test_supsub() {
+	fix_supsub_status = test_supsub(statuslabel_l);
+	fix_supsub_history = test_supsub(historyview);
+	fix_supsub_result = test_supsub(resultview);
+	fix_supsub_completion = test_supsub(completion_view);
+}
 void set_expression_size_request() {
 	string test_str = "Äy";
 	for(int i = 1; i < (expression_lines < 1 ? 3 : expression_lines); i++) test_str += "\nÄy";
@@ -1944,7 +2060,10 @@ void set_expression_size_request() {
 }
 void set_status_size_request() {
 	PangoLayout *layout_test = gtk_widget_create_pango_layout(statuslabel_l, NULL);
-	pango_layout_set_markup(layout_test, "Ä<sub>x</sub>y<sup>2</sup>", -1);
+	FIX_SUPSUB_PRE(statuslabel_l)
+	string str = "Ä<sub>x</sub>y<sup>2</sup>";
+	FIX_SUPSUB(str)
+	pango_layout_set_markup(layout_test, str.c_str(), -1);
 	gint h;
 	pango_layout_get_pixel_size(layout_test, NULL, &h);
 	g_object_unref(layout_test);
@@ -5049,6 +5168,8 @@ void display_parse_status() {
 		if(!str_f.empty()) {str_f += " "; parsed_expression.insert(0, str_f);}
 		fix_history_string_new2(parsed_expression);
 		gsub("&nbsp;", " ", parsed_expression);
+		FIX_SUPSUB_PRE(statuslabel_l)
+		FIX_SUPSUB(parsed_expression)
 		if(show_parsed_instead_of_result || (parsed_in_result && !surface_result && !rpn_mode)) {
 			tmp_surface = draw_structure(parse_l == 0 ? m_undefined : mparse, po, complex_angle_form, top_ips, NULL, 3, NULL, NULL, NULL, -1, true, &mwhere, &displayed_parsed_to);
 			showing_first_time_message = false;
@@ -8110,25 +8231,28 @@ void create_pmenu(GtkWidget *item) {
 	gtk_style_context_get(gtk_widget_get_style_context(item), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
 	int index = 0;
 	Prefix *p = CALCULATOR->getPrefix(index);
+	string str;
+	FIX_SUPSUB_PRE(item)
 	while(p) {
-		gchar *gstr = NULL;
+		str = p->preferredDisplayName(false, true, false, false, &can_display_unicode_string_function, (void*) item).name;
 		switch(p->type()) {
 			case PREFIX_DECIMAL: {
-				gstr = g_strdup_printf("%s (10<span size=\"x-small\" rise=\"%i\">%i</span>)", p->preferredDisplayName(false, true, false, false, &can_display_unicode_string_function, (void*) item).name.c_str(), (int) (pango_font_description_get_size(font_desc) / 1.5), ((DecimalPrefix*) p)->exponent());
+				str +=" (10<sup>";
+				str += i2s(((DecimalPrefix*) p)->exponent());
+				str += "</sup>)";
 				break;
 			}
 			case PREFIX_BINARY: {
-				gstr = g_strdup_printf("%s (2<span size=\"x-small\" rise=\"%i\">%i</span>)", p->preferredDisplayName(false, true, false, false, &can_display_unicode_string_function, (void*) item).name.c_str(), (int) (pango_font_description_get_size(font_desc) / 1.5), ((BinaryPrefix*) p)->exponent());
+				str +=" (2<sup>";
+				str += i2s(((BinaryPrefix*) p)->exponent());
+				str += "</sup>)";
 				break;
 			}
-			case PREFIX_NUMBER: {
-				gstr = g_strdup_printf("%s", p->preferredDisplayName(false, true, false, false, &can_display_unicode_string_function, (void*) item).name.c_str());
-				break;
-			}
+			default: {}
 		}
-		MENU_ITEM_WITH_POINTER(gstr, insert_prefix, p)
+		FIX_SUPSUB(str);
+		MENU_ITEM_WITH_POINTER(str.c_str(), insert_prefix, p)
 		gtk_label_set_use_markup(GTK_LABEL(gtk_bin_get_child(GTK_BIN(item))), TRUE);
-		g_free(gstr);
 		index++;
 		p = CALCULATOR->getPrefix(index);
 	}
@@ -8147,25 +8271,28 @@ void create_pmenu2() {
 	MENU_ITEM_WITH_POINTER(_("No Prefix"), on_menu_item_set_prefix_activate, CALCULATOR->decimal_null_prefix)
 	MENU_ITEM_WITH_POINTER(_("Optimal Prefix"), on_menu_item_set_prefix_activate, NULL)
 	Prefix *p = CALCULATOR->getPrefix(index);
+	FIX_SUPSUB_PRE(item)
+	string str;
 	while(p) {
-		gchar *gstr = NULL;
+		str = p->preferredDisplayName(false, true, false, false, &can_display_unicode_string_function, (void*) item).name;
 		switch(p->type()) {
 			case PREFIX_DECIMAL: {
-				gstr = g_strdup_printf("%s (10<sup>%i</sup>)", p->preferredDisplayName(false, true, false, false, &can_display_unicode_string_function, (void*) item).name.c_str(), ((DecimalPrefix*) p)->exponent());
+				str +=" (10<sup>";
+				str += i2s(((DecimalPrefix*) p)->exponent());
+				str += "</sup>)";
 				break;
 			}
 			case PREFIX_BINARY: {
-				gstr = g_strdup_printf("%s (2<sup>%i</sup>)", p->preferredDisplayName(false, true, false, false, &can_display_unicode_string_function, (void*) item).name.c_str(), ((BinaryPrefix*) p)->exponent());
+				str +=" (2<sup>";
+				str += i2s(((BinaryPrefix*) p)->exponent());
+				str += "</sup>)";
 				break;
 			}
-			case PREFIX_NUMBER: {
-				gstr = g_strdup_printf("%s", p->preferredDisplayName(false, true, false, false, &can_display_unicode_string_function, (void*) item).name.c_str());
-				break;
-			}
+			default: {}
 		}
-		MENU_ITEM_WITH_POINTER(gstr, on_menu_item_set_prefix_activate, p)
+		FIX_SUPSUB(str);
+		MENU_ITEM_WITH_POINTER(str.c_str(), on_menu_item_set_prefix_activate, p)
 		gtk_label_set_use_markup(GTK_LABEL(gtk_bin_get_child(GTK_BIN(item))), TRUE);
-		g_free(gstr);
 		index++;
 		p = CALCULATOR->getPrefix(index);
 	}
@@ -8326,6 +8453,8 @@ void update_completion() {
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_store), 1, GTK_SORT_ASCENDING);
 	capitalized_names.clear();
 
+	FIX_SUPSUB_PRE(completion_view)
+
 	string str, title, title2;
 	for(size_t i = 0; i < CALCULATOR->functions.size(); i++) {
 		if(CALCULATOR->functions[i]->isActive()) {
@@ -8345,6 +8474,7 @@ void update_completion() {
 				}
 			}
 			ellipsize_completion_names(str);
+			FIX_SUPSUB(str)
 			gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, CALCULATOR->functions[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) completion_view).c_str(), 2, CALCULATOR->functions[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, NULL, -1);
 		}
 	}
@@ -8395,6 +8525,7 @@ void update_completion() {
 				}
 			}
 			ellipsize_completion_names(str);
+			FIX_SUPSUB(str)
 			if(!CALCULATOR->variables[i]->title(false).empty()) {
 				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, CALCULATOR->variables[i]->title().c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, NULL, -1);
 				else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, CALCULATOR->variables[i]->title().c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, NULL, -1);
@@ -8500,6 +8631,7 @@ void update_completion() {
 				} else {
 					ellipsize_completion_names(str);
 				}
+				FIX_SUPSUB(str)
 				unordered_map<string, cairo_surface_t*>::const_iterator it_flag = flag_surfaces.end();
 				if(!u->title(false).empty()) {
 					title2 = u->title(false);
@@ -8512,6 +8644,7 @@ void update_completion() {
 						else title2 += ename->name;
 						if(!tp) title2 += ")";
 						if(title2.find("_") != string::npos) title2 = "";
+						FIX_SUPSUB(title2)
 					}
 				}
 				title = u->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) completion_view);
@@ -8559,6 +8692,8 @@ void update_completion() {
 					title2 += str;
 				}
 				if(!tp) title2 += ")";
+				FIX_SUPSUB(str)
+				FIX_SUPSUB(title2)
 				gtk_list_store_append(completion_store, &iter);
 				size_t i_slash = string::npos;
 				if(cu->category().length() > 1) i_slash = cu->category().rfind("/", cu->category().length() - 2);
@@ -8597,23 +8732,26 @@ void update_completion() {
 			}
 		}
 		ellipsize_completion_names(str);
-		gchar *gstr = NULL;
+		title = _("Prefix"); title += ": ";
 		switch(p->type()) {
 			case PREFIX_DECIMAL: {
-				gstr = g_strdup_printf("%s: 10<span size=\"x-small\" rise=\"%i\">%i</span>", _("Prefix"), (int) (pango_font_description_get_size(font_desc) / 1.5), ((DecimalPrefix*) p)->exponent());
+				title +="10<sup>";
+				title += i2s(((DecimalPrefix*) p)->exponent());
+				title += "</sup>";
 				break;
 			}
 			case PREFIX_BINARY: {
-				gstr = g_strdup_printf("%s: 2<span size=\"x-small\" rise=\"%i\">%i</span>", _("Prefix"), (int) (pango_font_description_get_size(font_desc) / 1.5), ((BinaryPrefix*) p)->exponent());
+				title +=" 2<sup>";
+				title += i2s(((BinaryPrefix*) p)->exponent());
+				title += "</sup>";
 				break;
 			}
 			case PREFIX_NUMBER: {
-				gstr = g_strdup_printf("%s: %s", _("Prefix"), ((NumberPrefix*) p)->value().print().c_str());
-				break;
+				title += ((NumberPrefix*) p)->value().print();
 			}
 		}
-		gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, gstr, 2, p, 3, FALSE, 4, 0, 5, NULL, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 2, 9, NULL, -1);
-		g_free(gstr);
+		FIX_SUPSUB(title);
+		gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, p, 3, FALSE, 4, 0, 5, NULL, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 2, 9, NULL, -1);
 	}
 	pango_font_description_free(font_desc);
 	string str2;
@@ -9255,6 +9393,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 							if(i2 != string::npos) {
 								value_str.insert(i2, "</sup>");
 								value_str.replace(i, 1, "<sup>");
+								FIX_SUP_RESULT(value_str);
 							}
 						}
 					}
@@ -9346,6 +9485,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						str += "<sub>";
 						str += number_base_map[(void*) &m.number()];
 						str += "</sub>";
+						FIX_SUB_RESULT(str)
 						TTE(str)
 					}
 					TTE(str)
@@ -10773,6 +10913,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					str += m.prefix()->preferredDisplayName(ename->abbreviation, po.use_unicode_signs, m.isPlural(), po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg).formattedName(-1, false, true, false, true, true);
 				}
 				str += ename->formattedName(TYPE_UNIT, true, true, false, true, true);
+				FIX_SUB_RESULT(str)
 				size_t i = 0;
 				while(true) {
 					i = str.find("<sub>", i);
@@ -10827,6 +10968,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				if(cursive) str = "<i>";
 				TTBP(str);
 				str += ename->formattedName(TYPE_VARIABLE, true, true, false, true, true);
+				FIX_SUB_RESULT(str)
 				size_t i = 0;
 				while(true) {
 					i = str.find("<sub>", i);
@@ -11180,6 +11322,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 				const ExpressionName *ename = &m.function()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
 				str += ename->formattedName(TYPE_FUNCTION, true, true, false, true, true);
+				FIX_SUB_RESULT(str)
 				size_t i = 0;
 				bool b_sub = false;
 				while(true) {
@@ -11790,6 +11933,7 @@ void reload_history(gint from_index) {
 	GtkTreeIter history_iter;
 	size_t i = inhistory.size();
 	gint pos = 0;
+	FIX_SUPSUB_PRE(historyview)
 	while(i > 0 && (from_index < 0 || (i >= (size_t) from_index))) {
 		i--;
 		switch(inhistory_type[i]) {
@@ -11820,6 +11964,7 @@ void reload_history(gint from_index) {
 				size_t history_expr_i = history_str.length();
 				history_str += fix_history_string_new(inhistory[i]);
 				add_line_breaks(history_str, 2, history_expr_i);
+				FIX_SUPSUB(history_str)
 				if(trans_l > 0) {
 					trans_l = history_str.find(":  ");
 					if(trans_l != string::npos) {
@@ -11873,6 +12018,7 @@ void reload_history(gint from_index) {
 							history_str += " ";
 							history_str += fix_history_string_new(inhistory[i]);
 							history_str += "</span>";
+							FIX_SUPSUB(history_str)
 						}
 						PangoLayout *layout = gtk_widget_create_pango_layout(historyview, "");
 						pango_layout_set_markup(layout, history_str.c_str(), -1);
@@ -11887,6 +12033,7 @@ void reload_history(gint from_index) {
 								size_t history_expr_i = str2.length();
 								str2 += inhistory[i];
 								add_line_breaks(str2, 3, history_expr_i);
+								FIX_SUPSUB(str2)
 								history_str += '\n';
 								history_str += "<span font-style=\"italic\" foreground=\"";
 								history_str += history_parse_color;
@@ -12608,6 +12755,8 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 
 	GtkTreeIter history_iter;
 
+	FIX_SUPSUB_PRE(historyview)
+
 	bool b_rpn_operation = false;
 	int history_index_bak = history_index;
 
@@ -12644,7 +12793,9 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				}
 			}
 			nr_of_new_expressions++;
-			gtk_list_store_insert_with_values(historystore, &history_iter, 0, 0, fix_history_string(result_text).c_str(), 1, inhistory.size() - 1, 2, i2s(nr_of_new_expressions).c_str(), 3, nr_of_new_expressions, 4, EXPRESSION_YPAD, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
+			string history_str = fix_history_string(result_text);
+			FIX_SUPSUB(history_str)
+			gtk_list_store_insert_with_values(historystore, &history_iter, 0, 0, history_str.c_str(), 1, inhistory.size() - 1, 2, i2s(nr_of_new_expressions).c_str(), 3, nr_of_new_expressions, 4, EXPRESSION_YPAD, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
 			gtk_list_store_insert_with_values(historystore, NULL, 1, 1, -1, 5, history_scroll_width, 6, 1.0, 7, PANGO_ALIGN_RIGHT, -1);
 			history_index = 0;
 			inhistory_index = inhistory.size() - 1;
@@ -12656,6 +12807,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				string history_str = fix_history_string(transformation);
 				history_str += ":";
 				add_line_breaks(history_str, 3, 0);
+				FIX_SUPSUB(history_str)
 				history_str.insert(0, "<span font-style=\"italic\">");
 				history_str += "</span>";
 				history_index++;
@@ -13003,6 +13155,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				str += " ";
 				str += fix_history_string_new(parsed_text);
 				str += "</span>";
+				FIX_SUPSUB(str)
 			}
 			inhistory.insert(inhistory.begin() + inhistory_index, parsed_text);
 			if(nr_of_new_expressions > 0 && parsed_mstruct && !history_parsed[nr_of_new_expressions - 1]) {
@@ -13021,6 +13174,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 					size_t history_expr_i = str2.length();
 					str2 += fix_history_string_new(parsed_text);
 					add_line_breaks(str2, 3, history_expr_i);
+					FIX_SUPSUB(str2)
 					str += '\n';
 					str += "<span font-style=\"italic\" foreground=\"";
 					str += history_parse_color;
@@ -13064,6 +13218,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		size_t history_expr_i = history_str.length();
 		history_str += fix_history_string_new(result_text);
 		add_line_breaks(history_str, 2, history_expr_i);
+		FIX_SUPSUB(history_str)
 		if(trans_l > 0) {
 			trans_l = history_str.find(":  ");
 			if(trans_l != string::npos) {
@@ -25149,6 +25304,7 @@ void on_preferences_checkbutton_custom_history_font_toggled(GtkToggleButton *w, 
 		g_object_set(G_OBJECT(register_index_renderer), "font", "", NULL);
 	}
 	updateRPNIndexes();
+	fix_supsub_history = test_supsub(historyview);
 }
 void keypad_font_changed() {
 	set_unicode_buttons();
@@ -25224,6 +25380,7 @@ void on_preferences_checkbutton_custom_app_font_toggled(GtkToggleButton *w, gpoi
 	status_font_modified();
 	result_font_modified();
 	keypad_font_changed();
+	test_supsub();
 }
 void on_preferences_radiobutton_dot_toggled(GtkToggleButton *w, gpointer) {
 	if(gtk_toggle_button_get_active(w)) {

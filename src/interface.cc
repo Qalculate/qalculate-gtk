@@ -2603,6 +2603,7 @@ void create_main_window(void) {
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnitSelectorCategories_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnitSelectorCategories_store), 0, GTK_SORT_ASCENDING);
 
+	test_supsub();
 	set_result_size_request();
 	set_expression_size_request();
 	set_status_size_request();

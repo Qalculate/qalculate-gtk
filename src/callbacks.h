@@ -214,6 +214,8 @@ void clearresult();
 void set_result_size_request();
 void set_status_size_request();
 void set_expression_size_request();
+void test_supsub();
+bool test_supsub(GtkWidget *w);
 
 void create_umenu(void);
 void create_umenu2(void);
