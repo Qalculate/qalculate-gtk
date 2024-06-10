@@ -3543,6 +3543,7 @@ GtkWidget* get_names_edit_dialog(void) {
 		g_object_set(G_OBJECT(renderer), "editable", true, NULL);
 		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", NAMES_NAME_COLUMN, NULL);
 		names_edit_name_column = column;
+		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tNames_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
 		gtk_tree_view_column_set_sort_column_id(column, NAMES_NAME_COLUMN);
 		gtk_tree_view_column_set_expand(column, TRUE);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tNames), column);
@@ -4385,6 +4386,10 @@ GtkWidget* get_shortcuts_dialog(void) {
 
 		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tShortcuts_store), 0, GTK_SORT_ASCENDING);
 
+		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tShortcuts_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
+		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tShortcuts_store), 1, string_sort_func, GINT_TO_POINTER(1), NULL);
+		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tShortcuts_store), 2, string_sort_func, GINT_TO_POINTER(2), NULL);
+
 		tShortcutsType = GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_treeview"));
 
 		tShortcutsType_store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_INT);
@@ -4396,6 +4401,8 @@ GtkWidget* get_shortcuts_dialog(void) {
 		gtk_tree_view_column_set_sort_column_id(column, 0);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tShortcutsType), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tShortcutsType_selection_changed), NULL);
+
+		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tShortcutsType_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
 
 		for(int i = 0; i <= SHORTCUT_TYPE_QUIT; i++) {
 			GtkTreeIter iter;
@@ -4595,6 +4602,7 @@ GtkWidget* get_buttons_edit_dialog(void) {
 		gtk_tree_view_column_set_sort_column_id(column, 0);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(tButtonsEditType), column);
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tButtonsEditType_selection_changed), NULL);
+		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tButtonsEditType_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
 
 		gtk_list_store_append(tButtonsEditType_store, &iter);
 		gtk_list_store_set(tButtonsEditType_store, &iter, 0, _("None"), 1, -2, -1);

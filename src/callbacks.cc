@@ -23743,7 +23743,23 @@ gint string_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpoin
 	gint retval;
 	gtk_tree_model_get(model, a, cid, &gstr1, -1);
 	gtk_tree_model_get(model, b, cid, &gstr2, -1);
-	retval = g_ascii_strcasecmp(gstr1, gstr2);
+	gchar *gstr1c = g_utf8_casefold(gstr1, -1);
+	gchar *gstr2c = g_utf8_casefold(gstr2, -1);
+#ifdef _WIN32
+	for(size_t i = 2; i < strlen(gstr1c); i++) {
+		if((unsigned char) gstr1c[i - 2] == 0xE2 && (unsigned char) gstr1c[i - 1] == 0x88) {
+			gstr1c[i - 2] = ' '; gstr1c[i - 1] = ' '; gstr1c[i] = ' ';
+		}
+	}
+	for(size_t i = 2; i < strlen(gstr2c); i++) {
+		if((unsigned char) gstr2c[i - 2] == 0xE2 && (unsigned char) gstr2c[i - 1] == 0x88) {
+			gstr2c[i - 2] = ' '; gstr2c[i - 1] = ' '; gstr2c[i] = ' ';
+		}
+	}
+#endif
+	retval = g_utf8_collate(gstr1c, gstr2c);
+	g_free(gstr1c);
+	g_free(gstr2c);
 	g_free(gstr1);
 	g_free(gstr2);
 	return retval;
@@ -23763,7 +23779,13 @@ gint category_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpo
 	else if(g_strcmp0(gstr2, _("User functions")) == 0) retval = 1;
 	else if(g_strcmp0(gstr1, _("Inactive")) == 0) retval = -1;
 	else if(g_strcmp0(gstr2, _("Inactive")) == 0) retval = 1;
-	else retval = g_ascii_strcasecmp(gstr1, gstr2);
+	else {
+		gchar *gstr1c = g_utf8_casefold(gstr1, -1);
+		gchar *gstr2c = g_utf8_casefold(gstr2, -1);
+		retval = g_utf8_collate(gstr1c, gstr2c);
+		g_free(gstr1c);
+		g_free(gstr2c);
+	}
 	g_free(gstr1);
 	g_free(gstr2);
 	return retval;
@@ -23783,7 +23805,11 @@ gint completion_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, g
 	gint cid = GPOINTER_TO_INT(user_data);
 	gtk_tree_model_get(model, a, cid, &gstr1, -1);
 	gtk_tree_model_get(model, b, cid, &gstr2, -1);
-	retval = g_ascii_strcasecmp(gstr1, gstr2);
+	gchar *gstr1c = g_utf8_casefold(gstr1, -1);
+	gchar *gstr2c = g_utf8_casefold(gstr2, -1);
+	retval = g_utf8_collate(gstr1c, gstr2c);
+	g_free(gstr1c);
+	g_free(gstr2c);
 	g_free(gstr1);
 	g_free(gstr2);
 	return retval;
@@ -23805,12 +23831,17 @@ gint int_string_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, g
 	if(gstr2[0] == '-') {
 		b2 = true;
 	}
-	if(b1 == b2)
-		retval = g_ascii_strcasecmp(gstr1, gstr2);
-	else if(b1)
+	if(b1 == b2) {
+		gchar *gstr1c = g_utf8_casefold(gstr1, -1);
+		gchar *gstr2c = g_utf8_casefold(gstr2, -1);
+		retval = g_utf8_collate(gstr1c, gstr2c);
+		g_free(gstr1c);
+		g_free(gstr2c);
+	} else if(b1) {
 		retval = -1;
-	else
+	} else {
 		retval = 1;
+	}
 	g_free(gstr1);
 	g_free(gstr2);
 	return retval;
