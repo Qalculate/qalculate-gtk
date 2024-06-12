@@ -176,6 +176,7 @@ extern Unit *selected_to_unit;
 bool save_mode_on_exit;
 bool save_defs_on_exit;
 bool clear_history_on_exit = false;
+int max_history_lines = 300;
 int history_expression_type = 2;
 int gtk_theme = -1;
 bool use_custom_result_font, use_custom_expression_font, use_custom_status_font, use_custom_keypad_font, use_custom_app_font, use_custom_history_font;
@@ -21902,6 +21903,7 @@ void load_preferences() {
 	save_mode_on_exit = true;
 	save_defs_on_exit = true;
 	clear_history_on_exit = false;
+	max_history_lines = 300;
 	history_expression_type = 2;
 	hyp_is_on = false;
 	inv_is_on = false;
@@ -22097,6 +22099,8 @@ void load_preferences() {
 					save_defs_on_exit = v;
 				} else if(svar == "clear_history_on_exit") {
 					clear_history_on_exit = v;
+				} else if(svar == "max_history_lines") {
+					max_history_lines = v;
 				} else if(svar == "history_expression_type") {
 					history_expression_type = v;
 				} else if(svar == "language") {
@@ -23224,6 +23228,7 @@ bool save_preferences(bool mode, bool allow_cancel) {
 	fprintf(file, "save_mode_on_exit=%i\n", save_mode_on_exit);
 	fprintf(file, "save_definitions_on_exit=%i\n", save_defs_on_exit);
 	fprintf(file, "clear_history_on_exit=%i\n", clear_history_on_exit);
+	if(max_history_lines != 300) fprintf(file, "max_history_lines=%i\n", max_history_lines);
 	fprintf(file, "history_expression_type=%i\n", history_expression_type);
 	if(!custom_lang.empty()) fprintf(file, "language=%s\n", custom_lang.c_str());
 	fprintf(file, "ignore_locale=%i\n", ignore_locale);
@@ -23360,7 +23365,7 @@ bool save_preferences(bool mode, bool allow_cancel) {
 		}
 	}
 
-	int lines = 300;
+	int lines = max_history_lines;
 	bool end_after_result = false, end_before_expression = false;
 	bool is_protected = false;
 	bool is_bookmarked = false;
@@ -24783,6 +24788,9 @@ void on_preferences_checkbutton_persistent_keypad_toggled(GtkToggleButton *w, gp
 }
 void on_preferences_checkbutton_clear_history_toggled(GtkToggleButton *w, gpointer) {
 	clear_history_on_exit = gtk_toggle_button_get_active(w);
+}
+void on_preferences_max_history_lines_spin_button_value_changed(GtkSpinButton *spin, gpointer) {
+	max_history_lines = gtk_spin_button_get_value_as_int(spin);
 }
 gboolean on_status_left_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
 	if(event->type == GDK_BUTTON_PRESS && event->button == 3 && !b_busy) {
