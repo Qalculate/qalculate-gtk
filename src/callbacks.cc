@@ -32579,6 +32579,7 @@ void on_popup_menu_item_clear_activate(GtkMenuItem*, gpointer) {
 void on_popup_menu_item_clear_history_activate(GtkMenuItem*, gpointer) {
 	expression_history.clear();
 	expression_history_index = -1;
+	current_history_expression = "";
 }
 void on_popup_menu_item_display_normal_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
