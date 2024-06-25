@@ -10,8 +10,7 @@
     <property name="border-width">6</property>
     <property name="title" translatable="yes">Floating Point Conversion</property>
     <property name="type-hint">normal</property>
-    <signal name="delete-event" handler="gtk_widget_hide" swapped="no"/>
-    <signal name="destroy-event" handler="gtk_widget_hide" swapped="no"/>
+    <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
     <signal name="key-press-event" handler="on_floatingpoint_dialog_key_press_event" swapped="no"/>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox5">
