@@ -200,6 +200,22 @@
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_save_history_separately">
+                    <property name="label" translatable="yes">Save history to separate file</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_save_history_separately_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_allow_multiple_instances">
                     <property name="label" translatable="yes">Allow multiple instances</property>
                     <property name="visible">True</property>
@@ -215,7 +231,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">3</property>
+                    <property name="position">4</property>
                   </packing>
                 </child>
                 <child>
@@ -231,7 +247,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">4</property>
+                    <property name="position">5</property>
                   </packing>
                 </child>
                 <child>
@@ -248,7 +264,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">5</property>
+                    <property name="position">6</property>
                   </packing>
                 </child>
                 <child>
@@ -265,7 +281,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">6</property>
+                    <property name="position">7</property>
                   </packing>
                 </child>
                 <child>
@@ -283,7 +299,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">7</property>
+                    <property name="position">8</property>
                   </packing>
                 </child>
                 <child>
@@ -301,7 +317,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">8</property>
+                    <property name="position">9</property>
                   </packing>
                 </child>
                 <child>
@@ -344,7 +360,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">9</property>
+                    <property name="position">10</property>
                   </packing>
                 </child>
                 <child>
@@ -401,7 +417,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">10</property>
+                    <property name="position">11</property>
                   </packing>
                 </child>
                 <child>
@@ -441,7 +457,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">11</property>
+                    <property name="position">12</property>
                   </packing>
                 </child>
               </object>

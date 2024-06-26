@@ -1,3 +1,32 @@
+2024-06-25 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Use Pango and GTK version information from library linked, instead of compiled, against in some cases
+	* Remove "Show Parsed Expression in Result Field" from Mode menu
+	* Option to save history to separate file
+	* Fix window (e.g. units window) empty when opened a second time
+
+2024-06-13 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Save date and time for history items, add search by date, and show date of selected history item in search by date context menu item
+
+2024-06-12 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add max history lines saved configuration to preferences
+	* Remove current expression from history on expression history clear
+
+2024-06-10 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Remove current expression from history on expression history clear
+
+2024-06-09 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix subsequent tab completions after completion of unit with prefix
+	* Workaround for extremely small superscript and subscript with some fonts and on Windows with scaling >= 200%
+
+2024-05-07 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix element index in matrix dialogs (show row before column)
+
 2024-05-02 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Fix updating of self-contained binaries from GUI

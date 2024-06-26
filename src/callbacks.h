@@ -181,6 +181,9 @@ DECLARE_BUILTIN_FUNCTION(AnswerFunction, 0)
 DECLARE_BUILTIN_FUNCTION(ExpressionFunction, 0)
 DECLARE_BUILTIN_FUNCTION(SetTitleFunction, 0)
 
+#define RUNTIME_CHECK_GTK_VERSION(x, y) (gtk_get_minor_version() >= y)
+#define RUNTIME_CHECK_GTK_VERSION_LESS(x, y) (gtk_get_minor_version() < y)
+
 class ViewThread : public Thread {
 protected:
 	virtual void run();
@@ -302,6 +305,7 @@ void save_mode();
 
 void load_preferences();
 bool save_preferences(bool mode = false, bool allow_cancel = false);
+bool save_history(bool allow_cancel = false);
 void edit_preferences();
 
 gint completion_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer user_data);

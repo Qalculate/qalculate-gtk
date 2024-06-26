@@ -50,6 +50,37 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="5.2.0" date="2024-07-01">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Physical constants updated with CODATA 2022 values</li>
+      <li>New function: allroots()</li>
+      <li>New units: therm, thermie, IUNS calorie, rpm</li>
+      <li>Additional names/symbols for turn unit</li>
+      <li>Use symbol "cal" for thermochemical (instead of international table) calorie</li>
+      <li>Change title and names/symbols of weak mixing angle (prepend "sin2" to theta variants)</li>
+      <li>Return exact negative integers in log10()</li>
+      <li>More conservative handling of infinity in equations</li>
+      <li>Remove n from equation solution if possible using assumptions of x</li>
+      <li>Save date and time for history items, add search by date, and show date of selected history item in search by date context menu item</li>
+      <li>Option to change the max number of history lines saved</li>
+      <li>Option to save history to separate file</li>
+      <li>Improved sorting of text strings with Unicode characters</li>
+      <li>Reverse order of row and column for element index in matrix dialogs</li>
+      <li>Fix extremely small superscript and subscript with some fonts and on Windows with scaling ≥200%</li>
+      <li>Fix empty windows when opened a second time</li>
+      <li>Fix subsequent tab completions after completion of unit with prefix</li>
+      <li>Fix input of scientific E-notation using lowercase e in numbers using concise interval notation, in expressions</li>
+      <li>Fix "bit width" and "signed integer" arguments in setbits()</li>
+      <li>Fix a^(f(x))=a^(b*g(x)) where b=2 or b=3</li>
+      <li>Fix auto/dual approximation with "where" expression</li>
+      <li>Fix "where" expressions with multiple inequality statements for a single variable, e.g. "where x≥0 and x≤10"</li>
+      <li>Fix crash when a variable name/symbol with more than 20 characters is used in "where" expression</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
   <release version="5.1.0" date="2024-05-06">
    <description>
     <p>Changes:</p>

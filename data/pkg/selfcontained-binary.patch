@@ -1,17 +1,17 @@
 diff --git a/src/callbacks.cc b/src/callbacks.cc
-index f61afc2..d4a3155 100644
+index 14ab38a..c3c3dd4 100644
 --- a/src/callbacks.cc
 +++ b/src/callbacks.cc
-@@ -2324,6 +2324,8 @@ gboolean on_activate_link(GtkLabel*, gchar *uri, gpointer) {
+@@ -2870,6 +2870,8 @@ gboolean on_activate_link(GtkLabel*, gchar *uri, gpointer) {
  #endif
  }
  
 +#define AUTO_UPDATE 1
 +
  #ifdef AUTO_UPDATE
- void auto_update(string new_version) {
+ void auto_update(string new_version, string url) {
  	char selfpath[1000];
-@@ -19062,11 +19064,7 @@ void load_preferences() {
+@@ -21784,11 +21786,7 @@ void load_preferences() {
  	use_systray_icon = false;
  	hide_on_startup = false;
  
@@ -23,18 +23,18 @@ index f61afc2..d4a3155 100644
  
  	title_type = TITLE_APP;
  
-@@ -19328,7 +19326,9 @@ void load_preferences() {
- 				} else if(svar == "auto_update_exchange_rates") {
- 					auto_update_exchange_rates = v;
- 				} else if(svar == "check_version") {
--					check_version = v;
-+					if(version_numbers[0] > 3 || version_numbers[1] >= 10) {
-+						check_version = v;
-+					}
- 				} else if(svar == "last_version_check") {
- 					last_version_check_date.set(svalue);
- 				} else if(svar == "last_found_version") {
-@@ -31776,7 +31776,7 @@ void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
+@@ -22101,7 +22099,9 @@ void load_preferences() {
+ 					} else if(svar == "auto_update_exchange_rates") {
+ 						auto_update_exchange_rates = v;
+ 					} else if(svar == "check_version") {
+-						check_version = v;
++						if(version_numbers[0] > 3 || version_numbers[1] >= 10) {
++							check_version = v;
++						}
+ 					} else if(svar == "last_version_check") {
+ 						last_version_check_date.set(svalue);
+ 					} else if(svar == "last_found_version") {
+@@ -35895,7 +35895,7 @@ void on_menu_item_about_activate(GtkMenuItem*, gpointer) {
  	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), _("Powerful and easy to use calculator"));
  	gtk_about_dialog_set_license_type(GTK_ABOUT_DIALOG(dialog), GTK_LICENSE_GPL_2_0);
  	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016–2023 Hanna Knutsson");

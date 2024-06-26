@@ -2760,21 +2760,6 @@ On: 1.1 × 1.1 ≈ 1.2</property>
                         <property name="can-focus">False</property>
                       </object>
                     </child>
-		    <child>
-                      <object class="GtkCheckMenuItem" id="menu_item_parsed_in_result">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Show Parsed Expression in Result Field (experimental)</property>
-                        <property name="use-underline">True</property>
-                        <signal name="activate" handler="on_menu_item_parsed_in_result_activate" swapped="no"/>
-                      </object>
-                    </child>
-		    <child>
-                      <object class="GtkSeparatorMenuItem" id="separator6b">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                      </object>
-                    </child>
                     <child>
                       <object class="GtkMenuItem" id="item1">
                         <property name="visible">True</property>

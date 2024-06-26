@@ -404,7 +404,7 @@ void load_preferences_search() {
 	gchar *gstr_file = g_build_filename(getLocalDir().c_str(), "qalculate-gtk.cfg", NULL);
 	file = fopen(gstr_file, "r");
 
-	int version_numbers[] = {5, 1, 0};
+	int version_numbers[] = {5, 2, 0};
 
 	if(file) {
 		char line[1000000L];

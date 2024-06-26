@@ -162,7 +162,7 @@ gint history_scroll_width = 16;
 GtkCssProvider *topframe_provider, *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider, *app_provider_theme, *statusframe_provider, *button_padding_provider, *color_provider, *history_provider;
 
 extern bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad, minimal_mode, show_bases_keypad;
-extern bool save_mode_on_exit, save_defs_on_exit, load_global_defs, hyp_is_on, inv_is_on, fetch_exchange_rates_at_startup, clear_history_on_exit;
+extern bool save_mode_on_exit, save_defs_on_exit, load_global_defs, hyp_is_on, inv_is_on, fetch_exchange_rates_at_startup, clear_history_on_exit, save_history_separately;
 extern int max_history_lines;
 extern bool fraction_fixed_combined;
 extern int allow_multiple_instances;
@@ -405,7 +405,7 @@ void update_colors(bool initial) {
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
 	GdkRGBA bg_color;
 	gtk_style_context_get_background_color(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, &bg_color);
-	if(!initial) {
+	if(!initial && RUNTIME_CHECK_GTK_VERSION_LESS(3, 16)) {
 		gchar *gstr = gtk_css_provider_to_string(topframe_provider);
 		string topframe_css = gstr;
 		g_free(gstr);
@@ -1851,7 +1851,7 @@ void create_main_window(void) {
 		gtk_widget_destroy(GTK_WIDGET(gtk_builder_get_object(main_builder, "image_hide_right_buttons")));
 		gtk_container_add(GTK_CONTAINER(gtk_builder_get_object(main_builder, "event_hide_right_buttons")), arrow_right);
 	}
-	gtk_grid_set_column_spacing(GTK_GRID(gtk_builder_get_object(main_builder, "grid_buttons")), 0);
+	if(RUNTIME_CHECK_GTK_VERSION_LESS(3, 14)) gtk_grid_set_column_spacing(GTK_GRID(gtk_builder_get_object(main_builder, "grid_buttons")), 0);
 	gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_swap")), "object-flip-vertical-symbolic", GTK_ICON_SIZE_BUTTON);
 #endif
 
@@ -1987,14 +1987,19 @@ void create_main_window(void) {
 	topframe_provider = gtk_css_provider_new();
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "topframe"))), GTK_STYLE_PROVIDER(topframe_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	string topframe_css = "* {background-color: ";
+
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
-	GdkRGBA bg_color;
-	gtk_style_context_get_background_color(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, &bg_color);
-	gchar *gstr = gdk_rgba_to_string(&bg_color);
-	topframe_css += gstr;
-	g_free(gstr);
-#else
-	topframe_css += "@theme_base_color;";
+	if(RUNTIME_CHECK_GTK_VERSION_LESS(3, 16)) {
+		GdkRGBA bg_color;
+		gtk_style_context_get_background_color(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, &bg_color);
+		gchar *gstr = gdk_rgba_to_string(&bg_color);
+		topframe_css += gstr;
+		g_free(gstr);
+	} else {
+#endif
+		topframe_css += "@theme_base_color;";
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
+	}
 #endif
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 18
 	GtkCssProvider *expressionborder_provider = gtk_css_provider_new();
@@ -2014,11 +2019,13 @@ void create_main_window(void) {
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusframe"))), GTK_STYLE_PROVIDER(statusframe_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_css_provider_load_from_data(statusframe_provider, topframe_css.c_str(), -1, NULL);
 
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
-	GtkCssProvider *result_color_provider = gtk_css_provider_new();
-	gtk_css_provider_load_from_data(result_color_provider, "* {color: @theme_text_color;}", -1, NULL);
-	gtk_style_context_add_provider(gtk_widget_get_style_context(resultview), GTK_STYLE_PROVIDER(result_color_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION - 1);
+	if(RUNTIME_CHECK_GTK_VERSION(3, 16)) {
+		GtkCssProvider *result_color_provider = gtk_css_provider_new();
+		gtk_css_provider_load_from_data(result_color_provider, "* {color: @theme_text_color;}", -1, NULL);
+		gtk_style_context_add_provider(gtk_widget_get_style_context(resultview), GTK_STYLE_PROVIDER(result_color_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION - 1);
+	}
 
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
 	if(gtk_theme < 0) {
 		app_provider_theme = NULL;
 	} else {
@@ -2098,11 +2105,9 @@ void create_main_window(void) {
 		}
 	}
 	if(use_custom_expression_font) {
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
-		gchar *gstr = font_name_to_css(custom_expression_font.c_str(), "textview.view");
-#else
-		gchar *gstr = font_name_to_css(custom_expression_font.c_str());
-#endif
+		gchar *gstr;
+		if(RUNTIME_CHECK_GTK_VERSION(3, 20)) gstr = font_name_to_css(custom_expression_font.c_str(), "textview.view");
+		else gstr = font_name_to_css(custom_expression_font.c_str());
 		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
@@ -2112,11 +2117,9 @@ void create_main_window(void) {
 		char *gstr_l = pango_font_description_to_string(font_desc);
 		if(custom_expression_font.empty()) custom_expression_font = gstr_l;
 		pango_font_description_free(font_desc);
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
-		gchar *gstr = font_name_to_css(gstr_l, "textview.view");
-#else
-		gchar *gstr = font_name_to_css(gstr_l);
-#endif
+		gchar *gstr;
+		if(RUNTIME_CHECK_GTK_VERSION(3, 20)) gstr = font_name_to_css(gstr_l, "textview.view");
+		else gstr = font_name_to_css(gstr_l);
 		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
 		g_free(gstr);
 		g_free(gstr_l);
@@ -2413,7 +2416,7 @@ void create_main_window(void) {
 	if(!gtk_icon_theme_has_icon(gtk_icon_theme_get_default(), "document-edit-symbolic")) {
 		gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_edit")), "gtk-edit", GTK_ICON_SIZE_BUTTON);
 #if GTK_MAJOR_VERSION <= 3 && GTK_MINOR_VERSION <= 18
-		if(themestr == "Ambiance" || themestr == "Radiance") {
+		if(RUNTIME_CHECK_GTK_VERSION_LESS(3, 18) && (themestr == "Ambiance" || themestr == "Radiance")) {
 			gtk_style_context_remove_class(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_re"))), "linked");
 			gtk_style_context_remove_class(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rm"))), "linked");
 			gtk_style_context_remove_class(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_ro1"))), "linked");
@@ -2423,8 +2426,6 @@ void create_main_window(void) {
 		}
 #endif
 	}
-
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_parsed_in_result")), parsed_in_result);
 
 	gtk_builder_connect_signals(main_builder, NULL);
 
@@ -2460,10 +2461,8 @@ void create_main_window(void) {
 	completion_view = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionview"));
 	gtk_style_context_add_provider(gtk_widget_get_style_context(completion_view), GTK_STYLE_PROVIDER(expression_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20
-
 	// Fix for breeze-gtk and Ubuntu theme
-	if(themestr.substr(0, 7) != "Adwaita" && themestr.substr(0, 5) != "oomox" && themestr.substr(0, 6) != "themix" && themestr != "Yaru") {
+	if(RUNTIME_CHECK_GTK_VERSION(3, 20) && themestr.substr(0, 7) != "Adwaita" && themestr.substr(0, 5) != "oomox" && themestr.substr(0, 6) != "themix" && themestr != "Yaru") {
 		GtkCssProvider *historyview_provider = gtk_css_provider_new();
 		gtk_tree_view_set_grid_lines(GTK_TREE_VIEW(historyview), GTK_TREE_VIEW_GRID_LINES_NONE);
 		gtk_style_context_add_provider(gtk_widget_get_style_context(historyview), GTK_STYLE_PROVIDER(historyview_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
@@ -2475,8 +2474,6 @@ void create_main_window(void) {
 			gtk_css_provider_load_from_data(historyview_provider, "treeview.view {-GtkTreeView-horizontal-separator: 0;}\ntreeview.view.separator {min-height: 2px;}", -1, NULL);
 		}
 	}
-
-#endif
 
 	if(theme_name) g_free(theme_name);
 
@@ -2520,10 +2517,13 @@ void create_main_window(void) {
 	gtk_widget_set_size_request(gtk_scrolled_window_get_vscrollbar(GTK_SCROLLED_WINDOW(completion_scrolled)), -1, 0);
 	completion_window = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionwindow"));
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 20
-	GtkCssProvider *completion_provider = gtk_css_provider_new();
-	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "completionview"))), GTK_STYLE_PROVIDER(completion_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	gtk_css_provider_load_from_data(completion_provider, "* {font-size: medium;}", -1, NULL);
+	if(RUNTIME_CHECK_GTK_VERSION_LESS(3, 20)) {
+		GtkCssProvider *completion_provider = gtk_css_provider_new();
+		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "completionview"))), GTK_STYLE_PROVIDER(completion_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		gtk_css_provider_load_from_data(completion_provider, "* {font-size: medium;}", -1, NULL);
+	}
 #endif
+
 	completion_store = gtk_list_store_new(10, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN, G_TYPE_INT, CAIRO_GOBJECT_TYPE_SURFACE, G_TYPE_INT, G_TYPE_UINT, G_TYPE_INT, G_TYPE_STRING);
 	completion_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(completion_store), NULL);
 	gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(completion_filter), 3);
@@ -2648,8 +2648,9 @@ void create_main_window(void) {
 	gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 18
-	set_expression_size_request();
+	if(RUNTIME_CHECK_GTK_VERSION_LESS(3, 18)) set_expression_size_request();
 #endif
+
 	if(history_height > 0) gtk_widget_set_size_request(tabs, -1, -1);
 
 #ifdef _WIN32
@@ -2989,6 +2990,7 @@ GtkWidget* get_preferences_dialog(void) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_save_mode")), save_mode_on_exit);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_clear_history")), clear_history_on_exit);
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_max_history_lines_spin_button")), (double) max_history_lines);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_save_history_separately")), save_history_separately);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_allow_multiple_instances")), allow_multiple_instances > 0);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_ignore_locale")), ignore_locale);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_check_version")), check_version);
@@ -3893,7 +3895,7 @@ GtkWidget* get_nbases_dialog(void) {
 			gtk_widget_destroy(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_image_hide_buttons")));
 			gtk_container_add(GTK_CONTAINER(gtk_builder_get_object(nbases_builder, "nbases_event_hide_buttons")), arrow_left);
 		}
-		gtk_box_set_spacing(GTK_BOX(gtk_builder_get_object(nbases_builder, "grid_nbases")), 0);
+		if(RUNTIME_CHECK_GTK_VERSION_LESS(3, 14)) gtk_box_set_spacing(GTK_BOX(gtk_builder_get_object(nbases_builder, "grid_nbases")), 0);
 #endif
 
 		if(!show_bases_keypad) gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "box_keypad")));
