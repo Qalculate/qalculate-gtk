@@ -23411,6 +23411,13 @@ bool save_preferences(bool mode, bool allow_cancel) {
 	gchar *gstr2 = g_build_filename(homedir.c_str(), "qalculate-gtk.cfg", NULL);
 	file = fopen(gstr2, "w+");
 	if(file == NULL) {
+#ifndef _WIN32
+		GStatBuf stat;
+		if(g_lstat(gstr2, &stat) == 0 && S_ISLNK(stat.st_mode)) {
+			g_free(gstr2);
+			return true;
+		}
+#endif
 		GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_NONE, _("Couldn't write preferences to\n%s"), gstr2);
 		if(allow_cancel) {
 			gtk_dialog_add_buttons(GTK_DIALOG(edialog), _("Ignore"), GTK_RESPONSE_CLOSE, _("Cancel"), GTK_RESPONSE_CANCEL, _("Retry"), GTK_RESPONSE_APPLY, NULL);
