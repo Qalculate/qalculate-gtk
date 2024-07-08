@@ -22796,8 +22796,8 @@ void load_preferences() {
 						max_plot_time = v;
 					} else if(svar == "custom_button_label") {
 						unsigned int index = 0;
-						char str[svalue.length()];
-						int n = sscanf(svalue.c_str(), "%u:%[^\n]", &index, str);
+						char str[20];
+						int n = sscanf(svalue.c_str(), "%u:%19[^\n]", &index, str);
 						if(n >= 2 && index < custom_buttons.size()) {
 							custom_buttons[index].text = str;
 							remove_blank_ends(custom_buttons[index].text);
@@ -22805,9 +22805,9 @@ void load_preferences() {
 					} else if(svar == "custom_button") {
 						unsigned int index = 0;
 						unsigned int bi = 0;
-						char str[svalue.length()];
+						char str[20];
 						int type = -1;
-						int n = sscanf(svalue.c_str(), "%u:%u:%i:%[^\n]", &index, &bi, &type, str);
+						int n = sscanf(svalue.c_str(), "%u:%u:%i:%19[^\n]", &index, &bi, &type, str);
 						if(n >= 3 && index < custom_buttons.size()) {
 							if(bi <= 2) {
 								string value;
@@ -22821,10 +22821,9 @@ void load_preferences() {
 						}
 					} else if(svar == "keyboard_shortcut") {
 						default_shortcuts = false;
-						char str[svalue.length()];
 						int type = -1;
 						guint key, modifier;
-						int n = sscanf(svalue.c_str(), "%u:%u:%i:%[^\n]", &key, &modifier, &type, str);
+						int n = sscanf(svalue.c_str(), "%u:%u:%i:%999999[^\n]", &key, &modifier, &type, line);
 						if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 9) || (version_numbers[0] == 3 && version_numbers[1] == 9 && version_numbers[2] < 1)) {
 							if(type >= SHORTCUT_TYPE_DEGREES) type += 3;
 						}
@@ -22843,7 +22842,7 @@ void load_preferences() {
 						if(n >= 3 && type >= SHORTCUT_TYPE_FUNCTION && type <= LAST_SHORTCUT_TYPE) {
 							string value;
 							if(n == 4) {
-								value = str;
+								value = line;
 								if(type != SHORTCUT_TYPE_TEXT) remove_blank_ends(value);
 							}
 							unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find((guint64) key + (guint64) G_MAXUINT32 * (guint64) modifier);
