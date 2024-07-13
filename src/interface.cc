@@ -14,7 +14,9 @@
 #  include <config.h>
 #endif
 
-#include <unistd.h>
+#ifndef _MSC_VER
+#	include <unistd.h>
+#endif
 #include <string.h>
 #include <stdio.h>
 
@@ -26,6 +28,10 @@
 #include "callbacks.h"
 #include "interface.h"
 #include "main.h"
+#include "util.h"
+#include "precisiondialog.h"
+#include "decimalsdialog.h"
+#include "setbasedialog.h"
 
 #include <deque>
 
@@ -69,44 +75,18 @@ using std::iterator;
 using std::list;
 using std::deque;
 
-extern GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *datasetedit_builder, *datasets_builder, *setbase_builder, *decimals_builder;
-extern GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
-extern GtkBuilder *shortcuts_builder, *preferences_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder, *buttonsedit_builder;
-extern GtkBuilder *periodictable_builder, *percentage_builder, *calendarconversion_builder, *floatingpoint_builder;
+extern GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *datasetedit_builder;
+extern GtkBuilder *functionedit_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder;
+extern GtkBuilder *preferences_builder, *unitedit_builder, *unknownedit_builder, *variableedit_builder;
 extern vector<mode_struct> modes;
 
 GtkWidget *mainwindow;
-
-GtkWidget *tFunctionCategories;
-GtkWidget *tFunctions;
-GtkListStore *tFunctions_store;
-GtkTreeModel *tFunctions_store_filter;
-GtkTreeStore *tFunctionCategories_store;
-
-GtkWidget *tVariableCategories;
-GtkWidget *tVariables;
-GtkListStore *tVariables_store;
-GtkTreeModel *tVariables_store_filter;
-GtkTreeStore *tVariableCategories_store;
-
-GtkWidget *tUnitCategories;
-GtkWidget *tUnits;
-GtkListStore *tUnits_store;
-GtkTreeModel *tUnits_store_filter, *units_convert_filter;
-GtkTreeStore *tUnitCategories_store;
-GtkWidget *units_convert_view, *units_convert_window, *units_convert_scrolled;
-GtkCellRenderer *units_convert_flag_renderer;
 
 GtkWidget *tUnitSelectorCategories;
 GtkWidget *tUnitSelector;
 GtkListStore *tUnitSelector_store;
 GtkTreeModel *tUnitSelector_store_filter;
 GtkTreeStore *tUnitSelectorCategories_store;
-
-GtkWidget *tDatasets;
-GtkWidget *tDataObjects;
-GtkListStore *tDatasets_store;
-GtkListStore *tDataObjects_store;
 
 GtkWidget *tDataProperties;
 GtkListStore *tDataProperties_store;
@@ -115,12 +95,6 @@ GtkWidget *tNames;
 GtkListStore *tNames_store;
 GtkCellRenderer *names_edit_name_renderer;
 GtkTreeViewColumn *names_edit_name_column;
-
-GtkWidget *tShortcuts, *tShortcutsType;
-GtkListStore *tShortcuts_store, *tShortcutsType_store;
-
-GtkWidget *tButtonsEditType, *tButtonsEdit;
-GtkListStore *tButtonsEditType_store, *tButtonsEdit_store;
 
 GtkWidget *tabs, *expander_keypad, *expander_history, *expander_stack, *expander_convert;
 GtkEntryCompletion *completion;
@@ -133,9 +107,6 @@ GtkListStore *tFunctionArguments_store;
 GtkWidget *tSubfunctions;
 GtkListStore *tSubfunctions_store;
 
-GtkWidget *tPlotFunctions;
-GtkListStore *tPlotFunctions_store;
-
 GtkWidget *item_factorize, *item_simplify;
 
 GtkWidget *tMatrixEdit, *tMatrix;
@@ -143,7 +114,7 @@ GtkListStore *tMatrixEdit_store, *tMatrix_store;
 extern vector<GtkTreeViewColumn*> matrix_edit_columns, matrix_columns;
 
 GtkCellRenderer *history_renderer, *history_index_renderer, *ans_renderer, *register_renderer, *register_index_renderer;
-GtkTreeViewColumn *register_column, *history_column, *history_index_column, *flag_column, *units_flag_column;
+GtkTreeViewColumn *register_column, *history_column, *history_index_column, *flag_column;
 
 GtkWidget *expressiontext;
 GtkTextBuffer *expressionbuffer;
@@ -161,7 +132,7 @@ gint history_scroll_width = 16;
 
 GtkCssProvider *topframe_provider, *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider, *app_provider_theme, *statusframe_provider, *button_padding_provider, *color_provider, *history_provider;
 
-extern bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad, minimal_mode, show_bases_keypad;
+extern bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad, minimal_mode;
 extern bool save_mode_on_exit, save_defs_on_exit, load_global_defs, hyp_is_on, inv_is_on, fetch_exchange_rates_at_startup, clear_history_on_exit, save_history_separately;
 extern int max_history_lines;
 extern bool fraction_fixed_combined;
@@ -183,7 +154,7 @@ extern bool caret_as_xor;
 extern int close_with_esc;
 extern int visible_keypad;
 extern bool auto_calculate, chain_mode;
-extern bool simplified_percentage;
+extern int simplified_percentage;
 extern bool complex_angle_form;
 extern bool check_version;
 extern int max_plot_time;
@@ -196,8 +167,6 @@ extern int previous_precision;
 extern int enable_tooltips;
 extern bool toe_changed;
 
-extern string nbases_error_color, nbases_warning_color;
-
 extern PrintOptions printops;
 extern EvaluationOptions evalops;
 
@@ -208,7 +177,7 @@ extern vector<GtkWidget*> popup_result_mode_items;
 
 extern deque<string> expression_undo_buffer;
 
-gint win_height, win_width, win_x, win_y, win_monitor, history_height, variables_width, variables_height, variables_hposition, variables_vposition, units_width, units_height, units_hposition, units_vposition, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2;
+gint win_height, win_width, win_x, win_y, win_monitor, history_height;
 bool win_monitor_primary;
 extern bool remember_position, always_on_top, aot_changed;
 extern gint minimal_width;
@@ -228,13 +197,17 @@ gchar history_bookmark_color[8];
 extern unordered_map<string, cairo_surface_t*> flag_surfaces;
 int flagheight;
 
-extern unordered_map<guint64, keyboard_shortcut> keyboard_shortcuts;
 extern vector<custom_button> custom_buttons;
 
 extern string fix_history_string(const string &str);
 
 gint compare_categories(gconstpointer a, gconstpointer b) {
-	return strcasecmp((const char*) a, (const char*) b);
+	gchar *gstr1c = g_utf8_casefold((const char*) a, -1);
+	gchar *gstr2c = g_utf8_casefold((const char*) b, -1);
+	gint retval = g_utf8_collate(gstr1c, gstr2c);
+	g_free(gstr1c);
+	g_free(gstr2c);
+	return retval;
 }
 
 bool border_tested = false;
@@ -1032,61 +1005,20 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 	set_assumptions_items(at, as);
 
 	if(!initial_update) {
-		if(decimals_builder) {
-			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gtk_builder_get_object(decimals_builder, "decimals_dialog_checkbutton_min")), po.use_min_decimals);
-			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gtk_builder_get_object(decimals_builder, "decimals_dialog_checkbutton_max")), po.use_max_decimals);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(decimals_builder, "decimals_dialog_spinbutton_min")), po.min_decimals);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(decimals_builder, "decimals_dialog_spinbutton_max")), po.max_decimals);
-		} else {
-			printops.max_decimals = po.max_decimals;
-			printops.use_max_decimals = po.use_max_decimals;
-			printops.max_decimals = po.min_decimals;
-			printops.use_min_decimals = po.use_min_decimals;
-		}
-		if(precision_builder) {
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(precision_builder, "precision_dialog_spinbutton_precision")), precision);
-		} else {
-			CALCULATOR->setPrecision(precision);
-			previous_precision = 0;
-		}
+		printops.max_decimals = po.max_decimals;
+		printops.use_max_decimals = po.use_max_decimals;
+		printops.max_decimals = po.min_decimals;
+		printops.use_min_decimals = po.use_min_decimals;
+		decimals_updated();
+		CALCULATOR->setPrecision(precision);
+		previous_precision = 0;
+		precision_updated();
 		printops.spacious = po.spacious;
 		printops.short_multiplication = po.short_multiplication;
 		printops.excessive_parenthesis = po.excessive_parenthesis;
 		evalops.calculate_functions = eo.calculate_functions;
-		if(setbase_builder) {
-			switch(eo.parse_options.base) {
-				case BASE_BINARY: {
-					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_binary")), TRUE);
-					break;
-				}
-				case BASE_OCTAL: {
-					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_octal")), TRUE);
-					break;
-				}
-				case BASE_DECIMAL: {
-					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_decimal")), TRUE);
-					break;
-				}
-				case 12: {
-					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_duodecimal")), TRUE);
-					break;
-				}
-				case BASE_HEXADECIMAL: {
-					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_hexadecimal")), TRUE);
-					break;
-				}
-				case BASE_ROMAN_NUMERALS: {
-					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_roman")), TRUE);
-					break;
-				}
-				default: {
-					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
-					gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_spinbutton_input_other")), eo.parse_options.base);
-				}
-			}
-		} else {
-			evalops.parse_options.base = eo.parse_options.base;
-		}
+		evalops.parse_options.base = eo.parse_options.base;
+		bases_updated();
 	}
 	update_keypad_bases();
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_programmers_keypad")), keypad & PROGRAMMING_KEYPAD);
@@ -2244,23 +2176,6 @@ void create_main_window(void) {
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")), continuous_conversion);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes")), set_missing_prefixes);
 
-#if GTK_MAJOR_VERSION <= 3 && GTK_MINOR_VERSION < 20
-#	define SET_FOCUS_ON_CLICK(x) gtk_button_set_focus_on_click(GTK_BUTTON(x), FALSE)
-#else
-#	define SET_FOCUS_ON_CLICK(x) gtk_widget_set_focus_on_click(GTK_WIDGET(x), FALSE)
-#endif
-#define CHILDREN_SET_FOCUS_ON_CLICK(x) list = gtk_container_get_children(GTK_CONTAINER(gtk_builder_get_object(main_builder, x))); \
-	for(l = list; l != NULL; l = l->next) { \
-		SET_FOCUS_ON_CLICK(l->data); \
-	} \
-	g_list_free(list);
-#define CHILDREN_SET_FOCUS_ON_CLICK_2(x, y) list = gtk_container_get_children(GTK_CONTAINER(gtk_builder_get_object(main_builder, x))); \
-	obj = gtk_builder_get_object(main_builder, y); \
-	for(l = list; l != NULL; l = l->next) { \
-		if(l->data != obj) SET_FOCUS_ON_CLICK(l->data); \
-	} \
-	g_list_free(list);
-
 	GList *l, *l2;
 	GList *list, *list2;
 	GObject *obj;
@@ -2666,309 +2581,6 @@ void create_main_window(void) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 	}
 
-}
-
-GtkWidget* get_functions_dialog(void) {
-
-	if(!functions_builder) {
-
-		functions_builder =  getBuilder("functions.ui");
-		g_assert(functions_builder != NULL);
-
-		g_assert(gtk_builder_get_object(functions_builder, "functions_dialog") != NULL);
-
-		tFunctionCategories = GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_treeview_category"));
-		tFunctions = GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_treeview_function"));
-
-		tFunctions_store = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN);
-		tFunctions_store_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(tFunctions_store), NULL);
-		gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(tFunctions_store_filter), 2);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tFunctions), GTK_TREE_MODEL(tFunctions_store_filter));
-		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctions));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
-		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Function"), renderer, "text", 0, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, 0);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tFunctions), column);
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tFunctions_selection_changed), NULL);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tFunctions_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
-		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tFunctions_store), 0, GTK_SORT_ASCENDING);
-
-		gtk_tree_view_set_enable_search(GTK_TREE_VIEW(tFunctions), FALSE);
-
-		tFunctionCategories_store = gtk_tree_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tFunctionCategories), GTK_TREE_MODEL(tFunctionCategories_store));
-		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctionCategories));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Category"), renderer, "text", 0, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tFunctionCategories), column);
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tFunctionCategories_selection_changed), NULL);
-		gtk_tree_view_column_set_sort_column_id(column, 0);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tFunctionCategories_store), 0, category_sort_func, GINT_TO_POINTER(0), NULL);
-		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tFunctionCategories_store), 0, GTK_SORT_ASCENDING);
-
-		GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functions_builder, "functions_textview_description")));
-		gtk_text_buffer_create_tag(buffer, "bold", "weight", PANGO_WEIGHT_BOLD, NULL);
-		gtk_text_buffer_create_tag(buffer, "italic", "style", PANGO_STYLE_ITALIC, NULL);
-
-		if(functions_width > 0 && functions_height > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(functions_builder, "functions_dialog")), functions_width, functions_height);
-		if(functions_hposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(functions_builder, "functions_hpaned")), functions_hposition);
-		if(functions_vposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(functions_builder, "functions_vpaned")), functions_vposition);
-
-		gtk_builder_connect_signals(functions_builder, NULL);
-
-		update_functions_tree();
-
-	}
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(functions_builder, "functions_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_dialog"));
-}
-
-GtkWidget* get_variables_dialog(void) {
-	if(!variables_builder) {
-
-		variables_builder = getBuilder("variables.ui");
-		g_assert(variables_builder != NULL);
-
-		g_assert(gtk_builder_get_object(variables_builder, "variables_dialog") != NULL);
-
-		tVariableCategories = GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_treeview_category"));
-		tVariables = GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_treeview_variable"));
-
-		tVariables_store = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN);
-		tVariables_store_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(tVariables_store), NULL);
-		gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(tVariables_store_filter), 2);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tVariables), GTK_TREE_MODEL(tVariables_store_filter));
-		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariables));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
-		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Variable"), renderer, "text", 0, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, 0);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tVariables), column);
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tVariables_selection_changed), NULL);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tVariables_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
-		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tVariables_store), 0, GTK_SORT_ASCENDING);
-
-		gtk_tree_view_set_enable_search(GTK_TREE_VIEW(tVariables), FALSE);
-
-		tVariableCategories_store = gtk_tree_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tVariableCategories), GTK_TREE_MODEL(tVariableCategories_store));
-		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariableCategories));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Category"), renderer, "text", 0, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tVariableCategories), column);
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tVariableCategories_selection_changed), NULL);
-		gtk_tree_view_column_set_sort_column_id(column, 0);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tVariableCategories_store), 0, category_sort_func, GINT_TO_POINTER(0), NULL);
-		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tVariableCategories_store), 0, GTK_SORT_ASCENDING);
-
-		GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(variables_builder, "variables_textview_description")));
-		gtk_text_buffer_create_tag(buffer, "bold", "weight", PANGO_WEIGHT_BOLD, NULL);
-		gtk_text_buffer_create_tag(buffer, "italic", "style", PANGO_STYLE_ITALIC, NULL);
-
-		if(variables_width > 0 && variables_height > 0) {
-			gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")), variables_width, variables_height);
-			if(variables_vposition <= 0) variables_vposition = variables_height / 3 * 2;
-		}
-		if(variables_hposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(variables_builder, "variables_hpaned")), variables_hposition);
-		if(variables_vposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(variables_builder, "variables_vpaned")), variables_vposition);
-
-		gtk_builder_connect_signals(variables_builder, NULL);
-
-		update_variables_tree();
-
-	}
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_dialog"));
-}
-
-GtkWidget* get_units_dialog(void) {
-
-	if(!units_builder) {
-
-		units_builder = getBuilder("units.ui");
-		g_assert(units_builder != NULL);
-
-		g_assert(gtk_builder_get_object(units_builder, "units_dialog") != NULL);
-
-		tUnitCategories = GTK_WIDGET(gtk_builder_get_object(units_builder, "units_treeview_category"));
-		tUnits = GTK_WIDGET(gtk_builder_get_object(units_builder, "units_treeview_unit"));
-
-#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 14
-		if(!gtk_icon_theme_has_icon(gtk_icon_theme_get_default(), "pan-down-symbolic")) {
-			GtkWidget *arrow_down = gtk_arrow_new(GTK_ARROW_DOWN, GTK_SHADOW_OUT);
-			gtk_widget_set_size_request(GTK_WIDGET(arrow_down), 18, 18);
-			gtk_widget_show(arrow_down);
-			gtk_widget_destroy(GTK_WIDGET(gtk_builder_get_object(units_builder, "image_to_unit")));
-			gtk_container_add(GTK_CONTAINER(gtk_builder_get_object(units_builder, "units_to_box")), arrow_down);
-		}
-#endif
-
-		tUnits_store = gtk_list_store_new(UNITS_N_COLUMNS, G_TYPE_STRING, G_TYPE_POINTER, CAIRO_GOBJECT_TYPE_SURFACE, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
-		tUnits_store_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(tUnits_store), NULL);
-		gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(tUnits_store_filter), UNITS_VISIBLE_COLUMN);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tUnits), GTK_TREE_MODEL(tUnits_store_filter));
-		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnits));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		GtkCellRenderer *renderer = gtk_cell_renderer_pixbuf_new();
-		gtk_cell_renderer_set_padding(renderer, 4, 0);
-		units_flag_column = gtk_tree_view_column_new_with_attributes(_("Flag"), renderer, "surface", UNITS_FLAG_COLUMN, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tUnits), units_flag_column);
-		renderer = gtk_cell_renderer_text_new();
-		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", UNITS_TITLE_COLUMN, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, UNITS_TITLE_COLUMN);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tUnits), column);
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tUnits_selection_changed), NULL);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnits_store), UNITS_TITLE_COLUMN, string_sort_func, GINT_TO_POINTER(UNITS_TITLE_COLUMN), NULL);
-		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnits_store), UNITS_TITLE_COLUMN, GTK_SORT_ASCENDING);
-
-		gtk_tree_view_set_enable_search(GTK_TREE_VIEW(tUnits), FALSE);
-
-		tUnitCategories_store = gtk_tree_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tUnitCategories), GTK_TREE_MODEL(tUnitCategories_store));
-		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnitCategories));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Category"), renderer, "text", 0, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tUnitCategories), column);
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tUnitCategories_selection_changed), NULL);
-		gtk_tree_view_column_set_sort_column_id(column, 0);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tUnitCategories_store), 0, category_sort_func, GINT_TO_POINTER(0), NULL);
-		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tUnitCategories_store), 0, GTK_SORT_ASCENDING);
-
-		units_convert_window = GTK_WIDGET(gtk_builder_get_object(units_builder, "units_convert_window"));
-		units_convert_scrolled = GTK_WIDGET(gtk_builder_get_object(units_builder, "units_convert_scrolled"));
-		units_convert_view = GTK_WIDGET(gtk_builder_get_object(units_builder, "units_convert_view"));
-		units_convert_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(tUnits_store), NULL);
-		gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(units_convert_filter), UNITS_VISIBLE_COLUMN_CONVERT);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(units_convert_view), GTK_TREE_MODEL(units_convert_filter));
-		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(units_convert_view));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		units_convert_flag_renderer = gtk_cell_renderer_pixbuf_new();
-		GtkCellArea *area = gtk_cell_area_box_new();
-		gtk_cell_area_box_set_spacing(GTK_CELL_AREA_BOX(area), 12);
-		gtk_cell_area_box_pack_start(GTK_CELL_AREA_BOX(area), units_convert_flag_renderer, FALSE, TRUE, TRUE);
-		gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(area), units_convert_flag_renderer, "pixbuf", UNITS_FLAG_COLUMN, NULL);
-		renderer = gtk_cell_renderer_text_new();
-		gtk_cell_area_box_pack_start(GTK_CELL_AREA_BOX(area), renderer, TRUE, TRUE, TRUE);
-		gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(area), renderer, "text", UNITS_TITLE_COLUMN, NULL);
-		column = gtk_tree_view_column_new_with_area(area);
-		gtk_tree_view_column_set_sort_column_id(column, UNITS_TITLE_COLUMN);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(units_convert_view), column);
-
-#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION >= 16
-		gtk_label_set_width_chars(GTK_LABEL(gtk_builder_get_object(units_builder, "units_label_to_unit")), 20);
-		gtk_label_set_xalign(GTK_LABEL(gtk_builder_get_object(units_builder, "units_label_to_unit")), 0.0);
-#else
-		gint w;
-		PangoLayout *layout = gtk_widget_create_pango_layout(GTK_WIDGET((gtk_builder_get_object(units_builder, "units_label_to_unit"))), "AAAAAAAAAAAAAAAAAAAA");
-		pango_layout_get_pixel_size(layout, &w, NULL);
-		gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_to_box")), w + 16, -1);
-#endif
-
-		GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(units_builder, "units_textview_description")));
-		gtk_text_buffer_create_tag(buffer, "bold", "weight", PANGO_WEIGHT_BOLD, NULL);
-		gtk_text_buffer_create_tag(buffer, "italic", "style", PANGO_STYLE_ITALIC, NULL);
-
-		if(units_width > 0 && units_height > 0) {
-			gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")), units_width, units_height);
-			if(units_vposition <= 0) units_vposition = units_height / 3 * 2;
-		}
-		if(units_hposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(units_builder, "units_hpaned")), units_hposition);
-		if(units_vposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(units_builder, "units_vpaned")), units_vposition);
-
-		gtk_builder_connect_signals(units_builder, NULL);
-
-		update_units_tree();
-
-		gtk_entry_set_text (GTK_ENTRY (gtk_builder_get_object(units_builder, "units_entry_from_val")), "1");
-		gtk_entry_set_text (GTK_ENTRY (gtk_builder_get_object(units_builder, "units_entry_to_val")), "1");
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_from_val")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_to_val")), 1.0);
-
-	}
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog"));
-}
-
-GtkWidget* get_datasets_dialog(void) {
-
-	if(!datasets_builder) {
-
-		datasets_builder = getBuilder("datasets.ui");
-		g_assert(datasets_builder != NULL);
-
-		g_assert(gtk_builder_get_object(datasets_builder, "datasets_dialog") != NULL);
-
-		tDatasets = GTK_WIDGET(gtk_builder_get_object(datasets_builder, "datasets_treeview_datasets"));
-		tDataObjects = GTK_WIDGET(gtk_builder_get_object(datasets_builder, "datasets_treeview_objects"));
-
-		tDataObjects_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tDataObjects), GTK_TREE_MODEL(tDataObjects_store));
-		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tDataObjects));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
-		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes("Key 1", renderer, "text", 0, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, 0);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tDataObjects), column);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes("Key 2", renderer, "text", 1, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, 1);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tDataObjects), column);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes("Key 3", renderer, "text", 2, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, 2);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tDataObjects), column);
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tDataObjects_selection_changed), NULL);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tDataObjects_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
-		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tDataObjects_store), 0, GTK_SORT_ASCENDING);
-
-		tDatasets_store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tDatasets), GTK_TREE_MODEL(tDatasets_store));
-		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tDatasets));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Data Set"), renderer, "text", 0, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tDatasets), column);
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tDatasets_selection_changed), NULL);
-		gtk_tree_view_column_set_sort_column_id(column, 0);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tDatasets_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
-		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tDatasets_store), 0, GTK_SORT_ASCENDING);
-
-		GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(datasets_builder, "datasets_textview_description")));
-		gtk_text_buffer_create_tag(buffer, "bold", "weight", PANGO_WEIGHT_BOLD, NULL);
-		gtk_text_buffer_create_tag(buffer, "italic", "style", PANGO_STYLE_ITALIC, NULL);
-
-		if(datasets_width > 0 && datasets_height > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(datasets_builder, "datasets_dialog")), datasets_width, datasets_height);
-		if(datasets_hposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(datasets_builder, "datasets_hpaned")), datasets_hposition);
-		if(datasets_vposition1 > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(datasets_builder, "datasets_vpaned1")), datasets_vposition1);
-		if(datasets_vposition2 > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(datasets_builder, "datasets_vpaned2")), datasets_vposition2);
-		
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
-		gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(datasets_builder, "vbox1")), 6);
-		gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(datasets_builder, "vbox2")), 6);
-#else
-		gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(datasets_builder, "vbox1")), 6);
-		gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(datasets_builder, "vbox2")), 6);
-#endif
-
-		gtk_builder_connect_signals(datasets_builder, NULL);
-
-		update_datasets_tree();
-
-	}
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(datasets_builder, "datasets_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(datasets_builder, "datasets_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(datasets_builder, "datasets_dialog"));
 }
 
 GtkWidget* get_preferences_dialog(void) {
@@ -3477,12 +3089,6 @@ GtkWidget* get_matrix_dialog(void) {
 
 }
 
-GtkWidget* get_dataobject_edit_dialog(void) {
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(datasets_builder, "dataobject_edit_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(datasets_builder, "dataobject_edit_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(datasets_builder, "dataobject_edit_dialog"));
-}
-
 GtkWidget* get_dataset_edit_dialog(void) {
 
 	if(!datasetedit_builder) {
@@ -3663,524 +3269,6 @@ GtkWidget* get_csv_export_dialog(void) {
 	return GTK_WIDGET(gtk_builder_get_object(csvexport_builder, "csv_export_dialog"));
 
 }
-extern string prev_output_base, prev_input_base;
-GtkWidget* get_set_base_dialog(void) {
-	if(!setbase_builder) {
-
-		setbase_builder = getBuilder("setbase.ui");
-		g_assert(setbase_builder != NULL);
-
-		g_assert(gtk_builder_get_object(setbase_builder, "set_base_dialog") != NULL);
-
-		PrintOptions po = printops;
-		po.number_fraction_format = FRACTION_DECIMAL_EXACT;
-		po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
-		po.preserve_precision = true;
-		po.base = 10;
-		if(printops.base >= BASE_CUSTOM && !CALCULATOR->customOutputBase().isZero()) gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), CALCULATOR->customOutputBase().print(po).c_str());
-		if(evalops.parse_options.base >= BASE_CUSTOM && !CALCULATOR->customInputBase().isZero()) gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), CALCULATOR->customInputBase().print(po).c_str());
-		switch(evalops.parse_options.base) {
-			case BASE_BINARY: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_binary")), TRUE);
-				break;
-			}
-			case BASE_OCTAL: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_octal")), TRUE);
-				break;
-			}
-			case BASE_DECIMAL: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_decimal")), TRUE);
-				break;
-			}
-			case 12: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_duodecimal")), TRUE);
-				break;
-			}
-			case BASE_HEXADECIMAL: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_hexadecimal")), TRUE);
-				break;
-			}
-			case BASE_ROMAN_NUMERALS: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_roman")), TRUE);
-				break;
-			}
-			case BASE_UNICODE: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "Unicode");
-				break;
-			}
-			case BASE_E: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "e");
-				break;
-			}
-			case BASE_PI: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "π");
-				break;
-			}
-			case BASE_GOLDEN_RATIO: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "φ");
-				break;
-			}
-			case BASE_SUPER_GOLDEN_RATIO: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "ψ");
-				break;
-			}
-			case BASE_SQRT2: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "√2");
-				break;
-			}
-			case BASE_BIJECTIVE_26: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), _("Bijective base-26"));
-				break;
-			}
-			case BASE_BINARY_DECIMAL: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), "BCD");
-				break;
-			}
-			case BASE_CUSTOM: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_input_other")), TRUE);
-				break;
-			}
-			default: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_input_other")), i2s(evalops.parse_options.base).c_str());
-			}
-		}
-		switch(printops.base) {
-			case BASE_BINARY: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_binary")), TRUE);
-				break;
-			}
-			case BASE_OCTAL: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_octal")), TRUE);
-				break;
-			}
-			case BASE_DECIMAL: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_decimal")), TRUE);
-				break;
-			}
-			case 12: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_duodecimal")), TRUE);
-				break;
-			}
-			case BASE_HEXADECIMAL: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_hexadecimal")), TRUE);
-				break;
-			}
-			case BASE_SEXAGESIMAL: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_sexagesimal")), TRUE);
-				break;
-			}
-			case BASE_TIME: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_time")), TRUE);
-				break;
-			}
-			case BASE_ROMAN_NUMERALS: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_roman")), TRUE);
-				break;
-			}
-			case BASE_UNICODE: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "Unicode");
-				break;
-			}
-			case BASE_E: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "e");
-				break;
-			}
-			case BASE_PI: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "π");
-				break;
-			}
-			case BASE_GOLDEN_RATIO: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "φ");
-				break;
-			}
-			case BASE_SUPER_GOLDEN_RATIO: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "ψ");
-				break;
-			}
-			case BASE_SQRT2: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "sqrt(2)");
-				break;
-			}
-			case BASE_BIJECTIVE_26: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), _("Bijective base-26"));
-				break;
-			}
-			case BASE_BINARY_DECIMAL: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "BCD");
-				break;
-			}
-			case BASE_FP16: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "fp16");
-				break;
-			}
-			case BASE_FP32: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "float");
-				break;
-			}
-			case BASE_FP64: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "double");
-				break;
-			}
-			case BASE_FP80: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "fp80");
-				break;
-			}
-			case BASE_FP128: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), "fp128");
-				break;
-			}
-			case BASE_CUSTOM: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
-				break;
-			}
-			default: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(setbase_builder, "set_base_radiobutton_output_other")), TRUE);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(setbase_builder, "set_base_entry_output_other")), i2s(printops.base).c_str());
-			}
-		}
-		
-		SET_FOCUS_ON_CLICK(gtk_builder_get_object(setbase_builder, "button_close"));
-
-		gtk_builder_connect_signals(setbase_builder, NULL);
-
-	}
-	prev_output_base = ""; prev_input_base = "";
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(setbase_builder, "set_base_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_dialog"));
-}
-
-GtkWidget* get_nbases_dialog(void) {
-	if(!nbases_builder) {
-
-		nbases_builder = getBuilder("nbases.ui");
-		g_assert(nbases_builder != NULL);
-
-		g_assert(gtk_builder_get_object(nbases_builder, "nbases_dialog") != NULL);
-
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_binary")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_octal")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_decimal")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_hexadecimal")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_duo")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_roman")), 1.0);
-
-#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 14
-		if(!gtk_icon_theme_has_icon(gtk_icon_theme_get_default(), "pan-start-symbolic")) {
-			GtkWidget *arrow_left = gtk_arrow_new(GTK_ARROW_RIGHT, GTK_SHADOW_OUT);
-			gtk_widget_set_size_request(GTK_WIDGET(arrow_left), 18, 18);
-			gtk_widget_show(arrow_left);
-			gtk_widget_destroy(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_image_hide_buttons")));
-			gtk_container_add(GTK_CONTAINER(gtk_builder_get_object(nbases_builder, "nbases_event_hide_buttons")), arrow_left);
-		}
-		if(RUNTIME_CHECK_GTK_VERSION_LESS(3, 14)) gtk_box_set_spacing(GTK_BOX(gtk_builder_get_object(nbases_builder, "grid_nbases")), 0);
-#endif
-
-		if(!show_bases_keypad) gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "box_keypad")));
-
-		if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_sub"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_sub")), SIGN_MINUS);
-		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_sub")), MINUS);
-		if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_times"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_times")), SIGN_MULTIPLICATION);
-		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_times")), MULTIPLICATION);
-		if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_divide")), SIGN_DIVISION_SLASH);
-		else if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_DIVISION, (void*) gtk_builder_get_object(nbases_builder, "nbases_label_divide"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_divide")), SIGN_DIVISION);
-		else gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(nbases_builder, "nbases_label_divide")), DIVISION);
-
-		gchar *theme_name = NULL;
-		g_object_get(gtk_settings_get_default(), "gtk-theme-name", &theme_name, NULL);
-		string themestr;
-		if(theme_name) {
-			themestr = theme_name;
-			g_free(theme_name);
-		}
-
-		if(themestr.substr(0, 7) == "Adwaita" || themestr.substr(0, 5) == "oomox" || themestr.substr(0, 6) == "themix" || themestr == "Breeze" || themestr == "Breeze-Dark" || themestr == "Yaru") {
-			GtkCssProvider *link_style_top = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_top, "* {border-bottom-left-radius: 0; border-bottom-right-radius: 0}", -1, NULL);
-			GtkCssProvider *link_style_bot = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_bot, "* {border-top-left-radius: 0; border-top-right-radius: 0}", -1, NULL);
-			GtkCssProvider *link_style_tl = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_tl, "* {border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-top-right-radius: 0;}", -1, NULL);
-			GtkCssProvider *link_style_tr = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_tr, "* {border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-top-left-radius: 0;}", -1, NULL);
-			GtkCssProvider *link_style_bl = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_bl, "* {border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;}", -1, NULL);
-			GtkCssProvider *link_style_br = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_br, "* {border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-left-radius: 0;}", -1, NULL);
-			GtkCssProvider *link_style_mid = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_mid, "* {border-radius: 0;}", -1, NULL);
-
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_zero"))), GTK_STYLE_PROVIDER(link_style_bl), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_one"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_two"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_three"))), GTK_STYLE_PROVIDER(link_style_br), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_four"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_five"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_six"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_seven"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_eight"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_nine"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_a"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_b"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_c"))), GTK_STYLE_PROVIDER(link_style_tl), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_d"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_e"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_f"))), GTK_STYLE_PROVIDER(link_style_tr), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_and"))), GTK_STYLE_PROVIDER(link_style_top), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_or"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_xor"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_not"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_divide"))), GTK_STYLE_PROVIDER(link_style_top), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_times"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_sub"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_add"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_left_shift"))), GTK_STYLE_PROVIDER(link_style_top), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_right_shift"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_del"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_button_ac"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		}
-
-		GdkRGBA c;
-		gtk_style_context_get_color(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_label_decimal"))), GTK_STATE_FLAG_NORMAL, &c);
-		GdkRGBA c_err = c;
-		if(c_err.red >= 0.8) {
-			c_err.green /= 1.5;
-			c_err.blue /= 1.5;
-			c_err.red = 1.0;
-		} else {
-			if(c_err.red >= 0.5) c_err.red = 1.0;
-			else c_err.red += 0.5;
-		}
-		gchar ecs[8];
-		g_snprintf(ecs, 8, "#%02x%02x%02x", (int) (c_err.red * 255), (int) (c_err.green * 255), (int) (c_err.blue * 255));
-		nbases_error_color = ecs;
-
-		GdkRGBA c_warn = c;
-		if(c_warn.blue >= 0.8) {
-			c_warn.green /= 1.5;
-			c_warn.red /= 1.5;
-			c_warn.blue = 1.0;
-		} else {
-			if(c_warn.blue >= 0.3) c_warn.blue = 1.0;
-			else c_warn.blue += 0.7;
-		}
-		gchar wcs[8];
-		g_snprintf(wcs, 8, "#%02x%02x%02x", (int) (c_warn.red * 255), (int) (c_warn.green * 255), (int) (c_warn.blue * 255));
-		nbases_warning_color = wcs;
-
-		gtk_builder_connect_signals(nbases_builder, NULL);
-
-	}
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(nbases_builder, "nbases_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_dialog"));
-}
-GtkWidget* get_percentage_dialog(void) {
-	if(!percentage_builder) {
-
-		percentage_builder = getBuilder("percentage.ui");
-		g_assert(percentage_builder != NULL);
-
-		g_assert(gtk_builder_get_object(percentage_builder, "percentage_dialog") != NULL);
-
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_1")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_2")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_3")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_4")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_5")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_6")), 1.0);
-		gtk_entry_set_alignment(GTK_ENTRY(gtk_builder_get_object(percentage_builder, "percentage_entry_7")), 1.0);
-
-		gtk_text_view_set_left_margin(GTK_TEXT_VIEW(gtk_builder_get_object(percentage_builder, "percentage_description")), 12);
-		gtk_text_view_set_right_margin(GTK_TEXT_VIEW(gtk_builder_get_object(percentage_builder, "percentage_description")), 12);
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
-		gtk_text_view_set_top_margin(GTK_TEXT_VIEW(gtk_builder_get_object(percentage_builder, "percentage_description")), 12);
-		gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(gtk_builder_get_object(percentage_builder, "percentage_description")), 12);
-#else
-		gtk_text_view_set_pixels_above_lines(GTK_TEXT_VIEW(gtk_builder_get_object(percentage_builder, "percentage_description")), 12);
-#endif
-
-		gtk_builder_connect_signals(percentage_builder, NULL);
-
-	}
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(percentage_builder, "percentage_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_dialog"));
-}
-
-unordered_map<size_t, GtkWidget*> cal_year, cal_month, cal_day, cal_label;
-GtkWidget *chinese_stem, *chinese_branch;
-
-GtkWidget* get_calendarconversion_dialog(void) {
-	if(!calendarconversion_builder) {
-
-		calendarconversion_builder = getBuilder("calendarconversion.ui");
-		g_assert(calendarconversion_builder != NULL);
-
-		g_assert(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog") != NULL);
-
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_1")), _("Gregorian"));
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_8")), _("Revised Julian (Milanković)"));
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_7")), _("Julian"));
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_3")), _("Islamic (Hijri)"));
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_2")), _("Hebrew"));
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_6")), _("Chinese"));
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_4")), _("Persian (Solar Hijri)"));
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_9")), _("Coptic"));
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_10")), _("Ethiopian"));
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(calendarconversion_builder, "label_5")), _("Indian (National)"));
-
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
-		gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_1")), 12);
-		gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_2")), 12);
-		gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_3")), 12);
-		gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_4")), 12);
-		gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_5")), 12);
-		gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_6")), 12);
-		gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_7")), 12);
-		gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_8")), 12);
-		gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_9")), 12);
-		gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_10")), 12);
-#else
-		gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_1")), 12);
-		gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_2")), 12);
-		gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_3")), 12);
-		gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_4")), 12);
-		gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_5")), 12);
-		gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_6")), 12);
-		gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_7")), 12);
-		gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_8")), 12);
-		gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_9")), 12);
-		gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_10")), 12);
-#endif
-
-		cal_year[CALENDAR_GREGORIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_1"));
-		cal_month[CALENDAR_GREGORIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_1"));
-		cal_day[CALENDAR_GREGORIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_1"));
-		cal_label[CALENDAR_GREGORIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_1"));
-		cal_year[CALENDAR_HEBREW] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_2"));
-		cal_month[CALENDAR_HEBREW] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_2"));
-		cal_day[CALENDAR_HEBREW] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_2"));
-		cal_label[CALENDAR_HEBREW] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_2"));
-		cal_year[CALENDAR_ISLAMIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_3"));
-		cal_month[CALENDAR_ISLAMIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_3"));
-		cal_day[CALENDAR_ISLAMIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_3"));
-		cal_label[CALENDAR_ISLAMIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_3"));
-		cal_year[CALENDAR_PERSIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_4"));
-		cal_month[CALENDAR_PERSIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_4"));
-		cal_day[CALENDAR_PERSIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_4"));
-		cal_label[CALENDAR_PERSIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_4"));
-		cal_year[CALENDAR_INDIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_5"));
-		cal_month[CALENDAR_INDIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_5"));
-		cal_day[CALENDAR_INDIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_5"));
-		cal_label[CALENDAR_INDIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_5"));
-		cal_year[CALENDAR_CHINESE] = NULL;
-		chinese_stem = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "stem_6"));
-		chinese_branch = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "branch_6"));
-		cal_month[CALENDAR_CHINESE] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_6"));
-		cal_day[CALENDAR_CHINESE] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_6"));
-		cal_label[CALENDAR_CHINESE] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_6"));
-		cal_year[CALENDAR_JULIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_7"));
-		cal_month[CALENDAR_JULIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_7"));
-		cal_day[CALENDAR_JULIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_7"));
-		cal_label[CALENDAR_JULIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_7"));
-		cal_year[CALENDAR_MILANKOVIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_8"));
-		cal_month[CALENDAR_MILANKOVIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_8"));
-		cal_day[CALENDAR_MILANKOVIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_8"));
-		cal_label[CALENDAR_MILANKOVIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_8"));
-		cal_year[CALENDAR_COPTIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_9"));
-		cal_month[CALENDAR_COPTIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_9"));
-		cal_day[CALENDAR_COPTIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_9"));
-		cal_label[CALENDAR_COPTIC] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_9"));
-		cal_year[CALENDAR_ETHIOPIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "year_10"));
-		cal_month[CALENDAR_ETHIOPIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "month_10"));
-		cal_day[CALENDAR_ETHIOPIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "day_10"));
-		cal_label[CALENDAR_ETHIOPIAN] = GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "label_10"));
-
-		for(size_t i = 0; i < NUMBER_OF_CALENDARS; i++) {
-			if(cal_day.count(i) > 0) {
-				if(i == CALENDAR_CHINESE) {
-					for(size_t i2 = 1; i2 <= 5; i2++) gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(chinese_stem), chineseStemName(i2 * 2).c_str());
-					for(size_t i2 = 1; i2 <= 12; i2++) gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(chinese_branch), chineseBranchName(i2).c_str());
-				} else {
-					gtk_spin_button_set_range(GTK_SPIN_BUTTON(cal_year[i]), G_MININT, G_MAXINT);
-					gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(cal_year[i]), TRUE);
-					gtk_spin_button_set_increments(GTK_SPIN_BUTTON(cal_year[i]), 1.0, 10.0);
-					gtk_spin_button_set_digits(GTK_SPIN_BUTTON(cal_year[i]), 0);
-					gtk_entry_set_alignment(GTK_ENTRY(cal_year[i]), 1.0);
-				}
-				for(size_t i2 = 1; i2 <= (size_t) numberOfMonths((CalendarSystem) i); i2++) gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(cal_month[i]), monthName(i2, (CalendarSystem) i, true).c_str());
-				for(size_t i2 = 1; i2 <= 31; i2++) gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(cal_day[i]), i2s(i2).c_str());
-			}
-		}
-
-		QalculateDateTime date;
-		date.setToCurrentDate();
-		gtk_spin_button_set_value(GTK_SPIN_BUTTON(cal_year[CALENDAR_GREGORIAN]), date.year());
-		gtk_combo_box_set_active(GTK_COMBO_BOX(cal_month[CALENDAR_GREGORIAN]), date.month() - 1);
-
-		for(size_t i = 0; i < NUMBER_OF_CALENDARS; i++) {
-			if(cal_day.count(i) > 0) {
-				if(i == CALENDAR_CHINESE) {
-					g_signal_connect(chinese_stem, "changed", G_CALLBACK(calendar_changed), GINT_TO_POINTER((gint) i));
-					g_signal_connect(chinese_branch, "changed", G_CALLBACK(calendar_changed), GINT_TO_POINTER((gint) i));
-				} else {
-					g_signal_connect(cal_year[i], "value-changed", G_CALLBACK(calendar_changed), GINT_TO_POINTER((gint) i));
-				}
-				g_signal_connect(cal_month[i], "changed", G_CALLBACK(calendar_changed), GINT_TO_POINTER((gint) i));
-				g_signal_connect(cal_day[i], "changed", G_CALLBACK(calendar_changed), GINT_TO_POINTER((gint) i));
-			}
-		}
-
-		gtk_builder_connect_signals(calendarconversion_builder, NULL);
-
-		gtk_combo_box_set_active(GTK_COMBO_BOX(cal_day[CALENDAR_GREGORIAN]), date.day() - 1);
-
-	}
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog"));
-}
-
-GtkWidget *create_InfoWidget(const gchar *text) {
-
-	GtkWidget *hbox, *image, *infolabel;
-
-	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
-	gtk_widget_show(hbox);
-	gtk_widget_set_halign(hbox, GTK_ALIGN_START);
-	//gtk_widget_set_valign(hbox, GTK_ALIGN_CENTER);
-
-	image = gtk_image_new_from_icon_name("dialog-information", GTK_ICON_SIZE_BUTTON);
-	gtk_widget_show(image);
-	gtk_box_pack_start (GTK_BOX(hbox), image, FALSE, TRUE, 0);
-
-	infolabel = gtk_label_new(text);
-	gtk_widget_show(infolabel);
-	gtk_box_pack_start(GTK_BOX(hbox), infolabel, FALSE, FALSE, 0);
-	gtk_label_set_justify(GTK_LABEL(infolabel), GTK_JUSTIFY_LEFT);
-	gtk_label_set_line_wrap(GTK_LABEL(infolabel), TRUE);
-
-	return hbox;
-}
 
 GtkWidget* get_argument_rules_dialog(void) {
 
@@ -4206,448 +3294,5 @@ GtkWidget* get_argument_rules_dialog(void) {
 	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_dialog")), enable_tooltips);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(argumentrules_builder, "argument_rules_dialog")), always_on_top);
 	return GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_dialog"));
-}
-GtkWidget* get_decimals_dialog(void) {
-	if(!decimals_builder) {
-
-		decimals_builder = getBuilder("decimals.ui");
-		g_assert(decimals_builder != NULL);
-
-		g_assert(gtk_builder_get_object(decimals_builder, "decimals_dialog") != NULL);
-
-		gtk_builder_connect_signals(decimals_builder, NULL);
-
-	}
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(decimals_builder, "decimals_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(decimals_builder, "decimals_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(decimals_builder, "decimals_dialog"));
-}
-GtkWidget* get_plot_dialog(void) {
-	if(!plot_builder) {
-
-		if(!CALCULATOR->canPlot()) return NULL;
-
-		plot_builder = getBuilder("plot.ui");
-		g_assert(plot_builder != NULL);
-
-		g_assert(gtk_builder_get_object(plot_builder, "plot_dialog") != NULL);
-
-		tPlotFunctions = GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_treeview_data"));
-		tPlotFunctions_store = gtk_list_store_new(10, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_POINTER, G_TYPE_POINTER, G_TYPE_STRING);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tPlotFunctions), GTK_TREE_MODEL(tPlotFunctions_store));
-		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tPlotFunctions));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
-		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Title"), renderer, "text", 0, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tPlotFunctions), column);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Expression"), renderer, "text", 1, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tPlotFunctions), column);
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tPlotFunctions_selection_changed), NULL);
-
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_button_save")), false);
-
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_style")), 0);
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_smoothing")), 0);
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(plot_builder, "plot_combobox_legend_place")), 0);
-
-		gtk_builder_connect_signals(plot_builder, NULL);
-
-	}
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(plot_builder, "plot_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog"));
-}
-GtkWidget* get_precision_dialog(void) {
-	if(!precision_builder) {
-
-		precision_builder = getBuilder("precision.ui");
-		g_assert(precision_builder != NULL);
-
-		g_assert(gtk_builder_get_object(precision_builder, "precision_dialog") != NULL);
-
-		gtk_builder_connect_signals(precision_builder, NULL);
-
-	}
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(precision_builder, "precision_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(precision_builder, "precision_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(precision_builder, "precision_dialog"));
-}
-GtkWidget* get_periodic_dialog(void) {
-	if(!periodictable_builder) {
-
-		periodictable_builder = getBuilder("periodictable.ui");
-		g_assert(periodictable_builder != NULL);
-
-		g_assert(gtk_builder_get_object(periodictable_builder, "periodic_dialog") != NULL);
-
-		gtk_builder_connect_signals(periodictable_builder, NULL);
-
-		DataSet *dc = CALCULATOR->getDataSet("atom");
-		if(!dc) {
-			if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(periodictable_builder, "periodic_dialog")), always_on_top);
-			return GTK_WIDGET(gtk_builder_get_object(periodictable_builder, "periodic_dialog"));
-		}
-
-		DataObject *e;
-		GtkWidget *e_button;
-		GtkGrid *e_table = GTK_GRID(gtk_builder_get_object(periodictable_builder, "periodic_table"));
-		string tip;
-		GtkCssProvider *e_style[] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
-		GtkCssProvider *l_style = NULL;
-		DataProperty *p_xpos = dc->getProperty("x_pos");
-		DataProperty *p_ypos = dc->getProperty("y_pos");
-		DataProperty *p_weight = dc->getProperty("weight");
-		DataProperty *p_number = dc->getProperty("number");
-		DataProperty *p_symbol = dc->getProperty("symbol");
-		DataProperty *p_class = dc->getProperty("class");
-		DataProperty *p_name = dc->getProperty("name");
-		int x_pos = 0, y_pos = 0, group = 0;
-		string weight;
-		l_style = gtk_css_provider_new();
-		for(size_t i3 = 0; i3 < 12; i3++) {
-			e_style[i3] = gtk_css_provider_new();
-		}
-		for(size_t i = 1; i < 120; i++) {
-			e = dc->getObject(i2s(i));
-			if(e) {
-				x_pos = s2i(e->getProperty(p_xpos));
-				y_pos = s2i(e->getProperty(p_ypos));
-			}
-			if(e && x_pos > 0 && x_pos <= 18 && y_pos > 0 && y_pos <= 10) {
-				e_button = gtk_button_new();
-				gtk_button_set_relief(GTK_BUTTON(e_button), GTK_RELIEF_HALF);
-				gtk_container_add(GTK_CONTAINER(e_button), gtk_label_new(e->getProperty(p_symbol).c_str()));
-				group = s2i(e->getProperty(p_class));
-				if(group > 0 && group <= 11) gtk_style_context_add_provider(gtk_widget_get_style_context(e_button), GTK_STYLE_PROVIDER(e_style[group - 1]), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-				else gtk_style_context_add_provider(gtk_widget_get_style_context(e_button), GTK_STYLE_PROVIDER(e_style[11]), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-				if(x_pos > 2) gtk_grid_attach(e_table, e_button, x_pos + 1, y_pos, 1, 1);
-				else gtk_grid_attach(e_table, e_button, x_pos, y_pos, 1, 1);
-				tip = e->getProperty(p_number);
-				tip += " ";
-				tip += e->getProperty(p_name);
-				weight = e->getPropertyDisplayString(p_weight);
-				if(!weight.empty() && weight != "-") {
-					tip += "\n";
-					tip += weight;
-				}
-				gtk_widget_set_tooltip_text(e_button, tip.c_str());
-				gtk_widget_show_all(e_button);
-				g_signal_connect((gpointer) e_button, "clicked", G_CALLBACK(on_element_button_clicked), (gpointer) e);
-			}
-		}
-		gtk_css_provider_load_from_data(l_style, "* {color: #000000;}", -1, NULL);
-		gtk_css_provider_load_from_data(e_style[0], "* {color: #000000; background-image: none; background-color: #eeccee;}", -1, NULL);
-		gtk_css_provider_load_from_data(e_style[1], "* {color: #000000; background-image: none; background-color: #ddccee;}", -1, NULL);
-		gtk_css_provider_load_from_data(e_style[2], "* {color: #000000; background-image: none; background-color: #ccddff;}", -1, NULL);
-		gtk_css_provider_load_from_data(e_style[3], "* {color: #000000; background-image: none; background-color: #ddeeff;}", -1, NULL);
-		gtk_css_provider_load_from_data(e_style[4], "* {color: #000000; background-image: none; background-color: #cceeee;}", -1, NULL);
-		gtk_css_provider_load_from_data(e_style[5], "* {color: #000000; background-image: none; background-color: #bbffbb;}", -1, NULL);
-		gtk_css_provider_load_from_data(e_style[6], "* {color: #000000; background-image: none; background-color: #eeffdd;}", -1, NULL);
-		gtk_css_provider_load_from_data(e_style[7], "* {color: #000000; background-image: none; background-color: #ffffaa;}", -1, NULL);
-		gtk_css_provider_load_from_data(e_style[8], "* {color: #000000; background-image: none; background-color: #ffddaa;}", -1, NULL);
-		gtk_css_provider_load_from_data(e_style[9], "* {color: #000000; background-image: none; background-color: #ffccdd;}", -1, NULL);
-		gtk_css_provider_load_from_data(e_style[10], "* {color: #000000; background-image: none; background-color: #aaeedd;}", -1, NULL);
-		gtk_css_provider_load_from_data(e_style[11], "* {color: #000000; background-image: none;}", -1, NULL);
-	}
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(periodictable_builder, "periodic_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(periodictable_builder, "periodic_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(periodictable_builder, "periodic_dialog"));
-}
-
-GtkWidget* get_shortcuts_dialog(void) {
-	if(!shortcuts_builder) {
-
-		shortcuts_builder = getBuilder("shortcuts.ui");
-		g_assert(shortcuts_builder != NULL);
-
-		g_assert(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog") != NULL);
-
-		tShortcuts = GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_treeview"));
-
-		tShortcuts_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_UINT64);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tShortcuts), GTK_TREE_MODEL(tShortcuts_store));
-		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcuts));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
-		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Action"), renderer, "text", 0, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, 0);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tShortcuts), column);
-		renderer = gtk_cell_renderer_text_new();
-		g_object_set(G_OBJECT(renderer), "ellipsize", PANGO_ELLIPSIZE_END, "width-chars", 20, NULL);
-		column = gtk_tree_view_column_new_with_attributes(_("Value"), renderer, "text", 1, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, 1);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tShortcuts), column);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Key combination"), renderer, "text", 2, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, 2);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tShortcuts), column);
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tShortcuts_selection_changed), NULL);
-
-		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(tShortcuts_store), 0, GTK_SORT_ASCENDING);
-
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tShortcuts_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tShortcuts_store), 1, string_sort_func, GINT_TO_POINTER(1), NULL);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tShortcuts_store), 2, string_sort_func, GINT_TO_POINTER(2), NULL);
-
-		tShortcutsType = GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_treeview"));
-
-		tShortcutsType_store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_INT);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tShortcutsType), GTK_TREE_MODEL(tShortcutsType_store));
-		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcutsType));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_BROWSE);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Action"), renderer, "text", 0, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, 0);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tShortcutsType), column);
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tShortcutsType_selection_changed), NULL);
-
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tShortcutsType_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
-
-		for(int i = 0; i <= SHORTCUT_TYPE_QUIT; i++) {
-			GtkTreeIter iter;
-			gtk_list_store_append(tShortcutsType_store, &iter);
-			gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(i), 1, i, -1);
-			if(i == SHORTCUT_TYPE_RPN_MODE) {
-				gtk_list_store_append(tShortcutsType_store, &iter);
-				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_CHAIN_MODE), 1, SHORTCUT_TYPE_CHAIN_MODE, -1);
-			} else if(i == SHORTCUT_TYPE_COPY_RESULT) {
-				gtk_list_store_append(tShortcutsType_store, &iter);
-				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_INSERT_RESULT), 1, SHORTCUT_TYPE_INSERT_RESULT, -1);
-			} else if(i == SHORTCUT_TYPE_HISTORY_SEARCH) {
-				gtk_list_store_append(tShortcutsType_store, &iter);
-				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_HISTORY_CLEAR), 1, SHORTCUT_TYPE_HISTORY_CLEAR, -1);
-			} else if(i == SHORTCUT_TYPE_MINIMAL) {
-				gtk_list_store_append(tShortcutsType_store, &iter);
-				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_ALWAYS_ON_TOP), 1, SHORTCUT_TYPE_ALWAYS_ON_TOP, -1);
-				gtk_list_store_append(tShortcutsType_store, &iter);
-				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_DO_COMPLETION), 1, SHORTCUT_TYPE_DO_COMPLETION, -1);
-				gtk_list_store_append(tShortcutsType_store, &iter);
-				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION), 1, SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION, -1);
-			} else if(i == SHORTCUT_TYPE_SIMPLE_NOTATION) {
-				gtk_list_store_append(tShortcutsType_store, &iter);
-				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_PRECISION), 1, SHORTCUT_TYPE_PRECISION, -1);
-				gtk_list_store_append(tShortcutsType_store, &iter);
-				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_MIN_DECIMALS), 1, SHORTCUT_TYPE_MIN_DECIMALS, -1);
-				gtk_list_store_append(tShortcutsType_store, &iter);
-				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_MAX_DECIMALS), 1, SHORTCUT_TYPE_MAX_DECIMALS, -1);
-				gtk_list_store_append(tShortcutsType_store, &iter);
-				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_MINMAX_DECIMALS), 1, SHORTCUT_TYPE_MINMAX_DECIMALS, -1);
-			}
-			if(i == 0) gtk_tree_selection_select_iter(selection, &iter);
-		}
-
-		for(unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.begin(); it != keyboard_shortcuts.end(); ++it) {
-			GtkTreeIter iter;
-			gtk_list_store_insert(tShortcuts_store, &iter, 0);
-			gtk_list_store_set(tShortcuts_store, &iter, 0, shortcut_types_text(it->second.type).c_str(), 1, shortcut_values_text(it->second.value, it->second.type).c_str(), 2, shortcut_to_text(it->second.key, it->second.modifier).c_str(), 3, (guint64) it->second.key + (guint64) G_MAXUINT32 * (guint64) it->second.modifier, -1);
-		}
-
-		gtk_builder_connect_signals(shortcuts_builder, NULL);
-
-	}
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog"));
-}
-GtkWidget* get_floatingpoint_dialog(void) {
-	if(!floatingpoint_builder) {
-
-		floatingpoint_builder = getBuilder("floatingpoint.ui");
-		g_assert(floatingpoint_builder != NULL);
-
-		g_assert(gtk_builder_get_object(floatingpoint_builder, "floatingpoint_dialog") != NULL);
-
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
-		gtk_text_view_set_top_margin(GTK_TEXT_VIEW(gtk_builder_get_object(floatingpoint_builder, "fp_textedit_bin")), 6);
-		gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(gtk_builder_get_object(floatingpoint_builder, "fp_textedit_bin")), 6);
-#else
-		gtk_text_view_set_pixels_above_lines(GTK_TEXT_VIEW(gtk_builder_get_object(floatingpoint_builder, "fp_textedit_bin")), 6);
-#endif
-
-		gtk_builder_connect_signals(floatingpoint_builder, NULL);
-
-	}
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "floatingpoint_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(floatingpoint_builder, "floatingpoint_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "floatingpoint_dialog"));
-}
-
-#define SET_BUTTONS_EDIT_ITEM_3(l, t1, t2, t3) \
-	{gtk_list_store_set(tButtonsEdit_store, &iter, 1, custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str(), 2, custom_buttons[i].type[0] == -1 ? t1 : button_valuetype_text(custom_buttons[i].type[0], custom_buttons[i].value[0]).c_str(), 3, custom_buttons[i].type[1] == -1 ? t2 : button_valuetype_text(custom_buttons[i].type[1], custom_buttons[i].value[1]).c_str(), 4, custom_buttons[i].type[2] == -1 ? t3 : button_valuetype_text(custom_buttons[i].type[2], custom_buttons[i].value[2]).c_str(), -1);\
-	if(index >= 0) break;}
-	
-#define SET_BUTTONS_EDIT_ITEM_3B(l, t1, t2, t3) SET_BUTTONS_EDIT_ITEM_3(gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(main_builder, l))), t1, t2, t3)
-#define SET_BUTTONS_EDIT_ITEM_2(l, t1, t2) SET_BUTTONS_EDIT_ITEM_3(l, t1, t2, t2)
-#define SET_BUTTONS_EDIT_ITEM_2B(l, t1, t2) SET_BUTTONS_EDIT_ITEM_3(gtk_label_get_text(GTK_LABEL(gtk_builder_get_object(main_builder, l))), t1, t2, t2)
-#define SET_BUTTONS_EDIT_ITEM_C(l) SET_BUTTONS_EDIT_ITEM_3(l, "-", "-", "-")
-
-void update_custom_buttons_edit(int index, bool update_label_entry) {
-	GtkTreeIter iter;
-	gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tButtonsEdit_store), &iter);
-	int i = 0;
-	do {
-		gtk_tree_model_get(GTK_TREE_MODEL(tButtonsEdit_store), &iter, 0, &i, -1);
-		if(i == 0 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2("↑ ↓", _("Cycle through previous expression"), "-")
-		else if(i == 1 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2("← →", _("Move cursor left or right"), _("Move cursor to beginning or end"))
-		else if(i == 2 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2("%", CALCULATOR->v_percent->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) tButtonsEdit).c_str(), CALCULATOR->v_permille->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) tButtonsEdit).c_str())
-		else if(i == 3 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("±", _("Uncertainty/interval"), _("Relative error"), _("Interval"))
-		else if(i == 4 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3B("label_comma", _("Argument separator"), _("Blank space"), _("New line"))
-		else if(i == 5 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2("(x)", _("Smart parentheses"), _("Vector brackets"))
-		else if(i == 6 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2("(", _("Left parenthesis"), _("Left vector bracket"))
-		else if(i == 7 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2(")", _("Right parenthesis"), _("Right vector bracket"))
-		else if(i == 8 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("0", "0", "x^0", CALCULATOR->getDegUnit()->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) tButtonsEdit).c_str())
-		else if(i == 9 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("1", "1", "x^1", "1/x")
-		else if(i == 10 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("2", "2", "x^2", "1/2")
-		else if(i == 11 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("3", "3", "x^3", "1/3")
-		else if(i == 12 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("4", "4", "x^4", "1/4")
-		else if(i == 13 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("5", "5", "x^5", "1/5")
-		else if(i == 14 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("6", "6", "x^6", "1/6")
-		else if(i == 15 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("7", "7", "x^7", "1/7")
-		else if(i == 16 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("8", "8", "x^8", "1/8")
-		else if(i == 17 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("9", "9", "x^9", "1/9")
-		else if(i == 18 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3B("label_dot", _("Decimal point"), _("Blank space"), _("New line"))
-		else if(i == 19 && (index == i || index < 0)) {
-			MathFunction *f = CALCULATOR->getActiveFunction("exp10");
-			SET_BUTTONS_EDIT_ITEM_3B("label_exp", "10^x", CALCULATOR->f_exp->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) tButtonsEdit).c_str(), (f ? f->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) tButtonsEdit).c_str() : "-"));
-		} else if(i == 20 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2("x^y", _("Raise"), CALCULATOR->f_sqrt->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) tButtonsEdit).c_str())
-		else if(i == 21 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2B("label_divide", _("Divide"), "1/x")
-		else if(i == 22 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2B("label_times", _("Multiply"), _("Bitwise Exclusive OR"))
-		else if(i == 23 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3B("label_add", _("Add"), _("M+ (memory plus)"), _("Bitwise AND"))
-		else if(i == 24 && (index == i || index < 0)) {
-			MathFunction *f = CALCULATOR->getActiveFunction("neg");
-			SET_BUTTONS_EDIT_ITEM_3B("label_sub", _("Subtract"), f ? f->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) tButtonsEdit).c_str() : "-", _("Bitwise OR"));
-		} else if(i == 25 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2B("label_ac", _("Clear"), _("MC (memory clear)"))
-		else if(i == 26 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3B("label_del", _("Delete"), _("Backspace"), _("M− (memory minus)"))
-		else if(i == 27 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2B("label_ans", _("Previous result"), _("Previous result (static)"))
-		else if(i == 28 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("=", _("Calculate expression"), _("MR (memory recall)"), _("MS (memory store)"))
-		else if(i == 29 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C1")
-		else if(i == 30 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C2")
-		else if(i == 31 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C3")
-		else if(i == 32 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C4")
-		else if(i == 33 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C5")
-		else if(i == 34 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C6")
-		else if(i == 35 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C7")
-		else if(i == 36 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C8")
-		else if(i == 37 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C9")
-		else if(i == 38 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C10")
-		else if(i == 39 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C11")
-		else if(i == 40 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C12")
-		else if(i == 41 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C13")
-		else if(i == 42 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C14")
-		else if(i == 43 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C15")
-		else if(i == 44 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C16")
-		else if(i == 45 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C17")
-		else if(i == 46 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C18")
-		else if(i == 47 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C19")
-		else if(i == 48 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_C("C20")
-	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(tButtonsEdit_store), &iter));
-	on_tButtonsEdit_update_selection(gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEdit)), update_label_entry);
-}
-GtkWidget* get_buttons_edit_dialog(void) {
-	if(!buttonsedit_builder) {
-
-		buttonsedit_builder = getBuilder("buttonsedit.ui");
-		g_assert(buttonsedit_builder != NULL);
-
-		g_assert(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_dialog") != NULL);
-		
-		tButtonsEdit = GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_treeview"));
-
-		tButtonsEdit_store = gtk_list_store_new(5, G_TYPE_INT, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tButtonsEdit), GTK_TREE_MODEL(tButtonsEdit_store));
-		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEdit));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
-		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Label"), renderer, "text", 1, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tButtonsEdit), column);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Left-click"), renderer, "text", 2, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tButtonsEdit), column);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Right-click"), renderer, "text", 3, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tButtonsEdit), column);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Middle-click"), renderer, "text", 4, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tButtonsEdit), column);
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tButtonsEdit_selection_changed), NULL);
-
-		GtkTreeIter iter;
-		for(int i = 29; i <= 33; i++) {
-			gtk_list_store_append(tButtonsEdit_store, &iter);
-			gtk_list_store_set(tButtonsEdit_store, &iter, 0, i, -1);
-		}
-		for(int i = 0; i < 20; i++) {
-			gtk_list_store_append(tButtonsEdit_store, &iter);
-			gtk_list_store_set(tButtonsEdit_store, &iter, 0, i, -1);
-		}
-		for(int i = 34; i <= 48; i++) {
-			gtk_list_store_append(tButtonsEdit_store, &iter);
-			gtk_list_store_set(tButtonsEdit_store, &iter, 0, i, -1);
-		}
-		gtk_tree_selection_unselect_all(selection);
-
-		update_custom_buttons_edit();
-
-		tButtonsEditType = GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_type_treeview"));
-
-		tButtonsEditType_store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_INT);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tButtonsEditType), GTK_TREE_MODEL(tButtonsEditType_store));
-		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEditType));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_BROWSE);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Action"), renderer, "text", 0, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, 0);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tButtonsEditType), column);
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tButtonsEditType_selection_changed), NULL);
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tButtonsEditType_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
-
-		gtk_list_store_append(tButtonsEditType_store, &iter);
-		gtk_list_store_set(tButtonsEditType_store, &iter, 0, _("None"), 1, -2, -1);
-		for(int i = 0; i <= SHORTCUT_TYPE_QUIT; i++) {
-			gtk_list_store_append(tButtonsEditType_store, &iter);
-			gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(i), 1, i, -1);
-			if(i == SHORTCUT_TYPE_RPN_MODE) {
-				gtk_list_store_append(tButtonsEditType_store, &iter);
-				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_CHAIN_MODE), 1, SHORTCUT_TYPE_CHAIN_MODE, -1);
-			} else if(i == SHORTCUT_TYPE_COPY_RESULT) {
-				gtk_list_store_append(tButtonsEditType_store, &iter);
-				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_INSERT_RESULT), 1, SHORTCUT_TYPE_INSERT_RESULT, -1);
-			} else if(i == SHORTCUT_TYPE_HISTORY_SEARCH) {
-				gtk_list_store_append(tButtonsEditType_store, &iter);
-				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_HISTORY_CLEAR), 1, SHORTCUT_TYPE_HISTORY_CLEAR, -1);
-			} else if(i == SHORTCUT_TYPE_MINIMAL) {
-				gtk_list_store_append(tButtonsEditType_store, &iter);
-				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_ALWAYS_ON_TOP), 1, SHORTCUT_TYPE_ALWAYS_ON_TOP, -1);
-				gtk_list_store_append(tButtonsEditType_store, &iter);
-				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_DO_COMPLETION), 1, SHORTCUT_TYPE_DO_COMPLETION, -1);
-				gtk_list_store_append(tButtonsEditType_store, &iter);
-				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION), 1, SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION, -1);
-			} else if(i == SHORTCUT_TYPE_SIMPLE_NOTATION) {
-				gtk_list_store_append(tButtonsEditType_store, &iter);
-				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_PRECISION), 1, SHORTCUT_TYPE_PRECISION, -1);
-				gtk_list_store_append(tButtonsEditType_store, &iter);
-				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_MIN_DECIMALS), 1, SHORTCUT_TYPE_MIN_DECIMALS, -1);
-				gtk_list_store_append(tButtonsEditType_store, &iter);
-				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_MAX_DECIMALS), 1, SHORTCUT_TYPE_MAX_DECIMALS, -1);
-				gtk_list_store_append(tButtonsEditType_store, &iter);
-				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_MINMAX_DECIMALS), 1, SHORTCUT_TYPE_MINMAX_DECIMALS, -1);
-			}
-			if(i == 0) gtk_tree_selection_select_iter(selection, &iter);
-		}
-
-		gtk_builder_connect_signals(buttonsedit_builder, NULL);
-
-	}
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_dialog"));
 }
 

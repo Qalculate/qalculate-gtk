@@ -29,10 +29,25 @@ flags.c : $(top_srcdir)/data/flags.gresource.xml $(top_srcdir)/data/flags/*.png
 	glib-compile-resources --generate-source --target=$@ --sourcedir=$(top_srcdir)/data/flags $(top_srcdir)/data/flags.gresource.xml
 
 qalculate_gtk_SOURCES = \
-	main.cc		main.h		\
-	interface.cc	interface.h	\
-	callbacks.cc	callbacks.h	\
-	support.h
+	setbasedialog.cc setbasedialog.h \
+	buttonseditdialog.cc buttonseditdialog.h \
+	shortcutsdialog.cc shortcutsdialog.h \
+	decimalsdialog.cc decimalsdialog.h \
+	precisiondialog.cc precisiondialog.h \
+	datasetsdialog.cc datasetsdialog.h \
+	functionsdialog.cc functionsdialog.h \
+	unitsdialog.cc unitsdialog.h \
+	variablesdialog.cc variablesdialog.h \
+	plotdialog.cc plotdialog.h \
+	periodictabledialog.cc periodictabledialog.h \
+	numberbasesdialog.cc numberbasesdialog.h \
+	percentagecalculationdialog.cc percentagecalculationdialog.h \
+	calendarconversiondialog.cc calendarconversiondialog.h \
+	floatingpointdialog.cc floatingpointdialog.h \
+	main.cc main.h \
+	interface.cc interface.h \
+	callbacks.cc callbacks.h \
+	support.h util.h settings.h
 
 nodist_qalculate_gtk_SOURCES = ui.c flags.c
 

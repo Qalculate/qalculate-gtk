@@ -42,15 +42,6 @@
 #define EXPRESSION_YPAD 3
 
 enum {
-	UNITS_TITLE_COLUMN,
-	UNITS_POINTER_COLUMN,
-	UNITS_FLAG_COLUMN,
-	UNITS_VISIBLE_COLUMN,
-	UNITS_VISIBLE_COLUMN_CONVERT,
-	UNITS_N_COLUMNS
-};
-
-enum {
 	UNIT_CLASS_BASE_UNIT,
 	UNIT_CLASS_ALIAS_UNIT,
 	UNIT_CLASS_COMPOSITE_UNIT
@@ -102,36 +93,6 @@ enum {
 	MENU_ARGUMENT_TYPE_DATA_PROPERTY
 };
 
-enum {
-	SMOOTHING_MENU_NONE,
-	SMOOTHING_MENU_UNIQUE,
-	SMOOTHING_MENU_CSPLINES,
-	SMOOTHING_MENU_BEZIER,
-	SMOOTHING_MENU_SBEZIER
-};
-
-enum {
-	PLOTSTYLE_MENU_LINES,
-	PLOTSTYLE_MENU_POINTS,
-	PLOTSTYLE_MENU_LINESPOINTS,
-	PLOTSTYLE_MENU_BOXES,
-	PLOTSTYLE_MENU_HISTEPS,
-	PLOTSTYLE_MENU_STEPS,
-	PLOTSTYLE_MENU_CANDLESTICKS,
-	PLOTSTYLE_MENU_DOTS,
-	PLOTSTYLE_MENU_POLAR
-};
-
-enum {
-	PLOTLEGEND_MENU_NONE,
-	PLOTLEGEND_MENU_TOP_LEFT,
-	PLOTLEGEND_MENU_TOP_RIGHT,
-	PLOTLEGEND_MENU_BOTTOM_LEFT,
-	PLOTLEGEND_MENU_BOTTOM_RIGHT,
-	PLOTLEGEND_MENU_BELOW,
-	PLOTLEGEND_MENU_OUTSIDE
-};
-
 #ifdef _WIN32
 void create_systray_icon();
 void destroy_systray_icon();
@@ -141,41 +102,21 @@ void set_tooltips_enabled(GtkWidget *w, bool b);
 void test_border(void);
 void update_colors(bool initial = false);
 void set_custom_buttons(void);
-void update_custom_buttons(int index = -1);
-void update_custom_buttons_edit(int index = -1, bool update_label_entry = true);
 void create_button_menus(void);
 void update_button_padding(bool initial = false);
 void create_main_window(void);
-GtkWidget* get_functions_dialog(void);
-GtkWidget* get_variables_dialog(void);
-GtkWidget* get_units_dialog(void);
-GtkWidget* get_datasets_dialog(void);
 GtkWidget* get_preferences_dialog(void);
 GtkWidget* get_unit_edit_dialog(void);
 GtkWidget* get_function_edit_dialog(void);
-GtkWidget* get_simple_function_edit_dialog(void);
 GtkWidget* get_variable_edit_dialog(void);
 GtkWidget* get_unknown_edit_dialog(void);
 GtkWidget* get_matrix_edit_dialog(void);
 GtkWidget* get_matrix_dialog(void);
-GtkWidget* get_dataobject_edit_dialog(void);
 GtkWidget* get_dataset_edit_dialog(void);
 GtkWidget* get_dataproperty_edit_dialog(void);
 GtkWidget* get_names_edit_dialog(void);
 GtkWidget* get_csv_import_dialog(void);
 GtkWidget* get_csv_export_dialog(void);
-GtkWidget* get_set_base_dialog(void);
-GtkWidget* get_nbases_dialog(void);
-GtkWidget* get_percentage_dialog(void);
-GtkWidget* get_calendarconversion_dialog(void);
 GtkWidget* get_argument_rules_dialog(void);
-GtkWidget* get_decimals_dialog(void);
-GtkWidget* get_plot_dialog(void);
-GtkWidget* get_precision_dialog(void);
-GtkWidget* get_periodic_dialog(void);
-GtkWidget* get_shortcuts_dialog(void);
-GtkWidget* get_floatingpoint_dialog(void);
-GtkWidget* get_buttons_edit_dialog(void);
-GtkWidget* create_InfoWidget(const gchar *text);
 
 #endif /* INTERFACE_H */

@@ -18,14 +18,17 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <glib/gstdio.h>
 #ifdef G_OS_UNIX
-#include <glib-unix.h>
+#	include <glib-unix.h>
 #endif
-#include <unistd.h>
+#ifndef _MSC_VER
+#	include <unistd.h>
+#endif
 #include <sys/stat.h>
 
 #include "support.h"
 #include "interface.h"
 #include "callbacks.h"
+#include "util.h"
 #include "main.h"
 
 using std::string;
@@ -36,17 +39,8 @@ using std::endl;
 MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct, *displayed_mstruct;
 extern MathStructure mbak_convert;
 KnownVariable *vans[5], *v_memory;
-GtkWidget *functions_window;
-string selected_function_category;
-MathFunction *selected_function;
-GtkWidget *variables_window;
-string selected_variable_category;
-Variable *selected_variable;
 string result_text, parsed_text;
-GtkWidget *units_window;
-string selected_unit_category;
 string selected_unit_selector_category;
-Unit *selected_unit, *selected_to_unit;
 bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message;
 int allow_multiple_instances = -1;
 cairo_surface_t *surface_result;
@@ -75,10 +69,9 @@ extern int enable_tooltips;
 MathFunction *f_answer;
 MathFunction *f_expression;
 
-GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *setbase_builder, *datasetedit_builder, *datasets_builder, *decimals_builder;
-GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
-GtkBuilder *shortcuts_builder, *preferences_builder, *unit_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder, *buttonsedit_builder;
-GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_builder, *calendarconversion_builder, *floatingpoint_builder;
+GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *datasetedit_builder;
+GtkBuilder *functionedit_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder;
+GtkBuilder *preferences_builder, *unit_builder, *unitedit_builder, *unknownedit_builder, *variableedit_builder;
 
 Thread *view_thread, *command_thread;
 string calc_arg, file_arg;
@@ -175,11 +168,11 @@ void create_application(GtkApplication *app) {
 	b_busy_command = false;
 
 	main_builder = NULL; argumentrules_builder = NULL;
-	csvimport_builder = NULL; datasetedit_builder = NULL; datasets_builder = NULL; decimals_builder = NULL; functionedit_builder = NULL;
-	functions_builder = NULL; matrixedit_builder = NULL; matrix_builder = NULL; namesedit_builder = NULL; nbases_builder = NULL; plot_builder = NULL;
-	precision_builder = NULL; preferences_builder = NULL; unit_builder = NULL; percentage_builder = NULL; shortcuts_builder = NULL;
-	unitedit_builder = NULL; units_builder = NULL; unknownedit_builder = NULL; variableedit_builder = NULL; buttonsedit_builder = NULL;
-	variables_builder = NULL; csvexport_builder = NULL; setbase_builder = NULL; periodictable_builder = NULL, simplefunctionedit_builder = NULL; floatingpoint_builder = NULL;
+	csvimport_builder = NULL; datasetedit_builder = NULL; functionedit_builder = NULL;
+	matrixedit_builder = NULL; matrix_builder = NULL; namesedit_builder = NULL;
+	preferences_builder = NULL; unit_builder = NULL;
+	unitedit_builder = NULL; unknownedit_builder = NULL; variableedit_builder = NULL;
+	csvexport_builder = NULL;
 
 	//create the almighty Calculator object
 	new Calculator(ignore_locale);
@@ -291,16 +284,6 @@ void create_application(GtkApplication *app) {
 	}
 
 	//reset
-	functions_window = NULL;
-	selected_function_category = _("All");
-	selected_function = NULL;
-	variables_window = NULL;
-	selected_variable_category = _("All");
-	selected_variable = NULL;
-	units_window = NULL;
-	selected_unit_category = _("All");
-	selected_unit = NULL;
-	selected_to_unit = NULL;
 	result_text = "0";
 	parsed_text = "0";
 	surface_result = NULL;
@@ -609,13 +592,14 @@ int main (int argc, char *argv[]) {
 			ULONG nlang = 0;
 			DWORD n = 0;
 			if(GetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &nlang, NULL, &n)) {
-				WCHAR wlocale[n];
+				WCHAR* wlocale = new WCHAR[n];
 				if(GetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &nlang, wlocale, &n)) {
 					lang = utf8_encode(wlocale);
 					gsub("-", "_", lang);
 					if(lang.length() > 5) lang = lang.substr(0, 5);
 					if(!lang.empty()) _putenv_s("LANG", lang.c_str());
 				}
+				delete[] wlocale;
 			}
 		}
 		bindtextdomain(GETTEXT_PACKAGE, getPackageLocaleDir().c_str());
