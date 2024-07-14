@@ -99,7 +99,6 @@ gboolean on_display_errors_timeout(gpointer data);
 gboolean on_check_version_idle(gpointer data);
 
 void update_unit_selector_tree();
-void on_tDataProperties_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 void on_tUnitSelector_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 
@@ -121,10 +120,6 @@ void variable_inserted(Variable *object);
 void unit_inserted(Unit *object);
 
 void on_tPlotFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
-
-void on_tSubfunctions_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
-void on_tFunctionArguments_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
-void update_function_arguments_list(MathFunction *f);
 
 void on_tNames_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 
@@ -171,11 +166,7 @@ void add_as_variable();
 
 void fetch_exchange_rates(int timeout, int n = -1);
 
-Argument *edit_argument(Argument *arg = NULL);
-
 void insert_matrix(const MathStructure *initial_value = NULL, GtkWidget *win = NULL, gboolean create_vector = FALSE, bool is_text_struct = false, bool is_result = false, GtkEntry *entry = NULL);
-
-void edit_names(ExpressionItem *item = NULL, const gchar *namestr = NULL, GtkWidget *win = NULL, bool is_unit = false, bool is_dp = false, DataProperty *dp = NULL);
 
 gchar *font_name_to_css(const char *font_name, const char *w = "*");
 
@@ -514,35 +505,6 @@ void on_historyview_item_edited(GtkCellRendererText*, gchar*, gchar*, gpointer);
 void on_historyview_item_editing_started(GtkCellRenderer*, GtkCellEditable*, gchar*, gpointer);
 void on_historyview_item_editing_canceled(GtkCellRenderer*, gpointer);
 
-void on_unit_edit_entry_name_changed(GtkEditable *editable, gpointer user_data);
-void on_unit_edit_combobox_class_changed(GtkComboBox *om, gpointer user_data);
-void on_unit_edit_checkbutton_mix_toggled(GtkToggleButton *w, gpointer);
-void on_unit_edit_combo_system_changed(GtkComboBox *om, gpointer user_data);
-void on_function_edit_entry_name_changed(GtkEditable *editable, gpointer user_data);
-void on_variable_edit_entry_name_changed(GtkEditable *editable, gpointer user_data);
-void on_variables_edit_textview_value_changed(GtkTextBuffer*, gpointer user_data);
-void on_unknown_edit_checkbutton_custom_assumptions_toggled(GtkToggleButton *w, gpointer user_data);
-void on_unknown_edit_combobox_type_changed(GtkComboBox *om, gpointer user_data);
-void on_unknown_edit_combobox_sign_changed(GtkComboBox *om, gpointer user_data);
-
-void on_function_changed();
-void on_subfunction_changed();
-void on_argument_changed();
-void on_unit_changed();
-void on_variable_changed();
-void on_dataset_changed();
-void on_dataproperty_changed();
-void on_matrix_changed();
-void on_unknown_changed();
-void on_name_changed();
-
-void on_dataset_edit_entry_name_changed(GtkEditable *editable, gpointer user_data);
-void on_dataset_edit_button_new_property_clicked(GtkButton *button, gpointer user_data);
-void on_dataset_edit_button_edit_property_clicked(GtkButton *button, gpointer user_data);
-void on_dataset_edit_button_del_property_clicked(GtkButton *button, gpointer user_data);
-void on_dataset_edit_button_names_clicked(GtkWidget *button, gpointer user_data);
-void on_dataproperty_edit_combobox_type_changed(GtkComboBox *om, gpointer);
-
 void on_menu_item_show_percentage_dialog_activate(GtkMenuItem *w, gpointer user_data);
 
 void on_menu_item_show_calendarconversion_dialog_activate(GtkMenuItem *w, gpointer user_data);
@@ -575,16 +537,6 @@ void on_expressionbuffer_cursor_position_notify();
 
 gboolean on_resultview_draw(GtkWidget *w, cairo_t *cr, gpointer user_data);
 
-gboolean on_tMatrixEdit_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer user_data);
-gboolean on_tMatrixEdit_button_press_event(GtkWidget *w, GdkEventButton *event, gpointer user_data);
-gboolean on_tMatrixEdit_cursor_changed(GtkTreeView *w, gpointer user_data);
-
-void on_matrix_edit_spinbutton_columns_value_changed(GtkSpinButton *w, gpointer user_data);
-void on_matrix_edit_spinbutton_rows_value_changed(GtkSpinButton *w, gpointer user_data);
-
-void on_matrix_edit_radiobutton_matrix_toggled(GtkToggleButton *w, gpointer user_data);
-void on_matrix_edit_radiobutton_vector_toggled(GtkToggleButton *w, gpointer user_data);
-
 gboolean on_tMatrix_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer user_data);
 gboolean on_tMatrix_button_press_event(GtkWidget *w, GdkEventButton *event, gpointer user_data);
 gboolean on_tMatrix_cursor_changed(GtkTreeView *w, gpointer user_data);
@@ -595,51 +547,10 @@ void on_matrix_spinbutton_rows_value_changed(GtkSpinButton *w, gpointer user_dat
 void on_matrix_radiobutton_matrix_toggled(GtkToggleButton *w, gpointer user_data);
 void on_matrix_radiobutton_vector_toggled(GtkToggleButton *w, gpointer user_data);
 
-void on_csv_import_radiobutton_matrix_toggled(GtkToggleButton *w, gpointer user_data);
-void on_csv_import_radiobutton_vectors_toggled(GtkToggleButton *w, gpointer user_data);
-void on_csv_import_combobox_delimiter_changed(GtkComboBox *w, gpointer user_data);
-
-void on_csv_export_combobox_delimiter_changed(GtkComboBox *w, gpointer user_data);
-void on_csv_export_radiobutton_current_toggled(GtkToggleButton *w, gpointer user_data);
-void on_csv_export_radiobutton_matrix_toggled(GtkToggleButton *w, gpointer user_data);
-
 void on_type_label_date_clicked(GtkEntry *w, gpointer user_data);
 void on_type_label_file_clicked(GtkEntry *w, gpointer user_data);
 void on_type_label_vector_clicked(GtkEntry *w, gpointer user_data);
 void on_type_label_matrix_clicked(GtkEntry *w, gpointer user_data);
-
-void on_function_edit_button_subfunctions_clicked(GtkButton *w, gpointer user_data);
-void on_function_edit_button_add_subfunction_clicked(GtkButton *w, gpointer user_data);
-void on_function_edit_button_modify_subfunction_clicked(GtkButton *w, gpointer user_data);
-void on_function_edit_button_remove_subfunction_clicked(GtkButton *w, gpointer user_data);
-void on_function_edit_entry_subexpression_activate(GtkEntry *entry, gpointer user_data);
-void on_function_edit_button_add_argument_clicked(GtkButton *w, gpointer user_data);
-void on_function_edit_button_remove_argument_clicked(GtkButton *w, gpointer user_data);
-void on_function_edit_button_modify_argument_clicked(GtkButton *w, gpointer user_data);
-void on_function_edit_entry_argument_name_activate(GtkEntry *entry, gpointer user_data);
-void on_function_edit_button_rules_clicked(GtkButton *w, gpointer user_data);
-void on_argument_rules_combobox_type_changed(GtkComboBox *om, gpointer user_data);
-void on_argument_rules_checkbutton_enable_min_toggled(GtkToggleButton *w, gpointer user_data);
-void on_argument_rules_checkbutton_enable_max_toggled(GtkToggleButton *w, gpointer user_data);
-void on_argument_rules_checkbutton_enable_condition_toggled(GtkToggleButton *w, gpointer user_data);
-void on_function_edit_treeview_arguments_name_edited(GtkCellRendererText *renderer, gchar *path, gchar *new_text, gpointer user_data);
-void on_function_edit_treeview_subfunctions_expression_edited(GtkCellRendererText *renderer, gchar *path, gchar *new_text, gpointer user_data);
-void on_function_edit_treeview_subfunctions_precalculate_toggled(GtkCellRendererToggle *renderer, gchar *path, gpointer user_data);
-
-void on_variable_edit_button_names_clicked(GtkWidget *w, gpointer user_data);
-void on_unknown_edit_button_names_clicked(GtkWidget *w, gpointer user_data);
-void on_matrix_edit_button_names_clicked(GtkWidget *w, gpointer user_data);
-void on_function_edit_button_names_clicked(GtkWidget *w, gpointer user_data);
-void on_unit_edit_button_names_clicked(GtkWidget *w, gpointer user_data);
-
-void on_names_edit_property_toggled(GtkCellRendererToggle *renderer, gchar *path, gpointer user_data);
-void on_names_edit_name_edited(GtkCellRendererText *renderer, gchar *path, gchar *new_text, gpointer user_data);
-void on_names_edit_checkbutton_abbreviation_toggled(GtkToggleButton *w, gpointer user_data);
-void on_names_edit_button_add_clicked(GtkButton *w, gpointer user_data);
-void on_names_edit_button_modify_clicked(GtkButton *w, gpointer user_data);
-void on_names_edit_button_remove_clicked(GtkButton *w, gpointer user_data);
-void on_names_edit_entry_name_activate(GtkEntry *w, gpointer user_data);
-void on_names_edit_entry_name_changed(GtkEditable *editable, gpointer user_data);
 
 void on_plot_button_save_clicked(GtkButton *w, gpointer user_data);
 void on_plot_button_add_clicked(GtkButton *w, gpointer user_data);

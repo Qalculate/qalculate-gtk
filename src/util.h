@@ -99,6 +99,14 @@ enum {
 
 #define LAST_SHORTCUT_TYPE SHORTCUT_TYPE_MINMAX_DECIMALS
 
+enum {
+	DELIMITER_COMMA,
+	DELIMITER_TABULATOR,
+	DELIMITER_SEMICOLON,
+	DELIMITER_SPACE,
+	DELIMITER_OTHER
+};
+
 bool string_is_less(std::string str1, std::string str2);
 extern KnownVariable *v_memory;
 
@@ -225,6 +233,7 @@ const char *expression_divide_sign();
 gint string_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer user_data);
 gint category_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer user_data);
 gint int_string_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer user_data);
+gint compare_categories(gconstpointer a, gconstpointer b);
 
 bool can_display_unicode_string_function(const char *str, void *w);
 bool can_display_unicode_string_function_exact(const char *str, void *w);
@@ -233,15 +242,19 @@ std::string localize_expression(std::string str, bool unit_expression = false);
 std::string unlocalize_expression(std::string str);
 
 void base_from_string(std::string str, int &base, Number &nbase, bool input_base = false);
+std::string get_value_string(const MathStructure &mstruct_, int type = 0, Prefix *prefix = NULL);
 
 bool entry_in_quotes(GtkEntry *w);
 const gchar *key_press_get_symbol(GdkEventKey *event, bool do_caret_as_xor = true, bool unit_expression = false);
 extern "C" {
+void on_variable_edit_entry_name_changed(GtkEditable *editable, gpointer user_data);
 gboolean on_math_entry_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer);
+gboolean on_unit_entry_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer);
 void entry_insert_text(GtkWidget *w, const gchar *text);
 void update_keypad_bases();
 void set_input_base(int base);
 void set_output_base(int base);
+bool textview_in_quotes(GtkTextView *w);
 }
 
 void on_abort_display(GtkDialog*, gint, gpointer);
@@ -262,6 +275,8 @@ void expression_calculation_updated();
 void expression_format_updated(bool recalculate = false);
 void execute_expression(bool force = true, bool do_mathoperation = false, MathOperation op = OPERATION_ADD, MathFunction *f = NULL, bool do_stack = false, size_t stack_index = 0, std::string execute_str = std::string(), std::string str = std::string(), bool check_exrates = true);
 
+MathStructure *current_result();
+
 void update_vmenu(bool update_compl = true);
 void update_fmenu(bool update_compl = true);
 void update_umenus(bool update_compl = true);
@@ -271,23 +286,18 @@ void variable_removed(Variable *v);
 void unit_removed(Unit *u);
 void function_removed(MathFunction *f);
 
+void variable_edited(Variable *v);
+void function_edited(MathFunction *f);
+void unit_edited(Unit *u);
+void dataset_edited(DataSet *ds);
+
 bool equalsIgnoreCase(const std::string &str1, const std::string &str2, size_t i2, size_t i2_end, size_t minlength);
 bool title_matches(ExpressionItem *item, const std::string &str, size_t minlength = 0);
 bool name_matches(ExpressionItem *item, const std::string &str);
 bool country_matches(Unit *u, const std::string &str, size_t minlength = 0);
 
-void import_csv_file(GtkWidget *win = NULL);
-void export_csv_file(KnownVariable *v = NULL, GtkWidget *win = NULL);
-
 void apply_function(MathFunction *f);
 void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu = true);
-
-void edit_unknown(const char *category = "", Variable *v = NULL, GtkWidget *win = NULL);
-void edit_variable(const char *category = "", Variable *v = NULL, MathStructure *mstruct_ = NULL, GtkWidget *win = NULL);
-void edit_matrix(const char *category = "", Variable *v = NULL, MathStructure *mstruct_ = NULL, GtkWidget *win = NULL, gboolean create_vector = FALSE);
-void edit_unit(const char *category = "", Unit *u = NULL, GtkWidget *win = NULL);
-void edit_function(const char *category = "", MathFunction *f = NULL, GtkWidget *win = NULL, const char *name = NULL, const char *expression = NULL, bool enable_ok = true);
-void edit_dataset(DataSet *ds = NULL, GtkWidget *win = NULL);
 
 bool check_exchange_rates(GtkWidget *win = NULL, bool set_result = false);
 
@@ -305,5 +315,7 @@ const char *shortcut_copy_value_text(int v);
 std::string shortcut_values_text(const std::vector<std::string> &value, const std::vector<int> &type);
 void update_accels(int type = -1);
 void update_custom_buttons(int index = -1);
+
+void update_window_properties(GtkWidget *w, bool ignore_tooltips_setting = false);
 
 #endif /* QALCULATE_GTK_UTIL_H */

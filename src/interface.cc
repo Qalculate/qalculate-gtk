@@ -75,9 +75,9 @@ using std::iterator;
 using std::list;
 using std::deque;
 
-extern GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *datasetedit_builder;
-extern GtkBuilder *functionedit_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder;
-extern GtkBuilder *preferences_builder, *unitedit_builder, *unknownedit_builder, *variableedit_builder;
+extern GtkBuilder *main_builder;
+extern GtkBuilder *matrix_builder;
+extern GtkBuilder *preferences_builder;
 extern vector<mode_struct> modes;
 
 GtkWidget *mainwindow;
@@ -88,30 +88,17 @@ GtkListStore *tUnitSelector_store;
 GtkTreeModel *tUnitSelector_store_filter;
 GtkTreeStore *tUnitSelectorCategories_store;
 
-GtkWidget *tDataProperties;
-GtkListStore *tDataProperties_store;
-
-GtkWidget *tNames;
-GtkListStore *tNames_store;
-GtkCellRenderer *names_edit_name_renderer;
-GtkTreeViewColumn *names_edit_name_column;
-
 GtkWidget *tabs, *expander_keypad, *expander_history, *expander_stack, *expander_convert;
 GtkEntryCompletion *completion;
 GtkWidget *completion_view, *completion_window, *completion_scrolled;
 GtkTreeModel *completion_filter, *completion_sort;
 GtkListStore *completion_store;
 
-GtkWidget *tFunctionArguments;
-GtkListStore *tFunctionArguments_store;
-GtkWidget *tSubfunctions;
-GtkListStore *tSubfunctions_store;
-
 GtkWidget *item_factorize, *item_simplify;
 
-GtkWidget *tMatrixEdit, *tMatrix;
-GtkListStore *tMatrixEdit_store, *tMatrix_store;
-extern vector<GtkTreeViewColumn*> matrix_edit_columns, matrix_columns;
+GtkWidget *tMatrix;
+GtkListStore *tMatrix_store;
+extern vector<GtkTreeViewColumn*> matrix_columns;
 
 GtkCellRenderer *history_renderer, *history_index_renderer, *ans_renderer, *register_renderer, *register_index_renderer;
 GtkTreeViewColumn *register_column, *history_column, *history_index_column, *flag_column;
@@ -369,6 +356,11 @@ void set_tooltips_enabled(GtkWidget *w, bool b) {
 		}
 		g_list_free(list);
 	}
+}
+
+void update_window_properties(GtkWidget *d, bool ignore_tooltips_setting) {
+	if(!ignore_tooltips_setting && (!enable_tooltips || toe_changed)) set_tooltips_enabled(d, enable_tooltips);
+	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 }
 
 GdkRGBA c_gray;
@@ -2813,254 +2805,11 @@ GtkWidget* get_preferences_dialog(void) {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay")), enable_completion);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay")), (double) completion_delay);
 
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(preferences_builder, "preferences_dialog")), always_on_top);
+	update_window_properties(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_dialog")));
+
 	return GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_dialog"));
 }
 
-GtkWidget* get_unit_edit_dialog(void) {
-
-	if(!unitedit_builder) {
-
-		unitedit_builder = getBuilder("unitedit.ui");
-		g_assert(unitedit_builder != NULL);
-
-		g_assert(gtk_builder_get_object(unitedit_builder, "unit_edit_dialog") != NULL);
-
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unitedit_builder, "unit_edit_combobox_class")), 0);
-
-		gtk_builder_connect_signals(unitedit_builder, NULL);
-
-	}
-
-	/* populate combo menu */
-
-	GHashTable *hash = g_hash_table_new(g_str_hash, g_str_equal);
-	GList *items = NULL;
-	for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
-		if(!CALCULATOR->units[i]->category().empty()) {
-			//add category if not present
-			if(g_hash_table_lookup(hash, (gconstpointer) CALCULATOR->units[i]->category().c_str()) == NULL) {
-				items = g_list_insert_sorted(items, (gpointer) CALCULATOR->units[i]->category().c_str(), (GCompareFunc) compare_categories);
-				//remember added categories
-				g_hash_table_insert(hash, (gpointer) CALCULATOR->units[i]->category().c_str(), (gpointer) hash);
-			}
-		}
-	}
-	for(GList *l = items; l != NULL; l = l->next) {
-		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(unitedit_builder, "unit_edit_combo_category")), (const gchar*) l->data);
-	}
-	g_hash_table_destroy(hash);
-	g_list_free(items);
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(unitedit_builder, "unit_edit_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_dialog"));
-}
-
-GtkWidget* get_function_edit_dialog(void) {
-
-	if(!functionedit_builder) {
-
-		functionedit_builder = getBuilder("functionedit.ui");
-		g_assert(functionedit_builder != NULL);
-
-		g_assert(gtk_builder_get_object(functionedit_builder, "function_edit_dialog") != NULL);
-
-		tFunctionArguments = GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_treeview_arguments"));
-		tFunctionArguments_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_STRING);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tFunctionArguments), GTK_TREE_MODEL(tFunctionArguments_store));
-		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctionArguments));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
-		g_object_set(G_OBJECT(renderer), "ellipsize", PANGO_ELLIPSIZE_END, NULL);
-		g_object_set(G_OBJECT(renderer), "editable", TRUE, "ellipsize", PANGO_ELLIPSIZE_END, "mode", GTK_CELL_RENDERER_MODE_EDITABLE, NULL);
-		g_signal_connect((gpointer) renderer, "edited", G_CALLBACK(on_function_edit_treeview_arguments_name_edited), NULL);
-		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", 0, NULL);
-		gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-		gtk_tree_view_column_set_expand(column, TRUE);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tFunctionArguments), column);
-		renderer = gtk_cell_renderer_text_new();
-		g_object_set(G_OBJECT(renderer), "ellipsize", PANGO_ELLIPSIZE_END, NULL);
-		column = gtk_tree_view_column_new_with_attributes(_("Type"), renderer, "text", 1, NULL);
-		gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-		gtk_tree_view_column_set_expand(column, TRUE);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tFunctionArguments), column);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes("Reference", renderer, "text", 3, NULL);
-		gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-		gtk_tree_view_column_set_expand(column, FALSE);
-		g_object_set(G_OBJECT(renderer), "xalign", 0.5, "style", PANGO_STYLE_ITALIC, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tFunctionArguments), column);
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tFunctionArguments_selection_changed), NULL);
-
-		tSubfunctions = GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_treeview_subfunctions"));
-		tSubfunctions_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_UINT);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tSubfunctions), GTK_TREE_MODEL(tSubfunctions_store));
-		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tSubfunctions));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		renderer = gtk_cell_renderer_text_new();
-		g_object_set(G_OBJECT(renderer), "editable", TRUE, "ellipsize", PANGO_ELLIPSIZE_END, "mode", GTK_CELL_RENDERER_MODE_EDITABLE, NULL);
-		g_signal_connect((gpointer) renderer, "edited", G_CALLBACK(on_function_edit_treeview_subfunctions_expression_edited), NULL);
-		column = gtk_tree_view_column_new_with_attributes(_("Expression"), renderer, "text", 1, NULL);
-		gtk_tree_view_column_set_expand(column, TRUE);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tSubfunctions), column);
-		renderer = gtk_cell_renderer_toggle_new();
-		g_signal_connect((gpointer) renderer, "toggled", G_CALLBACK(on_function_edit_treeview_subfunctions_precalculate_toggled), NULL);
-		column = gtk_tree_view_column_new_with_attributes(_("Precalculate"), renderer, "active", 2, NULL);
-		gtk_tree_view_column_set_expand(column, FALSE);
-		g_object_set(G_OBJECT(renderer), "xalign", 0.5, "activatable", TRUE, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tSubfunctions), column);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Reference"), renderer, "text", 0, NULL);
-		gtk_tree_view_column_set_expand(column, FALSE);
-		g_object_set(G_OBJECT(renderer), "xalign", 0.5, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tSubfunctions), column);
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tSubfunctions_selection_changed), NULL);
-
-		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_description"))), "changed", G_CALLBACK(on_function_changed), NULL);
-		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_expression"))), "changed", G_CALLBACK(on_function_changed), NULL);
-		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_subexpression"))), "changed", G_CALLBACK(on_subfunction_changed), NULL);
-
-		gtk_builder_connect_signals(functionedit_builder, NULL);
-
-	}
-
-	/* populate combo menu */
-
-	GHashTable *hash = g_hash_table_new(g_str_hash, g_str_equal);
-	GList *items = NULL;
-	for(size_t i = 0; i < CALCULATOR->functions.size(); i++) {
-		if(!CALCULATOR->functions[i]->category().empty()) {
-			//add category if not present
-			if(g_hash_table_lookup(hash, (gconstpointer) CALCULATOR->functions[i]->category().c_str()) == NULL) {
-				items = g_list_insert_sorted(items, (gpointer) CALCULATOR->functions[i]->category().c_str(), (GCompareFunc) compare_categories);
-				//remember added categories
-				g_hash_table_insert(hash, (gpointer) CALCULATOR->functions[i]->category().c_str(), (gpointer) hash);
-			}
-		}
-	}
-	for(GList *l = items; l != NULL; l = l->next) {
-		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(functionedit_builder, "function_edit_combo_category")), (const gchar*) l->data);
-	}
-	g_hash_table_destroy(hash);
-	g_list_free(items);
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(functionedit_builder, "function_edit_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_dialog"));
-}
-
-GtkWidget* get_variable_edit_dialog(void) {
-
-	if(!variableedit_builder) {
-
-		variableedit_builder = getBuilder("variableedit.ui");
-		g_assert(variableedit_builder != NULL);
-
-		g_assert(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog") != NULL);
-
-		g_signal_connect(gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(variableedit_builder, "variable_edit_textview_value"))), "changed", G_CALLBACK(on_variables_edit_textview_value_changed), NULL);
-		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(variableedit_builder, "variable_edit_textview_description"))), "changed", G_CALLBACK(on_variable_changed), NULL);
-		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(variableedit_builder, "variable_edit_textview_value"))), "changed", G_CALLBACK(on_variable_changed), NULL);
-
-		gtk_builder_connect_signals(variableedit_builder, NULL);
-
-	}
-	/* populate combo menu */
-
-	GHashTable *hash = g_hash_table_new(g_str_hash, g_str_equal);
-	GList *items = NULL;
-	for(size_t i = 0; i < CALCULATOR->variables.size(); i++) {
-		if(!CALCULATOR->variables[i]->category().empty()) {
-			//add category if not present
-			if(g_hash_table_lookup(hash, (gconstpointer) CALCULATOR->variables[i]->category().c_str()) == NULL) {
-				items = g_list_insert_sorted(items, (gpointer) CALCULATOR->variables[i]->category().c_str(), (GCompareFunc) compare_categories);
-				//remember added categories
-				g_hash_table_insert(hash, (gpointer) CALCULATOR->variables[i]->category().c_str(), (gpointer) hash);
-			}
-		}
-	}
-	for(GList *l = items; l != NULL; l = l->next) {
-		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(variableedit_builder, "variable_edit_combo_category")), (const gchar*) l->data);
-	}
-	g_hash_table_destroy(hash);
-	g_list_free(items);
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog"));
-}
-
-GtkWidget* get_unknown_edit_dialog(void) {
-
-	if(!unknownedit_builder) {
-
-		unknownedit_builder = getBuilder("unknownedit.ui");
-		g_assert(unknownedit_builder != NULL);
-
-		g_assert(gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog") != NULL);
-
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), 0);
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), 0);
-
-		gtk_builder_connect_signals(unknownedit_builder, NULL);
-
-	}
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(unknownedit_builder, "unknown_edit_dialog"));
-}
-
-GtkWidget* get_matrix_edit_dialog(void) {
-	if(!matrixedit_builder) {
-
-		matrixedit_builder = getBuilder("matrixedit.ui");
-		g_assert(matrixedit_builder != NULL);
-
-		g_assert(gtk_builder_get_object(matrixedit_builder, "matrix_edit_dialog") != NULL);
-
-		GType types[200];
-		for(gint i = 0; i < 200; i += 1) {
-			types[i] = G_TYPE_STRING;
-		}
-		tMatrixEdit_store = gtk_list_store_newv(200, types);
-		tMatrixEdit = GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_view"));
-		gtk_tree_view_set_model (GTK_TREE_VIEW(tMatrixEdit), GTK_TREE_MODEL(tMatrixEdit_store));
-		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tMatrixEdit));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_NONE);
-
-		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(matrixedit_builder, "matrix_edit_textview_description"))), "changed", G_CALLBACK(on_matrix_changed), NULL);
-
-		gtk_builder_connect_signals(matrixedit_builder, NULL);
-
-	}
-
-	/* populate combo menu */
-
-	GHashTable *hash = g_hash_table_new(g_str_hash, g_str_equal);
-	GList *items = NULL;
-	for(size_t i = 0; i < CALCULATOR->variables.size(); i++) {
-		if(!CALCULATOR->variables[i]->category().empty()) {
-			//add category if not present
-			if(g_hash_table_lookup(hash, (gconstpointer) CALCULATOR->variables[i]->category().c_str()) == NULL) {
-				items = g_list_insert_sorted(items, (gpointer) CALCULATOR->variables[i]->category().c_str(), (GCompareFunc) compare_categories);
-				//remember added categories
-				g_hash_table_insert(hash, (gpointer) CALCULATOR->variables[i]->category().c_str(), (gpointer) hash);
-			}
-		}
-	}
-	for(GList *l = items; l != NULL; l = l->next) {
-		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(matrixedit_builder, "matrix_edit_combo_category")), (const gchar*) l->data);
-	}
-	g_hash_table_destroy(hash);
-	g_list_free(items);
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(matrixedit_builder, "matrix_edit_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(matrixedit_builder, "matrix_edit_dialog"));
-}
 GtkWidget* get_matrix_dialog(void) {
 	if(!matrix_builder) {
 
@@ -3083,216 +2832,9 @@ GtkWidget* get_matrix_dialog(void) {
 
 	}
 
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(matrix_builder, "matrix_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(matrix_builder, "matrix_dialog")), always_on_top);
+	update_window_properties(GTK_WIDGET(gtk_builder_get_object(matrix_builder, "matrix_dialog")));
+
 	return GTK_WIDGET(gtk_builder_get_object(matrix_builder, "matrix_dialog"));
 
-}
-
-GtkWidget* get_dataset_edit_dialog(void) {
-
-	if(!datasetedit_builder) {
-
-		datasetedit_builder = getBuilder("datasetedit.ui");
-		g_assert(datasetedit_builder != NULL);
-
-		g_assert(gtk_builder_get_object(datasetedit_builder, "dataset_edit_dialog") != NULL);
-
-		tDataProperties = GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_treeview_properties"));
-		tDataProperties_store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tDataProperties), GTK_TREE_MODEL(tDataProperties_store));
-		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tDataProperties));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
-		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Title"), renderer, "text", 0, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tDataProperties), column);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", 1, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tDataProperties), column);
-		renderer = gtk_cell_renderer_text_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Type"), renderer, "text", 2, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tDataProperties), column);
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tDataProperties_selection_changed), NULL);
-		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(datasetedit_builder, "dataset_edit_textview_description"))), "changed", G_CALLBACK(on_dataset_changed), NULL);
-		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(datasetedit_builder, "dataset_edit_textview_copyright"))), "changed", G_CALLBACK(on_dataset_changed), NULL);
-		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_textview_description"))), "changed", G_CALLBACK(on_dataproperty_changed), NULL);
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_combobox_type")), 0);
-
-		gtk_builder_connect_signals(datasetedit_builder, NULL);
-
-	}
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(datasetedit_builder, "dataset_edit_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_dialog"));
-}
-
-GtkWidget* get_dataproperty_edit_dialog(void) {
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_dialog"));
-}
-
-
-GtkWidget* get_names_edit_dialog(void) {
-	if(!namesedit_builder) {
-
-		namesedit_builder = getBuilder("namesedit.ui");
-		g_assert(namesedit_builder != NULL);
-
-		g_assert(gtk_builder_get_object(namesedit_builder, "names_edit_dialog") != NULL);
-
-		tNames = GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_treeview"));
-
-		tNames_store = gtk_list_store_new(NAMES_N_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
-		gtk_tree_view_set_model(GTK_TREE_VIEW(tNames), GTK_TREE_MODEL(tNames_store));
-		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tNames));
-		gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
-		names_edit_name_renderer = renderer;
-		g_signal_connect((gpointer) renderer, "edited", G_CALLBACK(on_names_edit_name_edited), NULL);
-		g_object_set(G_OBJECT(renderer), "editable", true, NULL);
-		GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", NAMES_NAME_COLUMN, NULL);
-		names_edit_name_column = column;
-		gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(tNames_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
-		gtk_tree_view_column_set_sort_column_id(column, NAMES_NAME_COLUMN);
-		gtk_tree_view_column_set_expand(column, TRUE);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tNames), column);
-		renderer = gtk_cell_renderer_toggle_new();
-		g_signal_connect((gpointer) renderer, "toggled", G_CALLBACK(on_names_edit_property_toggled), GINT_TO_POINTER(NAMES_ABBREVIATION_COLUMN));
-		g_object_set(G_OBJECT(renderer), "xalign", 0.5, "activatable", TRUE, NULL);
-		column = gtk_tree_view_column_new_with_attributes(_("Abbreviation"), renderer, "active", NAMES_ABBREVIATION_COLUMN, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, NAMES_ABBREVIATION_COLUMN);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tNames), column);
-		renderer = gtk_cell_renderer_toggle_new();
-		g_signal_connect((gpointer) renderer, "toggled", G_CALLBACK(on_names_edit_property_toggled), GINT_TO_POINTER(NAMES_PLURAL_COLUMN));
-		g_object_set(G_OBJECT(renderer), "xalign", 0.5, "activatable", TRUE, NULL);
-		column = gtk_tree_view_column_new_with_attributes(_("Plural"), renderer, "active", NAMES_PLURAL_COLUMN, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, NAMES_PLURAL_COLUMN);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tNames), column);
-		renderer = gtk_cell_renderer_toggle_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Reference"), renderer, "active", NAMES_REFERENCE_COLUMN, NULL);
-		g_signal_connect((gpointer) renderer, "toggled", G_CALLBACK(on_names_edit_property_toggled), GINT_TO_POINTER(NAMES_REFERENCE_COLUMN));
-		g_object_set(G_OBJECT(renderer), "xalign", 0.5, "activatable", TRUE, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, NAMES_REFERENCE_COLUMN);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tNames), column);
-		renderer = gtk_cell_renderer_toggle_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Avoid input"), renderer, "active", NAMES_AVOID_INPUT_COLUMN, NULL);
-		g_signal_connect((gpointer) renderer, "toggled", G_CALLBACK(on_names_edit_property_toggled), GINT_TO_POINTER(NAMES_AVOID_INPUT_COLUMN));
-		g_object_set(G_OBJECT(renderer), "xalign", 0.5, "activatable", TRUE, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, NAMES_AVOID_INPUT_COLUMN);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tNames), column);
-		renderer = gtk_cell_renderer_toggle_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Suffix"), renderer, "active", NAMES_SUFFIX_COLUMN, NULL);
-		g_signal_connect((gpointer) renderer, "toggled", G_CALLBACK(on_names_edit_property_toggled), GINT_TO_POINTER(NAMES_SUFFIX_COLUMN));
-		g_object_set(G_OBJECT(renderer), "xalign", 0.5, "activatable", TRUE, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, NAMES_SUFFIX_COLUMN);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tNames), column);
-		renderer = gtk_cell_renderer_toggle_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Case sensitive"), renderer, "active", NAMES_CASE_SENSITIVE_COLUMN, NULL);
-		g_signal_connect((gpointer) renderer, "toggled", G_CALLBACK(on_names_edit_property_toggled), GINT_TO_POINTER(NAMES_CASE_SENSITIVE_COLUMN));
-		g_object_set(G_OBJECT(renderer), "xalign", 0.5, "activatable", TRUE, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, NAMES_CASE_SENSITIVE_COLUMN);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tNames), column);
-		renderer = gtk_cell_renderer_toggle_new();
-		column = gtk_tree_view_column_new_with_attributes(_("Completion only"), renderer, "active", NAMES_COMPLETION_ONLY_COLUMN, NULL);
-		g_signal_connect((gpointer) renderer, "toggled", G_CALLBACK(on_names_edit_property_toggled), GINT_TO_POINTER(NAMES_COMPLETION_ONLY_COLUMN));
-		g_object_set(G_OBJECT(renderer), "xalign", 0.5, "activatable", TRUE, NULL);
-		gtk_tree_view_column_set_sort_column_id(column, NAMES_COMPLETION_ONLY_COLUMN);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(tNames), column);
-		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tNames_selection_changed), NULL);
-
-		gtk_builder_connect_signals(namesedit_builder, NULL);
-
-	}
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(namesedit_builder, "names_edit_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_dialog"));
-}
-
-GtkWidget* get_csv_import_dialog(void) {
-
-	if(!csvimport_builder) {
-
-		csvimport_builder = getBuilder("csvimport.ui");
-		g_assert(csvimport_builder != NULL);
-
-		g_assert(gtk_builder_get_object(csvimport_builder, "csv_import_dialog") != NULL);
-
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(csvimport_builder, "csv_import_combobox_delimiter")), 0);
-
-		gtk_builder_connect_signals(csvimport_builder, NULL);
-
-	}
-
-	/* populate combo menu */
-	GHashTable *hash = g_hash_table_new(g_str_hash, g_str_equal);
-	GList *items = NULL;
-	for(size_t i = 0; i < CALCULATOR->variables.size(); i++) {
-		if(!CALCULATOR->variables[i]->category().empty()) {
-			//add category if not present
-			if(g_hash_table_lookup(hash, (gconstpointer) CALCULATOR->variables[i]->category().c_str()) == NULL) {
-				items = g_list_append(items, (gpointer) CALCULATOR->variables[i]->category().c_str());
-				//remember added categories
-				g_hash_table_insert(hash, (gpointer) CALCULATOR->variables[i]->category().c_str(), (gpointer) hash);
-			}
-		}
-	}
-	for(GList *l = items; l != NULL; l = l->next) {
-		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(csvimport_builder, "csv_import_combo_category")), (const gchar*) l->data);
-	}
-	g_hash_table_destroy(hash);
-	g_list_free(items);
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(csvimport_builder, "csv_import_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(csvimport_builder, "csv_import_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(csvimport_builder, "csv_import_dialog"));
-}
-
-GtkWidget* get_csv_export_dialog(void) {
-
-	if(!csvexport_builder) {
-
-		csvexport_builder = getBuilder("csvexport.ui");
-		g_assert(csvexport_builder != NULL);
-
-		g_assert(gtk_builder_get_object(csvexport_builder, "csv_export_dialog") != NULL);
-
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(csvexport_builder, "csv_export_combobox_delimiter")), 0);
-
-		gtk_builder_connect_signals(csvexport_builder, NULL);
-
-	}
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(csvexport_builder, "csv_export_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(csvexport_builder, "csv_export_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(csvexport_builder, "csv_export_dialog"));
-
-}
-
-GtkWidget* get_argument_rules_dialog(void) {
-
-	if(!argumentrules_builder) {
-
-		argumentrules_builder = getBuilder("argumentrules.ui");
-		g_assert(argumentrules_builder != NULL);
-
-		g_assert(gtk_builder_get_object(argumentrules_builder, "argument_rules_dialog") != NULL);
-
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(argumentrules_builder, "argument_rules_combobox_type")), 0);
-		gtk_spin_button_set_digits(GTK_SPIN_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_spinbutton_max")), 8);
-		gtk_spin_button_set_digits(GTK_SPIN_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_spinbutton_min")), 8);
-		gtk_adjustment_set_lower(GTK_ADJUSTMENT(gtk_builder_get_object(argumentrules_builder, "adjustment_min")), INT_MIN);
-		gtk_adjustment_set_upper(GTK_ADJUSTMENT(gtk_builder_get_object(argumentrules_builder, "adjustment_min")), INT_MAX);
-		gtk_adjustment_set_lower(GTK_ADJUSTMENT(gtk_builder_get_object(argumentrules_builder, "adjustment_max")), INT_MIN);
-		gtk_adjustment_set_upper(GTK_ADJUSTMENT(gtk_builder_get_object(argumentrules_builder, "adjustment_max")), INT_MAX);
-
-		gtk_builder_connect_signals(argumentrules_builder, NULL);
-
-	}
-
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(argumentrules_builder, "argument_rules_dialog")), always_on_top);
-	return GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_dialog"));
 }
 

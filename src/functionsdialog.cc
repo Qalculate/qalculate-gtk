@@ -27,6 +27,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "functioneditdialog.h"
 #include "functionsdialog.h"
 
 using std::string;
@@ -427,17 +428,17 @@ void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 */
 void on_functions_button_new_clicked(GtkButton*, gpointer) {
 	if(selected_function_category.empty() || selected_function_category[0] != '/') {
-		edit_function("", NULL, GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_dialog")));
+		edit_function("", NULL, GTK_WINDOW(gtk_builder_get_object(functions_builder, "functions_dialog")));
 	} else {
 		//fill in category field with selected category
-		edit_function(selected_function_category.substr(1, selected_function_category.length() - 1).c_str(), NULL, GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_dialog")));
+		edit_function(selected_function_category.substr(1, selected_function_category.length() - 1).c_str(), NULL, GTK_WINDOW(gtk_builder_get_object(functions_builder, "functions_dialog")));
 	}
 }
 
 void on_functions_button_edit_clicked(GtkButton*, gpointer) {
 	MathFunction *f = get_selected_function();
 	if(f) {
-		edit_function("", f, GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_dialog")));
+		edit_function("", f, GTK_WINDOW(gtk_builder_get_object(functions_builder, "functions_dialog")));
 	}
 }
 
@@ -587,8 +588,8 @@ GtkWidget* get_functions_dialog(void) {
 
 	}
 
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(functions_builder, "functions_dialog")), always_on_top);
+	update_window_properties(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_dialog")));
+
 	return GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_dialog"));
 }
 

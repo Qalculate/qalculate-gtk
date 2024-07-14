@@ -17,9 +17,7 @@
 extern PrintOptions printops, parsed_printops, displayed_printops;
 extern EvaluationOptions evalops;
 extern int simplified_percentage;
-extern int enable_tooltips;
-extern bool toe_changed;
-extern bool always_on_top, aot_changed;
+extern bool always_on_top;
 extern bool implicit_question_asked;
 extern bool rpn_mode;
 extern int previous_precision;

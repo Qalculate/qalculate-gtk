@@ -28,6 +28,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "uniteditdialog.h"
 #include "unitsdialog.h"
 
 #if HAVE_UNORDERED_MAP
@@ -708,17 +709,17 @@ void on_units_convert_to_button_toggled(GtkToggleButton *w, gpointer) {
 
 void on_units_button_new_clicked(GtkButton*, gpointer) {
 	if(selected_unit_category.empty() || selected_unit_category[0] != '/') {
-		edit_unit("", NULL, GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")));
+		edit_unit("", NULL, GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")));
 	} else {
 		//fill in category field with selected category
-		edit_unit(selected_unit_category.substr(1, selected_unit_category.length() - 1).c_str(), NULL, GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")));
+		edit_unit(selected_unit_category.substr(1, selected_unit_category.length() - 1).c_str(), NULL, GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")));
 	}
 }
 
 void on_units_button_edit_clicked(GtkButton*, gpointer) {
 	Unit *u = get_selected_unit();
 	if(u) {
-		edit_unit("", u, GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")));
+		edit_unit("", u, GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")));
 	}
 }
 
@@ -1081,8 +1082,8 @@ GtkWidget* get_units_dialog(void) {
 
 	}
 
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")), always_on_top);
+	update_window_properties(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")));
+
 	return GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog"));
 }
 

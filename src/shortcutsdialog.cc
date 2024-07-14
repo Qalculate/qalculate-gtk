@@ -219,8 +219,7 @@ void on_shortcuts_type_treeview_row_activated(GtkTreeView*, GtkTreePath*, GtkTre
 }
 void on_shortcuts_button_new_clicked(GtkButton*, gpointer) {
 	GtkWidget *d = GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog"));
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(d), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+	update_window_properties(d);
 	gtk_widget_grab_focus(tShortcutsType);
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")), "");
 	gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(shortcuts_builder, "shortcuts_stack_value")), GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")));
@@ -451,8 +450,7 @@ void on_shortcuts_treeview_row_activated(GtkTreeView *w, GtkTreePath *path, GtkT
 	unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find(id);
 	if(it == keyboard_shortcuts.end() && !it->second.type.empty()) return;
 	GtkWidget *d = GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog"));
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(d), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+	update_window_properties(d);
 	GtkTreeIter iter2;
 	GtkTreeModel *model;
 	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tShortcutsType));
@@ -685,8 +683,8 @@ GtkWidget* get_shortcuts_dialog(void) {
 
 	}
 
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")), always_on_top);
+	update_window_properties(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog")));
+
 	return GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_dialog"));
 }
 

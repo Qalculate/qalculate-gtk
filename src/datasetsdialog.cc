@@ -27,6 +27,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "dataseteditdialog.h"
 #include "datasetsdialog.h"
 
 using std::string;
@@ -329,10 +330,10 @@ void on_tDataObjects_selection_changed(GtkTreeSelection *treeselection, gpointer
 }
 
 void on_datasets_button_newset_clicked(GtkButton*, gpointer) {
-	edit_dataset(NULL, GTK_WIDGET(gtk_builder_get_object(datasets_builder, "datasets_dialog")));
+	edit_dataset(NULL, GTK_WINDOW(gtk_builder_get_object(datasets_builder, "datasets_dialog")));
 }
 void on_datasets_button_editset_clicked(GtkButton*, gpointer) {
-	edit_dataset(selected_dataset, GTK_WIDGET(gtk_builder_get_object(datasets_builder, "datasets_dialog")));
+	edit_dataset(selected_dataset, GTK_WINDOW(gtk_builder_get_object(datasets_builder, "datasets_dialog")));
 }
 void on_datasets_button_delset_clicked(GtkButton*, gpointer) {
 	if(selected_dataset && selected_dataset->isLocal()) {
@@ -433,14 +434,13 @@ GtkWidget* get_datasets_dialog(void) {
 
 	}
 
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(datasets_builder, "datasets_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(datasets_builder, "datasets_dialog")), always_on_top);
+	update_window_properties(GTK_WIDGET(gtk_builder_get_object(datasets_builder, "datasets_dialog")));
+
 	return GTK_WIDGET(gtk_builder_get_object(datasets_builder, "datasets_dialog"));
 }
 
 GtkWidget* get_dataobject_edit_dialog(void) {
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(datasets_builder, "dataobject_edit_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(datasets_builder, "dataobject_edit_dialog")), always_on_top);
+	update_window_properties(GTK_WIDGET(gtk_builder_get_object(datasets_builder, "dataobject_edit_dialog")));
 	return GTK_WIDGET(gtk_builder_get_object(datasets_builder, "dataobject_edit_dialog"));
 }
 

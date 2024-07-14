@@ -69,9 +69,9 @@ extern int enable_tooltips;
 MathFunction *f_answer;
 MathFunction *f_expression;
 
-GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *datasetedit_builder;
-GtkBuilder *functionedit_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder;
-GtkBuilder *preferences_builder, *unit_builder, *unitedit_builder, *unknownedit_builder, *variableedit_builder;
+GtkBuilder *main_builder;
+GtkBuilder *matrix_builder;
+GtkBuilder *preferences_builder;
 
 Thread *view_thread, *command_thread;
 string calc_arg, file_arg;
@@ -167,12 +167,9 @@ void create_application(GtkApplication *app) {
 	b_busy_expression = false;
 	b_busy_command = false;
 
-	main_builder = NULL; argumentrules_builder = NULL;
-	csvimport_builder = NULL; datasetedit_builder = NULL; functionedit_builder = NULL;
-	matrixedit_builder = NULL; matrix_builder = NULL; namesedit_builder = NULL;
-	preferences_builder = NULL; unit_builder = NULL;
-	unitedit_builder = NULL; unknownedit_builder = NULL; variableedit_builder = NULL;
-	csvexport_builder = NULL;
+	main_builder = NULL;
+	matrix_builder = NULL;
+	preferences_builder = NULL;
 
 	//create the almighty Calculator object
 	new Calculator(ignore_locale);

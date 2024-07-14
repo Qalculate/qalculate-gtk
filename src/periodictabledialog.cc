@@ -191,7 +191,7 @@ GtkWidget* get_periodic_dialog(void) {
 
 		DataSet *dc = CALCULATOR->getDataSet("atom");
 		if(!dc) {
-			if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(periodictable_builder, "periodic_dialog")), always_on_top);
+			update_window_properties(GTK_WIDGET(gtk_builder_get_object(periodictable_builder, "periodic_dialog")), false);
 			return GTK_WIDGET(gtk_builder_get_object(periodictable_builder, "periodic_dialog"));
 		}
 
@@ -257,8 +257,8 @@ GtkWidget* get_periodic_dialog(void) {
 		gtk_css_provider_load_from_data(e_style[11], "* {color: #000000; background-image: none;}", -1, NULL);
 	}
 
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(periodictable_builder, "periodic_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(periodictable_builder, "periodic_dialog")), always_on_top);
+	update_window_properties(GTK_WIDGET(gtk_builder_get_object(periodictable_builder, "periodic_dialog")), true);
+
 	return GTK_WIDGET(gtk_builder_get_object(periodictable_builder, "periodic_dialog"));
 }
 

@@ -41,58 +41,6 @@
 
 #define EXPRESSION_YPAD 3
 
-enum {
-	UNIT_CLASS_BASE_UNIT,
-	UNIT_CLASS_ALIAS_UNIT,
-	UNIT_CLASS_COMPOSITE_UNIT
-};
-
-enum {
-	NAMES_NAME_COLUMN,
-	NAMES_ABBREVIATION_COLUMN,
-	NAMES_REFERENCE_COLUMN,
-	NAMES_PLURAL_COLUMN,
-	NAMES_SUFFIX_COLUMN,
-	NAMES_AVOID_INPUT_COLUMN,
-	NAMES_COMPLETION_ONLY_COLUMN,
-	NAMES_CASE_SENSITIVE_COLUMN,
-	NAMES_N_COLUMNS
-};
-
-enum {
-	DELIMITER_COMMA,
-	DELIMITER_TABULATOR,
-	DELIMITER_SEMICOLON,
-	DELIMITER_SPACE,
-	DELIMITER_OTHER
-};
-
-enum {
-	MENU_ARGUMENT_TYPE_FREE,
-	MENU_ARGUMENT_TYPE_NUMBER,
-	MENU_ARGUMENT_TYPE_INTEGER,
-	MENU_ARGUMENT_TYPE_SYMBOLIC,
-	MENU_ARGUMENT_TYPE_TEXT,
-	MENU_ARGUMENT_TYPE_DATE,
-	MENU_ARGUMENT_TYPE_VECTOR,
-	MENU_ARGUMENT_TYPE_MATRIX,
-	MENU_ARGUMENT_TYPE_POSITIVE,
-	MENU_ARGUMENT_TYPE_NONZERO,
-	MENU_ARGUMENT_TYPE_NONNEGATIVE,
-	MENU_ARGUMENT_TYPE_POSITIVE_INTEGER,
-	MENU_ARGUMENT_TYPE_NONZERO_INTEGER,
-	MENU_ARGUMENT_TYPE_NONNEGATIVE_INTEGER,
-	MENU_ARGUMENT_TYPE_BOOLEAN,
-	MENU_ARGUMENT_TYPE_EXPRESSION_ITEM,
-	MENU_ARGUMENT_TYPE_FUNCTION,
-	MENU_ARGUMENT_TYPE_UNIT,
-	MENU_ARGUMENT_TYPE_VARIABLE,
-	MENU_ARGUMENT_TYPE_FILE,
-	MENU_ARGUMENT_TYPE_ANGLE,
-	MENU_ARGUMENT_TYPE_DATA_OBJECT,
-	MENU_ARGUMENT_TYPE_DATA_PROPERTY
-};
-
 #ifdef _WIN32
 void create_systray_icon();
 void destroy_systray_icon();
@@ -106,17 +54,6 @@ void create_button_menus(void);
 void update_button_padding(bool initial = false);
 void create_main_window(void);
 GtkWidget* get_preferences_dialog(void);
-GtkWidget* get_unit_edit_dialog(void);
-GtkWidget* get_function_edit_dialog(void);
-GtkWidget* get_variable_edit_dialog(void);
-GtkWidget* get_unknown_edit_dialog(void);
-GtkWidget* get_matrix_edit_dialog(void);
 GtkWidget* get_matrix_dialog(void);
-GtkWidget* get_dataset_edit_dialog(void);
-GtkWidget* get_dataproperty_edit_dialog(void);
-GtkWidget* get_names_edit_dialog(void);
-GtkWidget* get_csv_import_dialog(void);
-GtkWidget* get_csv_export_dialog(void);
-GtkWidget* get_argument_rules_dialog(void);
 
 #endif /* INTERFACE_H */

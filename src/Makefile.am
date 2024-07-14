@@ -29,6 +29,15 @@ flags.c : $(top_srcdir)/data/flags.gresource.xml $(top_srcdir)/data/flags/*.png
 	glib-compile-resources --generate-source --target=$@ --sourcedir=$(top_srcdir)/data/flags $(top_srcdir)/data/flags.gresource.xml
 
 qalculate_gtk_SOURCES = \
+	nameseditdialog.cc nameseditdialog.h \
+	dataseteditdialog.cc dataseteditdialog.h \
+	functioneditdialog.cc functioneditdialog.h \
+	uniteditdialog.cc uniteditdialog.h \
+	matrixeditdialog.cc matrixeditdialog.h \
+	unknowneditdialog.cc unknowneditdialog.h \
+	variableeditdialog.cc variableeditdialog.h \
+	exportcsvdialog.cc exportcsvdialog.h \
+	importcsvdialog.cc importcsvdialog.h \
 	setbasedialog.cc setbasedialog.h \
 	buttonseditdialog.cc buttonseditdialog.h \
 	shortcutsdialog.cc shortcutsdialog.h \

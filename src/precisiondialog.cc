@@ -59,8 +59,8 @@ GtkWidget* get_precision_dialog(void) {
 
 	}
 
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(precision_builder, "precision_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(precision_builder, "precision_dialog")), always_on_top);
+	update_window_properties(GTK_WIDGET(gtk_builder_get_object(precision_builder, "precision_dialog")));
+
 	return GTK_WIDGET(gtk_builder_get_object(precision_builder, "precision_dialog"));
 }
 

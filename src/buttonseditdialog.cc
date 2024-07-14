@@ -169,8 +169,7 @@ void on_buttonsedit_button_x_clicked(int b_i) {
 	if(!gtk_tree_selection_get_selected(select, &model, &iter)) return;
 	gtk_tree_model_get(model, &iter, 0, &i, -1);
 	GtkWidget *d = GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_type_dialog"));
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(d), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+	update_window_properties(d);
 	GtkTreeIter iter2;
 	select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEditType));
 	if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tButtonsEditType_store), &iter2)) {
@@ -499,8 +498,8 @@ GtkWidget* get_buttons_edit_dialog(void) {
 
 	}
 
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_dialog")), always_on_top);
+	update_window_properties(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_dialog")));
+
 	return GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "buttons_edit_dialog"));
 }
 

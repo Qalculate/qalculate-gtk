@@ -27,6 +27,8 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "exportcsvdialog.h"
+#include "variableeditdialog.h"
 #include "variablesdialog.h"
 
 using std::string;
@@ -359,10 +361,10 @@ void on_variables_entry_search_changed(GtkEntry *w, gpointer) {
 */
 void on_variables_button_new_clicked(GtkButton*, gpointer) {
 	if(selected_variable_category.empty() || selected_variable_category[0] != '/') {
-		edit_variable(NULL, NULL, NULL, GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_dialog")));
+		edit_variable(NULL, NULL, NULL, GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")));
 	} else {
 		//fill in category field with selected category
-		edit_variable(selected_variable_category.substr(1, selected_variable_category.length() - 1).c_str(), NULL, NULL, GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_dialog")));
+		edit_variable(selected_variable_category.substr(1, selected_variable_category.length() - 1).c_str(), NULL, NULL, GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")));
 	}
 }
 
@@ -377,7 +379,7 @@ void on_variables_button_edit_clicked(GtkButton*, gpointer) {
 			update_vmenu();
 			return;
 		}
-		edit_variable(NULL, v, NULL, GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_dialog")));
+		edit_variable(NULL, v, NULL, GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")));
 	}
 }
 
@@ -430,7 +432,7 @@ void on_variables_button_export_clicked(GtkButton*, gpointer) {
 		return;
 	}
 	if(v && v->isKnown()) {
-		export_csv_file((KnownVariable*) v, GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_dialog")));
+		export_csv_file(GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")), (KnownVariable*) v);
 	}
 }
 
@@ -523,8 +525,8 @@ GtkWidget* get_variables_dialog(void) {
 
 	}
 
-	if(!enable_tooltips || toe_changed) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_dialog")), enable_tooltips);
-	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")), always_on_top);
+	update_window_properties(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_dialog")));
+
 	return GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_dialog"));
 }
 
