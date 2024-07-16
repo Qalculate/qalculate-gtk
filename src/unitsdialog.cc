@@ -31,37 +31,7 @@
 #include "uniteditdialog.h"
 #include "unitsdialog.h"
 
-#if HAVE_UNORDERED_MAP
-#	include <unordered_map>
-	using std::unordered_map;
-#elif 	defined(__GNUC__)
-
-#	ifndef __has_include
-#	define __has_include(x) 0
-#	endif
-
-#	if (defined(__clang__) && __has_include(<tr1/unordered_map>)) || (__GNUC__ >= 4 && __GNUC_MINOR__ >= 3)
-#		include <tr1/unordered_map>
-		namespace Sgi = std;
-#		define unordered_map std::tr1::unordered_map
-#	else
-#		if __GNUC__ < 3
-#			include <hash_map.h>
-			namespace Sgi { using ::hash_map; }; // inherit globals
-#		else
-#			include <ext/hash_map>
-#			if __GNUC__ == 3 && __GNUC_MINOR__ == 0
-				namespace Sgi = std;		// GCC 3.0
-#			else
-				namespace Sgi = ::__gnu_cxx;	// GCC 3.1 and later
-#			endif
-#		endif
-#		define unordered_map Sgi::hash_map
-#	endif
-#else      // ...  there are other compilers, right?
-	namespace Sgi = std;
-#	define unordered_map Sgi::hash_map
-#endif
+#include "unordered_map_define.h"
 
 using std::string;
 using std::cout;
@@ -438,7 +408,7 @@ void convert_in_wUnits(int toFrom) {
 				po.number_fraction_format = FRACTION_DECIMAL;
 				po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 				CALCULATOR->resetExchangeRatesUsed();
-				block_error_timeout++;
+				block_error();
 				MathStructure v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(toValue, eo.parse_options), uTo, uFrom, 1500, eo);
 				if(!v_mstruct.isAborted() && check_exchange_rates(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")))) v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(toValue, eo.parse_options), uTo, uFrom, 1500, eo);
 				if(v_mstruct.isAborted()) {
@@ -449,7 +419,7 @@ void convert_in_wUnits(int toFrom) {
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_from_val")), old_fromValue.c_str());
 				b = b || v_mstruct.isApproximate();
 				display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")));
-				block_error_timeout--;
+				unblock_error();
 			}
 		} else {
 			if(CALCULATOR->timedOutString() == fromValue) return;
@@ -468,7 +438,7 @@ void convert_in_wUnits(int toFrom) {
 				po.number_fraction_format = FRACTION_DECIMAL;
 				po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 				CALCULATOR->resetExchangeRatesUsed();
-				block_error_timeout++;
+				block_error();
 				MathStructure v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(fromValue, eo.parse_options), uFrom, uTo, 1500, eo);
 				if(!v_mstruct.isAborted() && check_exchange_rates(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")))) v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(fromValue, eo.parse_options), uFrom, uTo, 1500, eo);
 				if(v_mstruct.isAborted()) {
@@ -479,7 +449,7 @@ void convert_in_wUnits(int toFrom) {
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_to_val")), old_toValue.c_str());
 				b = b || v_mstruct.isApproximate();
 				display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")));
-				block_error_timeout--;
+				unblock_error();
 			}
 		}
 		if(b && printops.use_unicode_signs && can_display_unicode_string_function(SIGN_ALMOST_EQUAL, (void*) gtk_builder_get_object(units_builder, "units_label_equals"))) {
@@ -1070,7 +1040,7 @@ GtkWidget* get_units_dialog(void) {
 		if(units_hposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(units_builder, "units_hpaned")), units_hposition);
 		if(units_vposition > 0) gtk_paned_set_position(GTK_PANED(gtk_builder_get_object(units_builder, "units_vpaned")), units_vposition);
 
-		gtk_builder_add_callback_symbols(units_builder, "on_units_dialog_button_press_event", G_CALLBACK(on_units_dialog_button_press_event), "on_units_dialog_delete_event", G_CALLBACK(on_units_dialog_delete_event), "on_units_dialog_key_press_event", G_CALLBACK(on_units_dialog_key_press_event), "on_units_button_convert_clicked", G_CALLBACK(on_units_button_convert_clicked), "on_units_entry_to_val_activate", G_CALLBACK(on_units_entry_to_val_activate), "on_units_entry_to_val_focus_out_event", G_CALLBACK(on_units_entry_to_val_focus_out_event), "on_math_entry_key_press_event", G_CALLBACK(on_math_entry_key_press_event), "on_units_entry_from_val_activate", G_CALLBACK(on_units_entry_from_val_activate), "on_units_entry_from_val_focus_out_event", G_CALLBACK(on_units_entry_from_val_focus_out_event), "on_math_entry_key_press_event", G_CALLBACK(on_math_entry_key_press_event), "on_units_convert_to_button_focus_out_event", G_CALLBACK(on_units_convert_to_button_focus_out_event), "on_units_convert_to_button_key_press_event", G_CALLBACK(on_units_convert_to_button_key_press_event), "on_units_convert_to_button_toggled", G_CALLBACK(on_units_convert_to_button_toggled), "on_units_entry_search_changed", G_CALLBACK(on_units_entry_search_changed), "on_units_button_new_clicked", G_CALLBACK(on_units_button_new_clicked), "on_units_button_edit_clicked", G_CALLBACK(on_units_button_edit_clicked), "on_units_button_delete_clicked", G_CALLBACK(on_units_button_delete_clicked), "on_units_button_deactivate_clicked", G_CALLBACK(on_units_button_deactivate_clicked), "on_units_button_insert_clicked", G_CALLBACK(on_units_button_insert_clicked), "on_units_button_convert_to_clicked", G_CALLBACK(on_units_button_convert_to_clicked), "on_units_convert_window_button_press_event", G_CALLBACK(on_units_convert_window_button_press_event), "on_units_convert_window_key_press_event", G_CALLBACK(on_units_convert_window_key_press_event), "on_units_convert_view_enter_notify_event", G_CALLBACK(on_units_convert_view_enter_notify_event), "on_units_convert_view_motion_notify_event", G_CALLBACK(on_units_convert_view_motion_notify_event), "on_units_convert_view_row_activated", G_CALLBACK(on_units_convert_view_row_activated), "on_units_convert_search_changed", G_CALLBACK(on_units_convert_search_changed), NULL);
+		gtk_builder_add_callback_symbols(units_builder, "on_units_dialog_button_press_event", G_CALLBACK(on_units_dialog_button_press_event), "on_units_dialog_delete_event", G_CALLBACK(on_units_dialog_delete_event), "on_units_dialog_key_press_event", G_CALLBACK(on_units_dialog_key_press_event), "on_units_button_convert_clicked", G_CALLBACK(on_units_button_convert_clicked), "on_units_entry_to_val_activate", G_CALLBACK(on_units_entry_to_val_activate), "on_units_entry_to_val_focus_out_event", G_CALLBACK(on_units_entry_to_val_focus_out_event), "on_math_entry_key_press_event", G_CALLBACK(on_math_entry_key_press_event), "on_units_entry_from_val_activate", G_CALLBACK(on_units_entry_from_val_activate), "on_units_entry_from_val_focus_out_event", G_CALLBACK(on_units_entry_from_val_focus_out_event), "on_units_convert_to_button_focus_out_event", G_CALLBACK(on_units_convert_to_button_focus_out_event), "on_units_convert_to_button_key_press_event", G_CALLBACK(on_units_convert_to_button_key_press_event), "on_units_convert_to_button_toggled", G_CALLBACK(on_units_convert_to_button_toggled), "on_units_entry_search_changed", G_CALLBACK(on_units_entry_search_changed), "on_units_button_new_clicked", G_CALLBACK(on_units_button_new_clicked), "on_units_button_edit_clicked", G_CALLBACK(on_units_button_edit_clicked), "on_units_button_delete_clicked", G_CALLBACK(on_units_button_delete_clicked), "on_units_button_deactivate_clicked", G_CALLBACK(on_units_button_deactivate_clicked), "on_units_button_insert_clicked", G_CALLBACK(on_units_button_insert_clicked), "on_units_button_convert_to_clicked", G_CALLBACK(on_units_button_convert_to_clicked), "on_units_convert_window_button_press_event", G_CALLBACK(on_units_convert_window_button_press_event), "on_units_convert_window_key_press_event", G_CALLBACK(on_units_convert_window_key_press_event), "on_units_convert_view_enter_notify_event", G_CALLBACK(on_units_convert_view_enter_notify_event), "on_units_convert_view_motion_notify_event", G_CALLBACK(on_units_convert_view_motion_notify_event), "on_units_convert_view_row_activated", G_CALLBACK(on_units_convert_view_row_activated), "on_units_convert_search_changed", G_CALLBACK(on_units_convert_search_changed), NULL);
 		gtk_builder_connect_signals(units_builder, NULL);
 
 		update_units_tree();

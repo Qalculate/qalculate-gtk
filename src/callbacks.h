@@ -17,12 +17,6 @@
 #include "main.h"
 
 enum {
-	PROGRAMMING_KEYPAD = 1,
-	HIDE_LEFT_KEYPAD = 2,
-	HIDE_RIGHT_KEYPAD = 4
-};
-
-enum {
 	QALCULATE_HISTORY_EXPRESSION,
 	QALCULATE_HISTORY_TRANSFORMATION,
 	QALCULATE_HISTORY_RESULT,
@@ -144,10 +138,10 @@ void set_donot_calcvars(GtkMenuItem *w, gpointer user_data);
 void set_unknownvariables_enabled(GtkMenuItem *w, gpointer user_data);
 void set_units_enabled(GtkMenuItem *w, gpointer user_data);
 void apply_function(GtkMenuItem *w, gpointer user_data);
-void insert_menu_function(GtkMenuItem *w, gpointer user_data);
-void insert_variable(GtkMenuItem *w, gpointer user_data);
-void insert_prefix(GtkMenuItem *w, gpointer user_data);
-void insert_unit(GtkMenuItem *w, gpointer user_data);
+void insert_function_from_menu(GtkMenuItem *w, gpointer user_data);
+void insert_variable_from_menu(GtkMenuItem *w, gpointer user_data);
+void insert_prefix_from_menu(GtkMenuItem *w, gpointer user_data);
+void insert_unit_from_menu(GtkMenuItem *w, gpointer user_data);
 
 void insert_button_function(GtkMenuItem *w, gpointer user_data);
 void insert_function_operator(GtkMenuItem *w, gpointer user_data);
@@ -177,28 +171,7 @@ void set_status_bottom_border_visible(bool);
 extern "C" {
 #endif
 
-void memory_recall();
-void memory_store();
-void memory_add();
-void memory_subtract();
-void memory_clear();
-
 void hide_tooltip(GtkWidget*);
-
-void insert_left_shift();
-void insert_right_shift();
-void insert_bitwise_and();
-void insert_bitwise_or();
-void insert_bitwise_xor();
-void insert_bitwise_not();
-void insert_angle_symbol();
-
-void update_mb_fx_menu();
-void update_mb_sto_menu();
-void update_mb_units_menu();
-void update_mb_pi_menu();
-void update_mb_to_menu();
-void update_mb_angles(AngleUnit angle_unit);
 
 void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewColumn*, gpointer);
 
@@ -207,10 +180,6 @@ void *command_proc(void*);
 void on_history_resize(GtkWidget*, GdkRectangle*, gpointer);
 void on_message_bar_response(GtkInfoBar *w, gint response_id, gpointer);
 void on_expressiontext_populate_popup(GtkTextView *w, GtkMenu *menu, gpointer user_data);
-void on_combobox_base_changed(GtkComboBox *w, gpointer user_data);
-void on_combobox_numerical_display_changed(GtkComboBox *w, gpointer user_data);
-void on_button_fraction_toggled(GtkToggleButton *w, gpointer user_data);
-void on_button_exact_toggled(GtkToggleButton *w, gpointer user_data);
 void on_expander_keypad_expanded(GObject *o, GParamSpec *param_spec, gpointer user_data);
 void on_expander_history_expanded(GObject *o, GParamSpec *param_spec, gpointer user_data);
 void on_expander_stack_expanded(GObject *o, GParamSpec *param_spec, gpointer user_data);
@@ -271,46 +240,10 @@ void on_radiobutton_degrees_toggled(GtkToggleButton *togglebutton, gpointer user
 void on_radiobutton_gradians_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 void on_radiobutton_no_default_angle_unit_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 gboolean on_gcalc_exit(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-void on_button_execute_clicked(GtkButton *button, gpointer user_data);
-void on_button_del_clicked(GtkButton *w, gpointer user_data);
-void on_button_ac_clicked(GtkButton *w, gpointer user_data);
-void on_button_hyp_toggled(GtkToggleButton *w, gpointer user_data);
-void on_button_inv_toggled(GtkToggleButton *w, gpointer user_data);
-void on_button_tan_clicked(GtkButton *w, gpointer user_data);
-void on_button_sine_clicked(GtkButton *w, gpointer user_data);
-void on_button_cosine_clicked(GtkButton *w, gpointer user_data);
-void on_button_store_clicked(GtkButton *w, gpointer user_data);
-void on_button_mod_clicked(GtkButton *w, gpointer user_data);
-void on_button_reciprocal_clicked(GtkButton *w, gpointer user_data);
 void on_togglebutton_expression_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 void on_togglebutton_result_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 void on_expression_changed(GtkEditable *w, gpointer user_data);
 void on_expression_move_cursor(GtkEntry*, GtkMovementStep, gint, gboolean, gpointer);
-void on_button_zero_clicked(GtkButton *w, gpointer user_data);
-void on_button_one_clicked(GtkButton *w, gpointer user_data);
-void on_button_two_clicked(GtkButton *w, gpointer user_data);
-void on_button_three_clicked(GtkButton *w, gpointer user_data);
-void on_button_four_clicked(GtkButton *w, gpointer user_data);
-void on_button_five_clicked(GtkButton *w, gpointer user_data);
-void on_button_six_clicked(GtkButton *w, gpointer user_data);
-void on_button_seven_clicked(GtkButton *w, gpointer user_data);
-void on_button_eight_clicked(GtkButton *w, gpointer user_data);
-void on_button_nine_clicked(GtkButton *w, gpointer user_data);
-void on_button_dot_clicked(GtkButton *w, gpointer user_data);
-void on_button_brace_open_clicked(GtkButton *w, gpointer user_data);
-void on_button_brace_close_clicked(GtkButton *w, gpointer user_data);
-void on_button_times_clicked(GtkButton *w, gpointer user_data);
-void on_button_add_clicked(GtkButton *w, gpointer user_data);
-void on_button_sub_clicked(GtkButton *w, gpointer user_data);
-void on_button_divide_clicked(GtkButton *w, gpointer user_data);
-void on_button_ans_clicked(GtkButton *w, gpointer user_data);
-void on_button_exp_clicked(GtkButton *w, gpointer user_data);
-void on_button_xy_clicked(GtkButton *w, gpointer user_data);
-void on_button_square_clicked();
-void on_button_sqrt_clicked(GtkButton *w, gpointer user_data);
-void on_button_log_clicked(GtkButton *w, gpointer user_data);
-void on_button_ln_clicked(GtkButton *w, gpointer user_data);
-void on_button_twos_in_toggled(GtkToggleButton *w, gpointer);
 void on_menu_item_manage_variables_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_manage_functions_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_manage_units_activate(GtkMenuItem *w, gpointer user_data);
@@ -358,9 +291,6 @@ void on_menu_item_custom_angle_unit_activate(GtkMenuItem *w, gpointer user_data)
 void on_menu_item_no_default_angle_unit_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_read_precision_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_rpn_syntax_activate(GtkMenuItem *w, gpointer user_data);
-void output_base_updated_from_menu();
-void input_base_updated_from_menu();
-void update_menu_base();
 void on_menu_item_binary_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_octal_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_decimal_activate(GtkMenuItem *w, gpointer user_data);
@@ -536,16 +466,6 @@ gboolean on_expressiontext_key_press_event(GtkWidget *w, GdkEventKey *event, gpo
 void on_expressionbuffer_cursor_position_notify();
 
 gboolean on_resultview_draw(GtkWidget *w, cairo_t *cr, gpointer user_data);
-
-gboolean on_tMatrix_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer user_data);
-gboolean on_tMatrix_button_press_event(GtkWidget *w, GdkEventButton *event, gpointer user_data);
-gboolean on_tMatrix_cursor_changed(GtkTreeView *w, gpointer user_data);
-
-void on_matrix_spinbutton_columns_value_changed(GtkSpinButton *w, gpointer user_data);
-void on_matrix_spinbutton_rows_value_changed(GtkSpinButton *w, gpointer user_data);
-
-void on_matrix_radiobutton_matrix_toggled(GtkToggleButton *w, gpointer user_data);
-void on_matrix_radiobutton_vector_toggled(GtkToggleButton *w, gpointer user_data);
 
 void on_type_label_date_clicked(GtkEntry *w, gpointer user_data);
 void on_type_label_file_clicked(GtkEntry *w, gpointer user_data);

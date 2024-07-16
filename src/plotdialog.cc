@@ -350,10 +350,10 @@ void on_plot_button_save_clicked(GtkButton*, gpointer) {
 		if(generate_plot(pp, y_vectors, x_vectors, pdps)) {
 			pp.filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(d));
 			pp.filetype = PLOT_FILETYPE_AUTO;
-			block_error_timeout++;
+			block_error();
 			CALCULATOR->plotVectors(&pp, y_vectors, x_vectors, pdps, false, max_plot_time * 1000);
 			display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
-			block_error_timeout--;
+			unblock_error();
 			for(size_t i = 0; i < pdps.size(); i++) {
 				if(pdps[i]) delete pdps[i];
 			}
@@ -375,10 +375,10 @@ void update_plot() {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_button_save")), false);
 		return;
 	}
-	block_error_timeout++;
+	block_error();
 	CALCULATOR->plotVectors(&pp, y_vectors, x_vectors, pdps, false, max_plot_time * 1000);
 	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
-	block_error_timeout--;
+	unblock_error();
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_button_save")), true);
 	for(size_t i = 0; i < pdps.size(); i++) {
 		if(pdps[i]) delete pdps[i];
@@ -393,7 +393,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 	if(!simplified_percentage) eo.parse_options.parsing_mode = (ParsingMode) (eo.parse_options.parsing_mode | PARSE_PERCENT_AS_ORDINARY_CONSTANT);
 	eo.parse_options.base = 10;
 	eo.parse_options.read_precision = DONT_READ_PRECISION;
-	block_error_timeout++;
+	block_error();
 	if(type == 1 || type == 2) {
 		*y_vector = new MathStructure();
 		if(!CALCULATOR->calculate(*y_vector, CALCULATOR->unlocalizeExpression(str, eo.parse_options), max_plot_time * 1000, eo)) {
@@ -413,7 +413,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 			gtk_dialog_run(GTK_DIALOG(d));
 			gtk_widget_destroy(d);
 			display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
-			block_error_timeout--;
+			unblock_error();
 			CALCULATOR->endTemporaryStopIntervalArithmetic();
 			return;
 		}
@@ -424,7 +424,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 			gtk_dialog_run(GTK_DIALOG(d));
 			gtk_widget_destroy(d);
 			display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
-			block_error_timeout--;
+			unblock_error();
 			CALCULATOR->endTemporaryStopIntervalArithmetic();
 			return;
 		}
@@ -436,7 +436,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 	}
 	CALCULATOR->endTemporaryStopIntervalArithmetic();
 	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
-	block_error_timeout--;
+	unblock_error();
 }
 void on_plot_button_add_clicked(GtkButton*, gpointer) {
 	string expression = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(plot_builder, "plot_entry_expression")));

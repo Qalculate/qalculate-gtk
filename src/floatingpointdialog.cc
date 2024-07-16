@@ -78,7 +78,7 @@ void on_fp_entry_dec_changed(GtkEditable *editable, gpointer) {
 	if(!simplified_percentage) eo.parse_options.parsing_mode = (ParsingMode) (eo.parse_options.parsing_mode | PARSE_PERCENT_AS_ORDINARY_CONSTANT);
 	eo.parse_options.base = 10;
 	MathStructure value;
-	block_error_timeout++;
+	block_error();
 	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options), 1500, eo);
 	if(value.isNumber()) {
 		string sbin = to_float(value.number(), bits, expbits, sgnpos);
@@ -91,7 +91,7 @@ void on_fp_entry_dec_changed(GtkEditable *editable, gpointer) {
 	}
 	changing_in_fp_dialog = false;
 	CALCULATOR->clearMessages();
-	block_error_timeout--;
+	unblock_error();
 }
 void on_fp_combo_bits_changed(GtkComboBox*, gpointer) {
 	on_fp_entry_dec_changed(GTK_EDITABLE(gtk_builder_get_object(floatingpoint_builder, "fp_entry_dec")), NULL);
@@ -107,7 +107,7 @@ void on_fp_buffer_bin_changed(GtkTextBuffer *w, gpointer) {
 	remove_blanks(str);
 	if(str.empty()) return;
 	changing_in_fp_dialog = true;
-	block_error_timeout++;
+	block_error();
 	unsigned int bits = get_fp_bits();
 	if(str.find_first_not_of("01") == string::npos && str.length() <= bits) {
 		update_fp_entries(str, 2);
@@ -116,7 +116,7 @@ void on_fp_buffer_bin_changed(GtkTextBuffer *w, gpointer) {
 	}
 	changing_in_fp_dialog = false;
 	CALCULATOR->clearMessages();
-	block_error_timeout--;
+	unblock_error();
 }
 void on_fp_entry_hex_changed(GtkEditable *editable, gpointer) {
 	if(changing_in_fp_dialog) return;
@@ -125,7 +125,7 @@ void on_fp_entry_hex_changed(GtkEditable *editable, gpointer) {
 	if(str.empty()) return;
 	changing_in_fp_dialog = true;
 	unsigned int bits = get_fp_bits();
-	block_error_timeout++;
+	block_error();
 	ParseOptions pa;
 	pa.base = BASE_HEXADECIMAL;
 	Number nr(str, pa);
@@ -144,7 +144,7 @@ void on_fp_entry_hex_changed(GtkEditable *editable, gpointer) {
 	}
 	changing_in_fp_dialog = false;
 	CALCULATOR->clearMessages();
-	block_error_timeout--;
+	unblock_error();
 }
 void update_fp_entries(string sbin, int base, Number *decnum) {
 	unsigned int bits = get_fp_bits();

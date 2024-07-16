@@ -28,6 +28,7 @@
 #include "support.h"
 #include "interface.h"
 #include "callbacks.h"
+#include "keypad.h"
 #include "util.h"
 #include "main.h"
 
@@ -70,7 +71,6 @@ MathFunction *f_answer;
 MathFunction *f_expression;
 
 GtkBuilder *main_builder;
-GtkBuilder *matrix_builder;
 GtkBuilder *preferences_builder;
 
 Thread *view_thread, *command_thread;
@@ -106,9 +106,9 @@ gboolean create_menus_etc(gpointer) {
 	generate_variables_tree_struct();
 
 	//create button menus after definitions have been loaded
-	block_expression_execution++;
+	block_calculation();
 	create_button_menus();
-	block_expression_execution--;
+	unblock_calculation();
 
 	//create dynamic menus
 	create_fmenu();
@@ -168,7 +168,6 @@ void create_application(GtkApplication *app) {
 	b_busy_command = false;
 
 	main_builder = NULL;
-	matrix_builder = NULL;
 	preferences_builder = NULL;
 
 	//create the almighty Calculator object

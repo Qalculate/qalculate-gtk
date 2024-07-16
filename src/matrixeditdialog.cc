@@ -317,7 +317,7 @@ GtkWidget* get_matrix_edit_dialog(void) {
 
 		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(matrixedit_builder, "matrix_edit_textview_description"))), "changed", G_CALLBACK(on_matrix_changed), NULL);
 
-		gtk_builder_add_callback_symbols(matrixedit_builder, "on_tMatrixEdit_button_press_event", G_CALLBACK(on_tMatrixEdit_button_press_event), "on_tMatrixEdit_cursor_changed", G_CALLBACK(on_tMatrixEdit_cursor_changed), "on_tMatrixEdit_key_press_event", G_CALLBACK(on_tMatrixEdit_key_press_event), "on_matrix_changed", G_CALLBACK(on_matrix_changed), "on_variable_edit_entry_name_changed", G_CALLBACK(on_variable_edit_entry_name_changed), "on_matrix_edit_button_names_clicked", G_CALLBACK(on_matrix_edit_button_names_clicked), "on_matrix_changed", G_CALLBACK(on_matrix_changed), "on_matrix_edit_spinbutton_rows_value_changed", G_CALLBACK(on_matrix_edit_spinbutton_rows_value_changed), "on_matrix_changed", G_CALLBACK(on_matrix_changed), "on_matrix_edit_spinbutton_columns_value_changed", G_CALLBACK(on_matrix_edit_spinbutton_columns_value_changed), "on_matrix_changed", G_CALLBACK(on_matrix_changed), "on_matrix_edit_radiobutton_matrix_toggled", G_CALLBACK(on_matrix_edit_radiobutton_matrix_toggled), "on_matrix_changed", G_CALLBACK(on_matrix_changed), "on_matrix_edit_radiobutton_vector_toggled", G_CALLBACK(on_matrix_edit_radiobutton_vector_toggled), "on_matrix_changed", G_CALLBACK(on_matrix_changed), "on_matrix_edit_checkbutton_temporary_toggled", G_CALLBACK(on_matrix_edit_checkbutton_temporary_toggled), "on_matrix_changed", G_CALLBACK(on_matrix_changed), "on_matrix_changed", G_CALLBACK(on_matrix_changed), NULL);
+		gtk_builder_add_callback_symbols(matrixedit_builder, "on_tMatrixEdit_button_press_event", G_CALLBACK(on_tMatrixEdit_button_press_event), "on_tMatrixEdit_cursor_changed", G_CALLBACK(on_tMatrixEdit_cursor_changed), "on_tMatrixEdit_key_press_event", G_CALLBACK(on_tMatrixEdit_key_press_event), "on_matrix_changed", G_CALLBACK(on_matrix_changed), "on_variable_edit_entry_name_changed", G_CALLBACK(on_variable_edit_entry_name_changed), "on_matrix_edit_button_names_clicked", G_CALLBACK(on_matrix_edit_button_names_clicked), "on_matrix_edit_spinbutton_rows_value_changed", G_CALLBACK(on_matrix_edit_spinbutton_rows_value_changed), "on_matrix_edit_spinbutton_columns_value_changed", G_CALLBACK(on_matrix_edit_spinbutton_columns_value_changed), "on_matrix_edit_radiobutton_matrix_toggled", G_CALLBACK(on_matrix_edit_radiobutton_matrix_toggled), "on_matrix_edit_radiobutton_vector_toggled", G_CALLBACK(on_matrix_edit_radiobutton_vector_toggled), "on_matrix_edit_checkbutton_temporary_toggled", G_CALLBACK(on_matrix_edit_checkbutton_temporary_toggled), NULL);
 		gtk_builder_connect_signals(matrixedit_builder, NULL);
 
 	}
@@ -562,7 +562,7 @@ run_matrix_edit_dialog:
 			r = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(matrixedit_builder, "matrix_edit_spinbutton_rows")));
 			gchar *gstr = NULL;
 			string mstr;
-			block_error_timeout++;
+			block_error();
 			ParseOptions pa = evalops.parse_options; pa.base = 10; pa.rpn = false;
 			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(matrixedit_builder, "matrix_edit_radiobutton_vector")))) {
 				mstruct_new.clearVector();
@@ -593,7 +593,7 @@ run_matrix_edit_dialog:
 				}
 			}
 			display_errors(NULL, dialog);
-			block_error_timeout--;
+			unblock_error();
 		}
 		bool add_var = false;
 		if(v) {

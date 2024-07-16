@@ -227,10 +227,10 @@ void on_nbases_entry_decimal_changed(GtkEditable *editable, gpointer) {
 	eo.parse_options.read_precision = DONT_READ_PRECISION;
 	eo.parse_options.base = 10;
 	MathStructure value;
-	block_error_timeout++;
+	block_error();
 	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options), 1500, eo);
 	update_nbases_entries(value, 10);
-	block_error_timeout--;
+	unblock_error();
 	changing_in_nbases_dialog = false;
 }
 void on_nbases_entry_binary_changed(GtkEditable *editable, gpointer) {
@@ -247,10 +247,10 @@ void on_nbases_entry_binary_changed(GtkEditable *editable, gpointer) {
 	eo.parse_options.base = BASE_BINARY;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
-	block_error_timeout++;
+	block_error();
 	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options), 1500, eo);
 	update_nbases_entries(value, 2);
-	block_error_timeout--;
+	unblock_error();
 	changing_in_nbases_dialog = false;
 }
 void on_nbases_entry_octal_changed(GtkEditable *editable, gpointer) {
@@ -267,10 +267,10 @@ void on_nbases_entry_octal_changed(GtkEditable *editable, gpointer) {
 	eo.parse_options.base = BASE_OCTAL;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
-	block_error_timeout++;
+	block_error();
 	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options), 1500, eo);
 	update_nbases_entries(value, 8);
-	block_error_timeout--;
+	unblock_error();
 	changing_in_nbases_dialog = false;
 }
 void on_nbases_entry_hexadecimal_changed(GtkEditable *editable, gpointer) {
@@ -287,11 +287,11 @@ void on_nbases_entry_hexadecimal_changed(GtkEditable *editable, gpointer) {
 	eo.parse_options.base = BASE_HEXADECIMAL;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
-	block_error_timeout++;
+	block_error();
 	str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options);
 	CALCULATOR->calculate(&value, str, 1500, eo);
 	update_nbases_entries(value, 16);
-	block_error_timeout--;
+	unblock_error();
 	changing_in_nbases_dialog = false;
 }
 void on_nbases_entry_duo_changed(GtkEditable *editable, gpointer) {
@@ -308,10 +308,10 @@ void on_nbases_entry_duo_changed(GtkEditable *editable, gpointer) {
 	eo.parse_options.base = BASE_DUODECIMAL;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
-	block_error_timeout++;
+	block_error();
 	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options), 1500, eo);
 	update_nbases_entries(value, 12);
-	block_error_timeout--;
+	unblock_error();
 	changing_in_nbases_dialog = false;
 }
 void on_nbases_entry_roman_changed(GtkEditable *editable, gpointer) {
@@ -328,10 +328,10 @@ void on_nbases_entry_roman_changed(GtkEditable *editable, gpointer) {
 	eo.parse_options.base = BASE_ROMAN_NUMERALS;
 	changing_in_nbases_dialog = true;
 	MathStructure value;
-	block_error_timeout++;
+	block_error();
 	CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(editable)), eo.parse_options), 1500, eo);
 	update_nbases_entries(value, BASE_ROMAN_NUMERALS);
-	block_error_timeout--;
+	unblock_error();
 	changing_in_nbases_dialog = false;
 }
 

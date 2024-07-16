@@ -19,7 +19,23 @@ extern EvaluationOptions evalops;
 extern int simplified_percentage;
 extern bool always_on_top;
 extern bool implicit_question_asked;
-extern bool rpn_mode;
+extern bool rpn_mode, chain_mode;
 extern int previous_precision;
+extern bool caret_as_xor;
+extern int enable_tooltips;
+extern bool parsed_in_result;
+extern int horizontal_button_padding, vertical_button_padding;
+extern int default_signed, default_bits;
+extern bool automatic_fraction;
+extern int default_fraction_fraction;
+extern bool scientific_negexp;
+extern bool scientific_notminuslast;
+extern bool scientific_noprefix;
+extern int auto_prefix;
+extern bool fraction_fixed_combined;
+
+extern std::vector<MathFunction*> recent_functions;
+extern std::vector<Variable*> recent_variables;
+extern std::vector<Unit*> recent_units;
 
 #endif /* QALCULATE_GTK_SETTINGS_H */

@@ -123,7 +123,7 @@ void update_percentage_entries() {
 		case 68: {str1 = gtk_entry_get_text(GTK_ENTRY(w3)); str2 = gtk_entry_get_text(GTK_ENTRY(w7)); break;}
 		default: {variant = 0;}
 	}
-	block_error_timeout++;
+	block_error();
 	EvaluationOptions eo;
 	eo.parse_options = evalops.parse_options;
 	if(eo.parse_options.parsing_mode == PARSING_MODE_RPN || eo.parse_options.parsing_mode == PARSING_MODE_CHAIN) eo.parse_options.parsing_mode = PARSING_MODE_ADAPTIVE;
@@ -235,7 +235,7 @@ void update_percentage_entries() {
 		gtk_entry_set_text(GTK_ENTRY(w7), m2.isZero() ? "" : (m7.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(m7, 200, po).c_str()));
 	}
 	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_dialog")));
-	block_error_timeout--;
+	unblock_error();
 	g_signal_handlers_unblock_matched((gpointer) w1, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_1_changed, NULL);
 	g_signal_handlers_unblock_matched((gpointer) w2, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_2_changed, NULL);
 	g_signal_handlers_unblock_matched((gpointer) w3, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_3_changed, NULL);
@@ -271,7 +271,7 @@ GtkWidget* get_percentage_dialog(void) {
 		gtk_text_view_set_pixels_above_lines(GTK_TEXT_VIEW(gtk_builder_get_object(percentage_builder, "percentage_description")), 12);
 #endif
 
-		gtk_builder_add_callback_symbols(percentage_builder, "on_percentage_button_calculate_clicked", G_CALLBACK(on_percentage_button_calculate_clicked), "on_percentage_button_clear_clicked", G_CALLBACK(on_percentage_button_clear_clicked), "on_percentage_entry_1_activate", G_CALLBACK(on_percentage_entry_1_activate), "on_percentage_entry_1_changed", G_CALLBACK(on_percentage_entry_1_changed), "on_math_entry_key_press_event", G_CALLBACK(on_math_entry_key_press_event), "on_percentage_entry_3_activate", G_CALLBACK(on_percentage_entry_3_activate), "on_percentage_entry_3_changed", G_CALLBACK(on_percentage_entry_3_changed), "on_math_entry_key_press_event", G_CALLBACK(on_math_entry_key_press_event), "on_percentage_entry_4_activate", G_CALLBACK(on_percentage_entry_4_activate), "on_percentage_entry_4_changed", G_CALLBACK(on_percentage_entry_4_changed), "on_math_entry_key_press_event", G_CALLBACK(on_math_entry_key_press_event), "on_percentage_entry_2_activate", G_CALLBACK(on_percentage_entry_2_activate), "on_percentage_entry_2_changed", G_CALLBACK(on_percentage_entry_2_changed), "on_math_entry_key_press_event", G_CALLBACK(on_math_entry_key_press_event), "on_percentage_entry_6_activate", G_CALLBACK(on_percentage_entry_6_activate), "on_percentage_entry_6_changed", G_CALLBACK(on_percentage_entry_6_changed), "on_math_entry_key_press_event", G_CALLBACK(on_math_entry_key_press_event), "on_percentage_entry_7_activate", G_CALLBACK(on_percentage_entry_7_activate), "on_percentage_entry_7_changed", G_CALLBACK(on_percentage_entry_7_changed), "on_math_entry_key_press_event", G_CALLBACK(on_math_entry_key_press_event), "on_percentage_entry_5_activate", G_CALLBACK(on_percentage_entry_5_activate), "on_percentage_entry_5_changed", G_CALLBACK(on_percentage_entry_5_changed), "on_math_entry_key_press_event", G_CALLBACK(on_math_entry_key_press_event), NULL);
+		gtk_builder_add_callback_symbols(percentage_builder, "on_percentage_button_calculate_clicked", G_CALLBACK(on_percentage_button_calculate_clicked), "on_percentage_button_clear_clicked", G_CALLBACK(on_percentage_button_clear_clicked), "on_percentage_entry_1_activate", G_CALLBACK(on_percentage_entry_1_activate), "on_percentage_entry_1_changed", G_CALLBACK(on_percentage_entry_1_changed), "on_math_entry_key_press_event", G_CALLBACK(on_math_entry_key_press_event), "on_percentage_entry_3_activate", G_CALLBACK(on_percentage_entry_3_activate), "on_percentage_entry_3_changed", G_CALLBACK(on_percentage_entry_3_changed), "on_percentage_entry_4_activate", G_CALLBACK(on_percentage_entry_4_activate), "on_percentage_entry_4_changed", G_CALLBACK(on_percentage_entry_4_changed), "on_percentage_entry_2_activate", G_CALLBACK(on_percentage_entry_2_activate), "on_percentage_entry_2_changed", G_CALLBACK(on_percentage_entry_2_changed), "on_percentage_entry_6_activate", G_CALLBACK(on_percentage_entry_6_activate), "on_percentage_entry_6_changed", G_CALLBACK(on_percentage_entry_6_changed), "on_percentage_entry_7_activate", G_CALLBACK(on_percentage_entry_7_activate), "on_percentage_entry_7_changed", G_CALLBACK(on_percentage_entry_7_changed), "on_percentage_entry_5_activate", G_CALLBACK(on_percentage_entry_5_activate), "on_percentage_entry_5_changed", G_CALLBACK(on_percentage_entry_5_changed), NULL);
 		gtk_builder_connect_signals(percentage_builder, NULL);
 
 	}

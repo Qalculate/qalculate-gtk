@@ -87,7 +87,7 @@ GtkWidget* get_unknown_edit_dialog(void) {
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_type")), 0);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(unknownedit_builder, "unknown_edit_combobox_sign")), 0);
 
-		gtk_builder_add_callback_symbols(unknownedit_builder, "on_unknown_changed", G_CALLBACK(on_unknown_changed), "on_unknown_edit_checkbutton_custom_assumptions_toggled", G_CALLBACK(on_unknown_edit_checkbutton_custom_assumptions_toggled), "on_unknown_changed", G_CALLBACK(on_unknown_changed), "on_unknown_edit_combobox_type_changed", G_CALLBACK(on_unknown_edit_combobox_type_changed), "on_unknown_changed", G_CALLBACK(on_unknown_changed), "on_unknown_edit_combobox_sign_changed", G_CALLBACK(on_unknown_edit_combobox_sign_changed), "on_unknown_changed", G_CALLBACK(on_unknown_changed), "on_variable_edit_entry_name_changed", G_CALLBACK(on_variable_edit_entry_name_changed), "on_unknown_edit_button_names_clicked", G_CALLBACK(on_unknown_edit_button_names_clicked), "on_unknown_changed", G_CALLBACK(on_unknown_changed), NULL);
+		gtk_builder_add_callback_symbols(unknownedit_builder, "on_unknown_changed", G_CALLBACK(on_unknown_changed), "on_unknown_edit_checkbutton_custom_assumptions_toggled", G_CALLBACK(on_unknown_edit_checkbutton_custom_assumptions_toggled), "on_unknown_edit_combobox_type_changed", G_CALLBACK(on_unknown_edit_combobox_type_changed), "on_unknown_edit_combobox_sign_changed", G_CALLBACK(on_unknown_edit_combobox_sign_changed), "on_variable_edit_entry_name_changed", G_CALLBACK(on_variable_edit_entry_name_changed), "on_unknown_edit_button_names_clicked", G_CALLBACK(on_unknown_edit_button_names_clicked), NULL);
 		gtk_builder_connect_signals(unknownedit_builder, NULL);
 
 	}

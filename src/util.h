@@ -107,8 +107,22 @@ enum {
 	DELIMITER_OTHER
 };
 
+enum {
+	COMMAND_FACTORIZE,
+	COMMAND_EXPAND_PARTIAL_FRACTIONS,
+	COMMAND_EXPAND,
+	COMMAND_TRANSFORM,
+	COMMAND_CONVERT_UNIT,
+	COMMAND_CONVERT_STRING,
+	COMMAND_CONVERT_BASE,
+	COMMAND_CONVERT_OPTIMAL,
+	COMMAND_CALCULATE,
+	COMMAND_EVAL
+};
+
 bool string_is_less(std::string str1, std::string str2);
-extern KnownVariable *v_memory;
+extern KnownVariable *vans[5], *v_memory;
+extern MathFunction *f_answer;
 
 struct tree_struct {
 	std::string item;
@@ -176,6 +190,8 @@ struct custom_button {
 							gtk_tree_path_free(path);
 
 extern GtkWidget *mainwindow;
+extern GtkWidget *expressiontext;
+extern GtkTextBuffer *expressionbuffer;
 
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
 #	define CLEAN_MODIFIERS(x) (x & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK))
@@ -205,6 +221,76 @@ extern GtkWidget *mainwindow;
 	} \
 	g_list_free(list);
 
+#define FIX_SUPSUB_PRE(w_supsub) \
+	string s_sup, s_sub;\
+	if(use_supsub(w_supsub)) {\
+		if(pango_version() >= 15000) {\
+			s_sup = "<span size=\"60%\" baseline_shift=\"superscript\">";\
+			s_sub = "<span size=\"60%\" baseline_shift=\"subscript\">";\
+		} else {\
+			PangoFontDescription *font_supsub;\
+			gtk_style_context_get(gtk_widget_get_style_context(w_supsub), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_supsub, NULL);\
+			s_sup = "<span size=\"x-small\" rise=\""; s_sup += i2s(pango_font_description_get_size(font_supsub) * 0.5); s_sup += "\">";\
+			s_sub = "<span size=\"x-small\" rise=\"-"; s_sub += i2s(pango_font_description_get_size(font_supsub) * 0.2); s_sub += "\">";\
+		}\
+	}
+
+#define FIX_SUB_RESULT(str) \
+	if(fix_supsub_result) {\
+		int s = scaledown;\
+		if(ips.power_depth > 0) s++;\
+		if(pango_version() >= 15000) {\
+			if(s <= 0) gsub("<sub>", "<span size=\"80%\" baseline_shift=\"subscript\">", str);\
+			else if(s == 1) gsub("<sub>", "<span size=\"60%\" baseline_shift=\"subscript\">", str);\
+			else gsub("<sub>", "<span size=\"50%\" baseline_shift=\"subscript\">", str);\
+		} else {\
+			PangoFontDescription *font_supsub;\
+			gtk_style_context_get(gtk_widget_get_style_context(resultview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_supsub, NULL);\
+			string s_sub;\
+			if(s <= 0) s_sub = "<span size=\"small\" rise=\"-";\
+			else if(s == 1) s_sub = "<span size=\"x-small\" rise=\"-";\
+			else s_sub = "<span size=\"xx-small\" rise=\"-";\
+			s_sub += i2s(pango_font_description_get_size(font_supsub) * 0.2); s_sub += "\">";\
+			if(ips.power_depth > 0) s++;\
+			gsub("<sub>", s_sub, str);\
+			gsub("</sub>", "</span>", str);\
+		}\
+		gsub("</sub>", "</span>", str);\
+	}
+
+#define FIX_SUP_RESULT(str) \
+	if(fix_supsub_result) {\
+		int s = scaledown;\
+		if(ips.power_depth > 0) s++;\
+		if(pango_version() >= 15000) {\
+			if(s <= 0) gsub("<sup>", "<span size=\"80%\" baseline_shift=\"superscript\">", str);\
+			else if(s == 1) gsub("<sup>", "<span size=\"60%\" baseline_shift=\"superscript\">", str);\
+			else gsub("<sup>", "<span size=\"50%\" baseline_shift=\"superscript\">", str);\
+		} else {\
+			PangoFontDescription *font_supsub;\
+			gtk_style_context_get(gtk_widget_get_style_context(resultview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_supsub, NULL);\
+			string s_sup;\
+			if(s <= 0) s_sup = "<span size=\"small\" rise=\"";\
+			else if(s == 1) s_sup = "<span size=\"x-small\" rise=\"";\
+			else s_sup = "<span size=\"xx-small\" rise=\"";\
+			s_sup += i2s(pango_font_description_get_size(font_supsub) * 0.5); s_sup += "\">";\
+			if(ips.power_depth > 0) s++;\
+			gsub("<sup>", s_sup, str);\
+		}\
+		gsub("</sup>", "</span>", str);\
+	}
+
+#define FIX_SUPSUB(str) \
+	if(!s_sup.empty()) {\
+		gsub("<sup>", s_sup, str);\
+		gsub("</sup>", "</span>", str);\
+		gsub("<sub>", s_sub, str);\
+		gsub("</sub>", "</span>", str);\
+	}
+
+bool use_supsub(GtkWidget *w);
+extern bool fix_supsub_status, fix_supsub_result, fix_supsub_history, fix_supsub_completion;
+
 extern tree_struct function_cats, unit_cats, variable_cats;
 extern std::string volume_cat;
 extern std::vector<std::string> alt_volcats;
@@ -213,9 +299,19 @@ extern std::vector<Unit*> user_units;
 extern std::vector<Variable*> user_variables;
 extern std::vector<MathFunction*> user_functions;
 
-extern int block_error_timeout;
 extern bool b_busy, b_busy_command, b_busy_result, b_busy_expression, b_busy_fetch;
 extern GtkWidget *expressiontext;
+
+void block_completion();
+void unblock_completion();
+void block_calculation();
+void unblock_calculation();
+void block_error();
+void unblock_error();
+bool calculation_blocked();
+void block_result();
+void unblock_result();
+bool result_blocked();
 
 GtkBuilder *getBuilder(const char *filename);
 void set_tooltips_enabled(GtkWidget *w, bool b);
@@ -229,6 +325,19 @@ const char *expression_add_sign();
 const char *expression_sub_sign();
 const char *expression_times_sign();
 const char *expression_divide_sign();
+
+std::string get_expression_text();
+bool expression_is_empty();
+void clear_expression_text();
+bool expression_history_up();
+bool expression_history_down();
+bool is_at_beginning_of_expression(bool allow_selection = false);
+int wrap_expression_selection(const char *insert_before = NULL, bool return_true_if_whole_selected = false);
+void focus_keeping_selection();
+bool expression_changed();
+bool result_is_autocalculated();
+
+std::string print_with_evalops(const Number &nr);
 
 gint string_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer user_data);
 gint category_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer user_data);
@@ -246,16 +355,41 @@ std::string get_value_string(const MathStructure &mstruct_, int type = 0, Prefix
 
 bool entry_in_quotes(GtkEntry *w);
 const gchar *key_press_get_symbol(GdkEventKey *event, bool do_caret_as_xor = true, bool unit_expression = false);
-extern "C" {
+
 void on_variable_edit_entry_name_changed(GtkEditable *editable, gpointer user_data);
+#ifdef __cplusplus
+extern "C" {
+#endif
+void brace_wrap();
+bool do_shortcut(int type, std::string value);
 gboolean on_math_entry_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer);
 gboolean on_unit_entry_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer);
 void entry_insert_text(GtkWidget *w, const gchar *text);
-void update_keypad_bases();
 void set_input_base(int base);
 void set_output_base(int base);
 bool textview_in_quotes(GtkTextView *w);
+bool contains_polynomial_division(MathStructure &m);
+bool contains_imaginary_number(MathStructure &m);
+bool contains_rational_number(MathStructure &m);
+bool contains_fraction(MathStructure &m, bool in_div = false);
+bool contains_convertible_unit(MathStructure &m);
+
+void memory_recall();
+void memory_store();
+void memory_add();
+void memory_subtract();
+void memory_clear();
+
+void insert_angle_symbol();
+
+void output_base_updated_from_menu();
+void input_base_updated_from_menu();
+void update_menu_base();
+#ifdef __cplusplus
 }
+#endif
+bool use_keypad_buttons_for_history();
+bool keypad_is_visible();
 
 void on_abort_display(GtkDialog*, gint, gpointer);
 void on_abort_command(GtkDialog*, gint, gpointer);
@@ -263,9 +397,8 @@ void on_abort_calculation(GtkDialog*, gint, gpointer);
 
 void show_message(const gchar *text, GtkWidget *win);
 bool ask_question(const gchar *text, GtkWidget *win);
+void show_notification(std::string text);
 void show_help(const char *file, GtkWidget *win);
-void insert_text(const gchar *text);
-bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inhistory_index = NULL, int type = 0, bool *implicit_warning = NULL, time_t history_time = 0);
 
 void result_display_updated();
 void result_format_updated();
@@ -274,8 +407,15 @@ void result_prefix_changed(Prefix *prefix = NULL);
 void expression_calculation_updated();
 void expression_format_updated(bool recalculate = false);
 void execute_expression(bool force = true, bool do_mathoperation = false, MathOperation op = OPERATION_ADD, MathFunction *f = NULL, bool do_stack = false, size_t stack_index = 0, std::string execute_str = std::string(), std::string str = std::string(), bool check_exrates = true);
+void executeCommand(int command_type, bool show_result = true, bool force = false, std::string ceu_str = "", Unit *u = NULL, int run = 1);
+void calculateRPN(int op);
+void calculateRPN(MathFunction *f);
+bool do_chain_mode(const gchar *op);
+bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inhistory_index = NULL, int type = 0, bool *implicit_warning = NULL, time_t history_time = 0);
+void add_as_variable();
 
 MathStructure *current_result();
+MathStructure *current_displayed_result();
 
 void update_vmenu(bool update_compl = true);
 void update_fmenu(bool update_compl = true);
@@ -296,8 +436,13 @@ bool title_matches(ExpressionItem *item, const std::string &str, size_t minlengt
 bool name_matches(ExpressionItem *item, const std::string &str);
 bool country_matches(Unit *u, const std::string &str, size_t minlength = 0);
 
+void insert_text(const gchar *text);
+void overwrite_expression_selection(const gchar *text);
 void apply_function(MathFunction *f);
 void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu = true);
+void insert_variable(Variable *v, bool add_to_menu = true);
+void insert_unit(Unit *u, bool add_to_recent = false);
+void insert_button_function(MathFunction *f, bool save_to_recent = false, bool apply_to_stack = true);
 
 bool check_exchange_rates(GtkWidget *win = NULL, bool set_result = false);
 
@@ -317,5 +462,32 @@ void update_accels(int type = -1);
 void update_custom_buttons(int index = -1);
 
 void update_window_properties(GtkWidget *w, bool ignore_tooltips_setting = false);
+
+#define MENU_ITEM_WITH_INT(x,y,z)		item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), GINT_TO_POINTER(z)); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
+#define MENU_ITEM_WITH_STRING(x,y,z)		item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), (gpointer) z); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
+#define MENU_ITEM_WITH_POINTER(x,y,z)		item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), (gpointer) z); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
+#define MENU_ITEM_WITH_OBJECT(x,y)		item = gtk_menu_item_new_with_label(x->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) sub).c_str()); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), (gpointer) x); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
+#define MENU_ITEM_WITH_POINTER_PREPEND(x,y,z)	item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), (gpointer) z); gtk_menu_shell_prepend(GTK_MENU_SHELL(sub), item);
+#define MENU_ITEM_WITH_OBJECT_PREPEND(x,y)	item = gtk_menu_item_new_with_label(x->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) sub).c_str()); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), (gpointer) x); gtk_menu_shell_prepend(GTK_MENU_SHELL(sub), item);
+#define MENU_ITEM_WITH_OBJECT_AND_FLAG(x,y)	{GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6); unordered_map<string, cairo_surface_t*>::const_iterator it_flag = flag_surfaces.find(x->referenceName()); GtkWidget *image_w; if(it_flag != flag_surfaces.end()) {image_w = gtk_image_new_from_surface(it_flag->second);} else {image_w = gtk_image_new();} gtk_widget_set_size_request(image_w, flagheight * 2, flagheight); gtk_container_add(GTK_CONTAINER(box), image_w); gtk_container_add(GTK_CONTAINER(box), gtk_label_new(x->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) sub).c_str())); item = gtk_menu_item_new(); gtk_container_add(GTK_CONTAINER(item), box); gtk_widget_show_all(item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), (gpointer) x); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);}
+#define MENU_ITEM_MARKUP_WITH_INT_AND_FLAGIMAGE(x,y,z,i)	{GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6); GtkWidget *image_w = gtk_image_new_from_surface(y); gtk_widget_set_size_request(image_w, flagheight * 2, flagheight); gtk_container_add(GTK_CONTAINER(box), image_w); GtkWidget *label = gtk_label_new(x); gtk_container_add(GTK_CONTAINER(box), label); item = gtk_menu_item_new(); gtk_container_add(GTK_CONTAINER(item), box); gtk_widget_show_all(item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(z), GINT_TO_POINTER(i)); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);}
+#define MENU_ITEM_MARKUP_WITH_POINTER(x,y,z)	item = gtk_menu_item_new_with_label(""); gtk_label_set_markup(GTK_LABEL(gtk_bin_get_child(GTK_BIN(item))), x); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), (gpointer) z); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
+#define MENU_ITEM_MARKUP_WITH_INT(x,y,z)	item = gtk_menu_item_new_with_label(""); gtk_label_set_markup(GTK_LABEL(gtk_bin_get_child(GTK_BIN(item))), x); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), GINT_TO_POINTER(z)); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
+#define MENU_ITEM(x,y)				item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), NULL); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
+#define MENU_ITEM_MARKUP(x,y)			item = gtk_menu_item_new_with_label(""); gtk_label_set_markup(GTK_LABEL(gtk_bin_get_child(GTK_BIN(item))), x); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), NULL); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
+#define MENU_NO_ITEMS(x)			item = gtk_menu_item_new_with_label(x); gtk_widget_set_sensitive(item, FALSE); gtk_widget_show (item); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
+#define CHECK_MENU_ITEM(x,y,b)			item = gtk_check_menu_item_new_with_label(x); gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), b); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), NULL); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
+#define RADIO_MENU_ITEM(x,y,b)			item = gtk_radio_menu_item_new_with_label(group, x); group = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(item)); gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), b); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), NULL); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
+#define RADIO_MENU_ITEM_WITH_INT(x,y,b,z)	item = gtk_radio_menu_item_new_with_label(group, x); group = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(item)); gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), b); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), GINT_TO_POINTER(z)); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
+#define POPUP_CHECK_MENU_ITEM_WITH_LABEL(y,w,l)	item = gtk_check_menu_item_new_with_label(l); gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))); gstr = gtk_widget_get_tooltip_text(GTK_WIDGET(w)); if(gstr) {gtk_widget_set_tooltip_text(item, gstr); g_free(gstr);} gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), NULL); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
+#define POPUP_CHECK_MENU_ITEM(y,w)		item = gtk_check_menu_item_new_with_label(gtk_menu_item_get_label(GTK_MENU_ITEM(w))); gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))); gstr = gtk_widget_get_tooltip_text(GTK_WIDGET(w)); if(gstr) {gtk_widget_set_tooltip_text(item, gstr); g_free(gstr);} gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), NULL); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
+#define POPUP_RADIO_MENU_ITEM(y,w)		item = gtk_radio_menu_item_new_with_label(group, gtk_menu_item_get_label(GTK_MENU_ITEM(w))); group = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(item)); gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))); gstr = gtk_widget_get_tooltip_text(GTK_WIDGET(w)); if(gstr) {gtk_widget_set_tooltip_text(item, gstr); g_free(gstr);} gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), NULL); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
+#define MENU_ITEM_SET_ACCEL(a)			gtk_widget_add_accelerator(item, "activate", accel_group, a, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+#define MENU_TEAROFF				item = gtk_tearoff_menu_item_new(); gtk_widget_show (item); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
+#define MENU_SEPARATOR				item = gtk_separator_menu_item_new(); gtk_widget_show (item); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
+#define MENU_SEPARATOR_PREPEND			item = gtk_separator_menu_item_new(); gtk_widget_show (item); gtk_menu_shell_prepend(GTK_MENU_SHELL(sub), item);
+#define SUBMENU_ITEM(x,y)			item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); gtk_menu_shell_append(GTK_MENU_SHELL(y), item); sub = gtk_menu_new(); gtk_widget_show (sub); gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), sub);
+#define SUBMENU_ITEM_PREPEND(x,y)		item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); gtk_menu_shell_prepend(GTK_MENU_SHELL(y), item); sub = gtk_menu_new(); gtk_widget_show (sub); gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), sub);
+#define SUBMENU_ITEM_INSERT(x,y,i)		item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); gtk_menu_shell_insert(GTK_MENU_SHELL(y), item, i); sub = gtk_menu_new(); gtk_widget_show (sub); gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), sub);
 
 #endif /* QALCULATE_GTK_UTIL_H */
