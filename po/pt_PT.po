@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-25 06:38+0200\n"
-"PO-Revision-Date: 2024-04-17 17:23+0100\n"
+"PO-Revision-Date: 2024-07-16 12:21+0100\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: \n"
 "Language: pt_PT\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.4.4\n"
 
 #: ../data/qalculate-gtk.desktop.in.h:1 ../src/callbacks.cc:12575
 #: ../src/callbacks.cc:12582
@@ -2023,9 +2023,8 @@ msgid "Search…"
 msgstr "Procurar…"
 
 #: ../data/main.ui.h:318 ../src/callbacks.cc:29956 ../src/callbacks.cc:29969
-#, fuzzy
 msgid "Search by Date…"
-msgstr "Procurar…"
+msgstr "Procurar por data…"
 
 #: ../data/main.ui.h:319 ../src/callbacks.cc:29953
 msgid "Add Bookmark…"
@@ -2052,14 +2051,12 @@ msgid "Clear All"
 msgstr "Limpar tudo"
 
 #: ../data/main.ui.h:325
-#, fuzzy
 msgid "Show Parsed Expression"
-msgstr "Expressão analisada historicamente"
+msgstr "Mostrar expressão analisada"
 
 #: ../data/main.ui.h:326
-#, fuzzy
 msgid "Show Result"
-msgstr "Resultado"
+msgstr "Mostrar resultado"
 
 #: ../data/main.ui.h:327
 msgid "_Copy"
@@ -2178,9 +2175,8 @@ msgid "View/Edit Vector"
 msgstr "Ver/Editar Vetor"
 
 #: ../data/main.ui.h:356
-#, fuzzy
 msgid "Show Parsed Expression in Result Field"
-msgstr "Expressão formatada + resultado"
+msgstr "Mostrar a expressão analisada no campo de resultados"
 
 #: ../data/main.ui.h:357
 msgid "Copy Text"
@@ -2227,9 +2223,8 @@ msgid "Select Number Base…"
 msgstr "Selecionar Base Numérica…"
 
 #: ../data/main.ui.h:368
-#, fuzzy
 msgid "Display Expression Status"
-msgstr "Mostrar estado da expressão"
+msgstr "Apresentar o estado da expressão"
 
 #: ../data/main.ui.h:369 ../src/callbacks.cc:7463
 msgid "Store result"
@@ -2683,11 +2678,11 @@ msgstr "Limpar histórico ao sair"
 
 #: ../data/preferences.ui.h:6
 msgid "Max history lines saved"
-msgstr ""
+msgstr "Máx. de linhas de histórico guardadas"
 
 #: ../data/preferences.ui.h:7
 msgid "Save history to separate file"
-msgstr ""
+msgstr "Guardar histórico num ficheiro separado"
 
 #: ../data/preferences.ui.h:8
 msgid "Allow multiple instances"
@@ -2919,18 +2914,16 @@ msgstr ""
 "entrada da expressão"
 
 #: ../data/preferences.ui.h:60
-#, fuzzy
 msgid "Show parsed expression in result field"
-msgstr "Expressão formatada + resultado"
+msgstr "Mostrar a expressão analisada no campo de resultados"
 
 #: ../data/preferences.ui.h:61
-#, fuzzy
 msgid ""
 "If as-you-type expression interpretation shall be displayed in the result "
 "field"
 msgstr ""
-"Para que o estado da expressão, conforme digita, seja exibido abaixo da "
-"entrada da expressão"
+"Se a interpretação de uma expressão do tipo \"enquanto escreve\" for "
+"apresentada no campo de resultados"
 
 #: ../data/preferences.ui.h:62
 msgid "Persistent keypad"
@@ -2961,6 +2954,9 @@ msgid ""
 "numbers. All binary numbers starting with 1 are negative, unless binary bits "
 "is set."
 msgstr ""
+"Ativa a representação do complemento de dois para a entrada de números "
+"binários negativos. Todos os números binários que começam por 1 são "
+"negativos, a menos que bits binários esteja definido."
 
 #: ../data/preferences.ui.h:71
 msgid ""
@@ -2968,11 +2964,13 @@ msgid ""
 "numbers. All hexadecimal numbers starting with 8 or higher are negative, "
 "unless binary bits is set."
 msgstr ""
+"Ativa a representação do complemento de dois para a entrada de números "
+"hexadecimais negativos. Todos os números hexadecimais que comecem por 8 ou "
+"mais são negativos, a menos que a opção bits binários esteja definida."
 
 #: ../data/preferences.ui.h:72
-#, fuzzy
 msgid "Binary bits"
-msgstr "Binário"
+msgstr "Bits binários"
 
 #: ../data/preferences.ui.h:73
 msgid "Use lower case letters in non-decimal numbers"
@@ -4070,9 +4068,8 @@ msgid "No updates found."
 msgstr "Nenhuma atualização encontrada."
 
 #: ../src/callbacks.cc:2991
-#, fuzzy
 msgid "_Download"
-msgstr "Abaixo"
+msgstr "_Transferir"
 
 #: ../src/callbacks.cc:3003
 #, c-format
@@ -4178,22 +4175,20 @@ msgid "Conventional"
 msgstr "Convencional"
 
 #: ../src/callbacks.cc:3503
-#, fuzzy
 msgid "Percentage Interpretation"
-msgstr "Ferramenta de cálculo de percentagem"
+msgstr "Interpretação das percentagens"
 
 #: ../src/callbacks.cc:3513
-#, fuzzy
 msgid "Please select interpretation of percentage addition."
-msgstr "Selecione a variante desejada da função sinc."
+msgstr "Selecionar a interpretação da adição de percentagem."
 
 #: ../src/callbacks.cc:3516
 msgid "Add percentage of original value"
-msgstr ""
+msgstr "Adicionar percentagem do valor original"
 
 #: ../src/callbacks.cc:3524
 msgid "Add percentage multiplied by 1/100"
-msgstr ""
+msgstr "Adicionar percentagem multiplicada por 1/100"
 
 #: ../src/callbacks.cc:3567 ../src/callbacks.cc:5719 ../src/callbacks.cc:5720
 #: ../src/callbacks.cc:5774 ../src/callbacks.cc:6098 ../src/callbacks.cc:6099
@@ -5393,12 +5388,12 @@ msgid "Delete Mode"
 msgstr "Eliminar modo"
 
 #: ../src/callbacks.cc:23377
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Couldn't write history to\n"
 "%s"
 msgstr ""
-"Não foi possível gravar preferências em\n"
+"Não foi possível gravar o histórico em\n"
 "%s"
 
 #: ../src/callbacks.cc:23414
