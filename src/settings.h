@@ -33,6 +33,9 @@ extern bool scientific_notminuslast;
 extern bool scientific_noprefix;
 extern int auto_prefix;
 extern bool fraction_fixed_combined;
+extern bool continuous_conversion, set_missing_prefixes;
+extern bool use_custom_result_font, use_custom_expression_font, use_custom_status_font, use_custom_keypad_font, use_custom_app_font, use_custom_history_font;
+extern std::string custom_result_font, custom_expression_font, custom_status_font, custom_keypad_font, custom_app_font, custom_history_font;
 
 extern std::vector<MathFunction*> recent_functions;
 extern std::vector<Variable*> recent_variables;

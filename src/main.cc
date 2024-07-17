@@ -28,6 +28,7 @@
 #include "support.h"
 #include "interface.h"
 #include "callbacks.h"
+#include "conversionview.h"
 #include "keypad.h"
 #include "util.h"
 #include "main.h"
@@ -41,7 +42,6 @@ MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct, *dis
 extern MathStructure mbak_convert;
 KnownVariable *vans[5], *v_memory;
 string result_text, parsed_text;
-string selected_unit_selector_category;
 bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message;
 int allow_multiple_instances = -1;
 cairo_surface_t *surface_result;

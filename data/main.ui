@@ -4522,6 +4522,7 @@ On: 1.1 × 1.1 ≈ 1.2</property>
                                 <property name="halign">end</property>
                                 <property name="active">True</property>
                                 <property name="draw-indicator">True</property>
+                                <signal name="toggled" handler="on_convert_button_continuous_conversion_toggled" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="left-attach">1</property>

@@ -400,6 +400,8 @@ bool ask_question(const gchar *text, GtkWidget *win);
 void show_notification(std::string text);
 void show_help(const char *file, GtkWidget *win);
 
+void set_clipboard(std::string str, int ascii, bool html, bool is_result, int copy_without_units = -1);
+
 void result_display_updated();
 void result_format_updated();
 void result_action_executed();
@@ -411,10 +413,14 @@ void executeCommand(int command_type, bool show_result = true, bool force = fals
 void calculateRPN(int op);
 void calculateRPN(MathFunction *f);
 bool do_chain_mode(const gchar *op);
+void setResult(Prefix *prefix = NULL, bool update_history = true, bool update_parse = false, bool force = false, std::string transformation = "", size_t stack_index = 0, bool register_moved = false, bool supress_dialog = false);
+void clearresult();
+void convert_result_to_unit_expression(std::string str);
 bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inhistory_index = NULL, int type = 0, bool *implicit_warning = NULL, time_t history_time = 0);
 void add_as_variable();
 
 MathStructure *current_result();
+void replace_current_result(MathStructure*);
 MathStructure *current_displayed_result();
 
 void update_vmenu(bool update_compl = true);

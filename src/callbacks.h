@@ -64,8 +64,6 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po = default_prin
 
 void update_status_text();
 
-void clearresult();
-
 void set_result_size_request();
 void set_status_size_request();
 void set_expression_size_request();
@@ -92,19 +90,11 @@ void generate_units_tree_struct();
 gboolean on_display_errors_timeout(gpointer data);
 gboolean on_check_version_idle(gpointer data);
 
-void update_unit_selector_tree();
-void on_tUnitSelector_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
-void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
-
-void setResult(Prefix *prefix = NULL, bool update_history = true, bool update_parse = false, bool force = false, std::string transformation = "", size_t stack_index = 0, bool register_moved = false, bool supress_dialog = false);
 void execute_from_file(std::string file_name);
 
 void set_rpn_mode(bool b);
 void calculateRPN(int op);
 void calculateRPN(MathFunction *f);
-void RPNRegisterAdded(std::string text, gint index = 0);
-void RPNRegisterRemoved(gint index);
-void RPNRegisterChanged(std::string text, gint index);
 
 void recreate_recent_functions();
 void recreate_recent_variables();
@@ -416,20 +406,6 @@ void on_menu_item_algebraic_mode_factorize_activate(GtkMenuItem *w, gpointer use
 void on_menu_item_algebraic_mode_hybrid_activate(GtkMenuItem *w, gpointer user_data);
 gboolean on_main_window_focus_in_event(GtkWidget *w, GdkEventFocus *e, gpointer user_data);
 
-void on_button_registerup_clicked(GtkButton *button, gpointer user_data);
-void on_button_registerdown_clicked(GtkButton *button, gpointer user_data);
-void on_button_registerswap_clicked(GtkButton *button, gpointer user_data);
-void on_button_editregister_clicked(GtkButton *button, gpointer user_data);
-void on_button_deleteregister_clicked(GtkButton *button, gpointer user_data);
-void on_button_copyregister_clicked(GtkButton *button, gpointer user_data);
-void on_button_clearstack_clicked(GtkButton *button, gpointer user_data);
-void on_stackview_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
-void on_stackview_item_edited(GtkCellRendererText *renderer, gchar *path, gchar *new_text, gpointer user_data);
-void on_stackview_item_editing_started(GtkCellRenderer *renderer, GtkCellEditable *editable, gchar *path, gpointer user_data);
-void on_stackview_item_editing_canceled(GtkCellRenderer *renderer, gpointer user_data);
-void on_stackstore_row_inserted(GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer user_data);
-void on_stackstore_row_deleted(GtkTreeModel *model, GtkTreePath *path, gpointer user_data);
-
 void on_historyview_selection_changed(GtkTreeSelection *select, gpointer);
 void on_historyview_item_edited(GtkCellRendererText*, gchar*, gchar*, gpointer);
 void on_historyview_item_editing_started(GtkCellRenderer*, GtkCellEditable*, gchar*, gpointer);
@@ -444,7 +420,6 @@ void on_popup_menu_item_to_utc_activate(GtkMenuItem *w, gpointer user_data);
 void on_button_functions_clicked(GtkButton *button, gpointer user_data);
 void on_button_variables_clicked(GtkButton *button, gpointer user_data);
 void on_button_units_clicked(GtkButton *button, gpointer user_data);
-void on_button_convert_clicked(GtkButton *button, gpointer user_data);
 
 void on_menu_item_about_activate(GtkMenuItem *w, gpointer user_data);
 void on_menu_item_help_activate(GtkMenuItem *w, gpointer user_data);
@@ -485,11 +460,6 @@ void on_plot_entry_expression_activate(GtkEntry *entry, gpointer user_data);
 void on_unit_dialog_button_apply_clicked(GtkButton *w, gpointer user_data);
 void on_unit_dialog_button_ok_clicked(GtkButton *w, gpointer user_data);
 void on_unit_dialog_entry_unit_activate(GtkEntry *entry, gpointer user_data);
-
-void convert_from_convert_entry_unit();
-void on_convert_button_convert_clicked(GtkButton *w, gpointer user_data);
-void on_convert_entry_unit_activate(GtkEntry *entry, gpointer user_data);
-void on_convert_entry_search_changed(GtkEntry *w, gpointer user_data);
 
 gboolean on_menu_key_press(GtkWidget *widget, GdkEventKey *event);
 

@@ -3289,6 +3289,82 @@ void update_result_bases() {
 }
 
 void create_keypad() {
+
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 14
+	if(!gtk_icon_theme_has_icon(gtk_icon_theme_get_default(), "pan-start-symbolic")) {
+		GtkWidget *arrow_left = gtk_arrow_new(GTK_ARROW_RIGHT, GTK_SHADOW_OUT);
+		gtk_widget_set_size_request(GTK_WIDGET(arrow_left), 18, 18);
+		gtk_widget_show(arrow_left);
+		gtk_widget_destroy(GTK_WIDGET(gtk_builder_get_object(main_builder, "image_hide_left_buttons")));
+		gtk_container_add(GTK_CONTAINER(gtk_builder_get_object(main_builder, "event_hide_left_buttons")), arrow_left);
+	}
+	if(!gtk_icon_theme_has_icon(gtk_icon_theme_get_default(), "pan-end-symbolic")) {
+		GtkWidget *arrow_right = gtk_arrow_new(GTK_ARROW_LEFT, GTK_SHADOW_OUT);
+		gtk_widget_set_size_request(GTK_WIDGET(arrow_right), 18, 18);
+		gtk_widget_show(arrow_right);
+		gtk_widget_destroy(GTK_WIDGET(gtk_builder_get_object(main_builder, "image_hide_right_buttons")));
+		gtk_container_add(GTK_CONTAINER(gtk_builder_get_object(main_builder, "event_hide_right_buttons")), arrow_right);
+	}
+	if(RUNTIME_CHECK_GTK_VERSION_LESS(3, 14)) gtk_grid_set_column_spacing(GTK_GRID(gtk_builder_get_object(main_builder, "grid_buttons")), 0);
+#endif
+
+#ifdef _WIN32
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_down_image")), 12);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_up_image")), 12);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_left_image")), 12);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_right_image")), 12);
+#else
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_down_image")), 14);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_up_image")), 14);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_left_image")), 14);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "button_right_image")), 14);
+#endif
+
+	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_sin")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_sin")));
+	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_cos")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_cos")));
+	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_tan")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tan")));
+	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_sqrt")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_sqrt")));
+	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_e")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_e")));
+	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_xequals")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_xequals")));
+	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_ln")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_ln")));
+	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_sum")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_sum")));
+	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_mean")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_mean")));
+	gtk_menu_button_set_align_widget(GTK_MENU_BUTTON(gtk_builder_get_object(main_builder, "mb_pi")), GTK_WIDGET(gtk_builder_get_object(main_builder, "box_pi")));
+
+	GList *l, *l2;
+	GList *list, *list2;
+	GObject *obj;
+	CHILDREN_SET_FOCUS_ON_CLICK_2("table_buttons", "grid_numbers")
+	CHILDREN_SET_FOCUS_ON_CLICK("box_custom_buttons1")
+	CHILDREN_SET_FOCUS_ON_CLICK("box_custom_buttons2")
+	CHILDREN_SET_FOCUS_ON_CLICK("box_custom_buttons3")
+	CHILDREN_SET_FOCUS_ON_CLICK("box_custom_buttons4")
+	CHILDREN_SET_FOCUS_ON_CLICK("grid_numbers")
+	CHILDREN_SET_FOCUS_ON_CLICK("grid_programmers_buttons")
+	CHILDREN_SET_FOCUS_ON_CLICK("box_bases")
+	CHILDREN_SET_FOCUS_ON_CLICK("box_twos")
+	list = gtk_container_get_children(GTK_CONTAINER(gtk_builder_get_object(main_builder, "versatile_keypad")));
+	for(l = list; l != NULL; l = l->next) {
+		list2 = gtk_container_get_children(GTK_CONTAINER(l->data));
+		for(l2 = list2; l2 != NULL; l2 = l2->next) {
+			SET_FOCUS_ON_CLICK(l2->data);
+		}
+		g_list_free(list2);
+	}
+	g_list_free(list);
+
+	if(visible_keypad & PROGRAMMING_KEYPAD) {
+		gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_left_buttons")), GTK_WIDGET(gtk_builder_get_object(main_builder, "programmers_keypad")));
+		gtk_stack_set_visible_child_name(GTK_STACK(gtk_builder_get_object(main_builder, "stack_keypad_top")), "page1");
+	}
+
+	if(visible_keypad & HIDE_LEFT_KEYPAD) {
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "stack_left_buttons")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "event_hide_right_buttons")));
+	} else if(visible_keypad & HIDE_RIGHT_KEYPAD) {
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_right_buttons")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "event_hide_left_buttons")));
+	}
 	update_button_padding(true);
 	result_bases = GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases"));
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
