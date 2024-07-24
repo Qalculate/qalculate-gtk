@@ -352,7 +352,7 @@ void on_plot_button_save_clicked(GtkButton*, gpointer) {
 			pp.filetype = PLOT_FILETYPE_AUTO;
 			block_error();
 			CALCULATOR->plotVectors(&pp, y_vectors, x_vectors, pdps, false, max_plot_time * 1000);
-			display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
+			display_errors(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
 			unblock_error();
 			for(size_t i = 0; i < pdps.size(); i++) {
 				if(pdps[i]) delete pdps[i];
@@ -377,7 +377,7 @@ void update_plot() {
 	}
 	block_error();
 	CALCULATOR->plotVectors(&pp, y_vectors, x_vectors, pdps, false, max_plot_time * 1000);
-	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
+	display_errors(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
 	unblock_error();
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_button_save")), true);
 	for(size_t i = 0; i < pdps.size(); i++) {
@@ -412,7 +412,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 			if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 			gtk_dialog_run(GTK_DIALOG(d));
 			gtk_widget_destroy(d);
-			display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
+			display_errors(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
 			unblock_error();
 			CALCULATOR->endTemporaryStopIntervalArithmetic();
 			return;
@@ -423,7 +423,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 			if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 			gtk_dialog_run(GTK_DIALOG(d));
 			gtk_widget_destroy(d);
-			display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
+			display_errors(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
 			unblock_error();
 			CALCULATOR->endTemporaryStopIntervalArithmetic();
 			return;
@@ -435,7 +435,7 @@ void generate_plot_series(MathStructure **x_vector, MathStructure **y_vector, in
 		}
 	}
 	CALCULATOR->endTemporaryStopIntervalArithmetic();
-	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
+	display_errors(GTK_WIDGET(gtk_builder_get_object(plot_builder, "plot_dialog")));
 	unblock_error();
 }
 void on_plot_button_add_clicked(GtkButton*, gpointer) {

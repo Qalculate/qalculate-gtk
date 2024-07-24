@@ -288,6 +288,9 @@ extern GtkTextBuffer *expressionbuffer;
 		gsub("</sub>", "</span>", str);\
 	}
 
+#define RUNTIME_CHECK_GTK_VERSION(x, y) (gtk_get_minor_version() >= y)
+#define RUNTIME_CHECK_GTK_VERSION_LESS(x, y) (gtk_get_minor_version() < y)
+
 bool use_supsub(GtkWidget *w);
 extern bool fix_supsub_status, fix_supsub_result, fix_supsub_history, fix_supsub_completion;
 
@@ -300,10 +303,7 @@ extern std::vector<Variable*> user_variables;
 extern std::vector<MathFunction*> user_functions;
 
 extern bool b_busy, b_busy_command, b_busy_result, b_busy_expression, b_busy_fetch;
-extern GtkWidget *expressiontext;
 
-void block_completion();
-void unblock_completion();
 void block_calculation();
 void unblock_calculation();
 void block_error();
@@ -313,28 +313,22 @@ void block_result();
 void unblock_result();
 bool result_blocked();
 
+void mainwindow_cursor_moved();
+void display_parse_status();
+
 GtkBuilder *getBuilder(const char *filename);
+
 void set_tooltips_enabled(GtkWidget *w, bool b);
+
+gchar *font_name_to_css(const char *font_name, const char *w = "*");
+
+std::string unhtmlize(std::string str, bool b_ascii = false);
 
 bool last_is_operator(std::string str, bool allow_exp = false);
 
 const char *sub_sign();
 const char *times_sign(bool unit_expression = false);
 const char *divide_sign();
-const char *expression_add_sign();
-const char *expression_sub_sign();
-const char *expression_times_sign();
-const char *expression_divide_sign();
-
-std::string get_expression_text();
-bool expression_is_empty();
-void clear_expression_text();
-bool expression_history_up();
-bool expression_history_down();
-bool is_at_beginning_of_expression(bool allow_selection = false);
-int wrap_expression_selection(const char *insert_before = NULL, bool return_true_if_whole_selected = false);
-void focus_keeping_selection();
-bool expression_changed();
 bool result_is_autocalculated();
 
 std::string print_with_evalops(const Number &nr);
@@ -360,12 +354,11 @@ void on_variable_edit_entry_name_changed(GtkEditable *editable, gpointer user_da
 #ifdef __cplusplus
 extern "C" {
 #endif
-void brace_wrap();
 bool do_shortcut(int type, std::string value);
 gboolean on_math_entry_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer);
 gboolean on_unit_entry_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer);
 void entry_insert_text(GtkWidget *w, const gchar *text);
-void set_input_base(int base);
+void set_input_base(int base, bool opendialog = false, bool recalculate = true);
 void set_output_base(int base);
 bool textview_in_quotes(GtkTextView *w);
 bool contains_polynomial_division(MathStructure &m);
@@ -373,14 +366,13 @@ bool contains_imaginary_number(MathStructure &m);
 bool contains_rational_number(MathStructure &m);
 bool contains_fraction(MathStructure &m, bool in_div = false);
 bool contains_convertible_unit(MathStructure &m);
+bool has_prefix(const MathStructure &m);
 
 void memory_recall();
 void memory_store();
 void memory_add();
 void memory_subtract();
 void memory_clear();
-
-void insert_angle_symbol();
 
 void output_base_updated_from_menu();
 void input_base_updated_from_menu();
@@ -413,15 +405,24 @@ void executeCommand(int command_type, bool show_result = true, bool force = fals
 void calculateRPN(int op);
 void calculateRPN(MathFunction *f);
 bool do_chain_mode(const gchar *op);
+void do_auto_calc(int recalculate = 1, std::string str = std::string());
+void abort_calculation();
 void setResult(Prefix *prefix = NULL, bool update_history = true, bool update_parse = false, bool force = false, std::string transformation = "", size_t stack_index = 0, bool register_moved = false, bool supress_dialog = false);
 void clearresult();
 void convert_result_to_unit_expression(std::string str);
-bool display_errors(int *history_index_p = NULL, GtkWidget *win = NULL, int *inhistory_index = NULL, int type = 0, bool *implicit_warning = NULL, time_t history_time = 0);
+bool display_errors(GtkWidget *win = NULL, int type = 0, bool add_to_history = false);
 void add_as_variable();
+void add_autocalculated_result_to_history();
+void handle_expression_modified(bool autocalc);
+
+void copy_result(int ascii = -1, int type = 0);
+
+void set_expression_output_updated(bool);
 
 MathStructure *current_result();
 void replace_current_result(MathStructure*);
 MathStructure *current_displayed_result();
+MathStructure *current_parsed_result();
 
 void update_vmenu(bool update_compl = true);
 void update_fmenu(bool update_compl = true);
@@ -437,22 +438,26 @@ void function_edited(MathFunction *f);
 void unit_edited(Unit *u);
 void dataset_edited(DataSet *ds);
 
+void edit_preferences(int tab = -1);
+
 bool equalsIgnoreCase(const std::string &str1, const std::string &str2, size_t i2, size_t i2_end, size_t minlength);
 bool title_matches(ExpressionItem *item, const std::string &str, size_t minlength = 0);
 bool name_matches(ExpressionItem *item, const std::string &str);
 bool country_matches(Unit *u, const std::string &str, size_t minlength = 0);
 
-void insert_text(const gchar *text);
-void overwrite_expression_selection(const gchar *text);
-void apply_function(MathFunction *f);
 void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu = true);
 void insert_variable(Variable *v, bool add_to_menu = true);
 void insert_unit(Unit *u, bool add_to_recent = false);
 void insert_button_function(MathFunction *f, bool save_to_recent = false, bool apply_to_stack = true);
 
+void apply_function(MathFunction *f);
+
 bool check_exchange_rates(GtkWidget *win = NULL, bool set_result = false);
 
 void convert_result_to_unit(Unit *u);
+
+void find_matching_units(const MathStructure &m, const MathStructure *mparse, std::vector<Unit*> &v, bool top = true);
+Unit *find_exact_matching_unit(const MathStructure &m);
 
 void fix_deactivate_label_width(GtkWidget *w);
 

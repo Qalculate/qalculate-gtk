@@ -26,6 +26,7 @@ void create_button_menus();
 void update_button_padding(bool initial = false);
 void create_keypad();
 
+void update_keypad_font();
 void update_keypad_programming_base();
 void update_keypad_fraction();
 void update_keypad_exact();

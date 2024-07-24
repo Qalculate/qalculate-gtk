@@ -23,12 +23,15 @@
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 #include <cairo/cairo-gobject.h>
+#include <libqalculate/qalculate.h>
 
 #include "support.h"
 #include "callbacks.h"
 #include "interface.h"
-#include "main.h"
+#include "expressionedit.h"
+#include "expressioncompletion.h"
 #include "conversionview.h"
+#include "historyview.h"
 #include "stackview.h"
 #include "keypad.h"
 #include "settings.h"
@@ -54,30 +57,18 @@ extern GtkBuilder *preferences_builder;
 
 GtkWidget *mainwindow;
 
-GtkWidget *tabs, *keypad, *expander_keypad, *expander_history, *expander_stack, *expander_convert;
-GtkEntryCompletion *completion;
-GtkWidget *completion_view, *completion_window, *completion_scrolled;
-GtkTreeModel *completion_filter, *completion_sort;
-GtkListStore *completion_store;
+GtkWidget *tabs, *keypad, *historyview, *expander_keypad, *expander_history, *expander_stack, *expander_convert;
 
-GtkCellRenderer *history_renderer, *history_index_renderer, *ans_renderer;
-GtkTreeViewColumn *history_column, *history_index_column;
-
-GtkWidget *expressiontext;
-GtkTextBuffer *expressionbuffer;
-GtkTextTag *expression_par_tag;
 GtkWidget *resultview;
-GtkWidget *historyview;
-GtkListStore *historystore;
+extern GtkWidget *expressiontext;
+extern GtkTextBuffer *expressionbuffer;
 GtkWidget *statuslabel_l, *statuslabel_r;
 GtkWidget *f_menu ,*v_menu, *u_menu, *u_menu2, *recent_menu;
 GtkAccelGroup *accel_group;
 
-gint history_scroll_width = 16;
+GtkCssProvider *topframe_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *app_provider, *app_provider_theme, *statusframe_provider, *color_provider;
 
-GtkCssProvider *topframe_provider, *expression_provider, *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *keypad_provider, *box_rpnl_provider, *app_provider, *app_provider_theme, *statusframe_provider, *color_provider, *history_provider;
-
-extern bool show_keypad, show_history, show_stack, show_convert, continuous_conversion, set_missing_prefixes, persistent_keypad, minimal_mode;
+extern bool show_keypad, show_history, show_stack, show_convert, persistent_keypad, minimal_mode;
 extern bool save_mode_on_exit, save_defs_on_exit, load_global_defs, hyp_is_on, inv_is_on, fetch_exchange_rates_at_startup, clear_history_on_exit, save_history_separately;
 extern int max_history_lines;
 extern bool fraction_fixed_combined;
@@ -109,6 +100,7 @@ extern string custom_angle_unit;
 extern int previous_precision;
 extern int enable_tooltips;
 extern bool toe_changed;
+string themestr;
 
 extern std::vector<custom_button> custom_buttons;
 extern std::vector<mode_struct> modes;
@@ -121,8 +113,6 @@ extern bool rpn_mode, rpn_keys, adaptive_interval_display;
 extern vector<GtkWidget*> mode_items;
 extern vector<GtkWidget*> popup_result_mode_items;
 
-extern deque<string> expression_undo_buffer;
-
 gint win_height, win_width, win_x, win_y, win_monitor, history_height;
 bool win_monitor_primary;
 extern bool remember_position, always_on_top, aot_changed;
@@ -130,15 +120,6 @@ extern gint minimal_width;
 
 extern Unit *latest_button_unit, *latest_button_currency;
 extern string latest_button_unit_pre, latest_button_currency_pre;
-
-extern int completion_min, completion_min2;
-extern bool enable_completion, enable_completion2;
-extern int completion_delay;
-
-gchar history_error_color[8];
-gchar history_warning_color[8];
-gchar history_parse_color[8];
-gchar history_bookmark_color[8];
 
 extern unordered_map<string, cairo_surface_t*> flag_surfaces;
 int flagheight;
@@ -197,7 +178,7 @@ INT_PTR CALLBACK tray_window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			hidden_x = -1;
 		}
 		gtk_window_present_with_time(GTK_WINDOW(mainwindow), GDK_CURRENT_TIME);
-		if(expressiontext) gtk_widget_grab_focus(expressiontext);
+		focus_expression();
 		gtk_window_present_with_time(GTK_WINDOW(mainwindow), GDK_CURRENT_TIME);
 	}
 	return DefWindowProc(hWnd, message, wParam, lParam);
@@ -345,130 +326,20 @@ void update_colors(bool initial) {
 	}
 #endif
 
-#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 14
-
-	gint scalefactor = gtk_widget_get_scale_factor(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")));
-	cairo_surface_t *surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 16 * scalefactor, 16 * scalefactor);
-	cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-	cairo_t *cr = cairo_create(surface);
-	GdkRGBA rgba;
-	gtk_style_context_get_color(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals"))), GTK_STATE_FLAG_NORMAL, &rgba);
-
-	PangoLayout *layout_equals = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), "=");
-	PangoFontDescription *font_desc;
-	gtk_style_context_get(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-	pango_font_description_set_weight(font_desc, PANGO_WEIGHT_MEDIUM);
-	pango_font_description_set_absolute_size(font_desc, PANGO_SCALE * 26);
-	pango_layout_set_font_description(layout_equals, font_desc);
-
-	PangoRectangle rect, lrect;
-	pango_layout_get_pixel_extents(layout_equals, &rect, &lrect);
-	if(rect.width >= 16) {
-		pango_font_description_set_absolute_size(font_desc, PANGO_SCALE * 18);
-		pango_layout_set_font_description(layout_equals, font_desc);
-		pango_layout_get_pixel_extents(layout_equals, &rect, &lrect);
-	}
-
-	pango_font_description_free(font_desc);
-
-	double offset_x = (rect.x - (lrect.width - (rect.x + rect.width))) / 2.0, offset_y = (rect.y - (lrect.height - (rect.y + rect.height))) / 2.0;
-	cairo_move_to(cr, (16 - lrect.width) / 2.0 - offset_x, (16 - lrect.height) / 2.0 - offset_y);
-	gdk_cairo_set_source_rgba(cr, &rgba);
-	pango_cairo_show_layout(cr, layout_equals);
-	g_object_unref(layout_equals);
-	cairo_destroy(cr);
-	gtk_image_set_from_surface(GTK_IMAGE(gtk_builder_get_object(main_builder, "expression_button_equals")), surface);
-	cairo_surface_destroy(surface);
-
-#endif
+	update_expression_colors(initial, text_color_set);
 
 	if(initial || !text_color_set) {
 
+
+		update_history_colors(initial);
+
 		GdkRGBA c;
-
-		gtk_style_context_get_color(gtk_widget_get_style_context(historyview), GTK_STATE_FLAG_NORMAL, &c);
-		GdkRGBA c_red = c;
-		if(c_red.red >= 0.8) {
-			c_red.green /= 1.5;
-			c_red.blue /= 1.5;
-			c_red.red = 1.0;
-		} else {
-			if(c_red.red >= 0.5) c_red.red = 1.0;
-			else c_red.red += 0.5;
-		}
-		g_snprintf(history_error_color, 8, "#%02x%02x%02x", (int) (c_red.red * 255), (int) (c_red.green * 255), (int) (c_red.blue * 255));
-
-		GdkRGBA c_blue = c;
-		if(c_blue.blue >= 0.8) {
-			c_blue.green /= 1.5;
-			c_blue.red /= 1.5;
-			c_blue.blue = 1.0;
-		} else {
-			if(c_blue.blue >= 0.4) c_blue.blue = 1.0;
-			else c_blue.blue += 0.6;
-		}
-		g_snprintf(history_warning_color, 8, "#%02x%02x%02x", (int) (c_blue.red * 255), (int) (c_blue.green * 255), (int) (c_blue.blue * 255));
-
-		GdkRGBA c_green = c;
-		if(c_green.green >= 0.8) {
-			c_green.blue /= 1.5;
-			c_green.red /= 1.5;
-			c_green.green = 0.8;
-		} else {
-			if(c_green.green >= 0.4) c_green.green = 0.8;
-			else c_green.green += 0.4;
-		}
-		g_snprintf(history_bookmark_color, 8, "#%02x%02x%02x", (int) (c_green.red * 255), (int) (c_green.green * 255), (int) (c_green.blue * 255));
-
-		c_gray = c;
-		if(c_gray.blue + c_gray.green + c_gray.red > 1.5) {
-			c_gray.green /= 1.5;
-			c_gray.red /= 1.5;
-			c_gray.blue /= 1.5;
-		} else if(c_gray.blue + c_gray.green + c_gray.red > 0.3) {
-			c_gray.green += 0.235;
-			c_gray.red += 0.235;
-			c_gray.blue += 0.235;
-		} else if(c_gray.blue + c_gray.green + c_gray.red > 0.15) {
-			c_gray.green += 0.3;
-			c_gray.red += 0.3;
-			c_gray.blue += 0.3;
-		} else {
-			c_gray.green += 0.4;
-			c_gray.red += 0.4;
-			c_gray.blue += 0.4;
-		}
-		g_snprintf(history_parse_color, 8, "#%02x%02x%02x", (int) (c_gray.red * 255), (int) (c_gray.green * 255), (int) (c_gray.blue * 255));
-		if(!initial) g_object_set(G_OBJECT(history_index_renderer), "ypad", 0, "yalign", 0.0, "xalign", 0.5, "foreground-rgba", &c_gray, NULL);
-
 		gtk_style_context_get_color(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, &c);
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
 		if(gdk_rgba_equal(&c, &bg_color)) {
 			gtk_style_context_get_color(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, &c);
 		}
 #endif
-		GdkRGBA c_par = c;
-		if(c_par.green >= 0.8) {
-			c_par.red /= 1.5;
-			c_par.blue /= 1.5;
-			c_par.green = 1.0;
-		} else {
-			if(c_par.green >= 0.5) c_par.green = 1.0;
-			else c_par.green += 0.5;
-		}
-		if(initial) {
-			PangoLayout *layout_par = gtk_widget_create_pango_layout(expressiontext, "()");
-			gint w1 = 0, w2 = 0;
-			pango_layout_get_pixel_size(layout_par, &w1, NULL);
-			pango_layout_set_markup(layout_par, "<b>()</b>", -1);
-			pango_layout_get_pixel_size(layout_par, &w2, NULL);
-			g_object_unref(layout_par);
-			if(w1 == w2) expression_par_tag = gtk_text_buffer_create_tag(expressionbuffer, "curpar", "foreground-rgba", &c_par, "weight", PANGO_WEIGHT_BOLD, NULL);
-			else expression_par_tag = gtk_text_buffer_create_tag(expressionbuffer, "curpar", "foreground-rgba", &c_par, NULL);
-		} else {
-			g_object_set(G_OBJECT(expression_par_tag), "foreground-rgba", &c_par, NULL);
-		}
-
 		gchar tcs[8];
 		g_snprintf(tcs, 8, "#%02x%02x%02x", (int) (c.red * 255), (int) (c.green * 255), (int) (c.blue * 255));
 		if(initial && text_color == tcs) text_color_set = false;
@@ -990,17 +861,6 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 	}
 }
 
-gboolean completion_row_separator_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer) {
-	gint i;
-	gtk_tree_model_get(model, iter, 4, &i, -1);
-	return i == 3;
-}
-gboolean history_row_separator_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer) {
-	gint hindex = -1;
-	gtk_tree_model_get(model, iter, 1, &hindex, -1);
-	return hindex < 0;
-}
-
 GtkBuilder *getBuilder(const char *filename) {
 	string resstr = "/qalculate-gtk/ui/";
 	resstr += filename;
@@ -1018,6 +878,7 @@ void create_main_window(void) {
 	mainwindow = GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window"));
 
 	keypad = GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons"));
+	historyview = GTK_WIDGET(gtk_builder_get_object(main_builder, "historyview"));
 
 	accel_group = gtk_accel_group_new();
 	gtk_window_add_accel_group(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), accel_group);
@@ -1061,25 +922,6 @@ void create_main_window(void) {
 	expressiontext = GTK_WIDGET(gtk_builder_get_object(main_builder, "expressiontext"));
 	expressionbuffer = GTK_TEXT_BUFFER(gtk_builder_get_object(main_builder, "expressionbuffer"));
 	resultview = GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"));
-	historyview = GTK_WIDGET(gtk_builder_get_object(main_builder, "historyview"));
-
-	expression_undo_buffer.push_back("");
-
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
-	gtk_text_view_set_left_margin(GTK_TEXT_VIEW(expressiontext), 12);
-	gtk_text_view_set_right_margin(GTK_TEXT_VIEW(expressiontext), 6);
-	gtk_text_view_set_top_margin(GTK_TEXT_VIEW(expressiontext), 6);
-	gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(expressiontext), 6);
-#else
-	gtk_text_view_set_left_margin(GTK_TEXT_VIEW(expressiontext), 12);
-	gtk_text_view_set_right_margin(GTK_TEXT_VIEW(expressiontext), 6);
-	gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(expressiontext), GTK_TEXT_WINDOW_TOP, 6);
-	gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(expressiontext), GTK_TEXT_WINDOW_BOTTOM, 6);
-#endif
-
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION > 22 || (GTK_MINOR_VERSION == 22 && GTK_MICRO_VERSION >= 20)
-	gtk_text_view_set_input_hints(GTK_TEXT_VIEW(expressiontext), GTK_INPUT_HINT_NO_EMOJI);
-#endif
 
 	statuslabel_l = GTK_WIDGET(gtk_builder_get_object(main_builder, "label_status_left"));
 	statuslabel_r = GTK_WIDGET(gtk_builder_get_object(main_builder, "label_status_right"));
@@ -1092,21 +934,11 @@ void create_main_window(void) {
 	gtk_widget_set_margin_start(statuslabel_l, 9);
 	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport")), 6);
 	gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport")), 6);
-	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), 6);
-	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_clear")), 6);
-	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_stop")), 6);
-	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon")), 6);
-	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")), 6);
 #else
 	gtk_widget_set_margin_right(statuslabel_r, 12);
 	gtk_widget_set_margin_left(statuslabel_l, 9);
 	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport")), 6);
 	gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport")), 6);
-	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")), 6);
-	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_clear")), 6);
-	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_stop")), 6);
-	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon")), 6);
-	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")), 6);
 #endif
 
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
@@ -1117,20 +949,12 @@ void create_main_window(void) {
 	gtk_misc_set_alignment(GTK_MISC(statuslabel_l), 0.0, 0.5);
 #endif
 
-	expression_provider = gtk_css_provider_new();
 	resultview_provider = gtk_css_provider_new();
 	statuslabel_l_provider = gtk_css_provider_new();
 	statuslabel_r_provider = gtk_css_provider_new();
-	keypad_provider = gtk_css_provider_new();
-	history_provider = gtk_css_provider_new();
-	box_rpnl_provider = gtk_css_provider_new();
-	gtk_style_context_add_provider(gtk_widget_get_style_context(expressiontext), GTK_STYLE_PROVIDER(expression_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(resultview), GTK_STYLE_PROVIDER(resultview_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(statuslabel_l), GTK_STYLE_PROVIDER(statuslabel_l_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(statuslabel_r), GTK_STYLE_PROVIDER(statuslabel_r_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	gtk_style_context_add_provider(gtk_widget_get_style_context(keypad), GTK_STYLE_PROVIDER(keypad_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	gtk_style_context_add_provider(gtk_widget_get_style_context(historyview), GTK_STYLE_PROVIDER(history_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnl"))), GTK_STYLE_PROVIDER(box_rpnl_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
 	topframe_provider = gtk_css_provider_new();
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "topframe"))), GTK_STYLE_PROVIDER(topframe_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
@@ -1149,18 +973,6 @@ void create_main_window(void) {
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
 	}
 #endif
-#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 18
-	GtkCssProvider *expressionborder_provider = gtk_css_provider_new();
-	gtk_style_context_add_provider(gtk_widget_get_style_context(expressiontext), GTK_STYLE_PROVIDER(expressionborder_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	string border_css = topframe_css; border_css += "}";
-	gsub("*", "textview.view > border", border_css);
-	gtk_css_provider_load_from_data(expressionborder_provider, border_css.c_str(), -1, NULL);
-#endif
-	GtkCssProvider *expression_provider2 = gtk_css_provider_new();
-	gtk_style_context_add_provider(gtk_widget_get_style_context(expressiontext), GTK_STYLE_PROVIDER(expression_provider2), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	string expression_css = topframe_css; expression_css += "}";
-	gsub("*", "textview.view > text", expression_css);
-	gtk_css_provider_load_from_data(expression_provider2, expression_css.c_str(), -1, NULL);
 	topframe_css += "; border-left-width: 0; border-right-width: 0; border-radius: 0;}";
 	gtk_css_provider_load_from_data(topframe_provider, topframe_css.c_str(), -1, NULL);
 	statusframe_provider = gtk_css_provider_new();
@@ -1235,26 +1047,7 @@ void create_main_window(void) {
 			pango_font_description_free(font_desc);
 		}
 	}
-	if(use_custom_expression_font) {
-		gchar *gstr;
-		if(RUNTIME_CHECK_GTK_VERSION(3, 20)) gstr = font_name_to_css(custom_expression_font.c_str(), "textview.view");
-		else gstr = font_name_to_css(custom_expression_font.c_str());
-		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
-		g_free(gstr);
-	} else {
-		PangoFontDescription *font_desc;
-		gtk_style_context_get(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-		pango_font_description_set_size(font_desc, pango_font_description_get_size(font_desc) * 1.2);
-		char *gstr_l = pango_font_description_to_string(font_desc);
-		if(custom_expression_font.empty()) custom_expression_font = gstr_l;
-		pango_font_description_free(font_desc);
-		gchar *gstr;
-		if(RUNTIME_CHECK_GTK_VERSION(3, 20)) gstr = font_name_to_css(gstr_l, "textview.view");
-		else gstr = font_name_to_css(gstr_l);
-		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
-		g_free(gstr);
-		g_free(gstr_l);
-	}
+
 	if(use_custom_status_font) {
 		gchar *gstr = font_name_to_css(custom_status_font.c_str());
 		gtk_css_provider_load_from_data(statuslabel_l_provider, gstr, -1, NULL);
@@ -1272,35 +1065,6 @@ void create_main_window(void) {
 			pango_font_description_free(font_desc);
 		}
 	}
-	if(use_custom_keypad_font) {
-		gchar *gstr = font_name_to_css(custom_keypad_font.c_str());
-		gtk_css_provider_load_from_data(keypad_provider, gstr, -1, NULL);
-		gtk_css_provider_load_from_data(box_rpnl_provider, gstr, -1, NULL);
-		g_free(gstr);
-	} else {
-		if(custom_keypad_font.empty()) {
-			PangoFontDescription *font_desc;
-			gtk_style_context_get(gtk_widget_get_style_context(keypad), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-			char *gstr = pango_font_description_to_string(font_desc);
-			custom_keypad_font = gstr;
-			g_free(gstr);
-			pango_font_description_free(font_desc);
-		}
-	}
-	if(use_custom_history_font) {
-		gchar *gstr = font_name_to_css(custom_history_font.c_str());
-		gtk_css_provider_load_from_data(history_provider, gstr, -1, NULL);
-		g_free(gstr);
-	} else {
-		if(custom_history_font.empty()) {
-			PangoFontDescription *font_desc;
-			gtk_style_context_get(gtk_widget_get_style_context(historyview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-			char *gstr = pango_font_description_to_string(font_desc);
-			custom_history_font = gstr;
-			g_free(gstr);
-			pango_font_description_free(font_desc);
-		}
-	}
 
 	update_status_text();
 
@@ -1310,10 +1074,6 @@ void create_main_window(void) {
 
 	set_operator_symbols();
 
-	gtk_widget_grab_focus(expressiontext);
-	gtk_widget_set_can_default(expressiontext, TRUE);
-	gtk_widget_grab_default(expressiontext);
-
 	expander_keypad = GTK_WIDGET(gtk_builder_get_object(main_builder, "expander_keypad"));
 	expander_history = GTK_WIDGET(gtk_builder_get_object(main_builder, "expander_history"));
 	expander_stack = GTK_WIDGET(gtk_builder_get_object(main_builder, "expander_stack"));
@@ -1322,6 +1082,7 @@ void create_main_window(void) {
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_hi")), !persistent_keypad);
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnl")), !persistent_keypad || (show_stack && rpn_mode));
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnr")), !persistent_keypad || (show_stack && rpn_mode));
+
 	if(history_height > 0) gtk_widget_set_size_request(tabs, -1, history_height);
 	if(show_stack && rpn_mode) {
 		gtk_expander_set_expanded(GTK_EXPANDER(expander_stack), TRUE);
@@ -1372,220 +1133,39 @@ void create_main_window(void) {
 	}
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")), minimal_mode);
 
-	GList *l;
-	GList *list;
-	CHILDREN_SET_FOCUS_ON_CLICK("historyactions")
-	SET_FOCUS_ON_CLICK(gtk_builder_get_object(main_builder, "button_history_copy"));
-	CHILDREN_SET_FOCUS_ON_CLICK("box_ho")
-
 	gchar *theme_name = NULL;
 	g_object_get(gtk_settings_get_default(), "gtk-theme-name", &theme_name, NULL);
-	string themestr;
-	if(theme_name) themestr = theme_name;
+	if(theme_name) {
+		themestr = theme_name;
+		g_free(theme_name);
+	}
 
 	GtkCssProvider *notification_style = gtk_css_provider_new(); gtk_css_provider_load_from_data(notification_style, "* {border-radius: 5px}", -1, NULL);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "overlaybox"))), GTK_STYLE_PROVIDER(notification_style), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
-	if(themestr.substr(0, 7) == "Adwaita" || themestr.substr(0, 5) == "oomox" || themestr.substr(0, 6) == "themix" || themestr == "Breeze" || themestr == "Breeze-Dark" || themestr.substr(0, 4) == "Yaru") {
-
-		GtkCssProvider *link_style_top = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_top, "* {border-bottom-left-radius: 0; border-bottom-right-radius: 0;}", -1, NULL);
-		GtkCssProvider *link_style_bot = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_bot, "* {border-top-left-radius: 0; border-top-right-radius: 0;}", -1, NULL);
-		GtkCssProvider *link_style_tl = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_tl, "* {border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-top-right-radius: 0;}", -1, NULL);
-		GtkCssProvider *link_style_tr = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_tr, "* {border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-top-left-radius: 0;}", -1, NULL);
-		GtkCssProvider *link_style_bl = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_bl, "* {border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;}", -1, NULL);
-		GtkCssProvider *link_style_br = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_br, "* {border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-left-radius: 0;}", -1, NULL);
-		GtkCssProvider *link_style_mid = gtk_css_provider_new(); gtk_css_provider_load_from_data(link_style_mid, "* {border-radius: 0;}", -1, NULL);
-
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_zero"))), GTK_STYLE_PROVIDER(link_style_bl), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_dot"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_exp"))), GTK_STYLE_PROVIDER(link_style_br), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_one"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_two"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_three"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_four"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_five"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_six"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_seven"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_eight"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_nine"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_open"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_close"))), GTK_STYLE_PROVIDER(link_style_tr), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_brace_wrap"))), GTK_STYLE_PROVIDER(link_style_tl), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_comma"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move"))), GTK_STYLE_PROVIDER(link_style_top), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move2"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_percent"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_plusminus"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_xy"))), GTK_STYLE_PROVIDER(link_style_top), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_divide"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_times"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_sub"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_add"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_ac"))), GTK_STYLE_PROVIDER(link_style_top), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_del"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_ans"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_equals"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c1"))), GTK_STYLE_PROVIDER(link_style_top), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c2"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c3"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c4"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_c5"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-
-		if(themestr == "Breeze" || themestr == "Breeze-Dark") {
-
-			gtk_style_context_remove_class(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_ro1"))), "linked");
-			gtk_style_context_remove_class(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_ro2"))), "linked");
-			gtk_style_context_remove_class(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rm"))), "linked");
-			gtk_style_context_remove_class(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_re"))), "linked");
-			gtk_style_context_remove_class(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_hi"))), "linked");
-			gtk_style_context_remove_class(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_ho"))), "linked");
-
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_insert_value"))), GTK_STYLE_PROVIDER(link_style_top), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_insert_text"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_add"))), GTK_STYLE_PROVIDER(link_style_top), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_sub"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_times"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_divide"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_xy"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_sqrt"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_add"))), GTK_STYLE_PROVIDER(link_style_top), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sub"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_times"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_divide"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_xy"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_negate"))), GTK_STYLE_PROVIDER(link_style_top), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_reciprocal"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sqrt"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup"))), GTK_STYLE_PROVIDER(link_style_top), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerdown"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_copyregister"))), GTK_STYLE_PROVIDER(link_style_top), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_lastx"))), GTK_STYLE_PROVIDER(link_style_mid), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_deleteregister"))), GTK_STYLE_PROVIDER(link_style_bot), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		}
-	}
-
 	create_keypad();
+	create_history_view();
 	create_conversion_view();
 	create_stack_view();
-
-	if(!gtk_icon_theme_has_icon(gtk_icon_theme_get_default(), "document-edit-symbolic")) {
-		gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_edit")), "gtk-edit", GTK_ICON_SIZE_BUTTON);
-#if GTK_MAJOR_VERSION <= 3 && GTK_MINOR_VERSION <= 18
-		if(RUNTIME_CHECK_GTK_VERSION_LESS(3, 18) && (themestr == "Ambiance" || themestr == "Radiance")) {
-			gtk_style_context_remove_class(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_re"))), "linked");
-			gtk_style_context_remove_class(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rm"))), "linked");
-			gtk_style_context_remove_class(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_ro1"))), "linked");
-			gtk_style_context_remove_class(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_ro2"))), "linked");
-			gtk_style_context_remove_class(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyactions"))), "linked");
-			gtk_style_context_remove_class(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_ho"))), "linked");
-		}
-#endif
-	}
-
-	gtk_builder_connect_signals(main_builder, NULL);
-
-	historystore = gtk_list_store_new(8, G_TYPE_STRING, G_TYPE_INT, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_FLOAT, G_TYPE_INT);
-	gtk_tree_view_set_model(GTK_TREE_VIEW(historyview), GTK_TREE_MODEL(historystore));
-	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(historyview));
-	gtk_tree_selection_set_mode(selection, GTK_SELECTION_MULTIPLE);
-	history_index_renderer = gtk_cell_renderer_text_new();
-	history_index_column = gtk_tree_view_column_new_with_attributes(_("Index"), history_index_renderer, "text", 2, "ypad", 4, NULL);
-	gtk_tree_view_column_set_expand(history_index_column, FALSE);
-	gtk_tree_view_column_set_min_width(history_index_column, 30);
-	g_object_set(G_OBJECT(history_index_renderer), "ypad", 0, "yalign", 0.0, "xalign", 0.5, "foreground-rgba", &c_gray, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(historyview), history_index_column);
-	history_renderer = gtk_cell_renderer_text_new();
-	g_signal_connect((gpointer) history_renderer, "edited", G_CALLBACK(on_historyview_item_edited), NULL);
-	g_signal_connect((gpointer) history_renderer, "editing-started", G_CALLBACK(on_historyview_item_editing_started), NULL);
-	g_signal_connect((gpointer) history_renderer, "editing-canceled", G_CALLBACK(on_historyview_item_editing_canceled), NULL);
-	g_object_set(G_OBJECT(history_renderer), "editable", true, NULL);
-	history_column = gtk_tree_view_column_new_with_attributes(_("History"), history_renderer, "markup", 0, "ypad", 4, "xpad", 5, "xalign", 6, "alignment", 7, NULL);
-	gtk_tree_view_column_set_expand(history_column, TRUE);
-	GtkWidget *scrollbar = gtk_scrolled_window_get_vscrollbar(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "historyscrolled")));
-	if(scrollbar) gtk_widget_get_preferred_width(scrollbar, NULL, &history_scroll_width);
-	if(history_scroll_width == 0) history_scroll_width = 3;
-	history_scroll_width += 1;
-	gtk_tree_view_append_column(GTK_TREE_VIEW(historyview), history_column);
-	g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_historyview_selection_changed), NULL);
-	gtk_tree_view_set_row_separator_func(GTK_TREE_VIEW(historyview), history_row_separator_func, NULL, NULL);
-
-	if(!copy_ascii) gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_text")))), GDK_KEY_c, GDK_CONTROL_MASK);
-	else gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_ascii")))), GDK_KEY_c, GDK_CONTROL_MASK);
-	gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_delete")))), GDK_KEY_Delete, GDK_SHIFT_MASK);
-
-	completion_view = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionview"));
-	gtk_style_context_add_provider(gtk_widget_get_style_context(completion_view), GTK_STYLE_PROVIDER(expression_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-
-	// Fix for breeze-gtk and Ubuntu theme
-	if(RUNTIME_CHECK_GTK_VERSION(3, 20) && themestr.substr(0, 7) != "Adwaita" && themestr.substr(0, 5) != "oomox" && themestr.substr(0, 6) != "themix" && themestr != "Yaru") {
-		GtkCssProvider *historyview_provider = gtk_css_provider_new();
-		gtk_tree_view_set_grid_lines(GTK_TREE_VIEW(historyview), GTK_TREE_VIEW_GRID_LINES_NONE);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(historyview), GTK_STYLE_PROVIDER(historyview_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		if(themestr == "Breeze") {
-			gtk_css_provider_load_from_data(historyview_provider, "treeview.view {-GtkTreeView-horizontal-separator: 0;}\ntreeview.view.separator {min-height: 2px;}", -1, NULL);
-		} else if(themestr == "Breeze-Dark") {
-			gtk_css_provider_load_from_data(historyview_provider, "treeview.view {-GtkTreeView-horizontal-separator: 0;}\ntreeview.view.separator {min-height: 2px;}", -1, NULL);
-		} else {
-			gtk_css_provider_load_from_data(historyview_provider, "treeview.view {-GtkTreeView-horizontal-separator: 0;}\ntreeview.view.separator {min-height: 2px;}", -1, NULL);
-		}
-	}
-
-	if(theme_name) g_free(theme_name);
+	create_expression_edit();
 
 	if(rpn_mode) {
 		gtk_label_set_angle(GTK_LABEL(gtk_builder_get_object(main_builder, "label_equals")), 90.0);
 		// RPN Enter (calculate and add to stack)
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_equals")), _("ENTER"));
 		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_equals")), _("Calculate expression and add to stack"));
-		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), _("Calculate expression and add to stack"));
 	} else {
 		gtk_widget_hide(expander_stack);
 	}
 
+	gtk_builder_connect_signals(main_builder, NULL);
+
+	if(!copy_ascii) gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_text")))), GDK_KEY_c, GDK_CONTROL_MASK);
+	else gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_ascii")))), GDK_KEY_c, GDK_CONTROL_MASK);
+	gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_delete")))), GDK_KEY_Delete, GDK_SHIFT_MASK);
+
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), FALSE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), FALSE);
-
-/*	Completion	*/
-	completion_scrolled = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionscrolled"));
-	gtk_widget_set_size_request(gtk_scrolled_window_get_vscrollbar(GTK_SCROLLED_WINDOW(completion_scrolled)), -1, 0);
-	completion_window = GTK_WIDGET(gtk_builder_get_object(main_builder, "completionwindow"));
-#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 20
-	if(RUNTIME_CHECK_GTK_VERSION_LESS(3, 20)) {
-		GtkCssProvider *completion_provider = gtk_css_provider_new();
-		gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "completionview"))), GTK_STYLE_PROVIDER(completion_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_css_provider_load_from_data(completion_provider, "* {font-size: medium;}", -1, NULL);
-	}
-#endif
-
-	completion_store = gtk_list_store_new(10, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN, G_TYPE_INT, CAIRO_GOBJECT_TYPE_SURFACE, G_TYPE_INT, G_TYPE_UINT, G_TYPE_INT, G_TYPE_STRING);
-	completion_filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(completion_store), NULL);
-	gtk_tree_model_filter_set_visible_column(GTK_TREE_MODEL_FILTER(completion_filter), 3);
-	completion_sort = gtk_tree_model_sort_new_with_model(completion_filter);
-	gtk_tree_view_set_model(GTK_TREE_VIEW(completion_view), completion_sort);
-	gtk_tree_view_set_row_separator_func(GTK_TREE_VIEW(completion_view), completion_row_separator_func, NULL, NULL);
-
-	gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
-	GtkCellArea *area = gtk_cell_area_box_new();
-	gtk_cell_area_box_set_spacing(GTK_CELL_AREA_BOX(area), 12);
-	GtkTreeViewColumn *column = gtk_tree_view_column_new_with_area(area);
-	gtk_cell_area_box_pack_start(GTK_CELL_AREA_BOX(area), renderer, TRUE, TRUE, TRUE);
-	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(area), renderer, "markup", 0, "weight", 6, NULL);
-	renderer = gtk_cell_renderer_pixbuf_new();
-	gtk_cell_renderer_set_padding(renderer, 2, 0);
-	gtk_cell_area_box_pack_end(GTK_CELL_AREA_BOX(area), renderer, FALSE, TRUE, TRUE);
-	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(area), renderer, "surface", 5, NULL);
-	renderer = gtk_cell_renderer_text_new();
-	g_object_set(G_OBJECT(renderer), "style", PANGO_STYLE_ITALIC, NULL);
-	gtk_cell_area_box_pack_end(GTK_CELL_AREA_BOX(area), renderer, FALSE, TRUE, TRUE);
-	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(area), renderer, "markup", 1, "weight", 6, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(completion_view), column);
-	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(completion_store), 1, string_sort_func, GINT_TO_POINTER(1), NULL);
-	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_store), 1, GTK_SORT_ASCENDING);
-	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(completion_sort), 1, completion_sort_func, GINT_TO_POINTER(1), NULL);
-	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_sort), 1, GTK_SORT_ASCENDING);
 
 	for(size_t i = 0; i < modes.size(); i++) {
 		GtkWidget *item = gtk_menu_item_new_with_label(modes[i].name.c_str());
@@ -1643,8 +1223,6 @@ void create_main_window(void) {
 		}
 	}
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), always_on_top);
-
-	g_signal_connect_after(gtk_builder_get_object(main_builder, "historyscrolled"), "size-allocate", G_CALLBACK(on_history_resize), NULL);
 
 	gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
 
@@ -1846,13 +1424,6 @@ GtkWidget* get_preferences_dialog(void) {
 		gtk_scale_add_mark(GTK_SCALE(gtk_builder_get_object(preferences_builder, "preferences_scale_plot_time")), 8.91, GTK_POS_BOTTOM, "600 s");
 		nr.set(max_plot_time); nr.log(2);
 		gtk_range_set_value(GTK_RANGE(gtk_builder_get_object(preferences_builder, "preferences_scale_plot_time")), nr.floatValue() - 0.322);
-#ifdef _WIN32
-		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_combo_language")));
-		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_language")));
-#else
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_combo_language")));
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_language")));
-#endif
 		string lang = custom_lang;
 		if(lang.length() > 2) lang = lang.substr(0, 2);
 		if(custom_lang == "ca") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 1);

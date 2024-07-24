@@ -27,6 +27,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "expressionedit.h"
 #include "periodictabledialog.h"
 
 using std::string;

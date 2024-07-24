@@ -27,6 +27,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "expressionedit.h"
 #include "numberbasesdialog.h"
 
 using std::string;

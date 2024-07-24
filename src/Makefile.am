@@ -55,9 +55,12 @@ qalculate_gtk_SOURCES = \
 	calendarconversiondialog.cc calendarconversiondialog.h \
 	floatingpointdialog.cc floatingpointdialog.h \
 	conversionview.cc conversionview.h \
+	historyview.cc historyview.h \
 	stackview.cc stackview.h \
 	keypad.cc keypad.h \
-	main.cc main.h \
+	expressionedit.cc expressionedit.h \
+	expressioncompletion.cc expressioncompletion.h \
+	main.cc \
 	interface.cc interface.h \
 	callbacks.cc callbacks.h \
 	unordered_map_define.h support.h util.h settings.h

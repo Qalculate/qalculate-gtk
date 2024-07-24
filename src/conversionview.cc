@@ -28,6 +28,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "expressionedit.h"
 #include "conversionview.h"
 
 using std::string;
@@ -50,6 +51,7 @@ string selected_unit_selector_category;
 bool block_unit_selector_convert = false;
 int block_conversion_category_switch = 0;
 bool keep_unit_selection = false;
+bool continuous_conversion = false, set_missing_prefixes = false;
 unordered_map<string, GtkTreeIter> convert_category_map;
 
 extern unordered_map<string, cairo_surface_t*> flag_surfaces;

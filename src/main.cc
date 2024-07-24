@@ -24,14 +24,15 @@
 #	include <unistd.h>
 #endif
 #include <sys/stat.h>
+#include <libqalculate/qalculate.h>
 
 #include "support.h"
 #include "interface.h"
 #include "callbacks.h"
 #include "conversionview.h"
+#include "historyview.h"
 #include "keypad.h"
 #include "util.h"
-#include "main.h"
 
 using std::string;
 using std::cout;
@@ -67,8 +68,8 @@ extern string custom_angle_unit;
 extern EvaluationOptions evalops;
 extern int enable_tooltips;
 
-MathFunction *f_answer;
-MathFunction *f_expression;
+extern MathFunction *f_answer;
+extern MathFunction *f_expression;
 
 GtkBuilder *main_builder;
 GtkBuilder *preferences_builder;
@@ -76,8 +77,6 @@ GtkBuilder *preferences_builder;
 Thread *view_thread, *command_thread;
 string calc_arg, file_arg;
 
-bool check_expression_position;
-gint expression_position;
 bool do_imaginary_j = false;
 
 QalculateDateTime last_version_check_date;
@@ -287,9 +286,6 @@ void create_application(GtkApplication *app) {
 
 	//check for calculation errros regularly
 	g_timeout_add_seconds(1, on_display_errors_timeout, NULL);
-
-	check_expression_position = true;
-	expression_position = 1;
 
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object (main_builder, "menu_item_fetch_exchange_rates")), canfetch);
 
@@ -574,7 +570,7 @@ int main (int argc, char *argv[]) {
 #	ifdef _WIN32
 					_putenv_s("LANG", lang.c_str());
 #	else
-					setenv("LANG", lang.c_str(), 1);
+					setenv("LANGUAGE", lang.c_str(), 1);
 #	endif
 				}
 				break;

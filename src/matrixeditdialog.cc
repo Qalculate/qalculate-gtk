@@ -592,7 +592,7 @@ run_matrix_edit_dialog:
 					b = gtk_tree_model_iter_next(GTK_TREE_MODEL(tMatrixEdit_store), &iter);
 				}
 			}
-			display_errors(NULL, dialog);
+			display_errors(dialog);
 			unblock_error();
 		}
 		bool add_var = false;

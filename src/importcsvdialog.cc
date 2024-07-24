@@ -192,7 +192,7 @@ run_csv_import_dialog:
 			gtk_dialog_run(GTK_DIALOG(edialog));
 			gtk_widget_destroy(edialog);
 		}
-		display_errors(NULL, dialog);
+		display_errors(dialog);
 		unblock_error();
 		update_vmenu();
 	}

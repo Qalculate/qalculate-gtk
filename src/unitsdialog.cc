@@ -28,6 +28,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "expressionedit.h"
 #include "uniteditdialog.h"
 #include "unitsdialog.h"
 
@@ -418,7 +419,7 @@ void convert_in_wUnits(int toFrom) {
 				}
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_from_val")), old_fromValue.c_str());
 				b = b || v_mstruct.isApproximate();
-				display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")));
+				display_errors(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")));
 				unblock_error();
 			}
 		} else {
@@ -448,7 +449,7 @@ void convert_in_wUnits(int toFrom) {
 				}
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_to_val")), old_toValue.c_str());
 				b = b || v_mstruct.isApproximate();
-				display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")));
+				display_errors(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")));
 				unblock_error();
 			}
 		}

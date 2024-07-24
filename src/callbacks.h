@@ -13,32 +13,9 @@
 #define CALLBACKS_H
 
 #include <gtk/gtk.h>
+#include <libqalculate/qalculate.h>
 
-#include "main.h"
-
-enum {
-	QALCULATE_HISTORY_EXPRESSION,
-	QALCULATE_HISTORY_TRANSFORMATION,
-	QALCULATE_HISTORY_RESULT,
-	QALCULATE_HISTORY_RESULT_APPROXIMATE,
-	QALCULATE_HISTORY_PARSE_WITHEQUALS,
-	QALCULATE_HISTORY_PARSE,
-	QALCULATE_HISTORY_PARSE_APPROXIMATE,
-	QALCULATE_HISTORY_WARNING,
-	QALCULATE_HISTORY_ERROR,
-	QALCULATE_HISTORY_OLD,
-	QALCULATE_HISTORY_REGISTER_MOVED,
-	QALCULATE_HISTORY_RPN_OPERATION,
-	QALCULATE_HISTORY_BOOKMARK,
-	QALCULATE_HISTORY_MESSAGE
-};
-
-DECLARE_BUILTIN_FUNCTION(AnswerFunction, 0)
-DECLARE_BUILTIN_FUNCTION(ExpressionFunction, 0)
 DECLARE_BUILTIN_FUNCTION(SetTitleFunction, 0)
-
-#define RUNTIME_CHECK_GTK_VERSION(x, y) (gtk_get_minor_version() >= y)
-#define RUNTIME_CHECK_GTK_VERSION_LESS(x, y) (gtk_get_minor_version() < y)
 
 class ViewThread : public Thread {
 protected:
@@ -66,7 +43,6 @@ void update_status_text();
 
 void set_result_size_request();
 void set_status_size_request();
-void set_expression_size_request();
 void test_supsub();
 bool test_supsub(GtkWidget *w);
 
@@ -115,7 +91,6 @@ void save_mode();
 void load_preferences();
 bool save_preferences(bool mode = false, bool allow_cancel = false);
 bool save_history(bool allow_cancel = false);
-void edit_preferences();
 
 gint completion_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer user_data);
 
@@ -152,9 +127,6 @@ void fetch_exchange_rates(int timeout, int n = -1);
 
 void insert_matrix(const MathStructure *initial_value = NULL, GtkWidget *win = NULL, gboolean create_vector = FALSE, bool is_text_struct = false, bool is_result = false, GtkEntry *entry = NULL);
 
-gchar *font_name_to_css(const char *font_name, const char *w = "*");
-
-void reload_history(gint from_index = -1);
 void set_status_bottom_border_visible(bool);
 
 #ifdef __cplusplus
@@ -167,7 +139,6 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 
 void *view_proc(void*);
 void *command_proc(void*);
-void on_history_resize(GtkWidget*, GdkRectangle*, gpointer);
 void on_message_bar_response(GtkInfoBar *w, gint response_id, gpointer);
 void on_expressiontext_populate_popup(GtkTextView *w, GtkMenu *menu, gpointer user_data);
 void on_expander_keypad_expanded(GObject *o, GParamSpec *param_spec, gpointer user_data);
@@ -310,10 +281,6 @@ void on_menu_item_expression_status_activate(GtkMenuItem *w, gpointer user_data)
 void on_menu_item_parsed_in_result_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_exact_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_assume_nonzero_denominators_activate(GtkMenuItem *w, gpointer user_data);
-void on_popup_menu_item_abort_activate(GtkMenuItem *w, gpointer user_data);
-void on_popup_menu_item_clear_activate(GtkMenuItem *w, gpointer user_data);
-void on_popup_menu_item_clear_history_activate(GtkMenuItem *w, gpointer user_data);
-void on_popup_menu_item_history_clear_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_display_normal_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_display_engineering_activate(GtkMenuItem *w, gpointer user_data);
 void on_popup_menu_item_display_scientific_activate(GtkMenuItem *w, gpointer user_data);
@@ -406,11 +373,6 @@ void on_menu_item_algebraic_mode_factorize_activate(GtkMenuItem *w, gpointer use
 void on_menu_item_algebraic_mode_hybrid_activate(GtkMenuItem *w, gpointer user_data);
 gboolean on_main_window_focus_in_event(GtkWidget *w, GdkEventFocus *e, gpointer user_data);
 
-void on_historyview_selection_changed(GtkTreeSelection *select, gpointer);
-void on_historyview_item_edited(GtkCellRendererText*, gchar*, gchar*, gpointer);
-void on_historyview_item_editing_started(GtkCellRenderer*, GtkCellEditable*, gchar*, gpointer);
-void on_historyview_item_editing_canceled(GtkCellRenderer*, gpointer);
-
 void on_menu_item_show_percentage_dialog_activate(GtkMenuItem *w, gpointer user_data);
 
 void on_menu_item_show_calendarconversion_dialog_activate(GtkMenuItem *w, gpointer user_data);
@@ -435,10 +397,6 @@ gboolean on_expressiontext_button_press_event(GtkWidget *w, GdkEventButton *even
 
 gboolean on_resultview_button_press_event(GtkWidget *w, GdkEventButton *event, gpointer user_data);
 gboolean on_resultview_popup_menu(GtkWidget *w, gpointer user_data);
-
-gboolean on_expressiontext_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer user_data);
-
-void on_expressionbuffer_cursor_position_notify();
 
 gboolean on_resultview_draw(GtkWidget *w, cairo_t *cr, gpointer user_data);
 

@@ -27,7 +27,8 @@ void updateRPNIndexes();
 void RPNRegisterAdded(std::string text, gint index = 0);
 void RPNRegisterRemoved(gint index);
 void RPNRegisterChanged(std::string text, gint index);
-void stack_view_update_font(bool initial = false);
+void update_stack_font(bool initial = false);
+void update_stack_button_font();
 void update_lastx();
 bool editing_stack();
 

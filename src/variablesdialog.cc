@@ -27,6 +27,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "expressionedit.h"
 #include "exportcsvdialog.h"
 #include "variableeditdialog.h"
 #include "variablesdialog.h"

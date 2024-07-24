@@ -234,7 +234,7 @@ void update_percentage_entries() {
 		gtk_entry_set_text(GTK_ENTRY(w6), m1.isZero() ? "" : (m6.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(m6, 200, po).c_str()));
 		gtk_entry_set_text(GTK_ENTRY(w7), m2.isZero() ? "" : (m7.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(m7, 200, po).c_str()));
 	}
-	display_errors(NULL, GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_dialog")));
+	display_errors(GTK_WIDGET(gtk_builder_get_object(percentage_builder, "percentage_dialog")));
 	unblock_error();
 	g_signal_handlers_unblock_matched((gpointer) w1, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_1_changed, NULL);
 	g_signal_handlers_unblock_matched((gpointer) w2, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_percentage_entry_2_changed, NULL);

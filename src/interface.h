@@ -12,8 +12,6 @@
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
-#define EXPRESSION_YPAD 3
-
 #ifdef _WIN32
 void create_systray_icon();
 void destroy_systray_icon();
