@@ -30,6 +30,7 @@
 #include "historyview.h"
 #include "stackview.h"
 #include "keypad.h"
+#include "preferencesdialog.h"
 #include "expressioncompletion.h"
 #include "expressionedit.h"
 
@@ -57,9 +58,6 @@ extern bool current_object_has_changed;
 string previous_expression;
 bool cursor_has_moved = false;
 extern bool minimal_mode;
-extern bool rpn_keys;
-extern int close_with_esc;
-extern bool use_systray_icon;
 
 string sdot, saltdot, sdiv, sslash, stimes, sminus;
 
@@ -1199,7 +1197,7 @@ void on_popup_menu_item_completion_delay_toggled(GtkCheckMenuItem *w, gpointer) 
 	else completion_delay = 0;
 }
 void on_popup_menu_item_custom_completion_activated(GtkMenuItem*, gpointer) {
-	edit_preferences(4);
+	edit_preferences(GTK_WINDOW(mainwindow), 4);
 }
 void on_popup_menu_item_read_precision_activate(GtkMenuItem *w, gpointer) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_read_precision")), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
@@ -1243,9 +1241,6 @@ void on_popup_menu_item_clear_history_activate(GtkMenuItem*, gpointer) {
 	clear_expression_history();
 }
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 extern void on_menu_item_insert_date_activate(GtkMenuItem *w, gpointer user_data);
 extern void on_menu_item_insert_matrix_activate(GtkMenuItem *w, gpointer user_data);
 extern void on_menu_item_insert_vector_activate(GtkMenuItem *w, gpointer user_data);
@@ -1253,9 +1248,73 @@ extern void on_menu_item_meta_mode_activate(GtkMenuItem *w, gpointer user_data);
 extern void on_menu_item_meta_mode_save_activate(GtkMenuItem *w, gpointer user_data);
 extern gboolean on_menu_item_meta_mode_popup_menu(GtkWidget*, gpointer data);
 extern gboolean on_menu_item_meta_mode_button_press(GtkWidget *widget, GdkEventButton *event, gpointer data);
-#ifdef __cplusplus
+
+void expression_insert_date() {
+	GtkWidget *d = gtk_dialog_new_with_buttons(_("Select date"), GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_CANCEL, _("_OK"), GTK_RESPONSE_OK, NULL);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
+	GtkWidget *date_w = gtk_calendar_new();
+	string str = get_selected_expression_text(), str2;
+	CALCULATOR->separateToExpression(str, str2, evalops, true);
+	remove_blank_ends(str);
+	int b_quote = -1;
+	if(str.length() > 2 && ((str[0] == '\"' && str[str.length() - 1] == '\"') || (str[0] == '\'' && str[str.length() - 1] == '\''))) {
+		str = str.substr(1, str.length() - 2);
+		remove_blank_ends(str);
+		b_quote = 1;
+	}
+	if(!str.empty()) {
+		QalculateDateTime date;
+		if(date.set(str)) {
+			if(b_quote < 0) b_quote = 0;
+			gtk_calendar_select_month(GTK_CALENDAR(date_w), date.month() - 1, date.year());
+			gtk_calendar_select_day(GTK_CALENDAR(date_w), date.day());
+		}
+	}
+	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(d))), date_w);
+	gtk_widget_show_all(d);
+	if(gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_OK) {
+		guint year = 0, month = 0, day = 0;
+		gtk_calendar_get_date(GTK_CALENDAR(date_w), &year, &month, &day);
+		gchar *gstr;
+		if(b_quote == 0) gstr = g_strdup_printf("%i-%02i-%02i", year, month + 1, day);
+		else gstr = g_strdup_printf("\"%i-%02i-%02i\"", year, month + 1, day);
+		insert_text(gstr);
+		g_free(gstr);
+	}
+	gtk_widget_destroy(d);
 }
-#endif
+void expression_insert_matrix() {
+	string str = get_selected_expression_text(), str2;
+	CALCULATOR->separateToExpression(str, str2, evalops, true);
+	remove_blank_ends(str);
+	if(!str.empty()) {
+		MathStructure mstruct_sel;
+		CALCULATOR->beginTemporaryStopMessages();
+		CALCULATOR->parse(&mstruct_sel, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), evalops.parse_options);
+		CALCULATOR->endTemporaryStopMessages();
+		if(mstruct_sel.isMatrix() && mstruct_sel[0].size() > 0) {
+			insert_matrix(&mstruct_sel, mainwindow, false);
+			return;
+		}
+	}
+	insert_matrix(NULL, mainwindow, false);
+}
+void expression_insert_vector() {
+	string str = get_selected_expression_text(), str2;
+	CALCULATOR->separateToExpression(str, str2, evalops, true);
+	remove_blank_ends(str);
+	if(!str.empty()) {
+		MathStructure mstruct_sel;
+		CALCULATOR->beginTemporaryStopMessages();
+		CALCULATOR->parse(&mstruct_sel, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), evalops.parse_options);
+		CALCULATOR->endTemporaryStopMessages();
+		if(mstruct_sel.isVector() && !mstruct_sel.isMatrix()) {
+			insert_matrix(&mstruct_sel, mainwindow, true);
+			return;
+		}
+	}
+	insert_matrix(NULL, mainwindow, true);
+}
 
 bool block_popup_input_base = false;
 void on_popup_menu_item_input_base(GtkMenuItem *w, gpointer data) {
@@ -1361,6 +1420,11 @@ void on_expressiontext_populate_popup(GtkTextView*, GtkMenu *menu, gpointer) {
 gboolean epxression_tooltip_timeout(gpointer) {
 	gtk_widget_trigger_tooltip_query(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")));
 	return FALSE;
+}
+gboolean on_button_minimal_mode_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
+	if(event->button != 1) return FALSE;
+	set_minimal_mode(false);
+	return TRUE;
 }
 gboolean on_expression_button_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
 	if(event->button != 1) return FALSE;
@@ -1507,6 +1571,8 @@ void expression_font_modified() {
 }
 
 void update_expression_font(bool initial) {
+	gint h_old = 0, h_new = 0;
+	if(!initial) gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h_old);
 	if(use_custom_expression_font) {
 		gchar *gstr;
 		if(RUNTIME_CHECK_GTK_VERSION(3, 20)) gstr = font_name_to_css(custom_expression_font.c_str(), "textview.view");
@@ -1527,7 +1593,14 @@ void update_expression_font(bool initial) {
 		g_free(gstr);
 		g_free(gstr_l);
 	}
-	if(!initial) expression_font_modified();
+	if(!initial) {
+		expression_font_modified();
+		gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h_new);
+		gint winh, winw;
+		gtk_window_get_size(GTK_WINDOW(mainwindow), &winw, &winh);
+		winh += (h_new - h_old);
+		gtk_window_resize(GTK_WINDOW(mainwindow), winw, winh);
+	}
 }
 
 void create_expression_edit() {
@@ -1594,6 +1667,7 @@ void create_expression_edit() {
 	gtk_css_provider_load_from_data(expression_provider2, expression_css.c_str(), -1, NULL);
 
 	update_expression_font(true);
+	set_expression_operator_symbols();
 
 	gtk_widget_grab_focus(expressiontext);
 	gtk_widget_set_can_default(expressiontext, TRUE);
@@ -1603,6 +1677,6 @@ void create_expression_edit() {
 
 	create_expression_completion();
 
-	gtk_builder_add_callback_symbols(main_builder, "on_expressionbuffer_changed", G_CALLBACK(on_expressionbuffer_changed), "on_expressionbuffer_cursor_position_notify", G_CALLBACK(on_expressionbuffer_cursor_position_notify), "on_expressionbuffer_paste_done", G_CALLBACK(on_expressionbuffer_paste_done), "on_expressiontext_button_press_event", G_CALLBACK(on_expressiontext_button_press_event), "on_expressiontext_focus_out_event", G_CALLBACK(on_expressiontext_focus_out_event), "on_expressiontext_key_press_event", G_CALLBACK(on_expressiontext_key_press_event), "on_expressiontext_populate_popup", G_CALLBACK(on_expressiontext_populate_popup), "on_expression_button_button_press_event", G_CALLBACK(on_expression_button_button_press_event), "on_expression_button_button_release_event", G_CALLBACK(on_expression_button_button_release_event), NULL);
+	gtk_builder_add_callback_symbols(main_builder, "on_expressionbuffer_changed", G_CALLBACK(on_expressionbuffer_changed), "on_expressionbuffer_cursor_position_notify", G_CALLBACK(on_expressionbuffer_cursor_position_notify), "on_expressionbuffer_paste_done", G_CALLBACK(on_expressionbuffer_paste_done), "on_expressiontext_button_press_event", G_CALLBACK(on_expressiontext_button_press_event), "on_expressiontext_focus_out_event", G_CALLBACK(on_expressiontext_focus_out_event), "on_expressiontext_key_press_event", G_CALLBACK(on_expressiontext_key_press_event), "on_expressiontext_populate_popup", G_CALLBACK(on_expressiontext_populate_popup), "on_expression_button_button_press_event", G_CALLBACK(on_expression_button_button_press_event), "on_expression_button_button_release_event", G_CALLBACK(on_expression_button_button_release_event), "on_button_minimal_mode_button_press_event", G_CALLBACK(on_button_minimal_mode_button_press_event), NULL);
 
 }

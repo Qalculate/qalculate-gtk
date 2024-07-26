@@ -37,8 +37,6 @@ using std::vector;
 using std::endl;
 using std::deque;
 
-#include "unordered_map_define.h"
-
 #define EXPRESSION_YPAD 3
 
 deque<string> inhistory;
@@ -1310,14 +1308,27 @@ void update_history_colors(bool initial) {
 	g_snprintf(history_parse_color, 8, "#%02x%02x%02x", (int) (history_gray.red * 255), (int) (history_gray.green * 255), (int) (history_gray.blue * 255));
 	if(!initial) g_object_set(G_OBJECT(history_index_renderer), "ypad", 0, "yalign", 0.0, "xalign", 0.5, "foreground-rgba", &history_gray, NULL);
 }
-void update_history_font() {
+void history_font_modified() {
+	fix_supsub_history = test_supsub(historyview);
+}
+void update_history_font(bool initial) {
 	if(use_custom_history_font) {
 		gchar *gstr = font_name_to_css(custom_history_font.c_str());
 		gtk_css_provider_load_from_data(history_provider, gstr, -1, NULL);
 		g_free(gstr);
+	} else if(initial) {
+		if(custom_history_font.empty()) {
+			PangoFontDescription *font_desc;
+			gtk_style_context_get(gtk_widget_get_style_context(historyview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+			char *gstr = pango_font_description_to_string(font_desc);
+			custom_history_font = gstr;
+			g_free(gstr);
+			pango_font_description_free(font_desc);
+		}
 	} else {
 		gtk_css_provider_load_from_data(history_provider, "", -1, NULL);
 	}
+	history_font_modified();
 }
 
 #define INDEX_TYPE_ANS 0
@@ -2826,24 +2837,104 @@ void on_history_resize(GtkWidget*, GdkRectangle *alloc, gpointer) {
 		reload_history();
 	}
 }
+void update_history_button_text() {
+	if(printops.use_unicode_signs) {
+		if(can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(main_builder, "label_history_sub"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sub")), SIGN_MINUS);
+		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sub")), MINUS);
+		if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(main_builder, "label_history_times"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_times")), SIGN_MULTIPLICATION);
+		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_times")), MULTIPLICATION);
+		if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(main_builder, "label_history_divide"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_divide")), SIGN_DIVISION_SLASH);
+		else if(can_display_unicode_string_function(SIGN_DIVISION, (void*) gtk_builder_get_object(main_builder, "label_history_divide"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_divide")), SIGN_DIVISION);
+		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_divide")), DIVISION);
+	} else {
+
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sub")), MINUS);
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_times")), MULTIPLICATION);
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_divide")), DIVISION);
+	}
+
+	FIX_SUPSUB_PRE(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_history_xy")));
+	string s_xy = "x<sup>y</sup>";
+	FIX_SUPSUB(s_xy);
+	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_xy")), s_xy.c_str());
+
+	if(can_display_unicode_string_function(SIGN_SQRT, (void*) gtk_builder_get_object(main_builder, "label_history_sqrt"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sqrt")), SIGN_SQRT);
+	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sqrt")), "sqrt");
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_insert_value")), -1, -1);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_copy")), -1, -1);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_add")), -1, -1);
+	GtkRequisition a;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_xy")), &a, NULL);
+	gint w = a.width; gint h = a.height;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_sqrt")), &a, NULL);
+	if(a.width > w) w = a.width;
+	if(a.height > h) h = a.height;
+	if(gtk_image_get_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_history_insert_value"))) != -1) {
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_history_insert_value")), -1);
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_history_insert_text")), -1);
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_history_copy")), -1);
+	}
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_insert_value")), &a, NULL);
+	if(a.width > w) w = a.width;
+	if(a.height > h) h = a.height;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_copy")), &a, NULL);
+	gint h_i = -1;
+	if(use_custom_keypad_font || use_custom_app_font) {
+		h_i = 16 + (h - a.height);
+		if(h_i < 20) h_i = -1;
+	}
+	if(h_i != -1) {
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_history_insert_value")), h_i);
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_history_insert_text")), h_i);
+		gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_history_copy")), h_i);
+	}
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_insert_value")), w, h);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_copy")), w, h);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_history_add")), w, h);
+}
+
+void update_history_accels(int type) {
+	bool b = false;
+	for(unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.begin(); it != keyboard_shortcuts.end(); ++it) {
+		if(it->second.type.size() != 1 || (type >= 0 && it->second.type[0] != type)) continue;
+		b = true;
+		switch(it->second.type[0]) {
+			case SHORTCUT_TYPE_HISTORY_SEARCH: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_search")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+			case SHORTCUT_TYPE_HISTORY_CLEAR: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_clear")))), it->second.key, (GdkModifierType) it->second.modifier);
+				break;
+			}
+		}
+		if(type >= 0) break;
+	}
+	if(!b) {
+		switch(type) {
+			case SHORTCUT_TYPE_HISTORY_SEARCH: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_search")))), 0, (GdkModifierType) 0); break;}
+			case SHORTCUT_TYPE_HISTORY_CLEAR: {gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_clear")))), 0, (GdkModifierType) 0); break;}
+		}
+	}
+	if(type == SHORTCUT_TYPE_COPY_RESULT) {
+		if(copy_ascii) {
+			gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_ascii")))), GDK_KEY_c, GDK_CONTROL_MASK);
+			gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_text")))), 0, (GdkModifierType) 0);
+		} else {
+			gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_text")))), GDK_KEY_c, GDK_CONTROL_MASK);
+			gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_ascii")))), 0, (GdkModifierType) 0);
+		}
+	}
+}
 
 void create_history_view() {
 
 	history_provider = gtk_css_provider_new();
 	gtk_style_context_add_provider(gtk_widget_get_style_context(historyview), GTK_STYLE_PROVIDER(history_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
-	if(use_custom_history_font) {
-		update_history_font();
-	} else {
-		if(custom_history_font.empty()) {
-			PangoFontDescription *font_desc;
-			gtk_style_context_get(gtk_widget_get_style_context(historyview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-			char *gstr = pango_font_description_to_string(font_desc);
-			custom_history_font = gstr;
-			g_free(gstr);
-			pango_font_description_free(font_desc);
-		}
-	}
+	update_history_font(true);
+
+	update_history_button_text();
 
 	GList *l;
 	GList *list;
@@ -2917,6 +3008,10 @@ void create_history_view() {
 	g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_historyview_selection_changed), NULL);
 	gtk_tree_view_set_row_separator_func(GTK_TREE_VIEW(historyview), history_row_separator_func, NULL, NULL);
 	g_signal_connect_after(gtk_builder_get_object(main_builder, "historyscrolled"), "size-allocate", G_CALLBACK(on_history_resize), NULL);
+
+	if(!copy_ascii) gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_text")))), GDK_KEY_c, GDK_CONTROL_MASK);
+	else gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_ascii")))), GDK_KEY_c, GDK_CONTROL_MASK);
+	gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_delete")))), GDK_KEY_Delete, GDK_SHIFT_MASK);
 
 	gtk_builder_add_callback_symbols(main_builder, "on_historyview_button_press_event", G_CALLBACK(on_historyview_button_press_event), "on_historyview_button_release_event", G_CALLBACK(on_historyview_button_release_event), "on_historyview_key_press_event", G_CALLBACK(on_historyview_key_press_event), "on_historyview_popup_menu", G_CALLBACK(on_historyview_popup_menu), "on_historyview_row_activated", G_CALLBACK(on_historyview_row_activated), "on_button_history_insert_value_clicked", G_CALLBACK(on_button_history_insert_value_clicked), "on_button_history_insert_text_clicked", G_CALLBACK(on_button_history_insert_text_clicked), "on_button_history_copy_clicked", G_CALLBACK(on_button_history_copy_clicked), "on_button_history_add_clicked", G_CALLBACK(on_button_history_add_clicked), "on_button_history_sub_clicked", G_CALLBACK(on_button_history_sub_clicked), "on_button_history_times_clicked", G_CALLBACK(on_button_history_times_clicked), "on_button_history_divide_clicked", G_CALLBACK(on_button_history_divide_clicked), "on_button_history_xy_clicked", G_CALLBACK(on_button_history_xy_clicked), "on_button_history_sqrt_clicked", G_CALLBACK(on_button_history_sqrt_clicked), "on_popup_menu_item_history_insert_value_activate", G_CALLBACK(on_popup_menu_item_history_insert_value_activate), "on_popup_menu_item_history_insert_text_activate", G_CALLBACK(on_popup_menu_item_history_insert_text_activate), "on_popup_menu_item_history_insert_parsed_text_activate", G_CALLBACK(on_popup_menu_item_history_insert_parsed_text_activate), "on_popup_menu_item_history_copy_text_activate", G_CALLBACK(on_popup_menu_item_history_copy_text_activate), "on_popup_menu_item_history_copy_ascii_activate", G_CALLBACK(on_popup_menu_item_history_copy_ascii_activate), "on_popup_menu_item_history_copy_full_text_activate", G_CALLBACK(on_popup_menu_item_history_copy_full_text_activate), "on_popup_menu_item_history_search_activate", G_CALLBACK(on_popup_menu_item_history_search_activate), "on_popup_menu_item_history_search_date_activate", G_CALLBACK(on_popup_menu_item_history_search_date_activate), "on_popup_menu_item_history_bookmark_activate", G_CALLBACK(on_popup_menu_item_history_bookmark_activate), "on_popup_menu_item_history_protect_toggled", G_CALLBACK(on_popup_menu_item_history_protect_toggled), "on_popup_menu_item_history_movetotop_activate", G_CALLBACK(on_popup_menu_item_history_movetotop_activate), "on_popup_menu_item_history_delete_activate", G_CALLBACK(on_popup_menu_item_history_delete_activate), "on_popup_menu_item_history_clear_activate", G_CALLBACK(on_popup_menu_item_history_clear_activate), NULL);
 

@@ -24,15 +24,21 @@ enum {
 void set_custom_buttons();
 void create_button_menus();
 void update_button_padding(bool initial = false);
+void update_keypad_state(bool initial = false);
+void update_keypad_accels(int type);
 void create_keypad();
 
-void update_keypad_font();
+void update_keypad_caret_as_xor();
+void update_keypad_i();
+void update_keypad_button_text();
+void update_keypad_font(bool initial = false);
 void update_keypad_programming_base();
 void update_keypad_fraction();
 void update_keypad_exact();
 void update_keypad_numerical_display();
 void update_keypad_base();
 void update_result_bases();
+void keypad_rpn_mode_changed();
 void set_result_bases(const MathStructure &m);
 void clear_result_bases();
 void update_mb_fx_menu();
@@ -41,5 +47,6 @@ void update_mb_units_menu();
 void update_mb_pi_menu();
 void update_mb_to_menu();
 void update_mb_angles(AngleUnit angle_unit);
+void keypad_algebraic_mode_changed();
 
 #endif /* KEYPAD_DIALOG_H */

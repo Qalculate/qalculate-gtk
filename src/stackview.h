@@ -15,6 +15,7 @@
 #include <gtk/gtk.h>
 
 void create_stack_view();
+void update_stack_accels(int type);
 std::string get_register_text(int index);
 void stack_view_swap(int index = -1);
 void stack_view_copy(int index = -1);
@@ -31,6 +32,7 @@ void update_stack_font(bool initial = false);
 void update_stack_button_font();
 void update_lastx();
 bool editing_stack();
+void update_stack_button_text();
 
 
 #endif /* STACK_VIEW_H */

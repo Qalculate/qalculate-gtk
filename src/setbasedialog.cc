@@ -483,7 +483,7 @@ GtkWidget* get_set_base_dialog(void) {
 	return GTK_WIDGET(gtk_builder_get_object(setbase_builder, "set_base_dialog"));
 }
 
-void bases_updated() {
+void update_setbase() {
 	if(setbase_builder) {
 		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(setbase_builder, "set_base_combo_output_other"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_set_base_combo_output_other_changed, NULL);
 		switch(printops.base) {

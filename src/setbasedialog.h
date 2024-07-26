@@ -15,6 +15,6 @@
 #include <gtk/gtk.h>
 
 void open_setbase(GtkWindow *parent, bool custom = false, bool input = false);
-void bases_updated();
+void update_setbase();
 
 #endif /* SETBASE_DIALOG_H */

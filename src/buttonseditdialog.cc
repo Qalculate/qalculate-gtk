@@ -40,9 +40,6 @@ extern GtkBuilder *main_builder;
 GtkWidget *tButtonsEditType, *tButtonsEdit;
 GtkListStore *tButtonsEditType_store, *tButtonsEdit_store;
 
-extern vector<custom_button> custom_buttons;
-extern vector<mode_struct> modes;
-
 #define SET_BUTTONS_EDIT_ITEM_3(l, t1, t2, t3) \
 	{gtk_list_store_set(tButtonsEdit_store, &iter, 1, custom_buttons[i].text.empty() ? l : custom_buttons[i].text.c_str(), 2, custom_buttons[i].type[0] == -1 ? t1 : button_valuetype_text(custom_buttons[i].type[0], custom_buttons[i].value[0]).c_str(), 3, custom_buttons[i].type[1] == -1 ? t2 : button_valuetype_text(custom_buttons[i].type[1], custom_buttons[i].value[1]).c_str(), 4, custom_buttons[i].type[2] == -1 ? t3 : button_valuetype_text(custom_buttons[i].type[2], custom_buttons[i].value[2]).c_str(), -1);\
 	if(index >= 0) break;}

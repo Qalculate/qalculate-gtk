@@ -16,90 +16,6 @@
 #include <gtk/gtk.h>
 
 enum {
-	SHORTCUT_TYPE_FUNCTION,
-	SHORTCUT_TYPE_FUNCTION_WITH_DIALOG,
-	SHORTCUT_TYPE_VARIABLE,
-	SHORTCUT_TYPE_UNIT,
-	SHORTCUT_TYPE_TEXT,
-	SHORTCUT_TYPE_DATE,
-	SHORTCUT_TYPE_VECTOR,
-	SHORTCUT_TYPE_MATRIX,
-	SHORTCUT_TYPE_SMART_PARENTHESES,
-	SHORTCUT_TYPE_CONVERT,
-	SHORTCUT_TYPE_CONVERT_ENTRY,
-	SHORTCUT_TYPE_OPTIMAL_UNIT,
-	SHORTCUT_TYPE_BASE_UNITS,
-	SHORTCUT_TYPE_OPTIMAL_PREFIX,
-	SHORTCUT_TYPE_TO_NUMBER_BASE,
-	SHORTCUT_TYPE_FACTORIZE,
-	SHORTCUT_TYPE_EXPAND,
-	SHORTCUT_TYPE_PARTIAL_FRACTIONS,
-	SHORTCUT_TYPE_SET_UNKNOWNS,
-	SHORTCUT_TYPE_RPN_UP,
-	SHORTCUT_TYPE_RPN_DOWN,
-	SHORTCUT_TYPE_RPN_SWAP,
-	SHORTCUT_TYPE_RPN_COPY,
-	SHORTCUT_TYPE_RPN_LASTX,
-	SHORTCUT_TYPE_RPN_DELETE,
-	SHORTCUT_TYPE_RPN_CLEAR,
-	SHORTCUT_TYPE_META_MODE,
-	SHORTCUT_TYPE_OUTPUT_BASE,
-	SHORTCUT_TYPE_INPUT_BASE,
-	SHORTCUT_TYPE_EXACT_MODE,
-	SHORTCUT_TYPE_DEGREES,
-	SHORTCUT_TYPE_RADIANS,
-	SHORTCUT_TYPE_GRADIANS,
-	SHORTCUT_TYPE_FRACTIONS,
-	SHORTCUT_TYPE_MIXED_FRACTIONS,
-	SHORTCUT_TYPE_SCIENTIFIC_NOTATION,
-	SHORTCUT_TYPE_SIMPLE_NOTATION,
-	SHORTCUT_TYPE_RPN_MODE,
-	SHORTCUT_TYPE_AUTOCALC,
-	SHORTCUT_TYPE_PROGRAMMING,
-	SHORTCUT_TYPE_KEYPAD,
-	SHORTCUT_TYPE_HISTORY,
-	SHORTCUT_TYPE_HISTORY_SEARCH,
-	SHORTCUT_TYPE_CONVERSION,
-	SHORTCUT_TYPE_STACK,
-	SHORTCUT_TYPE_MINIMAL,
-	SHORTCUT_TYPE_MANAGE_VARIABLES,
-	SHORTCUT_TYPE_MANAGE_FUNCTIONS,
-	SHORTCUT_TYPE_MANAGE_UNITS,
-	SHORTCUT_TYPE_MANAGE_DATA_SETS,
-	SHORTCUT_TYPE_STORE,
-	SHORTCUT_TYPE_MEMORY_CLEAR,
-	SHORTCUT_TYPE_MEMORY_RECALL,
-	SHORTCUT_TYPE_MEMORY_STORE,
-	SHORTCUT_TYPE_MEMORY_ADD,
-	SHORTCUT_TYPE_MEMORY_SUBTRACT,
-	SHORTCUT_TYPE_NEW_VARIABLE,
-	SHORTCUT_TYPE_NEW_FUNCTION,
-	SHORTCUT_TYPE_PLOT,
-	SHORTCUT_TYPE_NUMBER_BASES,
-	SHORTCUT_TYPE_FLOATING_POINT,
-	SHORTCUT_TYPE_CALENDARS,
-	SHORTCUT_TYPE_PERCENTAGE_TOOL,
-	SHORTCUT_TYPE_PERIODIC_TABLE,
-	SHORTCUT_TYPE_UPDATE_EXRATES,
-	SHORTCUT_TYPE_COPY_RESULT,
-	SHORTCUT_TYPE_SAVE_IMAGE,
-	SHORTCUT_TYPE_HELP,
-	SHORTCUT_TYPE_QUIT,
-	SHORTCUT_TYPE_CHAIN_MODE,
-	SHORTCUT_TYPE_ALWAYS_ON_TOP,
-	SHORTCUT_TYPE_DO_COMPLETION,
-	SHORTCUT_TYPE_ACTIVATE_FIRST_COMPLETION,
-	SHORTCUT_TYPE_INSERT_RESULT,
-	SHORTCUT_TYPE_HISTORY_CLEAR,
-	SHORTCUT_TYPE_PRECISION,
-	SHORTCUT_TYPE_MIN_DECIMALS,
-	SHORTCUT_TYPE_MAX_DECIMALS,
-	SHORTCUT_TYPE_MINMAX_DECIMALS
-};
-
-#define LAST_SHORTCUT_TYPE SHORTCUT_TYPE_MINMAX_DECIMALS
-
-enum {
 	DELIMITER_COMMA,
 	DELIMITER_TABULATOR,
 	DELIMITER_SEMICOLON,
@@ -140,43 +56,6 @@ struct tree_struct {
 	bool operator < (const tree_struct &s1) const {
 		return string_is_less(item, s1.item);
 	}
-};
-
-struct mode_struct {
-	PrintOptions po;
-	EvaluationOptions eo;
-	AssumptionType at;
-	AssumptionSign as;
-	Number custom_output_base;
-	Number custom_input_base;
-	int precision;
-	std::string name;
-	bool rpn_mode;
-	bool interval;
-	bool adaptive_interval_display;
-	bool variable_units_enabled;
-	int keypad;
-	bool autocalc;
-	bool chain_mode;
-	bool complex_angle_form;
-	bool implicit_question_asked;
-	int simplified_percentage;
-	bool concise_uncertainty_input;
-	long int fixed_denominator;
-	std::string custom_angle_unit;
-};
-
-struct keyboard_shortcut {
-	guint key;
-	guint modifier;
-	std::vector<int> type;
-	std::vector<std::string> value;
-};
-
-struct custom_button {
-	int type[3];
-	std::string value[3], text;
-	custom_button() {type[0] = -1; type[1] = -1; type[2] = -1;}
 };
 
 #define EXPAND_TO_ITER(model, view, iter)		GtkTreePath *path = gtk_tree_model_get_path(model, &iter); \
@@ -220,6 +99,8 @@ extern GtkTextBuffer *expressionbuffer;
 		if(l->data != obj) SET_FOCUS_ON_CLICK(l->data); \
 	} \
 	g_list_free(list);
+
+extern bool fix_supsub_status, fix_supsub_result, fix_supsub_history, fix_supsub_completion;
 
 #define FIX_SUPSUB_PRE(w_supsub) \
 	string s_sup, s_sub;\
@@ -319,6 +200,7 @@ void display_parse_status();
 GtkBuilder *getBuilder(const char *filename);
 
 void set_tooltips_enabled(GtkWidget *w, bool b);
+void update_tooltips_enabled();
 
 gchar *font_name_to_css(const char *font_name, const char *w = "*");
 
@@ -351,6 +233,14 @@ bool entry_in_quotes(GtkEntry *w);
 const gchar *key_press_get_symbol(GdkEventKey *event, bool do_caret_as_xor = true, bool unit_expression = false);
 
 void on_variable_edit_entry_name_changed(GtkEditable *editable, gpointer user_data);
+
+enum {
+	PREFIX_MODE_NO_PREFIXES,
+	PREFIX_MODE_SELECTED_UNITS,
+	PREFIX_MODE_CURRENCIES,
+	PREFIX_MODE_ALL_UNITS
+};
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -368,20 +258,54 @@ bool contains_fraction(MathStructure &m, bool in_div = false);
 bool contains_convertible_unit(MathStructure &m);
 bool has_prefix(const MathStructure &m);
 
+void stop_autocalculate_history_timeout();
+
+void keypad_font_modified();
+void update_app_font(bool initial = false);
+void update_status_font(bool initial = false);
+void update_result_font(bool initial = false);
+void update_colors(bool initial = false);
+void set_status_operator_symbols();
+void set_app_operator_symbols();
+
 void memory_recall();
 void memory_store();
 void memory_add();
 void memory_subtract();
 void memory_clear();
 
-void output_base_updated_from_menu();
-void input_base_updated_from_menu();
-void update_menu_base();
+void set_fraction_format(int nff);
+void set_fixed_fraction(long int v, bool combined);
+void set_min_exp(int min_exp);
+void set_prefix_mode(int i);
+void set_approximation(ApproximationMode approx);
+void set_autocalculate(bool b);
+void update_exchange_rates();
+void import_definitions_file();
+void save_as_image();
+void show_about();
+void report_bug();
+void set_unknowns();
+void open_convert_number_bases();
+void open_convert_floatingpoint();
+void open_percentage_tool();
+void open_calendarconversion();
+void show_unit_conversion();
+void open_plot();
+bool qalculate_quit();
 #ifdef __cplusplus
 }
 #endif
+bool test_supsub(GtkWidget *w);
+void update_status_menu(bool initial = false);
 bool use_keypad_buttons_for_history();
 bool keypad_is_visible();
+bool update_window_title(const char *str = NULL, bool is_result = false);
+void set_rpn_mode(bool b);
+void set_parsed_in_result(bool b);
+void set_minimal_mode(bool b);
+void check_for_new_version(bool do_not_show_again = false);
+void insert_matrix(const MathStructure *initial_value = NULL, GtkWidget *win = NULL, gboolean create_vector = FALSE, bool is_text_struct = false, bool is_result = false, GtkEntry *entry = NULL);
 
 void on_abort_display(GtkDialog*, gint, gpointer);
 void on_abort_command(GtkDialog*, gint, gpointer);
@@ -391,6 +315,10 @@ void show_message(const gchar *text, GtkWidget *win);
 bool ask_question(const gchar *text, GtkWidget *win);
 void show_notification(std::string text);
 void show_help(const char *file, GtkWidget *win);
+
+void clear_status_text();
+
+void update_persistent_keypad(bool showhide_buttons = false);
 
 void set_clipboard(std::string str, int ascii, bool html, bool is_result, int copy_without_units = -1);
 
@@ -437,8 +365,6 @@ void variable_edited(Variable *v);
 void function_edited(MathFunction *f);
 void unit_edited(Unit *u);
 void dataset_edited(DataSet *ds);
-
-void edit_preferences(int tab = -1);
 
 bool equalsIgnoreCase(const std::string &str1, const std::string &str2, size_t i2, size_t i2_end, size_t minlength);
 bool title_matches(ExpressionItem *item, const std::string &str, size_t minlength = 0);

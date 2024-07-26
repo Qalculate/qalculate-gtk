@@ -15,6 +15,6 @@
 #include <gtk/gtk.h>
 
 void open_precision(GtkWindow *parent);
-void precision_updated();
+void update_precision();
 
 #endif /* PRECISION_DIALOG_H */

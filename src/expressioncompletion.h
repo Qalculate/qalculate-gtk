@@ -34,6 +34,8 @@ void update_completion();
 
 void create_expression_completion();
 
+void completion_font_modified();
+
 void add_completion_timeout();
 void stop_completion_timeout();
 

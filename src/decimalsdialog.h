@@ -15,6 +15,6 @@
 #include <gtk/gtk.h>
 
 void open_decimals(GtkWindow *parent);
-void decimals_updated();
+void update_decimals();
 
 #endif /* DECIMALS_DIALOG_H */

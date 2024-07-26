@@ -36,8 +36,6 @@ using std::cout;
 using std::vector;
 using std::endl;
 
-#include "unordered_map_define.h"
-
 extern GtkBuilder *main_builder;
 
 GtkEntryCompletion *completion;
@@ -48,8 +46,6 @@ GtkListStore *completion_store;
 unordered_map<const ExpressionName*, string> capitalized_names;
 
 extern GtkCssProvider *expression_provider;
-
-extern unordered_map<string, cairo_surface_t*> flag_surfaces;
 
 extern size_t current_function_index;
 extern MathFunction *current_function;
@@ -1890,6 +1886,9 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &completion_separator_iter); gtk_list_store_set(completion_store, &completion_separator_iter, 0, "", 1, "", 2, NULL, 3, FALSE, 4, 3, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 0, 9, NULL, -1);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_store), GTK_TREE_SORTABLE_UNSORTED_SORT_COLUMN_ID, GTK_SORT_ASCENDING);
 }
+void completion_font_modified() {
+	fix_supsub_completion = test_supsub(completion_view);
+}
 
 void create_expression_completion() {
 
@@ -1933,6 +1932,8 @@ void create_expression_completion() {
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_store), 1, GTK_SORT_ASCENDING);
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(completion_sort), 1, completion_sort_func, GINT_TO_POINTER(1), NULL);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_sort), 1, GTK_SORT_ASCENDING);
+
+	completion_font_modified();
 
 	gtk_builder_add_callback_symbols(main_builder, "on_completionwindow_button_press_event", G_CALLBACK(on_completionwindow_button_press_event), "on_completionwindow_key_press_event", G_CALLBACK(on_completionwindow_key_press_event), "on_completionview_enter_notify_event", G_CALLBACK(on_completionview_enter_notify_event), "on_completionview_motion_notify_event", G_CALLBACK(on_completionview_motion_notify_event), "on_completion_match_selected", G_CALLBACK(on_completion_match_selected), NULL);
 

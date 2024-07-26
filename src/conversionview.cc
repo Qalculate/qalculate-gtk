@@ -36,8 +36,6 @@ using std::cout;
 using std::vector;
 using std::endl;
 
-#include "unordered_map_define.h"
-
 extern GtkBuilder *main_builder;
 
 GtkWidget *tUnitSelectorCategories;
@@ -53,8 +51,6 @@ int block_conversion_category_switch = 0;
 bool keep_unit_selection = false;
 bool continuous_conversion = false, set_missing_prefixes = false;
 unordered_map<string, GtkTreeIter> convert_category_map;
-
-extern unordered_map<string, cairo_surface_t*> flag_surfaces;
 
 void on_convert_entry_search_changed(GtkEntry *w, gpointer);
 void on_tUnitSelector_selection_changed(GtkTreeSelection *treeselection, gpointer);

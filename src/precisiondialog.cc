@@ -64,7 +64,7 @@ GtkWidget* get_precision_dialog(void) {
 	return GTK_WIDGET(gtk_builder_get_object(precision_builder, "precision_dialog"));
 }
 
-void precision_updated() {
+void update_precision() {
 	if(precision_builder) {
 		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(precision_builder, "precision_dialog_spinbutton_precision"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_precision_dialog_spinbutton_precision_value_changed, NULL);
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(precision_builder, "precision_dialog_spinbutton_precision")), PRECISION);
@@ -74,7 +74,7 @@ void precision_updated() {
 
 void open_precision(GtkWindow *parent) {
 	GtkWidget *dialog = get_precision_dialog();
-	precision_updated();
+	update_precision();
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), parent);
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(precision_builder, "precision_dialog_spinbutton_precision")));
 	gtk_widget_show(dialog);

@@ -32,6 +32,9 @@
 #include "conversionview.h"
 #include "historyview.h"
 #include "keypad.h"
+#include "menubar.h"
+#include "expressioncompletion.h"
+#include "settings.h"
 #include "util.h"
 
 using std::string;
@@ -72,7 +75,6 @@ extern MathFunction *f_answer;
 extern MathFunction *f_expression;
 
 GtkBuilder *main_builder;
-GtkBuilder *preferences_builder;
 
 Thread *view_thread, *command_thread;
 string calc_arg, file_arg;
@@ -167,7 +169,6 @@ void create_application(GtkApplication *app) {
 	b_busy_command = false;
 
 	main_builder = NULL;
-	preferences_builder = NULL;
 
 	//create the almighty Calculator object
 	new Calculator(ignore_locale);

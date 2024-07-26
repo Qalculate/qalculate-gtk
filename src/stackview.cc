@@ -590,6 +590,161 @@ void update_lastx() {
 	}
 }
 
+void update_stack_button_text() {
+	if(printops.use_unicode_signs) {
+		if(can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(main_builder, "label_rpn_sub"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sub")), SIGN_MINUS);
+		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sub")), MINUS);
+		if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(main_builder, "label_rpn_times"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_times")), SIGN_MULTIPLICATION);
+		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_times")), MULTIPLICATION);
+		if(can_display_unicode_string_function(SIGN_DIVISION_SLASH, (void*) gtk_builder_get_object(main_builder, "label_rpn_divide"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), SIGN_DIVISION_SLASH);
+		else if(can_display_unicode_string_function(SIGN_DIVISION, (void*) gtk_builder_get_object(main_builder, "label_rpn_divide"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), SIGN_DIVISION);
+		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), DIVISION);
+		if(can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(main_builder, "label_rpn_negate"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_negate")), SIGN_MINUS "x");
+		else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_negate")), MINUS "x");
+	} else {
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sub")), MINUS);
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_times")), MULTIPLICATION);
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_divide")), DIVISION);
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_negate")), MINUS "x");
+	}
+
+	FIX_SUPSUB_PRE(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_rpn_xy")));
+	string s_xy = "x<sup>y</sup>";
+	FIX_SUPSUB(s_xy);
+	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_xy")), s_xy.c_str());
+
+	if(can_display_unicode_string_function(SIGN_SQRT, (void*) gtk_builder_get_object(main_builder, "label_rpn_sqrt"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), SIGN_SQRT);
+	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sqrt")), "sqrt");
+	if(can_display_unicode_string_function("∑", (void*) gtk_builder_get_object(main_builder, "label_rpn_sum"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sum")), "∑");
+	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_sum")), "sum");
+
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), -1, -1);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_copyregister")), -1, -1);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_editregister")), -1, -1);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), -1, -1);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_add")), -1, -1);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sqrt")), -1, -1);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sum")), -1, -1);
+	GtkRequisition a;
+	gint w, h;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_reciprocal")), &a, NULL);
+	w = a.width; h = a.height;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_xy")), &a, NULL);
+	if(a.width > w) w = a.width;
+	if(a.height > h) h = a.height;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sqrt")), &a, NULL);
+	if(a.width > w) w = a.width;
+	if(a.height > h) h = a.height;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sum")), &a, NULL);
+	if(a.width > w) w = a.width;
+	if(a.height > h) h = a.height;
+	if(gtk_image_get_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_up"))) != -1) gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_up")), -1);
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), &a, NULL);
+	if(a.width > w) w = a.width;
+	if(a.height > h) h = a.height;
+	if(gtk_image_get_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_swap"))) != -1) gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_swap")), -1);
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), &a, NULL);
+	gint h_i = -1;
+	if(use_custom_keypad_font || use_custom_app_font) {
+		h_i = 16 + (h - a.height);
+		if(h_i < 20) h_i = -1;
+	}
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_up")), h_i);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_down")), h_i);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_swap")), h_i);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_copy")), h_i);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_lastx")), h_i);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_delete")), h_i);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_edit")), h_i);
+	gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_clear")), h_i);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), w, h);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_copyregister")), w, h);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_editregister")), w, h);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), w, h);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_add")), w, h);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sqrt")), w, h);
+	gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sum")), w, h);
+}
+
+#define SET_TOOLTIP_ACCEL(w, t) gtk_widget_set_tooltip_text(w, t); if(type >= 0 && enable_tooltips != 1) {gtk_widget_set_has_tooltip(w, FALSE);}
+void update_stack_accels(int type) {
+	bool b = false;
+	for(unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.begin(); it != keyboard_shortcuts.end(); ++it) {
+		if(it->second.type.size() != 1 || (type >= 0 && it->second.type[0] != type)) continue;
+		b = true;
+		switch(it->second.type[0]) {
+			case SHORTCUT_TYPE_RPN_UP: {
+				string str = _("Rotate the stack or move selected register up");
+				str += " (";
+				str += shortcut_to_text(it->second.key, it->second.modifier);
+				str += ")";
+				SET_TOOLTIP_ACCEL(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), str.c_str());
+				break;
+			}
+			case SHORTCUT_TYPE_RPN_DOWN: {
+				string str = _("Rotate the stack or move selected register down");
+				str += " (";
+				str += shortcut_to_text(it->second.key, it->second.modifier);
+				str += ")";
+				SET_TOOLTIP_ACCEL(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerdown")), str.c_str());
+				break;
+			}
+			case SHORTCUT_TYPE_RPN_SWAP: {
+				string str = _("Swap the two top values or move the selected value to the top of the stack");
+				str += " (";
+				str += shortcut_to_text(it->second.key, it->second.modifier);
+				str += ")";
+				SET_TOOLTIP_ACCEL(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), str.c_str());
+				break;
+			}
+			case SHORTCUT_TYPE_RPN_COPY: {
+				string str = _("Copy the selected or top value to the top of the stack");
+				str += " (";
+				str += shortcut_to_text(it->second.key, it->second.modifier);
+				str += ")";
+				SET_TOOLTIP_ACCEL(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_copyregister")), str.c_str());
+				break;
+			}
+			case SHORTCUT_TYPE_RPN_LASTX: {
+				string str = _("Enter the top value from before the last numeric operation");
+				str += " (";
+				str += shortcut_to_text(it->second.key, it->second.modifier);
+				str += ")";
+				SET_TOOLTIP_ACCEL(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_lastx")), str.c_str());
+				break;
+			}
+			case SHORTCUT_TYPE_RPN_DELETE: {
+				string str = _("Delete the top or selected value");
+				str += " (";
+				str += shortcut_to_text(it->second.key, it->second.modifier);
+				str += ")";
+				SET_TOOLTIP_ACCEL(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_deleteregister")), str.c_str());
+				break;
+			}
+			case SHORTCUT_TYPE_RPN_CLEAR: {
+				string str = _("Clear the RPN stack");
+				str += " (";
+				str += shortcut_to_text(it->second.key, it->second.modifier);
+				str += ")";
+				SET_TOOLTIP_ACCEL(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), str.c_str());
+				break;
+			}
+		}
+		if(type >= 0) break;
+	}
+	if(!b) {
+		switch(type) {
+			case SHORTCUT_TYPE_RPN_UP: {SET_TOOLTIP_ACCEL(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerup")), _("Rotate the stack or move selected register up")); break;}
+			case SHORTCUT_TYPE_RPN_DOWN: {SET_TOOLTIP_ACCEL(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerdown")), _("Rotate the stack or move selected register down")); break;}
+			case SHORTCUT_TYPE_RPN_SWAP: {SET_TOOLTIP_ACCEL(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), _("Swap the two top values or move the selected value to the top of the stack")); break;}
+			case SHORTCUT_TYPE_RPN_COPY: {SET_TOOLTIP_ACCEL(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_copyregister")), _("Copy the selected or top value to the top of the stack")); break;}
+			case SHORTCUT_TYPE_RPN_LASTX: {SET_TOOLTIP_ACCEL(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_lastx")), _("Enter the top value from before the last numeric operation")); break;}
+			case SHORTCUT_TYPE_RPN_DELETE: {SET_TOOLTIP_ACCEL(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_deleteregister")), _("Delete the top or selected value")); break;}
+			case SHORTCUT_TYPE_RPN_CLEAR: {SET_TOOLTIP_ACCEL(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), _("Clear the RPN stack")); break;}
+		}
+	}
+}
+
 void create_stack_view() {
 
 	stackview = GTK_WIDGET(gtk_builder_get_object(main_builder, "stackview"));
@@ -599,6 +754,7 @@ void create_stack_view() {
 
 	if(use_custom_keypad_font) update_stack_button_font();
 	if(use_custom_history_font) update_stack_font(true);
+	update_stack_button_text();
 
 	GList *l;
 	GList *list;

@@ -32,8 +32,6 @@
 #include "uniteditdialog.h"
 #include "unitsdialog.h"
 
-#include "unordered_map_define.h"
-
 using std::string;
 using std::cout;
 using std::vector;
@@ -57,8 +55,6 @@ GtkTreeStore *tUnitCategories_store;
 GtkTreeViewColumn *units_flag_column;
 GtkWidget *units_convert_view, *units_convert_window, *units_convert_scrolled;
 GtkCellRenderer *units_convert_flag_renderer;
-
-extern unordered_map<string, cairo_surface_t*> flag_surfaces;
 
 bool block_unit_convert = false;
 string old_fromValue, old_toValue;

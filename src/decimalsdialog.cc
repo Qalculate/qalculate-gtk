@@ -73,7 +73,7 @@ GtkWidget* get_decimals_dialog(void) {
 	return GTK_WIDGET(gtk_builder_get_object(decimals_builder, "decimals_dialog"));
 }
 
-void decimals_updated() {
+void update_decimals() {
 	if(decimals_builder) {
 		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(decimals_builder, "decimals_dialog_checkbutton_max"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_decimals_dialog_checkbutton_max_toggled, NULL);
 		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(decimals_builder, "decimals_dialog_checkbutton_min"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_decimals_dialog_checkbutton_min_toggled, NULL);
@@ -96,6 +96,6 @@ void open_decimals(GtkWindow *parent) {
 	GtkWidget *dialog = get_decimals_dialog();
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(decimals_builder, "decimals_dialog_checkbutton_min")));
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), parent);
-	decimals_updated();
+	update_decimals();
 	gtk_widget_show(dialog);
 }

@@ -17,10 +17,7 @@ void create_systray_icon();
 void destroy_systray_icon();
 #endif
 bool has_systray_icon();
-void set_tooltips_enabled(GtkWidget *w, bool b);
 void test_border(void);
-void update_colors(bool initial = false);
 void create_main_window(void);
-GtkWidget* get_preferences_dialog(void);
 
 #endif /* INTERFACE_H */

@@ -29,8 +29,6 @@
 #include "util.h"
 #include "shortcutsdialog.h"
 
-#include "unordered_map_define.h"
-
 using std::string;
 using std::cout;
 using std::vector;
@@ -41,12 +39,10 @@ GtkBuilder *shortcuts_builder = NULL;
 GtkWidget *tShortcuts, *tShortcutsType;
 GtkListStore *tShortcuts_store, *tShortcutsType_store;
 
-extern unordered_map<guint64, keyboard_shortcut> keyboard_shortcuts;
-extern vector<mode_struct> modes;
-extern bool default_shortcuts;
-
 guint32 current_shortcut_key = 0;
 guint32 current_shortcut_modifier = 0;
+
+unordered_map<guint64, keyboard_shortcut> keyboard_shortcuts;
 
 void on_tShortcuts_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 void on_tShortcutsType_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);

@@ -54,12 +54,14 @@ qalculate_gtk_SOURCES = \
 	percentagecalculationdialog.cc percentagecalculationdialog.h \
 	calendarconversiondialog.cc calendarconversiondialog.h \
 	floatingpointdialog.cc floatingpointdialog.h \
+	preferencesdialog.cc preferencesdialog.h \
 	conversionview.cc conversionview.h \
 	historyview.cc historyview.h \
 	stackview.cc stackview.h \
 	keypad.cc keypad.h \
 	expressionedit.cc expressionedit.h \
 	expressioncompletion.cc expressioncompletion.h \
+	menubar.cc menubar.h \
 	main.cc \
 	interface.cc interface.h \
 	callbacks.cc callbacks.h \

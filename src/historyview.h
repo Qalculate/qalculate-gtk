@@ -37,8 +37,11 @@ enum {
 };
 
 void create_history_view();
+void update_history_accels(int type);
+void update_history_button_text();
 void update_history_colors(bool initial);
-void update_history_font();
+void update_history_font(bool initial = false);
+void history_font_modified();
 std::string history_display_errors(bool add_to_history, GtkWidget *win, int type, bool *implicit_warning, time_t history_time, int *mtype_highest_p);
 void reload_history(gint from_index = -1);
 bool add_result_to_history_pre(bool update_parse, bool update_history, bool register_moved, bool b_rpn_operation, bool *first_expression, std::string &result_text, std::string &transformation);
