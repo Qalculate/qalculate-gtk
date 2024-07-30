@@ -28,6 +28,7 @@
 #include "settings.h"
 #include "util.h"
 #include "expressionedit.h"
+#include "insertfunctiondialog.h"
 #include "functioneditdialog.h"
 #include "functionsdialog.h"
 
@@ -50,6 +51,27 @@ gint functions_width = -1, functions_height = -1, functions_hposition = -1, func
 void on_tFunctionCategories_selection_changed(GtkTreeSelection *treeselection, gpointer);
 void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer);
 void on_functions_entry_search_changed(GtkEntry *w, gpointer);
+
+bool read_functions_dialog_settings_line(string &svar, string &svalue, int &v) {
+	if(svar == "functions_width") {
+		functions_width = v;
+	} else if(svar == "functions_height") {
+		functions_height = v;
+	} else if(svar == "functions_hpanel_position") {
+		functions_hposition = v;
+	} else if(svar == "functions_vpanel_position") {
+		functions_vposition = v;
+	} else {
+		return false;
+	}
+	return true;
+}
+void write_functions_dialog_settings(FILE *file) {
+	if(functions_width > -1) fprintf(file, "functions_width=%i\n", functions_width);
+	if(functions_height > -1) fprintf(file, "functions_height=%i\n", functions_height);
+	if(functions_hposition > -1) fprintf(file, "functions_hpanel_position=%i\n", functions_hposition);
+	if(functions_vposition > -1) fprintf(file, "functions_vpanel_position=%i\n", functions_vposition);
+}
 
 MathFunction *get_selected_function() {
 	return selected_function;
@@ -444,7 +466,7 @@ void on_functions_button_edit_clicked(GtkButton*, gpointer) {
 }
 
 void on_functions_button_insert_clicked(GtkButton*, gpointer) {
-	insert_function(get_selected_function(), GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_dialog")));
+	insert_function(get_selected_function(), GTK_WINDOW(gtk_builder_get_object(functions_builder, "functions_dialog")));
 }
 
 void on_functions_button_apply_clicked(GtkButton*, gpointer) {

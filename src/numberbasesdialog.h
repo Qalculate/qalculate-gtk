@@ -13,7 +13,11 @@
 #define NUMBER_BASES_DIALOG_H
 
 #include <gtk/gtk.h>
+#include <stdio.h>
 
 void convert_number_bases(GtkWindow *parent, const gchar *initial_expression = "", int base = 10);
+
+bool read_number_bases_dialog_settings_line(std::string &svar, std::string &svalue, int &v);
+void write_number_bases_dialog_settings(FILE *file);
 
 #endif /* NUMBER_BASES_DIALOG_H */

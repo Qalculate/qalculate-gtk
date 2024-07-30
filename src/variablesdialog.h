@@ -19,4 +19,7 @@ void manage_variables(GtkWindow *parent, const gchar *str = NULL);
 void update_variables_settings();
 void variables_font_updated();
 
+bool read_variables_dialog_settings_line(std::string &svar, std::string &svalue, int &v);
+void write_variables_dialog_settings(FILE *file);
+
 #endif /* VARIABLES_DIALOG_H */

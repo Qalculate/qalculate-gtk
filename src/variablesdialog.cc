@@ -52,6 +52,30 @@ void on_tVariableCategories_selection_changed(GtkTreeSelection *treeselection, g
 void on_tVariables_selection_changed(GtkTreeSelection *treeselection, gpointer);
 void on_variables_entry_search_changed(GtkEntry *w, gpointer);
 
+bool read_variables_dialog_settings_line(string &svar, string &svalue, int &v) {
+	if(svar == "variables_width") {
+		variables_width = v;
+	} else if(svar == "variables_height") {
+		variables_height = v;
+	} else if(svar == "variables_panel_position") {
+		variables_hposition = v;
+	} else if(svar == "variables_vpanel_position") {
+		variables_vposition = v;
+	} else if(svar == "variables_hpanel_position") {
+		variables_hposition = v;
+	} else {
+		return false;
+	}
+	return true;
+}
+void write_variables_dialog_settings(FILE *file) {
+	if(variables_height > -1) fprintf(file, "variables_height=%i\n", variables_height);
+	if(variables_width > -1) fprintf(file, "variables_width=%i\n", variables_width);
+	if(variables_height > -1) fprintf(file, "variables_height=%i\n", variables_height);
+	if(variables_hposition > -1) fprintf(file, "variables_hpanel_position=%i\n", variables_hposition);
+	if(variables_vposition > -1) fprintf(file, "variables_vpanel_position=%i\n", variables_vposition);
+}
+
 Variable *get_selected_variable() {
 	return selected_variable;
 }

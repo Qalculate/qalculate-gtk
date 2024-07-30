@@ -19,7 +19,11 @@ class MathStructure;
 void create_conversion_view();
 void update_conversion_view_selection(const MathStructure*);
 void update_unit_selector_tree();
-const gchar *current_conversion_expression();
+const char *current_conversion_expression();
 void focus_conversion_entry();
+bool conversionview_continuous_conversion();
+
+bool read_conversion_view_settings_line(std::string &svar, std::string &svalue, int &v);
+void write_conversion_view_settings(FILE *file);
 
 #endif /* CONVERSION_VIEW_H */

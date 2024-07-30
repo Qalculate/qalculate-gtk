@@ -49,6 +49,18 @@ void on_nbases_entry_duo_changed(GtkEditable *editable, gpointer user_data);
 void on_nbases_entry_roman_changed(GtkEditable *editable, gpointer user_data);
 void on_nbases_entry_sexa_changed(GtkEditable *editable, gpointer user_data);
 
+bool read_number_bases_dialog_settings_line(string &svar, string&, int &v) {
+	if(svar == "show_bases_keypad") {
+		show_bases_keypad = v;
+	} else {
+		return false;
+	}
+	return true;
+}
+void write_number_bases_dialog_settings(FILE *file) {
+	fprintf(file, "show_bases_keypad=%i\n", show_bases_keypad);
+}
+
 gboolean on_nbases_event_hide_buttons_button_release_event(GtkWidget*, GdkEventButton *event, gpointer) {
 	if(event->type == GDK_BUTTON_RELEASE && event->button == 1) {
 		show_bases_keypad = !gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "box_keypad")));

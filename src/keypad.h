@@ -28,15 +28,25 @@ void update_keypad_state(bool initial = false);
 void update_keypad_accels(int type);
 void create_keypad();
 
+bool read_keypad_settings_line(std::string &svar, std::string &svalue, int &v);
+void write_keypad_settings(FILE *file);
+
 void update_keypad_caret_as_xor();
 void update_keypad_i();
 void update_keypad_button_text();
 void update_keypad_font(bool initial = false);
+void set_keypad_font(const char *str);
+const char *keypad_font(bool return_default = false);
+void set_vertical_button_padding(int i);
+void set_horizontal_button_padding(int i);
+int vertical_button_padding();
+int horizontal_button_padding();
 void update_keypad_programming_base();
 void update_keypad_fraction();
 void update_keypad_exact();
 void update_keypad_numerical_display();
 void update_keypad_base();
+void update_keypad_angle();
 void update_result_bases();
 void keypad_rpn_mode_changed();
 void set_result_bases(const MathStructure &m);
@@ -46,7 +56,6 @@ void update_mb_sto_menu();
 void update_mb_units_menu();
 void update_mb_pi_menu();
 void update_mb_to_menu();
-void update_mb_angles(AngleUnit angle_unit);
 void keypad_algebraic_mode_changed();
 
 #endif /* KEYPAD_DIALOG_H */

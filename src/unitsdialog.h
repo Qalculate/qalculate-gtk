@@ -19,4 +19,7 @@ void manage_units(GtkWindow *parent, const gchar *str = NULL, bool show_currenci
 void update_units_settings();
 void units_font_updated();
 
+bool read_units_dialog_settings_line(std::string &svar, std::string &svalue, int &v);
+void write_units_dialog_settings(FILE *file);
+
 #endif /* UNITS_DIALOG_H */

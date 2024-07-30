@@ -37,6 +37,7 @@
 #include "expressionedit.h"
 #include "expressioncompletion.h"
 #include "preferencesdialog.h"
+#include "resultview.h"
 #include "keypad.h"
 #include "menubar.h"
 
@@ -64,7 +65,14 @@ bool result_bases_approx = false;
 Number max_bases, min_bases;
 int two_result_bases_rows = -1;
 
-int vertical_button_padding = -1, horizontal_button_padding = -1;
+bool use_custom_keypad_font = false, save_custom_keypad_font = false;
+string custom_keypad_font;
+#ifdef _WIN32
+int horizontal_button_padd = 6;
+#else
+int horizontal_button_padd = -1;
+#endif
+int vertical_button_padd = -1;
 int visible_keypad = 0, previous_keypad = 0;
 int programming_inbase = 0, programming_outbase = 0;
 bool versatile_exact = false;
@@ -82,9 +90,6 @@ extern void on_menu_item_factorize_activate(GtkMenuItem *w, gpointer user_data);
 extern void on_menu_item_expand_partial_fractions_activate(GtkMenuItem *w, gpointer user_data);
 extern void on_menu_item_manage_functions_activate(GtkMenuItem *w, gpointer user_data);
 extern void on_menu_item_manage_variables_activate(GtkMenuItem *w, gpointer user_data);
-extern void on_menu_item_degrees_activate(GtkMenuItem *w, gpointer);
-extern void on_menu_item_radians_activate(GtkMenuItem *w, gpointer);
-extern void on_menu_item_gradians_activate(GtkMenuItem *w, gpointer);
 extern void insert_variable_from_menu(GtkMenuItem *w, gpointer user_data);
 extern void insert_prefix_from_menu(GtkMenuItem *w, gpointer user_data);
 extern void insert_unit_from_menu(GtkMenuItem *w, gpointer user_data);
@@ -120,6 +125,87 @@ extern void autocalc_result_bases();
 		if(i == 1) n++;\
 		else n2++;\
 	}
+
+bool read_keypad_settings_line(string &svar, string &svalue, int &v) {
+	if(custom_buttons.empty()) {
+		custom_buttons.resize(49);
+		for(size_t i = 0; i < 49; i++) {
+			custom_buttons[i].type[0] = -1;
+			custom_buttons[i].type[1] = -1;
+			custom_buttons[i].type[2] = -1;
+			custom_buttons[i].value[0] = "";
+			custom_buttons[i].value[1] = "";
+			custom_buttons[i].value[2] = "";
+			custom_buttons[i].text = "";
+		}
+	}
+	if(svar == "horizontal_button_padding") {
+		horizontal_button_padd = v;
+	} else if(svar == "vertical_button_padding") {
+		vertical_button_padd = v;
+	} else if(svar == "use_custom_keypad_font") {
+		use_custom_keypad_font = v;
+	} else if(svar == "custom_keypad_font") {
+		custom_keypad_font = svalue;
+		save_custom_keypad_font = true;
+	} else if(svar == "programming_outbase") {
+		programming_outbase = v;
+	} else if(svar == "programming_inbase") {
+		programming_inbase = v;
+	} else if(svar == "general_exact") {
+		versatile_exact = v;
+	} else if(svar == "custom_button_label") {
+		unsigned int index = 0;
+		char str[20];
+		int n = sscanf(svalue.c_str(), "%u:%19[^\n]", &index, str);
+		if(n >= 2 && index < custom_buttons.size()) {
+			custom_buttons[index].text = str;
+			remove_blank_ends(custom_buttons[index].text);
+		}
+	} else if(svar == "custom_button") {
+		unsigned int index = 0;
+		unsigned int bi = 0;
+		char str[20];
+		int type = -1;
+		int n = sscanf(svalue.c_str(), "%u:%u:%i:%19[^\n]", &index, &bi, &type, str);
+		if(n >= 3 && index < custom_buttons.size()) {
+			if(bi <= 2) {
+				string value;
+				if(n >= 4) {
+					value = str;
+					if(type != SHORTCUT_TYPE_TEXT) remove_blank_ends(value);
+				}
+				custom_buttons[index].type[bi] = type;
+				custom_buttons[index].value[bi] = value;
+			}
+		}
+	} else {
+		return false;
+	}
+	return true;
+}
+void write_keypad_settings(FILE *file) {
+	if(~visible_keypad & PROGRAMMING_KEYPAD && programming_outbase != 0 && programming_inbase != 0) {
+		fprintf(file, "programming_outbase=%i\n", programming_outbase);
+		fprintf(file, "programming_inbase=%i\n", programming_inbase);
+	}
+	if(visible_keypad & PROGRAMMING_KEYPAD && versatile_exact) {
+		fprintf(file, "general_exact=%i\n", versatile_exact);
+	}
+	fprintf(file, "vertical_button_padding=%i\n", vertical_button_padd);
+	fprintf(file, "horizontal_button_padding=%i\n", horizontal_button_padd);
+	fprintf(file, "use_custom_keypad_font=%i\n", use_custom_keypad_font);
+	if(use_custom_keypad_font || save_custom_keypad_font) fprintf(file, "custom_keypad_font=%s\n", custom_keypad_font.c_str());
+	for(unsigned int i = 0; i < custom_buttons.size(); i++) {
+		if(!custom_buttons[i].text.empty()) fprintf(file, "custom_button_label=%u:%s\n", i, custom_buttons[i].text.c_str());
+		for(unsigned int bi = 0; bi <= 2; bi++) {
+			if(custom_buttons[i].type[bi] != -1) {
+				if(custom_buttons[i].value[bi].empty()) fprintf(file, "custom_button=%u:%u:%i\n", i, bi, custom_buttons[i].type[bi]);
+				else fprintf(file, "custom_button=%u:%u:%i:%s\n", i, bi, custom_buttons[i].type[bi], custom_buttons[i].value[bi].c_str());
+			}
+		}
+	}
+}
 
 void insert_left_shift() {
 	if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
@@ -257,19 +343,13 @@ void insert_button_currency(GtkMenuItem*, gpointer user_data) {
 }
 
 void base_button_alternative(int base) {
-	to_base = 0;
-	to_bits = 0;
 	if(printops.base != base) {
-		printops.base = base;
+		set_output_base(base);
 	} else if(evalops.parse_options.base != base) {
-		printops.base = evalops.parse_options.base;
+		set_output_base(evalops.parse_options.base);
 	} else {
-		printops.base = 10;
+		set_output_base(BASE_DECIMAL);
 	}
-	update_menu_base();
-	update_setbase();
-	update_keypad_programming_base();
-	result_format_updated();
 	focus_keeping_selection();
 }
 
@@ -413,7 +493,7 @@ void update_custom_buttons(int index) {
 	}
 	if(index == 20 || (index < 0 && !custom_buttons[20].text.empty())) {
 		if(custom_buttons[20].text.empty()) {
-			FIX_SUPSUB_PRE(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_xy")));
+			FIX_SUPSUB_PRE_W(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_xy")));
 			string s_xy = "x<sup>y</sup>";
 			FIX_SUPSUB(s_xy);
 			gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_xy")), s_xy.c_str());
@@ -966,22 +1046,22 @@ void create_button_menus() {
 }
 
 void update_button_padding(bool initial) {
-	if(horizontal_button_padding >= 0 || vertical_button_padding >= 0) {
+	if(horizontal_button_padd >= 0 || vertical_button_padd >= 0) {
 		if(!button_padding_provider) {
 			button_padding_provider = gtk_css_provider_new();
 			gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(button_padding_provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 		}
 		string padding_css;
-		if(horizontal_button_padding >= 0) {
+		if(horizontal_button_padd >= 0) {
 			padding_css += "#grid_buttons button, #button_exact, #button_fraction {";
-			padding_css += "padding-left: "; padding_css += i2s(horizontal_button_padding);
-			padding_css += "px; padding-right: "; padding_css += i2s(horizontal_button_padding); padding_css += "px}";
+			padding_css += "padding-left: "; padding_css += i2s(horizontal_button_padd);
+			padding_css += "px; padding-right: "; padding_css += i2s(horizontal_button_padd); padding_css += "px}";
 		}
-		if(vertical_button_padding >= 0) {
-			if(horizontal_button_padding >= 0) padding_css += "\n";
+		if(vertical_button_padd >= 0) {
+			if(horizontal_button_padd >= 0) padding_css += "\n";
 			padding_css += "#buttons button {";
-			padding_css += "padding-top: "; padding_css += i2s(vertical_button_padding);
-			padding_css += "px; padding-bottom: "; padding_css += i2s(vertical_button_padding); padding_css += "px}";
+			padding_css += "padding-top: "; padding_css += i2s(vertical_button_padd);
+			padding_css += "px; padding-bottom: "; padding_css += i2s(vertical_button_padd); padding_css += "px}";
 		}
 		gtk_css_provider_load_from_data(button_padding_provider, padding_css.c_str(), -1, NULL);
 	} else if(!initial) {
@@ -1952,19 +2032,8 @@ void on_button_bin_toggled(GtkToggleButton *w, gpointer) {
 		update_keypad_programming_base();
 		return;
 	}
-	if(printops.base != 2) {
-		to_base = 0;
-		to_bits = 0;
-		printops.base = 2;
-		update_menu_base();
-		if(evalops.parse_options.base == 2) {update_keypad_programming_base(); result_format_updated();}
-	}
-	if(evalops.parse_options.base != 2) {
-		evalops.parse_options.base = 2;
-		update_keypad_programming_base();
-		expression_format_updated(false);
-	}
-	update_setbase();
+	set_output_base(BASE_BINARY);
+	set_input_base(BASE_BINARY, false, false);
 	focus_keeping_selection();
 }
 void on_button_oct_toggled(GtkToggleButton *w, gpointer) {
@@ -1972,19 +2041,8 @@ void on_button_oct_toggled(GtkToggleButton *w, gpointer) {
 		update_keypad_programming_base();
 		return;
 	}
-	if(printops.base != 8) {
-		to_base = 0;
-		to_bits = 0;
-		printops.base = 8;
-		update_menu_base();
-		if(evalops.parse_options.base == 8) {update_keypad_programming_base(); result_format_updated();}
-	}
-	if(evalops.parse_options.base != 8) {
-		evalops.parse_options.base = 8;
-		update_keypad_programming_base();
-		expression_format_updated(false);
-	}
-	update_setbase();
+	set_output_base(BASE_OCTAL);
+	set_input_base(BASE_OCTAL, false, false);
 	focus_keeping_selection();
 }
 void on_button_dec_toggled(GtkToggleButton *w, gpointer) {
@@ -1992,19 +2050,8 @@ void on_button_dec_toggled(GtkToggleButton *w, gpointer) {
 		update_keypad_programming_base();
 		return;
 	}
-	if(printops.base != 10) {
-		to_base = 0;
-		to_bits = 0;
-		printops.base = 10;
-		update_menu_base();
-		if(evalops.parse_options.base == 10) {update_keypad_programming_base(); result_format_updated();}
-	}
-	if(evalops.parse_options.base != 10) {
-		evalops.parse_options.base = 10;
-		update_keypad_programming_base();
-		expression_format_updated(false);
-	}
-	update_setbase();
+	set_output_base(BASE_DECIMAL);
+	set_input_base(BASE_DECIMAL, false, false);
 	focus_keeping_selection();
 }
 void on_button_hex_toggled(GtkToggleButton *w, gpointer) {
@@ -2012,18 +2059,8 @@ void on_button_hex_toggled(GtkToggleButton *w, gpointer) {
 		update_keypad_programming_base();
 		return;
 	}
-	if(printops.base != 16) {
-		to_base = 0;
-		to_bits = 0;
-		printops.base = 16;
-		update_menu_base();
-		if(evalops.parse_options.base == 16) {update_keypad_programming_base(); result_format_updated();}
-	}
-	if(evalops.parse_options.base != 16) {
-		evalops.parse_options.base = 16;
-		update_keypad_programming_base();
-		expression_format_updated(false);
-	}
+	set_output_base(BASE_HEXADECIMAL);
+	set_input_base(BASE_HEXADECIMAL, false, false);
 	update_setbase();
 	focus_keeping_selection();
 }
@@ -2694,55 +2731,59 @@ void update_mb_sto_menu() {
 }
 
 void on_menu_item_mb_degrees_activate(GtkMenuItem *w, gpointer) {
-	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_degrees")), TRUE);
+	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) set_angle_unit(ANGLE_UNIT_DEGREES);
 }
 void on_menu_item_mb_radians_activate(GtkMenuItem *w, gpointer) {
-	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_radians")), TRUE);
+	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) set_angle_unit(ANGLE_UNIT_RADIANS);
 }
 void on_menu_item_mb_gradians_activate(GtkMenuItem *w, gpointer) {
-	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_gradians")), TRUE);
+	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) set_angle_unit(ANGLE_UNIT_GRADIANS);
 }
-void update_mb_angles(AngleUnit angle_unit) {
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sin_degrees")), angle_unit == ANGLE_UNIT_DEGREES);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sin_gradians")), angle_unit == ANGLE_UNIT_GRADIANS);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sin_radians")), angle_unit == ANGLE_UNIT_RADIANS);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sin_other")), angle_unit == ANGLE_UNIT_NONE || angle_unit == ANGLE_UNIT_CUSTOM);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_cos_degrees")), angle_unit == ANGLE_UNIT_DEGREES);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_cos_gradians")), angle_unit == ANGLE_UNIT_GRADIANS);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_cos_radians")), angle_unit == ANGLE_UNIT_RADIANS);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_cos_other")), angle_unit == ANGLE_UNIT_NONE || angle_unit == ANGLE_UNIT_CUSTOM);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_tan_degrees")), angle_unit == ANGLE_UNIT_DEGREES);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_tan_gradians")), angle_unit == ANGLE_UNIT_GRADIANS);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_tan_radians")), angle_unit == ANGLE_UNIT_RADIANS);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_tan_other")), angle_unit == ANGLE_UNIT_NONE || angle_unit == ANGLE_UNIT_CUSTOM);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_degrees")), angle_unit == ANGLE_UNIT_DEGREES);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_gradians")), angle_unit == ANGLE_UNIT_GRADIANS);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_radians")), angle_unit == ANGLE_UNIT_RADIANS);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_other")), angle_unit == ANGLE_UNIT_NONE || angle_unit == ANGLE_UNIT_CUSTOM);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
+void update_keypad_angle() {
+	switch(evalops.parse_options.angle_unit) {
+		case ANGLE_UNIT_DEGREES: {
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sin_degrees")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_cos_degrees")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_tan_degrees")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_degrees_activate, NULL);
+			break;
+		}
+		case ANGLE_UNIT_GRADIANS: {
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sin_gradians")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_cos_gradians")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_tan_gradians")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_gradians_activate, NULL);
+			break;
+		}
+		case ANGLE_UNIT_RADIANS: {
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sin_radians")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sin_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_cos_radians")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_cos_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_tan_radians")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_tan_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_mb_radians_activate, NULL);
+			break;
+		}
+		default: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sin_other")), TRUE);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_cos_other")), TRUE);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_tan_other")), TRUE);
+			break;
+		}
+	}
 }
 void on_combobox_bits_changed(GtkComboBox *w, gpointer) {
 	switch(gtk_combo_box_get_active(w)) {
@@ -2923,39 +2964,39 @@ gboolean on_hide_right_buttons_button_release_event(GtkWidget*, GdkEventButton *
 void on_combobox_base_changed(GtkComboBox *w, gpointer) {
 	switch(gtk_combo_box_get_active(w)) {
 		case 0: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_binary")), TRUE);
+			set_output_base(BASE_BINARY);
 			break;
 		}
 		case 1: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_octal")), TRUE);
+			set_output_base(BASE_OCTAL);
 			break;
 		}
 		case 2: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_decimal")), TRUE);
+			set_output_base(BASE_DECIMAL);
 			break;
 		}
 		case 3: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_duodecimal")), TRUE);
+			set_output_base(BASE_DUODECIMAL);
 			break;
 		}
 		case 4: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_hexadecimal")), TRUE);
+			set_output_base(BASE_HEXADECIMAL);
 			break;
 		}
 		case 5: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sexagesimal")), TRUE);
+			set_output_base(BASE_SEXAGESIMAL);
 			break;
 		}
 		case 6: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_time_format")), TRUE);
+			set_output_base(BASE_TIME);
 			break;
 		}
 		case 7: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_roman")), TRUE);
+			set_output_base(BASE_ROMAN_NUMERALS);
 			break;
 		}
 		case 8: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_custom_base")), TRUE);
+			open_setbase(GTK_WINDOW(mainwindow), true, false);
 			break;
 		}
 	}
@@ -2978,24 +3019,26 @@ void on_combobox_numerical_display_changed(GtkComboBox *w, gpointer) {
 	}
 	bool sne_bak = scientific_negexp, snml_bak = scientific_notminuslast, snp_bak = scientific_noprefix;
 	if(i == 0 || i == 4) {
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_negative_exponents")), FALSE);
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sort_minus_last")), TRUE);
+		printops.negative_exponents = false;
+		printops.sort_options.minus_last = true;
+		update_menu_numerical_display();
 		int ap_bak = auto_prefix;
-		if(auto_prefix == 1) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_prefixes_for_selected_units")), TRUE);
-		else if(auto_prefix == 2) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_prefixes_for_currencies")), TRUE);
-		else if(auto_prefix == 3) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_prefixes_for_all_units")), TRUE);
+		if(auto_prefix == 1) set_prefix_mode(PREFIX_MODE_SELECTED_UNITS);
+		else if(auto_prefix == 2) set_prefix_mode(PREFIX_MODE_CURRENCIES);
+		else if(auto_prefix == 3) set_prefix_mode(PREFIX_MODE_ALL_UNITS);
 		auto_prefix = ap_bak;
 	} else {
 		if(i != 1) {
-			if(scientific_negexp) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_negative_exponents")), TRUE);
-			if(scientific_notminuslast) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sort_minus_last")), FALSE);
+			if(scientific_negexp) printops.negative_exponents = true;
+			if(scientific_notminuslast) printops.sort_options.minus_last = false;
+			update_menu_numerical_display();
 		}
 		if(printops.use_unit_prefixes && scientific_noprefix) {
 			if(printops.use_prefixes_for_all_units) auto_prefix = 3;
 			else if(printops.use_prefixes_for_currencies) auto_prefix = 2;
 			else auto_prefix = 1;
 			int ap_bak = auto_prefix;
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_no_prefixes")), TRUE);
+			set_prefix_mode(PREFIX_MODE_NO_PREFIXES);
 			auto_prefix = ap_bak;
 		}
 	}
@@ -3077,7 +3120,6 @@ void update_keypad_numerical_display() {
 		case EXP_NONE: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 4); break;}
 		default: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 2); break;}
 	}
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 0);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_numerical_display"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_numerical_display_changed, NULL);
 }
 void update_keypad_base() {
@@ -3135,7 +3177,7 @@ void create_base_string(string &str1, int b_almost_equal, bool b_small) {
 		else str1 += "2";
 	}
 	if(b_small) str1 += "</small>";
-	FIX_SUPSUB_PRE(result_bases);
+	FIX_SUPSUB_PRE_W(result_bases);
 	FIX_SUPSUB(str1);
 }
 
@@ -3290,7 +3332,7 @@ void keypad_algebraic_mode_changed() {
 	if(evalops.structuring == STRUCTURING_SIMPLIFY) {
 		gtk_widget_hide(item_factorize);
 		gtk_widget_show(item_simplify);
-		FIX_SUPSUB_PRE(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_factorize")));
+		FIX_SUPSUB_PRE_W(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_factorize")));
 		string s_axb = "a(x)<sup>b</sup>";
 		FIX_SUPSUB(s_axb);
 		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize")), s_axb.c_str());
@@ -3299,7 +3341,7 @@ void keypad_algebraic_mode_changed() {
 	} else if(evalops.structuring == STRUCTURING_FACTORIZE) {
 		gtk_widget_show(item_factorize);
 		gtk_widget_hide(item_simplify);
-		FIX_SUPSUB_PRE(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_factorize")));
+		FIX_SUPSUB_PRE_W(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_factorize")));
 		string s_axb = "x+x<sup>b</sup>";
 		FIX_SUPSUB(s_axb);
 		gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_factorize")), s_axb.c_str());
@@ -3326,6 +3368,32 @@ void update_keypad_font(bool initial) {
 	}
 	if(!initial) keypad_font_modified();
 }
+void set_keypad_font(const char *str) {
+	if(!str) {
+		use_custom_keypad_font = false;
+	} else {
+		use_custom_keypad_font = true;
+		custom_keypad_font = str;
+	}
+	update_keypad_font(false);
+}
+const char *keypad_font(bool return_default) {
+	if(!return_default && !use_custom_keypad_font) return NULL;
+	return custom_keypad_font.c_str();
+}
+void set_vertical_button_padding(int i) {
+	vertical_button_padd = i;
+	update_button_padding();
+	keypad_font_modified();
+}
+void set_horizontal_button_padding(int i) {
+	horizontal_button_padd = i;
+	if(horizontal_button_padd > 4) horizontal_button_padd = (horizontal_button_padd - 4) * 2 + 4;
+	update_button_padding();
+	keypad_font_modified();
+}
+int vertical_button_padding() {return vertical_button_padd;}
+int horizontal_button_padding() {return horizontal_button_padd;}
 void update_keypad_button_text() {
 	if(printops.use_unicode_signs) {
 		if(custom_buttons[24].text.empty()) {
@@ -3373,7 +3441,7 @@ void update_keypad_button_text() {
 	if(custom_buttons[18].text.empty()) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_dot")), CALCULATOR->getDecimalPoint().c_str());
 	if(custom_buttons[4].text.empty()) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_comma")), CALCULATOR->getComma().c_str());
 
-	FIX_SUPSUB_PRE(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_xy")));
+	FIX_SUPSUB_PRE_W(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_xy")));
 	if(custom_buttons[20].text.empty()) {
 		string s_xy = "x<sup>y</sup>";
 		FIX_SUPSUB(s_xy);
@@ -3414,7 +3482,7 @@ void update_keypad_state(bool initial_update) {
 				break;
 			}
 		}
-		update_mb_angles(evalops.parse_options.angle_unit);
+		update_keypad_angle();
 		switch(printops.min_exp) {
 			case EXP_PRECISION: {
 				gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 0);
@@ -3687,6 +3755,7 @@ void create_keypad() {
 
 	update_button_padding(true);
 	update_keypad_state(true);
+	keypad_rpn_mode_changed();
 	result_bases = GTK_WIDGET(gtk_builder_get_object(main_builder, "label_result_bases"));
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
 	gtk_label_set_xalign(GTK_LABEL(result_bases), 1.0);

@@ -28,6 +28,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "resultview.h"
 #include "expressionedit.h"
 #include "expressioncompletion.h"
 
@@ -47,20 +48,67 @@ unordered_map<const ExpressionName*, string> capitalized_names;
 
 extern GtkCssProvider *expression_provider;
 
-extern size_t current_function_index;
-extern MathFunction *current_function;
-gint current_object_start = -1, current_object_end = -1;
-bool editing_to_expression = false, editing_to_expression1 = false;
-int completion_min = 1, completion_min2 = 2;
+int completion_min = 1, completion_min2 = 1;
 bool enable_completion = true, enable_completion2 = true;
 guint completion_timeout_id = 0;
 int completion_delay = 0;
+bool fix_supsub_completion = false;
 
+bool editing_to_expression = false, editing_to_expression1 = false;
+gint current_object_start = -1, current_object_end = -1;
 bool current_object_has_changed = false;
 extern MathStructure *current_from_struct;
 extern vector<Unit*> current_from_units;
+extern size_t current_function_index;
+extern MathFunction *current_function;
 
 int completion_blocked = 0;
+
+void get_expression_completion_settings(bool *enable1, bool *enable2, int *min1, int *min2, int *delay) {
+	if(enable1) *enable1 = enable_completion;
+	if(enable2) *enable2 = enable_completion2;
+	if(min1) *min1 = completion_min;
+	if(min2) *min2 = completion_min2;
+	if(delay) *delay = completion_delay;
+}
+void set_expression_completion_settings(int enable1, int enable2, int min1, int min2, int delay) {
+	if(enable1 >= 0) enable_completion = enable1;
+	if(enable2 >= 0) enable_completion2 = enable2;
+	if(min1 >= 0) completion_min = min1;
+	if(min2 >= 0) completion_min2 = min2;
+	if(delay >= 0) completion_delay = delay;
+	if(completion_min2 < completion_min) {
+		if(min1 >= 0) completion_min2 = completion_min;
+		else completion_min = completion_min2;
+	}
+}
+
+bool read_expression_completion_settings_line(string &svar, string &svalue, int &v) {
+	if(svar == "enable_completion") {
+		enable_completion = v;
+	} else if(svar == "enable_completion2") {
+		enable_completion2 = v;
+	} else if(svar == "completion_min") {
+		if(v < 1) v = 1;
+		completion_min = v;
+	} else if(svar == "completion_min2") {
+		if(v < 1) v = 1;
+		completion_min2 = v;
+	} else if(svar == "completion_delay") {
+		if(v < 0) v = 0;
+		completion_delay = v;
+	} else {
+		return false;
+	}
+	return true;
+}
+void write_expression_completion_settings(FILE *file) {
+	fprintf(file, "enable_completion=%i\n", enable_completion);
+	fprintf(file, "enable_completion2=%i\n", enable_completion2);
+	fprintf(file, "completion_min=%i\n", completion_min);
+	fprintf(file, "completion_min2=%i\n", completion_min2);
+	fprintf(file, "completion_delay=%i\n", completion_delay);
+}
 
 gboolean completion_row_separator_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer) {
 	gint i;
@@ -1508,7 +1556,7 @@ void update_completion() {
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_store), 1, GTK_SORT_ASCENDING);
 	capitalized_names.clear();
 
-	FIX_SUPSUB_PRE(completion_view)
+	FIX_SUPSUB_PRE(completion_view, fix_supsub_completion)
 
 	string str, title, title2;
 	for(size_t i = 0; i < CALCULATOR->functions.size(); i++) {

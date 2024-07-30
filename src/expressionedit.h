@@ -13,10 +13,13 @@
 #define EXPRESSION_EDIT_H
 
 #include <gtk/gtk.h>
+#include <stdio.h>
 
 void create_expression_edit();
 void update_expression_colors(bool initial, bool text_color_set);
 void update_expression_font(bool initial = false);
+void set_expression_font(const char *str);
+const char *expression_font(bool return_default = false);
 void expression_font_modified();
 void set_expression_size_request();
 
@@ -63,6 +66,8 @@ void add_expression_to_undo();
 void expression_undo();
 void expression_redo();
 void clear_expression_history();
+void start_expression_spinner();
+void stop_expression_spinner();
 
 #define EXPRESSION_STOP 1
 #define EXPRESSION_SPINNER 2
@@ -75,5 +80,9 @@ void hide_expression_spinner();
 void block_expression_icon_update();
 void unblock_expression_icon_update();
 
+bool read_expression_edit_settings_line(std::string &svar, std::string &svalue, int &v);
+void write_expression_edit_settings(FILE *file);
+bool read_expression_history_line(std::string &svar, std::string &svalue);
+void write_expression_history(FILE *file);
 
 #endif /* EXPRESSION_EDIT_H */

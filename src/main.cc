@@ -27,13 +27,14 @@
 #include <libqalculate/qalculate.h>
 
 #include "support.h"
-#include "interface.h"
-#include "callbacks.h"
+#include "mainwindow.h"
 #include "conversionview.h"
 #include "historyview.h"
 #include "keypad.h"
+#include "resultview.h"
 #include "menubar.h"
 #include "expressioncompletion.h"
+#include "expressionedit.h"
 #include "settings.h"
 #include "util.h"
 
@@ -42,21 +43,17 @@ using std::cout;
 using std::vector;
 using std::endl;
 
-MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct, *displayed_mstruct;
+MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct;
 extern MathStructure mbak_convert;
 KnownVariable *vans[5], *v_memory;
 string result_text, parsed_text;
-bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message;
+bool load_global_defs, fetch_exchange_rates_at_startup, first_time;
 int allow_multiple_instances = -1;
-cairo_surface_t *surface_result;
-GdkPixbuf *pixbuf_result;
 extern bool b_busy, b_busy_command, b_busy_result, b_busy_expression;
 extern int block_expression_execution;
 extern vector<string> recent_functions_pre;
 extern vector<string> recent_variables_pre;
 extern vector<string> recent_units_pre;
-extern GtkWidget *expressiontext;
-extern GtkWidget *resultview;
 extern PrintOptions printops;
 extern bool ignore_locale;
 extern bool title_modified;
@@ -74,7 +71,7 @@ extern int enable_tooltips;
 extern MathFunction *f_answer;
 extern MathFunction *f_expression;
 
-GtkBuilder *main_builder;
+extern GtkBuilder *main_builder;
 
 Thread *view_thread, *command_thread;
 string calc_arg, file_arg;
@@ -168,8 +165,6 @@ void create_application(GtkApplication *app) {
 	b_busy_expression = false;
 	b_busy_command = false;
 
-	main_builder = NULL;
-
 	//create the almighty Calculator object
 	new Calculator(ignore_locale);
 
@@ -179,7 +174,6 @@ void create_application(GtkApplication *app) {
 	load_preferences();
 
 	mstruct = new MathStructure();
-	displayed_mstruct = NULL;
 	parsed_mstruct = new MathStructure();
 	parsed_tostruct = new MathStructure();
 	parsed_tostruct->setUndefined();
@@ -192,22 +186,20 @@ void create_application(GtkApplication *app) {
 	create_main_window();
 
 	if(!custom_title.empty()) {
-		gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), custom_title.c_str());
+		gtk_window_set_title(GTK_WINDOW(mainwindow), custom_title.c_str());
 		title_modified = true;
 	} else {
 		update_window_title();
 		title_modified = false;
 	}
 	g_application_set_default(G_APPLICATION(app));
-	gtk_window_set_application(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), app);
+	gtk_window_set_application(GTK_WINDOW(mainwindow), app);
 
 	while(gtk_events_pending()) gtk_main_iteration();
 	test_border();
 
-	showing_first_time_message = first_time;
-
-	if(calc_arg.empty() && showing_first_time_message && file_arg.empty()) {
-		gtk_widget_queue_draw(resultview);
+	if(calc_arg.empty() && first_time && file_arg.empty()) {
+		show_result_help();
 	}
 
 	while(gtk_events_pending()) gtk_main_iteration();
@@ -282,13 +274,11 @@ void create_application(GtkApplication *app) {
 	//reset
 	result_text = "0";
 	parsed_text = "0";
-	surface_result = NULL;
-	pixbuf_result = NULL;
 
 	//check for calculation errros regularly
 	g_timeout_add_seconds(1, on_display_errors_timeout, NULL);
 
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object (main_builder, "menu_item_fetch_exchange_rates")), canfetch);
+	menu_enable_exchange_rates(canfetch);
 
 	view_thread = new ViewThread;
 	view_thread->start();
@@ -296,15 +286,17 @@ void create_application(GtkApplication *app) {
 
 	if(!file_arg.empty()) execute_from_file(file_arg);
 	if(!calc_arg.empty()) {
-		gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_builder_get_object(main_builder, "expressionbuffer")), calc_arg.c_str(), -1);
+		block_undo();
+		set_expression_text(calc_arg.c_str());
+		unblock_undo();
 		execute_expression();
-	} else if(!showing_first_time_message && !minimal_mode && !file_arg.empty()) {
+	} else if(!first_time && !minimal_mode && file_arg.empty()) {
 		int base = printops.base;
 		printops.base = 10;
 		setResult(NULL, false, false, false);
 		printops.base = base;
-	} else if(!showing_first_time_message) {
-		gtk_widget_queue_draw(resultview);
+	} else if(!first_time) {
+		redraw_result();
 	}
 
 	block_completion();
@@ -370,7 +362,7 @@ static void qalculate_activate(GtkApplication *app) {
 #ifdef _WIN32
 		gtk_window_present_with_time(GTK_WINDOW(list->data), GDK_CURRENT_TIME);
 #endif
-		if(expressiontext) gtk_widget_grab_focus(expressiontext);
+		focus_expression();
 		gtk_window_present_with_time(GTK_WINDOW(list->data), GDK_CURRENT_TIME);
 
 		return;
@@ -477,13 +469,13 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 		str = NULL;
 		g_variant_dict_lookup(options_dict, "title", "s", &str);
 		if(str) {
-			gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), str);
+			gtk_window_set_title(GTK_WINDOW(mainwindow), str);
 			title_modified = true;
 			g_free(str);
 		}
 		if(hidden_x >= 0) {
-			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
-			GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
+			gtk_widget_show(GTK_WIDGET(mainwindow));
+			GdkDisplay *display = gtk_widget_get_display(mainwindow);
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 			GdkMonitor *monitor = NULL;
 			if(hidden_monitor_primary) monitor = gdk_display_get_primary_monitor(display);
@@ -501,26 +493,28 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 				gdk_screen_get_monitor_workarea(screen, i, &area);
 #endif
 				gint w = 0, h = 0;
-				gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
+				gtk_window_get_size(GTK_WINDOW(mainwindow), &w, &h);
 				if(hidden_x + w > area.width) hidden_x = area.width - w;
 				if(hidden_y + h > area.height) hidden_y = area.height - h;
-				gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), hidden_x + area.x, hidden_y + area.y);
+				gtk_window_move(GTK_WINDOW(mainwindow), hidden_x + area.x, hidden_y + area.y);
 			} else {
-				gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), hidden_x, hidden_y);
+				gtk_window_move(GTK_WINDOW(mainwindow), hidden_x, hidden_y);
 			}
 			hidden_x = -1;
 		}
 #ifdef _WIN32
-		gtk_window_present_with_time(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GDK_CURRENT_TIME);
+		gtk_window_present_with_time(GTK_WINDOW(mainwindow), GDK_CURRENT_TIME);
 #endif
-		if(expressiontext) gtk_widget_grab_focus(expressiontext);
-		gtk_window_present_with_time(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GDK_CURRENT_TIME);
+		focus_expression();
+		gtk_window_present_with_time(GTK_WINDOW(mainwindow), GDK_CURRENT_TIME);
 		if(!file_arg.empty()) execute_from_file(file_arg);
 		if(!calc_arg.empty()) {
-			gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_builder_get_object(main_builder, "expressionbuffer")), calc_arg.c_str(), -1);
+			block_undo();
+			set_expression_text(calc_arg.c_str());
+			unblock_undo();
 			execute_expression();
 		} else if(allow_multiple_instances < 0 && file_arg.empty()) {
-			GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, _("By default, only one instance (one main window) of %s is allowed.\n\nIf multiple instances are opened simultaneously, only the definitions (variables, functions, etc.), mode, preferences, and history of the last closed window will be saved.\n\nDo you, despite this, want to change the default behavior and allow multiple simultaneous instances?"), "Qalculate!");
+			GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, _("By default, only one instance (one main window) of %s is allowed.\n\nIf multiple instances are opened simultaneously, only the definitions (variables, functions, etc.), mode, preferences, and history of the last closed window will be saved.\n\nDo you, despite this, want to change the default behavior and allow multiple simultaneous instances?"), "Qalculate!");
 			allow_multiple_instances = gtk_dialog_run(GTK_DIALOG(edialog)) == GTK_RESPONSE_YES;
 			save_preferences(false);
 			gtk_widget_destroy(edialog);

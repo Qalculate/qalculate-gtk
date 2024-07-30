@@ -54,18 +54,22 @@ qalculate_gtk_SOURCES = \
 	percentagecalculationdialog.cc percentagecalculationdialog.h \
 	calendarconversiondialog.cc calendarconversiondialog.h \
 	floatingpointdialog.cc floatingpointdialog.h \
+	insertfunctiondialog.cc insertfunctiondialog.h \
 	preferencesdialog.cc preferencesdialog.h \
 	conversionview.cc conversionview.h \
 	historyview.cc historyview.h \
 	stackview.cc stackview.h \
 	keypad.cc keypad.h \
 	expressionedit.cc expressionedit.h \
+	expressionstatus.cc expressionstatus.h \
 	expressioncompletion.cc expressioncompletion.h \
+	resultview.cc resultview.h \
+	openhelp.cc openhelp.h \
 	menubar.cc menubar.h \
 	main.cc \
-	interface.cc interface.h \
-	callbacks.cc callbacks.h \
-	unordered_map_define.h support.h util.h settings.h
+	mainwindow.cc mainwindow.h \
+	util.cc util.h \
+	unordered_map_define.h support.h settings.h
 
 nodist_qalculate_gtk_SOURCES = ui.c flags.c
 

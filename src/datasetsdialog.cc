@@ -51,6 +51,31 @@ void on_tDataObjects_selection_changed(GtkTreeSelection *treeselection, gpointer
 void on_tDatasets_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 void edit_dataobject(DataSet *ds, DataObject *o = NULL, GtkWidget *win = NULL);
 
+bool read_datasets_dialog_settings_line(string &svar, string &svalue, int &v) {
+	if(svar == "datasets_width") {
+		datasets_width = v;
+	} else if(svar == "datasets_height") {
+		datasets_height = v;
+	} else if(svar == "datasets_hpanel_position") {
+		datasets_hposition = v;
+	} else if(svar == "datasets_vpanel1_position") {
+		datasets_vposition1 = v;
+	} else if(svar == "datasets_vpanel2_position") {
+		datasets_vposition2 = v;
+	} else {
+		return false;
+	}
+	return true;
+}
+void write_datasets_dialog_settings(FILE *file) {
+	update_datasets_settings();
+	if(datasets_width > -1) fprintf(file, "datasets_width=%i\n", datasets_width);
+	if(datasets_height > -1) fprintf(file, "datasets_height=%i\n", datasets_height);
+	if(datasets_hposition > -1) fprintf(file, "datasets_hpanel_position=%i\n", datasets_hposition);
+	if(datasets_vposition1 > -1) fprintf(file, "datasets_vpanel1_position=%i\n", datasets_vposition1);
+	if(datasets_vposition2 > -1) fprintf(file, "datasets_vpanel2_position=%i\n", datasets_vposition2);
+}
+
 void update_datasets_tree() {
 	if(!datasets_builder) return;
 	GtkTreeIter iter;

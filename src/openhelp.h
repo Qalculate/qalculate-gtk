@@ -9,16 +9,11 @@
     (at your option) any later version.
 */
 
-#ifndef DATASETS_DIALOG_H
-#define DATASETS_DIALOG_H
+#ifndef OPEN_HELP_H
+#define OPEN_HELP_H
 
 #include <gtk/gtk.h>
 
-void update_datasets_tree();
-void manage_datasets(GtkWindow *parent);
-void update_datasets_settings();
+void show_help(const char *file, GtkWidget *parent);
 
-bool read_datasets_dialog_settings_line(std::string &svar, std::string &svalue, int &v);
-void write_datasets_dialog_settings(FILE *file);
-
-#endif /* DATASETS_DIALOG_H */
+#endif /* OPEN_HELP_H */

@@ -9219,7 +9219,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
         <property name="can-focus">False</property>
         <property name="label" translatable="yes">Show Parsed Expression in Result Field</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menu_item_parsed_in_result_activate" swapped="no"/>
+        <signal name="activate" handler="on_popup_menu_item_parsed_in_result_activate" swapped="no"/>
       </object>
     </child>
   </object>
@@ -9374,7 +9374,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
         <property name="can-focus">False</property>
         <property name="label" translatable="yes">Degrees</property>
         <property name="active">True</property>
-        <signal name="activate" handler="on_menu_item_mb_degrees_activate" swapped="no"/>
+        <signal name="activate" handler="on_menu_item_status_degrees_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -9383,7 +9383,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
         <property name="can-focus">False</property>
         <property name="label" translatable="yes">Radians</property>
         <property name="group">menu_item_status_degrees</property>
-        <signal name="activate" handler="on_menu_item_mb_radians_activate" swapped="no"/>
+        <signal name="activate" handler="on_menu_item_status_radians_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -9392,7 +9392,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
         <property name="can-focus">False</property>
         <property name="label" translatable="yes">Gradians</property>
         <property name="group">menu_item_status_degrees</property>
-        <signal name="activate" handler="on_menu_item_mb_gradians_activate" swapped="no"/>
+        <signal name="activate" handler="on_menu_item_status_gradians_activate" swapped="no"/>
       </object>
     </child>
     <child>

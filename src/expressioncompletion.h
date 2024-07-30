@@ -13,6 +13,7 @@
 #define EXPRESSION_COMPLETION_H
 
 #include <gtk/gtk.h>
+#include <stdio.h>
 
 extern int completion_min, completion_min2;
 extern bool enable_completion, enable_completion2;
@@ -38,5 +39,10 @@ void completion_font_modified();
 
 void add_completion_timeout();
 void stop_completion_timeout();
+
+void get_expression_completion_settings(bool *enable1 = NULL, bool *enable2 = NULL, int *min1 = NULL, int *min2 = NULL, int *delay = NULL);
+void set_expression_completion_settings(int enable1 = -1, int enable2 = -1, int min1 = -1, int min2 = -1, int delay = -1);
+bool read_expression_completion_settings_line(std::string &svar, std::string &svalue, int &v);
+void write_expression_completion_settings(FILE *file);
 
 #endif /* EXPRESSION_COMPLETION_H */

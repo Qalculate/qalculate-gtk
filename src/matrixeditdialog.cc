@@ -30,6 +30,7 @@
 #include "nameseditdialog.h"
 #include "unknowneditdialog.h"
 #include "variableeditdialog.h"
+#include "openhelp.h"
 #include "matrixeditdialog.h"
 
 using std::string;

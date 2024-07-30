@@ -18,9 +18,6 @@
 #include <gdk/gdk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <glib/gstdio.h>
-#ifdef USE_WEBKITGTK
-#	include <webkit2/webkit2.h>
-#endif
 #include <sys/stat.h>
 #ifndef _MSC_VER
 #	include <unistd.h>
@@ -31,15 +28,11 @@
 #include <sstream>
 
 #include "support.h"
-#include "callbacks.h"
-#include "interface.h"
+#include "mainwindow.h"
 #include "settings.h"
 #include "util.h"
 #include <stack>
 #include <deque>
-
-#define VERSION_BEFORE(i1, i2, i3) (version_numbers[0] < i1 || (version_numbers[0] == i1 && (version_numbers[1] < i2 || (version_numbers[1] == i2 && version_numbers[2] < i3))))
-#define VERSION_AFTER(i1, i2, i3) (version_numbers[0] > i1 || (version_numbers[0] == i1 && (version_numbers[1] > i2 || (version_numbers[1] == i2 && version_numbers[2] > i3))))
 
 using std::string;
 using std::cout;
@@ -54,17 +47,7 @@ using std::stack;
 
 int block_error_timeout = 0;
 
-extern GtkBuilder *main_builder;
-
-extern GtkWidget *mainwindow;
-
-extern GtkWidget *tabs, *expander_keypad, *expander_history, *expander_stack, *expander_convert;
-extern GtkEntryCompletion *completion;
-extern GtkWidget *completion_view, *completion_window, *completion_scrolled;
-
-extern GtkCssProvider *resultview_provider, *statuslabel_l_provider, *statuslabel_r_provider, *app_provider, *statusframe_provider, *color_provider;
-
-extern GtkWidget *expressiontext, *statuslabel_l, *statuslabel_r, *keypad;
+extern GtkWidget *expressiontext, *keypad;
 extern GtkTextBuffer *expressionbuffer;
 extern KnownVariable *vans[5], *v_memory;
 extern GtkAccelGroup *accel_group;
@@ -77,56 +60,41 @@ extern Unit *selected_unit;
 extern DataSet *selected_dataset;
 bool save_mode_on_exit;
 bool save_defs_on_exit;
-bool clear_history_on_exit = false;
-int max_history_lines = 300;
 bool save_history_separately = false;
-extern int history_expression_type;
 int gtk_theme = -1;
-bool use_custom_result_font, use_custom_expression_font, use_custom_status_font, use_custom_keypad_font, use_custom_app_font, use_custom_history_font;
-bool save_custom_result_font = false, save_custom_expression_font = false, save_custom_status_font = false, save_custom_keypad_font = false, save_custom_app_font = false, save_custom_history_font = false;
-string custom_result_font, custom_expression_font, custom_status_font, custom_keypad_font, custom_app_font, custom_history_font;
-int scale_n = 0;
+bool use_custom_app_font;
+bool save_custom_app_font = false;
+string custom_app_font;
 bool hyp_is_on, inv_is_on;
 bool show_keypad, show_history, show_stack, show_convert, persistent_keypad, minimal_mode;
-extern bool continuous_conversion, set_missing_prefixes;
-extern bool show_bases_keypad;
 bool copy_ascii = false;
 bool copy_ascii_without_units = false;
 bool caret_as_xor = false;
 int close_with_esc = -1;
-extern bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message;
+extern bool load_global_defs, fetch_exchange_rates_at_startup, first_time;
 extern int allow_multiple_instances;
 int b_decimal_comma;
 int auto_update_exchange_rates;
 bool first_error;
 bool display_expression_status;
-extern MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct, *displayed_mstruct;
-MathStructure *displayed_parsed_mstruct = NULL;
+extern MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct;
 MathStructure mbak_convert;
 extern string result_text, parsed_text;
 bool result_text_approximate = false;
 string result_text_long;
 extern GtkWidget *resultview;
 extern GtkWidget *historyview;
-extern cairo_surface_t *surface_result;
-cairo_surface_t *surface_parsed = NULL;
 vector<vector<GtkWidget*> > insert_element_entries;
 bool b_busy, b_busy_command, b_busy_result, b_busy_expression, b_busy_fetch;
-cairo_surface_t *tmp_surface;
-int block_result_update = 0, block_expression_execution = 0, block_display_parse = 0;
-string parsed_expression, parsed_expression_tooltip;
-bool parsed_had_errors = false, parsed_had_warnings = false;
-extern int visible_keypad, previous_keypad;
+int block_result_update = 0, block_expression_execution = 0;
+extern int visible_keypad;
 extern int programming_inbase, programming_outbase;
 bool title_modified = false;
 string current_mode;
-extern int horizontal_button_padding, vertical_button_padding;
 int simplified_percentage = -1;
 int version_numbers[3];
 
 extern bool cursor_has_moved;
-
-bool expression_has_changed2 = false;
 
 int enable_tooltips = 1;
 bool toe_changed = false;
@@ -142,46 +110,17 @@ Unit *command_convert_unit;
 
 extern GtkAccelGroup *accel_group;
 
-extern gint win_height, win_width, win_x, win_y, win_monitor, history_height, variables_width, variables_height, variables_hposition, variables_vposition, units_width, units_height, units_hposition, units_vposition, functions_width, functions_height, functions_hposition, functions_vposition, datasets_width, datasets_height, datasets_hposition, datasets_vposition1, datasets_vposition2, hidden_x, hidden_y, hidden_monitor;
+extern gint win_height, win_width, win_x, win_y, win_monitor, history_height, hidden_x, hidden_y, hidden_monitor;
 extern bool win_monitor_primary, hidden_monitor_primary;
 bool remember_position = false, always_on_top = false, aot_changed = false;
 
 gint minimal_width;
 
-extern vector<string> expression_history;
-extern string current_history_expression;
-extern int expression_history_index;
-extern bool dont_change_index;
-
-bool result_font_updated = false;
-bool first_draw_of_result = true;
-
-extern PlotLegendPlacement default_plot_legend_placement;
-extern bool default_plot_display_grid;
-extern bool default_plot_full_border;
-extern std::string default_plot_min;
-extern std::string default_plot_max;
-extern std::string default_plot_step;
-extern int default_plot_sampling_rate;
-extern int default_plot_linewidth;
-extern int default_plot_complex;
-extern bool default_plot_use_sampling_rate;
-extern bool default_plot_rows;
-extern int default_plot_type;
-extern PlotStyle default_plot_style;
-extern PlotSmoothing default_plot_smoothing;
-extern std::string default_plot_variable;
-extern bool default_plot_color;
-extern int max_plot_time;
-
-string status_error_color, status_warning_color, text_color;
+string text_color;
 
 bool stop_timeouts = false;
-size_t current_function_index = 0;
-MathFunction *current_function = NULL;
 
-PrintOptions printops, parsed_printops, displayed_printops;
-bool displayed_caf = false;
+PrintOptions printops;
 EvaluationOptions evalops;
 bool dot_question_asked = false, implicit_question_asked = false;
 
@@ -193,37 +132,14 @@ bool tc_set = false, sinc_set = false;
 bool use_systray_icon = false, hide_on_startup = false;
 
 extern Thread *view_thread, *command_thread;
-bool exit_in_progress = false, command_aborted = false, display_aborted = false, result_too_long = false, result_display_overflow = false;
+bool exit_in_progress = false, command_aborted = false;
 
 vector<mode_struct> modes;
 
-extern deque<string> inhistory;
-extern deque<bool> inhistory_protected;
-extern deque<int> inhistory_type;
-extern deque<int> inhistory_value;
-extern deque<time_t> inhistory_time;
-extern int unformatted_history;
-
-extern int initial_inhistory_index;
-
-extern int expression_lines;
-
-unordered_map<void*, string> date_map;
-unordered_map<void*, bool> date_approx_map;
-unordered_map<void*, string> number_map;
-unordered_map<void*, string> number_base_map;
-unordered_map<void*, bool> number_approx_map;
-unordered_map<void*, string> number_exp_map;
-unordered_map<void*, bool> number_exp_minus_map;
-
-bool status_error_color_set;
-bool status_warning_color_set;
 bool text_color_set;
 
 extern QalculateDateTime last_version_check_date;
 string last_found_version;
-
-bool keep_function_dialog_open = false;
 
 bool automatic_fraction = false;
 int default_fraction_fraction = -1;
@@ -242,15 +158,13 @@ int default_bits = -1;
 extern vector<string> history_bookmarks;
 extern unordered_map<string, size_t> history_bookmark_titles;
 
-extern bool versatile_exact;
-
 bool auto_calculate = false;
 bool result_autocalculated = false;
 gint autocalc_history_timeout_id = 0;
 int autocalc_history_delay = 2000;
 bool chain_mode = false;
 
-bool parsed_in_result = false, show_parsed_instead_of_result = false;
+bool parsed_in_result = false;
 
 int to_fraction = 0;
 long int to_fixed_fraction = 0;
@@ -264,56 +178,11 @@ Number to_nbase;
 extern bool do_imaginary_j;
 bool complex_angle_form = false;
 
-extern Unit *latest_button_unit, *latest_button_currency;
-extern string latest_button_unit_pre, latest_button_currency_pre;
-
 bool default_shortcuts;
 
 extern bool check_version;
 
-PangoLayout *status_layout = NULL;
-
-vector<PangoRectangle> binary_rect;
-vector<int> binary_pos;
-int binary_x_diff = 0;
-int binary_y_diff = 0;
-
-#define EQUALS_IGNORECASE_AND_LOCAL(x,y,z)	(equalsIgnoreCase(x, y) || equalsIgnoreCase(x, z))
-#define EQUALS_IGNORECASE_AND_LOCAL_NR(x,y,z,a)	(equalsIgnoreCase(x, y a) || (x.length() == strlen(z) + strlen(a) && equalsIgnoreCase(x.substr(0, x.length() - strlen(a)), z) && equalsIgnoreCase(x.substr(x.length() - strlen(a)), a)))
-
-#define TEXT_TAGS			"<span size=\"xx-large\">"
-#define TEXT_TAGS_END			"</span>"
-#define TEXT_TAGS_SMALL			"<span size=\"large\">"
-#define TEXT_TAGS_SMALL_END		"</span>"
-#define TEXT_TAGS_XSMALL		"<span size=\"medium\">"
-#define TEXT_TAGS_XSMALL_END		"</span>"
-
-#define TTB(str)			if(scaledown <= 0) {str += "<span size=\"xx-large\">";} else if(scaledown == 1) {str += "<span size=\"x-large\">";} else if(scaledown == 2) {str += "<span size=\"large\">";} else {str += "<span size=\"medium\">";}
-#define TTB_SMALL(str)			if(scaledown <= 0) {str += "<span size=\"large\">";} else if(scaledown == 1) {str += "<span size=\"medium\">";} else if(scaledown == 2) {str += "<span size=\"small\">";} else {str += "<span size=\"x-small\">";}
-#define TTB_XSMALL(str)			if(scaledown <= 0) {str += "<span size=\"medium\">";} else if(scaledown == 1) {str += "<span size=\"small\">";} else {str += "<span size=\"x-small\">";}
-#define TTB_XXSMALL(str)		if(scaledown <= 0) {str += "<span size=\"x-small\">";} else if(scaledown == 1) {str += "<span size=\"xx-small\">";} else {str += "<span size=\"xx-small\">";}
-#define TTBP(str)			if(ips.power_depth > 1) {TTB_XSMALL(str);} else if(ips.power_depth > 0) {TTB_SMALL(str);} else {TTB(str);}
-#define TTBP_SMALL(str)			if(ips.power_depth > 0) {TTB_XSMALL(str);} else {TTB_SMALL(str);}
-#define TTE(str)			str += "</span>";
-#define TT(str, x)			{if(scaledown <= 0) {str += "<span size=\"xx-large\">";} else if(scaledown == 1) {str += "<span size=\"x-large\">";} else if(scaledown == 2) {str += "<span size=\"large\">";} else {str += "<span size=\"medium\">";} str += x; str += "</span>";}
-#define TT_SMALL(str, x)		{if(scaledown <= 0) {str += "<span size=\"large\">";} else if(scaledown == 1) {str += "<span size=\"medium\">";} else if(scaledown == 2) {str += "<span size=\"small\">";} else {str += "<span size=\"x-small\">";} str += x; str += "</span>";}
-#define TT_XSMALL(str, x)		{if(scaledown <= 0) {str += "<span size=\"medium\">";} else if(scaledown == 1) {str += "<span size=\"small\">";} else {str += "<span size=\"x-small\">";} str += x; str += "</span>";}
-#define TTP(str, x)			if(ips.power_depth > 1) {TT_XSMALL(str, x);} else if(ips.power_depth > 0) {TT_SMALL(str, x);} else {TT(str, x);}
-#define TTP_SMALL(str, x)		if(ips.power_depth > 0) {TT_XSMALL(str, x);} else {TT_SMALL(str, x);}
-
-#define PANGO_TT(layout, x)		if(scaledown <= 0) {pango_layout_set_markup(layout, "<span size=\"xx-large\">" x "</span>", -1);} else if(scaledown == 1) {pango_layout_set_markup(layout, "<span size=\"x-large\">" x "</span>", -1);} else if(scaledown == 2) {pango_layout_set_markup(layout, "<span size=\"large\">" x "</span>", -1);} else {pango_layout_set_markup(layout, "<span size=\"medium\">" x "</span>", -1);}
-#define PANGO_TT_SMALL(layout, x)	if(scaledown <= 0) {pango_layout_set_markup(layout, "<span size=\"large\">" x "</span>", -1);} else if(scaledown == 1) {pango_layout_set_markup(layout, "<span size=\"medium\">" x "</span>", -1);} else if(scaledown == 1) {pango_layout_set_markup(layout, "<span size=\"medium\">" x "</span>", -1);} else {pango_layout_set_markup(layout, "<span size=\"x-small\">" x "</span>", -1);}
-#define PANGO_TT_XSMALL(layout, x)	if(scaledown <= 0) {pango_layout_set_markup(layout, "<span size=\"medium\">" x "</span>", -1);} else if(scaledown == 1) {pango_layout_set_markup(layout, "<span size=\"small\">" x "</span>", -1);} else {pango_layout_set_markup(layout, "<span size=\"x-small\">" x "</span>", -1);}
-#define PANGO_TTP(layout, x)		if(ips.power_depth > 1) {PANGO_TT_XSMALL(layout, x);} else if(ips.power_depth > 0) {PANGO_TT_SMALL(layout, x);} else {PANGO_TT(layout, x);}
-#define PANGO_TTP_SMALL(layout, x)	if(ips.power_depth > 0) {PANGO_TT_XSMALL(layout, x);} else {PANGO_TT_SMALL(layout, x);}
-
-#define CALCULATE_SPACE_W		gint space_w, space_h; PangoLayout *layout_space = gtk_widget_create_pango_layout(resultview, NULL); PANGO_TTP(layout_space, " "); pango_layout_get_pixel_size(layout_space, &space_w, &space_h); g_object_unref(layout_space);
-
 #define USE_QUOTES(arg, f) (arg && (arg->suggestsQuotes() || arg->type() == ARGUMENT_TYPE_TEXT) && f->id() != FUNCTION_ID_BASE && f->id() != FUNCTION_ID_BIN && f->id() != FUNCTION_ID_OCT && f->id() != FUNCTION_ID_DEC && f->id() != FUNCTION_ID_HEX)
-
-#define RESULT_SCALE_FACTOR gtk_widget_get_scale_factor(expressiontext)
-
-bool fix_supsub_status = false, fix_supsub_result = false, fix_supsub_history = false, fix_supsub_completion = false;
 
 enum {
 	TITLE_APP,
@@ -330,6 +199,7 @@ enum {
 #include "periodictabledialog.h"
 #include "plotdialog.h"
 #include "functionsdialog.h"
+#include "insertfunctiondialog.h"
 #include "unitsdialog.h"
 #include "variablesdialog.h"
 #include "datasetsdialog.h"
@@ -349,15 +219,479 @@ enum {
 #include "unknowneditdialog.h"
 #include "functioneditdialog.h"
 #include "dataseteditdialog.h"
+#include "openhelp.h"
 #include "conversionview.h"
 #include "expressionedit.h"
+#include "expressionstatus.h"
 #include "expressioncompletion.h"
 #include "historyview.h"
 #include "stackview.h"
+#include "resultview.h"
 #include "keypad.h"
 #include "menubar.h"
 
 int title_type = TITLE_APP;
+
+GtkBuilder *main_builder = NULL;
+
+GtkWidget *mainwindow;
+
+GtkWidget *tabs, *keypad, *historyview, *expander_keypad, *expander_history, *expander_stack, *expander_convert;
+
+extern GtkWidget *resultview;
+extern GtkWidget *expressiontext;
+extern GtkTextBuffer *expressionbuffer;
+GtkAccelGroup *accel_group;
+
+GtkCssProvider *topframe_provider = NULL, *app_provider = NULL, *app_provider_theme = NULL, *color_provider = NULL;
+
+string themestr;
+
+extern vector<GtkWidget*> mode_items;
+extern vector<GtkWidget*> popup_result_mode_items;
+
+gint win_height, win_width, win_x, win_y, win_monitor, history_height;
+bool win_monitor_primary;
+extern bool remember_position, always_on_top, aot_changed;
+extern gint minimal_width;
+
+extern Unit *latest_button_unit, *latest_button_currency;
+extern string latest_button_unit_pre, latest_button_currency_pre;
+
+unordered_map<string, cairo_surface_t*> flag_surfaces;
+int flagheight;
+
+gint compare_categories(gconstpointer a, gconstpointer b) {
+	gchar *gstr1c = g_utf8_casefold((const char*) a, -1);
+	gchar *gstr2c = g_utf8_casefold((const char*) b, -1);
+	gint retval = g_utf8_collate(gstr1c, gstr2c);
+	g_free(gstr1c);
+	g_free(gstr2c);
+	return retval;
+}
+
+bool border_tested = false;
+gint hidden_x = -1, hidden_y = -1, hidden_monitor = 1;
+bool hidden_monitor_primary = false;
+
+#ifdef _WIN32
+#	include <gdk/gdkwin32.h>
+#	define WIN_TRAY_ICON_ID 1000
+#	define WIN_TRAY_ICON_MESSAGE WM_APP + WIN_TRAY_ICON_ID
+static NOTIFYICONDATA nid;
+static HWND hwnd = NULL;
+
+INT_PTR CALLBACK tray_window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+	if(message == WIN_TRAY_ICON_MESSAGE && (lParam == WM_LBUTTONDBLCLK || lParam == WM_LBUTTONUP)) {
+		if(hidden_x >= 0) {
+			gtk_widget_show(mainwindow);
+			GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(mainwindow));
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+			GdkMonitor *monitor = NULL;
+			if(hidden_monitor_primary) monitor = gdk_display_get_primary_monitor(display);
+			if(!monitor && hidden_monitor > 0) gdk_display_get_monitor(display, hidden_monitor - 1);
+			if(monitor) {
+				GdkRectangle area;
+				gdk_monitor_get_workarea(monitor, &area);
+#else
+			GdkScreen *screen = gdk_display_get_default_screen(display);
+			int i = -1;
+			if(hidden_monitor_primary) i = gdk_screen_get_primary_monitor(screen);
+			if(i < 0 && hidden_monitor > 0 && hidden_monitor < gdk_screen_get_n_monitors(screen)) i = hidden_monitor;
+			if(i >= 0) {
+				GdkRectangle area;
+				gdk_screen_get_monitor_workarea(screen, i, &area);
+#endif
+				gint w = 0, h = 0;
+				gtk_window_get_size(GTK_WINDOW(mainwindow), &w, &h);
+				if(hidden_x + w > area.width) hidden_x = area.width - w;
+				if(hidden_y + h > area.height) hidden_y = area.height - h;
+				gtk_window_move(GTK_WINDOW(mainwindow), hidden_x + area.x, hidden_y + area.y);
+			} else {
+				gtk_window_move(GTK_WINDOW(mainwindow), hidden_x, hidden_y);
+			}
+			hidden_x = -1;
+		}
+		gtk_window_present_with_time(GTK_WINDOW(mainwindow), GDK_CURRENT_TIME);
+		focus_expression();
+		gtk_window_present_with_time(GTK_WINDOW(mainwindow), GDK_CURRENT_TIME);
+	}
+	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+void destroy_systray_icon() {
+	if(hwnd == NULL) return;
+	Shell_NotifyIcon(NIM_DELETE, &nid);
+	DestroyWindow(hwnd);
+	hwnd = NULL;
+}
+void create_systray_icon() {
+
+	if(hwnd != NULL) return;
+
+	WNDCLASSEX wcex;
+	TCHAR wname[32];
+	strcpy(wname, "QalculateTrayWin");
+	wcex.cbSize = sizeof(WNDCLASSEX);
+
+	wcex.style = 0;
+	wcex.lpfnWndProc = (WNDPROC) tray_window_proc;
+	wcex.cbClsExtra = 0;
+	wcex.cbWndExtra = 0;
+	wcex.hInstance = GetModuleHandle(NULL);
+	wcex.hIcon = NULL;
+	wcex.hCursor = NULL,
+	wcex.hbrBackground = NULL;
+	wcex.lpszMenuName = NULL;
+	wcex.lpszClassName = wname;
+	wcex.hIconSm = NULL;
+
+	if(RegisterClassEx(&wcex)) {
+		hwnd = CreateWindow(wname, "", 0, 0, 0, 0, 0, (HWND) gdk_win32_window_get_handle(gtk_widget_get_window(mainwindow)), NULL, GetModuleHandle(NULL), 0);
+	}
+	if(hwnd != NULL) {
+		UpdateWindow(hwnd);
+		memset(&nid, 0, sizeof(nid));
+		nid.cbSize = sizeof(NOTIFYICONDATA);
+		nid.hWnd = hwnd;
+		nid.uID = WIN_TRAY_ICON_ID;
+		nid.uFlags = NIF_ICON | NIF_MESSAGE;
+		nid.uCallbackMessage = WIN_TRAY_ICON_MESSAGE;
+		strcpy(nid.szTip, "Qalculate!");
+		nid.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(100));
+		Shell_NotifyIcon(NIM_ADD, &nid);
+	}
+}
+bool has_systray_icon() {
+	return hwnd != NULL;
+}
+#else
+bool has_systray_icon() {
+	return false;
+}
+#endif
+
+void test_border() {
+#ifndef _WIN32
+	if(border_tested) return;
+	GdkWindow *window = gtk_widget_get_window(mainwindow);
+	GdkRectangle rect;
+	gdk_window_get_frame_extents(window, &rect);
+	gint window_border = (rect.width - gtk_widget_get_allocated_width(mainwindow)) / 2;
+	if(window_border > 0) {
+		gchar *gstr = gtk_css_provider_to_string(topframe_provider);
+		string topframe_css = gstr;
+		g_free(gstr);
+		gsub("border-left-width: 0;", "", topframe_css);
+		gsub("border-right-width: 0;", "", topframe_css);
+		gtk_css_provider_load_from_data(topframe_provider, topframe_css.c_str(), -1, NULL);
+		border_tested = true;
+	} else if(rect.x != 0 || rect.y != 0) {
+		border_tested = true;
+	}
+#endif
+}
+
+GdkRGBA c_gray;
+
+void update_colors(bool initial) {
+
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
+	GdkRGBA bg_color;
+	gtk_style_context_get_background_color(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, &bg_color);
+	if(!initial && RUNTIME_CHECK_GTK_VERSION_LESS(3, 16)) {
+		gchar *gstr = gtk_css_provider_to_string(topframe_provider);
+		string topframe_css = gstr;
+		g_free(gstr);
+		size_t i1 = topframe_css.find("background-color:");
+		if(i1 != string::npos) {
+			i1 += 18;
+			size_t i2 = topframe_css.find(";", i1);
+			if(i2 != string::npos) {
+				gchar *gstr = gdk_rgba_to_string(&bg_color);
+				topframe_css.replace(i1, i2 - i1 - 1, gstr);
+				g_free(gstr);
+				gtk_css_provider_load_from_data(topframe_provider, topframe_css.c_str(), -1, NULL);
+			}
+		}
+	}
+#endif
+
+	update_expression_colors(initial, text_color_set);
+
+	if(initial || !text_color_set) {
+
+		update_history_colors(initial);
+
+		GdkRGBA c;
+		gtk_style_context_get_color(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, &c);
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
+		if(gdk_rgba_equal(&c, &bg_color)) {
+			gtk_style_context_get_color(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, &c);
+		}
+#endif
+		gchar tcs[8];
+		g_snprintf(tcs, 8, "#%02x%02x%02x", (int) (c.red * 255), (int) (c.green * 255), (int) (c.blue * 255));
+		if(initial && text_color == tcs) text_color_set = false;
+		if(!text_color_set) {
+			text_color = tcs;
+			if(initial) color_provider = NULL;
+		} else if(initial) {
+			color_provider = gtk_css_provider_new();
+			string css_str = "* {color: "; css_str += text_color; css_str += "}";
+			gtk_css_provider_load_from_data(color_provider, css_str.c_str(), -1, NULL);
+			gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(color_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		}
+
+		update_status_colors(initial);
+
+	}
+
+}
+
+void create_main_window(void) {
+
+	main_builder = getBuilder("main.ui");
+	g_assert(main_builder != NULL);
+
+	/* make sure we get a valid main window */
+	g_assert(gtk_builder_get_object(main_builder, "main_window") != NULL);
+
+	mainwindow = GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window"));
+
+	keypad = GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons"));
+	historyview = GTK_WIDGET(gtk_builder_get_object(main_builder, "historyview"));
+
+	accel_group = gtk_accel_group_new();
+	gtk_window_add_accel_group(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), accel_group);
+
+	if(win_width > 0) gtk_window_set_default_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width, win_height > 0 ? win_height : -1);
+
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 14
+	gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_swap")), "object-flip-vertical-symbolic", GTK_ICON_SIZE_BUTTON);
+#endif
+
+	char **flags_r = g_resources_enumerate_children("/qalculate-gtk/flags", G_RESOURCE_LOOKUP_FLAGS_NONE, NULL);
+	if(flags_r) {
+		PangoFontDescription *font_desc;
+		gtk_style_context_get(gtk_widget_get_style_context(mainwindow), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+		PangoFontset *fontset = pango_context_load_fontset(gtk_widget_get_pango_context(mainwindow), font_desc, pango_context_get_language(gtk_widget_get_pango_context(mainwindow)));
+		PangoFontMetrics *metrics = pango_fontset_get_metrics(fontset);
+		flagheight = (pango_font_metrics_get_ascent(metrics) + pango_font_metrics_get_descent(metrics)) / PANGO_SCALE;
+		pango_font_metrics_unref(metrics);
+		g_object_unref(fontset);
+		pango_font_description_free(font_desc);
+		gint scalefactor = gtk_widget_get_scale_factor(mainwindow);
+		for(size_t i = 0; flags_r[i] != NULL; i++) {
+			string flag_s = flags_r[i];
+			size_t i_ext = flag_s.find(".", 1);
+			if(i_ext != string::npos) {
+				GdkPixbuf *flagbuf = gdk_pixbuf_new_from_resource_at_scale((string("/qalculate-gtk/flags/") + flag_s).c_str(), -1, flagheight * scalefactor, TRUE, NULL);
+				if(flagbuf) {
+					cairo_surface_t *s = gdk_cairo_surface_create_from_pixbuf(flagbuf, scalefactor, NULL);
+					flag_surfaces[flag_s.substr(0, i_ext)] = s;
+					g_object_unref(flagbuf);
+				}
+			}
+		}
+		g_strfreev(flags_r);
+	}
+
+	expressiontext = GTK_WIDGET(gtk_builder_get_object(main_builder, "expressiontext"));
+	expressionbuffer = GTK_TEXT_BUFFER(gtk_builder_get_object(main_builder, "expressionbuffer"));
+	resultview = GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"));
+
+	tabs = GTK_WIDGET(gtk_builder_get_object(main_builder, "tabs"));
+
+	topframe_provider = gtk_css_provider_new();
+	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "topframe"))), GTK_STYLE_PROVIDER(topframe_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	string topframe_css = "* {background-color: ";
+
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
+	if(RUNTIME_CHECK_GTK_VERSION_LESS(3, 16)) {
+		GdkRGBA bg_color;
+		gtk_style_context_get_background_color(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, &bg_color);
+		gchar *gstr = gdk_rgba_to_string(&bg_color);
+		topframe_css += gstr;
+		g_free(gstr);
+	} else {
+#endif
+		topframe_css += "@theme_base_color;";
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
+	}
+#endif
+	topframe_css += "; border-left-width: 0; border-right-width: 0; border-radius: 0;}";
+	gtk_css_provider_load_from_data(topframe_provider, topframe_css.c_str(), -1, NULL);
+
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
+	if(gtk_theme < 0) {
+		app_provider_theme = NULL;
+	} else {
+		app_provider_theme = gtk_css_provider_new();
+		gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(app_provider_theme), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		switch(gtk_theme) {
+			case 0: {gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/Adwaita/gtk-contained.css"); break;}
+			case 1: {gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/Adwaita/gtk-contained-dark.css"); break;}
+			case 2: {gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/HighContrast/gtk-contained.css"); break;}
+			case 3: {gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/HighContrast/gtk-contained-inverse.css"); break;}
+		}
+	}
+#endif
+
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
+	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_label_unit")), 12);
+	gtk_widget_set_margin_start(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")), 12);
+	gtk_widget_set_margin_end(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")), 12);
+#else
+	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_label_unit")), 12);
+	gtk_widget_set_margin_left(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")), 12);
+	gtk_widget_set_margin_right(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")), 12);
+#endif
+	gtk_widget_set_margin_bottom(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")), 9);
+	gtk_widget_set_margin_bottom(tabs, 3);
+	gtk_widget_set_margin_bottom(keypad, 3);
+
+	update_app_font(true);
+	set_app_operator_symbols();
+
+	expander_keypad = GTK_WIDGET(gtk_builder_get_object(main_builder, "expander_keypad"));
+	expander_history = GTK_WIDGET(gtk_builder_get_object(main_builder, "expander_history"));
+	expander_stack = GTK_WIDGET(gtk_builder_get_object(main_builder, "expander_stack"));
+	expander_convert = GTK_WIDGET(gtk_builder_get_object(main_builder, "expander_convert"));
+
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_hi")), !persistent_keypad);
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnl")), !persistent_keypad || (show_stack && rpn_mode));
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnr")), !persistent_keypad || (show_stack && rpn_mode));
+
+	if(history_height > 0) gtk_widget_set_size_request(tabs, -1, history_height);
+	if(show_stack && rpn_mode) {
+		gtk_expander_set_expanded(GTK_EXPANDER(expander_stack), TRUE);
+		gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 1);
+		gtk_widget_show(tabs);
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
+	} else if(show_keypad && !persistent_keypad) {
+		gtk_expander_set_expanded(GTK_EXPANDER(expander_keypad), TRUE);
+		gtk_widget_hide(tabs);
+		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
+	} else if(show_history) {
+		gtk_expander_set_expanded(GTK_EXPANDER(expander_history), TRUE);
+		gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 0);
+		gtk_widget_show(tabs);
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
+	} else if(show_convert) {
+		gtk_expander_set_expanded(GTK_EXPANDER(expander_convert), TRUE);
+		gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 2);
+		gtk_widget_show(tabs);
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
+	} else {
+		gtk_widget_hide(tabs);
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
+		gtk_widget_set_vexpand(resultview, TRUE);
+	}
+	if(persistent_keypad) {
+		if(show_keypad) {
+			gtk_expander_set_expanded(GTK_EXPANDER(expander_keypad), TRUE);
+			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")));
+			gtk_widget_set_vexpand(resultview, FALSE);
+		}
+		gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_keypad_lock")), "changes-prevent-symbolic", GTK_ICON_SIZE_BUTTON);
+		if(show_convert) gtk_widget_set_margin_bottom(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert")), 6);
+	}
+	GtkRequisition req;
+	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_keypad")), &req, NULL);
+	if(req.height < 20) gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_keypad_lock")), req.height * 0.8);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_persistent_keypad")), persistent_keypad);
+	gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), !persistent_keypad || !gtk_widget_get_visible(tabs));
+
+	if(minimal_mode) {
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
+		set_status_bottom_border_visible(false);
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
+		gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), TRUE);
+		gtk_widget_set_vexpand(resultview, FALSE);
+	}
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")), minimal_mode);
+
+	gchar *theme_name = NULL;
+	g_object_get(gtk_settings_get_default(), "gtk-theme-name", &theme_name, NULL);
+	if(theme_name) {
+		themestr = theme_name;
+		g_free(theme_name);
+	}
+
+	GtkCssProvider *notification_style = gtk_css_provider_new(); gtk_css_provider_load_from_data(notification_style, "* {border-radius: 5px}", -1, NULL);
+	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "overlaybox"))), GTK_STYLE_PROVIDER(notification_style), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+	create_keypad();
+	create_history_view();
+	create_conversion_view();
+	create_stack_view();
+	create_result_view();
+	create_expression_edit();
+	create_expression_status();
+	create_menubar();
+
+	update_colors(true);
+
+	if(!rpn_mode) gtk_widget_hide(expander_stack);
+
+	gtk_builder_connect_signals(main_builder, NULL);
+
+	if(win_height <= 0) gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), NULL, &win_height);
+	if(minimal_mode && minimal_width > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), minimal_width, win_height);
+	else if(win_width > 0) gtk_window_resize(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_width, win_height);
+
+	if(remember_position) {
+		GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+		GdkMonitor *monitor = NULL;
+		if(win_monitor_primary) monitor = gdk_display_get_primary_monitor(display);
+		if(!monitor && win_monitor > 0) gdk_display_get_monitor(display, win_monitor - 1);
+		if(monitor) {
+			GdkRectangle area;
+			gdk_monitor_get_workarea(monitor, &area);
+#else
+			GdkScreen *screen = gdk_display_get_default_screen(display);
+			int i = -1;
+			if(hidden_monitor_primary) i = gdk_screen_get_primary_monitor(screen);
+			if(i < 0 && hidden_monitor > 0 && hidden_monitor < gdk_screen_get_n_monitors(screen)) i = hidden_monitor;
+			if(i >= 0) {
+				GdkRectangle area;
+				gdk_screen_get_monitor_workarea(screen, i, &area);
+#endif
+			gint w = 0, h = 0;
+			gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
+			if(win_x + w > area.width) win_x = area.width - w;
+			if(win_y + h > area.height) win_y = area.height - h;
+			gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_x + area.x, win_y + area.y);
+		} else {
+			gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), win_x, win_y);
+		}
+	}
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), always_on_top);
+
+	gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
+
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 18
+	if(RUNTIME_CHECK_GTK_VERSION_LESS(3, 18)) set_expression_size_request();
+#endif
+
+	if(history_height > 0) gtk_widget_set_size_request(tabs, -1, -1);
+
+#ifdef _WIN32
+	if(use_systray_icon) create_systray_icon();
+#endif
+	if(hide_on_startup) {
+		if(remember_position) {
+			hidden_x = win_x;
+			hidden_y = win_y;
+			hidden_monitor = win_monitor;
+			hidden_monitor_primary = win_monitor_primary;
+		}
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
+	}
+
+}
 
 void string_strdown(const string &str, string &strnew) {
 	char *cstr = utf8_strdown(str.c_str());
@@ -384,7 +718,6 @@ void replace_current_result(MathStructure *m) {
 	mstruct = m;
 	mstruct->ref();
 }
-MathStructure *current_displayed_result() {return displayed_mstruct;}
 MathStructure *current_parsed_result() {return parsed_mstruct;}
 
 int has_information_unit_gtk(const MathStructure &m, bool top = true) {
@@ -407,190 +740,6 @@ int has_information_unit_gtk(const MathStructure &m, bool top = true) {
 		}
 	}
 	return 0;
-}
-
-string unhtmlize(string str, bool b_ascii) {
-	size_t i = 0, i2;
-	while(true) {
-		i = str.find("<", i);
-		if(i == string::npos || i == str.length() - 1) break;
-		i2 = str.find(">", i + 1);
-		if(i2 == string::npos) break;
-		if((i2 - i == 3 && str.substr(i + 1, 2) == "br") || (i2 - i == 4 && str.substr(i + 1, 3) == "/tr")) {
-			str.replace(i, i2 - i + 1, "\n");
-			continue;
-		} else if(i2 - i == 4) {
-			if(str.substr(i + 1, 3) == "sup") {
-				size_t i3 = str.find("</sup>", i2 + 1);
-				if(i3 != string::npos) {
-					string str2 = unhtmlize(str.substr(i + 5, i3 - i - 5), b_ascii);
-					if(!b_ascii && str2.length() == 1 && str2[0] == '2') str.replace(i, i3 - i + 6, SIGN_POWER_2);
-					else if(!b_ascii && str2.length() == 1 && str2[0] == '3') str.replace(i, i3 - i + 6, SIGN_POWER_3);
-					else if(str.length() == i3 + 6 && (unicode_length(str2) == 1 || str2.find_first_not_of(NUMBERS) == string::npos)) str.replace(i, i3 - i + 6, string("^") + str2);
-					else str.replace(i, i3 - i + 6, string("^(") + str2 + ")");
-					continue;
-				}
-			} else if(str.substr(i + 1, 3) == "sub") {
-				size_t i3 = str.find("</sub>", i + 4);
-				if(i3 != string::npos) {
-					if(i3 - i2 > 16 && str.substr(i2 + 1, 7) == "<small>" && str.substr(i3 - 8, 8) == "</small>") str.erase(i, i3 - i + 6);
-					else str.replace(i, i3 - i + 6, string("_") + unhtmlize(str.substr(i + 5, i3 - i - 5), b_ascii));
-					continue;
-				}
-			}
-		} else if(i2 - i == 17 && str.substr(i + 1, 16) == "i class=\"symbol\"") {
-			size_t i3 = str.find("</i>", i2 + 1);
-			if(i3 != string::npos) {
-				string name = unhtmlize(str.substr(i2 + 1, i3 - i2 - 1), b_ascii);
-				if(name.length() == 1 && ((name[0] >= 'a' && name[0] <= 'z') || (name[0] >= 'A' && name[0] <= 'Z'))) {
-					name.insert(0, 1, '\\');
-				} else {
-					name.insert(0, 1, '\"');
-					name += '\"';
-				}
-				str.replace(i, i3 - i + 4, name);
-				continue;
-			}
-		}
-		str.erase(i, i2 - i + 1);
-	}
-	gsub(" " SIGN_DIVISION_SLASH " ", "/", str);
-	gsub("&amp;", "&", str);
-	gsub("&gt;", ">", str);
-	gsub("&lt;", "<", str);
-	gsub("&quot;", "\"", str);
-	gsub("&hairsp;", "", str);
-	gsub("&nbsp;", NBSP, str);
-	gsub("&thinsp;", THIN_SPACE, str);
-	gsub("&#8239;", NNBSP, str);
-	return str;
-}
-
-void remove_separator(string &copy_text) {
-	for(size_t i = ((CALCULATOR->local_digit_group_separator.empty() || CALCULATOR->local_digit_group_separator == " " || CALCULATOR->local_digit_group_separator == printops.decimalpoint()) ? 1 : 0); i < 4; i++) {
-		string str_sep;
-		if(i == 0) str_sep = CALCULATOR->local_digit_group_separator;
-		else if(i == 1) str_sep = THIN_SPACE;
-		else if(i == 2) str_sep = NNBSP;
-		else str_sep = " ";
-		size_t index = copy_text.find(str_sep);
-		while(index != string::npos) {
-			if(index > 0 && index + str_sep.length() < copy_text.length() && copy_text[index - 1] >= '0' && copy_text[index - 1] <= '9' && copy_text[index + str_sep.length()] >= '0' && copy_text[index + str_sep.length()] <= '9') {
-				copy_text.erase(index, str_sep.length());
-			} else {
-				index++;
-			}
-			index = copy_text.find(str_sep, index);
-		}
-	}
-}
-
-string unformat(string str) {
-	remove_separator(str);
-	gsub(SIGN_MINUS, "-", str);
-	gsub(SIGN_MULTIPLICATION, "*", str);
-	gsub(SIGN_MULTIDOT, "*", str);
-	gsub(SIGN_MIDDLEDOT, "*", str);
-	gsub(THIN_SPACE, " ", str);
-	gsub(NNBSP, " ", str);
-	gsub(NBSP, " ", str);
-	gsub(SIGN_DIVISION, "/", str);
-	gsub(SIGN_DIVISION_SLASH, "/", str);
-	gsub(SIGN_SQRT, "sqrt", str);
-	gsub("Ω", "ohm", str);
-	gsub("µ", "u", str);
-	return str;
-}
-
-string print_with_evalops(const Number &nr) {
-	PrintOptions po;
-	po.is_approximate = NULL;
-	po.base = evalops.parse_options.base;
-	po.base_display = BASE_DISPLAY_NONE;
-	po.twos_complement = evalops.parse_options.twos_complement;
-	po.hexadecimal_twos_complement = evalops.parse_options.hexadecimal_twos_complement;
-	if(((po.base == 2 && po.twos_complement) || (po.base == 16 && po.hexadecimal_twos_complement)) && nr.isNegative()) po.binary_bits = evalops.parse_options.binary_bits;
-	po.min_exp = EXP_NONE;
-	Number nr_base;
-	if(po.base == BASE_CUSTOM) {
-		nr_base = CALCULATOR->customOutputBase();
-		CALCULATOR->setCustomOutputBase(CALCULATOR->customInputBase());
-	}
-	if(po.base == BASE_CUSTOM && CALCULATOR->customInputBase().isInteger() && (CALCULATOR->customInputBase() > 1 || CALCULATOR->customInputBase() < -1)) {
-		nr_base = CALCULATOR->customOutputBase();
-		CALCULATOR->setCustomOutputBase(CALCULATOR->customInputBase());
-	} else if((po.base < BASE_CUSTOM && po.base != BASE_BINARY_DECIMAL && po.base != BASE_UNICODE && po.base != BASE_BIJECTIVE_26 && po.base != BASE_BINARY_DECIMAL) || (po.base == BASE_CUSTOM && CALCULATOR->customInputBase() <= 12 && CALCULATOR->customInputBase() >= -12)) {
-		po.base = 10;
-		string str = "dec(";
-		str += nr.print(po);
-		str += ")";
-		return str;
-	} else if(po.base == BASE_CUSTOM) {
-		po.base = 10;
-	}
-	string str = nr.print(po);
-	if(po.base == BASE_CUSTOM) CALCULATOR->setCustomOutputBase(nr_base);
-	return str;
-}
-
-bool equalsIgnoreCase(const string &str1, const string &str2, size_t i2, size_t i2_end, size_t minlength) {
-	if(str1.empty() || str2.empty()) return false;
-	size_t l = 0;
-	if(i2_end == string::npos) i2_end = str2.length();
-	for(size_t i1 = 0;; i1++, i2++) {
-		if(i2 >= i2_end) {
-			return i1 >= str1.length();
-		}
-		if(i1 >= str1.length()) break;
-		if(((signed char) str1[i1] < 0 && i1 + 1 < str1.length()) || ((signed char) str2[i2] < 0 && i2 + 1 < str2.length())) {
-			size_t iu1 = 1, iu2 = 1;
-			size_t n1 = 1, n2 = 1;
-			if((signed char) str1[i1] < 0) {
-				while(iu1 + i1 < str1.length() && (signed char) str1[i1 + iu1] < 0) {
-					if((unsigned char) str1[i1 + iu1] >= 0xC0) n1++;
-					iu1++;
-				}
-			}
-			if((signed char) str2[i2] < 0) {
-				while(iu2 + i2 < str2.length() && (signed char) str2[i2 + iu2] < 0) {
-					if((unsigned char) str2[i2 + iu2] >= 0xC0) {
-						if(n1 == n2) break;
-						n2++;
-					}
-					iu2++;
-				}
-			}
-			if(n1 != n2) return false;
-			bool isequal = (iu1 == iu2);
-			if(isequal) {
-				for(size_t i = 0; i < iu1; i++) {
-					if(str1[i1 + i] != str2[i2 + i]) {
-						isequal = false;
-						break;
-					}
-				}
-			}
-			if(!isequal) {
-				char *gstr1 = utf8_strdown(str1.c_str() + (sizeof(char) * i1), iu1);
-				if(!gstr1) return false;
-				char *gstr2 = utf8_strdown(str2.c_str() + (sizeof(char) * i2), iu2);
-				if(!gstr2) {
-					free(gstr1);
-					return false;
-				}
-				bool b = strcmp(gstr1, gstr2) == 0;
-				free(gstr1);
-				free(gstr2);
-				if(!b) return false;
-			}
-			i1 += iu1 - 1;
-			i2 += iu2 - 1;
-		} else if(str1[i1] != str2[i2] && !((str1[i1] >= 'a' && str1[i1] <= 'z') && str1[i1] - 32 == str2[i2]) && !((str1[i1] <= 'Z' && str1[i1] >= 'A') && str1[i1] + 32 == str2[i2])) {
-			return false;
-		}
-		l++;
-	}
-	return l >= minlength;
 }
 
 string copy_text;
@@ -675,490 +824,6 @@ void set_clipboard(string str, int ascii, bool html, bool is_result, int copy_wi
 	}
 }
 
-gint help_width = -1, help_height = -1;
-gdouble help_zoom = -1.0;
-
-string get_doc_uri(string file, bool with_proto = true) {
-	string surl;
-#ifndef LOCAL_HELP
-	surl = "https://qalculate.github.io/manual/";
-	surl += file;
-#else
-	if(with_proto) surl += "file://";
-#	ifdef _WIN32
-	char exepath[MAX_PATH];
-	GetModuleFileName(NULL, exepath, MAX_PATH);
-	surl += exepath;
-	surl.resize(surl.find_last_of('\\'));
-	if(surl.substr(surl.length() - 4) == "\\bin") {
-		surl.resize(surl.find_last_of('\\'));
-		surl += "\\share\\doc\\";
-		surl += PACKAGE;
-		surl += "\\html\\";
-	} else if(surl.substr(surl.length() - 6) == "\\.libs") {
-		surl.resize(surl.find_last_of('\\'));
-		surl.resize(surl.find_last_of('\\'));
-		surl += "\\doc\\html\\";
-	} else {
-		surl += "\\doc\\";
-	}
-	gsub("\\", "/", surl);
-	surl += file;
-#	else
-	surl += PACKAGE_DOC_DIR "/html/";
-	surl += file;
-#	endif
-#endif
-	return surl;
-}
-
-#ifdef USE_WEBKITGTK
-unordered_map<GtkWidget*, GtkWidget*> help_find_entries;
-bool backwards_search;
-void on_help_stop_search(GtkSearchEntry *w, gpointer view) {
-	webkit_find_controller_search_finish(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)));
-	gtk_entry_set_text(GTK_ENTRY(w), "");
-}
-void on_help_search_found(WebKitFindController*, guint, gpointer) {
-	backwards_search = false;
-}
-vector<string> help_files;
-vector<string> help_contents;
-void on_help_search_failed(WebKitFindController *f, gpointer w) {
-	g_signal_handlers_disconnect_matched((gpointer) f, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_help_search_failed, NULL);
-	string str = gtk_entry_get_text(GTK_ENTRY(help_find_entries[GTK_WIDGET(w)]));
-	remove_blank_ends(str);
-	remove_duplicate_blanks(str);
-	if(str.empty()) return;
-	string strl;
-	string_strdown(str, strl);
-	gsub("&", "&amp;", strl);
-	gsub(">", "&gt;", strl);
-	gsub("<", "&lt;", strl);
-	if(!webkit_web_view_get_uri(WEBKIT_WEB_VIEW(w))) return;
-	string file = webkit_web_view_get_uri(WEBKIT_WEB_VIEW(w));
-	size_t i = file.rfind("/");
-	if(i != string::npos) file = file.substr(i + 1);
-	i = file.find("#");
-	if(i != string::npos) file = file.substr(0, i);
-	size_t help_i = 0;
-	if(help_files.empty()) {
-		ifstream ifile(get_doc_uri("index.html", false).c_str());
-		if(!ifile.is_open()) return;
-		std::stringstream ssbuffer;
-		ssbuffer << ifile.rdbuf();
-		string sbuffer;
-		string_strdown(ssbuffer.str(), sbuffer);
-		ifile.close();
-		help_files.push_back("index.html");
-		help_contents.push_back(sbuffer);
-		i = sbuffer.find(".html\"");
-		while(i != string::npos) {
-			size_t i2 = sbuffer.rfind("\"", i);
-			if(i2 != string::npos) {
-				string sfile = sbuffer.substr(i2 + 1, (i + 5) - (i2 + 1));
-				if(sfile.find("/") == string::npos) {
-					for(i2 = 0; i2 < help_files.size(); i2++) {
-						if(help_files[i2] == sfile) break;
-					}
-					if(i2 == help_files.size()) {
-						help_files.push_back(sfile);
-						ifstream ifile_i(get_doc_uri(sfile, false).c_str());
-						string sbuffer_i;
-						if(ifile_i.is_open()) {
-							std::stringstream ssbuffer_i;
-							ssbuffer_i << ifile_i.rdbuf();
-							string_strdown(ssbuffer_i.str(), sbuffer_i);
-							ifile_i.close();
-						}
-						help_contents.push_back(sbuffer_i);
-					}
-				}
-			}
-			i = sbuffer.find(".html\"", i + 1);
-		}
-	}
-	for(i = 0; i < help_files.size(); i++) {
-		if(file == help_files[i]) {
-			help_i = i;
-			break;
-		}
-	}
-	size_t help_cur = help_i;
-	while(true) {
-		if(backwards_search) {
-			if(help_i == 0) help_i = help_files.size() - 1;
-			else help_i--;
-		} else {
-			help_i++;
-			if(help_i == help_files.size()) help_i = 0;
-		}
-		if(help_i == help_cur) {
-			webkit_find_controller_search(f, str.c_str(), backwards_search ? WEBKIT_FIND_OPTIONS_BACKWARDS | WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE : WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE, 10000);
-			backwards_search = false;
-			break;
-		}
-		string sbuffer = help_contents[help_i];
-		i = sbuffer.find("<body");
-		while(i != string::npos) {
-			i = sbuffer.find(strl, i + 1);
-			if(i == string::npos) break;
-			size_t i2 = sbuffer.find_last_of("<>", i);
-			if(i2 != string::npos && sbuffer[i2] == '>') {
-				webkit_web_view_load_uri(WEBKIT_WEB_VIEW(w), get_doc_uri(help_files[help_i]).c_str());
-				break;
-			}
-			i = sbuffer.find(">", i);
-		}
-		if(i != string::npos) break;
-	}
-}
-void on_help_search_changed(GtkSearchEntry *w, gpointer view) {
-	string str = gtk_entry_get_text(GTK_ENTRY(w));
-	remove_blank_ends(str);
-	remove_duplicate_blanks(str);
-	if(str.empty()) {
-		webkit_find_controller_search_finish(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)));
-	} else {
-		g_signal_handlers_disconnect_matched((gpointer) webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_help_search_failed, NULL);
-		webkit_find_controller_search(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)), str.c_str(), WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE, 10000);
-	}
-}
-void on_help_next_match(GtkWidget*, gpointer view) {
-	backwards_search = false;
-	g_signal_handlers_disconnect_matched((gpointer) webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_help_search_failed, NULL);
-	g_signal_connect(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)), "failed-to-find-text", G_CALLBACK(on_help_search_failed), view);
-	webkit_find_controller_search_next(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)));
-}
-void on_help_previous_match(GtkWidget*, gpointer view) {
-	backwards_search = true;
-	g_signal_handlers_disconnect_matched((gpointer) webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_help_search_failed, NULL);
-	g_signal_connect(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)), "failed-to-find-text", G_CALLBACK(on_help_search_failed), view);
-	webkit_find_controller_search_previous(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)));
-}
-gboolean on_help_configure_event(GtkWidget*, GdkEventConfigure *event, gpointer) {
-	if(help_width != -1 || event->width != 800 || event->height != 600) {
-		help_width = event->width;
-		help_height = event->height;
-	}
-	return FALSE;
-}
-gboolean on_help_key_press_event(GtkWidget *d, GdkEventKey *event, gpointer w) {
-	GtkWidget *entry_find = help_find_entries[GTK_WIDGET(w)];
-	switch(event->keyval) {
-		case GDK_KEY_Escape: {
-			string str = gtk_entry_get_text(GTK_ENTRY(entry_find));
-			remove_blank_ends(str);
-			remove_duplicate_blanks(str);
-			if(str.empty()) {
-				gtk_widget_destroy(d);
-			} else {
-				on_help_stop_search(GTK_SEARCH_ENTRY(entry_find), w);
-				return TRUE;
-			}
-			return TRUE;
-		}
-		case GDK_KEY_BackSpace: {
-			if(gtk_widget_has_focus(entry_find)) return FALSE;
-			webkit_web_view_go_back(WEBKIT_WEB_VIEW(w));
-			return TRUE;
-		}
-		case GDK_KEY_Left: {
-			if(event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) {
-				webkit_web_view_go_back(WEBKIT_WEB_VIEW(w));
-				return TRUE;
-			}
-			break;
-		}
-		case GDK_KEY_Right: {
-			if(event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) {
-				webkit_web_view_go_forward(WEBKIT_WEB_VIEW(w));
-				return TRUE;
-			}
-			break;
-		}
-		case GDK_KEY_KP_Add: {}
-		case GDK_KEY_plus: {
-			if(event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) {
-				help_zoom = webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) + 0.1;
-				webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), help_zoom);
-				return TRUE;
-			}
-			break;
-		}
-		case GDK_KEY_KP_Subtract: {}
-		case GDK_KEY_minus: {
-			if((event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) && webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) > 0.1) {
-				help_zoom = webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) - 0.1;
-				webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), help_zoom);
-				return TRUE;
-			}
-			break;
-		}
-		case GDK_KEY_Home: {
-			if(event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) {
-				webkit_web_view_load_uri(WEBKIT_WEB_VIEW(w), get_doc_uri("index.html").c_str());
-				return TRUE;
-			}
-			break;
-		}
-		case GDK_KEY_f: {
-			if(event->state & GDK_CONTROL_MASK) {
-				gtk_widget_grab_focus(GTK_WIDGET(entry_find));
-				return TRUE;
-			}
-			break;
-		}
-	}
-	return FALSE;
-}
-void on_help_button_home_clicked(GtkButton*, gpointer w) {
-	webkit_web_view_load_uri(WEBKIT_WEB_VIEW(w), get_doc_uri("index.html").c_str());
-}
-void on_help_button_zoomin_clicked(GtkButton*, gpointer w) {
-	help_zoom = webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) + 0.1;
-	webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), help_zoom);
-}
-void on_help_button_zoomout_clicked(GtkButton*, gpointer w) {
-	if(webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) > 0.1) {
-		help_zoom = webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) - 0.1;
-		webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), help_zoom);
-	}
-}
-gboolean on_help_context_menu(WebKitWebView*, WebKitContextMenu*, GdkEvent*, WebKitHitTestResult *hit_test_result, gpointer) {
-	return webkit_hit_test_result_context_is_image(hit_test_result) || webkit_hit_test_result_context_is_link(hit_test_result) || webkit_hit_test_result_context_is_media(hit_test_result);
-}
-
-void on_help_load_changed_b(WebKitWebView *w, WebKitLoadEvent load_event, gpointer button) {
-	if(load_event == WEBKIT_LOAD_FINISHED) gtk_widget_set_sensitive(GTK_WIDGET(button), webkit_web_view_can_go_back(w));
-}
-void on_help_load_changed_f(WebKitWebView *w, WebKitLoadEvent load_event, gpointer button) {
-	if(load_event == WEBKIT_LOAD_FINISHED) gtk_widget_set_sensitive(GTK_WIDGET(button), webkit_web_view_can_go_forward(w));
-}
-void on_help_load_changed(WebKitWebView *w, WebKitLoadEvent load_event, gpointer) {
-	if(load_event == WEBKIT_LOAD_FINISHED) {
-		string str = gtk_entry_get_text(GTK_ENTRY(help_find_entries[GTK_WIDGET(w)]));
-		remove_blank_ends(str);
-		remove_duplicate_blanks(str);
-		if(!str.empty()) webkit_find_controller_search(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(w)), str.c_str(), backwards_search ? WEBKIT_FIND_OPTIONS_BACKWARDS | WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE : WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE, 10000);
-		backwards_search = false;
-	}
-}
-gboolean on_help_decide_policy(WebKitWebView *w, WebKitPolicyDecision *d, WebKitPolicyDecisionType t, gpointer window) {
-	if(t == WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION) {
-		const gchar *uri = webkit_uri_request_get_uri(webkit_navigation_action_get_request(webkit_navigation_policy_decision_get_navigation_action (WEBKIT_NAVIGATION_POLICY_DECISION(d))));
-		if(uri[0] == 'h' && (uri[4] == ':' || uri[5] == ':')) {
-			GError *error = NULL;
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-			gtk_show_uri_on_window(GTK_WINDOW(window), uri, gtk_get_current_event_time(), &error);
-#else
-			gtk_show_uri(NULL, uri, gtk_get_current_event_time(), &error);
-#endif
-			if(error) {
-				gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
-				GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(window), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Failed to open %s.\n%s"), uri, error_str);
-				if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
-				gtk_dialog_run(GTK_DIALOG(dialog));
-				gtk_widget_destroy(dialog);
-				g_free(error_str);
-				g_error_free(error);
-			}
-			webkit_policy_decision_ignore(d);
-			return TRUE;
-		}
-	}
-	return FALSE;
-}
-#endif
-
-void show_help(const char *file, GtkWidget *parent) {
-#ifdef _WIN32
-	if(ShellExecuteA(NULL, "open", get_doc_uri("index.html").c_str(), NULL, NULL, SW_SHOWNORMAL) <= (HINSTANCE) 32) {
-		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help for Qalculate!."));
-		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
-		gtk_dialog_run(GTK_DIALOG(dialog));
-		gtk_widget_destroy(dialog);
-	}
-#elif USE_WEBKITGTK
-	GtkWidget *dialog = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
-	gtk_window_set_title(GTK_WINDOW(dialog), "Qalculate! Manual");
-	if(parent) {
-		gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(parent));
-		gtk_window_set_modal(GTK_WINDOW(dialog), gtk_window_get_modal(GTK_WINDOW(parent)));
-	}
-	gtk_window_set_default_size(GTK_WINDOW(dialog), help_width > 0 ? help_width : 800, help_height > 0 ? help_height : 600);
-	GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-	GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
-	GtkWidget *hbox_l = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-	GtkWidget *hbox_c = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-	GtkWidget *hbox_r = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-	GtkWidget *button_back = gtk_button_new_from_icon_name("go-previous-symbolic", GTK_ICON_SIZE_BUTTON);
-	GtkWidget *button_home = gtk_button_new_from_icon_name("go-home-symbolic", GTK_ICON_SIZE_BUTTON);
-	GtkWidget *button_forward = gtk_button_new_from_icon_name("go-next-symbolic", GTK_ICON_SIZE_BUTTON);
-	GtkWidget *entry_find = gtk_search_entry_new();
-	GtkWidget *button_previous_match = gtk_button_new_from_icon_name("go-up-symbolic", GTK_ICON_SIZE_BUTTON);
-	GtkWidget *button_next_match = gtk_button_new_from_icon_name("go-down-symbolic", GTK_ICON_SIZE_BUTTON);
-	gtk_entry_set_width_chars(GTK_ENTRY(entry_find), 25);
-	GtkWidget *button_zoomin = gtk_button_new_from_icon_name("zoom-in-symbolic", GTK_ICON_SIZE_BUTTON);
-	GtkWidget *button_zoomout = gtk_button_new_from_icon_name("zoom-out-symbolic", GTK_ICON_SIZE_BUTTON);
-	gtk_widget_set_sensitive(button_back, FALSE);
-	gtk_widget_set_sensitive(button_forward, FALSE);
-	gtk_container_add(GTK_CONTAINER(hbox_l), button_back);
-	gtk_container_add(GTK_CONTAINER(hbox_l), button_home);
-	gtk_container_add(GTK_CONTAINER(hbox_l), button_forward);
-	gtk_container_add(GTK_CONTAINER(hbox_c), entry_find);
-	gtk_container_add(GTK_CONTAINER(hbox_c), button_previous_match);
-	gtk_container_add(GTK_CONTAINER(hbox_c), button_next_match);
-	gtk_container_add(GTK_CONTAINER(hbox_r), button_zoomout);
-	gtk_container_add(GTK_CONTAINER(hbox_r), button_zoomin);
-	gtk_box_pack_start(GTK_BOX(hbox), hbox_l, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(hbox), hbox_c, TRUE, FALSE, 0);
-	gtk_box_pack_end(GTK_BOX(hbox), hbox_r, FALSE, FALSE, 0);
-	gtk_style_context_add_class(gtk_widget_get_style_context(hbox_l), "linked");
-	gtk_style_context_add_class(gtk_widget_get_style_context(hbox_c), "linked");
-	gtk_style_context_add_class(gtk_widget_get_style_context(hbox_r), "linked");
-	gtk_container_add(GTK_CONTAINER(vbox), hbox);
-	gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
-	gtk_container_add(GTK_CONTAINER(dialog), vbox);
-	GtkWidget *scrolledWeb = gtk_scrolled_window_new(NULL, NULL);
-	gtk_widget_set_hexpand(scrolledWeb, TRUE);
-	gtk_widget_set_vexpand(scrolledWeb, TRUE);
-	gtk_container_add(GTK_CONTAINER(vbox), scrolledWeb);
-	GtkWidget *webView = webkit_web_view_new();
-	help_find_entries[webView] = entry_find;
-	WebKitSettings *settings = webkit_web_view_get_settings(WEBKIT_WEB_VIEW(webView));
-#	if GTK_MAJOR_VERSION == 2 && GTK_MINOR_VERSION < 32
-	webkit_settings_set_enable_plugins(settings, FALSE);
-#	endif
-	webkit_settings_set_zoom_text_only(settings, FALSE);
-	if(help_zoom > 0.0) webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(webView), help_zoom);
-	PangoFontDescription *font_desc;
-	gtk_style_context_get(gtk_widget_get_style_context(mainwindow), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-	webkit_settings_set_default_font_family(settings, pango_font_description_get_family(font_desc));
-	webkit_settings_set_default_font_size(settings, webkit_settings_font_size_to_pixels(pango_font_description_get_size(font_desc) / PANGO_SCALE));
-	pango_font_description_free(font_desc);
-	g_signal_connect(G_OBJECT(dialog), "key-press-event", G_CALLBACK(on_help_key_press_event), (gpointer) webView);
-	g_signal_connect(G_OBJECT(webView), "context-menu", G_CALLBACK(on_help_context_menu), NULL);
-	g_signal_connect(G_OBJECT(webView), "load-changed", G_CALLBACK(on_help_load_changed_b), (gpointer) button_back);
-	g_signal_connect(G_OBJECT(webView), "load-changed", G_CALLBACK(on_help_load_changed_f), (gpointer) button_forward);
-	g_signal_connect(G_OBJECT(webView), "load-changed", G_CALLBACK(on_help_load_changed), NULL);
-	g_signal_connect(G_OBJECT(webView), "decide-policy", G_CALLBACK(on_help_decide_policy), dialog);
-	g_signal_connect_swapped(G_OBJECT(button_back), "clicked", G_CALLBACK(webkit_web_view_go_back), (gpointer) webView);
-	g_signal_connect_swapped(G_OBJECT(button_forward), "clicked", G_CALLBACK(webkit_web_view_go_forward), (gpointer) webView);
-	g_signal_connect(G_OBJECT(button_home), "clicked", G_CALLBACK(on_help_button_home_clicked), (gpointer) webView);
-	g_signal_connect(G_OBJECT(button_zoomin), "clicked", G_CALLBACK(on_help_button_zoomin_clicked), (gpointer) webView);
-	g_signal_connect(G_OBJECT(button_zoomout), "clicked", G_CALLBACK(on_help_button_zoomout_clicked), (gpointer) webView);
-	g_signal_connect(G_OBJECT(entry_find), "search-changed", G_CALLBACK(on_help_search_changed), (gpointer) webView);
-	g_signal_connect(G_OBJECT(entry_find), "next-match", G_CALLBACK(on_help_next_match), (gpointer) webView);
-	g_signal_connect(G_OBJECT(entry_find), "previous-match", G_CALLBACK(on_help_previous_match), (gpointer) webView);
-	g_signal_connect(G_OBJECT(button_next_match), "clicked", G_CALLBACK(on_help_next_match), (gpointer) webView);
-	g_signal_connect(G_OBJECT(button_previous_match), "clicked", G_CALLBACK(on_help_previous_match), (gpointer) webView);
-	g_signal_connect(G_OBJECT(entry_find), "stop-search", G_CALLBACK(on_help_stop_search), (gpointer) webView);
-	g_signal_connect(G_OBJECT(entry_find), "activate", G_CALLBACK(on_help_next_match), (gpointer) webView);
-	g_signal_connect(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(webView)), "found-text", G_CALLBACK(on_help_search_found), NULL);
-	gtk_container_add(GTK_CONTAINER(scrolledWeb), GTK_WIDGET(webView));
-	webkit_web_view_load_uri(WEBKIT_WEB_VIEW(webView), get_doc_uri(file).c_str());
-	g_signal_connect(G_OBJECT(dialog), "configure-event", G_CALLBACK(on_help_configure_event), NULL);
-	gtk_widget_grab_focus(GTK_WIDGET(webView));
-	gtk_widget_show_all(dialog);
-#else
-	GError *error = NULL;
-#	if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-	gtk_show_uri_on_window(GTK_WINDOW(parent), get_doc_uri(file).c_str(), gtk_get_current_event_time(), &error);
-#	else
-	gtk_show_uri(NULL, get_doc_uri(file).c_str(), gtk_get_current_event_time(), &error);
-#	endif
-	if(error) {
-		gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
-		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help for Qalculate!.\n%s"), error_str);
-		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
-		gtk_dialog_run(GTK_DIALOG(dialog));
-		gtk_widget_destroy(dialog);
-		g_free(error_str);
-		g_error_free(error);
-	}
-#endif
-}
-
-bool entry_in_quotes(GtkEntry *w) {
-	if(!w) return false;
-	gint pos = -1;
-	g_object_get(w, "cursor-position", &pos, NULL);
-	if(pos >= 0) {
-		const gchar *gtext = gtk_entry_get_text(GTK_ENTRY(w));
-		bool in_cit1 = false, in_cit2 = false;
-		for(gint i = 0; gtext && i < pos; i++) {
-			if(!in_cit2 && gtext[0] == '\"') {
-				in_cit1 = !in_cit1;
-			} else if(!in_cit1 && gtext[0] == '\'') {
-				in_cit2 = !in_cit2;
-			}
-			gtext = g_utf8_next_char(gtext);
-		}
-		return in_cit1 || in_cit2;
-	}
-	return false;
-}
-
-bool block_input = false;
-const gchar *key_press_get_symbol(GdkEventKey *event, bool do_caret_as_xor, bool unit_expression) {
-	if(block_input && (event->keyval == GDK_KEY_q || event->keyval == GDK_KEY_Q) && !(event->state & GDK_CONTROL_MASK)) {block_input = false; return "";}
-	guint state = CLEAN_MODIFIERS(event->state);
-	FIX_ALT_GR
-	state = state & ~GDK_SHIFT_MASK;
-	if(state == GDK_CONTROL_MASK) {
-		switch(event->keyval) {
-			case GDK_KEY_asciicircum: {}
-			case GDK_KEY_dead_circumflex: {
-				bool input_xor = !do_caret_as_xor || !caret_as_xor;
-				return input_xor ? " xor " : "^";
-			}
-			case GDK_KEY_KP_Multiply: {}
-			case GDK_KEY_asterisk: {
-				return "^";
-			}
-		}
-	}
-	if(state != 0) return NULL;
-	switch(event->keyval) {
-		case GDK_KEY_dead_circumflex: {
-#ifdef _WIN32
-			// fix dead key
-			block_input = true;
-			INPUT ip; ip.type = INPUT_KEYBOARD; ip.ki.wScan = 0; ip.ki.time = 0; ip.ki.dwExtraInfo = 0;
-			ip.ki.wVk = 0x51; ip.ki.dwFlags = 0; SendInput(1, &ip, sizeof(INPUT));
-			ip.ki.dwFlags = KEYEVENTF_KEYUP; SendInput(1, &ip, sizeof(INPUT));
-#endif
-		}
-		case GDK_KEY_asciicircum: {
-			bool input_xor = !do_caret_as_xor && caret_as_xor;
-			return input_xor ? " xor " : "^";
-		}
-		case GDK_KEY_KP_Multiply: {}
-		case GDK_KEY_asterisk: {
-			return times_sign(unit_expression);
-		}
-		case GDK_KEY_KP_Divide: {}
-		case GDK_KEY_slash: {
-			return divide_sign();
-		}
-		case GDK_KEY_KP_Subtract: {}
-		case GDK_KEY_minus: {
-			return sub_sign();
-		}
-		case GDK_KEY_KP_Add: {}
-		case GDK_KEY_plus: {
-			return "+";
-		}
-		case GDK_KEY_braceleft: {}
-		case GDK_KEY_braceright: {
-			return "";
-		}
-	}
-	return NULL;
-}
-
 void replace_result_cis_gtk(string &resstr) {
 	if(can_display_unicode_string_function_exact("∠", (void*) historyview)) gsub(" cis ", "∠", resstr);
 }
@@ -1187,11 +852,34 @@ void block_error() {
 void unblock_error() {
 	block_error_timeout++;
 }
+bool error_blocked() {
+	return block_error_timeout > 0;
+}
 bool result_is_autocalculated() {
 	return result_autocalculated;
 }
 
-void minimal_mode_show_resultview(bool b = true) {
+void clearresult() {
+	if(!current_parsed_expression_is_displayed_in_result() || rpn_mode) minimal_mode_show_resultview(false);
+	if(!parsed_in_result) result_autocalculated = false;
+	result_view_clear();
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), FALSE);
+	if(gtk_revealer_get_child_revealed(GTK_REVEALER(gtk_builder_get_object(main_builder, "message_revealer")))) {
+		gtk_info_bar_response(GTK_INFO_BAR(gtk_builder_get_object(main_builder, "message_bar")), GTK_RESPONSE_CLOSE);
+	}
+	update_expression_icons();
+	if(visible_keypad & PROGRAMMING_KEYPAD) clear_result_bases();
+}
+void clear_parsed_in_result() {
+	result_view_clear_parsed();
+	if(result_view_empty()) minimal_mode_show_resultview(false);
+}
+void show_parsed_in_result(MathStructure &mparse, const PrintOptions &po) {
+	draw_parsed(mparse, po);
+	minimal_mode_show_resultview();
+}
+
+void minimal_mode_show_resultview(bool b) {
 	if(!minimal_mode) return;
 	if(b && !gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")))) {
 		gint h = -1;
@@ -1246,13 +934,19 @@ void copy_result(int ascii, int type) {
 		else str += " " SIGN_ALMOST_EQUAL " ";
 		fix_history_string2(str);
 	}
-	if(type == 8) str += parsed_expression;
+	if(type == 8) str += current_parsed_expression_text();
 	else if(type <= 3 || type > 5) str += result_text;
 	set_clipboard(str, ascii, type <= 3 || type > 5, type <= 3 || type == 8, copy_without_units);
 }
 
 bool result_text_empty() {
 	return result_text.empty() && !autocalc_history_timeout_id;
+}
+const string &current_result_text() {
+	return result_text;
+}
+bool current_result_text_is_approximate() {
+	return result_text_approximate;
 }
 string get_result_text() {
 	if(autocalc_history_timeout_id) {
@@ -1262,7 +956,6 @@ string get_result_text() {
 	return unhtmlize(result_text);
 }
 
-string sdot_s, saltdot_s, sdiv_s, sslash_s, stimes_s, sminus_s;
 string sdot_o, saltdot_o, sdiv_o, sslash_o, stimes_o, sminus_o;
 
 const char *sub_sign() {
@@ -1281,24 +974,6 @@ const char *divide_sign() {
 	return sslash_o.c_str();
 }
 
-void set_status_operator_symbols() {
-	if(can_display_unicode_string_function_exact(SIGN_MINUS, (void*) statuslabel_l)) sminus_s = SIGN_MINUS;
-	else sminus_s = "-";
-	if(can_display_unicode_string_function(SIGN_DIVISION, (void*) statuslabel_l)) sdiv_s = SIGN_DIVISION;
-	else sdiv_s = "/";
-	if(can_display_unicode_string_function_exact(SIGN_DIVISION, (void*) statuslabel_l)) sslash_s = SIGN_DIVISION_SLASH;
-	else sslash_s = "/";
-	if(can_display_unicode_string_function(SIGN_MULTIDOT, (void*) statuslabel_l)) sdot_s = SIGN_MULTIDOT;
-	else sdot_s = "*";
-	if(can_display_unicode_string_function(SIGN_MIDDLEDOT, (void*) statuslabel_l)) saltdot_s = SIGN_MIDDLEDOT;
-	else saltdot_s = "*";
-	if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) statuslabel_l)) stimes_s = SIGN_MULTIPLICATION;
-	else stimes_s = "*";
-	if(status_layout) {
-		g_object_unref(status_layout);
-		status_layout = NULL;
-	}
-}
 void set_app_operator_symbols() {
 	if(can_display_unicode_string_function_exact(SIGN_MINUS, (void*) gtk_builder_get_object(main_builder, "convert_entry_unit"))) sminus_o = SIGN_MINUS;
 	else sminus_o = "-";
@@ -1311,182 +986,6 @@ void set_app_operator_symbols() {
 	else saltdot_o = "*";
 	if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) gtk_builder_get_object(main_builder, "convert_entry_unit"))) stimes_o = SIGN_MULTIPLICATION;
 	else stimes_o = "*";
-}
-
-string localize_expression(string str, bool unit_expression) {
-	ParseOptions pa = evalops.parse_options; pa.base = 10;
-	str = CALCULATOR->localizeExpression(str, pa);
-	gsub("*", times_sign(unit_expression), str);
-	gsub("/", divide_sign(), str);
-	gsub("-", sub_sign(), str);
-	return str;
-}
-
-string unlocalize_expression(string str) {
-	ParseOptions pa = evalops.parse_options; pa.base = 10;
-	str = CALCULATOR->unlocalizeExpression(str, pa);
-	CALCULATOR->parseSigns(str);
-	return str;
-}
-
-void result_font_modified() {
-	while(gtk_events_pending()) gtk_main_iteration();
-	fix_supsub_result = test_supsub(resultview);
-	set_result_size_request();
-	result_font_updated = true;
-	result_display_updated();
-}
-void status_font_modified() {
-	while(gtk_events_pending()) gtk_main_iteration();
-	fix_supsub_status = test_supsub(statuslabel_l);
-	set_status_size_request();
-	set_status_operator_symbols();
-}
-
-PangoCoverageLevel get_least_coverage(const gchar *gstr, GtkWidget *widget) {
-
-	PangoCoverageLevel level = PANGO_COVERAGE_EXACT;
-	PangoContext *context = gtk_widget_get_pango_context(widget);
-	PangoLanguage *language = pango_context_get_language(context);
-	PangoFontDescription *font_desc;
-	gtk_style_context_get(gtk_widget_get_style_context(widget), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-	PangoFontset *fontset = pango_context_load_fontset(context, font_desc, language);
-	pango_font_description_free(font_desc);
-	while(gstr[0] != '\0') {
-		if((signed char) gstr[0] < 0) {
-			gunichar gu = g_utf8_get_char_validated(gstr, -1);
-			if(gu != (gunichar) -1 && gu != (gunichar) -2) {
-				PangoFont *font = pango_fontset_get_font(fontset, (guint) gu);
-				if(font) {
-					PangoCoverage *coverage = pango_font_get_coverage(font, language);
-					if(pango_coverage_get(coverage, (int) gu) < level) {
-						level = pango_coverage_get(coverage, gu);
-					}
-					g_object_unref(font);
-#if PANGO_VERSION >= 15200
-					g_object_unref(coverage);
-#else
-					pango_coverage_unref(coverage);
-#endif
-				} else {
-					level = PANGO_COVERAGE_NONE;
-				}
-			}
-		}
-		gstr = g_utf8_find_next_char(gstr, NULL);
-		if(!gstr) break;
-	}
-	g_object_unref(fontset);
-	return level;
-
-}
-
-unordered_map<void*, unordered_map<const char*, int> > coverage_map;
-
-bool can_display_unicode_string_function(const char *str, void *w) {
-	if(!w) w = (void*) historyview;
-	unordered_map<void*, unordered_map<const char*, int> >::iterator it1 = coverage_map.find(w);
-	if(it1 == coverage_map.end()) {
-		coverage_map[w] = unordered_map<const char*, int>();
-	} else {
-		unordered_map<const char*, int>::iterator it = it1->second.find(str);
-		if(it != it1->second.end()) return it->second;
-	}
-	coverage_map[w][str] = get_least_coverage(str, (GtkWidget*) w);
-	return coverage_map[w][str] >= PANGO_COVERAGE_APPROXIMATE;
-}
-bool can_display_unicode_string_function_exact(const char *str, void *w) {
-	if(!w) w = (void*) historyview;
-	unordered_map<void*, unordered_map<const char*, int> >::iterator it1 = coverage_map.find(w);
-	if(it1 == coverage_map.end()) {
-		coverage_map[w] = unordered_map<const char*, int>();
-	} else {
-		unordered_map<const char*, int>::iterator it = it1->second.find(str);
-		if(it != it1->second.end()) return it->second;
-	}
-	coverage_map[w][str] = get_least_coverage(str, (GtkWidget*) w);
-	return coverage_map[w][str] >= PANGO_COVERAGE_EXACT;
-}
-
-double par_width = 6.0;
-
-void set_result_size_request() {
-	MathStructure mtest;
-	MathStructure m1("Ü");
-	MathStructure mden("y"); mden ^= m1;
-	mtest = m1; mtest ^= m1; mtest.transform(STRUCT_DIVISION, mden);
-	mtest.transform(CALCULATOR->f_sqrt);
-	mtest.transform(CALCULATOR->f_abs);
-	PrintOptions po;
-	po.can_display_unicode_string_function = &can_display_unicode_string_function;
-	po.can_display_unicode_string_arg = (void*) resultview;
-	cairo_surface_t *tmp_surface2 = draw_structure(mtest, po, false, top_ips, NULL, 3);
-	if(tmp_surface2) {
-		cairo_surface_flush(tmp_surface2);
-		gint h = cairo_image_surface_get_height(tmp_surface2) / RESULT_SCALE_FACTOR;
-		gint sbh = 0;
-		gtk_widget_get_preferred_height(gtk_scrolled_window_get_hscrollbar(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "scrolled_result"))), NULL, &sbh);
-		h += sbh;
-		h += 3;
-		cairo_surface_destroy(tmp_surface2);
-		mtest.set(9);
-		mtest.transform(STRUCT_DIVISION, 9);
-		tmp_surface2 = draw_structure(mtest, po);
-		if(tmp_surface2) {
-			cairo_surface_flush(tmp_surface2);
-			gint h2 = cairo_image_surface_get_height(tmp_surface2) / RESULT_SCALE_FACTOR + 3;
-			if(h2 > h) h = h2;
-			cairo_surface_destroy(tmp_surface2);
-		}
-		gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), -1, h);
-	}
-	PangoLayout *layout_test = gtk_widget_create_pango_layout(resultview, "x");
-	gint h;
-	pango_layout_get_pixel_size(layout_test, NULL, &h);
-	par_width = h / 2.2;
-	g_object_unref(layout_test);
-}
-
-void get_image_blank_height(cairo_surface_t *surface, int *y1, int *y2);
-bool test_supsub(GtkWidget *w) {
-	PangoLayout *layout_test = gtk_widget_create_pango_layout(w, NULL);
-	pango_layout_set_markup(layout_test, "x", -1);
-	PangoRectangle rect;
-	pango_layout_get_pixel_extents(layout_test, NULL, &rect);
-	cairo_surface_t *tmp_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, rect.width, rect.height);
-	cairo_t *cr = cairo_create(tmp_surface);
-	pango_cairo_show_layout(cr, layout_test);
-	cairo_destroy(cr);
-	int y1, y2;
-	get_image_blank_height(tmp_surface, &y1, &y2);
-	cairo_surface_destroy(tmp_surface);
-	pango_layout_set_markup(layout_test, "x<sup>1</sup>", -1);
-	pango_layout_get_pixel_extents(layout_test, NULL, &rect);
-	tmp_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, rect.width, rect.height);
-	cr = cairo_create(tmp_surface);
-	pango_cairo_show_layout(cr, layout_test);
-	cairo_destroy(cr);
-	int y3, y4;
-	get_image_blank_height(tmp_surface, &y3, &y4);
-	cairo_surface_destroy(tmp_surface);
-	g_object_unref(layout_test);
-	return y2 == y4;
-}
-
-bool use_supsub(GtkWidget *w_supsub) {
-	return (w_supsub == statuslabel_l && fix_supsub_status) || (w_supsub == resultview && fix_supsub_result) || (w_supsub == historyview && fix_supsub_history) || (w_supsub == completion_view && fix_supsub_completion) || (w_supsub != statuslabel_l && w_supsub != resultview && w_supsub != historyview && w_supsub != completion_view && test_supsub(w_supsub));
-}
-
-void set_status_size_request() {
-	PangoLayout *layout_test = gtk_widget_create_pango_layout(statuslabel_l, NULL);
-	FIX_SUPSUB_PRE(statuslabel_l)
-	string str = "Ä<sub>x</sub>y<sup>2</sup>";
-	FIX_SUPSUB(str)
-	pango_layout_set_markup(layout_test, str.c_str(), -1);
-	gint h;
-	pango_layout_get_pixel_size(layout_test, NULL, &h);
-	g_object_unref(layout_test);
-	gtk_widget_set_size_request(statuslabel_l, -1, h);
 }
 
 bool string_is_less(string str1, string str2) {
@@ -1519,20 +1018,6 @@ bool is_answer_variable(Variable *v) {
 	return v == vans[0] || v == vans[1] || v == vans[2] || v == vans[3] || v == vans[4];
 }
 
-void show_message(const gchar *text, GtkWidget *win) {
-	GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(win), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", text);
-	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
-	gtk_dialog_run(GTK_DIALOG(edialog));
-	gtk_widget_destroy(edialog);
-}
-bool ask_question(const gchar *text, GtkWidget *win) {
-	GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(win), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_YES_NO, "%s", text);
-	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
-	int question_answer = gtk_dialog_run(GTK_DIALOG(edialog));
-	gtk_widget_destroy(edialog);
-	return question_answer == GTK_RESPONSE_YES;
-}
-
 gboolean do_notification_timeout(gpointer) {
 	gtk_revealer_set_reveal_child(GTK_REVEALER(gtk_builder_get_object(main_builder, "overlayrevealer")), FALSE);
 	gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "overlayrevealer")));
@@ -1545,221 +1030,6 @@ void show_notification(string text) {
 	gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "overlayrevealer")));
 	gtk_revealer_set_reveal_child(GTK_REVEALER(gtk_builder_get_object(main_builder, "overlayrevealer")), TRUE);
 	g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 1000, do_notification_timeout, NULL, NULL);
-}
-
-enum {
-	STATUS_TEXT_NONE,
-	STATUS_TEXT_FUNCTION,
-	STATUS_TEXT_ERROR,
-	STATUS_TEXT_PARSED,
-	STATUS_TEXT_AUTOCALC,
-	STATUS_TEXT_OTHER
-};
-int status_text_source = STATUS_TEXT_NONE;
-
-#define STATUS_SPACE	if(b) str += "  "; else b = true;
-
-void set_status_text(string text, bool break_begin = false, bool had_errors = false, bool had_warnings = false, string tooltip_text = "") {
-
-	string str;
-	if(had_errors) {
-		str = "<span foreground=\"";
-		str += status_error_color;
-		str += "\">";
-	} else if(had_warnings) {
-		str = "<span foreground=\"";
-		str += status_warning_color;
-		str += "\">";
-	}
-	if(text.empty()) str += " ";
-	else str += text;
-	if(had_errors || had_warnings) str += "</span>";
-	if(text.empty()) status_text_source = STATUS_TEXT_NONE;
-
-	if(break_begin) gtk_label_set_ellipsize(GTK_LABEL(statuslabel_l), PANGO_ELLIPSIZE_START);
-	else gtk_label_set_ellipsize(GTK_LABEL(statuslabel_l), PANGO_ELLIPSIZE_END);
-
-	gtk_label_set_markup(GTK_LABEL(statuslabel_l), str.c_str());
-	gint w = 0;
-	if(str.length() > 500) {
-		w = -1;
-	} else if(str.length() > 20) {
-		if(!status_layout) status_layout = gtk_widget_create_pango_layout(statuslabel_l, "");
-		pango_layout_set_markup(status_layout, str.c_str(), -1);
-		pango_layout_get_pixel_size(status_layout, &w, NULL);
-	}
-	if(((auto_calculate && !rpn_mode) || !had_errors || tooltip_text.empty()) && (w < 0 || w > gtk_widget_get_allocated_width(statuslabel_l))) gtk_widget_set_tooltip_markup(statuslabel_l, text.c_str());
-	else gtk_widget_set_tooltip_text(statuslabel_l, tooltip_text.c_str());
-}
-void clear_status_text() {
-	set_status_text("");
-}
-
-void update_status_text() {
-
-	string str = "<span size=\"small\">";
-
-	bool b = false;
-	if(evalops.approximation == APPROXIMATION_EXACT) {
-		STATUS_SPACE
-		str += _("EXACT");
-	} else if(evalops.approximation == APPROXIMATION_APPROXIMATE) {
-		STATUS_SPACE
-		str += _("APPROX");
-	}
-	if(evalops.parse_options.parsing_mode == PARSING_MODE_RPN) {
-		STATUS_SPACE
-		str += _("RPN");
-	}
-	if(evalops.parse_options.parsing_mode == PARSING_MODE_CHAIN) {
-		STATUS_SPACE
-		// Chain mode
-		str += _("CHN");
-	}
-	switch(evalops.parse_options.base) {
-		case BASE_DECIMAL: {
-			break;
-		}
-		case BASE_BINARY: {
-			STATUS_SPACE
-			str += _("BIN");
-			break;
-		}
-		case BASE_OCTAL: {
-			STATUS_SPACE
-			str += _("OCT");
-			break;
-		}
-		case 12: {
-			STATUS_SPACE
-			str += _("DUO");
-			break;
-		}
-		case BASE_HEXADECIMAL: {
-			STATUS_SPACE
-			str += _("HEX");
-			break;
-		}
-		case BASE_ROMAN_NUMERALS: {
-			STATUS_SPACE
-			str += _("ROMAN");
-			break;
-		}
-		case BASE_BIJECTIVE_26: {
-			STATUS_SPACE
-			str += "B26";
-			break;
-		}
-		case BASE_BINARY_DECIMAL: {
-			STATUS_SPACE
-			str += "BCD";
-			break;
-		}
-		case BASE_CUSTOM: {
-			STATUS_SPACE
-			str += CALCULATOR->customInputBase().print(CALCULATOR->messagePrintOptions());
-			break;
-		}
-		case BASE_GOLDEN_RATIO: {
-			STATUS_SPACE
-			str += "φ";
-			break;
-		}
-		case BASE_SUPER_GOLDEN_RATIO: {
-			STATUS_SPACE
-			str += "ψ";
-			break;
-		}
-		case BASE_PI: {
-			STATUS_SPACE
-			str += "π";
-			break;
-		}
-		case BASE_E: {
-			STATUS_SPACE
-			str += "e";
-			break;
-		}
-		case BASE_SQRT2: {
-			STATUS_SPACE
-			str += "√2";
-			break;
-		}
-		case BASE_UNICODE: {
-			STATUS_SPACE
-			str += "UNICODE";
-			break;
-		}
-		default: {
-			STATUS_SPACE
-			str += i2s(evalops.parse_options.base);
-			break;
-		}
-	}
-	switch (evalops.parse_options.angle_unit) {
-		case ANGLE_UNIT_DEGREES: {
-			STATUS_SPACE
-			str += _("DEG");
-			break;
-		}
-		case ANGLE_UNIT_RADIANS: {
-			STATUS_SPACE
-			str += _("RAD");
-			break;
-		}
-		case ANGLE_UNIT_GRADIANS: {
-			STATUS_SPACE
-			str += _("GRA");
-			break;
-		}
-		default: {}
-	}
-	if(evalops.parse_options.read_precision != DONT_READ_PRECISION) {
-		STATUS_SPACE
-		str += _("PREC");
-	}
-	if(!evalops.parse_options.functions_enabled) {
-		STATUS_SPACE
-		str += "<s>";
-		str += _("FUNC");
-		str += "</s>";
-	}
-	if(!evalops.parse_options.units_enabled) {
-		STATUS_SPACE
-		str += "<s>";
-		str += _("UNIT");
-		str += "</s>";
-	}
-	if(!evalops.parse_options.variables_enabled) {
-		STATUS_SPACE
-		str += "<s>";
-		str += _("VAR");
-		str += "</s>";
-	}
-	if(!evalops.allow_infinite) {
-		STATUS_SPACE
-		str += "<s>";
-		str += _("INF");
-		str += "</s>";
-	}
-	if(!evalops.allow_complex) {
-		STATUS_SPACE
-		str += "<s>";
-		str += _("CPLX");
-		str += "</s>";
-	}
-
-	remove_blank_ends(str);
-	if(!b) str += " ";
-
-	str += "</span>";
-
-	if(str != gtk_label_get_label(GTK_LABEL(statuslabel_r))) {
-		gtk_label_set_text(GTK_LABEL(statuslabel_l), "");
-		gtk_label_set_markup(GTK_LABEL(statuslabel_r), str.c_str());
-		display_parse_status();
-	}
-
 }
 
 bool check_exchange_rates(GtkWidget *win, bool set_result) {
@@ -1885,7 +1155,7 @@ bool display_errors(GtkWidget *win, int type, bool add_to_history) {
 
 gboolean on_display_errors_timeout(gpointer) {
 	if(stop_timeouts) return FALSE;
-	if(block_error_timeout > 0) return TRUE;
+	if(error_blocked()) return TRUE;
 	if(CALCULATOR->checkSaveFunctionCalled()) {
 		update_vmenu(false);
 		update_fmenu(false);
@@ -2062,171 +1332,6 @@ void check_for_new_version(bool do_not_show_again) {
 gboolean on_check_version_idle(gpointer) {
 	check_for_new_version(true);
 	return FALSE;
-}
-
-bool display_function_hint(MathFunction *f, int arg_index = 1) {
-	if(!f) return false;
-	int iargs = f->maxargs();
-	Argument *arg;
-	Argument default_arg;
-	string str, str2, str3;
-	const ExpressionName *ename = &f->preferredName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) statuslabel_l);
-	bool last_is_vctr = f->getArgumentDefinition(iargs) && f->getArgumentDefinition(iargs)->type() == ARGUMENT_TYPE_VECTOR;
-	if(arg_index > iargs && iargs >= 0 && !last_is_vctr) {
-		if(iargs == 1 && f->getArgumentDefinition(1) && f->getArgumentDefinition(1)->handlesVector()) {
-			return false;
-		}
-		gchar *gstr = g_strdup_printf(_("Too many arguments for %s()."), ename->formattedName(TYPE_FUNCTION, true, true).c_str());
-		set_status_text(gstr, false, false, true);
-		g_free(gstr);
-		status_text_source = STATUS_TEXT_FUNCTION;
-		return true;
-	}
-	str += ename->formattedName(TYPE_FUNCTION, true, true);
-	if(iargs < 0) {
-		iargs = f->minargs() + 1;
-		if((int) f->lastArgumentDefinitionIndex() > iargs) iargs = (int) f->lastArgumentDefinitionIndex();
-		if(arg_index > iargs) arg_index = iargs;
-	}
-	if(arg_index > iargs && last_is_vctr) arg_index = iargs;
-	str += "(";
-	int i_reduced = 0;
-	if(iargs != 0) {
-		for(int i2 = 1; i2 <= iargs; i2++) {
-			if(i2 > f->minargs() && arg_index < i2) {
-				str += "[";
-			}
-			if(i2 > 1) {
-				str += CALCULATOR->getComma();
-				str += " ";
-			}
-			if(i2 == arg_index) str += "<b>";
-			arg = f->getArgumentDefinition(i2);
-			if(arg && !arg->name().empty()) {
-				str2 = arg->name();
-			} else {
-				str2 = _("argument");
-				if(i2 > 1 || f->maxargs() != 1) {
-					str2 += " ";
-					str2 += i2s(i2);
-				}
-			}
-			if(i2 == arg_index) {
-				if(arg) {
-					if(i_reduced == 2) str3 = arg->print();
-					else str3 = arg->printlong();
-				} else {
-					Argument arg_default;
-					if(i_reduced == 2) str3 = arg_default.print();
-					else str3 = arg_default.printlong();
-				}
-				if(i_reduced != 2 && printops.use_unicode_signs) {
-					gsub(">=", SIGN_GREATER_OR_EQUAL, str3);
-					gsub("<=", SIGN_LESS_OR_EQUAL, str3);
-					gsub("!=", SIGN_NOT_EQUAL, str3);
-				}
-				if(!str3.empty()) {
-					str2 += ": ";
-					str2 += str3;
-				}
-				gsub("&", "&amp;", str2);
-				gsub(">", "&gt;", str2);
-				gsub("<", "&lt;", str2);
-				str += str2;
-				str += "</b>";
-				if(i_reduced < 2) {
-					PangoLayout *layout_test = gtk_widget_create_pango_layout(statuslabel_l, NULL);
-					pango_layout_set_markup(layout_test, str.c_str(), -1);
-					gint w, h;
-					pango_layout_get_pixel_size(layout_test, &w, &h);
-					if(w > gtk_widget_get_allocated_width(statuslabel_l) - 20) {
-						str = ename->formattedName(TYPE_FUNCTION, true, true);
-						str += "(";
-						if(i2 != 1) {
-							str += "…";
-							i_reduced++;
-						} else {
-							i_reduced = 2;
-						}
-						i2--;
-					}
-					g_object_unref(layout_test);
-				} else {
-					i_reduced = 0;
-				}
-			} else {
-				gsub("&", "&amp;", str2);
-				gsub(">", "&gt;", str2);
-				gsub("<", "&lt;", str2);
-				str += str2;
-				if(i2 > f->minargs() && arg_index < i2) {
-					str += "]";
-				}
-			}
-		}
-		if(f->maxargs() < 0) {
-			str += CALCULATOR->getComma();
-			str += " …";
-		}
-	}
-	str += ")";
-	set_status_text(str);
-	status_text_source = STATUS_TEXT_FUNCTION;
-	return true;
-}
-
-void replace_interval_with_function(MathStructure &m);
-
-bool last_is_operator(string str, bool allow_exp) {
-	remove_blank_ends(str);
-	if(str.empty()) return false;
-	if((signed char) str[str.length() - 1] > 0) {
-		if(is_in(OPERATORS "\\" LEFT_PARENTHESIS LEFT_VECTOR_WRAP, str[str.length() - 1]) && (str[str.length() - 1] != '!' || str.length() == 1)) return true;
-		if(allow_exp && is_in(EXP, str[str.length() - 1])) return true;
-		if(str.length() >= 3 && str[str.length() - 1] == 'r' && str[str.length() - 2] == 'o' && str[str.length() - 3] == 'x') return true;
-	} else {
-		if(str.length() >= 3 && (signed char) str[str.length() - 2] < 0) {
-			str = str.substr(str.length() - 3);
-			if(str == "∧" || str == "∨" || str == "⊻" || str == "≤" || str == "≥" || str == "≠" || str == "∠" || str == expression_times_sign() || str == expression_divide_sign() || str == expression_add_sign() || str == expression_sub_sign()) {
-				return true;
-			}
-		}
-		if(str.length() >= 2) {
-			str = str.substr(str.length() - 2);
-			if(str == "¬" || str == expression_times_sign() || str == expression_divide_sign() || str == expression_add_sign() || str == expression_sub_sign()) return true;
-		}
-	}
-	return false;
-}
-
-void base_from_string(string str, int &base, Number &nbase, bool input_base) {
-	if(equalsIgnoreCase(str, "golden") || equalsIgnoreCase(str, "golden ratio") || str == "φ") base = BASE_GOLDEN_RATIO;
-	else if(equalsIgnoreCase(str, "roman") || equalsIgnoreCase(str, "roman")) base = BASE_ROMAN_NUMERALS;
-	else if(!input_base && (equalsIgnoreCase(str, "time") || equalsIgnoreCase(str, "time"))) base = BASE_TIME;
-	else if(str == "b26" || str == "B26") base = BASE_BIJECTIVE_26;
-	else if(equalsIgnoreCase(str, "bcd")) base = BASE_BINARY_DECIMAL;
-	else if(equalsIgnoreCase(str, "unicode")) base = BASE_UNICODE;
-	else if(equalsIgnoreCase(str, "supergolden") || equalsIgnoreCase(str, "supergolden ratio") || str == "ψ") base = BASE_SUPER_GOLDEN_RATIO;
-	else if(equalsIgnoreCase(str, "pi") || str == "π") base = BASE_PI;
-	else if(str == "e") base = BASE_E;
-	else if(str == "sqrt(2)" || str == "sqrt 2" || str == "sqrt2" || str == "√2") base = BASE_SQRT2;
-	else {
-		EvaluationOptions eo = evalops;
-		eo.parse_options.base = 10;
-		MathStructure m;
-		eo.approximation = APPROXIMATION_TRY_EXACT;
-		CALCULATOR->beginTemporaryStopMessages();
-		CALCULATOR->calculate(&m, CALCULATOR->unlocalizeExpression(str, eo.parse_options), 350, eo);
-		if(CALCULATOR->endTemporaryStopMessages()) {
-			base = BASE_CUSTOM;
-			nbase.clear();
-		} else if(m.isInteger() && m.number() >= 2 && m.number() <= 36) {
-			base = m.number().intValue();
-		} else {
-			base = BASE_CUSTOM;
-			nbase = m.number();
-		}
-	}
 }
 
 bool is_time(const MathStructure &m) {
@@ -2570,6 +1675,9 @@ void add_autocalculated_result_to_history() {
 }
 
 bool auto_calc_stopped_at_operator = false;
+bool autocalculation_stopped_at_operator() {
+	return auto_calc_stopped_at_operator;
+}
 
 bool test_parsed_comparison_gtk(const MathStructure &m) {
 	if(m.isComparison()) return true;
@@ -2616,7 +1724,7 @@ long int get_fixed_denominator_gtk2(const string &str, int &to_fraction, char sg
 	}
 	return fden;
 }
-long int get_fixed_denominator_gtk(const string &str, int &to_fraction, bool qalc_command = false) {
+long int get_fixed_denominator_gtk(const string &str, int &to_fraction, bool qalc_command) {
 	size_t n = 0;
 	if(str[0] == '-' || str[0] == '+') n = 1;
 	if(n > 0) return get_fixed_denominator_gtk2(str.substr(n, str.length() - n), to_fraction, str[0], qalc_command);
@@ -2632,7 +1740,7 @@ bool contains_fraction_gtk(const MathStructure &m) {
 }
 
 string prev_autocalc_str;
-MathStructure current_status_struct, mauto;
+MathStructure mauto;
 
 void do_auto_calc(int recalculate, string str) {
 	if(result_blocked() || calculation_blocked()) return;
@@ -2695,7 +1803,7 @@ void do_auto_calc(int recalculate, string str) {
 					if(last_is_operator(str, evalops.parse_options.base == 10) && (evalops.parse_options.base != BASE_ROMAN_NUMERALS || str[str.length() - 1] != '|' || str.find('|') == str.length() - 1)) {
 						size_t n = 1;
 						while(n < str.length() && (char) str[str.length() - n] < 0 && (unsigned char) str[str.length() - n] < 0xC0) n++;
-						if((b_to && n == 1 && (str[str.length() - 1] != ' ' || str[str.length() - 1] != '/')) || n == str.length() || (display_expression_status && !b_to && parsed_mstruct->equals(current_status_struct, true, true)) || ((!display_expression_status || b_to) && str.length() - n == prev_autocalc_str.length() && str.substr(0, str.length() - n) == prev_autocalc_str)) {
+						if((b_to && n == 1 && (str[str.length() - 1] != ' ' || str[str.length() - 1] != '/')) || n == str.length() || (display_expression_status && !b_to && parsed_mstruct->equals(current_parsed_expression(), true, true)) || ((!display_expression_status || b_to) && str.length() - n == prev_autocalc_str.length() && str.substr(0, str.length() - n) == prev_autocalc_str)) {
 							auto_calc_stopped_at_operator = true;
 							return;
 						}
@@ -2716,7 +1824,7 @@ void do_auto_calc(int recalculate, string str) {
 					}
 					if((c2.length() == 1 && is_in("*/^|&<>=)]", c2[0]) && (c2[0] != '|' || evalops.parse_options.base != BASE_ROMAN_NUMERALS)) || (c2.length() > 1 && (c2 == "∧" || c2 == "∨" || c2 == "⊻" || c2 == expression_times_sign() || c2 == expression_divide_sign() || c2 == SIGN_NOT_EQUAL || c2 == SIGN_GREATER_OR_EQUAL || c2 == SIGN_LESS_OR_EQUAL))) {
 						if(c1.empty() || (c1.length() == 1 && is_in(OPERATORS LEFT_PARENTHESIS, c1[0]) && c1[0] != '!' && (c1[0] != '|' || (evalops.parse_options.base != BASE_ROMAN_NUMERALS && c1 != "|")) && (c1[0] != '&' || c2 != "&") && (c1[0] != '/' || (c2 != "/" && c2 != expression_divide_sign())) && (c1[0] != '*' || (c2 != "*" && c2 != expression_times_sign())) && ((c1[0] != '>' && c1[0] != '<') || (c2 != "=" && c2 != c1)) && ((c2 != ">" && c2 == "<") || (c1[0] != '=' && c1 != c2))) || (c1.length() > 1 && (c1 == "∧" || c1 == "∨" || c1 == "⊻" || c1 == SIGN_NOT_EQUAL || c1 == SIGN_GREATER_OR_EQUAL || c1 == SIGN_LESS_OR_EQUAL || (c1 == expression_times_sign() && c2 != "*" && c2 != expression_times_sign()) || (c1 == expression_divide_sign() && c2 != "/" && c2 != expression_divide_sign()) || c1 == expression_add_sign() || c1 == expression_sub_sign()))) {
-							if(parsed_mstruct->equals(current_status_struct, true, true)) {
+							if(parsed_mstruct->equals(current_parsed_expression(), true, true)) {
 								auto_calc_stopped_at_operator = true;
 								if(parsed_in_result) {
 									result_text = "";
@@ -2988,15 +2096,8 @@ void do_auto_calc(int recalculate, string str) {
 				}
 			}
 		}
-		if(origstr && str_conv.empty() && continuous_conversion && gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) && !minimal_mode) {
-			ParseOptions pa = evalops.parse_options; pa.base = 10;
-			string ceu_str = CALCULATOR->unlocalizeExpression(current_conversion_expression(), pa);
-			remove_blank_ends(ceu_str);
-			if(set_missing_prefixes && !ceu_str.empty()) {
-				if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-' && (ceu_str.length() == 1 || ceu_str[1] != '?')) {
-					ceu_str = "?" + ceu_str;
-				}
-			}
+		if(origstr && str_conv.empty() && conversionview_continuous_conversion() && gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) && !minimal_mode) {
+			string ceu_str = current_conversion_expression();
 			if(ceu_str.empty()) {
 				parsed_tostruct->setUndefined();
 			} else {
@@ -3165,18 +2266,6 @@ void do_auto_calc(int recalculate, string str) {
 
 		MathStructure *displayed_mstruct_pre = new MathStructure();
 		displayed_mstruct_pre->set(parsed_in_result ? mauto : *mstruct);
-		if(printops.interval_display == INTERVAL_DISPLAY_INTERVAL) replace_interval_with_function(*displayed_mstruct_pre);
-
-		printops.allow_non_usable = true;
-		printops.can_display_unicode_string_arg = (void*) resultview;
-
-		date_map.clear();
-		date_approx_map.clear();
-		number_map.clear();
-		number_base_map.clear();
-		number_exp_map.clear();
-		number_exp_minus_map.clear();
-		number_approx_map.clear();
 
 		// convert time units to hours when using time format
 		if(printops.base == BASE_TIME && is_time(*displayed_mstruct_pre)) {
@@ -3203,18 +2292,17 @@ void do_auto_calc(int recalculate, string str) {
 		if(parsed_in_result) {
 			PrintOptions po = printops;
 			po.base_display = BASE_DISPLAY_SUFFIX;
+			po.can_display_unicode_string_arg = (void*) gtk_builder_get_object(main_builder, "label_status_left");
+			po.allow_non_usable = true;
 			result_text = displayed_mstruct_pre->print(printops, true);
 			result_text_approximate = *po.is_approximate;
 			fix_history_string_new2(result_text);
 			gsub("&nbsp;", " ", result_text);
-			printops.can_display_unicode_string_arg = NULL;
-			printops.allow_non_usable = false;
 			result_text_long = "";
 			if(CALCULATOR->aborted()) {
 				CALCULATOR->endTemporaryStopMessages();
 				result_text = "";
 				result_autocalculated = false;
-				displayed_mstruct_pre->unref();
 			} else {
 				CALCULATOR->endTemporaryStopMessages(true);
 				if(complex_angle_form) replace_result_cis_gtk(result_text);
@@ -3224,40 +2312,20 @@ void do_auto_calc(int recalculate, string str) {
 				}
 				result_autocalculated = true;
 			}
+			displayed_mstruct_pre->unref();
 			display_parse_status();
 		} else {
-			tmp_surface = draw_structure(*displayed_mstruct_pre, printops, complex_angle_form, top_ips, NULL, 0);
-			printops.can_display_unicode_string_arg = NULL;
-			printops.allow_non_usable = false;
-			if(tmp_surface && CALCULATOR->aborted()) {
-				CALCULATOR->endTemporaryStopMessages();
-				cairo_surface_destroy(tmp_surface);
-				tmp_surface = NULL;
-				clearresult();
-				displayed_mstruct_pre->unref();
+			bool b = draw_result(displayed_mstruct_pre);
+			CALCULATOR->endTemporaryStopMessages(b);
+			if(b) {
 				result_autocalculated = true;
-			} else if(tmp_surface) {
-				CALCULATOR->endTemporaryStopMessages(true);
-				scale_n = 0;
-				showing_first_time_message = false;
-				if(surface_result) cairo_surface_destroy(surface_result);
-				if(displayed_mstruct) displayed_mstruct->unref();
-				displayed_mstruct = displayed_mstruct_pre;
-				displayed_printops = printops;
-				displayed_printops.allow_non_usable = true;
-				displayed_caf = complex_angle_form;
-				result_autocalculated = true;
-				display_aborted = false;
-				surface_result = tmp_surface;
-				first_draw_of_result = true;
 				minimal_mode_show_resultview();
-				gtk_widget_queue_draw(resultview);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), true);
-				gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), true);
-				if(autocalc_history_timeout_id == 0 || ((printops.base == BASE_BINARY || (printops.base <= BASE_FP16 && printops.base >= BASE_FP80)) && displayed_mstruct->isInteger())) {
+				if(autocalc_history_timeout_id == 0 || ((printops.base == BASE_BINARY || (printops.base <= BASE_FP16 && printops.base >= BASE_FP80)) && current_displayed_result()->isInteger())) {
 					PrintOptions po = printops;
 					po.base_display = BASE_DISPLAY_SUFFIX;
-					result_text = displayed_mstruct->print(po, true);
+					po.can_display_unicode_string_arg = (void*) mainwindow;
+					po.allow_non_usable = true;
+					result_text = current_displayed_result()->print(po, true);
 					gsub("&nbsp;", " ", result_text);
 					if(complex_angle_form) replace_result_cis_gtk(result_text);
 				} else {
@@ -3267,13 +2335,9 @@ void do_auto_calc(int recalculate, string str) {
 				gtk_widget_set_tooltip_text(resultview, "");
 				if(!display_errors(NULL, 1)) update_expression_icons(EXPRESSION_CLEAR);
 				if(visible_keypad & PROGRAMMING_KEYPAD) {
-					set_result_bases(*displayed_mstruct);
+					set_result_bases(*current_displayed_result());
 					update_result_bases();
 				}
-			} else {
-				displayed_mstruct_pre->unref();
-				CALCULATOR->endTemporaryStopMessages();
-				clearresult();
 			}
 		}
 		CALCULATOR->stopControl();
@@ -3314,6 +2378,35 @@ void print_auto_calc() {
 	do_auto_calc(false);
 }
 
+void toggle_binary_pos(int pos) {
+	size_t index = result_text.find("<");
+	string new_binary = result_text;
+	if(index != string::npos) new_binary = new_binary.substr(0, index);
+	index = new_binary.length();
+	int n = 0;
+	for(; index > 0; index--) {
+		if(result_text[index - 1] == '0' || result_text[index - 1] == '1') {
+			if(n == pos) break;
+			n++;
+		} else if(result_text[index - 1] != ' ') {
+			index = 0;
+			break;
+		}
+	}
+	if(index > 0) {
+		index--;
+		if(new_binary[index] == '1') new_binary[index] = '0';
+		else new_binary[index] = '1';
+		ParseOptions po;
+		po.base = BASE_BINARY;
+		po.twos_complement = printops.twos_complement;
+		gsub(SIGN_MINUS, "-", new_binary);
+		Number nr(new_binary, po);
+		set_expression_text(print_with_evalops(nr).c_str());
+		if(rpn_mode || !auto_calculate || parsed_in_result) execute_expression();
+	}
+}
+
 void autocalc_result_bases() {
 	string str = CALCULATOR->unlocalizeExpression(get_expression_text(), evalops.parse_options);
 	CALCULATOR->parseSigns(str);
@@ -3339,7 +2432,6 @@ void handle_expression_modified(bool autocalc) {
 	if(!parsed_in_result || rpn_mode) display_parse_status();
 	if(autocalc && !rpn_mode && auto_calculate && !parsed_in_result) do_auto_calc(2);
 	if(result_text.empty() && !autocalc_history_timeout_id && (!parsed_in_result || rpn_mode) && (!chain_mode || auto_calculate)) return;
-	if(!dont_change_index) expression_history_index = -1;
 	if((!autocalc || !auto_calculate || parsed_in_result) && !rpn_mode) {
 		clearresult();
 	}
@@ -3351,7 +2443,7 @@ void handle_expression_modified(bool autocalc) {
 }
 
 bool do_chain_mode(const gchar *op) {
-	if(!rpn_mode && chain_mode && !current_function && evalops.parse_options.base != BASE_UNICODE && (evalops.parse_options.base != BASE_CUSTOM || (CALCULATOR->customInputBase() <= 62 && CALCULATOR->customInputBase() >= -62))) {
+	if(!rpn_mode && chain_mode && !current_parsed_function() && evalops.parse_options.base != BASE_UNICODE && (evalops.parse_options.base != BASE_CUSTOM || (CALCULATOR->customInputBase() <= 62 && CALCULATOR->customInputBase() >= -62))) {
 		GtkTextIter iend, istart;
 		gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iend, gtk_text_buffer_get_insert(expressionbuffer));
 		if(gtk_text_buffer_get_has_selection(expressionbuffer)) {
@@ -3394,9 +2486,6 @@ bool do_chain_mode(const gchar *op) {
 	}
 	return false;
 }
-
-MathStructure *current_from_struct = NULL;
-vector<Unit*> current_from_units;
 
 Unit *find_exact_matching_unit2(const MathStructure &m) {
 	switch(m.type()) {
@@ -3573,606 +2662,6 @@ void find_matching_units(const MathStructure &m, const MathStructure *mparse, ve
 			}
 		}
 	}
-}
-
-#define CLEAR_PARSED_IN_RESULT \
-	if(surface_parsed) {\
-		cairo_surface_destroy(surface_parsed);\
-		surface_parsed = NULL;\
-		if(!surface_result) {\
-			gtk_widget_queue_draw(resultview);\
-			minimal_mode_show_resultview(false);\
-		}\
-	}
-
-MathStructure mwhere;
-vector<MathStructure> displayed_parsed_to;
-
-void set_expression_output_updated(bool b) {
-	expression_has_changed2 = b;
-}
-bool expression_output_updated() {
-	return expression_has_changed2;
-}
-
-void display_parse_status() {
-	current_function = NULL;
-	if(auto_calculate && !rpn_mode && expression_output_updated()) current_status_struct.setAborted();
-	if(!display_expression_status) return;
-	if(block_display_parse) return;
-	GtkTextIter istart, iend, ipos;
-	gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
-	gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
-	gchar *gtext = gtk_text_buffer_get_text(expressionbuffer, &istart, &iend, FALSE);
-	string text = gtext, str_f;
-	g_free(gtext);
-	bool double_tag = false;
-	string to_str = CALCULATOR->parseComments(text, evalops.parse_options, &double_tag);
-	if(!to_str.empty() && text.empty() && double_tag) {
-		text = CALCULATOR->f_message->referenceName();
-		text += "(";
-		if(to_str.find("\"") == string::npos) {text += "\""; text += to_str; text += "\"";}
-		else if(to_str.find("\'") == string::npos) {text += "\'"; text += to_str; text += "\'";}
-		else text += to_str;
-		text += ")";
-	}
-	if(text.empty()) {
-		set_status_text("", true, false, false);
-		parsed_expression = "";
-		parsed_expression_tooltip = "";
-		set_expression_output_updated(false);
-		CLEAR_PARSED_IN_RESULT
-		return;
-	}
-	if(text[0] == '/' && text.length() > 1) {
-		size_t i = text.find_first_not_of(SPACES, 1);
-		if(i != string::npos && (signed char) text[i] > 0 && is_not_in(NUMBER_ELEMENTS OPERATORS, text[i])) {
-			set_status_text("qalc command", true, false, false);
-			status_text_source = STATUS_TEXT_OTHER;
-			CLEAR_PARSED_IN_RESULT
-			return;
-		}
-	} else if(text == "MC") {
-		set_status_text(_("MC (memory clear)"), true, false, false);
-		status_text_source = STATUS_TEXT_OTHER;
-		CLEAR_PARSED_IN_RESULT
-		return;
-	} else if(text == "MS") {
-		set_status_text(_("MS (memory store)"), true, false, false);
-		status_text_source = STATUS_TEXT_OTHER;
-		CLEAR_PARSED_IN_RESULT
-		return;
-	} else if(text == "M+") {
-		set_status_text(_("M+ (memory plus)"), true, false, false);
-		status_text_source = STATUS_TEXT_OTHER;
-		CLEAR_PARSED_IN_RESULT
-		return;
-	} else if(text == "M-" || text == "M−") {
-		set_status_text(_("M− (memory minus)"), true, false, false);
-		status_text_source = STATUS_TEXT_OTHER;
-		CLEAR_PARSED_IN_RESULT
-		return;
-	}
-	gsub(ID_WRAP_LEFT, LEFT_PARENTHESIS, text);
-	gsub(ID_WRAP_RIGHT, RIGHT_PARENTHESIS, text);
-	remove_duplicate_blanks(text);
-	size_t i = text.find_first_of(SPACES LEFT_PARENTHESIS);
-	if(i != string::npos) {
-		str_f = text.substr(0, i);
-		if(str_f == "factor" || equalsIgnoreCase(str_f, "factorize") || equalsIgnoreCase(str_f, _("factorize"))) {
-			text = text.substr(i + 1);
-			str_f = _("factorize");
-		} else if(equalsIgnoreCase(str_f, "expand") || equalsIgnoreCase(str_f, _("expand"))) {
-			text = text.substr(i + 1);
-			str_f = _("expand");
-		} else {
-			str_f = "";
-		}
-	}
-	GtkTextMark *mark = gtk_text_buffer_get_insert(expressionbuffer);
-	if(mark) gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mark);
-	else ipos = iend;
-	MathStructure mparse, mfunc;
-	bool full_parsed = false;
-	string str_e, str_u, str_w;
-	bool had_errors = false, had_warnings = false;
-	if(!simplified_percentage) evalops.parse_options.parsing_mode = (ParsingMode) (evalops.parse_options.parsing_mode | PARSE_PERCENT_AS_ORDINARY_CONSTANT);
-	evalops.parse_options.preserve_format = true;
-	on_display_errors_timeout(NULL);
-	block_error();
-	if(!gtk_text_iter_is_start(&ipos)) {
-		evalops.parse_options.unended_function = &mfunc;
-		if(!gtk_text_iter_is_end(&ipos)) {
-			if(current_from_struct) {current_from_struct->unref(); current_from_struct = NULL; current_from_units.clear();}
-			gtext = gtk_text_buffer_get_text(expressionbuffer, &istart, &ipos, FALSE);
-			str_e = CALCULATOR->unlocalizeExpression(gtext, evalops.parse_options);
-			bool b = CALCULATOR->separateToExpression(str_e, str_u, evalops, false, !auto_calculate || rpn_mode || parsed_in_result);
-			b = CALCULATOR->separateWhereExpression(str_e, str_w, evalops) || b;
-			if(!b) {
-				CALCULATOR->beginTemporaryStopMessages();
-				CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
-				CALCULATOR->endTemporaryStopMessages();
-			}
-			g_free(gtext);
-		} else {
-			str_e = CALCULATOR->unlocalizeExpression(text, evalops.parse_options);
-			transform_expression_for_equals_save(str_e, evalops.parse_options);
-			bool b = CALCULATOR->separateToExpression(str_e, str_u, evalops, false, !auto_calculate || rpn_mode || parsed_in_result);
-			b = CALCULATOR->separateWhereExpression(str_e, str_w, evalops) || b;
-			if(!b) {
-				CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
-				if(current_from_struct) {current_from_struct->unref(); current_from_struct = NULL; current_from_units.clear();}
-				full_parsed = true;
-			}
-		}
-		evalops.parse_options.unended_function = NULL;
-	}
-	bool b_func = false;
-	if(mfunc.isFunction()) {
-		current_function = mfunc.function();
-		if(mfunc.countChildren() == 0) {
-			current_function_index = 1;
-			b_func = display_function_hint(mfunc.function(), 1);
-		} else {
-			current_function_index = mfunc.countChildren();
-			b_func = display_function_hint(mfunc.function(), mfunc.countChildren());
-		}
-	}
-	if(expression_output_updated()) {
-		bool last_is_space = false;
-		parsed_expression_tooltip = "";
-		if(!full_parsed) {
-			str_e = CALCULATOR->unlocalizeExpression(text, evalops.parse_options);
-			transform_expression_for_equals_save(str_e, evalops.parse_options);
-			last_is_space = is_in(SPACES, str_e[str_e.length() - 1]);
-			bool b_to = CALCULATOR->separateToExpression(str_e, str_u, evalops, true, !auto_calculate || rpn_mode || parsed_in_result);
-			CALCULATOR->separateWhereExpression(str_e, str_w, evalops);
-			if(!str_e.empty()) CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
-			if(b_to && !str_e.empty()) {
-				if(!current_from_struct && !mparse.containsFunction(CALCULATOR->f_save) && (!CALCULATOR->f_plot || !mparse.containsFunction(CALCULATOR->f_plot))) {
-					current_from_struct = new MathStructure;
-					EvaluationOptions eo = evalops;
-					eo.structuring = STRUCTURING_NONE;
-					eo.mixed_units_conversion = MIXED_UNITS_CONVERSION_NONE;
-					eo.auto_post_conversion = POST_CONVERSION_NONE;
-					eo.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
-					eo.expand = -2;
-					if(!CALCULATOR->calculate(current_from_struct, str_w.empty() ? str_e : str_e + "/." + str_w, 20, eo)) current_from_struct->setAborted();
-					find_matching_units(*current_from_struct, &mparse, current_from_units);
-				}
-			} else if(current_from_struct) {
-				current_from_struct->unref();
-				current_from_struct = NULL;
-				current_from_units.clear();
-			}
-		}
-		if(auto_calculate && !rpn_mode) current_status_struct = mparse;
-		PrintOptions po;
-		po.preserve_format = true;
-		po.show_ending_zeroes = evalops.parse_options.read_precision != DONT_READ_PRECISION && !CALCULATOR->usesIntervalArithmetic() && evalops.parse_options.base > BASE_CUSTOM;
-		po.exp_display = printops.exp_display;
-		po.lower_case_numbers = printops.lower_case_numbers;
-		po.base_display = printops.base_display;
-		po.twos_complement = printops.twos_complement;
-		po.hexadecimal_twos_complement = printops.hexadecimal_twos_complement;
-		po.round_halfway_to_even = printops.round_halfway_to_even;
-		po.base = evalops.parse_options.base;
-		Number nr_base;
-		if(po.base == BASE_CUSTOM && (CALCULATOR->usesIntervalArithmetic() || CALCULATOR->customInputBase().isRational()) && (CALCULATOR->customInputBase().isInteger() || !CALCULATOR->customInputBase().isNegative()) && (CALCULATOR->customInputBase() > 1 || CALCULATOR->customInputBase() < -1)) {
-			nr_base = CALCULATOR->customOutputBase();
-			CALCULATOR->setCustomOutputBase(CALCULATOR->customInputBase());
-		} else if(po.base == BASE_CUSTOM || (po.base < BASE_CUSTOM && !CALCULATOR->usesIntervalArithmetic() && po.base != BASE_UNICODE && po.base != BASE_BIJECTIVE_26 && po.base != BASE_BINARY_DECIMAL)) {
-			po.base = 10;
-			po.min_exp = 6;
-			po.use_max_decimals = true;
-			po.max_decimals = 5;
-			po.preserve_format = false;
-		}
-		po.abbreviate_names = false;
-		po.hide_underscore_spaces = true;
-		po.use_unicode_signs = printops.use_unicode_signs;
-		po.digit_grouping = printops.digit_grouping;
-		po.multiplication_sign = printops.multiplication_sign;
-		po.division_sign = printops.division_sign;
-		po.short_multiplication = false;
-		po.excessive_parenthesis = true;
-		po.improve_division_multipliers = false;
-		po.can_display_unicode_string_function = &can_display_unicode_string_function;
-		po.can_display_unicode_string_arg = (void*) statuslabel_l;
-		po.spell_out_logical_operators = printops.spell_out_logical_operators;
-		po.restrict_to_parent_precision = false;
-		po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
-		size_t parse_l = 0;
-		mwhere.clear();
-		if(!str_w.empty()) {
-			CALCULATOR->beginTemporaryStopMessages();
-			CALCULATOR->parseExpressionAndWhere(&mparse, &mwhere, str_e, str_w, evalops.parse_options);
-			mparse.format(po);
-			parsed_expression = mparse.print(po, true, false, TAG_TYPE_HTML);
-			parse_l = parsed_expression.length();
-			parsed_expression += CALCULATOR->localWhereString();
-			mwhere.format(po);
-			parsed_expression += mwhere.print(po, true, false, TAG_TYPE_HTML);
-			CALCULATOR->endTemporaryStopMessages();
-		} else if(str_e.empty()) {
-			parsed_expression = "";
-		} else {
-			CALCULATOR->beginTemporaryStopMessages();
-			mparse.format(po);
-			parsed_expression = mparse.print(po, true, false, TAG_TYPE_HTML);
-			parse_l = parsed_expression.length();
-			CALCULATOR->endTemporaryStopMessages();
-		}
-		displayed_parsed_to.clear();
-		if(!str_u.empty()) {
-			string str_u2;
-			bool had_to_conv = false;
-			MathStructure *mparse2 = NULL;
-			while(true) {
-				bool unit_struct = false;
-				if(last_is_space) str_u += " ";
-				CALCULATOR->separateToExpression(str_u, str_u2, evalops, true, false);
-				remove_blank_ends(str_u);
-				if(parsed_expression.empty()) {
-					parsed_expression += CALCULATOR->localToString(false);
-					parsed_expression += " ";
-				} else {
-					parsed_expression += CALCULATOR->localToString();
-				}
-				size_t to_begin = parsed_expression.length();
-				remove_duplicate_blanks(str_u);
-				string to_str1, to_str2;
-				size_t ispace = str_u.find_first_of(SPACES);
-				if(ispace != string::npos) {
-					to_str1 = str_u.substr(0, ispace);
-					remove_blank_ends(to_str1);
-					to_str2 = str_u.substr(ispace + 1);
-					remove_blank_ends(to_str2);
-				}
-				if(equalsIgnoreCase(str_u, "hex") || equalsIgnoreCase(str_u, "hexadecimal") || equalsIgnoreCase(str_u, _("hexadecimal"))) {
-					parsed_expression += _("hexadecimal number");
-				} else if(equalsIgnoreCase(str_u, "oct") || equalsIgnoreCase(str_u, "octal") || equalsIgnoreCase(str_u, _("octal"))) {
-					parsed_expression += _("octal number");
-				} else if(equalsIgnoreCase(str_u, "dec") || equalsIgnoreCase(str_u, "decimal") || equalsIgnoreCase(str_u, _("decimal"))) {
-					parsed_expression += _("decimal number");
-				} else if(equalsIgnoreCase(str_u, "duo") || equalsIgnoreCase(str_u, "duodecimal") || equalsIgnoreCase(str_u, _("duodecimal"))) {
-					parsed_expression += _("duodecimal number");
-				} else if(equalsIgnoreCase(str_u, "doz") || equalsIgnoreCase(str_u, "dozenal")) {
-					parsed_expression += _("duodecimal number");
-				} else if(equalsIgnoreCase(str_u, "bin") || equalsIgnoreCase(str_u, "binary") || equalsIgnoreCase(str_u, _("binary"))) {
-					parsed_expression += _("binary number");
-				} else if(equalsIgnoreCase(str_u, "roman") || equalsIgnoreCase(str_u, _("roman"))) {
-					parsed_expression += _("roman numerals");
-				} else if(equalsIgnoreCase(str_u, "bijective") || equalsIgnoreCase(str_u, _("bijective"))) {
-					parsed_expression += _("bijective base-26");
-				} else if(equalsIgnoreCase(str_u, "bcd")) {
-					parsed_expression += _("binary-coded decimal");
-				} else if(equalsIgnoreCase(str_u, "sexa") || equalsIgnoreCase(str_u, "sexa2") || equalsIgnoreCase(str_u, "sexa3") || equalsIgnoreCase(str_u, "sexagesimal") || equalsIgnoreCase(str_u, _("sexagesimal")) || EQUALS_IGNORECASE_AND_LOCAL_NR(str_u, "sexagesimal", _("sexagesimal"), "2") || EQUALS_IGNORECASE_AND_LOCAL_NR(str_u, "sexagesimal", _("sexagesimal"), "3")) {
-					parsed_expression += _("sexagesimal number");
-				} else if(equalsIgnoreCase(str_u, "latitude") || equalsIgnoreCase(str_u, _("latitude")) || EQUALS_IGNORECASE_AND_LOCAL_NR(to_str, "latitude", _("latitude"), "2")) {
-					parsed_expression += _("latitude");
-				} else if(equalsIgnoreCase(str_u, "longitude") || equalsIgnoreCase(str_u, _("longitude")) || EQUALS_IGNORECASE_AND_LOCAL_NR(to_str, "longitude", _("longitude"), "2")) {
-					parsed_expression += _("longitude");
-				} else if(equalsIgnoreCase(str_u, "fp32") || equalsIgnoreCase(str_u, "binary32") || equalsIgnoreCase(str_u, "float")) {
-					parsed_expression += _("32-bit floating point");
-				} else if(equalsIgnoreCase(str_u, "fp64") || equalsIgnoreCase(str_u, "binary64") || equalsIgnoreCase(str_u, "double")) {
-					parsed_expression += _("64-bit floating point");
-				} else if(equalsIgnoreCase(str_u, "fp16") || equalsIgnoreCase(str_u, "binary16")) {
-					parsed_expression += _("16-bit floating point");
-				} else if(equalsIgnoreCase(str_u, "fp80")) {
-					parsed_expression += _("80-bit (x86) floating point");
-				} else if(equalsIgnoreCase(str_u, "fp128") || equalsIgnoreCase(str_u, "binary128")) {
-					parsed_expression += _("128-bit floating point");
-				} else if(equalsIgnoreCase(str_u, "time") || equalsIgnoreCase(str_u, _("time"))) {
-					parsed_expression += _("time format");
-				} else if(equalsIgnoreCase(str_u, "unicode")) {
-					parsed_expression += _("Unicode");
-				} else if(equalsIgnoreCase(str_u, "bases") || equalsIgnoreCase(str_u, _("bases"))) {
-					parsed_expression += _("number bases");
-				} else if(equalsIgnoreCase(str_u, "calendars") || equalsIgnoreCase(str_u, _("calendars"))) {
-					parsed_expression += _("calendars");
-				} else if(equalsIgnoreCase(str_u, "optimal") || equalsIgnoreCase(str_u, _("optimal"))) {
-					parsed_expression += _("optimal unit");
-				} else if(equalsIgnoreCase(str_u, "prefix") || equalsIgnoreCase(str_u, _("prefix")) || str_u == "?" || (str_u.length() == 2 && str_u[1] == '?' && (str_u[0] == 'b' || str_u[0] == 'a' || str_u[0] == 'd'))) {
-					parsed_expression += _("optimal prefix");
-				} else if(equalsIgnoreCase(str_u, "base") || equalsIgnoreCase(str_u, _("base"))) {
-					parsed_expression += _("base units");
-				} else if(equalsIgnoreCase(str_u, "mixed") || equalsIgnoreCase(str_u, _("mixed"))) {
-					parsed_expression += _("mixed units");
-				} else if(equalsIgnoreCase(str_u, "factors") || equalsIgnoreCase(str_u, _("factors")) || equalsIgnoreCase(str_u, "factor")) {
-					parsed_expression += _("factors");
-				} else if(equalsIgnoreCase(str_u, "partial fraction") || equalsIgnoreCase(str_u, _("partial fraction"))) {
-					parsed_expression += _("expanded partial fractions");
-				} else if(equalsIgnoreCase(str_u, "rectangular") || equalsIgnoreCase(str_u, "cartesian") || equalsIgnoreCase(str_u, _("rectangular")) || equalsIgnoreCase(str_u, _("cartesian"))) {
-					parsed_expression += _("complex rectangular form");
-				} else if(equalsIgnoreCase(str_u, "exponential") || equalsIgnoreCase(str_u, _("exponential"))) {
-					parsed_expression += _("complex exponential form");
-				} else if(equalsIgnoreCase(str_u, "polar") || equalsIgnoreCase(str_u, _("polar"))) {
-					parsed_expression += _("complex polar form");
-				} else if(str_u == "cis") {
-					parsed_expression += _("complex cis form");
-				} else if(equalsIgnoreCase(str_u, "angle") || equalsIgnoreCase(str_u, _("angle"))) {
-					parsed_expression += _("complex angle notation");
-				} else if(equalsIgnoreCase(str_u, "phasor") || equalsIgnoreCase(str_u, _("phasor"))) {
-					parsed_expression += _("complex phasor notation");
-				} else if(equalsIgnoreCase(str_u, "utc") || equalsIgnoreCase(str_u, "gmt")) {
-					parsed_expression += _("UTC time zone");
-				} else if(str_u.length() > 3 && (equalsIgnoreCase(str_u.substr(0, 3), "utc") || equalsIgnoreCase(str_u.substr(0, 3), "gmt"))) {
-					str_u = str_u.substr(3);
-					parsed_expression += "UTC";
-					remove_blanks(str_u);
-					bool b_minus = false;
-					if(str_u[0] == '+') {
-						str_u.erase(0, 1);
-					} else if(str_u[0] == '-') {
-						b_minus = true;
-						str_u.erase(0, 1);
-					} else if(str_u.find(SIGN_MINUS) == 0) {
-						b_minus = true;
-						str_u.erase(0, strlen(SIGN_MINUS));
-					}
-					unsigned int tzh = 0, tzm = 0;
-					int itz = 0;
-					if(!str_u.empty() && sscanf(str_u.c_str(), "%2u:%2u", &tzh, &tzm) > 0) {
-						itz = tzh * 60 + tzm;
-					} else {
-						had_errors = true;
-					}
-					if(itz > 0) {
-						if(b_minus) parsed_expression += '-';
-						else parsed_expression += '+';
-						if(itz < 60) {
-							parsed_expression += "00";
-						} else {
-							if(itz < 60 * 10) parsed_expression += '0';
-							parsed_expression += i2s(itz / 60);
-						}
-						if(itz % 60 > 0) {
-							parsed_expression += ":";
-							if(itz % 60 < 10) parsed_expression += '0';
-							parsed_expression += i2s(itz % 60);
-						}
-					}
-				} else if(str_u.length() > 3 && equalsIgnoreCase(str_u.substr(0, 3), "bin") && is_in(NUMBERS, str_u[3])) {
-					unsigned int bits = s2i(str_u.substr(3));
-					if(bits > 4096) bits = 4096;
-					parsed_expression += i2s(bits);
-					parsed_expression += "-bit ";
-					parsed_expression += _("binary number");
-				} else if(str_u.length() > 3 && equalsIgnoreCase(str_u.substr(0, 3), "hex") && is_in(NUMBERS, str_u[3])) {
-					unsigned int bits = s2i(str_u.substr(3));
-					if(bits > 4096) bits = 4096;
-					parsed_expression += i2s(bits);
-					parsed_expression += "-bit ";
-					parsed_expression += _("hexadecimal number");
-				} else if(str_u == "CET") {
-					parsed_expression += "UTC";
-					parsed_expression += "+01";
-				} else if(equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _("base"))) {
-					gchar *gstr = g_strdup_printf(_("number base %s"), to_str2.c_str());
-					parsed_expression += gstr;
-					g_free(gstr);
-
-				} else if(equalsIgnoreCase(str_u, "decimals") || equalsIgnoreCase(str_u, _("decimals"))) {
-					parsed_expression += _("decimal fraction");
-				} else {
-					int tofr = 0;
-					long int fden = get_fixed_denominator_gtk(unlocalize_expression(str_u), tofr);
-					if(fden > 0) {
-						parsed_expression += _("fraction");
-						parsed_expression += " (";
-						parsed_expression += "1/";
-						parsed_expression += i2s(fden);
-						parsed_expression += ")";
-					} else if(fden < 0) {
-						parsed_expression += _("fraction");
-					} else {
-						if(str_u[0] == '0' || str_u[0] == '?' || str_u[0] == '+' || str_u[0] == '-') {
-							str_u = str_u.substr(1, str_u.length() - 1);
-							remove_blank_ends(str_u);
-						} else if(str_u.length() > 1 && str_u[1] == '?' && (str_u[0] == 'b' || str_u[0] == 'a' || str_u[0] == 'd')) {
-							str_u = str_u.substr(2, str_u.length() - 2);
-							remove_blank_ends(str_u);
-						}
-						MathStructure mparse_to;
-						Unit *u = CALCULATOR->getActiveUnit(str_u);
-						if(!u) u = CALCULATOR->getCompositeUnit(str_u);
-						Variable *v = NULL;
-						if(!u) v = CALCULATOR->getActiveVariable(str_u);
-						if(v && !v->isKnown()) v = NULL;
-						Prefix *p = NULL;
-						if(!u && !v && CALCULATOR->unitNameIsValid(str_u)) p = CALCULATOR->getPrefix(str_u);
-						if(u) {
-							mparse_to = u;
-							if(!had_to_conv && !str_e.empty()) {
-								CALCULATOR->beginTemporaryStopMessages();
-								MathStructure to_struct = get_units_for_parsed_expression(&mparse, u, evalops, current_from_struct && !current_from_struct->isAborted() ? current_from_struct : NULL);
-								if(!to_struct.isZero()) {
-									mparse2 = new MathStructure();
-									CALCULATOR->parse(mparse2, str_e, evalops.parse_options);
-									po.preserve_format = false;
-									to_struct.format(po);
-									po.preserve_format = true;
-									if(to_struct.isMultiplication() && to_struct.size() >= 2) {
-										if(to_struct[0].isOne()) to_struct.delChild(1, true);
-										else if(to_struct[1].isOne()) to_struct.delChild(2, true);
-									}
-									mparse2->multiply(to_struct);
-								}
-								CALCULATOR->endTemporaryStopMessages();
-							}
-						} else if(v) {
-							mparse_to = v;
-						} else if(!p) {
-							CALCULATOR->beginTemporaryStopMessages();
-							CompositeUnit cu("", evalops.parse_options.limit_implicit_multiplication ? "01" : "00", "", str_u);
-							int i_warn = 0, i_error = CALCULATOR->endTemporaryStopMessages(NULL, &i_warn);
-							if(!had_to_conv && cu.countUnits() > 0 && !str_e.empty()) {
-								CALCULATOR->beginTemporaryStopMessages();
-								MathStructure to_struct = get_units_for_parsed_expression(&mparse, &cu, evalops, current_from_struct && !current_from_struct->isAborted() ? current_from_struct : NULL);
-								if(!to_struct.isZero()) {
-									mparse2 = new MathStructure();
-									CALCULATOR->parse(mparse2, str_e, evalops.parse_options);
-									po.preserve_format = false;
-									to_struct.format(po);
-									po.preserve_format = true;
-									if(to_struct.isMultiplication() && to_struct.size() >= 2) {
-										if(to_struct[0].isOne()) to_struct.delChild(1, true);
-										else if(to_struct[1].isOne()) to_struct.delChild(2, true);
-									}
-									mparse2->multiply(to_struct);
-								}
-								CALCULATOR->endTemporaryStopMessages();
-							}
-							if(i_error) {
-								ParseOptions pa = evalops.parse_options;
-								pa.units_enabled = true;
-								CALCULATOR->parse(&mparse_to, str_u, pa);
-							} else {
-								if(i_warn > 0) had_warnings = true;
-								mparse_to = cu.generateMathStructure(true);
-							}
-							mparse_to.format(po);
-						}
-						if(p) {
-							parsed_expression += p->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, false, po.can_display_unicode_string_function, po.can_display_unicode_string_arg).formattedName(-1, true, TAG_TYPE_HTML, 0, true, po.hide_underscore_spaces);
-						} else {
-							CALCULATOR->beginTemporaryStopMessages();
-							parsed_expression += mparse_to.print(po, true, false, TAG_TYPE_HTML);
-							CALCULATOR->endTemporaryStopMessages();
-							if(parsed_in_result || show_parsed_instead_of_result) displayed_parsed_to.push_back(mparse_to);
-							unit_struct = true;
-						}
-						had_to_conv = true;
-					}
-					if((parsed_in_result || show_parsed_instead_of_result) && !unit_struct && to_begin < parsed_expression.length()) {
-						displayed_parsed_to.push_back(MathStructure(string("to expression:") + parsed_expression.substr(to_begin), true));
-					}
-				}
-				if(str_u2.empty()) break;
-				str_u = str_u2;
-			}
-			if(mparse2) {
-				mparse2->format(po);
-				parsed_expression.replace(0, parse_l, mparse2->print(po, true, false, TAG_TYPE_HTML));
-				if(parsed_in_result || show_parsed_instead_of_result) mparse.set_nocopy(*mparse2);
-				mparse2->unref();
-			}
-		}
-		if(po.base == BASE_CUSTOM) CALCULATOR->setCustomOutputBase(nr_base);
-		size_t message_n = 0;
-		if(result_autocalculated && ((parsed_in_result && !rpn_mode && !result_text.empty()) || show_parsed_instead_of_result)) {
-			CALCULATOR->clearMessages();
-			for(size_t i = 0; i < autocalc_messages.size(); i++) {
-				MessageType mtype = autocalc_messages[i].type();
-				if((mtype == MESSAGE_ERROR || mtype == MESSAGE_WARNING) && (!implicit_question_asked || autocalc_messages[i].category() != MESSAGE_CATEGORY_IMPLICIT_MULTIPLICATION)) {
-					if(mtype == MESSAGE_ERROR) had_errors = true;
-					else had_warnings = true;
-					if(message_n > 0) {
-						if(message_n == 1) parsed_expression_tooltip = "• " + parsed_expression_tooltip;
-						parsed_expression_tooltip += "\n• ";
-					}
-					parsed_expression_tooltip += autocalc_messages[i].message();
-					message_n++;
-				}
-			}
-		} else {
-			while(CALCULATOR->message()) {
-				MessageType mtype = CALCULATOR->message()->type();
-				if((mtype == MESSAGE_ERROR || mtype == MESSAGE_WARNING) && (!implicit_question_asked || CALCULATOR->message()->category() != MESSAGE_CATEGORY_IMPLICIT_MULTIPLICATION)) {
-					if(mtype == MESSAGE_ERROR) had_errors = true;
-					else had_warnings = true;
-					if(message_n > 0) {
-						if(message_n == 1) parsed_expression_tooltip = "• " + parsed_expression_tooltip;
-						parsed_expression_tooltip += "\n• ";
-					}
-					parsed_expression_tooltip += CALCULATOR->message()->message();
-					message_n++;
-				}
-				CALCULATOR->nextMessage();
-			}
-		}
-		unblock_error();
-		parsed_had_errors = had_errors; parsed_had_warnings = had_warnings;
-		if(!str_f.empty()) {str_f += " "; parsed_expression.insert(0, str_f);}
-		fix_history_string_new2(parsed_expression);
-		gsub("&nbsp;", " ", parsed_expression);
-		FIX_SUPSUB_PRE(statuslabel_l)
-		FIX_SUPSUB(parsed_expression)
-		if(show_parsed_instead_of_result || (parsed_in_result && !surface_result && !rpn_mode)) {
-			tmp_surface = draw_structure(parse_l == 0 ? m_undefined : mparse, po, complex_angle_form, top_ips, NULL, 3, NULL, NULL, NULL, -1, true, &mwhere, &displayed_parsed_to);
-			showing_first_time_message = false;
-			if(surface_parsed) cairo_surface_destroy(surface_parsed);
-			surface_parsed = tmp_surface;
-			first_draw_of_result = true;
-			parsed_printops = po;
-			if(!displayed_parsed_mstruct) displayed_parsed_mstruct = new MathStructure();
-			if(parse_l == 0) displayed_parsed_mstruct->setUndefined();
-			else displayed_parsed_mstruct->set_nocopy(mparse);
-			gtk_widget_queue_draw(resultview);
-			minimal_mode_show_resultview();
-			if((result_autocalculated || show_parsed_instead_of_result) && !result_text.empty()) {
-				string equalsstr;
-				if(result_text_approximate) {
-					if(printops.use_unicode_signs && (!printops.can_display_unicode_string_function || (*printops.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, (void*) statuslabel_l))) {
-						equalsstr = SIGN_ALMOST_EQUAL " ";
-					} else {
-						equalsstr = "= ";
-						equalsstr += _("approx.");
-					}
-				} else {
-					equalsstr = "= ";
-				}
-				set_status_text(equalsstr + result_text, false, parsed_had_errors, parsed_had_warnings, parsed_expression_tooltip);
-				status_text_source = STATUS_TEXT_AUTOCALC;
-			} else if((!auto_calc_stopped_at_operator || !result_autocalculated) && message_n >= 1 && !b_func && !last_is_operator(str_e)) {
-				size_t i = parsed_expression_tooltip.rfind("\n• ");
-				if(i == string::npos) set_status_text(parsed_expression_tooltip, false, had_errors, had_warnings);
-				else set_status_text(parsed_expression_tooltip.substr(i + strlen("\n• ")), false, had_errors, had_warnings, parsed_expression_tooltip);
-				status_text_source = STATUS_TEXT_ERROR;
-			} else if(!b_func) {
-				set_status_text("");
-			}
-		} else {
-			if(!b_func) {
-				set_status_text(parsed_expression.c_str(), true, had_errors, had_warnings, parsed_expression_tooltip);
-				status_text_source = STATUS_TEXT_PARSED;
-			}
-		}
-		set_expression_output_updated(false);
-	} else if(!b_func) {
-		CALCULATOR->clearMessages();
-		unblock_error();
-		if(show_parsed_instead_of_result || (parsed_in_result && !surface_result && !rpn_mode)) {
-			if(!result_text.empty() && (result_autocalculated || show_parsed_instead_of_result)) {
-				string equalsstr;
-				if(result_text_approximate) {
-					if(printops.use_unicode_signs && (!printops.can_display_unicode_string_function || (*printops.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, (void*) statuslabel_l))) {
-						equalsstr = SIGN_ALMOST_EQUAL " ";
-					} else {
-						equalsstr = "= ";
-						equalsstr += _("approx.");
-					}
-				} else {
-					equalsstr = "= ";
-				}
-				set_status_text(equalsstr + result_text, false, parsed_had_errors, parsed_had_warnings, parsed_expression_tooltip);
-				status_text_source = STATUS_TEXT_AUTOCALC;
-			} else if((!auto_calc_stopped_at_operator || !result_autocalculated) && !parsed_expression_tooltip.empty()) {
-				size_t i = parsed_expression_tooltip.rfind("\n• ");
-				if(i == string::npos) set_status_text(parsed_expression_tooltip, false, parsed_had_errors, parsed_had_warnings);
-				else set_status_text(parsed_expression_tooltip.substr(i + strlen("\n• ")), false, parsed_had_errors, parsed_had_warnings, parsed_expression_tooltip);
-				status_text_source = STATUS_TEXT_ERROR;
-			} else {
-				set_status_text("");
-			}
-		} else {
-			set_status_text(parsed_expression.c_str(), true, parsed_had_errors, parsed_had_warnings, parsed_expression_tooltip);
-			status_text_source = STATUS_TEXT_PARSED;
-		}
-	}
-	if(!simplified_percentage) evalops.parse_options.parsing_mode = (ParsingMode) (evalops.parse_options.parsing_mode & ~PARSE_PERCENT_AS_ORDINARY_CONSTANT);
-	evalops.parse_options.preserve_format = false;
 }
 
 void mainwindow_cursor_moved() {
@@ -4753,2824 +3242,13 @@ string get_value_string(const MathStructure &mstruct_, int type, Prefix *prefix)
 	return str;
 }
 
-void draw_background(cairo_t *cr, gint w, gint h) {
-/*	GdkRGBA rgba;
-	gtk_style_context_get_background_color(gtk_widget_get_style_context(resultview), gtk_widget_get_state_flags(resultview);, &rgba);
-	gdk_cairo_set_source_rgba(cr, &rgba);
-	cairo_rectangle(cr, 0, 0, w, h);
-	cairo_fill(cr);*/
-}
-
-#define PAR_SPACE 1
-#define PAR_WIDTH (scaledown + ips.power_depth > 1 ? par_width / 1.7 : (scaledown + ips.power_depth > 0 ? par_width / 1.4 : par_width)) + (PAR_SPACE * 2)
-
-cairo_surface_t *get_left_parenthesis(gint arc_w, gint arc_h, int, GdkRGBA *color) {
-	gint scalefactor = RESULT_SCALE_FACTOR;
-	cairo_surface_t *s = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, arc_w * scalefactor, arc_h * scalefactor);
-	cairo_surface_set_device_scale(s, scalefactor, scalefactor);
-	cairo_t *cr = cairo_create(s);
-	gdk_cairo_set_source_rgba(cr, color);
-	cairo_save(cr);
-	double hscale = 2;
-	double radius = arc_w - PAR_SPACE * 2;
-	if(radius * 2 * hscale > arc_h - 4) hscale = (arc_h - 4) / (radius * 2.0);
-	cairo_scale(cr, 1, hscale);
-	cairo_arc(cr, radius + PAR_SPACE, (arc_h - 2) / hscale - radius, radius, 1.8708, 3.14159);
-	cairo_arc(cr, radius + PAR_SPACE, radius + 2, radius, 3.14159, 4.41239);
-	cairo_restore(cr);
-	cairo_set_line_width(cr, arc_w > 7 ? 2 : 1);
-	cairo_stroke(cr);
-	cairo_destroy(cr);
-	return s;
-}
-cairo_surface_t *get_right_parenthesis(gint arc_w, gint arc_h, int, GdkRGBA *color) {
-	gint scalefactor = RESULT_SCALE_FACTOR;
-	cairo_surface_t *s = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, arc_w * scalefactor, arc_h * scalefactor);
-	cairo_surface_set_device_scale(s, scalefactor, scalefactor);
-	cairo_t *cr = cairo_create(s);
-	gdk_cairo_set_source_rgba(cr, color);
-	cairo_save(cr);
-	double hscale = 2;
-	double radius = arc_w - PAR_SPACE * 2;
-	if(radius * 2 * hscale > arc_h - 4) hscale = (arc_h - 4) / (radius * 2.0);
-	cairo_scale(cr, 1, hscale);
-	cairo_arc(cr, PAR_SPACE, radius + 2, radius, -1.2708, 0);
-	cairo_arc(cr, PAR_SPACE, (arc_h - 2) / hscale - radius, radius, 0, 1.2708);
-	cairo_restore(cr);
-	cairo_set_line_width(cr, arc_w > 7 ? 2 : 1);
-	cairo_stroke(cr);
-	cairo_destroy(cr);
-	return s;
-}
-
-void get_image_blank_width(cairo_surface_t *surface, int *x1, int *x2) {
-	int w = cairo_image_surface_get_width(surface);
-	int h = cairo_image_surface_get_height(surface);
-	unsigned char *data = cairo_image_surface_get_data(surface);
-	int stride = cairo_image_surface_get_stride(surface);
-	int first_col = w;
-	int last_col = -1;
-	for(int i = 0; i < h; i++) {
-		unsigned char *row = data + i * stride;
-		if(x1) {
-			for(int j = 0; j < first_col; j++) {
-				for(int s_i = 0; s_i < 4; s_i++) {
-					if(*(row + 4 * j + s_i) != 0) {
-						first_col = j;
-						if(first_col > last_col) last_col = first_col;
-						break;
-					}
-				}
-			}
-		}
-		if((first_col != w || !x1) && x2) {
-			for(int j = w - 1; j > last_col; j--) {
-				for(int s_i = 0; s_i < 4; s_i++) {
-					if(*(row + 4 * j + s_i) != 0) {
-						last_col = j;
-						break;
-					}
-				}
-			}
-		}
-	}
-	if(x1) *x1 = first_col;
-	if(x2) *x2 = last_col;
-}
-void get_image_blank_height(cairo_surface_t *surface, int *y1, int *y2) {
-	int w = cairo_image_surface_get_width(surface);
-	int h = cairo_image_surface_get_height(surface);
-	unsigned char *data = cairo_image_surface_get_data(surface);
-	int stride = cairo_image_surface_get_stride(surface);
-	if(y1) {
-		*y1 = 0;
-		for(int i = 0; i < h - 1; i++) {
-			unsigned char *row = data + i * stride;
-			for(int j = 0; j < w; j++) {
-				for(int s_i = 0; s_i < 4; s_i++) {
-					if(*(row + 4 * j + s_i) != 0) {
-						*y1 = i;
-						j = w; i = h;
-						break;
-					}
-				}
-			}
-		}
-	}
-	if(y2) {
-		*y2 = h;
-		for(int i = h - 1; i > 0; i--) {
-			unsigned char *row = data + i * stride;
-			for(int j = 0; j < w; j++) {
-				for(int s_i = 0; s_i < 4; s_i++) {
-					if(*(row + 4 * j + s_i) != 0) {
-						*y2 = i;
-						j = w; i = 0;
-						break;
-					}
-				}
-			}
-		}
-	}
-}
-
-#define SHOW_WITH_ROOT_SIGN(x) (x.isFunction() && ((x.function() == CALCULATOR->f_sqrt && x.size() == 1) || (x.function() == CALCULATOR->f_cbrt && x.size() == 1) || (x.function() == CALCULATOR->f_root && x.size() == 2 && x[1].isNumber() && x[1].number().isInteger() && x[1].number().isPositive() && x[1].number().isLessThan(10))))
-
-cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, InternalPrintStruct ips, gint *point_central, int scaledown, GdkRGBA *color, gint *x_offset, gint *w_offset, gint max_width, bool for_result_widget, MathStructure *where_struct, vector<MathStructure> *to_structs) {
-
-	if(for_result_widget && ips.depth == 0) {
-		binary_rect.clear();
-		binary_pos.clear();
-	}
-
-	if(CALCULATOR->aborted()) return NULL;
-
-	if(BASE_IS_SEXAGESIMAL(po.base) && m.isMultiplication() && m.size() == 2 && m[0].isNumber() && m[1].isUnit() && m[1].unit() == CALCULATOR->getDegUnit() && !po.preserve_format) {
-		return draw_structure(m[0], po, caf, ips, point_central, scaledown, color, x_offset, w_offset, max_width, for_result_widget);
-	}
-
-	gint scalefactor = RESULT_SCALE_FACTOR;
-
-	if(ips.depth == 0 && po.is_approximate) *po.is_approximate = false;
-
-	cairo_surface_t *surface = NULL;
-
-	GdkRGBA rgba;
-	if(!color) {
-		gtk_style_context_get_color(gtk_widget_get_style_context(resultview), GTK_STATE_FLAG_NORMAL, &rgba);
-		color = &rgba;
-	}
-	gint w, h;
-	gint central_point = 0;
-	gint offset_x = 0;
-	gint offset_w = 0;
-
-	InternalPrintStruct ips_n = ips;
-	if(m.isApproximate()) ips_n.parent_approximate = true;
-	if(m.precision() > 0 && (ips_n.parent_precision < 1 || m.precision() < ips_n.parent_precision)) ips_n.parent_precision = m.precision();
-
-	if(where_struct && where_struct->isZero()) where_struct = NULL;
-	if(to_structs && to_structs->empty()) to_structs = NULL;
-	if(to_structs || where_struct) {
-		ips_n.depth++;
-
-		vector<cairo_surface_t*> surface_terms;
-		vector<PangoLayout*> surface_termsl;
-		vector<gint> hpt, wpt, cpt, xpt;
-		gint where_w = 0, where_h = 0, to_w = 0, to_h = 0, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0, xtmp = 0, wotmp = 0;
-		CALCULATE_SPACE_W
-
-		PangoLayout *layout_to = NULL;
-		if(to_structs) {
-			layout_to = gtk_widget_create_pango_layout(resultview, NULL);
-			string str;
-			TTB(str);
-			str += CALCULATOR->localToString(false);
-			TTE(str);
-			pango_layout_set_markup(layout_to, str.c_str(), -1);
-			pango_layout_get_pixel_size(layout_to, &to_w, &to_h);
-		}
-		PangoLayout *layout_where = NULL;
-		if(where_struct) {
-			layout_where = gtk_widget_create_pango_layout(resultview, NULL);
-			string str;
-			TTB(str);
-			str += CALCULATOR->localWhereString();
-			TTE(str);
-			pango_layout_set_markup(layout_where, str.c_str(), -1);
-			pango_layout_get_pixel_size(layout_where, &where_w, &where_h);
-		}
-
-		for(size_t i = 0; ; i++) {
-			if(i == 0 && m.isUndefined() && !where_struct) continue;
-			if(i == 1 && !where_struct) continue;
-			if(i > 1 && (!to_structs || i - 2 >= to_structs->size())) break;
-			hetmp = 0;
-			surface_terms.push_back(draw_structure(i == 0 ? m : (i == 1 ? *where_struct : (*to_structs)[i - 2]), po, caf, ips_n, &hetmp, scaledown, color, &xtmp, &wotmp));
-			if(CALCULATOR->aborted()) {
-				for(size_t i = 0; i < surface_terms.size(); i++) {
-					if(surface_terms[i]) cairo_surface_destroy(surface_terms[i]);
-				}
-				return NULL;
-			}
-			if(surface_terms.size() == 1) {
-				offset_x = xtmp;
-				xtmp = 0;
-			} else if((i == 1 && !to_structs) || (i > 1 && i - 2 == to_structs->size() - 1)) {
-				offset_w = wotmp;
-				wotmp = 0;
-			}
-			wtmp = cairo_image_surface_get_width(surface_terms[surface_terms.size() - 1]) / scalefactor;
-			htmp = cairo_image_surface_get_height(surface_terms[surface_terms.size() - 1]) / scalefactor;
-			hpt.push_back(htmp);
-			cpt.push_back(hetmp);
-			wpt.push_back(wtmp);
-			xpt.push_back(xtmp);
-			w -= xtmp;
-			w += wtmp;
-			if(i == 0) {
-				w += space_w;
-			} else if(i == 1) {
-				w += where_w + space_w;
-				if(to_structs) w += space_w;
-			} else {
-				w += space_w + to_w;
-				if(i - 2 < to_structs->size() - 1) w += space_w;
-			}
-			if(htmp - hetmp > uh) {
-				uh = htmp - hetmp;
-			}
-			if(hetmp > dh) {
-				dh = hetmp;
-			}
-		}
-
-
-		if(to_h / 2 > dh) dh = to_h / 2;
-		if(to_h / 2 + to_h % 2 > uh) uh = to_h / 2 + to_h % 2;
-		if(where_h / 2 > dh) dh = where_h / 2;
-		if(where_h / 2 + where_h % 2 > uh) uh = where_h / 2 + where_h % 2;
-
-		central_point = dh;
-		h = dh + uh;
-		surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-		cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-		cairo_t *cr = cairo_create(surface);
-		w = 0;
-		for(size_t i = 0; i < surface_terms.size(); i++) {
-			if(!CALCULATOR->aborted()) {
-				gdk_cairo_set_source_rgba(cr, color);
-				if(i > 0) w += space_w;
-				if(i == 1 && where_struct) {
-					cairo_move_to(cr, w, uh - where_h / 2 - where_h % 2);
-					pango_cairo_show_layout(cr, layout_where);
-					w += where_w;
-					w += space_w;
-				} else if(i > 0 || (!where_struct && m.isUndefined())) {
-					cairo_move_to(cr, w, uh - to_h / 2 - to_h % 2);
-					pango_cairo_show_layout(cr, layout_to);
-					w += to_w;
-					w += space_w;
-				}
-				w -= xpt[i];
-				cairo_set_source_surface(cr, surface_terms[i], w, uh - (hpt[i] - cpt[i]));
-				cairo_paint(cr);
-				w += wpt[i];
-			}
-			cairo_surface_destroy(surface_terms[i]);
-		}
-		if(layout_to) g_object_unref(layout_to);
-		if(layout_where) g_object_unref(layout_where);
-		cairo_destroy(cr);
-	} else if(caf && m.isMultiplication() && m.size() == 2 && m[1].isFunction() && m[1].size() == 1 && m[1].function()->referenceName() == "cis") {
-		// angle/phasor notation: x+y*i=a*cis(b)=a∠b
-		ips_n.depth++;
-
-		vector<cairo_surface_t*> surface_terms;
-
-		vector<gint> hpt;
-		vector<gint> wpt;
-		vector<gint> cpt;
-		gint sign_w, sign_h, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0, space_w = 0;
-
-		PangoLayout *layout_sign = NULL;
-
-		if(can_display_unicode_string_function_exact("∠", (void*) resultview)) {
-			layout_sign = gtk_widget_create_pango_layout(resultview, NULL);
-			PANGO_TTP(layout_sign, "∠");
-			pango_layout_get_pixel_size(layout_sign, &sign_w, &sign_h);
-			w = sign_w;
-			uh = sign_h / 2 + sign_h % 2;
-			dh = sign_h / 2;
-		}
-		for(size_t i = 0; i < 2; i++) {
-			hetmp = 0;
-			ips_n.wrap = false;
-			surface_terms.push_back(draw_structure(i == 0 ? m[0] : m[1][0], po, caf, ips_n, &hetmp, scaledown, color));
-			if(CALCULATOR->aborted()) {
-				for(size_t i = 0; i < surface_terms.size(); i++) {
-					if(surface_terms[i]) cairo_surface_destroy(surface_terms[i]);
-				}
-				return NULL;
-			}
-			wtmp = cairo_image_surface_get_width(surface_terms[i]) / scalefactor;
-			htmp = cairo_image_surface_get_height(surface_terms[i]) / scalefactor;
-			hpt.push_back(htmp);
-			cpt.push_back(hetmp);
-			wpt.push_back(wtmp);
-			w += wtmp;
-			if(htmp - hetmp > uh) {
-				uh = htmp - hetmp;
-			}
-			if(hetmp > dh) {
-				dh = hetmp;
-			}
-		}
-
-		central_point = dh;
-		h = dh + uh;
-
-		if(!layout_sign) {
-			space_w = 5;
-			sign_h = (h * 6) / 10;
-			sign_w = sign_h;
-			w += sign_w;
-		}
-
-		w += space_w * 2;
-
-		double divider = 1.0;
-		if(ips.power_depth >= 1) divider = 1.5;
-		surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-		cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-		cairo_t *cr = cairo_create(surface);
-		w = 0;
-		for(size_t i = 0; i < surface_terms.size(); i++) {
-			if(!CALCULATOR->aborted()) {
-				gdk_cairo_set_source_rgba(cr, color);
-				if(i > 0) {
-					w += space_w;
-					if(layout_sign) {
-						cairo_move_to(cr, w, uh - sign_h / 2 - sign_h % 2);
-						pango_cairo_show_layout(cr, layout_sign);
-					} else {
-						cairo_move_to(cr, w, h - 2 / divider - (h - sign_h) / 2);
-						cairo_line_to(cr, w + (sign_w * 3) / 4, (h - sign_h) / 2);
-						cairo_move_to(cr, w, h - 2 / divider - (h - sign_h) / 2);
-						cairo_line_to(cr, w + sign_w, h - 2 / divider - (h - sign_h) / 2);
-						cairo_set_line_width(cr, 2 / divider);
-						cairo_stroke(cr);
-					}
-					w += sign_w;
-					w += space_w;
-				}
-				cairo_set_source_surface(cr, surface_terms[i], w, uh - (hpt[i] - cpt[i]));
-				cairo_paint(cr);
-				w += wpt[i];
-			}
-			cairo_surface_destroy(surface_terms[i]);
-		}
-		if(layout_sign) g_object_unref(layout_sign);
-		cairo_destroy(cr);
-	} else {
-		switch(m.type()) {
-			case STRUCT_NUMBER: {
-				unordered_map<void*, string>::iterator it = number_map.find((void*) &m.number());
-				string str;
-				string exp = "";
-				bool exp_minus = false;
-				bool base10 = (po.base == BASE_DECIMAL);
-				bool base_without_exp = (po.base != BASE_DECIMAL && !BASE_IS_SEXAGESIMAL(po.base) && po.base != BASE_TIME && ((po.base < BASE_CUSTOM && po.base != BASE_BIJECTIVE_26) || (po.base == BASE_CUSTOM && (!CALCULATOR->customOutputBase().isInteger() || CALCULATOR->customOutputBase() > 62 || CALCULATOR->customOutputBase() < 2))));
-				string value_str;
-				int base = po.base;
-				if(base <= BASE_FP16 && base >= BASE_FP80) base = BASE_BINARY;
-				if(it != number_map.end()) {
-					value_str += it->second;
-					if(number_approx_map.find((void*) &m.number()) != number_approx_map.end()) {
-						if(po.is_approximate && !(*po.is_approximate) && number_approx_map[(void*) &m.number()]) *po.is_approximate = true;
-					}
-					if(number_exp_map.find((void*) &m.number()) != number_exp_map.end()) {
-						exp = number_exp_map[(void*) &m.number()];
-						exp_minus = number_exp_minus_map[(void*) &m.number()];
-					}
-					if(printops.exp_display != EXP_POWER_OF_10 && base_without_exp) {
-						if(!exp.empty()) base10 = true;
-						exp = "";
-						exp_minus = false;
-					}
-				} else {
-					if(po.number_fraction_format == FRACTION_FRACTIONAL_FIXED_DENOMINATOR || po.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR) {
-						po.show_ending_zeroes = false;
-						po.number_fraction_format = FRACTION_FRACTIONAL;
-					} else if(po.number_fraction_format == FRACTION_PERCENT || po.number_fraction_format == FRACTION_PERMILLE || po.number_fraction_format == FRACTION_PERMYRIAD) {
-						po.number_fraction_format = FRACTION_DECIMAL;
-					}
-					bool was_approx = (po.is_approximate && *po.is_approximate);
-					if(po.is_approximate) *po.is_approximate = false;
-					if(printops.exp_display == EXP_POWER_OF_10 || base_without_exp || (po.base != BASE_DECIMAL && !BASE_IS_SEXAGESIMAL(po.base) && po.base != BASE_TIME)) {
-						ips_n.exp = &exp;
-						ips_n.exp_minus = &exp_minus;
-						if(printops.exp_display != EXP_POWER_OF_10 && base_without_exp) {
-							m.number().print(po, ips_n);
-							base10 = !exp.empty();
-							exp = "";
-							exp_minus = false;
-							ips_n.exp = NULL;
-							ips_n.exp_minus = NULL;
-						}
-					} else {
-						ips_n.exp = NULL;
-						ips_n.exp_minus = NULL;
-					}
-					value_str = m.number().print(po, ips_n);
-					gsub(NNBSP, THIN_SPACE, value_str);
-					if(po.base == BASE_HEXADECIMAL && po.base_display == BASE_DISPLAY_NORMAL) {
-						gsub("0x", "", value_str);
-						size_t l = value_str.find(po.decimalpoint());
-						if(l == string::npos) l = value_str.length();
-						size_t i_after_minus = 0;
-						if(m.number().isNegative()) {
-							if(l > 1 && value_str[0] == '-') i_after_minus = 1;
-							else if(value_str.find("−") == 0) i_after_minus = strlen("−");
-						}
-						for(int i = (int) l - 2; i > (int) i_after_minus; i -= 2) {
-							value_str.insert(i, 1, ' ');
-						}
-						if(po.binary_bits == 0 && value_str.length() > i_after_minus + 1 && value_str[i_after_minus] == ' ') value_str.insert(i_after_minus + 1, 1, '0');
-					} else if(po.base == BASE_OCTAL && po.base_display == BASE_DISPLAY_NORMAL) {
-						if(value_str.length() > 1 && value_str[0] == '0' && is_in(NUMBERS, value_str[1])) value_str.erase(0, 1);
-					}
-					number_map[(void*) &m.number()] = value_str;
-					number_exp_map[(void*) &m.number()] = exp;
-					number_exp_minus_map[(void*) &m.number()] = exp_minus;
-					if(!exp.empty() && (base_without_exp || (po.base != BASE_CUSTOM && (po.base < 2 || po.base > 36)) || (po.base == BASE_CUSTOM && (!CALCULATOR->customOutputBase().isInteger() || CALCULATOR->customOutputBase() > 62 || CALCULATOR->customOutputBase() < 2)))) base10 = true;
-					if(!base10 && (BASE_IS_SEXAGESIMAL(po.base) || po.base == BASE_TIME) && value_str.find(po.decimalpoint()) && (value_str.find("+/-") != string::npos || value_str.find(SIGN_PLUSMINUS) != string::npos) && ((po.base == BASE_TIME && value_str.find(":") == string::npos) || (po.base != BASE_TIME && value_str.find("″") == string::npos && value_str.find("′") == string::npos && value_str.find(SIGN_DEGREE) == string::npos && value_str.find_first_of("\'\"o") == string::npos))) base10 = true;
-					if(po.base != BASE_DECIMAL && (base10 || (!BASE_IS_SEXAGESIMAL(po.base) && po.base != BASE_TIME))) {
-						bool twos = (((po.base == BASE_BINARY && po.twos_complement) || (po.base == BASE_HEXADECIMAL && po.hexadecimal_twos_complement)) && m.number().isNegative() && value_str.find(SIGN_MINUS) == string::npos && value_str.find("-") == string::npos);
-						if(base10) {
-							number_base_map[(void*) &m.number()]  = "10";
-						} else if((twos || po.base_display != BASE_DISPLAY_ALTERNATIVE || (base != BASE_HEXADECIMAL && base != BASE_BINARY && base != BASE_OCTAL)) && (base > 0 || base <= BASE_CUSTOM) && base <= 36) {
-							switch(base) {
-								case BASE_GOLDEN_RATIO: {number_base_map[(void*) &m.number()]  = "<i>φ</i>"; break;}
-								case BASE_SUPER_GOLDEN_RATIO: {number_base_map[(void*) &m.number()]  = "<i>ψ</i>"; break;}
-								case BASE_PI: {number_base_map[(void*) &m.number()]  = "<i>π</i>"; break;}
-								case BASE_E: {number_base_map[(void*) &m.number()]  = "<i>e</i>"; break;}
-								case BASE_SQRT2: {number_base_map[(void*) &m.number()]  = "√2"; break;}
-								case BASE_UNICODE: {number_base_map[(void*) &m.number()]  = "Unicode"; break;}
-								case BASE_BIJECTIVE_26: {number_base_map[(void*) &m.number()]  = "b26"; break;}
-								case BASE_BINARY_DECIMAL: {number_base_map[(void*) &m.number()]  = "BCD"; break;}
-								case BASE_CUSTOM: {number_base_map[(void*) &m.number()]  = CALCULATOR->customOutputBase().print(CALCULATOR->messagePrintOptions()); break;}
-								default: {number_base_map[(void*) &m.number()]  = i2s(base);}
-							}
-							if(twos) number_base_map[(void*) &m.number()] += '-';
-						}
-					} else {
-						number_base_map[(void*) &m.number()] = "";
-					}
-					if(po.is_approximate) {
-						number_approx_map[(void*) &m.number()] = po.is_approximate && *po.is_approximate;
-					} else {
-						number_approx_map[(void*) &m.number()] = FALSE;
-					}
-					if(po.is_approximate && was_approx) *po.is_approximate = true;
-				}
-				if(!exp.empty()) {
-					if(value_str == "1") {
-						MathStructure mnr((po.base == BASE_DECIMAL || po.base < 2 || po.base > 36) ? 10 : po.base, 1, 0);
-						mnr.raise(m_one);
-						if(po.base == BASE_DECIMAL || po.base < 2 || po.base > 36) number_map[(void*) &mnr[0].number()] = "10";
-						number_base_map[(void*) &mnr[0].number()] = number_base_map[(void*) &m.number()];
-						if(exp_minus) {
-							mnr[1].transform(STRUCT_NEGATE);
-							number_map[(void*) &mnr[1][0].number()] = exp;
-							number_base_map[(void*) &mnr[1][0].number()] = "";
-						} else {
-							number_map[(void*) &mnr[1].number()] = exp;
-							number_base_map[(void*) &mnr[1].number()] = "";
-						}
-						surface = draw_structure(mnr, po, caf, ips, point_central, scaledown, color, x_offset, w_offset, max_width);
-						if(exp_minus) {number_map.erase(&mnr[1][0].number()); number_base_map.erase(&mnr[1][0].number());}
-						else {number_map.erase(&mnr[1].number()); number_base_map.erase(&mnr[1].number());}
-						number_base_map.erase(&mnr[0].number());
-						number_map.erase(&mnr[0].number());
-						return surface;
-					} else {
-						MathStructure mnr(m_one);
-						mnr.multiply(Number((po.base == BASE_DECIMAL || po.base < 2 || po.base > 36) ? 10 : po.base, 1, 0));
-						number_map[(void*) &mnr[0].number()] = value_str;
-						if(base_without_exp) number_base_map[(void*) &mnr[0].number()] = "10";
-						number_base_map[(void*) &mnr[0].number()] = number_base_map[(void*) &m.number()];
-						number_approx_map[(void*) &mnr[0].number()] = number_approx_map[(void*) &m.number()];
-						mnr[1].raise(m_one);
-						if(po.base == BASE_DECIMAL || po.base < 2 || po.base > 36) number_map[(void*) &mnr[1][0].number()] = "10";
-						number_base_map[(void*) &mnr[1][0].number()] = number_base_map[(void*) &m.number()];
-						if(exp_minus) {
-							mnr[1][1].transform(STRUCT_NEGATE);
-							number_map[(void*) &mnr[1][1][0].number()] = exp;
-							number_base_map[(void*) &mnr[1][1][0].number()] = "";
-						} else {
-							number_map[(void*) &mnr[1][1].number()] = exp;
-							number_base_map[(void*) &mnr[1][1].number()] = "";
-						}
-						surface = draw_structure(mnr, po, caf, ips, point_central, scaledown, color, x_offset, w_offset, max_width);
-						if(exp_minus) {number_map.erase(&mnr[1][1][0].number()); number_base_map.erase(&mnr[1][1][0].number());}
-						else {number_map.erase(&mnr[1][1].number()); number_base_map.erase(&mnr[1][1].number());}
-						number_map.erase(&mnr[1][0].number());
-						number_map.erase(&mnr[0].number());
-						number_base_map.erase(&mnr[1][0].number());
-						number_base_map.erase(&mnr[0].number());
-						number_approx_map.erase(&mnr[0].number());
-						return surface;
-					}
-				}
-				if(exp.empty() && printops.exp_display != EXP_LOWERCASE_E && ((printops.exp_display != EXP_POWER_OF_10 && po.base == BASE_DECIMAL) || BASE_IS_SEXAGESIMAL(po.base) || po.base == BASE_TIME)) {
-					size_t i = 0;
-					while(true) {
-						i = value_str.find("E", i + 1);
-						if(i == string::npos || i == value_str.length() - 1) break;
-						if(value_str[i - 1] >= '0' && value_str[i - 1] <= '9' && value_str[i + 1] >= '0' && value_str[i + 1] <= '9') {
-							string estr;
-							TTP_SMALL(estr, "E");
-							value_str.replace(i, 1, estr);
-							i += estr.length();
-						}
-					}
-					if(printops.exp_display == EXP_POWER_OF_10 && ips.power_depth == 0) {
-						i = value_str.find("10^");
-						if(i != string::npos) {
-							i += 2;
-							size_t i2 = value_str.find(")", i);
-							if(i2 != string::npos) {
-								value_str.insert(i2, "</sup>");
-								value_str.replace(i, 1, "<sup>");
-								FIX_SUP_RESULT(value_str);
-							}
-						}
-					}
-				}
-				string value_str_bak, str_bak;
-				vector<gint> pos_x;
-				vector<PangoLayout*> pos_nr;
-				gint pos_h = 0, pos_y = 0;
-				gint wle = 0;
-				if(max_width > 0) {
-					PangoLayout *layout_equals = gtk_widget_create_pango_layout(resultview, NULL);
-					if((po.is_approximate && *po.is_approximate) || m.isApproximate()) {
-						if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, po.can_display_unicode_string_arg))) {
-							PANGO_TT(layout_equals, SIGN_ALMOST_EQUAL);
-						} else {
-							string str;
-							TTB(str);
-							str += "= ";
-							str += _("approx.");
-							TTE(str);
-							pango_layout_set_markup(layout_equals, str.c_str(), -1);
-						}
-					} else {
-						PANGO_TT(layout_equals, "=");
-					}
-					CALCULATE_SPACE_W
-					PangoRectangle rect, lrect;
-					pango_layout_get_pixel_extents(layout_equals, &rect, &lrect);
-					wle = lrect.width - offset_x + space_w;
-					if(rect.x < 0) wle -= rect.x;
-					g_object_unref(layout_equals);
-				}
-				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-				bool multiline = false;
-				for(int try_i = 0; try_i <= 1; try_i++) {
-					if(try_i == 1) {
-						value_str_bak = value_str;
-						size_t i = string::npos, l = 0;
-						if(base == BASE_BINARY || (base == BASE_DECIMAL && po.digit_grouping != DIGIT_GROUPING_NONE)) {
-							i = value_str.find(" ", value_str.length() / 2);
-							l = 1;
-							if(i == string::npos && base == BASE_DECIMAL) {
-								if(po.digit_grouping != DIGIT_GROUPING_LOCALE) {
-									l = strlen(THIN_SPACE);
-									i = value_str.find(THIN_SPACE, value_str.length() / 2 - 1);
-								} else if(!CALCULATOR->local_digit_group_separator.empty()) {
-									l = CALCULATOR->local_digit_group_separator.length();
-									i = value_str.find(CALCULATOR->local_digit_group_separator, value_str.length() / 2 - (l == 3 ? 1 : 0));
-								}
-							}
-						}
-						if(i == string::npos && base != BASE_BINARY) {
-							l = 0;
-							i = value_str.length() / 2 + 2;
-							if(base == BASE_DECIMAL && (po.digit_grouping == DIGIT_GROUPING_STANDARD || (po.digit_grouping == DIGIT_GROUPING_LOCALE && CALCULATOR->local_digit_group_separator != " "))) {
-								size_t i2 = 0;
-								while(true) {
-									i2 = value_str.find(po.digit_grouping == DIGIT_GROUPING_LOCALE ? CALCULATOR->local_digit_group_separator : THIN_SPACE, i2 + 1);
-									if(i2 == string::npos || i2 == value_str.length() - 1) break;
-									i++;
-								}
-								if(i >= value_str.length()) i = string::npos;
-							}
-							while((signed char) value_str[i] < 0) {
-								i++;
-								if(i >= value_str.length()) {i = string::npos; break;}
-							}
-						}
-						if(i == string::npos) {
-							break;
-						} else {
-							if(l == 0) value_str.insert(i, 1, '\n');
-							else if(l == 1) value_str[i] = '\n';
-							else {value_str.erase(i, l - 1); value_str[i] = '\n';}
-							if(base == BASE_DECIMAL) pango_layout_set_alignment(layout, PANGO_ALIGN_RIGHT);
-							multiline = true;
-						}
-					}
-					TTBP(str)
-					str += value_str;
-					if(!number_base_map[(void*) &m.number()].empty()) {
-						if(!multiline) {
-							string str2 = str;
-							TTE(str2)
-							pango_layout_set_markup(layout, str2.c_str(), -1);
-							pango_layout_get_pixel_size(layout, NULL, &central_point);
-						}
-						TTBP_SMALL(str)
-						str += "<sub>";
-						str += number_base_map[(void*) &m.number()];
-						str += "</sub>";
-						FIX_SUB_RESULT(str)
-						TTE(str)
-					}
-					TTE(str)
-					pango_layout_set_markup(layout, str.c_str(), -1);
-					if(max_width > 0 && exp.empty() && ((base >= 2 && base <= 36 && base != BASE_DUODECIMAL) || (base == BASE_CUSTOM && CALCULATOR->customOutputBase().isInteger() && CALCULATOR->customOutputBase() <= 62 && CALCULATOR->customOutputBase() >= -62))) {
-						pango_layout_get_pixel_size(layout, &w, NULL);
-						if(w + wle > max_width) {
-							if(try_i == 1) {
-								str = str_bak;
-								pango_layout_set_markup(layout, str.c_str(), -1);
-								multiline = false;
-							} else {
-								str_bak = str;
-								str = "";
-							}
-						} else {
-							break;
-						}
-					} else {
-						break;
-					}
-				}
-
-				if(ips.depth == 0 && base == BASE_BINARY && value_str.find(po.decimalpoint()) == string::npos && value_str.find_first_not_of("10 \n") == string::npos) {
-					PangoLayoutIter *iter = pango_layout_get_iter(layout);
-					PangoRectangle crect;
-					string str2;
-					size_t n_begin = (value_str.length() + 1) % 10;
-					for(size_t i = 0; i == 0 || pango_layout_iter_next_char(iter); i++) {
-						int bin_pos = ((value_str.length() - n_begin) - (value_str.length() - n_begin) / 5) - ((i - n_begin) - (i - n_begin) / 5) - 1;
-						if(bin_pos < 0) break;
-						pango_layout_iter_get_char_extents(iter, &crect);
-						pango_extents_to_pixels(&crect, NULL);
-						if(i % 10 == n_begin && value_str.length() > 20 && bin_pos > 0) {
-							PangoLayout *layout_pos = gtk_widget_create_pango_layout(resultview, NULL);
-							str2 = "";
-							TTB_XXSMALL(str2);
-							str2 += i2s(bin_pos + 1);
-							TTE(str2);
-							pango_layout_set_markup(layout_pos, str2.c_str(), -1);
-							pos_nr.push_back(layout_pos);
-							if(bin_pos < 10) {
-								pango_layout_get_pixel_size(layout_pos, &w, &pos_h);
-								pos_x.push_back(crect.x + (crect.width - w) / 2);
-							} else {
-								pos_x.push_back(crect.x);
-							}
-						}
-						if(for_result_widget && value_str[i] != ' ') {
-							binary_rect.push_back(crect);
-							binary_pos.push_back(bin_pos);
-						}
-					}
-					pango_layout_iter_free(iter);
-				}
-				PangoRectangle rect, lrect;
-				pango_layout_get_pixel_extents(layout, &rect, &lrect);
-				w = lrect.width;
-				h = lrect.height;
-				if(rect.x < 0) {
-					w -= rect.x;
-					if(rect.width > w) {
-						offset_w = rect.width - w;
-						w = rect.width;
-					}
-					offset_x = -rect.x;
-				} else {
-					if(rect.width + rect.x > w) {
-						offset_w = rect.width + rect.x - w;
-						w = rect.width + rect.x;
-					}
-				}
-				if(multiline) {
-					pango_layout_line_get_pixel_extents(pango_layout_get_line(layout, 0), NULL, &lrect);
-					central_point = h - (lrect.height / 2 + lrect.height % 2);
-					pos_y = h;
-					if(!binary_rect.empty()) {
-						central_point += pos_h;
-						h += pos_h * 2;
-						pos_y += pos_h;
-						for(size_t i = 0; i < binary_rect.size(); i++) binary_rect[i].y += pos_h;
-					}
-				} else if(central_point != 0) {
-					pos_y = central_point;
-					if(pos_h + pos_y > h) h = pos_h + pos_y;
-					central_point = h - (central_point / 2 + central_point % 2);
-				} else {
-					central_point = h / 2;
-					pos_y = h;
-					h += pos_h;
-				}
-				if(rect.y < 0) {
-					h -= rect.y;
-					pos_y -= rect.y;
-				}
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cairo_t *cr = cairo_create(surface);
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_move_to(cr, offset_x, (multiline && !binary_rect.empty() ? pos_h : 0) + (rect.y < 0 ? -rect.y : 0));
-				pango_cairo_show_layout(cr, layout);
-				if(!pos_nr.empty()) {
-					GdkRGBA *color2 = gdk_rgba_copy(color);
-					color2->alpha = color2->alpha * 0.7;
-					gdk_cairo_set_source_rgba(cr, color2);
-					for(size_t i = 0; i < pos_nr.size(); i++) {
-						cairo_move_to(cr, pos_x[i], (multiline && i < (pos_nr.size() + 1) / 2) ? 0 : pos_y);
-						pango_cairo_show_layout(cr, pos_nr[i]);
-						g_object_unref(pos_nr[i]);
-					}
-					gdk_rgba_free(color2);
-				}
-				g_object_unref(layout);
-				cairo_destroy(cr);
-				break;
-			}
-			case STRUCT_ABORTED: {}
-			case STRUCT_SYMBOLIC: {
-				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-				string str;
-				if(m.symbol().length() >= 14 && m.symbol().find("to expression:") == 0) {
-					TTBP(str)
-					str += m.symbol().substr(14);
-					TTE(str)
-				} else {
-					str = "<i>";
-					TTBP(str)
-					str += m.symbol();
-					TTE(str)
-					str += "</i>";
-				}
-				pango_layout_set_markup(layout, str.c_str(), -1);
-				PangoRectangle rect, lrect;
-				pango_layout_get_pixel_extents(layout, &rect, &lrect);
-				w = lrect.width;
-				h = lrect.height;
-				if(rect.x < 0) {
-					w -= rect.x;
-					if(rect.width > w) {
-						offset_w = rect.width - w;
-						w = rect.width;
-					}
-					offset_x = -rect.x;
-				} else {
-					if(rect.width + rect.x > w) {
-						offset_w = rect.width + rect.x - w;
-						w = rect.width + rect.x;
-					}
-				}
-				central_point = h / 2;
-				if(rect.y < 0) h -= rect.y;
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cairo_t *cr = cairo_create(surface);
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_move_to(cr, offset_x, rect.y < 0 ? -rect.y : 0);
-				pango_cairo_show_layout(cr, layout);
-				g_object_unref(layout);
-				cairo_destroy(cr);
-				break;
-			}
-			case STRUCT_DATETIME: {
-				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-				string str;
-				TTBP(str)
-				unordered_map<void*, string>::iterator it = date_map.find((void*) m.datetime());
-				if(it != date_map.end()) {
-					str += it->second;
-					if(date_approx_map.find((void*) m.datetime()) != date_approx_map.end()) {
-						if(po.is_approximate && !(*po.is_approximate) && date_approx_map[(void*) m.datetime()]) *po.is_approximate = true;
-					}
-				} else {
-					bool was_approx = (po.is_approximate && *po.is_approximate);
-					if(po.is_approximate) *po.is_approximate = false;
-					string value_str = m.datetime()->print(po);
-					date_map[(void*) m.datetime()] = value_str;
-					date_approx_map[(void*) m.datetime()] = po.is_approximate && *po.is_approximate;
-					if(po.is_approximate && was_approx) *po.is_approximate = true;
-					str += value_str;
-				}
-				TTE(str)
-				pango_layout_set_markup(layout, str.c_str(), -1);
-				PangoRectangle rect, lrect;
-				pango_layout_get_pixel_extents(layout, &rect, &lrect);
-				w = lrect.width;
-				h = lrect.height;
-				if(rect.x < 0) {
-					w -= rect.x;
-					if(rect.width > w) {
-						offset_w = rect.width - w;
-						w = rect.width;
-					}
-					offset_x = -rect.x;
-				} else {
-					if(rect.width + rect.x > w) {
-						offset_w = rect.width + rect.x - w;
-						w = rect.width + rect.x;
-					}
-				}
-				central_point = h / 2;
-				if(rect.y < 0) h -= rect.y;
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cairo_t *cr = cairo_create(surface);
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_move_to(cr, offset_x, rect.y < 0 ? -rect.y : 0);
-				pango_cairo_show_layout(cr, layout);
-				g_object_unref(layout);
-				cairo_destroy(cr);
-				break;
-			}
-			case STRUCT_ADDITION: {
-				ips_n.depth++;
-
-				vector<cairo_surface_t*> surface_terms;
-				vector<gint> hpt, wpt, cpt, xpt;
-				gint plus_w, plus_h, minus_w, minus_h, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0, xtmp = 0, wotmp = 0;
-
-				CALCULATE_SPACE_W
-				PangoLayout *layout_plus = gtk_widget_create_pango_layout(resultview, NULL);
-				PANGO_TTP(layout_plus, "+");
-				pango_layout_get_pixel_size(layout_plus, &plus_w, &plus_h);
-				PangoLayout *layout_minus = gtk_widget_create_pango_layout(resultview, NULL);
-				if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MINUS, po.can_display_unicode_string_arg))) {
-					PANGO_TTP(layout_minus, SIGN_MINUS);
-				} else {
-					PANGO_TTP(layout_minus, "-");
-				}
-				pango_layout_get_pixel_size(layout_minus, &minus_w, &minus_h);
-				for(size_t i = 0; i < m.size(); i++) {
-					hetmp = 0;
-					if(m[i].type() == STRUCT_NEGATE && i > 0) {
-						ips_n.wrap = m[i][0].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-						surface_terms.push_back(draw_structure(m[i][0], po, caf, ips_n, &hetmp, scaledown, color, &xtmp, &wotmp));
-					} else {
-						ips_n.wrap = m[i].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-						surface_terms.push_back(draw_structure(m[i], po, caf, ips_n, &hetmp, scaledown, color, &xtmp, &wotmp));
-					}
-					if(CALCULATOR->aborted()) {
-						for(size_t i = 0; i < surface_terms.size(); i++) {
-							if(surface_terms[i]) cairo_surface_destroy(surface_terms[i]);
-						}
-						g_object_unref(layout_minus);
-						g_object_unref(layout_plus);
-						return NULL;
-					}
-					if(i == 0) {
-						offset_x = xtmp;
-						xtmp = 0;
-					} else if(i == m.size() - 1) {
-						offset_w = wotmp;
-						wotmp = 0;
-					}
-					wtmp = cairo_image_surface_get_width(surface_terms[i]) / scalefactor;
-					htmp = cairo_image_surface_get_height(surface_terms[i]) / scalefactor;
-					hpt.push_back(htmp);
-					cpt.push_back(hetmp);
-					wpt.push_back(wtmp);
-					xpt.push_back(xtmp);
-					w -= xtmp;
-					w += wtmp;
-					if(m[i].type() == STRUCT_NEGATE && i > 0) {
-						w += minus_w;
-						if(minus_h / 2 > dh) {
-							dh = minus_h / 2;
-						}
-						if(minus_h / 2 + minus_h % 2 > uh) {
-							uh = minus_h / 2 + minus_h % 2;
-						}
-					} else if(i > 0) {
-						w += plus_w;
-						if(plus_h / 2 > dh) {
-							dh = plus_h / 2;
-						}
-						if(plus_h / 2 + plus_h % 2 > uh) {
-							uh = plus_h / 2 + plus_h % 2;
-						}
-					}
-					if(htmp - hetmp > uh) {
-						uh = htmp - hetmp;
-					}
-					if(hetmp > dh) {
-						dh = hetmp;
-					}
-				}
-				w += space_w * (surface_terms.size() - 1) * 2;
-				central_point = dh;
-				h = dh + uh;
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cairo_t *cr = cairo_create(surface);
-				w = 0;
-				for(size_t i = 0; i < surface_terms.size(); i++) {
-					if(!CALCULATOR->aborted()) {
-						gdk_cairo_set_source_rgba(cr, color);
-						if(i > 0) {
-							w += space_w;
-							if(m[i].type() == STRUCT_NEGATE) {
-								cairo_move_to(cr, w, uh - minus_h / 2 - minus_h % 2);
-								pango_cairo_show_layout(cr, layout_minus);
-								w += minus_w;
-							} else {
-								cairo_move_to(cr, w, uh - plus_h / 2 - plus_h % 2);
-								pango_cairo_show_layout(cr, layout_plus);
-								w += plus_w;
-							}
-							w += space_w;
-						}
-						w -= xpt[i];
-						cairo_set_source_surface(cr, surface_terms[i], w, uh - (hpt[i] - cpt[i]));
-						cairo_paint(cr);
-						w += wpt[i];
-					}
-					cairo_surface_destroy(surface_terms[i]);
-				}
-				g_object_unref(layout_minus);
-				g_object_unref(layout_plus);
-				cairo_destroy(cr);
-				break;
-			}
-			case STRUCT_NEGATE: {
-				ips_n.depth++;
-
-				gint minus_w, minus_h, uh, dh, h, w, ctmp, htmp, wtmp, hpa, cpa, xtmp;
-
-				PangoLayout *layout_minus = gtk_widget_create_pango_layout(resultview, NULL);
-
-				if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MINUS, po.can_display_unicode_string_arg))) {
-					PANGO_TTP(layout_minus, SIGN_MINUS);
-				} else {
-					PANGO_TTP(layout_minus, "-");
-				}
-				PangoRectangle rect, lrect;
-				pango_layout_get_pixel_extents(layout_minus, &rect, &lrect);
-				minus_w = lrect.width;
-				minus_h = lrect.height;
-				if(rect.x < 0) {
-					minus_w -= rect.x;
-					offset_x = -rect.x;
-				}
-
-				w = minus_w + 1;
-				uh = minus_h / 2 + minus_h % 2;
-				dh = minus_h / 2;
-
-				ips_n.wrap = m[0].isPower() ? m[0][0].needsParenthesis(po, ips_n, m, 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0) : m[0].needsParenthesis(po, ips_n, m, 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-				cairo_surface_t *surface_arg = draw_structure(m[0], po, caf, ips_n, &ctmp, scaledown, color, &xtmp, &offset_w, ips.depth == 0 && max_width > 0 ? max_width - minus_w : -1);
-				if(!surface_arg) {
-					g_object_unref(layout_minus);
-					return NULL;
-				}
-				wtmp = cairo_image_surface_get_width(surface_arg) / scalefactor;
-				htmp = cairo_image_surface_get_height(surface_arg) / scalefactor;
-				hpa = htmp;
-				cpa = ctmp;
-				w += wtmp - xtmp;
-				if(ctmp > dh) {
-					dh = ctmp;
-				}
-				if(htmp - ctmp > uh) {
-					uh = htmp - ctmp;
-				}
-
-				h = uh + dh;
-				central_point = dh;
-
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cairo_t *cr = cairo_create(surface);
-
-				w = offset_x;
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_move_to(cr, w, uh - minus_h / 2 - minus_h % 2);
-				pango_cairo_show_layout(cr, layout_minus);
-				w += minus_w + 1 - xtmp;
-				cairo_set_source_surface(cr, surface_arg, w, uh - (hpa - cpa));
-				cairo_paint(cr);
-				cairo_surface_destroy(surface_arg);
-
-				g_object_unref(layout_minus);
-				cairo_destroy(cr);
-				break;
-			}
-			case STRUCT_MULTIPLICATION: {
-
-				ips_n.depth++;
-
-				vector<cairo_surface_t*> surface_terms;
-				vector<gint> hpt, wpt, cpt, xpt, wopt;
-				gint mul_w = 0, mul_h = 0, altmul_w = 0, altmul_h = 0, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0, xtmp = 0, wotmp = 0;
-
-				bool b_cis = (!caf && m.size() == 2 && (m[0].isNumber() || (m[0].isNegate() && m[0][0].isNumber())) && m[1].isFunction() && m[1].size() == 1 && m[1].function()->referenceName() == "cis" && (((m[1][0].isNumber() || (m[1][0].isNegate() && m[1][0][0].isNumber())) || (m[1][0].isMultiplication() && m[1][0].size() == 2 && (m[1][0][0].isNumber() || (m[1][0].isNegate() && m[1][0][0][0].isNumber())) && m[1][0][1].isUnit())) || (m[1][0].isNegate() && m[1][0][0].isMultiplication() && m[1][0][0].size() == 2 && m[1][0][0][0].isNumber() && m[1][0][0][1].isUnit())));
-
-				CALCULATE_SPACE_W
-				PangoLayout *layout_mul = NULL, *layout_altmul = NULL; 
-				
-				bool par_prev = false;
-				vector<int> nm;
-				for(size_t i = 0; i < m.size(); i++) {
-					hetmp = 0;
-					ips_n.wrap = b_cis ? (i == 1 && ((m[1][0].isMultiplication() && m[1][0][1].neededMultiplicationSign(po, ips_n, m[1][0], 2, false, false, false, false) != MULTIPLICATION_SIGN_NONE) || (m[1][0].isNegate() && m[1][0][0].isMultiplication() && m[1][0][0][1].neededMultiplicationSign(po, ips_n, m[1][0][0], 2, false, false, false, false) != MULTIPLICATION_SIGN_NONE))) : m[i].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-					surface_terms.push_back(draw_structure((b_cis && i == 1) ? m[i][0] : m[i], po, caf, ips_n, &hetmp, scaledown, color, &xtmp, &wotmp));
-					if(CALCULATOR->aborted()) {
-						for(size_t i = 0; i < surface_terms.size(); i++) {
-							if(surface_terms[i]) cairo_surface_destroy(surface_terms[i]);
-						}
-						g_object_unref(layout_mul);
-						return NULL;
-					}
-					wtmp = cairo_image_surface_get_width(surface_terms[i]) / scalefactor;
-					if(i == 0) {
-						offset_x = xtmp;
-						xtmp = 0;
-					} else if(i == m.size() - 1) {
-						offset_w = wotmp;
-						wotmp = 0;
-					}
-					htmp = cairo_image_surface_get_height(surface_terms[i]) / scalefactor;
-					hpt.push_back(htmp);
-					cpt.push_back(hetmp);
-					wpt.push_back(wtmp);
-					xpt.push_back(xtmp);
-					wopt.push_back(wotmp);
-					w -= wotmp;
-					w -= xtmp;
-					w += wtmp;
-					if(i > 0) {
-						if(b_cis || !po.short_multiplication) {
-							nm.push_back(MULTIPLICATION_SIGN_OPERATOR);
-						} else {
-							nm.push_back(m[i].neededMultiplicationSign(po, ips_n, m, i + 1, ips_n.wrap || (m[i].isPower() && m[i][0].needsParenthesis(po, ips_n, m[i], 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0)), par_prev, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0));
-							if(nm[i] == MULTIPLICATION_SIGN_NONE && m[i].isPower() && m[i][0].isUnit() && po.use_unicode_signs && po.abbreviate_names && m[i][0].unit() == CALCULATOR->getDegUnit()) {
-								PrintOptions po2 = po;
-								po2.use_unicode_signs = false;
-								nm[i] = m[i].neededMultiplicationSign(po2, ips_n, m, i + 1, ips_n.wrap || (m[i].isPower() && m[i][0].needsParenthesis(po, ips_n, m[i], 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0)), par_prev, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-							}
-						}
-						if(nm[i] != MULTIPLICATION_SIGN_NONE) {
-							w += wopt[i - 1];
-							wopt[i - 1] = 0;
-						}
-						switch(nm[i]) {
-							case MULTIPLICATION_SIGN_SPACE: {
-								w += space_w;
-								break;
-							}
-							case MULTIPLICATION_SIGN_OPERATOR_SHORT: {}
-							case MULTIPLICATION_SIGN_OPERATOR: {
-								if(!b_cis && po.place_units_separately && po.use_unicode_signs && (po.multiplication_sign == MULTIPLICATION_SIGN_X || po.multiplication_sign == MULTIPLICATION_SIGN_ASTERISK) && m[i].isUnit_exp() && m[i - 1].isUnit_exp() && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MIDDLEDOT, po.can_display_unicode_string_arg))) {
-									if(!layout_altmul) {
-										string str;
-										TTP_SMALL(str, SIGN_MIDDLEDOT);
-										layout_altmul = gtk_widget_create_pango_layout(resultview, NULL);
-										pango_layout_set_markup(layout_altmul, str.c_str(), -1);
-										pango_layout_get_pixel_size(layout_altmul, &altmul_w, &altmul_h);
-									}
-									w += altmul_w + (space_w / 2) * 2;
-									if(altmul_h / 2 > dh) {
-										dh = altmul_h / 2;
-									}
-									if(altmul_h / 2 + altmul_h % 2 > uh) {
-										uh = altmul_h / 2 + altmul_h % 2;
-									}
-									break;
-								}
-								if(!layout_mul) {
-									string str;
-									if(b_cis) {
-										TTP(str, "cis");
-									} else if(po.use_unicode_signs && po.multiplication_sign == MULTIPLICATION_SIGN_DOT && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MULTIDOT, po.can_display_unicode_string_arg))) {
-										TTP_SMALL(str, SIGN_MULTIDOT);
-									} else if(po.use_unicode_signs && (po.multiplication_sign == MULTIPLICATION_SIGN_DOT || po.multiplication_sign == MULTIPLICATION_SIGN_ALTDOT) && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MIDDLEDOT, po.can_display_unicode_string_arg))) {
-										TTP_SMALL(str, SIGN_MIDDLEDOT);
-									} else if(po.use_unicode_signs && po.multiplication_sign == MULTIPLICATION_SIGN_X && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MULTIPLICATION, po.can_display_unicode_string_arg))) {
-										TTP_SMALL(str, SIGN_MULTIPLICATION);
-									} else {
-										TTP(str, "*");
-									}
-									layout_mul = gtk_widget_create_pango_layout(resultview, NULL);
-									pango_layout_set_markup(layout_mul, str.c_str(), -1);
-									pango_layout_get_pixel_size(layout_mul, &mul_w, &mul_h);
-								}
-								if(nm[i] == MULTIPLICATION_SIGN_OPERATOR_SHORT && m[i].isUnit_exp() && m[i - 1].isUnit_exp()) w += mul_w + (space_w / 2) * 2;
-								else if(nm[i] == MULTIPLICATION_SIGN_OPERATOR_SHORT) w += mul_w;
-								else w += mul_w + space_w * 2;
-								if(mul_h / 2 > dh) {
-									dh = mul_h / 2;
-								}
-								if(mul_h / 2 + mul_h % 2 > uh) {
-									uh = mul_h / 2 + mul_h % 2;
-								}
-								break;
-							}
-							default: {
-								if(par_prev || (m[i - 1].size() && m[i - 1].type() != STRUCT_POWER)) {
-									w += xtmp;
-									xpt[i] = 0;
-									w += wopt[i - 1];
-									wopt[i - 1] = 0;
-								}
-								w++;
-							}
-						}
-					} else {
-						nm.push_back(-1);
-					}
-					if(htmp - hetmp > uh) {
-						uh = htmp - hetmp;
-					}
-					if(hetmp > dh) {
-						dh = hetmp;
-					}
-					par_prev = ips_n.wrap;
-					if(par_prev && i > 0 && nm[i] != MULTIPLICATION_SIGN_NONE) {
-						wpt[i - 1] -= ips.power_depth > 0 ? 2 : 3;
-						w -= ips.power_depth > 0 ? 2 : 3;
-					}
-				}
-				cairo_surface_t *flag_s = NULL;
-				gint flag_width = 0;
-				size_t flag_i = 0;
-				if(m.size() == 2 && ((m[0].isUnit() && m[0].unit()->isCurrency() && m[1].isNumber()) || (m[1].isUnit() && m[1].unit()->isCurrency() && m[0].isNumber()))) {
-					size_t i_unit = 0;
-					if(m[1].isUnit()) {
-						i_unit = 1;
-						flag_i = 1;
-					} else if(nm[1] == MULTIPLICATION_SIGN_NONE) {
-						flag_i = 1;
-					}
-					string imagefile = "/qalculate-gtk/flags/"; imagefile += m[i_unit].unit()->referenceName(); imagefile += ".png";
-					h = hpt[flag_i];
-					GdkPixbuf *pixbuf = gdk_pixbuf_new_from_resource_at_scale(imagefile.c_str(), -1, h / 2.5 * scalefactor, TRUE, NULL);
-					if(pixbuf) {
-						flag_s = gdk_cairo_surface_create_from_pixbuf(pixbuf, scalefactor, NULL);
-						flag_width = cairo_image_surface_get_width(flag_s);
-						w += flag_width + 2;
-						g_object_unref(pixbuf);
-					}
-				}
-				central_point = dh;
-				h = dh + uh;
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cairo_t *cr = cairo_create(surface);
-				w = 0;
-				for(size_t i = 0; i < surface_terms.size(); i++) {
-					if(!CALCULATOR->aborted()) {
-						gdk_cairo_set_source_rgba(cr, color);
-						if(i > 0) {
-							switch(nm[i]) {
-								case MULTIPLICATION_SIGN_SPACE: {
-									w += space_w;
-									break;
-								}
-								case MULTIPLICATION_SIGN_OPERATOR: {}
-								case MULTIPLICATION_SIGN_OPERATOR_SHORT: {
-									if(layout_altmul && m[i].isUnit_exp() && m[i - 1].isUnit_exp()) {
-										w += space_w / 2;
-										cairo_move_to(cr, w, uh - altmul_h / 2 - altmul_h % 2);
-										pango_cairo_show_layout(cr, layout_altmul);
-										w += altmul_w;
-										w += space_w / 2;
-									} else {
-										if(nm[i] == MULTIPLICATION_SIGN_OPERATOR_SHORT && m[i].isUnit_exp() && m[i - 1].isUnit_exp()) w += space_w / 2;
-										else if(nm[i] == MULTIPLICATION_SIGN_OPERATOR) w += space_w;
-										cairo_move_to(cr, w, uh - mul_h / 2 - mul_h % 2);
-										pango_cairo_show_layout(cr, layout_mul);
-										w += mul_w;
-										if(nm[i] == MULTIPLICATION_SIGN_OPERATOR_SHORT && m[i].isUnit_exp() && m[i - 1].isUnit_exp()) w += space_w / 2;
-										else if(nm[i] == MULTIPLICATION_SIGN_OPERATOR) w += space_w;
-									}
-									break;
-								}
-								default: {w++;}
-							}
-						}
-						w -= xpt[i];
-						cairo_set_source_surface(cr, surface_terms[i], w, uh - (hpt[i] - cpt[i]));
-						cairo_paint(cr);
-						w += wpt[i];
-						w -= wopt[i];
-						if(flag_s && i == 0 && flag_i == 0) {
-							gdk_cairo_set_source_rgba(cr, color);
-							cairo_set_source_surface(cr, flag_s, w + 2, uh - (hpt[i] - cpt[i]) + hpt[i] / 8);
-							cairo_paint(cr);
-							cairo_surface_destroy(flag_s);
-							flag_s = NULL;
-							w += flag_width + 2;
-						}
-					}
-					cairo_surface_destroy(surface_terms[i]);
-				}
-				if(flag_s) {
-					if(!CALCULATOR->aborted()) {
-						gdk_cairo_set_source_rgba(cr, color);
-						cairo_set_source_surface(cr, flag_s, w + 2, uh - (hpt.back() - cpt.back()) + hpt.back() / 8);
-						cairo_paint(cr);
-					}
-					cairo_surface_destroy(flag_s);
-				}
-				if(layout_mul) g_object_unref(layout_mul);
-				if(layout_altmul) g_object_unref(layout_altmul);
-				cairo_destroy(cr);
-				break;
-			}
-			case STRUCT_INVERSE: {}
-			case STRUCT_DIVISION: {
-
-				ips_n.depth++;
-				ips_n.division_depth++;
-
-				gint den_uh, den_w, den_dh, num_w, num_dh, num_uh, dh = 0, uh = 0, w = 0, h = 0, xtmp1, xtmp2, wotmp1, wotmp2;
-
-				bool flat = ips.division_depth > 0 || ips.power_depth > 0;
-				bool b_units = false;
-				if(po.place_units_separately) {
-					b_units = true;
-					size_t i = 0;
-					if(m.isDivision()) {
-						i = 1;
-					}
-					if(m[i].isMultiplication()) {
-						for(size_t i2 = 0; i2 < m[i].size(); i2++) {
-							if(!m[i][i2].isUnit_exp()) {
-								b_units = false;
-								break;
-							}
-						}
-					} else if(!m[i].isUnit_exp()) {
-						b_units = false;
-					}
-					if(b_units) {
-						ips_n.division_depth--;
-						flat = true;
-					}
-				}
-
-				cairo_surface_t *num_surface = NULL, *den_surface = NULL;
-				if(m.type() == STRUCT_DIVISION) {
-					ips_n.wrap = (!m[0].isDivision() || !flat || ips.division_depth > 0 || ips.power_depth > 0) && !b_units && m[0].needsParenthesis(po, ips_n, m, 1, flat, ips.power_depth > 0);
-					num_surface = draw_structure(m[0], po, caf, ips_n, &num_dh, scaledown, color, &xtmp1, &wotmp1);
-				} else {
-					MathStructure onestruct(1, 1);
-					ips_n.wrap = false;
-					num_surface = draw_structure(onestruct, po, caf, ips_n, &num_dh, scaledown, color, &xtmp1, &wotmp1);
-				}
-				if(!num_surface) {
-					return NULL;
-				}
-				num_w = cairo_image_surface_get_width(num_surface) / scalefactor;
-				h = cairo_image_surface_get_height(num_surface) / scalefactor;
-				num_uh = h - num_dh;
-				if(m.type() == STRUCT_DIVISION) {
-					ips_n.wrap = m[1].needsParenthesis(po, ips_n, m, 2, flat, ips.power_depth > 0);
-					den_surface = draw_structure(m[1], po, caf, ips_n, &den_dh, scaledown, color, &xtmp2, &wotmp2);
-				} else {
-					ips_n.wrap = m[0].needsParenthesis(po, ips_n, m, 2, flat, ips.power_depth > 0);
-					den_surface = draw_structure(m[0], po, caf, ips_n, &den_dh, scaledown, color, &xtmp2, &wotmp2);
-				}
-				if(flat && !ips_n.wrap && m[m.type() == STRUCT_DIVISION ? 1 : 0].isNumber()) {
-					unordered_map<void*, string>::iterator it = number_exp_map.find((void*) &m[m.type() == STRUCT_DIVISION ? 1 : 0].number());
-					if(it != number_exp_map.end() && !it->second.empty()) ips_n.wrap = true;
-				}
-				if(!den_surface) {
-					cairo_surface_destroy(num_surface);
-					return NULL;
-				}
-				den_w = cairo_image_surface_get_width(den_surface) / scalefactor;
-				h = cairo_image_surface_get_height(den_surface) / scalefactor;
-				den_uh = h - den_dh;
-				h = 0;
-				if(flat) {
-					offset_x = xtmp1;
-					offset_w = wotmp2;
-					gint div_w, div_h, space_w = 0;
-					PangoLayout *layout_div = gtk_widget_create_pango_layout(resultview, NULL);
-					if(po.use_unicode_signs && po.division_sign == DIVISION_SIGN_DIVISION && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_DIVISION, po.can_display_unicode_string_arg))) {
-						PANGO_TTP(layout_div, SIGN_DIVISION);
-					} else if(po.use_unicode_signs && po.division_sign == DIVISION_SIGN_DIVISION_SLASH && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_DIVISION_SLASH, po.can_display_unicode_string_arg))) {
-						PANGO_TTP(layout_div, SIGN_DIVISION_SLASH);
-						PangoRectangle rect;
-						pango_layout_get_pixel_extents(layout_div, &rect, NULL);
-						if(rect.x < 0) space_w = -rect.x;
-					} else {
-						PANGO_TTP(layout_div, "/");
-					}
-					pango_layout_get_pixel_size(layout_div, &div_w, &div_h);
-					w = num_w + den_w - xtmp2 + space_w * 2 + div_w;
-					dh = num_dh; uh = num_uh;
-					if(den_dh > dh) dh = den_dh;
-					if(den_uh > uh) uh = den_uh;
-					if(div_h / 2 > dh) {
-						dh = div_h / 2;
-					}
-					if(div_h / 2 + div_h % 2 > uh) {
-						uh = div_h / 2 + div_h % 2;
-					}
-					h = uh + dh;
-					central_point = dh;
-					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-					cairo_t *cr = cairo_create(surface);
-					gdk_cairo_set_source_rgba(cr, color);
-					w = 0;
-					cairo_set_source_surface(cr, num_surface, w, uh - num_uh);
-					cairo_paint(cr);
-					w += num_w;
-					w += space_w;
-					gdk_cairo_set_source_rgba(cr, color);
-					cairo_move_to(cr, w, uh - div_h / 2 - div_h % 2);
-					pango_cairo_show_layout(cr, layout_div);
-					w += div_w;
-					w += space_w;
-					w -= xtmp2;
-					cairo_set_source_surface(cr, den_surface, w, uh - den_uh);
-					cairo_paint(cr);
-					g_object_unref(layout_div);
-					cairo_destroy(cr);
-				} else {
-					num_w = num_w - xtmp1 - wotmp1;
-					den_w = den_w - xtmp2 - wotmp2;
-					int y1n;
-					get_image_blank_height(num_surface, &y1n, NULL);
-					y1n /= scalefactor;
-					num_uh -= y1n;
-					int y2d;
-					get_image_blank_height(den_surface, NULL, &y2d);
-					y2d = ::ceil((y2d + 1) / scalefactor);
-					den_dh -= (den_dh + den_uh - y2d);
-					gint wfr;
-					dh = den_dh + den_uh + 3;
-					uh = num_dh + num_uh + 3;
-					wfr = den_w;
-					if(num_w > wfr) wfr = num_w;
-					w = wfr;
-					h = uh + dh;
-					central_point = dh;
-					gint w_extra = ips.depth > 0 ? 4 : 1;
-					gint num_pos = (wfr - num_w) / 2;
-					gint den_pos = (wfr - den_w) / 2;
-					if(num_pos - xtmp1 < 0) offset_x = -(num_pos - xtmp1);
-					if(den_pos - xtmp2 < -offset_x) offset_x = -(den_pos - xtmp2);
-					if(num_pos + num_w + wotmp1 > w) offset_w = (num_pos + num_w + wotmp1) - w;
-					if((den_pos + den_w + wotmp2) - w > offset_w) offset_w = (den_pos + den_w + wotmp2) - w;
-					w += offset_x + offset_w;
-					wfr = w;
-					if(num_pos - (wotmp1 + xtmp1) > den_pos) num_pos = (wfr - num_w) / 2;
-					else num_pos += offset_x;
-					if(den_pos - (wotmp2 + xtmp2) > num_pos) den_pos = (wfr - den_w) / 2;
-					else den_pos += offset_x;
-					wfr += 2; w += 2; num_pos++; den_pos++;
-					w += w_extra * 2;
-					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-					cairo_t *cr = cairo_create(surface);
-					gdk_cairo_set_source_rgba(cr, color);
-					w = w_extra;
-					cairo_set_source_surface(cr, num_surface, w + num_pos - xtmp1, -y1n);
-					cairo_paint(cr);
-					gdk_cairo_set_source_rgba(cr, color);
-					cairo_move_to(cr, w, uh);
-					cairo_line_to(cr, w + wfr, uh);
-					cairo_set_line_width(cr, 2);
-					cairo_stroke(cr);
-					cairo_set_source_surface(cr, den_surface, w + den_pos - xtmp2, uh + 3);
-					cairo_paint(cr);
-					offset_x = 0;
-					offset_w = 0;
-					cairo_destroy(cr);
-				}
-				if(num_surface) cairo_surface_destroy(num_surface);
-				if(den_surface) cairo_surface_destroy(den_surface);
-				break;
-			}
-			case STRUCT_POWER: {
-
-				ips_n.depth++;
-
-				gint base_w, base_h, exp_w, exp_h, w = 0, h = 0, ctmp = 0;
-				CALCULATE_SPACE_W
-				ips_n.wrap = SHOW_WITH_ROOT_SIGN(m[0]) || m[0].needsParenthesis(po, ips_n, m, 1, ips.division_depth > 0, false);
-				if(!ips_n.wrap && m[0].isNumber()) {
-					unordered_map<void*, string>::iterator it = number_exp_map.find((void*) &m[0].number());
-					if(it != number_exp_map.end() && !it->second.empty()) ips_n.wrap = true;
-				}
-				cairo_surface_t *surface_base = NULL;
-				if(m[0].isUnit() && po.use_unicode_signs && po.abbreviate_names && m[0].unit() == CALCULATOR->getDegUnit()) {
-					PrintOptions po2 = po;
-					po2.use_unicode_signs = false;
-					surface_base = draw_structure(m[0], po2, caf, ips_n, &central_point, scaledown, color, &offset_x);
-				} else {
-					surface_base = draw_structure(m[0], po, caf, ips_n, &central_point, scaledown, color, &offset_x);
-				}
-				if(!surface_base) {
-					return NULL;
-				}
-				base_w = cairo_image_surface_get_width(surface_base) / scalefactor;
-				base_h = cairo_image_surface_get_height(surface_base) / scalefactor;
-
-				ips_n.power_depth++;
-				ips_n.wrap = false;
-				PrintOptions po2 = po;
-				po2.show_ending_zeroes = false;
-				cairo_surface_t *surface_exp = draw_structure(m[1], po2, caf, ips_n, &ctmp, scaledown, color);
-				if(!surface_exp) {
-					cairo_surface_destroy(surface_base);
-					return NULL;
-				}
-				exp_w = cairo_image_surface_get_width(surface_exp) / scalefactor;
-				exp_h = cairo_image_surface_get_height(surface_exp) / scalefactor;
-				h = base_h;
-				w = base_w;
-				if(exp_h <= h) {
-					h += exp_h / 5;
-				} else {
-					h += exp_h - base_h / 1.5;
-				}
-				w += exp_w;
-
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cairo_t *cr = cairo_create(surface);
-				gdk_cairo_set_source_rgba(cr, color);
-				w = 0;
-				cairo_set_source_surface(cr, surface_base, w, h - base_h);
-				cairo_paint(cr);
-				cairo_surface_destroy(surface_base);
-				w += base_w;
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_set_source_surface(cr, surface_exp, w, 0);
-				cairo_paint(cr);
-				cairo_surface_destroy(surface_exp);
-				cairo_destroy(cr);
-
-				break;
-			}
-			case STRUCT_LOGICAL_AND: {
-				if(m.size() == 2 && m[0].isComparison() && m[1].isComparison() && m[0].comparisonType() != COMPARISON_EQUALS && m[0].comparisonType() != COMPARISON_NOT_EQUALS && m[1].comparisonType() != COMPARISON_EQUALS && m[1].comparisonType() != COMPARISON_NOT_EQUALS && m[0][0] == m[1][0]) {
-					ips_n.depth++;
-
-					vector<cairo_surface_t*> surface_terms;
-					vector<gint> hpt, wpt, cpt, xpt;
-					gint sign_w, sign_h, sign2_w, sign2_h, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0, xtmp = 0;
-					CALCULATE_SPACE_W
-
-					hetmp = 0;
-					ips_n.wrap = m[0][1].needsParenthesis(po, ips_n, m[0], 2, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-					surface_terms.push_back(draw_structure(m[0][1], po, caf, ips_n, &hetmp, scaledown, color, &offset_x, NULL));
-					if(CALCULATOR->aborted()) {
-						cairo_surface_destroy(surface_terms[0]);
-						return NULL;
-					}
-					wtmp = cairo_image_surface_get_width(surface_terms[0]) / scalefactor;
-					htmp = cairo_image_surface_get_height(surface_terms[0]) / scalefactor;
-					hpt.push_back(htmp);
-					cpt.push_back(hetmp);
-					wpt.push_back(wtmp);
-					xpt.push_back(0);
-					w += wtmp;
-					if(htmp - hetmp > uh) {
-						uh = htmp - hetmp;
-					}
-					if(hetmp > dh) {
-						dh = hetmp;
-					}
-					hetmp = 0;
-					ips_n.wrap = m[0][0].needsParenthesis(po, ips_n, m[0], 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-					surface_terms.push_back(draw_structure(m[0][0], po, caf, ips_n, &hetmp, scaledown, color, &xtmp, NULL));
-					if(CALCULATOR->aborted()) {
-						cairo_surface_destroy(surface_terms[0]);
-						cairo_surface_destroy(surface_terms[1]);
-						return NULL;
-					}
-					wtmp = cairo_image_surface_get_width(surface_terms[1]) / scalefactor;
-					htmp = cairo_image_surface_get_height(surface_terms[1]) / scalefactor;
-					hpt.push_back(htmp);
-					cpt.push_back(hetmp);
-					wpt.push_back(wtmp);
-					xpt.push_back(xtmp);
-					w -= xtmp;
-					w += wtmp;
-					if(htmp - hetmp > uh) {
-						uh = htmp - hetmp;
-					}
-					if(hetmp > dh) {
-						dh = hetmp;
-					}
-					hetmp = 0;
-					ips_n.wrap = m[1][1].needsParenthesis(po, ips_n, m[1], 2, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-					surface_terms.push_back(draw_structure(m[1][1], po, caf, ips_n, &hetmp, scaledown, color, &xtmp, &offset_w));
-					if(CALCULATOR->aborted()) {
-						cairo_surface_destroy(surface_terms[0]);
-						cairo_surface_destroy(surface_terms[1]);
-						cairo_surface_destroy(surface_terms[2]);
-						return NULL;
-					}
-					wtmp = cairo_image_surface_get_width(surface_terms[2]) / scalefactor;
-					htmp = cairo_image_surface_get_height(surface_terms[2]) / scalefactor;
-					hpt.push_back(htmp);
-					cpt.push_back(hetmp);
-					wpt.push_back(wtmp);
-					xpt.push_back(xtmp);
-					w -= xtmp;
-					w += wtmp;
-					if(htmp - hetmp > uh) {
-						uh = htmp - hetmp;
-					}
-					if(hetmp > dh) {
-						dh = hetmp;
-					}
-
-					PangoLayout *layout_sign = gtk_widget_create_pango_layout(resultview, NULL);
-					string str;
-					TTBP(str);
-					switch(m[0].comparisonType()) {
-						case COMPARISON_LESS: {
-							str += "&gt;";
-							break;
-						}
-						case COMPARISON_GREATER: {
-							str += "&lt;";
-							break;
-						}
-						case COMPARISON_EQUALS_LESS: {
-							if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_GREATER_OR_EQUAL, po.can_display_unicode_string_arg))) {
-								str += SIGN_GREATER_OR_EQUAL;
-							} else {
-								str += "&gt;=";
-							}
-							break;
-						}
-						case COMPARISON_EQUALS_GREATER: {
-							if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_LESS_OR_EQUAL, po.can_display_unicode_string_arg))) {
-								str += SIGN_LESS_OR_EQUAL;
-							} else {
-								str += "&lt;=";
-							}
-							break;
-						}
-						default: {}
-					}
-					TTE(str);
-					pango_layout_set_markup(layout_sign, str.c_str(), -1);
-					pango_layout_get_pixel_size(layout_sign, &sign_w, &sign_h);
-					if(sign_h / 2 > dh) {
-						dh = sign_h / 2;
-					}
-					if(sign_h / 2 + sign_h % 2 > uh) {
-						uh = sign_h / 2 + sign_h % 2;
-					}
-					w += sign_w;
-
-					PangoLayout *layout_sign2 = gtk_widget_create_pango_layout(resultview, NULL);
-					str = "";
-					TTBP(str);
-					switch(m[1].comparisonType()) {
-						case COMPARISON_GREATER: {
-							str += "&gt;";
-							break;
-						}
-						case COMPARISON_LESS: {
-							str += "&lt;";
-							break;
-						}
-						case COMPARISON_EQUALS_GREATER: {
-							if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_GREATER_OR_EQUAL, po.can_display_unicode_string_arg))) {
-								str += SIGN_GREATER_OR_EQUAL;
-							} else {
-								str += "&gt;=";
-							}
-							break;
-						}
-						case COMPARISON_EQUALS_LESS: {
-							if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_LESS_OR_EQUAL, po.can_display_unicode_string_arg))) {
-								str += SIGN_LESS_OR_EQUAL;
-							} else {
-								str += "&lt;=";
-							}
-							break;
-						}
-						default: {}
-					}
-					TTE(str);
-					pango_layout_set_markup(layout_sign2, str.c_str(), -1);
-					pango_layout_get_pixel_size(layout_sign2, &sign2_w, &sign2_h);
-					if(sign2_h / 2 > dh) {
-						dh = sign2_h / 2;
-					}
-					if(sign2_h / 2 + sign2_h % 2 > uh) {
-						uh = sign2_h / 2 + sign2_h % 2;
-					}
-					w += sign2_w;
-
-
-					w += space_w * (surface_terms.size() - 1) * 2;
-
-					central_point = dh;
-					h = dh + uh;
-					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-					cairo_t *cr = cairo_create(surface);
-					w = 0;
-					for(size_t i = 0; i < surface_terms.size(); i++) {
-						gdk_cairo_set_source_rgba(cr, color);
-						if(i > 0) {
-							w += space_w;
-							if(i == 1) {
-								cairo_move_to(cr, w, uh - sign_h / 2 - sign_h % 2);
-								pango_cairo_show_layout(cr, layout_sign);
-								w += sign_w;
-							} else {
-								cairo_move_to(cr, w, uh - sign2_h / 2 - sign2_h % 2);
-								pango_cairo_show_layout(cr, layout_sign2);
-								w += sign2_w;
-							}
-							w += space_w;
-						}
-						w -= xpt[i];
-						cairo_set_source_surface(cr, surface_terms[i], w, uh - (hpt[i] - cpt[i]));
-						cairo_paint(cr);
-						w += wpt[i];
-						cairo_surface_destroy(surface_terms[i]);
-					}
-					g_object_unref(layout_sign);
-					g_object_unref(layout_sign2);
-					cairo_destroy(cr);
-					break;
-				}
-			}
-			case STRUCT_COMPARISON: {}
-			case STRUCT_LOGICAL_XOR: {}
-			case STRUCT_LOGICAL_OR: {}
-			case STRUCT_BITWISE_AND: {}
-			case STRUCT_BITWISE_XOR: {}
-			case STRUCT_BITWISE_OR: {
-
-				ips_n.depth++;
-
-				vector<cairo_surface_t*> surface_terms;
-				vector<gint> hpt, wpt, cpt, xpt;
-				gint sign_w, sign_h, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0, xtmp = 0, wotmp = 0;
-				CALCULATE_SPACE_W
-
-				for(size_t i = 0; i < m.size(); i++) {
-					hetmp = 0;
-					ips_n.wrap = m[i].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-					surface_terms.push_back(draw_structure(m[i], po, caf, ips_n, &hetmp, scaledown, color, &xtmp, &wotmp));
-					if(CALCULATOR->aborted()) {
-						for(size_t i = 0; i < surface_terms.size(); i++) {
-							if(surface_terms[i]) cairo_surface_destroy(surface_terms[i]);
-						}
-						return NULL;
-					}
-					if(i == 0) {
-						offset_x = xtmp;
-						xtmp = 0;
-					} else if(i == m.size() - 1) {
-						offset_w = wotmp;
-						wotmp = 0;
-					}
-					wtmp = cairo_image_surface_get_width(surface_terms[i]) / scalefactor;
-					htmp = cairo_image_surface_get_height(surface_terms[i]) / scalefactor;
-					hpt.push_back(htmp);
-					cpt.push_back(hetmp);
-					wpt.push_back(wtmp);
-					xpt.push_back(xtmp);
-					w -= xtmp;
-					w += wtmp;
-					if(htmp - hetmp > uh) {
-						uh = htmp - hetmp;
-					}
-					if(hetmp > dh) {
-						dh = hetmp;
-					}
-				}
-
-				PangoLayout *layout_sign = gtk_widget_create_pango_layout(resultview, NULL);
-				string str;
-				TTBP(str);
-				if(m.type() == STRUCT_COMPARISON) {
-					switch(m.comparisonType()) {
-						case COMPARISON_EQUALS: {
-							if((ips.depth == 0 || (po.interval_display != INTERVAL_DISPLAY_INTERVAL && m.containsInterval())) && po.use_unicode_signs && ((po.is_approximate && *po.is_approximate) || m.isApproximate()) && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, po.can_display_unicode_string_arg))) {
-								str += SIGN_ALMOST_EQUAL;
-							} else {
-								str += "=";
-							}
-							break;
-						}
-						case COMPARISON_NOT_EQUALS: {
-							if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_NOT_EQUAL, po.can_display_unicode_string_arg))) {
-								str += SIGN_NOT_EQUAL;
-							} else {
-								str += "!=";
-							}
-							break;
-						}
-						case COMPARISON_GREATER: {
-							str += "&gt;";
-							break;
-						}
-						case COMPARISON_LESS: {
-							str += "&lt;";
-							break;
-						}
-						case COMPARISON_EQUALS_GREATER: {
-							if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_GREATER_OR_EQUAL, po.can_display_unicode_string_arg))) {
-								str += SIGN_GREATER_OR_EQUAL;
-							} else {
-								str += "&gt;=";
-							}
-							break;
-						}
-						case COMPARISON_EQUALS_LESS: {
-							if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_LESS_OR_EQUAL, po.can_display_unicode_string_arg))) {
-								str += SIGN_LESS_OR_EQUAL;
-							} else {
-								str += "&lt;=";
-							}
-							break;
-						}
-					}
-				} else if(m.type() == STRUCT_LOGICAL_AND) {
-					if(po.spell_out_logical_operators) str += _("and");
-					else str += "&amp;&amp;";
-				} else if(m.type() == STRUCT_LOGICAL_OR) {
-					if(po.spell_out_logical_operators) str += _("or");
-					else str += "||";
-				} else if(m.type() == STRUCT_LOGICAL_XOR) {
-					str += "xor";
-				} else if(m.type() == STRUCT_BITWISE_AND) {
-					str += "&amp;";
-				} else if(m.type() == STRUCT_BITWISE_OR) {
-					str += "|";
-				} else if(m.type() == STRUCT_BITWISE_XOR) {
-					str += "xor";
-				}
-
-				TTE(str);
-				pango_layout_set_markup(layout_sign, str.c_str(), -1);
-				pango_layout_get_pixel_size(layout_sign, &sign_w, &sign_h);
-				if(sign_h / 2 > dh) {
-					dh = sign_h / 2;
-				}
-				if(sign_h / 2 + sign_h % 2 > uh) {
-					uh = sign_h / 2 + sign_h % 2;
-				}
-				w += sign_w * (m.size() - 1);
-
-				w += space_w * (surface_terms.size() - 1) * 2;
-
-				central_point = dh;
-				h = dh + uh;
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cairo_t *cr = cairo_create(surface);
-				w = 0;
-				for(size_t i = 0; i < surface_terms.size(); i++) {
-					if(!CALCULATOR->aborted()) {
-						gdk_cairo_set_source_rgba(cr, color);
-						if(i > 0) {
-							w += space_w;
-							cairo_move_to(cr, w, uh - sign_h / 2 - sign_h % 2);
-							pango_cairo_show_layout(cr, layout_sign);
-							w += sign_w;
-							w += space_w;
-						}
-						w -= xpt[i];
-						cairo_set_source_surface(cr, surface_terms[i], w, uh - (hpt[i] - cpt[i]));
-						cairo_paint(cr);
-						w += wpt[i];
-					}
-					cairo_surface_destroy(surface_terms[i]);
-				}
-				g_object_unref(layout_sign);
-				cairo_destroy(cr);
-				break;
-			}
-			case STRUCT_LOGICAL_NOT: {}
-			case STRUCT_BITWISE_NOT: {
-
-				ips_n.depth++;
-
-				gint not_w, not_h, uh, dh, h, w, ctmp, htmp, wtmp, hpa, cpa, xtmp;
-				//gint wpa;
-
-				PangoLayout *layout_not = gtk_widget_create_pango_layout(resultview, NULL);
-
-				if(m.type() == STRUCT_LOGICAL_NOT) {
-					PANGO_TTP(layout_not, "!");
-				} else {
-					if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) ("¬", po.can_display_unicode_string_arg))) {
-						PANGO_TTP(layout_not, "¬");
-					} else {
-						PANGO_TTP(layout_not, "~");
-					}
-				}
-				pango_layout_get_pixel_size(layout_not, &not_w, &not_h);
-
-				w = not_w + 1;
-				uh = not_h / 2 + not_h % 2;
-				dh = not_h / 2;
-
-				ips_n.wrap = m[0].needsParenthesis(po, ips_n, m, 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-				cairo_surface_t *surface_arg = draw_structure(m[0], po, caf, ips_n, &ctmp, scaledown, color, &xtmp, &offset_w);
-				if(!surface_arg) {
-					g_object_unref(layout_not);
-					return NULL;
-				}
-				wtmp = cairo_image_surface_get_width(surface_arg) / scalefactor;
-				htmp = cairo_image_surface_get_height(surface_arg) / scalefactor;
-				hpa = htmp;
-				cpa = ctmp;
-				//wpa = wtmp;
-				w -= xtmp;
-				w += wtmp;
-				if(ctmp > dh) {
-					dh = ctmp;
-				}
-				if(htmp - ctmp > uh) {
-					uh = htmp - ctmp;
-				}
-
-				h = uh + dh;
-				central_point = dh;
-
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cairo_t *cr = cairo_create(surface);
-
-				w = 0;
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_move_to(cr, w, uh - not_h / 2 - not_h % 2);
-				pango_cairo_show_layout(cr, layout_not);
-				w += not_w + 1 - xtmp;
-				cairo_set_source_surface(cr, surface_arg, w, uh - (hpa - cpa));
-				cairo_paint(cr);
-				cairo_surface_destroy(surface_arg);
-
-				g_object_unref(layout_not);
-				cairo_destroy(cr);
-				break;
-			}
-			case STRUCT_VECTOR: {
-
-				ips_n.depth++;
-
-				bool b_matrix = m.isMatrix();
-				if(m.size() == 0 || (b_matrix && m[0].size() == 0)) {
-					PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-					string str;
-					TTBP(str)
-					str += "[ ]";
-					TTE(str)
-					pango_layout_set_markup(layout, str.c_str(), -1);
-					pango_layout_get_pixel_size(layout, &w, &h);
-					w += 1;
-					central_point = h / 2;
-					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-					cairo_t *cr = cairo_create(surface);
-					gdk_cairo_set_source_rgba(cr, color);
-					cairo_move_to(cr, 1, 0);
-					pango_cairo_show_layout(cr, layout);
-					g_object_unref(layout);
-					cairo_destroy(cr);
-					break;
-				}
-				bool flat_matrix = po.preserve_format && b_matrix && m.rows() > 3;
-				gint wtmp, htmp, ctmp = 0, w = 0, h = 0;
-				CALCULATE_SPACE_W
-				vector<gint> col_w;
-				vector<gint> row_h;
-				vector<gint> row_uh;
-				vector<gint> row_dh;
-				vector<vector<gint> > element_w;
-				vector<vector<gint> > element_h;
-				vector<vector<gint> > element_c;
-				vector<vector<cairo_surface_t*> > surface_elements;
-				element_w.resize(b_matrix ? m.size() : 1);
-				element_h.resize(b_matrix ? m.size() : 1);
-				element_c.resize(b_matrix ? m.size() : 1);
-				surface_elements.resize(b_matrix ? m.size() : 1);
-				PangoLayout *layout_comma = gtk_widget_create_pango_layout(resultview, NULL);
-				string str;
-				gint comma_w = 0, comma_h = 0;
-				TTP(str, ";")
-				pango_layout_set_markup(layout_comma, str.c_str(), -1);
-				pango_layout_get_pixel_size(layout_comma, &comma_w, &comma_h);
-				for(size_t index_r = 0; index_r < m.size(); index_r++) {
-					for(size_t index_c = 0; index_c < (b_matrix ? m[index_r].size() : m.size()); index_c++) {
-						ctmp = 0;
-						if(b_matrix) ips_n.wrap = m[index_r][index_c].needsParenthesis(po, ips_n, m, index_r + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-						else ips_n.wrap = m[index_c].needsParenthesis(po, ips_n, m, index_r + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-						surface_elements[index_r].push_back(draw_structure(b_matrix ? m[index_r][index_c] : m[index_c], po, caf, ips_n, &ctmp, scaledown, color));
-						if(CALCULATOR->aborted()) {
-							break;
-						}
-						wtmp = cairo_image_surface_get_width(surface_elements[index_r][index_c]) / scalefactor;
-						htmp = cairo_image_surface_get_height(surface_elements[index_r][index_c]) / scalefactor;
-						element_w[index_r].push_back(wtmp);
-						element_h[index_r].push_back(htmp);
-						element_c[index_r].push_back(ctmp);
-						if(flat_matrix) {
-							w += wtmp;
-							if(index_c != 0) w += space_w * 2;
-						} else if(index_r == 0) {
-							col_w.push_back(wtmp);
-						} else if(wtmp > col_w[index_c]) {
-							col_w[index_c] = wtmp;
-						}
-						if(index_c == 0 && (!flat_matrix || index_r == 0)) {
-							row_uh.push_back(htmp - ctmp);
-							row_dh.push_back(ctmp);
-						} else {
-							if(ctmp > row_dh[flat_matrix ? 0 : index_r]) {
-								row_dh[flat_matrix ? 0 : index_r] = ctmp;
-							}
-							if(htmp - ctmp > row_uh[flat_matrix ? 0 : index_r]) {
-								row_uh[flat_matrix ? 0 : index_r] = htmp - ctmp;
-							}
-						}
-					}
-					if(CALCULATOR->aborted()) {
-						break;
-					}
-					if(!flat_matrix || index_r == m.size() - 1) {
-						row_h.push_back(row_uh[flat_matrix ? 0 : index_r] + row_dh[flat_matrix ? 0 : index_r]);
-						h += row_h[flat_matrix ? 0 : index_r];
-					} else if(flat_matrix) {
-						w += space_w;
-						w += comma_w;
-					}
-					if(!flat_matrix && index_r != 0) {
-						h += 4;
-					}
-					if(!b_matrix) break;
-				}
-				h += 4;
-				for(size_t i = 0; !flat_matrix && i < col_w.size(); i++) {
-					w += col_w[i];
-					if(i != 0) {
-						w += space_w * 2;
-					}
-				}
-
-				gint wlr, wll;
-				wll = 10;
-				wlr = 10;
-
-				w += wlr + 1;
-				w += wll + 3;
-				central_point = h / 2;
-
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cairo_t *cr = cairo_create(surface);
-				gdk_cairo_set_source_rgba(cr, color);
-				w = 1;
-				cairo_move_to(cr, w, 1);
-				cairo_line_to(cr, w, h - 1);
-				cairo_move_to(cr, w, 1);
-				cairo_line_to(cr, w + 7, 1);
-				cairo_move_to(cr, w, h - 1);
-				cairo_line_to(cr, w + 7, h - 1);
-				cairo_set_line_width(cr, 2);
-				cairo_stroke(cr);
-				h = 2;
-				for(size_t index_r = 0; index_r < surface_elements.size(); index_r++) {
-					if(!CALCULATOR->aborted()) {
-						gdk_cairo_set_source_rgba(cr, color);
-						if(index_r == 0 || !flat_matrix) {
-							w = wll + 1;
-						} else {
-							cairo_move_to(cr, w, central_point - comma_h / 2 - comma_h % 2);
-							pango_cairo_show_layout(cr, layout_comma);
-							w += space_w;
-							w += comma_w;
-						}
-					}
-					for(size_t index_c = 0; index_c < surface_elements[index_r].size(); index_c++) {
-						if(!CALCULATOR->aborted()) {
-							cairo_set_source_surface(cr, surface_elements[index_r][index_c], flat_matrix ? w : w + (col_w[index_c] - element_w[index_r][index_c]), h + row_uh[flat_matrix ? 0 : index_r] - (element_h[index_r][index_c] - element_c[index_r][index_c]));
-							cairo_paint(cr);
-							if(flat_matrix) w += element_w[index_r][index_c];
-							else w += col_w[index_c];
-							if(index_c != (b_matrix ? m[index_r].size() - 1 : m.size() - 1)) {
-								w += space_w * 2;
-							}
-						}
-						if(surface_elements[index_r][index_c]) {
-							cairo_surface_destroy(surface_elements[index_r][index_c]);
-						}
-					}
-					if(!CALCULATOR->aborted() && !flat_matrix) {
-						h += row_h[index_r];
-						h += 4;
-					}
-				}
-				if(flat_matrix) h += row_h[0];
-				else h -= 4;
-				h += 2;
-				w += wll - 7;
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_move_to(cr, w + 7, 1);
-				cairo_line_to(cr, w + 7, h - 1);
-				cairo_move_to(cr, w, 1);
-				cairo_line_to(cr, w + 7, 1);
-				cairo_move_to(cr, w, h - 1);
-				cairo_line_to(cr, w + 7, h - 1);
-				cairo_set_line_width(cr, 2);
-				cairo_stroke(cr);
-				g_object_unref(layout_comma);
-				cairo_destroy(cr);
-				break;
-			}
-			case STRUCT_UNIT: {
-
-				string str, str2;
-				TTBP(str);
-
-				const ExpressionName *ename = &m.unit()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, m.isPlural(), po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
-
-				if(m.prefix()) {
-					str += m.prefix()->preferredDisplayName(ename->abbreviation, po.use_unicode_signs, m.isPlural(), po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg).formattedName(-1, false, true, false, true, true);
-				}
-				str += ename->formattedName(TYPE_UNIT, true, true, false, true, true);
-				FIX_SUB_RESULT(str)
-				size_t i = 0;
-				while(true) {
-					i = str.find("<sub>", i);
-					if(i == string::npos) break;
-					string str_s;
-					TTBP_SMALL(str_s);
-					str.insert(i, str_s);
-					i = str.find("</sub>", i);
-					if(i == string::npos) break;
-					str.insert(i + 6, TEXT_TAGS_END);
-				}
-				TTE(str);
-				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-				pango_layout_set_markup(layout, str.c_str(), -1);
-				PangoRectangle rect, lrect;
-				pango_layout_get_pixel_extents(layout, &rect, &lrect);
-				w = lrect.width;
-				h = lrect.height;
-				if(rect.x < 0) {
-					w -= rect.x;
-					if(rect.width > w) {
-						offset_w = rect.width - w;
-						w = rect.width;
-					}
-					offset_x = -rect.x;
-				} else {
-					if(rect.width + rect.x > w) {
-						offset_w = rect.width + rect.x - w;
-						w = rect.width + rect.x;
-					}
-				}
-				central_point = h / 2;
-				if(rect.y < 0) h -= rect.y;
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cairo_t *cr = cairo_create(surface);
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_move_to(cr, offset_x, rect.y < 0 ? -rect.y : 0);
-				pango_cairo_show_layout(cr, layout);
-				g_object_unref(layout);
-				cairo_destroy(cr);
-				break;
-			}
-			case STRUCT_VARIABLE: {
-
-				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-				string str;
-
-				const ExpressionName *ename = &m.variable()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
-
-				bool cursive = m.variable() != CALCULATOR->v_i && ename->name != "%" && ename->name != "‰" && ename->name != "‱" && m.variable()->referenceName() != "true" && m.variable()->referenceName() != "false";
-				if(cursive) str = "<i>";
-				TTBP(str);
-				str += ename->formattedName(TYPE_VARIABLE, true, true, false, true, true);
-				FIX_SUB_RESULT(str)
-				size_t i = 0;
-				while(true) {
-					i = str.find("<sub>", i);
-					if(i == string::npos) break;
-					string str_s;
-					TTBP_SMALL(str_s);
-					str.insert(i, str_s);
-					i = str.find("</sub>", i);
-					if(i == string::npos) break;
-					str.insert(i + 6, TEXT_TAGS_END);
-				}
-				TTE(str);
-				if(cursive) str += "</i>";
-
-				pango_layout_set_markup(layout, str.c_str(), -1);
-				PangoRectangle rect, lrect;
-				pango_layout_get_pixel_extents(layout, &rect, &lrect);
-				w = lrect.width;
-				h = lrect.height;
-				if(rect.x < 0) {
-					w -= rect.x;
-					if(rect.width > w) {
-						offset_w = rect.width - w;
-						w = rect.width;
-					}
-					offset_x = -rect.x;
-				} else {
-					if(rect.width + rect.x > w) {
-						offset_w = rect.width + rect.x - w;
-						w = rect.width + rect.x;
-					}
-				}
-				if(m.variable() == CALCULATOR->v_i) w += 1;
-				central_point = h / 2;
-				if(rect.y < 0) h -= rect.y;
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cairo_t *cr = cairo_create(surface);
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_move_to(cr, offset_x, rect.y < 0 ? -rect.y : 0);
-				pango_cairo_show_layout(cr, layout);
-				g_object_unref(layout);
-				cairo_destroy(cr);
-				break;
-			}
-			case STRUCT_FUNCTION: {
-
-				if(m.function() == CALCULATOR->f_uncertainty && m.size() == 3 && m[2].isZero()) {
-					ips_n.depth++;
-					gint unc_uh, unc_w, unc_dh, mid_w, mid_dh, mid_uh, dh = 0, uh = 0, w = 0, h = 0;
-					cairo_surface_t *mid_surface = NULL, *unc_surface = NULL;
-					ips_n.wrap = !m[0].isNumber();
-					PrintOptions po2 = po;
-					po2.show_ending_zeroes = false;
-					po2.number_fraction_format = FRACTION_DECIMAL;
-					mid_surface = draw_structure(m[0], po2, caf, ips_n, &mid_dh, scaledown, color, &offset_x, NULL);
-					if(!mid_surface) {
-						return NULL;
-					}
-					mid_w = cairo_image_surface_get_width(mid_surface) / scalefactor;
-					h = cairo_image_surface_get_height(mid_surface) / scalefactor;
-					mid_uh = h - mid_dh;
-					ips_n.wrap = !m[1].isNumber();
-					unc_surface = draw_structure(m[1], po2, caf, ips_n, &unc_dh, scaledown, color, NULL, &offset_w);
-					unc_w = cairo_image_surface_get_width(unc_surface) / scalefactor;
-					h = cairo_image_surface_get_height(unc_surface) / scalefactor;
-					unc_uh = h - unc_dh;
-					h = 0;
-					gint pm_w, pm_h;
-					PangoLayout *layout_pm = gtk_widget_create_pango_layout(resultview, NULL);
-					PANGO_TTP(layout_pm, SIGN_PLUSMINUS);
-					pango_layout_get_pixel_size(layout_pm, &pm_w, &pm_h);
-					w = mid_w + unc_w + pm_w;
-					dh = mid_dh; uh = mid_uh;
-					if(unc_dh > dh) h = unc_dh;
-					if(unc_uh > uh) uh = unc_uh;
-					if(pm_h / 2 > dh) {
-						dh = pm_h / 2;
-					}
-					if(pm_h / 2 + pm_h % 2 > uh) {
-						uh = pm_h / 2 + pm_h % 2;
-					}
-					h = uh + dh;
-					central_point = dh;
-					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-					cairo_t *cr = cairo_create(surface);
-					gdk_cairo_set_source_rgba(cr, color);
-					w = 0;
-					cairo_set_source_surface(cr, mid_surface, w, uh - mid_uh);
-					cairo_paint(cr);
-					w += mid_w;
-					gdk_cairo_set_source_rgba(cr, color);
-					cairo_move_to(cr, w, uh - pm_h / 2 - pm_h % 2);
-					pango_cairo_show_layout(cr, layout_pm);
-					w += pm_w;
-					cairo_set_source_surface(cr, unc_surface, w, uh - unc_uh);
-					cairo_paint(cr);
-					g_object_unref(layout_pm);
-					cairo_surface_destroy(mid_surface);
-					cairo_surface_destroy(unc_surface);
-					cairo_destroy(cr);
-					break;
-				} else if(SHOW_WITH_ROOT_SIGN(m)) {
-
-					ips_n.depth++;
-					gint arg_w, arg_h, root_w, root_h, sign_w, sign_h, h, w, ctmp;
-
-					int i_root = 2;
-					if(m.function() == CALCULATOR->f_root) i_root = m[1].number().intValue();
-					else if(m.function() == CALCULATOR->f_cbrt) i_root = 3;
-					string root_str;
-					TT_XSMALL(root_str, i2s(i_root));
-					PangoLayout *layout_root = gtk_widget_create_pango_layout(resultview, NULL);
-					pango_layout_set_markup(layout_root, root_str.c_str(), -1);
-					pango_layout_get_pixel_size(layout_root, &root_w, &root_h);
-					PangoRectangle rect;
-					pango_layout_get_pixel_extents(layout_root, &rect, NULL);
-					root_h = rect.y + rect.height;
-
-					ips_n.wrap = false;
-					cairo_surface_t *surface_arg = draw_structure(m[0], po, caf, ips_n, &ctmp, scaledown, color);
-					if(!surface_arg) return NULL;
-
-					arg_w = cairo_image_surface_get_width(surface_arg) / scalefactor;
-					arg_h = cairo_image_surface_get_height(surface_arg) / scalefactor;
-
-					int y;
-					get_image_blank_height(surface_arg, &y, NULL);
-					y /= scalefactor;
-					y -= 6;
-					arg_h -= y;
-
-					double divider = 1.0;
-					if(ips.power_depth >= 1) divider = 1.5;
-
-					gint extra_space = 5;
-					if(scaledown == 1) extra_space = 3;
-					else if(scaledown > 1) extra_space = 1;
-
-					central_point = ctmp + extra_space / divider;
-
-					root_w = root_w / divider;
-					root_h = root_h / divider;
-					sign_w = root_w * 2.6;
-
-					if(i_root == 2) {
-						sign_h = arg_h + extra_space / divider;
-					} else {
-						sign_h = root_h * 2.0;
-						if(sign_h < arg_h + extra_space / divider) sign_h = arg_h + extra_space / divider;
-					}
-
-					h = sign_h + extra_space * 2.0 / divider;
-					w = arg_w + sign_w * 1.25;
-
-					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-					cairo_t *cr = cairo_create(surface);
-					gdk_cairo_set_source_rgba(cr, color);
-
-					cairo_move_to(cr, 0, h / 2.0 + h / 15.0);
-					cairo_line_to(cr, sign_w / 6.0, h / 2.0);
-					cairo_line_to(cr, sign_w / 2.2, h - extra_space / divider);
-					cairo_line_to(cr, sign_w,  extra_space / divider);
-					cairo_line_to(cr, w,  extra_space / divider);
-					cairo_set_line_width(cr, 2 / divider);
-					cairo_stroke(cr);
-
-					if(i_root != 2) {
-						cairo_move_to(cr, (sign_w - root_w) / 3.0, (h / 2.0) - root_h - extra_space / (divider * 2) - 1);
-						cairo_surface_set_device_scale(surface, scalefactor / divider, scalefactor / divider);
-						pango_cairo_show_layout(cr, layout_root);
-						cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-					}
-
-					gdk_cairo_set_source_rgba(cr, color);
-					cairo_move_to(cr, 0, 0);
-					cairo_set_source_surface(cr, surface_arg, sign_w + 1, h - arg_h - extra_space / divider - y);
-					cairo_paint(cr);
-
-					cairo_surface_destroy(surface_arg);
-					g_object_unref(layout_root);
-					cairo_destroy(cr);
-
-					break;
-
-				} else if((m.function() == CALCULATOR->f_abs || m.function() == CALCULATOR->f_floor || m.function() == CALCULATOR->f_ceil) && m.size() == 1) {
-
-					ips_n.depth++;
-					gint arg_w, arg_h, h, w, ctmp;
-
-					ips_n.wrap = false;
-					cairo_surface_t *surface_arg = draw_structure(m[0], po, caf, ips_n, &ctmp, scaledown, color);
-					if(!surface_arg) return NULL;
-
-					arg_w = cairo_image_surface_get_width(surface_arg) / scalefactor;
-					arg_h = cairo_image_surface_get_height(surface_arg) / scalefactor;
-
-					double divider = 1.0;
-					if(ips.power_depth >= 1) divider = 1.5;
-
-					gint extra_space = m.function() == CALCULATOR->f_abs ? 5 : 3;
-					gint bracket_length = (m.function() == CALCULATOR->f_abs ? 0 : 7);
-					
-					int y;
-					get_image_blank_height(surface_arg, &y, NULL);
-					y /= scalefactor;
-					y -= 6; if(y < 0) y = 0;
-					arg_h -= y;
-
-					gint line_space = extra_space / divider;
-					central_point = ctmp + line_space;
-					h = arg_h + line_space * 2;
-					w = arg_w + (m.function() != CALCULATOR->f_abs && extra_space > 2 ? 4 : extra_space * 2) + extra_space * 2 / divider + bracket_length * 2;
-					double linewidth = 2 / divider;
-
-					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-					cairo_t *cr = cairo_create(surface);
-					gdk_cairo_set_source_rgba(cr, color);
-
-					cairo_move_to(cr, (extra_space / divider), line_space);
-					cairo_line_to(cr, (extra_space / divider), h - line_space);
-					cairo_move_to(cr, w - (extra_space / divider), line_space);
-					cairo_line_to(cr, w - (extra_space / divider), h - line_space);
-					if(m.function() == CALCULATOR->f_floor) {
-						cairo_move_to(cr, extra_space / divider, h - line_space - linewidth / 2);
-						cairo_line_to(cr, extra_space / divider + bracket_length, h - line_space - linewidth / 2);
-						cairo_move_to(cr, w - (extra_space / divider) - bracket_length, h - line_space - linewidth / 2);
-						cairo_line_to(cr, w - (extra_space / divider), h - line_space - linewidth / 2);
-					} else if(m.function() == CALCULATOR->f_ceil) {
-						cairo_move_to(cr, extra_space / divider, line_space + linewidth / 2);
-						cairo_line_to(cr, extra_space / divider + bracket_length, line_space + linewidth / 2);
-						cairo_move_to(cr, w - (extra_space / divider) - bracket_length, line_space + linewidth / 2);
-						cairo_line_to(cr, w - (extra_space / divider), line_space + linewidth / 2);
-					}
-					cairo_set_line_width(cr, linewidth);
-					cairo_stroke(cr);
-
-					gdk_cairo_set_source_rgba(cr, color);
-					cairo_move_to(cr, 0, 0);
-					cairo_set_source_surface(cr, surface_arg, (w - arg_w) / 2.0, line_space - y);
-					cairo_paint(cr);
-
-					cairo_surface_destroy(surface_arg);
-					cairo_destroy(cr);
-
-					break;
-				} else if(m.function() == CALCULATOR->f_diff && (m.size() == 3 || (m.size() == 4 && m[3].isUndefined())) && (m[1].isVariable() || m[1].isSymbolic()) && m[2].isInteger()) {
-
-					MathStructure mdx("d");
-					if(!m[2].isOne()) mdx ^= m[2];
-					string s = "d";
-					if(m[1].isSymbolic()) s += m[1].symbol();
-					else s += m[1].variable()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg).formattedName(TYPE_VARIABLE, true, true, false, true, true);
-					mdx.transform(STRUCT_DIVISION, s);
-					if(!m[2].isOne()) mdx[1] ^= m[2];
-
-					ips_n.depth++;
-
-					gint hpt1, hpt2;
-					gint wpt1, wpt2;
-					gint cpt1, cpt2;
-					gint w = 0, h = 0, dh = 0, uh = 0;
-
-					CALCULATE_SPACE_W
-
-					ips_n.wrap = false;
-					cairo_surface_t *surface_term1 = draw_structure(mdx, po, caf, ips_n, &cpt1, scaledown, color);
-					wpt1 = cairo_image_surface_get_width(surface_term1) / scalefactor;
-					hpt1 = cairo_image_surface_get_height(surface_term1) / scalefactor;
-					ips_n.wrap = true;
-					cairo_surface_t *surface_term2 = draw_structure(m[0], po, caf, ips_n, &cpt2, scaledown, color);
-					wpt2 = cairo_image_surface_get_width(surface_term2) / scalefactor;
-					hpt2 = cairo_image_surface_get_height(surface_term2) / scalefactor;
-					w = wpt1 + wpt2 + space_w;
-					if(hpt1 - cpt1 > hpt2 - cpt2) uh = hpt1 - cpt1;
-					else uh = hpt2 - cpt2;
-					if(cpt1 > cpt2) dh = cpt1;
-					else dh = cpt2;
-					central_point = dh;
-					h = dh + uh;
-					surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-					cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-					cairo_t *cr = cairo_create(surface);
-					gdk_cairo_set_source_rgba(cr, color);
-					cairo_set_source_surface(cr, surface_term1, 0, uh - (hpt1 - cpt1));
-					cairo_paint(cr);
-					gdk_cairo_set_source_rgba(cr, color);
-					cairo_set_source_surface(cr, surface_term2, wpt1 + space_w, uh - (hpt2 - cpt2));
-					cairo_paint(cr);
-					cairo_surface_destroy(surface_term1);
-					cairo_surface_destroy(surface_term2);
-					cairo_destroy(cr);
-
-					break;
-				}
-
-				ips_n.depth++;
-
-				gint comma_w, comma_h, function_w, function_h, uh, dh, h, w, ctmp, htmp, wtmp, arc_w, arc_h, xtmp;
-				vector<cairo_surface_t*> surface_args;
-				vector<gint> hpa, cpa, wpa, xpa;
-
-				CALCULATE_SPACE_W
-				PangoLayout *layout_comma = gtk_widget_create_pango_layout(resultview, NULL);
-				string str;
-				TTP(str, po.comma())
-				pango_layout_set_markup(layout_comma, str.c_str(), -1);
-				pango_layout_get_pixel_size(layout_comma, &comma_w, &comma_h);
-				PangoLayout *layout_function = gtk_widget_create_pango_layout(resultview, NULL);
-
-				str = "";
-				TTBP(str);
-
-				size_t argcount = m.size();
-
-				if(m.function() == CALCULATOR->f_signum && argcount > 1) {
-					argcount = 1;
-				} else if(m.function() == CALCULATOR->f_integrate && argcount > 3) {
-					if(m[1].isUndefined() && m[2].isUndefined()) argcount = 1;
-					else argcount = 3;
-				} else if((m.function()->maxargs() < 0 || m.function()->minargs() < m.function()->maxargs()) && m.size() > (size_t) m.function()->minargs()) {
-					while(true) {
-						string defstr = m.function()->getDefaultValue(argcount);
-						if(defstr.empty() && m.function()->maxargs() < 0) break;
-						Argument *arg = m.function()->getArgumentDefinition(argcount);
-						remove_blank_ends(defstr);
-						if(defstr.empty()) break;
-						if(m[argcount - 1].isUndefined() && defstr == "undefined") {
-							argcount--;
-						} else if(argcount > 1 && arg && arg->type() == ARGUMENT_TYPE_SYMBOLIC && ((argcount > 1 && defstr == "undefined" && m[argcount - 1] == m[0].find_x_var()) || (defstr == "\"\"" && m[argcount - 1] == ""))) {
-							argcount--;
-						} else if(m[argcount - 1].isVariable() && (!arg || (arg->type() != ARGUMENT_TYPE_TEXT && !arg->suggestsQuotes())) && defstr == m[argcount - 1].variable()->referenceName()) {
-							argcount--;
-						} else if(m[argcount - 1].isInteger() && (!arg || (arg->type() != ARGUMENT_TYPE_TEXT && !arg->suggestsQuotes())) && defstr.find_first_not_of(NUMBERS, defstr[0] == '-' && defstr.length() > 1 ? 1 : 0) == string::npos && m[argcount - 1].number() == s2i(defstr)) {
-							argcount--;
-						} else if(defstr[0] == '-' && m[argcount - 1].isNegate() && m[argcount - 1][0].isInteger() && (!arg || (arg->type() != ARGUMENT_TYPE_TEXT && !arg->suggestsQuotes())) && defstr.find_first_not_of(NUMBERS, 1) == string::npos && m[argcount - 1][0].number() == -s2i(defstr)) {
-							argcount--;
-						} else if(defstr[0] == '-' && m[argcount - 1].isMultiplication() && m[argcount - 1].size() == 2 && (m[argcount - 1][0].isMinusOne() || (m[argcount - 1][0].isNegate() && m[argcount - 1][0][0].isOne())) && m[argcount - 1][1].isInteger() && (!arg || (arg->type() != ARGUMENT_TYPE_TEXT && !arg->suggestsQuotes())) && defstr.find_first_not_of(NUMBERS, 1) == string::npos && m[argcount - 1][1].number() == -s2i(defstr)) {
-							argcount--;
-						} else if(m[argcount - 1].isSymbolic() && arg && arg->type() == ARGUMENT_TYPE_TEXT && (m[argcount - 1].symbol() == defstr || (defstr == "\"\"" && m[argcount - 1].symbol().empty()))) {
-							argcount--;
-						} else {
-							break;
-						}
-						if(argcount == 0 || argcount == (size_t) m.function()->minargs()) break;
-					}
-				}
-
-				const ExpressionName *ename = &m.function()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
-				str += ename->formattedName(TYPE_FUNCTION, true, true, false, true, true);
-				FIX_SUB_RESULT(str)
-				size_t i = 0;
-				bool b_sub = false;
-				while(true) {
-					i = str.find("<sub>", i);
-					if(i == string::npos) break;
-					b_sub = true;
-					string str_s;
-					TTBP_SMALL(str_s);
-					str.insert(i, str_s);
-					i = str.find("</sub>", i);
-					if(i == string::npos) break;
-					str.insert(i + 6, TEXT_TAGS_END);
-				}
-				if(!b_sub && (m.function() == CALCULATOR->f_lambert_w || m.function() == CALCULATOR->f_logn) && m.size() == 2 && ((m[1].size() == 0 && (!m[1].isNumber() || (m[1].number().isInteger() && m[1].number() < 100 && m[1].number() > -100))) || (m[1].isNegate() && m[1][0].size() == 0 && (!m[1][0].isNumber() || (m[1][0].number().isInteger() && m[1][0].number() < 100 && m[1][0].number() > -100))))) {
-					argcount = 1;
-					str += "<sub>";
-					str += m[1].print(po);
-					str += "</sub>";
-				}
-
-				TTE(str);
-
-				pango_layout_set_markup(layout_function, str.c_str(), -1);
-				PangoRectangle rect, lrect;
-				pango_layout_get_pixel_extents(layout_function, &rect, &lrect);
-				function_w = lrect.width;
-				function_h = lrect.height;
-				if(rect.x < 0) {
-					function_w -= rect.x;
-					if(rect.width > function_w) {
-						function_w = rect.width;
-					}
-					offset_x = -rect.x;
-				} else {
-					if(rect.width + rect.x > function_w) {
-						function_w = rect.width + rect.x;
-					}
-				}
-				w = function_w + 1;
-				uh = function_h / 2 + function_h % 2;
-				dh = function_h / 2;
-				if(rect.y < 0) {
-					uh = -rect.y;
-					function_h -= rect.y;
-				}
-
-				for(size_t index = 0; index < argcount; index++) {
-
-					ips_n.wrap = m[index].needsParenthesis(po, ips_n, m, index + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-					if(m.function() == CALCULATOR->f_interval) {
-						PrintOptions po2 = po;
-						po2.show_ending_zeroes = false;
-						if(m[index].isNumber()) {
-							if(index == 0) po2.interval_display = INTERVAL_DISPLAY_LOWER;
-							else if(index == 1) po2.interval_display = INTERVAL_DISPLAY_UPPER;
-						}
-						surface_args.push_back(draw_structure(m[index], po2, caf, ips_n, &ctmp, scaledown, color, &xtmp));
-					} else {
-						surface_args.push_back(draw_structure(m[index], po, caf, ips_n, &ctmp, scaledown, color, &xtmp));
-					}
-					if(CALCULATOR->aborted()) {
-						for(size_t i = 0; i < surface_args.size(); i++) {
-							if(surface_args[i]) cairo_surface_destroy(surface_args[i]);
-						}
-						g_object_unref(layout_function);
-						g_object_unref(layout_comma);
-						return NULL;
-					}
-					wtmp = cairo_image_surface_get_width(surface_args[index]) / scalefactor;
-					htmp = cairo_image_surface_get_height(surface_args[index]) / scalefactor;
-					if(index == 0) xtmp = 0;
-					hpa.push_back(htmp);
-					cpa.push_back(ctmp);
-					wpa.push_back(wtmp);
-					xpa.push_back(xtmp);
-					if(index > 0) {
-						w += comma_w;
-						w += space_w;
-					}
-					w -= xtmp;
-					w += wtmp;
-					if(ctmp > dh) {
-						dh = ctmp;
-					}
-					if(htmp - ctmp > uh) {
-						uh = htmp - ctmp;
-					}
-				}
-
-				if(dh > uh) uh = dh;
-				else if(uh > dh) dh = uh;
-				h = uh + dh;
-				central_point = dh;
-				arc_h = h;
-				arc_w = PAR_WIDTH;
-				w += arc_w * 2;
-				w += ips.power_depth > 0 ? 3 : 4;
-
-				int x1 = 0, x2 = 0;
-				if(surface_args.size() == 1) {
-					get_image_blank_width(surface_args[0], &x1, &x2);
-					x1 /= scalefactor;
-					x1++;
-					x2 = ::ceil(x2 / scalefactor);
-					w -= wpa[0];
-					wpa[0] = x2 - x1;
-					w += wpa[0];
-				} else if(surface_args.size() > 1) {
-					get_image_blank_width(surface_args[0], &x1, NULL);
-					x1 /= scalefactor;
-					x1++;
-					w -= x1;
-					wpa[0] -= x1;
-					int i_last = surface_args.size() - 1;
-					get_image_blank_width(surface_args[i_last], NULL, &x2);
-					x2 = ::ceil(x2 / scalefactor);
-					w -= wpa[i_last] - x2;
-					wpa[i_last] -= wpa[i_last] - x2;
-				}
-
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cairo_t *cr = cairo_create(surface);
-
-				w = 0;
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_move_to(cr, w, uh - function_h / 2 - function_h % 2);
-				pango_cairo_show_layout(cr, layout_function);
-				w += function_w;
-				w += ips.power_depth > 0 ? 2 : 3;
-				cairo_set_source_surface(cr, get_left_parenthesis(arc_w, arc_h, scaledown, color), w, (h - arc_h) / 2);
-				cairo_paint(cr);
-				w += arc_w;
-				for(size_t index = 0; index < surface_args.size(); index++) {
-					if(!CALCULATOR->aborted()) {
-						gdk_cairo_set_source_rgba(cr, color);
-						if(index > 0) {
-							cairo_move_to(cr, w, uh - comma_h / 2 - comma_h % 2);
-							pango_cairo_show_layout(cr, layout_comma);
-							w += comma_w;
-							w += space_w;
-						}
-						w -= xpa[index];
-						cairo_set_source_surface(cr, surface_args[index], index == 0 ? w - x1 : w, uh - (hpa[index] - cpa[index]));
-						cairo_paint(cr);
-						w += wpa[index];
-					}
-					cairo_surface_destroy(surface_args[index]);
-				}
-				cairo_set_source_surface(cr, get_right_parenthesis(arc_w, arc_h, scaledown, color), w, (h - arc_h) / 2);
-				cairo_paint(cr);
-
-				g_object_unref(layout_comma);
-				g_object_unref(layout_function);
-				cairo_destroy(cr);
-
-				break;
-			}
-			case STRUCT_UNDEFINED: {
-				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-				string str;
-				TTP(str, _("undefined"));
-				pango_layout_set_markup(layout, str.c_str(), -1);
-				PangoRectangle rect, lrect;
-				pango_layout_get_pixel_extents(layout, &rect, &lrect);
-				w = lrect.width;
-				h = lrect.height;
-				if(rect.x < 0) {
-					w -= rect.x;
-					if(rect.width > w) {
-						offset_w = rect.width - w;
-						w = rect.width;
-					}
-					offset_x = -rect.x;
-				} else {
-					if(rect.width + rect.x > w) {
-						offset_w = rect.width + rect.x - w;
-						w = rect.width + rect.x;
-					}
-				}
-				central_point = h / 2;
-				if(rect.y < 0) h -= rect.y;
-				surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-				cairo_t *cr = cairo_create(surface);
-				gdk_cairo_set_source_rgba(cr, color);
-				cairo_move_to(cr, offset_x, rect.y < 0 ? -rect.y : 0);
-				pango_cairo_show_layout(cr, layout);
-				g_object_unref(layout);
-				cairo_destroy(cr);
-				break;
-			}
-			default: {}
-		}
-	}
-	if(ips.wrap && surface) {
-		gint w, h, base_h, base_w;
-		offset_w = 0; offset_x = 0;
-		base_w = cairo_image_surface_get_width(surface) / scalefactor;
-		base_h = cairo_image_surface_get_height(surface) / scalefactor;
-		int x1 = 0, x2 = 0;
-		get_image_blank_width(surface, &x1, &x2);
-		x1 /= scalefactor;
-		x1++;
-		x2 = ::ceil(x2 / scalefactor);
-		base_w = x2 - x1;
-		h = base_h;
-		w = base_w;
-		gint base_dh = central_point;
-		if(h > central_point * 2) central_point = h - central_point;
-		gint arc_base_h = central_point * 2;
-		if(h < arc_base_h) h = arc_base_h;
-		gint arc_base_w = PAR_WIDTH;
-		w += arc_base_w * 2;
-		w += ips.power_depth > 0 ? 2 : 3;
-		cairo_surface_t *surface_old = surface;
-		surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-		cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-		cairo_t *cr = cairo_create(surface);
-		gdk_cairo_set_source_rgba(cr, color);
-		w = ips.power_depth > 0 ? 2 : 3;
-		cairo_set_source_surface(cr, get_left_parenthesis(arc_base_w, arc_base_h, scaledown, color), w, (h - arc_base_h) / 2);
-		cairo_paint(cr);
-		w += arc_base_w;
-		cairo_set_source_surface(cr, surface_old, w - x1, central_point - (base_h - base_dh));
-		cairo_paint(cr);
-		cairo_surface_destroy(surface_old);
-		w += base_w;
-		cairo_set_source_surface(cr, get_right_parenthesis(arc_base_w, arc_base_h, scaledown, color), w, (h - arc_base_h) / 2);
-		cairo_paint(cr);
-		cairo_destroy(cr);
-	}
-	if(ips.depth == 0 && !po.preserve_format && !(m.isComparison() && (!((po.is_approximate && *po.is_approximate) || m.isApproximate()) || (m.comparisonType() == COMPARISON_EQUALS && po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, po.can_display_unicode_string_arg))))) && surface) {
-		gint w, h, wle, hle, w_new, h_new;
-		w = cairo_image_surface_get_width(surface) / scalefactor;
-		h = cairo_image_surface_get_height(surface) / scalefactor;
-		cairo_surface_t *surface_old = surface;
-		PangoLayout *layout_equals = gtk_widget_create_pango_layout(resultview, NULL);
-		if((po.is_approximate && *po.is_approximate) || m.isApproximate()) {
-			if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, po.can_display_unicode_string_arg))) {
-				PANGO_TT(layout_equals, SIGN_ALMOST_EQUAL);
-			} else {
-				string str;
-				TTB(str);
-				str += "= ";
-				str += _("approx.");
-				TTE(str);
-				pango_layout_set_markup(layout_equals, str.c_str(), -1);
-			}
-		} else {
-			PANGO_TT(layout_equals, "=");
-		}
-		CALCULATE_SPACE_W
-		PangoRectangle rect, lrect;
-		pango_layout_get_pixel_extents(layout_equals, &rect, &lrect);
-		wle = lrect.width - offset_x;
-		offset_x = 0;
-		if(rect.x < 0) {
-			wle -= rect.x;
-			offset_x = -rect.x;
-		}
-		hle = lrect.height;
-		w_new = w + wle + space_w;
-		h_new = h;
-		surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w_new * scalefactor, h_new * scalefactor);
-		cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-		cairo_t *cr = cairo_create(surface);
-		gdk_cairo_set_source_rgba(cr, color);
-		cairo_move_to(cr, offset_x, h - central_point - hle / 2 - hle % 2);
-		pango_cairo_show_layout(cr, layout_equals);
-		for(size_t i = 0; i < binary_rect.size(); i++) {
-			binary_rect[i].x = binary_rect[i].x + wle + space_w;
-		}
-		cairo_set_source_surface(cr, surface_old, wle + space_w, 0);
-		cairo_paint(cr);
-		cairo_surface_destroy(surface_old);
-		g_object_unref(layout_equals);
-		cairo_destroy(cr);
-	}
-	if(!surface) {
-		surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 1 * scalefactor, 1 * scalefactor);
-		cairo_surface_set_device_scale(surface, scalefactor, scalefactor);
-	}
-	if(point_central) *point_central = central_point;
-	if(x_offset) *x_offset = offset_x;
-	if(w_offset) *w_offset = offset_w;
-	return surface;
-}
-
-void set_status_bottom_border_visible(bool b) {
-	gchar *gstr = gtk_css_provider_to_string(statusframe_provider);
-	string status_css = gstr;
-	g_free(gstr);
-	if(b) {
-		gsub("border-bottom-width: 0;", "", status_css);
-	} else {
-		gsub("}", "border-bottom-width: 0;}", status_css);
-	}
-	gtk_css_provider_load_from_data(statusframe_provider, status_css.c_str(), -1, NULL);
-}
-
-void clearresult() {
-	if(!parsed_in_result || !surface_parsed || rpn_mode) minimal_mode_show_resultview(false);
-	show_parsed_instead_of_result = false;
-	showing_first_time_message = false;
-	if(displayed_mstruct) {
-		displayed_mstruct->unref();
-		displayed_mstruct = NULL;
-		if(!surface_result && !surface_parsed) gtk_widget_queue_draw(resultview);
-	}
-	if(!parsed_in_result) result_autocalculated = false;
-	result_too_long = false;
-	display_aborted = false;
-	result_display_overflow = false;
-	date_map.clear();
-	number_map.clear();
-	number_base_map.clear();
-	number_exp_map.clear();
-	number_exp_minus_map.clear();
-	number_approx_map.clear();
-	if(gtk_revealer_get_child_revealed(GTK_REVEALER(gtk_builder_get_object(main_builder, "message_revealer")))) {
-		gtk_info_bar_response(GTK_INFO_BAR(gtk_builder_get_object(main_builder, "message_bar")), GTK_RESPONSE_CLOSE);
-	}
-	update_expression_icons();
-	if(surface_parsed) {
-		cairo_surface_destroy(surface_parsed);
-		surface_parsed = NULL;
-		if(!surface_result) gtk_widget_queue_draw(resultview);
-	}
-	if(surface_result) {
-		cairo_surface_destroy(surface_result);
-		surface_result = NULL;
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), FALSE);
-		gtk_widget_queue_draw(resultview);
-	}
-	if(visible_keypad & PROGRAMMING_KEYPAD) clear_result_bases();
-	gtk_widget_set_tooltip_text(resultview, "");
-}
-
 void on_abort_display(GtkDialog*, gint, gpointer) {
 	CALCULATOR->abort();
-}
-
-void replace_interval_with_function(MathStructure &m) {
-	if(m.isNumber() && m.number().isInterval()) {
-		m.transform(STRUCT_FUNCTION);
-		m.setFunction(CALCULATOR->f_interval);
-		m.addChild(m[0]);
-	} else {
-		for(size_t i = 0; i < m.size(); i++) replace_interval_with_function(m[i]);
-	}
 }
 
 void ViewThread::run() {
 
 	while(true) {
-		int scale_tmp = 0;
-		if(!read(&scale_tmp)) break;
 		void *x = NULL;
 		if(!read(&x) || !x) break;
 		MathStructure m(*((MathStructure*) x));
@@ -7616,7 +3294,7 @@ void ViewThread::run() {
 			po.excessive_parenthesis = true;
 			po.improve_division_multipliers = false;
 			po.can_display_unicode_string_function = &can_display_unicode_string_function;
-			po.can_display_unicode_string_arg = (void*) statuslabel_l;
+			po.can_display_unicode_string_arg = (void*) gtk_builder_get_object(main_builder, "label_status_left");
 			po.spell_out_logical_operators = printops.spell_out_logical_operators;
 			po.restrict_to_parent_precision = false;
 			po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
@@ -7702,83 +3380,11 @@ void ViewThread::run() {
 		}
 		printops.can_display_unicode_string_arg = NULL;
 
-		result_too_long = false;
-		result_display_overflow = false;
-		if(!b_stack && unhtmlize(result_text).length() > 900) {
-			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-			result_too_long = true;
-			pango_layout_set_markup(layout, _("result is too long\nsee history"), -1);
-			gint w = 0, h = 0;
-			pango_layout_get_pixel_size(layout, &w, &h);
-			PangoRectangle rect;
-			pango_layout_get_pixel_extents(layout, &rect, NULL);
-			if(rect.x < 0) {w -= rect.x; if(rect.width > w) w = rect.width;}
-			else if(w < rect.x + rect.width) w = rect.x + rect.width;
-			gint scalefactor = RESULT_SCALE_FACTOR;
-			tmp_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-			cairo_surface_set_device_scale(tmp_surface, scalefactor, scalefactor);
-			cairo_t *cr = cairo_create(tmp_surface);
-			GdkRGBA rgba;
-			gtk_style_context_get_color(gtk_widget_get_style_context(resultview), gtk_widget_get_state_flags(resultview), &rgba);
-			gdk_cairo_set_source_rgba(cr, &rgba);
-			if(rect.x < 0) cairo_move_to(cr, -rect.x, 0);
-			pango_cairo_show_layout(cr, layout);
-			cairo_destroy(cr);
-			g_object_unref(layout);
+		if(!b_stack && (m.isAborted() || unhtmlize(result_text).length() > 900)) {
 			*printops.is_approximate = false;
-			if(displayed_mstruct) displayed_mstruct->unref();
-			displayed_mstruct = new MathStructure(m);
-		} else if(!b_stack && m.isAborted()) {
-			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-			pango_layout_set_markup(layout, _("calculation was aborted"), -1);
-			gint w = 0, h = 0;
-			pango_layout_get_pixel_size(layout, &w, &h);
-			PangoRectangle rect;
-			pango_layout_get_pixel_extents(layout, &rect, NULL);
-			if(rect.x < 0) {w -= rect.x; if(rect.width > w) w = rect.width;}
-			else if(w < rect.x + rect.width) w = rect.x + rect.width;
-			gint scalefactor = RESULT_SCALE_FACTOR;
-			tmp_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-			cairo_t *cr = cairo_create(tmp_surface);
-			GdkRGBA rgba;
-			gtk_style_context_get_color(gtk_widget_get_style_context(resultview), gtk_widget_get_state_flags(resultview), &rgba);
-			gdk_cairo_set_source_rgba(cr, &rgba);
-			if(rect.x < 0) cairo_move_to(cr, -rect.x, 0);
-			pango_cairo_show_layout(cr, layout);
-			cairo_destroy(cr);
-			g_object_unref(layout);
-			*printops.is_approximate = false;
-			if(displayed_mstruct) displayed_mstruct->unref();
-			displayed_mstruct = new MathStructure(m);
-			displayed_printops = printops;
-			displayed_printops.allow_non_usable = true;
-			displayed_caf = complex_angle_form;
+			draw_result_failure(m, !m.isAborted());
 		} else if(!b_stack) {
-			if(!CALCULATOR->aborted()) {
-				printops.allow_non_usable = true;
-				printops.can_display_unicode_string_arg = (void*) resultview;
-
-				MathStructure *displayed_mstruct_pre = new MathStructure(m);
-				if(printops.interval_display == INTERVAL_DISPLAY_INTERVAL) replace_interval_with_function(*displayed_mstruct_pre);
-				tmp_surface = draw_structure(*displayed_mstruct_pre, printops, complex_angle_form, top_ips, NULL, scale_tmp);
-				if(displayed_mstruct) displayed_mstruct->unref();
-				displayed_mstruct = displayed_mstruct_pre;
-				if(tmp_surface && CALCULATOR->aborted()) {
-					cairo_surface_destroy(tmp_surface);
-					tmp_surface = NULL;
-				}
-
-				printops.can_display_unicode_string_arg = NULL;
-				printops.allow_non_usable = false;
-			}
-			if(!tmp_surface && displayed_mstruct) {
-				displayed_mstruct->unref();
-				displayed_mstruct = NULL;
-			} else {
-				displayed_printops = printops;
-				displayed_printops.allow_non_usable = true;
-				displayed_caf = complex_angle_form;
-			}
+			draw_result_temp(m);
 		}
 		result_autocalculated = false;
 		printops.use_unit_prefixes = b_puup;
@@ -7899,7 +3505,6 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	block_error();
 	b_busy = true;
 	b_busy_result = true;
-	display_aborted = false;
 
 	if(!view_thread->running && !view_thread->start()) {
 		b_busy = false;
@@ -7944,9 +3549,6 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		unblock_expression_icon_update();
 	}
 
-	scale_n = 0;
-
-	gint w = 0, h = 0;
 	bool parsed_approx = false;
 	bool title_set = false, was_busy = false;
 
@@ -7965,7 +3567,6 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	NumberFractionFormat save_format = printops.number_fraction_format;
 	bool save_restrict_fraction_length = printops.restrict_fraction_length;
 	bool do_to = false;
-	bool result_cleared = false;
 
 	if(stack_index == 0) {
 		if(to_base != 0 || to_fraction > 0 || to_fixed_fraction >= 2 || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form)) {
@@ -8032,27 +3633,13 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 				}
 			}
 		}
-		if(surface_result) {
-			cairo_surface_destroy(surface_result);
-			surface_result = NULL;
-			result_cleared = true;
-		}
-		date_map.clear();
-		number_map.clear();
-		number_base_map.clear();
-		number_exp_map.clear();
-		number_exp_minus_map.clear();
-		number_approx_map.clear();
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), FALSE);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), FALSE);
+		draw_result_pre();
 	}
 
 	printops.prefix = prefix;
-	tmp_surface = NULL;
 
 #define SET_RESULT_RETURN {b_busy = false; b_busy_result = false; unblock_error(); return;}
 
-	if(!view_thread->write(scale_n)) SET_RESULT_RETURN
 	if(stack_index == 0) {
 		if(!view_thread->write((void *) mstruct)) SET_RESULT_RETURN
 	} else {
@@ -8084,11 +3671,11 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	i = 0;
 
 	if(b_busy && view_thread->running) {
-		if(result_cleared) gtk_widget_queue_draw(resultview);
+		if(stack_index == 0) draw_result_waiting();
 		g_application_mark_busy(g_application_get_default());
 		update_expression_icons(stack_index == 0 ? (!minimal_mode ? RESULT_SPINNER : EXPRESSION_SPINNER) : EXPRESSION_STOP);
-		if(minimal_mode) gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
-		else gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
+		if(!minimal_mode) start_result_spinner();
+		else start_expression_spinner();
 		if(update_window_title(_("Processing…"))) title_set = true;
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), FALSE);
@@ -8106,23 +3693,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	b_busy_result = true;
 
 	if(stack_index == 0) {
-		display_aborted = !tmp_surface;
-		if(display_aborted) {
-			PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
-			pango_layout_set_markup(layout, _("result processing was aborted"), -1);
-			pango_layout_get_pixel_size(layout, &w, &h);
-			gint scalefactor = RESULT_SCALE_FACTOR;
-			tmp_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-			cairo_surface_set_device_scale(tmp_surface, scalefactor, scalefactor);
-			cairo_t *cr = cairo_create(tmp_surface);
-			GdkRGBA rgba;
-			gtk_style_context_get_color(gtk_widget_get_style_context(resultview), gtk_widget_get_state_flags(resultview), &rgba);
-			gdk_cairo_set_source_rgba(cr, &rgba);
-			pango_cairo_show_layout(cr, layout);
-			cairo_destroy(cr);
-			g_object_unref(layout);
-			*printops.is_approximate = false;
-		}
+		draw_result_check();
 	}
 
 	if(was_busy) {
@@ -8134,23 +3705,14 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "rpntab")), TRUE);
 		if(!update_parse && stack_index == 0) hide_expression_spinner();
 		if(title_set && stack_index != 0) update_window_title();
-		if(minimal_mode) gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
-		else gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
+		if(!minimal_mode) stop_result_spinner();
+		else stop_expression_spinner();
 		g_application_unmark_busy(g_application_get_default());
 	}
 
 	if(stack_index == 0) {
 		if(visible_keypad & PROGRAMMING_KEYPAD) update_result_bases();
-		surface_result = NULL;
-		if(tmp_surface) {
-			showing_first_time_message = false;
-			first_draw_of_result = true;
-			surface_result = tmp_surface;
-			minimal_mode_show_resultview();
-			gtk_widget_queue_draw(resultview);
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), displayed_mstruct && !result_too_long && !display_aborted);
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), displayed_mstruct && !result_too_long && !display_aborted);
-		}
+		if(draw_result_finalize()) minimal_mode_show_resultview();
 		if(!update_window_title(unhtmlize(result_text).c_str(), true) && title_set) update_window_title();
 	}
 	if(register_moved) {
@@ -8221,7 +3783,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 
 	while(gtk_events_pending()) gtk_main_iteration();
 
-	if(!register_moved && stack_index == 0 && mstruct->isMatrix() && matrix_mstruct->isMatrix() && matrix_mstruct->columns() < 200 && (result_too_long || result_display_overflow)) {
+	if(!register_moved && stack_index == 0 && mstruct->isMatrix() && matrix_mstruct->isMatrix() && matrix_mstruct->columns() < 200 && result_did_not_fit(false)) {
 		focus_expression();
 		if(update_history && update_parse && force) {
 			expression_select_all();
@@ -8279,15 +3841,8 @@ void CommandThread::run() {
 			}
 			case COMMAND_TRANSFORM: {
 				string ceu_str;
-				if(continuous_conversion && gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) && !minimal_mode) {
-					ParseOptions pa = evalops.parse_options; pa.base = 10;
-					ceu_str = CALCULATOR->unlocalizeExpression(current_conversion_expression(), pa);
-					remove_blank_ends(ceu_str);
-					if(set_missing_prefixes && !ceu_str.empty()) {
-						if(ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-' && (ceu_str.length() == 1 || ceu_str[1] != '?')) {
-							ceu_str = "?" + ceu_str;
-						}
-					}
+				if(conversionview_continuous_conversion() && gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) && !minimal_mode) {
+					ceu_str = current_conversion_expression();
 					if(!ceu_str.empty() && ceu_str[0] == '?') {
 						to_prefix = 1;
 					} else if(ceu_str.length() > 1 && ceu_str[1] == '?' && (ceu_str[0] == 'b' || ceu_str[0] == 'a' || ceu_str[0] == 'd')) {
@@ -8341,7 +3896,7 @@ void executeCommand(int command_type, bool show_result, bool force, string ceu_s
 		if(expression_modified() && !rpn_mode && command_type != COMMAND_TRANSFORM) {
 			if(get_expression_text().find_first_not_of(SPACES) == string::npos) return;
 			execute_expression();
-		} else if(!displayed_mstruct && !force) {
+		} else if(!current_displayed_result() && !force) {
 			return;
 		}
 
@@ -8388,7 +3943,7 @@ void executeCommand(int command_type, bool show_result, bool force, string ceu_s
 	}
 	i = 0;
 
-	cairo_surface_t *surface_result_bak = surface_result;
+	draw_result_backup();
 
 	if(b_busy && command_thread->running) {
 		string progress_str;
@@ -8423,12 +3978,11 @@ void executeCommand(int command_type, bool show_result, bool force, string ceu_s
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyactions")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "rpntab")), FALSE);
 		update_expression_icons(!minimal_mode ? RESULT_SPINNER : EXPRESSION_SPINNER);
-		if(!minimal_mode && surface_result) {
-			surface_result = NULL;
-			gtk_widget_queue_draw(resultview);
+		if(!minimal_mode) {
+			draw_result_clear();
 		}
-		if(!minimal_mode) gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
-		else gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
+		if(!minimal_mode) start_result_spinner();
+		else start_expression_spinner();
 		g_application_mark_busy(g_application_get_default());
 		was_busy = true;
 	}
@@ -8458,8 +4012,8 @@ void executeCommand(int command_type, bool show_result, bool force, string ceu_s
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "rpntab")), TRUE);
 		if(title_set) update_window_title();
 		hide_expression_spinner();
-		if(!minimal_mode) gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
-		else gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
+		if(!minimal_mode) stop_result_spinner();
+		else stop_expression_spinner();
 		g_application_unmark_busy(g_application_get_default());
 	}
 
@@ -8489,14 +4043,10 @@ void executeCommand(int command_type, bool show_result, bool force, string ceu_s
 		}
 		if(show_result) {
 			setResult(NULL, true, !parsed_mstruct->equals(parsebak, true, true), true, command_type == COMMAND_TRANSFORM ? ceu_str : "");
-			surface_result_bak = NULL;
 		}
 	}
 
-	if(!surface_result && surface_result_bak) {
-		surface_result = surface_result_bak;
-		gtk_widget_queue_draw(resultview);
-	}
+	draw_result_restore();
 
 	unblock_error();
 
@@ -8552,24 +4102,6 @@ void update_message_print_options() {
 	CALCULATOR->setMessagePrintOptions(message_printoptions);
 }
 
-void result_display_updated() {
-	if(result_blocked()) return;
-	displayed_printops.use_unicode_signs = printops.use_unicode_signs;
-	displayed_printops.spell_out_logical_operators = printops.spell_out_logical_operators;
-	displayed_printops.multiplication_sign = printops.multiplication_sign;
-	displayed_printops.division_sign = printops.division_sign;
-	date_map.clear();
-	number_map.clear();
-	number_base_map.clear();
-	number_exp_map.clear();
-	number_exp_minus_map.clear();
-	number_approx_map.clear();
-	gtk_widget_queue_draw(resultview);
-	update_message_print_options();
-	update_status_text();
-	set_expression_output_updated(true);
-	display_parse_status();
-}
 void result_format_updated() {
 	if(result_blocked()) return;
 	update_message_print_options();
@@ -8591,7 +4123,7 @@ bool contains_prefix(const MathStructure &m) {
 	return false;
 }
 void result_prefix_changed(Prefix *prefix) {
-	if((!expression_modified() || rpn_mode) && !displayed_mstruct) {
+	if((!expression_modified() || rpn_mode) && !current_displayed_result()) {
 		return;
 	}
 	to_prefix = 0;
@@ -8810,23 +4342,9 @@ void set_option(string str) {
 		if(v == 0) {
 			CALCULATOR->error(true, "Illegal base: %s.", svalue.c_str(), NULL);
 		} else if(b_in) {
-			if(v == BASE_CUSTOM || v != evalops.parse_options.base) {
-				evalops.parse_options.base = v;
-				update_setbase();
-				update_keypad_programming_base();
-				expression_format_updated(false);
-				history_input_base_changed();
-			}
+			set_input_base(v, false, false);
 		} else {
-			if(v == BASE_CUSTOM || v != printops.base) {
-				printops.base = v;
-				to_base = 0;
-				to_bits = 0;
-				update_menu_base();
-				update_setbase();
-				update_keypad_programming_base();
-				result_format_updated();
-			}
+			set_output_base(v);
 		}
 	} else if(equalsIgnoreCase(svar, "assumptions") || svar == "ass" || svar == "asm") {
 		size_t i = svalue.find_first_of(SPACES);
@@ -9085,7 +4603,7 @@ void set_option(string str) {
 		} else if(v == ANGLE_UNIT_CUSTOM && !CALCULATOR->customAngleUnit()) {
 			CALCULATOR->error(true, "Please specify a custom angle unit as argument (e.g. set angle arcsec).", NULL);
 		} else {
-			menu_set_angle_unit(v);
+			set_angle_unit((AngleUnit) v);
 		}
 	} else if(equalsIgnoreCase(svar, "caret as xor") || equalsIgnoreCase(svar, "xor^")) SET_BOOL_PREF("preferences_checkbutton_caret_as_xor")
 	else if(equalsIgnoreCase(svar, "concise uncertainty") || equalsIgnoreCase(svar, "concise")) SET_BOOL_MENU("menu_item_concise_uncertainty_input")
@@ -10294,7 +5812,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					b_busy = false;
 					b_busy_expression = false;
 					restore_previous_expression();
-					on_popup_menu_item_calendarconversion_activate(NULL, NULL);
+					show_calendarconversion_dialog(GTK_WINDOW(mainwindow), mstruct && mstruct->isDateTime() ? mstruct->datetime() : NULL);
 					return;
 				}
 				do_calendars = true;
@@ -10501,15 +6019,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 
 	size_t stack_size = 0;
 
-	if(do_ceu && str_conv.empty() && continuous_conversion && gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) && !minimal_mode) {
-		ParseOptions pa = evalops.parse_options; pa.base = 10;
-		string ceu_str = CALCULATOR->unlocalizeExpression(current_conversion_expression(), pa);
-		remove_blank_ends(ceu_str);
-		if(set_missing_prefixes && !ceu_str.empty()) {
-			if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-' && (ceu_str.length() == 1 || ceu_str[1] != '?')) {
-				ceu_str = "?" + ceu_str;
-			}
-		}
+	if(do_ceu && str_conv.empty() && conversionview_continuous_conversion() && gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) && !minimal_mode) {
+		string ceu_str = current_conversion_expression();
 		if(ceu_str.empty()) {
 			parsed_tostruct->setUndefined();
 		} else {
@@ -10670,11 +6181,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 
 	if(CALCULATOR->busy()) {
 		if(update_window_title(_("Calculating…"))) title_set = true;
-		if(stack_index == 0 && surface_result) {
-			cairo_surface_destroy(surface_result);
-			surface_result = NULL;
-			gtk_widget_queue_draw(resultview);
-		}
+		if(stack_index == 0) draw_result_destroy();
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert")), FALSE);
@@ -10682,8 +6189,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyactions")), FALSE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "rpntab")), FALSE);
 		update_expression_icons(stack_index == 0 ? (!minimal_mode ? RESULT_SPINNER : EXPRESSION_SPINNER) : EXPRESSION_STOP);
-		if(!minimal_mode) gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
-		else gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
+		if(!minimal_mode) start_result_spinner();
+		else start_expression_spinner();
 		g_application_mark_busy(g_application_get_default());
 		was_busy = true;
 	}
@@ -10700,8 +6207,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "historyactions")), TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "rpntab")), TRUE);
 		if(title_set) update_window_title();
-		if(!minimal_mode) gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "resultspinner")));
-		else gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
+		if(!minimal_mode) stop_result_spinner();
+		else stop_expression_spinner();
 		g_application_unmark_busy(g_application_get_default());
 	}
 
@@ -10836,7 +6343,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	setResult(NULL, true, stack_index == 0, true, "", stack_index);
 
 	if(do_bases) convert_number_bases(GTK_WINDOW(mainwindow), execute_str.c_str(), evalops.parse_options.base);
-	if(do_calendars) on_popup_menu_item_calendarconversion_activate(NULL, NULL);
+	if(do_calendars) show_calendarconversion_dialog(GTK_WINDOW(mainwindow), mstruct && mstruct->isDateTime() ? mstruct->datetime() : NULL);
 	
 	evalops.complex_number_form = cnf_bak;
 	evalops.auto_post_conversion = save_auto_post_conversion;
@@ -10886,10 +6393,6 @@ void execute_from_file(string command_file) {
 	clearresult();
 	gtk_widget_show(resultview);
 	set_expression_modified(true, false, false);
-	if(displayed_mstruct) {
-		displayed_mstruct->unref();
-		displayed_mstruct = NULL;
-	}
 	if(parsed_mstruct) parsed_mstruct->clear();
 	if(parsed_tostruct) parsed_tostruct->setUndefined();
 	if(matrix_mstruct) matrix_mstruct->clear();
@@ -10919,25 +6422,13 @@ bool keypad_is_visible() {return gtk_expander_get_expanded(GTK_EXPANDER(expander
 
 extern void on_menu_item_chain_mode_activate(GtkMenuItem*, gpointer user_data);
 extern void on_menu_item_autocalc_activate(GtkMenuItem*, gpointer user_data);
-int scale_n_bak = 0;
+
 void show_parsed(bool b) {
-	show_parsed_instead_of_result = b;
-	first_draw_of_result = false;
 	if(autocalc_history_timeout_id) {
 		g_source_remove(autocalc_history_timeout_id);
 		do_autocalc_history_timeout(NULL);
 	}
-	if(show_parsed_instead_of_result) {
-		scale_n_bak = scale_n;
-		scale_n = 3;
-		if(!parsed_in_result) set_expression_output_updated(true);
-		display_parse_status();
-		if(!parsed_in_result) set_expression_output_updated(false);
-	} else {
-		scale_n = scale_n_bak;
-		display_parse_status();
-	}
-	gtk_widget_queue_draw(resultview);
+	display_parsed_instead_of_result(b);
 }
 void set_parsed_in_result(bool b) {
 	if(b == parsed_in_result) return;
@@ -10945,7 +6436,7 @@ void set_parsed_in_result(bool b) {
 		parsed_in_result = true;
 	} else {
 		parsed_in_result = false;
-		CLEAR_PARSED_IN_RESULT
+		clear_parsed_in_result();
 	}
 	if(parsed_in_result) {
 		if(autocalc_history_timeout_id) {
@@ -10984,10 +6475,8 @@ void set_rpn_mode(bool b) {
 		}
 		set_expression_modified(true, false, false);
 		set_expression_output_updated(true);
-		expression_history_index = -1;
 		if(auto_calculate && result_autocalculated) result_text = "";
 		clearresult();
-		menu_rpn_mode_changed();
 	} else {
 		gtk_widget_hide(expander_stack);
 		show_stack = gtk_expander_get_expanded(GTK_EXPANDER(expander_stack));
@@ -11000,13 +6489,13 @@ void set_rpn_mode(bool b) {
 		CALCULATOR->clearRPNStack();
 		RPNStackCleared();
 		clearresult();
-		menu_rpn_mode_changed();
 		prev_autocalc_str = "";
 		if(auto_calculate) {
 			result_autocalculated = false;
 			do_auto_calc(2);
 		}
 	}
+	update_menu_calculator_mode();
 	keypad_rpn_mode_changed();
 	preferences_rpn_mode_changed();
 	if(enable_tooltips != 1) gtk_widget_set_has_tooltip(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_equals")), FALSE);
@@ -11126,727 +6615,6 @@ void apply_function(MathFunction *f) {
 	function_inserted(f);
 }
 
-gint on_function_int_input(GtkSpinButton *entry, gpointer new_value, gpointer) {
-	string str = gtk_entry_get_text(GTK_ENTRY(entry));
-	remove_blank_ends(str);
-	if(str.find_first_not_of(NUMBERS) != string::npos) {
-		MathStructure value;
-		CALCULATOR->beginTemporaryStopMessages();
-		CALCULATOR->calculate(&value, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), 200, evalops);
-		CALCULATOR->endTemporaryStopMessages();
-		if(!value.isNumber()) return GTK_INPUT_ERROR;
-		bool overflow = false;
-		*((gdouble*) new_value) = value.number().intValue(&overflow);
-		if(overflow) return GTK_INPUT_ERROR;
-		return TRUE;
-	}
-	return FALSE;
-}
-
-struct FunctionDialog {
-	GtkWidget *dialog;
-	GtkWidget *b_cancel, *b_exec, *b_insert, *b_keepopen, *w_result;
-	vector<GtkWidget*> label;
-	vector<GtkWidget*> entry;
-	vector<GtkWidget*> type_label;
-	vector<GtkWidget*> boolean_buttons;
-	vector<int> boolean_index;
-	GtkListStore *properties_store;
-	bool add_to_menu, keep_open, rpn;
-	int args;
-};
-
-unordered_map<MathFunction*, FunctionDialog*> function_dialogs;
-
-void insert_function_do(MathFunction *f, FunctionDialog *fd) {
-	string str = f->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).formattedName(TYPE_FUNCTION, true) + "(", str2;
-
-	int argcount = fd->args;
-	if(f->maxargs() > 0 && f->minargs() < f->maxargs() && argcount > f->minargs()) {
-		while(true) {
-			string defstr = localize_expression(f->getDefaultValue(argcount));
-			remove_blank_ends(defstr);
-			if(f->getArgumentDefinition(argcount) && f->getArgumentDefinition(argcount)->type() == ARGUMENT_TYPE_BOOLEAN) {
-				if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fd->boolean_buttons[fd->boolean_index[argcount - 1]]))) {
-					str2 = "1";
-				} else {
-					str2 = "0";
-				}
-			} else if(evalops.parse_options.base != BASE_DECIMAL && f->getArgumentDefinition(argcount) && f->getArgumentDefinition(argcount)->type() == ARGUMENT_TYPE_INTEGER) {
-				Number nr(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(fd->entry[argcount - 1])), 1);
-				str2 = print_with_evalops(nr);
-			} else if(fd->properties_store && f->getArgumentDefinition(argcount) && f->getArgumentDefinition(argcount)->type() == ARGUMENT_TYPE_DATA_PROPERTY) {
-				GtkTreeIter iter;
-				DataProperty *dp = NULL;
-				if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(fd->entry[argcount - 1]), &iter)) {
-					gtk_tree_model_get(GTK_TREE_MODEL(fd->properties_store), &iter, 1, &dp, -1);
-				}
-				if(dp) {
-					str2 = dp->getName();
-				} else {
-					str2 = "info";
-				}
-			} else {
-				str2 = gtk_entry_get_text(GTK_ENTRY(fd->entry[argcount - 1]));
-				remove_blank_ends(str2);
-			}
-			if(!str2.empty() && USE_QUOTES(f->getArgumentDefinition(argcount), f) && (unicode_length(str2) <= 2 || str2.find_first_of("\"\'") == string::npos)) {
-				if(str2.find("\"") != string::npos) {
-					str2.insert(0, "\'");
-					str2 += "\'";
-				} else {
-					str2.insert(0, "\"");
-					str2 += "\"";
-				}
-			}
-			if(str2.empty() || str2 == defstr) argcount--;
-			else break;
-			if(argcount == 0 || argcount == f->minargs()) break;
-		}
-	}
-
-	int i_vector = f->maxargs() > 0 ? f->maxargs() : argcount;
-	for(int i = 0; i < argcount; i++) {
-		if(f->getArgumentDefinition(i + 1) && f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_BOOLEAN) {
-			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fd->boolean_buttons[fd->boolean_index[i]]))) {
-				str2 = "1";
-			} else {
-				str2 = "0";
-			}
-		} else if((i != (f->maxargs() > 0 ? f->maxargs() : argcount) - 1 || i_vector == i - 1) && f->getArgumentDefinition(i + 1) && f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_VECTOR) {
-			i_vector = i;
-			str2 = gtk_entry_get_text(GTK_ENTRY(fd->entry[i]));
-			remove_blank_ends(str2);
-			if(str2.find_first_of(PARENTHESISS VECTOR_WRAPS) == string::npos && str2.find_first_of(CALCULATOR->getComma() == COMMA ? COMMAS : CALCULATOR->getComma()) != string::npos) {
-				str2.insert(0, 1, '[');
-				str2 += ']';
-			}
-		} else if(evalops.parse_options.base != BASE_DECIMAL && f->getArgumentDefinition(i + 1) && f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_INTEGER) {
-			Number nr(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(fd->entry[i])), 1);
-			str2 = print_with_evalops(nr);
-		} else if(fd->properties_store && f->getArgumentDefinition(i + 1) && f->getArgumentDefinition(i + 1)->type() == ARGUMENT_TYPE_DATA_PROPERTY) {
-			GtkTreeIter iter;
-			DataProperty *dp = NULL;
-			if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(fd->entry[i]), &iter)) {
-				gtk_tree_model_get(GTK_TREE_MODEL(fd->properties_store), &iter, 1, &dp, -1);
-			}
-			if(dp) {
-				str2 = dp->getName();
-			} else {
-				str2 = "info";
-			}
-		} else {
-			str2 = gtk_entry_get_text(GTK_ENTRY(fd->entry[i]));
-			remove_blank_ends(str2);
-		}
-		if((i < f->minargs() || !str2.empty()) && USE_QUOTES(f->getArgumentDefinition(i + 1), f) && (unicode_length(str2) <= 2 || str2.find_first_of("\"\'") == string::npos)) {
-			if(str2.find("\"") != string::npos) {
-				str2.insert(0, "\'");
-				str2 += "\'";
-			} else {
-				str2.insert(0, "\"");
-				str2 += "\"";
-			}
-		}
-		if(i > 0) {
-			str += CALCULATOR->getComma();
-			str += " ";
-		}
-		str += str2;
-	}
-	str += ")";
-	insert_text(str.c_str());
-	if(fd->add_to_menu) function_inserted(f);
-}
-
-gboolean on_insert_function_delete(GtkWidget*, GdkEvent*, gpointer p) {
-	MathFunction *f = (MathFunction*) p;
-	FunctionDialog *fd = function_dialogs[f];
-	gtk_widget_destroy(fd->dialog);
-	delete fd;
-	function_dialogs.erase(f);
-	return true;
-}
-void on_insert_function_close(GtkWidget*, gpointer p) {
-	MathFunction *f = (MathFunction*) p;
-	FunctionDialog *fd = function_dialogs[f];
-	gtk_widget_destroy(fd->dialog);
-	delete fd;
-	function_dialogs.erase(f);
-}
-void on_insert_function_exec(GtkWidget*, gpointer p) {
-	MathFunction *f = (MathFunction*) p;
-	FunctionDialog *fd = function_dialogs[f];
-	if(!fd->keep_open) gtk_widget_hide(fd->dialog);
-	gtk_text_buffer_set_text(expressionbuffer, "", -1);
-	insert_function_do(f, fd);
-	execute_expression();
-	if(fd->keep_open) {
-		string str;
-		bool b_approx = result_text_approximate || (mstruct && mstruct->isApproximate());
-		if(!b_approx) {
-			str = "=";
-		} else {
-			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_ALMOST_EQUAL, (void*) historyview)) {
-				str = SIGN_ALMOST_EQUAL;
-			} else {
-				str = "= ";
-				str += _("approx.");
-			}
-		}
-		str += " <span font-weight=\"bold\">";
-		str += result_text;
-		str += "</span>";
-		gtk_label_set_markup(GTK_LABEL(fd->w_result), str.c_str());
-		gtk_widget_grab_focus(fd->entry[0]);
-	} else {
-		gtk_widget_destroy(fd->dialog);
-		delete fd;
-		function_dialogs.erase(f);
-	}
-}
-void on_insert_function_insert(GtkWidget*, gpointer p) {
-	MathFunction *f = (MathFunction*) p;
-	FunctionDialog *fd = function_dialogs[f];
-	if(!fd->keep_open) gtk_widget_hide(fd->dialog);
-	insert_function_do(f, fd);
-	if(fd->keep_open) {
-		gtk_widget_grab_focus(fd->entry[0]);
-	} else {
-		gtk_widget_destroy(fd->dialog);
-		delete fd;
-		function_dialogs.erase(f);
-	}
-}
-void on_insert_function_rpn(GtkWidget *w, gpointer p) {
-	MathFunction *f = (MathFunction*) p;
-	FunctionDialog *fd = function_dialogs[f];
-	if(!fd->keep_open) gtk_widget_hide(fd->dialog);
-	calculateRPN(f);
-	if(fd->add_to_menu) function_inserted(f);
-	if(fd->keep_open) {
-		gtk_widget_grab_focus(fd->entry[0]);
-	} else {
-		gtk_widget_destroy(fd->dialog);
-		delete fd;
-		function_dialogs.erase(f);
-	}
-}
-void on_insert_function_keepopen(GtkToggleButton *w, gpointer p) {
-	MathFunction *f = (MathFunction*) p;
-	FunctionDialog *fd = function_dialogs[f];
-	fd->keep_open = gtk_toggle_button_get_active(w);
-	keep_function_dialog_open = fd->keep_open;
-}
-void on_insert_function_changed(GtkWidget *w, gpointer p) {
-	MathFunction *f = (MathFunction*) p;
-	FunctionDialog *fd = function_dialogs[f];
-	gtk_label_set_text(GTK_LABEL(fd->w_result), "");
-}
-void on_insert_function_entry_activated(GtkWidget *w, gpointer p) {
-	MathFunction *f = (MathFunction*) p;
-	FunctionDialog *fd = function_dialogs[f];
-	for(int i = 0; i < fd->args; i++) {
-		if(fd->entry[i] == w) {
-			if(i == fd->args - 1) {
-				if(fd->rpn) on_insert_function_rpn(w, p);
-				else if(fd->keep_open || rpn_mode) on_insert_function_exec(w, p);
-				else on_insert_function_insert(w, p);
-			} else {
-				if(f->getArgumentDefinition(i + 2) && f->getArgumentDefinition(i + 2)->type() == ARGUMENT_TYPE_BOOLEAN) {
-					gtk_widget_grab_focus(fd->boolean_buttons[fd->boolean_index[i + 1]]);
-				} else {
-					gtk_widget_grab_focus(fd->entry[i + 1]);
-				}
-			}
-			break;
-		}
-	}
-
-}
-
-/*
-	insert function
-	pops up an argument entry dialog and inserts function into expression entry
-	parent is parent window
-*/
-void insert_function(MathFunction *f, GtkWidget *parent, bool add_to_menu) {
-	if(!f) {
-		return;
-	}
-
-	//if function takes no arguments, do not display dialog and insert function directly
-	if(f->args() == 0) {
-		string str = f->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).formattedName(TYPE_FUNCTION, true) + "()";
-		gchar *gstr = g_strdup(str.c_str());
-		function_inserted(f);
-		insert_text(gstr);
-		g_free(gstr);
-		return;
-	}
-
-	GtkTextIter istart, iend;
-	gtk_text_buffer_get_selection_bounds(expressionbuffer, &istart, &iend);
-
-	if(function_dialogs.find(f) != function_dialogs.end()) {
-		FunctionDialog *fd = function_dialogs[f];
-		if(fd->args > 0) {
-			Argument *arg = f->getArgumentDefinition(1);
-			if(arg && arg->type() == ARGUMENT_TYPE_BOOLEAN) {
-			} else if(fd->properties_store && arg && arg->type() == ARGUMENT_TYPE_DATA_PROPERTY) {
-			} else {
-				g_signal_handlers_block_matched((gpointer) fd->entry[0], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
-				//insert selection in expression entry into the first argument entry
-				string str = get_selected_expression_text(true), str2;
-				CALCULATOR->separateToExpression(str, str2, evalops, true);
-				remove_blank_ends(str);
-				gtk_entry_set_text(GTK_ENTRY(fd->entry[0]), str.c_str());
-				if(arg && arg->type() == ARGUMENT_TYPE_INTEGER) {
-					gtk_spin_button_update(GTK_SPIN_BUTTON(fd->entry[0]));
-				}
-				g_signal_handlers_unblock_matched((gpointer) fd->entry[0], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
-			}
-			gtk_widget_grab_focus(fd->entry[0]);
-		}
-		gtk_window_present_with_time(GTK_WINDOW(fd->dialog), GDK_CURRENT_TIME);
-		return;
-	}
-
-	FunctionDialog *fd = new FunctionDialog;
-
-	function_dialogs[f] = fd;
-
-	int args = 0;
-	bool has_vector = false;
-	if(f->args() > 0) {
-		args = f->args();
-	} else if(f->minargs() > 0) {
-		args = f->minargs();
-		while(!f->getDefaultValue(args + 1).empty()) args++;
-		args++;
-	} else {
-		args = 1;
-		has_vector = true;
-	}
-	fd->args = args;
-
-	fd->rpn = rpn_mode && expression_is_empty() && CALCULATOR->RPNStackSize() >= (f->minargs() <= 0 ? 1 : (size_t) f->minargs());
-	fd->add_to_menu = add_to_menu;
-
-	fd->dialog = gtk_dialog_new();
-	string f_title = f->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) fd->dialog);
-	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(fd->dialog), always_on_top);
-	gtk_window_set_title(GTK_WINDOW(fd->dialog), f_title.c_str());
-	gtk_window_set_transient_for(GTK_WINDOW(fd->dialog), GTK_WINDOW(parent));
-	gtk_window_set_destroy_with_parent(GTK_WINDOW(fd->dialog), TRUE);
-
-	fd->b_keepopen = gtk_check_button_new_with_label(_("Keep open"));
-	gtk_dialog_add_action_widget(GTK_DIALOG(fd->dialog), fd->b_keepopen, GTK_RESPONSE_NONE);
-	fd->keep_open = keep_function_dialog_open;
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fd->b_keepopen), fd->keep_open);
-
-	fd->b_cancel = gtk_button_new_with_mnemonic(_("_Close"));
-	gtk_dialog_add_action_widget(GTK_DIALOG(fd->dialog), fd->b_cancel, GTK_RESPONSE_REJECT);
-
-	// RPN Enter (calculate and add to stack)
-	fd->b_exec = gtk_button_new_with_mnemonic(rpn_mode ? _("Enter") : _("C_alculate"));
-	gtk_dialog_add_action_widget(GTK_DIALOG(fd->dialog), fd->b_exec, GTK_RESPONSE_APPLY);
-
-	fd->b_insert = gtk_button_new_with_mnemonic(rpn_mode ? _("Apply to Stack") : _("_Insert"));
-	if(rpn_mode && CALCULATOR->RPNStackSize() < (f->minargs() <= 0 ? 1 : (size_t) f->minargs())) gtk_widget_set_sensitive(fd->b_insert, FALSE);
-	gtk_dialog_add_action_widget(GTK_DIALOG(fd->dialog), fd->b_insert, GTK_RESPONSE_ACCEPT);
-
-	gtk_container_set_border_width(GTK_CONTAINER(fd->dialog), 6);
-	gtk_window_set_resizable(GTK_WINDOW(fd->dialog), FALSE);
-	GtkWidget *vbox_pre = gtk_box_new(GTK_ORIENTATION_VERTICAL, 18);
-	gtk_container_set_border_width(GTK_CONTAINER(vbox_pre), 6);
-	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(fd->dialog))), vbox_pre);
-	f_title.insert(0, "<b>");
-	f_title += "</b>";
-	GtkWidget *title_label = gtk_label_new(f_title.c_str());
-	gtk_label_set_use_markup(GTK_LABEL(title_label), TRUE);
-	gtk_widget_set_halign(title_label, GTK_ALIGN_START);
-
-	gtk_container_add(GTK_CONTAINER(vbox_pre), title_label);
-
-	GtkWidget *table = gtk_grid_new();
-	gtk_grid_set_row_spacing(GTK_GRID(table), 6);
-	gtk_grid_set_column_spacing(GTK_GRID(table), 12);
-	gtk_grid_set_row_homogeneous(GTK_GRID(table), FALSE);
-	gtk_container_add(GTK_CONTAINER(vbox_pre), table);
-	gtk_widget_set_hexpand(table, TRUE);
-	fd->label.resize(args, NULL);
-	fd->entry.resize(args, NULL);
-	fd->type_label.resize(args, NULL);
-	fd->boolean_index.resize(args, 0);
-
-	fd->w_result = gtk_label_new("");
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
-	gtk_widget_set_margin_end(fd->w_result, 6);
-#else
-	gtk_widget_set_margin_right(fd->w_result, 6);
-#endif
-	gtk_widget_set_margin_bottom(fd->w_result, 6);
-	gtk_label_set_max_width_chars(GTK_LABEL(fd->w_result), 20);
-	gtk_label_set_ellipsize(GTK_LABEL(fd->w_result), PANGO_ELLIPSIZE_MIDDLE);
-	gtk_widget_set_hexpand(fd->w_result, TRUE);
-	gtk_label_set_selectable(GTK_LABEL(fd->w_result), TRUE);
-
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
-	gtk_label_set_xalign(GTK_LABEL(fd->w_result), 1.0);
-#else
-	gtk_misc_set_alignment(GTK_MISC(fd->w_result), 1.0, 0.5);
-#endif
-
-	int bindex = 0;
-	int r = 0;
-	string argstr, typestr, defstr;
-	string freetype = Argument().printlong();
-	Argument *arg;
-	//create argument entries
-	fd->properties_store = NULL;
-	for(int i = 0; i < args; i++) {
-		arg = f->getArgumentDefinition(i + 1);
-		if(!arg || arg->name().empty()) {
-			if(args == 1) {
-				argstr = _("Value");
-			} else {
-				argstr = _("Argument");
-				if(i > 0 || f->maxargs() != 1) {
-					argstr += " ";
-					argstr += i2s(i + 1);
-				}
-			}
-		} else {
-			argstr = arg->name();
-		}
-		typestr = "";
-		defstr = localize_expression(f->getDefaultValue(i + 1));
-		if(arg && (arg->suggestsQuotes() || arg->type() == ARGUMENT_TYPE_TEXT) && defstr.length() >= 2 && defstr[0] == '\"' && defstr[defstr.length() - 1] == '\"') {
-			defstr = defstr.substr(1, defstr.length() - 2);
-		}
-		fd->label[i] = gtk_label_new(argstr.c_str());
-		gtk_widget_set_halign(fd->label[i], GTK_ALIGN_END);
-		gtk_widget_set_hexpand(fd->label[i], FALSE);
-		GtkWidget *combo = NULL;
-		if(arg) {
-			switch(arg->type()) {
-				case ARGUMENT_TYPE_INTEGER: {
-					IntegerArgument *iarg = (IntegerArgument*) arg;
-					glong min = LONG_MIN, max = LONG_MAX;
-					if(iarg->min()) {
-						min = iarg->min()->lintValue();
-					}
-					if(iarg->max()) {
-						max = iarg->max()->lintValue();
-					}
-					fd->entry[i] = gtk_spin_button_new_with_range(min, max, 1);
-					gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(fd->entry[i]), evalops.parse_options.base != BASE_DECIMAL);
-					gtk_entry_set_alignment(GTK_ENTRY(fd->entry[i]), 1.0);
-					g_signal_connect(G_OBJECT(fd->entry[i]), "input", G_CALLBACK(on_function_int_input), NULL);
-					g_signal_connect(G_OBJECT(fd->entry[i]), "key-press-event", G_CALLBACK(on_math_entry_key_press_event), NULL);
-					if(!arg->zeroForbidden() && min <= 0 && max >= 0) {
-						gtk_spin_button_set_value(GTK_SPIN_BUTTON(fd->entry[i]), 0);
-					} else {
-						if(max < 0) {
-							gtk_spin_button_set_value(GTK_SPIN_BUTTON(fd->entry[i]), max);
-						} else if(min <= 1) {
-							gtk_spin_button_set_value(GTK_SPIN_BUTTON(fd->entry[i]), 1);
-						} else {
-							gtk_spin_button_set_value(GTK_SPIN_BUTTON(fd->entry[i]), min);
-						}
-					}
-					g_signal_connect(G_OBJECT(fd->entry[i]), "changed", G_CALLBACK(on_insert_function_changed), (gpointer) f);
-					g_signal_connect(G_OBJECT(fd->entry[i]), "activate", G_CALLBACK(on_insert_function_entry_activated), (gpointer) f);
-					break;
-				}
-				case ARGUMENT_TYPE_BOOLEAN: {
-					fd->boolean_index[i] = bindex;
-					bindex += 2;
-					fd->entry[i] = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
-					gtk_box_set_homogeneous(GTK_BOX(fd->entry[i]), TRUE);
-					gtk_widget_set_halign(fd->entry[i], GTK_ALIGN_START);
-					fd->boolean_buttons.push_back(gtk_radio_button_new_with_label(NULL, _("True")));
-					gtk_box_pack_start(GTK_BOX(fd->entry[i]), fd->boolean_buttons[fd->boolean_buttons.size() - 1], TRUE, TRUE, 0);
-					fd->boolean_buttons.push_back(gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(fd->boolean_buttons[fd->boolean_buttons.size() - 1]), _("False")));
-					gtk_box_pack_end(GTK_BOX(fd->entry[i]), fd->boolean_buttons[fd->boolean_buttons.size() - 1], TRUE, TRUE, 0);
-					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fd->boolean_buttons[fd->boolean_buttons.size() - 1]), TRUE);
-					g_signal_connect(G_OBJECT(fd->boolean_buttons[fd->boolean_buttons.size() - 1]), "toggled", G_CALLBACK(on_insert_function_changed), (gpointer) f);
-					g_signal_connect(G_OBJECT(fd->boolean_buttons[fd->boolean_buttons.size() - 2]), "toggled", G_CALLBACK(on_insert_function_changed), (gpointer) f);
-					break;
-				}
-				case ARGUMENT_TYPE_DATA_PROPERTY: {
-					if(f->subtype() == SUBTYPE_DATA_SET) {
-						fd->properties_store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
-						gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(fd->properties_store), 0, string_sort_func, GINT_TO_POINTER(0), NULL);
-						gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(fd->properties_store), 0, GTK_SORT_ASCENDING);
-						fd->entry[i] = gtk_combo_box_new_with_model(GTK_TREE_MODEL(fd->properties_store));
-						GtkCellRenderer *cell = gtk_cell_renderer_text_new();
-						gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(fd->entry[i]), cell, TRUE);
-						gtk_cell_layout_add_attribute(GTK_CELL_LAYOUT(fd->entry[i]), cell, "text", 0);
-						DataPropertyIter it;
-						DataSet *ds = (DataSet*) f;
-						DataProperty *dp = ds->getFirstProperty(&it);
-						GtkTreeIter iter;
-						bool active_set = false;
-						if(fd->rpn && (size_t) i < CALCULATOR->RPNStackSize()) {
-							defstr = get_register_text(i + 1);
-						}
-						while(dp) {
-							if(!dp->isHidden()) {
-								gtk_list_store_append(fd->properties_store, &iter);
-								if(!active_set && defstr == dp->getName()) {
-									gtk_combo_box_set_active_iter(GTK_COMBO_BOX(fd->entry[i]), &iter);
-									active_set = true;
-								}
-								gtk_list_store_set(fd->properties_store, &iter, 0, dp->title().c_str(), 1, (gpointer) dp, -1);
-							}
-							dp = ds->getNextProperty(&it);
-						}
-						gtk_list_store_append(fd->properties_store, &iter);
-						if(!active_set) {
-							gtk_combo_box_set_active_iter(GTK_COMBO_BOX(fd->entry[i]), &iter);
-						}
-						gtk_list_store_set(fd->properties_store, &iter, 0, _("Info"), 1, (gpointer) NULL, -1);
-						g_signal_connect(G_OBJECT(fd->entry[i]), "changed", G_CALLBACK(on_insert_function_changed), (gpointer) f);
-						break;
-					}
-				}
-				default: {
-					typestr = arg->printlong();
-					if(typestr == freetype) typestr = "";
-					if(arg->type() == ARGUMENT_TYPE_DATA_OBJECT && f->subtype() == SUBTYPE_DATA_SET && ((DataSet*) f)->getPrimaryKeyProperty()) {
-						combo = gtk_combo_box_text_new_with_entry();
-						DataObjectIter it;
-						DataSet *ds = (DataSet*) f;
-						DataObject *obj = ds->getFirstObject(&it);
-						DataProperty *dp = ds->getProperty("name");
-						if(!dp || !dp->isKey()) dp = ds->getPrimaryKeyProperty();
-						while(obj) {
-							gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), obj->getPropertyInputString(dp).c_str());
-							obj = ds->getNextObject(&it);
-						}
-						fd->entry[i] = gtk_bin_get_child(GTK_BIN(combo));
-						gtk_entry_set_text(GTK_ENTRY(fd->entry[i]), "");
-					} else if(i == 1 && f == CALCULATOR->f_ascii && arg->type() == ARGUMENT_TYPE_TEXT) {
-						combo = gtk_combo_box_text_new_with_entry();
-						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "UTF-8");
-						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "UTF-16");
-						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "UTF-32");
-						fd->entry[i] = gtk_bin_get_child(GTK_BIN(combo));
-					} else if(i == 3 && f == CALCULATOR->f_date && arg->type() == ARGUMENT_TYPE_TEXT) {
-						combo = gtk_combo_box_text_new_with_entry();
-						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "chinese");
-						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "coptic");
-						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "egyptian");
-						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "ethiopian");
-						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "gregorian");
-						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "hebrew");
-						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "indian");
-						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "islamic");
-						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "julian");
-						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "milankovic");
-						gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), "persian");
-						fd->entry[i] = gtk_bin_get_child(GTK_BIN(combo));
-					} else {
-						fd->entry[i] = gtk_entry_new();
-					}
-					if(i >= f->minargs() && !has_vector) {
-						gtk_entry_set_placeholder_text(GTK_ENTRY(fd->entry[i]), _("optional"));
-					}
-					gtk_entry_set_alignment(GTK_ENTRY(fd->entry[i]), 1.0);
-					if(!USE_QUOTES(arg, f)) g_signal_connect(G_OBJECT(fd->entry[i]), "key-press-event", G_CALLBACK(on_math_entry_key_press_event), NULL);
-					g_signal_connect(G_OBJECT(fd->entry[i]), "changed", G_CALLBACK(on_insert_function_changed), (gpointer) f);
-					g_signal_connect(G_OBJECT(fd->entry[i]), "activate", G_CALLBACK(on_insert_function_entry_activated), (gpointer) f);
-				}
-			}
-		} else {
-			fd->entry[i] = gtk_entry_new();
-			if(i >= f->minargs() && !has_vector) {
-				gtk_entry_set_placeholder_text(GTK_ENTRY(fd->entry[i]), _("optional"));
-			}
-			gtk_entry_set_alignment(GTK_ENTRY(fd->entry[i]), 1.0);
-			g_signal_connect(G_OBJECT(fd->entry[i]), "key-press-event", G_CALLBACK(on_math_entry_key_press_event), NULL);
-			g_signal_connect(G_OBJECT(fd->entry[i]), "changed", G_CALLBACK(on_insert_function_changed), (gpointer) f);
-			g_signal_connect(G_OBJECT(fd->entry[i]), "activate", G_CALLBACK(on_insert_function_entry_activated), (gpointer) f);
-		}
-		gtk_widget_set_hexpand(fd->entry[i], TRUE);
-		if(arg && arg->type() == ARGUMENT_TYPE_DATE) {
-			if(defstr == "now") defstr = CALCULATOR->v_now->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) fd->entry[i]).formattedName(TYPE_VARIABLE, true);
-			else if(defstr == "today") defstr = CALCULATOR->v_today->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) fd->entry[i]).formattedName(TYPE_VARIABLE, true);
-			gtk_entry_set_icon_from_icon_name(GTK_ENTRY(fd->entry[i]), GTK_ENTRY_ICON_SECONDARY, "document-edit-symbolic");
-			g_signal_connect(G_OBJECT(fd->entry[i]), "icon_press", G_CALLBACK(on_type_label_date_clicked), NULL);
-		} else if(arg && arg->type() == ARGUMENT_TYPE_FILE) {
-			gtk_entry_set_icon_from_icon_name(GTK_ENTRY(fd->entry[i]), GTK_ENTRY_ICON_SECONDARY, "document-open-symbolic");
-			g_signal_connect(G_OBJECT(fd->entry[i]), "icon_press", G_CALLBACK(on_type_label_file_clicked), NULL);
-		} else if(arg && (arg->type() == ARGUMENT_TYPE_VECTOR || arg->type() == ARGUMENT_TYPE_MATRIX)) {
-			gtk_entry_set_icon_from_icon_name(GTK_ENTRY(fd->entry[i]), GTK_ENTRY_ICON_SECONDARY, "document-edit-symbolic");
-			g_signal_connect(G_OBJECT(fd->entry[i]), "icon_press", G_CALLBACK(arg->type() == ARGUMENT_TYPE_VECTOR ? on_type_label_vector_clicked : on_type_label_matrix_clicked), NULL);
-		} else if(!typestr.empty()) {
-			if(printops.use_unicode_signs) {
-				gsub(">=", SIGN_GREATER_OR_EQUAL, typestr);
-				gsub("<=", SIGN_LESS_OR_EQUAL, typestr);
-				gsub("!=", SIGN_NOT_EQUAL, typestr);
-			}
-			gsub("&", "&amp;", typestr);
-			gsub(">", "&gt;", typestr);
-			gsub("<", "&lt;", typestr);
-			typestr.insert(0, "<i><small>"); typestr += "</small></i>";
-			fd->type_label[i] = gtk_label_new(typestr.c_str());
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
-			gtk_widget_set_margin_end(fd->type_label[i], 6);
-#else
-			gtk_widget_set_margin_right(fd->type_label[i], 6);
-#endif
-			gtk_label_set_use_markup(GTK_LABEL(fd->type_label[i]), TRUE);
-			gtk_label_set_line_wrap(GTK_LABEL(fd->type_label[i]), TRUE);
-			gtk_widget_set_halign(fd->type_label[i], GTK_ALIGN_END);
-			gtk_widget_set_valign(fd->type_label[i], GTK_ALIGN_START);
-		} else {
-			fd->type_label[i] = NULL;
-		}
-		if(fd->rpn && (size_t) i < CALCULATOR->RPNStackSize()) {
-			string str = get_register_text(i + 1);
-			if(!str.empty()) {
-				if(arg && arg->type() == ARGUMENT_TYPE_BOOLEAN) {
-					if(str == "1") {
-						g_signal_handlers_block_matched((gpointer) fd->boolean_buttons[fd->boolean_buttons.size() - 2], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
-						gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fd->boolean_buttons[fd->boolean_buttons.size() - 2]), TRUE);
-						g_signal_handlers_unblock_matched((gpointer) fd->boolean_buttons[fd->boolean_buttons.size() - 2], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
-					}
-				} else if(fd->properties_store && arg && arg->type() == ARGUMENT_TYPE_DATA_PROPERTY) {
-				} else {
-					g_signal_handlers_block_matched((gpointer) fd->entry[i], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
-					if(i == 0 && args == 1 && (has_vector || arg->type() == ARGUMENT_TYPE_VECTOR)) {
-						string rpn_vector = str;
-						int i2 = i + 1;
-						while(true) {
-							str = get_register_text(i2 + 1);
-							if(str.empty()) break;
-							rpn_vector += CALCULATOR->getComma();
-							rpn_vector += " ";
-							rpn_vector += str;
-
-						}
-						gtk_entry_set_text(GTK_ENTRY(fd->entry[i]), rpn_vector.c_str());
-					} else {
-						gtk_entry_set_text(GTK_ENTRY(fd->entry[i]), str.c_str());
-						if(arg && arg->type() == ARGUMENT_TYPE_INTEGER) {
-							gtk_spin_button_update(GTK_SPIN_BUTTON(fd->entry[i]));
-						}
-					}
-					g_signal_handlers_unblock_matched((gpointer) fd->entry[i], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
-				}
-			}
-		} else if(arg && arg->type() == ARGUMENT_TYPE_BOOLEAN) {
-			if(defstr == "1") {
-				g_signal_handlers_block_matched((gpointer) fd->boolean_buttons[fd->boolean_buttons.size() - 2], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fd->boolean_buttons[fd->boolean_buttons.size() - 2]), TRUE);
-				g_signal_handlers_unblock_matched((gpointer) fd->boolean_buttons[fd->boolean_buttons.size() - 2], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
-			}
-		} else if(fd->properties_store && arg && arg->type() == ARGUMENT_TYPE_DATA_PROPERTY) {
-		} else {
-			g_signal_handlers_block_matched((gpointer) fd->entry[i], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
-			if(!defstr.empty() && (i < f->minargs() || has_vector || (defstr != "undefined" && defstr != "\"\""))) {
-				gtk_entry_set_text(GTK_ENTRY(fd->entry[i]), defstr.c_str());
-				if(arg && arg->type() == ARGUMENT_TYPE_INTEGER) {
-					gtk_spin_button_update(GTK_SPIN_BUTTON(fd->entry[i]));
-				}
-			}
-			//insert selection in expression entry into the first argument entry
-			if(i == 0) {
-				string seltext = get_selected_expression_text(true), str2;
-				CALCULATOR->separateToExpression(seltext, str2, evalops, true);
-				remove_blank_ends(seltext);
-				if(!seltext.empty()) {
-					gtk_entry_set_text(GTK_ENTRY(fd->entry[i]), seltext.c_str());
-					if(arg && arg->type() == ARGUMENT_TYPE_INTEGER) {
-						gtk_spin_button_update(GTK_SPIN_BUTTON(fd->entry[i]));
-					}
-				}
-			}
-			g_signal_handlers_unblock_matched((gpointer) fd->entry[i], G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_insert_function_changed, NULL);
-		}
-		gtk_grid_attach(GTK_GRID(table), fd->label[i], 0, r, 1, 1);
-		if(combo) gtk_grid_attach(GTK_GRID(table), combo, 1, r, 1, 1);
-		else gtk_grid_attach(GTK_GRID(table), fd->entry[i], 1, r, 1, 1);
-		r++;
-		if(fd->type_label[i]) {
-			gtk_widget_set_hexpand(fd->type_label[i], FALSE);
-			gtk_grid_attach(GTK_GRID(table), fd->type_label[i], 1, r, 1, 1);
-			r++;
-		}
-	}
-
-	//display function description
-	if(!f->description().empty() || !f->example(true).empty()) {
-		GtkWidget *descr_frame = gtk_scrolled_window_new(NULL, NULL);
-		gtk_container_add(GTK_CONTAINER(vbox_pre), descr_frame);
-		gtk_container_add(GTK_CONTAINER(vbox_pre), fd->w_result);
-		GtkWidget *descr = gtk_text_view_new();
-		gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(descr), GTK_WRAP_WORD);
-		gtk_text_view_set_editable(GTK_TEXT_VIEW(descr), FALSE);
-		GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(descr));
-		string str;
-		if(!f->description().empty()) str += f->description();
-		if(!f->example(true).empty()) {
-			if(!str.empty()) str += "\n\n";
-			str += _("Example:");
-			str += " ";
-			str += f->example(false);
-		}
-		if(printops.use_unicode_signs) {
-			gsub(">=", SIGN_GREATER_OR_EQUAL, str);
-			gsub("<=", SIGN_LESS_OR_EQUAL, str);
-			gsub("!=", SIGN_NOT_EQUAL, str);
-			gsub("...", "…", str);
-		}
-		gtk_text_buffer_set_text(buffer, str.c_str(), -1);
-		gtk_container_add(GTK_CONTAINER(descr_frame), descr);
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
-		gtk_text_view_set_left_margin(GTK_TEXT_VIEW(descr), 12);
-		gtk_text_view_set_right_margin(GTK_TEXT_VIEW(descr), 12);
-		gtk_text_view_set_top_margin(GTK_TEXT_VIEW(descr), 12);
-		gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(descr), 12);
-#else
-		gtk_text_view_set_left_margin(GTK_TEXT_VIEW(descr), 6);
-		gtk_text_view_set_right_margin(GTK_TEXT_VIEW(descr), 6);
-		gtk_text_view_set_pixels_above_lines(GTK_TEXT_VIEW(descr), 6);
-#endif
-		gtk_widget_show_all(vbox_pre);
-		gint nw, mw, nh, mh;
-		gtk_widget_get_preferred_width(vbox_pre, &mw, &nw);
-		gtk_widget_get_preferred_height(vbox_pre, &mh, &nh);
-		PangoLayout *layout_test = gtk_widget_create_pango_layout(descr, NULL);
-		pango_layout_set_text(layout_test, str.c_str(), -1);
-		pango_layout_set_width(layout_test, (nw - 24) * PANGO_SCALE);
-		pango_layout_set_wrap(layout_test, PANGO_WRAP_WORD);
-		gint w, h;
-		pango_layout_get_pixel_size(layout_test, &w, &h);
-		h *= 1.2;
-		if(h > nh) h = nh;
-		if(h < 100) h = 100;
-		gtk_widget_set_size_request(descr_frame, -1, h);
-	} else {
-		gtk_widget_set_margin_top(fd->w_result, 6);
-		gtk_grid_attach(GTK_GRID(table), fd->w_result, 0, r, 2, 1);
-	}
-
-	g_signal_connect(G_OBJECT(fd->b_exec), "clicked", G_CALLBACK(on_insert_function_exec), (gpointer) f);
-	if(fd->rpn) g_signal_connect(G_OBJECT(fd->b_insert), "clicked", G_CALLBACK(on_insert_function_rpn), (gpointer) f);
-	else g_signal_connect(G_OBJECT(fd->b_insert), "clicked", G_CALLBACK(on_insert_function_insert), (gpointer) f);
-	g_signal_connect(G_OBJECT(fd->b_cancel), "clicked", G_CALLBACK(on_insert_function_close), (gpointer) f);
-	g_signal_connect(G_OBJECT(fd->b_keepopen), "toggled", G_CALLBACK(on_insert_function_keepopen), (gpointer) f);
-	g_signal_connect(G_OBJECT(fd->dialog), "delete-event", G_CALLBACK(on_insert_function_delete), (gpointer) f);
-
-	gtk_widget_show_all(fd->dialog);
-
-	block_undo();
-	gtk_text_buffer_select_range(expressionbuffer, &istart, &iend);
-	unblock_undo();
-
-}
-
 void insert_variable(Variable *v, bool add_to_recent) {
 	if(!v || !CALCULATOR->stillHasVariable(v)) {
 		show_message(_("Variable does not exist anymore."), mainwindow);
@@ -11901,20 +6669,6 @@ void convert_result_to_unit_expression(string str) {
 	unblock_error();
 }
 
-void convert_to_unit_noprefix(GtkMenuItem*, gpointer user_data) {
-	GtkWidget *edialog;
-	ExpressionItem *u = (ExpressionItem*) user_data;
-	if(!u) {
-		edialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Unit does not exist"));
-		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
-		gtk_dialog_run(GTK_DIALOG(edialog));
-		gtk_widget_destroy(edialog);
-	}
-	string ceu_str = u->name();
-	//result is stored in MathStructure *mstruct
-	executeCommand(COMMAND_CONVERT_STRING, true, false, ceu_str);
-	focus_keeping_selection();
-}
 
 void variable_removed(Variable *v) {
 	remove_from_recent_variables(v);
@@ -12005,7 +6759,7 @@ void insert_button_function(MathFunction *f, bool save_to_recent, bool apply_to_
 		return;
 	}
 
-	if(f->minargs() > 2) return insert_function(f, mainwindow, save_to_recent);
+	if(f->minargs() > 2) return insert_function(f, GTK_WINDOW(mainwindow), save_to_recent);
 
 	bool b_bitrot = (f->referenceName() == "bitrot");
 
@@ -12468,7 +7222,7 @@ size_t save_mode_as(string name, bool *new_mode) {
 void load_mode(const mode_struct &mode) {
 	block_result();
 	block_calculation();
-	block_display_parse++;
+	block_status();
 	if(mode.keypad == 1) {
 		programming_inbase = 0;
 		programming_outbase = 0;
@@ -12492,7 +7246,7 @@ void load_mode(const mode_struct &mode) {
 	evalops.approximation = mode.eo.approximation;
 	unblock_result();
 	unblock_calculation();
-	block_display_parse--;
+	unblock_status();
 	printops.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
 	update_message_print_options();
 	update_status_text();
@@ -12696,7 +7450,7 @@ void set_minimal_mode(bool b) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")));
-		if(expression_is_empty() || !displayed_mstruct) {
+		if(expression_is_empty() || !current_displayed_result()) {
 			clearresult();
 		}
 		gtk_window_resize(GTK_WINDOW(mainwindow), minimal_width > 0 ? minimal_width : win_width, 1);
@@ -12730,28 +7484,13 @@ void set_minimal_mode(bool b) {
 	set_expression_size_request();
 }
 
+extern gint help_width, help_height;
+extern gdouble help_zoom;
+
 /*
 	load preferences from ~/.conf/qalculate/qalculate-gtk.cfg
 */
 void load_preferences() {
-
-	default_plot_legend_placement = PLOT_LEGEND_TOP_RIGHT;
-	default_plot_display_grid = true;
-	default_plot_full_border = false;
-	default_plot_min = "0";
-	default_plot_max = "10";
-	default_plot_step = "1";
-	default_plot_sampling_rate = 1001;
-	default_plot_linewidth = 2;
-	default_plot_rows = false;
-	default_plot_type = 0;
-	default_plot_style = PLOT_STYLE_LINES;
-	default_plot_smoothing = PLOT_SMOOTHING_NONE;
-	default_plot_variable = "x";
-	default_plot_color = true;
-	default_plot_use_sampling_rate = true;
-	default_plot_complex = -1;
-	max_plot_time = 5;
 
 	printops.multiplication_sign = MULTIPLICATION_SIGN_X;
 	printops.division_sign = DIVISION_SIGN_DIVISION_SLASH;
@@ -12843,9 +7582,6 @@ void load_preferences() {
 	default_signed = -1;
 	default_bits = -1;
 
-	programming_inbase = 0;
-	programming_outbase = 0;
-
 	visible_keypad = 0;
 
 	caret_as_xor = false;
@@ -12861,8 +7597,6 @@ void load_preferences() {
 	scientific_negexp = true;
 	auto_prefix = 0;
 	fraction_fixed_combined = true;
-
-	keep_function_dialog_open = false;
 
 	copy_ascii = false;
 	copy_ascii_without_units = false;
@@ -12898,58 +7632,18 @@ void load_preferences() {
 	aot_changed = false;
 	win_width = -1;
 	win_height = -1;
-	variables_width = -1;
-	variables_height = -1;
-	variables_hposition = -1;
-	variables_vposition = -1;
-	units_width = -1;
-	units_height = -1;
-	units_hposition = -1;
-	units_vposition = -1;
-	functions_width = -1;
-	functions_height = -1;
-	functions_hposition = -1;
-	functions_vposition = -1;
-	datasets_width = -1;
-	datasets_height = -1;
-	datasets_hposition = -1;
-	datasets_vposition1 = -1;
-	datasets_vposition2 = -1;
 	help_width = -1;
 	help_height = -1;
 	help_zoom = -1.0;
-#ifdef _WIN32
-	horizontal_button_padding = 6;
-#else
-	horizontal_button_padding = -1;
-#endif
-	vertical_button_padding = -1;
 	minimal_width = 500;
 	history_height = 0;
+	save_history_separately = false;
 	save_mode_on_exit = true;
 	save_defs_on_exit = true;
-	clear_history_on_exit = false;
-	max_history_lines = 300;
-	save_history_separately = false;
-	history_expression_type = 2;
 	hyp_is_on = false;
 	inv_is_on = false;
-	use_custom_result_font = false;
-	use_custom_expression_font = false;
-	use_custom_status_font = false;
-	use_custom_keypad_font = false;
-	use_custom_history_font = false;
 	use_custom_app_font = false;
-	custom_result_font = "";
-	custom_expression_font = "";
-	custom_status_font = "";
-	custom_keypad_font = "";
-	custom_history_font = "";
 	custom_app_font = "";
-	status_error_color = "#FF0000";
-	status_warning_color = "#0000FF";
-	status_error_color_set = false;
-	status_warning_color_set = false;
 	text_color = "#FFFFFF";
 	text_color_set = false;
 	show_keypad = true;
@@ -12958,45 +7652,21 @@ void load_preferences() {
 	show_convert = false;
 	persistent_keypad = false;
 	minimal_mode = false;
-	show_bases_keypad = true;
-	continuous_conversion = true;
-	set_missing_prefixes = false;
 	load_global_defs = true;
 	fetch_exchange_rates_at_startup = false;
 	auto_update_exchange_rates = -1;
 	display_expression_status = true;
 	parsed_in_result = false;
-	enable_completion = true;
-	enable_completion2 = true;
-	completion_min = 1;
-	completion_min2 = 1;
-	completion_delay = 0;
 	first_time = false;
 	first_error = true;
-	expression_history.clear();
-	expression_history_index = -1;
-	expression_lines = -1;
 	gtk_theme = -1;
 	custom_lang = "";
 
 	CALCULATOR->setPrecision(10);
 	previous_precision = 0;
 
-	time_t history_time = 0;
-
 	default_shortcuts = true;
 	keyboard_shortcuts.clear();
-
-	custom_buttons.resize(49);
-	for(size_t i = 0; i < 49; i++) {
-		custom_buttons[i].type[0] = -1;
-		custom_buttons[i].type[1] = -1;
-		custom_buttons[i].type[2] = -1;
-		custom_buttons[i].value[0] = "";
-		custom_buttons[i].value[1] = "";
-		custom_buttons[i].value[2] = "";
-		custom_buttons[i].text = "";
-	}
 
 	last_version_check_date.setToCurrentDate();
 
@@ -13015,14 +7685,9 @@ void load_preferences() {
 #endif
 	}
 
-	size_t bookmark_index = 0;
-
 	version_numbers[0] = 5;
 	version_numbers[1] = 2;
 	version_numbers[2] = 0;
-
-	bool old_history_format = false;
-	unformatted_history = 0;
 
 	if(file) {
 		char line[1000000L];
@@ -13042,8 +7707,6 @@ void load_preferences() {
 					v = s2i(svalue);
 					if(svar == "version") {
 						parse_qalculate_version(svalue, version_numbers);
-						old_history_format = (version_numbers[0] == 0 && (version_numbers[1] < 9 || (version_numbers[1] == 9 && version_numbers[2] <= 4)));
-						if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 22) || (version_numbers[0] == 3 && version_numbers[1] == 22 && version_numbers[2] < 1)) unformatted_history = 1;
 					} else if(svar == "allow_multiple_instances") {
 						if(v == 0 && version_numbers[0] < 3) v = -1;
 						allow_multiple_instances = v;
@@ -13074,66 +7737,20 @@ void load_preferences() {
 #endif
 					} else if(svar == "hide_on_startup") {
 						hide_on_startup = v;
-					} else if(svar == "variables_width") {
-						variables_width = v;
-					} else if(svar == "variables_height") {
-						variables_height = v;
-					} else if(svar == "variables_panel_position") {
-						variables_hposition = v;
-					} else if(svar == "variables_vpanel_position") {
-						variables_vposition = v;
-					} else if(svar == "variables_hpanel_position") {
-						variables_hposition = v;
-					} else if(svar == "units_width") {
-						units_width = v;
-					} else if(svar == "units_height") {
-						units_height = v;
-					} else if(svar == "units_panel_position") {
-						units_hposition = v;
-					} else if(svar == "units_hpanel_position") {
-						units_hposition = v;
-					} else if(svar == "units_vpanel_position") {
-						units_vposition = v;
-					} else if(svar == "functions_width") {
-						functions_width = v;
-					} else if(svar == "functions_height") {
-						functions_height = v;
-					} else if(svar == "functions_hpanel_position") {
-						functions_hposition = v;
-					} else if(svar == "functions_vpanel_position") {
-						functions_vposition = v;
-					} else if(svar == "datasets_width") {
-						datasets_width = v;
-					} else if(svar == "datasets_height") {
-						datasets_height = v;
-					} else if(svar == "datasets_hpanel_position") {
-						datasets_hposition = v;
-					} else if(svar == "datasets_vpanel1_position") {
-						datasets_vposition1 = v;
-					} else if(svar == "datasets_vpanel2_position") {
-						datasets_vposition2 = v;
 					} else if(svar == "help_width") {
 						help_width = v;
 					} else if(svar == "help_height") {
 						help_height = v;
 					} else if(svar == "help_zoom") {
 						help_zoom = strtod(svalue.c_str(), NULL);
-					} else if(svar == "keep_function_dialog_open") {
-						keep_function_dialog_open = v;
 					} else if(svar == "error_info_shown") {
 						first_error = !v;
 					} else if(svar == "save_mode_on_exit") {
 						save_mode_on_exit = v;
 					} else if(svar == "save_definitions_on_exit") {
 						save_defs_on_exit = v;
-					} else if(svar == "clear_history_on_exit") {
-						clear_history_on_exit = v;
-					} else if(svar == "max_history_lines") {
-						max_history_lines = v;
 					} else if(svar == "save_history_separately") {
 						save_history_separately = v;
-					} else if(svar == "history_expression_type") {
-						history_expression_type = v;
 					} else if(svar == "language") {
 						custom_lang = svalue;
 					} else if(svar == "ignore_locale") {
@@ -13166,42 +7783,15 @@ void load_preferences() {
 						persistent_keypad = v;
 					} else if(svar == "minimal_mode") {
 						minimal_mode = v;
-					} else if(svar == "show_bases_keypad") {
-						show_bases_keypad = v;
-					} else if(svar == "continuous_conversion") {
-						continuous_conversion = v;
-					} else if(svar == "set_missing_prefixes") {
-						set_missing_prefixes = v;
-					} else if(svar == "expression_lines") {
-						expression_lines = v;
 					} else if(svar == "display_expression_status") {
 						display_expression_status = v;
 					} else if(svar == "parsed_expression_in_resultview") {
 						parsed_in_result = v;
-					} else if(svar == "enable_completion") {
-						enable_completion = v;
-					} else if(svar == "enable_completion2") {
-						enable_completion2 = v;
-					} else if(svar == "completion_min") {
-						if(v < 1) v = 1;
-						completion_min = v;
-					} else if(svar == "completion_min2") {
-						if(v < 1) v = 1;
-						completion_min2 = v;
-					} else if(svar == "completion_delay") {
-						if(v < 0) v = 0;
-						completion_delay = v;
 					} else if(svar == "calculate_as_you_type_history_delay") {
 						autocalc_history_delay = v;
-					} else if(svar == "programming_outbase") {
-						programming_outbase = v;
-					} else if(svar == "programming_inbase") {
-						programming_inbase = v;
 					} else if(svar == "programming_bits" || svar == "binary_bits") {
 						evalops.parse_options.binary_bits = v;
 						printops.binary_bits = v;
-					} else if(svar == "general_exact") {
-						versatile_exact = v;
 					} else if(svar == "bit_width") {
 						default_bits = v;
 					} else if(svar == "signed_integer") {
@@ -13678,49 +8268,14 @@ void load_preferences() {
 						if(v > 0) gtk_theme = 1;
 					} else if(svar == "gtk_theme") {
 						gtk_theme = v;
-					} else if(svar == "horizontal_button_padding") {
-						horizontal_button_padding = v;
-					} else if(svar == "vertical_button_padding") {
-						vertical_button_padding = v;
-					} else if(svar == "use_custom_result_font") {
-						use_custom_result_font = v;
-					} else if(svar == "use_custom_expression_font") {
-						use_custom_expression_font = v;
-					} else if(svar == "use_custom_status_font") {
-						use_custom_status_font = v;
-					} else if(svar == "use_custom_keypad_font") {
-						use_custom_keypad_font = v;
-					} else if(svar == "use_custom_history_font") {
-						use_custom_history_font = v;
 					} else if(svar == "use_custom_application_font") {
 						use_custom_app_font = v;
-					} else if(svar == "custom_result_font") {
-						custom_result_font = svalue;
-						save_custom_result_font = true;
-					} else if(svar == "custom_expression_font") {
-						custom_expression_font = svalue;
-						save_custom_expression_font = true;
-					} else if(svar == "custom_status_font") {
-						custom_status_font = svalue;
-						save_custom_status_font = true;
-					} else if(svar == "custom_keypad_font") {
-						custom_keypad_font = svalue;
-						save_custom_keypad_font = true;
-					} else if(svar == "custom_history_font") {
-						custom_history_font = svalue;
-						save_custom_history_font = true;
 					} else if(svar == "custom_application_font") {
 						custom_app_font = svalue;
 						save_custom_app_font = true;
-					} else if(svar == "status_error_color") {
-						status_error_color = svalue;
-						status_error_color_set = true;
 					} else if(svar == "text_color") {
 						text_color = svalue;
 						text_color_set = true;
-					} else if(svar == "status_warning_color") {
-						status_warning_color = svalue;
-						status_warning_color_set = true;
 					} else if(svar == "multiplication_sign") {
 						if(svalue == "*") {
 							printops.multiplication_sign = MULTIPLICATION_SIGN_ASTERISK;
@@ -13802,67 +8357,6 @@ void load_preferences() {
 						latest_button_unit_pre = svalue;
 					} else if(svar == "latest_button_currency") {
 						latest_button_currency_pre = svalue;
-					} else if(svar == "plot_legend_placement") {
-						if(v >= PLOT_LEGEND_NONE && v <= PLOT_LEGEND_OUTSIDE) default_plot_legend_placement = (PlotLegendPlacement) v;
-					} else if(svar == "plot_style") {
-						if(v >= PLOT_STYLE_LINES && v <= PLOT_STYLE_POLAR) default_plot_style = (PlotStyle) v;
-					} else if(svar == "plot_smoothing") {
-						if(v >= PLOT_SMOOTHING_NONE && v <= PLOT_SMOOTHING_SBEZIER) default_plot_smoothing = (PlotSmoothing) v;
-					} else if(svar == "plot_display_grid") {
-						default_plot_display_grid = v;
-					} else if(svar == "plot_full_border") {
-						default_plot_full_border = v;
-					} else if(svar == "plot_min") {
-						default_plot_min = svalue;
-					} else if(svar == "plot_max") {
-						default_plot_max = svalue;
-					} else if(svar == "plot_step") {
-						default_plot_step = svalue;
-					} else if(svar == "plot_sampling_rate") {
-						default_plot_sampling_rate = v;
-					} else if(svar == "plot_use_sampling_rate") {
-						default_plot_use_sampling_rate = v;
-					} else if(svar == "plot_complex") {
-						default_plot_complex = v;
-					} else if(svar == "plot_variable") {
-						default_plot_variable = svalue;
-					} else if(svar == "plot_rows") {
-						default_plot_rows = v;
-					} else if(svar == "plot_type") {
-						default_plot_type = v;
-					} else if(svar == "plot_color") {
-						if(version_numbers[0] > 2 || (version_numbers[0] == 2 && (version_numbers[1] > 2 || (version_numbers[1] == 2 && version_numbers[2] > 1)))) {
-							default_plot_color = v;
-						}
-					} else if(svar == "plot_linewidth") {
-						default_plot_linewidth = v;
-					} else if(svar == "max_plot_time") {
-						max_plot_time = v;
-					} else if(svar == "custom_button_label") {
-						unsigned int index = 0;
-						char str[20];
-						int n = sscanf(svalue.c_str(), "%u:%19[^\n]", &index, str);
-						if(n >= 2 && index < custom_buttons.size()) {
-							custom_buttons[index].text = str;
-							remove_blank_ends(custom_buttons[index].text);
-						}
-					} else if(svar == "custom_button") {
-						unsigned int index = 0;
-						unsigned int bi = 0;
-						char str[20];
-						int type = -1;
-						int n = sscanf(svalue.c_str(), "%u:%u:%i:%19[^\n]", &index, &bi, &type, str);
-						if(n >= 3 && index < custom_buttons.size()) {
-							if(bi <= 2) {
-								string value;
-								if(n >= 4) {
-									value = str;
-									if(type != SHORTCUT_TYPE_TEXT) remove_blank_ends(value);
-								}
-								custom_buttons[index].type[bi] = type;
-								custom_buttons[index].value[bi] = value;
-							}
-						}
 					} else if(svar == "keyboard_shortcut") {
 						default_shortcuts = false;
 						int type = -1;
@@ -13902,141 +8396,22 @@ void load_preferences() {
 								keyboard_shortcuts[(guint64) key + (guint64) G_MAXUINT32 * (guint64) modifier] = ks;
 							}
 						}
-					} else if(svar == "expression_history") {
-						expression_history.push_back(svalue);
-					} else if(svar == "history") {
-						inhistory.push_front(svalue);
-						inhistory_type.push_front(QALCULATE_HISTORY_OLD);
-						inhistory_time.push_front(history_time);
-						inhistory_protected.push_front(false);
-						inhistory_value.push_front(0);
-					} else if(svar == "history_old") {
-						inhistory.push_front(svalue);
-						inhistory_type.push_front(QALCULATE_HISTORY_OLD);
-						inhistory_time.push_front(history_time);
-						inhistory_protected.push_front(false);
-						inhistory_value.push_front(0);
-					} else if(svar == "history_expression") {
-						inhistory.push_front(svalue);
-						inhistory_type.push_front(QALCULATE_HISTORY_EXPRESSION);
-						inhistory_time.push_front(history_time);
-						inhistory_protected.push_front(false);
-						inhistory_value.push_front(0);
-					} else if(svar == "history_expression*") {
-						inhistory.push_front(svalue);
-						inhistory_type.push_front(QALCULATE_HISTORY_EXPRESSION);
-						inhistory_time.push_front(history_time);
-						inhistory_protected.push_front(true);
-						inhistory_value.push_front(0);
-					} else if(svar == "history_transformation") {
-						inhistory.push_front(svalue);
-						inhistory_type.push_front(QALCULATE_HISTORY_TRANSFORMATION);
-						inhistory_time.push_front(history_time);
-						inhistory_protected.push_front(false);
-						inhistory_value.push_front(0);
-					} else if(svar == "history_result") {
-						if(VERSION_BEFORE(4, 1, 1) && svalue.length() > 20 && svalue.substr(svalue.length() - 4, 4) == " …" && (unsigned char) svalue[svalue.length() - 5] >= 0xC0) svalue.erase(svalue.length() - 5, 1);
-						inhistory.push_front(svalue);
-						inhistory_type.push_front(QALCULATE_HISTORY_RESULT);
-						inhistory_time.push_front(history_time);
-						inhistory_protected.push_front(false);
-						inhistory_value.push_front(0);
-					} else if(svar == "history_result_approximate") {
-						if(VERSION_BEFORE(4, 1, 1) && svalue.length() > 20 && svalue.substr(svalue.length() - 4, 4) == " …" && (unsigned char) svalue[svalue.length() - 5] >= 0xC0) svalue.erase(svalue.length() - 5, 1);
-						inhistory.push_front(svalue);
-						inhistory_type.push_front(QALCULATE_HISTORY_RESULT_APPROXIMATE);
-						inhistory_time.push_front(history_time);
-						inhistory_protected.push_front(false);
-						inhistory_value.push_front(0);
-					} else if(svar == "history_parse") {
-						inhistory.push_front(svalue);
-						if(old_history_format) inhistory_type.push_front(QALCULATE_HISTORY_PARSE_WITHEQUALS);
-						else inhistory_type.push_front(QALCULATE_HISTORY_PARSE);
-						inhistory_time.push_front(history_time);
-						inhistory_protected.push_front(false);
-						inhistory_value.push_front(0);
-					} else if(svar == "history_parse_withequals") {
-						inhistory.push_front(svalue);
-						inhistory_type.push_front(QALCULATE_HISTORY_PARSE_WITHEQUALS);
-						inhistory_time.push_front(history_time);
-						inhistory_protected.push_front(false);
-						inhistory_value.push_front(0);
-					} else if(svar == "history_parse_approximate") {
-						inhistory.push_front(svalue);
-						inhistory_type.push_front(QALCULATE_HISTORY_PARSE_APPROXIMATE);
-						inhistory_time.push_front(history_time);
-						inhistory_protected.push_front(false);
-						inhistory_value.push_front(0);
-					} else if(svar == "history_register_moved") {
-						inhistory.push_front(svalue);
-						inhistory_type.push_front(QALCULATE_HISTORY_REGISTER_MOVED);
-						inhistory_time.push_front(history_time);
-						inhistory_protected.push_front(false);
-						inhistory_value.push_front(0);
-					} else if(svar == "history_rpn_operation") {
-						inhistory.push_front(svalue);
-						inhistory_type.push_front(QALCULATE_HISTORY_RPN_OPERATION);
-						inhistory_time.push_front(history_time);
-						inhistory_protected.push_front(false);
-						inhistory_value.push_front(0);
-					} else if(svar == "history_register_moved*") {
-						inhistory.push_front(svalue);
-						inhistory_type.push_front(QALCULATE_HISTORY_REGISTER_MOVED);
-						inhistory_time.push_front(history_time);
-						inhistory_protected.push_front(true);
-						inhistory_value.push_front(0);
-					} else if(svar == "history_rpn_operation*") {
-						inhistory.push_front(svalue);
-						inhistory_type.push_front(QALCULATE_HISTORY_RPN_OPERATION);
-						inhistory_time.push_front(history_time);
-						inhistory_protected.push_front(true);
-						inhistory_value.push_front(0);
-					} else if(svar == "history_warning") {
-						inhistory.push_front(svalue);
-						inhistory_type.push_front(QALCULATE_HISTORY_WARNING);
-						inhistory_time.push_front(history_time);
-						inhistory_protected.push_front(false);
-						inhistory_value.push_front(0);
-					} else if(svar == "history_message") {
-						inhistory.push_front(svalue);
-						inhistory_type.push_front(QALCULATE_HISTORY_MESSAGE);
-						inhistory_time.push_front(history_time);
-						inhistory_protected.push_front(false);
-						inhistory_value.push_front(0);
-					} else if(svar == "history_error") {
-						inhistory.push_front(svalue);
-						inhistory_type.push_front(QALCULATE_HISTORY_ERROR);
-						inhistory_time.push_front(history_time);
-						inhistory_protected.push_front(false);
-						inhistory_value.push_front(0);
-					} else if(svar == "history_bookmark") {
-						inhistory.push_front(svalue);
-						inhistory_type.push_front(QALCULATE_HISTORY_BOOKMARK);
-						inhistory_time.push_front(history_time);
-						inhistory_protected.push_front(false);
-						inhistory_value.push_front(0);
-						bool b = false;
-						bookmark_index = 0;
-						for(vector<string>::iterator it = history_bookmarks.begin(); it != history_bookmarks.end(); ++it) {
-							if(string_is_less(svalue, *it)) {
-								history_bookmarks.insert(it, svalue);
-								b = true;
-								break;
-							}
-							bookmark_index++;
-						}
-						if(!b) history_bookmarks.push_back(svalue);
-					} else if(svar == "history_continued") {
-						if(inhistory.size() > 0) {
-							inhistory[0] += "\n";
-							inhistory[0] += svalue;
-							if(inhistory_type[0] == QALCULATE_HISTORY_BOOKMARK) {
-								history_bookmarks[bookmark_index] += "\n";
-								history_bookmarks[bookmark_index] += svalue;
-							}
-						}
-					} else if(svar == "history_time") {
-						history_time = (time_t) strtoll(svalue.c_str(), NULL, 10);
+					} else if(read_keypad_settings_line(svar, svalue, v)) {
+					} else if(read_expression_edit_settings_line(svar, svalue, v)) {
+					} else if(read_expression_status_settings_line(svar, svalue, v)) {
+					} else if(read_history_settings_line(svar, svalue, v)) {
+					} else if(read_datasets_dialog_settings_line(svar, svalue, v)) {
+					} else if(read_conversion_view_settings_line(svar, svalue, v)) {
+					} else if(read_result_view_settings_line(svar, svalue, v)) {
+					} else if(read_number_bases_dialog_settings_line(svar, svalue, v)) {
+					} else if(read_insert_function_dialog_settings_line(svar, svalue, v)) {
+					} else if(read_plot_settings_line(svar, svalue, v)) {
+					} else if(read_functions_dialog_settings_line(svar, svalue, v)) {
+					} else if(read_units_dialog_settings_line(svar, svalue, v)) {
+					} else if(read_variables_dialog_settings_line(svar, svalue, v)) {
+					} else if(read_datasets_dialog_settings_line(svar, svalue, v)) {
+					} else if(read_expression_history_line(svar, svalue)) {
+					} else if(read_history_line(svar, svalue)) {
 					}
 				} else if(stmp.length() > 2 && stmp[0] == '[' && stmp[stmp.length() - 1] == ']') {
 					stmp = stmp.substr(1, stmp.length() - 2);
@@ -14123,291 +8498,12 @@ void load_preferences() {
 		evalops.parse_options.binary_bits = 0;
 	}
 	update_message_print_options();
-	displayed_printops = printops;
-	displayed_printops.allow_non_usable = true;
-	displayed_caf = complex_angle_form;
-	initial_inhistory_index = inhistory.size() - 1;
+	update_displayed_printops();
 	g_free(gstr_file);
 	show_history = show_history && (persistent_keypad || !show_keypad);
 	show_convert = show_convert && !show_history && (persistent_keypad || !show_keypad);
 	set_saved_mode();
 
-}
-
-void save_history_to_file(FILE *file) {
-	if(!clear_history_on_exit) {
-		for(size_t i = 0; i < expression_history.size(); i++) {
-			gsub("\n", " ", expression_history[i]);
-			fprintf(file, "expression_history=%s\n", expression_history[i].c_str());
-		}
-	}
-
-	int lines = max_history_lines;
-	bool end_after_result = false, end_before_expression = false;
-	bool is_protected = false;
-	bool is_bookmarked = false;
-	bool doend = false;
-	size_t hi = inhistory.size();
-	time_t history_time_prev = 0;
-	while(!doend && hi > 0) {
-		hi--;
-		if(inhistory_time[hi] != history_time_prev) {
-			history_time_prev = inhistory_time[hi];
-			fprintf(file, "history_time=%lli\n", (long long int) history_time_prev);
-		}
-		switch(inhistory_type[hi]) {
-			case QALCULATE_HISTORY_EXPRESSION: {
-				if(end_before_expression) {
-					doend = true;
-				} else {
-					if(inhistory_protected[hi]) fprintf(file, "history_expression*=");
-					else if(!clear_history_on_exit || is_bookmarked) fprintf(file, "history_expression=");
-					is_protected = inhistory_protected[hi] || is_bookmarked;
-					is_bookmarked = false;
-				}
-				break;
-			}
-			case QALCULATE_HISTORY_TRANSFORMATION: {
-				if(clear_history_on_exit && !is_protected) break;
-				fprintf(file, "history_transformation=");
-				break;
-			}
-			case QALCULATE_HISTORY_RESULT: {
-				if(end_after_result) doend = true;
-				if(clear_history_on_exit && !is_protected) break;
-				fprintf(file, "history_result=");
-				lines--;
-				break;
-			}
-			case QALCULATE_HISTORY_RESULT_APPROXIMATE: {
-				if(end_after_result) doend = true;
-				if(clear_history_on_exit && !is_protected) break;
-				fprintf(file, "history_result_approximate=");
-				lines--;
-				break;
-			}
-			case QALCULATE_HISTORY_PARSE: {}
-			case QALCULATE_HISTORY_PARSE_WITHEQUALS: {}
-			case QALCULATE_HISTORY_PARSE_APPROXIMATE: {
-				if(clear_history_on_exit && !is_protected) break;
-				if(inhistory_type[hi] == QALCULATE_HISTORY_PARSE) fprintf(file, "history_parse=");
-				else if(inhistory_type[hi] == QALCULATE_HISTORY_PARSE_WITHEQUALS) fprintf(file, "history_parse_withequals=");
-				else fprintf(file, "history_parse_approximate=");
-				lines--;
-				if(lines < 0) {
-					if(hi + 1 < inhistory_protected.size() && inhistory_protected[hi + 1]) {
-						end_before_expression = true;
-					} else if(hi + 2 < inhistory_type.size() && inhistory_type[hi + 2] == QALCULATE_HISTORY_BOOKMARK) {
-						end_before_expression = true;
-					}
-					if(!end_before_expression) end_after_result = true;
-				}
-				break;
-			}
-			case QALCULATE_HISTORY_REGISTER_MOVED: {
-				if(end_before_expression) {
-					doend = true;
-				} else {
-					if(inhistory_protected[hi]) fprintf(file, "history_register_moved*=");
-					else if(!clear_history_on_exit || is_bookmarked) fprintf(file, "history_register_moved=");
-					is_protected = inhistory_protected[hi] || is_bookmarked;
-					is_bookmarked = false;
-				}
-				break;
-			}
-			case QALCULATE_HISTORY_RPN_OPERATION: {
-				if(end_before_expression) {
-					doend = true;
-				} else {
-					if(inhistory_protected[hi]) fprintf(file, "history_rpn_operation*=");
-					else if(!clear_history_on_exit || is_bookmarked) fprintf(file, "history_rpn_operation=");
-					is_protected = inhistory_protected[hi] || is_bookmarked;
-					is_bookmarked = false;
-				}
-				break;
-			}
-			case QALCULATE_HISTORY_WARNING: {
-				if(clear_history_on_exit && !is_protected) break;
-				fprintf(file, "history_warning=");
-				lines--;
-				break;
-			}
-			case QALCULATE_HISTORY_MESSAGE: {
-				if(clear_history_on_exit && !is_protected) break;
-				fprintf(file, "history_message=");
-				lines--;
-				break;
-			}
-			case QALCULATE_HISTORY_ERROR: {
-				if(clear_history_on_exit && !is_protected) break;
-				fprintf(file, "history_error=");
-				lines--;
-				break;
-			}
-			case QALCULATE_HISTORY_BOOKMARK: {
-				if(end_before_expression && hi > 0 && (inhistory_type[hi - 1] == QALCULATE_HISTORY_EXPRESSION || inhistory_type[hi - 1] == QALCULATE_HISTORY_REGISTER_MOVED || inhistory_type[hi - 1] == QALCULATE_HISTORY_RPN_OPERATION)) {
-					doend = true;
-				} else {
-					fprintf(file, "history_bookmark=");
-					is_bookmarked = true;
-					is_protected = true;
-					lines--;
-					break;
-				}
-			}
-			case QALCULATE_HISTORY_OLD: {
-				if(clear_history_on_exit && !is_protected) break;
-				fprintf(file, "history_old=");
-				lines--;
-				if(lines < 0) doend = true;
-				break;
-			}
-		}
-		if(doend && end_before_expression) break;
-		if(!clear_history_on_exit || is_protected) {
-			size_t i3 = inhistory[hi].find('\n');
-			if(i3 == string::npos) {
-				if(!is_protected && inhistory[hi].length() > 5000) {
-					int index = 50;
-					while(index > 0 && (signed char) inhistory[hi][index] < 0 && (unsigned char) inhistory[hi][index + 1] < 0xC0) index--;
-					fprintf(file, "%s …\n", fix_history_string(unhtmlize(inhistory[hi].substr(0, index + 1))).c_str());
-				} else {
-					fprintf(file, "%s\n", inhistory[hi].c_str());
-					if(inhistory[hi].length() > 300) {
-						if(inhistory[hi].length() > 9000) lines -= 30;
-						else lines -= inhistory[hi].length() / 300;
-					}
-				}
-			} else {
-				fprintf(file, "%s\n", inhistory[hi].substr(0, i3).c_str());
-				i3++;
-				size_t i2 = inhistory[hi].find('\n', i3);
-				while(i2 != string::npos) {
-					fprintf(file, "history_continued=%s\n", inhistory[hi].substr(i3, i2 - i3).c_str());
-					lines--;
-					i3 = i2 + 1;
-					i2 = inhistory[hi].find('\n', i3);
-				}
-				fprintf(file, "history_continued=%s\n", inhistory[hi].substr(i3, inhistory[hi].length() - i3).c_str());
-				lines--;
-			}
-		}
-	}
-	while(hi >= 0 && inhistory.size() > 0) {
-		if(inhistory_protected[hi] || (inhistory_type[hi] == QALCULATE_HISTORY_BOOKMARK && hi != 0 && inhistory_type[hi - 1] != QALCULATE_HISTORY_OLD)) {
-			bool b_first = true;
-			if(inhistory_time[hi] != history_time_prev) {
-				history_time_prev = inhistory_time[hi];
-				fprintf(file, "history_time=%lli\n", (long long int) history_time_prev);
-			}
-			while(hi >= 0) {
-				bool do_end = false;
-				switch(inhistory_type[hi]) {
-					case QALCULATE_HISTORY_EXPRESSION: {
-						if(!b_first) {
-							do_end = true;
-						} else {
-							if(inhistory_protected[hi]) fprintf(file, "history_expression*=");
-							else fprintf(file, "history_expression=");
-							b_first = false;
-						}
-						break;
-					}
-					case QALCULATE_HISTORY_TRANSFORMATION: {
-						fprintf(file, "history_transformation=");
-						break;
-					}
-					case QALCULATE_HISTORY_RESULT: {
-						fprintf(file, "history_result=");
-						break;
-					}
-					case QALCULATE_HISTORY_RESULT_APPROXIMATE: {
-						fprintf(file, "history_result_approximate=");
-						break;
-					}
-					case QALCULATE_HISTORY_PARSE: {
-						fprintf(file, "history_parse=");
-						break;
-					}
-					case QALCULATE_HISTORY_PARSE_WITHEQUALS: {
-						fprintf(file, "history_parse_withequals=");
-						break;
-					}
-					case QALCULATE_HISTORY_PARSE_APPROXIMATE: {
-						fprintf(file, "history_parse_approximate=");
-						break;
-					}
-					case QALCULATE_HISTORY_REGISTER_MOVED: {
-						if(!b_first) {
-							do_end = true;
-						} else {
-							if(inhistory_protected[hi]) fprintf(file, "history_register_moved*=");
-							else fprintf(file, "history_register_moved=");
-							b_first = false;
-						}
-						break;
-					}
-					case QALCULATE_HISTORY_RPN_OPERATION: {
-						if(!b_first) {
-							do_end = true;
-						} else {
-							if(inhistory_protected[hi]) fprintf(file, "history_rpn_operation*=");
-							else fprintf(file, "history_rpn_operation=");
-							b_first = false;
-						}
-						break;
-					}
-					case QALCULATE_HISTORY_WARNING: {
-						fprintf(file, "history_warning=");
-						break;
-					}
-					case QALCULATE_HISTORY_MESSAGE: {
-						fprintf(file, "history_message=");
-						break;
-					}
-					case QALCULATE_HISTORY_ERROR: {
-						fprintf(file, "history_error=");
-						break;
-					}
-					case QALCULATE_HISTORY_BOOKMARK: {
-						if(!b_first) {
-							do_end = true;
-							break;
-						}
-						fprintf(file, "history_bookmark=");
-						break;
-					}
-					case QALCULATE_HISTORY_OLD: {
-						do_end = true;
-						break;
-					}
-				}
-				if(do_end) {
-					hi++;
-					break;
-				}
-				size_t i3 = inhistory[hi].find('\n');
-				if(i3 == string::npos) {
-					fprintf(file, "%s\n", inhistory[hi].c_str());
-				} else {
-					fprintf(file, "%s\n", inhistory[hi].substr(0, i3).c_str());
-					i3++;
-					size_t i2 = inhistory[hi].find('\n', i3);
-					while(i2 != string::npos) {
-						fprintf(file, "history_continued=%s\n", inhistory[hi].substr(i3, i2 - i3).c_str());
-						i3 = i2 + 1;
-						i2 = inhistory[hi].find('\n', i3);
-					}
-					fprintf(file, "history_continued=%s\n", inhistory[hi].substr(i3, inhistory[hi].length() - i3).c_str());
-				}
-				if(hi == 0) break;
-				hi--;
-			}
-			if(hi > inhistory_type.size()) break;
-		}
-		if(hi == 0) break;
-		hi--;
-	}
 }
 
 bool save_history(bool allow_cancel) {
@@ -14434,7 +8530,8 @@ bool save_history(bool allow_cancel) {
 	}
 	g_free(gstr2);
 
-	save_history_to_file(file);
+	write_expression_history(file);
+	write_history(file);
 
 	fclose(file);
 
@@ -14482,7 +8579,6 @@ bool save_preferences(bool mode, bool allow_cancel) {
 	update_variables_settings();
 	update_units_settings();
 	update_functions_settings();
-	update_datasets_settings();
 	fprintf(file, "\n[General]\n");
 	fprintf(file, "version=%s\n", "5.0.1");
 	fprintf(file, "allow_multiple_instances=%i\n", allow_multiple_instances);
@@ -14551,35 +8647,26 @@ bool save_preferences(bool mode, bool allow_cancel) {
 #else
 	if(hide_on_startup) fprintf(file, "hide_on_startup=%i\n", hide_on_startup);
 #endif
-	if(variables_height > -1) fprintf(file, "variables_height=%i\n", variables_height);
-	if(variables_width > -1) fprintf(file, "variables_width=%i\n", variables_width);
-	if(variables_height > -1) fprintf(file, "variables_height=%i\n", variables_height);
-	if(variables_hposition > -1) fprintf(file, "variables_hpanel_position=%i\n", variables_hposition);
-	if(variables_vposition > -1) fprintf(file, "variables_vpanel_position=%i\n", variables_vposition);
-	if(units_width > -1) fprintf(file, "units_width=%i\n", units_width);
-	if(units_height > -1) fprintf(file, "units_height=%i\n", units_height);
-	if(units_hposition > -1) fprintf(file, "units_hpanel_position=%i\n", units_hposition);
-	if(units_vposition > -1) fprintf(file, "units_vpanel_position=%i\n", units_vposition);
-	if(functions_width > -1) fprintf(file, "functions_width=%i\n", functions_width);
-	if(functions_height > -1) fprintf(file, "functions_height=%i\n", functions_height);
-	if(functions_hposition > -1) fprintf(file, "functions_hpanel_position=%i\n", functions_hposition);
-	if(functions_vposition > -1) fprintf(file, "functions_vpanel_position=%i\n", functions_vposition);
-	if(datasets_width > -1) fprintf(file, "datasets_width=%i\n", datasets_width);
-	if(datasets_height > -1) fprintf(file, "datasets_height=%i\n", datasets_height);
-	if(datasets_hposition > -1) fprintf(file, "datasets_hpanel_position=%i\n", datasets_hposition);
-	if(datasets_vposition1 > -1) fprintf(file, "datasets_vpanel1_position=%i\n", datasets_vposition1);
-	if(datasets_vposition2 > -1) fprintf(file, "datasets_vpanel2_position=%i\n", datasets_vposition2);
 	if(help_width != -1) fprintf(file, "help_width=%i\n", help_width);
 	if(help_height != -1) fprintf(file, "help_height=%i\n", help_height);
 	if(help_zoom >= 0.0) fprintf(file, "help_zoom=%f\n", help_zoom);
-	fprintf(file, "keep_function_dialog_open=%i\n", keep_function_dialog_open);
 	fprintf(file, "error_info_shown=%i\n", !first_error);
 	fprintf(file, "save_mode_on_exit=%i\n", save_mode_on_exit);
 	fprintf(file, "save_definitions_on_exit=%i\n", save_defs_on_exit);
-	fprintf(file, "clear_history_on_exit=%i\n", clear_history_on_exit);
-	if(max_history_lines != 300) fprintf(file, "max_history_lines=%i\n", max_history_lines);
 	fprintf(file, "save_history_separately=%i\n", save_history_separately);
-	fprintf(file, "history_expression_type=%i\n", history_expression_type);
+	write_history_settings(file);
+	write_expression_edit_settings(file);
+	write_expression_status_settings(file);
+	write_keypad_settings(file);
+	write_result_view_settings(file);
+	write_conversion_view_settings(file);
+	write_datasets_dialog_settings(file);
+	write_number_bases_dialog_settings(file);
+	write_insert_function_dialog_settings(file);
+	write_datasets_dialog_settings(file);
+	write_functions_dialog_settings(file);
+	write_units_dialog_settings(file);
+	write_variables_dialog_settings(file);
 	if(!custom_lang.empty()) fprintf(file, "language=%s\n", custom_lang.c_str());
 	fprintf(file, "ignore_locale=%i\n", ignore_locale);
 	fprintf(file, "load_global_definitions=%i\n", load_global_defs);
@@ -14606,18 +8693,9 @@ bool save_preferences(bool mode, bool allow_cancel) {
 	fprintf(file, "show_convert=%i\n", (rpn_mode && show_convert && gtk_expander_get_expanded(GTK_EXPANDER(expander_stack))) || gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)));
 	fprintf(file, "persistent_keypad=%i\n", persistent_keypad);
 	fprintf(file, "minimal_mode=%i\n", minimal_mode);
-	fprintf(file, "show_bases_keypad=%i\n", show_bases_keypad);
-	fprintf(file, "continuous_conversion=%i\n", continuous_conversion);
-	fprintf(file, "set_missing_prefixes=%i\n", set_missing_prefixes);
 	fprintf(file, "rpn_keys=%i\n", rpn_keys);
-	if(expression_lines > 0) fprintf(file, "expression_lines=%i\n", expression_lines);
 	fprintf(file, "display_expression_status=%i\n", display_expression_status);
 	fprintf(file, "parsed_expression_in_resultview=%i\n", parsed_in_result);
-	fprintf(file, "enable_completion=%i\n", enable_completion);
-	fprintf(file, "enable_completion2=%i\n", enable_completion2);
-	fprintf(file, "completion_min=%i\n", completion_min);
-	fprintf(file, "completion_min2=%i\n", completion_min2);
-	fprintf(file, "completion_delay=%i\n", completion_delay);
 	fprintf(file, "calculate_as_you_type_history_delay=%i\n", autocalc_history_delay);
 	fprintf(file, "use_unicode_signs=%i\n", printops.use_unicode_signs);
 	fprintf(file, "lower_case_numbers=%i\n", printops.lower_case_numbers);
@@ -14630,14 +8708,7 @@ bool save_preferences(bool mode, bool allow_cancel) {
 	fprintf(file, "hexadecimal_twos_complement=%i\n", printops.hexadecimal_twos_complement);
 	fprintf(file, "twos_complement_input=%i\n", evalops.parse_options.twos_complement);
 	fprintf(file, "hexadecimal_twos_complement_input=%i\n", evalops.parse_options.hexadecimal_twos_complement);
-	if(~visible_keypad & PROGRAMMING_KEYPAD && programming_outbase != 0 && programming_inbase != 0) {
-		fprintf(file, "programming_outbase=%i\n", programming_outbase);
-		fprintf(file, "programming_inbase=%i\n", programming_inbase);
-	}
 	if(evalops.parse_options.binary_bits > 0) fprintf(file, "binary_bits=%i\n", evalops.parse_options.binary_bits);
-	if(visible_keypad & PROGRAMMING_KEYPAD && versatile_exact) {
-		fprintf(file, "general_exact=%i\n", versatile_exact);
-	}
 	if(default_bits >= 0) fprintf(file, "bit_width=%i\n", default_bits);
 	if(default_signed >= 0) fprintf(file, "signed_integer=%i\n", default_signed);
 	fprintf(file, "spell_out_logical_operators=%i\n", printops.spell_out_logical_operators);
@@ -14651,22 +8722,8 @@ bool save_preferences(bool mode, bool allow_cancel) {
 	fprintf(file, "comma_as_separator=%i\n", evalops.parse_options.comma_as_separator);
 	if(previous_precision > 0) fprintf(file, "previous_precision=%i\n", previous_precision);
 	if(gtk_theme >= 0) fprintf(file, "gtk_theme=%i\n", gtk_theme);
-	fprintf(file, "vertical_button_padding=%i\n", vertical_button_padding);
-	fprintf(file, "horizontal_button_padding=%i\n", horizontal_button_padding);
-	fprintf(file, "use_custom_result_font=%i\n", use_custom_result_font);
-	fprintf(file, "use_custom_expression_font=%i\n", use_custom_expression_font);
-	fprintf(file, "use_custom_status_font=%i\n", use_custom_status_font);
-	fprintf(file, "use_custom_keypad_font=%i\n", use_custom_keypad_font);
-	fprintf(file, "use_custom_history_font=%i\n", use_custom_history_font);
 	fprintf(file, "use_custom_application_font=%i\n", use_custom_app_font);
-	if(use_custom_result_font || save_custom_result_font) fprintf(file, "custom_result_font=%s\n", custom_result_font.c_str());
-	if(use_custom_expression_font || save_custom_expression_font) fprintf(file, "custom_expression_font=%s\n", custom_expression_font.c_str());
-	if(use_custom_status_font || save_custom_status_font) fprintf(file, "custom_status_font=%s\n", custom_status_font.c_str());
-	if(use_custom_keypad_font || save_custom_keypad_font) fprintf(file, "custom_keypad_font=%s\n", custom_keypad_font.c_str());
-	if(use_custom_history_font || save_custom_history_font) fprintf(file, "custom_history_font=%s\n", custom_history_font.c_str());
 	if(use_custom_app_font || save_custom_app_font) fprintf(file, "custom_application_font=%s\n", custom_app_font.c_str());
-	if(status_error_color_set) fprintf(file, "status_error_color=%s\n", status_error_color.c_str());
-	if(status_warning_color_set) fprintf(file, "status_warning_color=%s\n", status_warning_color.c_str());
 	if(text_color_set) fprintf(file, "text_color=%s\n", text_color.c_str());
 	fprintf(file, "multiplication_sign=%i\n", printops.multiplication_sign);
 	fprintf(file, "division_sign=%i\n", printops.division_sign);
@@ -14679,15 +8736,6 @@ bool save_preferences(bool mode, bool allow_cancel) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fixed_combined")))) fprintf(file, "fraction_fixed_combined=%i\n", false);
 	if(tc_set) fprintf(file, "temperature_calculation=%i\n", CALCULATOR->getTemperatureCalculationMode());
 	if(sinc_set) fprintf(file, "sinc_function=%i\n", CALCULATOR->getFunctionById(FUNCTION_ID_SINC)->getDefaultValue(2) == "pi" ? 1 : 0);
-	for(unsigned int i = 0; i < custom_buttons.size(); i++) {
-		if(!custom_buttons[i].text.empty()) fprintf(file, "custom_button_label=%u:%s\n", i, custom_buttons[i].text.c_str());
-		for(unsigned int bi = 0; bi <= 2; bi++) {
-			if(custom_buttons[i].type[bi] != -1) {
-				if(custom_buttons[i].value[bi].empty()) fprintf(file, "custom_button=%u:%u:%i\n", i, bi, custom_buttons[i].type[bi]);
-				else fprintf(file, "custom_button=%u:%u:%i:%s\n", i, bi, custom_buttons[i].type[bi], custom_buttons[i].value[bi].c_str());
-			}
-		}
-	}
 	if(!default_shortcuts) {
 		std::vector<guint64> ksv;
 		ksv.reserve(keyboard_shortcuts.size());
@@ -14708,7 +8756,10 @@ bool save_preferences(bool mode, bool allow_cancel) {
 			}
 		}
 	}
-	if(!save_history_separately) save_history_to_file(file);
+	if(!save_history_separately) {
+		write_expression_history(file);
+		write_history(file);
+	}
 	fprintf(file, "recent_functions=");
 	for(int i = (int) (recent_functions.size()) - 1; i >= 0; i--) {
 		fprintf(file, "%s", recent_functions[i]->referenceName().c_str());
@@ -14801,23 +8852,7 @@ bool save_preferences(bool mode, bool allow_cancel) {
 		if(modes[i].at != ASSUMPTION_TYPE_BOOLEAN) fprintf(file, "default_assumption_sign=%i\n", modes[i].as);
 	}
 	fprintf(file, "\n[Plotting]\n");
-	fprintf(file, "plot_legend_placement=%i\n", default_plot_legend_placement);
-	fprintf(file, "plot_style=%i\n", default_plot_style);
-	fprintf(file, "plot_smoothing=%i\n", default_plot_smoothing);
-	fprintf(file, "plot_display_grid=%i\n", default_plot_display_grid);
-	fprintf(file, "plot_full_border=%i\n", default_plot_full_border);
-	fprintf(file, "plot_min=%s\n", default_plot_min.c_str());
-	fprintf(file, "plot_max=%s\n", default_plot_max.c_str());
-	fprintf(file, "plot_step=%s\n", default_plot_step.c_str());
-	fprintf(file, "plot_sampling_rate=%i\n", default_plot_sampling_rate);
-	fprintf(file, "plot_use_sampling_rate=%i\n", default_plot_use_sampling_rate);
-	if(default_plot_complex >= 0) fprintf(file, "plot_complex=%i\n", default_plot_complex);
-	fprintf(file, "plot_variable=%s\n", default_plot_variable.c_str());
-	fprintf(file, "plot_rows=%i\n", default_plot_rows);
-	fprintf(file, "plot_type=%i\n", default_plot_type);
-	fprintf(file, "plot_color=%i\n", default_plot_color);
-	fprintf(file, "plot_linewidth=%i\n", default_plot_linewidth);
-	if(max_plot_time != 5) fprintf(file, "max_plot_time=%i\n", max_plot_time);
+	write_plot_settings(file);
 
 	fclose(file);
 
@@ -15006,48 +9041,6 @@ gboolean on_main_window_close(GtkWidget *w, GdkEvent *event, gpointer user_data)
 	return TRUE;
 }
 
-gboolean on_status_left_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(event->type == GDK_BUTTON_PRESS && event->button == 3 && !b_busy) {
-		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_parsed_in_result"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_parsed_in_result_activate, NULL);
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_parsed_in_result")), parsed_in_result && !rpn_mode);
-		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_parsed_in_result"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_parsed_in_result_activate, NULL);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_parsed_in_result")), display_expression_status && !rpn_mode);
-		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_expression_status"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_expression_status_activate, NULL);
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_expression_status")), display_expression_status);
-		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_expression_status"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_expression_status_activate, NULL);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_copy_status")), status_text_source == STATUS_TEXT_AUTOCALC || status_text_source == STATUS_TEXT_PARSED);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_copy_ascii_status")), status_text_source == STATUS_TEXT_AUTOCALC || status_text_source == STATUS_TEXT_PARSED);
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_status_left")), (GdkEvent*) event);
-#else
-		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_status_left")), NULL, NULL, NULL, NULL, event->button, event->time);
-#endif
-		return TRUE;
-	}
-	return FALSE;
-}
-gboolean on_status_right_button_release_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(event->type == GDK_BUTTON_RELEASE && event->button == 1) {
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_status_right")), (GdkEvent*) event);
-#else
-		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_status_right")), NULL, NULL, NULL, NULL, event->button, event->time);
-#endif
-		return TRUE;
-	}
-	return FALSE;
-}
-gboolean on_status_right_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS && event->button != 1) {
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_status_right")), (GdkEvent*) event);
-#else
-		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_status_right")), NULL, NULL, NULL, NULL, event->button, event->time);
-#endif
-		return TRUE;
-	}
-	return FALSE;
-}
 gboolean on_image_keypad_lock_button_release_event(GtkWidget*, GdkEvent*, gpointer) {
 	persistent_keypad = !persistent_keypad;
 	update_persistent_keypad(false);
@@ -15087,21 +9080,6 @@ void on_menu_item_show_result_activate(GtkMenuItem *w, gpointer) {
 	show_parsed(false);
 }
 
-void on_menu_item_parsed_in_result_activate(GtkMenuItem *w, gpointer) {
-	set_parsed_in_result(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
-}
-void on_menu_item_expression_status_activate(GtkMenuItem *w, gpointer) {
-	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)) == display_expression_status) return;
-	display_expression_status = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
-	if(display_expression_status) {
-		display_parse_status();
-		preferences_update_expression_status();
-	} else {
-		set_parsed_in_result(false);
-		clear_status_text();
-	}
-}
-
 void update_app_font(bool initial) {
 	if(use_custom_app_font) {
 		if(!app_provider) {
@@ -15134,67 +9112,6 @@ void update_app_font(bool initial) {
 		keypad_font_modified();
 		history_font_modified();
 		completion_font_modified();
-	}
-}
-void update_result_font(bool initial) {
-	gint h_old = 0, h_new = 0;
-	if(!initial) gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), NULL, &h_old);
-	if(use_custom_result_font) {
-		gchar *gstr = font_name_to_css(custom_result_font.c_str());
-		gtk_css_provider_load_from_data(resultview_provider, gstr, -1, NULL);
-		g_free(gstr);
-	} else {
-		gtk_css_provider_load_from_data(resultview_provider, "* {font-size: larger;}", -1, NULL);
-		if(initial && custom_result_font.empty()) {
-			PangoFontDescription *font_desc;
-			gtk_style_context_get(gtk_widget_get_style_context(resultview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-			char *gstr = pango_font_description_to_string(font_desc);
-			custom_result_font = gstr;
-			g_free(gstr);
-			pango_font_description_free(font_desc);
-		}
-	}
-	if(initial) {
-		fix_supsub_result = test_supsub(resultview);
-	} else {
-		result_font_modified();
-		gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), NULL, &h_new);
-		gint winh, winw;
-		gtk_window_get_size(GTK_WINDOW(mainwindow), &winw, &winh);
-		winh += (h_new - h_old);
-		gtk_window_resize(GTK_WINDOW(mainwindow), winw, winh);
-	}
-}
-void update_status_font(bool initial) {
-	gint h_old = 0;
-	if(!initial) h_old = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")));
-	if(use_custom_status_font) {
-		gchar *gstr = font_name_to_css(custom_status_font.c_str());
-		gtk_css_provider_load_from_data(statuslabel_l_provider, gstr, -1, NULL);
-		gtk_css_provider_load_from_data(statuslabel_r_provider, gstr, -1, NULL);
-		g_free(gstr);
-	} else {
-		gtk_css_provider_load_from_data(statuslabel_l_provider, "* {font-size: 90%;}", -1, NULL);
-		gtk_css_provider_load_from_data(statuslabel_r_provider, "* {font-size: 90%;}", -1, NULL);
-		if(initial && custom_status_font.empty()) {
-			PangoFontDescription *font_desc;
-			gtk_style_context_get(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-			char *gstr = pango_font_description_to_string(font_desc);
-			custom_status_font = gstr;
-			g_free(gstr);
-			pango_font_description_free(font_desc);
-		}
-	}
-	if(initial) {
-		fix_supsub_status = test_supsub(statuslabel_l);
-	} else {
-		status_font_modified();
-		while(gtk_events_pending()) gtk_main_iteration();
-		gint h_new = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")));
-		gint winh, winw;
-		gtk_window_get_size(GTK_WINDOW(mainwindow), &winw, &winh);
-		winh += (h_new - h_old);
-		gtk_window_resize(GTK_WINDOW(mainwindow), winw, winh);
 	}
 }
 void keypad_font_modified() {
@@ -15289,15 +9206,6 @@ bool contains_convertible_unit(MathStructure &m) {
 	return false;
 }
 
-bool test_can_approximate(const MathStructure &m, bool top = true) {
-	if((m.isVariable() && m.variable()->isKnown()) || (m.isNumber() && !top)) return true;
-	if(m.isUnit_exp()) return false;
-	for(size_t i = 0; i < m.size(); i++) {
-		if(test_can_approximate(m[i], false)) return true;
-	}
-	return false;
-}
-
 bool has_prefix(const MathStructure &m) {
 	if(m.isUnit() && (m.prefix() && m.prefix() != CALCULATOR->decimal_null_prefix && m.prefix() != CALCULATOR->binary_null_prefix)) return true;
 	for(size_t i = 0; i < m.size(); i++) {
@@ -15306,488 +9214,9 @@ bool has_prefix(const MathStructure &m) {
 	return false;
 }
 
-void update_resultview_popup() {
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_octal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_octal_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_decimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_decimal_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_duodecimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_duodecimal_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_hexadecimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_hexadecimal_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_binary"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_binary_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_roman"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_roman_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_sexagesimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_sexagesimal_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_time_format"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_time_format_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_custom_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_custom_base_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_display_normal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_display_normal_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_display_engineering"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_display_engineering_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_display_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_display_scientific_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_display_purely_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_display_purely_scientific_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_display_non_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_display_non_scientific_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_display_no_prefixes"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_display_no_prefixes_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_display_prefixes_for_selected_units"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_display_prefixes_for_selected_units_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_display_prefixes_for_currencies"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_display_prefixes_for_currencies_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_display_prefixes_for_all_units"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_display_prefixes_for_all_units_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_mixed_units_conversion"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_mixed_units_conversion_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_abbreviate_names"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_abbreviate_names_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_all_prefixes"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_denominator_prefixes_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_denominator_prefixes"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_all_prefixes_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_fraction_decimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_fraction_decimal_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_fraction_decimal_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_fraction_decimal_exact_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_fraction_combined"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_fraction_combined_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_fraction_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_fraction_fraction_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_exact_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_assume_nonzero_denominators"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_assume_nonzero_denominators_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_rectangular"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_rectangular_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_exponential"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_exponential_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_polar"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_polar_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_angle"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_angle_activate, NULL);
-
-	bool b_parsed = (parsed_in_result && !displayed_mstruct && displayed_parsed_mstruct);
-
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), displayed_mstruct || displayed_parsed_mstruct);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_copy")), displayed_mstruct || b_parsed);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_copy_ascii")), displayed_mstruct || b_parsed);
-
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "result_popup_menu_item_show_parsed")), !show_parsed_instead_of_result && displayed_mstruct);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "result_popup_menu_item_show_result")), show_parsed_instead_of_result && displayed_mstruct);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_show_parsed")), displayed_mstruct != NULL);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "result_popup_menu_item_parsed_in_result")), b_parsed);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_parsed_in_result")), b_parsed);
-	if(b_parsed) {
-		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "result_popup_menu_item_parsed_in_result"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_parsed_in_result_activate, NULL);
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "result_popup_menu_item_parsed_in_result")), TRUE);
-		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "result_popup_menu_item_parsed_in_result"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_parsed_in_result_activate, NULL);
-	}
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "result_popup_menu_item_meta_modes")), !b_parsed);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_result_popup_modes")), !b_parsed);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save")), !b_parsed);
-
-	bool b_unit = !b_parsed && displayed_mstruct && contains_convertible_unit(*displayed_mstruct);
-	bool b_date = !b_parsed && displayed_mstruct && displayed_mstruct->isDateTime();
-	bool b_complex = !b_parsed && displayed_mstruct && mstruct && (contains_imaginary_number(*mstruct) || mstruct->containsFunctionId(FUNCTION_ID_CIS));
-	bool b_rational = !b_parsed && displayed_mstruct && mstruct && contains_rational_number(*mstruct);
-	bool b_object = !b_parsed && displayed_mstruct && (displayed_mstruct->containsType(STRUCT_UNIT) || displayed_mstruct->containsType(STRUCT_FUNCTION) || displayed_mstruct->containsType(STRUCT_VARIABLE));
-
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_abbreviate_names")), b_object);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_abbreviate_names")), b_object);
-
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_display_prefixes")), b_unit);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_no_prefixes")), b_unit);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_prefixes_for_selected_units")), b_unit);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_prefixes_for_currencies")), b_unit);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_prefixes_for_all_units")), b_unit);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_all_prefixes")), b_unit);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_denominator_prefixes")), b_unit);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_unit_settings")), b_unit);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_convert_to_unit")), FALSE);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_convert_to_base_units")), b_unit);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_convert_to_best_unit")), b_unit);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_set_optimal_prefix")), b_unit);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_convert_to")), FALSE);
-	if(!b_parsed && displayed_mstruct && ((displayed_mstruct->isMultiplication() && displayed_mstruct->size() == 2 && (*displayed_mstruct)[1].isUnit() && (*displayed_mstruct)[0].isNumber() && (*displayed_mstruct)[1].unit()->subtype() == SUBTYPE_ALIAS_UNIT && ((AliasUnit*) (*displayed_mstruct)[1].unit())->mixWithBase()) || (displayed_mstruct->isAddition() && displayed_mstruct->size() > 0 && (*displayed_mstruct)[0].isMultiplication() && (*displayed_mstruct)[0].size() == 2 && (*displayed_mstruct)[0][1].isUnit() && (*displayed_mstruct)[0][0].isNumber() && (*displayed_mstruct)[0][1].unit()->subtype() == SUBTYPE_ALIAS_UNIT && ((AliasUnit*) (*displayed_mstruct)[0][1].unit())->mixWithBase()))) {
-		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_mixed_units_conversion")), TRUE);
-	} else {
-		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_mixed_units_conversion")), FALSE);
-	}
-	if(b_unit) {
-		GtkWidget *sub = GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_convert_to"));
-		GtkWidget *item;
-		if(expression_modified() && !rpn_mode && (!auto_calculate || parsed_in_result)) execute_expression(true);
-		GList *list = gtk_container_get_children(GTK_CONTAINER(sub));
-		for(GList *l = list; l != NULL; l = l->next) {
-			gtk_widget_destroy(GTK_WIDGET(l->data));
-		}
-		g_list_free(list);
-		Unit *u_result = NULL;
-		if(displayed_mstruct) u_result = find_exact_matching_unit(*displayed_mstruct);
-		bool b_exact = (u_result != NULL);
-		if(!u_result && mstruct) u_result = CALCULATOR->findMatchingUnit(*mstruct);
-		bool b_prefix = false;
-		if(b_exact && u_result && u_result->subtype() != SUBTYPE_COMPOSITE_UNIT) b_prefix = has_prefix(displayed_mstruct ? *displayed_mstruct : *mstruct);
-		vector<Unit*> to_us;
-		if(u_result && u_result->isCurrency()) {
-			Unit *u_local_currency = CALCULATOR->getLocalCurrency();
-			if(latest_button_currency && (!b_exact || b_prefix || latest_button_currency != u_result) && latest_button_currency != u_local_currency) to_us.push_back(latest_button_currency);
-			for(size_t i = 0; i < CALCULATOR->units.size() + 2; i++) {
-				Unit * u;
-				if(i == 0) u = u_local_currency;
-				else if(i == 1) u = latest_button_currency;
-				else u = CALCULATOR->units[i - 2];
-				if(u && (!b_exact || b_prefix || u != u_result) && u->isActive() && u->isCurrency() && (i == 0 || (u != u_local_currency && u != latest_button_currency && !u->isHidden()))) {
-					bool b = false;
-					for(size_t i2 = 0; i2 < to_us.size(); i2++) {
-						if(string_is_less(u->title(true, printops.use_unicode_signs), to_us[i2]->title(true, printops.use_unicode_signs))) {
-							to_us.insert(to_us.begin() + i2, u);
-							b = true;
-							break;
-						}
-					}
-					if(!b) to_us.push_back(u);
-				}
-			}
-			for(size_t i = 0; i < to_us.size(); i++) {
-				MENU_ITEM_WITH_OBJECT_AND_FLAG(to_us[i], convert_to_unit)
-			}
-			vector<Unit*> to_us2;
-			for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
-				if(CALCULATOR->units[i]->isCurrency()) {
-					Unit *u = CALCULATOR->units[i];
-					if(u->isActive() && (!b_exact || b_prefix || u != u_result) && u->isHidden() && u != u_local_currency && u != latest_button_currency) {
-						bool b = false;
-						for(int i2 = to_us2.size() - 1; i2 >= 0; i2--) {
-							if(u->title(true, printops.use_unicode_signs) > to_us2[(size_t) i2]->title(true, printops.use_unicode_signs)) {
-								if((size_t) i2 == to_us2.size() - 1) to_us2.push_back(u);
-								else to_us2.insert(to_us2.begin() + (size_t) i2 + 1, u);
-								b = true;
-								break;
-							}
-						}
-						if(!b) to_us2.insert(to_us2.begin(), u);
-					}
-				}
-			}
-			if(to_us2.size() > 0) {
-				SUBMENU_ITEM(_("more"), sub);
-				for(size_t i = 0; i < to_us2.size(); i++) {
-					// Show further items in a submenu
-					MENU_ITEM_WITH_OBJECT_AND_FLAG(to_us2[i], convert_to_unit)
-				}
-			}
-			gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_convert_to")), TRUE);
-		} else if(u_result && !u_result->category().empty()) {
-			string s_cat = u_result->category();
-			for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
-				if(CALCULATOR->units[i]->category() == s_cat) {
-					Unit *u = CALCULATOR->units[i];
-					if((!b_exact || b_prefix || u != u_result) && u->isActive() && !u->isHidden()) {
-						bool b = false;
-						for(size_t i2 = 0; i2 < to_us.size(); i2++) {
-							if(string_is_less(u->title(true, printops.use_unicode_signs), to_us[i2]->title(true, printops.use_unicode_signs))) {
-								to_us.insert(to_us.begin() + i2, u);
-								b = true;
-								break;
-							}
-						}
-						if(!b) to_us.push_back(u);
-					}
-				}
-			}
-			for(size_t i = 0; i < to_us.size(); i++) {
-				MENU_ITEM_WITH_OBJECT(to_us[i], convert_to_unit_noprefix)
-			}
-			gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_convert_to")), TRUE);
-		}
-	}
-
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_units")), b_unit);
-
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_octal")), !b_parsed && !b_unit && !b_date && !b_complex);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_decimal")), !b_parsed && !b_unit && !b_date && !b_complex);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_duodecimal")), !b_parsed && !b_unit && !b_date && !b_complex);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_hexadecimal")), !b_parsed && !b_unit && !b_date && !b_complex);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_binary")), !b_parsed && !b_unit && !b_date && !b_complex);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_roman")), FALSE);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_sexagesimal")), FALSE);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_time_format")), FALSE);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_custom_base")), !b_parsed && !b_unit && !b_date && !b_complex);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_base")), !b_parsed && !b_unit && !b_date && !b_complex);
-
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_complex_rectangular")), b_complex);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_complex_exponential")), b_complex);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_complex_polar")), b_complex);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_complex_angle")), b_complex);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_complex")), b_complex);
-
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_normal")), !b_parsed && !b_unit && !b_date);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_engineering")), !b_parsed && !b_unit && !b_date);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_scientific")), !b_parsed && !b_unit && !b_date);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_purely_scientific")), FALSE);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_display_non_scientific")), !b_parsed && !b_unit && !b_date);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_display")), !b_parsed && !b_unit && !b_date);
-
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_fraction")), b_rational);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_decimal")), b_rational);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_decimal_exact")), b_rational);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_combined")), b_rational);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_fraction")), b_rational);
-
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_calendarconversion")), b_date);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_to_utc")), b_date);
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_display_date")), b_date);
-
-	if(!b_parsed && mstruct && mstruct->containsUnknowns()) {
-		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_set_unknowns")));
-		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_factorize")));
-	} else {
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_set_unknowns")));
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_factorize")));
-	}
-	if(!b_parsed && mstruct && mstruct->containsType(STRUCT_ADDITION)) {
-		if(evalops.structuring == STRUCTURING_FACTORIZE) {
-			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_factorize")));
-		} else {
-			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_factorize")));
-		}
-		if(evalops.structuring == STRUCTURING_SIMPLIFY) {
-			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_simplify")));
-		} else {
-			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_simplify")));
-		}
-		if(contains_polynomial_division(*mstruct)) gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_expand_partial_fractions")));
-		else gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_expand_partial_fractions")));
-		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_factorize")));
-	} else {
-		if(!b_parsed && mstruct && mstruct->isNumber() && mstruct->number().isInteger() && !mstruct->number().isZero()) {
-			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_factorize")));
-			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_factorize")));
-		} else {
-			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_factorize")));
-		}
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_simplify")));
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_expand_partial_fractions")));
-	}
-	if(!b_parsed && mstruct && (mstruct->isApproximate() || test_can_approximate(*mstruct))) {
-		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_exact")));
-		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_nonzero")));
-		if(!mstruct->isApproximate() && mstruct->containsDivision()) gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_assume_nonzero_denominators")));
-		else gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_assume_nonzero_denominators")));
-	} else {
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_exact")));
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_assume_nonzero_denominators")));
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_nonzero")));
-	}
-	if(!b_parsed && mstruct->isVector() && (mstruct->size() != 1 || !(*mstruct)[0].isVector() || (*mstruct)[0].size() > 0)) {
-		if(mstruct->isMatrix()) {
-			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_view_matrix")));
-			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_view_vector")));
-		} else {
-			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_view_matrix")));
-			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_view_vector")));
-		}
-		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_view_matrixvector")));
-	} else {
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_view_matrix")));
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_view_vector")));
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_view_matrixvector")));
-	}
-	switch(printops.base) {
-		case BASE_OCTAL: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_octal")), TRUE);
-			break;
-		}
-		case BASE_DECIMAL: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_decimal")), TRUE);
-			break;
-		}
-		case BASE_DUODECIMAL: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_duodecimal")), TRUE);
-			break;
-		}
-		case BASE_HEXADECIMAL: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_hexadecimal")), TRUE);
-			break;
-		}
-		case BASE_BINARY: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_binary")), TRUE);
-			break;
-		}
-		case BASE_ROMAN_NUMERALS: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_roman")), TRUE);
-			break;
-		}
-		/*case BASE_SEXAGESIMAL: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_sexagesimal")), TRUE);
-			break;
-		}
-		case BASE_TIME: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_time_format")), TRUE);
-			break;
-		}*/
-		default: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_custom_base")), TRUE);
-			break;
-		}
-	}
-	switch(printops.min_exp) {
-		case EXP_PRECISION: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_display_normal")), TRUE);
-			break;
-		}
-		case EXP_BASE_3: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_display_engineering")), TRUE);
-			break;
-		}
-		case EXP_SCIENTIFIC: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_display_scientific")), TRUE);
-			break;
-		}
-		case EXP_PURE: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_display_purely_scientific")), TRUE);
-			break;
-		}
-		case EXP_NONE: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_display_non_scientific")), TRUE);
-			break;
-		}
-	}
-	if(!printops.use_unit_prefixes) {
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_display_no_prefixes")), TRUE);
-	} else if(printops.use_prefixes_for_all_units) {
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_display_prefixes_for_all_units")), TRUE);
-	} else if(printops.use_prefixes_for_currencies) {
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_display_prefixes_for_currencies")), TRUE);
-	} else {
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_display_prefixes_for_selected_units")), TRUE);
-	}
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_mixed_units_conversion")), evalops.mixed_units_conversion != MIXED_UNITS_CONVERSION_NONE);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_abbreviate_names")), printops.abbreviate_names);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_all_prefixes")), printops.use_all_prefixes);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_denominator_prefixes")), printops.use_denominator_prefix);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_exact")), evalops.approximation == APPROXIMATION_EXACT);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_assume_nonzero_denominators")), evalops.assume_denominators_nonzero);
-	switch(printops.number_fraction_format) {
-		case FRACTION_DECIMAL: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_decimal")), TRUE);
-			break;
-		}
-		case FRACTION_DECIMAL_EXACT: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_decimal_exact")), TRUE);
-			break;
-		}
-		case FRACTION_COMBINED: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_combined")), TRUE);
-			break;
-		}
-		case FRACTION_FRACTIONAL: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_fraction")), TRUE);
-			break;
-		}
-		default: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_fraction_other")), TRUE);
-			break;
-		}
-	}
-	switch(evalops.complex_number_form) {
-		case COMPLEX_NUMBER_FORM_RECTANGULAR: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_complex_rectangular")), TRUE);
-			break;
-		}
-		case COMPLEX_NUMBER_FORM_EXPONENTIAL: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_complex_exponential")), TRUE);
-			break;
-		}
-		case COMPLEX_NUMBER_FORM_POLAR: {
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_complex_polar")), TRUE);
-			break;
-		}
-		case COMPLEX_NUMBER_FORM_CIS: {
-			if(complex_angle_form) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_complex_angle")), TRUE);
-			else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_complex_polar")), TRUE);
-			break;
-		}
-	}
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_octal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_octal_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_decimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_decimal_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_duodecimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_duodecimal_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_hexadecimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_hexadecimal_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_binary"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_binary_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_roman"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_roman_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_sexagesimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_sexagesimal_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_time_format"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_time_format_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_custom_base"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_custom_base_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_display_normal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_display_normal_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_display_engineering"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_display_engineering_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_display_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_display_scientific_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_display_purely_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_display_purely_scientific_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_display_non_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_display_non_scientific_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_display_no_prefixes"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_display_no_prefixes_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_display_prefixes_for_selected_units"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_display_prefixes_for_selected_units_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_display_prefixes_for_all_units"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_display_prefixes_for_all_units_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_display_prefixes_for_currencies"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_display_prefixes_for_currencies_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_mixed_units_conversion"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_mixed_units_conversion_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_abbreviate_names"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_abbreviate_names_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_abbreviate_names"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_all_prefixes_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_all_prefixes"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_denominator_prefixes_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_fraction_decimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_fraction_decimal_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_fraction_decimal_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_fraction_decimal_exact_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_fraction_combined"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_fraction_combined_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_fraction_fraction"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_fraction_fraction_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_exact_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_assume_nonzero_denominators"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_assume_nonzero_denominators_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_rectangular"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_rectangular_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_exponential"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_exponential_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_polar"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_polar_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_angle"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_angle_activate, NULL);
-}
-
 gboolean on_main_window_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
 	hide_completion();
 	return FALSE;
-}
-guint32 prev_result_press_time = 0;
-gboolean on_resultview_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(b_busy) return FALSE;
-	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
-		update_resultview_popup();
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_resultview")), (GdkEvent*) event);
-#else
-		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_resultview")), NULL, NULL, NULL, NULL, event->button, event->time);
-#endif
-		return TRUE;
-	}
-	if(event->button == 1 && event->time > prev_result_press_time + 100 && surface_result && !show_parsed_instead_of_result && event->x >= gtk_widget_get_allocated_width(resultview) - cairo_image_surface_get_width(surface_result) - 20) {
-		gint x = event->x - binary_x_diff;
-		gint y = event->y - binary_y_diff;
-		if(!binary_rect.empty() && x >= binary_rect[0].x) {
-			for(size_t i = 0; i < binary_rect.size(); i++) {
-				if(x >= binary_rect[i].x && x <= binary_rect[i].x + binary_rect[i].width && y >= binary_rect[i].y && y <= binary_rect[i].y + binary_rect[i].height) {
-					size_t index = result_text.find("<");
-					string new_binary = result_text;
-					if(index != string::npos) new_binary = new_binary.substr(0, index);
-					index = new_binary.length();
-					int n = 0;
-					for(; index > 0; index--) {
-						if(result_text[index - 1] == '0' || result_text[index - 1] == '1') {
-							if(n == binary_pos[i]) break;
-							n++;
-						} else if(result_text[index - 1] != ' ') {
-							index = 0;
-							break;
-						}
-					}
-					prev_result_press_time = event->time;
-					if(index > 0) {
-						index--;
-						if(new_binary[index] == '1') new_binary[index] = '0';
-						else new_binary[index] = '1';
-						ParseOptions po;
-						po.base = BASE_BINARY;
-						po.twos_complement = printops.twos_complement;
-						gsub(SIGN_MINUS, "-", new_binary);
-						Number nr(new_binary, po);
-						set_expression_text(print_with_evalops(nr).c_str());
-						if(rpn_mode || !auto_calculate || parsed_in_result) execute_expression();
-					}
-					return TRUE;
-				}
-			}
-		} else {
-			prev_result_press_time = event->time;
-			copy_result(-1);
-			// Result was copied
-			show_notification(_("Copied"));
-		}
-	}
-	return FALSE;
-}
-gboolean on_resultview_popup_menu(GtkWidget*, gpointer) {
-	if(b_busy) return TRUE;
-	update_resultview_popup();
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-	gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_resultview")), NULL);
-#else
-	gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_resultview")), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
-#endif
-	return TRUE;
 }
 
 /*
@@ -15827,7 +9256,6 @@ bool qalculate_quit() {
 		command_thread->write(NULL);
 	}
 	if(view_thread->running) {
-		view_thread->write((int) 0);
 		view_thread->write(NULL);
 	}
 	CALCULATOR->terminateThreads();
@@ -15919,39 +9347,11 @@ void on_expander_convert_activate(GtkExpander *o, gpointer) {
 	focus_conversion_entry();
 }
 
-void on_menu_item_status_exact_activate(GtkMenuItem *w, gpointer) {
-	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_always_exact")), TRUE);
-	else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_try_exact")), TRUE);
-}
-void on_menu_item_status_read_precision_activate(GtkMenuItem *w, gpointer) {
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_read_precision")), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
-}
-void on_menu_item_status_rpn_syntax_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_syntax")), TRUE);
-}
-void on_menu_item_status_chain_syntax_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_chain_syntax")), TRUE);
-}
-void on_menu_item_status_adaptive_parsing_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_adaptive_parsing")), TRUE);
-}
-void on_menu_item_status_ignore_whitespace_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_ignore_whitespace")), TRUE);
-}
-void on_menu_item_status_no_special_implicit_multiplication_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_no_special_implicit_multiplication")), TRUE);
-}
-
 void set_autocalculate(bool b) {
 	if(auto_calculate == b) return;
 	auto_calculate = b;
 	if(auto_calculate && !rpn_mode) {
-		current_status_struct.setAborted();
+		clear_parsed_expression();
 		prev_autocalc_str = "";
 		do_auto_calc();
 	} else if(!auto_calculate && result_autocalculated) {
@@ -16045,7 +9445,7 @@ void import_definitions_file() {
 }
 
 void set_input_base(int base, bool open_dialog, bool recalculate) {
-	if(base == BASE_CUSTOM) {
+	if(base == BASE_CUSTOM && open_dialog) {
 		open_setbase(GTK_WINDOW(mainwindow), true, true);
 		return;
 	}
@@ -16068,14 +9468,6 @@ void set_output_base(int base) {
 	if(!b) result_format_updated();
 }
 
-void on_popup_menu_item_calendarconversion_activate(GtkMenuItem *w, gpointer) {
-	show_calendarconversion_dialog(GTK_WINDOW(mainwindow), mstruct && mstruct->isDateTime() ? mstruct->datetime() : NULL);
-}
-void on_popup_menu_item_to_utc_activate(GtkMenuItem *w, gpointer) {
-	printops.time_zone = TIME_ZONE_UTC;
-	result_format_updated();
-	printops.time_zone = TIME_ZONE_LOCAL;
-}
 void open_plot() {
 	string str, str2;
 	if(evalops.parse_options.base == 10) {
@@ -16084,135 +9476,6 @@ void open_plot() {
 		remove_blank_ends(str);
 	}
 	show_plot_dialog(GTK_WINDOW(GTK_WINDOW(mainwindow)), str.c_str());
-}
-void on_popup_menu_item_display_normal_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 0);
-}
-void on_popup_menu_item_exact_activate(GtkMenuItem *w, gpointer) {
-	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_always_exact")), true);
-	else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_try_exact")), true);
-}
-void on_popup_menu_item_assume_nonzero_denominators_activate(GtkMenuItem *w, gpointer) {
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_assume_nonzero_denominators")), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
-}
-void on_popup_menu_item_display_engineering_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 1);
-}
-void on_popup_menu_item_display_scientific_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 2);
-}
-void on_popup_menu_item_display_purely_scientific_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 3);
-}
-void on_popup_menu_item_display_non_scientific_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 4);
-}
-void on_popup_menu_item_complex_rectangular_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_complex_rectangular")), TRUE);
-}
-void on_popup_menu_item_complex_exponential_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_complex_exponential")), TRUE);
-}
-void on_popup_menu_item_complex_polar_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_complex_polar")), TRUE);
-}
-void on_popup_menu_item_complex_angle_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_complex_angle")), TRUE);
-}
-void on_popup_menu_item_display_no_prefixes_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_no_prefixes")), TRUE);
-}
-void on_popup_menu_item_display_prefixes_for_selected_units_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_prefixes_for_selected_units")), TRUE);
-}
-void on_popup_menu_item_display_prefixes_for_all_units_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_prefixes_for_all_units")), TRUE);
-}
-void on_popup_menu_item_display_prefixes_for_currencies_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_prefixes_for_currencies")), TRUE);
-}
-void on_popup_menu_item_mixed_units_conversion_activate(GtkMenuItem *w, gpointer) {
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_mixed_units_conversion")), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
-}
-void on_popup_menu_item_fraction_decimal_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
-}
-void on_popup_menu_item_fraction_decimal_exact_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal_exact")), TRUE);
-}
-void on_popup_menu_item_fraction_combined_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
-}
-void on_popup_menu_item_fraction_fraction_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
-}
-void on_popup_menu_item_binary_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_binary")), TRUE);
-}
-void on_popup_menu_item_roman_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_roman")), TRUE);
-}
-void on_popup_menu_item_sexagesimal_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sexagesimal")), TRUE);
-}
-void on_popup_menu_item_time_format_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_time_format")), TRUE);
-}
-void on_popup_menu_item_octal_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_octal")), TRUE);
-}
-void on_popup_menu_item_decimal_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_decimal")), TRUE);
-}
-void on_popup_menu_item_duodecimal_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_duodecimal")), TRUE);
-}
-void on_popup_menu_item_hexadecimal_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_hexadecimal")), TRUE);
-}
-void on_popup_menu_item_custom_base_activate(GtkMenuItem *w, gpointer) {
-	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	gtk_menu_item_activate(GTK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_custom_base")));
-}
-void on_popup_menu_item_abbreviate_names_activate(GtkMenuItem *w, gpointer) {
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_abbreviate_names")), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
-}
-void on_popup_menu_item_all_prefixes_activate(GtkMenuItem *w, gpointer) {
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_all_prefixes")), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
-}
-void on_popup_menu_item_denominator_prefixes_activate(GtkMenuItem *w, gpointer) {
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_denominator_prefixes")), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
-}
-void on_popup_menu_item_view_matrix_activate(GtkMenuItem*, gpointer) {
-	insert_matrix(mstruct, mainwindow, false, false, true);
-}
-void on_popup_menu_item_view_vector_activate(GtkMenuItem*, gpointer) {
-	insert_matrix(mstruct, mainwindow, true, false, true);
 }
 
 void restore_automatic_fraction() {
@@ -16236,9 +9499,7 @@ void set_approximation(ApproximationMode approx) {
 	} else {
 		restore_automatic_fraction();
 	}
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_status_exact_activate, NULL);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_exact")), approx == APPROXIMATION_EXACT);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_status_exact_activate, NULL);
+	update_status_approximation();
 	update_menu_approximation();
 
 	expression_calculation_updated();
@@ -16280,62 +9541,20 @@ void set_fixed_fraction(long int v, bool combined) {
 	if(combined) set_fraction_format(FRACTION_COMBINED_FIXED_DENOMINATOR);
 	else set_fraction_format(FRACTION_FRACTIONAL_FIXED_DENOMINATOR);
 }
-
-void save_as_image() {
-	if(display_aborted || !displayed_mstruct) return;
-#if !defined(_WIN32) && (GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20)
-	GtkFileChooserNative *d = gtk_file_chooser_native_new(_("Select file to save PNG image to"), GTK_WINDOW(mainwindow), GTK_FILE_CHOOSER_ACTION_SAVE, _("_Save"), _("_Cancel"));
-#else
-	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file to save PNG image to"), GTK_WINDOW(mainwindow), GTK_FILE_CHOOSER_ACTION_SAVE, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Save"), GTK_RESPONSE_ACCEPT, NULL);
-	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
-#endif
-	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(d), TRUE);
-	GtkFileFilter *filter = gtk_file_filter_new();
-	gtk_file_filter_set_name(filter, _("Allowed File Types"));
-	gtk_file_filter_add_mime_type(filter, "image/png");
-	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(d), filter);
-	GtkFileFilter *filter_all = gtk_file_filter_new();
-	gtk_file_filter_add_pattern(filter_all, "*");
-	gtk_file_filter_set_name(filter_all, _("All Files"));
-	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(d), filter_all);
-	gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(d), "qalculate.png");
-#if !defined(_WIN32) && (GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20)
-	if(gtk_native_dialog_run(GTK_NATIVE_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
-#else
-	if(gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
-#endif
-		GdkRGBA color;
-		color.red = 0.0;
-		color.green = 0.0;
-		color.blue = 0.0;
-		color.alpha = 1.0;
-		cairo_surface_t *s = NULL;
-		if(((parsed_in_result && !displayed_mstruct) || show_parsed_instead_of_result) && displayed_parsed_mstruct) s = draw_structure(*displayed_parsed_mstruct, parsed_printops, complex_angle_form, top_ips, NULL, 1, &color, NULL, NULL, -1, false, &mwhere, &displayed_parsed_to);
-		else s = draw_structure(*displayed_mstruct, displayed_printops, displayed_caf, top_ips, NULL, 1, &color, NULL, NULL, -1, false);
-		if(s) {
-			cairo_surface_flush(s);
-			cairo_surface_write_to_png(s, gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(d)));
-			cairo_surface_destroy(s);
-		}
-	}
-#if !defined(_WIN32) && (GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20)
-	g_object_unref(d);
-#else
-	gtk_widget_destroy(d);
-#endif
+void set_angle_unit(AngleUnit au) {
+	evalops.parse_options.angle_unit = au;
+	expression_format_updated(true);
+	update_keypad_angle();
+	update_status_angle();
+	update_menu_angle();
 }
-
-void on_popup_menu_item_copy_activate(GtkMenuItem*, gpointer) {
-	copy_result(0, (((parsed_in_result && !displayed_mstruct) || show_parsed_instead_of_result) && displayed_parsed_mstruct) ? 8 : 0);
-}
-void on_popup_menu_item_copy_ascii_activate(GtkMenuItem*, gpointer) {
-	copy_result(1, (((parsed_in_result && !displayed_mstruct) || show_parsed_instead_of_result) && displayed_parsed_mstruct) ? 8 : 0);
-}
-void on_menu_item_copy_status_activate(GtkMenuItem*, gpointer) {
-	copy_result(0, status_text_source == STATUS_TEXT_AUTOCALC ? 0 : 8);
-}
-void on_menu_item_copy_ascii_status_activate(GtkMenuItem*, gpointer) {
-	copy_result(1, status_text_source == STATUS_TEXT_AUTOCALC ? 0 : 8);
+void set_custom_angle_unit(Unit *u) {
+	evalops.parse_options.angle_unit = ANGLE_UNIT_CUSTOM;
+	CALCULATOR->setCustomAngleUnit(u);
+	expression_format_updated(true);
+	update_keypad_angle();
+	update_status_angle();
+	update_menu_angle();
 }
 
 gboolean on_about_activate_link(GtkAboutDialog*, gchar *uri, gpointer) {
@@ -16394,7 +9613,7 @@ bool do_shortcut(int type, string value) {
 			return true;
 		}
 		case SHORTCUT_TYPE_FUNCTION_WITH_DIALOG: {
-			insert_function(CALCULATOR->getActiveFunction(value), mainwindow);
+			insert_function(CALCULATOR->getActiveFunction(value), GTK_WINDOW(mainwindow));
 			return true;
 		}
 		case SHORTCUT_TYPE_VARIABLE: {
@@ -16811,6 +10030,7 @@ gboolean on_key_release_event(GtkWidget*, GdkEventKey*, gpointer) {
 	disable_history_arrow_keys = false;
 	return FALSE;
 }
+bool block_input = false;
 gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 	if(block_input && (event->keyval == GDK_KEY_q || event->keyval == GDK_KEY_Q) && !(event->state & GDK_CONTROL_MASK)) {block_input = false; return TRUE;}
 	if(gtk_widget_has_focus(expressiontext) || editing_stack() || editing_history()) return FALSE;
@@ -16856,226 +10076,6 @@ gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 		focus_keeping_selection();
 	}
 	return FALSE;
-}
-
-
-gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
-	if(exit_in_progress) return TRUE;
-	gint scalefactor = gtk_widget_get_scale_factor(widget);
-	gtk_render_background(gtk_widget_get_style_context(widget), cr, 0, 0, gtk_widget_get_allocated_width(widget), gtk_widget_get_allocated_height(widget));
-	result_display_overflow = false;
-	if(surface_result || (surface_parsed && ((parsed_in_result && !rpn_mode) || show_parsed_instead_of_result))) {
-		gint w = 0, h = 0;
-		if(!first_draw_of_result) {
-			if(b_busy) {
-				if(b_busy_result) return TRUE;
-			} else if((!surface_result || show_parsed_instead_of_result) && displayed_parsed_mstruct) {
-				gint rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - 12;
-				displayed_printops.can_display_unicode_string_arg = (void*) resultview;
-				tmp_surface = draw_structure(*displayed_parsed_mstruct, parsed_printops, false, top_ips, NULL, 3, NULL, NULL, NULL, rw, true, &mwhere, &displayed_parsed_to);
-				parsed_printops.can_display_unicode_string_arg = NULL;
-				cairo_surface_destroy(surface_parsed);
-				surface_parsed = tmp_surface;
-			} else if(display_aborted || result_too_long) {
-				PangoLayout *layout = gtk_widget_create_pango_layout(widget, NULL);
-				pango_layout_set_markup(layout, display_aborted ? _("result processing was aborted") : _("result is too long\nsee history"), -1);
-				pango_layout_get_pixel_size(layout, &w, &h);
-				PangoRectangle rect;
-				pango_layout_get_pixel_extents(layout, &rect, NULL);
-				if(rect.x < 0) {w -= rect.x; if(rect.width > w) w = rect.width;}
-				else if(w < rect.x + rect.width) w = rect.x + rect.width;
-				cairo_surface_t *s = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-				cairo_surface_set_device_scale(s, scalefactor, scalefactor);
-				cairo_t *cr2 = cairo_create(s);
-				GdkRGBA rgba;
-				gtk_style_context_get_color(gtk_widget_get_style_context(widget), gtk_widget_get_state_flags(widget), &rgba);
-				gdk_cairo_set_source_rgba(cr2, &rgba);
-				if(rect.x < 0) cairo_move_to(cr, -rect.x, 0);
-				pango_cairo_show_layout(cr2, layout);
-				cairo_destroy(cr2);
-				cairo_surface_destroy(surface_result);
-				surface_result = s;
-				tmp_surface = s;
-			} else if(surface_result && displayed_mstruct) {
-				if(displayed_mstruct->isAborted()) {
-					PangoLayout *layout = gtk_widget_create_pango_layout(widget, NULL);
-					pango_layout_set_markup(layout, _("calculation was aborted"), -1);
-					gint w = 0, h = 0;
-					pango_layout_get_pixel_size(layout, &w, &h);
-					PangoRectangle rect;
-					pango_layout_get_pixel_extents(layout, &rect, NULL);
-					if(rect.x < 0) {w -= rect.x; if(rect.width > w) w = rect.width;}
-					else if(w < rect.x + rect.width) w = rect.x + rect.width;
-					tmp_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w * scalefactor, h * scalefactor);
-					cairo_surface_set_device_scale(tmp_surface, scalefactor, scalefactor);
-					cairo_t *cr2 = cairo_create(tmp_surface);
-					GdkRGBA rgba;
-					gtk_style_context_get_color(gtk_widget_get_style_context(widget), gtk_widget_get_state_flags(widget), &rgba);
-					gdk_cairo_set_source_rgba(cr2, &rgba);
-					if(rect.x < 0) cairo_move_to(cr, -rect.x, 0);
-					pango_cairo_show_layout(cr2, layout);
-					cairo_destroy(cr2);
-					g_object_unref(layout);
-				} else {
-					gint rw = -1;
-					if(scale_n == 3) rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - 12;
-					displayed_printops.can_display_unicode_string_arg = (void*) resultview;
-					tmp_surface = draw_structure(*displayed_mstruct, displayed_printops, displayed_caf, top_ips, NULL, scale_n, NULL, NULL, NULL, rw);
-					displayed_printops.can_display_unicode_string_arg = NULL;
-				}
-				cairo_surface_destroy(surface_result);
-				surface_result = tmp_surface;
-			}
-		}
-		cairo_surface_t *surface = surface_result;
-		if(show_parsed_instead_of_result && !surface_parsed) show_parsed_instead_of_result = false;
-		if(!surface || show_parsed_instead_of_result) {
-			surface = surface_parsed;
-			scale_n = 3;
-		}
-		w = cairo_image_surface_get_width(surface) / scalefactor;
-		h = cairo_image_surface_get_height(surface) / scalefactor;
-		gint sbw, sbh;
-		gtk_widget_get_preferred_width(gtk_scrolled_window_get_vscrollbar(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "scrolled_result"))), NULL, &sbw);
-		gtk_widget_get_preferred_height(gtk_scrolled_window_get_hscrollbar(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "scrolled_result"))), NULL, &sbh);
-		gint rh = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")));
-		gint rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - 12;
-		if((surface_result && !show_parsed_instead_of_result) && (first_draw_of_result || (!b_busy && result_font_updated))) {
-			gint margin = 24;
-			while(displayed_mstruct && !display_aborted && !result_too_long && scale_n < 3 && (w > rw || (w > rw - sbw ? h + margin / 1.5 > rh - sbh : h + margin > rh))) {
-				int scroll_diff = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport")));
-				double scale_div = (double) h / (gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultport"))) + scroll_diff);
-				if(scale_div > 1.44) {
-					scale_n = 3;
-				} else if(scale_n < 2 && scale_div > 1.2) {
-					scale_n = 2;
-				} else {
-					scale_n++;
-				}
-				cairo_surface_destroy(surface);
-				displayed_printops.can_display_unicode_string_arg = (void*) resultview;
-				surface_result = draw_structure(*displayed_mstruct, displayed_printops, displayed_caf, top_ips, NULL, scale_n, NULL, NULL, NULL, scale_n == 3 ? rw : -1);
-				surface = surface_result;
-				displayed_printops.can_display_unicode_string_arg = NULL;
-				w = cairo_image_surface_get_width(surface) / scalefactor;
-				h = cairo_image_surface_get_height(surface) / scalefactor;
-				if(scale_n == 1) margin = 18;
-				else margin = 12;
-			}
-			result_font_updated = false;
-		}
-		gtk_widget_set_size_request(widget, w, h);
-		if(h > sbh) rw -= sbw;
-		result_display_overflow = w > rw || h > rh;
-		gint rx = 0, ry = 0;
-		if(rw >= w) {
-			if(surface_result && !show_parsed_instead_of_result) {
-#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
-				// compensate for overlay scrollbars
-				if(rw >= w + 5) rx = rw - w - 5;
-#else
-				if(rw >= w) rx = rw - w;
-#endif
-				else rx = rw - w - (rw - w) / 2;
-			} else {
-				rx = 12;
-			}
-			if(h < rh) ry = (rh - h) / 2;
-		} else {
-			if(h + ((rh - h) / 2) < rh - sbh) ry = (rh - h) / 2;
-			else if(h <= rh - sbh) ry = (rh - h - sbh) / 2;
-		}
-		cairo_set_source_surface(cr, surface, rx, ry);
-		binary_x_diff = rx;
-		binary_y_diff = ry;
-		cairo_paint(cr);
-		if(!surface_result && result_display_overflow) {
-			GtkWidget *hscroll = gtk_scrolled_window_get_hscrollbar(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "scrolled_result")));
-			if(hscroll) {
-				gtk_range_set_value(GTK_RANGE(hscroll), gtk_adjustment_get_upper(gtk_range_get_adjustment(GTK_RANGE(hscroll))));
-			}
-		}
-		first_draw_of_result = false;
-	} else if(showing_first_time_message) {
-		PangoLayout *layout = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview")), NULL);
-		GdkRGBA rgba;
-		pango_layout_set_markup(layout, (string("<span size=\"smaller\">") + string(_("Type a mathematical expression above, e.g. \"5 + 2 / 3\",\nand press the enter key.")) + "</span>").c_str(), -1);
-		gtk_style_context_get_color(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), gtk_widget_get_state_flags(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), &rgba);
-		cairo_move_to(cr, 6, 6);
-		gdk_cairo_set_source_rgba(cr, &rgba);
-		pango_cairo_show_layout(cr, layout);
-		g_object_unref(layout);
-	} else {
-		gtk_widget_set_size_request(widget, -1, -1);
-	}
-	return TRUE;
-}
-
-void on_type_label_date_clicked(GtkEntry *w, gpointer) {
-	GtkWidget *d = gtk_dialog_new_with_buttons(_("Select date"), GTK_WINDOW(gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW)), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_CANCEL, _("_OK"), GTK_RESPONSE_OK, NULL);
-	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
-	GtkWidget *date_w = gtk_calendar_new();
-	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(d))), date_w);
-	gtk_widget_show_all(d);
-	if(gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_OK) {
-		guint year = 0, month = 0, day = 0;
-		gtk_calendar_get_date(GTK_CALENDAR(date_w), &year, &month, &day);
-		gchar *gstr = g_strdup_printf("%i-%02i-%02i", year, month + 1, day);
-		gtk_entry_set_text(w, gstr);
-		g_free(gstr);
-	}
-	gtk_widget_destroy(d);
-}
-void on_type_label_vector_clicked(GtkEntry *w, gpointer user_data) {
-	MathStructure mstruct_v;
-	string str = gtk_entry_get_text(w);
-	remove_blank_ends(str);
-	if(!str.empty()) {
-		if(str[0] != '(' && str[0] != '[') {
-			str.insert(0, 1, '[');
-			str += ']';
-		}
-		CALCULATOR->beginTemporaryStopMessages();
-		CALCULATOR->parse(&mstruct_v, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), evalops.parse_options);
-		CALCULATOR->endTemporaryStopMessages();
-	}
-	insert_matrix(str.empty() ? NULL : &mstruct_v, gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW), TRUE, false, false, w);
-}
-void on_type_label_matrix_clicked(GtkEntry *w, gpointer user_data) {
-	MathStructure mstruct_m;
-	string str = gtk_entry_get_text(w);
-	remove_blank_ends(str);
-	if(!str.empty()) {
-		CALCULATOR->beginTemporaryStopMessages();
-		CALCULATOR->parse(&mstruct_m, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), evalops.parse_options);
-		CALCULATOR->endTemporaryStopMessages();
-		if(!mstruct_m.isMatrix()) str = "";
-	}
-	insert_matrix(str.empty() ? NULL : &mstruct_m, gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW), FALSE, false, false, w);
-}
-void on_type_label_file_clicked(GtkEntry *w, gpointer) {
-#if !defined(_WIN32) && (GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20)
-	GtkFileChooserNative *d = gtk_file_chooser_native_new(_("Select file"), GTK_WINDOW(gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW)), GTK_FILE_CHOOSER_ACTION_OPEN, _("_Open"), _("_Cancel"));
-#else
-	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file"), GTK_WINDOW(gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW)), GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT, NULL);
-	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
-#endif
-	string filestr = gtk_entry_get_text(w);
-	remove_blank_ends(filestr);
-	if(!filestr.empty()) gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(d), filestr.c_str());
-	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(d), filestr.c_str());
-#if !defined(_WIN32) && (GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20)
-	if(gtk_native_dialog_run(GTK_NATIVE_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
-#else
-	if(gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_ACCEPT) {
-#endif
-		gtk_entry_set_text(w, gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(d)));
-	}
-#if !defined(_WIN32) && (GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20)
-	g_object_unref(d);
-#else
-	gtk_widget_destroy(d);
-#endif
 }
 
 void set_unknowns() {
@@ -17200,14 +10200,14 @@ void set_unknowns() {
 	}
 }
 void open_convert_number_bases() {
-	if(current_displayed_result() && !result_text_empty() && !result_too_long) return convert_number_bases(GTK_WINDOW(mainwindow), ((current_result()->isNumber() && !current_result()->number().hasImaginaryPart()) || current_result()->isUndefined()) ? get_result_text().c_str() : "", displayed_printops.base);
+	if(current_displayed_result() && !result_text_empty() && !result_did_not_fit()) return convert_number_bases(GTK_WINDOW(mainwindow), ((current_result()->isNumber() && !current_result()->number().hasImaginaryPart()) || current_result()->isUndefined()) ? get_result_text().c_str() : "", current_displayed_printops().base);
 	string str = get_selected_expression_text(true), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	remove_blank_ends(str);
 	convert_number_bases(GTK_WINDOW(mainwindow), str.c_str(), evalops.parse_options.base);
 }
 void open_convert_floatingpoint() {
-	if(current_displayed_result() && !result_text_empty() && !result_too_long) return convert_floatingpoint(((current_result()->isNumber() && !current_result()->number().hasImaginaryPart()) || current_result()->isUndefined()) ? get_result_text().c_str() : "", true, GTK_WINDOW(mainwindow));
+	if(current_displayed_result() && !result_text_empty() && !result_did_not_fit()) return convert_floatingpoint(((current_result()->isNumber() && !current_result()->number().hasImaginaryPart()) || current_result()->isUndefined()) ? get_result_text().c_str() : "", true, GTK_WINDOW(mainwindow));
 	string str = get_selected_expression_text(true), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	remove_blank_ends(str);
@@ -17230,66 +10230,3 @@ void show_unit_conversion() {
 #ifdef __cplusplus
 }
 #endif
-void update_status_menu(bool initial) {
-	if(initial) {
-		switch(evalops.approximation) {
-			case APPROXIMATION_EXACT: {
-				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_exact")), TRUE);
-				break;
-			}
-			case APPROXIMATION_TRY_EXACT: {
-				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_exact")), FALSE);
-				break;
-			}
-			default: {
-				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_exact")), FALSE);
-				break;
-			}
-		}
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_read_precision")), evalops.parse_options.read_precision != DONT_READ_PRECISION);
-		switch(evalops.parse_options.parsing_mode) {
-			case PARSING_MODE_IMPLICIT_MULTIPLICATION_FIRST: {
-				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_ignore_whitespace")), TRUE);
-				break;
-			}
-			case PARSING_MODE_CONVENTIONAL: {
-				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_no_special_implicit_multiplication")), TRUE);
-				break;
-			}
-			case PARSING_MODE_CHAIN: {
-				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_chain_syntax")), TRUE);
-				break;
-			}
-			case PARSING_MODE_RPN: {
-				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_rpn_syntax")), TRUE);
-				break;
-			}
-			default: {
-				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_adaptive_parsing")), TRUE);
-				break;
-			}
-		}
-	} else {
-		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_status_exact_activate, NULL);
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_exact")), evalops.approximation == APPROXIMATION_EXACT);
-		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_status_exact_activate, NULL);
-		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_read_precision"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_status_read_precision_activate, NULL);
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_read_precision")), evalops.parse_options.read_precision != DONT_READ_PRECISION);
-		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_read_precision"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_status_read_precision_activate, NULL);
-		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_rpn_syntax"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_status_rpn_syntax_activate, NULL);
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_rpn_syntax")), evalops.parse_options.parsing_mode == PARSING_MODE_RPN);
-		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_rpn_syntax"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_status_rpn_syntax_activate, NULL);
-		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_adaptive_parsing"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_status_adaptive_parsing_activate, NULL);
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_adaptive_parsing")), evalops.parse_options.parsing_mode == PARSING_MODE_ADAPTIVE);
-		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_adaptive_parsing"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_status_adaptive_parsing_activate, NULL);
-		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_ignore_whitespace"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_status_ignore_whitespace_activate, NULL);
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_ignore_whitespace")), evalops.parse_options.parsing_mode == PARSING_MODE_IMPLICIT_MULTIPLICATION_FIRST);
-		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_ignore_whitespace"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_status_ignore_whitespace_activate, NULL);
-		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_no_special_implicit_multiplication"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_status_no_special_implicit_multiplication_activate, NULL);
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_no_special_implicit_multiplication")), evalops.parse_options.parsing_mode == PARSING_MODE_CONVENTIONAL);
-		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_no_special_implicit_multiplication"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_status_no_special_implicit_multiplication_activate, NULL);
-		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_chain_syntax"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_status_chain_syntax_activate, NULL);
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_status_chain_syntax")), evalops.parse_options.parsing_mode == PARSING_MODE_CHAIN);
-		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_status_chain_syntax"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_status_chain_syntax_activate, NULL);
-	}
-}

@@ -33,7 +33,9 @@
 #include "functionsdialog.h"
 #include "unitsdialog.h"
 #include "variablesdialog.h"
+#include "resultview.h"
 #include "expressionedit.h"
+#include "expressionstatus.h"
 #include "expressioncompletion.h"
 #include "preferencesdialog.h"
 
@@ -69,18 +71,14 @@ void on_colorbutton_status_error_color_color_set(GtkColorButton *w, gpointer) {
 	gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(w), &c);
 	gchar color_str[8];
 	g_snprintf(color_str, 8, "#%02x%02x%02x", (int) (c.red * 255), (int) (c.green * 255), (int) (c.blue * 255));
-	status_error_color = color_str;
-	status_error_color_set = true;
-	display_parse_status();
+	set_status_error_color(color_str);
 }
 void on_colorbutton_status_warning_color_color_set(GtkColorButton *w, gpointer) {
 	GdkRGBA c;
 	gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(w), &c);
 	gchar color_str[8];
 	g_snprintf(color_str, 8, "#%02x%02x%02x", (int) (c.red * 255), (int) (c.green * 255), (int) (c.blue * 255));
-	status_warning_color = color_str;
-	status_warning_color_set = true;
-	display_parse_status();
+	set_status_warning_color(color_str);
 }
 void on_preferences_expression_lines_spin_button_value_changed(GtkSpinButton *spin, gpointer) {
 	expression_lines = gtk_spin_button_get_value_as_int(spin);
@@ -94,15 +92,10 @@ void on_preferences_expression_lines_spin_button_value_changed(GtkSpinButton *sp
 	gtk_window_resize(GTK_WINDOW(mainwindow), winw, winh);
 }
 void on_preferences_vertical_padding_combo_changed(GtkComboBox *w, gpointer) {
-	vertical_button_padding = gtk_combo_box_get_active(w) - 1;
-	update_button_padding();
-	keypad_font_modified();
+	set_vertical_button_padding(gtk_combo_box_get_active(w) - 1);
 }
 void on_preferences_horizontal_padding_combo_changed(GtkComboBox *w, gpointer) {
-	horizontal_button_padding = gtk_combo_box_get_active(w) - 1;
-	if(horizontal_button_padding > 4) horizontal_button_padding = (horizontal_button_padding - 4) * 2 + 4;
-	update_button_padding();
-	keypad_font_modified();
+	set_horizontal_button_padding(gtk_combo_box_get_active(w) - 1);
 }
 void on_preferences_update_exchange_rates_spin_button_value_changed(GtkSpinButton *spin, gpointer) {
 	auto_update_exchange_rates = gtk_spin_button_get_value_as_int(spin);
@@ -576,9 +569,9 @@ void on_preferences_combo_theme_changed(GtkComboBox *w, gpointer) {
 	GdkRGBA c;
 	gdk_rgba_parse(&c, text_color.c_str());
 	gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(gtk_builder_get_object(preferences_builder, "colorbutton_text_color")), &c);
-	gdk_rgba_parse(&c, status_error_color.c_str());
+	gdk_rgba_parse(&c, status_error_color());
 	gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(gtk_builder_get_object(preferences_builder, "colorbutton_status_error_color")), &c);
-	gdk_rgba_parse(&c, status_warning_color.c_str());
+	gdk_rgba_parse(&c, status_warning_color());
 	gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(gtk_builder_get_object(preferences_builder, "colorbutton_status_warning_color")), &c);
 #endif
 }
@@ -604,31 +597,51 @@ void on_preferences_checkbutton_hide_on_startup_toggled(GtkToggleButton *w, gpoi
 	hide_on_startup = gtk_toggle_button_get_active(w);
 }
 void on_preferences_checkbutton_custom_result_font_toggled(GtkToggleButton *w, gpointer) {
-	use_custom_result_font = gtk_toggle_button_get_active(w);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_result_font")), use_custom_result_font);
-	update_result_font();
+	if(gtk_toggle_button_get_active(w)) {
+		set_result_font(result_font(true));
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_result_font")), TRUE);
+	} else {
+		set_result_font(NULL);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_result_font")), FALSE);
+	}
 }
 void on_preferences_checkbutton_custom_expression_font_toggled(GtkToggleButton *w, gpointer) {
-	use_custom_expression_font = gtk_toggle_button_get_active(w);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_expression_font")), use_custom_expression_font);
-	update_expression_font();
+	if(gtk_toggle_button_get_active(w)) {
+		set_expression_font(expression_font(true));
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_expression_font")), TRUE);
+	} else {
+		set_expression_font(NULL);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_expression_font")), FALSE);
+	}
 }
 void on_preferences_checkbutton_custom_status_font_toggled(GtkToggleButton *w, gpointer) {
-	use_custom_status_font = gtk_toggle_button_get_active(w);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_status_font")), use_custom_status_font);
-	update_status_font();
+	if(gtk_toggle_button_get_active(w)) {
+		set_status_font(status_font(true));
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_status_font")), TRUE);
+	} else {
+		set_status_font(NULL);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_status_font")), FALSE);
+	}
 }
 void on_preferences_checkbutton_custom_history_font_toggled(GtkToggleButton *w, gpointer) {
-	use_custom_history_font = gtk_toggle_button_get_active(w);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_history_font")), use_custom_history_font);
-	update_history_font();
+	if(gtk_toggle_button_get_active(w)) {
+		set_history_font(history_font(true));
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_history_font")), TRUE);
+	} else {
+		set_history_font(NULL);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_history_font")), FALSE);
+	}
 	update_stack_font();
 }
 void on_preferences_checkbutton_custom_keypad_font_toggled(GtkToggleButton *w, gpointer) {
-	use_custom_keypad_font = gtk_toggle_button_get_active(w);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_keypad_font")), use_custom_keypad_font);
-	if(use_custom_keypad_font) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_app_font")), FALSE);
-	update_keypad_font();
+	if(gtk_toggle_button_get_active(w)) {
+		set_keypad_font(keypad_font(true));
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_keypad_font")), TRUE);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_app_font")), FALSE);
+	} else {
+		set_keypad_font(NULL);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_keypad_font")), FALSE);
+	}
 	update_stack_button_font();
 }
 void on_preferences_checkbutton_custom_app_font_toggled(GtkToggleButton *w, gpointer) {
@@ -699,37 +712,73 @@ void on_preferences_radiobutton_digit_grouping_locale_toggled(GtkToggleButton *w
 }
 
 void on_preferences_checkbutton_enable_completion_toggled(GtkToggleButton *w, gpointer) {
-	enable_completion = gtk_toggle_button_get_active(w);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_min")), enable_completion);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min")), enable_completion);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_enable_completion2")), enable_completion);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_min2")), enable_completion && enable_completion2);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min2")), enable_completion && enable_completion2);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_delay")), enable_completion);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay")), enable_completion);
+	bool b = gtk_toggle_button_get_active(w);
+	set_expression_completion_settings(b);
+	bool b2 = false;
+	get_expression_completion_settings(NULL, &b2);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_min")), b);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min")), b);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_enable_completion2")), b);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_min2")), b && b2);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min2")), b && b2);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_delay")), b);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay")), b);
 }
 void on_preferences_checkbutton_enable_completion2_toggled(GtkToggleButton *w, gpointer) {
-	enable_completion2 = gtk_toggle_button_get_active(w);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_min2")), enable_completion && enable_completion2);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min2")), enable_completion && enable_completion2);
+	bool b2 = gtk_toggle_button_get_active(w);
+	set_expression_completion_settings(-1, b2);
+	bool b = false;
+	get_expression_completion_settings(&b);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_min2")), b && b2);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min2")), b && b2);
 }
 void on_preferences_spin_completion_min_value_changed(GtkSpinButton *spin, gpointer) {
-	completion_min = gtk_spin_button_get_value_as_int(spin);
-	if(completion_min2 < completion_min) {
-		completion_min2 = completion_min;
-		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min2")), (double) completion_min2);
-	}
+	set_expression_completion_settings(-1, -1, gtk_spin_button_get_value_as_int(spin));
+	int i2 = 0;
+	get_expression_completion_settings(NULL, NULL, NULL, &i2);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min2")), (double) i2);
 }
 void on_preferences_spin_completion_min2_value_changed(GtkSpinButton *spin, gpointer) {
-	completion_min2 = gtk_spin_button_get_value_as_int(spin);
-	if(completion_min2 < completion_min) {
-		completion_min = completion_min2;
-		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min")), (double) completion_min);
-	}
+	set_expression_completion_settings(-1, -1, -1, gtk_spin_button_get_value_as_int(spin));
+	int i = 0;
+	get_expression_completion_settings(NULL, NULL, &i);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min")), (double) i);
 }
 void on_preferences_spin_completion_delay_value_changed(GtkSpinButton *spin, gpointer) {
-	completion_delay = gtk_spin_button_get_value_as_int(spin);
+	set_expression_completion_settings(-1, -1, -1, -1, gtk_spin_button_get_value_as_int(spin));
 }
+void preferences_update_completion(bool initial) {
+	bool c1 = false, c2 = false;
+	int m1 = 0, m2 = 0, d = 0;
+	get_expression_completion_settings(&c1, &c2, &m1, &m2, &d);
+	if(!initial) {
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_enable_completion"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_enable_completion_toggled, NULL);
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_enable_completion2"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_enable_completion2_toggled, NULL);
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_spin_completion_min_value_changed, NULL);
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min2"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_spin_completion_min2_value_changed, NULL);
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_spin_completion_delay_value_changed, NULL);
+	}
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_enable_completion")), c1);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_enable_completion2")), c2);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_min")), c1);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min")), c1);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min")), (double) m1);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_enable_completion2")), c1);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_min2")), c1 && c2);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min2")), c1 && c2);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min2")), (double) m2);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_delay")), c1);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay")), c2);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay")), (double) d);
+	if(!initial) {
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_enable_completion"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_enable_completion_toggled, NULL);
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_enable_completion2"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_enable_completion2_toggled, NULL);
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_spin_completion_min_value_changed, NULL);
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min2"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_spin_completion_min2_value_changed, NULL);
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_spin_completion_delay_value_changed, NULL);
+	}
+}
+
 void preferences_rpn_mode_changed() {
 	if(!preferences_builder) return;
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_parsed_in_result_toggled, NULL);
@@ -738,30 +787,20 @@ void preferences_rpn_mode_changed() {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result")), display_expression_status && !rpn_mode);
 }
 void on_preferences_button_result_font_font_set(GtkFontButton *w, gpointer) {
-	save_custom_result_font = true;
-	custom_result_font = gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w));
-	update_result_font();
+	set_result_font(gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w)));
 }
 void on_preferences_button_expression_font_font_set(GtkFontButton *w, gpointer) {
-	save_custom_expression_font = true;
-	custom_expression_font = gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w));
-	update_expression_font();
+	set_expression_font(gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w)));
 }
 void on_preferences_button_status_font_font_set(GtkFontButton *w, gpointer) {
-	save_custom_status_font = true;
-	custom_status_font = gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w));
-	update_status_font();
+	set_status_font(gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w)));
 }
 void on_preferences_button_keypad_font_font_set(GtkFontButton *w, gpointer) {
-	save_custom_keypad_font = true;
-	custom_keypad_font = gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w));
-	update_keypad_font();
+	set_keypad_font(gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w)));
 	update_stack_button_font();
 }
 void on_preferences_button_history_font_font_set(GtkFontButton *w, gpointer) {
-	save_custom_history_font = true;
-	custom_history_font = gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w));
-	update_history_font();
+	set_history_font(gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w)));
 	update_stack_font();
 }
 void on_preferences_button_app_font_font_set(GtkFontButton *w, gpointer) {
@@ -781,9 +820,9 @@ GtkWidget* get_preferences_dialog() {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result")), parsed_in_result && !rpn_mode);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result")), display_expression_status && !rpn_mode);
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_expression_lines_spin_button")), (double) (expression_lines < 1 ? 3 : expression_lines));
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_vertical_padding_combo")), vertical_button_padding > 9 ? 9 : vertical_button_padding + 1);
-		if(horizontal_button_padding > 4) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_horizontal_padding_combo")), horizontal_button_padding > 12 ? 9 : (horizontal_button_padding - 4) / 2 + 4 + 1);
-		else gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_horizontal_padding_combo")), horizontal_button_padding + 1);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_vertical_padding_combo")), vertical_button_padding() > 9 ? 9 : vertical_button_padding() + 1);
+		if(horizontal_button_padding() > 4) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_horizontal_padding_combo")), horizontal_button_padding() > 12 ? 9 : (horizontal_button_padding() - 4) / 2 + 4 + 1);
+		else gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_horizontal_padding_combo")), horizontal_button_padding() + 1);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_fetch_exchange_rates")), fetch_exchange_rates_at_startup);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_local_currency_conversion")), evalops.local_currency_conversion);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_save_mode")), save_mode_on_exit);
@@ -818,30 +857,30 @@ GtkWidget* get_preferences_dialog() {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_save_defs")), save_defs_on_exit);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_rpn_keys")), rpn_keys);
 		preferences_update_dot(true);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_result_font")), use_custom_result_font);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_expression_font")), use_custom_expression_font);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_status_font")), use_custom_status_font);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_keypad_font")), use_custom_keypad_font);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_history_font")), use_custom_history_font);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_result_font")), result_font() != NULL);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_expression_font")), expression_font() != NULL);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_status_font")), status_font() != NULL);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_keypad_font")), keypad_font() != NULL);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_history_font")), history_font() != NULL);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_app_font")), use_custom_app_font);
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_result_font")), use_custom_result_font);
-		gtk_font_chooser_set_font(GTK_FONT_CHOOSER(gtk_builder_get_object(preferences_builder, "preferences_button_result_font")), custom_result_font.c_str());
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_expression_font")), use_custom_expression_font);
-		gtk_font_chooser_set_font(GTK_FONT_CHOOSER(gtk_builder_get_object(preferences_builder, "preferences_button_expression_font")), custom_expression_font.c_str());
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_status_font")), use_custom_status_font);
-		gtk_font_chooser_set_font(GTK_FONT_CHOOSER(gtk_builder_get_object(preferences_builder, "preferences_button_status_font")), custom_status_font.c_str());
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_keypad_font")), use_custom_keypad_font);
-		gtk_font_chooser_set_font(GTK_FONT_CHOOSER(gtk_builder_get_object(preferences_builder, "preferences_button_keypad_font")), custom_keypad_font.c_str());
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_history_font")), use_custom_history_font);
-		gtk_font_chooser_set_font(GTK_FONT_CHOOSER(gtk_builder_get_object(preferences_builder, "preferences_button_history_font")), custom_history_font.c_str());
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_result_font")), result_font() != NULL);
+		gtk_font_chooser_set_font(GTK_FONT_CHOOSER(gtk_builder_get_object(preferences_builder, "preferences_button_result_font")), result_font(true));
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_expression_font")), expression_font() != NULL);
+		gtk_font_chooser_set_font(GTK_FONT_CHOOSER(gtk_builder_get_object(preferences_builder, "preferences_button_expression_font")), expression_font(true));
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_status_font")), status_font() != NULL);
+		gtk_font_chooser_set_font(GTK_FONT_CHOOSER(gtk_builder_get_object(preferences_builder, "preferences_button_status_font")), status_font(true));
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_keypad_font")), keypad_font() != NULL);
+		gtk_font_chooser_set_font(GTK_FONT_CHOOSER(gtk_builder_get_object(preferences_builder, "preferences_button_keypad_font")), keypad_font(true));
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_history_font")), history_font() != NULL);
+		gtk_font_chooser_set_font(GTK_FONT_CHOOSER(gtk_builder_get_object(preferences_builder, "preferences_button_history_font")), history_font(true));
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_button_app_font")), use_custom_app_font);
 		gtk_font_chooser_set_font(GTK_FONT_CHOOSER(gtk_builder_get_object(preferences_builder, "preferences_button_app_font")), custom_app_font.c_str());
 		GdkRGBA c;
 		gdk_rgba_parse(&c, text_color.c_str());
 		gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(gtk_builder_get_object(preferences_builder, "colorbutton_text_color")), &c);
-		gdk_rgba_parse(&c, status_error_color.c_str());
+		gdk_rgba_parse(&c, status_error_color());
 		gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(gtk_builder_get_object(preferences_builder, "colorbutton_status_error_color")), &c);
-		gdk_rgba_parse(&c, status_warning_color.c_str());
+		gdk_rgba_parse(&c, status_warning_color());
 		gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(gtk_builder_get_object(preferences_builder, "colorbutton_status_warning_color")), &c);
 		gtk_button_set_label(GTK_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_dot")), SIGN_MULTIDOT);
 		gtk_button_set_label(GTK_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_altdot")), SIGN_MIDDLEDOT);
@@ -955,27 +994,46 @@ GtkWidget* get_preferences_dialog() {
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_use_systray_icon")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_hide_on_startup")));
 #endif
+		preferences_update_completion(true);
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_update_exchange_rates_spin_button")), (double) auto_update_exchange_rates);
 
-		gtk_builder_add_callback_symbols(preferences_builder, "on_preferences_checkbutton_save_defs_toggled", G_CALLBACK(on_preferences_checkbutton_save_defs_toggled), "on_preferences_checkbutton_clear_history_toggled", G_CALLBACK(on_preferences_checkbutton_clear_history_toggled), "on_preferences_max_history_lines_spin_button_value_changed", G_CALLBACK(on_preferences_max_history_lines_spin_button_value_changed), "on_preferences_checkbutton_save_history_separately_toggled", G_CALLBACK(on_preferences_checkbutton_save_history_separately_toggled), "on_preferences_checkbutton_allow_multiple_instances_toggled", G_CALLBACK(on_preferences_checkbutton_allow_multiple_instances_toggled), "on_preferences_checkbutton_check_version_toggled", G_CALLBACK(on_preferences_checkbutton_check_version_toggled), "on_preferences_checkbutton_save_mode_toggled", G_CALLBACK(on_preferences_checkbutton_save_mode_toggled), "on_preferences_checkbutton_close_with_esc_toggled", G_CALLBACK(on_preferences_checkbutton_close_with_esc_toggled), "on_preferences_checkbutton_rpn_keys_toggled", G_CALLBACK(on_preferences_checkbutton_rpn_keys_toggled), "on_preferences_checkbutton_caret_as_xor_toggled", G_CALLBACK(on_preferences_checkbutton_caret_as_xor_toggled), "on_preferences_combo_history_expression_changed", G_CALLBACK(on_preferences_combo_history_expression_changed), "on_preferences_checkbutton_autocalc_history_toggled", G_CALLBACK(on_preferences_checkbutton_autocalc_history_toggled), "on_preferences_scale_autocalc_history_value_changed", G_CALLBACK(on_preferences_scale_autocalc_history_value_changed), "on_preferences_scale_plot_time_value_changed", G_CALLBACK(on_preferences_scale_plot_time_value_changed), "on_preferences_checkbutton_unicode_signs_toggled", G_CALLBACK(on_preferences_checkbutton_unicode_signs_toggled), "on_preferences_checkbutton_ignore_locale_toggled", G_CALLBACK(on_preferences_checkbutton_ignore_locale_toggled), "on_preferences_checkbutton_use_systray_icon_toggled", G_CALLBACK(on_preferences_checkbutton_use_systray_icon_toggled), "on_preferences_checkbutton_hide_on_startup_toggled", G_CALLBACK(on_preferences_checkbutton_hide_on_startup_toggled), "on_preferences_checkbutton_remember_position_toggled", G_CALLBACK(on_preferences_checkbutton_remember_position_toggled), "on_preferences_checkbutton_keep_above_toggled", G_CALLBACK(on_preferences_checkbutton_keep_above_toggled), "on_preferences_horizontal_padding_combo_changed", G_CALLBACK(on_preferences_horizontal_padding_combo_changed), "on_preferences_vertical_padding_combo_changed", G_CALLBACK(on_preferences_vertical_padding_combo_changed), "on_preferences_combo_title_changed", G_CALLBACK(on_preferences_combo_title_changed), "on_preferences_combo_theme_changed", G_CALLBACK(on_preferences_combo_theme_changed), "on_preferences_combo_language_changed", G_CALLBACK(on_preferences_combo_language_changed), "on_preferences_combo_tooltips_changed", G_CALLBACK(on_preferences_combo_tooltips_changed), "on_preferences_expression_lines_spin_button_value_changed", G_CALLBACK(on_preferences_expression_lines_spin_button_value_changed), "on_preferences_checkbutton_display_expression_status_toggled", G_CALLBACK(on_preferences_checkbutton_display_expression_status_toggled), "on_preferences_checkbutton_parsed_in_result_toggled", G_CALLBACK(on_preferences_checkbutton_parsed_in_result_toggled), "on_preferences_checkbutton_persistent_keypad_toggled", G_CALLBACK(on_preferences_checkbutton_persistent_keypad_toggled), "on_preferences_checkbutton_twos_complement_toggled", G_CALLBACK(on_preferences_checkbutton_twos_complement_toggled), "on_preferences_checkbutton_hexadecimal_twos_complement_toggled", G_CALLBACK(on_preferences_checkbutton_hexadecimal_twos_complement_toggled), "on_preferences_checkbutton_twos_complement_input_toggled", G_CALLBACK(on_preferences_checkbutton_twos_complement_input_toggled), "on_preferences_checkbutton_hexadecimal_twos_complement_input_toggled", G_CALLBACK(on_preferences_checkbutton_hexadecimal_twos_complement_input_toggled), "on_preferences_combobox_bits_changed", G_CALLBACK(on_preferences_combobox_bits_changed), "on_preferences_checkbutton_lower_case_numbers_toggled", G_CALLBACK(on_preferences_checkbutton_lower_case_numbers_toggled), "on_preferences_checkbutton_duodecimal_symbols_toggled", G_CALLBACK(on_preferences_checkbutton_duodecimal_symbols_toggled), "on_preferences_checkbutton_alternative_base_prefixes_toggled", G_CALLBACK(on_preferences_checkbutton_alternative_base_prefixes_toggled), "on_preferences_checkbutton_spell_out_logical_operators_toggled", G_CALLBACK(on_preferences_checkbutton_spell_out_logical_operators_toggled), "on_preferences_checkbutton_e_notation_toggled", G_CALLBACK(on_preferences_checkbutton_e_notation_toggled), "on_preferences_checkbutton_lower_case_e_toggled", G_CALLBACK(on_preferences_checkbutton_lower_case_e_toggled), "on_preferences_checkbutton_decimal_comma_toggled", G_CALLBACK(on_preferences_checkbutton_decimal_comma_toggled), "on_preferences_checkbutton_imaginary_j_toggled", G_CALLBACK(on_preferences_checkbutton_imaginary_j_toggled), "on_preferences_checkbutton_comma_as_separator_toggled", G_CALLBACK(on_preferences_checkbutton_comma_as_separator_toggled), "on_preferences_checkbutton_copy_ascii_toggled", G_CALLBACK(on_preferences_checkbutton_copy_ascii_toggled), "on_preferences_checkbutton_dot_as_separator_toggled", G_CALLBACK(on_preferences_checkbutton_dot_as_separator_toggled), "on_preferences_radiobutton_digit_grouping_none_toggled", G_CALLBACK(on_preferences_radiobutton_digit_grouping_none_toggled), "on_preferences_radiobutton_digit_grouping_standard_toggled", G_CALLBACK(on_preferences_radiobutton_digit_grouping_standard_toggled), "on_preferences_radiobutton_digit_grouping_locale_toggled", G_CALLBACK(on_preferences_radiobutton_digit_grouping_locale_toggled), "on_preferences_radiobutton_dot_toggled", G_CALLBACK(on_preferences_radiobutton_dot_toggled), "on_preferences_radiobutton_ex_toggled", G_CALLBACK(on_preferences_radiobutton_ex_toggled), "on_preferences_radiobutton_altdot_toggled", G_CALLBACK(on_preferences_radiobutton_altdot_toggled), "on_preferences_radiobutton_asterisk_toggled", G_CALLBACK(on_preferences_radiobutton_asterisk_toggled), "on_preferences_radiobutton_division_slash_toggled", G_CALLBACK(on_preferences_radiobutton_division_slash_toggled), "on_preferences_radiobutton_division_toggled", G_CALLBACK(on_preferences_radiobutton_division_toggled), "on_preferences_radiobutton_slash_toggled", G_CALLBACK(on_preferences_radiobutton_slash_toggled), "on_preferences_checkbutton_binary_prefixes_toggled", G_CALLBACK(on_preferences_checkbutton_binary_prefixes_toggled), "on_preferences_checkbutton_copy_ascii_without_units_toggled", G_CALLBACK(on_preferences_checkbutton_copy_ascii_without_units_toggled), "on_preferences_checkbutton_local_currency_conversion_toggled", G_CALLBACK(on_preferences_checkbutton_local_currency_conversion_toggled), "on_preferences_checkbutton_fetch_exchange_rates_toggled", G_CALLBACK(on_preferences_checkbutton_fetch_exchange_rates_toggled), "on_preferences_update_exchange_rates_spin_button_input", G_CALLBACK(on_preferences_update_exchange_rates_spin_button_input), "on_preferences_update_exchange_rates_spin_button_output", G_CALLBACK(on_preferences_update_exchange_rates_spin_button_output), "on_preferences_update_exchange_rates_spin_button_value_changed", G_CALLBACK(on_preferences_update_exchange_rates_spin_button_value_changed), "on_preferences_radiobutton_temp_abs_toggled", G_CALLBACK(on_preferences_radiobutton_temp_abs_toggled), "on_preferences_radiobutton_temp_rel_toggled", G_CALLBACK(on_preferences_radiobutton_temp_rel_toggled), "on_preferences_radiobutton_temp_hybrid_toggled", G_CALLBACK(on_preferences_radiobutton_temp_hybrid_toggled), "on_preferences_checkbutton_enable_completion_toggled", G_CALLBACK(on_preferences_checkbutton_enable_completion_toggled), "on_preferences_checkbutton_enable_completion2_toggled", G_CALLBACK(on_preferences_checkbutton_enable_completion2_toggled), "on_preferences_spin_completion_min_value_changed", G_CALLBACK(on_preferences_spin_completion_min_value_changed), "on_preferences_spin_completion_min2_value_changed", G_CALLBACK(on_preferences_spin_completion_min2_value_changed), "on_preferences_spin_completion_delay_value_changed", G_CALLBACK(on_preferences_spin_completion_delay_value_changed), "on_preferences_checkbutton_custom_status_font_toggled", G_CALLBACK(on_preferences_checkbutton_custom_status_font_toggled), "on_preferences_button_status_font_font_set", G_CALLBACK(on_preferences_button_status_font_font_set), "on_preferences_button_expression_font_font_set", G_CALLBACK(on_preferences_button_expression_font_font_set), "on_preferences_checkbutton_custom_expression_font_toggled", G_CALLBACK(on_preferences_checkbutton_custom_expression_font_toggled), "on_preferences_checkbutton_custom_result_font_toggled", G_CALLBACK(on_preferences_checkbutton_custom_result_font_toggled), "on_preferences_button_result_font_font_set", G_CALLBACK(on_preferences_button_result_font_font_set), "on_preferences_checkbutton_custom_keypad_font_toggled", G_CALLBACK(on_preferences_checkbutton_custom_keypad_font_toggled), "on_preferences_button_keypad_font_font_set", G_CALLBACK(on_preferences_button_keypad_font_font_set), "on_colorbutton_status_warning_color_color_set", G_CALLBACK(on_colorbutton_status_warning_color_color_set), "on_colorbutton_status_error_color_color_set", G_CALLBACK(on_colorbutton_status_error_color_color_set), "on_colorbutton_text_color_color_set", G_CALLBACK(on_colorbutton_text_color_color_set), "on_preferences_button_app_font_font_set", G_CALLBACK(on_preferences_button_app_font_font_set), "on_preferences_button_history_font_font_set", G_CALLBACK(on_preferences_button_history_font_font_set), "on_preferences_checkbutton_custom_app_font_toggled", G_CALLBACK(on_preferences_checkbutton_custom_app_font_toggled), "on_preferences_checkbutton_custom_history_font_toggled", G_CALLBACK(on_preferences_checkbutton_custom_history_font_toggled), NULL);
+		gtk_builder_add_callback_symbols(preferences_builder, "on_preferences_checkbutton_save_defs_toggled", G_CALLBACK(on_preferences_checkbutton_save_defs_toggled), "on_preferences_checkbutton_clear_history_toggled", G_CALLBACK(on_preferences_checkbutton_clear_history_toggled), "on_preferences_max_history_lines_spin_button_value_changed",
+		G_CALLBACK(on_preferences_max_history_lines_spin_button_value_changed), "on_preferences_checkbutton_save_history_separately_toggled",
+		G_CALLBACK(on_preferences_checkbutton_save_history_separately_toggled), "on_preferences_checkbutton_allow_multiple_instances_toggled",
+		G_CALLBACK(on_preferences_checkbutton_allow_multiple_instances_toggled), "on_preferences_checkbutton_check_version_toggled", G_CALLBACK(on_preferences_checkbutton_check_version_toggled), "on_preferences_checkbutton_save_mode_toggled", G_CALLBACK(on_preferences_checkbutton_save_mode_toggled), "on_preferences_checkbutton_close_with_esc_toggled",
+		G_CALLBACK(on_preferences_checkbutton_close_with_esc_toggled), "on_preferences_checkbutton_rpn_keys_toggled", G_CALLBACK(on_preferences_checkbutton_rpn_keys_toggled), "on_preferences_checkbutton_caret_as_xor_toggled", G_CALLBACK(on_preferences_checkbutton_caret_as_xor_toggled), "on_preferences_combo_history_expression_changed",
+		G_CALLBACK(on_preferences_combo_history_expression_changed), "on_preferences_checkbutton_autocalc_history_toggled", G_CALLBACK(on_preferences_checkbutton_autocalc_history_toggled), "on_preferences_scale_autocalc_history_value_changed", G_CALLBACK(on_preferences_scale_autocalc_history_value_changed), "on_preferences_scale_plot_time_value_changed",
+		G_CALLBACK(on_preferences_scale_plot_time_value_changed), "on_preferences_checkbutton_unicode_signs_toggled", G_CALLBACK(on_preferences_checkbutton_unicode_signs_toggled), "on_preferences_checkbutton_ignore_locale_toggled", G_CALLBACK(on_preferences_checkbutton_ignore_locale_toggled), "on_preferences_checkbutton_use_systray_icon_toggled",
+		G_CALLBACK(on_preferences_checkbutton_use_systray_icon_toggled), "on_preferences_checkbutton_hide_on_startup_toggled", G_CALLBACK(on_preferences_checkbutton_hide_on_startup_toggled), "on_preferences_checkbutton_remember_position_toggled", G_CALLBACK(on_preferences_checkbutton_remember_position_toggled), "on_preferences_checkbutton_keep_above_toggled",
+		G_CALLBACK(on_preferences_checkbutton_keep_above_toggled), "on_preferences_horizontal_padding_combo_changed", G_CALLBACK(on_preferences_horizontal_padding_combo_changed), "on_preferences_vertical_padding_combo_changed", G_CALLBACK(on_preferences_vertical_padding_combo_changed), "on_preferences_combo_title_changed", G_CALLBACK(on_preferences_combo_title_changed),
+		"on_preferences_combo_theme_changed", G_CALLBACK(on_preferences_combo_theme_changed), "on_preferences_combo_language_changed", G_CALLBACK(on_preferences_combo_language_changed), "on_preferences_combo_tooltips_changed", G_CALLBACK(on_preferences_combo_tooltips_changed), "on_preferences_expression_lines_spin_button_value_changed",
+		G_CALLBACK(on_preferences_expression_lines_spin_button_value_changed), "on_preferences_checkbutton_display_expression_status_toggled", G_CALLBACK(on_preferences_checkbutton_display_expression_status_toggled), "on_preferences_checkbutton_parsed_in_result_toggled", G_CALLBACK(on_preferences_checkbutton_parsed_in_result_toggled),
+		"on_preferences_checkbutton_persistent_keypad_toggled", G_CALLBACK(on_preferences_checkbutton_persistent_keypad_toggled), "on_preferences_checkbutton_twos_complement_toggled", G_CALLBACK(on_preferences_checkbutton_twos_complement_toggled), "on_preferences_checkbutton_hexadecimal_twos_complement_toggled",
+		G_CALLBACK(on_preferences_checkbutton_hexadecimal_twos_complement_toggled), "on_preferences_checkbutton_twos_complement_input_toggled", G_CALLBACK(on_preferences_checkbutton_twos_complement_input_toggled), "on_preferences_checkbutton_hexadecimal_twos_complement_input_toggled",
+		G_CALLBACK(on_preferences_checkbutton_hexadecimal_twos_complement_input_toggled), "on_preferences_combobox_bits_changed", G_CALLBACK(on_preferences_combobox_bits_changed),
+		"on_preferences_checkbutton_lower_case_numbers_toggled", G_CALLBACK(on_preferences_checkbutton_lower_case_numbers_toggled), "on_preferences_checkbutton_duodecimal_symbols_toggled", G_CALLBACK(on_preferences_checkbutton_duodecimal_symbols_toggled), "on_preferences_checkbutton_alternative_base_prefixes_toggled",
+		G_CALLBACK(on_preferences_checkbutton_alternative_base_prefixes_toggled), "on_preferences_checkbutton_spell_out_logical_operators_toggled", G_CALLBACK(on_preferences_checkbutton_spell_out_logical_operators_toggled), "on_preferences_checkbutton_e_notation_toggled", G_CALLBACK(on_preferences_checkbutton_e_notation_toggled),
+		"on_preferences_checkbutton_lower_case_e_toggled", G_CALLBACK(on_preferences_checkbutton_lower_case_e_toggled), "on_preferences_checkbutton_decimal_comma_toggled", G_CALLBACK(on_preferences_checkbutton_decimal_comma_toggled), "on_preferences_checkbutton_imaginary_j_toggled", G_CALLBACK(on_preferences_checkbutton_imaginary_j_toggled),
+		"on_preferences_checkbutton_comma_as_separator_toggled", G_CALLBACK(on_preferences_checkbutton_comma_as_separator_toggled), "on_preferences_checkbutton_copy_ascii_toggled", G_CALLBACK(on_preferences_checkbutton_copy_ascii_toggled), "on_preferences_checkbutton_dot_as_separator_toggled", G_CALLBACK(on_preferences_checkbutton_dot_as_separator_toggled),
+		"on_preferences_radiobutton_digit_grouping_none_toggled", G_CALLBACK(on_preferences_radiobutton_digit_grouping_none_toggled), "on_preferences_radiobutton_digit_grouping_standard_toggled", G_CALLBACK(on_preferences_radiobutton_digit_grouping_standard_toggled), "on_preferences_radiobutton_digit_grouping_locale_toggled",
+		G_CALLBACK(on_preferences_radiobutton_digit_grouping_locale_toggled), "on_preferences_radiobutton_dot_toggled", G_CALLBACK(on_preferences_radiobutton_dot_toggled), "on_preferences_radiobutton_ex_toggled", G_CALLBACK(on_preferences_radiobutton_ex_toggled), "on_preferences_radiobutton_altdot_toggled", G_CALLBACK(on_preferences_radiobutton_altdot_toggled),
+		"on_preferences_radiobutton_asterisk_toggled", G_CALLBACK(on_preferences_radiobutton_asterisk_toggled), "on_preferences_radiobutton_division_slash_toggled", G_CALLBACK(on_preferences_radiobutton_division_slash_toggled), "on_preferences_radiobutton_division_toggled", G_CALLBACK(on_preferences_radiobutton_division_toggled),
+		"on_preferences_radiobutton_slash_toggled", G_CALLBACK(on_preferences_radiobutton_slash_toggled), "on_preferences_checkbutton_binary_prefixes_toggled", G_CALLBACK(on_preferences_checkbutton_binary_prefixes_toggled), "on_preferences_checkbutton_copy_ascii_without_units_toggled",
+		G_CALLBACK(on_preferences_checkbutton_copy_ascii_without_units_toggled), "on_preferences_checkbutton_local_currency_conversion_toggled", G_CALLBACK(on_preferences_checkbutton_local_currency_conversion_toggled), "on_preferences_checkbutton_fetch_exchange_rates_toggled",
+		G_CALLBACK(on_preferences_checkbutton_fetch_exchange_rates_toggled), "on_preferences_update_exchange_rates_spin_button_input", G_CALLBACK(on_preferences_update_exchange_rates_spin_button_input),
+		"on_preferences_update_exchange_rates_spin_button_output", G_CALLBACK(on_preferences_update_exchange_rates_spin_button_output), "on_preferences_update_exchange_rates_spin_button_value_changed", G_CALLBACK(on_preferences_update_exchange_rates_spin_button_value_changed), "on_preferences_radiobutton_temp_abs_toggled", G_CALLBACK(on_preferences_radiobutton_temp_abs_toggled),
+		"on_preferences_radiobutton_temp_rel_toggled", G_CALLBACK(on_preferences_radiobutton_temp_rel_toggled), "on_preferences_radiobutton_temp_hybrid_toggled", G_CALLBACK(on_preferences_radiobutton_temp_hybrid_toggled), "on_preferences_checkbutton_enable_completion_toggled", G_CALLBACK(on_preferences_checkbutton_enable_completion_toggled),
+		"on_preferences_checkbutton_enable_completion2_toggled", G_CALLBACK(on_preferences_checkbutton_enable_completion2_toggled), "on_preferences_spin_completion_min_value_changed", G_CALLBACK(on_preferences_spin_completion_min_value_changed), "on_preferences_spin_completion_min2_value_changed", G_CALLBACK(on_preferences_spin_completion_min2_value_changed),
+		"on_preferences_spin_completion_delay_value_changed", G_CALLBACK(on_preferences_spin_completion_delay_value_changed), "on_preferences_checkbutton_custom_status_font_toggled", G_CALLBACK(on_preferences_checkbutton_custom_status_font_toggled), "on_preferences_button_status_font_font_set", G_CALLBACK(on_preferences_button_status_font_font_set),
+		"on_preferences_button_expression_font_font_set", G_CALLBACK(on_preferences_button_expression_font_font_set), "on_preferences_checkbutton_custom_expression_font_toggled", G_CALLBACK(on_preferences_checkbutton_custom_expression_font_toggled), "on_preferences_checkbutton_custom_result_font_toggled", G_CALLBACK(on_preferences_checkbutton_custom_result_font_toggled),
+		"on_preferences_button_result_font_font_set", G_CALLBACK(on_preferences_button_result_font_font_set), "on_preferences_checkbutton_custom_keypad_font_toggled", G_CALLBACK(on_preferences_checkbutton_custom_keypad_font_toggled), "on_preferences_button_keypad_font_font_set", G_CALLBACK(on_preferences_button_keypad_font_font_set),
+		"on_colorbutton_status_warning_color_color_set", G_CALLBACK(on_colorbutton_status_warning_color_color_set), "on_colorbutton_status_error_color_color_set", G_CALLBACK(on_colorbutton_status_error_color_color_set), "on_colorbutton_text_color_color_set", G_CALLBACK(on_colorbutton_text_color_color_set), "on_preferences_button_app_font_font_set",
+		G_CALLBACK(on_preferences_button_app_font_font_set), "on_preferences_button_history_font_font_set", G_CALLBACK(on_preferences_button_history_font_font_set), "on_preferences_checkbutton_custom_app_font_toggled", G_CALLBACK(on_preferences_checkbutton_custom_app_font_toggled), "on_preferences_checkbutton_custom_history_font_toggled",
+		G_CALLBACK(on_preferences_checkbutton_custom_history_font_toggled), NULL);
 
 		gtk_builder_connect_signals(preferences_builder, NULL);
 
 	}
-
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_update_exchange_rates_spin_button")), (double) auto_update_exchange_rates);
-
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_enable_completion")), enable_completion);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_enable_completion2")), enable_completion2);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_min")), enable_completion);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min")), enable_completion);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min")), (double) completion_min);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_enable_completion2")), enable_completion);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_min2")), enable_completion && enable_completion2);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min2")), enable_completion && enable_completion2);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_min2")), (double) completion_min2);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_label_completion_delay")), enable_completion);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay")), enable_completion);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_spin_completion_delay")), (double) completion_delay);
 
 	update_window_properties(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_dialog")));
 

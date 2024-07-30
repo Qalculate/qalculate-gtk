@@ -68,6 +68,9 @@ struct tree_struct {
 							gtk_tree_view_expand_row(GTK_TREE_VIEW(view), path, FALSE); \
 							gtk_tree_path_free(path);
 
+#define VERSION_BEFORE(i1, i2, i3) (version_numbers[0] < i1 || (version_numbers[0] == i1 && (version_numbers[1] < i2 || (version_numbers[1] == i2 && version_numbers[2] < i3))))
+#define VERSION_AFTER(i1, i2, i3) (version_numbers[0] > i1 || (version_numbers[0] == i1 && (version_numbers[1] > i2 || (version_numbers[1] == i2 && version_numbers[2] > i3))))
+
 extern GtkWidget *mainwindow;
 extern GtkWidget *expressiontext;
 extern GtkTextBuffer *expressionbuffer;
@@ -100,11 +103,11 @@ extern GtkTextBuffer *expressionbuffer;
 	} \
 	g_list_free(list);
 
-extern bool fix_supsub_status, fix_supsub_result, fix_supsub_history, fix_supsub_completion;
+#define FIX_SUPSUB_PRE_W(w_supsub) FIX_SUPSUB_PRE(w_supsub, test_supsub(w_supsub))
 
-#define FIX_SUPSUB_PRE(w_supsub) \
+#define FIX_SUPSUB_PRE(w_supsub, b) \
 	string s_sup, s_sub;\
-	if(use_supsub(w_supsub)) {\
+	if(b) {\
 		if(pango_version() >= 15000) {\
 			s_sup = "<span size=\"60%\" baseline_shift=\"superscript\">";\
 			s_sub = "<span size=\"60%\" baseline_shift=\"subscript\">";\
@@ -114,51 +117,6 @@ extern bool fix_supsub_status, fix_supsub_result, fix_supsub_history, fix_supsub
 			s_sup = "<span size=\"x-small\" rise=\""; s_sup += i2s(pango_font_description_get_size(font_supsub) * 0.5); s_sup += "\">";\
 			s_sub = "<span size=\"x-small\" rise=\"-"; s_sub += i2s(pango_font_description_get_size(font_supsub) * 0.2); s_sub += "\">";\
 		}\
-	}
-
-#define FIX_SUB_RESULT(str) \
-	if(fix_supsub_result) {\
-		int s = scaledown;\
-		if(ips.power_depth > 0) s++;\
-		if(pango_version() >= 15000) {\
-			if(s <= 0) gsub("<sub>", "<span size=\"80%\" baseline_shift=\"subscript\">", str);\
-			else if(s == 1) gsub("<sub>", "<span size=\"60%\" baseline_shift=\"subscript\">", str);\
-			else gsub("<sub>", "<span size=\"50%\" baseline_shift=\"subscript\">", str);\
-		} else {\
-			PangoFontDescription *font_supsub;\
-			gtk_style_context_get(gtk_widget_get_style_context(resultview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_supsub, NULL);\
-			string s_sub;\
-			if(s <= 0) s_sub = "<span size=\"small\" rise=\"-";\
-			else if(s == 1) s_sub = "<span size=\"x-small\" rise=\"-";\
-			else s_sub = "<span size=\"xx-small\" rise=\"-";\
-			s_sub += i2s(pango_font_description_get_size(font_supsub) * 0.2); s_sub += "\">";\
-			if(ips.power_depth > 0) s++;\
-			gsub("<sub>", s_sub, str);\
-			gsub("</sub>", "</span>", str);\
-		}\
-		gsub("</sub>", "</span>", str);\
-	}
-
-#define FIX_SUP_RESULT(str) \
-	if(fix_supsub_result) {\
-		int s = scaledown;\
-		if(ips.power_depth > 0) s++;\
-		if(pango_version() >= 15000) {\
-			if(s <= 0) gsub("<sup>", "<span size=\"80%\" baseline_shift=\"superscript\">", str);\
-			else if(s == 1) gsub("<sup>", "<span size=\"60%\" baseline_shift=\"superscript\">", str);\
-			else gsub("<sup>", "<span size=\"50%\" baseline_shift=\"superscript\">", str);\
-		} else {\
-			PangoFontDescription *font_supsub;\
-			gtk_style_context_get(gtk_widget_get_style_context(resultview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_supsub, NULL);\
-			string s_sup;\
-			if(s <= 0) s_sup = "<span size=\"small\" rise=\"";\
-			else if(s == 1) s_sup = "<span size=\"x-small\" rise=\"";\
-			else s_sup = "<span size=\"xx-small\" rise=\"";\
-			s_sup += i2s(pango_font_description_get_size(font_supsub) * 0.5); s_sup += "\">";\
-			if(ips.power_depth > 0) s++;\
-			gsub("<sup>", s_sup, str);\
-		}\
-		gsub("</sup>", "</span>", str);\
 	}
 
 #define FIX_SUPSUB(str) \
@@ -172,8 +130,8 @@ extern bool fix_supsub_status, fix_supsub_result, fix_supsub_history, fix_supsub
 #define RUNTIME_CHECK_GTK_VERSION(x, y) (gtk_get_minor_version() >= y)
 #define RUNTIME_CHECK_GTK_VERSION_LESS(x, y) (gtk_get_minor_version() < y)
 
-bool use_supsub(GtkWidget *w);
-extern bool fix_supsub_status, fix_supsub_result, fix_supsub_history, fix_supsub_completion;
+#define EQUALS_IGNORECASE_AND_LOCAL(x,y,z)	(equalsIgnoreCase(x, y) || equalsIgnoreCase(x, z))
+#define EQUALS_IGNORECASE_AND_LOCAL_NR(x,y,z,a)	(equalsIgnoreCase(x, y a) || (x.length() == strlen(z) + strlen(a) && equalsIgnoreCase(x.substr(0, x.length() - strlen(a)), z) && equalsIgnoreCase(x.substr(x.length() - strlen(a)), a)))
 
 extern tree_struct function_cats, unit_cats, variable_cats;
 extern std::string volume_cat;
@@ -187,17 +145,22 @@ extern bool b_busy, b_busy_command, b_busy_result, b_busy_expression, b_busy_fet
 
 void block_calculation();
 void unblock_calculation();
+bool calculation_blocked();
 void block_error();
 void unblock_error();
-bool calculation_blocked();
+bool error_blocked();
 void block_result();
 void unblock_result();
 bool result_blocked();
 
 void mainwindow_cursor_moved();
-void display_parse_status();
 
 GtkBuilder *getBuilder(const char *filename);
+
+std::string unformat(std::string str);
+
+void get_image_blank_width(cairo_surface_t *surface, int *x1, int *x2);
+void get_image_blank_height(cairo_surface_t *surface, int *y1, int *y2);
 
 void set_tooltips_enabled(GtkWidget *w, bool b);
 void update_tooltips_enabled();
@@ -258,14 +221,13 @@ bool contains_fraction(MathStructure &m, bool in_div = false);
 bool contains_convertible_unit(MathStructure &m);
 bool has_prefix(const MathStructure &m);
 
+void minimal_mode_show_resultview(bool b = true);
+
 void stop_autocalculate_history_timeout();
 
 void keypad_font_modified();
 void update_app_font(bool initial = false);
-void update_status_font(bool initial = false);
-void update_result_font(bool initial = false);
 void update_colors(bool initial = false);
-void set_status_operator_symbols();
 void set_app_operator_symbols();
 
 void memory_recall();
@@ -279,10 +241,11 @@ void set_fixed_fraction(long int v, bool combined);
 void set_min_exp(int min_exp);
 void set_prefix_mode(int i);
 void set_approximation(ApproximationMode approx);
+void set_angle_unit(AngleUnit au);
+void set_custom_angle_unit(Unit *u);
 void set_autocalculate(bool b);
 void update_exchange_rates();
 void import_definitions_file();
-void save_as_image();
 void show_about();
 void report_bug();
 void set_unknowns();
@@ -293,11 +256,13 @@ void open_calendarconversion();
 void show_unit_conversion();
 void open_plot();
 bool qalculate_quit();
+
+void clear_parsed_in_result();
+void show_parsed_in_result(MathStructure &mparse, const PrintOptions &po);
 #ifdef __cplusplus
 }
 #endif
 bool test_supsub(GtkWidget *w);
-void update_status_menu(bool initial = false);
 bool use_keypad_buttons_for_history();
 bool keypad_is_visible();
 bool update_window_title(const char *str = NULL, bool is_result = false);
@@ -314,15 +279,11 @@ void on_abort_calculation(GtkDialog*, gint, gpointer);
 void show_message(const gchar *text, GtkWidget *win);
 bool ask_question(const gchar *text, GtkWidget *win);
 void show_notification(std::string text);
-void show_help(const char *file, GtkWidget *win);
-
-void clear_status_text();
 
 void update_persistent_keypad(bool showhide_buttons = false);
 
 void set_clipboard(std::string str, int ascii, bool html, bool is_result, int copy_without_units = -1);
 
-void result_display_updated();
 void result_format_updated();
 void result_action_executed();
 void result_prefix_changed(Prefix *prefix = NULL);
@@ -336,21 +297,28 @@ bool do_chain_mode(const gchar *op);
 void do_auto_calc(int recalculate = 1, std::string str = std::string());
 void abort_calculation();
 void setResult(Prefix *prefix = NULL, bool update_history = true, bool update_parse = false, bool force = false, std::string transformation = "", size_t stack_index = 0, bool register_moved = false, bool supress_dialog = false);
-void clearresult();
 void convert_result_to_unit_expression(std::string str);
 bool display_errors(GtkWidget *win = NULL, int type = 0, bool add_to_history = false);
 void add_as_variable();
 void add_autocalculated_result_to_history();
+bool autocalculation_stopped_at_operator();
 void handle_expression_modified(bool autocalc);
 
 void copy_result(int ascii = -1, int type = 0);
 
 void set_expression_output_updated(bool);
 
+void update_message_print_options();
+
+void toggle_binary_pos(int pos);
+
 MathStructure *current_result();
 void replace_current_result(MathStructure*);
-MathStructure *current_displayed_result();
 MathStructure *current_parsed_result();
+const std::string &current_result_text();
+bool current_result_text_is_approximate();
+void clearresult();
+void clear_parsed_in_result();
 
 void update_vmenu(bool update_compl = true);
 void update_fmenu(bool update_compl = true);
@@ -366,12 +334,13 @@ void function_edited(MathFunction *f);
 void unit_edited(Unit *u);
 void dataset_edited(DataSet *ds);
 
+void function_inserted(MathFunction *object);
+
 bool equalsIgnoreCase(const std::string &str1, const std::string &str2, size_t i2, size_t i2_end, size_t minlength);
 bool title_matches(ExpressionItem *item, const std::string &str, size_t minlength = 0);
 bool name_matches(ExpressionItem *item, const std::string &str);
 bool country_matches(Unit *u, const std::string &str, size_t minlength = 0);
 
-void insert_function(MathFunction *f, GtkWidget *parent = NULL, bool add_to_menu = true);
 void insert_variable(Variable *v, bool add_to_menu = true);
 void insert_unit(Unit *u, bool add_to_recent = false);
 void insert_button_function(MathFunction *f, bool save_to_recent = false, bool apply_to_stack = true);
@@ -384,6 +353,8 @@ void convert_result_to_unit(Unit *u);
 
 void find_matching_units(const MathStructure &m, const MathStructure *mparse, std::vector<Unit*> &v, bool top = true);
 Unit *find_exact_matching_unit(const MathStructure &m);
+
+long int get_fixed_denominator_gtk(const std::string &str, int &to_fraction, bool qalc_command = false);
 
 void fix_deactivate_label_width(GtkWidget *w);
 

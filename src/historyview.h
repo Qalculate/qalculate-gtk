@@ -15,6 +15,7 @@
 #include <gtk/gtk.h>
 #include <libqalculate/qalculate.h>
 #include <time.h>
+#include <stdio.h>
 
 DECLARE_BUILTIN_FUNCTION(AnswerFunction, 0)
 DECLARE_BUILTIN_FUNCTION(ExpressionFunction, 0)
@@ -41,6 +42,8 @@ void update_history_accels(int type);
 void update_history_button_text();
 void update_history_colors(bool initial);
 void update_history_font(bool initial = false);
+void set_history_font(const char *str);
+const char *history_font(bool return_default = false);
 void history_font_modified();
 std::string history_display_errors(bool add_to_history, GtkWidget *win, int type, bool *implicit_warning, time_t history_time, int *mtype_highest_p);
 void reload_history(gint from_index = -1);
@@ -64,5 +67,10 @@ void history_search();
 void history_clear();
 void history_input_base_changed();
 void history_operator(std::string str_sign);
+
+bool read_history_settings_line(std::string &svar, std::string &svalue, int &v);
+void write_history_settings(FILE *file);
+bool read_history_line(std::string &svar, std::string &svalue);
+void write_history(FILE *file);
 
 #endif /* HISTORY_VIEW_H */

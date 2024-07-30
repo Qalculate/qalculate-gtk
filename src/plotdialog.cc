@@ -27,6 +27,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "openhelp.h"
 #include "plotdialog.h"
 
 using std::string;
@@ -44,7 +45,7 @@ bool default_plot_full_border = false;
 string default_plot_min = "0";
 string default_plot_max = "10";
 string default_plot_step = "1";
-int default_plot_sampling_rate = 100;
+int default_plot_sampling_rate = 1001;
 int default_plot_linewidth = 2;
 int default_plot_complex = -1;
 bool default_plot_use_sampling_rate = true;
@@ -85,6 +86,68 @@ enum {
 	PLOTLEGEND_MENU_BELOW,
 	PLOTLEGEND_MENU_OUTSIDE
 };
+
+bool read_plot_settings_line(string &svar, string &svalue, int &v) {
+	if(svar == "plot_legend_placement") {
+		if(v >= PLOT_LEGEND_NONE && v <= PLOT_LEGEND_OUTSIDE) default_plot_legend_placement = (PlotLegendPlacement) v;
+	} else if(svar == "plot_style") {
+		if(v >= PLOT_STYLE_LINES && v <= PLOT_STYLE_POLAR) default_plot_style = (PlotStyle) v;
+	} else if(svar == "plot_smoothing") {
+		if(v >= PLOT_SMOOTHING_NONE && v <= PLOT_SMOOTHING_SBEZIER) default_plot_smoothing = (PlotSmoothing) v;
+	} else if(svar == "plot_display_grid") {
+		default_plot_display_grid = v;
+	} else if(svar == "plot_full_border") {
+		default_plot_full_border = v;
+	} else if(svar == "plot_min") {
+		default_plot_min = svalue;
+	} else if(svar == "plot_max") {
+		default_plot_max = svalue;
+	} else if(svar == "plot_step") {
+		default_plot_step = svalue;
+	} else if(svar == "plot_sampling_rate") {
+		default_plot_sampling_rate = v;
+	} else if(svar == "plot_use_sampling_rate") {
+		default_plot_use_sampling_rate = v;
+	} else if(svar == "plot_complex") {
+		default_plot_complex = v;
+	} else if(svar == "plot_variable") {
+		default_plot_variable = svalue;
+	} else if(svar == "plot_rows") {
+		default_plot_rows = v;
+	} else if(svar == "plot_type") {
+		default_plot_type = v;
+	} else if(svar == "plot_color") {
+		if(version_numbers[0] > 2 || (version_numbers[0] == 2 && (version_numbers[1] > 2 || (version_numbers[1] == 2 && version_numbers[2] > 1)))) {
+			default_plot_color = v;
+		}
+	} else if(svar == "plot_linewidth") {
+		default_plot_linewidth = v;
+	} else if(svar == "max_plot_time") {
+		max_plot_time = v;
+	} else {
+		return false;
+	}
+	return true;
+}
+void write_plot_settings(FILE *file) {
+	fprintf(file, "plot_legend_placement=%i\n", default_plot_legend_placement);
+	fprintf(file, "plot_style=%i\n", default_plot_style);
+	fprintf(file, "plot_smoothing=%i\n", default_plot_smoothing);
+	fprintf(file, "plot_display_grid=%i\n", default_plot_display_grid);
+	fprintf(file, "plot_full_border=%i\n", default_plot_full_border);
+	fprintf(file, "plot_min=%s\n", default_plot_min.c_str());
+	fprintf(file, "plot_max=%s\n", default_plot_max.c_str());
+	fprintf(file, "plot_step=%s\n", default_plot_step.c_str());
+	fprintf(file, "plot_sampling_rate=%i\n", default_plot_sampling_rate);
+	fprintf(file, "plot_use_sampling_rate=%i\n", default_plot_use_sampling_rate);
+	if(default_plot_complex >= 0) fprintf(file, "plot_complex=%i\n", default_plot_complex);
+	fprintf(file, "plot_variable=%s\n", default_plot_variable.c_str());
+	fprintf(file, "plot_rows=%i\n", default_plot_rows);
+	fprintf(file, "plot_type=%i\n", default_plot_type);
+	fprintf(file, "plot_color=%i\n", default_plot_color);
+	fprintf(file, "plot_linewidth=%i\n", default_plot_linewidth);
+	if(max_plot_time != 5) fprintf(file, "max_plot_time=%i\n", max_plot_time);
+}
 
 void on_tPlotFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 	GtkTreeModel *model;

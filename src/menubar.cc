@@ -53,6 +53,10 @@
 #include "functioneditdialog.h"
 #include "dataseteditdialog.h"
 #include "expressionedit.h"
+#include "expressionstatus.h"
+#include "insertfunctiondialog.h"
+#include "resultview.h"
+#include "openhelp.h"
 #include "keypad.h"
 #include "menubar.h"
 
@@ -90,7 +94,7 @@ void insert_prefix_from_menu(GtkMenuItem*, gpointer user_data) {
 }
 void insert_function_from_menu(GtkMenuItem*, gpointer user_data) {
 	if(!CALCULATOR->stillHasFunction((MathFunction*) user_data)) return;
-	insert_function((MathFunction*) user_data, mainwindow);
+	insert_function((MathFunction*) user_data, GTK_WINDOW(mainwindow));
 }
 void convert_to_unit(GtkMenuItem*, gpointer user_data) {
 	GtkWidget *edialog;
@@ -433,23 +437,6 @@ void on_menu_item_display_non_scientific_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	set_min_exp(EXP_NONE);
 }
-void update_menu_numerical_display() {
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_normal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_normal_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_engineering"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_engineering_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_scientific_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_purley_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_purely_scientific_activate, NULL);
-	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_non_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_non_scientific_activate, NULL);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_normal")), printops.min_exp == EXP_PRECISION);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_engineering")), printops.min_exp <= -2);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_scientific")), printops.min_exp > 1);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_purely_scientific")), printops.min_exp == EXP_PURE);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_non_scientific")), printops.min_exp == EXP_NONE);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_normal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_normal_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_engineering"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_engineering_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_scientific_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_purley_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_purely_scientific_activate, NULL);
-	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_non_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_non_scientific_activate, NULL);
-}
 void on_menu_item_display_no_prefixes_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	set_prefix_mode(PREFIX_MODE_NO_PREFIXES);
@@ -539,44 +526,60 @@ void on_menu_item_sort_minus_last_activate(GtkMenuItem *w, gpointer) {
 	if(printops.min_exp != EXP_NONE && printops.min_exp != EXP_PRECISION) scientific_notminuslast = !printops.sort_options.minus_last;
 	result_format_updated();
 }
-extern int to_base;
-extern unsigned int to_bits;
-void output_base_updated_from_menu() {
-	to_base = 0;
-	to_bits = 0;
-	update_setbase();
-	update_keypad_programming_base();
-	update_keypad_base();
+void update_menu_numerical_display() {
+	switch(printops.min_exp) {
+		case EXP_PRECISION: {
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_normal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_normal_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_normal")), TRUE);
+			break;
+		}
+		case EXP_BASE_3: {
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_engineering"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_engineering_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_engineering")), TRUE);
+			break;
+		}
+		case EXP_SCIENTIFIC: {
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_scientific_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_scientific")), TRUE);
+			break;
+		}
+		case EXP_PURE: {
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_purely_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_purely_scientific_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_purely_scientific")), TRUE);
+			break;
+		}
+		case EXP_NONE: {
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_non_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_non_scientific_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_non_scientific")), TRUE);
+			break;
+		}
+	}
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_negative_exponents"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_negative_exponents_activate, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sort_minus_last"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_sort_minus_last_activate, NULL);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_negative_exponents")), printops.negative_exponents);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sort_minus_last")), printops.sort_options.minus_last);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_negative_exponents"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_negative_exponents_activate, NULL);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sort_minus_last"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_sort_minus_last_activate, NULL);
 }
 void on_menu_item_binary_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	printops.base = BASE_BINARY;
-	output_base_updated_from_menu();
-	result_format_updated();
+	set_output_base(BASE_BINARY);
 }
 void on_menu_item_octal_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	printops.base = BASE_OCTAL;
-	output_base_updated_from_menu();
-	result_format_updated();
+	set_output_base(BASE_OCTAL);
 }
 void on_menu_item_decimal_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	printops.base = BASE_DECIMAL;
-	output_base_updated_from_menu();
-	result_format_updated();
+	set_output_base(BASE_DECIMAL);
 }
 void on_menu_item_duodecimal_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	printops.base = 12;
-	output_base_updated_from_menu();
-	result_format_updated();
+	set_output_base(12);
 }
 void on_menu_item_hexadecimal_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	printops.base = BASE_HEXADECIMAL;
-	output_base_updated_from_menu();
-	result_format_updated();
+	set_output_base(BASE_HEXADECIMAL);
 }
 void on_menu_item_custom_base_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
@@ -584,21 +587,15 @@ void on_menu_item_custom_base_activate(GtkMenuItem *w, gpointer) {
 }
 void on_menu_item_roman_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	printops.base = BASE_ROMAN_NUMERALS;
-	output_base_updated_from_menu();
-	result_format_updated();
+	set_output_base(BASE_ROMAN_NUMERALS);
 }
 void on_menu_item_sexagesimal_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	printops.base = BASE_SEXAGESIMAL;
-	output_base_updated_from_menu();
-	result_format_updated();
+	set_output_base(BASE_SEXAGESIMAL);
 }
 void on_menu_item_time_format_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	printops.base = BASE_TIME;
-	output_base_updated_from_menu();
-	result_format_updated();
+	set_output_base(BASE_TIME);
 }
 void on_menu_item_set_base_activate(GtkMenuItem*, gpointer) {
 	open_setbase(GTK_WINDOW(mainwindow));
@@ -679,41 +676,30 @@ void on_menu_item_edit_prefs_activate(GtkMenuItem*, gpointer) {
 }
 void on_menu_item_degrees_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {
-		evalops.parse_options.angle_unit = ANGLE_UNIT_DEGREES;
-		expression_format_updated(true);
-		update_mb_angles(evalops.parse_options.angle_unit);
+		set_angle_unit(ANGLE_UNIT_DEGREES);
 	}
 }
 void on_menu_item_radians_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {
-		evalops.parse_options.angle_unit = ANGLE_UNIT_RADIANS;
-		expression_format_updated(true);
-		update_mb_angles(evalops.parse_options.angle_unit);
+		set_angle_unit(ANGLE_UNIT_RADIANS);
 	}
 }
 void on_menu_item_gradians_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {
-		evalops.parse_options.angle_unit = ANGLE_UNIT_GRADIANS;
-		expression_format_updated(true);
-		update_mb_angles(evalops.parse_options.angle_unit);
+		set_angle_unit(ANGLE_UNIT_GRADIANS);
 	}
 }
 void on_menu_item_custom_angle_unit_activate(GtkMenuItem *w, gpointer data) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {
 		Unit *u = (Unit*) data;
 		if(CALCULATOR->hasUnit(u)) {
-			evalops.parse_options.angle_unit = ANGLE_UNIT_CUSTOM;
-			CALCULATOR->setCustomAngleUnit(u);
-			expression_format_updated(true);
-			update_mb_angles(evalops.parse_options.angle_unit);
+			set_custom_angle_unit(u);
 		}
 	}
 }
 void on_menu_item_no_default_angle_unit_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {
-		evalops.parse_options.angle_unit = ANGLE_UNIT_NONE;
-		expression_format_updated(true);
-		update_mb_angles(evalops.parse_options.angle_unit);
+		set_angle_unit(ANGLE_UNIT_NONE);
 	}
 }
 
@@ -1597,7 +1583,7 @@ void create_pmenu(GtkWidget *item) {
 	int index = 0;
 	Prefix *p = CALCULATOR->getPrefix(index);
 	string str;
-	FIX_SUPSUB_PRE(item)
+	FIX_SUPSUB_PRE_W(item)
 	while(p) {
 		str = p->preferredDisplayName(false, true, false, false, &can_display_unicode_string_function, (void*) item).name;
 		switch(p->type()) {
@@ -1636,7 +1622,7 @@ void create_pmenu2() {
 	MENU_ITEM_WITH_POINTER(_("No Prefix"), on_menu_item_set_prefix_activate, CALCULATOR->decimal_null_prefix)
 	MENU_ITEM_WITH_POINTER(_("Optimal Prefix"), on_menu_item_set_prefix_activate, NULL)
 	Prefix *p = CALCULATOR->getPrefix(index);
-	FIX_SUPSUB_PRE(item)
+	FIX_SUPSUB_PRE_W(item)
 	string str;
 	while(p) {
 		str = p->preferredDisplayName(false, true, false, false, &can_display_unicode_string_function, (void*) item).name;
@@ -1842,25 +1828,6 @@ void remove_from_recent_units(Unit *u) {
 		}
 	}
 }
-void menu_rpn_mode_changed() {
-	if(rpn_mode) {
-		if(auto_calculate) {
-			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_autocalc"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_autocalc_activate, NULL);
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_autocalc")), FALSE);
-			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_autocalc"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_autocalc_activate, NULL);
-		}
-		if(chain_mode) {
-			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_chain_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_chain_mode_activate, NULL);
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_chain_mode")), FALSE);
-			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_chain_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_chain_mode_activate, NULL);
-		}
-	} else {
-		if(auto_calculate) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_autocalc")), TRUE);
-		if(chain_mode) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_chain_mode")), TRUE);
-	}
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_autocalc")), !rpn_mode);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_chain_mode")), !rpn_mode);
-}
 void set_assumptions_items(AssumptionType at, AssumptionSign as) {
 	switch(as) {
 		case ASSUMPTION_SIGN_POSITIVE: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_assumptions_positive")), TRUE); break;}
@@ -1932,19 +1899,57 @@ void add_custom_angles_to_menus() {
 	}
 }
 
-void menu_set_angle_unit(int v) {
-	if(v == ANGLE_UNIT_DEGREES) {
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_degrees")), TRUE);
-	} else if(v == ANGLE_UNIT_RADIANS) {
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_radians")), TRUE);
-	} else if(v == ANGLE_UNIT_GRADIANS) {
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_gradians")), TRUE);
-	} else if(v == ANGLE_UNIT_CUSTOM && CALCULATOR->customAngleUnit()) {
-		unordered_map<Unit*, GtkWidget*>::iterator it = angle_unit_items.find(CALCULATOR->customAngleUnit());
-		if(it != angle_unit_items.end()) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(it->second), TRUE);
-	} else {
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_no_default_angle_unit")), TRUE);
+void update_menu_angle() {
+	switch(evalops.parse_options.angle_unit) {
+		case ANGLE_UNIT_DEGREES: {
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_degrees_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_degrees")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_degrees"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_degrees_activate, NULL);
+			break;
+		}
+		case ANGLE_UNIT_RADIANS: {
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_radians_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_radians")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_radians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_radians_activate, NULL);
+			break;
+		}
+		case ANGLE_UNIT_GRADIANS: {
+			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_gradians_activate, NULL);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_gradians")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_gradians"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_gradians_activate, NULL);
+			break;
+		}
+		case ANGLE_UNIT_CUSTOM: {
+			unordered_map<Unit*, GtkWidget*>::iterator it = angle_unit_items.find(CALCULATOR->customAngleUnit());
+			if(it != angle_unit_items.end()) {
+				g_signal_handlers_block_matched((gpointer) it->second, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_custom_angle_unit_activate, NULL);
+				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(it->second), TRUE);
+				g_signal_handlers_unblock_matched((gpointer) it->second, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_custom_angle_unit_activate, NULL);
+			}
+			break;
+		}
+		default: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_no_default_angle_unit")), TRUE);
+			break;
+		}
 	}
+}
+void menu_enable_exchange_rates(bool b) {
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_fetch_exchange_rates")), b);
+}
+
+void update_menu_calculator_mode() {
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_autocalc"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_autocalc_activate, NULL);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_autocalc")), auto_calculate && !rpn_mode);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_autocalc"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_autocalc_activate, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_chain_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_chain_mode_activate, NULL);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_chain_mode")), chain_mode && !rpn_mode);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_chain_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_chain_mode_activate, NULL);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_rpn_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_rpn_mode_activate, NULL);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_mode")), rpn_mode);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_rpn_mode"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_rpn_mode_activate, NULL);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_autocalc")), !rpn_mode);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_chain_mode")), !rpn_mode);
 }
 
 void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, AssumptionType at, AssumptionSign as, bool in_rpn_mode, int precision, bool interval, bool variable_units, bool id_adaptive, bool autocalc, bool chainmode, bool caf, bool simper, bool initial_update) {
@@ -2118,8 +2123,7 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 		}
 		default: {
 			if(initial_update) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_custom_base")), TRUE);
-			printops.base = po.base;
-			output_base_updated_from_menu();
+			set_output_base(po.base);
 		}
 	}
 
@@ -2566,5 +2570,8 @@ void create_menubar() {
 	}
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_meta_mode_delete")), modes.size() > 2);
 
-	gtk_builder_add_callback_symbols(main_builder, "on_menu_item_new_variable_activate", G_CALLBACK(on_menu_item_new_variable_activate), "on_menu_item_new_matrix_activate", G_CALLBACK(on_menu_item_new_matrix_activate), "on_menu_item_new_vector_activate", G_CALLBACK(on_menu_item_new_vector_activate), "on_menu_item_new_unknown_activate", G_CALLBACK(on_menu_item_new_unknown_activate), "on_menu_item_new_function_activate", G_CALLBACK(on_menu_item_new_function_activate), "on_menu_item_new_dataset_activate", G_CALLBACK(on_menu_item_new_dataset_activate), "on_menu_item_new_unit_activate", G_CALLBACK(on_menu_item_new_unit_activate), "on_menu_item_import_csv_file_activate", G_CALLBACK(on_menu_item_import_csv_file_activate), "on_menu_item_export_csv_file_activate", G_CALLBACK(on_menu_item_export_csv_file_activate), "on_menu_item_save_activate", G_CALLBACK(on_menu_item_save_activate), "on_menu_item_save_image_activate", G_CALLBACK(on_menu_item_save_image_activate), "on_menu_item_save_defs_activate", G_CALLBACK(on_menu_item_save_defs_activate), "on_menu_item_import_definitions_activate", G_CALLBACK(on_menu_item_import_definitions_activate), "on_menu_item_fetch_exchange_rates_activate", G_CALLBACK(on_menu_item_fetch_exchange_rates_activate), "on_menu_item_plot_functions_activate", G_CALLBACK(on_menu_item_plot_functions_activate), "on_menu_item_convert_number_bases_activate", G_CALLBACK(on_menu_item_convert_number_bases_activate), "on_menu_item_convert_floatingpoint_activate", G_CALLBACK(on_menu_item_convert_floatingpoint_activate), "on_menu_item_show_calendarconversion_dialog_activate", G_CALLBACK(on_menu_item_show_calendarconversion_dialog_activate), "on_menu_item_show_percentage_dialog_activate", G_CALLBACK(on_menu_item_show_percentage_dialog_activate), "on_menu_item_periodic_table_activate", G_CALLBACK(on_menu_item_periodic_table_activate), "on_menu_item_minimal_mode_activate", G_CALLBACK(on_menu_item_minimal_mode_activate), "on_menu_item_quit_activate", G_CALLBACK(on_menu_item_quit_activate), "on_menu_item_manage_variables_activate", G_CALLBACK(on_menu_item_manage_variables_activate), "on_menu_item_manage_functions_activate", G_CALLBACK(on_menu_item_manage_functions_activate), "on_menu_item_manage_units_activate", G_CALLBACK(on_menu_item_manage_units_activate), "on_menu_item_datasets_activate", G_CALLBACK(on_menu_item_datasets_activate), "on_menu_item_factorize_activate", G_CALLBACK(on_menu_item_factorize_activate), "on_menu_item_simplify_activate", G_CALLBACK(on_menu_item_simplify_activate), "on_menu_item_expand_partial_fractions_activate", G_CALLBACK(on_menu_item_expand_partial_fractions_activate), "on_menu_item_set_unknowns_activate", G_CALLBACK(on_menu_item_set_unknowns_activate), "on_menu_item_convert_to_unit_expression_activate", G_CALLBACK(on_menu_item_convert_to_unit_expression_activate), "on_menu_item_convert_to_base_units_activate", G_CALLBACK(on_menu_item_convert_to_base_units_activate), "on_menu_item_convert_to_best_unit_activate", G_CALLBACK(on_menu_item_convert_to_best_unit_activate), "on_menu_item_insert_date_activate", G_CALLBACK(on_menu_item_insert_date_activate), "on_menu_item_insert_matrix_activate", G_CALLBACK(on_menu_item_insert_matrix_activate), "on_menu_item_insert_vector_activate", G_CALLBACK(on_menu_item_insert_vector_activate), "on_menu_item_copy_activate", G_CALLBACK(on_menu_item_copy_activate), "on_menu_item_copy_ascii_activate", G_CALLBACK(on_menu_item_copy_ascii_activate), "on_menu_item_edit_shortcuts_activate", G_CALLBACK(on_menu_item_edit_shortcuts_activate), "on_menu_item_customize_buttons_activate", G_CALLBACK(on_menu_item_customize_buttons_activate), "on_menu_item_edit_prefs_activate", G_CALLBACK(on_menu_item_edit_prefs_activate), "on_menu_item_set_base_activate", G_CALLBACK(on_menu_item_set_base_activate), "on_menu_item_binary_activate", G_CALLBACK(on_menu_item_binary_activate), "on_menu_item_octal_activate", G_CALLBACK(on_menu_item_octal_activate), "on_menu_item_decimal_activate", G_CALLBACK(on_menu_item_decimal_activate), "on_menu_item_duodecimal_activate", G_CALLBACK(on_menu_item_duodecimal_activate), "on_menu_item_hexadecimal_activate", G_CALLBACK(on_menu_item_hexadecimal_activate), "on_menu_item_custom_base_activate", G_CALLBACK(on_menu_item_custom_base_activate), "on_menu_item_sexagesimal_activate", G_CALLBACK(on_menu_item_sexagesimal_activate), "on_menu_item_time_format_activate", G_CALLBACK(on_menu_item_time_format_activate), "on_menu_item_roman_activate", G_CALLBACK(on_menu_item_roman_activate), "on_menu_item_display_normal_activate", G_CALLBACK(on_menu_item_display_normal_activate), "on_menu_item_display_engineering_activate", G_CALLBACK(on_menu_item_display_engineering_activate), "on_menu_item_display_scientific_activate", G_CALLBACK(on_menu_item_display_scientific_activate), "on_menu_item_display_purely_scientific_activate", G_CALLBACK(on_menu_item_display_purely_scientific_activate), "on_menu_item_display_non_scientific_activate", G_CALLBACK(on_menu_item_display_non_scientific_activate), "on_menu_item_indicate_infinite_series_activate", G_CALLBACK(on_menu_item_indicate_infinite_series_activate), "on_menu_item_show_ending_zeroes_activate", G_CALLBACK(on_menu_item_show_ending_zeroes_activate), "on_menu_item_sort_minus_last_activate", G_CALLBACK(on_menu_item_sort_minus_last_activate), "on_menu_item_rounding_half_away_from_zero_activate", G_CALLBACK(on_menu_item_rounding_half_away_from_zero_activate), "on_menu_item_rounding_half_to_even_activate", G_CALLBACK(on_menu_item_rounding_half_to_even_activate), "on_menu_item_rounding_half_to_odd_activate", G_CALLBACK(on_menu_item_rounding_half_to_odd_activate), "on_menu_item_rounding_half_toward_zero_activate", G_CALLBACK(on_menu_item_rounding_half_toward_zero_activate), "on_menu_item_rounding_half_random_activate", G_CALLBACK(on_menu_item_rounding_half_random_activate), "on_menu_item_rounding_half_up_activate", G_CALLBACK(on_menu_item_rounding_half_up_activate), "on_menu_item_rounding_half_down_activate", G_CALLBACK(on_menu_item_rounding_half_down_activate), "on_menu_item_rounding_toward_zero_activate", G_CALLBACK(on_menu_item_rounding_toward_zero_activate), "on_menu_item_rounding_away_from_zero_activate", G_CALLBACK(on_menu_item_rounding_away_from_zero_activate), "on_menu_item_rounding_up_activate", G_CALLBACK(on_menu_item_rounding_up_activate), "on_menu_item_rounding_down_activate", G_CALLBACK(on_menu_item_rounding_down_activate), "on_menu_item_complex_rectangular_activate", G_CALLBACK(on_menu_item_complex_rectangular_activate), "on_menu_item_complex_exponential_activate", G_CALLBACK(on_menu_item_complex_exponential_activate), "on_menu_item_complex_polar_activate", G_CALLBACK(on_menu_item_complex_polar_activate), "on_menu_item_complex_angle_activate", G_CALLBACK(on_menu_item_complex_angle_activate), "on_menu_item_fraction_decimal_activate", G_CALLBACK(on_menu_item_fraction_decimal_activate), "on_menu_item_fraction_decimal_exact_activate", G_CALLBACK(on_menu_item_fraction_decimal_exact_activate), "on_menu_item_fraction_fraction_activate", G_CALLBACK(on_menu_item_fraction_fraction_activate), "on_menu_item_fraction_combined_activate", G_CALLBACK(on_menu_item_fraction_combined_activate), "on_menu_item_fraction_halves_activate", G_CALLBACK(on_menu_item_fraction_halves_activate), "on_menu_item_fraction_3rds_activate", G_CALLBACK(on_menu_item_fraction_3rds_activate), "on_menu_item_fraction_4ths_activate", G_CALLBACK(on_menu_item_fraction_4ths_activate), "on_menu_item_fraction_5ths_activate", G_CALLBACK(on_menu_item_fraction_5ths_activate), "on_menu_item_fraction_6ths_activate", G_CALLBACK(on_menu_item_fraction_6ths_activate), "on_menu_item_fraction_8ths_activate", G_CALLBACK(on_menu_item_fraction_8ths_activate), "on_menu_item_fraction_10ths_activate", G_CALLBACK(on_menu_item_fraction_10ths_activate), "on_menu_item_fraction_12ths_activate", G_CALLBACK(on_menu_item_fraction_12ths_activate), "on_menu_item_fraction_16ths_activate", G_CALLBACK(on_menu_item_fraction_16ths_activate), "on_menu_item_fraction_32ths_activate", G_CALLBACK(on_menu_item_fraction_32ths_activate), "on_menu_item_fraction_fixed_combined_activate", G_CALLBACK(on_menu_item_fraction_fixed_combined_activate), "on_menu_item_fraction_percent_activate", G_CALLBACK(on_menu_item_fraction_percent_activate), "on_menu_item_fraction_permille_activate", G_CALLBACK(on_menu_item_fraction_permille_activate), "on_menu_item_fraction_permyriad_activate", G_CALLBACK(on_menu_item_fraction_permyriad_activate), "on_menu_item_interval_adaptive_activate", G_CALLBACK(on_menu_item_interval_adaptive_activate), "on_menu_item_interval_significant_activate", G_CALLBACK(on_menu_item_interval_significant_activate), "on_menu_item_interval_interval_activate", G_CALLBACK(on_menu_item_interval_interval_activate), "on_menu_item_interval_plusminus_activate", G_CALLBACK(on_menu_item_interval_plusminus_activate), "on_menu_item_interval_relative_activate", G_CALLBACK(on_menu_item_interval_relative_activate), "on_menu_item_interval_concise_activate", G_CALLBACK(on_menu_item_interval_concise_activate), "on_menu_item_interval_midpoint_activate", G_CALLBACK(on_menu_item_interval_midpoint_activate), "on_menu_item_interval_lower_activate", G_CALLBACK(on_menu_item_interval_lower_activate), "on_menu_item_interval_upper_activate", G_CALLBACK(on_menu_item_interval_upper_activate), "on_menu_item_concise_uncertainty_input_activate", G_CALLBACK(on_menu_item_concise_uncertainty_input_activate), "on_menu_item_display_no_prefixes_activate", G_CALLBACK(on_menu_item_display_no_prefixes_activate), "on_menu_item_display_prefixes_for_selected_units_activate", G_CALLBACK(on_menu_item_display_prefixes_for_selected_units_activate), "on_menu_item_display_prefixes_for_currencies_activate", G_CALLBACK(on_menu_item_display_prefixes_for_currencies_activate), "on_menu_item_display_prefixes_for_all_units_activate", G_CALLBACK(on_menu_item_display_prefixes_for_all_units_activate), "on_menu_item_all_prefixes_activate", G_CALLBACK(on_menu_item_all_prefixes_activate), "on_menu_item_denominator_prefixes_activate", G_CALLBACK(on_menu_item_denominator_prefixes_activate), "on_menu_item_negative_exponents_activate", G_CALLBACK(on_menu_item_negative_exponents_activate), "on_menu_item_place_units_separately_activate", G_CALLBACK(on_menu_item_place_units_separately_activate), "on_menu_item_post_conversion_none_activate", G_CALLBACK(on_menu_item_post_conversion_none_activate), "on_menu_item_post_conversion_base_activate", G_CALLBACK(on_menu_item_post_conversion_base_activate), "on_menu_item_post_conversion_optimal_activate", G_CALLBACK(on_menu_item_post_conversion_optimal_activate), "on_menu_item_post_conversion_optimal_si_activate", G_CALLBACK(on_menu_item_post_conversion_optimal_si_activate), "on_menu_item_mixed_units_conversion_activate", G_CALLBACK(on_menu_item_mixed_units_conversion_activate), "on_menu_item_abbreviate_names_activate", G_CALLBACK(on_menu_item_abbreviate_names_activate), "on_menu_item_enable_variables_activate", G_CALLBACK(on_menu_item_enable_variables_activate), "on_menu_item_enable_functions_activate", G_CALLBACK(on_menu_item_enable_functions_activate), "on_menu_item_enable_units_activate", G_CALLBACK(on_menu_item_enable_units_activate), "on_menu_item_enable_unknown_variables_activate", G_CALLBACK(on_menu_item_enable_unknown_variables_activate), "on_menu_item_enable_variable_units_activate", G_CALLBACK(on_menu_item_enable_variable_units_activate), "on_menu_item_calculate_variables_activate", G_CALLBACK(on_menu_item_calculate_variables_activate), "on_menu_item_allow_complex_activate", G_CALLBACK(on_menu_item_allow_complex_activate), "on_menu_item_allow_infinite_activate", G_CALLBACK(on_menu_item_allow_infinite_activate), "on_menu_item_always_exact_activate", G_CALLBACK(on_menu_item_always_exact_activate), "on_menu_item_try_exact_activate", G_CALLBACK(on_menu_item_try_exact_activate), "on_menu_item_approximate_activate", G_CALLBACK(on_menu_item_approximate_activate), "on_menu_item_interval_arithmetic_activate", G_CALLBACK(on_menu_item_interval_arithmetic_activate), "on_menu_item_ic_none_activate", G_CALLBACK(on_menu_item_ic_none_activate), "on_menu_item_ic_variance_activate", G_CALLBACK(on_menu_item_ic_variance_activate), "on_menu_item_ic_interval_arithmetic_activate", G_CALLBACK(on_menu_item_ic_interval_arithmetic_activate), "on_menu_item_ic_simple_activate", G_CALLBACK(on_menu_item_ic_simple_activate), "on_menu_item_degrees_activate", G_CALLBACK(on_menu_item_degrees_activate), "on_menu_item_radians_activate", G_CALLBACK(on_menu_item_radians_activate), "on_menu_item_gradians_activate", G_CALLBACK(on_menu_item_gradians_activate), "on_menu_item_no_default_angle_unit_activate", G_CALLBACK(on_menu_item_no_default_angle_unit_activate), "on_menu_item_assumptions_none_activate", G_CALLBACK(on_menu_item_assumptions_none_activate), "on_menu_item_assumptions_nonmatrix_activate", G_CALLBACK(on_menu_item_assumptions_nonmatrix_activate), "on_menu_item_assumptions_number_activate", G_CALLBACK(on_menu_item_assumptions_number_activate), "on_menu_item_assumptions_complex_activate", G_CALLBACK(on_menu_item_assumptions_complex_activate), "on_menu_item_assumptions_real_activate", G_CALLBACK(on_menu_item_assumptions_real_activate), "on_menu_item_assumptions_rational_activate", G_CALLBACK(on_menu_item_assumptions_rational_activate), "on_menu_item_assumptions_integer_activate", G_CALLBACK(on_menu_item_assumptions_integer_activate), "on_menu_item_assumptions_boolean_activate", G_CALLBACK(on_menu_item_assumptions_boolean_activate), "on_menu_item_assumptions_unknown_activate", G_CALLBACK(on_menu_item_assumptions_unknown_activate), "on_menu_item_assumptions_nonzero_activate", G_CALLBACK(on_menu_item_assumptions_nonzero_activate), "on_menu_item_assumptions_positive_activate", G_CALLBACK(on_menu_item_assumptions_positive_activate), "on_menu_item_assumptions_nonnegative_activate", G_CALLBACK(on_menu_item_assumptions_nonnegative_activate), "on_menu_item_assumptions_negative_activate", G_CALLBACK(on_menu_item_assumptions_negative_activate), "on_menu_item_assumptions_nonpositive_activate", G_CALLBACK(on_menu_item_assumptions_nonpositive_activate), "on_menu_item_algebraic_mode_simplify_activate", G_CALLBACK(on_menu_item_algebraic_mode_simplify_activate), "on_menu_item_algebraic_mode_factorize_activate", G_CALLBACK(on_menu_item_algebraic_mode_factorize_activate), "on_menu_item_assume_nonzero_denominators_activate", G_CALLBACK(on_menu_item_assume_nonzero_denominators_activate), "on_menu_item_warn_about_denominators_assumed_nonzero_activate", G_CALLBACK(on_menu_item_warn_about_denominators_assumed_nonzero_activate), "on_menu_item_adaptive_parsing_activate", G_CALLBACK(on_menu_item_adaptive_parsing_activate), "on_menu_item_ignore_whitespace_activate", G_CALLBACK(on_menu_item_ignore_whitespace_activate), "on_menu_item_no_special_implicit_multiplication_activate", G_CALLBACK(on_menu_item_no_special_implicit_multiplication_activate), "on_menu_item_chain_syntax_activate", G_CALLBACK(on_menu_item_chain_syntax_activate), "on_menu_item_rpn_syntax_activate", G_CALLBACK(on_menu_item_rpn_syntax_activate), "on_menu_item_simplified_percentage_activate", G_CALLBACK(on_menu_item_simplified_percentage_activate), "on_menu_item_limit_implicit_multiplication_activate", G_CALLBACK(on_menu_item_limit_implicit_multiplication_activate), "on_menu_item_read_precision_activate", G_CALLBACK(on_menu_item_read_precision_activate), "on_menu_item_precision_activate", G_CALLBACK(on_menu_item_precision_activate), "on_menu_item_decimals_activate", G_CALLBACK(on_menu_item_decimals_activate), "on_menu_item_autocalc_activate", G_CALLBACK(on_menu_item_autocalc_activate), "on_menu_item_chain_mode_activate", G_CALLBACK(on_menu_item_chain_mode_activate), "on_menu_item_rpn_mode_activate", G_CALLBACK(on_menu_item_rpn_mode_activate), "on_menu_item_meta_mode_save_activate", G_CALLBACK(on_menu_item_meta_mode_save_activate), "on_menu_item_meta_mode_delete_activate", G_CALLBACK(on_menu_item_meta_mode_delete_activate), "on_menu_item_save_mode_activate", G_CALLBACK(on_menu_item_save_mode_activate), "on_menu_item_help_activate", G_CALLBACK(on_menu_item_help_activate), "on_menu_item_reportbug_activate", G_CALLBACK(on_menu_item_reportbug_activate), "on_menu_item_check_updates_activate", G_CALLBACK(on_menu_item_check_updates_activate), "on_menu_item_about_activate", G_CALLBACK(on_menu_item_about_activate), "on_menu_item_set_prefix_activate", G_CALLBACK(on_menu_item_set_prefix_activate), NULL);
+	gtk_builder_add_callback_symbols(main_builder, "on_menu_item_new_variable_activate", G_CALLBACK(on_menu_item_new_variable_activate), "on_menu_item_new_matrix_activate", G_CALLBACK(on_menu_item_new_matrix_activate), "on_menu_item_new_vector_activate", G_CALLBACK(on_menu_item_new_vector_activate), "on_menu_item_new_unknown_activate", G_CALLBACK(on_menu_item_new_unknown_activate), "on_menu_item_new_function_activate", G_CALLBACK(on_menu_item_new_function_activate), "on_menu_item_new_dataset_activate", G_CALLBACK(on_menu_item_new_dataset_activate), "on_menu_item_new_unit_activate", G_CALLBACK(on_menu_item_new_unit_activate), "on_menu_item_import_csv_file_activate", G_CALLBACK(on_menu_item_import_csv_file_activate), "on_menu_item_export_csv_file_activate", G_CALLBACK(on_menu_item_export_csv_file_activate), "on_menu_item_save_activate", G_CALLBACK(on_menu_item_save_activate), "on_menu_item_save_image_activate", G_CALLBACK(on_menu_item_save_image_activate), "on_menu_item_save_defs_activate", G_CALLBACK(on_menu_item_save_defs_activate), "on_menu_item_import_definitions_activate", G_CALLBACK(on_menu_item_import_definitions_activate), "on_menu_item_fetch_exchange_rates_activate", G_CALLBACK(on_menu_item_fetch_exchange_rates_activate), "on_menu_item_plot_functions_activate", G_CALLBACK(on_menu_item_plot_functions_activate), "on_menu_item_convert_number_bases_activate", G_CALLBACK(on_menu_item_convert_number_bases_activate), "on_menu_item_convert_floatingpoint_activate", G_CALLBACK(on_menu_item_convert_floatingpoint_activate), "on_menu_item_show_calendarconversion_dialog_activate", G_CALLBACK(on_menu_item_show_calendarconversion_dialog_activate), "on_menu_item_show_percentage_dialog_activate", G_CALLBACK(on_menu_item_show_percentage_dialog_activate), "on_menu_item_periodic_table_activate", G_CALLBACK(on_menu_item_periodic_table_activate), "on_menu_item_minimal_mode_activate", G_CALLBACK(on_menu_item_minimal_mode_activate), "on_menu_item_quit_activate", G_CALLBACK(on_menu_item_quit_activate), "on_menu_item_manage_variables_activate", G_CALLBACK(on_menu_item_manage_variables_activate), "on_menu_item_manage_functions_activate", G_CALLBACK(on_menu_item_manage_functions_activate), "on_menu_item_manage_units_activate", G_CALLBACK(on_menu_item_manage_units_activate), "on_menu_item_datasets_activate", G_CALLBACK(on_menu_item_datasets_activate), "on_menu_item_factorize_activate", G_CALLBACK(on_menu_item_factorize_activate), "on_menu_item_simplify_activate", G_CALLBACK(on_menu_item_simplify_activate), "on_menu_item_expand_partial_fractions_activate", G_CALLBACK(on_menu_item_expand_partial_fractions_activate), "on_menu_item_set_unknowns_activate", G_CALLBACK(on_menu_item_set_unknowns_activate), "on_menu_item_convert_to_unit_expression_activate", G_CALLBACK(on_menu_item_convert_to_unit_expression_activate), "on_menu_item_convert_to_base_units_activate", G_CALLBACK(on_menu_item_convert_to_base_units_activate), "on_menu_item_convert_to_best_unit_activate", G_CALLBACK(on_menu_item_convert_to_best_unit_activate), "on_menu_item_insert_date_activate", G_CALLBACK(on_menu_item_insert_date_activate), "on_menu_item_insert_matrix_activate", G_CALLBACK(on_menu_item_insert_matrix_activate), "on_menu_item_insert_vector_activate", G_CALLBACK(on_menu_item_insert_vector_activate), "on_menu_item_copy_activate", G_CALLBACK(on_menu_item_copy_activate), "on_menu_item_copy_ascii_activate", G_CALLBACK(on_menu_item_copy_ascii_activate), "on_menu_item_edit_shortcuts_activate", G_CALLBACK(on_menu_item_edit_shortcuts_activate), "on_menu_item_customize_buttons_activate", G_CALLBACK(on_menu_item_customize_buttons_activate), "on_menu_item_edit_prefs_activate", G_CALLBACK(on_menu_item_edit_prefs_activate), "on_menu_item_set_base_activate", G_CALLBACK(on_menu_item_set_base_activate), "on_menu_item_binary_activate", G_CALLBACK(on_menu_item_binary_activate), "on_menu_item_octal_activate", G_CALLBACK(on_menu_item_octal_activate), "on_menu_item_decimal_activate", G_CALLBACK(on_menu_item_decimal_activate), "on_menu_item_duodecimal_activate", G_CALLBACK(on_menu_item_duodecimal_activate), "on_menu_item_hexadecimal_activate", G_CALLBACK(on_menu_item_hexadecimal_activate), "on_menu_item_custom_base_activate", G_CALLBACK(on_menu_item_custom_base_activate), "on_menu_item_sexagesimal_activate", G_CALLBACK(on_menu_item_sexagesimal_activate), "on_menu_item_time_format_activate", G_CALLBACK(on_menu_item_time_format_activate), "on_menu_item_roman_activate", G_CALLBACK(on_menu_item_roman_activate), "on_menu_item_display_normal_activate", G_CALLBACK(on_menu_item_display_normal_activate), "on_menu_item_display_engineering_activate", G_CALLBACK(on_menu_item_display_engineering_activate), "on_menu_item_display_scientific_activate", G_CALLBACK(on_menu_item_display_scientific_activate), "on_menu_item_display_purely_scientific_activate", G_CALLBACK(on_menu_item_display_purely_scientific_activate), "on_menu_item_display_non_scientific_activate", G_CALLBACK(on_menu_item_display_non_scientific_activate), "on_menu_item_indicate_infinite_series_activate", G_CALLBACK(on_menu_item_indicate_infinite_series_activate), "on_menu_item_show_ending_zeroes_activate", G_CALLBACK(on_menu_item_show_ending_zeroes_activate), "on_menu_item_sort_minus_last_activate", G_CALLBACK(on_menu_item_sort_minus_last_activate), "on_menu_item_rounding_half_away_from_zero_activate", G_CALLBACK(on_menu_item_rounding_half_away_from_zero_activate), "on_menu_item_rounding_half_to_even_activate", G_CALLBACK(on_menu_item_rounding_half_to_even_activate), "on_menu_item_rounding_half_to_odd_activate", G_CALLBACK(on_menu_item_rounding_half_to_odd_activate), "on_menu_item_rounding_half_toward_zero_activate", G_CALLBACK(on_menu_item_rounding_half_toward_zero_activate),
+	"on_menu_item_rounding_half_random_activate", G_CALLBACK(on_menu_item_rounding_half_random_activate), "on_menu_item_rounding_half_up_activate", G_CALLBACK(on_menu_item_rounding_half_up_activate), "on_menu_item_rounding_half_down_activate", G_CALLBACK(on_menu_item_rounding_half_down_activate), "on_menu_item_rounding_toward_zero_activate", G_CALLBACK(on_menu_item_rounding_toward_zero_activate), "on_menu_item_rounding_away_from_zero_activate", G_CALLBACK(on_menu_item_rounding_away_from_zero_activate), "on_menu_item_rounding_up_activate", G_CALLBACK(on_menu_item_rounding_up_activate), "on_menu_item_rounding_down_activate", G_CALLBACK(on_menu_item_rounding_down_activate), "on_menu_item_complex_rectangular_activate", G_CALLBACK(on_menu_item_complex_rectangular_activate), "on_menu_item_complex_exponential_activate", G_CALLBACK(on_menu_item_complex_exponential_activate), "on_menu_item_complex_polar_activate", G_CALLBACK(on_menu_item_complex_polar_activate), "on_menu_item_complex_angle_activate", G_CALLBACK(on_menu_item_complex_angle_activate), "on_menu_item_fraction_decimal_activate", G_CALLBACK(on_menu_item_fraction_decimal_activate), "on_menu_item_fraction_decimal_exact_activate", G_CALLBACK(on_menu_item_fraction_decimal_exact_activate), "on_menu_item_fraction_fraction_activate", G_CALLBACK(on_menu_item_fraction_fraction_activate), "on_menu_item_fraction_combined_activate", G_CALLBACK(on_menu_item_fraction_combined_activate), "on_menu_item_fraction_halves_activate", G_CALLBACK(on_menu_item_fraction_halves_activate), "on_menu_item_fraction_3rds_activate", G_CALLBACK(on_menu_item_fraction_3rds_activate), "on_menu_item_fraction_4ths_activate", G_CALLBACK(on_menu_item_fraction_4ths_activate), "on_menu_item_fraction_5ths_activate", G_CALLBACK(on_menu_item_fraction_5ths_activate), "on_menu_item_fraction_6ths_activate", G_CALLBACK(on_menu_item_fraction_6ths_activate), "on_menu_item_fraction_8ths_activate", G_CALLBACK(on_menu_item_fraction_8ths_activate), "on_menu_item_fraction_10ths_activate", G_CALLBACK(on_menu_item_fraction_10ths_activate), "on_menu_item_fraction_12ths_activate", G_CALLBACK(on_menu_item_fraction_12ths_activate), "on_menu_item_fraction_16ths_activate", G_CALLBACK(on_menu_item_fraction_16ths_activate), "on_menu_item_fraction_32ths_activate", G_CALLBACK(on_menu_item_fraction_32ths_activate), "on_menu_item_fraction_fixed_combined_activate", G_CALLBACK(on_menu_item_fraction_fixed_combined_activate), "on_menu_item_fraction_percent_activate", G_CALLBACK(on_menu_item_fraction_percent_activate), "on_menu_item_fraction_permille_activate", G_CALLBACK(on_menu_item_fraction_permille_activate), "on_menu_item_fraction_permyriad_activate", G_CALLBACK(on_menu_item_fraction_permyriad_activate), "on_menu_item_interval_adaptive_activate", G_CALLBACK(on_menu_item_interval_adaptive_activate), "on_menu_item_interval_significant_activate", G_CALLBACK(on_menu_item_interval_significant_activate), "on_menu_item_interval_interval_activate", G_CALLBACK(on_menu_item_interval_interval_activate), "on_menu_item_interval_plusminus_activate", G_CALLBACK(on_menu_item_interval_plusminus_activate), "on_menu_item_interval_relative_activate", G_CALLBACK(on_menu_item_interval_relative_activate), "on_menu_item_interval_concise_activate", G_CALLBACK(on_menu_item_interval_concise_activate), "on_menu_item_interval_midpoint_activate", G_CALLBACK(on_menu_item_interval_midpoint_activate), "on_menu_item_interval_lower_activate", G_CALLBACK(on_menu_item_interval_lower_activate), "on_menu_item_interval_upper_activate", G_CALLBACK(on_menu_item_interval_upper_activate), "on_menu_item_concise_uncertainty_input_activate", G_CALLBACK(on_menu_item_concise_uncertainty_input_activate), "on_menu_item_display_no_prefixes_activate", G_CALLBACK(on_menu_item_display_no_prefixes_activate), "on_menu_item_display_prefixes_for_selected_units_activate", G_CALLBACK(on_menu_item_display_prefixes_for_selected_units_activate),
+	"on_menu_item_display_prefixes_for_currencies_activate", G_CALLBACK(on_menu_item_display_prefixes_for_currencies_activate), "on_menu_item_display_prefixes_for_all_units_activate", G_CALLBACK(on_menu_item_display_prefixes_for_all_units_activate), "on_menu_item_all_prefixes_activate", G_CALLBACK(on_menu_item_all_prefixes_activate), "on_menu_item_denominator_prefixes_activate", G_CALLBACK(on_menu_item_denominator_prefixes_activate), "on_menu_item_negative_exponents_activate", G_CALLBACK(on_menu_item_negative_exponents_activate), "on_menu_item_place_units_separately_activate", G_CALLBACK(on_menu_item_place_units_separately_activate), "on_menu_item_post_conversion_none_activate", G_CALLBACK(on_menu_item_post_conversion_none_activate), "on_menu_item_post_conversion_base_activate", G_CALLBACK(on_menu_item_post_conversion_base_activate), "on_menu_item_post_conversion_optimal_activate", G_CALLBACK(on_menu_item_post_conversion_optimal_activate), "on_menu_item_post_conversion_optimal_si_activate", G_CALLBACK(on_menu_item_post_conversion_optimal_si_activate), "on_menu_item_mixed_units_conversion_activate", G_CALLBACK(on_menu_item_mixed_units_conversion_activate), "on_menu_item_abbreviate_names_activate", G_CALLBACK(on_menu_item_abbreviate_names_activate), "on_menu_item_enable_variables_activate", G_CALLBACK(on_menu_item_enable_variables_activate), "on_menu_item_enable_functions_activate", G_CALLBACK(on_menu_item_enable_functions_activate), "on_menu_item_enable_units_activate", G_CALLBACK(on_menu_item_enable_units_activate), "on_menu_item_enable_unknown_variables_activate", G_CALLBACK(on_menu_item_enable_unknown_variables_activate), "on_menu_item_enable_variable_units_activate", G_CALLBACK(on_menu_item_enable_variable_units_activate), "on_menu_item_calculate_variables_activate", G_CALLBACK(on_menu_item_calculate_variables_activate), "on_menu_item_allow_complex_activate", G_CALLBACK(on_menu_item_allow_complex_activate), "on_menu_item_allow_infinite_activate", G_CALLBACK(on_menu_item_allow_infinite_activate), "on_menu_item_always_exact_activate", G_CALLBACK(on_menu_item_always_exact_activate), "on_menu_item_try_exact_activate", G_CALLBACK(on_menu_item_try_exact_activate), "on_menu_item_approximate_activate", G_CALLBACK(on_menu_item_approximate_activate), "on_menu_item_interval_arithmetic_activate", G_CALLBACK(on_menu_item_interval_arithmetic_activate), "on_menu_item_ic_none_activate", G_CALLBACK(on_menu_item_ic_none_activate), "on_menu_item_ic_variance_activate", G_CALLBACK(on_menu_item_ic_variance_activate), "on_menu_item_ic_interval_arithmetic_activate", G_CALLBACK(on_menu_item_ic_interval_arithmetic_activate), "on_menu_item_ic_simple_activate", G_CALLBACK(on_menu_item_ic_simple_activate), "on_menu_item_degrees_activate", G_CALLBACK(on_menu_item_degrees_activate), "on_menu_item_radians_activate", G_CALLBACK(on_menu_item_radians_activate), "on_menu_item_gradians_activate", G_CALLBACK(on_menu_item_gradians_activate), "on_menu_item_no_default_angle_unit_activate", G_CALLBACK(on_menu_item_no_default_angle_unit_activate), "on_menu_item_assumptions_none_activate", G_CALLBACK(on_menu_item_assumptions_none_activate), "on_menu_item_assumptions_nonmatrix_activate", G_CALLBACK(on_menu_item_assumptions_nonmatrix_activate), "on_menu_item_assumptions_number_activate", G_CALLBACK(on_menu_item_assumptions_number_activate), "on_menu_item_assumptions_complex_activate", G_CALLBACK(on_menu_item_assumptions_complex_activate), "on_menu_item_assumptions_real_activate", G_CALLBACK(on_menu_item_assumptions_real_activate), "on_menu_item_assumptions_rational_activate", G_CALLBACK(on_menu_item_assumptions_rational_activate), "on_menu_item_assumptions_integer_activate", G_CALLBACK(on_menu_item_assumptions_integer_activate), "on_menu_item_assumptions_boolean_activate", G_CALLBACK(on_menu_item_assumptions_boolean_activate), "on_menu_item_assumptions_unknown_activate", G_CALLBACK(on_menu_item_assumptions_unknown_activate), "on_menu_item_assumptions_nonzero_activate", G_CALLBACK(on_menu_item_assumptions_nonzero_activate), "on_menu_item_assumptions_positive_activate", G_CALLBACK(on_menu_item_assumptions_positive_activate), "on_menu_item_assumptions_nonnegative_activate", G_CALLBACK(on_menu_item_assumptions_nonnegative_activate), "on_menu_item_assumptions_negative_activate",
+	G_CALLBACK(on_menu_item_assumptions_negative_activate), "on_menu_item_assumptions_nonpositive_activate", G_CALLBACK(on_menu_item_assumptions_nonpositive_activate), "on_menu_item_algebraic_mode_simplify_activate", G_CALLBACK(on_menu_item_algebraic_mode_simplify_activate), "on_menu_item_algebraic_mode_factorize_activate", G_CALLBACK(on_menu_item_algebraic_mode_factorize_activate), "on_menu_item_assume_nonzero_denominators_activate", G_CALLBACK(on_menu_item_assume_nonzero_denominators_activate), "on_menu_item_warn_about_denominators_assumed_nonzero_activate", G_CALLBACK(on_menu_item_warn_about_denominators_assumed_nonzero_activate), "on_menu_item_adaptive_parsing_activate", G_CALLBACK(on_menu_item_adaptive_parsing_activate), "on_menu_item_ignore_whitespace_activate", G_CALLBACK(on_menu_item_ignore_whitespace_activate), "on_menu_item_no_special_implicit_multiplication_activate", G_CALLBACK(on_menu_item_no_special_implicit_multiplication_activate), "on_menu_item_chain_syntax_activate", G_CALLBACK(on_menu_item_chain_syntax_activate), "on_menu_item_rpn_syntax_activate", G_CALLBACK(on_menu_item_rpn_syntax_activate), "on_menu_item_simplified_percentage_activate", G_CALLBACK(on_menu_item_simplified_percentage_activate), "on_menu_item_limit_implicit_multiplication_activate", G_CALLBACK(on_menu_item_limit_implicit_multiplication_activate), "on_menu_item_read_precision_activate", G_CALLBACK(on_menu_item_read_precision_activate), "on_menu_item_precision_activate", G_CALLBACK(on_menu_item_precision_activate), "on_menu_item_decimals_activate", G_CALLBACK(on_menu_item_decimals_activate), "on_menu_item_autocalc_activate", G_CALLBACK(on_menu_item_autocalc_activate), "on_menu_item_chain_mode_activate", G_CALLBACK(on_menu_item_chain_mode_activate), "on_menu_item_rpn_mode_activate", G_CALLBACK(on_menu_item_rpn_mode_activate), "on_menu_item_meta_mode_save_activate", G_CALLBACK(on_menu_item_meta_mode_save_activate), "on_menu_item_meta_mode_delete_activate", G_CALLBACK(on_menu_item_meta_mode_delete_activate), "on_menu_item_save_mode_activate", G_CALLBACK(on_menu_item_save_mode_activate), "on_menu_item_help_activate", G_CALLBACK(on_menu_item_help_activate), "on_menu_item_reportbug_activate", G_CALLBACK(on_menu_item_reportbug_activate), "on_menu_item_check_updates_activate", G_CALLBACK(on_menu_item_check_updates_activate), "on_menu_item_about_activate", G_CALLBACK(on_menu_item_about_activate), "on_menu_item_set_prefix_activate", G_CALLBACK(on_menu_item_set_prefix_activate), NULL);
 }

@@ -27,6 +27,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "openhelp.h"
 #include "nameseditdialog.h"
 #include "uniteditdialog.h"
 

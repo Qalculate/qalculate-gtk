@@ -57,6 +57,21 @@ void on_tUnitSelector_selection_changed(GtkTreeSelection *treeselection, gpointe
 void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselection, gpointer);
 void convert_from_convert_entry_unit();
 
+bool read_conversion_view_settings_line(string &svar, string &svalue, int &v) {
+	if(svar == "continuous_conversion") {
+		continuous_conversion = v;
+	} else if(svar == "set_missing_prefixes") {
+		set_missing_prefixes = v;
+	} else {
+		return false;
+	}
+	return true;
+}
+void write_conversion_view_settings(FILE *file) {
+	fprintf(file, "continuous_conversion=%i\n", continuous_conversion);
+	fprintf(file, "set_missing_prefixes=%i\n", set_missing_prefixes);
+}
+
 void update_unit_selector_tree() {
 	GtkTreeIter iter, iter2, iter3;
 	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(tUnitSelectorCategories));
@@ -456,9 +471,18 @@ void update_conversion_view_selection(const MathStructure *m) {
 void focus_conversion_entry() {
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_unit")));
 }
-const gchar *current_conversion_expression() {
-	return gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit")));
+const char *current_conversion_expression() {
+	ParseOptions pa = evalops.parse_options; pa.base = 10;
+	string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), pa);
+	remove_blank_ends(ceu_str);
+	if(set_missing_prefixes && !ceu_str.empty()) {
+		if(!ceu_str.empty() && ceu_str[0] != '0' && ceu_str[0] != '?' && ceu_str[0] != '+' && ceu_str[0] != '-' && (ceu_str.length() == 1 || ceu_str[1] != '?')) {
+			ceu_str = "?" + ceu_str;
+		}
+	}
+	return ceu_str.c_str();
 }
+bool conversionview_continuous_conversion() {return continuous_conversion;}
 
 void create_conversion_view() {
 	tUnitSelectorCategories = GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_treeview_category"));

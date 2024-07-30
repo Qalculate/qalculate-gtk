@@ -31,6 +31,7 @@
 #include "stackview.h"
 #include "keypad.h"
 #include "preferencesdialog.h"
+#include "expressionstatus.h"
 #include "expressioncompletion.h"
 #include "expressionedit.h"
 
@@ -58,6 +59,8 @@ extern bool current_object_has_changed;
 string previous_expression;
 bool cursor_has_moved = false;
 extern bool minimal_mode;
+bool use_custom_expression_font = false, save_custom_expression_font = false;
+string custom_expression_font;
 
 string sdot, saltdot, sdiv, sslash, stimes, sminus;
 
@@ -68,6 +71,48 @@ deque<string> expression_undo_buffer;
 GtkMenu *popup_menu_expressiontext;
 vector<GtkWidget*> popup_expression_mode_items;
 extern vector<mode_struct> modes;
+
+bool read_expression_edit_settings_line(string &svar, string &svalue, int &v) {
+	if(svar == "expression_lines") {
+		expression_lines = v;
+	} else if(svar == "use_custom_expression_font") {
+		use_custom_expression_font = v;
+	} else if(svar == "custom_expression_font") {
+		custom_expression_font = svalue;
+		save_custom_expression_font = true;
+	} else if(!read_expression_completion_settings_line(svar, svalue, v)) {
+		return false;
+	}
+	return true;
+}
+void write_expression_edit_settings(FILE *file) {
+	if(expression_lines > 0) fprintf(file, "expression_lines=%i\n", expression_lines);
+	fprintf(file, "use_custom_expression_font=%i\n", use_custom_expression_font);
+	if(use_custom_expression_font || save_custom_expression_font) fprintf(file, "custom_expression_font=%s\n", custom_expression_font.c_str());
+	write_expression_completion_settings(file);
+}
+bool read_expression_history_line(string &svar, string &svalue) {
+	if(svar == "expression_history") {
+		expression_history.push_back(svalue);
+	} else {
+		return false;
+	}
+	return true;
+}
+void write_expression_history(FILE *file) {
+	if(clear_history_on_exit) return;
+	for(size_t i = 0; i < expression_history.size(); i++) {
+		gsub("\n", " ", expression_history[i]);
+		fprintf(file, "expression_history=%s\n", expression_history[i].c_str());
+	}
+}
+
+void start_expression_spinner() {
+	gtk_spinner_start(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
+}
+void stop_expression_spinner() {
+	gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
+}
 
 int wrap_expression_selection(const char *insert_before, bool return_true_if_whole_selected) {
 	if(!gtk_text_buffer_get_has_selection(expressionbuffer)) return false;
@@ -514,6 +559,7 @@ void set_expression_modified(bool b, bool handle, bool autocalc) {
 	highlight_parentheses();
 	add_completion_timeout();
 	showhide_expression_button();
+	if(!dont_change_index) expression_history_index = -1;
 	handle_expression_modified(autocalc);
 }
 
@@ -1183,18 +1229,12 @@ void expression_redo() {
 void on_popup_menu_item_completion_level_toggled(GtkCheckMenuItem *w, gpointer p) {
 	if(!gtk_check_menu_item_get_active(w)) return;
 	int completion_level = GPOINTER_TO_INT(p);
-	enable_completion = completion_level > 0;
-	if(enable_completion) {
-		enable_completion2 = completion_level > 2;
-		if(completion_level > 1) completion_min = 1;
-		else completion_min = 2;
-		if(completion_level > 3) completion_min2 = 1;
-		else completion_min2 = 2;
-	}
+	set_expression_completion_settings(completion_level > 0, completion_level > 2, completion_level > 1 ? 1 : 2, completion_level > 3 ? 1 : 2);
+	preferences_update_completion();
 }
 void on_popup_menu_item_completion_delay_toggled(GtkCheckMenuItem *w, gpointer) {
-	if(gtk_check_menu_item_get_active(w)) completion_delay = 500;
-	else completion_delay = 0;
+	set_expression_completion_settings(-1, -1, -1, -1, gtk_check_menu_item_get_active(w) ? 500 : 0);
+	preferences_update_completion();
 }
 void on_popup_menu_item_custom_completion_activated(GtkMenuItem*, gpointer) {
 	edit_preferences(GTK_WINDOW(mainwindow), 4);
@@ -1602,6 +1642,20 @@ void update_expression_font(bool initial) {
 		gtk_window_resize(GTK_WINDOW(mainwindow), winw, winh);
 	}
 }
+void set_expression_font(const char *str) {
+	if(!str) {
+		use_custom_expression_font = false;
+	} else {
+		use_custom_expression_font = true;
+		custom_expression_font = str;
+	}
+	update_expression_font(false);
+}
+const char *expression_font(bool return_default) {
+	if(!return_default && !use_custom_expression_font) return NULL;
+	return custom_expression_font.c_str();
+}
+
 
 void create_expression_edit() {
 
@@ -1676,6 +1730,10 @@ void create_expression_edit() {
 	if(rpn_mode) gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), _("Calculate expression and add to stack"));
 
 	create_expression_completion();
+
+	set_expression_size_request();
+
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), FALSE);
 
 	gtk_builder_add_callback_symbols(main_builder, "on_expressionbuffer_changed", G_CALLBACK(on_expressionbuffer_changed), "on_expressionbuffer_cursor_position_notify", G_CALLBACK(on_expressionbuffer_cursor_position_notify), "on_expressionbuffer_paste_done", G_CALLBACK(on_expressionbuffer_paste_done), "on_expressiontext_button_press_event", G_CALLBACK(on_expressiontext_button_press_event), "on_expressiontext_focus_out_event", G_CALLBACK(on_expressiontext_focus_out_event), "on_expressiontext_key_press_event", G_CALLBACK(on_expressiontext_key_press_event), "on_expressiontext_populate_popup", G_CALLBACK(on_expressiontext_populate_popup), "on_expression_button_button_press_event", G_CALLBACK(on_expression_button_button_press_event), "on_expression_button_button_release_event", G_CALLBACK(on_expression_button_button_release_event), "on_button_minimal_mode_button_press_event", G_CALLBACK(on_button_minimal_mode_button_press_event), NULL);
 

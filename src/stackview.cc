@@ -28,6 +28,9 @@
 #include "settings.h"
 #include "util.h"
 #include "expressionedit.h"
+#include "resultview.h"
+#include "keypad.h"
+#include "historyview.h"
 #include "stackview.h"
 
 using std::string;
@@ -562,9 +565,9 @@ void RPNRegisterChanged(string text, gint index) {
 	gtk_list_store_set(stackstore, &iter, 1, text.c_str(), -1);
 }
 void update_stack_font(bool initial) {
-	if(use_custom_history_font) {
-		g_object_set(G_OBJECT(register_renderer), "font", custom_history_font.c_str(), NULL);
-		g_object_set(G_OBJECT(register_index_renderer), "font", custom_history_font.c_str(), NULL);
+	if(history_font()) {
+		g_object_set(G_OBJECT(register_renderer), "font", history_font(), NULL);
+		g_object_set(G_OBJECT(register_index_renderer), "font", history_font(), NULL);
 	} else if(!initial) {
 		g_object_set(G_OBJECT(register_renderer), "font", "", NULL);
 		g_object_set(G_OBJECT(register_index_renderer), "font", "", NULL);
@@ -572,8 +575,8 @@ void update_stack_font(bool initial) {
 	if(!initial) updateRPNIndexes();
 }
 void update_stack_button_font() {
-	if(use_custom_keypad_font) {
-		gchar *gstr = font_name_to_css(custom_keypad_font.c_str());
+	if(keypad_font()) {
+		gchar *gstr = font_name_to_css(keypad_font());
 		gtk_css_provider_load_from_data(box_rpnl_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
@@ -608,7 +611,7 @@ void update_stack_button_text() {
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_negate")), MINUS "x");
 	}
 
-	FIX_SUPSUB_PRE(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_rpn_xy")));
+	FIX_SUPSUB_PRE_W(GTK_WIDGET(gtk_builder_get_object(main_builder, "label_rpn_xy")));
 	string s_xy = "x<sup>y</sup>";
 	FIX_SUPSUB(s_xy);
 	gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_rpn_xy")), s_xy.c_str());
@@ -645,7 +648,7 @@ void update_stack_button_text() {
 	if(gtk_image_get_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_swap"))) != -1) gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_swap")), -1);
 	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), &a, NULL);
 	gint h_i = -1;
-	if(use_custom_keypad_font || use_custom_app_font) {
+	if(keypad_font() || use_custom_app_font) {
 		h_i = 16 + (h - a.height);
 		if(h_i < 20) h_i = -1;
 	}
@@ -752,8 +755,8 @@ void create_stack_view() {
 	box_rpnl_provider = gtk_css_provider_new();
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnl"))), GTK_STYLE_PROVIDER(box_rpnl_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
-	if(use_custom_keypad_font) update_stack_button_font();
-	if(use_custom_history_font) update_stack_font(true);
+	if(keypad_font()) update_stack_button_font();
+	if(history_font()) update_stack_font(true);
 	update_stack_button_text();
 
 	GList *l;

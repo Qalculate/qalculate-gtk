@@ -70,6 +70,29 @@ void on_units_entry_search_changed(GtkEntry *w, gpointer);
 void on_units_convert_search_changed(GtkEntry *w, gpointer);
 void convert_in_wUnits(int toFrom = -1);
 
+bool read_units_dialog_settings_line(string &svar, string &svalue, int &v) {
+	if(svar == "units_width") {
+		units_width = v;
+	} else if(svar == "units_height") {
+		units_height = v;
+	} else if(svar == "units_panel_position") {
+		units_hposition = v;
+	} else if(svar == "units_hpanel_position") {
+		units_hposition = v;
+	} else if(svar == "units_vpanel_position") {
+		units_vposition = v;
+	} else {
+		return false;
+	}
+	return true;
+}
+void write_units_dialog_settings(FILE *file) {
+	if(units_width > -1) fprintf(file, "units_width=%i\n", units_width);
+	if(units_height > -1) fprintf(file, "units_height=%i\n", units_height);
+	if(units_hposition > -1) fprintf(file, "units_hpanel_position=%i\n", units_hposition);
+	if(units_vposition > -1) fprintf(file, "units_vpanel_position=%i\n", units_vposition);
+}
+
 Unit *get_selected_unit() {
 	return selected_unit;
 }
