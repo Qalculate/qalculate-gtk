@@ -14,6 +14,9 @@
 
 #include <gtk/gtk.h>
 
-void show_help(const char *file, GtkWidget *parent);
+void show_help(const char *file, GtkWindow *parent);
+
+bool read_help_settings_line(std::string &svar, std::string &svalue, int &v);
+void write_help_settings(FILE *file);
 
 #endif /* OPEN_HELP_H */

@@ -27,6 +27,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "mainwindow.h"
 #include "nameseditdialog.h"
 #include "dataseteditdialog.h"
 
@@ -302,7 +303,7 @@ bool edit_dataproperty(DataProperty *dp, bool new_property) {
 		if(str.empty() && (!names_status() || !has_name())) {
 			//no name -- open dialog again
 			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataproperty_edit_entry_name")));
-			show_message(_("Empty name field."), dialog);
+			show_message(_("Empty name field."), GTK_WINDOW(dialog));
 			goto run_dataproperty_edit_dialog;
 		}
 
@@ -438,7 +439,7 @@ void edit_dataset(DataSet *ds, GtkWindow *win) {
 			//no name -- open dialog again
 			gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(datasetedit_builder, "dataset_edit_tabs")), 2);
 			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_name")));
-			show_message(_("Empty name field."), dialog);
+			show_message(_("Empty name field."), GTK_WINDOW(dialog));
 			goto run_dataset_edit_dialog;
 		}
 		GtkTextIter d_iter_s, d_iter_e;
@@ -450,7 +451,7 @@ void edit_dataset(DataSet *ds, GtkWindow *win) {
 		//dataset with the same name exists -- overwrite or open the dialog again
 		if((!ds || !ds->hasName(str)) && ((names_status() != 1 && !str.empty()) || !has_name()) && CALCULATOR->functionNameTaken(str, ds)) {
 			MathFunction *func = CALCULATOR->getActiveFunction(str, true);
-			if((!ds || ds != func) && (!func || func->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A function with the same name already exists.\nDo you want to overwrite the function?"), dialog)) {
+			if((!ds || ds != func) && (!func || func->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A function with the same name already exists.\nDo you want to overwrite the function?"), GTK_WINDOW(dialog))) {
 				gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(datasetedit_builder, "dataset_edit_tabs")), 2);
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(datasetedit_builder, "dataset_edit_entry_name")));
 				goto run_dataset_edit_dialog;

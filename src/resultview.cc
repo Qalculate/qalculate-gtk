@@ -31,6 +31,7 @@
 #include "setbasedialog.h"
 #include "expressionedit.h"
 #include "expressionstatus.h"
+#include "mainwindow.h"
 #include "resultview.h"
 
 using std::string;
@@ -41,7 +42,7 @@ using std::endl;
 extern GtkBuilder *main_builder;
 
 GtkCssProvider *resultview_provider = NULL;
-GtkWidget *resultview;
+GtkWidget *resultview = NULL;
 
 cairo_surface_t *surface_result = NULL;
 cairo_surface_t *surface_parsed = NULL;
@@ -105,9 +106,9 @@ int binary_y_diff = 0;
 #define PANGO_TTP(layout, x)		if(ips.power_depth > 1) {PANGO_TT_XSMALL(layout, x);} else if(ips.power_depth > 0) {PANGO_TT_SMALL(layout, x);} else {PANGO_TT(layout, x);}
 #define PANGO_TTP_SMALL(layout, x)	if(ips.power_depth > 0) {PANGO_TT_XSMALL(layout, x);} else {PANGO_TT_SMALL(layout, x);}
 
-#define CALCULATE_SPACE_W		gint space_w, space_h; PangoLayout *layout_space = gtk_widget_create_pango_layout(resultview, NULL); PANGO_TTP(layout_space, " "); pango_layout_get_pixel_size(layout_space, &space_w, &space_h); g_object_unref(layout_space);
+#define CALCULATE_SPACE_W		gint space_w, space_h; PangoLayout *layout_space = gtk_widget_create_pango_layout(result_view_widget(), NULL); PANGO_TTP(layout_space, " "); pango_layout_get_pixel_size(layout_space, &space_w, &space_h); g_object_unref(layout_space);
 
-#define RESULT_SCALE_FACTOR gtk_widget_get_scale_factor(expressiontext)
+#define RESULT_SCALE_FACTOR gtk_widget_get_scale_factor(expression_edit_widget())
 
 #define FIX_SUB_RESULT(str) \
 	if(fix_supsub_result) {\
@@ -119,7 +120,7 @@ int binary_y_diff = 0;
 			else gsub("<sub>", "<span size=\"50%\" baseline_shift=\"subscript\">", str);\
 		} else {\
 			PangoFontDescription *font_supsub;\
-			gtk_style_context_get(gtk_widget_get_style_context(resultview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_supsub, NULL);\
+			gtk_style_context_get(gtk_widget_get_style_context(result_view_widget()), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_supsub, NULL);\
 			string s_sub;\
 			if(s <= 0) s_sub = "<span size=\"small\" rise=\"-";\
 			else if(s == 1) s_sub = "<span size=\"x-small\" rise=\"-";\
@@ -142,7 +143,7 @@ int binary_y_diff = 0;
 			else gsub("<sup>", "<span size=\"50%\" baseline_shift=\"superscript\">", str);\
 		} else {\
 			PangoFontDescription *font_supsub;\
-			gtk_style_context_get(gtk_widget_get_style_context(resultview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_supsub, NULL);\
+			gtk_style_context_get(gtk_widget_get_style_context(result_view_widget()), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_supsub, NULL);\
 			string s_sup;\
 			if(s <= 0) s_sup = "<span size=\"small\" rise=\"";\
 			else if(s == 1) s_sup = "<span size=\"x-small\" rise=\"";\
@@ -158,6 +159,11 @@ int binary_y_diff = 0;
 #define PAR_WIDTH (scaledown + ips.power_depth > 1 ? par_width / 1.7 : (scaledown + ips.power_depth > 0 ? par_width / 1.4 : par_width)) + (PAR_SPACE * 2)
 
 cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po = default_print_options, bool caf = false, InternalPrintStruct ips = top_ips, gint *point_central = NULL, int scaledown = 0, GdkRGBA *color = NULL, gint *x_offset = NULL, gint *w_offset = NULL, gint max_width = -1, bool for_result_widget = true, MathStructure *where_struct = NULL, std::vector<MathStructure> *to_structs = NULL);
+
+GtkWidget *result_view_widget() {
+	if(!resultview) resultview = GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"));
+	return resultview;
+}
 
 bool read_result_view_settings_line(string &svar, string &svalue, int &v) {
 	if(svar == "use_custom_result_font") {
@@ -202,12 +208,12 @@ void display_parsed_instead_of_result(bool b) {
 		scale_n = scale_n_bak;
 		display_parse_status();
 	}
-	gtk_widget_queue_draw(resultview);
+	gtk_widget_queue_draw(result_view_widget());
 }
 
 void draw_background(cairo_t *cr, gint w, gint h) {
 /*	GdkRGBA rgba;
-	gtk_style_context_get_background_color(gtk_widget_get_style_context(resultview), gtk_widget_get_state_flags(resultview);, &rgba);
+	gtk_style_context_get_background_color(gtk_widget_get_style_context(result_view_widget()), gtk_widget_get_state_flags(result_view_widget());, &rgba);
 	gdk_cairo_set_source_rgba(cr, &rgba);
 	cairo_rectangle(cr, 0, 0, w, h);
 	cairo_fill(cr);*/
@@ -275,7 +281,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 	GdkRGBA rgba;
 	if(!color) {
-		gtk_style_context_get_color(gtk_widget_get_style_context(resultview), GTK_STATE_FLAG_NORMAL, &rgba);
+		gtk_style_context_get_color(gtk_widget_get_style_context(result_view_widget()), GTK_STATE_FLAG_NORMAL, &rgba);
 		color = &rgba;
 	}
 	gint w, h;
@@ -300,7 +306,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 		PangoLayout *layout_to = NULL;
 		if(to_structs) {
-			layout_to = gtk_widget_create_pango_layout(resultview, NULL);
+			layout_to = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 			string str;
 			TTB(str);
 			str += CALCULATOR->localToString(false);
@@ -310,7 +316,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 		}
 		PangoLayout *layout_where = NULL;
 		if(where_struct) {
-			layout_where = gtk_widget_create_pango_layout(resultview, NULL);
+			layout_where = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 			string str;
 			TTB(str);
 			str += CALCULATOR->localWhereString();
@@ -413,8 +419,8 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 		PangoLayout *layout_sign = NULL;
 
-		if(can_display_unicode_string_function_exact("∠", (void*) resultview)) {
-			layout_sign = gtk_widget_create_pango_layout(resultview, NULL);
+		if(can_display_unicode_string_function_exact("∠", (void*) result_view_widget())) {
+			layout_sign = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 			PANGO_TTP(layout_sign, "∠");
 			pango_layout_get_pixel_size(layout_sign, &sign_w, &sign_h);
 			w = sign_w;
@@ -672,7 +678,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				gint pos_h = 0, pos_y = 0;
 				gint wle = 0;
 				if(max_width > 0) {
-					PangoLayout *layout_equals = gtk_widget_create_pango_layout(resultview, NULL);
+					PangoLayout *layout_equals = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 					if((po.is_approximate && *po.is_approximate) || m.isApproximate()) {
 						if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, po.can_display_unicode_string_arg))) {
 							PANGO_TT(layout_equals, SIGN_ALMOST_EQUAL);
@@ -694,7 +700,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					if(rect.x < 0) wle -= rect.x;
 					g_object_unref(layout_equals);
 				}
-				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
+				PangoLayout *layout = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 				bool multiline = false;
 				for(int try_i = 0; try_i <= 1; try_i++) {
 					if(try_i == 1) {
@@ -788,7 +794,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						pango_layout_iter_get_char_extents(iter, &crect);
 						pango_extents_to_pixels(&crect, NULL);
 						if(i % 10 == n_begin && value_str.length() > 20 && bin_pos > 0) {
-							PangoLayout *layout_pos = gtk_widget_create_pango_layout(resultview, NULL);
+							PangoLayout *layout_pos = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 							str2 = "";
 							TTB_XXSMALL(str2);
 							str2 += i2s(bin_pos + 1);
@@ -872,7 +878,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 			}
 			case STRUCT_ABORTED: {}
 			case STRUCT_SYMBOLIC: {
-				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
+				PangoLayout *layout = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 				string str;
 				if(m.symbol().length() >= 14 && m.symbol().find("to expression:") == 0) {
 					TTBP(str)
@@ -916,7 +922,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				break;
 			}
 			case STRUCT_DATETIME: {
-				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
+				PangoLayout *layout = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 				string str;
 				TTBP(str)
 				unordered_map<void*, string>::iterator it = date_map.find((void*) m.datetime());
@@ -973,10 +979,10 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				gint plus_w, plus_h, minus_w, minus_h, wtmp, htmp, hetmp = 0, w = 0, h = 0, dh = 0, uh = 0, xtmp = 0, wotmp = 0;
 
 				CALCULATE_SPACE_W
-				PangoLayout *layout_plus = gtk_widget_create_pango_layout(resultview, NULL);
+				PangoLayout *layout_plus = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 				PANGO_TTP(layout_plus, "+");
 				pango_layout_get_pixel_size(layout_plus, &plus_w, &plus_h);
-				PangoLayout *layout_minus = gtk_widget_create_pango_layout(resultview, NULL);
+				PangoLayout *layout_minus = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 				if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MINUS, po.can_display_unicode_string_arg))) {
 					PANGO_TTP(layout_minus, SIGN_MINUS);
 				} else {
@@ -1079,7 +1085,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 				gint minus_w, minus_h, uh, dh, h, w, ctmp, htmp, wtmp, hpa, cpa, xtmp;
 
-				PangoLayout *layout_minus = gtk_widget_create_pango_layout(resultview, NULL);
+				PangoLayout *layout_minus = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 
 				if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_MINUS, po.can_display_unicode_string_arg))) {
 					PANGO_TTP(layout_minus, SIGN_MINUS);
@@ -1206,7 +1212,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 									if(!layout_altmul) {
 										string str;
 										TTP_SMALL(str, SIGN_MIDDLEDOT);
-										layout_altmul = gtk_widget_create_pango_layout(resultview, NULL);
+										layout_altmul = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 										pango_layout_set_markup(layout_altmul, str.c_str(), -1);
 										pango_layout_get_pixel_size(layout_altmul, &altmul_w, &altmul_h);
 									}
@@ -1232,7 +1238,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 									} else {
 										TTP(str, "*");
 									}
-									layout_mul = gtk_widget_create_pango_layout(resultview, NULL);
+									layout_mul = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 									pango_layout_set_markup(layout_mul, str.c_str(), -1);
 									pango_layout_get_pixel_size(layout_mul, &mul_w, &mul_h);
 								}
@@ -1429,7 +1435,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					offset_x = xtmp1;
 					offset_w = wotmp2;
 					gint div_w, div_h, space_w = 0;
-					PangoLayout *layout_div = gtk_widget_create_pango_layout(resultview, NULL);
+					PangoLayout *layout_div = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 					if(po.use_unicode_signs && po.division_sign == DIVISION_SIGN_DIVISION && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_DIVISION, po.can_display_unicode_string_arg))) {
 						PANGO_TTP(layout_div, SIGN_DIVISION);
 					} else if(po.use_unicode_signs && po.division_sign == DIVISION_SIGN_DIVISION_SLASH && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_DIVISION_SLASH, po.can_display_unicode_string_arg))) {
@@ -1665,7 +1671,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						dh = hetmp;
 					}
 
-					PangoLayout *layout_sign = gtk_widget_create_pango_layout(resultview, NULL);
+					PangoLayout *layout_sign = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 					string str;
 					TTBP(str);
 					switch(m[0].comparisonType()) {
@@ -1706,7 +1712,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					}
 					w += sign_w;
 
-					PangoLayout *layout_sign2 = gtk_widget_create_pango_layout(resultview, NULL);
+					PangoLayout *layout_sign2 = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 					str = "";
 					TTBP(str);
 					switch(m[1].comparisonType()) {
@@ -1830,7 +1836,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					}
 				}
 
-				PangoLayout *layout_sign = gtk_widget_create_pango_layout(resultview, NULL);
+				PangoLayout *layout_sign = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 				string str;
 				TTBP(str);
 				if(m.type() == STRUCT_COMPARISON) {
@@ -1940,7 +1946,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				gint not_w, not_h, uh, dh, h, w, ctmp, htmp, wtmp, hpa, cpa, xtmp;
 				//gint wpa;
 
-				PangoLayout *layout_not = gtk_widget_create_pango_layout(resultview, NULL);
+				PangoLayout *layout_not = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 
 				if(m.type() == STRUCT_LOGICAL_NOT) {
 					PANGO_TTP(layout_not, "!");
@@ -2003,7 +2009,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 				bool b_matrix = m.isMatrix();
 				if(m.size() == 0 || (b_matrix && m[0].size() == 0)) {
-					PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
+					PangoLayout *layout = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 					string str;
 					TTBP(str)
 					str += "[ ]";
@@ -2037,7 +2043,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				element_h.resize(b_matrix ? m.size() : 1);
 				element_c.resize(b_matrix ? m.size() : 1);
 				surface_elements.resize(b_matrix ? m.size() : 1);
-				PangoLayout *layout_comma = gtk_widget_create_pango_layout(resultview, NULL);
+				PangoLayout *layout_comma = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 				string str;
 				gint comma_w = 0, comma_h = 0;
 				TTP(str, ";")
@@ -2194,7 +2200,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					str.insert(i + 6, TEXT_TAGS_END);
 				}
 				TTE(str);
-				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
+				PangoLayout *layout = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 				pango_layout_set_markup(layout, str.c_str(), -1);
 				PangoRectangle rect, lrect;
 				pango_layout_get_pixel_extents(layout, &rect, &lrect);
@@ -2227,7 +2233,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 			}
 			case STRUCT_VARIABLE: {
 
-				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
+				PangoLayout *layout = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 				string str;
 
 				const ExpressionName *ename = &m.variable()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
@@ -2306,7 +2312,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					unc_uh = h - unc_dh;
 					h = 0;
 					gint pm_w, pm_h;
-					PangoLayout *layout_pm = gtk_widget_create_pango_layout(resultview, NULL);
+					PangoLayout *layout_pm = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 					PANGO_TTP(layout_pm, SIGN_PLUSMINUS);
 					pango_layout_get_pixel_size(layout_pm, &pm_w, &pm_h);
 					w = mid_w + unc_w + pm_w;
@@ -2350,7 +2356,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					else if(m.function() == CALCULATOR->f_cbrt) i_root = 3;
 					string root_str;
 					TT_XSMALL(root_str, i2s(i_root));
-					PangoLayout *layout_root = gtk_widget_create_pango_layout(resultview, NULL);
+					PangoLayout *layout_root = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 					pango_layout_set_markup(layout_root, root_str.c_str(), -1);
 					pango_layout_get_pixel_size(layout_root, &root_w, &root_h);
 					PangoRectangle rect;
@@ -2543,12 +2549,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				vector<gint> hpa, cpa, wpa, xpa;
 
 				CALCULATE_SPACE_W
-				PangoLayout *layout_comma = gtk_widget_create_pango_layout(resultview, NULL);
+				PangoLayout *layout_comma = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 				string str;
 				TTP(str, po.comma())
 				pango_layout_set_markup(layout_comma, str.c_str(), -1);
 				pango_layout_get_pixel_size(layout_comma, &comma_w, &comma_h);
-				PangoLayout *layout_function = gtk_widget_create_pango_layout(resultview, NULL);
+				PangoLayout *layout_function = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 
 				str = "";
 				TTBP(str);
@@ -2750,7 +2756,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				break;
 			}
 			case STRUCT_UNDEFINED: {
-				PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
+				PangoLayout *layout = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 				string str;
 				TTP(str, _("undefined"));
 				pango_layout_set_markup(layout, str.c_str(), -1);
@@ -2828,7 +2834,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 		w = cairo_image_surface_get_width(surface) / scalefactor;
 		h = cairo_image_surface_get_height(surface) / scalefactor;
 		cairo_surface_t *surface_old = surface;
-		PangoLayout *layout_equals = gtk_widget_create_pango_layout(resultview, NULL);
+		PangoLayout *layout_equals = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 		if((po.is_approximate && *po.is_approximate) || m.isApproximate()) {
 			if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, po.can_display_unicode_string_arg))) {
 				PANGO_TT(layout_equals, SIGN_ALMOST_EQUAL);
@@ -2889,7 +2895,7 @@ void result_view_clear() {
 	if(displayed_mstruct) {
 		displayed_mstruct->unref();
 		displayed_mstruct = NULL;
-		if(!surface_result && !surface_parsed) gtk_widget_queue_draw(resultview);
+		if(!surface_result && !surface_parsed) gtk_widget_queue_draw(result_view_widget());
 	}
 	result_too_long = false;
 	display_aborted = false;
@@ -2903,14 +2909,14 @@ void result_view_clear() {
 	if(surface_parsed) {
 		cairo_surface_destroy(surface_parsed);
 		surface_parsed = NULL;
-		if(!surface_result) gtk_widget_queue_draw(resultview);
+		if(!surface_result) gtk_widget_queue_draw(result_view_widget());
 	}
 	if(surface_result) {
 		cairo_surface_destroy(surface_result);
 		surface_result = NULL;
-		gtk_widget_queue_draw(resultview);
+		gtk_widget_queue_draw(result_view_widget());
 	}
-	gtk_widget_set_tooltip_text(resultview, "");
+	gtk_widget_set_tooltip_text(result_view_widget(), "");
 }
 
 void on_popup_menu_item_parsed_in_result_activate(GtkMenuItem *w, gpointer) {
@@ -2942,7 +2948,7 @@ void result_view_clear_parsed() {
 		cairo_surface_destroy(surface_parsed);
 		surface_parsed = NULL;
 		if(!surface_result) {
-			gtk_widget_queue_draw(resultview);
+			gtk_widget_queue_draw(result_view_widget());
 		}
 	}
 }
@@ -2955,7 +2961,7 @@ void draw_parsed(MathStructure &mparse, const PrintOptions &po) {
 	parsed_printops = po;
 	if(!displayed_parsed_mstruct) displayed_parsed_mstruct = new MathStructure();
 	displayed_parsed_mstruct->set_nocopy(mparse);
-	gtk_widget_queue_draw(resultview);
+	gtk_widget_queue_draw(result_view_widget());
 }
 
 extern bool exit_in_progress;
@@ -2971,7 +2977,7 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 				if(b_busy_result) return TRUE;
 			} else if((!surface_result || show_parsed_instead_of_result) && displayed_parsed_mstruct) {
 				gint rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - 12;
-				displayed_printops.can_display_unicode_string_arg = (void*) resultview;
+				displayed_printops.can_display_unicode_string_arg = (void*) result_view_widget();
 				tmp_surface = draw_structure(*displayed_parsed_mstruct, parsed_printops, false, top_ips, NULL, 3, NULL, NULL, NULL, rw, true, &current_parsed_where(), &current_parsed_to());
 				parsed_printops.can_display_unicode_string_arg = NULL;
 				cairo_surface_destroy(surface_parsed);
@@ -3019,7 +3025,7 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 				} else {
 					gint rw = -1;
 					if(scale_n == 3) rw = gtk_widget_get_allocated_width(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result"))) - 12;
-					displayed_printops.can_display_unicode_string_arg = (void*) resultview;
+					displayed_printops.can_display_unicode_string_arg = (void*) result_view_widget();
 					tmp_surface = draw_structure(*displayed_mstruct, displayed_printops, displayed_caf, top_ips, NULL, scale_n, NULL, NULL, NULL, rw);
 					displayed_printops.can_display_unicode_string_arg = NULL;
 				}
@@ -3053,7 +3059,7 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 					scale_n++;
 				}
 				cairo_surface_destroy(surface);
-				displayed_printops.can_display_unicode_string_arg = (void*) resultview;
+				displayed_printops.can_display_unicode_string_arg = (void*) result_view_widget();
 				surface_result = draw_structure(*displayed_mstruct, displayed_printops, displayed_caf, top_ips, NULL, scale_n, NULL, NULL, NULL, scale_n == 3 ? rw : -1);
 				surface = surface_result;
 				displayed_printops.can_display_unicode_string_arg = NULL;
@@ -3097,10 +3103,10 @@ gboolean on_resultview_draw(GtkWidget *widget, cairo_t *cr, gpointer) {
 		}
 		first_draw_of_result = false;
 	} else if(showing_first_time_message) {
-		PangoLayout *layout = gtk_widget_create_pango_layout(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview")), NULL);
+		PangoLayout *layout = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 		GdkRGBA rgba;
 		pango_layout_set_markup(layout, (string("<span size=\"smaller\">") + string(_("Type a mathematical expression above, e.g. \"5 + 2 / 3\",\nand press the enter key.")) + "</span>").c_str(), -1);
-		gtk_style_context_get_color(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), gtk_widget_get_state_flags(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultview"))), &rgba);
+		gtk_style_context_get_color(gtk_widget_get_style_context(result_view_widget()), gtk_widget_get_state_flags(result_view_widget()), &rgba);
 		cairo_move_to(cr, 6, 6);
 		gdk_cairo_set_source_rgba(cr, &rgba);
 		pango_cairo_show_layout(cr, layout);
@@ -3123,7 +3129,7 @@ bool result_did_not_fit(bool only_too_long) {
 void update_displayed_printops() {
 	displayed_printops = printops;
 	displayed_printops.allow_non_usable = true;
-	displayed_printops.can_display_unicode_string_arg = (void*) resultview;
+	if(main_builder) displayed_printops.can_display_unicode_string_arg = (void*) result_view_widget();
 	displayed_caf = complex_angle_form;
 }
 const PrintOptions &current_displayed_printops() {
@@ -3132,10 +3138,10 @@ const PrintOptions &current_displayed_printops() {
 
 void show_result_help() {
 	showing_first_time_message = true;
-	gtk_widget_queue_draw(resultview);
+	gtk_widget_queue_draw(result_view_widget());
 }
 void redraw_result() {
-	gtk_widget_queue_draw(resultview);
+	gtk_widget_queue_draw(result_view_widget());
 }
 
 cairo_surface_t *surface_result_bak = NULL;
@@ -3145,20 +3151,20 @@ void draw_result_backup() {
 void draw_result_clear() {
 	if(surface_result) {
 		surface_result = NULL;
-		gtk_widget_queue_draw(resultview);
+		gtk_widget_queue_draw(result_view_widget());
 	}
 }
 void draw_result_restore() {
 	if(!surface_result && surface_result_bak) {
 		surface_result = surface_result_bak;
-		gtk_widget_queue_draw(resultview);
+		gtk_widget_queue_draw(result_view_widget());
 	}
 }
 void draw_result_destroy() {
 	if(surface_result) {
 		cairo_surface_destroy(surface_result);
 		surface_result = NULL;
-			gtk_widget_queue_draw(resultview);
+			gtk_widget_queue_draw(result_view_widget());
 	}
 }
 bool result_cleared = false;
@@ -3184,12 +3190,12 @@ void draw_result_pre() {
 	display_aborted = false;
 }
 void draw_result_waiting() {
-	if(result_cleared) gtk_widget_queue_draw(resultview);
+	if(result_cleared) gtk_widget_queue_draw(result_view_widget());
 }
 void draw_result_temp(MathStructure &m) {
 	if(!CALCULATOR->aborted()) {
 		printops.allow_non_usable = true;
-		printops.can_display_unicode_string_arg = (void*) resultview;
+		printops.can_display_unicode_string_arg = (void*) result_view_widget();
 		MathStructure *displayed_mstruct_pre = new MathStructure(m);
 		if(printops.interval_display == INTERVAL_DISPLAY_INTERVAL) replace_interval_with_function(*displayed_mstruct_pre);
 		tmp_surface = draw_structure(*displayed_mstruct_pre, printops, complex_angle_form, top_ips, NULL, 0);
@@ -3213,7 +3219,7 @@ void draw_result_check() {
 	display_aborted = !tmp_surface;
 	if(display_aborted) {
 		gint w = 0, h = 0;
-		PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
+		PangoLayout *layout = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 		pango_layout_set_markup(layout, _("result processing was aborted"), -1);
 		pango_layout_get_pixel_size(layout, &w, &h);
 		gint scalefactor = RESULT_SCALE_FACTOR;
@@ -3221,7 +3227,7 @@ void draw_result_check() {
 		cairo_surface_set_device_scale(tmp_surface, scalefactor, scalefactor);
 		cairo_t *cr = cairo_create(tmp_surface);
 		GdkRGBA rgba;
-		gtk_style_context_get_color(gtk_widget_get_style_context(resultview), gtk_widget_get_state_flags(resultview), &rgba);
+		gtk_style_context_get_color(gtk_widget_get_style_context(result_view_widget()), gtk_widget_get_state_flags(result_view_widget()), &rgba);
 		gdk_cairo_set_source_rgba(cr, &rgba);
 		pango_cairo_show_layout(cr, layout);
 		cairo_destroy(cr);
@@ -3235,7 +3241,7 @@ bool draw_result_finalize() {
 		showing_first_time_message = false;
 		first_draw_of_result = true;
 		surface_result = tmp_surface;
-		gtk_widget_queue_draw(resultview);
+		gtk_widget_queue_draw(result_view_widget());
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), displayed_mstruct && !result_too_long && !display_aborted);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), displayed_mstruct && !result_too_long && !display_aborted);
 		return true;
@@ -3251,7 +3257,7 @@ bool draw_result(MathStructure *displayed_mstruct_pre) {
 	number_exp_minus_map.clear();
 	number_approx_map.clear();
 	printops.allow_non_usable = true;
-	printops.can_display_unicode_string_arg = (void*) resultview;
+	printops.can_display_unicode_string_arg = (void*) result_view_widget();
 	if(printops.interval_display == INTERVAL_DISPLAY_INTERVAL) replace_interval_with_function(*displayed_mstruct_pre);
 	tmp_surface = draw_structure(*displayed_mstruct_pre, printops, complex_angle_form, top_ips, NULL, 0);
 	printops.allow_non_usable = false;
@@ -3272,14 +3278,14 @@ bool draw_result(MathStructure *displayed_mstruct_pre) {
 		display_aborted = false;
 		surface_result = tmp_surface;
 		first_draw_of_result = true;
-		gtk_widget_queue_draw(resultview);
+		gtk_widget_queue_draw(result_view_widget());
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), true);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_save_image")), true);
 	}
 	return true;
 }
 void draw_result_failure(MathStructure &m, bool too_long) {
-	PangoLayout *layout = gtk_widget_create_pango_layout(resultview, NULL);
+	PangoLayout *layout = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 	if(too_long) {
 		result_too_long = true;
 		pango_layout_set_markup(layout, _("result is too long\nsee history"), -1);
@@ -3297,7 +3303,7 @@ void draw_result_failure(MathStructure &m, bool too_long) {
 	cairo_surface_set_device_scale(tmp_surface, scalefactor, scalefactor);
 	cairo_t *cr = cairo_create(tmp_surface);
 	GdkRGBA rgba;
-	gtk_style_context_get_color(gtk_widget_get_style_context(resultview), gtk_widget_get_state_flags(resultview), &rgba);
+	gtk_style_context_get_color(gtk_widget_get_style_context(result_view_widget()), gtk_widget_get_state_flags(result_view_widget()), &rgba);
 	gdk_cairo_set_source_rgba(cr, &rgba);
 	if(rect.x < 0) cairo_move_to(cr, -rect.x, 0);
 	pango_cairo_show_layout(cr, layout);
@@ -3310,9 +3316,9 @@ void draw_result_failure(MathStructure &m, bool too_long) {
 void save_as_image() {
 	if(display_aborted || !displayed_mstruct) return;
 #if !defined(_WIN32) && (GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 20)
-	GtkFileChooserNative *d = gtk_file_chooser_native_new(_("Select file to save PNG image to"), GTK_WINDOW(mainwindow), GTK_FILE_CHOOSER_ACTION_SAVE, _("_Save"), _("_Cancel"));
+	GtkFileChooserNative *d = gtk_file_chooser_native_new(_("Select file to save PNG image to"), main_window(), GTK_FILE_CHOOSER_ACTION_SAVE, _("_Save"), _("_Cancel"));
 #else
-	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file to save PNG image to"), GTK_WINDOW(mainwindow), GTK_FILE_CHOOSER_ACTION_SAVE, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Save"), GTK_RESPONSE_ACCEPT, NULL);
+	GtkWidget *d = gtk_file_chooser_dialog_new(_("Select file to save PNG image to"), main_window(), GTK_FILE_CHOOSER_ACTION_SAVE, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Save"), GTK_RESPONSE_ACCEPT, NULL);
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
 #endif
 	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(d), TRUE);
@@ -3365,7 +3371,7 @@ void result_display_updated() {
 	number_exp_map.clear();
 	number_exp_minus_map.clear();
 	number_approx_map.clear();
-	gtk_widget_queue_draw(resultview);
+	gtk_widget_queue_draw(result_view_widget());
 	update_message_print_options();
 	update_status_text();
 	set_expression_output_updated(true);
@@ -3381,7 +3387,7 @@ void on_popup_menu_item_to_utc_activate(GtkMenuItem *w, gpointer) {
 }
 void on_popup_menu_item_display_normal_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	set_min_exp(EXP_PRECISION);
+	set_min_exp(EXP_PRECISION, true);
 }
 void on_popup_menu_item_exact_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) set_approximation(APPROXIMATION_EXACT);
@@ -3392,19 +3398,19 @@ void on_popup_menu_item_assume_nonzero_denominators_activate(GtkMenuItem *w, gpo
 }
 void on_popup_menu_item_display_engineering_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	set_min_exp(EXP_BASE_3);
+	set_min_exp(EXP_BASE_3, true);
 }
 void on_popup_menu_item_display_scientific_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	set_min_exp(EXP_SCIENTIFIC);
+	set_min_exp(EXP_SCIENTIFIC, true);
 }
 void on_popup_menu_item_display_purely_scientific_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	set_min_exp(EXP_PURE);
+	set_min_exp(EXP_PURE, true);
 }
 void on_popup_menu_item_display_non_scientific_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	set_min_exp(EXP_NONE);
+	set_min_exp(EXP_NONE, true);
 }
 void on_popup_menu_item_complex_rectangular_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
@@ -3491,7 +3497,7 @@ void on_popup_menu_item_hexadecimal_activate(GtkMenuItem *w, gpointer) {
 }
 void on_popup_menu_item_custom_base_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	open_setbase(GTK_WINDOW(mainwindow), true, false);
+	open_setbase(main_window(), true, false);
 }
 void on_popup_menu_item_abbreviate_names_activate(GtkMenuItem *w, gpointer) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_abbreviate_names")), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
@@ -3503,10 +3509,10 @@ void on_popup_menu_item_denominator_prefixes_activate(GtkMenuItem *w, gpointer) 
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_denominator_prefixes")), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
 }
 void on_popup_menu_item_view_matrix_activate(GtkMenuItem*, gpointer) {
-	insert_matrix(current_result(), mainwindow, false, false, true);
+	insert_matrix(current_result(), main_window(), false, false, true);
 }
 void on_popup_menu_item_view_vector_activate(GtkMenuItem*, gpointer) {
-	insert_matrix(current_result(), mainwindow, true, false, true);
+	insert_matrix(current_result(), main_window(), true, false, true);
 }
 void on_popup_menu_item_copy_activate(GtkMenuItem*, gpointer) {
 	copy_result(0, (((parsed_in_result && !displayed_mstruct) || show_parsed_instead_of_result) && displayed_parsed_mstruct) ? 8 : 0);
@@ -3514,6 +3520,14 @@ void on_popup_menu_item_copy_activate(GtkMenuItem*, gpointer) {
 void on_popup_menu_item_copy_ascii_activate(GtkMenuItem*, gpointer) {
 	copy_result(1, (((parsed_in_result && !displayed_mstruct) || show_parsed_instead_of_result) && displayed_parsed_mstruct) ? 8 : 0);
 }
+void on_menu_item_show_parsed_activate(GtkMenuItem *w, gpointer) {
+	show_parsed(true);
+}
+void on_menu_item_show_result_activate(GtkMenuItem *w, gpointer) {
+	show_parsed(false);
+}
+
+extern Unit *latest_button_currency;
 void update_resultview_popup() {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_octal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_octal_activate, NULL);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_decimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_decimal_activate, NULL);
@@ -3925,6 +3939,13 @@ void update_resultview_popup() {
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_polar"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_polar_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_angle"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_angle_activate, NULL);
 }
+gboolean on_resultspinner_button_press_event(GtkWidget *w, GdkEventButton *event, gpointer) {
+	if(event->button != 1 || !gtk_widget_is_visible(w)) return FALSE;
+	if(b_busy_command) on_abort_command(NULL, 0, NULL);
+	else if(b_busy_expression) on_abort_calculation(NULL, 0, NULL);
+	else if(b_busy_result) on_abort_display(NULL, 0, NULL);
+	return TRUE;
+}
 guint32 prev_result_press_time = 0;
 gboolean on_resultview_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
 	if(b_busy) return FALSE;
@@ -3937,7 +3958,7 @@ gboolean on_resultview_button_press_event(GtkWidget*, GdkEventButton *event, gpo
 #endif
 		return TRUE;
 	}
-	if(event->button == 1 && event->time > prev_result_press_time + 100 && surface_result && !show_parsed_instead_of_result && event->x >= gtk_widget_get_allocated_width(resultview) - cairo_image_surface_get_width(surface_result) - 20) {
+	if(event->button == 1 && event->time > prev_result_press_time + 100 && surface_result && !show_parsed_instead_of_result && event->x >= gtk_widget_get_allocated_width(result_view_widget()) - cairo_image_surface_get_width(surface_result) - 20) {
 		gint x = event->x - binary_x_diff;
 		gint y = event->y - binary_y_diff;
 		if(!binary_rect.empty() && x >= binary_rect[0].x) {
@@ -3979,7 +4000,7 @@ void update_result_font(bool initial) {
 		gtk_css_provider_load_from_data(resultview_provider, "* {font-size: larger;}", -1, NULL);
 		if(initial && custom_result_font.empty()) {
 			PangoFontDescription *font_desc;
-			gtk_style_context_get(gtk_widget_get_style_context(resultview), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+			gtk_style_context_get(gtk_widget_get_style_context(result_view_widget()), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
 			char *gstr = pango_font_description_to_string(font_desc);
 			custom_result_font = gstr;
 			g_free(gstr);
@@ -3987,14 +4008,14 @@ void update_result_font(bool initial) {
 		}
 	}
 	if(initial) {
-		fix_supsub_result = test_supsub(resultview);
+		fix_supsub_result = test_supsub(result_view_widget());
 	} else {
 		result_font_modified();
 		gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), NULL, &h_new);
 		gint winh, winw;
-		gtk_window_get_size(GTK_WINDOW(mainwindow), &winw, &winh);
+		gtk_window_get_size(main_window(), &winw, &winh);
 		winh += (h_new - h_old);
-		gtk_window_resize(GTK_WINDOW(mainwindow), winw, winh);
+		gtk_window_resize(main_window(), winw, winh);
 	}
 }
 void set_result_font(const char *str) {
@@ -4002,7 +4023,10 @@ void set_result_font(const char *str) {
 		use_custom_result_font = false;
 	} else {
 		use_custom_result_font = true;
-		custom_result_font = str;
+		if(custom_result_font != str) {
+			save_custom_result_font = true;
+			custom_result_font = str;
+		}
 	}
 	update_result_font(false);
 }
@@ -4012,7 +4036,7 @@ const char *result_font(bool return_default) {
 }
 void result_font_modified() {
 	while(gtk_events_pending()) gtk_main_iteration();
-	fix_supsub_result = test_supsub(resultview);
+	fix_supsub_result = test_supsub(result_view_widget());
 	set_result_size_request();
 	result_font_updated = true;
 	result_display_updated();
@@ -4026,7 +4050,7 @@ void set_result_size_request() {
 	mtest.transform(CALCULATOR->f_abs);
 	PrintOptions po;
 	po.can_display_unicode_string_function = &can_display_unicode_string_function;
-	po.can_display_unicode_string_arg = (void*) resultview;
+	po.can_display_unicode_string_arg = (void*) result_view_widget();
 	cairo_surface_t *tmp_surface2 = draw_structure(mtest, po, false, top_ips, NULL, 3);
 	if(tmp_surface2) {
 		cairo_surface_flush(tmp_surface2);
@@ -4047,20 +4071,55 @@ void set_result_size_request() {
 		}
 		gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), -1, h);
 	}
-	PangoLayout *layout_test = gtk_widget_create_pango_layout(resultview, "x");
+	PangoLayout *layout_test = gtk_widget_create_pango_layout(result_view_widget(), "x");
 	gint h;
 	pango_layout_get_pixel_size(layout_test, NULL, &h);
 	par_width = h / 2.2;
 	g_object_unref(layout_test);
 }
+void update_result_accels(int type) {
+	bool b = false;
+	for(unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.begin(); it != keyboard_shortcuts.end(); ++it) {
+		if(it->second.type.size() != 1 || (type >= 0 && it->second.type[0] != type)) continue;
+		b = true;
+		switch(it->second.type[0]) {
+			case SHORTCUT_TYPE_COPY_RESULT: {
+				int v = s2i(it->second.value[0]);
+				if(v > 0 && v <= 7) break;
+				if(!copy_ascii) {
+					gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_copy")))), it->second.key, (GdkModifierType) it->second.modifier);
+					if(type >= 0) {
+						gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_copy_ascii")))), 0, (GdkModifierType) 0);
+					}
+				} else {
+					gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_copy_ascii")))), it->second.key, (GdkModifierType) it->second.modifier);
+					if(type >= 0) {
+						gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_copy")))), 0, (GdkModifierType) 0);
+					}
+				}
+				break;
+			}
+		}
+		if(type >= 0) break;
+	}
+	if(!b) {
+		switch(type) {
+			case SHORTCUT_TYPE_COPY_RESULT: {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_copy")))), 0, (GdkModifierType) 0);
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_copy_ascii")))), 0, (GdkModifierType) 0);
+				break;
+			}
+		}
+	}
+}
 
 void create_result_view() {
 	resultview_provider = gtk_css_provider_new();
-	gtk_style_context_add_provider(gtk_widget_get_style_context(resultview), GTK_STYLE_PROVIDER(resultview_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_style_context_add_provider(gtk_widget_get_style_context(result_view_widget()), GTK_STYLE_PROVIDER(resultview_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	if(RUNTIME_CHECK_GTK_VERSION(3, 16)) {
 		GtkCssProvider *result_color_provider = gtk_css_provider_new();
 		gtk_css_provider_load_from_data(result_color_provider, "* {color: @theme_text_color;}", -1, NULL);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(resultview), GTK_STYLE_PROVIDER(result_color_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION - 1);
+		gtk_style_context_add_provider(gtk_widget_get_style_context(result_view_widget()), GTK_STYLE_PROVIDER(result_color_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION - 1);
 	}
 
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
@@ -4080,6 +4139,6 @@ void create_result_view() {
 	update_result_font(true);
 	set_result_size_request();
 
-	gtk_builder_add_callback_symbols(main_builder, "on_resultview_button_press_event", G_CALLBACK(on_resultview_button_press_event), "on_resultview_popup_menu", G_CALLBACK(on_resultview_popup_menu), "on_resultview_draw", G_CALLBACK(on_resultview_draw), "on_popup_menu_item_copy_activate", G_CALLBACK(on_popup_menu_item_copy_activate), "on_popup_menu_item_copy_ascii_activate", G_CALLBACK(on_popup_menu_item_copy_ascii_activate), "on_popup_menu_item_exact_activate", G_CALLBACK(on_popup_menu_item_exact_activate), "on_popup_menu_item_assume_nonzero_denominators_activate", G_CALLBACK(on_popup_menu_item_assume_nonzero_denominators_activate), "on_popup_menu_item_display_normal_activate", G_CALLBACK(on_popup_menu_item_display_normal_activate), "on_popup_menu_item_display_engineering_activate", G_CALLBACK(on_popup_menu_item_display_engineering_activate), "on_popup_menu_item_display_scientific_activate", G_CALLBACK(on_popup_menu_item_display_scientific_activate), "on_popup_menu_item_display_purely_scientific_activate", G_CALLBACK(on_popup_menu_item_display_purely_scientific_activate), "on_popup_menu_item_display_non_scientific_activate", G_CALLBACK(on_popup_menu_item_display_non_scientific_activate), "on_popup_menu_item_complex_rectangular_activate", G_CALLBACK(on_popup_menu_item_complex_rectangular_activate), "on_popup_menu_item_complex_exponential_activate", G_CALLBACK(on_popup_menu_item_complex_exponential_activate), "on_popup_menu_item_complex_polar_activate", G_CALLBACK(on_popup_menu_item_complex_polar_activate), "on_popup_menu_item_complex_angle_activate", G_CALLBACK(on_popup_menu_item_complex_angle_activate), "on_popup_menu_item_binary_activate", G_CALLBACK(on_popup_menu_item_binary_activate), "on_popup_menu_item_octal_activate", G_CALLBACK(on_popup_menu_item_octal_activate), "on_popup_menu_item_decimal_activate", G_CALLBACK(on_popup_menu_item_decimal_activate), "on_popup_menu_item_duodecimal_activate", G_CALLBACK(on_popup_menu_item_duodecimal_activate), "on_popup_menu_item_hexadecimal_activate", G_CALLBACK(on_popup_menu_item_hexadecimal_activate), "on_popup_menu_item_sexagesimal_activate", G_CALLBACK(on_popup_menu_item_sexagesimal_activate), "on_popup_menu_item_time_format_activate", G_CALLBACK(on_popup_menu_item_time_format_activate), "on_popup_menu_item_roman_activate", G_CALLBACK(on_popup_menu_item_roman_activate), "on_popup_menu_item_custom_base_activate", G_CALLBACK(on_popup_menu_item_custom_base_activate), "on_popup_menu_item_fraction_decimal_activate", G_CALLBACK(on_popup_menu_item_fraction_decimal_activate), "on_popup_menu_item_fraction_decimal_exact_activate", G_CALLBACK(on_popup_menu_item_fraction_decimal_exact_activate), "on_popup_menu_item_fraction_fraction_activate", G_CALLBACK(on_popup_menu_item_fraction_fraction_activate), "on_popup_menu_item_fraction_combined_activate", G_CALLBACK(on_popup_menu_item_fraction_combined_activate), "on_popup_menu_item_abbreviate_names_activate", G_CALLBACK(on_popup_menu_item_abbreviate_names_activate), "on_popup_menu_item_mixed_units_conversion_activate", G_CALLBACK(on_popup_menu_item_mixed_units_conversion_activate), "on_popup_menu_item_to_utc_activate", G_CALLBACK(on_popup_menu_item_to_utc_activate), "on_popup_menu_item_calendarconversion_activate", G_CALLBACK(on_popup_menu_item_calendarconversion_activate), "on_popup_menu_item_display_no_prefixes_activate", G_CALLBACK(on_popup_menu_item_display_no_prefixes_activate), "on_popup_menu_item_display_prefixes_for_selected_units_activate", G_CALLBACK(on_popup_menu_item_display_prefixes_for_selected_units_activate), "on_popup_menu_item_display_prefixes_for_currencies_activate", G_CALLBACK(on_popup_menu_item_display_prefixes_for_currencies_activate), "on_popup_menu_item_display_prefixes_for_all_units_activate", G_CALLBACK(on_popup_menu_item_display_prefixes_for_all_units_activate), "on_popup_menu_item_all_prefixes_activate", G_CALLBACK(on_popup_menu_item_all_prefixes_activate), "on_popup_menu_item_denominator_prefixes_activate", G_CALLBACK(on_popup_menu_item_denominator_prefixes_activate), "on_popup_menu_item_view_matrix_activate", G_CALLBACK(on_popup_menu_item_view_matrix_activate), "on_popup_menu_item_view_vector_activate", G_CALLBACK(on_popup_menu_item_view_vector_activate), "on_popup_menu_item_parsed_in_result_activate", G_CALLBACK(on_popup_menu_item_parsed_in_result_activate), NULL);
+	gtk_builder_add_callback_symbols(main_builder, "on_resultview_button_press_event", G_CALLBACK(on_resultview_button_press_event), "on_resultview_popup_menu", G_CALLBACK(on_resultview_popup_menu), "on_resultview_draw", G_CALLBACK(on_resultview_draw), "on_popup_menu_item_copy_activate", G_CALLBACK(on_popup_menu_item_copy_activate), "on_popup_menu_item_copy_ascii_activate", G_CALLBACK(on_popup_menu_item_copy_ascii_activate), "on_popup_menu_item_exact_activate", G_CALLBACK(on_popup_menu_item_exact_activate), "on_popup_menu_item_assume_nonzero_denominators_activate", G_CALLBACK(on_popup_menu_item_assume_nonzero_denominators_activate), "on_popup_menu_item_display_normal_activate", G_CALLBACK(on_popup_menu_item_display_normal_activate), "on_popup_menu_item_display_engineering_activate", G_CALLBACK(on_popup_menu_item_display_engineering_activate), "on_popup_menu_item_display_scientific_activate", G_CALLBACK(on_popup_menu_item_display_scientific_activate), "on_popup_menu_item_display_purely_scientific_activate", G_CALLBACK(on_popup_menu_item_display_purely_scientific_activate), "on_popup_menu_item_display_non_scientific_activate", G_CALLBACK(on_popup_menu_item_display_non_scientific_activate), "on_popup_menu_item_complex_rectangular_activate", G_CALLBACK(on_popup_menu_item_complex_rectangular_activate), "on_popup_menu_item_complex_exponential_activate", G_CALLBACK(on_popup_menu_item_complex_exponential_activate), "on_popup_menu_item_complex_polar_activate", G_CALLBACK(on_popup_menu_item_complex_polar_activate), "on_popup_menu_item_complex_angle_activate", G_CALLBACK(on_popup_menu_item_complex_angle_activate), "on_popup_menu_item_binary_activate", G_CALLBACK(on_popup_menu_item_binary_activate), "on_popup_menu_item_octal_activate", G_CALLBACK(on_popup_menu_item_octal_activate), "on_popup_menu_item_decimal_activate", G_CALLBACK(on_popup_menu_item_decimal_activate), "on_popup_menu_item_duodecimal_activate", G_CALLBACK(on_popup_menu_item_duodecimal_activate), "on_popup_menu_item_hexadecimal_activate", G_CALLBACK(on_popup_menu_item_hexadecimal_activate), "on_popup_menu_item_sexagesimal_activate", G_CALLBACK(on_popup_menu_item_sexagesimal_activate), "on_popup_menu_item_time_format_activate", G_CALLBACK(on_popup_menu_item_time_format_activate), "on_popup_menu_item_roman_activate", G_CALLBACK(on_popup_menu_item_roman_activate), "on_popup_menu_item_custom_base_activate", G_CALLBACK(on_popup_menu_item_custom_base_activate), "on_popup_menu_item_fraction_decimal_activate", G_CALLBACK(on_popup_menu_item_fraction_decimal_activate), "on_popup_menu_item_fraction_decimal_exact_activate", G_CALLBACK(on_popup_menu_item_fraction_decimal_exact_activate), "on_popup_menu_item_fraction_fraction_activate", G_CALLBACK(on_popup_menu_item_fraction_fraction_activate), "on_popup_menu_item_fraction_combined_activate", G_CALLBACK(on_popup_menu_item_fraction_combined_activate), "on_popup_menu_item_abbreviate_names_activate", G_CALLBACK(on_popup_menu_item_abbreviate_names_activate), "on_popup_menu_item_mixed_units_conversion_activate", G_CALLBACK(on_popup_menu_item_mixed_units_conversion_activate), "on_popup_menu_item_to_utc_activate", G_CALLBACK(on_popup_menu_item_to_utc_activate), "on_popup_menu_item_calendarconversion_activate", G_CALLBACK(on_popup_menu_item_calendarconversion_activate), "on_popup_menu_item_display_no_prefixes_activate", G_CALLBACK(on_popup_menu_item_display_no_prefixes_activate), "on_popup_menu_item_display_prefixes_for_selected_units_activate", G_CALLBACK(on_popup_menu_item_display_prefixes_for_selected_units_activate), "on_popup_menu_item_display_prefixes_for_currencies_activate", G_CALLBACK(on_popup_menu_item_display_prefixes_for_currencies_activate), "on_popup_menu_item_display_prefixes_for_all_units_activate", G_CALLBACK(on_popup_menu_item_display_prefixes_for_all_units_activate), "on_popup_menu_item_all_prefixes_activate", G_CALLBACK(on_popup_menu_item_all_prefixes_activate), "on_popup_menu_item_denominator_prefixes_activate", G_CALLBACK(on_popup_menu_item_denominator_prefixes_activate), "on_popup_menu_item_view_matrix_activate", G_CALLBACK(on_popup_menu_item_view_matrix_activate), "on_popup_menu_item_view_vector_activate", G_CALLBACK(on_popup_menu_item_view_vector_activate), "on_popup_menu_item_parsed_in_result_activate", G_CALLBACK(on_popup_menu_item_parsed_in_result_activate), "on_menu_item_show_parsed_activate", G_CALLBACK(on_menu_item_show_parsed_activate), "on_menu_item_show_result_activate", G_CALLBACK(on_menu_item_show_result_activate), "on_resultspinner_button_press_event", G_CALLBACK(on_resultspinner_button_press_event), NULL);
 
 }

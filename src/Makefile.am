@@ -29,6 +29,7 @@ flags.c : $(top_srcdir)/data/flags.gresource.xml $(top_srcdir)/data/flags/*.png
 	glib-compile-resources --generate-source --target=$@ --sourcedir=$(top_srcdir)/data/flags $(top_srcdir)/data/flags.gresource.xml
 
 qalculate_gtk_SOURCES = \
+	exchangerates.cc exchangerates.h \
 	matrixdialog.cc matrixdialog.h \
 	nameseditdialog.cc nameseditdialog.h \
 	dataseteditdialog.cc dataseteditdialog.h \
@@ -68,6 +69,7 @@ qalculate_gtk_SOURCES = \
 	menubar.cc menubar.h \
 	main.cc \
 	mainwindow.cc mainwindow.h \
+	modes.cc modes.h \
 	util.cc util.h \
 	unordered_map_define.h support.h settings.h
 

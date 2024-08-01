@@ -45,10 +45,10 @@ void update_history_font(bool initial = false);
 void set_history_font(const char *str);
 const char *history_font(bool return_default = false);
 void history_font_modified();
-std::string history_display_errors(bool add_to_history, GtkWidget *win, int type, bool *implicit_warning, time_t history_time, int *mtype_highest_p);
+std::string history_display_errors(bool add_to_history, GtkWindow *win, int type, bool *implicit_warning, time_t history_time, int *mtype_highest_p);
 void reload_history(gint from_index = -1);
 bool add_result_to_history_pre(bool update_parse, bool update_history, bool register_moved, bool b_rpn_operation, bool *first_expression, std::string &result_text, std::string &transformation);
-void add_result_to_history(bool &update_history, bool update_parse, bool register_moved, bool b_rpn_operation, std::string &result_text, bool b_approx, std::string &parsed_text, bool parsed_approx, std::string &transformation, GtkWidget *win, std::string *error_str, int *mtype_highest_p, bool *implicit_warning);
+void add_result_to_history(bool &update_history, bool update_parse, bool register_moved, bool b_rpn_operation, std::string &result_text, bool b_approx, std::string &parsed_text, bool parsed_approx, std::string &transformation, GtkWindow *win, std::string *error_str, int *mtype_highest_p, bool *implicit_warning);
 void add_message_to_history(std::string *error_str, int *mtype_highest_p);
 void history_scroll_on_realized();
 std::string last_history_expression();
@@ -67,6 +67,8 @@ void history_search();
 void history_clear();
 void history_input_base_changed();
 void history_operator(std::string str_sign);
+
+GtkWidget *history_view_widget();
 
 bool read_history_settings_line(std::string &svar, std::string &svalue, int &v);
 void write_history_settings(FILE *file);

@@ -27,6 +27,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "mainwindow.h"
 #include "openhelp.h"
 #include "nameseditdialog.h"
 #include "matrixeditdialog.h"
@@ -262,20 +263,20 @@ run_variable_edit_dialog:
 			//no name -- open dialog again
 			gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(variableedit_builder, "variable_edit_tabs")), 0);
 			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")));
-			show_message(_("Empty name field."), dialog);
+			show_message(_("Empty name field."), GTK_WINDOW(dialog));
 			goto run_variable_edit_dialog;
 		}
 		if(str2.empty()) {
 			//no value -- open dialog again
 			gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(variableedit_builder, "variable_edit_tabs")), 0);
 			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_textview_value")));
-			show_message(_("Empty value field."), dialog);
+			show_message(_("Empty value field."), GTK_WINDOW(dialog));
 			goto run_variable_edit_dialog;
 		}
 		//variable with the same name exists -- overwrite or open dialog again
 		if((!v || !v->hasName(str)) && ((names_status() != 1 && !str.empty()) || !has_name()) && CALCULATOR->variableNameTaken(str, v)) {
 			Variable *var = CALCULATOR->getActiveVariable(str, true);
-			if((!v || v != var) && (!var || var->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
+			if((!v || v != var) && (!var || var->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), GTK_WINDOW(dialog))) {
 				gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(variableedit_builder, "variable_edit_tabs")), 0);
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")));
 				goto run_variable_edit_dialog;
@@ -325,7 +326,7 @@ run_variable_edit_dialog:
 			variable_edited(v);
 		}
 	} else if(response == GTK_RESPONSE_HELP) {
-		show_help("qalculate-variables.html#qalculate-variable-creation", GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog")));
+		show_help("qalculate-variables.html#qalculate-variable-creation", GTK_WINDOW(gtk_builder_get_object(variableedit_builder, "variable_edit_dialog")));
 		goto run_variable_edit_dialog;
 	}
 	edited_variable = NULL;

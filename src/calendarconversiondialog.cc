@@ -50,7 +50,7 @@ void calendar_changed(GtkWidget*, gpointer data) {
 	if(i == CALENDAR_CHINESE) {
 		long int cy = chineseStemBranchToCycleYear((gtk_combo_box_get_active(GTK_COMBO_BOX(chinese_stem)) * 2) + 1, gtk_combo_box_get_active(GTK_COMBO_BOX(chinese_branch)) + 1);
 		if(cy <= 0) {
-			show_message(_("The selected Chinese year does not exist."), GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog")));
+			show_message(_("The selected Chinese year does not exist."), GTK_WINDOW(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog")));
 			block_calendar_conversion = false;
 			return;
 		}
@@ -62,7 +62,7 @@ void calendar_changed(GtkWidget*, gpointer data) {
 	long int d = gtk_combo_box_get_active(GTK_COMBO_BOX(cal_day[(size_t) i])) + 1;
 	QalculateDateTime date;
 	if(!calendarToDate(date, y, m, d, (CalendarSystem) i)) {
-		show_message(_("Conversion to Gregorian calendar failed."), GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog")));
+		show_message(_("Conversion to Gregorian calendar failed."), GTK_WINDOW(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog")));
 		block_calendar_conversion = false;
 		return;
 	}
@@ -88,7 +88,7 @@ void calendar_changed(GtkWidget*, gpointer data) {
 	}
 	if(!failed_str.empty()) {
 		gchar *gstr = g_strdup_printf(_("Calendar conversion failed for: %s."), failed_str.c_str());
-		show_message(gstr, GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog")));
+		show_message(gstr, GTK_WINDOW(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog")));
 		g_free(gstr);
 	}
 	block_calendar_conversion = false;

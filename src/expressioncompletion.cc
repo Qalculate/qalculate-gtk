@@ -28,6 +28,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "mainwindow.h"
 #include "resultview.h"
 #include "expressionedit.h"
 #include "expressioncompletion.h"
@@ -259,7 +260,7 @@ void set_current_object() {
 	while(gtk_events_pending()) gtk_main_iteration();
 	GtkTextIter ipos, istart, iend;
 	gint pos, pos2;
-	g_object_get(expressionbuffer, "cursor-position", &pos, NULL);
+	g_object_get(expression_edit_buffer(), "cursor-position", &pos, NULL);
 	pos2 = pos;
 	if(pos == 0) {
 		current_object_start = -1;
@@ -267,9 +268,9 @@ void set_current_object() {
 		editing_to_expression = false;
 		return;
 	}
-	gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
-	gtk_text_buffer_get_iter_at_offset(expressionbuffer, &ipos, pos);
-	gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &istart, &ipos, FALSE);
+	gtk_text_buffer_get_start_iter(expression_edit_buffer(), &istart);
+	gtk_text_buffer_get_iter_at_offset(expression_edit_buffer(), &ipos, pos);
+	gchar *gstr = gtk_text_buffer_get_text(expression_edit_buffer(), &istart, &ipos, FALSE);
 	gchar *p = gstr + strlen(gstr);
 	size_t l_to = strlen(gstr);
 	if(l_to > 0) {
@@ -333,9 +334,9 @@ void set_current_object() {
 		current_object_start = -1;
 		current_object_end = -1;
 	} else {
-		gtk_text_buffer_get_iter_at_offset(expressionbuffer, &ipos, pos);
-		gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
-		gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &ipos, &iend, FALSE);
+		gtk_text_buffer_get_iter_at_offset(expression_edit_buffer(), &ipos, pos);
+		gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iend);
+		gchar *gstr2 = gtk_text_buffer_get_text(expression_edit_buffer(), &ipos, &iend, FALSE);
 		p = gstr2;
 		while(p[0] != '\0') {
 			if(!CALCULATOR->utf8_pos_is_valid_in_name(p)) {
@@ -344,7 +345,7 @@ void set_current_object() {
 			pos++;
 			p = g_utf8_next_char(p);
 		}
-		if(pos2 >= gtk_text_buffer_get_char_count(expressionbuffer)) {
+		if(pos2 >= gtk_text_buffer_get_char_count(expression_edit_buffer())) {
 			current_object_start = -1;
 			current_object_end = -1;
 		} else {
@@ -378,11 +379,11 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 	else if(p_type >= 100) p_type = 0;
 	gint cos_bak = current_object_start;
 	GtkTextIter object_start, object_end;
-	gtk_text_buffer_get_iter_at_offset(expressionbuffer, &object_start, current_object_start);
-	gtk_text_buffer_get_iter_at_offset(expressionbuffer, &object_end, current_object_end);
+	gtk_text_buffer_get_iter_at_offset(expression_edit_buffer(), &object_start, current_object_start);
+	gtk_text_buffer_get_iter_at_offset(expression_edit_buffer(), &object_end, current_object_end);
 	if(item && item->type() == TYPE_UNIT && ((Unit*) item)->subtype() == SUBTYPE_COMPOSITE_UNIT && (((CompositeUnit*) item)->countUnits() > 1 || !((CompositeUnit*) item)->get(1, &exp, &prefix) || exp != 1)) {
 		PrintOptions po = printops;
-		po.can_display_unicode_string_arg = (void*) expressiontext;
+		po.can_display_unicode_string_arg = (void*) expression_edit_widget();
 		po.abbreviate_names = true;
 		str = ((Unit*) item)->print(po, false, TAG_TYPE_HTML, true, false);
 	} else if(item) {
@@ -393,18 +394,18 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 		}
 		if(i_type > 2) {
 			if(i_match > 0) ename = &item->getName(i_match);
-			else ename = &item->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+			else ename = &item->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget());
 			if(!ename) return;
 			if(cu && prefix) {
-				str = prefix->preferredInputName(ename->abbreviation, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).name;
+				str = prefix->preferredInputName(ename->abbreviation, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).name;
 				str += ename->formattedName(TYPE_UNIT, true);
 			} else {
 				str = ename->formattedName(TYPE_UNIT, true);
 			}
 		} else if(cu && prefix) {
-			gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &object_start, &object_end, FALSE);
-			ename_r = &prefix->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
-			if(printops.abbreviate_names && ename_r->abbreviation) ename_r2 = &prefix->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+			gchar *gstr2 = gtk_text_buffer_get_text(expression_edit_buffer(), &object_start, &object_end, FALSE);
+			ename_r = &prefix->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget());
+			if(printops.abbreviate_names && ename_r->abbreviation) ename_r2 = &prefix->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget());
 			else ename_r2 = NULL;
 			if(ename_r2 == ename_r) ename_r2 = NULL;
 			const ExpressionName *ename_i;
@@ -416,7 +417,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 					ename_i = ename_r2;
 				} else {
 					ename_i = &prefix->getName(ename_r2 ? name_i - 1 : name_i);
-					if(!ename_i || ename_i == ename_r || ename_i == ename_r2 || (ename_i->name.length() <= l && ename_i->name.length() != strlen(gstr2)) || ename_i->plural || (ename_i->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename_i->name.c_str(), (void*) expressiontext)))) {
+					if(!ename_i || ename_i == ename_r || ename_i == ename_r2 || (ename_i->name.length() <= l && ename_i->name.length() != strlen(gstr2)) || ename_i->plural || (ename_i->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename_i->name.c_str(), (void*) expression_edit_widget())))) {
 						ename_i = NULL;
 					}
 				}
@@ -441,7 +442,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 			}
 			for(size_t name_i = 1; name_i <= prefix->countNames() && l != strlen(gstr2); name_i++) {
 				ename_i = &prefix->getName(name_i);
-				if(!ename_i || ename_i == ename_r || ename_i == ename_r2 || (ename_i->name.length() <= l && ename_i->name.length() != strlen(gstr2)) || (!ename_i->plural && !(ename_i->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename_i->name.c_str(), (void*) expressiontext))))) {
+				if(!ename_i || ename_i == ename_r || ename_i == ename_r2 || (ename_i->name.length() <= l && ename_i->name.length() != strlen(gstr2)) || (!ename_i->plural && !(ename_i->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename_i->name.c_str(), (void*) expression_edit_widget()))))) {
 					ename_i = NULL;
 				}
 				if(ename_i) {
@@ -464,15 +465,15 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 				}
 			}
 			if(ename && ename->completion_only) {
-				ename = &prefix->preferredInputName(ename->abbreviation, printops.use_unicode_signs, ename->plural, false, &can_display_unicode_string_function, (void*) expressiontext);
+				ename = &prefix->preferredInputName(ename->abbreviation, printops.use_unicode_signs, ename->plural, false, &can_display_unicode_string_function, (void*) expression_edit_widget());
 			}
 			if(!ename) ename = ename_r;
 			g_free(gstr2);
 			if(!ename) return;
 			str = ename->name;
-			str += item->preferredInputName(printops.abbreviate_names && ename->abbreviation, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).formattedName(TYPE_UNIT, true);
+			str += item->preferredInputName(printops.abbreviate_names && ename->abbreviation, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_UNIT, true);
 		} else {
-			gchar *gstr_pre = gtk_text_buffer_get_text(expressionbuffer, &object_start, &object_end, FALSE);
+			gchar *gstr_pre = gtk_text_buffer_get_text(expression_edit_buffer(), &object_start, &object_end, FALSE);
 			gchar *gstr2 = gstr_pre;
 			string cap_str;
 			while(i_match > 0) {
@@ -481,8 +482,8 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 				current_object_start += strlen(gstr2);
 				if(strlen(gstr_pre) - strlen(gstr2) >= i_match) break;
 			}
-			ename_r = &item->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
-			if(printops.abbreviate_names && ename_r->abbreviation) ename_r2 = &item->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+			ename_r = &item->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget());
+			if(printops.abbreviate_names && ename_r->abbreviation) ename_r2 = &item->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget());
 			else ename_r2 = NULL;
 			if(ename_r2 == ename_r) ename_r2 = NULL;
 			for(size_t name_i = 0; name_i <= (ename_r2 ? item->countNames() + 1 : item->countNames()) && !ename; name_i++) {
@@ -492,7 +493,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 					ename = ename_r2;
 				} else {
 					ename = &item->getName(ename_r2 ? name_i - 1 : name_i);
-					if(!ename || ename == ename_r || ename == ename_r2 || ename->plural || (ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext)))) {
+					if(!ename || ename == ename_r || ename == ename_r2 || ename->plural || (ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expression_edit_widget())))) {
 						ename = NULL;
 					}
 				}
@@ -529,7 +530,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 			}
 			for(size_t name_i = 1; name_i <= item->countNames() && !ename; name_i++) {
 				ename = &item->getName(name_i);
-				if(!ename || ename == ename_r || ename == ename_r2 || (!ename->plural && !(ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))))) {
+				if(!ename || ename == ename_r || ename == ename_r2 || (!ename->plural && !(ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expression_edit_widget()))))) {
 					ename = NULL;
 				}
 				if(ename) {
@@ -554,9 +555,9 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 			else str = ename->name;
 		}
 	} else if(prefix) {
-		gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &object_start, &object_end, FALSE);
-		ename_r = &prefix->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
-		if(printops.abbreviate_names && ename_r->abbreviation) ename_r2 = &prefix->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+		gchar *gstr2 = gtk_text_buffer_get_text(expression_edit_buffer(), &object_start, &object_end, FALSE);
+		ename_r = &prefix->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget());
+		if(printops.abbreviate_names && ename_r->abbreviation) ename_r2 = &prefix->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget());
 		else ename_r2 = NULL;
 		if(ename_r2 == ename_r) ename_r2 = NULL;
 		for(size_t name_i = 0; name_i <= (ename_r2 ? prefix->countNames() + 1 : prefix->countNames()) && !ename; name_i++) {
@@ -566,7 +567,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 				ename = ename_r2;
 			} else {
 				ename = &prefix->getName(ename_r2 ? name_i - 1 : name_i);
-				if(!ename || ename == ename_r || ename == ename_r2 || ename->plural || (ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext)))) {
+				if(!ename || ename == ename_r || ename == ename_r2 || ename->plural || (ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expression_edit_widget())))) {
 					ename = NULL;
 				}
 			}
@@ -587,7 +588,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 		}
 		for(size_t name_i = 1; name_i <= prefix->countNames() && !ename; name_i++) {
 			ename = &prefix->getName(name_i);
-			if(!ename || ename == ename_r || ename == ename_r2 || (!ename->plural && !(ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))))) {
+			if(!ename || ename == ename_r || ename == ename_r2 || (!ename->plural && !(ename->unicode && (!printops.use_unicode_signs || !can_display_unicode_string_function(ename->name.c_str(), (void*) expression_edit_widget()))))) {
 				ename = NULL;
 			}
 			if(ename) {
@@ -606,7 +607,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 			}
 		}
 		if(ename && (ename->completion_only || (printops.use_unicode_signs && ename->name == "u"))) {
-			ename = &prefix->preferredInputName(ename->abbreviation, printops.use_unicode_signs, ename->plural, false, &can_display_unicode_string_function, (void*) expressiontext);
+			ename = &prefix->preferredInputName(ename->abbreviation, printops.use_unicode_signs, ename->plural, false, &can_display_unicode_string_function, (void*) expression_edit_widget());
 		}
 		if(!ename) ename = ename_r;
 		if(!ename) return;
@@ -634,7 +635,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 	}
 	if(completion_to_menu) {
 		if(str[str.length() - 1] == ' ' || str[str.length() - 1] == '/') {
-			if(printops.use_unicode_signs && can_display_unicode_string_function("➞", (void*) expressiontext)) {
+			if(printops.use_unicode_signs && can_display_unicode_string_function("➞", (void*) expression_edit_widget())) {
 				str.insert(0, "➞");
 			} else {
 				if(!auto_calculate || rpn_mode || parsed_in_result) str.insert(0, " ");
@@ -642,8 +643,8 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 			}
 			if(auto_calculate && !rpn_mode && !parsed_in_result) {
 				GtkTextIter iter;
-				gtk_text_buffer_get_end_iter(expressionbuffer, &iter);
-				gtk_text_buffer_select_range(expressionbuffer, &iter, &iter);
+				gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iter);
+				gtk_text_buffer_select_range(expression_edit_buffer(), &iter, &iter);
 			}
 			insert_text(str.c_str());
 		} else {
@@ -659,26 +660,26 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 	}
 	block_completion();
 	block_undo();
-	gtk_text_buffer_delete(expressionbuffer, &object_start, &object_end);
+	gtk_text_buffer_delete(expression_edit_buffer(), &object_start, &object_end);
 	unblock_undo();
 	GtkTextIter ipos = object_start;
 	if(item && item->type() == TYPE_FUNCTION) {
 		GtkTextIter ipos2 = ipos;
 		gtk_text_iter_forward_char(&ipos2);
-		gchar *gstr = gtk_text_buffer_get_text(expressionbuffer, &ipos, &ipos2, FALSE);
+		gchar *gstr = gtk_text_buffer_get_text(expression_edit_buffer(), &ipos, &ipos2, FALSE);
 		if(strlen(gstr) > 0 && gstr[0] == '(') {
-			gtk_text_buffer_insert(expressionbuffer, &ipos, str.c_str(), -1);
-			gtk_text_buffer_place_cursor(expressionbuffer, &ipos);
+			gtk_text_buffer_insert(expression_edit_buffer(), &ipos, str.c_str(), -1);
+			gtk_text_buffer_place_cursor(expression_edit_buffer(), &ipos);
 		} else {
 			str += "()";
-			gtk_text_buffer_insert(expressionbuffer, &ipos, str.c_str(), -1);
+			gtk_text_buffer_insert(expression_edit_buffer(), &ipos, str.c_str(), -1);
 			gtk_text_iter_backward_char(&ipos);
-			gtk_text_buffer_place_cursor(expressionbuffer, &ipos);
+			gtk_text_buffer_place_cursor(expression_edit_buffer(), &ipos);
 		}
 		g_free(gstr);
 	} else {
-		gtk_text_buffer_insert(expressionbuffer, &ipos, str.c_str(), -1);
-		gtk_text_buffer_place_cursor(expressionbuffer, &ipos);
+		gtk_text_buffer_insert(expression_edit_buffer(), &ipos, str.c_str(), -1);
+		gtk_text_buffer_place_cursor(expression_edit_buffer(), &ipos);
 	}
 	current_object_end = current_object_start + unicode_length(str);
 	current_object_start = cos_bak;
@@ -705,7 +706,7 @@ gboolean on_completionview_motion_notify_event(GtkWidget*, GdkEventMotion*, gpoi
 }
 gboolean on_completionwindow_key_press_event(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
 	if(!gtk_widget_get_mapped(completion_window)) return FALSE;
-	gtk_widget_event(expressiontext, (GdkEvent*) event);
+	gtk_widget_event(expression_edit_widget(), (GdkEvent*) event);
 	return TRUE;
 }
 gboolean on_completionwindow_button_press_event(GtkWidget *widget, GdkEventButton *event, gpointer user_data) {
@@ -732,14 +733,14 @@ void completion_resize_popup(int matches) {
 
 	GtkTextIter iter;
 	if(current_object_start < 0) {
-		GtkTextMark *miter = gtk_text_buffer_get_insert(expressionbuffer);
-		gtk_text_buffer_get_iter_at_mark(expressionbuffer, &iter, miter);
+		GtkTextMark *miter = gtk_text_buffer_get_insert(expression_edit_buffer());
+		gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &iter, miter);
 	} else {
-		gtk_text_buffer_get_iter_at_offset(expressionbuffer, &iter, current_object_start);
+		gtk_text_buffer_get_iter_at_offset(expression_edit_buffer(), &iter, current_object_start);
 	}
-	gtk_text_view_get_iter_location(GTK_TEXT_VIEW(expressiontext), &iter, &bufloc);
-	gtk_text_view_buffer_to_window_coords(GTK_TEXT_VIEW(expressiontext), GTK_TEXT_WINDOW_WIDGET, bufloc.x, bufloc.y, &bufloc.x, &bufloc.y);
-	window = gtk_text_view_get_window(GTK_TEXT_VIEW(expressiontext), GTK_TEXT_WINDOW_WIDGET);
+	gtk_text_view_get_iter_location(GTK_TEXT_VIEW(expression_edit_widget()), &iter, &bufloc);
+	gtk_text_view_buffer_to_window_coords(GTK_TEXT_VIEW(expression_edit_widget()), GTK_TEXT_WINDOW_WIDGET, bufloc.x, bufloc.y, &bufloc.x, &bufloc.y);
+	window = gtk_text_view_get_window(GTK_TEXT_VIEW(expression_edit_widget()), GTK_TEXT_WINDOW_WIDGET);
 	gdk_window_get_origin(window, &x, &y);
 
 	x += bufloc.x;
@@ -760,7 +761,7 @@ void completion_resize_popup(int matches) {
 	height_diff -= rect.height;
 	if(height_diff < 2) height_diff = 2;
 
-	display = gtk_widget_get_display(GTK_WIDGET(expressiontext));
+	display = gtk_widget_get_display(GTK_WIDGET(expression_edit_widget()));
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 	monitor = gdk_display_get_monitor_at_window(display, window);
 	gdk_monitor_get_workarea(monitor, &area);
@@ -881,9 +882,9 @@ void do_completion(bool to_menu = false) {
 		}
 	} else {
 		GtkTextIter object_start, object_end;
-		gtk_text_buffer_get_iter_at_offset(expressionbuffer, &object_start, current_object_start);
-		gtk_text_buffer_get_iter_at_offset(expressionbuffer, &object_end, current_object_end);
-		gchar *gstr2 = gtk_text_buffer_get_text(expressionbuffer, &object_start, &object_end, FALSE);
+		gtk_text_buffer_get_iter_at_offset(expression_edit_buffer(), &object_start, current_object_start);
+		gtk_text_buffer_get_iter_at_offset(expression_edit_buffer(), &object_end, current_object_end);
+		gchar *gstr2 = gtk_text_buffer_get_text(expression_edit_buffer(), &object_start, &object_end, FALSE);
 		str = gstr2;
 		g_free(gstr2);
 		if(str.length() < (size_t) completion_min) {gtk_widget_hide(completion_window); return;}
@@ -1349,9 +1350,9 @@ void do_completion(bool to_menu = false) {
 		completion_resize_popup(matches);
 		if(cos_bak != current_object_start || current_object_end != coe_bak) return;
 		if(!gtk_widget_is_visible(completion_window)) {
-			gtk_window_set_transient_for(GTK_WINDOW(completion_window), GTK_WINDOW(mainwindow));
-			gtk_window_group_add_window(gtk_window_get_group(GTK_WINDOW(mainwindow)), GTK_WINDOW(completion_window));
-			gtk_window_set_screen(GTK_WINDOW(completion_window), gtk_widget_get_screen(expressiontext));
+			gtk_window_set_transient_for(GTK_WINDOW(completion_window), main_window());
+			gtk_window_group_add_window(gtk_window_get_group(main_window()), GTK_WINDOW(completion_window));
+			gtk_window_set_screen(GTK_WINDOW(completion_window), gtk_widget_get_screen(expression_edit_widget()));
 			gtk_widget_show(completion_window);
 		}
 		gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(completion_view)));
@@ -1563,13 +1564,13 @@ void update_completion() {
 		if(CALCULATOR->functions[i]->isActive()) {
 			gtk_list_store_append(completion_store, &iter);
 			const ExpressionName *ename, *ename_r;
-			ename_r = &CALCULATOR->functions[i]->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+			ename_r = &CALCULATOR->functions[i]->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget());
 			if(name_has_formatting(ename_r)) str = format_name(ename_r, TYPE_FUNCTION);
 			else str = ename_r->name;
 			str += "()";
 			for(size_t name_i = 1; name_i <= CALCULATOR->functions[i]->countNames(); name_i++) {
 				ename = &CALCULATOR->functions[i]->getName(name_i);
-				if(ename && ename != ename_r && !ename->completion_only && !ename->plural && (!ename->unicode || can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))) {
+				if(ename && ename != ename_r && !ename->completion_only && !ename->plural && (!ename->unicode || can_display_unicode_string_function(ename->name.c_str(), (void*) expression_edit_widget()))) {
 					str += " <i>";
 					if(name_has_formatting(ename)) str += format_name(ename, TYPE_FUNCTION);
 					else str += ename->name;
@@ -1586,10 +1587,10 @@ void update_completion() {
 			gtk_list_store_append(completion_store, &iter);
 			const ExpressionName *ename, *ename_r;
 			bool b = false;
-			ename_r = &CALCULATOR->variables[i]->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+			ename_r = &CALCULATOR->variables[i]->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget());
 			for(size_t name_i = 1; name_i <= CALCULATOR->variables[i]->countNames(); name_i++) {
 				ename = &CALCULATOR->variables[i]->getName(name_i);
-				if(ename && ename != ename_r && !ename->completion_only && !ename->plural && (!ename->unicode || can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))) {
+				if(ename && ename != ename_r && !ename->completion_only && !ename->plural && (!ename->unicode || can_display_unicode_string_function(ename->name.c_str(), (void*) expression_edit_widget()))) {
 					if(!b) {
 						if(name_has_formatting(ename_r)) str = format_name(ename_r, TYPE_VARIABLE);
 						else str = ename_r->name;
@@ -1605,7 +1606,7 @@ void update_completion() {
 				str = format_name(ename_r, TYPE_VARIABLE);
 				b = true;
 			}
-			if(printops.use_unicode_signs && can_display_unicode_string_function("→", (void*) expressiontext)) {
+			if(printops.use_unicode_signs && can_display_unicode_string_function("→", (void*) expression_edit_widget())) {
 				size_t pos = 0;
 				if(b) {
 					pos = str.find("_to_");
@@ -1704,7 +1705,7 @@ void update_completion() {
 	}
 	PrintOptions po = printops;
 	po.is_approximate = NULL;
-	po.can_display_unicode_string_arg = (void*) expressiontext;
+	po.can_display_unicode_string_arg = (void*) expression_edit_widget();
 	po.abbreviate_names = true;
 	for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 		Unit *u = CALCULATOR->units[i];
@@ -1713,10 +1714,10 @@ void update_completion() {
 				gtk_list_store_append(completion_store, &iter);
 				const ExpressionName *ename, *ename_r;
 				bool b = false;
-				ename_r = &u->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+				ename_r = &u->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget());
 				for(size_t name_i = 1; name_i <= u->countNames(); name_i++) {
 					ename = &u->getName(name_i);
-					if(ename && ename != ename_r && !ename->completion_only && !ename->plural && (!ename->unicode || can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))) {
+					if(ename && ename != ename_r && !ename->completion_only && !ename->plural && (!ename->unicode || can_display_unicode_string_function(ename->name.c_str(), (void*) expression_edit_widget()))) {
 						if(!b) {
 							if(name_has_formatting(ename_r)) str = format_name(ename_r, TYPE_UNIT);
 							else str = ename_r->name;
@@ -1738,7 +1739,7 @@ void update_completion() {
 				unordered_map<string, cairo_surface_t*>::const_iterator it_flag = flag_surfaces.end();
 				if(!u->title(false).empty()) {
 					title2 = u->title(false);
-					ename = &u->preferredInputName(true, printops.use_unicode_signs, false, u->isCurrency(), &can_display_unicode_string_function, (void*) expressiontext);
+					ename = &u->preferredInputName(true, printops.use_unicode_signs, false, u->isCurrency(), &can_display_unicode_string_function, (void*) expression_edit_widget());
 					if(ename->abbreviation) {
 						bool tp = title2[title2.length() - 1] == ')';
 						title2 += " ";
@@ -1779,12 +1780,12 @@ void update_completion() {
 					str = "";
 					for(size_t name_i = 0; name_i < 2; name_i++) {
 						const ExpressionName *ename;
-						ename = &prefix->preferredInputName(name_i != 1, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+						ename = &prefix->preferredInputName(name_i != 1, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget());
 						if(!ename->name.empty() && (ename->abbreviation == (name_i != 1))) {
 							bool b_italic = !str.empty();
 							if(b_italic) str += " <i>";
 							str += ename->formattedName(-1, false, true);
-							str += u->preferredInputName(name_i != 1, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).formattedName(TYPE_UNIT, true, true);
+							str += u->preferredInputName(name_i != 1, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_UNIT, true, true);
 							if(b_italic) str += "</i>";
 							if(!b_italic) title2 += str;
 						}
@@ -1824,11 +1825,11 @@ void update_completion() {
 		gtk_list_store_append(completion_store, &iter);
 		str = "";
 		const ExpressionName *ename, *ename_r;
-		ename_r = &p->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext);
+		ename_r = &p->preferredInputName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget());
 		str = ename_r->formattedName(-1, false, true);
 		for(size_t name_i = 1; name_i <= p->countNames(); name_i++) {
 			ename = &p->getName(name_i);
-			if(ename && ename != ename_r && !ename->completion_only && !ename->plural && (!ename->unicode || can_display_unicode_string_function(ename->name.c_str(), (void*) expressiontext))) {
+			if(ename && ename != ename_r && !ename->completion_only && !ename->plural && (!ename->unicode || can_display_unicode_string_function(ename->name.c_str(), (void*) expression_edit_widget()))) {
 				str += " <i>";
 				str += ename->formattedName(-1, false, true);
 				str += "</i>";

@@ -28,6 +28,8 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "mainwindow.h"
+#include "exchangerates.h"
 #include "expressionedit.h"
 #include "uniteditdialog.h"
 #include "unitsdialog.h"
@@ -430,7 +432,7 @@ void convert_in_wUnits(int toFrom) {
 				CALCULATOR->resetExchangeRatesUsed();
 				block_error();
 				MathStructure v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(toValue, eo.parse_options), uTo, uFrom, 1500, eo);
-				if(!v_mstruct.isAborted() && check_exchange_rates(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")))) v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(toValue, eo.parse_options), uTo, uFrom, 1500, eo);
+				if(!v_mstruct.isAborted() && check_exchange_rates(GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")))) v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(toValue, eo.parse_options), uTo, uFrom, 1500, eo);
 				if(v_mstruct.isAborted()) {
 					old_fromValue = CALCULATOR->timedOutString();
 				} else {
@@ -438,7 +440,7 @@ void convert_in_wUnits(int toFrom) {
 				}
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_from_val")), old_fromValue.c_str());
 				b = b || v_mstruct.isApproximate();
-				display_errors(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")));
+				display_errors(GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")));
 				unblock_error();
 			}
 		} else {
@@ -460,7 +462,7 @@ void convert_in_wUnits(int toFrom) {
 				CALCULATOR->resetExchangeRatesUsed();
 				block_error();
 				MathStructure v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(fromValue, eo.parse_options), uFrom, uTo, 1500, eo);
-				if(!v_mstruct.isAborted() && check_exchange_rates(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")))) v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(fromValue, eo.parse_options), uFrom, uTo, 1500, eo);
+				if(!v_mstruct.isAborted() && check_exchange_rates(GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")))) v_mstruct = CALCULATOR->convert(CALCULATOR->unlocalizeExpression(fromValue, eo.parse_options), uFrom, uTo, 1500, eo);
 				if(v_mstruct.isAborted()) {
 					old_toValue = CALCULATOR->timedOutString();
 				} else {
@@ -468,7 +470,7 @@ void convert_in_wUnits(int toFrom) {
 				}
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_entry_to_val")), old_toValue.c_str());
 				b = b || v_mstruct.isApproximate();
-				display_errors(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")));
+				display_errors(GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")));
 				unblock_error();
 			}
 		}
@@ -719,11 +721,11 @@ void on_units_button_insert_clicked(GtkButton*, gpointer) {
 		if(u->subtype() == SUBTYPE_COMPOSITE_UNIT) {
 			PrintOptions po = printops;
 			po.is_approximate = NULL;
-			po.can_display_unicode_string_arg = (void*) expressiontext;
+			po.can_display_unicode_string_arg = (void*) expression_edit_widget();
 			string str = ((CompositeUnit*) u)->print(po, false, TAG_TYPE_HTML, true);
 			insert_text(str.c_str());
 		} else {
-			insert_text(u->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, true, false, &can_display_unicode_string_function, (void*) expressiontext).formattedName(TYPE_UNIT, true).c_str());
+			insert_text(u->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, true, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_UNIT, true).c_str());
 		}
 	}
 }
@@ -749,7 +751,7 @@ void on_units_button_delete_clicked(GtkButton*, gpointer) {
 	if(!u || !u->isLocal()) return;
 	if(u->isUsedByOtherUnits()) {
 		//do not delete units that are used by other units
-		show_message(_("Cannot delete unit as it is needed by other units."), GTK_WIDGET(gtk_builder_get_object(units_builder, "units_dialog")));
+		show_message(_("Cannot delete unit as it is needed by other units."), GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")));
 		return;
 	}
 	u->destroy();

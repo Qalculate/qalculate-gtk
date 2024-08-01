@@ -28,6 +28,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "mainwindow.h"
 #include "expressionedit.h"
 #include "conversionview.h"
 
@@ -522,5 +523,5 @@ void create_conversion_view() {
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_continuous_conversion")), continuous_conversion);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "convert_button_set_missing_prefixes")), set_missing_prefixes);
 
-	gtk_builder_add_callback_symbols(main_builder, "on_convert_entry_unit_activate", G_CALLBACK(on_convert_entry_unit_activate), "on_convert_entry_unit_changed", G_CALLBACK(on_convert_entry_unit_changed), "on_convert_entry_unit_icon_release", G_CALLBACK(on_convert_entry_unit_icon_release), "on_convert_treeview_category_row_expanded", G_CALLBACK(on_convert_treeview_category_row_expanded), "on_convert_treeview_unit_button_press_event", G_CALLBACK(on_convert_treeview_unit_button_press_event), "on_convert_treeview_unit_popup_menu", G_CALLBACK(on_convert_treeview_unit_popup_menu), "on_convert_entry_search_changed", G_CALLBACK(on_convert_entry_search_changed), "on_convert_button_convert_clicked", G_CALLBACK(on_convert_button_convert_clicked), "on_convert_button_continuous_conversion_toggled", G_CALLBACK(on_convert_button_continuous_conversion_toggled), "on_convert_button_set_missing_prefixes_toggled", G_CALLBACK(on_convert_button_set_missing_prefixes_toggled), "on_popup_menu_convert_insert_activate", G_CALLBACK(on_popup_menu_convert_insert_activate), "on_popup_menu_convert_convert_activate", G_CALLBACK(on_popup_menu_convert_convert_activate), NULL);
+	gtk_builder_add_callback_symbols(main_builder, "on_convert_entry_unit_activate", G_CALLBACK(on_convert_entry_unit_activate), "on_convert_entry_unit_changed", G_CALLBACK(on_convert_entry_unit_changed), "on_convert_entry_unit_icon_release", G_CALLBACK(on_convert_entry_unit_icon_release), "on_convert_treeview_category_row_expanded", G_CALLBACK(on_convert_treeview_category_row_expanded), "on_convert_treeview_unit_button_press_event", G_CALLBACK(on_convert_treeview_unit_button_press_event), "on_convert_treeview_unit_popup_menu", G_CALLBACK(on_convert_treeview_unit_popup_menu), "on_convert_entry_search_changed", G_CALLBACK(on_convert_entry_search_changed), "on_convert_button_convert_clicked", G_CALLBACK(on_convert_button_convert_clicked), "on_convert_button_continuous_conversion_toggled", G_CALLBACK(on_convert_button_continuous_conversion_toggled), "on_convert_button_set_missing_prefixes_toggled", G_CALLBACK(on_convert_button_set_missing_prefixes_toggled), "on_popup_menu_convert_insert_activate", G_CALLBACK(on_popup_menu_convert_insert_activate), "on_popup_menu_convert_convert_activate", G_CALLBACK(on_popup_menu_convert_convert_activate), "on_unit_entry_key_press_event", G_CALLBACK(on_unit_entry_key_press_event), NULL);
 }

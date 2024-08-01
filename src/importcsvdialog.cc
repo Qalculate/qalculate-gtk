@@ -27,6 +27,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "mainwindow.h"
 #include "importcsvdialog.h"
 
 using std::string;
@@ -137,7 +138,7 @@ run_csv_import_dialog:
 		if(str.empty()) {
 			//no filename -- open dialog again
 			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(csvimport_builder, "csv_import_entry_file")));
-			show_message(_("No file name entered."), dialog);
+			show_message(_("No file name entered."), GTK_WINDOW(dialog));
 			goto run_csv_import_dialog;
 		}
 		string name_str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(csvimport_builder, "csv_import_entry_name")));
@@ -145,13 +146,13 @@ run_csv_import_dialog:
 		if(name_str.empty()) {
 			//no name -- open dialog again
 			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(csvimport_builder, "csv_import_entry_name")));
-			show_message(_("Empty name field."), dialog);
+			show_message(_("Empty name field."), GTK_WINDOW(dialog));
 			goto run_csv_import_dialog;
 		}
 		//variable with the same name exists -- overwrite or open dialog again
 		if(CALCULATOR->variableNameTaken(name_str)) {
 			Variable *var = CALCULATOR->getActiveVariable(str, true);
-			if((!var || var->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
+			if((!var || var->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), GTK_WINDOW(dialog))) {
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(csvimport_builder, "csv_import_entry_name")));
 				goto run_csv_import_dialog;
 			}
@@ -182,17 +183,17 @@ run_csv_import_dialog:
 		if(delimiter.empty()) {
 			//no filename -- open dialog again
 			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(csvimport_builder, "csv_import_entry_delimiter_other")));
-			show_message(_("No delimiter selected."), dialog);
+			show_message(_("No delimiter selected."), GTK_WINDOW(dialog));
 			goto run_csv_import_dialog;
 		}
 		block_error();
 		if(!CALCULATOR->importCSV(str.c_str(), gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(csvimport_builder, "csv_import_spinbutton_first_row"))), gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(csvimport_builder, "csv_import_checkbutton_headers"))), delimiter, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(csvimport_builder, "csv_import_radiobutton_matrix"))), name_str, gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(csvimport_builder, "csv_import_entry_desc"))), gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(csvimport_builder, "csv_import_combo_category"))))) {
-			GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not import from file \n%s"), str.c_str());
+			GtkWidget *edialog = gtk_message_dialog_new(main_window(), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not import from file \n%s"), str.c_str());
 			if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
 			gtk_dialog_run(GTK_DIALOG(edialog));
 			gtk_widget_destroy(edialog);
 		}
-		display_errors(dialog);
+		display_errors(GTK_WINDOW(dialog));
 		unblock_error();
 		update_vmenu();
 	}

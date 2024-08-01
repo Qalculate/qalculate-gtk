@@ -39,6 +39,24 @@ using std::endl;
 gint help_width = -1, help_height = -1;
 gdouble help_zoom = -1.0;
 
+bool read_help_settings_line(string &svar, string &svalue, int &v) {
+	if(svar == "help_width") {
+		help_width = v;
+	} else if(svar == "help_height") {
+		help_height = v;
+	} else if(svar == "help_zoom") {
+		help_zoom = strtod(svalue.c_str(), NULL);
+	} else {
+		return false;
+	}
+	return true;
+}
+void write_help_settings(FILE *file) {
+	if(help_width != -1) fprintf(file, "help_width=%i\n", help_width);
+	if(help_height != -1) fprintf(file, "help_height=%i\n", help_height);
+	if(help_zoom >= 0.0) fprintf(file, "help_zoom=%f\n", help_zoom);
+}
+
 string get_doc_uri(string file, bool with_proto = true) {
 	string surl;
 #ifndef LOCAL_HELP
@@ -332,10 +350,10 @@ gboolean on_help_decide_policy(WebKitWebView *w, WebKitPolicyDecision *d, WebKit
 }
 #endif
 
-void show_help(const char *file, GtkWidget *parent) {
+void show_help(const char *file, GtkWindow *parent) {
 #ifdef _WIN32
 	if(ShellExecuteA(NULL, "open", get_doc_uri("index.html").c_str(), NULL, NULL, SW_SHOWNORMAL) <= (HINSTANCE) 32) {
-		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help for Qalculate!."));
+		GtkWidget *dialog = gtk_message_dialog_new(parent, (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help for Qalculate!."));
 		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 		gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(dialog);
@@ -345,8 +363,8 @@ void show_help(const char *file, GtkWidget *parent) {
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 	gtk_window_set_title(GTK_WINDOW(dialog), "Qalculate! Manual");
 	if(parent) {
-		gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(parent));
-		gtk_window_set_modal(GTK_WINDOW(dialog), gtk_window_get_modal(GTK_WINDOW(parent)));
+		gtk_window_set_transient_for(GTK_WINDOW(dialog), parent);
+		gtk_window_set_modal(GTK_WINDOW(dialog), gtk_window_get_modal(parent));
 	}
 	gtk_window_set_default_size(GTK_WINDOW(dialog), help_width > 0 ? help_width : 800, help_height > 0 ? help_height : 600);
 	GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -395,7 +413,7 @@ void show_help(const char *file, GtkWidget *parent) {
 	webkit_settings_set_zoom_text_only(settings, FALSE);
 	if(help_zoom > 0.0) webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(webView), help_zoom);
 	PangoFontDescription *font_desc;
-	gtk_style_context_get(gtk_widget_get_style_context(mainwindow), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+	gtk_style_context_get(gtk_widget_get_style_context(main_window()), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
 	webkit_settings_set_default_font_family(settings, pango_font_description_get_family(font_desc));
 	webkit_settings_set_default_font_size(settings, webkit_settings_font_size_to_pixels(pango_font_description_get_size(font_desc) / PANGO_SCALE));
 	pango_font_description_free(font_desc);
@@ -426,13 +444,13 @@ void show_help(const char *file, GtkWidget *parent) {
 #else
 	GError *error = NULL;
 #	if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-	gtk_show_uri_on_window(GTK_WINDOW(parent), get_doc_uri(file).c_str(), gtk_get_current_event_time(), &error);
+	gtk_show_uri_on_window(parent, get_doc_uri(file).c_str(), gtk_get_current_event_time(), &error);
 #	else
 	gtk_show_uri(NULL, get_doc_uri(file).c_str(), gtk_get_current_event_time(), &error);
 #	endif
 	if(error) {
 		gchar *error_str = g_locale_to_utf8(error->message, -1, NULL, NULL, NULL);
-		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help for Qalculate!.\n%s"), error_str);
+		GtkWidget *dialog = gtk_message_dialog_new(parent, (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not display help for Qalculate!.\n%s"), error_str);
 		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 		gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(dialog);

@@ -27,6 +27,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "modes.h"
 #include "floatingpointdialog.h"
 #include "calendarconversiondialog.h"
 #include "percentagecalculationdialog.h"
@@ -55,6 +56,7 @@
 #include "expressionedit.h"
 #include "expressionstatus.h"
 #include "insertfunctiondialog.h"
+#include "mainwindow.h"
 #include "resultview.h"
 #include "openhelp.h"
 #include "keypad.h"
@@ -79,10 +81,26 @@ vector<GtkWidget*> recent_function_items;
 vector<GtkWidget*> recent_variable_items;
 vector<GtkWidget*> recent_unit_items;
 
-extern vector<mode_struct> modes;
 vector<GtkWidget*> mode_items;
 vector<GtkWidget*> popup_result_mode_items;
 
+bool fraction_fixed_combined = true;
+
+bool read_menubar_settings_line(string &svar, string &svalue, int &v) {
+	if(svar == "fraction_fixed_combined") {
+		fraction_fixed_combined = v;
+	} else {
+		return false;
+	}
+	return true;
+}
+void write_menubar_settings(FILE *file) {
+	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fixed_combined")))) fprintf(file, "fraction_fixed_combined=%i\n", false);
+}
+
+bool combined_fixed_fraction_set() {
+	return gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fixed_combined")));
+}
 void insert_unit_from_menu(GtkMenuItem*, gpointer user_data) {
 	insert_unit((Unit*) user_data, true);
 }
@@ -90,17 +108,17 @@ void insert_variable_from_menu(GtkMenuItem*, gpointer user_data) {
 	insert_variable((Variable*) user_data, true);
 }
 void insert_prefix_from_menu(GtkMenuItem*, gpointer user_data) {
-	insert_text(((Prefix*) user_data)->name(printops.abbreviate_names, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expressiontext).c_str());
+	insert_text(((Prefix*) user_data)->name(printops.abbreviate_names, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) expression_edit_widget()).c_str());
 }
 void insert_function_from_menu(GtkMenuItem*, gpointer user_data) {
 	if(!CALCULATOR->stillHasFunction((MathFunction*) user_data)) return;
-	insert_function((MathFunction*) user_data, GTK_WINDOW(mainwindow));
+	insert_function((MathFunction*) user_data, main_window());
 }
 void convert_to_unit(GtkMenuItem*, gpointer user_data) {
 	GtkWidget *edialog;
 	Unit *u = (Unit*) user_data;
 	if(!u) {
-		edialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Unit does not exist"));
+		edialog = gtk_message_dialog_new(main_window(), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Unit does not exist"));
 		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
 		gtk_dialog_run(GTK_DIALOG(edialog));
 		gtk_widget_destroy(edialog);
@@ -115,10 +133,10 @@ void on_menu_item_copy_ascii_activate(GtkMenuItem*, gpointer) {
 	copy_result(1);
 }
 void on_menu_item_precision_activate(GtkMenuItem*, gpointer) {
-	open_precision(GTK_WINDOW(mainwindow));
+	open_precision(main_window());
 }
 void on_menu_item_decimals_activate(GtkMenuItem*, gpointer) {
-	open_decimals(GTK_WINDOW(mainwindow));
+	open_decimals(main_window());
 }
 void on_menu_item_check_updates_activate(GtkMenuItem*, gpointer) {
 	check_for_new_version(false);
@@ -130,7 +148,7 @@ void on_menu_item_reportbug_activate(GtkMenuItem*, gpointer) {
 	report_bug();
 }
 void on_menu_item_help_activate(GtkMenuItem*, gpointer) {
-	show_help("index.html", mainwindow);
+	show_help("index.html", main_window());
 }
 void on_menu_item_save_activate(GtkMenuItem*, gpointer) {
 	add_as_variable();
@@ -139,13 +157,13 @@ void on_menu_item_save_image_activate(GtkMenuItem*, gpointer) {
 	save_as_image();
 }
 void on_menu_item_customize_buttons_activate(GtkMenuItem*, gpointer) {
-	edit_buttons(GTK_WINDOW(mainwindow));
+	edit_buttons(main_window());
 }
 void on_menu_item_edit_shortcuts_activate(GtkMenuItem*, gpointer) {
-	edit_shortcuts(GTK_WINDOW(mainwindow));
+	edit_shortcuts(main_window());
 }
 void on_menu_item_periodic_table_activate(GtkMenuItem*, gpointer) {
-	show_periodic_table(GTK_WINDOW(mainwindow));
+	show_periodic_table(main_window());
 }
 void on_menu_item_plot_functions_activate(GtkMenuItem*, gpointer) {
 	open_plot();
@@ -245,23 +263,62 @@ void update_menu_fraction() {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_fraction_percent"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_percent_activate, NULL);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_fraction_permille"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_permille_activate, NULL);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_fraction_permyriad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_permyriad_activate, NULL);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), printops.number_fraction_format == FRACTION_DECIMAL);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal_exact")), printops.number_fraction_format == FRACTION_DECIMAL_EXACT);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), printops.number_fraction_format == FRACTION_COMBINED);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fractional")), printops.number_fraction_format == FRACTION_FRACTIONAL);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_percent")), printops.number_fraction_format == FRACTION_PERCENT);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_permille")), printops.number_fraction_format == FRACTION_PERMILLE);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_permyriad")), printops.number_fraction_format == FRACTION_PERMYRIAD);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_halves")), (printops.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR || printops.number_fraction_format == FRACTION_FRACTIONAL_FIXED_DENOMINATOR) && CALCULATOR->fixedDenominator() == 2);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_3rds")), (printops.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR || printops.number_fraction_format == FRACTION_FRACTIONAL_FIXED_DENOMINATOR) && CALCULATOR->fixedDenominator() == 3);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_4ths")), (printops.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR || printops.number_fraction_format == FRACTION_FRACTIONAL_FIXED_DENOMINATOR) && CALCULATOR->fixedDenominator() == 4);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_5ths")), (printops.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR || printops.number_fraction_format == FRACTION_FRACTIONAL_FIXED_DENOMINATOR) && CALCULATOR->fixedDenominator() == 5);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_6ths")), (printops.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR || printops.number_fraction_format == FRACTION_FRACTIONAL_FIXED_DENOMINATOR) && CALCULATOR->fixedDenominator() == 6);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_8ths")), (printops.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR || printops.number_fraction_format == FRACTION_FRACTIONAL_FIXED_DENOMINATOR) && CALCULATOR->fixedDenominator() == 8);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_10ths")), (printops.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR || printops.number_fraction_format == FRACTION_FRACTIONAL_FIXED_DENOMINATOR) && CALCULATOR->fixedDenominator() == 19);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_12ths")), (printops.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR || printops.number_fraction_format == FRACTION_FRACTIONAL_FIXED_DENOMINATOR) && CALCULATOR->fixedDenominator() == 12);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_16ths")), (printops.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR || printops.number_fraction_format == FRACTION_FRACTIONAL_FIXED_DENOMINATOR) && CALCULATOR->fixedDenominator() == 16);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_32ths")), (printops.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR || printops.number_fraction_format == FRACTION_FRACTIONAL_FIXED_DENOMINATOR) && CALCULATOR->fixedDenominator() == 32);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_fraction_fixed_combined"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_fixed_combined_activate, NULL);
+	switch(printops.number_fraction_format) {
+		case FRACTION_DECIMAL: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
+			break;
+		}
+		case FRACTION_DECIMAL_EXACT: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal_exact")), TRUE);
+			break;
+		}
+		case FRACTION_COMBINED: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
+			break;
+		}
+		case FRACTION_FRACTIONAL: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
+			break;
+		}
+		case FRACTION_COMBINED_FIXED_DENOMINATOR: {}
+		case FRACTION_FRACTIONAL_FIXED_DENOMINATOR: {
+			switch(CALCULATOR->fixedDenominator()) {
+				case 2: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_halves")), TRUE); break;}
+				case 3: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_3rds")), TRUE); break;}
+				case 4: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_4ths")), TRUE); break;}
+				case 5: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_5ths")), TRUE); break;}
+				case 6: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_6ths")), TRUE); break;}
+				case 8: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_8ths")), TRUE); break;}
+				case 10: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_10ths")), TRUE); break;}
+				case 12: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_12ths")), TRUE); break;}
+				case 16: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_16ths")), TRUE); break;}
+				case 32: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_32ths")), TRUE); break;}
+				default: {
+					if(printops.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR) {
+						gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
+					} else {
+						gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
+					}
+					break;
+				}
+			}
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fixed_combined")), printops.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR);
+			break;
+		}
+		case FRACTION_PERCENT: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_percent")), TRUE);
+			break;
+		}
+		case FRACTION_PERMILLE: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_permille")), TRUE);
+			break;
+		}
+		case FRACTION_PERMYRIAD: {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_permyriad")), TRUE);
+			break;
+		}
+	}
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_fraction_decimal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_decimal_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_fraction_decimal_exact"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_decimal_exact_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_fraction_combined"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_combined_activate, NULL);
@@ -279,6 +336,7 @@ void update_menu_fraction() {
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_fraction_percent"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_percent_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_fraction_permille"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_permille_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_fraction_permyriad"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_permyriad_activate, NULL);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_fraction_fixed_combined"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_fraction_fixed_combined_activate, NULL);
 }
 
 void on_menu_item_interval_adaptive_activate(GtkMenuItem *w, gpointer) {
@@ -419,23 +477,23 @@ void update_menu_approximation() {
 }
 void on_menu_item_display_normal_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	set_min_exp(EXP_PRECISION);
+	set_min_exp(EXP_PRECISION, false);
 }
 void on_menu_item_display_engineering_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	set_min_exp(EXP_BASE_3);
+	set_min_exp(EXP_BASE_3, false);
 }
 void on_menu_item_display_scientific_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	set_min_exp(EXP_SCIENTIFIC);
+	set_min_exp(EXP_SCIENTIFIC, false);
 }
 void on_menu_item_display_purely_scientific_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	set_min_exp(EXP_PURE);
+	set_min_exp(EXP_PURE, false);
 }
 void on_menu_item_display_non_scientific_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	set_min_exp(EXP_NONE);
+	set_min_exp(EXP_NONE, false);
 }
 void on_menu_item_display_no_prefixes_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
@@ -516,6 +574,8 @@ void on_menu_item_rounding_down_activate(GtkMenuItem *w, gpointer) {
 	printops.rounding = ROUNDING_DOWN;
 	result_format_updated();
 }
+extern bool scientific_negexp;
+extern bool scientific_notminuslast;
 void on_menu_item_negative_exponents_activate(GtkMenuItem *w, gpointer) {
 	printops.negative_exponents = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
 	if(printops.min_exp != EXP_NONE && printops.min_exp != EXP_PRECISION) scientific_negexp = printops.negative_exponents;
@@ -531,26 +591,31 @@ void update_menu_numerical_display() {
 		case EXP_PRECISION: {
 			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_normal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_normal_activate, NULL);
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_normal")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_normal"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_normal_activate, NULL);
 			break;
 		}
 		case EXP_BASE_3: {
 			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_engineering"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_engineering_activate, NULL);
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_engineering")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_engineering"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_engineering_activate, NULL);
 			break;
 		}
 		case EXP_SCIENTIFIC: {
 			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_scientific_activate, NULL);
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_scientific")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_scientific_activate, NULL);
 			break;
 		}
 		case EXP_PURE: {
 			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_purely_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_purely_scientific_activate, NULL);
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_purely_scientific")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_purely_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_purely_scientific_activate, NULL);
 			break;
 		}
 		case EXP_NONE: {
 			g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_non_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_non_scientific_activate, NULL);
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_non_scientific")), TRUE);
+			g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_non_scientific"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_non_scientific_activate, NULL);
 			break;
 		}
 	}
@@ -583,7 +648,7 @@ void on_menu_item_hexadecimal_activate(GtkMenuItem *w, gpointer) {
 }
 void on_menu_item_custom_base_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	open_setbase(GTK_WINDOW(mainwindow), true, false);
+	open_setbase(main_window(), true, false);
 }
 void on_menu_item_roman_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
@@ -598,7 +663,7 @@ void on_menu_item_time_format_activate(GtkMenuItem *w, gpointer) {
 	set_output_base(BASE_TIME);
 }
 void on_menu_item_set_base_activate(GtkMenuItem*, gpointer) {
-	open_setbase(GTK_WINDOW(mainwindow));
+	open_setbase(main_window());
 }
 void on_menu_item_abbreviate_names_activate(GtkMenuItem *w, gpointer) {
 	printops.abbreviate_names = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
@@ -672,7 +737,7 @@ void on_menu_item_save_mode_activate(GtkMenuItem*, gpointer) {
 	save_mode();
 }
 void on_menu_item_edit_prefs_activate(GtkMenuItem*, gpointer) {
-	edit_preferences(GTK_WINDOW(mainwindow));
+	edit_preferences(main_window());
 }
 void on_menu_item_degrees_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {
@@ -702,10 +767,10 @@ void on_menu_item_no_default_angle_unit_activate(GtkMenuItem *w, gpointer) {
 		set_angle_unit(ANGLE_UNIT_NONE);
 	}
 }
-
 void on_menu_item_fetch_exchange_rates_activate(GtkMenuItem*, gpointer) {
 	update_exchange_rates();
 }
+extern bool save_defs_on_exit;
 void on_menu_item_save_defs_activate(GtkMenuItem*, gpointer) {
 	save_defs();
 }
@@ -780,25 +845,25 @@ void on_menu_item_read_precision_activate(GtkMenuItem *w, gpointer) {
 	expression_format_updated(true);
 }
 void on_menu_item_new_unknown_activate(GtkMenuItem*, gpointer) {
-	edit_unknown(NULL, NULL, GTK_WINDOW(mainwindow));
+	edit_unknown(NULL, NULL, main_window());
 }
 void on_menu_item_new_variable_activate(GtkMenuItem*, gpointer) {
-	edit_variable(NULL, NULL, NULL, GTK_WINDOW(mainwindow));
+	edit_variable(NULL, NULL, NULL, main_window());
 }
 void on_menu_item_new_matrix_activate(GtkMenuItem*, gpointer) {
-	edit_matrix(NULL, NULL, NULL, GTK_WINDOW(mainwindow), FALSE);
+	edit_matrix(NULL, NULL, NULL, main_window(), FALSE);
 }
 void on_menu_item_new_vector_activate(GtkMenuItem*, gpointer) {
-	edit_matrix(NULL, NULL, NULL, GTK_WINDOW(mainwindow), TRUE);
+	edit_matrix(NULL, NULL, NULL, main_window(), TRUE);
 }
 void on_menu_item_new_function_activate(GtkMenuItem*, gpointer) {
-	edit_function("", NULL, GTK_WINDOW(mainwindow));
+	edit_function("", NULL, main_window());
 }
 void on_menu_item_new_dataset_activate(GtkMenuItem*, gpointer) {
-	edit_dataset(NULL, GTK_WINDOW(mainwindow));
+	edit_dataset(NULL, main_window());
 }
 void on_menu_item_new_unit_activate(GtkMenuItem*, gpointer) {
-	edit_unit("", NULL, GTK_WINDOW(mainwindow));
+	edit_unit("", NULL, main_window());
 }
 void on_menu_item_autocalc_activate(GtkMenuItem *w, gpointer) {
 	set_autocalculate(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
@@ -854,24 +919,24 @@ void on_menu_item_chain_syntax_activate(GtkMenuItem *w, gpointer) {
 }
 
 void on_menu_item_manage_variables_activate(GtkMenuItem*, gpointer) {
-	manage_variables(GTK_WINDOW(mainwindow));
+	manage_variables(main_window());
 }
 void on_menu_item_manage_functions_activate(GtkMenuItem*, gpointer) {
-	manage_functions(GTK_WINDOW(mainwindow));
+	manage_functions(main_window());
 }
 void on_menu_item_manage_units_activate(GtkMenuItem*, gpointer) {
-	manage_units(GTK_WINDOW(mainwindow));
+	manage_units(main_window());
 }
 void on_menu_item_datasets_activate(GtkMenuItem*, gpointer) {
-	manage_datasets(GTK_WINDOW(mainwindow));
+	manage_datasets(main_window());
 }
 
 void on_menu_item_import_csv_file_activate(GtkMenuItem*, gpointer) {
-	import_csv_file(GTK_WINDOW(mainwindow));
+	import_csv_file(main_window());
 }
 
 void on_menu_item_export_csv_file_activate(GtkMenuItem*, gpointer) {
-	export_csv_file(GTK_WINDOW(mainwindow));
+	export_csv_file(main_window());
 }
 void on_menu_item_convert_to_unit_expression_activate(GtkMenuItem*, gpointer) {
 	show_unit_conversion();
@@ -991,11 +1056,8 @@ void on_menu_item_assumptions_unknown_activate(GtkMenuItem *w, gpointer) {
 }
 
 int mode_menu_i = 0;
-extern GtkMenu *popup_menu_expressiontext;
-
 void on_popup_menu_mode_update_activate(GtkMenuItem*, gpointer data) {
-	size_t index = save_mode_as((const char*) data);
-	current_mode = modes[index].name;
+	save_mode_as((const char*) data, NULL, true);
 	update_window_title();
 	if(mode_menu_i == 1) {
 		gtk_menu_popdown(GTK_MENU(gtk_builder_get_object(main_builder, "mode_menu_menu")));
@@ -1003,30 +1065,25 @@ void on_popup_menu_mode_update_activate(GtkMenuItem*, gpointer data) {
 	} else if(mode_menu_i == 2) {
 		gtk_menu_popdown(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_resultview")));
 	} else if(mode_menu_i == 3) {
-		gtk_menu_popdown(popup_menu_expressiontext);
+		gtk_menu_popdown(expression_edit_popup_menu());
 	}
 	focus_keeping_selection();
 }
 void on_popup_menu_mode_delete_activate(GtkMenuItem*, gpointer data) {
-	size_t index = 2;
-	const char *name = (const char*) data;
-	for(; index < modes.size(); index++) {
-		if(modes[index].name == name) break;
-	}
-	if(index >= modes.size()) return;
+	size_t index = remove_mode((const char*) data);
+	if(index == (size_t) -1) return;
 	gtk_widget_destroy(mode_items[index]);
 	gtk_widget_destroy(popup_result_mode_items[index]);
-	modes.erase(modes.begin() + index);
 	mode_items.erase(mode_items.begin() + index);
 	popup_result_mode_items.erase(popup_result_mode_items.begin() + index);
-	if(modes.size() < 3) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_meta_mode_delete")), FALSE);
+	if(mode_count(false) == 0) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_meta_mode_delete")), FALSE);
 	if(mode_menu_i == 1) {
 		gtk_menu_popdown(GTK_MENU(gtk_builder_get_object(main_builder, "mode_menu_menu")));
 		gtk_menu_shell_deselect(GTK_MENU_SHELL(gtk_builder_get_object(main_builder, "menubar")));
 	} else if(mode_menu_i == 2) {
 		gtk_menu_popdown(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_resultview")));
 	} else if(mode_menu_i == 3) {
-		gtk_menu_popdown(popup_menu_expressiontext);
+		gtk_menu_popdown(expression_edit_popup_menu());
 	}
 	focus_keeping_selection();
 }
@@ -1035,12 +1092,8 @@ gulong on_popup_menu_mode_update_activate_handler = 0, on_popup_menu_mode_delete
 extern vector<GtkWidget*> popup_expression_mode_items;
 
 gboolean on_menu_item_meta_mode_popup_menu(GtkWidget *w, gpointer data) {
-	size_t index = 0;
-	const char *name = (const char*) data;
-	for(; index < modes.size(); index++) {
-		if(modes[index].name == name) break;
-	}
-	if(index >= modes.size()) return TRUE;
+	size_t index = mode_index((const char*) data);
+	if(index == (size_t) -1) return TRUE;
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_mode_update")), index > 0);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_mode_delete")), index > 1);
 	if(on_popup_menu_mode_update_activate_handler != 0) g_signal_handler_disconnect(gtk_builder_get_object(main_builder, "popup_menu_mode_update"), on_popup_menu_mode_update_activate_handler);
@@ -1083,7 +1136,7 @@ void on_menu_item_meta_mode_activate(GtkMenuItem*, gpointer user_data) {
 	load_mode(name);
 }
 void on_menu_item_meta_mode_save_activate(GtkMenuItem*, gpointer) {
-	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Save Mode"), GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_REJECT, _("_Save"), GTK_RESPONSE_ACCEPT, NULL);
+	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Save Mode"), main_window(), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_REJECT, _("_Save"), GTK_RESPONSE_ACCEPT, NULL);
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 	GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
@@ -1095,8 +1148,10 @@ void on_menu_item_meta_mode_save_activate(GtkMenuItem*, gpointer) {
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, TRUE, 0);
 	gtk_widget_show(label);
 	GtkWidget *entry = gtk_combo_box_text_new_with_entry();
-	for(size_t i = 2; i < modes.size(); i++) {
-		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry), modes[i].name.c_str());
+	for(size_t i = 2; ; i++) {
+		mode_struct *mode = get_mode(i);
+		if(!mode) break;
+		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entry), mode->name.c_str());
 	}
 	gtk_box_pack_end(GTK_BOX(hbox), entry, TRUE, TRUE, 0);
 	gtk_widget_show(entry);
@@ -1107,39 +1162,39 @@ run_meta_mode_save_dialog:
 		string name = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(entry));
 		remove_blank_ends(name);
 		if(name.empty()) {
-			show_message(_("Empty name field."), dialog);
+			show_message(_("Empty name field."), GTK_WINDOW(dialog));
 			goto run_meta_mode_save_dialog;
 		}
-		if(name == modes[0].name) {
-			show_message(_("Preset mode cannot be overwritten."), dialog);
+		if(name == get_mode(0)->name) {
+			show_message(_("Preset mode cannot be overwritten."), GTK_WINDOW(dialog));
 			goto run_meta_mode_save_dialog;
 		}
-		size_t index = save_mode_as(name, &new_mode);
-		current_mode = modes[index].name;
+		size_t index = save_mode_as(name, &new_mode, true);
 		update_window_title();
 		if(new_mode) {
-			GtkWidget *item = gtk_menu_item_new_with_label(modes[index].name.c_str());
+			mode_struct *mode = get_mode(index);
+			GtkWidget *item = gtk_menu_item_new_with_label(mode->name.c_str());
 			gtk_widget_show(item);
-			g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(on_menu_item_meta_mode_activate), (gpointer) modes[index].name.c_str());
-			g_signal_connect(G_OBJECT(item), "button-press-event", G_CALLBACK(on_menu_item_meta_mode_button_press), (gpointer) modes[index].name.c_str());
-			g_signal_connect(G_OBJECT(item), "popup-menu", G_CALLBACK(on_menu_item_meta_mode_popup_menu), (gpointer) modes[index].name.c_str());
+			g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(on_menu_item_meta_mode_activate), (gpointer) mode->name.c_str());
+			g_signal_connect(G_OBJECT(item), "button-press-event", G_CALLBACK(on_menu_item_meta_mode_button_press), (gpointer) mode->name.c_str());
+			g_signal_connect(G_OBJECT(item), "popup-menu", G_CALLBACK(on_menu_item_meta_mode_popup_menu), (gpointer) mode->name.c_str());
 			gtk_menu_shell_insert(GTK_MENU_SHELL(gtk_builder_get_object(main_builder, "menu_meta_modes")), item, (gint) index);
 			mode_items.push_back(item);
-			item = gtk_menu_item_new_with_label(modes[index].name.c_str());
+			item = gtk_menu_item_new_with_label(mode->name.c_str());
 			gtk_widget_show(item);
-			g_signal_connect(G_OBJECT(item), "button-press-event", G_CALLBACK(on_menu_item_meta_mode_button_press), (gpointer) modes[index].name.c_str());
-			g_signal_connect(G_OBJECT(item), "popup-menu", G_CALLBACK(on_menu_item_meta_mode_popup_menu), (gpointer) modes[index].name.c_str());
-			g_signal_connect(G_OBJECT(item), "popup-menu", G_CALLBACK(on_menu_item_meta_mode_popup_menu), (gpointer) modes[index].name.c_str());
+			g_signal_connect(G_OBJECT(item), "button-press-event", G_CALLBACK(on_menu_item_meta_mode_button_press), (gpointer) mode->name.c_str());
+			g_signal_connect(G_OBJECT(item), "popup-menu", G_CALLBACK(on_menu_item_meta_mode_popup_menu), (gpointer) mode->name.c_str());
+			g_signal_connect(G_OBJECT(item), "popup-menu", G_CALLBACK(on_menu_item_meta_mode_popup_menu), (gpointer) mode->name.c_str());
 			gtk_menu_shell_insert(GTK_MENU_SHELL(gtk_builder_get_object(main_builder, "menu_result_popup_meta_modes")), item, (gint) index);
 			popup_result_mode_items.push_back(item);
-			if(modes.size() == 3) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_meta_mode_delete")), TRUE);
+			if(mode_count(false) == 1) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_meta_mode_delete")), TRUE);
 		}
 	}
 	gtk_widget_destroy(dialog);
 }
 
 void on_menu_item_meta_mode_delete_activate(GtkMenuItem*, gpointer) {
-	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Delete Mode"), GTK_WINDOW(mainwindow), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_REJECT, _("_Delete"), GTK_RESPONSE_ACCEPT, NULL);
+	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Delete Mode"), main_window(), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_REJECT, _("_Delete"), GTK_RESPONSE_ACCEPT, NULL);
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
 	GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
@@ -1151,8 +1206,10 @@ void on_menu_item_meta_mode_delete_activate(GtkMenuItem*, gpointer) {
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, TRUE, 0);
 	gtk_widget_show(label);
 	GtkWidget *menu = gtk_combo_box_text_new();
-	for(size_t i = 2; i < modes.size(); i++) {
-		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(menu), modes[i].name.c_str());
+	for(size_t i = 2; ; i++) {
+		mode_struct *mode = get_mode(i);
+		if(!mode) break;
+		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(menu), mode->name.c_str());
 	}
 	gtk_combo_box_set_active(GTK_COMBO_BOX(menu), 0);
 	gtk_box_pack_end(GTK_BOX(hbox), menu, TRUE, TRUE, 0);
@@ -1162,10 +1219,10 @@ void on_menu_item_meta_mode_delete_activate(GtkMenuItem*, gpointer) {
 		size_t index = gtk_combo_box_get_active(GTK_COMBO_BOX(menu)) + 2;
 		gtk_widget_destroy(mode_items[index]);
 		gtk_widget_destroy(popup_result_mode_items[index]);
-		modes.erase(modes.begin() + index);
+		remove_mode(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(menu)));
 		mode_items.erase(mode_items.begin() + index);
 		popup_result_mode_items.erase(popup_result_mode_items.begin() + index);
-		if(modes.size() < 3) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_meta_mode_delete")), FALSE);
+		if(mode_count(false) == 0) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_meta_mode_delete")), FALSE);
 	}
 	gtk_widget_destroy(dialog);
 }
@@ -1934,10 +1991,6 @@ void update_menu_angle() {
 		}
 	}
 }
-void menu_enable_exchange_rates(bool b) {
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_fetch_exchange_rates")), b);
-}
-
 void update_menu_calculator_mode() {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_autocalc"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_autocalc_activate, NULL);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_autocalc")), auto_calculate && !rpn_mode);
@@ -1952,16 +2005,16 @@ void update_menu_calculator_mode() {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_chain_mode")), !rpn_mode);
 }
 
-void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, AssumptionType at, AssumptionSign as, bool in_rpn_mode, int precision, bool interval, bool variable_units, bool id_adaptive, bool autocalc, bool chainmode, bool caf, bool simper, bool initial_update) {
+void set_mode_items(const mode_struct *mode, bool initial_update) {
 
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_autocalc")), autocalc && (!initial_update || !in_rpn_mode));
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_chain_mode")), chainmode && (!initial_update || !in_rpn_mode));
-	auto_calculate = autocalc;
-	chain_mode = chainmode;
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_autocalc")), !in_rpn_mode);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_chain_mode")), !in_rpn_mode);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_mode")), in_rpn_mode);
-	switch(eo.approximation) {
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_autocalc")), mode->autocalc && (!initial_update || !mode->rpn_mode));
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_chain_mode")), mode->chain_mode && (!initial_update || !mode->rpn_mode));
+	auto_calculate = mode->autocalc;
+	chain_mode = mode->chain_mode;
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_autocalc")), !mode->rpn_mode);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_chain_mode")), !mode->rpn_mode);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_mode")), mode->rpn_mode);
+	switch(mode->eo.approximation) {
 		case APPROXIMATION_EXACT: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_always_exact")), TRUE);
 			break;
@@ -1975,9 +2028,9 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 			break;
 		}
 	}
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_arithmetic")), interval);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_arithmetic")), mode->interval);
 
-	switch(eo.interval_calculation) {
+	switch(mode->eo.interval_calculation) {
 		case INTERVAL_CALCULATION_VARIANCE_FORMULA: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_ic_variance")), TRUE);
 			break;
@@ -1996,7 +2049,7 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 		}
 	}
 
-	switch(eo.auto_post_conversion) {
+	switch(mode->eo.auto_post_conversion) {
 		case POST_CONVERSION_OPTIMAL: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_post_conversion_optimal")), TRUE);
 			break;
@@ -2015,9 +2068,9 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 		}
 	}
 
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_mixed_units_conversion")), eo.mixed_units_conversion != MIXED_UNITS_CONVERSION_NONE);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_mixed_units_conversion")), mode->eo.mixed_units_conversion != MIXED_UNITS_CONVERSION_NONE);
 
-	switch(eo.parse_options.angle_unit) {
+	switch(mode->eo.parse_options.angle_unit) {
 		case ANGLE_UNIT_DEGREES: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_degrees")), TRUE);
 			break;
@@ -2031,7 +2084,7 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 			break;
 		}
 		case ANGLE_UNIT_CUSTOM: {
-			Unit *u = initial_update ? NULL : CALCULATOR->getActiveUnit(custom_angle_unit);
+			Unit *u = (initial_update || mode->custom_angle_unit.empty()) ? NULL : CALCULATOR->getActiveUnit(mode->custom_angle_unit);
 			if(!u) {
 				gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_no_default_angle_unit")), TRUE);
 			} else {
@@ -2049,10 +2102,10 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 		}
 	}
 
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_read_precision")), eo.parse_options.read_precision != DONT_READ_PRECISION);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_limit_implicit_multiplication")), eo.parse_options.limit_implicit_multiplication);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_simplified_percentage")), simper);
-	switch(eo.parse_options.parsing_mode) {
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_read_precision")), mode->eo.parse_options.read_precision != DONT_READ_PRECISION);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_limit_implicit_multiplication")), mode->eo.parse_options.limit_implicit_multiplication);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_simplified_percentage")), mode->simplified_percentage);
+	switch(mode->eo.parse_options.parsing_mode) {
 		case PARSING_MODE_IMPLICIT_MULTIPLICATION_FIRST: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_ignore_whitespace")), TRUE);
 			break;
@@ -2074,10 +2127,10 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 			break;
 		}
 	}
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_assume_nonzero_denominators")), eo.assume_denominators_nonzero);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_warn_about_denominators_assumed_nonzero")), eo.warn_about_denominators_assumed_nonzero);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_assume_nonzero_denominators")), mode->eo.assume_denominators_nonzero);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_warn_about_denominators_assumed_nonzero")), mode->eo.warn_about_denominators_assumed_nonzero);
 
-	switch(eo.structuring) {
+	switch(mode->eo.structuring) {
 		case STRUCTURING_FACTORIZE: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_algebraic_mode_factorize")), TRUE);
 			break;
@@ -2088,7 +2141,7 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 		}
 	}
 
-	switch(po.base) {
+	switch(mode->po.base) {
 		case BASE_BINARY: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_binary")), TRUE);
 			break;
@@ -2123,11 +2176,11 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 		}
 		default: {
 			if(initial_update) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_custom_base")), TRUE);
-			set_output_base(po.base);
+			set_output_base(mode->po.base);
 		}
 	}
 
-	switch(po.min_exp) {
+	switch(mode->po.min_exp) {
 		case EXP_PRECISION: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_normal")), TRUE);
 			break;
@@ -2150,9 +2203,9 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 		}
 	}
 
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_indicate_infinite_series")), po.indicate_infinite_series);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_show_ending_zeroes")), po.show_ending_zeroes);
-	switch(po.rounding) {
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_indicate_infinite_series")), mode->po.indicate_infinite_series);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_show_ending_zeroes")), mode->po.show_ending_zeroes);
+	switch(mode->po.rounding) {
 		case ROUNDING_HALF_AWAY_FROM_ZERO: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rounding_half_away_from_zero")), TRUE);
 			break;
@@ -2199,54 +2252,49 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 		}
 	}
 
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_negative_exponents")), po.negative_exponents);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sort_minus_last")), po.sort_options.minus_last);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_negative_exponents")), mode->po.negative_exponents);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sort_minus_last")), mode->po.sort_options.minus_last);
 
-	if(!po.use_unit_prefixes) {
+	if(!mode->po.use_unit_prefixes) {
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_no_prefixes")), TRUE);
-	} else if(po.use_prefixes_for_all_units) {
+	} else if(mode->po.use_prefixes_for_all_units) {
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_prefixes_for_all_units")), TRUE);
-	} else if(po.use_prefixes_for_currencies) {
+	} else if(mode->po.use_prefixes_for_currencies) {
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_prefixes_for_currencies")), TRUE);
 	} else {
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_prefixes_for_selected_units")), TRUE);
 	}
 
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_all_prefixes")), po.use_all_prefixes);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_denominator_prefixes")), po.use_denominator_prefix);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_place_units_separately")), po.place_units_separately);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_abbreviate_names")), po.abbreviate_names);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_all_prefixes")), mode->po.use_all_prefixes);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_denominator_prefixes")), mode->po.use_denominator_prefix);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_place_units_separately")), mode->po.place_units_separately);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_abbreviate_names")), mode->po.abbreviate_names);
 
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_enable_variables")), eo.parse_options.variables_enabled);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_enable_functions")), eo.parse_options.functions_enabled);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_enable_units")), eo.parse_options.units_enabled);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_enable_unknown_variables")), eo.parse_options.unknowns_enabled);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_enable_variable_units")), variable_units);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_calculate_variables")), eo.calculate_variables);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_allow_complex")), eo.allow_complex);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_allow_infinite")), eo.allow_infinite);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_enable_variables")), mode->eo.parse_options.variables_enabled);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_enable_functions")), mode->eo.parse_options.functions_enabled);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_enable_units")), mode->eo.parse_options.units_enabled);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_enable_unknown_variables")), mode->eo.parse_options.unknowns_enabled);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_enable_variable_units")), mode->variable_units_enabled);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_calculate_variables")), mode->eo.calculate_variables);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_allow_complex")), mode->eo.allow_complex);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_allow_infinite")), mode->eo.allow_infinite);
 
-	int dff = default_fraction_fraction;
 	if(initial_update) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fixed_combined")), fraction_fixed_combined);
-	switch(po.number_fraction_format) {
+	switch(mode->po.number_fraction_format) {
 		case FRACTION_DECIMAL: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal")), TRUE);
-			if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), FALSE);
 			break;
 		}
 		case FRACTION_DECIMAL_EXACT: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_decimal_exact")), TRUE);
-			if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), FALSE);
 			break;
 		}
 		case FRACTION_COMBINED: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
-			if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), TRUE);
 			break;
 		}
 		case FRACTION_FRACTIONAL: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fraction")), TRUE);
-			if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), TRUE);
 			break;
 		}
 		case FRACTION_COMBINED_FIXED_DENOMINATOR: {}
@@ -2263,7 +2311,7 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 				case 16: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_16ths")), TRUE); break;}
 				case 32: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_32ths")), TRUE); break;}
 				default: {
-					if(po.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR) {
+					if(mode->po.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR) {
 						gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_combined")), TRUE);
 						printops.number_fraction_format = FRACTION_COMBINED_FIXED_DENOMINATOR;
 					} else {
@@ -2273,29 +2321,24 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 					break;
 				}
 			}
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fixed_combined")), po.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR);
-			if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), TRUE);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_fixed_combined")), mode->po.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR);
 			break;
 		}
 		case FRACTION_PERCENT: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_percent")), TRUE);
-			if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), FALSE);
 			break;
 		}
 		case FRACTION_PERMILLE: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_permille")), TRUE);
-			if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), FALSE);
 			break;
 		}
 		case FRACTION_PERMYRIAD: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_fraction_permyriad")), TRUE);
-			if(initial_update) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_fraction")), FALSE);
 			break;
 		}
 	}
-	default_fraction_fraction = dff;
 
-	switch(eo.complex_number_form) {
+	switch(mode->eo.complex_number_form) {
 		case COMPLEX_NUMBER_FORM_RECTANGULAR: {
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_complex_rectangular")), TRUE);
 			break;
@@ -2309,16 +2352,16 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 			break;
 		}
 		case COMPLEX_NUMBER_FORM_CIS: {
-			if(caf) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_complex_angle")), TRUE);
+			if(mode->complex_angle_form) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_complex_angle")), TRUE);
 			else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_complex_polar")), TRUE);
 			break;
 		}
 	}
 
-	if(id_adaptive) {
+	if(mode->adaptive_interval_display) {
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_adaptive")), TRUE);
 	} else {
-		switch(po.interval_display) {
+		switch(mode->po.interval_display) {
 			case INTERVAL_DISPLAY_INTERVAL: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_interval")), TRUE); break;}
 			case INTERVAL_DISPLAY_PLUSMINUS: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_plusminus")), TRUE); break;}
 			case INTERVAL_DISPLAY_MIDPOINT: {gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_interval_midpoint")), TRUE); break;}
@@ -2328,19 +2371,19 @@ void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, Assumpt
 	}
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_concise_uncertainty_input")), CALCULATOR->conciseUncertaintyInputEnabled());
 
-	set_assumptions_items(at, as);
+	set_assumptions_items(mode->at, mode->as);
 
 	if(!initial_update) {
-		printops.max_decimals = po.max_decimals;
-		printops.use_max_decimals = po.use_max_decimals;
-		printops.max_decimals = po.min_decimals;
-		printops.use_min_decimals = po.use_min_decimals;
-		CALCULATOR->setPrecision(precision);
-		printops.spacious = po.spacious;
-		printops.short_multiplication = po.short_multiplication;
-		printops.excessive_parenthesis = po.excessive_parenthesis;
-		evalops.calculate_functions = eo.calculate_functions;
-		evalops.parse_options.base = eo.parse_options.base;
+		printops.max_decimals = mode->po.max_decimals;
+		printops.use_max_decimals = mode->po.use_max_decimals;
+		printops.max_decimals = mode->po.min_decimals;
+		printops.use_min_decimals = mode->po.use_min_decimals;
+		CALCULATOR->setPrecision(mode->precision);
+		printops.spacious = mode->po.spacious;
+		printops.short_multiplication = mode->po.short_multiplication;
+		printops.excessive_parenthesis = mode->po.excessive_parenthesis;
+		evalops.calculate_functions = mode->eo.calculate_functions;
+		evalops.parse_options.base = mode->eo.parse_options.base;
 	}
 }
 void update_menu_accels(int type) {
@@ -2550,25 +2593,28 @@ void update_menu_accels(int type) {
 }
 
 void create_menubar() {
-	set_mode_items(printops, evalops, CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign(), rpn_mode, CALCULATOR->getPrecision(), CALCULATOR->usesIntervalArithmetic(), CALCULATOR->variableUnitsEnabled(), adaptive_interval_display, auto_calculate, chain_mode, complex_angle_form, simplified_percentage, true);
+	set_mode_items(get_mode(1), true);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), FALSE);
-	for(size_t i = 0; i < modes.size(); i++) {
-		GtkWidget *item = gtk_menu_item_new_with_label(modes[i].name.c_str());
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_fetch_exchange_rates")), CALCULATOR->canFetch());
+	for(size_t i = 0; ; i++) {
+		mode_struct *mode = get_mode(i);
+		if(!mode) break;
+		GtkWidget *item = gtk_menu_item_new_with_label(mode->name.c_str());
 		gtk_widget_show(item);
-		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(on_menu_item_meta_mode_activate), (gpointer) modes[i].name.c_str());
-		g_signal_connect(G_OBJECT(item), "button-press-event", G_CALLBACK(on_menu_item_meta_mode_button_press), (gpointer) modes[i].name.c_str());
-		g_signal_connect(G_OBJECT(item), "popup-menu", G_CALLBACK(on_menu_item_meta_mode_popup_menu), (gpointer) modes[i].name.c_str());
+		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(on_menu_item_meta_mode_activate), (gpointer) mode->name.c_str());
+		g_signal_connect(G_OBJECT(item), "button-press-event", G_CALLBACK(on_menu_item_meta_mode_button_press), (gpointer) mode->name.c_str());
+		g_signal_connect(G_OBJECT(item), "popup-menu", G_CALLBACK(on_menu_item_meta_mode_popup_menu), (gpointer) mode->name.c_str());
 		gtk_menu_shell_insert(GTK_MENU_SHELL(gtk_builder_get_object(main_builder, "menu_meta_modes")), item, (gint) i);
 		mode_items.push_back(item);
-		item = gtk_menu_item_new_with_label(modes[i].name.c_str());
+		item = gtk_menu_item_new_with_label(mode->name.c_str());
 		gtk_widget_show(item);
-		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(on_menu_item_meta_mode_activate), (gpointer) modes[i].name.c_str());
-		g_signal_connect(G_OBJECT(item), "button-press-event", G_CALLBACK(on_menu_item_meta_mode_button_press), (gpointer) modes[i].name.c_str());
-		g_signal_connect(G_OBJECT(item), "popup-menu", G_CALLBACK(on_menu_item_meta_mode_popup_menu), (gpointer) modes[i].name.c_str());
+		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(on_menu_item_meta_mode_activate), (gpointer) mode->name.c_str());
+		g_signal_connect(G_OBJECT(item), "button-press-event", G_CALLBACK(on_menu_item_meta_mode_button_press), (gpointer) mode->name.c_str());
+		g_signal_connect(G_OBJECT(item), "popup-menu", G_CALLBACK(on_menu_item_meta_mode_popup_menu), (gpointer) mode->name.c_str());
 		gtk_menu_shell_insert(GTK_MENU_SHELL(gtk_builder_get_object(main_builder, "menu_result_popup_meta_modes")), item, (gint) i);
 		popup_result_mode_items.push_back(item);
 	}
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_meta_mode_delete")), modes.size() > 2);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_meta_mode_delete")), mode_count(false) > 0);
 
 	gtk_builder_add_callback_symbols(main_builder, "on_menu_item_new_variable_activate", G_CALLBACK(on_menu_item_new_variable_activate), "on_menu_item_new_matrix_activate", G_CALLBACK(on_menu_item_new_matrix_activate), "on_menu_item_new_vector_activate", G_CALLBACK(on_menu_item_new_vector_activate), "on_menu_item_new_unknown_activate", G_CALLBACK(on_menu_item_new_unknown_activate), "on_menu_item_new_function_activate", G_CALLBACK(on_menu_item_new_function_activate), "on_menu_item_new_dataset_activate", G_CALLBACK(on_menu_item_new_dataset_activate), "on_menu_item_new_unit_activate", G_CALLBACK(on_menu_item_new_unit_activate), "on_menu_item_import_csv_file_activate", G_CALLBACK(on_menu_item_import_csv_file_activate), "on_menu_item_export_csv_file_activate", G_CALLBACK(on_menu_item_export_csv_file_activate), "on_menu_item_save_activate", G_CALLBACK(on_menu_item_save_activate), "on_menu_item_save_image_activate", G_CALLBACK(on_menu_item_save_image_activate), "on_menu_item_save_defs_activate", G_CALLBACK(on_menu_item_save_defs_activate), "on_menu_item_import_definitions_activate", G_CALLBACK(on_menu_item_import_definitions_activate), "on_menu_item_fetch_exchange_rates_activate", G_CALLBACK(on_menu_item_fetch_exchange_rates_activate), "on_menu_item_plot_functions_activate", G_CALLBACK(on_menu_item_plot_functions_activate), "on_menu_item_convert_number_bases_activate", G_CALLBACK(on_menu_item_convert_number_bases_activate), "on_menu_item_convert_floatingpoint_activate", G_CALLBACK(on_menu_item_convert_floatingpoint_activate), "on_menu_item_show_calendarconversion_dialog_activate", G_CALLBACK(on_menu_item_show_calendarconversion_dialog_activate), "on_menu_item_show_percentage_dialog_activate", G_CALLBACK(on_menu_item_show_percentage_dialog_activate), "on_menu_item_periodic_table_activate", G_CALLBACK(on_menu_item_periodic_table_activate), "on_menu_item_minimal_mode_activate", G_CALLBACK(on_menu_item_minimal_mode_activate), "on_menu_item_quit_activate", G_CALLBACK(on_menu_item_quit_activate), "on_menu_item_manage_variables_activate", G_CALLBACK(on_menu_item_manage_variables_activate), "on_menu_item_manage_functions_activate", G_CALLBACK(on_menu_item_manage_functions_activate), "on_menu_item_manage_units_activate", G_CALLBACK(on_menu_item_manage_units_activate), "on_menu_item_datasets_activate", G_CALLBACK(on_menu_item_datasets_activate), "on_menu_item_factorize_activate", G_CALLBACK(on_menu_item_factorize_activate), "on_menu_item_simplify_activate", G_CALLBACK(on_menu_item_simplify_activate), "on_menu_item_expand_partial_fractions_activate", G_CALLBACK(on_menu_item_expand_partial_fractions_activate), "on_menu_item_set_unknowns_activate", G_CALLBACK(on_menu_item_set_unknowns_activate), "on_menu_item_convert_to_unit_expression_activate", G_CALLBACK(on_menu_item_convert_to_unit_expression_activate), "on_menu_item_convert_to_base_units_activate", G_CALLBACK(on_menu_item_convert_to_base_units_activate), "on_menu_item_convert_to_best_unit_activate", G_CALLBACK(on_menu_item_convert_to_best_unit_activate), "on_menu_item_insert_date_activate", G_CALLBACK(on_menu_item_insert_date_activate), "on_menu_item_insert_matrix_activate", G_CALLBACK(on_menu_item_insert_matrix_activate), "on_menu_item_insert_vector_activate", G_CALLBACK(on_menu_item_insert_vector_activate), "on_menu_item_copy_activate", G_CALLBACK(on_menu_item_copy_activate), "on_menu_item_copy_ascii_activate", G_CALLBACK(on_menu_item_copy_ascii_activate), "on_menu_item_edit_shortcuts_activate", G_CALLBACK(on_menu_item_edit_shortcuts_activate), "on_menu_item_customize_buttons_activate", G_CALLBACK(on_menu_item_customize_buttons_activate), "on_menu_item_edit_prefs_activate", G_CALLBACK(on_menu_item_edit_prefs_activate), "on_menu_item_set_base_activate", G_CALLBACK(on_menu_item_set_base_activate), "on_menu_item_binary_activate", G_CALLBACK(on_menu_item_binary_activate), "on_menu_item_octal_activate", G_CALLBACK(on_menu_item_octal_activate), "on_menu_item_decimal_activate", G_CALLBACK(on_menu_item_decimal_activate), "on_menu_item_duodecimal_activate", G_CALLBACK(on_menu_item_duodecimal_activate), "on_menu_item_hexadecimal_activate", G_CALLBACK(on_menu_item_hexadecimal_activate), "on_menu_item_custom_base_activate", G_CALLBACK(on_menu_item_custom_base_activate), "on_menu_item_sexagesimal_activate", G_CALLBACK(on_menu_item_sexagesimal_activate), "on_menu_item_time_format_activate", G_CALLBACK(on_menu_item_time_format_activate), "on_menu_item_roman_activate", G_CALLBACK(on_menu_item_roman_activate), "on_menu_item_display_normal_activate", G_CALLBACK(on_menu_item_display_normal_activate), "on_menu_item_display_engineering_activate", G_CALLBACK(on_menu_item_display_engineering_activate), "on_menu_item_display_scientific_activate", G_CALLBACK(on_menu_item_display_scientific_activate), "on_menu_item_display_purely_scientific_activate", G_CALLBACK(on_menu_item_display_purely_scientific_activate), "on_menu_item_display_non_scientific_activate", G_CALLBACK(on_menu_item_display_non_scientific_activate), "on_menu_item_indicate_infinite_series_activate", G_CALLBACK(on_menu_item_indicate_infinite_series_activate), "on_menu_item_show_ending_zeroes_activate", G_CALLBACK(on_menu_item_show_ending_zeroes_activate), "on_menu_item_sort_minus_last_activate", G_CALLBACK(on_menu_item_sort_minus_last_activate), "on_menu_item_rounding_half_away_from_zero_activate", G_CALLBACK(on_menu_item_rounding_half_away_from_zero_activate), "on_menu_item_rounding_half_to_even_activate", G_CALLBACK(on_menu_item_rounding_half_to_even_activate), "on_menu_item_rounding_half_to_odd_activate", G_CALLBACK(on_menu_item_rounding_half_to_odd_activate), "on_menu_item_rounding_half_toward_zero_activate", G_CALLBACK(on_menu_item_rounding_half_toward_zero_activate),
 	"on_menu_item_rounding_half_random_activate", G_CALLBACK(on_menu_item_rounding_half_random_activate), "on_menu_item_rounding_half_up_activate", G_CALLBACK(on_menu_item_rounding_half_up_activate), "on_menu_item_rounding_half_down_activate", G_CALLBACK(on_menu_item_rounding_half_down_activate), "on_menu_item_rounding_toward_zero_activate", G_CALLBACK(on_menu_item_rounding_toward_zero_activate), "on_menu_item_rounding_away_from_zero_activate", G_CALLBACK(on_menu_item_rounding_away_from_zero_activate), "on_menu_item_rounding_up_activate", G_CALLBACK(on_menu_item_rounding_up_activate), "on_menu_item_rounding_down_activate", G_CALLBACK(on_menu_item_rounding_down_activate), "on_menu_item_complex_rectangular_activate", G_CALLBACK(on_menu_item_complex_rectangular_activate), "on_menu_item_complex_exponential_activate", G_CALLBACK(on_menu_item_complex_exponential_activate), "on_menu_item_complex_polar_activate", G_CALLBACK(on_menu_item_complex_polar_activate), "on_menu_item_complex_angle_activate", G_CALLBACK(on_menu_item_complex_angle_activate), "on_menu_item_fraction_decimal_activate", G_CALLBACK(on_menu_item_fraction_decimal_activate), "on_menu_item_fraction_decimal_exact_activate", G_CALLBACK(on_menu_item_fraction_decimal_exact_activate), "on_menu_item_fraction_fraction_activate", G_CALLBACK(on_menu_item_fraction_fraction_activate), "on_menu_item_fraction_combined_activate", G_CALLBACK(on_menu_item_fraction_combined_activate), "on_menu_item_fraction_halves_activate", G_CALLBACK(on_menu_item_fraction_halves_activate), "on_menu_item_fraction_3rds_activate", G_CALLBACK(on_menu_item_fraction_3rds_activate), "on_menu_item_fraction_4ths_activate", G_CALLBACK(on_menu_item_fraction_4ths_activate), "on_menu_item_fraction_5ths_activate", G_CALLBACK(on_menu_item_fraction_5ths_activate), "on_menu_item_fraction_6ths_activate", G_CALLBACK(on_menu_item_fraction_6ths_activate), "on_menu_item_fraction_8ths_activate", G_CALLBACK(on_menu_item_fraction_8ths_activate), "on_menu_item_fraction_10ths_activate", G_CALLBACK(on_menu_item_fraction_10ths_activate), "on_menu_item_fraction_12ths_activate", G_CALLBACK(on_menu_item_fraction_12ths_activate), "on_menu_item_fraction_16ths_activate", G_CALLBACK(on_menu_item_fraction_16ths_activate), "on_menu_item_fraction_32ths_activate", G_CALLBACK(on_menu_item_fraction_32ths_activate), "on_menu_item_fraction_fixed_combined_activate", G_CALLBACK(on_menu_item_fraction_fixed_combined_activate), "on_menu_item_fraction_percent_activate", G_CALLBACK(on_menu_item_fraction_percent_activate), "on_menu_item_fraction_permille_activate", G_CALLBACK(on_menu_item_fraction_permille_activate), "on_menu_item_fraction_permyriad_activate", G_CALLBACK(on_menu_item_fraction_permyriad_activate), "on_menu_item_interval_adaptive_activate", G_CALLBACK(on_menu_item_interval_adaptive_activate), "on_menu_item_interval_significant_activate", G_CALLBACK(on_menu_item_interval_significant_activate), "on_menu_item_interval_interval_activate", G_CALLBACK(on_menu_item_interval_interval_activate), "on_menu_item_interval_plusminus_activate", G_CALLBACK(on_menu_item_interval_plusminus_activate), "on_menu_item_interval_relative_activate", G_CALLBACK(on_menu_item_interval_relative_activate), "on_menu_item_interval_concise_activate", G_CALLBACK(on_menu_item_interval_concise_activate), "on_menu_item_interval_midpoint_activate", G_CALLBACK(on_menu_item_interval_midpoint_activate), "on_menu_item_interval_lower_activate", G_CALLBACK(on_menu_item_interval_lower_activate), "on_menu_item_interval_upper_activate", G_CALLBACK(on_menu_item_interval_upper_activate), "on_menu_item_concise_uncertainty_input_activate", G_CALLBACK(on_menu_item_concise_uncertainty_input_activate), "on_menu_item_display_no_prefixes_activate", G_CALLBACK(on_menu_item_display_no_prefixes_activate), "on_menu_item_display_prefixes_for_selected_units_activate", G_CALLBACK(on_menu_item_display_prefixes_for_selected_units_activate),

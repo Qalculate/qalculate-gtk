@@ -27,9 +27,11 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "mainwindow.h"
 #include "historyview.h"
 #include "resultview.h"
 #include "preferencesdialog.h"
+#include "expressionedit.h"
 #include "expressionstatus.h"
 
 using std::string;
@@ -618,9 +620,9 @@ void display_parse_status() {
 	if(!display_expression_status) return;
 	if(block_display_parse) return;
 	GtkTextIter istart, iend, ipos;
-	gtk_text_buffer_get_start_iter(expressionbuffer, &istart);
-	gtk_text_buffer_get_end_iter(expressionbuffer, &iend);
-	gchar *gtext = gtk_text_buffer_get_text(expressionbuffer, &istart, &iend, FALSE);
+	gtk_text_buffer_get_start_iter(expression_edit_buffer(), &istart);
+	gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iend);
+	gchar *gtext = gtk_text_buffer_get_text(expression_edit_buffer(), &istart, &iend, FALSE);
 	string text = gtext, str_f;
 	g_free(gtext);
 	bool double_tag = false;
@@ -686,8 +688,8 @@ void display_parse_status() {
 			str_f = "";
 		}
 	}
-	GtkTextMark *mark = gtk_text_buffer_get_insert(expressionbuffer);
-	if(mark) gtk_text_buffer_get_iter_at_mark(expressionbuffer, &ipos, mark);
+	GtkTextMark *mark = gtk_text_buffer_get_insert(expression_edit_buffer());
+	if(mark) gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &ipos, mark);
 	else ipos = iend;
 	MathStructure mparse, mfunc;
 	bool full_parsed = false;
@@ -701,7 +703,7 @@ void display_parse_status() {
 		evalops.parse_options.unended_function = &mfunc;
 		if(!gtk_text_iter_is_end(&ipos)) {
 			if(current_from_struct) {current_from_struct->unref(); current_from_struct = NULL; current_from_units.clear();}
-			gtext = gtk_text_buffer_get_text(expressionbuffer, &istart, &ipos, FALSE);
+			gtext = gtk_text_buffer_get_text(expression_edit_buffer(), &istart, &ipos, FALSE);
 			str_e = CALCULATOR->unlocalizeExpression(gtext, evalops.parse_options);
 			bool b = CALCULATOR->separateToExpression(str_e, str_u, evalops, false, !auto_calculate || rpn_mode || parsed_in_result);
 			b = CALCULATOR->separateWhereExpression(str_e, str_w, evalops) || b;
@@ -1249,9 +1251,9 @@ void update_status_font(bool initial) {
 		while(gtk_events_pending()) gtk_main_iteration();
 		gint h_new = gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")));
 		gint winh, winw;
-		gtk_window_get_size(GTK_WINDOW(mainwindow), &winw, &winh);
+		gtk_window_get_size(main_window(), &winw, &winh);
 		winh += (h_new - h_old);
-		gtk_window_resize(GTK_WINDOW(mainwindow), winw, winh);
+		gtk_window_resize(main_window(), winw, winh);
 	}
 }
 void set_status_font(const char *str) {
@@ -1259,7 +1261,10 @@ void set_status_font(const char *str) {
 		use_custom_status_font = false;
 	} else {
 		use_custom_status_font = true;
-		custom_status_font = str;
+		if(custom_status_font != str) {
+			save_custom_status_font = true;
+			custom_status_font = str;
+		}
 	}
 	update_status_font(false);
 }
@@ -1413,7 +1418,7 @@ void create_expression_status() {
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
 	if(RUNTIME_CHECK_GTK_VERSION_LESS(3, 16)) {
 		GdkRGBA bg_color;
-		gtk_style_context_get_background_color(gtk_widget_get_style_context(expressiontext), GTK_STATE_FLAG_NORMAL, &bg_color);
+		gtk_style_context_get_background_color(gtk_widget_get_style_context(expression_edit_widget()), GTK_STATE_FLAG_NORMAL, &bg_color);
 		gchar *gstr = gdk_rgba_to_string(&bg_color);
 		topframe_css += gstr;
 		g_free(gstr);

@@ -53,7 +53,7 @@ void on_element_button_function_clicked(GtkButton *w, gpointer user_data) {
 	}
 	if(dp) ds = dp->parentSet();
 	if(ds && o) {
-		string str = ds->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expressiontext).formattedName(TYPE_FUNCTION, true);
+		string str = ds->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_FUNCTION, true);
 		str += "(";
 		str += o->getProperty(ds->getPrimaryKeyProperty());
 		str += CALCULATOR->getComma();

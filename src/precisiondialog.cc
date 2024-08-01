@@ -27,6 +27,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "mainwindow.h"
 #include "precisiondialog.h"
 
 using std::string;
@@ -37,13 +38,10 @@ using std::endl;
 GtkBuilder *precision_builder = NULL;
 
 void on_precision_dialog_spinbutton_precision_value_changed(GtkSpinButton *w, gpointer) {
-	CALCULATOR->setPrecision(gtk_spin_button_get_value_as_int(w));
-	previous_precision = 0;
+	set_precision(gtk_spin_button_get_value_as_int(w), 0);
 }
 void on_precision_dialog_button_recalculate_clicked(GtkButton*, gpointer) {
-	CALCULATOR->setPrecision(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(precision_builder, "precision_dialog_spinbutton_precision"))));
-	previous_precision = 0;
-	execute_expression(true, false, OPERATION_ADD, NULL, rpn_mode);
+	set_precision(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(precision_builder, "precision_dialog_spinbutton_precision"))), 1);
 }
 
 GtkWidget* get_precision_dialog(void) {

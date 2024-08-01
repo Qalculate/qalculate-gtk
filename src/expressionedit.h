@@ -23,6 +23,10 @@ const char *expression_font(bool return_default = false);
 void expression_font_modified();
 void set_expression_size_request();
 
+GtkWidget *expression_edit_widget();
+GtkTextBuffer *expression_edit_buffer();
+GtkMenu *expression_edit_popup_menu();
+
 void block_undo();
 void unblock_undo();
 bool undo_blocked();
@@ -46,6 +50,7 @@ void expression_save_selection();
 void expression_restore_selection();
 bool expression_history_up();
 bool expression_history_down();
+void add_to_expression_history(std::string str);
 bool is_at_beginning_of_expression(bool allow_selection = false);
 int wrap_expression_selection(const char *insert_before = NULL, bool return_true_if_whole_selected = false);
 void focus_keeping_selection();

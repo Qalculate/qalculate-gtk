@@ -15,6 +15,8 @@
 #include <libqalculate/qalculate.h>
 #include <gtk/gtk.h>
 
+struct mode_struct;
+
 void create_umenu(void);
 void create_umenu2(void);
 void create_vmenu(void);
@@ -39,12 +41,16 @@ void update_menu_numerical_display();
 void update_menu_fraction();
 void update_menu_calculator_mode();
 void update_menu_angle();
-void menu_enable_exchange_rates(bool b);
 void set_assumptions_items(AssumptionType at, AssumptionSign as);
-void set_mode_items(const PrintOptions &po, const EvaluationOptions &eo, AssumptionType at, AssumptionSign as, bool in_rpn_mode, int precision, bool interval, bool variable_units, bool id_adaptive, bool autocalc, bool chainmode, bool caf, bool simper, bool initial_update);
+void set_mode_items(const mode_struct *mode, bool initial_update);
 void add_custom_angles_to_menus();
 void convert_to_unit(GtkMenuItem*, gpointer user_data);
 
+bool combined_fixed_fraction_set();
+
 void create_menubar();
+
+bool read_menubar_settings_line(std::string &svar, std::string &svalue, int &v);
+void write_menubar_settings(FILE *file);
 
 #endif /* MENUBAR_H */

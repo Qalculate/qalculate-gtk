@@ -99,10 +99,10 @@ void on_names_edit_name_edited(GtkCellRendererText*, gchar *path, gchar *new_tex
 			if(names_type == TYPE_FUNCTION) str = CALCULATOR->convertToValidFunctionName(str);
 			else if(names_type == TYPE_VARIABLE) str = CALCULATOR->convertToValidVariableName(str);
 			else if(names_type == TYPE_UNIT) str = CALCULATOR->convertToValidUnitName(str);
-			show_message(_("Illegal name"), GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_dialog")));
+			show_message(_("Illegal name"), GTK_WINDOW(gtk_builder_get_object(namesedit_builder, "names_edit_dialog")));
 		}
 		if(names_edit_name_taken(str.c_str())) {
-			show_message(_("A conflicting object with the same name exists. If you proceed and save changes, the conflicting object will be overwritten or deactivated."), GTK_WIDGET(gtk_builder_get_object(namesedit_builder, "names_edit_dialog")));
+			show_message(_("A conflicting object with the same name exists. If you proceed and save changes, the conflicting object will be overwritten or deactivated."), GTK_WINDOW(gtk_builder_get_object(namesedit_builder, "names_edit_dialog")));
 		}
 		gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, str.c_str(), -1);
 		on_name_changed();
@@ -250,7 +250,7 @@ bool edit_names(ExpressionItem *item, int type, const gchar *namestr, GtkWindow 
 				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, ename->name.c_str(), NAMES_ABBREVIATION_COLUMN, ename->abbreviation, NAMES_PLURAL_COLUMN, ename->plural, NAMES_REFERENCE_COLUMN, ename->reference, NAMES_SUFFIX_COLUMN, ename->suffix, NAMES_AVOID_INPUT_COLUMN, ename->avoid_input, NAMES_CASE_SENSITIVE_COLUMN, ename->case_sensitive, NAMES_COMPLETION_ONLY_COLUMN, ename->completion_only, -1);
 				if(i == 1 && namestr && strlen(namestr) > 0 && item->getName(1).name != namestr) {
 					if(names_edit_name_taken(namestr)) {
-						show_message(_("A conflicting object with the same name exists. If you proceed and save changes, the conflicting object will be overwritten or deactivated."), GTK_WIDGET(win));
+						show_message(_("A conflicting object with the same name exists. If you proceed and save changes, the conflicting object will be overwritten or deactivated."), win);
 					}
 					gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, namestr, -1);
 				}
@@ -269,7 +269,7 @@ bool edit_names(ExpressionItem *item, int type, const gchar *namestr, GtkWindow 
 				gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, namestr, NAMES_ABBREVIATION_COLUMN, FALSE, NAMES_PLURAL_COLUMN, FALSE, NAMES_REFERENCE_COLUMN, TRUE, NAMES_SUFFIX_COLUMN, FALSE, NAMES_AVOID_INPUT_COLUMN, FALSE, NAMES_CASE_SENSITIVE_COLUMN, FALSE, NAMES_COMPLETION_ONLY_COLUMN, FALSE, -1);
 			} else {
 				if(names_edit_name_taken(namestr)) {
-					show_message(_("A conflicting object with the same name exists. If you proceed and save changes, the conflicting object will be overwritten or deactivated."), GTK_WIDGET(win));
+					show_message(_("A conflicting object with the same name exists. If you proceed and save changes, the conflicting object will be overwritten or deactivated."), win);
 				}
 				ExpressionName ename(namestr);
 				ename.reference = true;
@@ -278,7 +278,7 @@ bool edit_names(ExpressionItem *item, int type, const gchar *namestr, GtkWindow 
 		}
 	} else if(namestr && strlen(namestr) > 0) {
 		if(!is_dp && names_edited == 2 && names_edit_name_taken(namestr)) {
-			show_message(_("A conflicting object with the same name exists. If you proceed and save changes, the conflicting object will be overwritten or deactivated."), GTK_WIDGET(win));
+			show_message(_("A conflicting object with the same name exists. If you proceed and save changes, the conflicting object will be overwritten or deactivated."), win);
 		}
 		if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(tNames_store), &iter)) {
 			gtk_list_store_set(tNames_store, &iter, NAMES_NAME_COLUMN, namestr, -1);

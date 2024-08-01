@@ -27,6 +27,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "mainwindow.h"
 #include "expressionedit.h"
 #include "exportcsvdialog.h"
 #include "variableeditdialog.h"
@@ -243,7 +244,7 @@ void on_tVariables_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 		Variable *v;
 		gtk_tree_model_get(model, &iter, 1, &v, -1);
 		if(!CALCULATOR->stillHasVariable(v)) {
-			show_message(_("Variable does not exist anymore."), GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_dialog")));
+			show_message(_("Variable does not exist anymore."), GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")));
 			selected_variable = NULL;
 			update_vmenu();
 			return;
@@ -400,7 +401,7 @@ void on_variables_button_edit_clicked(GtkButton*, gpointer) {
 	Variable *v = get_selected_variable();
 	if(v) {
 		if(!CALCULATOR->stillHasVariable(v)) {
-			show_message(_("Variable does not exist anymore."), GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_dialog")));
+			show_message(_("Variable does not exist anymore."), GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")));
 			update_vmenu();
 			return;
 		}
@@ -415,11 +416,11 @@ void on_variables_button_insert_clicked(GtkButton*, gpointer) {
 	Variable *v = get_selected_variable();
 	if(v) {
 		if(!CALCULATOR->stillHasVariable(v)) {
-			show_message(_("Variable does not exist anymore."), GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_dialog")));
+			show_message(_("Variable does not exist anymore."), GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")));
 			update_vmenu();
 			return;
 		}
-		gchar *gstr = g_strdup(v->preferredInputName(printops.abbreviate_names, true, false, false, &can_display_unicode_string_function, (void*) expressiontext).formattedName(TYPE_VARIABLE, true).c_str());
+		gchar *gstr = g_strdup(v->preferredInputName(printops.abbreviate_names, true, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_VARIABLE, true).c_str());
 		insert_text(gstr);
 		g_free(gstr);
 	}
@@ -431,7 +432,7 @@ void on_variables_button_delete_clicked(GtkButton*, gpointer) {
 	Variable *v = get_selected_variable();
 	if(!v) return;
 	if(!CALCULATOR->stillHasVariable(v)) {
-		show_message(_("Variable does not exist anymore."), GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_dialog")));
+		show_message(_("Variable does not exist anymore."), GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")));
 		update_vmenu();
 		return;
 	}
@@ -452,7 +453,7 @@ void on_variables_button_delete_clicked(GtkButton*, gpointer) {
 void on_variables_button_export_clicked(GtkButton*, gpointer) {
 	Variable *v = get_selected_variable();
 	if(v && !CALCULATOR->stillHasVariable(v)) {
-		show_message(_("Variable does not exist anymore."), GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_dialog")));
+		show_message(_("Variable does not exist anymore."), GTK_WINDOW(gtk_builder_get_object(variables_builder, "variables_dialog")));
 		update_vmenu();
 		return;
 	}

@@ -27,6 +27,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "mainwindow.h"
 #include "expressionedit.h"
 #include "dataseteditdialog.h"
 #include "datasetsdialog.h"

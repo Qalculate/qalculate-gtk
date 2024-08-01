@@ -27,6 +27,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "mainwindow.h"
 #include "openhelp.h"
 #include "nameseditdialog.h"
 #include "uniteditdialog.h"
@@ -322,14 +323,14 @@ run_unit_edit_dialog:
 			//no name given
 			gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(unitedit_builder, "unit_edit_tabs")), 0);
 			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_name")));
-			show_message(_("Empty name field."), dialog);
+			show_message(_("Empty name field."), GTK_WINDOW(dialog));
 			goto run_unit_edit_dialog;
 		}
 
 		//unit with the same name exists -- overwrite or open the dialog again
 		if((!u || !u->hasName(str)) && ((names_status() != 1 && !str.empty()) || !has_name()) && CALCULATOR->unitNameTaken(str, u)) {
 			Unit *unit = CALCULATOR->getActiveUnit(str, true);
-			if((!u || u != unit) && (!unit || unit->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), dialog)) {
+			if((!u || u != unit) && (!unit || unit->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A unit or variable with the same name already exists.\nDo you want to overwrite it?"), GTK_WINDOW(dialog))) {
 				gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(unitedit_builder, "unit_edit_tabs")), 0);
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_name")));
 				goto run_unit_edit_dialog;
@@ -356,7 +357,7 @@ run_unit_edit_dialog:
 						if(!bu || bu == u) {
 							gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(unitedit_builder, "unit_edit_tabs")), 1);
 							gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")));
-							show_message(_("Base unit does not exist."), dialog);
+							show_message(_("Base unit does not exist."), GTK_WINDOW(dialog));
 							goto run_unit_edit_dialog;
 						}
 						au->setBaseUnit(bu);
@@ -408,7 +409,7 @@ run_unit_edit_dialog:
 					if(!bu) {
 						gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(unitedit_builder, "unit_edit_tabs")), 1);
 						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_base")));
-						show_message(_("Base unit does not exist."), dialog);
+						show_message(_("Base unit does not exist."), GTK_WINDOW(dialog));
 						goto run_unit_edit_dialog;
 					}
 					u = new AliasUnit(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(unitedit_builder, "unit_edit_combo_category"))), "", "", "", gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_desc"))), bu, unlocalize_expression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_relation")))), gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(unitedit_builder, "unit_edit_spinbutton_exp"))), unlocalize_expression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(unitedit_builder, "unit_edit_entry_reversed")))), true);
@@ -466,7 +467,7 @@ run_unit_edit_dialog:
 			unit_edited(u);
 		}
 	} else if(response == GTK_RESPONSE_HELP) {
-		show_help("qalculate-units.html#qalculate-unit-creation", GTK_WIDGET(gtk_builder_get_object(unitedit_builder, "unit_edit_dialog")));
+		show_help("qalculate-units.html#qalculate-unit-creation", GTK_WINDOW(gtk_builder_get_object(unitedit_builder, "unit_edit_dialog")));
 		goto run_unit_edit_dialog;
 	}
 	edited_unit = NULL;

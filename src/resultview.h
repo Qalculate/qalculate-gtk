@@ -48,9 +48,12 @@ void set_result_font(const char *str);
 const char *result_font(bool return_default = false);
 void result_font_modified();
 void set_result_size_request();
+void update_result_accels(int type);
 void show_result_help();
 
 void create_result_view();
+
+GtkWidget *result_view_widget();
 
 bool read_result_view_settings_line(std::string &svar, std::string &svalue, int &v);
 void write_result_view_settings(FILE *file);

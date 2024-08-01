@@ -71,12 +71,8 @@ struct tree_struct {
 #define VERSION_BEFORE(i1, i2, i3) (version_numbers[0] < i1 || (version_numbers[0] == i1 && (version_numbers[1] < i2 || (version_numbers[1] == i2 && version_numbers[2] < i3))))
 #define VERSION_AFTER(i1, i2, i3) (version_numbers[0] > i1 || (version_numbers[0] == i1 && (version_numbers[1] > i2 || (version_numbers[1] == i2 && version_numbers[2] > i3))))
 
-extern GtkWidget *mainwindow;
-extern GtkWidget *expressiontext;
-extern GtkTextBuffer *expressionbuffer;
-
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
-#	define CLEAN_MODIFIERS(x) (x & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(mainwindow)), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK))
+#	define CLEAN_MODIFIERS(x) (x & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(GTK_WIDGET(main_window()))), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK))
 #else
 #	define CLEAN_MODIFIERS(x) (x & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SUPER_MASK | GDK_HYPER_MASK | GDK_META_MASK))
 #endif
@@ -143,18 +139,6 @@ extern std::vector<MathFunction*> user_functions;
 
 extern bool b_busy, b_busy_command, b_busy_result, b_busy_expression, b_busy_fetch;
 
-void block_calculation();
-void unblock_calculation();
-bool calculation_blocked();
-void block_error();
-void unblock_error();
-bool error_blocked();
-void block_result();
-void unblock_result();
-bool result_blocked();
-
-void mainwindow_cursor_moved();
-
 GtkBuilder *getBuilder(const char *filename);
 
 std::string unformat(std::string str);
@@ -204,152 +188,29 @@ enum {
 	PREFIX_MODE_ALL_UNITS
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 bool do_shortcut(int type, std::string value);
 gboolean on_math_entry_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer);
 gboolean on_unit_entry_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer);
 void entry_insert_text(GtkWidget *w, const gchar *text);
-void set_input_base(int base, bool opendialog = false, bool recalculate = true);
-void set_output_base(int base);
 bool textview_in_quotes(GtkTextView *w);
 bool contains_polynomial_division(MathStructure &m);
 bool contains_imaginary_number(MathStructure &m);
 bool contains_rational_number(MathStructure &m);
 bool contains_fraction(MathStructure &m, bool in_div = false);
+bool contains_plot_or_save(const std::string &str);
 bool contains_convertible_unit(MathStructure &m);
 bool has_prefix(const MathStructure &m);
 
-void minimal_mode_show_resultview(bool b = true);
-
-void stop_autocalculate_history_timeout();
-
-void keypad_font_modified();
-void update_app_font(bool initial = false);
-void update_colors(bool initial = false);
-void set_app_operator_symbols();
-
-void memory_recall();
-void memory_store();
-void memory_add();
-void memory_subtract();
-void memory_clear();
-
-void set_fraction_format(int nff);
-void set_fixed_fraction(long int v, bool combined);
-void set_min_exp(int min_exp);
-void set_prefix_mode(int i);
-void set_approximation(ApproximationMode approx);
-void set_angle_unit(AngleUnit au);
-void set_custom_angle_unit(Unit *u);
-void set_autocalculate(bool b);
-void update_exchange_rates();
-void import_definitions_file();
-void show_about();
-void report_bug();
-void set_unknowns();
-void open_convert_number_bases();
-void open_convert_floatingpoint();
-void open_percentage_tool();
-void open_calendarconversion();
-void show_unit_conversion();
-void open_plot();
-bool qalculate_quit();
-
-void clear_parsed_in_result();
-void show_parsed_in_result(MathStructure &mparse, const PrintOptions &po);
-#ifdef __cplusplus
-}
-#endif
 bool test_supsub(GtkWidget *w);
-bool use_keypad_buttons_for_history();
-bool keypad_is_visible();
-bool update_window_title(const char *str = NULL, bool is_result = false);
-void set_rpn_mode(bool b);
-void set_parsed_in_result(bool b);
-void set_minimal_mode(bool b);
-void check_for_new_version(bool do_not_show_again = false);
-void insert_matrix(const MathStructure *initial_value = NULL, GtkWidget *win = NULL, gboolean create_vector = FALSE, bool is_text_struct = false, bool is_result = false, GtkEntry *entry = NULL);
 
-void on_abort_display(GtkDialog*, gint, gpointer);
-void on_abort_command(GtkDialog*, gint, gpointer);
-void on_abort_calculation(GtkDialog*, gint, gpointer);
-
-void show_message(const gchar *text, GtkWidget *win);
-bool ask_question(const gchar *text, GtkWidget *win);
-void show_notification(std::string text);
-
-void update_persistent_keypad(bool showhide_buttons = false);
-
-void set_clipboard(std::string str, int ascii, bool html, bool is_result, int copy_without_units = -1);
-
-void result_format_updated();
-void result_action_executed();
-void result_prefix_changed(Prefix *prefix = NULL);
-void expression_calculation_updated();
-void expression_format_updated(bool recalculate = false);
-void execute_expression(bool force = true, bool do_mathoperation = false, MathOperation op = OPERATION_ADD, MathFunction *f = NULL, bool do_stack = false, size_t stack_index = 0, std::string execute_str = std::string(), std::string str = std::string(), bool check_exrates = true);
-void executeCommand(int command_type, bool show_result = true, bool force = false, std::string ceu_str = "", Unit *u = NULL, int run = 1);
-void calculateRPN(int op);
-void calculateRPN(MathFunction *f);
-bool do_chain_mode(const gchar *op);
-void do_auto_calc(int recalculate = 1, std::string str = std::string());
-void abort_calculation();
-void setResult(Prefix *prefix = NULL, bool update_history = true, bool update_parse = false, bool force = false, std::string transformation = "", size_t stack_index = 0, bool register_moved = false, bool supress_dialog = false);
-void convert_result_to_unit_expression(std::string str);
-bool display_errors(GtkWidget *win = NULL, int type = 0, bool add_to_history = false);
-void add_as_variable();
-void add_autocalculated_result_to_history();
-bool autocalculation_stopped_at_operator();
-void handle_expression_modified(bool autocalc);
-
-void copy_result(int ascii = -1, int type = 0);
-
-void set_expression_output_updated(bool);
-
-void update_message_print_options();
-
-void toggle_binary_pos(int pos);
-
-MathStructure *current_result();
-void replace_current_result(MathStructure*);
-MathStructure *current_parsed_result();
-const std::string &current_result_text();
-bool current_result_text_is_approximate();
-void clearresult();
-void clear_parsed_in_result();
-
-void update_vmenu(bool update_compl = true);
-void update_fmenu(bool update_compl = true);
-void update_umenus(bool update_compl = true);
-bool is_answer_variable(Variable *v);
-
-void variable_removed(Variable *v);
-void unit_removed(Unit *u);
-void function_removed(MathFunction *f);
-
-void variable_edited(Variable *v);
-void function_edited(MathFunction *f);
-void unit_edited(Unit *u);
-void dataset_edited(DataSet *ds);
-
-void function_inserted(MathFunction *object);
+void show_message(const gchar *text, GtkWindow *win = NULL);
+bool ask_question(const gchar *text, GtkWindow *win = NULL);
 
 bool equalsIgnoreCase(const std::string &str1, const std::string &str2, size_t i2, size_t i2_end, size_t minlength);
 bool title_matches(ExpressionItem *item, const std::string &str, size_t minlength = 0);
 bool name_matches(ExpressionItem *item, const std::string &str);
 bool country_matches(Unit *u, const std::string &str, size_t minlength = 0);
 
-void insert_variable(Variable *v, bool add_to_menu = true);
-void insert_unit(Unit *u, bool add_to_recent = false);
-void insert_button_function(MathFunction *f, bool save_to_recent = false, bool apply_to_stack = true);
-
-void apply_function(MathFunction *f);
-
-bool check_exchange_rates(GtkWidget *win = NULL, bool set_result = false);
-
-void convert_result_to_unit(Unit *u);
 
 void find_matching_units(const MathStructure &m, const MathStructure *mparse, std::vector<Unit*> &v, bool top = true);
 Unit *find_exact_matching_unit(const MathStructure &m);
@@ -366,10 +227,11 @@ std::string button_valuetype_text(int type, const std::string &value);
 std::string shortcut_types_text(const std::vector<int> &type);
 const char *shortcut_copy_value_text(int v);
 std::string shortcut_values_text(const std::vector<std::string> &value, const std::vector<int> &type);
-void update_accels(int type = -1);
-void update_custom_buttons(int index = -1);
 
 void update_window_properties(GtkWidget *w, bool ignore_tooltips_setting = false);
+
+void combo_set_bits(GtkComboBox *w, unsigned int bits, bool has_auto = true);
+unsigned int combo_get_bits(GtkComboBox *w, bool has_auto = true);
 
 #define MENU_ITEM_WITH_INT(x,y,z)		item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), GINT_TO_POINTER(z)); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
 #define MENU_ITEM_WITH_STRING(x,y,z)		item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), (gpointer) z); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);

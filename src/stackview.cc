@@ -27,6 +27,8 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "insertfunctiondialog.h"
+#include "mainwindow.h"
 #include "expressionedit.h"
 #include "resultview.h"
 #include "keypad.h"
@@ -648,7 +650,7 @@ void update_stack_button_text() {
 	if(gtk_image_get_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_swap"))) != -1) gtk_image_set_pixel_size(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_swap")), -1);
 	gtk_widget_get_preferred_size(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_registerswap")), &a, NULL);
 	gint h_i = -1;
-	if(keypad_font() || use_custom_app_font) {
+	if(keypad_font() || app_font()) {
 		h_i = 16 + (h - a.height);
 		if(h_i < 20) h_i = -1;
 	}

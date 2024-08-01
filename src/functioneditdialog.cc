@@ -27,6 +27,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "mainwindow.h"
 #include "openhelp.h"
 #include "nameseditdialog.h"
 #include "dataseteditdialog.h"
@@ -889,7 +890,7 @@ run_function_edit_dialog:
 			//no name -- open dialog again
 			gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(functionedit_builder, "function_edit_tabs")), 0);
 			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")));
-			show_message(_("Empty name field."), dialog);
+			show_message(_("Empty name field."), GTK_WINDOW(dialog));
 			goto run_function_edit_dialog;
 		}
 		GtkTextIter e_iter_s, e_iter_e;
@@ -904,7 +905,7 @@ run_function_edit_dialog:
 			//no expression/relation -- open dialog again
 			gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(functionedit_builder, "function_edit_tabs")), 0);
 			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_textview_expression")));
-			show_message(_("Empty expression field."), dialog);
+			show_message(_("Empty expression field."), GTK_WINDOW(dialog));
 			goto run_function_edit_dialog;
 		}
 		GtkTextIter d_iter_s, d_iter_e;
@@ -914,7 +915,7 @@ run_function_edit_dialog:
 		//function with the same name exists -- overwrite or open the dialog again
 		if((!f || !f->hasName(str)) && ((names_status() != 1 && !str.empty()) || !has_name()) && CALCULATOR->functionNameTaken(str, f)) {
 			MathFunction *func = CALCULATOR->getActiveFunction(str, true);
-			if((!f || f != func) && (!func || func->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A function with the same name already exists.\nDo you want to overwrite the function?"), dialog)) {
+			if((!f || f != func) && (!func || func->category() != CALCULATOR->temporaryCategory()) && !ask_question(_("A function with the same name already exists.\nDo you want to overwrite the function?"), GTK_WINDOW(dialog))) {
 				gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(functionedit_builder, "function_edit_tabs")), 0);
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")));
 				goto run_function_edit_dialog;
@@ -979,7 +980,7 @@ run_function_edit_dialog:
 			function_edited(f);
 		}
 	} else if(response == GTK_RESPONSE_HELP) {
-		show_help("qalculate-functions.html#qalculate-function-creation", GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_dialog")));
+		show_help("qalculate-functions.html#qalculate-function-creation", GTK_WINDOW(gtk_builder_get_object(functionedit_builder, "function_edit_dialog")));
 		goto run_function_edit_dialog;
 	} else {
 		GtkTreeIter iter;

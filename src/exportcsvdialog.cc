@@ -27,6 +27,7 @@
 #include "support.h"
 #include "settings.h"
 #include "util.h"
+#include "mainwindow.h"
 #include "exportcsvdialog.h"
 
 using std::string;
@@ -129,7 +130,7 @@ run_csv_export_dialog:
 		if(str.empty()) {
 			//no filename -- open dialog again
 			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(csvexport_builder, "csv_export_entry_file")));
-			show_message(_("No file name entered."), dialog);
+			show_message(_("No file name entered."), GTK_WINDOW(dialog));
 			goto run_csv_export_dialog;
 		}
 		string delimiter = "";
@@ -158,7 +159,7 @@ run_csv_export_dialog:
 		if(delimiter.empty()) {
 			//no delimiter -- open dialog again
 			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(csvexport_builder, "csv_export_entry_delimiter_other")));
-			show_message(_("No delimiter selected."), dialog);
+			show_message(_("No delimiter selected."), GTK_WINDOW(dialog));
 			goto run_csv_export_dialog;
 		}
 		MathStructure *matrix_struct;
@@ -171,7 +172,7 @@ run_csv_export_dialog:
 			remove_blank_ends(str2);
 			if(str2.empty()) {
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(csvexport_builder, "csv_export_entry_matrix")));
-				show_message(_("No variable name entered."), dialog);
+				show_message(_("No variable name entered."), GTK_WINDOW(dialog));
 				goto run_csv_export_dialog;
 			}
 			Variable *var = CALCULATOR->getActiveVariable(str2, true);
@@ -183,14 +184,14 @@ run_csv_export_dialog:
 			}
 			if(!var || !var->isKnown()) {
 				gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(csvexport_builder, "csv_export_entry_matrix")));
-				show_message(_("No known variable with entered name found."), dialog);
+				show_message(_("No known variable with entered name found."), GTK_WINDOW(dialog));
 				goto run_csv_export_dialog;
 			}
 			matrix_struct = (MathStructure*) &((KnownVariable*) var)->get();
 		}
 		CALCULATOR->startControl(600000);
 		if(!CALCULATOR->exportCSV(*matrix_struct, str.c_str(), delimiter) && CALCULATOR->aborted()) {
-			GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(mainwindow), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not export to file \n%s"), str.c_str());
+			GtkWidget *edialog = gtk_message_dialog_new(main_window(), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not export to file \n%s"), str.c_str());
 			if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
 			gtk_dialog_run(GTK_DIALOG(edialog));
 			gtk_widget_destroy(edialog);
