@@ -52,7 +52,7 @@ void on_tDataObjects_selection_changed(GtkTreeSelection *treeselection, gpointer
 void on_tDatasets_selection_changed(GtkTreeSelection *treeselection, gpointer user_data);
 void edit_dataobject(DataSet *ds, DataObject *o = NULL, GtkWidget *win = NULL);
 
-bool read_datasets_dialog_settings_line(string &svar, string &svalue, int &v) {
+bool read_datasets_dialog_settings_line(string &svar, string&, int &v) {
 	if(svar == "datasets_width") {
 		datasets_width = v;
 	} else if(svar == "datasets_height") {

@@ -45,13 +45,13 @@ KnownVariable *edited_variable = NULL;
 
 bool variable_value_changed = false;
 
-void on_variables_edit_textview_value_changed(GtkTextBuffer*, gpointer user_data) {
+void on_variables_edit_textview_value_changed(GtkTextBuffer*, gpointer) {
 	variable_value_changed = true;
 }
-void on_variable_edit_checkbutton_temporary_toggled(GtkToggleButton *w, gpointer user_data) {
+void on_variable_edit_checkbutton_temporary_toggled(GtkToggleButton *w, gpointer) {
 	gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(variableedit_builder, "variable_edit_combo_category")))), gtk_toggle_button_get_active(w) ? CALCULATOR->temporaryCategory().c_str() : "");
 }
-void on_variable_edit_combo_category_changed(GtkComboBox *w, gpointer user_data) {
+void on_variable_edit_combo_category_changed(GtkComboBox *w, gpointer) {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(variableedit_builder, "variable_edit_checkbutton_temporary"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_variable_edit_checkbutton_temporary_toggled, NULL);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(variableedit_builder, "variable_edit_checkbutton_temporary")), CALCULATOR->temporaryCategory() == gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(w)));
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(variableedit_builder, "variable_edit_checkbutton_temporary"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_variable_edit_checkbutton_temporary_toggled, NULL);
@@ -73,7 +73,7 @@ void on_variable_edit_button_names_clicked(GtkWidget*, gpointer) {
 	}
 	on_variable_changed();
 }
-gboolean on_variable_edit_textview_value_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer renderer) {
+gboolean on_variable_edit_textview_value_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer) {
 	if(textview_in_quotes(GTK_TEXT_VIEW(w))) return FALSE;
 	const gchar *key = key_press_get_symbol(event);
 	if(!key) return FALSE;

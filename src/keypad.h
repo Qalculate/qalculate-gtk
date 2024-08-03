@@ -14,6 +14,7 @@
 
 #include <gtk/gtk.h>
 #include <libqalculate/qalculate.h>
+#include <stdio.h>
 
 enum {
 	PROGRAMMING_KEYPAD = 1,

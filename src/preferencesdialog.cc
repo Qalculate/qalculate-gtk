@@ -190,6 +190,7 @@ void on_preferences_checkbutton_binary_prefixes_toggled(GtkToggleButton *w, gpoi
 	CALCULATOR->useBinaryPrefixes(gtk_toggle_button_get_active(w) ? 1 : 0);
 	result_format_updated();
 }
+extern bool tc_set;
 void on_preferences_radiobutton_temp_rel_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(w)) return;
 	CALCULATOR->setTemperatureCalculationMode(TEMPERATURE_CALCULATION_RELATIVE);
@@ -289,11 +290,13 @@ void on_preferences_checkbutton_ignore_locale_toggled(GtkToggleButton *w, gpoint
 	}
 }
 extern int title_type;
+extern bool title_modified;
 void on_preferences_combo_title_changed(GtkComboBox *w, gpointer) {
 	title_type = gtk_combo_box_get_active(w);
 	title_modified = false;
 	update_window_title();
 }
+extern int history_expression_type;
 void on_preferences_combo_history_expression_changed(GtkComboBox *w, gpointer) {
 	history_expression_type = gtk_combo_box_get_active(w);
 	reload_history();
@@ -353,19 +356,19 @@ void on_preferences_checkbutton_duodecimal_symbols_toggled(GtkToggleButton *w, g
 	result_format_updated();
 }
 void on_preferences_checkbutton_twos_complement_toggled(GtkToggleButton *w, gpointer) {
-	set_twos_complement(gtk_toggle_button_get_active(w));
+	set_twos_complement(gtk_toggle_button_get_active(w), -1, -1, -1, false);
 }
 void on_preferences_checkbutton_hexadecimal_twos_complement_toggled(GtkToggleButton *w, gpointer) {
-	set_twos_complement(-1, gtk_toggle_button_get_active(w));
+	set_twos_complement(-1, gtk_toggle_button_get_active(w), -1, -1, false);
 }
 void on_preferences_checkbutton_twos_complement_input_toggled(GtkToggleButton *w, gpointer) {
-	set_twos_complement(-1, -1, gtk_toggle_button_get_active(w));
+	set_twos_complement(-1, -1, gtk_toggle_button_get_active(w), -1, false);
 }
 void on_preferences_checkbutton_hexadecimal_twos_complement_input_toggled(GtkToggleButton *w, gpointer) {
-	set_twos_complement(-1, -1, -1, gtk_toggle_button_get_active(w));
+	set_twos_complement(-1, -1, -1, gtk_toggle_button_get_active(w), false);
 }
 void on_preferences_combobox_bits_changed(GtkComboBox *w, gpointer) {
-	set_binary_bits(combo_get_bits(w));
+	set_binary_bits(combo_get_bits(w), false);
 }
 void preferences_update_twos_complement(bool initial) {
 	if(!preferences_builder) return;
@@ -434,6 +437,8 @@ void on_preferences_checkbutton_allow_multiple_instances_toggled(GtkToggleButton
 void on_preferences_checkbutton_rpn_keys_toggled(GtkToggleButton *w, gpointer) {
 	rpn_keys = gtk_toggle_button_get_active(w);
 }
+extern bool dot_question_asked;
+extern int b_decimal_comma;
 void on_preferences_checkbutton_decimal_comma_toggled(GtkToggleButton *w, gpointer) {
 	b_decimal_comma = gtk_toggle_button_get_active(w);
 	if(b_decimal_comma) {
@@ -501,7 +506,7 @@ void on_preferences_checkbutton_parsed_in_result_toggled(GtkToggleButton *w, gpo
 }
 extern int autocalc_history_delay;
 void on_preferences_scale_autocalc_history_value_changed(GtkRange *w, gpointer) {
-	autocalc_history_delay = (gint) ::round(::pow(gtk_range_get_value(GTK_RANGE(gtk_builder_get_object(preferences_builder, "preferences_scale_autocalc_history"))), 3.0));
+	autocalc_history_delay = (gint) ::round(::pow(gtk_range_get_value(w), 3.0));
 }
 void on_preferences_checkbutton_autocalc_history_toggled(GtkToggleButton *w, gpointer) {
 	if(gtk_toggle_button_get_active(w)) {
@@ -552,8 +557,8 @@ void on_preferences_combo_theme_changed(GtkComboBox *w, gpointer) {
 	gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(gtk_builder_get_object(preferences_builder, "colorbutton_status_warning_color")), &c);
 #endif
 }
-void on_preferences_checkbutton_use_systray_icon_toggled(GtkToggleButton *w, gpointer) {
 #ifdef _WIN32
+void on_preferences_checkbutton_use_systray_icon_toggled(GtkToggleButton *w, gpointer) {
 	bool b = gtk_toggle_button_get_active(w);
 	set_system_tray_icon_enabled(b);
 	if(b) {
@@ -567,8 +572,10 @@ void on_preferences_checkbutton_use_systray_icon_toggled(GtkToggleButton *w, gpo
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_close_with_esc")), b);
 		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_close_with_esc"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_close_with_esc_toggled, NULL);
 	}
-#endif
 }
+#else
+void on_preferences_checkbutton_use_systray_icon_toggled(GtkToggleButton*, gpointer) {}
+#endif
 extern bool hide_on_startup;
 void on_preferences_checkbutton_hide_on_startup_toggled(GtkToggleButton *w, gpointer) {
 	hide_on_startup = gtk_toggle_button_get_active(w);

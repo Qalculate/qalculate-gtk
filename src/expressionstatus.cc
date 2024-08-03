@@ -41,7 +41,7 @@ using std::endl;
 
 extern GtkBuilder *main_builder;
 
-GtkWidget *statuslabel_l, *statuslabel_r;
+GtkWidget *statuslabel_l = NULL, *statuslabel_r = NULL;
 GtkCssProvider *statuslabel_l_provider = NULL, *statuslabel_r_provider = NULL, *statusframe_provider = NULL;
 PangoLayout *status_layout = NULL;
 string status_error_c = "#FF0000", status_warning_c = "#0000FF";
@@ -73,6 +73,11 @@ enum {
 	STATUS_TEXT_OTHER
 };
 int status_text_source = STATUS_TEXT_NONE;
+
+GtkWidget *parse_status_widget() {
+	if(!statuslabel_l) statuslabel_l = GTK_WIDGET(gtk_builder_get_object(main_builder, "label_status_left"));
+	return statuslabel_l;
+}
 
 bool read_expression_status_settings_line(string &svar, string &svalue, int &v) {
 	 if(svar == "use_custom_status_font") {
@@ -148,8 +153,7 @@ void on_menu_item_parsed_in_result_activate(GtkMenuItem *w, gpointer) {
 	set_parsed_in_result(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
 }
 void on_menu_item_status_exact_activate(GtkMenuItem *w, gpointer) {
-	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_always_exact")), TRUE);
-	else gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_try_exact")), TRUE);
+	set_approximation(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)) ? APPROXIMATION_EXACT : APPROXIMATION_TRY_EXACT);
 }
 void on_menu_item_status_read_precision_activate(GtkMenuItem *w, gpointer) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_read_precision")), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
@@ -182,7 +186,7 @@ void on_menu_item_copy_ascii_status_activate(GtkMenuItem*, gpointer) {
 }
 
 gboolean on_status_left_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(event->type == GDK_BUTTON_PRESS && event->button == 3 && !b_busy) {
+	if(event->type == GDK_BUTTON_PRESS && event->button == 3 && !calculator_busy()) {
 		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_parsed_in_result"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_parsed_in_result_activate, NULL);
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_parsed_in_result")), parsed_in_result && !rpn_mode);
 		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_parsed_in_result"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_parsed_in_result_activate, NULL);
@@ -312,20 +316,20 @@ void set_status_text(string text, bool break_begin = false, bool had_errors = fa
 	if(had_errors || had_warnings) str += "</span>";
 	if(text.empty()) status_text_source = STATUS_TEXT_NONE;
 
-	if(break_begin) gtk_label_set_ellipsize(GTK_LABEL(statuslabel_l), PANGO_ELLIPSIZE_START);
-	else gtk_label_set_ellipsize(GTK_LABEL(statuslabel_l), PANGO_ELLIPSIZE_END);
+	if(break_begin) gtk_label_set_ellipsize(GTK_LABEL(parse_status_widget()), PANGO_ELLIPSIZE_START);
+	else gtk_label_set_ellipsize(GTK_LABEL(parse_status_widget()), PANGO_ELLIPSIZE_END);
 
-	gtk_label_set_markup(GTK_LABEL(statuslabel_l), str.c_str());
+	gtk_label_set_markup(GTK_LABEL(parse_status_widget()), str.c_str());
 	gint w = 0;
 	if(str.length() > 500) {
 		w = -1;
 	} else if(str.length() > 20) {
-		if(!status_layout) status_layout = gtk_widget_create_pango_layout(statuslabel_l, "");
+		if(!status_layout) status_layout = gtk_widget_create_pango_layout(parse_status_widget(), "");
 		pango_layout_set_markup(status_layout, str.c_str(), -1);
 		pango_layout_get_pixel_size(status_layout, &w, NULL);
 	}
-	if(((auto_calculate && !rpn_mode) || !had_errors || tooltip_text.empty()) && (w < 0 || w > gtk_widget_get_allocated_width(statuslabel_l))) gtk_widget_set_tooltip_markup(statuslabel_l, text.c_str());
-	else gtk_widget_set_tooltip_text(statuslabel_l, tooltip_text.c_str());
+	if(((auto_calculate && !rpn_mode) || !had_errors || tooltip_text.empty()) && (w < 0 || w > gtk_widget_get_allocated_width(parse_status_widget()))) gtk_widget_set_tooltip_markup(parse_status_widget(), text.c_str());
+	else gtk_widget_set_tooltip_text(parse_status_widget(), tooltip_text.c_str());
 }
 void clear_status_text() {
 	set_status_text("");
@@ -490,7 +494,7 @@ void update_status_text() {
 	str += "</span>";
 
 	if(str != gtk_label_get_label(GTK_LABEL(statuslabel_r))) {
-		gtk_label_set_text(GTK_LABEL(statuslabel_l), "");
+		gtk_label_set_text(GTK_LABEL(parse_status_widget()), "");
 		gtk_label_set_markup(GTK_LABEL(statuslabel_r), str.c_str());
 		display_parse_status();
 	}
@@ -502,7 +506,7 @@ bool display_function_hint(MathFunction *f, int arg_index = 1) {
 	Argument *arg;
 	Argument default_arg;
 	string str, str2, str3;
-	const ExpressionName *ename = &f->preferredName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) statuslabel_l);
+	const ExpressionName *ename = &f->preferredName(false, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) parse_status_widget());
 	bool last_is_vctr = f->getArgumentDefinition(iargs) && f->getArgumentDefinition(iargs)->type() == ARGUMENT_TYPE_VECTOR;
 	if(arg_index > iargs && iargs >= 0 && !last_is_vctr) {
 		if(iargs == 1 && f->getArgumentDefinition(1) && f->getArgumentDefinition(1)->handlesVector()) {
@@ -567,11 +571,11 @@ bool display_function_hint(MathFunction *f, int arg_index = 1) {
 				str += str2;
 				str += "</b>";
 				if(i_reduced < 2) {
-					PangoLayout *layout_test = gtk_widget_create_pango_layout(statuslabel_l, NULL);
+					PangoLayout *layout_test = gtk_widget_create_pango_layout(parse_status_widget(), NULL);
 					pango_layout_set_markup(layout_test, str.c_str(), -1);
 					gint w, h;
 					pango_layout_get_pixel_size(layout_test, &w, &h);
-					if(w > gtk_widget_get_allocated_width(statuslabel_l) - 20) {
+					if(w > gtk_widget_get_allocated_width(parse_status_widget()) - 20) {
 						str = ename->formattedName(TYPE_FUNCTION, true, true);
 						str += "(";
 						if(i2 != 1) {
@@ -797,7 +801,7 @@ void display_parse_status() {
 		po.excessive_parenthesis = true;
 		po.improve_division_multipliers = false;
 		po.can_display_unicode_string_function = &can_display_unicode_string_function;
-		po.can_display_unicode_string_arg = (void*) gtk_builder_get_object(main_builder, "label_status_left");
+		po.can_display_unicode_string_arg = (void*) parse_status_widget();
 		po.spell_out_logical_operators = printops.spell_out_logical_operators;
 		po.restrict_to_parent_precision = false;
 		po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
@@ -1116,14 +1120,14 @@ void display_parse_status() {
 		if(!str_f.empty()) {str_f += " "; parsed_expression.insert(0, str_f);}
 		fix_history_string_new2(parsed_expression);
 		gsub("&nbsp;", " ", parsed_expression);
-		FIX_SUPSUB_PRE(statuslabel_l, fix_supsub_status)
+		FIX_SUPSUB_PRE(parse_status_widget(), fix_supsub_status)
 		FIX_SUPSUB(parsed_expression)
 		if(show_parsed_instead_of_result || parsed_expression_is_displayed_instead_of_result()) {
 			show_parsed_in_result(parse_l == 0 ? m_undefined : mparse, po);
 			if((result_is_autocalculated() || show_parsed_instead_of_result) && !current_result_text().empty()) {
 				string equalsstr;
 				if(current_result_text_is_approximate()) {
-					if(printops.use_unicode_signs && (!printops.can_display_unicode_string_function || (*printops.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, (void*) statuslabel_l))) {
+					if(printops.use_unicode_signs && (!printops.can_display_unicode_string_function || (*printops.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, (void*) parse_status_widget()))) {
 						equalsstr = SIGN_ALMOST_EQUAL " ";
 					} else {
 						equalsstr = "= ";
@@ -1156,7 +1160,7 @@ void display_parse_status() {
 			if(!current_result_text().empty() && (result_is_autocalculated() || show_parsed_instead_of_result)) {
 				string equalsstr;
 				if(current_result_text_is_approximate()) {
-					if(printops.use_unicode_signs && (!printops.can_display_unicode_string_function || (*printops.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, (void*) statuslabel_l))) {
+					if(printops.use_unicode_signs && (!printops.can_display_unicode_string_function || (*printops.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, (void*) parse_status_widget()))) {
 						equalsstr = SIGN_ALMOST_EQUAL " ";
 					} else {
 						equalsstr = "= ";
@@ -1196,28 +1200,28 @@ void set_status_bottom_border_visible(bool b) {
 	gtk_css_provider_load_from_data(statusframe_provider, status_css.c_str(), -1, NULL);
 }
 void set_status_size_request() {
-	PangoLayout *layout_test = gtk_widget_create_pango_layout(statuslabel_l, NULL);
-	FIX_SUPSUB_PRE(statuslabel_l, fix_supsub_status)
+	PangoLayout *layout_test = gtk_widget_create_pango_layout(parse_status_widget(), NULL);
+	FIX_SUPSUB_PRE(parse_status_widget(), fix_supsub_status)
 	string str = "Ä<sub>x</sub>y<sup>2</sup>";
 	FIX_SUPSUB(str)
 	pango_layout_set_markup(layout_test, str.c_str(), -1);
 	gint h;
 	pango_layout_get_pixel_size(layout_test, NULL, &h);
 	g_object_unref(layout_test);
-	gtk_widget_set_size_request(statuslabel_l, -1, h);
+	gtk_widget_set_size_request(parse_status_widget(), -1, h);
 }
 void set_status_operator_symbols() {
-	if(can_display_unicode_string_function_exact(SIGN_MINUS, (void*) statuslabel_l)) sminus_s = SIGN_MINUS;
+	if(can_display_unicode_string_function_exact(SIGN_MINUS, (void*) parse_status_widget())) sminus_s = SIGN_MINUS;
 	else sminus_s = "-";
-	if(can_display_unicode_string_function(SIGN_DIVISION, (void*) statuslabel_l)) sdiv_s = SIGN_DIVISION;
+	if(can_display_unicode_string_function(SIGN_DIVISION, (void*) parse_status_widget())) sdiv_s = SIGN_DIVISION;
 	else sdiv_s = "/";
-	if(can_display_unicode_string_function_exact(SIGN_DIVISION, (void*) statuslabel_l)) sslash_s = SIGN_DIVISION_SLASH;
+	if(can_display_unicode_string_function_exact(SIGN_DIVISION, (void*) parse_status_widget())) sslash_s = SIGN_DIVISION_SLASH;
 	else sslash_s = "/";
-	if(can_display_unicode_string_function(SIGN_MULTIDOT, (void*) statuslabel_l)) sdot_s = SIGN_MULTIDOT;
+	if(can_display_unicode_string_function(SIGN_MULTIDOT, (void*) parse_status_widget())) sdot_s = SIGN_MULTIDOT;
 	else sdot_s = "*";
-	if(can_display_unicode_string_function(SIGN_MIDDLEDOT, (void*) statuslabel_l)) saltdot_s = SIGN_MIDDLEDOT;
+	if(can_display_unicode_string_function(SIGN_MIDDLEDOT, (void*) parse_status_widget())) saltdot_s = SIGN_MIDDLEDOT;
 	else saltdot_s = "*";
-	if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) statuslabel_l)) stimes_s = SIGN_MULTIPLICATION;
+	if(can_display_unicode_string_function(SIGN_MULTIPLICATION, (void*) parse_status_widget())) stimes_s = SIGN_MULTIPLICATION;
 	else stimes_s = "*";
 	if(status_layout) {
 		g_object_unref(status_layout);
@@ -1237,7 +1241,7 @@ void update_status_font(bool initial) {
 		gtk_css_provider_load_from_data(statuslabel_r_provider, "* {font-size: 90%;}", -1, NULL);
 		if(initial && custom_status_font.empty()) {
 			PangoFontDescription *font_desc;
-			gtk_style_context_get(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+			gtk_style_context_get(gtk_widget_get_style_context(parse_status_widget()), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
 			char *gstr = pango_font_description_to_string(font_desc);
 			custom_status_font = gstr;
 			g_free(gstr);
@@ -1245,7 +1249,7 @@ void update_status_font(bool initial) {
 		}
 	}
 	if(initial) {
-		fix_supsub_status = test_supsub(statuslabel_l);
+		fix_supsub_status = test_supsub(parse_status_widget());
 	} else {
 		status_font_modified();
 		while(gtk_events_pending()) gtk_main_iteration();
@@ -1274,7 +1278,7 @@ const char *status_font(bool return_default) {
 }
 void status_font_modified() {
 	while(gtk_events_pending()) gtk_main_iteration();
-	fix_supsub_status = test_supsub(statuslabel_l);
+	fix_supsub_status = test_supsub(parse_status_widget());
 	set_status_size_request();
 	set_status_operator_symbols();
 }
@@ -1355,7 +1359,7 @@ void update_status_menu(bool initial) {
 }
 void update_status_colors(bool) {
 	GdkRGBA c;
-	gtk_style_context_get_color(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, &c);
+	gtk_style_context_get_color(gtk_widget_get_style_context(parse_status_widget()), GTK_STATE_FLAG_NORMAL, &c);
 	if(!status_error_c_set) {
 		GdkRGBA c_err = c;
 		if(c_err.red >= 0.8) {
@@ -1388,29 +1392,29 @@ void update_status_colors(bool) {
 }
 
 void create_expression_status() {
-	statuslabel_l = GTK_WIDGET(gtk_builder_get_object(main_builder, "label_status_left"));
+
 	statuslabel_r = GTK_WIDGET(gtk_builder_get_object(main_builder, "label_status_right"));
 
 	gtk_widget_set_margin_top(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")), 2);
 	gtk_widget_set_margin_bottom(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusbox")), 3);
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 12
 	gtk_widget_set_margin_end(statuslabel_r, 12);
-	gtk_widget_set_margin_start(statuslabel_l, 9);
+	gtk_widget_set_margin_start(parse_status_widget(), 9);
 #else
 	gtk_widget_set_margin_right(statuslabel_r, 12);
-	gtk_widget_set_margin_left(statuslabel_l, 9);
+	gtk_widget_set_margin_left(parse_status_widget(), 9);
 #endif
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
-	gtk_label_set_xalign(GTK_LABEL(statuslabel_l), 0.0);
-	gtk_label_set_yalign(GTK_LABEL(statuslabel_l), 0.5);
+	gtk_label_set_xalign(GTK_LABEL(parse_status_widget()), 0.0);
+	gtk_label_set_yalign(GTK_LABEL(parse_status_widget()), 0.5);
 	gtk_label_set_yalign(GTK_LABEL(statuslabel_r), 0.5);
 #else
-	gtk_misc_set_alignment(GTK_MISC(statuslabel_l), 0.0, 0.5);
+	gtk_misc_set_alignment(GTK_MISC(parse_status_widget()), 0.0, 0.5);
 #endif
 
 	statuslabel_l_provider = gtk_css_provider_new();
 	statuslabel_r_provider = gtk_css_provider_new();
-	gtk_style_context_add_provider(gtk_widget_get_style_context(statuslabel_l), GTK_STYLE_PROVIDER(statuslabel_l_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_style_context_add_provider(gtk_widget_get_style_context(parse_status_widget()), GTK_STYLE_PROVIDER(statuslabel_l_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_style_context_add_provider(gtk_widget_get_style_context(statuslabel_r), GTK_STYLE_PROVIDER(statuslabel_r_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
 	string topframe_css = "* {background-color: ";

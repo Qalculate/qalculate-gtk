@@ -86,7 +86,7 @@ vector<GtkWidget*> popup_result_mode_items;
 
 bool fraction_fixed_combined = true;
 
-bool read_menubar_settings_line(string &svar, string &svalue, int &v) {
+bool read_menubar_settings_line(string &svar, string&, int &v) {
 	if(svar == "fraction_fixed_combined") {
 		fraction_fixed_combined = v;
 	} else {
@@ -454,7 +454,7 @@ void on_menu_item_concise_uncertainty_input_activate(GtkMenuItem *w, gpointer) {
 }
 void on_menu_item_always_exact_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	set_approximation(evalops.approximation = APPROXIMATION_EXACT);
+	set_approximation(APPROXIMATION_EXACT);
 }
 void on_menu_item_try_exact_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
@@ -780,7 +780,7 @@ void on_menu_item_import_definitions_activate(GtkMenuItem*, gpointer) {
 void on_menu_item_minimal_mode_activate(GtkMenuItem*, gpointer) {
 	set_minimal_mode(true);
 }
-void on_menu_item_quit_activate(GtkMenuItem*, gpointer user_data) {
+void on_menu_item_quit_activate(GtkMenuItem*, gpointer) {
 	qalculate_quit();
 }
 

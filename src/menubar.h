@@ -53,4 +53,14 @@ void create_menubar();
 bool read_menubar_settings_line(std::string &svar, std::string &svalue, int &v);
 void write_menubar_settings(FILE *file);
 
+void on_menu_item_set_unknowns_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_simplify_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_factorize_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_expand_partial_fractions_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_manage_functions_activate(GtkMenuItem *w, gpointer user_data);
+void on_menu_item_manage_variables_activate(GtkMenuItem *w, gpointer user_data);
+void insert_variable_from_menu(GtkMenuItem *w, gpointer user_data);
+void insert_prefix_from_menu(GtkMenuItem *w, gpointer user_data);
+void insert_unit_from_menu(GtkMenuItem *w, gpointer user_data);
+
 #endif /* MENUBAR_H */

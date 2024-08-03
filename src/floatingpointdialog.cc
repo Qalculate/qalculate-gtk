@@ -314,12 +314,10 @@ void fp_insert_text(GtkWidget *w, const gchar *text) {
 	gtk_editable_select_region(GTK_EDITABLE(w), pos, pos);
 }
 
-gboolean on_floatingpoint_dialog_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
-	if(b_busy) {
+gboolean on_floatingpoint_dialog_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
+	if(calculator_busy()) {
 		if(event->keyval == GDK_KEY_Escape) {
-			if(b_busy_expression) on_abort_calculation(NULL, 0, NULL);
-			else if(b_busy_result) on_abort_display(NULL, 0, NULL);
-			else if(b_busy_command) on_abort_command(NULL, 0, NULL);
+			abort_calculation();
 		}
 		return TRUE;
 	}
@@ -356,14 +354,14 @@ GtkWidget* get_floatingpoint_dialog(void) {
 
 	return GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "floatingpoint_dialog"));
 }
-void convert_floatingpoint(const gchar *initial_expression, bool b_result, GtkWindow *parent) {
+void convert_floatingpoint(const gchar *initial_expression, int base, GtkWindow *parent) {
 	changing_in_fp_dialog = false;
 	GtkWidget *dialog = get_floatingpoint_dialog();
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), parent);
-	switch(b_result ? displayed_printops.base : evalops.parse_options.base) {
+	switch(base) {
 		case BASE_BINARY: {
-			gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(floatingpoint_builder, "fp_entry_bin")), initial_expression);
-			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "fp_entry_bin")));
+			gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_builder_get_object(floatingpoint_builder, "fp_buffer_bin")), initial_expression, -1);
+			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "fp_textedit_bin")));
 			break;
 		}
 		case BASE_HEXADECIMAL: {

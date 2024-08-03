@@ -82,21 +82,7 @@ extern int to_base;
 extern unsigned int to_bits;
 extern GtkListStore *completion_store;
 extern GtkTreeModel *completion_sort;
-extern int flagheight;
 extern vector<MathStructure*> history_answer;
-extern void do_completion(bool to_menu = false);
-void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewColumn*, gpointer);
-extern void on_menu_item_set_unknowns_activate(GtkMenuItem *w, gpointer user_data);
-extern void on_menu_item_simplify_activate(GtkMenuItem *w, gpointer user_data);
-extern void on_menu_item_factorize_activate(GtkMenuItem *w, gpointer user_data);
-extern void on_menu_item_expand_partial_fractions_activate(GtkMenuItem *w, gpointer user_data);
-extern void on_menu_item_manage_functions_activate(GtkMenuItem *w, gpointer user_data);
-extern void on_menu_item_manage_variables_activate(GtkMenuItem *w, gpointer user_data);
-extern void insert_variable_from_menu(GtkMenuItem *w, gpointer user_data);
-extern void insert_prefix_from_menu(GtkMenuItem *w, gpointer user_data);
-extern void insert_unit_from_menu(GtkMenuItem *w, gpointer user_data);
-extern void autocalc_result_bases();
-
 
 GtkWidget *keypad_widget() {
 	if(!keypad) keypad = GTK_WIDGET(gtk_builder_get_object(main_builder, "buttons"));
@@ -1187,7 +1173,7 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_ans"))) {
 		DO_CUSTOM_BUTTONS(27)
 		if(history_answer.size() > 0) {
-			string str = f_answer->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_FUNCTION, true);
+			string str = answer_function()->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_FUNCTION, true);
 			Number nr(history_answer.size(), 1);
 			str += '(';
 			str += print_with_evalops(nr);
@@ -1385,7 +1371,7 @@ gboolean keypad_long_press_timeout(gpointer data) {
 	if(data) {
 		hide_tooltip(GTK_WIDGET(data));
 		if(GTK_WIDGET(data) == GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_to"))) {
-			if(b_busy) return TRUE;
+			if(calculator_busy()) return TRUE;
 			update_mb_to_menu();
 		}
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
@@ -1587,7 +1573,7 @@ gboolean on_keypad_menu_button_button_event(GtkWidget *w, GdkEventButton *event,
 	bool b = (event->type == GDK_BUTTON_RELEASE && (event->button == 2 || event->button == 3));
 	if(b) {
 		if(GTK_WIDGET(data) == GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_to"))) {
-			if(b_busy) return TRUE;
+			if(calculator_busy()) return TRUE;
 			update_mb_to_menu();
 		}
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
@@ -1836,7 +1822,7 @@ void on_button_ac_clicked(GtkButton*, gpointer) {
 }
 
 void on_button_to_clicked(GtkButton*, gpointer) {
-	if(b_busy) return;
+	if(calculator_busy()) return;
 	string to_str;
 	GtkTextIter istart, iend;
 	gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iend);
@@ -1962,7 +1948,7 @@ void on_button_divide_clicked(GtkButton*, gpointer) {
 }
 void on_button_ans_clicked(GtkButton*, gpointer) {
 	DO_CUSTOM_BUTTON_1(27)
-	insert_text(vans[0]->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_VARIABLE, true).c_str());
+	insert_answer_variable();
 }
 void on_button_exp_clicked(GtkButton*, gpointer) {
 	DO_CUSTOM_BUTTON_1(19)
@@ -2474,8 +2460,8 @@ void update_mb_to_menu() {
 		} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(completion_sort), &iter));
 	}
 }
-gboolean on_mb_to_button_release_event(GtkWidget, GdkEventButton *event, gpointer) {
-	if(b_busy) return TRUE;
+gboolean on_mb_to_button_release_event(GtkWidget, GdkEventButton*, gpointer) {
+	if(calculator_busy()) return TRUE;
 	update_mb_to_menu();
 	return FALSE;
 }
@@ -2517,10 +2503,10 @@ void update_mb_units_menu() {
 	if(p) {MENU_ITEM_WITH_POINTER(p->longName(true, printops.use_unicode_signs).c_str(), insert_prefix_from_menu, p);}
 }
 
-void on_popup_menu_fx_edit_activate(GtkMenuItem *w, gpointer data) {
+void on_popup_menu_fx_edit_activate(GtkMenuItem*, gpointer data) {
 	edit_function("", (MathFunction*) data, main_window());
 }
-void on_popup_menu_fx_delete_activate(GtkMenuItem *w, gpointer data) {
+void on_popup_menu_fx_delete_activate(GtkMenuItem*, gpointer data) {
 	MathFunction *f = (MathFunction*) data;
 	if(f && f->isLocal()) {
 		f->destroy();
@@ -2534,7 +2520,7 @@ void on_popup_menu_fx_delete_activate(GtkMenuItem *w, gpointer data) {
 gulong on_popup_menu_fx_edit_activate_handler = 0, on_popup_menu_fx_delete_activate_handler = 0;
 
 gboolean on_menu_fx_popup_menu(GtkWidget*, gpointer data) {
-	if(b_busy) return TRUE;
+	if(calculator_busy()) return TRUE;
 	if(on_popup_menu_fx_edit_activate_handler != 0) g_signal_handler_disconnect(gtk_builder_get_object(main_builder, "popup_menu_fx_edit"), on_popup_menu_fx_edit_activate_handler);
 	if(on_popup_menu_fx_delete_activate_handler != 0) g_signal_handler_disconnect(gtk_builder_get_object(main_builder, "popup_menu_fx_delete"), on_popup_menu_fx_delete_activate_handler);
 	on_popup_menu_fx_edit_activate_handler = g_signal_connect(gtk_builder_get_object(main_builder, "popup_menu_fx_edit"), "activate", G_CALLBACK(on_popup_menu_fx_edit_activate), data);
@@ -2639,13 +2625,13 @@ void update_mb_pi_menu() {
 
 }
 
-void on_popup_menu_sto_set_activate(GtkMenuItem *w, gpointer data) {
+void on_popup_menu_sto_set_activate(GtkMenuItem*, gpointer data) {
 	((KnownVariable*) data)->set(*current_result());
 	gtk_menu_popdown(GTK_MENU(gtk_builder_get_object(main_builder, "menu_sto")));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "mb_sto")), FALSE);
 	focus_keeping_selection();
 }
-void on_popup_menu_sto_add_activate(GtkMenuItem *w, gpointer data) {
+void on_popup_menu_sto_add_activate(GtkMenuItem*, gpointer data) {
 	MathStructure m(((KnownVariable*) data)->get());
 	m.calculateAdd(*current_result(), evalops);
 	((KnownVariable*) data)->set(m);
@@ -2653,7 +2639,7 @@ void on_popup_menu_sto_add_activate(GtkMenuItem *w, gpointer data) {
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "mb_sto")), FALSE);
 	focus_keeping_selection();
 }
-void on_popup_menu_sto_sub_activate(GtkMenuItem *w, gpointer data) {
+void on_popup_menu_sto_sub_activate(GtkMenuItem*, gpointer data) {
 	MathStructure m(((KnownVariable*) data)->get());
 	m.calculateSubtract(*current_result(), evalops);
 	((KnownVariable*) data)->set(m);
@@ -2661,10 +2647,10 @@ void on_popup_menu_sto_sub_activate(GtkMenuItem *w, gpointer data) {
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "mb_sto")), FALSE);
 	focus_keeping_selection();
 }
-void on_popup_menu_sto_edit_activate(GtkMenuItem *w, gpointer data) {
+void on_popup_menu_sto_edit_activate(GtkMenuItem*, gpointer data) {
 	edit_variable(NULL, (Variable*) data, NULL, main_window());
 }
-void on_popup_menu_sto_delete_activate(GtkMenuItem *w, gpointer data) {
+void on_popup_menu_sto_delete_activate(GtkMenuItem*, gpointer data) {
 	Variable *v = (Variable*) data;
 	if(v && !CALCULATOR->stillHasVariable(v)) {
 		show_message(_("Variable does not exist anymore."));
@@ -2681,7 +2667,7 @@ void on_popup_menu_sto_delete_activate(GtkMenuItem *w, gpointer data) {
 gulong on_popup_menu_sto_set_activate_handler = 0, on_popup_menu_sto_add_activate_handler = 0, on_popup_menu_sto_sub_activate_handler = 0, on_popup_menu_sto_edit_activate_handler = 0, on_popup_menu_sto_delete_activate_handler = 0;
 
 gboolean on_menu_sto_popup_menu(GtkWidget*, gpointer data) {
-	if(b_busy) return TRUE;
+	if(calculator_busy()) return TRUE;
 	if(on_popup_menu_sto_set_activate_handler != 0) g_signal_handler_disconnect(gtk_builder_get_object(main_builder, "popup_menu_sto_set"), on_popup_menu_sto_set_activate_handler);
 	if(on_popup_menu_sto_add_activate_handler != 0) g_signal_handler_disconnect(gtk_builder_get_object(main_builder, "popup_menu_sto_add"), on_popup_menu_sto_add_activate_handler);
 	if(on_popup_menu_sto_sub_activate_handler != 0) g_signal_handler_disconnect(gtk_builder_get_object(main_builder, "popup_menu_sto_sub"), on_popup_menu_sto_sub_activate_handler);

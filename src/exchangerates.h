@@ -13,6 +13,7 @@
 #define EXCHANGE_RATES_H
 
 #include <gtk/gtk.h>
+#include <stdio.h>
 
 bool check_exchange_rates(GtkWindow *win = NULL, bool set_result = false);
 void fetch_exchange_rates(int timeout, int n = -1);

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-14 14:07+0200\n"
+"POT-Creation-Date: 2024-08-03 14:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,8 +18,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: ../data/qalculate-gtk.desktop.in.h:1 ../src/callbacks.cc:11029
-#: ../src/callbacks.cc:11036
+#: ../data/qalculate-gtk.desktop.in.h:1 ../src/mainwindow.cc:8127
+#: ../src/mainwindow.cc:8134
 msgid "Qalculate!"
 msgstr ""
 
@@ -28,7 +28,7 @@ msgid "Calculator"
 msgstr ""
 
 #: ../data/qalculate-gtk.desktop.in.h:3
-#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/callbacks.cc:28897
+#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/mainwindow.cc:6828
 msgid "Powerful and easy to use calculator"
 msgstr ""
 
@@ -65,17 +65,16 @@ msgstr ""
 #: ../data/datasets.ui.h:2 ../data/functionedit.ui.h:3 ../data/matrix.ui.h:2
 #: ../data/matrixedit.ui.h:3 ../data/shortcuts.ui.h:7 ../data/unitedit.ui.h:3
 #: ../data/unknownedit.ui.h:3 ../data/variableedit.ui.h:3
-#: ../src/callbacks.cc:3003 ../src/callbacks.cc:16106 ../src/callbacks.cc:16402
-#: ../src/callbacks.cc:16529 ../src/callbacks.cc:17599
-#: ../src/callbacks.cc:17655 ../src/callbacks.cc:25303
-#: ../src/callbacks.cc:25398 ../src/callbacks.cc:26016
-#: ../src/callbacks.cc:27069 ../src/callbacks.cc:27071
-#: ../src/callbacks.cc:28200 ../src/callbacks.cc:28202
-#: ../src/callbacks.cc:30064 ../src/callbacks.cc:30107
-#: ../src/callbacks.cc:30109 ../src/callbacks.cc:30215
-#: ../src/exportcsvdialog.cc:44 ../src/exportcsvdialog.cc:46
-#: ../src/importcsvdialog.cc:48 ../src/importcsvdialog.cc:50
-#: ../src/plotdialog.cc:314 ../src/plotdialog.cc:316
+#: ../src/exportcsvdialog.cc:45 ../src/exportcsvdialog.cc:47
+#: ../src/expressionedit.cc:1294 ../src/historyview.cc:2718
+#: ../src/historyview.cc:2813 ../src/importcsvdialog.cc:49
+#: ../src/importcsvdialog.cc:51 ../src/insertfunctiondialog.cc:65
+#: ../src/insertfunctiondialog.cc:108 ../src/insertfunctiondialog.cc:110
+#: ../src/insertfunctiondialog.cc:959 ../src/insertfunctiondialog.cc:1067
+#: ../src/mainwindow.cc:698 ../src/mainwindow.cc:6534 ../src/mainwindow.cc:6536
+#: ../src/mainwindow.cc:7449 ../src/matrixdialog.cc:381 ../src/menubar.cc:1139
+#: ../src/menubar.cc:1197 ../src/plotdialog.cc:378 ../src/plotdialog.cc:380
+#: ../src/resultview.cc:545 ../src/resultview.cc:547
 msgid "_Cancel"
 msgstr ""
 
@@ -88,12 +87,12 @@ msgstr ""
 #: ../data/datasets.ui.h:4 ../data/functionedit.ui.h:4
 #: ../data/matrixedit.ui.h:4 ../data/shortcuts.ui.h:9 ../data/unitedit.ui.h:5
 #: ../data/unknownedit.ui.h:4 ../data/variableedit.ui.h:4
-#: ../src/callbacks.cc:3003 ../src/callbacks.cc:3264 ../src/callbacks.cc:3342
-#: ../src/callbacks.cc:3395 ../src/callbacks.cc:3464 ../src/callbacks.cc:3520
-#: ../src/callbacks.cc:16402 ../src/callbacks.cc:16529
-#: ../src/callbacks.cc:25303 ../src/callbacks.cc:25398
-#: ../src/callbacks.cc:26016 ../src/callbacks.cc:30064
-#: ../src/callbacks.cc:30215
+#: ../src/expressionedit.cc:1294 ../src/historyview.cc:2718
+#: ../src/historyview.cc:2813 ../src/insertfunctiondialog.cc:65
+#: ../src/insertfunctiondialog.cc:959 ../src/insertfunctiondialog.cc:1067
+#: ../src/mainwindow.cc:698 ../src/mainwindow.cc:791 ../src/mainwindow.cc:848
+#: ../src/mainwindow.cc:901 ../src/mainwindow.cc:958 ../src/mainwindow.cc:1014
+#: ../src/mainwindow.cc:7449
 msgid "_OK"
 msgstr ""
 
@@ -133,12 +132,12 @@ msgid "Date"
 msgstr ""
 
 #: ../data/argumentrules.ui.h:13 ../data/main.ui.h:22 ../data/matrix.ui.h:10
-#: ../data/matrixedit.ui.h:13 ../src/callbacks.cc:16109
+#: ../data/matrixedit.ui.h:13 ../src/matrixdialog.cc:384
 msgid "Vector"
 msgstr ""
 
 #: ../data/argumentrules.ui.h:14 ../data/csvimport.ui.h:13 ../data/main.ui.h:21
-#: ../data/matrix.ui.h:1 ../data/matrixedit.ui.h:11 ../src/callbacks.cc:16111
+#: ../data/matrix.ui.h:1 ../data/matrixedit.ui.h:11 ../src/matrixdialog.cc:386
 msgid "Matrix"
 msgstr ""
 
@@ -171,12 +170,12 @@ msgstr ""
 msgid "Boolean"
 msgstr ""
 
-#: ../data/argumentrules.ui.h:22 ../src/dataseteditdialog.cc:477
+#: ../data/argumentrules.ui.h:22 ../src/dataseteditdialog.cc:478
 msgid "Object"
 msgstr ""
 
 #: ../data/argumentrules.ui.h:23 ../data/datasetedit.ui.h:35
-#: ../data/main.ui.h:24 ../data/plot.ui.h:9 ../src/functionsdialog.cc:555
+#: ../data/main.ui.h:24 ../data/plot.ui.h:9 ../src/functionsdialog.cc:579
 msgid "Function"
 msgstr ""
 
@@ -185,7 +184,7 @@ msgid "Unit"
 msgstr ""
 
 #: ../data/argumentrules.ui.h:25 ../data/main.ui.h:20
-#: ../src/variablesdialog.cc:489
+#: ../src/variablesdialog.cc:515
 msgid "Variable"
 msgstr ""
 
@@ -198,7 +197,7 @@ msgstr ""
 msgid "Angle"
 msgstr ""
 
-#: ../data/argumentrules.ui.h:28 ../src/callbacks.cc:22693
+#: ../data/argumentrules.ui.h:28 ../src/expressioncompletion.cc:981
 msgid "Data object"
 msgstr ""
 
@@ -249,17 +248,17 @@ msgid "Max"
 msgstr ""
 
 #: ../data/argumentrules.ui.h:40 ../data/unknownedit.ui.h:7
-#: ../src/dataseteditdialog.cc:229 ../src/functioneditdialog.cc:437
+#: ../src/dataseteditdialog.cc:230 ../src/functioneditdialog.cc:439
 msgid "Type"
 msgstr ""
 
 #: ../data/argumentrules.ui.h:41 ../data/csvimport.ui.h:8
 #: ../data/datasetedit.ui.h:4 ../data/functionedit.ui.h:5
 #: ../data/matrixedit.ui.h:6 ../data/unitedit.ui.h:7 ../data/unknownedit.ui.h:5
-#: ../data/variableedit.ui.h:5 ../src/callbacks.cc:17606
-#: ../src/callbacks.cc:25405 ../src/dataseteditdialog.cc:226
-#: ../src/functioneditdialog.cc:431 ../src/interface.cc:2496
-#: ../src/nameseditdialog.cc:156 ../src/unitsdialog.cc:1011
+#: ../data/variableedit.ui.h:5 ../src/conversionview.cc:505
+#: ../src/dataseteditdialog.cc:227 ../src/functioneditdialog.cc:433
+#: ../src/historyview.cc:2820 ../src/menubar.cc:1146
+#: ../src/nameseditdialog.cc:155 ../src/unitsdialog.cc:1003
 msgid "Name"
 msgstr ""
 
@@ -272,26 +271,26 @@ msgstr ""
 #: ../data/functions.ui.h:2 ../data/namesedit.ui.h:2 ../data/nbases.ui.h:2
 #: ../data/percentage.ui.h:5 ../data/plot.ui.h:5 ../data/precision.ui.h:2
 #: ../data/preferences.ui.h:2 ../data/setbase.ui.h:2 ../data/shortcuts.ui.h:2
-#: ../data/units.ui.h:2 ../data/variables.ui.h:2 ../src/callbacks.cc:3007
-#: ../src/callbacks.cc:3008 ../src/callbacks.cc:3010 ../src/callbacks.cc:15438
-#: ../src/callbacks.cc:16098 ../src/callbacks.cc:25268
-#: ../src/periodictabledialog.cc:85
+#: ../data/units.ui.h:2 ../data/variables.ui.h:2 ../src/historyview.cc:2683
+#: ../src/insertfunctiondialog.cc:449 ../src/mainwindow.cc:702
+#: ../src/mainwindow.cc:703 ../src/mainwindow.cc:705 ../src/matrixdialog.cc:373
+#: ../src/periodictabledialog.cc:86
 msgid "_Close"
 msgstr ""
 
-#: ../data/buttonsedit.ui.h:3 ../src/buttonseditdialog.cc:419
+#: ../data/buttonsedit.ui.h:3 ../src/buttonseditdialog.cc:413
 msgid "Label"
 msgstr ""
 
-#: ../data/buttonsedit.ui.h:4 ../src/buttonseditdialog.cc:422
+#: ../data/buttonsedit.ui.h:4 ../src/buttonseditdialog.cc:416
 msgid "Left-click"
 msgstr ""
 
-#: ../data/buttonsedit.ui.h:5 ../src/buttonseditdialog.cc:425
+#: ../data/buttonsedit.ui.h:5 ../src/buttonseditdialog.cc:419
 msgid "Right-click"
 msgstr ""
 
-#: ../data/buttonsedit.ui.h:6 ../src/buttonseditdialog.cc:428
+#: ../data/buttonsedit.ui.h:6 ../src/buttonseditdialog.cc:422
 msgid "Middle-click"
 msgstr ""
 
@@ -305,8 +304,8 @@ msgstr ""
 
 #: ../data/buttonsedit.ui.h:11 ../data/floatingpoint.ui.h:3
 #: ../data/shortcuts.ui.h:10 ../data/variableedit.ui.h:7
-#: ../src/callbacks.cc:15502 ../src/interface.cc:2402
-#: ../src/shortcutsdialog.cc:613
+#: ../src/insertfunctiondialog.cc:513 ../src/shortcutsdialog.cc:568
+#: ../src/stackview.cc:787
 msgid "Value"
 msgstr ""
 
@@ -374,9 +373,9 @@ msgstr ""
 
 #: ../data/csvimport.ui.h:10 ../data/functionedit.ui.h:18 ../data/main.ui.h:252
 #: ../data/matrixedit.ui.h:18 ../data/unitedit.ui.h:8
-#: ../data/variableedit.ui.h:11 ../src/functionsdialog.cc:569
-#: ../src/interface.cc:2507 ../src/unitsdialog.cc:1025
-#: ../src/variablesdialog.cc:503
+#: ../data/variableedit.ui.h:11 ../src/conversionview.cc:516
+#: ../src/functionsdialog.cc:593 ../src/unitsdialog.cc:1017
+#: ../src/variablesdialog.cc:529
 msgid "Category"
 msgstr ""
 
@@ -469,7 +468,7 @@ msgid "Unit expression"
 msgstr ""
 
 #: ../data/datasetedit.ui.h:16 ../data/functionedit.ui.h:8 ../data/plot.ui.h:8
-#: ../src/functioneditdialog.cc:457 ../src/plotdialog.cc:712
+#: ../src/functioneditdialog.cc:459 ../src/plotdialog.cc:776
 msgid "Expression"
 msgstr ""
 
@@ -485,7 +484,7 @@ msgstr ""
 msgid "Description of this data property"
 msgstr ""
 
-#: ../data/datasetedit.ui.h:20 ../src/dataseteditdialog.cc:363
+#: ../data/datasetedit.ui.h:20 ../src/dataseteditdialog.cc:364
 msgid "Edit Data Set"
 msgstr ""
 
@@ -525,12 +524,12 @@ msgid "_Edit"
 msgstr ""
 
 #: ../data/datasetedit.ui.h:29 ../data/functions.ui.h:10 ../data/units.ui.h:15
-#: ../data/variables.ui.h:10 ../src/callbacks.cc:17655
+#: ../data/variables.ui.h:10 ../src/menubar.cc:1197
 msgid "_Delete"
 msgstr ""
 
-#: ../data/datasetedit.ui.h:30 ../src/datasetsdialog.cc:136
-#: ../src/functionsdialog.cc:367
+#: ../data/datasetedit.ui.h:30 ../src/datasetsdialog.cc:163
+#: ../src/functionsdialog.cc:391
 msgid "Properties"
 msgstr ""
 
@@ -550,7 +549,7 @@ msgstr ""
 msgid "Name used to invoke the function in expressions"
 msgstr ""
 
-#: ../data/datasets.ui.h:1 ../src/datasetsdialog.cc:451
+#: ../data/datasets.ui.h:1 ../src/datasetsdialog.cc:478
 msgid "Edit Data Object"
 msgstr ""
 
@@ -562,11 +561,11 @@ msgstr ""
 msgid "Accept the creation/modification of this data object"
 msgstr ""
 
-#: ../data/datasets.ui.h:6 ../data/main.ui.h:48 ../src/dataseteditdialog.cc:469
+#: ../data/datasets.ui.h:6 ../data/main.ui.h:48 ../src/dataseteditdialog.cc:470
 msgid "Data Sets"
 msgstr ""
 
-#: ../data/datasets.ui.h:8 ../data/main.ui.h:25 ../src/datasetsdialog.cc:406
+#: ../data/datasets.ui.h:8 ../data/main.ui.h:25 ../src/datasetsdialog.cc:433
 msgid "Data Set"
 msgstr ""
 
@@ -683,7 +682,7 @@ msgstr ""
 msgid "Microchip 32-bit"
 msgstr ""
 
-#: ../data/functionedit.ui.h:1 ../src/functioneditdialog.cc:818
+#: ../data/functionedit.ui.h:1 ../src/functioneditdialog.cc:820
 msgid "Edit Function"
 msgstr ""
 
@@ -732,7 +731,7 @@ msgstr ""
 msgid "_Remove"
 msgstr ""
 
-#: ../data/functionedit.ui.h:16 ../src/functionsdialog.cc:308
+#: ../data/functionedit.ui.h:16 ../src/functionsdialog.cc:332
 msgid "Arguments"
 msgstr ""
 
@@ -752,7 +751,7 @@ msgstr ""
 msgid "Example"
 msgstr ""
 
-#: ../data/functionedit.ui.h:26 ../src/functioneditdialog.cc:462
+#: ../data/functionedit.ui.h:26 ../src/functioneditdialog.cc:464
 msgid "Precalculate"
 msgstr ""
 
@@ -793,8 +792,8 @@ msgid "(De)activate the selected function"
 msgstr ""
 
 #: ../data/functions.ui.h:13 ../data/units.ui.h:18 ../data/variables.ui.h:13
-#: ../src/callbacks.cc:16716 ../src/functionsdialog.cc:407
-#: ../src/unitsdialog.cc:394 ../src/variablesdialog.cc:312
+#: ../src/functionsdialog.cc:431 ../src/unitsdialog.cc:386 ../src/util.cc:1267
+#: ../src/variablesdialog.cc:338
 msgid "Deacti_vate"
 msgstr ""
 
@@ -806,7 +805,7 @@ msgstr ""
 msgid "Insert (or execute) the selected function into the expression entry"
 msgstr ""
 
-#: ../data/functions.ui.h:16 ../data/plot.ui.h:36 ../src/callbacks.cc:30215
+#: ../data/functions.ui.h:16 ../data/plot.ui.h:36 ../src/mainwindow.cc:7449
 msgid "_Apply"
 msgstr ""
 
@@ -826,12 +825,12 @@ msgstr ""
 msgid "Gradians"
 msgstr ""
 
-#: ../data/main.ui.h:4 ../src/variablesdialog.cc:298
+#: ../data/main.ui.h:4 ../src/variablesdialog.cc:324
 msgid "Default assumptions"
 msgstr ""
 
 #: ../data/main.ui.h:5 ../data/unknownedit.ui.h:14
-#: ../src/periodictabledialog.cc:142
+#: ../src/periodictabledialog.cc:143
 msgid "Unknown"
 msgstr ""
 
@@ -951,13 +950,13 @@ msgstr ""
 msgid "Units"
 msgstr ""
 
-#: ../data/main.ui.h:49 ../src/callbacks.cc:2195 ../src/callbacks.cc:26926
-#: ../src/interface.cc:1501
+#: ../data/main.ui.h:49 ../src/keypad.cc:830 ../src/keypad.cc:3248
+#: ../src/keypad.cc:3365
 msgid "Factorize"
 msgstr ""
 
-#: ../data/main.ui.h:50 ../src/callbacks.cc:2198 ../src/callbacks.cc:26940
-#: ../src/interface.cc:1499
+#: ../data/main.ui.h:50 ../src/keypad.cc:828 ../src/keypad.cc:3257
+#: ../src/keypad.cc:3368
 msgid "Expand"
 msgstr ""
 
@@ -965,7 +964,7 @@ msgstr ""
 msgid "Apply partial fraction decomposition to the current result."
 msgstr ""
 
-#: ../data/main.ui.h:52 ../src/interface.cc:1503
+#: ../data/main.ui.h:52 ../src/keypad.cc:832
 msgid "Expand Partial Fractions"
 msgstr ""
 
@@ -993,15 +992,15 @@ msgstr ""
 msgid "Convert to Optimal Unit"
 msgstr ""
 
-#: ../data/main.ui.h:59 ../src/callbacks.cc:17151
+#: ../data/main.ui.h:59 ../src/expressionedit.cc:1460
 msgid "Insert Date…"
 msgstr ""
 
-#: ../data/main.ui.h:60 ../src/callbacks.cc:17152
+#: ../data/main.ui.h:60 ../src/expressionedit.cc:1461
 msgid "Insert Matrix…"
 msgstr ""
 
-#: ../data/main.ui.h:61 ../src/callbacks.cc:17153
+#: ../data/main.ui.h:61 ../src/expressionedit.cc:1462
 msgid "Insert Vector…"
 msgstr ""
 
@@ -1025,7 +1024,8 @@ msgstr ""
 msgid "_Mode"
 msgstr ""
 
-#: ../data/main.ui.h:68 ../src/callbacks.cc:7213 ../src/callbacks.cc:17125
+#: ../data/main.ui.h:68 ../src/expressioncompletion.cc:1871
+#: ../src/expressionedit.cc:1432
 msgid "Number Base"
 msgstr ""
 
@@ -1034,36 +1034,36 @@ msgid "Select Result and Expression Base…"
 msgstr ""
 
 #: ../data/main.ui.h:70 ../data/nbases.ui.h:4 ../data/preferences.ui.h:64
-#: ../data/setbase.ui.h:3 ../src/callbacks.cc:17128 ../src/interface.cc:1698
-#: ../src/numberbasesdialog.cc:155 ../src/numberbasesdialog.cc:197
+#: ../data/setbase.ui.h:3 ../src/expressionedit.cc:1435 ../src/keypad.cc:1027
+#: ../src/numberbasesdialog.cc:169 ../src/numberbasesdialog.cc:211
 msgid "Binary"
 msgstr ""
 
 #: ../data/main.ui.h:71 ../data/nbases.ui.h:5 ../data/setbase.ui.h:4
-#: ../src/callbacks.cc:17129 ../src/interface.cc:1699
-#: ../src/numberbasesdialog.cc:156 ../src/numberbasesdialog.cc:198
+#: ../src/expressionedit.cc:1436 ../src/keypad.cc:1028
+#: ../src/numberbasesdialog.cc:170 ../src/numberbasesdialog.cc:212
 msgid "Octal"
 msgstr ""
 
 #: ../data/main.ui.h:72 ../data/nbases.ui.h:3 ../data/setbase.ui.h:5
-#: ../src/callbacks.cc:17130 ../src/interface.cc:1700
-#: ../src/numberbasesdialog.cc:157 ../src/numberbasesdialog.cc:199
+#: ../src/expressionedit.cc:1437 ../src/keypad.cc:1029
+#: ../src/numberbasesdialog.cc:171 ../src/numberbasesdialog.cc:213
 msgid "Decimal"
 msgstr ""
 
 #: ../data/main.ui.h:73 ../data/nbases.ui.h:10 ../data/setbase.ui.h:6
-#: ../src/callbacks.cc:17131 ../src/numberbasesdialog.cc:158
-#: ../src/numberbasesdialog.cc:200
+#: ../src/expressionedit.cc:1438 ../src/numberbasesdialog.cc:172
+#: ../src/numberbasesdialog.cc:214
 msgid "Duodecimal"
 msgstr ""
 
 #: ../data/main.ui.h:74 ../data/nbases.ui.h:11 ../data/preferences.ui.h:66
-#: ../data/setbase.ui.h:7 ../src/callbacks.cc:17132 ../src/interface.cc:1701
-#: ../src/numberbasesdialog.cc:159 ../src/numberbasesdialog.cc:201
+#: ../data/setbase.ui.h:7 ../src/expressionedit.cc:1439 ../src/keypad.cc:1030
+#: ../src/numberbasesdialog.cc:173 ../src/numberbasesdialog.cc:215
 msgid "Hexadecimal"
 msgstr ""
 
-#: ../data/main.ui.h:75 ../src/callbacks.cc:17134
+#: ../data/main.ui.h:75 ../src/expressionedit.cc:1441
 msgid "Other…"
 msgstr ""
 
@@ -1071,11 +1071,12 @@ msgstr ""
 msgid "Sexagesimal"
 msgstr ""
 
-#: ../data/main.ui.h:77 ../src/callbacks.cc:7272
+#: ../data/main.ui.h:77 ../src/expressioncompletion.cc:1930
 msgid "Time Format"
 msgstr ""
 
-#: ../data/main.ui.h:78 ../src/callbacks.cc:7268 ../src/callbacks.cc:17133
+#: ../data/main.ui.h:78 ../src/expressioncompletion.cc:1926
+#: ../src/expressionedit.cc:1440
 msgid "Roman Numerals"
 msgstr ""
 
@@ -1175,19 +1176,19 @@ msgstr ""
 msgid "Round Down"
 msgstr ""
 
-#: ../data/main.ui.h:104 ../src/callbacks.cc:7266
+#: ../data/main.ui.h:104 ../src/expressioncompletion.cc:1924
 msgid "Complex Rectangular Form"
 msgstr ""
 
-#: ../data/main.ui.h:105 ../src/callbacks.cc:7228
+#: ../data/main.ui.h:105 ../src/expressioncompletion.cc:1886
 msgid "Complex Exponential Form"
 msgstr ""
 
-#: ../data/main.ui.h:106 ../src/callbacks.cc:7262
+#: ../data/main.ui.h:106 ../src/expressioncompletion.cc:1920
 msgid "Complex Polar Form"
 msgstr ""
 
-#: ../data/main.ui.h:107 ../src/callbacks.cc:7207
+#: ../data/main.ui.h:107 ../src/expressioncompletion.cc:1865
 msgid "Complex Angle/Phasor Notation"
 msgstr ""
 
@@ -1244,7 +1245,7 @@ msgid ""
 "On: 1/2 × pi = 0.5 pi"
 msgstr ""
 
-#: ../data/main.ui.h:123 ../src/callbacks.cc:3493
+#: ../data/main.ui.h:123 ../src/mainwindow.cc:987
 msgid "Adaptive"
 msgstr ""
 
@@ -1258,8 +1259,7 @@ msgstr ""
 msgid "Significant Digits"
 msgstr ""
 
-#: ../data/main.ui.h:126 ../src/buttonseditdialog.cc:351
-#: ../src/interface.cc:1144
+#: ../data/main.ui.h:126 ../src/buttonseditdialog.cc:345 ../src/keypad.cc:473
 msgid "Interval"
 msgstr ""
 
@@ -1267,7 +1267,7 @@ msgstr ""
 msgid "Plus/Minus"
 msgstr ""
 
-#: ../data/main.ui.h:128 ../data/preferences.ui.h:109 ../src/callbacks.cc:3284
+#: ../data/main.ui.h:128 ../data/preferences.ui.h:108 ../src/mainwindow.cc:811
 msgid "Relative"
 msgstr ""
 
@@ -1418,7 +1418,7 @@ msgstr ""
 msgid "Try Exact"
 msgstr ""
 
-#: ../data/main.ui.h:167 ../src/datasetsdialog.cc:499
+#: ../data/main.ui.h:167 ../src/datasetsdialog.cc:526
 msgid "Approximate"
 msgstr ""
 
@@ -1442,7 +1442,7 @@ msgstr ""
 msgid "Angle Unit"
 msgstr ""
 
-#: ../data/main.ui.h:173 ../data/plot.ui.h:27 ../src/buttonseditdialog.cc:463
+#: ../data/main.ui.h:173 ../data/plot.ui.h:27 ../src/buttonseditdialog.cc:457
 msgid "None"
 msgstr ""
 
@@ -1470,7 +1470,7 @@ msgstr ""
 msgid "Warn About Denominators Assumed Non-Zero"
 msgstr ""
 
-#: ../data/main.ui.h:180 ../src/callbacks.cc:3464 ../src/callbacks.cc:17115
+#: ../data/main.ui.h:180 ../src/expressionedit.cc:1422 ../src/mainwindow.cc:958
 msgid "Parsing Mode"
 msgstr ""
 
@@ -1552,11 +1552,11 @@ msgstr ""
 msgid "RPN Mode"
 msgstr ""
 
-#: ../data/main.ui.h:204 ../src/callbacks.cc:17136
+#: ../data/main.ui.h:204 ../src/expressionedit.cc:1443
 msgid "Meta Modes"
 msgstr ""
 
-#: ../data/main.ui.h:205 ../src/callbacks.cc:17148
+#: ../data/main.ui.h:205 ../src/expressionedit.cc:1457
 msgid "Save Mode…"
 msgstr ""
 
@@ -1596,7 +1596,7 @@ msgstr ""
 msgid "_About"
 msgstr ""
 
-#: ../data/main.ui.h:216 ../src/callbacks.cc:5912
+#: ../data/main.ui.h:216 ../src/util.cc:893
 msgid "Toggle minimal window"
 msgstr ""
 
@@ -1662,7 +1662,7 @@ msgstr ""
 msgid "Calculate the square root of the selected value"
 msgstr ""
 
-#: ../data/main.ui.h:232 ../src/interface.cc:2354
+#: ../data/main.ui.h:232 ../src/historyview.cc:3479
 msgid "History"
 msgstr ""
 
@@ -1698,28 +1698,28 @@ msgstr ""
 msgid "Calculate the sum of all values"
 msgstr ""
 
-#: ../data/main.ui.h:242 ../src/callbacks.cc:6073 ../src/callbacks.cc:6293
+#: ../data/main.ui.h:242 ../src/stackview.cc:682 ../src/stackview.cc:742
 msgid "Rotate the stack or move selected register up"
 msgstr ""
 
-#: ../data/main.ui.h:243 ../src/callbacks.cc:6081 ../src/callbacks.cc:6294
+#: ../data/main.ui.h:243 ../src/stackview.cc:690 ../src/stackview.cc:743
 msgid "Rotate the stack or move selected register down"
 msgstr ""
 
-#: ../data/main.ui.h:244 ../src/callbacks.cc:6089 ../src/callbacks.cc:6295
+#: ../data/main.ui.h:244 ../src/stackview.cc:698 ../src/stackview.cc:744
 msgid ""
 "Swap the two top values or move the selected value to the top of the stack"
 msgstr ""
 
-#: ../data/main.ui.h:245 ../src/callbacks.cc:6097 ../src/callbacks.cc:6296
+#: ../data/main.ui.h:245 ../src/stackview.cc:706 ../src/stackview.cc:745
 msgid "Copy the selected or top value to the top of the stack"
 msgstr ""
 
-#: ../data/main.ui.h:246 ../src/callbacks.cc:6105 ../src/callbacks.cc:6297
+#: ../data/main.ui.h:246 ../src/stackview.cc:714 ../src/stackview.cc:746
 msgid "Enter the top value from before the last numeric operation"
 msgstr ""
 
-#: ../data/main.ui.h:247 ../src/callbacks.cc:6113 ../src/callbacks.cc:6298
+#: ../data/main.ui.h:247 ../src/stackview.cc:722 ../src/stackview.cc:747
 msgid "Delete the top or selected value"
 msgstr ""
 
@@ -1727,7 +1727,7 @@ msgstr ""
 msgid "Edit the selected value"
 msgstr ""
 
-#: ../data/main.ui.h:249 ../src/callbacks.cc:6121 ../src/callbacks.cc:6299
+#: ../data/main.ui.h:249 ../src/stackview.cc:730 ../src/stackview.cc:748
 msgid "Clear the RPN stack"
 msgstr ""
 
@@ -1764,15 +1764,16 @@ msgstr ""
 msgid "Conversion"
 msgstr ""
 
-#: ../data/main.ui.h:261 ../src/callbacks.cc:6157 ../src/callbacks.cc:6306
+#: ../data/main.ui.h:261 ../src/keypad.cc:3516 ../src/keypad.cc:3546
 msgid "Show/hide programming keypad"
 msgstr ""
 
-#: ../data/main.ui.h:262 ../src/datasetsdialog.cc:500
+#: ../data/main.ui.h:262 ../src/datasetsdialog.cc:527
 msgid "Exact"
 msgstr ""
 
-#: ../data/main.ui.h:263 ../src/callbacks.cc:7242 ../src/callbacks.cc:7244
+#: ../data/main.ui.h:263 ../src/expressioncompletion.cc:1900
+#: ../src/expressioncompletion.cc:1902
 msgid "Fraction"
 msgstr ""
 
@@ -1836,7 +1837,7 @@ msgstr ""
 msgid "mean"
 msgstr ""
 
-#: ../data/main.ui.h:280 ../src/interface.cc:1703
+#: ../data/main.ui.h:280 ../src/keypad.cc:1032
 msgid "Store result as a variable"
 msgstr ""
 
@@ -1853,7 +1854,7 @@ msgstr ""
 msgid "Imaginary unit i (√-1)"
 msgstr ""
 
-#: ../data/main.ui.h:285 ../src/callbacks.cc:5915
+#: ../data/main.ui.h:285 ../src/util.cc:896
 msgid "Manage units"
 msgstr ""
 
@@ -1873,17 +1874,17 @@ msgstr ""
 msgid "Two's complement output"
 msgstr ""
 
-#: ../data/main.ui.h:292 ../data/nbases.ui.h:26 ../src/buttonseditdialog.cc:372
-#: ../src/callbacks.cc:21090 ../src/callbacks.cc:21091 ../src/interface.cc:1202
-#: ../src/interface.cc:1379 ../src/interface.cc:1705 ../src/interface.cc:1706
+#: ../data/main.ui.h:292 ../data/nbases.ui.h:26 ../src/buttonseditdialog.cc:366
+#: ../src/keypad.cc:402 ../src/keypad.cc:403 ../src/keypad.cc:531
+#: ../src/keypad.cc:708
 msgid "Bitwise Exclusive OR"
 msgstr ""
 
-#: ../data/main.ui.h:293 ../data/nbases.ui.h:32 ../src/interface.cc:1375
+#: ../data/main.ui.h:293 ../data/nbases.ui.h:32 ../src/keypad.cc:704
 msgid "Bitwise Left Shift"
 msgstr ""
 
-#: ../data/main.ui.h:294 ../data/nbases.ui.h:33 ../src/interface.cc:1376
+#: ../data/main.ui.h:294 ../data/nbases.ui.h:33 ../src/keypad.cc:705
 msgid "Bitwise Right Shift"
 msgstr ""
 
@@ -1900,26 +1901,25 @@ msgid "Show/hide right keypad"
 msgstr ""
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:299 ../data/nbases.ui.h:29 ../src/interface.cc:1209
+#: ../data/main.ui.h:299 ../data/nbases.ui.h:29 ../src/keypad.cc:538
 msgid "DEL"
 msgstr ""
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:301 ../data/nbases.ui.h:31 ../src/interface.cc:1208
+#: ../data/main.ui.h:301 ../data/nbases.ui.h:31 ../src/keypad.cc:537
 msgid "AC"
 msgstr ""
 
-#: ../data/main.ui.h:302 ../src/buttonseditdialog.cc:379
-#: ../src/interface.cc:1210
+#: ../data/main.ui.h:302 ../src/buttonseditdialog.cc:373 ../src/keypad.cc:539
 msgid "Previous result"
 msgstr ""
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:304 ../src/interface.cc:1210
+#: ../data/main.ui.h:304 ../src/keypad.cc:539
 msgid "ANS"
 msgstr ""
 
-#: ../data/main.ui.h:305 ../src/interface.cc:1163
+#: ../data/main.ui.h:305 ../src/keypad.cc:492
 msgid "EXP"
 msgstr ""
 
@@ -1935,8 +1935,8 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: ../data/main.ui.h:309 ../data/nbases.ui.h:28 ../src/buttonseditdialog.cc:378
-#: ../src/interface.cc:1209
+#: ../data/main.ui.h:309 ../data/nbases.ui.h:28 ../src/buttonseditdialog.cc:372
+#: ../src/keypad.cc:538
 msgid "Delete"
 msgstr ""
 
@@ -1956,7 +1956,7 @@ msgstr ""
 msgid "Insert Parsed Text"
 msgstr ""
 
-#: ../data/main.ui.h:314 ../src/searchprovider.cc:240
+#: ../data/main.ui.h:314 ../src/searchprovider.cc:210
 msgid "Copy"
 msgstr ""
 
@@ -1972,11 +1972,11 @@ msgstr ""
 msgid "Search…"
 msgstr ""
 
-#: ../data/main.ui.h:318 ../src/callbacks.cc:25604 ../src/callbacks.cc:25617
+#: ../data/main.ui.h:318 ../src/historyview.cc:3019 ../src/historyview.cc:3032
 msgid "Search by Date…"
 msgstr ""
 
-#: ../data/main.ui.h:319 ../src/callbacks.cc:25601
+#: ../data/main.ui.h:319 ../src/historyview.cc:3016
 msgid "Add Bookmark…"
 msgstr ""
 
@@ -2060,7 +2060,7 @@ msgstr ""
 msgid "_Hexadecimal"
 msgstr ""
 
-#: ../data/main.ui.h:340 ../src/callbacks.cc:7246
+#: ../data/main.ui.h:340 ../src/expressioncompletion.cc:1904
 msgid "Decimal Fraction"
 msgstr ""
 
@@ -2176,7 +2176,7 @@ msgstr ""
 msgid "Display Expression Status"
 msgstr ""
 
-#: ../data/main.ui.h:369 ../src/callbacks.cc:5917
+#: ../data/main.ui.h:369 ../src/util.cc:898
 msgid "Store result"
 msgstr ""
 
@@ -2191,7 +2191,7 @@ msgid "Subtract result"
 msgstr ""
 
 #: ../data/matrix.ui.h:4 ../data/units.ui.h:19 ../data/variables.ui.h:14
-#: ../src/callbacks.cc:15445
+#: ../src/insertfunctiondialog.cc:456
 msgid "_Insert"
 msgstr ""
 
@@ -2199,8 +2199,8 @@ msgstr ""
 msgid "Insert the matrix/vector into the expression"
 msgstr ""
 
-#: ../data/matrix.ui.h:6 ../data/matrixedit.ui.h:7 ../src/callbacks.cc:30048
-#: ../src/callbacks.cc:30056
+#: ../data/matrix.ui.h:6 ../data/matrixedit.ui.h:7 ../src/matrixdialog.cc:272
+#: ../src/matrixdialog.cc:280
 msgid "Elements"
 msgstr ""
 
@@ -2220,7 +2220,7 @@ msgstr ""
 msgid "Current element:"
 msgstr ""
 
-#: ../data/matrixedit.ui.h:1 ../src/matrixeditdialog.cc:393
+#: ../data/matrixedit.ui.h:1 ../src/matrixeditdialog.cc:395
 msgid "Edit Matrix"
 msgstr ""
 
@@ -2245,7 +2245,8 @@ msgstr ""
 msgid "Names"
 msgstr ""
 
-#: ../data/nbases.ui.h:1 ../data/setbase.ui.h:1 ../src/callbacks.cc:7209
+#: ../data/nbases.ui.h:1 ../data/setbase.ui.h:1
+#: ../src/expressioncompletion.cc:1867
 msgid "Number Bases"
 msgstr ""
 
@@ -2262,7 +2263,7 @@ msgid "Octal value"
 msgstr ""
 
 #: ../data/nbases.ui.h:9 ../data/setbase.ui.h:10
-#: ../src/numberbasesdialog.cc:160 ../src/numberbasesdialog.cc:202
+#: ../src/numberbasesdialog.cc:174 ../src/numberbasesdialog.cc:216
 msgid "Roman numerals"
 msgstr ""
 
@@ -2274,11 +2275,11 @@ msgstr ""
 msgid "Show/hide keypad"
 msgstr ""
 
-#: ../data/nbases.ui.h:14 ../src/callbacks.cc:2482
+#: ../data/nbases.ui.h:14 ../src/expressionstatus.cc:364
 msgid "BIN"
 msgstr ""
 
-#: ../data/nbases.ui.h:15 ../src/callbacks.cc:2487
+#: ../data/nbases.ui.h:15 ../src/expressionstatus.cc:369
 msgid "OCT"
 msgstr ""
 
@@ -2286,11 +2287,11 @@ msgstr ""
 msgid "DEC"
 msgstr ""
 
-#: ../data/nbases.ui.h:17 ../src/callbacks.cc:2492
+#: ../data/nbases.ui.h:17 ../src/expressionstatus.cc:374
 msgid "DUO"
 msgstr ""
 
-#: ../data/nbases.ui.h:18 ../src/callbacks.cc:2497
+#: ../data/nbases.ui.h:18 ../src/expressionstatus.cc:379
 msgid "HEX"
 msgstr ""
 
@@ -2298,38 +2299,35 @@ msgstr ""
 msgid "ROM"
 msgstr ""
 
-#: ../data/nbases.ui.h:21 ../src/buttonseditdialog.cc:376
-#: ../src/interface.cc:1206
+#: ../data/nbases.ui.h:21 ../src/buttonseditdialog.cc:370 ../src/keypad.cc:535
 msgid "Subtract"
 msgstr ""
 
-#: ../data/nbases.ui.h:22 ../src/buttonseditdialog.cc:372
-#: ../src/interface.cc:1202
+#: ../data/nbases.ui.h:22 ../src/buttonseditdialog.cc:366 ../src/keypad.cc:531
 msgid "Multiply"
 msgstr ""
 
-#: ../data/nbases.ui.h:23 ../src/buttonseditdialog.cc:371
-#: ../src/interface.cc:1201
+#: ../data/nbases.ui.h:23 ../src/buttonseditdialog.cc:365 ../src/keypad.cc:530
 msgid "Divide"
 msgstr ""
 
-#: ../data/nbases.ui.h:24 ../src/buttonseditdialog.cc:373
-#: ../src/interface.cc:1203 ../src/interface.cc:1377 ../src/interface.cc:1694
+#: ../data/nbases.ui.h:24 ../src/buttonseditdialog.cc:367 ../src/keypad.cc:532
+#: ../src/keypad.cc:706 ../src/keypad.cc:1023
 msgid "Bitwise AND"
 msgstr ""
 
-#: ../data/nbases.ui.h:25 ../src/buttonseditdialog.cc:376
-#: ../src/interface.cc:1206 ../src/interface.cc:1378 ../src/interface.cc:1695
+#: ../data/nbases.ui.h:25 ../src/buttonseditdialog.cc:370 ../src/keypad.cc:535
+#: ../src/keypad.cc:707 ../src/keypad.cc:1024
 msgid "Bitwise OR"
 msgstr ""
 
-#: ../data/nbases.ui.h:27 ../src/interface.cc:1380 ../src/interface.cc:1696
+#: ../data/nbases.ui.h:27 ../src/keypad.cc:709 ../src/keypad.cc:1025
 msgid "Bitwise NOT"
 msgstr ""
 
 #: ../data/nbases.ui.h:30 ../data/percentage.ui.h:4
-#: ../src/buttonseditdialog.cc:377 ../src/callbacks.cc:17067
-#: ../src/interface.cc:1208
+#: ../src/buttonseditdialog.cc:371 ../src/expressionedit.cc:1374
+#: ../src/keypad.cc:537
 msgid "Clear"
 msgstr ""
 
@@ -2375,8 +2373,8 @@ msgstr ""
 msgid "Plot"
 msgstr ""
 
-#: ../data/plot.ui.h:3 ../src/callbacks.cc:17599 ../src/callbacks.cc:28200
-#: ../src/callbacks.cc:28202 ../src/plotdialog.cc:314 ../src/plotdialog.cc:316
+#: ../data/plot.ui.h:3 ../src/menubar.cc:1139 ../src/plotdialog.cc:378
+#: ../src/plotdialog.cc:380 ../src/resultview.cc:545 ../src/resultview.cc:547
 msgid "_Save"
 msgstr ""
 
@@ -2384,7 +2382,7 @@ msgstr ""
 msgid "Save as png, svg, postscript, eps, latex or fig"
 msgstr ""
 
-#: ../data/plot.ui.h:7 ../src/dataseteditdialog.cc:223 ../src/plotdialog.cc:709
+#: ../data/plot.ui.h:7 ../src/dataseteditdialog.cc:224 ../src/plotdialog.cc:773
 msgid "Title"
 msgstr ""
 
@@ -2757,9 +2755,9 @@ msgstr ""
 msgid "Button padding"
 msgstr ""
 
-#: ../data/preferences.ui.h:39 ../src/buttonseditdialog.cc:182
-#: ../src/callbacks.cc:5989 ../src/callbacks.cc:16832 ../src/callbacks.cc:17842
-#: ../src/datasetsdialog.cc:498
+#: ../data/preferences.ui.h:39 ../src/buttonseditdialog.cc:183
+#: ../src/datasetsdialog.cc:525 ../src/modes.cc:46 ../src/modes.cc:57
+#: ../src/util.cc:970
 msgid "Default"
 msgstr ""
 
@@ -2779,7 +2777,7 @@ msgstr ""
 msgid "Application name + result"
 msgstr ""
 
-#: ../data/preferences.ui.h:44 ../src/callbacks.cc:17662
+#: ../data/preferences.ui.h:44 ../src/menubar.cc:1204
 msgid "Mode"
 msgstr ""
 
@@ -2893,254 +2891,248 @@ msgid "Binary bits"
 msgstr ""
 
 #: ../data/preferences.ui.h:73
-msgid "Use lower case letters in non-decimal numbers"
+msgid "Automatic"
 msgstr ""
 
 #: ../data/preferences.ui.h:74
-msgid "If lower case letters should be used in numbers with non-decimal base"
+msgid "Use lower case letters in non-decimal numbers"
 msgstr ""
 
 #: ../data/preferences.ui.h:75
-msgid "Use special duodecimal symbols"
+msgid "If lower case letters should be used in numbers with non-decimal base"
 msgstr ""
 
 #: ../data/preferences.ui.h:76
+msgid "Use special duodecimal symbols"
+msgstr ""
+
+#: ../data/preferences.ui.h:77
 msgid ""
 "If ↊ and ↋ (or X and E) shall be used instead of A and B for digits 10 and "
 "11 in numbers with base 12"
 msgstr ""
 
-#: ../data/preferences.ui.h:77
+#: ../data/preferences.ui.h:78
 msgid "Alternative base prefixes"
 msgstr ""
 
-#: ../data/preferences.ui.h:78
+#: ../data/preferences.ui.h:79
 msgid ""
 "If hexadecimal numbers shall be displayed with \"0x0\" and binary numbers "
 "with \"0b00\" as prefixes"
 msgstr ""
 
-#: ../data/preferences.ui.h:79
+#: ../data/preferences.ui.h:80
 msgid "Spell out logical operators"
 msgstr ""
 
-#: ../data/preferences.ui.h:80
+#: ../data/preferences.ui.h:81
 msgid "If logical and/or shall be displayed as \"&&\"/\"||\" or \"and\"/\"or\""
 msgstr ""
 
-#: ../data/preferences.ui.h:81
+#: ../data/preferences.ui.h:82
 msgid "If \"e\" shall be used instead of \"E\" in numbers"
 msgstr ""
 
-#: ../data/preferences.ui.h:82
+#: ../data/preferences.ui.h:83
 msgid "Use E-notation instead of 10<sup><i>n</i></sup>"
 msgstr ""
 
-#: ../data/preferences.ui.h:83
+#: ../data/preferences.ui.h:84
 msgid "Use lower case \"e\" (as in 1e10)"
 msgstr ""
 
-#: ../data/preferences.ui.h:84
+#: ../data/preferences.ui.h:85
 msgid "Use comma as decimal separator"
 msgstr ""
 
-#: ../data/preferences.ui.h:85
+#: ../data/preferences.ui.h:86
 msgid "Use 'j' as imaginary unit"
 msgstr ""
 
-#: ../data/preferences.ui.h:86
+#: ../data/preferences.ui.h:87
 msgid ""
 "Use 'j' (instead of 'i') as default symbol for the imaginary unit, and place "
 "it in front of the imaginary part."
 msgstr ""
 
-#: ../data/preferences.ui.h:87
+#: ../data/preferences.ui.h:88
 msgid "Ignore comma in numbers"
 msgstr ""
 
-#: ../data/preferences.ui.h:88
+#: ../data/preferences.ui.h:89
 msgid ""
 "Allow commas, ',', to be used as thousands separator instead of as an "
 "function argument separator"
 msgstr ""
 
-#: ../data/preferences.ui.h:89
+#: ../data/preferences.ui.h:90
 msgid "Copy result as unformatted ASCII by default"
 msgstr ""
 
-#: ../data/preferences.ui.h:90
+#: ../data/preferences.ui.h:91
 msgid "Ignore dots in numbers"
 msgstr ""
 
-#: ../data/preferences.ui.h:91
+#: ../data/preferences.ui.h:92
 msgid ""
 "Allow dots, '.', to be used as thousands separator instead of as an "
 "alternative decimal sign"
 msgstr ""
 
-#: ../data/preferences.ui.h:92
+#: ../data/preferences.ui.h:93
 msgid "Digit grouping"
 msgstr ""
 
-#: ../data/preferences.ui.h:93
+#: ../data/preferences.ui.h:94
 msgid "off"
 msgstr ""
 
-#: ../data/preferences.ui.h:94
+#: ../data/preferences.ui.h:95
 msgid "standard"
 msgstr ""
 
-#: ../data/preferences.ui.h:95
+#: ../data/preferences.ui.h:96
 msgid "local"
 msgstr ""
 
-#: ../data/preferences.ui.h:96
+#: ../data/preferences.ui.h:97
 msgid "Multiplication sign"
 msgstr ""
 
-#: ../data/preferences.ui.h:97
+#: ../data/preferences.ui.h:98
 msgid "Division sign"
 msgstr ""
 
-#: ../data/preferences.ui.h:98
+#: ../data/preferences.ui.h:99
 msgid "Numbers & Operators"
 msgstr ""
 
-#: ../data/preferences.ui.h:99
+#: ../data/preferences.ui.h:100
 msgid "Use binary prefixes for information units"
 msgstr ""
 
-#: ../data/preferences.ui.h:100
+#: ../data/preferences.ui.h:101
 msgid ""
 "Use binary, instead of decimal, prefixes by default for information units (e."
 "g. bytes)."
 msgstr ""
 
-#: ../data/preferences.ui.h:101
+#: ../data/preferences.ui.h:102
 msgid "Copy unformatted ASCII without units"
 msgstr ""
 
-#: ../data/preferences.ui.h:102
+#: ../data/preferences.ui.h:103
 msgid "Conversion to local currency"
 msgstr ""
 
-#: ../data/preferences.ui.h:103
+#: ../data/preferences.ui.h:104
 msgid ""
 "Automatically convert to the local currency when optimal unit conversion is "
 "activated."
 msgstr ""
 
-#: ../data/preferences.ui.h:104
-msgid "Update exchange rates on start"
-msgstr ""
-
 #: ../data/preferences.ui.h:105
-msgid ""
-"If current exchange rates shall be downloaded from the internet at program "
-"start"
-msgstr ""
-
-#: ../data/preferences.ui.h:106
 msgid "Exchange rates updates"
 msgstr ""
 
-#: ../data/preferences.ui.h:107
+#: ../data/preferences.ui.h:106
 msgid "Temperature calculation mode:"
 msgstr ""
 
-#: ../data/preferences.ui.h:108 ../src/callbacks.cc:3277
+#: ../data/preferences.ui.h:107 ../src/mainwindow.cc:804
 msgid "Absolute"
 msgstr ""
 
-#: ../data/preferences.ui.h:110 ../src/callbacks.cc:3291
+#: ../data/preferences.ui.h:109 ../src/mainwindow.cc:818
 msgid "Hybrid"
 msgstr ""
 
-#: ../data/preferences.ui.h:111
+#: ../data/preferences.ui.h:110
 msgid "Units & Currencies"
 msgstr ""
 
-#: ../data/preferences.ui.h:112
+#: ../data/preferences.ui.h:111
 msgid "Show expression completion suggestions"
 msgstr ""
 
-#: ../data/preferences.ui.h:113
+#: ../data/preferences.ui.h:112
 msgid "Search titles and countries"
 msgstr ""
 
-#: ../data/preferences.ui.h:114
+#: ../data/preferences.ui.h:113
 msgid "Minimum characters"
 msgstr ""
 
-#: ../data/preferences.ui.h:115
+#: ../data/preferences.ui.h:114
 msgid "Popup delay (ms)"
 msgstr ""
 
-#: ../data/preferences.ui.h:116
+#: ../data/preferences.ui.h:115
 msgid "Completion"
 msgstr ""
 
-#: ../data/preferences.ui.h:117
+#: ../data/preferences.ui.h:116
 msgid "Custom status font"
 msgstr ""
 
-#: ../data/preferences.ui.h:118
+#: ../data/preferences.ui.h:117
 msgid ""
 "If you want to use a font other than the default in the status display below "
 "the expression entry"
 msgstr ""
 
-#: ../data/preferences.ui.h:119
+#: ../data/preferences.ui.h:118
 msgid "Custom expression font"
 msgstr ""
 
-#: ../data/preferences.ui.h:120
+#: ../data/preferences.ui.h:119
 msgid ""
 "If you want to use a font other than the default in the expression entry"
 msgstr ""
 
-#: ../data/preferences.ui.h:121
+#: ../data/preferences.ui.h:120
 msgid "Custom result font"
 msgstr ""
 
-#: ../data/preferences.ui.h:122
+#: ../data/preferences.ui.h:121
 msgid "If you want to use a font other than the default in the result display"
 msgstr ""
 
-#: ../data/preferences.ui.h:123
+#: ../data/preferences.ui.h:122
 msgid "Custom keypad font"
 msgstr ""
 
-#: ../data/preferences.ui.h:124
+#: ../data/preferences.ui.h:123
 msgid "If you want to use a font other than the default in the keypad"
 msgstr ""
 
-#: ../data/preferences.ui.h:125
+#: ../data/preferences.ui.h:124
 msgid "Status warning color"
 msgstr ""
 
-#: ../data/preferences.ui.h:126
+#: ../data/preferences.ui.h:125
 msgid "Status error color"
 msgstr ""
 
-#: ../data/preferences.ui.h:127
+#: ../data/preferences.ui.h:126
 msgid "Text color"
 msgstr ""
 
-#: ../data/preferences.ui.h:128
+#: ../data/preferences.ui.h:127
 msgid "Custom application font"
 msgstr ""
 
-#: ../data/preferences.ui.h:129
+#: ../data/preferences.ui.h:128
 msgid ""
 "If you want to use a font other than the default for the whole application"
 msgstr ""
 
-#: ../data/preferences.ui.h:130
+#: ../data/preferences.ui.h:129
 msgid "Custom history font"
 msgstr ""
 
-#: ../data/preferences.ui.h:131
+#: ../data/preferences.ui.h:130
 msgid "Fonts & Colors"
 msgstr ""
 
@@ -3148,12 +3140,12 @@ msgstr ""
 msgid "Other:"
 msgstr ""
 
-#: ../data/setbase.ui.h:12 ../src/setbasedialog.cc:49
-#: ../src/setbasedialog.cc:56 ../src/setbasedialog.cc:132
-#: ../src/setbasedialog.cc:193 ../src/setbasedialog.cc:230
-#: ../src/setbasedialog.cc:239 ../src/setbasedialog.cc:349
-#: ../src/setbasedialog.cc:431 ../src/setbasedialog.cc:584
-#: ../src/setbasedialog.cc:730
+#: ../data/setbase.ui.h:12 ../src/setbasedialog.cc:50
+#: ../src/setbasedialog.cc:57 ../src/setbasedialog.cc:133
+#: ../src/setbasedialog.cc:194 ../src/setbasedialog.cc:231
+#: ../src/setbasedialog.cc:240 ../src/setbasedialog.cc:350
+#: ../src/setbasedialog.cc:432 ../src/setbasedialog.cc:585
+#: ../src/setbasedialog.cc:731
 msgid "Bijective base-26"
 msgstr ""
 
@@ -3169,13 +3161,13 @@ msgstr ""
 msgid "New Keyboard Shortcut"
 msgstr ""
 
-#: ../data/shortcuts.ui.h:8 ../src/shortcutsdialog.cc:226
-#: ../src/shortcutsdialog.cc:325 ../src/shortcutsdialog.cc:479
-#: ../src/shortcutsdialog.cc:575
+#: ../data/shortcuts.ui.h:8 ../src/shortcutsdialog.cc:195
+#: ../src/shortcutsdialog.cc:287 ../src/shortcutsdialog.cc:441
+#: ../src/shortcutsdialog.cc:530
 msgid "Add Action"
 msgstr ""
 
-#: ../data/unitedit.ui.h:1 ../src/uniteditdialog.cc:186
+#: ../data/unitedit.ui.h:1 ../src/uniteditdialog.cc:188
 msgid "Edit Unit"
 msgstr ""
 
@@ -3345,7 +3337,7 @@ msgstr ""
 msgid "Type anywhere"
 msgstr ""
 
-#: ../data/unknownedit.ui.h:1 ../src/unknowneditdialog.cc:116
+#: ../data/unknownedit.ui.h:1 ../src/unknowneditdialog.cc:118
 msgid "Edit Unknown Variable"
 msgstr ""
 
@@ -3369,7 +3361,7 @@ msgstr ""
 msgid "Name used to reference this unknown variable in expressions"
 msgstr ""
 
-#: ../data/variableedit.ui.h:1 ../src/variableeditdialog.cc:158
+#: ../data/variableedit.ui.h:1 ../src/variableeditdialog.cc:160
 msgid "Edit Variable"
 msgstr ""
 
@@ -3405,1791 +3397,979 @@ msgstr ""
 msgid "E_xport"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:219 ../src/shortcutsdialog.cc:247
-#: ../src/shortcutsdialog.cc:497
+#: ../src/buttonseditdialog.cc:220 ../src/shortcutsdialog.cc:216
+#: ../src/shortcutsdialog.cc:459
 msgid "Empty value."
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:229 ../src/shortcutsdialog.cc:256
-#: ../src/shortcutsdialog.cc:506
+#: ../src/buttonseditdialog.cc:230 ../src/shortcutsdialog.cc:225
+#: ../src/shortcutsdialog.cc:468
 msgid "Function not found."
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:237 ../src/shortcutsdialog.cc:264
-#: ../src/shortcutsdialog.cc:514
+#: ../src/buttonseditdialog.cc:238 ../src/shortcutsdialog.cc:233
+#: ../src/shortcutsdialog.cc:476
 msgid "Variable not found."
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:245 ../src/shortcutsdialog.cc:272
-#: ../src/shortcutsdialog.cc:522
+#: ../src/buttonseditdialog.cc:246 ../src/shortcutsdialog.cc:241
+#: ../src/shortcutsdialog.cc:484
 msgid "Unit not found."
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:260 ../src/callbacks.cc:29079
-#: ../src/shortcutsdialog.cc:287 ../src/shortcutsdialog.cc:537
+#: ../src/buttonseditdialog.cc:254 ../src/mainwindow.cc:6998
+#: ../src/shortcutsdialog.cc:249 ../src/shortcutsdialog.cc:492
 msgid "Mode not found."
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:272 ../src/setbasedialog.cc:77
-#: ../src/setbasedialog.cc:153 ../src/setbasedialog.cc:209
-#: ../src/setbasedialog.cc:255 ../src/shortcutsdialog.cc:299
-#: ../src/shortcutsdialog.cc:549
+#: ../src/buttonseditdialog.cc:266 ../src/setbasedialog.cc:78
+#: ../src/setbasedialog.cc:154 ../src/setbasedialog.cc:210
+#: ../src/setbasedialog.cc:256 ../src/shortcutsdialog.cc:261
+#: ../src/shortcutsdialog.cc:504
 msgid "Unsupported base."
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:284 ../src/shortcutsdialog.cc:311
-#: ../src/shortcutsdialog.cc:561
+#: ../src/buttonseditdialog.cc:278 ../src/shortcutsdialog.cc:273
+#: ../src/shortcutsdialog.cc:516
 msgid "Unsupported value."
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:348 ../src/interface.cc:1133
+#: ../src/buttonseditdialog.cc:342 ../src/keypad.cc:462
 msgid "Cycle through previous expression"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:349 ../src/interface.cc:1140
+#: ../src/buttonseditdialog.cc:343 ../src/keypad.cc:469
 msgid "Move cursor left or right"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:349 ../src/interface.cc:1140
+#: ../src/buttonseditdialog.cc:343 ../src/keypad.cc:469
 msgid "Move cursor to beginning or end"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:351 ../src/interface.cc:1144
+#: ../src/buttonseditdialog.cc:345 ../src/keypad.cc:473
 msgid "Uncertainty/interval"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:351 ../src/interface.cc:1144
+#: ../src/buttonseditdialog.cc:345 ../src/keypad.cc:473
 msgid "Relative error"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:352 ../src/interface.cc:1145
+#: ../src/buttonseditdialog.cc:346 ../src/keypad.cc:474
 msgid "Argument separator"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:352 ../src/buttonseditdialog.cc:366
-#: ../src/interface.cc:1145 ../src/interface.cc:1160
+#: ../src/buttonseditdialog.cc:346 ../src/buttonseditdialog.cc:360
+#: ../src/keypad.cc:474 ../src/keypad.cc:489
 msgid "Blank space"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:352 ../src/buttonseditdialog.cc:366
-#: ../src/interface.cc:1145 ../src/interface.cc:1160
+#: ../src/buttonseditdialog.cc:346 ../src/buttonseditdialog.cc:360
+#: ../src/keypad.cc:474 ../src/keypad.cc:489
 msgid "New line"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:353 ../src/callbacks.cc:6028
-#: ../src/callbacks.cc:6276 ../src/callbacks.cc:6279 ../src/interface.cc:1146
+#: ../src/buttonseditdialog.cc:347 ../src/keypad.cc:475 ../src/keypad.cc:3499
+#: ../src/keypad.cc:3536 ../src/keypad.cc:3539
 msgid "Smart parentheses"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:353 ../src/interface.cc:1146
+#: ../src/buttonseditdialog.cc:347 ../src/keypad.cc:475
 msgid "Vector brackets"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:354 ../src/interface.cc:1148
+#: ../src/buttonseditdialog.cc:348 ../src/keypad.cc:477
 msgid "Left parenthesis"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:354 ../src/interface.cc:1148
+#: ../src/buttonseditdialog.cc:348 ../src/keypad.cc:477
 msgid "Left vector bracket"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:355 ../src/interface.cc:1149
+#: ../src/buttonseditdialog.cc:349 ../src/keypad.cc:478
 msgid "Right parenthesis"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:355 ../src/interface.cc:1149
+#: ../src/buttonseditdialog.cc:349 ../src/keypad.cc:478
 msgid "Right vector bracket"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:366 ../src/interface.cc:1160
+#: ../src/buttonseditdialog.cc:360 ../src/keypad.cc:489
 msgid "Decimal point"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:370
+#: ../src/buttonseditdialog.cc:364
 msgid "Raise"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:373 ../src/interface.cc:1203
+#: ../src/buttonseditdialog.cc:367 ../src/keypad.cc:532
 msgid "Add"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:373 ../src/callbacks.cc:4726
-#: ../src/callbacks.cc:5921 ../src/callbacks.cc:26844 ../src/interface.cc:1203
+#: ../src/buttonseditdialog.cc:367 ../src/expressionstatus.cc:669
+#: ../src/keypad.cc:532 ../src/keypad.cc:2729 ../src/util.cc:902
 msgid "M+ (memory plus)"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:377 ../src/callbacks.cc:4716
-#: ../src/callbacks.cc:5918 ../src/callbacks.cc:26841 ../src/interface.cc:1208
+#: ../src/buttonseditdialog.cc:371 ../src/expressionstatus.cc:659
+#: ../src/keypad.cc:537 ../src/keypad.cc:2726 ../src/util.cc:899
 msgid "MC (memory clear)"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:378 ../src/interface.cc:1209
+#: ../src/buttonseditdialog.cc:372 ../src/keypad.cc:538
 msgid "Backspace"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:378 ../src/callbacks.cc:4731
-#: ../src/callbacks.cc:5922 ../src/callbacks.cc:26845 ../src/interface.cc:1209
+#: ../src/buttonseditdialog.cc:372 ../src/expressionstatus.cc:674
+#: ../src/keypad.cc:538 ../src/keypad.cc:2730 ../src/util.cc:903
 msgid "M− (memory minus)"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:379 ../src/interface.cc:1210
+#: ../src/buttonseditdialog.cc:373 ../src/keypad.cc:539
 msgid "Previous result (static)"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:380 ../src/callbacks.cc:1887
-#: ../src/callbacks.cc:14752 ../src/interface.cc:1218
+#: ../src/buttonseditdialog.cc:374 ../src/expressionedit.cc:733
+#: ../src/keypad.cc:547 ../src/keypad.cc:3483
 msgid "Calculate expression"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:380 ../src/callbacks.cc:5919
-#: ../src/callbacks.cc:26842 ../src/interface.cc:1218
+#: ../src/buttonseditdialog.cc:374 ../src/keypad.cc:547 ../src/keypad.cc:2727
+#: ../src/util.cc:900
 msgid "MR (memory recall)"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:380 ../src/callbacks.cc:4721
-#: ../src/callbacks.cc:5920 ../src/callbacks.cc:26843 ../src/interface.cc:1218
+#: ../src/buttonseditdialog.cc:374 ../src/expressionstatus.cc:664
+#: ../src/keypad.cc:547 ../src/keypad.cc:2728 ../src/util.cc:901
 msgid "MS (memory store)"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:456 ../src/shortcutsdialog.cc:608
-#: ../src/shortcutsdialog.cc:635
+#: ../src/buttonseditdialog.cc:450 ../src/shortcutsdialog.cc:563
+#: ../src/shortcutsdialog.cc:590
 msgid "Action"
 msgstr ""
 
-#: ../src/calendarconversiondialog.cc:83
+#: ../src/calendarconversiondialog.cc:53
 msgid "The selected Chinese year does not exist."
 msgstr ""
 
-#: ../src/calendarconversiondialog.cc:95
+#: ../src/calendarconversiondialog.cc:65
 msgid "Conversion to Gregorian calendar failed."
 msgstr ""
 
-#: ../src/calendarconversiondialog.cc:120
+#: ../src/calendarconversiondialog.cc:90
 #, c-format
 msgid "Calendar conversion failed for: %s."
 msgstr ""
 
-#: ../src/calendarconversiondialog.cc:135
+#: ../src/calendarconversiondialog.cc:105
 msgid "Gregorian"
 msgstr ""
 
-#: ../src/calendarconversiondialog.cc:136
+#: ../src/calendarconversiondialog.cc:106
 msgid "Revised Julian (Milanković)"
 msgstr ""
 
-#: ../src/calendarconversiondialog.cc:137
+#: ../src/calendarconversiondialog.cc:107
 msgid "Julian"
 msgstr ""
 
-#: ../src/calendarconversiondialog.cc:138
+#: ../src/calendarconversiondialog.cc:108
 msgid "Islamic (Hijri)"
 msgstr ""
 
-#: ../src/calendarconversiondialog.cc:139
+#: ../src/calendarconversiondialog.cc:109
 msgid "Hebrew"
 msgstr ""
 
-#: ../src/calendarconversiondialog.cc:140
+#: ../src/calendarconversiondialog.cc:110
 msgid "Chinese"
 msgstr ""
 
-#: ../src/calendarconversiondialog.cc:141
+#: ../src/calendarconversiondialog.cc:111
 msgid "Persian (Solar Hijri)"
 msgstr ""
 
-#: ../src/calendarconversiondialog.cc:142
+#: ../src/calendarconversiondialog.cc:112
 msgid "Coptic"
 msgstr ""
 
-#: ../src/calendarconversiondialog.cc:143
+#: ../src/calendarconversiondialog.cc:113
 msgid "Ethiopian"
 msgstr ""
 
-#: ../src/calendarconversiondialog.cc:144
+#: ../src/calendarconversiondialog.cc:114
 msgid "Indian (National)"
 msgstr ""
 
-#: ../src/callbacks.cc:540
-msgid "History Answer Value"
+#. if no category has been selected (previously selected has been renamed/deleted), select "All"
+#: ../src/conversionview.cc:84 ../src/conversionview.cc:140
+#: ../src/conversionview.cc:178 ../src/functionsdialog.cc:90
+#: ../src/functionsdialog.cc:160 ../src/functionsdialog.cc:194
+#: ../src/functionsdialog.cc:564 ../src/unitsdialog.cc:113
+#: ../src/unitsdialog.cc:182 ../src/unitsdialog.cc:231
+#: ../src/unitsdialog.cc:973 ../src/variablesdialog.cc:92
+#: ../src/variablesdialog.cc:163 ../src/variablesdialog.cc:198
+#: ../src/variablesdialog.cc:500
+msgid "All"
 msgstr ""
 
-#: ../src/callbacks.cc:541 ../src/main.cc:226
-msgid "answer"
+#: ../src/conversionview.cc:131 ../src/conversionview.cc:132
+#: ../src/conversionview.cc:133 ../src/conversionview.cc:180
+#: ../src/conversionview.cc:457 ../src/functionsdialog.cc:144
+#: ../src/functionsdialog.cc:145 ../src/functionsdialog.cc:196
+#: ../src/mainwindow.cc:7300 ../src/mainwindow.cc:7330
+#: ../src/mainwindow.cc:7353 ../src/unitsdialog.cc:166
+#: ../src/unitsdialog.cc:167 ../src/unitsdialog.cc:233
+#: ../src/variablesdialog.cc:147 ../src/variablesdialog.cc:148
+#: ../src/variablesdialog.cc:200
+msgid "Uncategorized"
 msgstr ""
 
-#: ../src/callbacks.cc:544 ../src/callbacks.cc:569
-msgid "History Index(es)"
-msgstr ""
-
-#: ../src/callbacks.cc:555 ../src/callbacks.cc:580
-#, c-format
-msgid "History index %s does not exist."
-msgstr ""
-
-#: ../src/callbacks.cc:565
-msgid "History Parsed Expression"
-msgstr ""
-
-#: ../src/callbacks.cc:566 ../src/dataseteditdialog.cc:104
-msgid "expression"
-msgstr ""
-
-#: ../src/callbacks.cc:590
-msgid "Set Window Title"
-msgstr ""
-
-#: ../src/callbacks.cc:1290 ../src/callbacks.cc:14653 ../src/callbacks.cc:28922
-#, c-format
-msgid ""
-"Failed to open %s.\n"
-"%s"
-msgstr ""
-
-#: ../src/callbacks.cc:1308
-msgid "Could not display help for Qalculate!."
-msgstr ""
-
-#: ../src/callbacks.cc:1405
-#, c-format
-msgid ""
-"Could not display help for Qalculate!.\n"
-"%s"
-msgstr ""
-
-#: ../src/callbacks.cc:1526 ../src/callbacks.cc:5201 ../src/callbacks.cc:5234
-#: ../src/callbacks.cc:7861 ../src/callbacks.cc:10017 ../src/callbacks.cc:10404
-#: ../src/callbacks.cc:10457 ../src/callbacks.cc:10902
-#: ../src/callbacks.cc:11585 ../src/callbacks.cc:11649
-#: ../src/callbacks.cc:15284 ../src/callbacks.cc:24707
-#: ../src/searchprovider.cc:121 ../src/searchprovider.cc:122
-#: ../src/searchprovider.cc:199 ../src/variablesdialog.cc:264
-msgid "approx."
-msgstr ""
-
-#: ../src/callbacks.cc:1869
-msgid "Stop process"
-msgstr ""
-
-#: ../src/callbacks.cc:1880 ../src/callbacks.cc:23196
+#: ../src/conversionview.cc:282 ../src/expressionedit.cc:726
 msgid "Clear expression"
 msgstr ""
 
-#: ../src/callbacks.cc:1887 ../src/callbacks.cc:14716 ../src/interface.cc:2413
-#: ../src/interface.cc:2414
-msgid "Calculate expression and add to stack"
+#: ../src/conversionview.cc:502 ../src/unitsdialog.cc:1000
+msgid "Flag"
 msgstr ""
 
-#: ../src/callbacks.cc:2462
-msgid "EXACT"
+#: ../src/dataseteditdialog.cc:89
+msgid "text"
 msgstr ""
 
-#: ../src/callbacks.cc:2465
-msgid "APPROX"
+#: ../src/dataseteditdialog.cc:94 ../src/dataseteditdialog.cc:102
+msgid "approximate"
 msgstr ""
 
-#: ../src/callbacks.cc:2469
-msgid "RPN"
+#: ../src/dataseteditdialog.cc:97 ../src/expressioncompletion.cc:1692
+#: ../src/variablesdialog.cc:317
+msgid "number"
 msgstr ""
 
-#. Chain mode
-#: ../src/callbacks.cc:2474
-msgid "CHN"
+#: ../src/dataseteditdialog.cc:105 ../src/historyview.cc:138
+msgid "expression"
 msgstr ""
 
-#: ../src/callbacks.cc:2502
-msgid "ROMAN"
+#. indicating that the property is a data set key
+#: ../src/dataseteditdialog.cc:111 ../src/datasetsdialog.cc:181
+#: ../src/functionsdialog.cc:412
+msgid "key"
 msgstr ""
 
-#: ../src/callbacks.cc:2559
-msgid "DEG"
+#: ../src/dataseteditdialog.cc:306 ../src/dataseteditdialog.cc:442
+#: ../src/functioneditdialog.cc:893 ../src/importcsvdialog.cc:149
+#: ../src/matrixeditdialog.cc:542 ../src/menubar.cc:1165
+#: ../src/uniteditdialog.cc:326 ../src/unknowneditdialog.cc:191
+#: ../src/variableeditdialog.cc:266
+msgid "Empty name field."
 msgstr ""
 
-#: ../src/callbacks.cc:2564
-msgid "RAD"
+#: ../src/dataseteditdialog.cc:366
+msgid "Edit Data Set (global)"
 msgstr ""
 
-#: ../src/callbacks.cc:2569
-msgid "GRA"
+#: ../src/dataseteditdialog.cc:368
+msgid "New Data Set"
 msgstr ""
 
-#: ../src/callbacks.cc:2576
-msgid "PREC"
+#: ../src/dataseteditdialog.cc:454 ../src/functioneditdialog.cc:918
+msgid ""
+"A function with the same name already exists.\n"
+"Do you want to overwrite the function?"
 msgstr ""
 
-#: ../src/callbacks.cc:2581
-msgid "FUNC"
+#: ../src/dataseteditdialog.cc:485
+msgid "Property"
 msgstr ""
 
-#: ../src/callbacks.cc:2587
-msgid "UNIT"
+#: ../src/datasetsdialog.cc:197
+msgid "Data Retrieval Function"
 msgstr ""
 
-#: ../src/callbacks.cc:2593
-msgid "VAR"
+#: ../src/datasetsdialog.cc:227 ../src/expressionstatus.cc:544
+#: ../src/functionsdialog.cc:271
+msgid "argument"
 msgstr ""
 
-#: ../src/callbacks.cc:2599
-msgid "INF"
+#: ../src/datasetsdialog.cc:480
+msgid "New Data Object"
 msgstr ""
 
-#: ../src/callbacks.cc:2605
-msgid "CPLX"
+#: ../src/drawstructure.cc:631 ../src/drawstructure.cc:2787
+#: ../src/expressionstatus.cc:1134 ../src/expressionstatus.cc:1167
+#: ../src/historyview.cc:658 ../src/historyview.cc:1236
+#: ../src/historyview.cc:1289 ../src/historyview.cc:1535
+#: ../src/historyview.cc:1595 ../src/historyview.cc:2117
+#: ../src/insertfunctiondialog.cc:296 ../src/keypad.cc:3059
+#: ../src/mainwindow.cc:2641 ../src/searchprovider.cc:91
+#: ../src/searchprovider.cc:92 ../src/searchprovider.cc:169
+#: ../src/variablesdialog.cc:290
+msgid "approx."
 msgstr ""
 
-#: ../src/callbacks.cc:2631
+#: ../src/drawstructure.cc:1828
+msgid "and"
+msgstr ""
+
+#: ../src/drawstructure.cc:1831 ../src/historyview.cc:874
+#: ../src/historyview.cc:909 ../src/historyview.cc:910
+msgid "or"
+msgstr ""
+
+#: ../src/drawstructure.cc:2703
+msgid "undefined"
+msgstr ""
+
+#: ../src/exchangerates.cc:77
+msgid "Fetching exchange rates."
+msgstr ""
+
+#: ../src/exchangerates.cc:108
 msgid "Do you wish to update the exchange rates now?"
 msgstr ""
 
-#: ../src/callbacks.cc:2633
+#: ../src/exchangerates.cc:110
 #, c-format
 msgid "It has been %s day since the exchange rates last were updated."
 msgid_plural "It has been %s days since the exchange rates last were updated."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../src/callbacks.cc:2634
+#: ../src/exchangerates.cc:111
 msgid "Do not ask again"
 msgstr ""
 
-#: ../src/callbacks.cc:2691 ../src/plotdialog.cc:400 ../src/plotdialog.cc:411
-#: ../src/plotdialog.cc:422
-msgid "It took too long to generate the plot data."
-msgstr ""
-
-#: ../src/callbacks.cc:2691
-msgid ""
-"It took too long to generate the plot data. Please decrease the sampling "
-"rate or increase the time limit in preferences."
-msgstr ""
-
-#: ../src/callbacks.cc:2792
-msgid "Exchange rate source:"
-msgid_plural "Exchange rate sources:"
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../src/callbacks.cc:2794
-#, c-format
-msgid "updated %s"
-msgid_plural "updated %s"
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../src/callbacks.cc:2814
-msgid ""
-"When errors, warnings and other information are generated during "
-"calculation, the icon in the upper right corner of the expression entry "
-"changes to reflect this. If you hold the pointer over or click the icon, the "
-"message will be shown."
-msgstr ""
-
-#: ../src/callbacks.cc:2895
-msgid "Path of executable not found."
-msgstr ""
-
-#: ../src/callbacks.cc:2905
-msgid "curl not found."
-msgstr ""
-
-#: ../src/callbacks.cc:2970
-#, c-format
-msgid ""
-"Failed to run update script.\n"
-"%s"
-msgstr ""
-
-#: ../src/callbacks.cc:2994
-msgid "Failed to check for updates."
-msgstr ""
-
-#: ../src/callbacks.cc:2994
-msgid "No updates found."
-msgstr ""
-
-#: ../src/callbacks.cc:3008
-msgid "_Download"
-msgstr ""
-
-#: ../src/callbacks.cc:3020
-#, c-format
-msgid ""
-"A new version of %s is available at %s.\n"
-"\n"
-"Do you wish to update to version %s?"
-msgstr ""
-
-#: ../src/callbacks.cc:3022
-#, c-format
-msgid ""
-"A new version of %s is available.\n"
-"\n"
-"You can get version %s at %s."
-msgstr ""
-
-#: ../src/callbacks.cc:3062
-#, c-format
-msgid "Too many arguments for %s()."
-msgstr ""
-
-#: ../src/callbacks.cc:3091 ../src/datasetsdialog.cc:200
-#: ../src/functionsdialog.cc:247
-msgid "argument"
-msgstr ""
-
-#: ../src/callbacks.cc:3264
-msgid "Temperature Calculation Mode"
-msgstr ""
-
-#: ../src/callbacks.cc:3274
-msgid ""
-"The expression is ambiguous.\n"
-"Please select temperature calculation mode\n"
-"(the mode can later be changed in preferences)."
-msgstr ""
-
-#: ../src/callbacks.cc:3342
-msgid "Sinc Function"
-msgstr ""
-
-#: ../src/callbacks.cc:3352
-msgid "Please select desired variant of the sinc function."
-msgstr ""
-
-#: ../src/callbacks.cc:3355
-msgid "Unnormalized"
-msgstr ""
-
-#: ../src/callbacks.cc:3362
-msgid "Normalized"
-msgstr ""
-
-#: ../src/callbacks.cc:3395
-msgid "Interpretation of dots"
-msgstr ""
-
-#: ../src/callbacks.cc:3405
-msgid ""
-"Please select interpretation of dots (\".\")\n"
-"(this can later be changed in preferences)."
-msgstr ""
-
-#: ../src/callbacks.cc:3408
-msgid "Both dot and comma as decimal separators"
-msgstr ""
-
-#: ../src/callbacks.cc:3415
-msgid "Dot as thousands separator"
-msgstr ""
-
-#: ../src/callbacks.cc:3422
-msgid "Only dot as decimal separator"
-msgstr ""
-
-#: ../src/callbacks.cc:3474
-msgid ""
-"The expression is ambiguous.\n"
-"Please select interpretation of expressions with implicit multiplication\n"
-"(this can later be changed in preferences)."
-msgstr ""
-
-#: ../src/callbacks.cc:3477
-msgid "Implicit multiplication first"
-msgstr ""
-
-#: ../src/callbacks.cc:3485
-msgid "Conventional"
-msgstr ""
-
-#: ../src/callbacks.cc:3520
-msgid "Percentage Interpretation"
-msgstr ""
-
-#: ../src/callbacks.cc:3530
-msgid "Please select interpretation of percentage addition."
-msgstr ""
-
-#: ../src/callbacks.cc:3533
-msgid "Add percentage of original value"
-msgstr ""
-
-#: ../src/callbacks.cc:3541
-msgid "Add percentage multiplied by 1/100"
-msgstr ""
-
-#: ../src/callbacks.cc:3584 ../src/callbacks.cc:5687 ../src/callbacks.cc:5688
-#: ../src/callbacks.cc:5689 ../src/callbacks.cc:5736 ../src/callbacks.cc:14624
-#: ../src/callbacks.cc:14957 ../src/callbacks.cc:15012
-#: ../src/callbacks.cc:15058 ../src/functionsdialog.cc:120
-#: ../src/functionsdialog.cc:121 ../src/functionsdialog.cc:172
-#: ../src/unitsdialog.cc:174 ../src/unitsdialog.cc:175
-#: ../src/unitsdialog.cc:241 ../src/variablesdialog.cc:121
-#: ../src/variablesdialog.cc:122 ../src/variablesdialog.cc:174
-msgid "Uncategorized"
-msgstr ""
-
-#: ../src/callbacks.cc:3691 ../src/callbacks.cc:5042 ../src/callbacks.cc:5048
-msgid "fraction"
-msgstr ""
-
-#: ../src/callbacks.cc:3868 ../src/callbacks.cc:4912 ../src/callbacks.cc:13908
-msgid "hexadecimal"
-msgstr ""
-
-#: ../src/callbacks.cc:3871 ../src/callbacks.cc:4914 ../src/callbacks.cc:13911
-msgid "octal"
-msgstr ""
-
-#: ../src/callbacks.cc:3874 ../src/callbacks.cc:4916 ../src/callbacks.cc:13914
-msgid "decimal"
-msgstr ""
-
-#: ../src/callbacks.cc:3877 ../src/callbacks.cc:4918 ../src/callbacks.cc:13917
-msgid "duodecimal"
-msgstr ""
-
-#: ../src/callbacks.cc:3885 ../src/callbacks.cc:4922 ../src/callbacks.cc:13925
-msgid "binary"
-msgstr ""
-
-#: ../src/callbacks.cc:3888 ../src/callbacks.cc:4924 ../src/callbacks.cc:13928
-msgid "roman"
-msgstr ""
-
-#: ../src/callbacks.cc:3891 ../src/callbacks.cc:4926 ../src/callbacks.cc:13931
-msgid "bijective"
-msgstr ""
-
-#: ../src/callbacks.cc:3897 ../src/callbacks.cc:3900 ../src/callbacks.cc:3903
-#: ../src/callbacks.cc:4930 ../src/callbacks.cc:13937 ../src/callbacks.cc:13940
-#: ../src/callbacks.cc:13943
-msgid "sexagesimal"
-msgstr ""
-
-#: ../src/callbacks.cc:3906 ../src/callbacks.cc:3909 ../src/callbacks.cc:4932
-#: ../src/callbacks.cc:4933 ../src/callbacks.cc:13946 ../src/callbacks.cc:13949
-msgid "latitude"
-msgstr ""
-
-#: ../src/callbacks.cc:3912 ../src/callbacks.cc:3915 ../src/callbacks.cc:4934
-#: ../src/callbacks.cc:4935 ../src/callbacks.cc:13952 ../src/callbacks.cc:13955
-msgid "longitude"
-msgstr ""
-
-#: ../src/callbacks.cc:3933 ../src/callbacks.cc:4946 ../src/callbacks.cc:13973
-msgid "time"
-msgstr ""
-
-#: ../src/callbacks.cc:3984 ../src/callbacks.cc:4950 ../src/callbacks.cc:14047
-msgid "bases"
-msgstr ""
-
-#: ../src/callbacks.cc:3986 ../src/callbacks.cc:4952 ../src/callbacks.cc:4953
-#: ../src/callbacks.cc:14057
-msgid "calendars"
-msgstr ""
-
-#: ../src/callbacks.cc:3988 ../src/callbacks.cc:4966 ../src/callbacks.cc:14067
-msgid "rectangular"
-msgstr ""
-
-#: ../src/callbacks.cc:3988 ../src/callbacks.cc:4966 ../src/callbacks.cc:14067
-msgid "cartesian"
-msgstr ""
-
-#: ../src/callbacks.cc:3992 ../src/callbacks.cc:4968 ../src/callbacks.cc:14080
-msgid "exponential"
-msgstr ""
-
-#: ../src/callbacks.cc:3996 ../src/callbacks.cc:4970 ../src/callbacks.cc:14093
-msgid "polar"
-msgstr ""
-
-#: ../src/callbacks.cc:4004 ../src/callbacks.cc:4974 ../src/callbacks.cc:14119
-msgid "angle"
-msgstr ""
-
-#: ../src/callbacks.cc:4004 ../src/callbacks.cc:4976 ../src/callbacks.cc:14119
-msgid "phasor"
-msgstr ""
-
-#: ../src/callbacks.cc:4008 ../src/callbacks.cc:4954 ../src/callbacks.cc:14132
-msgid "optimal"
-msgstr ""
-
-#: ../src/callbacks.cc:4013 ../src/callbacks.cc:4956 ../src/callbacks.cc:14144
-msgid "prefix"
-msgstr ""
-
-#: ../src/callbacks.cc:4017 ../src/callbacks.cc:4033 ../src/callbacks.cc:4958
-#: ../src/callbacks.cc:5031 ../src/callbacks.cc:14148 ../src/callbacks.cc:14195
-msgid "base"
-msgstr ""
-
-#: ../src/callbacks.cc:4022 ../src/callbacks.cc:4960 ../src/callbacks.cc:14160
-msgid "mixed"
-msgstr ""
-
-#: ../src/callbacks.cc:4027 ../src/callbacks.cc:4962 ../src/callbacks.cc:4963
-#: ../src/callbacks.cc:14175
-msgid "factors"
-msgstr ""
-
-#: ../src/callbacks.cc:4030 ../src/callbacks.cc:4964 ../src/callbacks.cc:14185
-msgid "partial fraction"
-msgstr ""
-
-#: ../src/callbacks.cc:4037 ../src/callbacks.cc:5036 ../src/callbacks.cc:14199
-msgid "decimals"
-msgstr ""
-
-#: ../src/callbacks.cc:4080 ../src/callbacks.cc:4742 ../src/callbacks.cc:4744
-#: ../src/callbacks.cc:14257 ../src/searchprovider.cc:163
-msgid "factorize"
-msgstr ""
-
-#: ../src/callbacks.cc:4083 ../src/callbacks.cc:4745 ../src/callbacks.cc:4747
-#: ../src/callbacks.cc:14260 ../src/searchprovider.cc:163
-msgid "expand"
-msgstr ""
-
-#: ../src/callbacks.cc:4913 ../src/callbacks.cc:5027
-msgid "hexadecimal number"
-msgstr ""
-
-#: ../src/callbacks.cc:4915
-msgid "octal number"
-msgstr ""
-
-#: ../src/callbacks.cc:4917
-msgid "decimal number"
-msgstr ""
-
-#: ../src/callbacks.cc:4919 ../src/callbacks.cc:4921
-msgid "duodecimal number"
-msgstr ""
-
-#: ../src/callbacks.cc:4923 ../src/callbacks.cc:5021
-msgid "binary number"
-msgstr ""
-
-#: ../src/callbacks.cc:4925
-msgid "roman numerals"
-msgstr ""
-
-#: ../src/callbacks.cc:4927
-msgid "bijective base-26"
-msgstr ""
-
-#: ../src/callbacks.cc:4929
-msgid "binary-coded decimal"
-msgstr ""
-
-#: ../src/callbacks.cc:4931
-msgid "sexagesimal number"
-msgstr ""
-
-#: ../src/callbacks.cc:4937
-msgid "32-bit floating point"
-msgstr ""
-
-#: ../src/callbacks.cc:4939
-msgid "64-bit floating point"
-msgstr ""
-
-#: ../src/callbacks.cc:4941
-msgid "16-bit floating point"
-msgstr ""
-
-#: ../src/callbacks.cc:4943
-msgid "80-bit (x86) floating point"
-msgstr ""
-
-#: ../src/callbacks.cc:4945
-msgid "128-bit floating point"
-msgstr ""
-
-#: ../src/callbacks.cc:4947
-msgid "time format"
-msgstr ""
-
-#: ../src/callbacks.cc:4949 ../src/callbacks.cc:7274
-msgid "Unicode"
-msgstr ""
-
-#: ../src/callbacks.cc:4951
-msgid "number bases"
-msgstr ""
-
-#: ../src/callbacks.cc:4955
-msgid "optimal unit"
-msgstr ""
-
-#: ../src/callbacks.cc:4957
-msgid "optimal prefix"
-msgstr ""
-
-#: ../src/callbacks.cc:4959
-msgid "base units"
-msgstr ""
-
-#: ../src/callbacks.cc:4961
-msgid "mixed units"
-msgstr ""
-
-#: ../src/callbacks.cc:4965
-msgid "expanded partial fractions"
-msgstr ""
-
-#: ../src/callbacks.cc:4967
-msgid "complex rectangular form"
-msgstr ""
-
-#: ../src/callbacks.cc:4969
-msgid "complex exponential form"
-msgstr ""
-
-#: ../src/callbacks.cc:4971
-msgid "complex polar form"
-msgstr ""
-
-#: ../src/callbacks.cc:4973
-msgid "complex cis form"
-msgstr ""
-
-#: ../src/callbacks.cc:4975
-msgid "complex angle notation"
-msgstr ""
-
-#: ../src/callbacks.cc:4977
-msgid "complex phasor notation"
-msgstr ""
-
-#: ../src/callbacks.cc:4979
-msgid "UTC time zone"
-msgstr ""
-
-#: ../src/callbacks.cc:5032
-#, c-format
-msgid "number base %s"
-msgstr ""
-
-#: ../src/callbacks.cc:5037
-msgid "decimal fraction"
-msgstr ""
-
-#: ../src/callbacks.cc:5446
-msgid "My Variables"
-msgstr ""
-
-#. if no category has been selected (previously selected has been renamed/deleted), select "All"
-#: ../src/callbacks.cc:5640 ../src/callbacks.cc:5696 ../src/callbacks.cc:5734
-#: ../src/functionsdialog.cc:66 ../src/functionsdialog.cc:136
-#: ../src/functionsdialog.cc:170 ../src/functionsdialog.cc:540
-#: ../src/unitsdialog.cc:121 ../src/unitsdialog.cc:190
-#: ../src/unitsdialog.cc:239 ../src/unitsdialog.cc:981
-#: ../src/variablesdialog.cc:66 ../src/variablesdialog.cc:137
-#: ../src/variablesdialog.cc:172 ../src/variablesdialog.cc:474
-msgid "All"
-msgstr ""
-
-#: ../src/callbacks.cc:5862
-msgid "Insert function"
-msgstr ""
-
-#: ../src/callbacks.cc:5863
-msgid "Insert function (dialog)"
-msgstr ""
-
-#: ../src/callbacks.cc:5864
-msgid "Insert variable"
-msgstr ""
-
-#: ../src/callbacks.cc:5865
-msgid "Insert unit"
-msgstr ""
-
-#: ../src/callbacks.cc:5866
-msgid "Insert text"
-msgstr ""
-
-#: ../src/callbacks.cc:5867
-msgid "Insert date"
-msgstr ""
-
-#: ../src/callbacks.cc:5868
-msgid "Insert vector"
-msgstr ""
-
-#: ../src/callbacks.cc:5869
-msgid "Insert matrix"
-msgstr ""
-
-#: ../src/callbacks.cc:5870
-msgid "Insert smart parentheses"
-msgstr ""
-
-#: ../src/callbacks.cc:5871
-msgid "Convert to unit"
-msgstr ""
-
-#: ../src/callbacks.cc:5872
-msgid "Convert to unit (entry)"
-msgstr ""
-
-#: ../src/callbacks.cc:5873
-msgid "Convert to optimal unit"
-msgstr ""
-
-#: ../src/callbacks.cc:5874
-msgid "Convert to base units"
-msgstr ""
-
-#: ../src/callbacks.cc:5875
-msgid "Convert to optimal prefix"
-msgstr ""
-
-#: ../src/callbacks.cc:5876
-msgid "Convert to number base"
-msgstr ""
-
-#: ../src/callbacks.cc:5877
-msgid "Factorize result"
-msgstr ""
-
-#: ../src/callbacks.cc:5878
-msgid "Expand result"
-msgstr ""
-
-#: ../src/callbacks.cc:5879
-msgid "Expand partial fractions"
-msgstr ""
-
-#: ../src/callbacks.cc:5880 ../src/interface.cc:1496
-msgid "Set unknowns"
-msgstr ""
-
-#: ../src/callbacks.cc:5881
-msgid "RPN: down"
-msgstr ""
-
-#: ../src/callbacks.cc:5882
-msgid "RPN: up"
-msgstr ""
-
-#: ../src/callbacks.cc:5883
-msgid "RPN: swap"
-msgstr ""
-
-#: ../src/callbacks.cc:5884
-msgid "RPN: copy"
-msgstr ""
-
-#: ../src/callbacks.cc:5885
-msgid "RPN: lastx"
-msgstr ""
-
-#: ../src/callbacks.cc:5886
-msgid "RPN: delete register"
-msgstr ""
-
-#: ../src/callbacks.cc:5887
-msgid "RPN: clear stack"
-msgstr ""
-
-#: ../src/callbacks.cc:5888
-msgid "Load meta mode"
-msgstr ""
-
-#: ../src/callbacks.cc:5889
-msgid "Set expression base"
-msgstr ""
-
-#: ../src/callbacks.cc:5890
-msgid "Set result base"
-msgstr ""
-
-#: ../src/callbacks.cc:5891
-msgid "Toggle exact mode"
-msgstr ""
-
-#: ../src/callbacks.cc:5892
-msgid "Set angle unit to degrees"
-msgstr ""
-
-#: ../src/callbacks.cc:5893
-msgid "Set angle unit to radians"
-msgstr ""
-
-#: ../src/callbacks.cc:5894
-msgid "Set angle unit to gradians"
-msgstr ""
-
-#: ../src/callbacks.cc:5895
-msgid "Toggle simple fractions"
-msgstr ""
-
-#: ../src/callbacks.cc:5896
-msgid "Toggle mixed fractions"
-msgstr ""
-
-#: ../src/callbacks.cc:5897
-msgid "Toggle scientific notation"
-msgstr ""
-
-#: ../src/callbacks.cc:5898
-msgid "Toggle simple notation"
-msgstr ""
-
-#: ../src/callbacks.cc:5899
-msgid "Toggle precision"
-msgstr ""
-
-#: ../src/callbacks.cc:5900
-msgid "Toggle max decimals"
-msgstr ""
-
-#: ../src/callbacks.cc:5901
-msgid "Toggle min decimals"
-msgstr ""
-
-#: ../src/callbacks.cc:5902
-msgid "Toggle max/min decimals"
-msgstr ""
-
-#: ../src/callbacks.cc:5903
-msgid "Toggle RPN mode"
-msgstr ""
-
-#: ../src/callbacks.cc:5904
-msgid "Toggle calculate as you type"
-msgstr ""
-
-#: ../src/callbacks.cc:5905
-msgid "Toggle programming keypad"
-msgstr ""
-
-#: ../src/callbacks.cc:5906
-msgid "Show keypad"
-msgstr ""
-
-#: ../src/callbacks.cc:5907
-msgid "Show history"
-msgstr ""
-
-#: ../src/callbacks.cc:5908
-msgid "Search history"
-msgstr ""
-
-#: ../src/callbacks.cc:5909
-msgid "Clear history"
-msgstr ""
-
-#: ../src/callbacks.cc:5910
-msgid "Show conversion"
-msgstr ""
-
-#: ../src/callbacks.cc:5911
-msgid "Show RPN stack"
-msgstr ""
-
-#: ../src/callbacks.cc:5913
-msgid "Manage variables"
-msgstr ""
-
-#: ../src/callbacks.cc:5914
-msgid "Manage functions"
-msgstr ""
-
-#: ../src/callbacks.cc:5916
-msgid "Manage data sets"
-msgstr ""
-
-#: ../src/callbacks.cc:5923
-msgid "New variable"
-msgstr ""
-
-#: ../src/callbacks.cc:5924
-msgid "New function"
-msgstr ""
-
-#: ../src/callbacks.cc:5925
-msgid "Open plot functions/data"
-msgstr ""
-
-#: ../src/callbacks.cc:5926
-msgid "Open convert number bases"
-msgstr ""
-
-#: ../src/callbacks.cc:5927
-msgid "Open floating point conversion"
-msgstr ""
-
-#: ../src/callbacks.cc:5928
-msgid "Open calendar conversion"
-msgstr ""
-
-#: ../src/callbacks.cc:5929
-msgid "Open percentage calculation tool"
-msgstr ""
-
-#: ../src/callbacks.cc:5930
-msgid "Open periodic table"
-msgstr ""
-
-#: ../src/callbacks.cc:5931
-msgid "Update exchange rates"
-msgstr ""
-
-#: ../src/callbacks.cc:5932
-msgid "Copy result"
-msgstr ""
-
-#: ../src/callbacks.cc:5933
-msgid "Insert result"
-msgstr ""
-
-#: ../src/callbacks.cc:5934
-msgid "Save result image"
-msgstr ""
-
-#: ../src/callbacks.cc:5935
-msgid "Help"
-msgstr ""
-
-#: ../src/callbacks.cc:5936
-msgid "Quit"
-msgstr ""
-
-#: ../src/callbacks.cc:5937
-msgid "Toggle chain mode"
-msgstr ""
-
-#: ../src/callbacks.cc:5938
-msgid "Toggle keep above"
-msgstr ""
-
-#: ../src/callbacks.cc:5939
-msgid "Show/hide completion"
-msgstr ""
-
-#: ../src/callbacks.cc:5940
-msgid "Perform completion (activate first item)"
-msgstr ""
-
-#: ../src/callbacks.cc:5981
-msgid "Formatted result"
-msgstr ""
-
-#: ../src/callbacks.cc:5982
-msgid "Unformatted ASCII result"
-msgstr ""
-
-#: ../src/callbacks.cc:5983
-msgid "Unformatted ASCII result without units"
-msgstr ""
-
-#: ../src/callbacks.cc:5984
-msgid "Formatted expression"
-msgstr ""
-
-#: ../src/callbacks.cc:5985
-msgid "Unformatted ASCII expression"
-msgstr ""
-
-#: ../src/callbacks.cc:5986
-msgid "Formatted expression + result"
-msgstr ""
-
-#: ../src/callbacks.cc:5987
-msgid "Unformatted ASCII expression + result"
-msgstr ""
-
-#. Show further items in a submenu
-#: ../src/callbacks.cc:6386 ../src/callbacks.cc:6480 ../src/callbacks.cc:21855
-#: ../src/callbacks.cc:26569 ../src/interface.cc:1544 ../src/interface.cc:1632
-#: ../src/interface.cc:1635
-msgid "more"
-msgstr ""
-
-#: ../src/callbacks.cc:6417 ../src/callbacks.cc:6511 ../src/callbacks.cc:15056
-#: ../src/callbacks.cc:19820 ../src/callbacks.cc:19821
-#: ../src/unitsdialog.cc:166 ../src/unitsdialog.cc:167
-#: ../src/unitsdialog.cc:245
-msgid "User units"
-msgstr ""
-
-#: ../src/callbacks.cc:6425
-msgid "Prefixes"
-msgstr ""
-
-#: ../src/callbacks.cc:6659 ../src/callbacks.cc:15010 ../src/callbacks.cc:19818
-#: ../src/callbacks.cc:19819 ../src/variablesdialog.cc:112
-#: ../src/variablesdialog.cc:113 ../src/variablesdialog.cc:178
-msgid "User variables"
-msgstr ""
-
-#: ../src/callbacks.cc:6717
-msgid "No Prefix"
-msgstr ""
-
-#: ../src/callbacks.cc:6718 ../src/callbacks.cc:7264
-msgid "Optimal Prefix"
-msgstr ""
-
-#: ../src/callbacks.cc:6828 ../src/callbacks.cc:14955 ../src/callbacks.cc:19822
-#: ../src/callbacks.cc:19823 ../src/functionsdialog.cc:111
-#: ../src/functionsdialog.cc:112 ../src/functionsdialog.cc:176
-msgid "User functions"
-msgstr ""
-
-#: ../src/callbacks.cc:6984
-msgid "a previous result"
-msgstr ""
-
-#: ../src/callbacks.cc:6997
-msgid "matrix"
-msgstr ""
-
-#: ../src/callbacks.cc:6999
-msgid "vector"
-msgstr ""
-
-#: ../src/callbacks.cc:7020 ../src/variablesdialog.cc:276
-msgid "positive"
-msgstr ""
-
-#: ../src/callbacks.cc:7021 ../src/variablesdialog.cc:277
-msgid "non-positive"
-msgstr ""
-
-#: ../src/callbacks.cc:7022 ../src/variablesdialog.cc:278
-msgid "negative"
-msgstr ""
-
-#: ../src/callbacks.cc:7023 ../src/variablesdialog.cc:279
-msgid "non-negative"
-msgstr ""
-
-#: ../src/callbacks.cc:7024 ../src/variablesdialog.cc:280
-msgid "non-zero"
-msgstr ""
-
-#: ../src/callbacks.cc:7029 ../src/variablesdialog.cc:287
-msgid "boolean"
-msgstr ""
-
-#: ../src/callbacks.cc:7030 ../src/variablesdialog.cc:286
-msgid "integer"
-msgstr ""
-
-#: ../src/callbacks.cc:7031 ../src/variablesdialog.cc:288
-msgid "rational"
-msgstr ""
-
-#: ../src/callbacks.cc:7032 ../src/variablesdialog.cc:289
-msgid "real"
-msgstr ""
-
-#: ../src/callbacks.cc:7033 ../src/variablesdialog.cc:290
-msgid "complex"
-msgstr ""
-
-#: ../src/callbacks.cc:7034 ../src/dataseteditdialog.cc:96
-#: ../src/variablesdialog.cc:291
-msgid "number"
-msgstr ""
-
-#: ../src/callbacks.cc:7035
-msgid "(not matrix)"
-msgstr ""
-
-#: ../src/callbacks.cc:7038 ../src/variablesdialog.cc:295
-msgid "unknown"
-msgstr ""
-
-#: ../src/callbacks.cc:7040
-msgid "default assumptions"
-msgstr ""
-
-#: ../src/callbacks.cc:7181
-msgid "Prefix"
-msgstr ""
-
-#: ../src/callbacks.cc:7211
-msgid "Base Units"
-msgstr ""
-
-#: ../src/callbacks.cc:7214
-msgid "Binary-Coded Decimal"
-msgstr ""
-
-#: ../src/callbacks.cc:7216
-msgid "Bijective Base-26"
-msgstr ""
-
-#: ../src/callbacks.cc:7218
-msgid "Binary Number"
-msgstr ""
-
-#: ../src/callbacks.cc:7220
-msgid "Calendars"
-msgstr ""
-
-#: ../src/callbacks.cc:7222
-msgid "Complex cis Form"
-msgstr ""
-
-#: ../src/callbacks.cc:7224
-msgid "Decimal Number"
-msgstr ""
-
-#: ../src/callbacks.cc:7226
-msgid "Duodecimal Number"
-msgstr ""
-
-#: ../src/callbacks.cc:7230
-msgid "Factors"
-msgstr ""
-
-#: ../src/callbacks.cc:7232
-msgid "16-bit Floating Point Binary Format"
-msgstr ""
-
-#: ../src/callbacks.cc:7234
-msgid "32-bit Floating Point Binary Format"
-msgstr ""
-
-#: ../src/callbacks.cc:7236
-msgid "64-bit Floating Point Binary Format"
-msgstr ""
-
-#: ../src/callbacks.cc:7238
-msgid "80-bit (x86) Floating Point Binary Format"
-msgstr ""
-
-#: ../src/callbacks.cc:7240
-msgid "128-bit Floating Point Binary Format"
-msgstr ""
-
-#: ../src/callbacks.cc:7248
-msgid "Hexadecimal Number"
-msgstr ""
-
-#: ../src/callbacks.cc:7250
-msgid "Latitude"
-msgstr ""
-
-#: ../src/callbacks.cc:7252
-msgid "Longitude"
-msgstr ""
-
-#: ../src/callbacks.cc:7254
-msgid "Mixed Units"
-msgstr ""
-
-#: ../src/callbacks.cc:7256
-msgid "Octal Number"
-msgstr ""
-
-#: ../src/callbacks.cc:7258
-msgid "Optimal Units"
-msgstr ""
-
-#: ../src/callbacks.cc:7260
-msgid "Expanded Partial Fractions"
-msgstr ""
-
-#: ../src/callbacks.cc:7270
-msgid "Sexagesimal Number"
-msgstr ""
-
-#: ../src/callbacks.cc:7276
-msgid "UTC Time Zone"
-msgstr ""
-
-#: ../src/callbacks.cc:9058
-msgid "and"
-msgstr ""
-
-#: ../src/callbacks.cc:9061 ../src/callbacks.cc:10580 ../src/callbacks.cc:10615
-#: ../src/callbacks.cc:10616
-msgid "or"
-msgstr ""
-
-#: ../src/callbacks.cc:9933
-msgid "undefined"
-msgstr ""
-
-#: ../src/callbacks.cc:10266 ../src/callbacks.cc:29914
-msgid ""
-"result is too long\n"
-"see history"
-msgstr ""
-
-#: ../src/callbacks.cc:10289 ../src/callbacks.cc:29935
-msgid "calculation was aborted"
-msgstr ""
-
-#: ../src/callbacks.cc:11202 ../src/callbacks.cc:24676
-msgid "RPN Register Moved"
-msgstr ""
-
-#: ../src/callbacks.cc:11211 ../src/callbacks.cc:14505
-#: ../src/callbacks.cc:24682
-msgid "RPN Operation"
-msgstr ""
-
-#: ../src/callbacks.cc:11432
-msgid "Processing…"
-msgstr ""
-
-#: ../src/callbacks.cc:11452 ../src/callbacks.cc:29914
-msgid "result processing was aborted"
-msgstr ""
-
-#: ../src/callbacks.cc:11929
-msgid "Factorizing…"
-msgstr ""
-
-#: ../src/callbacks.cc:11933
-msgid "Expanding partial fractions…"
-msgstr ""
-
-#: ../src/callbacks.cc:11937
-msgid "Expanding…"
-msgstr ""
-
-#: ../src/callbacks.cc:11942 ../src/callbacks.cc:14441
-msgid "Calculating…"
-msgstr ""
-
-#: ../src/callbacks.cc:11946
-msgid "Converting…"
-msgstr ""
-
-#: ../src/callbacks.cc:12050
-msgid "Fetching exchange rates."
-msgstr ""
-
-#: ../src/callbacks.cc:14024
-msgid "Time zone parsing failed."
-msgstr ""
-
-#. RPN Enter (calculate and add to stack)
-#: ../src/callbacks.cc:14715 ../src/interface.cc:2412
-msgid "ENTER"
-msgstr ""
-
-#: ../src/callbacks.cc:14953 ../src/callbacks.cc:15008
-#: ../src/callbacks.cc:15054 ../src/callbacks.cc:19824
-#: ../src/callbacks.cc:19825 ../src/functionsdialog.cc:129
-#: ../src/functionsdialog.cc:130 ../src/functionsdialog.cc:174
-#: ../src/unitsdialog.cc:182 ../src/unitsdialog.cc:183
-#: ../src/unitsdialog.cc:243 ../src/variablesdialog.cc:130
-#: ../src/variablesdialog.cc:131 ../src/variablesdialog.cc:176
-msgid "Inactive"
-msgstr ""
-
-#: ../src/callbacks.cc:15433
-msgid "Keep open"
-msgstr ""
-
-#. RPN Enter (calculate and add to stack)
-#: ../src/callbacks.cc:15442
-msgid "Enter"
-msgstr ""
-
-#: ../src/callbacks.cc:15442
-msgid "C_alculate"
-msgstr ""
-
-#: ../src/callbacks.cc:15445
-msgid "Apply to Stack"
-msgstr ""
-
-#: ../src/callbacks.cc:15504
-msgid "Argument"
-msgstr ""
-
-#: ../src/callbacks.cc:15559
-msgid "True"
-msgstr ""
-
-#: ../src/callbacks.cc:15561
-msgid "False"
-msgstr ""
-
-#: ../src/callbacks.cc:15606
-msgid "Info"
-msgstr ""
-
-#. optional argument
-#: ../src/callbacks.cc:15651 ../src/callbacks.cc:15662
-#: ../src/functionsdialog.cc:334
-msgid "optional"
-msgstr ""
-
-#: ../src/callbacks.cc:15791 ../src/functionsdialog.cc:288
-msgid "Example:"
-msgstr ""
-
-#: ../src/callbacks.cc:15862 ../src/callbacks.cc:15871
-#: ../src/callbacks.cc:26771 ../src/variablesdialog.cc:221
-#: ../src/variablesdialog.cc:378 ../src/variablesdialog.cc:393
-#: ../src/variablesdialog.cc:409 ../src/variablesdialog.cc:430
-msgid "Variable does not exist anymore."
-msgstr ""
-
-#: ../src/callbacks.cc:15980 ../src/callbacks.cc:15992
-msgid "Unit does not exist"
-msgstr ""
-
-#: ../src/callbacks.cc:16101
-msgid "Vector Result"
-msgstr ""
-
-#: ../src/callbacks.cc:16103
-msgid "Matrix Result"
-msgstr ""
-
-#: ../src/callbacks.cc:16720 ../src/functionsdialog.cc:409
-#: ../src/unitsdialog.cc:396 ../src/variablesdialog.cc:314
-msgid "Acti_vate"
-msgstr ""
-
-#: ../src/callbacks.cc:16734
-msgid "Couldn't write definitions"
-msgstr ""
-
-#: ../src/callbacks.cc:16736 ../src/callbacks.cc:16738
-#: ../src/callbacks.cc:19376 ../src/callbacks.cc:19378
-#: ../src/callbacks.cc:19420 ../src/callbacks.cc:19422
-msgid "Ignore"
-msgstr ""
-
-#: ../src/callbacks.cc:16736 ../src/callbacks.cc:19376
-#: ../src/callbacks.cc:19420
-msgid "Cancel"
-msgstr ""
-
-#: ../src/callbacks.cc:16736 ../src/callbacks.cc:16738
-#: ../src/callbacks.cc:19376 ../src/callbacks.cc:19378
-#: ../src/callbacks.cc:19420 ../src/callbacks.cc:19422
-msgid "Retry"
-msgstr ""
-
-#: ../src/callbacks.cc:16832 ../src/callbacks.cc:17841
-msgid "Preset"
-msgstr ""
-
-#: ../src/callbacks.cc:17070
-msgid "Clear History"
-msgstr ""
-
-#: ../src/callbacks.cc:17074
-msgid "Abort"
-msgstr ""
-
-#: ../src/callbacks.cc:17077
-msgid "Undo"
-msgstr ""
-
-#: ../src/callbacks.cc:17080
-msgid "Redo"
-msgstr ""
-
-#: ../src/callbacks.cc:17085
-msgid "Completion Mode"
-msgstr ""
-
-#: ../src/callbacks.cc:17098
-msgid "Limited strict completion"
-msgstr ""
-
-#: ../src/callbacks.cc:17099
-msgid "Strict completion"
-msgstr ""
-
-#: ../src/callbacks.cc:17100
-msgid "Limited full completion"
-msgstr ""
-
-#: ../src/callbacks.cc:17101
-msgid "Full completion"
-msgstr ""
-
-#: ../src/callbacks.cc:17102
-msgid "No completion"
-msgstr ""
-
-#: ../src/callbacks.cc:17111
-msgid "Delayed completion"
-msgstr ""
-
-#: ../src/callbacks.cc:17113
-msgid "Customize completion…"
-msgstr ""
-
-#: ../src/callbacks.cc:17599
-msgid "Save Mode"
-msgstr ""
-
-#: ../src/callbacks.cc:17623 ../src/dataseteditdialog.cc:305
-#: ../src/dataseteditdialog.cc:441 ../src/functioneditdialog.cc:891
-#: ../src/importcsvdialog.cc:148 ../src/matrixeditdialog.cc:540
-#: ../src/uniteditdialog.cc:324 ../src/unknowneditdialog.cc:189
-#: ../src/variableeditdialog.cc:264
-msgid "Empty name field."
-msgstr ""
-
-#: ../src/callbacks.cc:17627
-msgid "Preset mode cannot be overwritten."
-msgstr ""
-
-#: ../src/callbacks.cc:17655
-msgid "Delete Mode"
-msgstr ""
-
-#: ../src/callbacks.cc:19374
-#, c-format
-msgid ""
-"Couldn't write history to\n"
-"%s"
-msgstr ""
-
-#: ../src/callbacks.cc:19418
-#, c-format
-msgid ""
-"Couldn't write preferences to\n"
-"%s"
-msgstr ""
-
-#: ../src/callbacks.cc:20788 ../src/callbacks.cc:20801
-msgid "never"
-msgstr ""
-
-#: ../src/callbacks.cc:20789 ../src/callbacks.cc:20803
-msgid "ask"
-msgstr ""
-
-#: ../src/callbacks.cc:20797
-#, c-format
-msgid "%i day"
-msgid_plural "%i days"
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../src/callbacks.cc:20965
-msgid "Please restart the program for the language change to take effect."
-msgstr ""
-
-#. Result was copied
-#: ../src/callbacks.cc:22219
-msgid "Copied"
-msgstr ""
-
-#: ../src/callbacks.cc:24359
-msgid "log10 function not found."
-msgstr ""
-
-#: ../src/callbacks.cc:25268
-msgid "Search"
-msgstr ""
-
-#: ../src/callbacks.cc:25268
-msgid "_Search"
-msgstr ""
-
-#: ../src/callbacks.cc:25303 ../src/callbacks.cc:26016
-#: ../src/callbacks.cc:30064
-msgid "Select date"
-msgstr ""
-
-#: ../src/callbacks.cc:25343 ../src/callbacks.cc:25600
-msgid "Remove Bookmark"
-msgstr ""
-
-#: ../src/callbacks.cc:25398
-msgid "Add Bookmark"
-msgstr ""
-
-#: ../src/callbacks.cc:25424
-msgid ""
-"A bookmark with the selected name already exists.\n"
-"Do you want to overwrite it?"
-msgstr ""
-
-#: ../src/callbacks.cc:25636
-msgid "No items found"
-msgstr ""
-
-#: ../src/callbacks.cc:26687
-msgid "All functions"
-msgstr ""
-
-#: ../src/callbacks.cc:26739
-msgid "All variables"
-msgstr ""
-
-#: ../src/callbacks.cc:27069 ../src/callbacks.cc:27071
-msgid "Select definitions file"
-msgstr ""
-
-#: ../src/callbacks.cc:27069 ../src/callbacks.cc:27071
-msgid "_Import"
-msgstr ""
-
-#: ../src/callbacks.cc:27075
-msgid "XML Files"
-msgstr ""
-
-#: ../src/callbacks.cc:27095
-#, c-format
-msgid "Could not copy %s to %s."
-msgstr ""
-
-#: ../src/callbacks.cc:27103
-#, c-format
-msgid "Could not read %s."
-msgstr ""
-
-#: ../src/callbacks.cc:27111
-#, c-format
-msgid "Could not copy file to %s."
-msgstr ""
-
-#: ../src/callbacks.cc:28200 ../src/callbacks.cc:28202
-msgid "Select file to save PNG image to"
-msgstr ""
-
-#: ../src/callbacks.cc:28207 ../src/plotdialog.cc:321
-msgid "Allowed File Types"
-msgstr ""
-
-#: ../src/callbacks.cc:28212 ../src/plotdialog.cc:332
-msgid "All Files"
-msgstr ""
-
-#: ../src/callbacks.cc:28797 ../src/matrixeditdialog.cc:91
-msgid "none"
-msgstr ""
-
-#: ../src/callbacks.cc:28896
-msgid "translator-credits"
-msgstr ""
-
-#: ../src/callbacks.cc:30035
-msgid ""
-"Type a mathematical expression above, e.g. \"5 + 2 / 3\",\n"
-"and press the enter key."
-msgstr ""
-
-#: ../src/callbacks.cc:30050 ../src/callbacks.cc:30058
-msgid "Elements (in horizontal order)"
-msgstr ""
-
-#: ../src/callbacks.cc:30107 ../src/callbacks.cc:30109
-msgid "Select file"
-msgstr ""
-
-#: ../src/callbacks.cc:30107 ../src/callbacks.cc:30109
-#: ../src/exportcsvdialog.cc:44 ../src/exportcsvdialog.cc:46
-#: ../src/importcsvdialog.cc:48 ../src/importcsvdialog.cc:50
-msgid "_Open"
-msgstr ""
-
-#: ../src/callbacks.cc:30209
-msgid "No unknowns in result."
-msgstr ""
-
-#: ../src/callbacks.cc:30215
-msgid "Set Unknowns"
-msgstr ""
-
-#: ../src/dataseteditdialog.cc:88
-msgid "text"
-msgstr ""
-
-#: ../src/dataseteditdialog.cc:93 ../src/dataseteditdialog.cc:101
-msgid "approximate"
-msgstr ""
-
-#. indicating that the property is a data set key
-#: ../src/dataseteditdialog.cc:110 ../src/datasetsdialog.cc:154
-#: ../src/functionsdialog.cc:388
-msgid "key"
-msgstr ""
-
-#: ../src/dataseteditdialog.cc:365
-msgid "Edit Data Set (global)"
-msgstr ""
-
-#: ../src/dataseteditdialog.cc:367
-msgid "New Data Set"
-msgstr ""
-
-#: ../src/dataseteditdialog.cc:453 ../src/functioneditdialog.cc:916
-msgid ""
-"A function with the same name already exists.\n"
-"Do you want to overwrite the function?"
-msgstr ""
-
-#: ../src/dataseteditdialog.cc:484
-msgid "Property"
-msgstr ""
-
-#: ../src/datasetsdialog.cc:170
-msgid "Data Retrieval Function"
-msgstr ""
-
-#: ../src/datasetsdialog.cc:453
-msgid "New Data Object"
-msgstr ""
-
-#: ../src/exportcsvdialog.cc:44 ../src/exportcsvdialog.cc:46
+#: ../src/exportcsvdialog.cc:45 ../src/exportcsvdialog.cc:47
 msgid "Select file to export to"
 msgstr ""
 
-#: ../src/exportcsvdialog.cc:132 ../src/importcsvdialog.cc:140
+#: ../src/exportcsvdialog.cc:45 ../src/exportcsvdialog.cc:47
+#: ../src/importcsvdialog.cc:49 ../src/importcsvdialog.cc:51
+#: ../src/insertfunctiondialog.cc:108 ../src/insertfunctiondialog.cc:110
+msgid "_Open"
+msgstr ""
+
+#: ../src/exportcsvdialog.cc:133 ../src/importcsvdialog.cc:141
 msgid "No file name entered."
 msgstr ""
 
-#: ../src/exportcsvdialog.cc:161 ../src/importcsvdialog.cc:185
+#: ../src/exportcsvdialog.cc:162 ../src/importcsvdialog.cc:186
 msgid "No delimiter selected."
 msgstr ""
 
-#: ../src/exportcsvdialog.cc:174
+#: ../src/exportcsvdialog.cc:175
 msgid "No variable name entered."
 msgstr ""
 
-#: ../src/exportcsvdialog.cc:186
+#: ../src/exportcsvdialog.cc:187
 msgid "No known variable with entered name found."
 msgstr ""
 
-#: ../src/exportcsvdialog.cc:193
+#: ../src/exportcsvdialog.cc:194
 #, c-format
 msgid ""
 "Could not export to file \n"
 "%s"
 msgstr ""
 
-#: ../src/functioneditdialog.cc:467 ../src/nameseditdialog.cc:175
+#: ../src/expressioncompletion.cc:1642
+msgid "a previous result"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1655
+msgid "matrix"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1657
+msgid "vector"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1678 ../src/variablesdialog.cc:302
+msgid "positive"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1679 ../src/variablesdialog.cc:303
+msgid "non-positive"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1680 ../src/variablesdialog.cc:304
+msgid "negative"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1681 ../src/variablesdialog.cc:305
+msgid "non-negative"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1682 ../src/variablesdialog.cc:306
+msgid "non-zero"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1687 ../src/variablesdialog.cc:313
+msgid "boolean"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1688 ../src/variablesdialog.cc:312
+msgid "integer"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1689 ../src/variablesdialog.cc:314
+msgid "rational"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1690 ../src/variablesdialog.cc:315
+msgid "real"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1691 ../src/variablesdialog.cc:316
+msgid "complex"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1693
+msgid "(not matrix)"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1696 ../src/variablesdialog.cc:321
+msgid "unknown"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1698
+msgid "default assumptions"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1839
+msgid "Prefix"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1869
+msgid "Base Units"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1872
+msgid "Binary-Coded Decimal"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1874
+msgid "Bijective Base-26"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1876
+msgid "Binary Number"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1878
+msgid "Calendars"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1880
+msgid "Complex cis Form"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1882
+msgid "Decimal Number"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1884
+msgid "Duodecimal Number"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1888
+msgid "Factors"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1890
+msgid "16-bit Floating Point Binary Format"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1892
+msgid "32-bit Floating Point Binary Format"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1894
+msgid "64-bit Floating Point Binary Format"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1896
+msgid "80-bit (x86) Floating Point Binary Format"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1898
+msgid "128-bit Floating Point Binary Format"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1906
+msgid "Hexadecimal Number"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1908
+msgid "Latitude"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1910
+msgid "Longitude"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1912
+msgid "Mixed Units"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1914
+msgid "Octal Number"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1916
+msgid "Optimal Units"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1918
+msgid "Expanded Partial Fractions"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1922 ../src/menubar.cc:1680
+msgid "Optimal Prefix"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1928
+msgid "Sexagesimal Number"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1932 ../src/expressionstatus.cc:892
+msgid "Unicode"
+msgstr ""
+
+#: ../src/expressioncompletion.cc:1934
+msgid "UTC Time Zone"
+msgstr ""
+
+#: ../src/expressionedit.cc:715
+msgid "Stop process"
+msgstr ""
+
+#: ../src/expressionedit.cc:733 ../src/expressionedit.cc:1736
+#: ../src/keypad.cc:3479
+msgid "Calculate expression and add to stack"
+msgstr ""
+
+#: ../src/expressionedit.cc:1294 ../src/historyview.cc:2718
+#: ../src/insertfunctiondialog.cc:65
+msgid "Select date"
+msgstr ""
+
+#: ../src/expressionedit.cc:1377
+msgid "Clear History"
+msgstr ""
+
+#: ../src/expressionedit.cc:1381
+msgid "Abort"
+msgstr ""
+
+#: ../src/expressionedit.cc:1384
+msgid "Undo"
+msgstr ""
+
+#: ../src/expressionedit.cc:1387
+msgid "Redo"
+msgstr ""
+
+#: ../src/expressionedit.cc:1392
+msgid "Completion Mode"
+msgstr ""
+
+#: ../src/expressionedit.cc:1405
+msgid "Limited strict completion"
+msgstr ""
+
+#: ../src/expressionedit.cc:1406
+msgid "Strict completion"
+msgstr ""
+
+#: ../src/expressionedit.cc:1407
+msgid "Limited full completion"
+msgstr ""
+
+#: ../src/expressionedit.cc:1408
+msgid "Full completion"
+msgstr ""
+
+#: ../src/expressionedit.cc:1409
+msgid "No completion"
+msgstr ""
+
+#: ../src/expressionedit.cc:1418
+msgid "Delayed completion"
+msgstr ""
+
+#: ../src/expressionedit.cc:1420
+msgid "Customize completion…"
+msgstr ""
+
+#: ../src/expressionstatus.cc:344
+msgid "EXACT"
+msgstr ""
+
+#: ../src/expressionstatus.cc:347
+msgid "APPROX"
+msgstr ""
+
+#: ../src/expressionstatus.cc:351
+msgid "RPN"
+msgstr ""
+
+#. Chain mode
+#: ../src/expressionstatus.cc:356
+msgid "CHN"
+msgstr ""
+
+#: ../src/expressionstatus.cc:384
+msgid "ROMAN"
+msgstr ""
+
+#: ../src/expressionstatus.cc:441
+msgid "DEG"
+msgstr ""
+
+#: ../src/expressionstatus.cc:446
+msgid "RAD"
+msgstr ""
+
+#: ../src/expressionstatus.cc:451
+msgid "GRA"
+msgstr ""
+
+#: ../src/expressionstatus.cc:458
+msgid "PREC"
+msgstr ""
+
+#: ../src/expressionstatus.cc:463
+msgid "FUNC"
+msgstr ""
+
+#: ../src/expressionstatus.cc:469
+msgid "UNIT"
+msgstr ""
+
+#: ../src/expressionstatus.cc:475
+msgid "VAR"
+msgstr ""
+
+#: ../src/expressionstatus.cc:481
+msgid "INF"
+msgstr ""
+
+#: ../src/expressionstatus.cc:487
+msgid "CPLX"
+msgstr ""
+
+#: ../src/expressionstatus.cc:515
+#, c-format
+msgid "Too many arguments for %s()."
+msgstr ""
+
+#: ../src/expressionstatus.cc:685 ../src/expressionstatus.cc:687
+#: ../src/mainwindow.cc:1454 ../src/mainwindow.cc:4861
+#: ../src/searchprovider.cc:133
+msgid "factorize"
+msgstr ""
+
+#: ../src/expressionstatus.cc:688 ../src/expressionstatus.cc:690
+#: ../src/mainwindow.cc:1457 ../src/mainwindow.cc:4864
+#: ../src/searchprovider.cc:133
+msgid "expand"
+msgstr ""
+
+#: ../src/expressionstatus.cc:855 ../src/mainwindow.cc:1242
+#: ../src/mainwindow.cc:4512
+msgid "hexadecimal"
+msgstr ""
+
+#: ../src/expressionstatus.cc:856 ../src/expressionstatus.cc:970
+msgid "hexadecimal number"
+msgstr ""
+
+#: ../src/expressionstatus.cc:857 ../src/mainwindow.cc:1245
+#: ../src/mainwindow.cc:4515
+msgid "octal"
+msgstr ""
+
+#: ../src/expressionstatus.cc:858
+msgid "octal number"
+msgstr ""
+
+#: ../src/expressionstatus.cc:859 ../src/mainwindow.cc:1248
+#: ../src/mainwindow.cc:4518
+msgid "decimal"
+msgstr ""
+
+#: ../src/expressionstatus.cc:860
+msgid "decimal number"
+msgstr ""
+
+#: ../src/expressionstatus.cc:861 ../src/mainwindow.cc:1251
+#: ../src/mainwindow.cc:4521
+msgid "duodecimal"
+msgstr ""
+
+#: ../src/expressionstatus.cc:862 ../src/expressionstatus.cc:864
+msgid "duodecimal number"
+msgstr ""
+
+#: ../src/expressionstatus.cc:865 ../src/mainwindow.cc:1259
+#: ../src/mainwindow.cc:4529
+msgid "binary"
+msgstr ""
+
+#: ../src/expressionstatus.cc:866 ../src/expressionstatus.cc:964
+msgid "binary number"
+msgstr ""
+
+#: ../src/expressionstatus.cc:867 ../src/mainwindow.cc:1262
+#: ../src/mainwindow.cc:4532
+msgid "roman"
+msgstr ""
+
+#: ../src/expressionstatus.cc:868
+msgid "roman numerals"
+msgstr ""
+
+#: ../src/expressionstatus.cc:869 ../src/mainwindow.cc:1265
+#: ../src/mainwindow.cc:4535
+msgid "bijective"
+msgstr ""
+
+#: ../src/expressionstatus.cc:870
+msgid "bijective base-26"
+msgstr ""
+
+#: ../src/expressionstatus.cc:872
+msgid "binary-coded decimal"
+msgstr ""
+
+#: ../src/expressionstatus.cc:873 ../src/mainwindow.cc:1271
+#: ../src/mainwindow.cc:1274 ../src/mainwindow.cc:1277
+#: ../src/mainwindow.cc:4541 ../src/mainwindow.cc:4544
+#: ../src/mainwindow.cc:4547
+msgid "sexagesimal"
+msgstr ""
+
+#: ../src/expressionstatus.cc:874
+msgid "sexagesimal number"
+msgstr ""
+
+#: ../src/expressionstatus.cc:875 ../src/expressionstatus.cc:876
+#: ../src/mainwindow.cc:1280 ../src/mainwindow.cc:1283
+#: ../src/mainwindow.cc:4550 ../src/mainwindow.cc:4553
+msgid "latitude"
+msgstr ""
+
+#: ../src/expressionstatus.cc:877 ../src/expressionstatus.cc:878
+#: ../src/mainwindow.cc:1286 ../src/mainwindow.cc:1289
+#: ../src/mainwindow.cc:4556 ../src/mainwindow.cc:4559
+msgid "longitude"
+msgstr ""
+
+#: ../src/expressionstatus.cc:880
+msgid "32-bit floating point"
+msgstr ""
+
+#: ../src/expressionstatus.cc:882
+msgid "64-bit floating point"
+msgstr ""
+
+#: ../src/expressionstatus.cc:884
+msgid "16-bit floating point"
+msgstr ""
+
+#: ../src/expressionstatus.cc:886
+msgid "80-bit (x86) floating point"
+msgstr ""
+
+#: ../src/expressionstatus.cc:888
+msgid "128-bit floating point"
+msgstr ""
+
+#: ../src/expressionstatus.cc:889 ../src/mainwindow.cc:1307
+#: ../src/mainwindow.cc:4577
+msgid "time"
+msgstr ""
+
+#: ../src/expressionstatus.cc:890
+msgid "time format"
+msgstr ""
+
+#: ../src/expressionstatus.cc:893 ../src/mainwindow.cc:1358
+#: ../src/mainwindow.cc:4651
+msgid "bases"
+msgstr ""
+
+#: ../src/expressionstatus.cc:894
+msgid "number bases"
+msgstr ""
+
+#: ../src/expressionstatus.cc:895 ../src/expressionstatus.cc:896
+#: ../src/mainwindow.cc:1360 ../src/mainwindow.cc:4661
+msgid "calendars"
+msgstr ""
+
+#: ../src/expressionstatus.cc:897 ../src/mainwindow.cc:1382
+#: ../src/mainwindow.cc:4736
+msgid "optimal"
+msgstr ""
+
+#: ../src/expressionstatus.cc:898
+msgid "optimal unit"
+msgstr ""
+
+#: ../src/expressionstatus.cc:899 ../src/mainwindow.cc:1387
+#: ../src/mainwindow.cc:4748
+msgid "prefix"
+msgstr ""
+
+#: ../src/expressionstatus.cc:900
+msgid "optimal prefix"
+msgstr ""
+
+#: ../src/expressionstatus.cc:901 ../src/expressionstatus.cc:974
+#: ../src/mainwindow.cc:1391 ../src/mainwindow.cc:1407
+#: ../src/mainwindow.cc:4752 ../src/mainwindow.cc:4799
+msgid "base"
+msgstr ""
+
+#: ../src/expressionstatus.cc:902
+msgid "base units"
+msgstr ""
+
+#: ../src/expressionstatus.cc:903 ../src/mainwindow.cc:1396
+#: ../src/mainwindow.cc:4764
+msgid "mixed"
+msgstr ""
+
+#: ../src/expressionstatus.cc:904
+msgid "mixed units"
+msgstr ""
+
+#: ../src/expressionstatus.cc:905 ../src/expressionstatus.cc:906
+#: ../src/mainwindow.cc:1401 ../src/mainwindow.cc:4779
+msgid "factors"
+msgstr ""
+
+#: ../src/expressionstatus.cc:907 ../src/mainwindow.cc:1404
+#: ../src/mainwindow.cc:4789
+msgid "partial fraction"
+msgstr ""
+
+#: ../src/expressionstatus.cc:908
+msgid "expanded partial fractions"
+msgstr ""
+
+#: ../src/expressionstatus.cc:909 ../src/mainwindow.cc:1362
+#: ../src/mainwindow.cc:4671
+msgid "rectangular"
+msgstr ""
+
+#: ../src/expressionstatus.cc:909 ../src/mainwindow.cc:1362
+#: ../src/mainwindow.cc:4671
+msgid "cartesian"
+msgstr ""
+
+#: ../src/expressionstatus.cc:910
+msgid "complex rectangular form"
+msgstr ""
+
+#: ../src/expressionstatus.cc:911 ../src/mainwindow.cc:1366
+#: ../src/mainwindow.cc:4684
+msgid "exponential"
+msgstr ""
+
+#: ../src/expressionstatus.cc:912
+msgid "complex exponential form"
+msgstr ""
+
+#: ../src/expressionstatus.cc:913 ../src/mainwindow.cc:1370
+#: ../src/mainwindow.cc:4697
+msgid "polar"
+msgstr ""
+
+#: ../src/expressionstatus.cc:914
+msgid "complex polar form"
+msgstr ""
+
+#: ../src/expressionstatus.cc:916
+msgid "complex cis form"
+msgstr ""
+
+#: ../src/expressionstatus.cc:917 ../src/mainwindow.cc:1378
+#: ../src/mainwindow.cc:4723
+msgid "angle"
+msgstr ""
+
+#: ../src/expressionstatus.cc:918
+msgid "complex angle notation"
+msgstr ""
+
+#: ../src/expressionstatus.cc:919 ../src/mainwindow.cc:1378
+#: ../src/mainwindow.cc:4723
+msgid "phasor"
+msgstr ""
+
+#: ../src/expressionstatus.cc:920
+msgid "complex phasor notation"
+msgstr ""
+
+#: ../src/expressionstatus.cc:922
+msgid "UTC time zone"
+msgstr ""
+
+#: ../src/expressionstatus.cc:975
+#, c-format
+msgid "number base %s"
+msgstr ""
+
+#: ../src/expressionstatus.cc:979 ../src/mainwindow.cc:1411
+#: ../src/mainwindow.cc:4803
+msgid "decimals"
+msgstr ""
+
+#: ../src/expressionstatus.cc:980
+msgid "decimal fraction"
+msgstr ""
+
+#: ../src/expressionstatus.cc:985 ../src/expressionstatus.cc:991
+#: ../src/util.cc:623
+msgid "fraction"
+msgstr ""
+
+#: ../src/functioneditdialog.cc:469 ../src/nameseditdialog.cc:174
 msgid "Reference"
 msgstr ""
 
-#: ../src/functioneditdialog.cc:820
+#: ../src/functioneditdialog.cc:822
 msgid "Edit Function (global)"
 msgstr ""
 
-#: ../src/functioneditdialog.cc:822
+#: ../src/functioneditdialog.cc:824
 msgid "New Function"
 msgstr ""
 
-#: ../src/functioneditdialog.cc:906
+#: ../src/functioneditdialog.cc:908
 msgid "Empty expression field."
 msgstr ""
 
-#: ../src/functionsdialog.cc:276
+#: ../src/functionsdialog.cc:135 ../src/functionsdialog.cc:136
+#: ../src/functionsdialog.cc:200 ../src/mainwindow.cc:7298
+#: ../src/menubar.cc:1540 ../src/util.cc:1217 ../src/util.cc:1218
+msgid "User functions"
+msgstr ""
+
+#: ../src/functionsdialog.cc:153 ../src/functionsdialog.cc:154
+#: ../src/functionsdialog.cc:198 ../src/mainwindow.cc:7296
+#: ../src/mainwindow.cc:7326 ../src/mainwindow.cc:7349
+#: ../src/unitsdialog.cc:174 ../src/unitsdialog.cc:175
+#: ../src/unitsdialog.cc:235 ../src/util.cc:1219 ../src/util.cc:1220
+#: ../src/variablesdialog.cc:156 ../src/variablesdialog.cc:157
+#: ../src/variablesdialog.cc:202
+msgid "Inactive"
+msgstr ""
+
+#: ../src/functionsdialog.cc:300
 #, c-format
 msgid ""
 "Retrieves data from the %s data set for a given object and property. If "
@@ -5197,148 +4377,269 @@ msgid ""
 "properties of the object."
 msgstr ""
 
+#: ../src/functionsdialog.cc:312 ../src/insertfunctiondialog.cc:795
+msgid "Example:"
+msgstr ""
+
+#. optional argument
+#: ../src/functionsdialog.cc:358 ../src/insertfunctiondialog.cc:656
+#: ../src/insertfunctiondialog.cc:667
+msgid "optional"
+msgstr ""
+
 #. argument default, in description
-#: ../src/functionsdialog.cc:338
+#: ../src/functionsdialog.cc:362
 msgid "default: "
 msgstr ""
 
-#: ../src/functionsdialog.cc:352
+#: ../src/functionsdialog.cc:376
 msgid "Requirement"
 msgstr ""
 
-#: ../src/importcsvdialog.cc:48 ../src/importcsvdialog.cc:50
+#: ../src/functionsdialog.cc:433 ../src/unitsdialog.cc:388 ../src/util.cc:1271
+#: ../src/variablesdialog.cc:340
+msgid "Acti_vate"
+msgstr ""
+
+#: ../src/historyview.cc:111
+msgid "History Answer Value"
+msgstr ""
+
+#: ../src/historyview.cc:112 ../src/mainwindow.cc:8357
+msgid "answer"
+msgstr ""
+
+#: ../src/historyview.cc:115 ../src/historyview.cc:141
+msgid "History Index(es)"
+msgstr ""
+
+#: ../src/historyview.cc:126 ../src/historyview.cc:152
+#, c-format
+msgid "History index %s does not exist."
+msgstr ""
+
+#: ../src/historyview.cc:137
+msgid "History Parsed Expression"
+msgstr ""
+
+#: ../src/historyview.cc:751 ../src/plotdialog.cc:464 ../src/plotdialog.cc:475
+#: ../src/plotdialog.cc:486
+msgid "It took too long to generate the plot data."
+msgstr ""
+
+#: ../src/historyview.cc:751
+msgid ""
+"It took too long to generate the plot data. Please decrease the sampling "
+"rate or increase the time limit in preferences."
+msgstr ""
+
+#: ../src/historyview.cc:2086 ../src/mainwindow.cc:2410
+msgid "RPN Register Moved"
+msgstr ""
+
+#: ../src/historyview.cc:2092 ../src/mainwindow.cc:2411
+#: ../src/mainwindow.cc:5094
+msgid "RPN Operation"
+msgstr ""
+
+#: ../src/historyview.cc:2683
+msgid "Search"
+msgstr ""
+
+#: ../src/historyview.cc:2683
+msgid "_Search"
+msgstr ""
+
+#: ../src/historyview.cc:2758 ../src/historyview.cc:3015
+msgid "Remove Bookmark"
+msgstr ""
+
+#: ../src/historyview.cc:2813
+msgid "Add Bookmark"
+msgstr ""
+
+#: ../src/historyview.cc:2839
+msgid ""
+"A bookmark with the selected name already exists.\n"
+"Do you want to overwrite it?"
+msgstr ""
+
+#: ../src/historyview.cc:3051
+msgid "No items found"
+msgstr ""
+
+#: ../src/historyview.cc:3469 ../src/stackview.cc:780
+msgid "Index"
+msgstr ""
+
+#: ../src/importcsvdialog.cc:49 ../src/importcsvdialog.cc:51
 msgid "Select file to import"
 msgstr ""
 
-#: ../src/importcsvdialog.cc:154 ../src/matrixeditdialog.cc:547
-#: ../src/uniteditdialog.cc:331 ../src/unknowneditdialog.cc:196
-#: ../src/variableeditdialog.cc:277
+#: ../src/importcsvdialog.cc:155 ../src/matrixeditdialog.cc:549
+#: ../src/uniteditdialog.cc:333 ../src/unknowneditdialog.cc:198
+#: ../src/variableeditdialog.cc:279
 msgid ""
 "A unit or variable with the same name already exists.\n"
 "Do you want to overwrite it?"
 msgstr ""
 
-#: ../src/importcsvdialog.cc:190
+#: ../src/importcsvdialog.cc:191
 #, c-format
 msgid ""
 "Could not import from file \n"
 "%s"
 msgstr ""
 
-#: ../src/interface.cc:1063
+#: ../src/insertfunctiondialog.cc:108 ../src/insertfunctiondialog.cc:110
+msgid "Select file"
+msgstr ""
+
+#: ../src/insertfunctiondialog.cc:444
+msgid "Keep open"
+msgstr ""
+
+#. RPN Enter (calculate and add to stack)
+#: ../src/insertfunctiondialog.cc:453
+msgid "Enter"
+msgstr ""
+
+#: ../src/insertfunctiondialog.cc:453
+msgid "C_alculate"
+msgstr ""
+
+#: ../src/insertfunctiondialog.cc:456
+msgid "Apply to Stack"
+msgstr ""
+
+#: ../src/insertfunctiondialog.cc:515
+msgid "Argument"
+msgstr ""
+
+#: ../src/insertfunctiondialog.cc:570
+msgid "True"
+msgstr ""
+
+#: ../src/insertfunctiondialog.cc:572
+msgid "False"
+msgstr ""
+
+#: ../src/insertfunctiondialog.cc:611
+msgid "Info"
+msgstr ""
+
+#: ../src/keypad.cc:383
 #, c-format
 msgid "Right-click/long press: %s"
 msgstr ""
 
-#: ../src/interface.cc:1064
+#: ../src/keypad.cc:384
 #, c-format
 msgid "Right-click: %s"
 msgstr ""
 
-#: ../src/interface.cc:1070
+#: ../src/keypad.cc:390
 #, c-format
 msgid "Middle-click: %s"
 msgstr ""
 
-#: ../src/interface.cc:1175
+#: ../src/keypad.cc:504
 msgid "Raise (Ctrl+*)"
 msgstr ""
 
-#: ../src/interface.cc:1694
+#: ../src/keypad.cc:825 ../src/util.cc:861
+msgid "Set unknowns"
+msgstr ""
+
+#. Show further items in a submenu
+#: ../src/keypad.cc:873 ../src/keypad.cc:961 ../src/keypad.cc:964
+#: ../src/keypad.cc:2453 ../src/menubar.cc:1339 ../src/menubar.cc:1434
+#: ../src/resultview.cc:891
+msgid "more"
+msgstr ""
+
+#: ../src/keypad.cc:1023
 msgid "Logical AND"
 msgstr ""
 
-#: ../src/interface.cc:1695
+#: ../src/keypad.cc:1024
 msgid "Logical OR"
 msgstr ""
 
-#: ../src/interface.cc:1696
+#: ../src/keypad.cc:1025
 msgid "Logical NOT"
 msgstr ""
 
-#: ../src/interface.cc:1698 ../src/interface.cc:1699 ../src/interface.cc:1700
-#: ../src/interface.cc:1701
+#: ../src/keypad.cc:1027 ../src/keypad.cc:1028 ../src/keypad.cc:1029
+#: ../src/keypad.cc:1030
 msgid "Toggle Result Base"
 msgstr ""
 
-#: ../src/interface.cc:1703
+#: ../src/keypad.cc:1032
 msgid "Open menu with stored variables"
 msgstr ""
 
-#: ../src/interface.cc:2344 ../src/interface.cc:2394
-msgid "Index"
+#: ../src/keypad.cc:2006
+msgid "log10 function not found."
 msgstr ""
 
-#: ../src/interface.cc:2493 ../src/unitsdialog.cc:1008
-msgid "Flag"
+#: ../src/keypad.cc:2571
+msgid "All functions"
 msgstr ""
 
-#: ../src/main.cc:88
+#: ../src/keypad.cc:2624
+msgid "All variables"
+msgstr ""
+
+#: ../src/keypad.cc:2656 ../src/mainwindow.cc:7372
+#: ../src/variablesdialog.cc:247 ../src/variablesdialog.cc:404
+#: ../src/variablesdialog.cc:419 ../src/variablesdialog.cc:435
+#: ../src/variablesdialog.cc:456
+msgid "Variable does not exist anymore."
+msgstr ""
+
+#: ../src/keypad.cc:3478
+msgid "ENTER"
+msgstr ""
+
+#: ../src/main.cc:61
 msgid "Execute expressions and commands from a file"
 msgstr ""
 
-#: ../src/main.cc:88
+#: ../src/main.cc:61
 msgid "FILE"
 msgstr ""
 
-#: ../src/main.cc:89
+#: ../src/main.cc:62
 msgid "Start a new instance of the application"
 msgstr ""
 
-#: ../src/main.cc:90
+#: ../src/main.cc:63
 msgid "Display the application version"
 msgstr ""
 
-#: ../src/main.cc:91
+#: ../src/main.cc:64
 msgid "Specify the window title"
 msgstr ""
 
-#: ../src/main.cc:91
+#: ../src/main.cc:64
 msgid "TITLE"
 msgstr ""
 
-#: ../src/main.cc:92
+#: ../src/main.cc:65
 msgid "Expression to calculate"
 msgstr ""
 
-#: ../src/main.cc:92
+#: ../src/main.cc:65
 msgid "[EXPRESSION]"
 msgstr ""
 
-#: ../src/main.cc:224
-msgid "ans"
-msgstr ""
-
-#: ../src/main.cc:225
-msgid "Last Answer"
-msgstr ""
-
-#: ../src/main.cc:228
-msgid "Answer 2"
-msgstr ""
-
-#: ../src/main.cc:229
-msgid "Answer 3"
-msgstr ""
-
-#: ../src/main.cc:230
-msgid "Answer 4"
-msgstr ""
-
-#: ../src/main.cc:231
-msgid "Answer 5"
-msgstr ""
-
-#: ../src/main.cc:241
-msgid "Memory"
-msgstr ""
-
-#: ../src/main.cc:253 ../src/searchprovider.cc:671
+#: ../src/main.cc:153 ../src/searchprovider.cc:641
 #, c-format
 msgid "Failed to load global definitions!\n"
 msgstr ""
 
-#: ../src/main.cc:527
+#: ../src/main.cc:326
 #, c-format
 msgid ""
 "By default, only one instance (one main window) of %s is allowed.\n"
@@ -5351,216 +4652,936 @@ msgid ""
 "simultaneous instances?"
 msgstr ""
 
-#: ../src/matrixeditdialog.cc:384
-msgid "Edit Vector"
+#: ../src/mainwindow.cc:243
+msgid "Set Window Title"
+msgstr ""
+
+#: ../src/mainwindow.cc:508
+msgid "Exchange rate source:"
+msgid_plural "Exchange rate sources:"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/mainwindow.cc:510
+#, c-format
+msgid "updated %s"
+msgid_plural "updated %s"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/mainwindow.cc:530
+msgid ""
+"When errors, warnings and other information are generated during "
+"calculation, the icon in the upper right corner of the expression entry "
+"changes to reflect this. If you hold the pointer over or click the icon, the "
+"message will be shown."
+msgstr ""
+
+#: ../src/mainwindow.cc:590
+msgid "Path of executable not found."
+msgstr ""
+
+#: ../src/mainwindow.cc:600
+msgid "curl not found."
+msgstr ""
+
+#: ../src/mainwindow.cc:665
+#, c-format
+msgid ""
+"Failed to run update script.\n"
+"%s"
+msgstr ""
+
+#: ../src/mainwindow.cc:689
+msgid "Failed to check for updates."
+msgstr ""
+
+#: ../src/mainwindow.cc:689
+msgid "No updates found."
+msgstr ""
+
+#: ../src/mainwindow.cc:703
+msgid "_Download"
+msgstr ""
+
+#: ../src/mainwindow.cc:715
+#, c-format
+msgid ""
+"A new version of %s is available at %s.\n"
+"\n"
+"Do you wish to update to version %s?"
+msgstr ""
+
+#: ../src/mainwindow.cc:717
+#, c-format
+msgid ""
+"A new version of %s is available.\n"
+"\n"
+"You can get version %s at %s."
+msgstr ""
+
+#: ../src/mainwindow.cc:791
+msgid "Temperature Calculation Mode"
+msgstr ""
+
+#: ../src/mainwindow.cc:801
+msgid ""
+"The expression is ambiguous.\n"
+"Please select temperature calculation mode\n"
+"(the mode can later be changed in preferences)."
+msgstr ""
+
+#: ../src/mainwindow.cc:848
+msgid "Sinc Function"
+msgstr ""
+
+#: ../src/mainwindow.cc:858
+msgid "Please select desired variant of the sinc function."
+msgstr ""
+
+#: ../src/mainwindow.cc:861
+msgid "Unnormalized"
+msgstr ""
+
+#: ../src/mainwindow.cc:868
+msgid "Normalized"
+msgstr ""
+
+#: ../src/mainwindow.cc:901
+msgid "Interpretation of dots"
+msgstr ""
+
+#: ../src/mainwindow.cc:911
+msgid ""
+"Please select interpretation of dots (\".\")\n"
+"(this can later be changed in preferences)."
+msgstr ""
+
+#: ../src/mainwindow.cc:914
+msgid "Both dot and comma as decimal separators"
+msgstr ""
+
+#: ../src/mainwindow.cc:921
+msgid "Dot as thousands separator"
+msgstr ""
+
+#: ../src/mainwindow.cc:928
+msgid "Only dot as decimal separator"
+msgstr ""
+
+#: ../src/mainwindow.cc:968
+msgid ""
+"The expression is ambiguous.\n"
+"Please select interpretation of expressions with implicit multiplication\n"
+"(this can later be changed in preferences)."
+msgstr ""
+
+#: ../src/mainwindow.cc:971
+msgid "Implicit multiplication first"
+msgstr ""
+
+#: ../src/mainwindow.cc:979
+msgid "Conventional"
+msgstr ""
+
+#: ../src/mainwindow.cc:1014
+msgid "Percentage Interpretation"
+msgstr ""
+
+#: ../src/mainwindow.cc:1024
+msgid "Please select interpretation of percentage addition."
+msgstr ""
+
+#: ../src/mainwindow.cc:1027
+msgid "Add percentage of original value"
+msgstr ""
+
+#: ../src/mainwindow.cc:1035
+msgid "Add percentage multiplied by 1/100"
+msgstr ""
+
+#: ../src/mainwindow.cc:1952
+msgid "My Variables"
+msgstr ""
+
+#: ../src/mainwindow.cc:2570
+msgid "Processing…"
+msgstr ""
+
+#: ../src/mainwindow.cc:2828
+msgid "Factorizing…"
+msgstr ""
+
+#: ../src/mainwindow.cc:2832
+msgid "Expanding partial fractions…"
+msgstr ""
+
+#: ../src/mainwindow.cc:2836
+msgid "Expanding…"
+msgstr ""
+
+#: ../src/mainwindow.cc:2841 ../src/mainwindow.cc:5034
+msgid "Calculating…"
+msgstr ""
+
+#: ../src/mainwindow.cc:2845
+msgid "Converting…"
+msgstr ""
+
+#: ../src/mainwindow.cc:4628
+msgid "Time zone parsing failed."
+msgstr ""
+
+#: ../src/mainwindow.cc:5218 ../src/mainwindow.cc:6853 ../src/openhelp.cc:350
+#, c-format
+msgid ""
+"Failed to open %s.\n"
+"%s"
+msgstr ""
+
+#: ../src/mainwindow.cc:5370
+msgid "Couldn't write definitions"
+msgstr ""
+
+#: ../src/mainwindow.cc:5372 ../src/mainwindow.cc:5374
+#: ../src/mainwindow.cc:6154 ../src/mainwindow.cc:6156
+#: ../src/mainwindow.cc:6199 ../src/mainwindow.cc:6201
+msgid "Ignore"
+msgstr ""
+
+#: ../src/mainwindow.cc:5372 ../src/mainwindow.cc:6154
+#: ../src/mainwindow.cc:6199
+msgid "Cancel"
+msgstr ""
+
+#: ../src/mainwindow.cc:5372 ../src/mainwindow.cc:5374
+#: ../src/mainwindow.cc:6154 ../src/mainwindow.cc:6156
+#: ../src/mainwindow.cc:6199 ../src/mainwindow.cc:6201
+msgid "Retry"
+msgstr ""
+
+#: ../src/mainwindow.cc:6152
+#, c-format
+msgid ""
+"Couldn't write history to\n"
+"%s"
+msgstr ""
+
+#: ../src/mainwindow.cc:6197
+#, c-format
+msgid ""
+"Couldn't write preferences to\n"
+"%s"
+msgstr ""
+
+#: ../src/mainwindow.cc:6534 ../src/mainwindow.cc:6536
+msgid "Select definitions file"
+msgstr ""
+
+#: ../src/mainwindow.cc:6534 ../src/mainwindow.cc:6536
+msgid "_Import"
+msgstr ""
+
+#: ../src/mainwindow.cc:6540
+msgid "XML Files"
+msgstr ""
+
+#: ../src/mainwindow.cc:6560
+#, c-format
+msgid "Could not copy %s to %s."
+msgstr ""
+
+#: ../src/mainwindow.cc:6568
+#, c-format
+msgid "Could not read %s."
+msgstr ""
+
+#: ../src/mainwindow.cc:6576
+#, c-format
+msgid "Could not copy file to %s."
+msgstr ""
+
+#: ../src/mainwindow.cc:6827
+msgid "translator-credits"
+msgstr ""
+
+#: ../src/mainwindow.cc:7328 ../src/menubar.cc:1621 ../src/util.cc:1213
+#: ../src/util.cc:1214 ../src/variablesdialog.cc:138
+#: ../src/variablesdialog.cc:139 ../src/variablesdialog.cc:204
+msgid "User variables"
+msgstr ""
+
+#: ../src/mainwindow.cc:7351 ../src/menubar.cc:1370 ../src/menubar.cc:1465
+#: ../src/unitsdialog.cc:158 ../src/unitsdialog.cc:159
+#: ../src/unitsdialog.cc:237 ../src/util.cc:1215 ../src/util.cc:1216
+msgid "User units"
+msgstr ""
+
+#: ../src/mainwindow.cc:7443
+msgid "No unknowns in result."
+msgstr ""
+
+#: ../src/mainwindow.cc:7449
+msgid "Set Unknowns"
+msgstr ""
+
+#: ../src/mainwindow.cc:8355
+msgid "ans"
+msgstr ""
+
+#: ../src/mainwindow.cc:8356
+msgid "Last Answer"
+msgstr ""
+
+#: ../src/mainwindow.cc:8359
+msgid "Answer 2"
+msgstr ""
+
+#: ../src/mainwindow.cc:8360
+msgid "Answer 3"
+msgstr ""
+
+#: ../src/mainwindow.cc:8361
+msgid "Answer 4"
+msgstr ""
+
+#: ../src/mainwindow.cc:8362
+msgid "Answer 5"
+msgstr ""
+
+#: ../src/mainwindow.cc:8372
+msgid "Memory"
+msgstr ""
+
+#: ../src/matrixdialog.cc:73 ../src/matrixeditdialog.cc:93
+msgid "none"
+msgstr ""
+
+#: ../src/matrixdialog.cc:274 ../src/matrixdialog.cc:282
+msgid "Elements (in horizontal order)"
+msgstr ""
+
+#: ../src/matrixdialog.cc:376
+msgid "Vector Result"
+msgstr ""
+
+#: ../src/matrixdialog.cc:378
+msgid "Matrix Result"
 msgstr ""
 
 #: ../src/matrixeditdialog.cc:386
-msgid "Edit Vector (global)"
+msgid "Edit Vector"
 msgstr ""
 
 #: ../src/matrixeditdialog.cc:388
+msgid "Edit Vector (global)"
+msgstr ""
+
+#: ../src/matrixeditdialog.cc:390
 msgid "New Vector"
 msgstr ""
 
-#: ../src/matrixeditdialog.cc:395
+#: ../src/matrixeditdialog.cc:397
 msgid "Edit Matrix (global)"
 msgstr ""
 
-#: ../src/matrixeditdialog.cc:397
+#: ../src/matrixeditdialog.cc:399
 msgid "New Matrix"
 msgstr ""
 
-#: ../src/nameseditdialog.cc:102
+#: ../src/menubar.cc:121
+msgid "Unit does not exist"
+msgstr ""
+
+#: ../src/menubar.cc:1139
+msgid "Save Mode"
+msgstr ""
+
+#: ../src/menubar.cc:1169
+msgid "Preset mode cannot be overwritten."
+msgstr ""
+
+#: ../src/menubar.cc:1197
+msgid "Delete Mode"
+msgstr ""
+
+#: ../src/menubar.cc:1378
+msgid "Prefixes"
+msgstr ""
+
+#: ../src/menubar.cc:1679
+msgid "No Prefix"
+msgstr ""
+
+#: ../src/modes.cc:46 ../src/modes.cc:56
+msgid "Preset"
+msgstr ""
+
+#: ../src/nameseditdialog.cc:101
 msgid "Illegal name"
 msgstr ""
 
-#: ../src/nameseditdialog.cc:105 ../src/nameseditdialog.cc:253
-#: ../src/nameseditdialog.cc:272 ../src/nameseditdialog.cc:281
+#: ../src/nameseditdialog.cc:104 ../src/nameseditdialog.cc:252
+#: ../src/nameseditdialog.cc:271 ../src/nameseditdialog.cc:280
 msgid ""
 "A conflicting object with the same name exists. If you proceed and save "
 "changes, the conflicting object will be overwritten or deactivated."
 msgstr ""
 
-#: ../src/nameseditdialog.cc:165
+#: ../src/nameseditdialog.cc:164
 msgid "Abbreviation"
 msgstr ""
 
-#: ../src/nameseditdialog.cc:171
+#: ../src/nameseditdialog.cc:170
 msgid "Plural"
 msgstr ""
 
-#: ../src/nameseditdialog.cc:181
+#: ../src/nameseditdialog.cc:180
 msgid "Avoid input"
 msgstr ""
 
-#: ../src/nameseditdialog.cc:187
+#: ../src/nameseditdialog.cc:186
 msgid "Suffix"
 msgstr ""
 
-#: ../src/nameseditdialog.cc:193
+#: ../src/nameseditdialog.cc:192
 msgid "Case sensitive"
 msgstr ""
 
-#: ../src/nameseditdialog.cc:199
+#: ../src/nameseditdialog.cc:198
 msgid "Completion only"
 msgstr ""
 
-#: ../src/numberbasesdialog.cc:120 ../src/numberbasesdialog.cc:121
-#: ../src/numberbasesdialog.cc:122 ../src/numberbasesdialog.cc:123
-#: ../src/numberbasesdialog.cc:136
+#: ../src/numberbasesdialog.cc:134 ../src/numberbasesdialog.cc:135
+#: ../src/numberbasesdialog.cc:136 ../src/numberbasesdialog.cc:137
+#: ../src/numberbasesdialog.cc:150
 msgid "result is too long"
 msgstr ""
 
-#: ../src/periodictabledialog.cc:88
+#: ../src/openhelp.cc:368
+msgid "Could not display help for Qalculate!."
+msgstr ""
+
+#: ../src/openhelp.cc:465
+#, c-format
+msgid ""
+"Could not display help for Qalculate!.\n"
+"%s"
+msgstr ""
+
+#: ../src/periodictabledialog.cc:89
 msgid "Element Data"
 msgstr ""
 
-#: ../src/periodictabledialog.cc:126
+#: ../src/periodictabledialog.cc:127
 msgid "Classification"
 msgstr ""
 
-#: ../src/periodictabledialog.cc:131
+#: ../src/periodictabledialog.cc:132
 msgid "Alkali Metal"
 msgstr ""
 
-#: ../src/periodictabledialog.cc:132
+#: ../src/periodictabledialog.cc:133
 msgid "Alkaline-Earth Metal"
 msgstr ""
 
-#: ../src/periodictabledialog.cc:133
+#: ../src/periodictabledialog.cc:134
 msgid "Lanthanide"
 msgstr ""
 
-#: ../src/periodictabledialog.cc:134
+#: ../src/periodictabledialog.cc:135
 msgid "Actinide"
 msgstr ""
 
-#: ../src/periodictabledialog.cc:135
+#: ../src/periodictabledialog.cc:136
 msgid "Transition Metal"
 msgstr ""
 
-#: ../src/periodictabledialog.cc:136
+#: ../src/periodictabledialog.cc:137
 msgid "Metal"
 msgstr ""
 
-#: ../src/periodictabledialog.cc:137
+#: ../src/periodictabledialog.cc:138
 msgid "Metalloid"
 msgstr ""
 
-#: ../src/periodictabledialog.cc:138
+#: ../src/periodictabledialog.cc:139
 msgid "Polyatomic Non-Metal"
 msgstr ""
 
-#: ../src/periodictabledialog.cc:139
+#: ../src/periodictabledialog.cc:140
 msgid "Diatomic Non-Metal"
 msgstr ""
 
-#: ../src/periodictabledialog.cc:140
+#: ../src/periodictabledialog.cc:141
 msgid "Noble Gas"
 msgstr ""
 
-#: ../src/periodictabledialog.cc:141
+#: ../src/periodictabledialog.cc:142
 msgid "Unknown chemical properties"
 msgstr ""
 
-#: ../src/plotdialog.cc:314 ../src/plotdialog.cc:316
+#: ../src/plotdialog.cc:378 ../src/plotdialog.cc:380
 msgid "Select file to export"
 msgstr ""
 
-#: ../src/plotdialog.cc:445 ../src/plotdialog.cc:528
+#: ../src/plotdialog.cc:385 ../src/resultview.cc:552
+msgid "Allowed File Types"
+msgstr ""
+
+#: ../src/plotdialog.cc:396 ../src/resultview.cc:557
+msgid "All Files"
+msgstr ""
+
+#: ../src/plotdialog.cc:509 ../src/plotdialog.cc:592
 msgid "Empty expression."
 msgstr ""
 
-#: ../src/plotdialog.cc:459 ../src/plotdialog.cc:542
+#: ../src/plotdialog.cc:523 ../src/plotdialog.cc:606
 msgid "Empty x variable."
 msgstr ""
 
-#: ../src/plotdialog.cc:743
+#: ../src/plotdialog.cc:807
 msgid "Gnuplot was not found."
 msgstr ""
 
-#: ../src/plotdialog.cc:745
+#: ../src/plotdialog.cc:809
 #, c-format
 msgid ""
 "%s (%s) needs to be installed separately, and found in the executable search "
 "path, for plotting to work."
 msgstr ""
 
-#: ../src/searchprovider.cc:241
+#: ../src/preferencesdialog.cc:108 ../src/preferencesdialog.cc:121
+msgid "never"
+msgstr ""
+
+#: ../src/preferencesdialog.cc:109 ../src/preferencesdialog.cc:123
+msgid "ask"
+msgstr ""
+
+#: ../src/preferencesdialog.cc:117
+#, c-format
+msgid "%i day"
+msgid_plural "%i days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/preferencesdialog.cc:280
+msgid "Please restart the program for the language change to take effect."
+msgstr ""
+
+#: ../src/resultview.cc:221 ../src/resultview.cc:454
+msgid "result processing was aborted"
+msgstr ""
+
+#: ../src/resultview.cc:221 ../src/resultview.cc:517
+msgid ""
+"result is too long\n"
+"see history"
+msgstr ""
+
+#: ../src/resultview.cc:242 ../src/resultview.cc:519
+msgid "calculation was aborted"
+msgstr ""
+
+#: ../src/resultview.cc:342
+msgid ""
+"Type a mathematical expression above, e.g. \"5 + 2 / 3\",\n"
+"and press the enter key."
+msgstr ""
+
+#: ../src/resultview.cc:545 ../src/resultview.cc:547
+msgid "Select file to save PNG image to"
+msgstr ""
+
+#. Result was copied
+#: ../src/resultview.cc:1192
+msgid "Copied"
+msgstr ""
+
+#: ../src/searchprovider.cc:211
 msgid "Copy result to clipboard"
 msgstr ""
 
-#: ../src/shortcutsdialog.cc:185
+#: ../src/shortcutsdialog.cc:153
 msgid "Set key combination"
 msgstr ""
 
 #. Make the line reasonably long, but not to short (at least around 40 characters)
-#: ../src/shortcutsdialog.cc:189
+#: ../src/shortcutsdialog.cc:157
 msgid ""
 "Press the key combination you wish to use for the action\n"
 "(press Escape to cancel)."
 msgstr ""
 
-#: ../src/shortcutsdialog.cc:199
+#: ../src/shortcutsdialog.cc:167
 msgid "No keys"
 msgstr ""
 
-#: ../src/shortcutsdialog.cc:339 ../src/shortcutsdialog.cc:407
+#: ../src/shortcutsdialog.cc:301 ../src/shortcutsdialog.cc:369
 msgid ""
 "The key combination is already in use.\n"
 "Do you wish to replace the current action?"
 msgstr ""
 
-#: ../src/shortcutsdialog.cc:617
+#: ../src/shortcutsdialog.cc:572
 msgid "Key combination"
 msgstr ""
 
-#: ../src/uniteditdialog.cc:188
+#: ../src/uniteditdialog.cc:190
 msgid "Edit Unit (global)"
 msgstr ""
 
-#: ../src/uniteditdialog.cc:190
+#: ../src/uniteditdialog.cc:192
 msgid "New Unit"
 msgstr ""
 
-#: ../src/uniteditdialog.cc:358 ../src/uniteditdialog.cc:410
+#: ../src/uniteditdialog.cc:360 ../src/uniteditdialog.cc:412
 msgid "Base unit does not exist."
 msgstr ""
 
 #. do not delete units that are used by other units
-#: ../src/unitsdialog.cc:762
+#: ../src/unitsdialog.cc:754
 msgid "Cannot delete unit as it is needed by other units."
 msgstr ""
 
-#: ../src/unknowneditdialog.cc:118
+#: ../src/unknowneditdialog.cc:120
 msgid "Edit Unknown Variable (global)"
 msgstr ""
 
-#: ../src/unknowneditdialog.cc:120
+#: ../src/unknowneditdialog.cc:122
 msgid "New Unknown Variable"
 msgstr ""
 
-#: ../src/variableeditdialog.cc:160
-msgid "Edit Variable (global)"
+#: ../src/util.cc:843
+msgid "Insert function"
+msgstr ""
+
+#: ../src/util.cc:844
+msgid "Insert function (dialog)"
+msgstr ""
+
+#: ../src/util.cc:845
+msgid "Insert variable"
+msgstr ""
+
+#: ../src/util.cc:846
+msgid "Insert unit"
+msgstr ""
+
+#: ../src/util.cc:847
+msgid "Insert text"
+msgstr ""
+
+#: ../src/util.cc:848
+msgid "Insert date"
+msgstr ""
+
+#: ../src/util.cc:849
+msgid "Insert vector"
+msgstr ""
+
+#: ../src/util.cc:850
+msgid "Insert matrix"
+msgstr ""
+
+#: ../src/util.cc:851
+msgid "Insert smart parentheses"
+msgstr ""
+
+#: ../src/util.cc:852
+msgid "Convert to unit"
+msgstr ""
+
+#: ../src/util.cc:853
+msgid "Convert to unit (entry)"
+msgstr ""
+
+#: ../src/util.cc:854
+msgid "Convert to optimal unit"
+msgstr ""
+
+#: ../src/util.cc:855
+msgid "Convert to base units"
+msgstr ""
+
+#: ../src/util.cc:856
+msgid "Convert to optimal prefix"
+msgstr ""
+
+#: ../src/util.cc:857
+msgid "Convert to number base"
+msgstr ""
+
+#: ../src/util.cc:858
+msgid "Factorize result"
+msgstr ""
+
+#: ../src/util.cc:859
+msgid "Expand result"
+msgstr ""
+
+#: ../src/util.cc:860
+msgid "Expand partial fractions"
+msgstr ""
+
+#: ../src/util.cc:862
+msgid "RPN: down"
+msgstr ""
+
+#: ../src/util.cc:863
+msgid "RPN: up"
+msgstr ""
+
+#: ../src/util.cc:864
+msgid "RPN: swap"
+msgstr ""
+
+#: ../src/util.cc:865
+msgid "RPN: copy"
+msgstr ""
+
+#: ../src/util.cc:866
+msgid "RPN: lastx"
+msgstr ""
+
+#: ../src/util.cc:867
+msgid "RPN: delete register"
+msgstr ""
+
+#: ../src/util.cc:868
+msgid "RPN: clear stack"
+msgstr ""
+
+#: ../src/util.cc:869
+msgid "Load meta mode"
+msgstr ""
+
+#: ../src/util.cc:870
+msgid "Set expression base"
+msgstr ""
+
+#: ../src/util.cc:871
+msgid "Set result base"
+msgstr ""
+
+#: ../src/util.cc:872
+msgid "Toggle exact mode"
+msgstr ""
+
+#: ../src/util.cc:873
+msgid "Set angle unit to degrees"
+msgstr ""
+
+#: ../src/util.cc:874
+msgid "Set angle unit to radians"
+msgstr ""
+
+#: ../src/util.cc:875
+msgid "Set angle unit to gradians"
+msgstr ""
+
+#: ../src/util.cc:876
+msgid "Toggle simple fractions"
+msgstr ""
+
+#: ../src/util.cc:877
+msgid "Toggle mixed fractions"
+msgstr ""
+
+#: ../src/util.cc:878
+msgid "Toggle scientific notation"
+msgstr ""
+
+#: ../src/util.cc:879
+msgid "Toggle simple notation"
+msgstr ""
+
+#: ../src/util.cc:880
+msgid "Toggle precision"
+msgstr ""
+
+#: ../src/util.cc:881
+msgid "Toggle max decimals"
+msgstr ""
+
+#: ../src/util.cc:882
+msgid "Toggle min decimals"
+msgstr ""
+
+#: ../src/util.cc:883
+msgid "Toggle max/min decimals"
+msgstr ""
+
+#: ../src/util.cc:884
+msgid "Toggle RPN mode"
+msgstr ""
+
+#: ../src/util.cc:885
+msgid "Toggle calculate as you type"
+msgstr ""
+
+#: ../src/util.cc:886
+msgid "Toggle programming keypad"
+msgstr ""
+
+#: ../src/util.cc:887
+msgid "Show keypad"
+msgstr ""
+
+#: ../src/util.cc:888
+msgid "Show history"
+msgstr ""
+
+#: ../src/util.cc:889
+msgid "Search history"
+msgstr ""
+
+#: ../src/util.cc:890
+msgid "Clear history"
+msgstr ""
+
+#: ../src/util.cc:891
+msgid "Show conversion"
+msgstr ""
+
+#: ../src/util.cc:892
+msgid "Show RPN stack"
+msgstr ""
+
+#: ../src/util.cc:894
+msgid "Manage variables"
+msgstr ""
+
+#: ../src/util.cc:895
+msgid "Manage functions"
+msgstr ""
+
+#: ../src/util.cc:897
+msgid "Manage data sets"
+msgstr ""
+
+#: ../src/util.cc:904
+msgid "New variable"
+msgstr ""
+
+#: ../src/util.cc:905
+msgid "New function"
+msgstr ""
+
+#: ../src/util.cc:906
+msgid "Open plot functions/data"
+msgstr ""
+
+#: ../src/util.cc:907
+msgid "Open convert number bases"
+msgstr ""
+
+#: ../src/util.cc:908
+msgid "Open floating point conversion"
+msgstr ""
+
+#: ../src/util.cc:909
+msgid "Open calendar conversion"
+msgstr ""
+
+#: ../src/util.cc:910
+msgid "Open percentage calculation tool"
+msgstr ""
+
+#: ../src/util.cc:911
+msgid "Open periodic table"
+msgstr ""
+
+#: ../src/util.cc:912
+msgid "Update exchange rates"
+msgstr ""
+
+#: ../src/util.cc:913
+msgid "Copy result"
+msgstr ""
+
+#: ../src/util.cc:914
+msgid "Insert result"
+msgstr ""
+
+#: ../src/util.cc:915
+msgid "Save result image"
+msgstr ""
+
+#: ../src/util.cc:916
+msgid "Help"
+msgstr ""
+
+#: ../src/util.cc:917
+msgid "Quit"
+msgstr ""
+
+#: ../src/util.cc:918
+msgid "Toggle chain mode"
+msgstr ""
+
+#: ../src/util.cc:919
+msgid "Toggle keep above"
+msgstr ""
+
+#: ../src/util.cc:920
+msgid "Show/hide completion"
+msgstr ""
+
+#: ../src/util.cc:921
+msgid "Perform completion (activate first item)"
+msgstr ""
+
+#: ../src/util.cc:962
+msgid "Formatted result"
+msgstr ""
+
+#: ../src/util.cc:963
+msgid "Unformatted ASCII result"
+msgstr ""
+
+#: ../src/util.cc:964
+msgid "Unformatted ASCII result without units"
+msgstr ""
+
+#: ../src/util.cc:965
+msgid "Formatted expression"
+msgstr ""
+
+#: ../src/util.cc:966
+msgid "Unformatted ASCII expression"
+msgstr ""
+
+#: ../src/util.cc:967
+msgid "Formatted expression + result"
+msgstr ""
+
+#: ../src/util.cc:968
+msgid "Unformatted ASCII expression + result"
 msgstr ""
 
 #: ../src/variableeditdialog.cc:162
+msgid "Edit Variable (global)"
+msgstr ""
+
+#: ../src/variableeditdialog.cc:164
 msgid "New Variable"
 msgstr ""
 
-#: ../src/variableeditdialog.cc:271
+#: ../src/variableeditdialog.cc:273
 msgid "Empty value field."
 msgstr ""
 
-#: ../src/variablesdialog.cc:248
+#: ../src/variablesdialog.cc:274
 msgid "a matrix"
 msgstr ""
 
-#: ../src/variablesdialog.cc:250
+#: ../src/variablesdialog.cc:276
 msgid "a vector"
 msgstr ""
 
-#: ../src/variablesdialog.cc:292
+#: ../src/variablesdialog.cc:318
 msgid "not matrix"
 msgstr ""

@@ -105,6 +105,9 @@ GtkWidget *history_view_widget() {
 	return historyview;
 }
 
+DECLARE_BUILTIN_FUNCTION(AnswerFunction, 0)
+DECLARE_BUILTIN_FUNCTION(ExpressionFunction, 0)
+
 AnswerFunction::AnswerFunction() : MathFunction("answer", 1, 1, CALCULATOR->f_warning->category(), _("History Answer Value")) {
 	ExpressionName name(_("answer"));
 	if(name.name[0] <= 'Z' && name.name[0] >= 'A') name.name[0] += 32;
@@ -130,6 +133,7 @@ int AnswerFunction::calculate(MathStructure &mstruct, const MathStructure &vargs
 	}
 	return 1;
 }
+MathFunction *answer_function() {return f_answer;}
 ExpressionFunction::ExpressionFunction() : MathFunction("expression", 1, 1, CALCULATOR->f_warning->category(), _("History Parsed Expression")) {
 	ExpressionName name(_("expression"));
 	if(name.name[0] <= 'Z' && name.name[0] >= 'A') name.name[0] += 32;
@@ -155,6 +159,7 @@ int ExpressionFunction::calculate(MathStructure &mstruct, const MathStructure &v
 	}
 	return 1;
 }
+MathFunction *expression_function() {return f_expression;}
 
 bool read_history_settings_line(string &svar, string &svalue, int &v) {
 	if(svar == "clear_history_on_exit") {
@@ -1851,7 +1856,7 @@ void process_history_selection(vector<size_t> *selected_rows, vector<size_t> *se
 	if(selected_list) g_list_free_full(selected_list, (GDestroyNotify) gtk_tree_path_free);
 }
 void history_operator(string str_sign) {
-	if(b_busy) return;
+	if(calculator_busy()) return;
 	vector<size_t> selected_indeces;
 	vector<int> selected_index_type;
 	process_history_selection(NULL, &selected_indeces, &selected_index_type);
@@ -1962,7 +1967,7 @@ void on_button_history_xy_clicked(GtkButton*, gpointer) {
 	history_operator("^");
 }
 void on_button_history_sqrt_clicked(GtkButton*, gpointer) {
-	if(b_busy) return;
+	if(calculator_busy()) return;
 	vector<size_t> selected_indeces;
 	vector<int> selected_index_type;
 	process_history_selection(NULL, &selected_indeces, &selected_index_type);
@@ -1995,7 +2000,7 @@ void on_button_history_sqrt_clicked(GtkButton*, gpointer) {
 	execute_expression();
 }
 void on_button_history_insert_value_clicked(GtkButton*, gpointer) {
-	if(b_busy) return;
+	if(calculator_busy()) return;
 	vector<size_t> selected_indeces;
 	vector<int> selected_index_type;
 	process_history_selection(NULL, &selected_indeces, &selected_index_type);
@@ -2029,7 +2034,7 @@ void on_button_history_insert_value_clicked(GtkButton*, gpointer) {
 	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(history_view_widget())));
 }
 void on_button_history_insert_text_clicked(GtkButton*, gpointer) {
-	if(b_busy) return;
+	if(calculator_busy()) return;
 	vector<size_t> selected_rows;
 	process_history_selection(&selected_rows, NULL, NULL);
 	if(selected_rows.empty()) return;
@@ -2040,7 +2045,7 @@ void on_button_history_insert_text_clicked(GtkButton*, gpointer) {
 	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(history_view_widget())));
 }
 void on_button_history_insert_parsed_text_clicked(GtkButton*, gpointer) {
-	if(b_busy) return;
+	if(calculator_busy()) return;
 	vector<size_t> selected_rows;
 	process_history_selection(&selected_rows, NULL, NULL);
 	if(selected_rows.empty()) return;
@@ -2051,7 +2056,7 @@ void on_button_history_insert_parsed_text_clicked(GtkButton*, gpointer) {
 	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(history_view_widget())));
 }
 void history_copy(bool full_text, int ascii = -1) {
-	if(b_busy) return;
+	if(calculator_busy()) return;
 	vector<size_t> selected_rows;
 	process_history_selection(&selected_rows, NULL, NULL);
 	if(selected_rows.empty()) return;
@@ -2147,7 +2152,7 @@ void on_popup_menu_item_history_clear_activate(GtkMenuItem*, gpointer) {
 	history_clear();
 }
 void history_clear() {
-	if(b_busy) return;
+	if(calculator_busy()) return;
 	gtk_list_store_clear(historystore);
 	bool b_protected = false;
 	for(size_t i = inhistory.size(); i > 0;) {
@@ -2170,7 +2175,7 @@ void history_clear() {
 	reload_history();
 }
 void on_popup_menu_item_history_movetotop_activate(GtkMenuItem*, gpointer) {
-	if(b_busy) return;
+	if(calculator_busy()) return;
 	GtkTreeModel *model;
 	GtkTreeIter iter, iter_first;
 	GList *selected_list;
@@ -2289,7 +2294,7 @@ void on_popup_menu_item_history_movetotop_activate(GtkMenuItem*, gpointer) {
 	if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(history_view_widget())));
 }
 void on_popup_menu_item_history_delete_activate(GtkMenuItem*, gpointer) {
-	if(b_busy) return;
+	if(calculator_busy()) return;
 	GtkTreeModel *model;
 	GtkTreeIter iter, iter2, iter3;
 	GList *selected_list;
@@ -2749,7 +2754,7 @@ void on_popup_menu_item_history_search_date_activate(GtkMenuItem*, gpointer) {
 	gtk_widget_destroy(d);
 }
 void on_popup_menu_item_history_bookmark_activate(GtkMenuItem *w, gpointer) {
-	if(b_busy) return;
+	if(calculator_busy()) return;
 	if(strcmp(gtk_menu_item_get_label(w), _("Remove Bookmark")) == 0) {
 		GtkTreeModel *model;
 		GtkTreeIter iter;
@@ -2862,7 +2867,7 @@ bool history_protected(size_t hi) {
 	return inhistory_protected[hi];
 }
 void on_popup_menu_item_history_protect_toggled(GtkCheckMenuItem *w, gpointer) {
-	if(b_busy) return;
+	if(calculator_busy()) return;
 	bool b = gtk_check_menu_item_get_active(w);
 	GtkTreeModel *model;
 	GtkTreeIter iter;
@@ -2936,7 +2941,7 @@ void on_popup_menu_history_bookmark_delete_activate(GtkMenuItem*, gpointer data)
 gulong on_popup_menu_history_bookmark_update_activate_handler = 0, on_popup_menu_history_bookmark_delete_activate_handler = 0;
 
 gboolean on_menu_history_bookmark_popup_menu(GtkWidget*, gpointer data) {
-	if(b_busy) return TRUE;
+	if(calculator_busy()) return TRUE;
 	vector<size_t> selected_rows;
 	process_history_selection(&selected_rows, NULL, NULL);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_history_bookmark_update")), selected_rows.size() == 1 && inhistory_type[selected_rows[0]] != QALCULATE_HISTORY_OLD);
@@ -3137,7 +3142,7 @@ gboolean on_historyview_button_press_event(GtkWidget*, GdkEventButton *event, gp
 	GtkTreeViewColumn *column = NULL;
 	GtkTreeSelection *select = NULL;
 	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
-		if(b_busy) return TRUE;
+		if(calculator_busy()) return TRUE;
 		if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(history_view_widget()), event->x, event->y, &path, NULL, NULL, NULL)) {
 			select = gtk_tree_view_get_selection(GTK_TREE_VIEW(history_view_widget()));
 			if(!gtk_tree_selection_path_is_selected(select, path)) {
@@ -3187,7 +3192,7 @@ gboolean on_historyview_button_press_event(GtkWidget*, GdkEventButton *event, gp
 }
 
 gboolean on_historyview_popup_menu(GtkWidget*, gpointer) {
-	if(b_busy) return TRUE;
+	if(calculator_busy()) return TRUE;
 	update_historyview_popup();
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 	gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_historyview")), NULL);
@@ -3395,6 +3400,9 @@ void update_history_accels(int type) {
 }
 
 void create_history_view() {
+
+	f_answer = CALCULATOR->addFunction(new AnswerFunction());
+	f_expression = CALCULATOR->addFunction(new ExpressionFunction());
 
 	if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 22) || (version_numbers[0] == 3 && version_numbers[1] == 22 && version_numbers[2] < 1)) unformatted_history = 1;
 	initial_inhistory_index = inhistory.size() - 1;

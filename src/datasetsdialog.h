@@ -13,6 +13,7 @@
 #define DATASETS_DIALOG_H
 
 #include <gtk/gtk.h>
+#include <stdio.h>
 
 void update_datasets_tree();
 void manage_datasets(GtkWindow *parent);

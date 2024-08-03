@@ -13,13 +13,14 @@
 #define CONVERSION_VIEW_H
 
 #include <gtk/gtk.h>
+#include <stdio.h>
 
 class MathStructure;
 
 void create_conversion_view();
 void update_conversion_view_selection(const MathStructure*);
 void update_unit_selector_tree();
-const char *current_conversion_expression();
+std::string current_conversion_expression();
 void focus_conversion_entry();
 bool conversionview_continuous_conversion();
 

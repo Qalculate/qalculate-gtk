@@ -19,6 +19,8 @@
 #endif
 #include <string.h>
 #include <stdio.h>
+#include <sstream>
+#include <fstream>
 
 #include <gdk/gdkkeysyms.h>
 #include <gdk/gdk.h>
@@ -29,6 +31,7 @@
 
 #include "support.h"
 #include "settings.h"
+#include "mainwindow.h"
 #include "openhelp.h"
 
 using std::string;
@@ -101,6 +104,15 @@ void on_help_stop_search(GtkSearchEntry *w, gpointer view) {
 void on_help_search_found(WebKitFindController*, guint, gpointer) {
 	backwards_search = false;
 }
+void string_strdown(const string &str, string &strnew) {
+	char *cstr = utf8_strdown(str.c_str());
+	if(cstr) {
+		strnew = cstr;
+		free(cstr);
+	} else {
+		strnew = str;
+	}
+}
 vector<string> help_files;
 vector<string> help_contents;
 void on_help_search_failed(WebKitFindController *f, gpointer w) {
@@ -122,7 +134,7 @@ void on_help_search_failed(WebKitFindController *f, gpointer w) {
 	if(i != string::npos) file = file.substr(0, i);
 	size_t help_i = 0;
 	if(help_files.empty()) {
-		ifstream ifile(get_doc_uri("index.html", false).c_str());
+		std::ifstream ifile(get_doc_uri("index.html", false).c_str());
 		if(!ifile.is_open()) return;
 		std::stringstream ssbuffer;
 		ssbuffer << ifile.rdbuf();
@@ -142,7 +154,7 @@ void on_help_search_failed(WebKitFindController *f, gpointer w) {
 					}
 					if(i2 == help_files.size()) {
 						help_files.push_back(sfile);
-						ifstream ifile_i(get_doc_uri(sfile, false).c_str());
+						std::ifstream ifile_i(get_doc_uri(sfile, false).c_str());
 						string sbuffer_i;
 						if(ifile_i.is_open()) {
 							std::stringstream ssbuffer_i;
@@ -323,7 +335,7 @@ void on_help_load_changed(WebKitWebView *w, WebKitLoadEvent load_event, gpointer
 		backwards_search = false;
 	}
 }
-gboolean on_help_decide_policy(WebKitWebView *w, WebKitPolicyDecision *d, WebKitPolicyDecisionType t, gpointer window) {
+gboolean on_help_decide_policy(WebKitWebView*, WebKitPolicyDecision *d, WebKitPolicyDecisionType t, gpointer window) {
 	if(t == WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION) {
 		const gchar *uri = webkit_uri_request_get_uri(webkit_navigation_action_get_request(webkit_navigation_policy_decision_get_navigation_action (WEBKIT_NAVIGATION_POLICY_DECISION(d))));
 		if(uri[0] == 'h' && (uri[4] == ':' || uri[5] == ':')) {
@@ -413,7 +425,7 @@ void show_help(const char *file, GtkWindow *parent) {
 	webkit_settings_set_zoom_text_only(settings, FALSE);
 	if(help_zoom > 0.0) webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(webView), help_zoom);
 	PangoFontDescription *font_desc;
-	gtk_style_context_get(gtk_widget_get_style_context(main_window()), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+	gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(main_window())), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
 	webkit_settings_set_default_font_family(settings, pango_font_description_get_family(font_desc));
 	webkit_settings_set_default_font_size(settings, webkit_settings_font_size_to_pixels(pango_font_description_get_size(font_desc) / PANGO_SCALE));
 	pango_font_description_free(font_desc);

@@ -702,10 +702,10 @@ bool contains_convertible_unit(MathStructure &m) {
 	return false;
 }
 
-bool has_prefix(const MathStructure &m) {
+bool contains_prefix(const MathStructure &m) {
 	if(m.isUnit() && (m.prefix() && m.prefix() != CALCULATOR->decimal_null_prefix && m.prefix() != CALCULATOR->binary_null_prefix)) return true;
 	for(size_t i = 0; i < m.size(); i++) {
-		if(has_prefix(m[i])) return true;
+		if(contains_prefix(m[i])) return true;
 	}
 	return false;
 }
@@ -779,14 +779,16 @@ gchar *font_name_to_css(const char *font_name, const char *w) {
 	return gstr;
 }
 
-gboolean on_activate_link(GtkLabel*, gchar *uri, gpointer) {
 #ifdef _WIN32
+gboolean on_activate_link(GtkLabel*, gchar *uri, gpointer) {
 	ShellExecuteA(NULL, "open", uri, NULL, NULL, SW_SHOWNORMAL);
 	return TRUE;
-#else
-	return FALSE;
-#endif
 }
+#else
+gboolean on_activate_link(GtkLabel*, gchar*, gpointer) {
+	return FALSE;
+}
+#endif
 
 gint compare_categories(gconstpointer a, gconstpointer b) {
 	gchar *gstr1c = g_utf8_casefold((const char*) a, -1);
@@ -795,16 +797,6 @@ gint compare_categories(gconstpointer a, gconstpointer b) {
 	g_free(gstr1c);
 	g_free(gstr2c);
 	return retval;
-}
-
-void string_strdown(const string &str, string &strnew) {
-	char *cstr = utf8_strdown(str.c_str());
-	if(cstr) {
-		strnew = cstr;
-		free(cstr);
-	} else {
-		strnew = str;
-	}
 }
 
 string shortcut_to_text(guint key, guint state) {

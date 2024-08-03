@@ -14,6 +14,7 @@
 
 #include <libqalculate/qalculate.h>
 #include <gtk/gtk.h>
+#include <stdio.h>
 
 void update_status_colors(bool initial);
 void update_status_font(bool initial = false);
@@ -48,5 +49,7 @@ MathFunction *current_parsed_function();
 
 bool read_expression_status_settings_line(std::string &svar, std::string &svalue, int &v);
 void write_expression_status_settings(FILE *file);
+
+GtkWidget *parse_status_widget();
 
 #endif /* EXPRESSION_STATUS_H */

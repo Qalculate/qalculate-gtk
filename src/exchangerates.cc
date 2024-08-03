@@ -38,7 +38,7 @@ using std::endl;
 
 int auto_update_exchange_rates = -1;
 
-bool read_exchange_rates_settings_line(string &svar, string &svalue, int &v) {
+bool read_exchange_rates_settings_line(string &svar, string&, int &v) {
 	if(svar == "auto_update_exchange_rates") {
 		auto_update_exchange_rates = v;
 	} else {
@@ -62,9 +62,9 @@ protected:
 };
 
 void fetch_exchange_rates(int timeout, int n) {
-	bool b_busy_bak = b_busy;
+	bool b_busy_bak = calculator_busy();
 	block_error();
-	b_busy = true;
+	set_busy();
 	FetchExchangeRatesThread fetch_thread;
 	if(fetch_thread.start() && fetch_thread.write(timeout) && fetch_thread.write(n)) {
 		int i = 0;
@@ -84,7 +84,7 @@ void fetch_exchange_rates(int timeout, int n) {
 			gtk_widget_destroy(dialog);
 		}
 	}
-	b_busy = b_busy_bak;
+	if(b_busy_bak) set_busy();
 	unblock_error();
 }
 

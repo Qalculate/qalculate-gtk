@@ -137,7 +137,7 @@ gboolean on_shortcut_key_released(GtkWidget *w, GdkEventKey *event, gpointer) {
 	gtk_dialog_response(GTK_DIALOG(w), GTK_RESPONSE_OK);
 	return TRUE;
 }
-gboolean on_shortcut_key_pressed(GtkWidget *w, GdkEventKey *event, gpointer) {
+gboolean on_shortcut_key_pressed(GtkWidget*, GdkEventKey *event, gpointer) {
 	guint state = CLEAN_MODIFIERS(event->state);
 	FIX_ALT_GR
 	string str = "<span size=\"large\">";
@@ -178,13 +178,14 @@ bool get_keyboard_shortcut(GtkWindow *parent) {
 	gtk_widget_destroy(dialog);
 	return false;
 }
-void on_shortcuts_entry_value_activate(GtkEntry*, gpointer d) {
+void on_shortcuts_entry_value_activate(GtkEntry*, gpointer) {
 	gtk_dialog_response(GTK_DIALOG(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog")), GTK_RESPONSE_ACCEPT);
 }
 void on_shortcuts_type_treeview_row_activated(GtkTreeView*, GtkTreePath*, GtkTreeViewColumn*, gpointer) {
 	if(gtk_widget_get_sensitive(GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_entry_value")))) gtk_widget_grab_focus(gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(shortcuts_builder, "shortcuts_stack_value"))));
 	else gtk_dialog_response(GTK_DIALOG(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog")), GTK_RESPONSE_ACCEPT);
 }
+extern bool default_shortcuts;
 void on_shortcuts_button_new_clicked(GtkButton*, gpointer) {
 	GtkWidget *d = GTK_WIDGET(gtk_builder_get_object(shortcuts_builder, "shortcuts_type_dialog"));
 	update_window_properties(d);

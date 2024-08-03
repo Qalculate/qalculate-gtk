@@ -13,12 +13,10 @@
 #define HISTORY_VIEW_H
 
 #include <gtk/gtk.h>
-#include <libqalculate/qalculate.h>
 #include <time.h>
 #include <stdio.h>
 
-DECLARE_BUILTIN_FUNCTION(AnswerFunction, 0)
-DECLARE_BUILTIN_FUNCTION(ExpressionFunction, 0)
+class MathFunction;
 
 enum {
 	QALCULATE_HISTORY_EXPRESSION,
@@ -69,6 +67,9 @@ void history_input_base_changed();
 void history_operator(std::string str_sign);
 
 GtkWidget *history_view_widget();
+
+MathFunction *answer_function();
+MathFunction *expression_function();
 
 bool read_history_settings_line(std::string &svar, std::string &svalue, int &v);
 void write_history_settings(FILE *file);

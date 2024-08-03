@@ -79,7 +79,7 @@ void on_tMatrix_edited(GtkCellRendererText *cell, gchar *path_string, gchar *new
 	gtk_tree_model_get_iter_from_string(GTK_TREE_MODEL(model), &iter, path_string);
 	gtk_list_store_set(GTK_LIST_STORE(model), &iter, i_column, new_text, -1);
 }
-gboolean on_tMatrix_editable_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer renderer) {
+gboolean on_tMatrix_editable_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer) {
 	switch(event->keyval) {
 		case GDK_KEY_Up: {}
 		case GDK_KEY_Down: {}
@@ -194,7 +194,7 @@ gboolean on_tMatrix_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
 	}
 	return FALSE;
 }
-void on_tMatrix_editing_started(GtkCellRenderer *renderer, GtkCellEditable *editable, gchar *path, gpointer user_data) {
+void on_tMatrix_editing_started(GtkCellRenderer *renderer, GtkCellEditable *editable, gchar*, gpointer) {
 	g_signal_connect(G_OBJECT(editable), "key-press-event", G_CALLBACK(on_tMatrix_editable_key_press_event), renderer);
 }
 gboolean on_tMatrix_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {

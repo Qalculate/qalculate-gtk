@@ -53,7 +53,7 @@ void on_tVariableCategories_selection_changed(GtkTreeSelection *treeselection, g
 void on_tVariables_selection_changed(GtkTreeSelection *treeselection, gpointer);
 void on_variables_entry_search_changed(GtkEntry *w, gpointer);
 
-bool read_variables_dialog_settings_line(string &svar, string &svalue, int &v) {
+bool read_variables_dialog_settings_line(string &svar, string&, int &v) {
 	if(svar == "variables_width") {
 		variables_width = v;
 	} else if(svar == "variables_height") {
@@ -330,9 +330,9 @@ void on_tVariables_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 			}
 			gtk_text_buffer_get_end_iter(buffer, &iter);
 			gtk_text_buffer_insert(buffer, &iter, str.c_str(), -1);
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_edit")), !v->isBuiltin() && !is_answer_variable(v) && v != v_memory);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_edit")), !v->isBuiltin() && !is_answer_variable(v) && !is_memory_variable(v));
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_insert")), v->isActive());
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_deactivate")), !is_answer_variable(v) && v != v_memory);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_deactivate")), !is_answer_variable(v) && !is_memory_variable(v));
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_export")), v->isKnown());
 			if(v->isActive()) {
 				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(variables_builder, "variables_buttonlabel_deactivate")), _("Deacti_vate"));
@@ -340,7 +340,7 @@ void on_tVariables_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(variables_builder, "variables_buttonlabel_deactivate")), _("Acti_vate"));
 			}
 			//user cannot delete global definitions
-			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_delete")), v->isLocal() && !is_answer_variable(v) && v != v_memory && v != CALCULATOR->v_x && v != CALCULATOR->v_y && v != CALCULATOR->v_z);
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_delete")), v->isLocal() && !is_answer_variable(v) && !is_memory_variable(v) && v != CALCULATOR->v_x && v != CALCULATOR->v_y && v != CALCULATOR->v_z);
 		}
 	} else {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_edit")), FALSE);

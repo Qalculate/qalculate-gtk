@@ -58,7 +58,7 @@ void on_tUnitSelector_selection_changed(GtkTreeSelection *treeselection, gpointe
 void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselection, gpointer);
 void convert_from_convert_entry_unit();
 
-bool read_conversion_view_settings_line(string &svar, string &svalue, int &v) {
+bool read_conversion_view_settings_line(string &svar, string&, int &v) {
 	if(svar == "continuous_conversion") {
 		continuous_conversion = v;
 	} else if(svar == "set_missing_prefixes") {
@@ -328,7 +328,7 @@ void on_popup_menu_convert_convert_activate(GtkMenuItem*, gpointer) {
 gboolean on_convert_treeview_unit_button_press_event(GtkWidget *w, GdkEventButton *event, gpointer) {
 	GtkTreePath *path = NULL;
 	if(event->type == GDK_BUTTON_PRESS && event->button == 2) {
-		if(b_busy) return TRUE;
+		if(calculator_busy()) return TRUE;
 		if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(w), event->x, event->y, &path, NULL, NULL, NULL)) {
 			GtkTreeIter iter;
 			if(gtk_tree_model_get_iter(tUnitSelector_store_filter, &iter, path)) {
@@ -341,7 +341,7 @@ gboolean on_convert_treeview_unit_button_press_event(GtkWidget *w, GdkEventButto
 			gtk_tree_path_free(path);
 		}
 	} else if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
-		if(b_busy) return TRUE;
+		if(calculator_busy()) return TRUE;
 		if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(w), event->x, event->y, &path, NULL, NULL, NULL)) {
 			GtkTreeIter iter;
 			if(gtk_tree_model_get_iter(tUnitSelector_store_filter, &iter, path)) {
@@ -363,7 +363,7 @@ gboolean on_convert_treeview_unit_button_press_event(GtkWidget *w, GdkEventButto
 	return FALSE;
 }
 gboolean on_convert_treeview_unit_popup_menu(GtkWidget*, gpointer) {
-	if(b_busy) return TRUE;
+	if(calculator_busy()) return TRUE;
 	popup_convert_unit = NULL;
 	update_convert_popup();
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
@@ -472,7 +472,7 @@ void update_conversion_view_selection(const MathStructure *m) {
 void focus_conversion_entry() {
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_unit")));
 }
-const char *current_conversion_expression() {
+string current_conversion_expression() {
 	ParseOptions pa = evalops.parse_options; pa.base = 10;
 	string ceu_str = CALCULATOR->unlocalizeExpression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(main_builder, "convert_entry_unit"))), pa);
 	remove_blank_ends(ceu_str);
@@ -481,7 +481,7 @@ const char *current_conversion_expression() {
 			ceu_str = "?" + ceu_str;
 		}
 	}
-	return ceu_str.c_str();
+	return ceu_str;
 }
 bool conversionview_continuous_conversion() {return continuous_conversion;}
 

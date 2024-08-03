@@ -72,7 +72,7 @@ void on_units_entry_search_changed(GtkEntry *w, gpointer);
 void on_units_convert_search_changed(GtkEntry *w, gpointer);
 void convert_in_wUnits(int toFrom = -1);
 
-bool read_units_dialog_settings_line(string &svar, string &svalue, int &v) {
+bool read_units_dialog_settings_line(string &svar, string&, int &v) {
 	if(svar == "units_width") {
 		units_width = v;
 	} else if(svar == "units_height") {
@@ -525,7 +525,7 @@ void on_units_entry_to_val_activate(GtkEntry*, gpointer) {
 	convert_in_wUnits(1);
 }
 
-gboolean on_units_dialog_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
+gboolean on_units_dialog_button_press_event(GtkWidget*, GdkEventButton*, gpointer) {
 	gtk_widget_hide(units_convert_window);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(units_builder, "units_convert_to_button")), FALSE);
 	return FALSE;
@@ -558,12 +558,12 @@ gboolean on_units_convert_view_motion_notify_event(GtkWidget*, GdkEventMotion*, 
 	}
 	return FALSE;
 }
-gboolean on_units_convert_window_key_press_event(GtkWidget *widget, GdkEventKey *event, gpointer) {
+gboolean on_units_convert_window_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
 	if(!gtk_widget_get_mapped(units_convert_window)) return FALSE;
 	gtk_widget_event(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_convert_to_button")), (GdkEvent*) event);
 	return TRUE;
 }
-gboolean on_units_convert_window_button_press_event(GtkWidget *widget, GdkEventButton *event, gpointer) {
+gboolean on_units_convert_window_button_press_event(GtkWidget*, GdkEventButton*, gpointer) {
 	if(!gtk_widget_get_mapped(units_convert_window)) return FALSE;
 	gtk_widget_hide(units_convert_window);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(units_builder, "units_convert_to_button")), FALSE);
@@ -731,7 +731,7 @@ void on_units_button_insert_clicked(GtkButton*, gpointer) {
 }
 
 void on_units_button_convert_to_clicked(GtkButton*, gpointer) {
-	if(b_busy) return;
+	if(calculator_busy()) return;
 	Unit *u = get_selected_unit();
 	if(u) convert_result_to_unit(u);
 }

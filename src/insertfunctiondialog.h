@@ -13,6 +13,7 @@
 #define INSERT_FUNCTION_DIALOG_H
 
 #include <gtk/gtk.h>
+#include <stdio.h>
 
 class MathFunction;
 

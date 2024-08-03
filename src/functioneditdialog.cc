@@ -163,7 +163,7 @@ void update_function_arguments_list(MathFunction *f) {
 	}
 }
 
-gboolean on_function_edit_textview_expression_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer renderer) {
+gboolean on_function_edit_textview_expression_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer) {
 	if(textview_in_quotes(GTK_TEXT_VIEW(w))) return FALSE;
 	const gchar *key = key_press_get_symbol(event);
 	if(!key) return FALSE;
@@ -182,7 +182,7 @@ void on_function_edit_treeview_subfunctions_expression_edited(GtkCellRendererTex
 		on_function_changed();
 	}
 }
-void on_function_edit_treeview_subfunctions_precalculate_toggled(GtkCellRendererToggle *renderer, gchar *path, gpointer) {
+void on_function_edit_treeview_subfunctions_precalculate_toggled(GtkCellRendererToggle*, gchar *path, gpointer) {
 	GtkTreeIter iter;
 	if(gtk_tree_model_get_iter_from_string(GTK_TREE_MODEL(tSubfunctions_store), &iter, path)) {
 		gboolean g_b;
@@ -307,7 +307,7 @@ void on_function_edit_treeview_arguments_name_edited(GtkCellRendererText*, gchar
 		on_function_changed();
 	}
 }
-void on_function_edit_treeview_arguments_row_activated(GtkTreeView*, GtkTreePath *path, GtkTreeViewColumn *column, gpointer) {
+void on_function_edit_treeview_arguments_row_activated(GtkTreeView*, GtkTreePath *path, GtkTreeViewColumn*, gpointer) {
 	GtkTreeIter iter;
 	if(!gtk_tree_model_get_iter(GTK_TREE_MODEL(tFunctionArguments_store), &iter, path)) return;
 	Argument *edited_arg = NULL;
@@ -351,7 +351,7 @@ void on_argument_rules_combobox_type_changed(GtkComboBox *om, gpointer) {
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_allow_matrix")), argtype == ARGUMENT_TYPE_FREE || argtype == ARGUMENT_TYPE_MATRIX);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_handle_vector")), argtype == ARGUMENT_TYPE_NUMBER || argtype == ARGUMENT_TYPE_INTEGER || argtype == ARGUMENT_TYPE_TEXT || argtype == ARGUMENT_TYPE_DATE || argtype == ARGUMENT_TYPE_BOOLEAN);
 	if(argtype == ARGUMENT_TYPE_INTEGER || argtype == ARGUMENT_TYPE_NUMBER) {
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_forbid_zero")), menu_index == MENU_ARGUMENT_TYPE_NONZERO_INTEGER && menu_index == MENU_ARGUMENT_TYPE_NONZERO);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_forbid_zero")), menu_index == MENU_ARGUMENT_TYPE_NONZERO_INTEGER || menu_index == MENU_ARGUMENT_TYPE_NONZERO);
 	}
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_enable_max")), argtype == ARGUMENT_TYPE_NUMBER || argtype == ARGUMENT_TYPE_INTEGER);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_enable_min")), argtype == ARGUMENT_TYPE_NUMBER || argtype == ARGUMENT_TYPE_INTEGER);

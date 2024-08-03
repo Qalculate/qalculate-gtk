@@ -13,6 +13,7 @@
 #define MODES_H
 
 #include <libqalculate/qalculate.h>
+#include <stdio.h>
 
 struct mode_struct {
 	PrintOptions po;

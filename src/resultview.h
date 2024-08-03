@@ -36,6 +36,7 @@ void draw_result_backup();
 void draw_result_clear();
 void draw_result_restore();
 void draw_result_destroy();
+void draw_result_abort();
 void draw_parsed(MathStructure &mparse, const PrintOptions &po);
 void redraw_result();
 void save_as_image();

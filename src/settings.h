@@ -15,7 +15,7 @@
 #include <libqalculate/qalculate.h>
 #include "unordered_map_define.h"
 
-extern PrintOptions printops, parsed_printops, displayed_printops;
+extern PrintOptions printops;
 extern EvaluationOptions evalops;
 extern bool complex_angle_form;
 extern bool adaptive_interval_display;
@@ -24,8 +24,6 @@ extern bool copy_ascii, copy_ascii_without_units;
 extern bool always_on_top;
 extern bool aot_changed;
 extern bool implicit_question_asked;
-extern int b_decimal_comma;
-extern bool dot_question_asked;
 extern bool rpn_mode, chain_mode;
 extern bool auto_calculate;
 extern bool caret_as_xor;
@@ -33,8 +31,6 @@ extern int enable_tooltips;
 extern bool toe_changed;
 extern bool parsed_in_result;
 extern bool load_global_defs, clear_history_on_exit;
-extern bool title_modified;
-extern int history_expression_type;
 extern bool display_expression_status;
 extern std::string text_color;
 extern bool text_color_set;
@@ -43,7 +39,6 @@ extern bool ignore_locale;
 extern bool rpn_keys;
 extern int close_with_esc;
 extern bool check_version;
-extern bool tc_set;
 extern bool persistent_keypad;
 extern bool minimal_mode;
 extern std::string themestr;
@@ -148,6 +143,5 @@ struct keyboard_shortcut {
 };
 
 extern unordered_map<guint64, keyboard_shortcut> keyboard_shortcuts;
-extern bool default_shortcuts;
 
 #endif /* QALCULATE_GTK_SETTINGS_H */

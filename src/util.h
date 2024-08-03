@@ -37,8 +37,6 @@ enum {
 };
 
 bool string_is_less(std::string str1, std::string str2);
-extern KnownVariable *vans[5], *v_memory;
-extern MathFunction *f_answer;
 
 struct tree_struct {
 	std::string item;
@@ -137,8 +135,6 @@ extern std::vector<Unit*> user_units;
 extern std::vector<Variable*> user_variables;
 extern std::vector<MathFunction*> user_functions;
 
-extern bool b_busy, b_busy_command, b_busy_result, b_busy_expression, b_busy_fetch;
-
 GtkBuilder *getBuilder(const char *filename);
 
 std::string unformat(std::string str);
@@ -199,7 +195,7 @@ bool contains_rational_number(MathStructure &m);
 bool contains_fraction(MathStructure &m, bool in_div = false);
 bool contains_plot_or_save(const std::string &str);
 bool contains_convertible_unit(MathStructure &m);
-bool has_prefix(const MathStructure &m);
+bool contains_prefix(const MathStructure &m);
 
 bool test_supsub(GtkWidget *w);
 

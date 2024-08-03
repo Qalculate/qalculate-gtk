@@ -25,7 +25,6 @@
 #include <gtk/gtk.h>
 
 #include "support.h"
-#include "settings.h"
 #include "util.h"
 #include "nameseditdialog.h"
 
@@ -73,7 +72,7 @@ void on_tNames_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 void on_name_changed() {
 	names_changed = true;
 }
-void on_names_edit_property_toggled(GtkCellRendererToggle *renderer, gchar *path, gpointer user_data) {
+void on_names_edit_property_toggled(GtkCellRendererToggle*, gchar *path, gpointer user_data) {
 	GtkTreeIter iter;
 	int c = GPOINTER_TO_INT(user_data);
 	if(gtk_tree_model_get_iter_from_string(GTK_TREE_MODEL(tNames_store), &iter, path)) {

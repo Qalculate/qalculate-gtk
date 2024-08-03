@@ -671,12 +671,10 @@ void on_nbases_button_ac_clicked(GtkToggleButton*, gpointer) {
 	gtk_widget_grab_focus(nbases_get_entry());
 }
 
-gboolean on_nbases_dialog_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
-	if(b_busy) {
+gboolean on_nbases_dialog_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
+	if(calculator_busy()) {
 		if(event->keyval == GDK_KEY_Escape) {
-			if(b_busy_expression) on_abort_calculation(NULL, 0, NULL);
-			else if(b_busy_result) on_abort_display(NULL, 0, NULL);
-			else if(b_busy_command) on_abort_command(NULL, 0, NULL);
+			abort_calculation();
 		}
 		return TRUE;
 	}

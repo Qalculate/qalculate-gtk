@@ -37,7 +37,7 @@ using std::endl;
 
 GtkBuilder *setbase_builder = NULL;
 
-extern string prev_output_base, prev_input_base;
+string prev_output_base, prev_input_base;
 
 void on_set_base_entry_output_other_activate(GtkEntry *w, gpointer user_data);
 void on_set_base_entry_input_other_activate(GtkEntry *w, gpointer user_data);

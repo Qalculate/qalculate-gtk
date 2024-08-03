@@ -43,7 +43,7 @@ int default_bits = -1;
 
 #define USE_QUOTES(arg, f) (arg && (arg->suggestsQuotes() || arg->type() == ARGUMENT_TYPE_TEXT) && f->id() != FUNCTION_ID_BASE && f->id() != FUNCTION_ID_BIN && f->id() != FUNCTION_ID_OCT && f->id() != FUNCTION_ID_DEC && f->id() != FUNCTION_ID_HEX)
 
-bool read_insert_function_dialog_settings_line(string &svar, string &svalue, int &v) {
+bool read_insert_function_dialog_settings_line(string &svar, string&, int &v) {
 	if(svar == "keep_function_dialog_open") {
 		keep_function_dialog_open = v;
 	} else if(svar == "bit_width") {
@@ -76,7 +76,7 @@ void on_type_label_date_clicked(GtkEntry *w, gpointer) {
 	}
 	gtk_widget_destroy(d);
 }
-void on_type_label_vector_clicked(GtkEntry *w, gpointer user_data) {
+void on_type_label_vector_clicked(GtkEntry *w, gpointer) {
 	MathStructure mstruct_v;
 	string str = gtk_entry_get_text(w);
 	remove_blank_ends(str);
@@ -91,7 +91,7 @@ void on_type_label_vector_clicked(GtkEntry *w, gpointer user_data) {
 	}
 	insert_matrix(str.empty() ? NULL : &mstruct_v, GTK_WINDOW(gtk_widget_get_ancestor(GTK_WIDGET(w), GTK_TYPE_WINDOW)), TRUE, false, false, w);
 }
-void on_type_label_matrix_clicked(GtkEntry *w, gpointer user_data) {
+void on_type_label_matrix_clicked(GtkEntry *w, gpointer) {
 	MathStructure mstruct_m;
 	string str = gtk_entry_get_text(w);
 	remove_blank_ends(str);
@@ -320,7 +320,7 @@ void on_insert_function_insert(GtkWidget*, gpointer p) {
 		function_dialogs.erase(f);
 	}
 }
-void on_insert_function_rpn(GtkWidget *w, gpointer p) {
+void on_insert_function_rpn(GtkWidget*, gpointer p) {
 	MathFunction *f = (MathFunction*) p;
 	FunctionDialog *fd = function_dialogs[f];
 	if(!fd->keep_open) gtk_widget_hide(fd->dialog);
@@ -340,7 +340,7 @@ void on_insert_function_keepopen(GtkToggleButton *w, gpointer p) {
 	fd->keep_open = gtk_toggle_button_get_active(w);
 	keep_function_dialog_open = fd->keep_open;
 }
-void on_insert_function_changed(GtkWidget *w, gpointer p) {
+void on_insert_function_changed(GtkWidget*, gpointer p) {
 	MathFunction *f = (MathFunction*) p;
 	FunctionDialog *fd = function_dialogs[f];
 	gtk_label_set_text(GTK_LABEL(fd->w_result), "");
@@ -1209,6 +1209,6 @@ void insert_button_function(MathFunction *f, bool save_to_recent, bool apply_to_
 void insert_function_binary_bits_changed() {
 	default_bits = -1;
 }
-void insert_function_twos_complement_changed(bool bo, bool ho, bool bi, bool hi) {
+void insert_function_twos_complement_changed(bool, bool, bool, bool hi) {
 	if(hi && evalops.parse_options.twos_complement != default_signed) default_signed = -1;
 }

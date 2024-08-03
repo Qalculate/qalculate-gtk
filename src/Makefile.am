@@ -64,6 +64,7 @@ qalculate_gtk_SOURCES = \
 	expressionedit.cc expressionedit.h \
 	expressionstatus.cc expressionstatus.h \
 	expressioncompletion.cc expressioncompletion.h \
+	drawstructure.cc drawstructure.h \
 	resultview.cc resultview.h \
 	openhelp.cc openhelp.h \
 	menubar.cc menubar.h \

@@ -40,14 +40,12 @@ using std::vector;
 using std::endl;
 using std::iterator;
 using std::list;
-using std::ifstream;
-using std::ofstream;
 using std::deque;
 using std::stack;
 
 int block_error_timeout = 0;
 
-extern KnownVariable *vans[5], *v_memory;
+KnownVariable *vans[5], *v_memory;
 extern string selected_function_category;
 extern MathFunction *selected_function;
 extern string selected_variable_category;
@@ -68,18 +66,18 @@ bool copy_ascii = false;
 bool copy_ascii_without_units = false;
 bool caret_as_xor = false;
 int close_with_esc = -1;
-extern bool load_global_defs, first_time;
+extern bool first_time;
 extern int allow_multiple_instances;
 int b_decimal_comma;
 bool first_error;
 bool display_expression_status;
-extern MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct;
+MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct;
 MathStructure mbak_convert;
-extern string result_text, parsed_text;
+string result_text, parsed_text;
 bool result_text_approximate = false;
 string result_text_long;
 vector<vector<GtkWidget*> > insert_element_entries;
-bool b_busy, b_busy_command, b_busy_result, b_busy_expression, b_busy_fetch;
+bool b_busy = false, b_busy_command = false, b_busy_result = false, b_busy_expression = false;
 int block_result_update = 0, block_expression_execution = 0;
 extern int visible_keypad;
 extern int programming_inbase, programming_outbase;
@@ -92,8 +90,6 @@ extern bool cursor_has_moved;
 int enable_tooltips = 1;
 bool toe_changed = false;
 
-string prev_output_base, prev_input_base;
-
 int previous_precision = 0;
 
 string custom_angle_unit;
@@ -101,10 +97,6 @@ string custom_angle_unit;
 string command_convert_units_string;
 Unit *command_convert_unit;
 
-extern GtkAccelGroup *accel_group;
-
-extern gint win_height, win_width, win_x, win_y, win_monitor, history_height, hidden_x, hidden_y, hidden_monitor;
-extern bool win_monitor_primary, hidden_monitor_primary;
 bool remember_position = false, always_on_top = false, aot_changed = false;
 
 gint minimal_width;
@@ -159,7 +151,7 @@ int to_caf = -1;
 unsigned int to_bits = 0;
 Number to_nbase;
 
-extern bool do_imaginary_j;
+bool do_imaginary_j = false;
 bool complex_angle_form = false;
 
 bool default_shortcuts;
@@ -238,18 +230,20 @@ GtkCssProvider *topframe_provider = NULL, *app_provider = NULL, *app_provider_th
 
 string themestr;
 
-gint win_height, win_width, win_x, win_y, win_monitor, history_height;
-bool win_monitor_primary;
-extern bool remember_position, always_on_top, aot_changed;
-extern gint minimal_width;
+gint win_height = -1, win_width = -1, win_x = 0, win_y = 0, win_monitor = 0, history_height = 0;
+bool win_monitor_primary = false;
+gint hidden_x = -1, hidden_y = -1, hidden_monitor = 1;
+bool hidden_monitor_primary = false;
 
 unordered_map<string, cairo_surface_t*> flag_surfaces;
 int flagheight;
 
+DECLARE_BUILTIN_FUNCTION(SetTitleFunction, 0)
+
 SetTitleFunction::SetTitleFunction() : MathFunction("settitle", 1, 1, CALCULATOR->f_warning->category(), _("Set Window Title")) {
 	setArgumentDefinition(1, new TextArgument());
 }
-int SetTitleFunction::calculate(MathStructure &mstruct, const MathStructure &vargs, const EvaluationOptions&) {
+int SetTitleFunction::calculate(MathStructure&, const MathStructure &vargs, const EvaluationOptions&) {
 	gtk_window_set_title(main_window(), vargs[0].symbol().c_str());
 	title_modified = true;
 	return 1;
@@ -288,7 +282,7 @@ int has_information_unit_gtk(const MathStructure &m, bool top = true) {
 string copy_text;
 
 void end_cb(GtkClipboard*, gpointer) {}
-void get_cb(GtkClipboard* cb, GtkSelectionData* sd, guint info, gpointer) {
+void get_cb(GtkClipboard*, GtkSelectionData* sd, guint info, gpointer) {
 	if(info == 1) gtk_selection_data_set(sd, gtk_selection_data_get_target(sd), 8, reinterpret_cast<const guchar*>(copy_text.c_str()), copy_text.length());
 	else if(info == 3) gtk_selection_data_set_text(sd, unformat(unhtmlize(copy_text, true)).c_str(), -1);
 	else gtk_selection_data_set_text(sd, unhtmlize(copy_text).c_str(), -1);
@@ -494,6 +488,9 @@ extern vector<Unit*> recent_units;
 
 bool is_answer_variable(Variable *v) {
 	return v == vans[0] || v == vans[1] || v == vans[2] || v == vans[3] || v == vans[4];
+}
+bool is_memory_variable(Variable *v) {
+	return v == v_memory;
 }
 
 bool expression_display_errors(GtkWindow *win, int type, bool do_exrate_sources, string &str, int mtype_highest) {
@@ -1109,7 +1106,7 @@ bool contains_fraction_gtk(const MathStructure &m) {
 string prev_autocalc_str;
 MathStructure mauto;
 
-void do_auto_calc(int recalculate, string str) {
+void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 	if(result_blocked() || calculation_blocked()) return;
 
 	bool do_factors = false, do_pfe = false, do_expand = false;
@@ -1659,7 +1656,7 @@ void do_auto_calc(int recalculate, string str) {
 		if(parsed_in_result) {
 			PrintOptions po = printops;
 			po.base_display = BASE_DISPLAY_SUFFIX;
-			po.can_display_unicode_string_arg = (void*) gtk_builder_get_object(main_builder, "label_status_left");
+			po.can_display_unicode_string_arg = (void*) parse_status_widget();
 			po.allow_non_usable = true;
 			result_text = displayed_mstruct_pre->print(printops, true);
 			result_text_approximate = *po.is_approximate;
@@ -2183,10 +2180,6 @@ void update_fmenu(bool update_compl) {
 }
 
 
-void on_abort_display(GtkDialog*, gint, gpointer) {
-	CALCULATOR->abort();
-}
-
 void ViewThread::run() {
 
 	while(true) {
@@ -2235,7 +2228,7 @@ void ViewThread::run() {
 			po.excessive_parenthesis = true;
 			po.improve_division_multipliers = false;
 			po.can_display_unicode_string_function = &can_display_unicode_string_function;
-			po.can_display_unicode_string_arg = (void*) gtk_builder_get_object(main_builder, "label_status_left");
+			po.can_display_unicode_string_arg = (void*) parse_status_widget();
 			po.spell_out_logical_operators = printops.spell_out_logical_operators;
 			po.restrict_to_parent_precision = false;
 			po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
@@ -2536,7 +2529,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 
 	printops.prefix = prefix;
 
-#define SET_RESULT_RETURN {b_busy = false; b_busy_result = false; unblock_error(); return;}
+#define SET_RESULT_RETURN {b_busy = false; b_busy_result = false; draw_result_abort(); unblock_error(); return;}
 
 	if(stack_index == 0) {
 		if(!view_thread->write((void *) mstruct)) SET_RESULT_RETURN
@@ -2695,21 +2688,6 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 
 	unblock_error();
 
-}
-
-void on_abort_command(GtkDialog*, gint, gpointer) {
-	CALCULATOR->abort();
-	int msecs = 5000;
-	while(b_busy && msecs > 0) {
-		sleep_ms(10);
-		msecs -= 10;
-	}
-	if(b_busy) {
-		command_thread->cancel();
-		b_busy = false;
-		CALCULATOR->stopControl();
-		command_aborted = true;
-	}
 }
 
 void CommandThread::run() {
@@ -2974,14 +2952,11 @@ void result_format_updated() {
 	set_expression_output_updated(true);
 	display_parse_status();
 }
-void result_action_executed() {
-	printops.allow_factorization = (evalops.structuring == STRUCTURING_FACTORIZE);
-	setResult(NULL, true, false, true);
-}
-bool contains_prefix(const MathStructure &m) {
+
+bool contains_prefix2(const MathStructure &m) {
 	if(m.isUnit() && (m.prefix() || m.unit()->subtype() == SUBTYPE_COMPOSITE_UNIT)) return true;
 	for(size_t i = 0; i < m.size(); i++) {
-		if(contains_prefix(m[i])) return true;
+		if(contains_prefix2(m[i])) return true;
 	}
 	return false;
 }
@@ -2992,7 +2967,7 @@ void result_prefix_changed(Prefix *prefix) {
 	to_prefix = 0;
 	bool b_use_unit_prefixes = printops.use_unit_prefixes;
 	bool b_use_prefixes_for_all_units = printops.use_prefixes_for_all_units;
-	if(contains_prefix(*mstruct)) {
+	if(contains_prefix2(*mstruct)) {
 		mstruct->unformat(evalops);
 		executeCommand(COMMAND_CALCULATE, false);
 	}
@@ -3049,13 +3024,28 @@ void expression_format_updated(bool recalculate) {
 	update_status_text();
 }
 
-void abort_calculation() {
-	if(b_busy_expression) on_abort_calculation(NULL, 0, NULL);
-	else if(b_busy_result) on_abort_display(NULL, 0, NULL);
-	else if(b_busy_command) on_abort_command(NULL, 0, NULL);
+bool calculator_busy() {
+	return b_busy;
 }
-void on_abort_calculation(GtkDialog*, gint, gpointer) {
-	CALCULATOR->abort();
+void set_busy(bool b) {
+	b_busy = b;
+}
+
+void abort_calculation() {
+	if(b_busy_expression || b_busy_result || b_busy_command) CALCULATOR->abort();
+	if(b_busy_command) {
+		int msecs = 5000;
+		while(b_busy && msecs > 0) {
+			sleep_ms(10);
+			msecs -= 10;
+		}
+		if(b_busy) {
+			command_thread->cancel();
+			b_busy = false;
+			CALCULATOR->stopControl();
+			command_aborted = true;
+		}
+	}
 }
 
 int s2b(const string &str) {
@@ -6120,7 +6110,6 @@ void load_preferences() {
 	save_default_mode(custom_angle_unit.c_str());
 
 }
-
 void definitions_loaded() {
 	remove_old_my_variables_category();
 
@@ -6136,6 +6125,19 @@ void definitions_loaded() {
 		ename.reference = false;
 		CALCULATOR->v_i->addName(ename, 1, true);
 		CALCULATOR->v_i->setChanged(false);
+	}
+}
+void add_recent_items() {
+	for(int i = ((int) recent_functions_pre.size()) - 1; i >= 0; i--) {
+		function_inserted(CALCULATOR->getActiveFunction(recent_functions_pre[i]));
+	}
+	for(int i = ((int) recent_variables_pre.size()) - 1; i >= 0; i--) {
+		variable_inserted(CALCULATOR->getActiveVariable(recent_variables_pre[i]));
+	}
+	for(int i = ((int) recent_units_pre.size()) - 1; i >= 0; i--) {
+		Unit *u = CALCULATOR->getActiveUnit(recent_units_pre[i]);
+		if(!u) u = CALCULATOR->getCompositeUnit(recent_units_pre[i]);
+		unit_inserted(u);
 	}
 }
 
@@ -6426,47 +6428,6 @@ bool save_preferences(bool mode, bool allow_cancel) {
 
 }
 
-/*
-	save preferences, mode and definitions and then quit
-*/
-bool qalculate_quit() {
-	exit_in_progress = true;
-	stop_autocalculate_history_timeout();
-	block_error();
-	hide_plot_dialog();
-	CALCULATOR->abort();
-	if(!save_preferences(save_mode_on_exit, true)) {
-		unblock_error();
-		exit_in_progress = false;
-		return FALSE;
-	}
-	if(!save_history(true)) {
-		unblock_error();
-		exit_in_progress = false;
-		return FALSE;
-	}
-	if(save_defs_on_exit && !save_defs(true)) {
-		unblock_error();
-		exit_in_progress = false;
-		return FALSE;
-	}
-	stop_timeouts = true;
-#ifdef _WIN32
-	if(use_systray_icon) destroy_systray_icon();
-#endif
-	history_free();
-	if(command_thread->running) {
-		command_thread->write((int) 0);
-		command_thread->write(NULL);
-	}
-	if(view_thread->running) {
-		view_thread->write(NULL);
-	}
-	CALCULATOR->terminateThreads();
-	g_application_quit(g_application_get_default());
-	return TRUE;
-}
-
 void memory_recall() {
 	bool b_exec = !rpn_mode && (!auto_calculate || parsed_in_result) && (expression_is_empty() || !expression_modified());
 	insert_variable(v_memory);
@@ -6560,14 +6521,14 @@ void import_definitions_file() {
 			gtk_widget_destroy(dialog);
 		}
 #else
-		ifstream source(from_file);
+		std::ifstream source(from_file);
 		if(source.fail()) {
 			source.close();
 			GtkWidget *dialog = gtk_message_dialog_new(main_window(), (GtkDialogFlags) 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, _("Could not read %s."), from_file);
 			gtk_dialog_run(GTK_DIALOG(dialog));
 			gtk_widget_destroy(dialog);
 		} else {
-			ofstream dest(buildPath(homedir, str).c_str());
+			std::ofstream dest(buildPath(homedir, str).c_str());
 			if(dest.fail()) {
 				source.close();
 				dest.close();
@@ -6718,7 +6679,7 @@ void set_prefix_mode(int i) {
 	auto_prefix = 0;
 	result_format_updated();
 }
-void set_twos_complement(int bo, int ho, int bi, int hi) {
+void set_twos_complement(int bo, int ho, int bi, int hi, bool recalculate) {
 	if(bo >= 0) {
 		if(printops.twos_complement == bo) bo = -1;
 		else printops.twos_complement = bo;
@@ -6735,17 +6696,17 @@ void set_twos_complement(int bo, int ho, int bi, int hi) {
 		if(evalops.parse_options.hexadecimal_twos_complement == hi) hi = -1;
 		else evalops.parse_options.hexadecimal_twos_complement = bo;
 	}
-	if(bi >= 0 || hi >= 0) expression_format_updated(true);
+	if(bi >= 0 || hi >= 0) expression_format_updated(recalculate);
 	else if(bo >= 0 || ho >= 0) result_format_updated();
 	update_keypad_programming_base();
 	preferences_update_twos_complement();
 	insert_function_twos_complement_changed(bo >= 0, ho >= 0, bi >= 0, hi >= 0);
 }
-void set_binary_bits(unsigned int i) {
+void set_binary_bits(unsigned int i, bool recalculate) {
 	if(i == printops.binary_bits && i == evalops.parse_options.binary_bits) return;
 	printops.binary_bits = i;
 	evalops.parse_options.binary_bits = printops.binary_bits;
-	if(evalops.parse_options.twos_complement || evalops.parse_options.hexadecimal_twos_complement) expression_format_updated(true);
+	if(evalops.parse_options.twos_complement || evalops.parse_options.hexadecimal_twos_complement) expression_format_updated(recalculate);
 	else result_format_updated();
 	update_keypad_programming_base();
 	preferences_update_twos_complement();
@@ -6806,15 +6767,17 @@ void set_custom_angle_unit(Unit *u) {
 	update_status_angle();
 	update_menu_angle();
 }
-
-gboolean on_about_activate_link(GtkAboutDialog*, gchar *uri, gpointer) {
 #ifdef _WIN32
+gboolean on_about_activate_link(GtkAboutDialog*, gchar *uri, gpointer) {
 	ShellExecuteA(NULL, "open", uri, NULL, NULL, SW_SHOWNORMAL);
 	return TRUE;
-#else
-	return FALSE;
-#endif
 }
+#else
+gboolean on_about_activate_link(GtkAboutDialog*, gchar*, gpointer) {
+	return FALSE;
+}
+#endif
+
 void show_about() {
 	const gchar *authors[] = {"Hanna Knutsson <hanna.knutsson@protonmail.com>", NULL};
 	GtkWidget *dialog = gtk_about_dialog_new();
@@ -7359,6 +7322,10 @@ void unit_inserted(Unit *object) {
 	add_recent_unit(object);
 	update_mb_units_menu();
 }
+void insert_answer_variable(size_t index) {
+	if(index > 5) return;
+	insert_text(vans[index]->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_VARIABLE, true).c_str());
+}
 void insert_variable(Variable *v, bool add_to_recent) {
 	if(!v || !CALCULATOR->stillHasVariable(v)) {
 		show_message(_("Variable does not exist anymore."));
@@ -7556,11 +7523,11 @@ void open_convert_number_bases() {
 	convert_number_bases(main_window(), str.c_str(), evalops.parse_options.base);
 }
 void open_convert_floatingpoint() {
-	if(current_displayed_result() && !result_text_empty() && !result_did_not_fit()) return convert_floatingpoint(((current_result()->isNumber() && !current_result()->number().hasImaginaryPart()) || current_result()->isUndefined()) ? get_result_text().c_str() : "", true, main_window());
+	if(current_displayed_result() && !result_text_empty() && !result_did_not_fit()) return convert_floatingpoint(((current_result()->isNumber() && !current_result()->number().hasImaginaryPart()) || current_result()->isUndefined()) ? get_result_text().c_str() : "", current_displayed_printops().base, main_window());
 	string str = get_selected_expression_text(true), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	remove_blank_ends(str);
-	convert_floatingpoint(str.c_str(), false, main_window());
+	convert_floatingpoint(str.c_str(), evalops.parse_options.base, main_window());
 }
 void open_percentage_tool() {
 	if(!result_text_empty()) return show_percentage_dialog(main_window(), get_result_text().c_str());
@@ -7672,7 +7639,7 @@ gboolean on_event(GtkWidget*, GdkEvent *e, gpointer) {
 	}
 	return TRUE;
 }
-gboolean on_configure_event(GtkWidget*, GdkEventConfigure *event, gpointer) {
+gboolean on_configure_event(GtkWidget*, GdkEventConfigure*, gpointer) {
 	if(minimal_mode) {
 		if(minimal_window_resized_timeout_id) g_source_remove(minimal_window_resized_timeout_id);
 		minimal_window_resized_timeout_id = g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 1000, minimal_window_resized_timeout, NULL, NULL);
@@ -7732,7 +7699,7 @@ gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 	}
 	return FALSE;
 }
-void on_message_bar_response(GtkInfoBar *w, gint response_id, gpointer) {
+void on_message_bar_response(GtkInfoBar*, gint response_id, gpointer) {
 	if(response_id == GTK_RESPONSE_CLOSE) {
 		gint w, h, dur;
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "message_label")), "");
@@ -7746,7 +7713,7 @@ void on_message_bar_response(GtkInfoBar *w, gint response_id, gpointer) {
 	}
 }
 
-gboolean on_main_window_close(GtkWidget *w, GdkEvent *event, gpointer user_data) {
+gboolean on_main_window_close(GtkWidget *w, GdkEvent*, gpointer) {
 	if(has_systray_icon()) {
 		save_preferences(save_mode_on_exit);
 		save_history();
@@ -7797,7 +7764,45 @@ gboolean on_main_window_close(GtkWidget *w, GdkEvent *event, gpointer user_data)
 	}
 	return TRUE;
 }
-gboolean on_main_window_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
+void restore_window(GtkWindow *win) {
+	if(!win) win = main_window();
+	if(hidden_x >= 0) {
+		gtk_widget_show(GTK_WIDGET(win));
+		GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(win));
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+		GdkMonitor *monitor = NULL;
+		if(hidden_monitor_primary) monitor = gdk_display_get_primary_monitor(display);
+		if(!monitor && hidden_monitor > 0) gdk_display_get_monitor(display, hidden_monitor - 1);
+		if(monitor) {
+			GdkRectangle area;
+			gdk_monitor_get_workarea(monitor, &area);
+#else
+		GdkScreen *screen = gdk_display_get_default_screen(display);
+		int i = -1;
+		if(hidden_monitor_primary) i = gdk_screen_get_primary_monitor(screen);
+		if(i < 0 && hidden_monitor > 0 && hidden_monitor < gdk_screen_get_n_monitors(screen)) i = hidden_monitor;
+		if(i >= 0) {
+			GdkRectangle area;
+			gdk_screen_get_monitor_workarea(screen, i, &area);
+#endif
+			gint w = 0, h = 0;
+			gtk_window_get_size(win, &w, &h);
+			if(hidden_x + w > area.width) hidden_x = area.width - w;
+			if(hidden_y + h > area.height) hidden_y = area.height - h;
+			gtk_window_move(win, hidden_x + area.x, hidden_y + area.y);
+		} else {
+			gtk_window_move(win, hidden_x, hidden_y);
+		}
+		hidden_x = -1;
+	}
+#ifdef _WIN32
+	gtk_window_present_with_time(win, GDK_CURRENT_TIME);
+#endif
+	focus_expression();
+	gtk_window_present_with_time(win, GDK_CURRENT_TIME);
+}
+
+gboolean on_main_window_button_press_event(GtkWidget*, GdkEventButton*, gpointer) {
 	hide_completion();
 	return FALSE;
 }
@@ -7977,11 +7982,11 @@ void on_expander_convert_expanded(GObject *o, GParamSpec*, gpointer) {
 		show_tabs(false);
 	}
 }
-void on_expander_convert_activate(GtkExpander *o, gpointer) {
+void on_expander_convert_activate(GtkExpander*, gpointer) {
 	focus_conversion_entry();
 }
 
-void update_app_font(bool initial) {
+void update_app_font(bool initial = false) {
 	if(use_custom_app_font) {
 		if(!app_provider) {
 			app_provider = gtk_css_provider_new();
@@ -8105,10 +8110,17 @@ bool update_window_title(const char *str, bool is_result) {
 	}
 	return true;
 }
+void set_custom_window_title(const char *str) {
+	if(str) {
+		gtk_window_set_title(main_window(), str);
+		title_modified = true;
+	} else {
+		update_window_title();
+		title_modified = false;
+	}
+}
 
 bool border_tested = false;
-gint hidden_x = -1, hidden_y = -1, hidden_monitor = 1;
-bool hidden_monitor_primary = false;
 
 #ifdef _WIN32
 #	include <gdk/gdkwin32.h>
@@ -8119,41 +8131,11 @@ static HWND hwnd = NULL;
 
 INT_PTR CALLBACK tray_window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	if(message == WIN_TRAY_ICON_MESSAGE && (lParam == WM_LBUTTONDBLCLK || lParam == WM_LBUTTONUP)) {
-		if(hidden_x >= 0) {
-			gtk_widget_show(main_window());
-			GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(main_window()));
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-			GdkMonitor *monitor = NULL;
-			if(hidden_monitor_primary) monitor = gdk_display_get_primary_monitor(display);
-			if(!monitor && hidden_monitor > 0) gdk_display_get_monitor(display, hidden_monitor - 1);
-			if(monitor) {
-				GdkRectangle area;
-				gdk_monitor_get_workarea(monitor, &area);
-#else
-			GdkScreen *screen = gdk_display_get_default_screen(display);
-			int i = -1;
-			if(hidden_monitor_primary) i = gdk_screen_get_primary_monitor(screen);
-			if(i < 0 && hidden_monitor > 0 && hidden_monitor < gdk_screen_get_n_monitors(screen)) i = hidden_monitor;
-			if(i >= 0) {
-				GdkRectangle area;
-				gdk_screen_get_monitor_workarea(screen, i, &area);
-#endif
-				gint w = 0, h = 0;
-				gtk_window_get_size(main_window(), &w, &h);
-				if(hidden_x + w > area.width) hidden_x = area.width - w;
-				if(hidden_y + h > area.height) hidden_y = area.height - h;
-				gtk_window_move(main_window(), hidden_x + area.x, hidden_y + area.y);
-			} else {
-				gtk_window_move(main_window(), hidden_x, hidden_y);
-			}
-			hidden_x = -1;
-		}
-		gtk_window_present_with_time(main_window(), GDK_CURRENT_TIME);
-		focus_expression();
-		gtk_window_present_with_time(main_window(), GDK_CURRENT_TIME);
+		restore_window();
 	}
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
+
 void destroy_systray_icon() {
 	if(hwnd == NULL) return;
 	Shell_NotifyIcon(NIM_DELETE, &nid);
@@ -8271,7 +8253,7 @@ void update_colors(bool initial) {
 		gtk_style_context_get_color(gtk_widget_get_style_context(expression_edit_widget()), GTK_STATE_FLAG_NORMAL, &c);
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
 		if(gdk_rgba_equal(&c, &bg_color)) {
-			gtk_style_context_get_color(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, &c);
+			gtk_style_context_get_color(gtk_widget_get_style_context(parse_status_widget()), GTK_STATE_FLAG_NORMAL, &c);
 		}
 #endif
 		gchar tcs[8];
@@ -8298,7 +8280,87 @@ GtkWindow *main_window() {
 	return mainwindow;
 }
 
-void create_main_window(void) {
+void initialize_variables() {
+	string ans_str = _("ans");
+	vans[0] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str, m_undefined, _("Last Answer"), false));
+	vans[0]->addName(_("answer"));
+	vans[0]->addName(ans_str + "1");
+	vans[1] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str + "2", m_undefined, _("Answer 2"), false));
+	vans[2] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str + "3", m_undefined, _("Answer 3"), false));
+	vans[3] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str + "4", m_undefined, _("Answer 4"), false));
+	vans[4] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str + "5", m_undefined, _("Answer 5"), false));
+	if(ans_str != "ans") {
+		ans_str = "ans";
+		vans[0]->addName(ans_str);
+		vans[0]->addName(ans_str + "1");
+		vans[1]->addName(ans_str + "2");
+		vans[2]->addName(ans_str + "3");
+		vans[3]->addName(ans_str + "4");
+		vans[4]->addName(ans_str + "5");
+	}
+	v_memory = new KnownVariable(CALCULATOR->temporaryCategory(), "", m_zero, _("Memory"), false, true);
+	ExpressionName ename;
+	ename.name = "MR";
+	ename.case_sensitive = true;
+	ename.abbreviation = true;
+	v_memory->addName(ename);
+	ename.name = "MRC";
+	v_memory->addName(ename);
+	CALCULATOR->addVariable(v_memory);
+	CALCULATOR->addFunction(new SetTitleFunction());
+}
+
+/*
+	save preferences, mode and definitions and then quit
+*/
+bool qalculate_quit() {
+	exit_in_progress = true;
+	stop_autocalculate_history_timeout();
+	block_error();
+	hide_plot_dialog();
+	CALCULATOR->abort();
+	if(!save_preferences(save_mode_on_exit, true)) {
+		unblock_error();
+		exit_in_progress = false;
+		return FALSE;
+	}
+	if(!save_history(true)) {
+		unblock_error();
+		exit_in_progress = false;
+		return FALSE;
+	}
+	if(save_defs_on_exit && !save_defs(true)) {
+		unblock_error();
+		exit_in_progress = false;
+		return FALSE;
+	}
+	stop_timeouts = true;
+#ifdef _WIN32
+	if(use_systray_icon) destroy_systray_icon();
+#endif
+	history_free();
+	if(command_thread->running) {
+		command_thread->write((int) 0);
+		command_thread->write(NULL);
+	}
+	if(view_thread->running) {
+		view_thread->write(NULL);
+	}
+	CALCULATOR->terminateThreads();
+	g_application_quit(g_application_get_default());
+	return TRUE;
+}
+
+void create_main_window() {
+
+	mstruct = new MathStructure();
+	parsed_mstruct = new MathStructure();
+	parsed_tostruct = new MathStructure();
+	parsed_tostruct->setUndefined();
+	matrix_mstruct = new MathStructure();
+	mbak_convert.setUndefined();
+
+	initialize_variables();
 
 	main_builder = getBuilder("main.ui");
 	g_assert(main_builder != NULL);
@@ -8537,5 +8599,8 @@ void create_main_window(void) {
 	view_thread = new ViewThread;
 	view_thread->start();
 	command_thread = new CommandThread;
+
+	result_text = "0";
+	parsed_text = "0";
 
 }

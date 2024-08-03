@@ -59,7 +59,7 @@ struct _QalculateSearchProvider {
 
 G_DEFINE_TYPE(QalculateSearchProvider, qalculate_search_provider, G_TYPE_OBJECT);
 
-static void qalculate_search_provider_class_init(QalculateSearchProviderClass *o) {}
+static void qalculate_search_provider_class_init(QalculateSearchProviderClass*) {}
 static QalculateSearchProvider *qalculate_search_provider_new(void) {
 	return QALCULATE_SEARCH_PROVIDER(g_object_new(qalculate_search_provider_get_type(), NULL));
 }
@@ -75,7 +75,7 @@ bool has_error() {
 	return false;
 }
 
-static void qalculate_search_provider_activate_result(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar *result, gchar **terms, guint timestamp, gpointer user_data) {
+static void qalculate_search_provider_activate_result(ShellSearchProvider2*, GDBusMethodInvocation *invocation, gchar *result, gchar **terms, guint, gpointer) {
 	gchar *joined_terms = g_strjoinv(" ", terms);
 	if(strcmp(result, "copy-to-clipboard") == 0) {
 		unordered_map<string, string>::const_iterator it = expressions.find(joined_terms);
@@ -177,7 +177,7 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 		}
 	}
 }
-static gboolean qalculate_search_provider_get_initial_result_set(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **terms, gpointer user_data) {
+static gboolean qalculate_search_provider_get_initial_result_set(ShellSearchProvider2*, GDBusMethodInvocation *invocation, gchar **terms, gpointer) {
 	gchar *joined_terms = g_strjoinv(" ", terms);
 	GVariantBuilder builder;
 	handle_terms(joined_terms, builder);
@@ -185,7 +185,7 @@ static gboolean qalculate_search_provider_get_initial_result_set(ShellSearchProv
 	g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
 	return TRUE;
 }
-static gboolean qalculate_search_provider_get_result_metas(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **eqs, gpointer user_data) {
+static gboolean qalculate_search_provider_get_result_metas(ShellSearchProvider2*, GDBusMethodInvocation *invocation, gchar **eqs, gpointer) {
 	gint idx;
 	GVariantBuilder metas;
 	g_variant_builder_init(&metas, G_VARIANT_TYPE ("aa{sv}"));
@@ -215,7 +215,7 @@ static gboolean qalculate_search_provider_get_result_metas(ShellSearchProvider2 
 	g_dbus_method_invocation_return_value(invocation, g_variant_new("(aa{sv})", &metas));
 	return TRUE;
 }
-static gboolean qalculate_search_provider_get_subsearch_result_set(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **arg_previous_results, gchar **terms, gpointer user_data) {
+static gboolean qalculate_search_provider_get_subsearch_result_set(ShellSearchProvider2*, GDBusMethodInvocation *invocation, gchar**, gchar **terms, gpointer) {
 	gchar *joined_terms = g_strjoinv(" ", terms);
 	GVariantBuilder builder;
 	handle_terms(joined_terms, builder);
@@ -223,7 +223,7 @@ static gboolean qalculate_search_provider_get_subsearch_result_set(ShellSearchPr
 	g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
 	return TRUE;
 }
-static gboolean qalculate_search_provider_launch_search(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **terms, guint timestamp, gpointer user_data) {
+static gboolean qalculate_search_provider_launch_search(ShellSearchProvider2*, GDBusMethodInvocation *invocation, gchar **terms, guint, gpointer) {
 	gchar *joined_terms = g_strjoinv(" ", terms);
 	string str = "qalculate-gtk \"";
 	str += joined_terms;
@@ -251,7 +251,7 @@ gboolean qalculate_search_provider_dbus_export(QalculateSearchProvider *self, GD
 	return g_dbus_interface_skeleton_export(G_DBUS_INTERFACE_SKELETON(self->skeleton), connection, object_path, error);
 }
 
-void qalculate_search_provider_dbus_unexport(QalculateSearchProvider *self, GDBusConnection *connection, const gchar *object_path) {
+void qalculate_search_provider_dbus_unexport(QalculateSearchProvider *self, GDBusConnection *connection, const gchar*) {
 	if(g_dbus_interface_skeleton_has_connection(G_DBUS_INTERFACE_SKELETON(self->skeleton), connection)) {
 		g_dbus_interface_skeleton_unexport_from_connection(G_DBUS_INTERFACE_SKELETON(self->skeleton), connection);
 	}
@@ -278,7 +278,7 @@ static void qalculate_search_application_class_init(QalculateSearchApplicationCl
 	application_class->dbus_unregister = qalculate_search_application_dbus_unregister;
 }
 
-static void qalculate_search_application_init(QalculateSearchApplication *self) {}
+static void qalculate_search_application_init(QalculateSearchApplication*) {}
 
 static GtkApplication *qalculate_search_application_new(void) {
 	return GTK_APPLICATION(g_object_new(qalculate_search_application_get_type(), "application-id", "io.github.Qalculate.SearchProvider", "flags", G_APPLICATION_IS_SERVICE, "inactivity-timeout", 20000, NULL));

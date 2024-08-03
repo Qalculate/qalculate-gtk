@@ -100,7 +100,7 @@ void on_tMatrixEdit_edited(GtkCellRendererText *cell, gchar *path_string, gchar 
 	gtk_list_store_set(GTK_LIST_STORE (model), &iter, i_column, new_text, -1);
 	on_matrix_changed();
 }
-gboolean on_tMatrixEdit_editable_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer renderer) {
+gboolean on_tMatrixEdit_editable_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer) {
 	switch(event->keyval) {
 		case GDK_KEY_Up: {}
 		case GDK_KEY_Down: {}
@@ -158,7 +158,7 @@ gboolean on_tMatrixEdit_editable_key_press_event(GtkWidget *w, GdkEventKey *even
 	}
 	return FALSE;
 }
-void on_tMatrixEdit_editing_started(GtkCellRenderer *renderer, GtkCellEditable *editable, gchar *path, gpointer user_data) {
+void on_tMatrixEdit_editing_started(GtkCellRenderer *renderer, GtkCellEditable *editable, gchar*, gpointer) {
 	g_signal_connect(G_OBJECT(editable), "key-press-event", G_CALLBACK(on_tMatrixEdit_editable_key_press_event), renderer);
 }
 gboolean on_tMatrixEdit_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
@@ -230,7 +230,7 @@ gboolean on_tMatrixEdit_button_press_event(GtkWidget*, GdkEventButton *event, gp
 	if(path) gtk_tree_path_free(path);
 	return FALSE;
 }
-void on_matrix_edit_checkbutton_temporary_toggled(GtkToggleButton *w, gpointer user_data) {
+void on_matrix_edit_checkbutton_temporary_toggled(GtkToggleButton *w, gpointer) {
 	gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(matrixedit_builder, "matrix_edit_combo_category")))), gtk_toggle_button_get_active(w) ? CALCULATOR->temporaryCategory().c_str() : "");
 }
 void on_matrix_edit_spinbutton_columns_value_changed(GtkSpinButton *w, gpointer) {
@@ -292,10 +292,10 @@ void on_matrix_edit_spinbutton_rows_value_changed(GtkSpinButton *w, gpointer) {
 		}
 	}
 }
-void on_matrix_edit_radiobutton_matrix_toggled(GtkToggleButton *w, gpointer) {
+void on_matrix_edit_radiobutton_matrix_toggled(GtkToggleButton*, gpointer) {
 	on_tMatrixEdit_cursor_changed(GTK_TREE_VIEW(tMatrixEdit), NULL);
 }
-void on_matrix_edit_radiobutton_vector_toggled(GtkToggleButton *w, gpointer) {
+void on_matrix_edit_radiobutton_vector_toggled(GtkToggleButton*, gpointer) {
 	on_tMatrixEdit_cursor_changed(GTK_TREE_VIEW(tMatrixEdit), NULL);
 }
 

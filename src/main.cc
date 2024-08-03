@@ -43,38 +43,15 @@ using std::cout;
 using std::vector;
 using std::endl;
 
-MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct;
-extern MathStructure mbak_convert;
-KnownVariable *vans[5], *v_memory;
-string result_text, parsed_text;
 bool load_global_defs, first_time;
 int allow_multiple_instances = -1;
-extern bool b_busy, b_busy_command, b_busy_result, b_busy_expression;
-extern int block_expression_execution;
-extern vector<string> recent_functions_pre;
-extern vector<string> recent_variables_pre;
-extern vector<string> recent_units_pre;
-extern PrintOptions printops;
-extern bool ignore_locale;
-extern bool title_modified;
-extern bool minimal_mode;
-extern gint hidden_x, hidden_y, hidden_monitor;
-extern bool hidden_monitor_primary;
 bool check_version = false;
-extern int version_numbers[3];
 extern int unformatted_history;
 string custom_title;
-extern EvaluationOptions evalops;
-extern int enable_tooltips;
-
-extern MathFunction *f_answer;
-extern MathFunction *f_expression;
 
 extern GtkBuilder *main_builder;
 
 string calc_arg, file_arg;
-
-bool do_imaginary_j = false;
 
 QalculateDateTime last_version_check_date;
 
@@ -88,9 +65,6 @@ static GOptionEntry options[] = {
 	{G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_STRING_ARRAY, NULL, N_("Expression to calculate"), N_("[EXPRESSION]")},
 	{NULL}
 };
-
-void block_completion();
-void unblock_completion();
 
 gboolean create_menus_etc(gpointer) {
 
@@ -113,18 +87,7 @@ gboolean create_menus_etc(gpointer) {
 	create_umenu2();
 	create_pmenu2();
 	add_custom_angles_to_menus();
-
-	for(int i = ((int) recent_functions_pre.size()) - 1; i >= 0; i--) {
-		function_inserted(CALCULATOR->getActiveFunction(recent_functions_pre[i]));
-	}
-	for(int i = ((int) recent_variables_pre.size()) - 1; i >= 0; i--) {
-		variable_inserted(CALCULATOR->getActiveVariable(recent_variables_pre[i]));
-	}
-	for(int i = ((int) recent_units_pre.size()) - 1; i >= 0; i--) {
-		Unit *u = CALCULATOR->getActiveUnit(recent_units_pre[i]);
-		if(!u) u = CALCULATOR->getCompositeUnit(recent_units_pre[i]);
-		unit_inserted(u);
-	}
+	add_recent_items();
 
 	if(!enable_tooltips) set_tooltips_enabled(GTK_WIDGET(main_window()), FALSE);
 	else if(enable_tooltips > 1) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")), FALSE);
@@ -158,11 +121,6 @@ void create_application(GtkApplication *app) {
 
 	gtk_window_set_default_icon_name("qalculate");
 
-	b_busy = false;
-	b_busy_result = false;
-	b_busy_expression = false;
-	b_busy_command = false;
-
 	//create the almighty Calculator object
 	new Calculator(ignore_locale);
 
@@ -171,23 +129,11 @@ void create_application(GtkApplication *app) {
 	//load application specific preferences
 	load_preferences();
 
-	mstruct = new MathStructure();
-	parsed_mstruct = new MathStructure();
-	parsed_tostruct = new MathStructure();
-	parsed_tostruct->setUndefined();
-	matrix_mstruct = new MathStructure();
-	mbak_convert.setUndefined();
-
 	//create main window
 	create_main_window();
 
-	if(!custom_title.empty()) {
-		gtk_window_set_title(main_window(), custom_title.c_str());
-		title_modified = true;
-	} else {
-		update_window_title();
-		title_modified = false;
-	}
+	set_custom_window_title(custom_title.empty() ? NULL : custom_title.c_str());
+
 	g_application_set_default(G_APPLICATION(app));
 	gtk_window_set_application(main_window(), app);
 
@@ -202,41 +148,10 @@ void create_application(GtkApplication *app) {
 
 	CALCULATOR->loadExchangeRates();
 
-	string ans_str = _("ans");
-	vans[0] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str, m_undefined, _("Last Answer"), false));
-	vans[0]->addName(_("answer"));
-	vans[0]->addName(ans_str + "1");
-	vans[1] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str + "2", m_undefined, _("Answer 2"), false));
-	vans[2] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str + "3", m_undefined, _("Answer 3"), false));
-	vans[3] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str + "4", m_undefined, _("Answer 4"), false));
-	vans[4] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str + "5", m_undefined, _("Answer 5"), false));
-	if(ans_str != "ans") {
-		ans_str = "ans";
-		vans[0]->addName(ans_str);
-		vans[0]->addName(ans_str + "1");
-		vans[1]->addName(ans_str + "2");
-		vans[2]->addName(ans_str + "3");
-		vans[3]->addName(ans_str + "4");
-		vans[4]->addName(ans_str + "5");
-	}
-	v_memory = new KnownVariable(CALCULATOR->temporaryCategory(), "", m_zero, _("Memory"), false, true);
-	ExpressionName ename;
-	ename.name = "MR";
-	ename.case_sensitive = true;
-	ename.abbreviation = true;
-	v_memory->addName(ename);
-	ename.name = "MRC";
-	v_memory->addName(ename);
-	CALCULATOR->addVariable(v_memory);
-
 	//load global definitions
 	if(load_global_defs && !CALCULATOR->loadGlobalDefinitions()) {
 		g_print(_("Failed to load global definitions!\n"));
 	}
-
-	f_answer = CALCULATOR->addFunction(new AnswerFunction());
-	f_expression = CALCULATOR->addFunction(new ExpressionFunction());
-	CALCULATOR->addFunction(new SetTitleFunction());
 
 	//load local definitions
 	CALCULATOR->loadLocalDefinitions();
@@ -248,10 +163,6 @@ void create_application(GtkApplication *app) {
 		reload_history();
 	}
 
-	//reset
-	result_text = "0";
-	parsed_text = "0";
-
 	//check for calculation errros regularly
 	g_timeout_add_seconds(1, on_display_errors_timeout, NULL);
 
@@ -261,11 +172,6 @@ void create_application(GtkApplication *app) {
 		set_expression_text(calc_arg.c_str());
 		unblock_undo();
 		execute_expression();
-	} else if(!first_time && !minimal_mode && file_arg.empty()) {
-		int base = printops.base;
-		printops.base = 10;
-		setResult(NULL, false, false, false);
-		printops.base = base;
 	} else if(!first_time) {
 		redraw_result();
 	}
@@ -301,41 +207,7 @@ static void qalculate_activate(GtkApplication *app) {
 	list = gtk_application_get_windows(app);
 
 	if(list) {
-		if(hidden_x >= 0) {
-			gtk_widget_show(GTK_WIDGET(list->data));
-			GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(list->data));
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-			GdkMonitor *monitor = NULL;
-			if(hidden_monitor_primary) monitor = gdk_display_get_primary_monitor(display);
-			if(!monitor && hidden_monitor > 0) gdk_display_get_monitor(display, hidden_monitor - 1);
-			if(monitor) {
-				GdkRectangle area;
-				gdk_monitor_get_workarea(monitor, &area);
-#else
-			GdkScreen *screen = gdk_display_get_default_screen(display);
-			int i = -1;
-			if(hidden_monitor_primary) i = gdk_screen_get_primary_monitor(screen);
-			if(i < 0 && hidden_monitor > 0 && hidden_monitor < gdk_screen_get_n_monitors(screen)) i = hidden_monitor;
-			if(i >= 0) {
-				GdkRectangle area;
-				gdk_screen_get_monitor_workarea(screen, i, &area);
-#endif
-				gint w = 0, h = 0;
-				gtk_window_get_size(GTK_WINDOW(list->data), &w, &h);
-				if(hidden_x + w > area.width) hidden_x = area.width - w;
-				if(hidden_y + h > area.height) hidden_y = area.height - h;
-				gtk_window_move(GTK_WINDOW(list->data), hidden_x + area.x, hidden_y + area.y);
-			} else {
-				gtk_window_move(GTK_WINDOW(list->data), hidden_x, hidden_y);
-			}
-			hidden_x = -1;
-		}
-#ifdef _WIN32
-		gtk_window_present_with_time(GTK_WINDOW(list->data), GDK_CURRENT_TIME);
-#endif
-		focus_expression();
-		gtk_window_present_with_time(GTK_WINDOW(list->data), GDK_CURRENT_TIME);
-
+		restore_window(GTK_WINDOW(list->data));
 		return;
 	}
 
@@ -440,44 +312,10 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 		str = NULL;
 		g_variant_dict_lookup(options_dict, "title", "s", &str);
 		if(str) {
-			gtk_window_set_title(main_window(), str);
-			title_modified = true;
+			set_custom_window_title(str);
 			g_free(str);
 		}
-		if(hidden_x >= 0) {
-			gtk_widget_show(GTK_WIDGET(main_window()));
-			GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(main_window()));
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-			GdkMonitor *monitor = NULL;
-			if(hidden_monitor_primary) monitor = gdk_display_get_primary_monitor(display);
-			if(!monitor && hidden_monitor > 0) gdk_display_get_monitor(display, hidden_monitor - 1);
-			if(monitor) {
-				GdkRectangle area;
-				gdk_monitor_get_workarea(monitor, &area);
-#else
-			GdkScreen *screen = gdk_display_get_default_screen(display);
-			int i = -1;
-			if(hidden_monitor_primary) i = gdk_screen_get_primary_monitor(screen);
-			if(i < 0 && hidden_monitor > 0 && hidden_monitor < gdk_screen_get_n_monitors(screen)) i = hidden_monitor;
-			if(i >= 0) {
-				GdkRectangle area;
-				gdk_screen_get_monitor_workarea(screen, i, &area);
-#endif
-				gint w = 0, h = 0;
-				gtk_window_get_size(main_window(), &w, &h);
-				if(hidden_x + w > area.width) hidden_x = area.width - w;
-				if(hidden_y + h > area.height) hidden_y = area.height - h;
-				gtk_window_move(main_window(), hidden_x + area.x, hidden_y + area.y);
-			} else {
-				gtk_window_move(main_window(), hidden_x, hidden_y);
-			}
-			hidden_x = -1;
-		}
-#ifdef _WIN32
-		gtk_window_present_with_time(main_window(), GDK_CURRENT_TIME);
-#endif
-		focus_expression();
-		gtk_window_present_with_time(main_window(), GDK_CURRENT_TIME);
+		restore_window();
 		if(!file_arg.empty()) execute_from_file(file_arg);
 		if(!calc_arg.empty()) {
 			block_undo();

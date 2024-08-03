@@ -84,7 +84,7 @@ void set_expression_completion_settings(int enable1, int enable2, int min1, int 
 	}
 }
 
-bool read_expression_completion_settings_line(string &svar, string &svalue, int &v) {
+bool read_expression_completion_settings_line(string &svar, string&, int &v) {
 	if(svar == "enable_completion") {
 		enable_completion = v;
 	} else if(svar == "enable_completion2") {
@@ -704,12 +704,12 @@ gboolean on_completionview_motion_notify_event(GtkWidget*, GdkEventMotion*, gpoi
 	}
 	return FALSE;
 }
-gboolean on_completionwindow_key_press_event(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
+gboolean on_completionwindow_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
 	if(!gtk_widget_get_mapped(completion_window)) return FALSE;
 	gtk_widget_event(expression_edit_widget(), (GdkEvent*) event);
 	return TRUE;
 }
-gboolean on_completionwindow_button_press_event(GtkWidget *widget, GdkEventButton *event, gpointer user_data) {
+gboolean on_completionwindow_button_press_event(GtkWidget*, GdkEventButton*, gpointer) {
 	if(!gtk_widget_get_mapped(completion_window)) return FALSE;
 	gtk_widget_hide(completion_window);
 	return TRUE;
@@ -835,7 +835,7 @@ bool contains_related_unit(const MathStructure &m, Unit *u) {
 GtkTreeIter completion_separator_iter;
 extern bool display_expression_status;
 
-void do_completion(bool to_menu = false) {
+void do_completion(bool to_menu) {
 	if(!enable_completion && !to_menu) {gtk_widget_hide(completion_window); return;}
 	Unit *exact_unit = NULL;
 	if(to_menu) {
@@ -847,7 +847,7 @@ void do_completion(bool to_menu = false) {
 		if(current_displayed_result()) u = find_exact_matching_unit(*current_displayed_result());
 		if(u) {
 			current_from_units.push_back(u);
-			if(u->subtype() == SUBTYPE_COMPOSITE_UNIT || !has_prefix(current_displayed_result() ? *current_displayed_result() : *current_result())) {
+			if(u->subtype() == SUBTYPE_COMPOSITE_UNIT || !contains_prefix(current_displayed_result() ? *current_displayed_result() : *current_result())) {
 				exact_unit = u;
 			}
 		} else {

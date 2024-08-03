@@ -53,7 +53,7 @@ void on_tFunctionCategories_selection_changed(GtkTreeSelection *treeselection, g
 void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer);
 void on_functions_entry_search_changed(GtkEntry *w, gpointer);
 
-bool read_functions_dialog_settings_line(string &svar, string &svalue, int &v) {
+bool read_functions_dialog_settings_line(string &svar, string&, int &v) {
 	if(svar == "functions_width") {
 		functions_width = v;
 	} else if(svar == "functions_height") {

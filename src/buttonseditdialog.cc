@@ -117,11 +117,11 @@ void on_buttonsedit_type_treeview_row_activated(GtkTreeView*, GtkTreePath*, GtkT
 	else gtk_dialog_response(GTK_DIALOG(gtk_builder_get_object(buttonsedit_builder, "shortcuts_type_dialog")), GTK_RESPONSE_ACCEPT);
 }
 
-void on_buttonsedit_entry_value_activate(GtkEntry*, gpointer d) {
+void on_buttonsedit_entry_value_activate(GtkEntry*, gpointer) {
 	gtk_dialog_response(GTK_DIALOG(gtk_builder_get_object(buttonsedit_builder, "shortcuts_type_dialog")), GTK_RESPONSE_ACCEPT);
 }
 
-void on_buttons_edit_entry_label_changed(GtkEditable *w, gpointer user_data) {
+void on_buttons_edit_entry_label_changed(GtkEditable *w, gpointer) {
 	int i = 0;
 	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEdit));
 	GtkTreeModel *model;
@@ -291,16 +291,16 @@ void on_buttonsedit_button_x_clicked(int b_i) {
 	}
 	gtk_widget_hide(d);
 }
-void on_buttons_edit_button_1_clicked(GtkButton*, gpointer user_data) {
+void on_buttons_edit_button_1_clicked(GtkButton*, gpointer) {
 	on_buttonsedit_button_x_clicked(0);
 }
-void on_buttons_edit_button_2_clicked(GtkButton*, gpointer user_data) {
+void on_buttons_edit_button_2_clicked(GtkButton*, gpointer) {
 	on_buttonsedit_button_x_clicked(1);
 }
-void on_buttons_edit_button_3_clicked(GtkButton*, gpointer user_data) {
+void on_buttons_edit_button_3_clicked(GtkButton*, gpointer) {
 	on_buttonsedit_button_x_clicked(2);
 }
-void on_buttons_edit_button_defaults_clicked(GtkButton *w, gpointer user_data) {
+void on_buttons_edit_button_defaults_clicked(GtkButton*, gpointer) {
 	int i = 0;
 	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(tButtonsEdit));
 	GtkTreeModel *model;

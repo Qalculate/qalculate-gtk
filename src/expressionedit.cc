@@ -246,7 +246,7 @@ void set_expression_text(const gchar *text) {
 	if(!block_add_to_undo) add_expression_to_undo();
 }
 void insert_text(const gchar *name) {
-	if(b_busy) return;
+	if(calculator_busy()) return;
 	block_completion();
 	overwrite_expression_selection(name);
 	focus_expression();
@@ -746,17 +746,14 @@ void insert_angle_symbol() {
 }
 
 extern bool disable_history_arrow_keys;
-extern void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewColumn*, gpointer);
 extern GtkTreeModel *completion_sort;
 extern GtkTreeIter tabbed_iter;
 extern bool block_input;
 
-extern bool do_keyboard_shortcut(GdkEventKey *event);
-
 gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
 	if(block_input && (event->keyval == GDK_KEY_q || event->keyval == GDK_KEY_Q) && !(event->state & GDK_CONTROL_MASK)) {block_input = false;
 return TRUE;}
-	if(b_busy) {
+	if(calculator_busy()) {
 		if(event->keyval == GDK_KEY_Escape) {
 			abort_calculation();
 		}
@@ -1270,9 +1267,7 @@ void on_popup_menu_item_rpn_mode_activate(GtkMenuItem *w, gpointer) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_mode")), gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
 }
 void on_popup_menu_item_abort_activate(GtkMenuItem*, gpointer) {
-	if(b_busy_expression) on_abort_calculation(NULL, 0, NULL);
-	else if(b_busy_result) on_abort_display(NULL, 0, NULL);
-	else if(b_busy_command) on_abort_command(NULL, 0, NULL);
+	abort_calculation();
 }
 void on_popup_menu_item_clear_activate(GtkMenuItem*, gpointer) {
 	clear_expression_text();
@@ -1382,7 +1377,7 @@ void on_expressiontext_populate_popup(GtkTextView*, GtkMenu *menu, gpointer) {
 	MENU_ITEM(_("Clear History"), on_popup_menu_item_clear_history_activate)
 	if(expression_history.empty()) gtk_widget_set_sensitive(item, FALSE);
 	MENU_SEPARATOR
-	if(b_busy) {
+	if(calculator_busy()) {
 		MENU_ITEM(_("Abort"), on_popup_menu_item_abort_activate)
 		return;
 	}
@@ -1487,9 +1482,7 @@ gboolean on_expression_button_button_press_event(GtkWidget*, GdkEventButton *eve
 	} else if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon"))) {
 		g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 0, epxression_tooltip_timeout, NULL, NULL);
 	} else {
-		if(b_busy_command) on_abort_command(NULL, 0, NULL);
-		else if(b_busy_expression) on_abort_calculation(NULL, 0, NULL);
-		else if(b_busy_result) on_abort_display(NULL, 0, NULL);
+		abort_calculation();
 	}
 	return TRUE;
 }
@@ -1503,7 +1496,7 @@ gboolean on_expression_button_button_release_event(GtkWidget*, GdkEventButton *e
 }
 gboolean on_expressiontext_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
 	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
-		if(b_busy) return TRUE;
+		if(calculator_busy()) return TRUE;
 	}
 	return FALSE;
 }
@@ -1553,7 +1546,7 @@ void update_expression_colors(bool initial, bool text_color_set) {
 		GdkRGBA bg_color;
 		gtk_style_context_get_background_color(gtk_widget_get_style_context(expression_edit_widget()), GTK_STATE_FLAG_NORMAL, &bg_color);
 		if(gdk_rgba_equal(&c, &bg_color)) {
-			gtk_style_context_get_color(gtk_widget_get_style_context(statuslabel_l), GTK_STATE_FLAG_NORMAL, &c);
+			gtk_style_context_get_color(gtk_widget_get_style_context(parse_status_widget()), GTK_STATE_FLAG_NORMAL, &c);
 		}
 #endif
 		GdkRGBA c_par = c;
