@@ -384,10 +384,10 @@ bool result_blocked() {
 	return block_result_update > 0;
 }
 void block_error() {
-	block_error_timeout--;
+	block_error_timeout++;
 }
 void unblock_error() {
-	block_error_timeout++;
+	block_error_timeout--;
 }
 bool error_blocked() {
 	return block_error_timeout > 0;
@@ -1670,11 +1670,12 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 			} else {
 				CALCULATOR->endTemporaryStopMessages(true);
 				if(complex_angle_form) replace_result_cis_gtk(result_text);
+				result_autocalculated = true;
+				if(!display_errors(NULL, 1)) update_expression_icons(EXPRESSION_CLEAR);
 				if(visible_keypad & PROGRAMMING_KEYPAD) {
 					set_result_bases(*displayed_mstruct_pre);
 					update_result_bases();
 				}
-				result_autocalculated = true;
 			}
 			displayed_mstruct_pre->unref();
 			display_parse_status();
@@ -1735,7 +1736,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 		evalops.mixed_units_conversion = save_mixed_units_conversion;
 		printops.time_zone = TIME_ZONE_LOCAL;
 	}
-	
+
 	unblock_error();
 }
 void print_auto_calc() {
@@ -4653,7 +4654,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					b_busy = false;
 					b_busy_expression = false;
 					restore_previous_expression();
-					convert_number_bases(main_window(), unhtmlize(result_text).c_str(), evalops.parse_options.base);
+					convert_number_bases(main_window(), current_result());
 					return;
 				}
 				do_bases = true;
@@ -5193,7 +5194,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	if(!parsed_tostruct->isUndefined() && do_ceu && str_conv.empty() && !mstruct->containsType(STRUCT_UNIT, true)) parsed_tostruct->setUndefined();
 	setResult(NULL, true, stack_index == 0, true, "", stack_index);
 
-	if(do_bases) convert_number_bases(main_window(), execute_str.c_str(), evalops.parse_options.base);
+	if(do_bases) convert_number_bases(main_window(), current_result());
 	if(do_calendars) show_calendarconversion_dialog(main_window(), mstruct && mstruct->isDateTime() ? mstruct->datetime() : NULL);
 	
 	evalops.complex_number_form = cnf_bak;
@@ -7516,28 +7517,35 @@ void set_unknowns() {
 	}
 }
 void open_convert_number_bases() {
-	if(current_displayed_result() && !result_text_empty() && !result_did_not_fit()) return convert_number_bases(main_window(), ((current_result()->isNumber() && !current_result()->number().hasImaginaryPart()) || current_result()->isUndefined()) ? get_result_text().c_str() : "", current_displayed_printops().base);
+	if(current_result() && !result_text_empty()) {
+		if(current_result()->isNumber() && !current_result()->number().hasImaginaryPart() && !result_did_not_fit()) return convert_number_bases(main_window(), current_result());
+		return convert_number_bases(main_window());
+	}
 	string str = get_selected_expression_text(true), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	remove_blank_ends(str);
 	convert_number_bases(main_window(), str.c_str(), evalops.parse_options.base);
 }
 void open_convert_floatingpoint() {
-	if(current_displayed_result() && !result_text_empty() && !result_did_not_fit()) return convert_floatingpoint(((current_result()->isNumber() && !current_result()->number().hasImaginaryPart()) || current_result()->isUndefined()) ? get_result_text().c_str() : "", current_displayed_printops().base, main_window());
+	if(current_result() && !result_text_empty()) {
+		if(current_result()->isNumber() && !current_result()->number().hasImaginaryPart() && !result_did_not_fit()) return convert_floatingpoint(current_result(), main_window());
+		return convert_floatingpoint("", 0, main_window());
+	}
 	string str = get_selected_expression_text(true), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	remove_blank_ends(str);
 	convert_floatingpoint(str.c_str(), evalops.parse_options.base, main_window());
 }
 void open_percentage_tool() {
-	if(!result_text_empty()) return show_percentage_dialog(main_window(), get_result_text().c_str());
+	if(current_result() && !result_text_empty() && !result_did_not_fit() && current_displayed_printops().base == BASE_DECIMAL) return show_percentage_dialog(main_window(), get_result_text().c_str());
+	else if(evalops.parse_options.base != 10) return show_percentage_dialog(main_window());
 	string str = get_selected_expression_text(true), str2;
 	CALCULATOR->separateToExpression(str, str2, evalops, true);
 	remove_blank_ends(str);
 	show_percentage_dialog(main_window(), str.c_str());
 }
 void open_calendarconversion() {
-	show_calendarconversion_dialog(main_window(), current_displayed_result() && current_result() && current_result()->isDateTime() ? current_result()->datetime() : NULL);
+	show_calendarconversion_dialog(main_window(), current_result() && current_result()->isDateTime() ? current_result()->datetime() : NULL);
 }
 void show_unit_conversion() {
 	gtk_expander_set_expanded(GTK_EXPANDER(expander_convert), TRUE);
@@ -8599,8 +8607,5 @@ void create_main_window() {
 	view_thread = new ViewThread;
 	view_thread->start();
 	command_thread = new CommandThread;
-
-	result_text = "0";
-	parsed_text = "0";
 
 }

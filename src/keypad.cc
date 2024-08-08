@@ -3023,7 +3023,7 @@ void update_keypad_exact() {
 void update_keypad_numerical_display() {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "combobox_numerical_display"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_combobox_numerical_display_changed, NULL);
 	switch(printops.min_exp) {
-		case EXP_PRECISION: {cout << printops.min_exp << endl; gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 0); break;}
+		case EXP_PRECISION: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 0); break;}
 		case EXP_BASE_3: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 1); break;}
 		case EXP_PURE: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 3); break;}
 		case EXP_NONE: {gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(main_builder, "combobox_numerical_display")), 4); break;}

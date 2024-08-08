@@ -1365,12 +1365,18 @@ void on_popup_menu_item_input_base(GtkMenuItem *w, gpointer data) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	set_input_base(GPOINTER_TO_INT(data), true, false);
 }
+GtkCssProvider *expression_popup_provider = NULL;
+extern string custom_app_font;
 void on_expressiontext_populate_popup(GtkTextView*, GtkMenu *menu, gpointer) {
 	popup_menu_expressiontext = menu;
 	GtkWidget *item, *sub, *sub2;
 	GSList *group = NULL;
-	gchar *gstr;
 	sub = GTK_WIDGET(menu);
+	if(!expression_popup_provider) expression_popup_provider = gtk_css_provider_new();
+	gtk_style_context_add_provider(gtk_widget_get_style_context(sub), GTK_STYLE_PROVIDER(expression_popup_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gchar *gstr = font_name_to_css(custom_app_font.c_str());
+	gtk_css_provider_load_from_data(expression_popup_provider, gstr, -1, NULL);
+	g_free(gstr);
 	MENU_ITEM(_("Clear"), on_popup_menu_item_clear_activate)
 	gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(item))), GDK_KEY_Escape, (GdkModifierType) 0);
 	if(expression_is_empty()) gtk_widget_set_sensitive(item, FALSE);

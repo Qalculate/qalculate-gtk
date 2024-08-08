@@ -15,6 +15,9 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 
+class MathStructure;
+
+void convert_number_bases(GtkWindow *parent, const MathStructure *initial_value);
 void convert_number_bases(GtkWindow *parent, const gchar *initial_expression = "", int base = 10);
 
 bool read_number_bases_dialog_settings_line(std::string &svar, std::string &svalue, int &v);

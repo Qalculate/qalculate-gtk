@@ -1136,7 +1136,10 @@ void display_parse_status() {
 				} else {
 					equalsstr = "= ";
 				}
-				set_status_text(equalsstr + current_result_text(), false, parsed_had_errors, parsed_had_warnings, parsed_expression_tooltip);
+				string str_autocalc = equalsstr;
+				str_autocalc += current_result_text();
+				FIX_SUPSUB(str_autocalc)
+				set_status_text(str_autocalc, false);
 				status_text_source = STATUS_TEXT_AUTOCALC;
 			} else if((!autocalculation_stopped_at_operator() || !result_is_autocalculated()) && message_n >= 1 && !b_func && !last_is_operator(str_e)) {
 				size_t i = parsed_expression_tooltip.rfind("\n• ");
@@ -1169,7 +1172,11 @@ void display_parse_status() {
 				} else {
 					equalsstr = "= ";
 				}
-				set_status_text(equalsstr + current_result_text(), false, parsed_had_errors, parsed_had_warnings, parsed_expression_tooltip);
+				string str_autocalc = equalsstr;
+				str_autocalc += current_result_text();
+				FIX_SUPSUB_PRE(parse_status_widget(), fix_supsub_status)
+				FIX_SUPSUB(str_autocalc)
+				set_status_text(str_autocalc, false);
 				status_text_source = STATUS_TEXT_AUTOCALC;
 			} else if((!autocalculation_stopped_at_operator() || !result_is_autocalculated()) && !parsed_expression_tooltip.empty()) {
 				size_t i = parsed_expression_tooltip.rfind("\n• ");

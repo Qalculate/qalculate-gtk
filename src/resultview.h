@@ -41,6 +41,7 @@ void draw_parsed(MathStructure &mparse, const PrintOptions &po);
 void redraw_result();
 void save_as_image();
 MathStructure *current_displayed_result();
+void set_current_displayed_result(MathStructure*);
 bool result_did_not_fit(bool only_too_long = true);
 void update_displayed_printops();
 const PrintOptions &current_displayed_printops();

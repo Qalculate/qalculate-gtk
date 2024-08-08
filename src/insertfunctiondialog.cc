@@ -724,10 +724,10 @@ void insert_function(MathFunction *f, GtkWindow *parent, bool add_to_menu) {
 						while(true) {
 							str = get_register_text(i2 + 1);
 							if(str.empty()) break;
-							rpn_vector += CALCULATOR->getComma();
+							rpn_vector += ",";
 							rpn_vector += " ";
 							rpn_vector += str;
-
+							i2++;
 						}
 						gtk_entry_set_text(GTK_ENTRY(fd->entry[i]), rpn_vector.c_str());
 					} else {

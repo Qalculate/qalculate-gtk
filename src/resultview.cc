@@ -360,6 +360,10 @@ void stop_result_spinner() {
 bool result_did_not_fit(bool only_too_long) {
 	return result_too_long || (!only_too_long && result_display_overflow);
 }
+void set_current_displayed_result(MathStructure *m) {
+	if(displayed_mstruct) displayed_mstruct->unref();
+	displayed_mstruct = m;
+}
 void update_displayed_printops() {
 	displayed_printops = printops;
 	displayed_printops.allow_non_usable = true;
