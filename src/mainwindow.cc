@@ -551,7 +551,7 @@ bool expression_display_errors(GtkWindow *win, int type, bool do_exrate_sources,
 			gtk_info_bar_set_show_close_button(GTK_INFO_BAR(gtk_builder_get_object(main_builder, "message_bar")), TRUE);
 			gtk_revealer_set_reveal_child(GTK_REVEALER(gtk_builder_get_object(main_builder, "message_revealer")), TRUE);
 		} else if(mtype_highest != MESSAGE_INFORMATION) {
-			GtkWidget *edialog = gtk_message_dialog_new(win,GTK_DIALOG_DESTROY_WITH_PARENT, mtype_highest == MESSAGE_ERROR ? GTK_MESSAGE_ERROR : (mtype_highest == MESSAGE_WARNING ? GTK_MESSAGE_WARNING : GTK_MESSAGE_INFO), GTK_BUTTONS_CLOSE, "%s", str.c_str());
+			GtkWidget *edialog = gtk_message_dialog_new(win, GTK_DIALOG_DESTROY_WITH_PARENT, mtype_highest == MESSAGE_ERROR ? GTK_MESSAGE_ERROR : (mtype_highest == MESSAGE_WARNING ? GTK_MESSAGE_WARNING : GTK_MESSAGE_INFO), GTK_BUTTONS_CLOSE, "%s", str.c_str());
 			if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
 			gtk_dialog_run(GTK_DIALOG(edialog));
 			gtk_widget_destroy(edialog);
@@ -6477,6 +6477,7 @@ void set_autocalculate(bool b) {
 			else clearresult();
 		}
 	}
+	update_menu_calculator_mode();
 }
 void update_exchange_rates() {
 	stop_autocalculate_history_timeout();
@@ -6687,15 +6688,15 @@ void set_twos_complement(int bo, int ho, int bi, int hi, bool recalculate) {
 	}
 	if(ho >= 0) {
 		if(printops.hexadecimal_twos_complement == ho) ho = -1;
-		else printops.hexadecimal_twos_complement = bo;
+		else printops.hexadecimal_twos_complement = ho;
 	}
 	if(bi >= 0) {
 		if(evalops.parse_options.twos_complement == bi) bi = -1;
-		else evalops.parse_options.twos_complement = bo;
+		else evalops.parse_options.twos_complement = bi;
 	}
 	if(hi >= 0) {
 		if(evalops.parse_options.hexadecimal_twos_complement == hi) hi = -1;
-		else evalops.parse_options.hexadecimal_twos_complement = bo;
+		else evalops.parse_options.hexadecimal_twos_complement = hi;
 	}
 	if(bi >= 0 || hi >= 0) expression_format_updated(recalculate);
 	else if(bo >= 0 || ho >= 0) result_format_updated();
@@ -6836,7 +6837,19 @@ bool do_shortcut(int type, string value) {
 		}
 		case SHORTCUT_TYPE_UNIT: {
 			Unit *u = CALCULATOR->getActiveUnit(value);
-			if(u && CALCULATOR->stillHasUnit(u)) {
+			if(!u) {
+				CALCULATOR->clearMessages();
+				CompositeUnit cu("", "", "", value);
+				if(CALCULATOR->message()) {
+					display_errors();
+				} else {
+					PrintOptions po = printops;
+					po.is_approximate = NULL;
+					po.can_display_unicode_string_arg = (void*) expression_edit_widget();
+					string str = cu.print(po, false, TAG_TYPE_HTML, true);
+					insert_text(str.c_str());
+				}
+			} else if(u && CALCULATOR->stillHasUnit(u)) {
 				if(u->subtype() == SUBTYPE_COMPOSITE_UNIT) {
 					PrintOptions po = printops;
 					po.is_approximate = NULL;
@@ -7153,6 +7166,7 @@ bool do_shortcut(int type, string value) {
 		}
 		case SHORTCUT_TYPE_CHAIN_MODE: {
 			chain_mode = !chain_mode;
+			update_menu_calculator_mode();
 			return true;
 		}
 		case SHORTCUT_TYPE_ALWAYS_ON_TOP: {
@@ -7174,8 +7188,9 @@ bool do_shortcut(int type, string value) {
 			if(previous_precision > 0 && CALCULATOR->getPrecision() == v) {
 				set_precision(previous_precision);
 			} else {
+				int prec = CALCULATOR->getPrecision();
 				set_precision(v);
-				previous_precision = CALCULATOR->getPrecision();
+				previous_precision = prec;
 			}
 			return true;
 		}

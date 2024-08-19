@@ -84,7 +84,7 @@ void fetch_exchange_rates(int timeout, int n) {
 			gtk_widget_destroy(dialog);
 		}
 	}
-	if(b_busy_bak) set_busy();
+	set_busy(b_busy_bak);
 	unblock_error();
 }
 

@@ -242,9 +242,14 @@ void on_buttonsedit_button_x_clicked(int b_i) {
 				}
 				case SHORTCUT_TYPE_UNIT: {
 					if(!CALCULATOR->getActiveUnit(value)) {
-						gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")));
-						show_message(_("Unit not found."), GTK_WINDOW(gtk_builder_get_object(buttonsedit_builder, "shortcuts_dialog")));
-						goto run_shortcuts_dialog;
+						CALCULATOR->beginTemporaryStopMessages();
+						CompositeUnit cu("", "", "", value);
+						int n = 0;
+						if(CALCULATOR->endTemporaryStopMessages(NULL, &n) || n) {
+							gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(buttonsedit_builder, "shortcuts_entry_value")));
+							show_message(_("Unit not found."), GTK_WINDOW(gtk_builder_get_object(buttonsedit_builder, "shortcuts_dialog")));
+							goto run_shortcuts_dialog;
+						}
 					}
 					break;
 				}

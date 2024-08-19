@@ -927,18 +927,45 @@ string button_valuetype_text(int type, const string &value) {
 	switch(type) {
 		case SHORTCUT_TYPE_FUNCTION: {
 			MathFunction *f = CALCULATOR->getActiveFunction(value);
+			if(!f) break;
 			return f->title(true, printops.use_unicode_signs);
 		}
 		case SHORTCUT_TYPE_FUNCTION_WITH_DIALOG: {
 			MathFunction *f = CALCULATOR->getActiveFunction(value);
+			if(!f) break;
 			return f->title(true, printops.use_unicode_signs);
 		}
 		case SHORTCUT_TYPE_VARIABLE: {
 			Variable *v = CALCULATOR->getActiveVariable(value);
+			if(!v) break;
 			return v->title(true, printops.use_unicode_signs);
 		}
 		case SHORTCUT_TYPE_UNIT: {
 			Unit *u = CALCULATOR->getActiveUnit(value);
+			if(!u) {
+				CALCULATOR->beginTemporaryStopMessages();
+				CompositeUnit cu("", "", "", value);
+				CALCULATOR->endTemporaryStopMessages();
+				if(cu.countUnits() == 0) break;
+				for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
+					if(CALCULATOR->units[i]->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+						CompositeUnit *cu2 = (CompositeUnit*) CALCULATOR->units[i];
+						if(cu2->countUnits() == cu.countUnits()) {
+							bool b = true;
+								for(size_t i2 = 1; i2 <= cu.countUnits(); i2++) {
+								int exp1 = 1, exp2 = 1;
+								Prefix *p1 = NULL, *p2 = NULL;
+								if(cu.get(i2, &exp1, &p1) != cu2->get(i2, &exp2, &p2) || exp1 != exp2 || p1 != p2) {
+									b = false;
+									break;
+								}
+							}
+							if(b) return cu2->title(true, printops.use_unicode_signs);
+						}
+					}
+				}
+				return cu.print(false, true, printops.use_unicode_signs);
+			}
 			return u->title(true, printops.use_unicode_signs);
 		}
 		default: {}
@@ -1003,7 +1030,6 @@ Unit *find_exact_matching_unit2(const MathStructure &m) {
 				Unit *u_base = m.base()->unit();
 				int exp = m.exponent()->number().intValue();
 				for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
-
 					if(CALCULATOR->units[i]->subtype() == SUBTYPE_ALIAS_UNIT) {
 						AliasUnit *u = (AliasUnit*) CALCULATOR->units[i];
 						if(u->firstBaseUnit() == u_base && u->firstBaseExponent() == exp) return u;
