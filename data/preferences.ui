@@ -34,6 +34,13 @@
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
   </object>
+  <object class="GtkAdjustment" id="adjustment_max_history_lines">
+    <property name="lower">0</property>
+    <property name="upper">100000</property>
+    <property name="value">300</property>
+    <property name="step-increment">100</property>
+    <property name="page-increment">1000</property>
+  </object>
   <object class="GtkAdjustment" id="adjustment_horizontal_padding">
     <property name="lower">-1</property>
     <property name="upper">100</property>
@@ -68,7 +75,7 @@
     <property name="title" translatable="yes">Preferences</property>
     <property name="resizable">False</property>
     <property name="type-hint">dialog</property>
-    <signal name="delete-event" handler="gtk_widget_hide" swapped="no"/>
+    <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox4">
         <property name="visible">True</property>
@@ -150,6 +157,65 @@
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkBox" id="box_max_history_lines">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="spacing">12</property>
+                    <child>
+                      <object class="GtkLabel" id="label_max_history_lines">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Max history lines saved</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSpinButton" id="preferences_max_history_lines_spin_button">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="hexpand">True</property>
+                        <property name="text">300</property>
+                        <property name="adjustment">adjustment_max_history_lines</property>
+                        <property name="snap-to-ticks">True</property>
+                        <property name="numeric">True</property>
+                        <property name="value">300</property>
+                        <signal name="value-changed" handler="on_preferences_max_history_lines_spin_button_value_changed" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_save_history_separately">
+                    <property name="label" translatable="yes">Save history to separate file</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_save_history_separately_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_allow_multiple_instances">
                     <property name="label" translatable="yes">Allow multiple instances</property>
                     <property name="visible">True</property>
@@ -165,7 +231,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">2</property>
+                    <property name="position">4</property>
                   </packing>
                 </child>
                 <child>
@@ -181,7 +247,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">3</property>
+                    <property name="position">5</property>
                   </packing>
                 </child>
                 <child>
@@ -198,7 +264,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">4</property>
+                    <property name="position">6</property>
                   </packing>
                 </child>
                 <child>
@@ -215,7 +281,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">5</property>
+                    <property name="position">7</property>
                   </packing>
                 </child>
                 <child>
@@ -233,7 +299,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">6</property>
+                    <property name="position">8</property>
                   </packing>
                 </child>
                 <child>
@@ -251,7 +317,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">7</property>
+                    <property name="position">9</property>
                   </packing>
                 </child>
                 <child>
@@ -294,7 +360,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">8</property>
+                    <property name="position">10</property>
                   </packing>
                 </child>
                 <child>
@@ -351,7 +417,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">9</property>
+                    <property name="position">11</property>
                   </packing>
                 </child>
                 <child>
@@ -391,7 +457,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">10</property>
+                    <property name="position">12</property>
                   </packing>
                 </child>
               </object>
@@ -693,9 +759,10 @@ Note that only the mode, history and definitions of the last closed instance wil
                           <item>English</item>
                           <item>Español</item>
                           <item>Français</item>
-                          <item id="&lt;Ange ID&gt;">ქართული ენა</item>
-                          <item id="&lt;Ange ID&gt;">Nederlands</item>
-                          <item id="&lt;Ange ID&gt;">Português do Brazil</item>
+                          <item>ქართული ენა</item>
+                          <item>Nederlands</item>
+                          <item>Português</item>
+                          <item>Português do Brazil</item>
                           <item>Русский</item>
                           <item>Slovenščina</item>
                           <item>Svenska</item>
@@ -807,6 +874,24 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_parsed_in_result">
+                    <property name="label" translatable="yes">Show parsed expression in result field</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">If as-you-type expression interpretation shall be displayed in the result field</property>
+                    <property name="use-underline">True</property>
+                    <property name="active">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_parsed_in_result_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">9</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_persistent_keypad">
                     <property name="label" translatable="yes">Persistent keypad</property>
                     <property name="visible">True</property>
@@ -819,7 +904,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">9</property>
+                    <property name="position">10</property>
                   </packing>
                 </child>
               </object>
@@ -849,37 +934,141 @@ Note that only the mode, history and definitions of the last closed instance wil
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <child>
-                  <object class="GtkCheckButton" id="preferences_checkbutton_twos_complement">
-                    <property name="label" translatable="yes">Binary two's complement representation</property>
+                  <!-- n-columns=3 n-rows=3 -->
+                  <object class="GtkGrid" id="grid_twos">
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">If two's complement representation shall be used for negative binary numbers.</property>
-                    <property name="use-underline">True</property>
-                    <property name="draw-indicator">True</property>
-                    <signal name="toggled" handler="on_preferences_checkbutton_twos_complement_toggled" swapped="no"/>
+                    <property name="can-focus">False</property>
+                    <property name="row-spacing">12</property>
+                    <property name="column-spacing">12</property>
+                    <child>
+                      <object class="GtkCheckButton" id="preferences_checkbutton_twos_complement">
+                        <property name="label" translatable="yes">Binary</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text" translatable="yes">If two's complement representation shall be used for negative binary numbers.</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
+                        <signal name="toggled" handler="on_preferences_checkbutton_twos_complement_toggled" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="preferences_checkbutton_hexadecimal_twos_complement">
+                        <property name="label" translatable="yes">Hexadecimal</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text" translatable="yes">If two's complement representation shall be used for negative hexadecimal numbers.</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
+                        <signal name="toggled" handler="on_preferences_checkbutton_hexadecimal_twos_complement_toggled" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">2</property>
+                        <property name="top-attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="label_twos">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Two's complement output</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="label_twos_input">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Two's complement input</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="preferences_checkbutton_twos_complement_input">
+                        <property name="label" translatable="yes">Binary</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text" translatable="yes">Enables two's complement representation for input of negative binary numbers. All binary numbers starting with 1 are negative, unless binary bits is set.</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
+                        <signal name="toggled" handler="on_preferences_checkbutton_twos_complement_input_toggled" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="preferences_checkbutton_hexadecimal_twos_complement_input">
+                        <property name="label" translatable="yes">Hexadecimal</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text" translatable="yes">Enables two's complement representation for input of negative hexadecimal numbers. All hexadecimal numbers starting with 8 or higher are negative, unless binary bits is set.</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
+                        <signal name="toggled" handler="on_preferences_checkbutton_hexadecimal_twos_complement_input_toggled" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">2</property>
+                        <property name="top-attach">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="label_bits">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Binary bits</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBoxText" id="preferences_combobox_bits">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="active">0</property>
+                        <items>
+                          <item translatable="yes">Automatic</item>
+                          <item>8</item>
+                          <item>16</item>
+                          <item>32</item>
+                          <item>64</item>
+                          <item>128</item>
+                          <item>256</item>
+                          <item>512</item>
+                          <item>1024</item>
+                        </items>
+                        <signal name="changed" handler="on_preferences_combobox_bits_changed" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">2</property>
+                        <property name="width">2</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
-                    <property name="fill">False</property>
+                    <property name="fill">True</property>
                     <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="preferences_checkbutton_hexadecimal_twos_complement">
-                    <property name="label" translatable="yes">Hexadecimal two's complement representation</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">If two's complement representation shall be used for negative hexadecimal numbers.</property>
-                    <property name="use-underline">True</property>
-                    <property name="draw-indicator">True</property>
-                    <signal name="toggled" handler="on_preferences_checkbutton_hexadecimal_twos_complement_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">1</property>
                   </packing>
                 </child>
                 <child>
@@ -930,7 +1119,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">4</property>
+                    <property name="position">5</property>
                   </packing>
                 </child>
                 <child>
@@ -995,6 +1184,23 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_decimal_comma">
+                    <property name="label" translatable="yes">Use comma as decimal separator</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="margin-top">12</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_decimal_comma_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">9</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_imaginary_j">
                     <property name="label" translatable="yes">Use 'j' as imaginary unit</property>
                     <property name="visible">True</property>
@@ -1005,23 +1211,6 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="use-underline">True</property>
                     <property name="draw-indicator">True</property>
                     <signal name="toggled" handler="on_preferences_checkbutton_imaginary_j_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">8</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="preferences_checkbutton_decimal_comma">
-                    <property name="label" translatable="yes">Use comma as decimal separator</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="margin-top">12</property>
-                    <property name="use-underline">True</property>
-                    <property name="draw-indicator">True</property>
-                    <signal name="toggled" handler="on_preferences_checkbutton_decimal_comma_toggled" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1047,23 +1236,6 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="preferences_checkbutton_dot_as_separator">
-                    <property name="label" translatable="yes">Ignore dots in numbers</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">Allow dots, '.', to be used as thousands separator instead of as an alternative decimal sign</property>
-                    <property name="use-underline">True</property>
-                    <property name="draw-indicator">True</property>
-                    <signal name="toggled" handler="on_preferences_checkbutton_dot_as_separator_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">11</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_copy_ascii">
                     <property name="label" translatable="yes">Copy result as unformatted ASCII by default</property>
                     <property name="visible">True</property>
@@ -1077,6 +1249,23 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="position">12</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_dot_as_separator">
+                    <property name="label" translatable="yes">Ignore dots in numbers</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">Allow dots, '.', to be used as thousands separator instead of as an alternative decimal sign</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_dot_as_separator_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
                     <property name="position">12</property>
                   </packing>
                 </child>
@@ -1420,22 +1609,6 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="preferences_checkbutton_fetch_exchange_rates">
-                    <property name="label" translatable="yes">Update exchange rates on start</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">If current exchange rates shall be downloaded from the internet at program start</property>
-                    <property name="use-underline">True</property>
-                    <property name="draw-indicator">True</property>
-                    <signal name="toggled" handler="on_preferences_checkbutton_fetch_exchange_rates_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">3</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkBox" id="box_exrates">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
@@ -1474,7 +1647,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">4</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
                 <child>
@@ -1488,7 +1661,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">5</property>
+                    <property name="position">4</property>
                   </packing>
                 </child>
                 <child>
@@ -1567,7 +1740,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">6</property>
+                    <property name="position">5</property>
                   </packing>
                 </child>
               </object>

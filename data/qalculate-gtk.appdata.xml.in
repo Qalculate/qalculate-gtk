@@ -35,7 +35,9 @@
  <url type="help">https://qalculate.github.io/manual/index.html</url>
  <url type="donation">https://www.paypal.me/HannaKnutsson</url>
  <url type="translate">https://github.com/Qalculate/libqalculate/blob/master/README.translate</url>
- <developer_name>Hanna Knutsson</developer_name>
+ <developer id="io.github.Qalculate">
+  <name>Hanna Knutsson</name>
+ </developer>
  <content_rating type="oars-1.0"/>
  <kudos>
   <kudo>HiDpiIcon</kudo>
@@ -48,6 +50,118 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="5.2.0" date="2024-07-01">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Physical constants updated with CODATA 2022 values</li>
+      <li>New function: allroots()</li>
+      <li>New units: therm, thermie, IUNS calorie, rpm</li>
+      <li>Additional names/symbols for turn unit</li>
+      <li>Use symbol "cal" for thermochemical (instead of international table) calorie</li>
+      <li>Change title and names/symbols of weak mixing angle (prepend "sin2" to theta variants)</li>
+      <li>Return exact negative integers in log10()</li>
+      <li>More conservative handling of infinity in equations</li>
+      <li>Remove n from equation solution if possible using assumptions of x</li>
+      <li>Save date and time for history items, add search by date, and show date of selected history item in search by date context menu item</li>
+      <li>Option to change the max number of history lines saved</li>
+      <li>Option to save history to separate file</li>
+      <li>Improved sorting of text strings with Unicode characters</li>
+      <li>Reverse order of row and column for element index in matrix dialogs</li>
+      <li>Fix extremely small superscript and subscript with some fonts and on Windows with scaling ≥200%</li>
+      <li>Fix empty windows when opened a second time</li>
+      <li>Fix subsequent tab completions after completion of unit with prefix</li>
+      <li>Fix input of scientific E-notation using lowercase e in numbers using concise interval notation, in expressions</li>
+      <li>Fix "bit width" and "signed integer" arguments in setbits()</li>
+      <li>Fix a^(f(x))=a^(b*g(x)) where b=2 or b=3</li>
+      <li>Fix auto/dual approximation with "where" expression</li>
+      <li>Fix "where" expressions with multiple inequality statements for a single variable, e.g. "where x≥0 and x≤10"</li>
+      <li>Fix crash when a variable name/symbol with more than 20 characters is used in "where" expression</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
+  <release version="5.1.0" date="2024-05-06">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Option to show parsed expression in result field</li>
+      <li>Add two's complement input and binary bits to preferences, and preserve these settings when leaving programming keypad</li>
+      <li>Ask for the desired interpretation the first time percent addition is used (e.g. 100 + 10% equals 110 or 100.1)</li>
+      <li>Download button in dialog shown when new version is available, on Windows</li>
+      <li>Support for solving equations containing if() function</li>
+      <li>Support for solving root(a, x)=b (requires rational value for ln(a)/ln(b))</li>
+      <li>New functions: powertower() and multiples()</li>
+      <li>New units for solar radius, mass, and luminosity</li>
+      <li>Use parentheses for exponent using scientific notation (with power of 10)</li>
+      <li>Support integer factorization of integers in matrix/vector, and of numerator and denominator in rational number</li>
+      <li>Relaxed conditions for (x^a)^b = x^(a × b) and x^a × x^b = x^(a + b) when complex numbers are deactivated (fixes segfaults)</li>
+      <li>Portuguese (Portugal) translation</li>
+      <li>Fix AltGr (primarily for input of operators) on Windows</li>
+      <li>Fix (ax + n)^2 > 1, where n is even and a is not 1, returning false</li>
+      <li>Fix setbits() function</li>
+      <li>Fix Number::equals(0, ..., true) when number is infinite (affects replace() function)</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
+  <release version="5.0.0" date="2024-03-11">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Detection of potential spelling mistakes (a warning will be shown)</li>
+      <li>Add support for n...m, j:k, and j:i:k syntax, for sequence of numbers, e.g. 1...3 = (1:3) = (1:1:3) = [1  2  3] (note that brackets may be required for colon syntax to avoid conflict with time format)</li>
+      <li>Improved "where" operator, including improved output of parsed expression, support for previously undefined variable names, and assignments before expression (e.g. "a=2, b=2, a^b")</li>
+      <li>Click on binary digit in result to flip bit</li>
+      <li>Improvements/fixes to conversion completion and menus</li>
+      <li>Add retry and cancel buttons to error dialog after failure to save preferences or definitions</li>
+      <li>Add last result to stack when pressing Enter with empty expression (was unintentionally disabled)</li>
+      <li>Selection of default number of bits for binary and hexadecimal numbers in programming keypad</li>
+      <li>Always show binary position numbers in result if numbers of bits are higher than 16, and improve appearance</li>
+      <li>More rounding methods</li>
+      <li>New units: LightSecond, LightMinute, and LightHour</li>
+      <li>New functions: bitget(), bitset(), setbits(), integerDigits(), digitGet(), digitSet(), flip(), colon(), and foreach()</li>
+      <li>Support for hexadecimal floating-point literals using 0x...p... notation (0x1.4p3 = 0x1.4 * 2^3 = 10)</li>
+      <li>Improve handling of zero solution and initial guess in newtonsolve() and secantsolve(), and check validity of solution</li>
+      <li>Change handling a vectors in multiple function arguments (of non-vector type) - return vector instead of matrix, require equal number of elements, and use the same vector index for all arguments for each function instance (e.g. atan2([1  2], [3  4]) = [atan2(1, 3)  atan(2 4)]</li>
+      <li>Set handle vector property by default, for text, date, and boolean arguments, and for arguments, in global non-builtin functions, without specified type, and enable parsing of vectors for text arguments</li>
+      <li>Do not apply "read precision" setting to exponents for values with units</li>
+      <li>Change from line to point (or dot) plot style for data with many discontinuous points</li>
+      <li>lambertw(x*e^x, 0)=x if x>=-1</li>
+      <li>Use parentheses for number with scientific notation in more cases</li>
+      <li>Allow plot grid values higher than 1 (true) to specify line width</li>
+      <li>Fix dsolve(diff(y, x) = y), and similar</li>
+      <li>Fix x and y reversed for paired matrix when using plot dialog</li>
+      <li>Fix log(1, 1) (undefined)</li>
+      <li>Fix "to"-conversion to prefix and add "prefix" conversion option (for optimal prefix)</li>
+      <li>Fix segfault in newtonsolve() and secantsolve() when equation does not contain variable</li>
+      <li>Fix conversion to angle unit for complex angle, cis and polar forms</li>
+      <li>Exchange rates fixes</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
+  <release version="4.9.0" date="2023-11-27">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Support for specifying a fixed denominator for display of fractions (e.g. "0.3 ft ➞ 1/8 ≈ (3 + 5/8) in")</li>
+      <li>Always add result to history (even if identical to previous) if expression contains a function generating a random number</li>
+      <li>Prefer capitalized function name (over name with underscore), when completing function name</li>
+      <li>Improve decision to (not) update calculate-as-you-type result when last character is an operator</li>
+      <li>Add percent and permille output options in rational number form menu</li>
+      <li>Return gcd of numerators divided by lcm of denominators in gcd() with non-integer rational numbers, and vice versa for lcm()</li>
+      <li>Add units for mean Gregorian and tropical years</li>
+      <li>Ignore underscore in number</li>
+      <li>Replace defunct exchange rates source and fix bitcoin exchange rate</li>
+      <li>Fix keypad button (up/down) for cycling through expression history</li>
+      <li>Fix asin(x)=a, acos(x)=a, and atan(x)=a, when a contains an angle unit and default angle unit is set</li>
+      <li>Fix output of value converted to unit expression with numerical multiplier in denominator, e.g. "➞ L/(100 km)"</li>
+      <li>Fix segfault when trying to solve "(x*sqrt(x)-y*sqrt(y))/(sqrt(x)-sqrt(y))=x+sqrt(x*y)+y"</li>
+      <li>Fix parsing of case insensitive object name ending with Unicode character when followed by another Unicode character in expression, e.g. "микрометр"</li>
+     </ul>
+   </description>
+  </release>
   <release version="4.8.1" date="2023-09-18">
    <description>
     <p>Changes:</p>

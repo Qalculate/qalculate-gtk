@@ -1,3 +1,140 @@
+2024-06-25 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Use Pango and GTK version information from library linked, instead of compiled, against in some cases
+	* Remove "Show Parsed Expression in Result Field" from Mode menu
+	* Option to save history to separate file
+	* Fix window (e.g. units window) empty when opened a second time
+
+2024-06-13 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Save date and time for history items, add search by date, and show date of selected history item in search by date context menu item
+
+2024-06-12 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add max history lines saved configuration to preferences
+	* Remove current expression from history on expression history clear
+
+2024-06-10 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Remove current expression from history on expression history clear
+
+2024-06-09 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix subsequent tab completions after completion of unit with prefix
+	* Workaround for extremely small superscript and subscript with some fonts and on Windows with scaling >= 200%
+
+2024-05-07 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix element index in matrix dialogs (show row before column)
+
+2024-05-02 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix updating of self-contained binaries from GUI
+
+2024-04-21 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Ask for the desired interpretation the first time percent addition is used (e.g. 100 + 10% equals 110 or 100.1)
+
+2024-04-17 Hugo Carvalho <hugokarvalho@hotmail.com>
+
+	* Portuguese (Portugal) translation
+
+2024-04-17 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add option show parsed expression in result field
+
+2024-04-07 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix AltGr includes Control modifier on Windows (fixes * and ^ with Czech QWERTY)
+	* Add Download button to new update available dialog on Windows
+	* Do not used a fixed URL for update of self-contained package
+
+2024-03-23 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add two's complement input and binary bits to preferences, and preserve these settings when leaving programming keypad
+
+2024-03-14 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Do not use Unicode minus in exponent of hexadecimal floating-point literals using 0x...p... notation
+
+2024-03-11 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add developer id to metadata
+
+2024-02-16 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add retry and cancel options (and change Ok to Ignore) to error dialog after failure to save preferences or definitions
+
+2024-02-08 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add new rounding methods
+	* Uses parentheses for numbers with scientific notation in more cases
+	* Use 1 as first index in binary number
+
+2024-01-31 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add output of hexadecimal floating-point literals to floating point conversion window
+
+2024-01-26 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Always show binary position numbers in result if numbers of bits are higher than 16, and improve appearance
+	* Click on binary number in result to flip bit
+	* Remove "ALL" button (opened number bases dialog) from programming keypad
+	* Add selection of number of bits (affects input and output of binary and hexadecimal numbers, and default number of bits for "cmp" and "rot") to programming keypad
+	* Fix conversion to angle unit for complex angle, cis and polar forms
+	* Suggest conversion to angle unit when expression contains inverse trigonometric function
+
+2024-01-01 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix x and y are reversed for paired matrix when using plot dialog
+	* Add support for "decimals" "to"-conversion (display as decimal fraction)
+
+2023-12-20 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Place non-object (e.g. "Fraction") items first in completion (with emty "to"-expression) and conversion lists and add separator in conversion menu before object (e.g. units) items
+	* Make suggestions for multiple unit categories, in "to"-conversion completion and menu, if no single matching unit (category) is found for expression
+
+2023-12-15 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Update menu of to-button in keypad (use completion list and add symbol to item title)
+	* Fix category matching (in completion and conversion view) for volume units in subcategories (U.S., imperial, and cooking units)
+	* Convert to simple fraction if value only contains integers, when converting to fixed denominator
+	* Add optimal prefix conversion using "to prefix";
+
+2023-12-04 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add last result to stack when pressing Enter with empty expression (was unintentionally disabled)
+
+2023-11-12 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add result to history even if both expression and result are identical if expression contains a function generating a random number
+
+2023-10-29 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Support for specifying a fixed denominator for display of fractions (using menu items or to-conversion, e.g. "to 1/8")
+	* Menu items for percent and permille fraction formats
+
+2023-10-26 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix case insensitive comparison for strings with more than two or more consecutive Unicode characters
+	* Prefer capitalized function name (over name with underscore), when completing function name
+
+2023-10-25 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Apply exact behaviour of PageUp/PageDown keys to keypad up/down button, and fix sefault in some cases with unfinished input when cycling through history both using keyboard and keypad
+
+2023-10-24 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Change order of up and down symbols for cycle through previous expressions keypad button, in order to match keyboard arrow key actions
+
+2023-09-28 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Improve decision to (not) update calculate-as-you-type result when last character is an operator
+
+2023-09-21 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Update calculate-as-you-type result even if last character is an operator, if cursor is not at the end of the expression
+
 2023-09-13 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Auto-update number bases above programming keypad when entering simple integers, even if calculate-as-you-type is deactivated

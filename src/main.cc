@@ -1,7 +1,7 @@
 /*
     Qalculate (GTK UI)
 
-    Copyright (C) 2003-2007, 2008, 2016-2021  Hanna Knutsson (hanna.knutsson@protonmail.com)
+    Copyright (C) 2003-2007, 2008, 2016-2024  Hanna Knutsson (hanna.knutsson@protonmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,74 +18,40 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <glib/gstdio.h>
 #ifdef G_OS_UNIX
-#include <glib-unix.h>
+#	include <glib-unix.h>
 #endif
-#include <unistd.h>
+#ifndef _MSC_VER
+#	include <unistd.h>
+#endif
 #include <sys/stat.h>
+#include <libqalculate/qalculate.h>
 
 #include "support.h"
-#include "interface.h"
-#include "callbacks.h"
-#include "main.h"
+#include "mainwindow.h"
+#include "conversionview.h"
+#include "historyview.h"
+#include "keypad.h"
+#include "resultview.h"
+#include "menubar.h"
+#include "expressioncompletion.h"
+#include "expressionedit.h"
+#include "settings.h"
+#include "util.h"
 
 using std::string;
 using std::cout;
 using std::vector;
 using std::endl;
 
-MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct, *displayed_mstruct;
-extern MathStructure mbak_convert;
-KnownVariable *vans[5], *v_memory;
-GtkWidget *functions_window;
-string selected_function_category;
-MathFunction *selected_function;
-GtkWidget *variables_window;
-string selected_variable_category;
-Variable *selected_variable;
-string result_text, parsed_text;
-GtkWidget *units_window;
-string selected_unit_category;
-string selected_unit_selector_category;
-Unit *selected_unit, *selected_to_unit;
-bool load_global_defs, fetch_exchange_rates_at_startup, first_time, showing_first_time_message;
+bool load_global_defs, first_time;
 int allow_multiple_instances = -1;
-cairo_surface_t *surface_result;
-GdkPixbuf *pixbuf_result;
-extern bool b_busy, b_busy_command, b_busy_result, b_busy_expression;
-extern int block_expression_execution;
-extern vector<string> recent_functions_pre;
-extern vector<string> recent_variables_pre;
-extern vector<string> recent_units_pre;
-extern GtkWidget *expressiontext;
-extern GtkWidget *resultview;
-extern PrintOptions printops;
-extern bool ignore_locale;
-extern bool title_modified;
-extern bool minimal_mode;
-extern gint hidden_x, hidden_y, hidden_monitor;
-extern bool hidden_monitor_primary;
 bool check_version = false;
-extern int version_numbers[3];
 extern int unformatted_history;
 string custom_title;
-extern string custom_angle_unit;
-extern EvaluationOptions evalops;
-extern int enable_tooltips;
 
-MathFunction *f_answer;
-MathFunction *f_expression;
+extern GtkBuilder *main_builder;
 
-GtkBuilder *main_builder, *argumentrules_builder, *csvimport_builder, *csvexport_builder, *setbase_builder, *datasetedit_builder, *datasets_builder, *decimals_builder;
-GtkBuilder *functionedit_builder, *functions_builder, *matrixedit_builder, *matrix_builder, *namesedit_builder, *nbases_builder, *plot_builder, *precision_builder;
-GtkBuilder *shortcuts_builder, *preferences_builder, *unit_builder, *unitedit_builder, *units_builder, *unknownedit_builder, *variableedit_builder, *variables_builder, *buttonsedit_builder;
-GtkBuilder *periodictable_builder, *simplefunctionedit_builder, *percentage_builder, *calendarconversion_builder, *floatingpoint_builder;
-
-Thread *view_thread, *command_thread;
 string calc_arg, file_arg;
-
-bool check_expression_position;
-gint expression_position;
-bool do_imaginary_j = false;
 
 QalculateDateTime last_version_check_date;
 
@@ -100,9 +66,6 @@ static GOptionEntry options[] = {
 	{NULL}
 };
 
-void block_completion();
-void unblock_completion();
-
 gboolean create_menus_etc(gpointer) {
 
 	test_border();
@@ -113,9 +76,9 @@ gboolean create_menus_etc(gpointer) {
 	generate_variables_tree_struct();
 
 	//create button menus after definitions have been loaded
-	block_expression_execution++;
+	block_calculation();
 	create_button_menus();
-	block_expression_execution--;
+	unblock_calculation();
 
 	//create dynamic menus
 	create_fmenu();
@@ -124,20 +87,9 @@ gboolean create_menus_etc(gpointer) {
 	create_umenu2();
 	create_pmenu2();
 	add_custom_angles_to_menus();
+	add_recent_items();
 
-	for(int i = ((int) recent_functions_pre.size()) - 1; i >= 0; i--) {
-		function_inserted(CALCULATOR->getActiveFunction(recent_functions_pre[i]));
-	}
-	for(int i = ((int) recent_variables_pre.size()) - 1; i >= 0; i--) {
-		variable_inserted(CALCULATOR->getActiveVariable(recent_variables_pre[i]));
-	}
-	for(int i = ((int) recent_units_pre.size()) - 1; i >= 0; i--) {
-		Unit *u = CALCULATOR->getActiveUnit(recent_units_pre[i]);
-		if(!u) u = CALCULATOR->getCompositeUnit(recent_units_pre[i]);
-		unit_inserted(u);
-	}
-
-	if(!enable_tooltips) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")), FALSE);
+	if(!enable_tooltips) set_tooltips_enabled(GTK_WIDGET(main_window()), FALSE);
 	else if(enable_tooltips > 1) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")), FALSE);
 
 	update_completion();
@@ -152,7 +104,7 @@ gboolean create_menus_etc(gpointer) {
 
 #ifdef G_OS_UNIX
 static gboolean on_sigterm_received(gpointer) {
-	on_gcalc_exit(NULL, NULL, NULL);
+	qalculate_quit();
 	return G_SOURCE_REMOVE;
 }
 #endif
@@ -169,18 +121,6 @@ void create_application(GtkApplication *app) {
 
 	gtk_window_set_default_icon_name("qalculate");
 
-	b_busy = false;
-	b_busy_result = false;
-	b_busy_expression = false;
-	b_busy_command = false;
-
-	main_builder = NULL; argumentrules_builder = NULL;
-	csvimport_builder = NULL; datasetedit_builder = NULL; datasets_builder = NULL; decimals_builder = NULL; functionedit_builder = NULL;
-	functions_builder = NULL; matrixedit_builder = NULL; matrix_builder = NULL; namesedit_builder = NULL; nbases_builder = NULL; plot_builder = NULL;
-	precision_builder = NULL; preferences_builder = NULL; unit_builder = NULL; percentage_builder = NULL; shortcuts_builder = NULL;
-	unitedit_builder = NULL; units_builder = NULL; unknownedit_builder = NULL; variableedit_builder = NULL; buttonsedit_builder = NULL;
-	variables_builder = NULL; csvexport_builder = NULL; setbase_builder = NULL; periodictable_builder = NULL, simplefunctionedit_builder = NULL; floatingpoint_builder = NULL;
-
 	//create the almighty Calculator object
 	new Calculator(ignore_locale);
 
@@ -189,146 +129,51 @@ void create_application(GtkApplication *app) {
 	//load application specific preferences
 	load_preferences();
 
-	mstruct = new MathStructure();
-	displayed_mstruct = NULL;
-	parsed_mstruct = new MathStructure();
-	parsed_tostruct = new MathStructure();
-	parsed_tostruct->setUndefined();
-	matrix_mstruct = new MathStructure();
-	mbak_convert.setUndefined();
-
-	bool canfetch = CALCULATOR->canFetch();
-
 	//create main window
 	create_main_window();
 
-	if(!custom_title.empty()) {
-		gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), custom_title.c_str());
-		title_modified = true;
-	} else {
-		update_window_title();
-		title_modified = false;
-	}
+	set_custom_window_title(custom_title.empty() ? NULL : custom_title.c_str());
+
 	g_application_set_default(G_APPLICATION(app));
-	gtk_window_set_application(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), app);
+	gtk_window_set_application(main_window(), app);
 
 	while(gtk_events_pending()) gtk_main_iteration();
 	test_border();
 
-	showing_first_time_message = first_time;
-
-	if(calc_arg.empty() && showing_first_time_message && file_arg.empty()) {
-		gtk_widget_queue_draw(resultview);
+	if(calc_arg.empty() && first_time && file_arg.empty()) {
+		show_result_help();
 	}
 
 	while(gtk_events_pending()) gtk_main_iteration();
 
-	//exchange rates
-
-	if(fetch_exchange_rates_at_startup && canfetch) {
-		fetch_exchange_rates(5);
-		while(gtk_events_pending()) gtk_main_iteration();
-	}
 	CALCULATOR->loadExchangeRates();
-
-	string ans_str = _("ans");
-	vans[0] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str, m_undefined, _("Last Answer"), false));
-	vans[0]->addName(_("answer"));
-	vans[0]->addName(ans_str + "1");
-	vans[1] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str + "2", m_undefined, _("Answer 2"), false));
-	vans[2] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str + "3", m_undefined, _("Answer 3"), false));
-	vans[3] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str + "4", m_undefined, _("Answer 4"), false));
-	vans[4] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str + "5", m_undefined, _("Answer 5"), false));
-	if(ans_str != "ans") {
-		ans_str = "ans";
-		vans[0]->addName(ans_str);
-		vans[0]->addName(ans_str + "1");
-		vans[1]->addName(ans_str + "2");
-		vans[2]->addName(ans_str + "3");
-		vans[3]->addName(ans_str + "4");
-		vans[4]->addName(ans_str + "5");
-	}
-	v_memory = new KnownVariable(CALCULATOR->temporaryCategory(), "", m_zero, _("Memory"), false, true);
-	ExpressionName ename;
-	ename.name = "MR";
-	ename.case_sensitive = true;
-	ename.abbreviation = true;
-	v_memory->addName(ename);
-	ename.name = "MRC";
-	v_memory->addName(ename);
-	CALCULATOR->addVariable(v_memory);
 
 	//load global definitions
 	if(load_global_defs && !CALCULATOR->loadGlobalDefinitions()) {
 		g_print(_("Failed to load global definitions!\n"));
 	}
 
-	f_answer = CALCULATOR->addFunction(new AnswerFunction());
-	f_expression = CALCULATOR->addFunction(new ExpressionFunction());
-	CALCULATOR->addFunction(new SetTitleFunction());
-
 	//load local definitions
 	CALCULATOR->loadLocalDefinitions();
-	remove_old_my_variables_category();
 
-	if(!custom_angle_unit.empty()) {
-		CALCULATOR->setCustomAngleUnit(CALCULATOR->getActiveUnit(custom_angle_unit));
-		if(CALCULATOR->customAngleUnit()) custom_angle_unit = CALCULATOR->customAngleUnit()->referenceName();
-	}
-	if(evalops.parse_options.angle_unit == ANGLE_UNIT_CUSTOM && !CALCULATOR->customAngleUnit()) evalops.parse_options.angle_unit = ANGLE_UNIT_NONE;
-
-	if(do_imaginary_j && CALCULATOR->v_i->hasName("j") == 0) {
-		ExpressionName ename = CALCULATOR->v_i->getName(1);
-		ename.name = "j";
-		ename.reference = false;
-		CALCULATOR->v_i->addName(ename, 1, true);
-		CALCULATOR->v_i->setChanged(false);
-	}
+	definitions_loaded();
 
 	if(unformatted_history == 1) {
 		unformatted_history = 2;
 		reload_history();
 	}
 
-	//reset
-	functions_window = NULL;
-	selected_function_category = _("All");
-	selected_function = NULL;
-	variables_window = NULL;
-	selected_variable_category = _("All");
-	selected_variable = NULL;
-	units_window = NULL;
-	selected_unit_category = _("All");
-	selected_unit = NULL;
-	selected_to_unit = NULL;
-	result_text = "0";
-	parsed_text = "0";
-	surface_result = NULL;
-	pixbuf_result = NULL;
-
 	//check for calculation errros regularly
 	g_timeout_add_seconds(1, on_display_errors_timeout, NULL);
 
-	check_expression_position = true;
-	expression_position = 1;
-
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object (main_builder, "menu_item_fetch_exchange_rates")), canfetch);
-
-	view_thread = new ViewThread;
-	view_thread->start();
-	command_thread = new CommandThread;
-
 	if(!file_arg.empty()) execute_from_file(file_arg);
 	if(!calc_arg.empty()) {
-		gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_builder_get_object(main_builder, "expressionbuffer")), calc_arg.c_str(), -1);
+		block_undo();
+		set_expression_text(calc_arg.c_str());
+		unblock_undo();
 		execute_expression();
-	} else if(!showing_first_time_message && !minimal_mode && !file_arg.empty()) {
-		int base = printops.base;
-		printops.base = 10;
-		setResult(NULL, false, false, false);
-		printops.base = base;
-	} else if(!showing_first_time_message) {
-		gtk_widget_queue_draw(resultview);
+	} else if(!first_time) {
+		redraw_result();
 	}
 
 	block_completion();
@@ -362,41 +207,7 @@ static void qalculate_activate(GtkApplication *app) {
 	list = gtk_application_get_windows(app);
 
 	if(list) {
-		if(hidden_x >= 0) {
-			gtk_widget_show(GTK_WIDGET(list->data));
-			GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(list->data));
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-			GdkMonitor *monitor = NULL;
-			if(hidden_monitor_primary) monitor = gdk_display_get_primary_monitor(display);
-			if(!monitor && hidden_monitor > 0) gdk_display_get_monitor(display, hidden_monitor - 1);
-			if(monitor) {
-				GdkRectangle area;
-				gdk_monitor_get_workarea(monitor, &area);
-#else
-			GdkScreen *screen = gdk_display_get_default_screen(display);
-			int i = -1;
-			if(hidden_monitor_primary) i = gdk_screen_get_primary_monitor(screen);
-			if(i < 0 && hidden_monitor > 0 && hidden_monitor < gdk_screen_get_n_monitors(screen)) i = hidden_monitor;
-			if(i >= 0) {
-				GdkRectangle area;
-				gdk_screen_get_monitor_workarea(screen, i, &area);
-#endif
-				gint w = 0, h = 0;
-				gtk_window_get_size(GTK_WINDOW(list->data), &w, &h);
-				if(hidden_x + w > area.width) hidden_x = area.width - w;
-				if(hidden_y + h > area.height) hidden_y = area.height - h;
-				gtk_window_move(GTK_WINDOW(list->data), hidden_x + area.x, hidden_y + area.y);
-			} else {
-				gtk_window_move(GTK_WINDOW(list->data), hidden_x, hidden_y);
-			}
-			hidden_x = -1;
-		}
-#ifdef _WIN32
-		gtk_window_present_with_time(GTK_WINDOW(list->data), GDK_CURRENT_TIME);
-#endif
-		if(expressiontext) gtk_widget_grab_focus(expressiontext);
-		gtk_window_present_with_time(GTK_WINDOW(list->data), GDK_CURRENT_TIME);
-
+		restore_window(GTK_WINDOW(list->data));
 		return;
 	}
 
@@ -501,50 +312,18 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 		str = NULL;
 		g_variant_dict_lookup(options_dict, "title", "s", &str);
 		if(str) {
-			gtk_window_set_title(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), str);
-			title_modified = true;
+			set_custom_window_title(str);
 			g_free(str);
 		}
-		if(hidden_x >= 0) {
-			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
-			GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(gtk_builder_get_object(main_builder, "main_window")));
-#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-			GdkMonitor *monitor = NULL;
-			if(hidden_monitor_primary) monitor = gdk_display_get_primary_monitor(display);
-			if(!monitor && hidden_monitor > 0) gdk_display_get_monitor(display, hidden_monitor - 1);
-			if(monitor) {
-				GdkRectangle area;
-				gdk_monitor_get_workarea(monitor, &area);
-#else
-			GdkScreen *screen = gdk_display_get_default_screen(display);
-			int i = -1;
-			if(hidden_monitor_primary) i = gdk_screen_get_primary_monitor(screen);
-			if(i < 0 && hidden_monitor > 0 && hidden_monitor < gdk_screen_get_n_monitors(screen)) i = hidden_monitor;
-			if(i >= 0) {
-				GdkRectangle area;
-				gdk_screen_get_monitor_workarea(screen, i, &area);
-#endif
-				gint w = 0, h = 0;
-				gtk_window_get_size(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), &w, &h);
-				if(hidden_x + w > area.width) hidden_x = area.width - w;
-				if(hidden_y + h > area.height) hidden_y = area.height - h;
-				gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), hidden_x + area.x, hidden_y + area.y);
-			} else {
-				gtk_window_move(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), hidden_x, hidden_y);
-			}
-			hidden_x = -1;
-		}
-#ifdef _WIN32
-		gtk_window_present_with_time(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GDK_CURRENT_TIME);
-#endif
-		if(expressiontext) gtk_widget_grab_focus(expressiontext);
-		gtk_window_present_with_time(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GDK_CURRENT_TIME);
+		restore_window();
 		if(!file_arg.empty()) execute_from_file(file_arg);
 		if(!calc_arg.empty()) {
-			gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_builder_get_object(main_builder, "expressionbuffer")), calc_arg.c_str(), -1);
+			block_undo();
+			set_expression_text(calc_arg.c_str());
+			unblock_undo();
 			execute_expression();
 		} else if(allow_multiple_instances < 0 && file_arg.empty()) {
-			GtkWidget *edialog = gtk_message_dialog_new(GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window")), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, _("By default, only one instance (one main window) of %s is allowed.\n\nIf multiple instances are opened simultaneously, only the definitions (variables, functions, etc.), mode, preferences, and history of the last closed window will be saved.\n\nDo you, despite this, want to change the default behavior and allow multiple simultaneous instances?"), "Qalculate!");
+			GtkWidget *edialog = gtk_message_dialog_new(main_window(), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, _("By default, only one instance (one main window) of %s is allowed.\n\nIf multiple instances are opened simultaneously, only the definitions (variables, functions, etc.), mode, preferences, and history of the last closed window will be saved.\n\nDo you, despite this, want to change the default behavior and allow multiple simultaneous instances?"), "Qalculate!");
 			allow_multiple_instances = gtk_dialog_run(GTK_DIALOG(edialog)) == GTK_RESPONSE_YES;
 			save_preferences(false);
 			gtk_widget_destroy(edialog);
@@ -595,7 +374,7 @@ int main (int argc, char *argv[]) {
 #	ifdef _WIN32
 					_putenv_s("LANG", lang.c_str());
 #	else
-					setenv("LANG", lang.c_str(), 1);
+					setenv("LANGUAGE", lang.c_str(), 1);
 #	endif
 				}
 				break;
@@ -609,13 +388,14 @@ int main (int argc, char *argv[]) {
 			ULONG nlang = 0;
 			DWORD n = 0;
 			if(GetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &nlang, NULL, &n)) {
-				WCHAR wlocale[n];
+				WCHAR* wlocale = new WCHAR[n];
 				if(GetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &nlang, wlocale, &n)) {
 					lang = utf8_encode(wlocale);
 					gsub("-", "_", lang);
 					if(lang.length() > 5) lang = lang.substr(0, 5);
 					if(!lang.empty()) _putenv_s("LANG", lang.c_str());
 				}
+				delete[] wlocale;
 			}
 		}
 		bindtextdomain(GETTEXT_PACKAGE, getPackageLocaleDir().c_str());

@@ -6,8 +6,8 @@ dnl  ----------------------
 dnl | initialize autotools |---------------------------------------------------
 dnl  ----------------------
 
-AC_INIT([Qalculate! (GTK UI)],[4.8.1],[],[qalculate-gtk])
-AC_CONFIG_SRCDIR([src/callbacks.cc])
+AC_INIT([Qalculate! (GTK UI)],[5.2.0],[],[qalculate-gtk])
+AC_CONFIG_SRCDIR([src/main.cc])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS(config.h)
 AM_MAINTAINER_MODE
@@ -125,7 +125,7 @@ AS_IF([test "x$with_local_help" != "xno"], [
 AM_CONDITIONAL(ENABLE_LOCAL_HELP, [test "x$with_local_help" != "xno"])
 
 PKG_CHECK_MODULES(QALCULATE, [
-	libqalculate >= 4.8.0
+	libqalculate >= 5.1.0
 	])
 AC_SUBST(QALCULATE_CFLAGS)
 AC_SUBST(QALCULATE_LIBS)
@@ -141,7 +141,7 @@ AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[The package name for gettext])
 
 dnl Please keep this in alphabetical order
-ALL_LINGUAS="ca de es fr nl pt_BR ru sl sv zh_CN"
+ALL_LINGUAS="ca de es fr nl pl pt_BR pt_PT ru sl sv zh_CN"
 AM_GNU_GETTEXT(external)
 AM_GNU_GETTEXT_VERSION([0.21])
 

@@ -6,7 +6,7 @@ Qalculate! is a multi-purpose cross-platform desktop calculator. It is simple to
 
 ## Requirements
 * GTK (>= 3.10)
-* libqalculate (>= 4.8.0)
+* libqalculate (>= 5.1.0)
 
 ## Installation
 Instructions and download links for installers, binaries packages, and the source code of released versions of Qalculate! are available at https://qalculate.github.io/downloads.html.
@@ -147,7 +147,7 @@ plot(x^2; −5; 5) _(plots the function y=x^2 from -5 to 5)_
 
 ### Units
 
-5 dm3 to L _= 25 dm^3 to L = 5 L_
+5 dm3 to L _= 5 dm^3 to L = 5 L_
 
 20 miles / 2h to km/h _= 16.09344 km/h_
 
@@ -251,6 +251,8 @@ limit(ln(1 + 4x)/(3^x − 1); 0) _= 4 / ln(3)_
 ### Matrices and vectors
 
 \[1, 2, 3; 4, 5, 6\] _= ((1; 2; 3); (4; 5; 6)) = \[1  2  3; 4  5  6\] (2×3 matrix)_
+
+1...5 = (1:5) = (1:1:5) = _\[1  2  3  4  5\]_
 
 (1; 2; 3) × 2 − 2 _= \[(1 × 2 − 2), (2 × 2 − 2), (3 × 2 − 2)\] = \[0  2  4\]_
 

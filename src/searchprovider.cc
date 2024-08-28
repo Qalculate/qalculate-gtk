@@ -1,7 +1,7 @@
 /*
     Qalculate (gnome shell search provider)
 
-    Copyright (C) 2020  Hanna Knutsson (hanna.knutsson@protonmail.com)
+    Copyright (C) 2020, 2024  Hanna Knutsson (hanna.knutsson@protonmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,7 +18,9 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <glib/gstdio.h>
 #include <gio/gio.h>
-#include <unistd.h>
+#ifndef _MSC_VER
+#	include <unistd.h>
+#endif
 #include <sys/stat.h>
 
 #include "support.h"
@@ -27,37 +29,7 @@
 
 #include "gnome-search-provider2.h"
 
-#if HAVE_UNORDERED_MAP
-#	include <unordered_map>
-	using std::unordered_map;
-#elif 	defined(__GNUC__)
-
-#	ifndef __has_include
-#	define __has_include(x) 0
-#	endif
-
-#	if (defined(__clang__) && __has_include(<tr1/unordered_map>)) || (__GNUC__ >= 4 && __GNUC_MINOR__ >= 3)
-#		include <tr1/unordered_map>
-		namespace Sgi = std;
-#		define unordered_map std::tr1::unordered_map
-#	else
-#		if __GNUC__ < 3
-#			include <hash_map.h>
-			namespace Sgi { using ::hash_map; }; // inherit globals
-#		else
-#			include <ext/hash_map>
-#			if __GNUC__ == 3 && __GNUC_MINOR__ == 0
-				namespace Sgi = std;		// GCC 3.0
-#			else
-				namespace Sgi = ::__gnu_cxx;	// GCC 3.1 and later
-#			endif
-#		endif
-#		define unordered_map Sgi::hash_map
-#	endif
-#else      // ...  there are other compilers, right?
-	namespace Sgi = std;
-#	define unordered_map Sgi::hash_map
-#endif
+#include "unordered_map_define.h"
 
 using std::string;
 using std::cout;
@@ -87,7 +59,7 @@ struct _QalculateSearchProvider {
 
 G_DEFINE_TYPE(QalculateSearchProvider, qalculate_search_provider, G_TYPE_OBJECT);
 
-static void qalculate_search_provider_class_init(QalculateSearchProviderClass *o) {}
+static void qalculate_search_provider_class_init(QalculateSearchProviderClass*) {}
 static QalculateSearchProvider *qalculate_search_provider_new(void) {
 	return QALCULATE_SEARCH_PROVIDER(g_object_new(qalculate_search_provider_get_type(), NULL));
 }
@@ -103,7 +75,7 @@ bool has_error() {
 	return false;
 }
 
-static void qalculate_search_provider_activate_result(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar *result, gchar **terms, guint timestamp, gpointer user_data) {
+static void qalculate_search_provider_activate_result(ShellSearchProvider2*, GDBusMethodInvocation *invocation, gchar *result, gchar **terms, guint, gpointer) {
 	gchar *joined_terms = g_strjoinv(" ", terms);
 	if(strcmp(result, "copy-to-clipboard") == 0) {
 		unordered_map<string, string>::const_iterator it = expressions.find(joined_terms);
@@ -205,7 +177,7 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 		}
 	}
 }
-static gboolean qalculate_search_provider_get_initial_result_set(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **terms, gpointer user_data) {
+static gboolean qalculate_search_provider_get_initial_result_set(ShellSearchProvider2*, GDBusMethodInvocation *invocation, gchar **terms, gpointer) {
 	gchar *joined_terms = g_strjoinv(" ", terms);
 	GVariantBuilder builder;
 	handle_terms(joined_terms, builder);
@@ -213,7 +185,7 @@ static gboolean qalculate_search_provider_get_initial_result_set(ShellSearchProv
 	g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
 	return TRUE;
 }
-static gboolean qalculate_search_provider_get_result_metas(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **eqs, gpointer user_data) {
+static gboolean qalculate_search_provider_get_result_metas(ShellSearchProvider2*, GDBusMethodInvocation *invocation, gchar **eqs, gpointer) {
 	gint idx;
 	GVariantBuilder metas;
 	g_variant_builder_init(&metas, G_VARIANT_TYPE ("aa{sv}"));
@@ -243,7 +215,7 @@ static gboolean qalculate_search_provider_get_result_metas(ShellSearchProvider2 
 	g_dbus_method_invocation_return_value(invocation, g_variant_new("(aa{sv})", &metas));
 	return TRUE;
 }
-static gboolean qalculate_search_provider_get_subsearch_result_set(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **arg_previous_results, gchar **terms, gpointer user_data) {
+static gboolean qalculate_search_provider_get_subsearch_result_set(ShellSearchProvider2*, GDBusMethodInvocation *invocation, gchar**, gchar **terms, gpointer) {
 	gchar *joined_terms = g_strjoinv(" ", terms);
 	GVariantBuilder builder;
 	handle_terms(joined_terms, builder);
@@ -251,7 +223,7 @@ static gboolean qalculate_search_provider_get_subsearch_result_set(ShellSearchPr
 	g_dbus_method_invocation_return_value(invocation, g_variant_new("(as)", &builder));
 	return TRUE;
 }
-static gboolean qalculate_search_provider_launch_search(ShellSearchProvider2 *object, GDBusMethodInvocation *invocation, gchar **terms, guint timestamp, gpointer user_data) {
+static gboolean qalculate_search_provider_launch_search(ShellSearchProvider2*, GDBusMethodInvocation *invocation, gchar **terms, guint, gpointer) {
 	gchar *joined_terms = g_strjoinv(" ", terms);
 	string str = "qalculate-gtk \"";
 	str += joined_terms;
@@ -279,7 +251,7 @@ gboolean qalculate_search_provider_dbus_export(QalculateSearchProvider *self, GD
 	return g_dbus_interface_skeleton_export(G_DBUS_INTERFACE_SKELETON(self->skeleton), connection, object_path, error);
 }
 
-void qalculate_search_provider_dbus_unexport(QalculateSearchProvider *self, GDBusConnection *connection, const gchar *object_path) {
+void qalculate_search_provider_dbus_unexport(QalculateSearchProvider *self, GDBusConnection *connection, const gchar*) {
 	if(g_dbus_interface_skeleton_has_connection(G_DBUS_INTERFACE_SKELETON(self->skeleton), connection)) {
 		g_dbus_interface_skeleton_unexport_from_connection(G_DBUS_INTERFACE_SKELETON(self->skeleton), connection);
 	}
@@ -306,7 +278,7 @@ static void qalculate_search_application_class_init(QalculateSearchApplicationCl
 	application_class->dbus_unregister = qalculate_search_application_dbus_unregister;
 }
 
-static void qalculate_search_application_init(QalculateSearchApplication *self) {}
+static void qalculate_search_application_init(QalculateSearchApplication*) {}
 
 static GtkApplication *qalculate_search_application_new(void) {
 	return GTK_APPLICATION(g_object_new(qalculate_search_application_get_type(), "application-id", "io.github.Qalculate.SearchProvider", "flags", G_APPLICATION_IS_SERVICE, "inactivity-timeout", 20000, NULL));
@@ -349,6 +321,8 @@ void load_preferences_search() {
 	search_po.use_unicode_signs = true;
 	search_po.digit_grouping = DIGIT_GROUPING_STANDARD;
 	search_po.use_unit_prefixes = true;
+	search_po.exp_display = EXP_POWER_OF_10;
+	search_po.duodecimal_symbols = false;
 	search_po.use_prefixes_for_currencies = false;
 	search_po.use_prefixes_for_all_units = false;
 	search_po.spacious = true;
@@ -402,7 +376,7 @@ void load_preferences_search() {
 	gchar *gstr_file = g_build_filename(getLocalDir().c_str(), "qalculate-gtk.cfg", NULL);
 	file = fopen(gstr_file, "r");
 
-	int version_numbers[] = {3, 9, 2};
+	int version_numbers[] = {5, 2, 0};
 
 	if(file) {
 		char line[1000000L];
@@ -552,9 +526,14 @@ void load_preferences_search() {
 				} else if(svar == "lower_case_numbers") {
 					search_po.lower_case_numbers = v;
 				} else if(svar == "duodecimal_symbols") {
-					search_po.custom_time_zone += TZ_DOZENAL;
+					search_po.duodecimal_symbols = v;
 				} else if(svar == "lower_case_e") {
-					search_po.lower_case_e = v;
+					if(v) search_po.exp_display = EXP_LOWERCASE_E;
+				} else if(svar == "e_notation") {
+					if(!v) search_po.exp_display = EXP_POWER_OF_10;
+					else if(search_po.exp_display != EXP_LOWERCASE_E) search_po.exp_display = EXP_UPPERCASE_E;
+				} else if(svar == "exp_display") {
+					if(v >= EXP_UPPERCASE_E && v <= EXP_POWER_OF_10) search_po.exp_display = (ExpDisplay) v;
 				} else if(svar == "imaginary_j") {
 					search_do_imaginary_j = v;
 				} else if(svar == "base_display") {
@@ -588,10 +567,12 @@ void load_preferences_search() {
 						search_po.digit_grouping = (DigitGrouping) v;
 					}
 				} else if(svar == "round_halfway_to_even") {//obsolete
-					search_po.round_halfway_to_even = v;
+					if(v) search_po.rounding = ROUNDING_HALF_TO_EVEN;
 				} else if(svar == "rounding_mode") {
-					if(v) search_po.custom_time_zone += TZ_TRUNCATE;
-					search_po.round_halfway_to_even = (v == 1);
+					if(v >= ROUNDING_HALF_AWAY_FROM_ZERO && v <= ROUNDING_DOWN) {
+						if(v == 2 && (version_numbers[0] < 4 || (version_numbers[0] == 4 && version_numbers[1] < 9) || (version_numbers[0] == 4 && version_numbers[1] == 9 && version_numbers[2] == 0))) v = ROUNDING_TOWARD_ZERO;
+						search_po.rounding = (RoundingMode) v;
+					}
 				/*} else if(svar == "approximation") {
 					if(v >= APPROXIMATION_EXACT && v <= APPROXIMATION_APPROXIMATE) {
 						search_eo.approximation = (ApproximationMode) v;

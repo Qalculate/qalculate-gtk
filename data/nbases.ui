@@ -7,8 +7,7 @@
     <property name="border-width">6</property>
     <property name="title" translatable="yes">Number Bases</property>
     <property name="type-hint">normal</property>
-    <signal name="delete-event" handler="gtk_widget_hide" object="nbases_dialog" swapped="yes"/>
-    <signal name="destroy-event" handler="gtk_widget_hide" object="nbases_dialog" swapped="yes"/>
+    <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
     <signal name="key-press-event" handler="on_nbases_dialog_key_press_event" swapped="no"/>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox5">
