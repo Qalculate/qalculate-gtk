@@ -3399,10 +3399,12 @@ void update_history_accels(int type) {
 	}
 }
 
-void create_history_view() {
-
+void initialize_history_functions() {
 	f_answer = CALCULATOR->addFunction(new AnswerFunction());
 	f_expression = CALCULATOR->addFunction(new ExpressionFunction());
+}
+
+void create_history_view() {
 
 	if(version_numbers[0] < 3 || (version_numbers[0] == 3 && version_numbers[1] < 22) || (version_numbers[0] == 3 && version_numbers[1] == 22 && version_numbers[2] < 1)) unformatted_history = 1;
 	initial_inhistory_index = inhistory.size() - 1;

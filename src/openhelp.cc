@@ -42,6 +42,8 @@ using std::endl;
 gint help_width = -1, help_height = -1;
 gdouble help_zoom = -1.0;
 
+GtkWidget *button_zoomout = NULL;
+
 bool read_help_settings_line(string &svar, string &svalue, int &v) {
 	if(svar == "help_width") {
 		help_width = v;
@@ -57,7 +59,7 @@ bool read_help_settings_line(string &svar, string &svalue, int &v) {
 void write_help_settings(FILE *file) {
 	if(help_width != -1) fprintf(file, "help_width=%i\n", help_width);
 	if(help_height != -1) fprintf(file, "help_height=%i\n", help_height);
-	if(help_zoom >= 0.0) fprintf(file, "help_zoom=%f\n", help_zoom);
+	if(help_zoom > 0.0) fprintf(file, "help_zoom=%f\n", help_zoom);
 }
 
 string get_doc_uri(string file, bool with_proto = true) {
@@ -273,15 +275,17 @@ gboolean on_help_key_press_event(GtkWidget *d, GdkEventKey *event, gpointer w) {
 			if(event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) {
 				help_zoom = webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) + 0.1;
 				webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), help_zoom);
+				gtk_widget_set_sensitive(button_zoomout, TRUE);
 				return TRUE;
 			}
 			break;
 		}
 		case GDK_KEY_KP_Subtract: {}
 		case GDK_KEY_minus: {
-			if((event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) && webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) > 0.1) {
+			if((event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) && webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) > 0.11) {
 				help_zoom = webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) - 0.1;
 				webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), help_zoom);
+				gtk_widget_set_sensitive(button_zoomout, help_zoom > 0.11);
 				return TRUE;
 			}
 			break;
@@ -309,11 +313,13 @@ void on_help_button_home_clicked(GtkButton*, gpointer w) {
 void on_help_button_zoomin_clicked(GtkButton*, gpointer w) {
 	help_zoom = webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) + 0.1;
 	webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), help_zoom);
+	gtk_widget_set_sensitive(button_zoomout, TRUE);
 }
 void on_help_button_zoomout_clicked(GtkButton*, gpointer w) {
-	if(webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) > 0.1) {
+	if(webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) > 0.11) {
 		help_zoom = webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) - 0.1;
 		webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), help_zoom);
+		gtk_widget_set_sensitive(button_zoomout, help_zoom > 0.11);
 	}
 }
 gboolean on_help_context_menu(WebKitWebView*, WebKitContextMenu*, GdkEvent*, WebKitHitTestResult *hit_test_result, gpointer) {
@@ -392,7 +398,7 @@ void show_help(const char *file, GtkWindow *parent) {
 	GtkWidget *button_next_match = gtk_button_new_from_icon_name("go-down-symbolic", GTK_ICON_SIZE_BUTTON);
 	gtk_entry_set_width_chars(GTK_ENTRY(entry_find), 25);
 	GtkWidget *button_zoomin = gtk_button_new_from_icon_name("zoom-in-symbolic", GTK_ICON_SIZE_BUTTON);
-	GtkWidget *button_zoomout = gtk_button_new_from_icon_name("zoom-out-symbolic", GTK_ICON_SIZE_BUTTON);
+	button_zoomout = gtk_button_new_from_icon_name("zoom-out-symbolic", GTK_ICON_SIZE_BUTTON);
 	gtk_widget_set_sensitive(button_back, FALSE);
 	gtk_widget_set_sensitive(button_forward, FALSE);
 	gtk_container_add(GTK_CONTAINER(hbox_l), button_back);
@@ -423,6 +429,7 @@ void show_help(const char *file, GtkWindow *parent) {
 	webkit_settings_set_enable_plugins(settings, FALSE);
 #	endif
 	webkit_settings_set_zoom_text_only(settings, FALSE);
+	gtk_widget_set_sensitive(button_zoomout, help_zoom > 0.11 || help_zoom < 0.0);
 	if(help_zoom > 0.0) webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(webView), help_zoom);
 	PangoFontDescription *font_desc;
 	gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(main_window())), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);

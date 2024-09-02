@@ -124,6 +124,7 @@ void generate_variables_tree_struct();
 void generate_units_tree_struct();
 
 void definitions_loaded();
+void initialize_variables_and_functions();
 
 void update_vmenu(bool update_compl = true);
 void update_fmenu(bool update_compl = true);

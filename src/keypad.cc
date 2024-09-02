@@ -287,15 +287,7 @@ void insert_button_variable(GtkWidget*, gpointer user_data) {
 	insert_variable((Variable*) user_data);
 }
 void insert_button_unit(GtkMenuItem*, gpointer user_data) {
-	if(!CALCULATOR->stillHasUnit((Unit*) user_data)) return;
-	if(((Unit*) user_data)->subtype() == SUBTYPE_COMPOSITE_UNIT) {
-		PrintOptions po = printops;
-		po.is_approximate = NULL;
-		po.can_display_unicode_string_arg = (void*) expression_edit_widget();
-		insert_text(((CompositeUnit*) user_data)->print(po, false, TAG_TYPE_HTML, true).c_str());
-	} else {
-		insert_text(((Unit*) user_data)->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, true, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_UNIT, true).c_str());
-	}
+	insert_unit((Unit*) user_data);
 	if((Unit*) user_data != latest_button_unit) {
 		latest_button_unit = (Unit*) user_data;
 		string si_label_str;
@@ -315,15 +307,6 @@ void insert_button_unit(GtkMenuItem*, gpointer user_data) {
 }
 void insert_button_currency(GtkMenuItem*, gpointer user_data) {
 	insert_unit((Unit*) user_data);
-	if(!CALCULATOR->stillHasUnit((Unit*) user_data)) return;
-	if(((Unit*) user_data)->subtype() == SUBTYPE_COMPOSITE_UNIT) {
-		PrintOptions po = printops;
-		po.is_approximate = NULL;
-		po.can_display_unicode_string_arg = (void*) expression_edit_widget();
-		insert_text(((CompositeUnit*) user_data)->print(po, false, TAG_TYPE_HTML, true).c_str());
-	} else {
-		insert_text(((Unit*) user_data)->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, true, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_UNIT, true).c_str());
-	}
 	if((Unit*) user_data != latest_button_currency) {
 		latest_button_currency = (Unit*) user_data;
 		string currency_label_str;
@@ -2626,25 +2609,31 @@ void update_mb_pi_menu() {
 }
 
 void on_popup_menu_sto_set_activate(GtkMenuItem*, gpointer data) {
-	((KnownVariable*) data)->set(*current_result());
+	KnownVariable *v = (KnownVariable*) data;
+	v->set(*current_result());
 	gtk_menu_popdown(GTK_MENU(gtk_builder_get_object(main_builder, "menu_sto")));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "mb_sto")), FALSE);
+	variable_edited(v);
 	focus_keeping_selection();
 }
 void on_popup_menu_sto_add_activate(GtkMenuItem*, gpointer data) {
-	MathStructure m(((KnownVariable*) data)->get());
+	KnownVariable *v = (KnownVariable*) data;
+	MathStructure m(v->get());
 	m.calculateAdd(*current_result(), evalops);
-	((KnownVariable*) data)->set(m);
+	v->set(m);
 	gtk_menu_popdown(GTK_MENU(gtk_builder_get_object(main_builder, "menu_sto")));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "mb_sto")), FALSE);
+	variable_edited(v);
 	focus_keeping_selection();
 }
 void on_popup_menu_sto_sub_activate(GtkMenuItem*, gpointer data) {
-	MathStructure m(((KnownVariable*) data)->get());
+	KnownVariable *v = (KnownVariable*) data;
+	MathStructure m(v->get());
 	m.calculateSubtract(*current_result(), evalops);
-	((KnownVariable*) data)->set(m);
+	v->set(m);
 	gtk_menu_popdown(GTK_MENU(gtk_builder_get_object(main_builder, "menu_sto")));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "mb_sto")), FALSE);
+	variable_edited(v);
 	focus_keeping_selection();
 }
 void on_popup_menu_sto_edit_activate(GtkMenuItem*, gpointer data) {

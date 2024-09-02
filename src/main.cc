@@ -153,6 +153,8 @@ void create_application(GtkApplication *app) {
 		g_print(_("Failed to load global definitions!\n"));
 	}
 
+	initialize_variables_and_functions();
+
 	//load local definitions
 	CALCULATOR->loadLocalDefinitions();
 

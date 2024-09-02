@@ -533,6 +533,26 @@ GtkWidget* get_argument_rules_dialog(void) {
 	return GTK_WIDGET(gtk_builder_get_object(argumentrules_builder, "argument_rules_dialog"));
 }
 
+void fix_expression(string &str) {
+	if(str.empty()) return;
+	size_t i = 0;
+	bool b = false;
+	while(true) {
+		i = str.find("\\", i);
+		if(i == string::npos || i == str.length() - 1) break;
+		if((str[i + 1] >= 'a' && str[i + 1] <= 'z') || (str[i + 1] >= 'A' && str[i + 1] <= 'Z') || (str[i + 1] >= '1' && str[i + 1] <= '9')) {
+			b = true;
+			break;
+		}
+		i++;
+	}
+	if(!b) {
+		gsub("x", "\\x", str);
+		gsub("y", "\\y", str);
+		gsub("z", "\\z", str);
+	}
+}
+
 Argument *edit_argument(Argument *arg) {
 	GtkWidget *dialog = get_argument_rules_dialog();
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_builder_get_object(functionedit_builder, "function_edit_dialog")));
@@ -727,7 +747,9 @@ Argument *edit_argument(Argument *arg) {
 		arg->setZeroForbidden(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_forbid_zero"))));
 		arg->setHandleVector(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_handle_vector"))));
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_enable_condition")))) {
-			arg->setCustomCondition(unlocalize_expression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(argumentrules_builder, "argument_rules_entry_condition")))));
+			string scond = unlocalize_expression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(argumentrules_builder, "argument_rules_entry_condition"))));
+			fix_expression(scond);
+			arg->setCustomCondition(scond);
 		} else {
 			arg->setCustomCondition("");
 		}
@@ -775,27 +797,6 @@ Argument *edit_argument(Argument *arg) {
 	}
 	gtk_widget_hide(dialog);
 	return NULL;
-}
-
-void fix_expression(string &str) {
-	if(str.empty()) return;
-	size_t i = 0;
-	bool b = false;
-	while(true) {
-		i = str.find("\\", i);
-		if(i == string::npos || i == str.length() - 1) break;
-		if((str[i + 1] >= 'a' && str[i + 1] <= 'z') || (str[i + 1] >= 'A' && str[i + 1] <= 'Z') || (str[i + 1] >= '1' && str[i + 1] <= '9')) {
-			b = true;
-			break;
-		}
-		i++;
-	}
-	if(!b) {
-		gsub("x", "\\x", str);
-		gsub("y", "\\y", str);
-		gsub("z", "\\z", str);
-	}
-	CALCULATOR->parseSigns(str);
 }
 
 /*

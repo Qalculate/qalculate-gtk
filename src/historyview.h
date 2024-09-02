@@ -36,6 +36,7 @@ enum {
 };
 
 void create_history_view();
+void initialize_history_functions();
 void update_history_accels(int type);
 void update_history_button_text();
 void update_history_colors(bool initial);

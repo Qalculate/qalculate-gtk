@@ -72,7 +72,6 @@ bool read_variables_dialog_settings_line(string &svar, string&, int &v) {
 void write_variables_dialog_settings(FILE *file) {
 	if(variables_height > -1) fprintf(file, "variables_height=%i\n", variables_height);
 	if(variables_width > -1) fprintf(file, "variables_width=%i\n", variables_width);
-	if(variables_height > -1) fprintf(file, "variables_height=%i\n", variables_height);
 	if(variables_hposition > -1) fprintf(file, "variables_hpanel_position=%i\n", variables_hposition);
 	if(variables_vposition > -1) fprintf(file, "variables_vpanel_position=%i\n", variables_vposition);
 }

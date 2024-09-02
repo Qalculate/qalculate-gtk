@@ -1282,9 +1282,6 @@ void on_popup_menu_item_clear_history_activate(GtkMenuItem*, gpointer) {
 	clear_expression_history();
 }
 
-extern void on_menu_item_insert_date_activate(GtkMenuItem *w, gpointer user_data);
-extern void on_menu_item_insert_matrix_activate(GtkMenuItem *w, gpointer user_data);
-extern void on_menu_item_insert_vector_activate(GtkMenuItem *w, gpointer user_data);
 extern void on_menu_item_meta_mode_activate(GtkMenuItem *w, gpointer user_data);
 extern void on_menu_item_meta_mode_save_activate(GtkMenuItem *w, gpointer user_data);
 extern gboolean on_menu_item_meta_mode_popup_menu(GtkWidget*, gpointer data);
@@ -1306,7 +1303,7 @@ void expression_insert_date() {
 	if(!str.empty()) {
 		QalculateDateTime date;
 		if(date.set(str)) {
-			if(b_quote < 0) b_quote = 0;
+			if(b_quote < 0 && is_in(NUMBERS, str[0])) b_quote = 0;
 			gtk_calendar_select_month(GTK_CALENDAR(date_w), date.month() - 1, date.year());
 			gtk_calendar_select_day(GTK_CALENDAR(date_w), date.day());
 		}
@@ -1358,6 +1355,16 @@ void expression_insert_vector() {
 }
 
 GtkMenu *expression_edit_popup_menu() {return popup_menu_expressiontext;}
+
+void on_popup_menu_item_insert_date_activate(GtkMenuItem*, gpointer) {
+	expression_insert_date();
+}
+void on_popup_menu_item_insert_matrix_activate(GtkMenuItem*, gpointer) {
+	expression_insert_matrix();
+}
+void on_popup_menu_item_insert_vector_activate(GtkMenuItem*, gpointer) {
+	expression_insert_vector();
+}
 
 bool block_popup_input_base = false;
 void on_popup_menu_item_input_base(GtkMenuItem *w, gpointer data) {
@@ -1463,9 +1470,9 @@ void on_expressiontext_populate_popup(GtkTextView*, GtkMenu *menu, gpointer) {
 	MENU_ITEM(_("Save Mode…"), on_menu_item_meta_mode_save_activate)
 	sub = sub2;
 	MENU_SEPARATOR
-	MENU_ITEM(_("Insert Date…"), on_menu_item_insert_date_activate)
-	MENU_ITEM(_("Insert Matrix…"), on_menu_item_insert_matrix_activate)
-	MENU_ITEM(_("Insert Vector…"), on_menu_item_insert_vector_activate)
+	MENU_ITEM(_("Insert Date…"), on_popup_menu_item_insert_date_activate)
+	MENU_ITEM(_("Insert Matrix…"), on_popup_menu_item_insert_matrix_activate)
+	MENU_ITEM(_("Insert Vector…"), on_popup_menu_item_insert_vector_activate)
 }
 
 gboolean epxression_tooltip_timeout(gpointer) {

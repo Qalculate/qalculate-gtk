@@ -302,7 +302,10 @@ void set_clipboard(string str, int ascii, bool html, bool is_result, int copy_wi
 				CALCULATOR->beginTemporaryStopMessages();
 				CALCULATOR->parse(&m, str.substr(i + 1, str.length() - (i + 1)), po);
 				if(is_unit_multiexp(m)) {
-					CALCULATOR->parse(&m, i2 != string::npos ? str.substr(i2 + 1, str.length() - (i2 + 1)) : str, po);
+					string str2 = (i2 != string::npos ? str.substr(i2 + 1, str.length() - (i2 + 1)) : str);
+					gsub(DOT, "", str2);
+					gsub(COMMA, "", str2);
+					CALCULATOR->parse(&m, str2, po);
 					if(m.isMultiplication() || m.isDivision()) {
 						str = str.substr(0, i);
 					}
@@ -3677,8 +3680,8 @@ void set_option(string str) {
 		if(!display && equalsIgnoreCase(svalue, "off")) v = EXP_NONE;
 		else if(!display && equalsIgnoreCase(svalue, "auto")) v = EXP_PRECISION;
 		else if(!display && equalsIgnoreCase(svalue, "pure")) v = EXP_PURE;
-		else if(!display && (empty_value || equalsIgnoreCase(svalue, "scientific"))) v = EXP_SCIENTIFIC;
-		else if(!display && equalsIgnoreCase(svalue, "engineering")) v = EXP_BASE_3;
+		else if(!display && (empty_value || svalue == "sci" || equalsIgnoreCase(svalue, "scientific"))) v = EXP_SCIENTIFIC;
+		else if(!display && (svalue == "eng" || equalsIgnoreCase(svalue, "engineering"))) v = EXP_BASE_3;
 		else if(svalue == "E" || (display && empty_value && printops.exp_display == EXP_POWER_OF_10)) {v = EXP_UPPERCASE_E; display = true;}
 		else if(svalue == "e") {v = EXP_LOWERCASE_E; display = true;}
 		//scientific notation
@@ -7279,6 +7282,7 @@ void function_edited(MathFunction *f) {
 	}
 	//select the new function
 	selected_function = f;
+	if(current_parsed_result() && current_parsed_result()->contains(f)) expression_format_updated(false);
 	update_fmenu();
 	function_inserted(f);
 }
@@ -7286,6 +7290,7 @@ void dataset_edited(DataSet *ds) {
 	if(!ds) return;
 	selected_dataset = ds;
 	update_fmenu();
+	if(current_parsed_result() && current_parsed_result()->contains(ds)) expression_format_updated(false);
 	function_inserted(ds);
 	update_datasets_tree();
 }
@@ -7307,6 +7312,7 @@ void variable_edited(Variable *v) {
 		selected_variable_category = "/";
 		selected_variable_category += v->category();
 	}
+	if(current_parsed_result() && current_parsed_result()->contains(v)) expression_format_updated(false);
 	update_vmenu();
 	variable_inserted(v);
 }
@@ -7330,6 +7336,7 @@ void unit_edited(Unit *u) {
 		selected_unit_category = "/";
 		selected_unit_category += u->category();
 	}
+	if(current_parsed_result() && current_parsed_result()->contains(u)) expression_format_updated(false);
 	update_umenus();
 	unit_inserted(u);
 }
@@ -7366,14 +7373,17 @@ void insert_unit(Unit *u, bool add_to_recent) {
 }
 void variable_removed(Variable *v) {
 	remove_from_recent_variables(v);
+	if(current_parsed_result() && current_parsed_result()->contains(v)) expression_format_updated(false);
 	update_vmenu();
 }
 void unit_removed(Unit *u) {
 	remove_from_recent_units(u);
+	if(current_parsed_result() && current_parsed_result()->contains(u)) expression_format_updated(false);
 	update_umenus();
 }
 void function_removed(MathFunction *f) {
 	remove_from_recent_functions(f);
+	if(current_parsed_result() && current_parsed_result()->contains(f)) expression_format_updated(false);
 	update_fmenu();
 }
 
@@ -8303,7 +8313,7 @@ GtkWindow *main_window() {
 	return mainwindow;
 }
 
-void initialize_variables() {
+void initialize_variables_and_functions() {
 	string ans_str = _("ans");
 	vans[0] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str, m_undefined, _("Last Answer"), false));
 	vans[0]->addName(_("answer"));
@@ -8331,6 +8341,7 @@ void initialize_variables() {
 	v_memory->addName(ename);
 	CALCULATOR->addVariable(v_memory);
 	CALCULATOR->addFunction(new SetTitleFunction());
+	initialize_history_functions();
 }
 
 /*
@@ -8382,8 +8393,6 @@ void create_main_window() {
 	parsed_tostruct->setUndefined();
 	matrix_mstruct = new MathStructure();
 	mbak_convert.setUndefined();
-
-	initialize_variables();
 
 	main_builder = getBuilder("main.ui");
 	g_assert(main_builder != NULL);

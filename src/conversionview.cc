@@ -50,7 +50,7 @@ string selected_unit_selector_category;
 bool block_unit_selector_convert = false;
 int block_conversion_category_switch = 0;
 bool keep_unit_selection = false;
-bool continuous_conversion = false, set_missing_prefixes = false;
+bool continuous_conversion = true, set_missing_prefixes = false;
 unordered_map<string, GtkTreeIter> convert_category_map;
 
 void on_convert_entry_search_changed(GtkEntry *w, gpointer);
