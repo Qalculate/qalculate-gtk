@@ -1688,7 +1688,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 			if(b) {
 				result_autocalculated = true;
 				minimal_mode_show_resultview();
-				if(autocalc_history_timeout_id == 0 || ((printops.base == BASE_BINARY || (printops.base <= BASE_FP16 && printops.base >= BASE_FP80)) && current_displayed_result()->isInteger())) {
+				if(autocalc_history_timeout_id == 0 || ((printops.base == BASE_BINARY || (printops.base <= BASE_FP16 && printops.base >= BASE_FP80)) && current_displayed_result()->isInteger()) || title_type == TITLE_RESULT || title_type == TITLE_APP_RESULT) {
 					PrintOptions po = printops;
 					po.base_display = BASE_DISPLAY_SUFFIX;
 					po.can_display_unicode_string_arg = (void*) main_window();
@@ -1706,7 +1706,10 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 					set_result_bases(*current_displayed_result());
 					update_result_bases();
 				}
+			} else {
+				result_text = "";
 			}
+			if(title_type == TITLE_RESULT || title_type == TITLE_APP_RESULT) update_window_title(unhtmlize(result_text).c_str(), true);
 		}
 		CALCULATOR->stopControl();
 	} else if(parsed_in_result) {
@@ -1716,7 +1719,9 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 	} else {
 		auto_calculate = false;
 		clearresult();
+		result_text = "";
 		auto_calculate = true;
+		if(title_type == TITLE_RESULT || title_type == TITLE_APP_RESULT) update_window_title("", true);
 	}
 
 	if(do_to) {
@@ -8132,7 +8137,7 @@ bool update_window_title(const char *str, bool is_result) {
 			break;
 		}
 		case TITLE_APP_RESULT: {
-			if(str) gtk_window_set_title(main_window(), (string("Qalculate! (") + string(str) + ")").c_str());
+			if(str) gtk_window_set_title(main_window(), strlen(str) == 0 ? "Qalculate!" : (string("Qalculate! (") + string(str) + ")").c_str());
 			break;
 		}
 		default: {

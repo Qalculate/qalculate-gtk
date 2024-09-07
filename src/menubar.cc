@@ -626,6 +626,24 @@ void update_menu_numerical_display() {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_sort_minus_last")), printops.sort_options.minus_last);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_negative_exponents"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_negative_exponents_activate, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_sort_minus_last"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_sort_minus_last_activate, NULL);
+
+	if(!printops.use_unit_prefixes) {
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_no_prefixes"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_no_prefixes_activate, NULL);
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_no_prefixes")), TRUE);
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_no_prefixes"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_no_prefixes_activate, NULL);
+	} else if(printops.use_prefixes_for_all_units) {
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_prefixes_for_all_units"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_prefixes_for_all_units_activate, NULL);
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_prefixes_for_all_units")), TRUE);
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_prefixes_for_all_units"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_prefixes_for_all_units_activate, NULL);
+	} else if(printops.use_prefixes_for_currencies) {
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_prefixes_for_currencies"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_prefixes_for_currencies_activate, NULL);
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_prefixes_for_currencies")), TRUE);
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_prefixes_for_currencies"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_prefixes_for_currencies_activate, NULL);
+	} else {
+		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_prefixes_for_selected_units"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_prefixes_for_selected_units_activate, NULL);
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_display_prefixes_for_selected_units")), TRUE);
+		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "menu_item_display_prefixes_for_selected_units"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_display_prefixes_for_selected_units_activate, NULL);
+	}
 }
 void on_menu_item_binary_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;

@@ -505,7 +505,9 @@ void set_tooltips_enabled(GtkWidget *w, bool b) {
 	} else {
 		gtk_widget_set_has_tooltip(w, FALSE);
 	}
-	if(GTK_IS_BIN(w)) {
+	if(GTK_IS_MENU_ITEM(w)) {
+		set_tooltips_enabled(gtk_menu_item_get_submenu(GTK_MENU_ITEM(w)), b);
+	} else if(GTK_IS_BIN(w)) {
 		set_tooltips_enabled(gtk_bin_get_child(GTK_BIN(w)), b);
 	} else if(GTK_IS_CONTAINER(w)) {
 		GList *list = gtk_container_get_children(GTK_CONTAINER(w));
