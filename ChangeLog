@@ -1,3 +1,51 @@
+2024-09-13 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix hover state of keypad del and arrow buttons after long press
+	* Fixes for custom status and expression fonts
+
+2024-09-07 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix hiding of tooltips in menus
+
+2024-09-02 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Update parsed expression and update or clear result if variable, function, or unit in expression has changed
+	* Fix copy unformatted ascii without units when decimal separator is comma
+	* Fix insert date (missing quotation marks) when data variable name is selected
+	* Support x without backslash for custom function argument condition
+	* Support "sci" and "eng" abbreviations for "exp" option in qalc set command
+	* Do not reduce zoom level if <= 0.11 (instead of 0.1 to avoid zero zoom level) and disable zoom out button when zoom level cannot be further reduced, in help window
+
+2024-08-19 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Allow unit expressions (and not only single units) for insert unit action (for custom shortcuts and buttons)
+	* Close expression completion list when menu in menubar is opened
+
+2024-08-08 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Do not set initial value in percentage calculation tool dialog if number base is not decimal
+	* Fix Up and Down item in context menu of RPN stack
+	* Improve handling of errors when calculate-as-you-type result is displayed in status area
+	* Improve handling of current result (use value not text) and initial focus in number bases and floating point conversion dialogs
+
+2024-08-03 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Code restructuring (split up in multiple files)
+
+2024-07-26 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Show language menu in preferences on all platforms and use LANGUAGE and LC_MESSAGES, instead of LANG, environment variables on platforms other than Windows
+
+2024-07-13 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Improved category sorting
+	* Fix workaround for tiny exponents in prefix menus
+
+2024-07-08 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Do not show "Couldn't write preferences" dialog if configuration file is a symlink
+	* Do not use variable length array (for compatibility reasons)
+
 2024-06-25 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Use Pango and GTK version information from library linked, instead of compiled, against in some cases

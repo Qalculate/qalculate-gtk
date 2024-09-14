@@ -1244,16 +1244,17 @@ void update_status_font(bool initial) {
 		gtk_css_provider_load_from_data(statuslabel_r_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
-		gtk_css_provider_load_from_data(statuslabel_l_provider, "* {font-size: 90%;}", -1, NULL);
-		gtk_css_provider_load_from_data(statuslabel_r_provider, "* {font-size: 90%;}", -1, NULL);
 		if(initial && custom_status_font.empty()) {
 			PangoFontDescription *font_desc;
 			gtk_style_context_get(gtk_widget_get_style_context(parse_status_widget()), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+			pango_font_description_set_size(font_desc, round(pango_font_description_get_size(font_desc) * 0.9 / PANGO_SCALE) * PANGO_SCALE);
 			char *gstr = pango_font_description_to_string(font_desc);
 			custom_status_font = gstr;
 			g_free(gstr);
 			pango_font_description_free(font_desc);
 		}
+		gtk_css_provider_load_from_data(statuslabel_l_provider, "* {font-size: 90%;}", -1, NULL);
+		gtk_css_provider_load_from_data(statuslabel_r_provider, "* {font-size: 90%;}", -1, NULL);
 	}
 	if(initial) {
 		fix_supsub_status = test_supsub(parse_status_widget());

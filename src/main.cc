@@ -377,6 +377,7 @@ int main (int argc, char *argv[]) {
 					_putenv_s("LANG", lang.c_str());
 #	else
 					setenv("LANGUAGE", lang.c_str(), 1);
+					setenv("LC_MESSAGES", lang.c_str(), 1);
 #	endif
 				}
 				break;

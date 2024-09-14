@@ -71,7 +71,7 @@ extern int allow_multiple_instances;
 int b_decimal_comma;
 bool first_error;
 bool display_expression_status;
-MathStructure *mstruct, *matrix_mstruct, *parsed_mstruct, *parsed_tostruct;
+MathStructure *mstruct = NULL, *matrix_mstruct = NULL, *parsed_mstruct = NULL, *parsed_tostruct = NULL;
 MathStructure mbak_convert;
 string result_text, parsed_text;
 bool result_text_approximate = false;
@@ -6796,7 +6796,7 @@ void show_about() {
 	gtk_about_dialog_set_translator_credits(GTK_ABOUT_DIALOG(dialog), _("translator-credits"));
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), _("Powerful and easy to use calculator"));
 	gtk_about_dialog_set_license_type(GTK_ABOUT_DIALOG(dialog), GTK_LICENSE_GPL_2_0);
-	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016–2023 Hanna Knutsson");
+	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016–2024 Hanna Knutsson");
 	gtk_about_dialog_set_logo_icon_name(GTK_ABOUT_DIALOG(dialog), "qalculate");
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(dialog), "Qalculate! (GTK)");
 	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dialog), VERSION);
@@ -7287,7 +7287,7 @@ void function_edited(MathFunction *f) {
 	}
 	//select the new function
 	selected_function = f;
-	if(current_parsed_result() && current_parsed_result()->contains(f)) expression_format_updated(false);
+	if(current_parsed_result() && current_parsed_result()->containsFunction(f)) expression_format_updated(false);
 	update_fmenu();
 	function_inserted(f);
 }
@@ -7295,7 +7295,7 @@ void dataset_edited(DataSet *ds) {
 	if(!ds) return;
 	selected_dataset = ds;
 	update_fmenu();
-	if(current_parsed_result() && current_parsed_result()->contains(ds)) expression_format_updated(false);
+	if(current_parsed_result() && current_parsed_result()->containsFunction(ds)) expression_format_updated(false);
 	function_inserted(ds);
 	update_datasets_tree();
 }
@@ -7388,7 +7388,7 @@ void unit_removed(Unit *u) {
 }
 void function_removed(MathFunction *f) {
 	remove_from_recent_functions(f);
-	if(current_parsed_result() && current_parsed_result()->contains(f)) expression_format_updated(false);
+	if(current_parsed_result() && current_parsed_result()->containsFunction(f)) expression_format_updated(false);
 	update_fmenu();
 }
 

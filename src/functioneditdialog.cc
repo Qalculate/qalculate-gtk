@@ -534,6 +534,8 @@ GtkWidget* get_argument_rules_dialog(void) {
 }
 
 void fix_expression(string &str) {
+	ParseOptions pa = evalops.parse_options; pa.base = 10;
+	str = CALCULATOR->unlocalizeExpression(str, pa);
 	if(str.empty()) return;
 	size_t i = 0;
 	bool b = false;
@@ -551,6 +553,7 @@ void fix_expression(string &str) {
 		gsub("y", "\\y", str);
 		gsub("z", "\\z", str);
 	}
+	CALCULATOR->parseSigns(str);
 }
 
 Argument *edit_argument(Argument *arg) {
@@ -747,7 +750,7 @@ Argument *edit_argument(Argument *arg) {
 		arg->setZeroForbidden(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_forbid_zero"))));
 		arg->setHandleVector(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_handle_vector"))));
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(argumentrules_builder, "argument_rules_checkbutton_enable_condition")))) {
-			string scond = unlocalize_expression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(argumentrules_builder, "argument_rules_entry_condition"))));
+			string scond = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(argumentrules_builder, "argument_rules_entry_condition")));
 			fix_expression(scond);
 			arg->setCustomCondition(scond);
 		} else {
@@ -898,7 +901,7 @@ run_function_edit_dialog:
 		gtk_text_buffer_get_start_iter(expression_buffer, &e_iter_s);
 		gtk_text_buffer_get_end_iter(expression_buffer, &e_iter_e);
 		gchar *gstr = gtk_text_buffer_get_text(expression_buffer, &e_iter_s, &e_iter_e, FALSE);
-		string str2 = unlocalize_expression(gstr);
+		string str2 = gstr;
 		g_free(gstr);
 		remove_blank_ends(str2);
 		fix_expression(str2);
@@ -939,7 +942,7 @@ run_function_edit_dialog:
 		}
 		g_free(gstr_descr);
 		if(f) {
-			string scond = unlocalize_expression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_condition"))));
+			string scond = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_condition")));
 			fix_expression(scond);
 			f->setCondition(scond);
 			f->setExample(unlocalize_expression(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_example")))));
@@ -965,7 +968,7 @@ run_function_edit_dialog:
 					gchar *gstr;
 					gboolean g_b = FALSE;
 					gtk_tree_model_get(GTK_TREE_MODEL(tSubfunctions_store), &iter, 1, &gstr, 2, &g_b, -1);
-					string ssub = unlocalize_expression(gstr);
+					string ssub = gstr;
 					fix_expression(ssub);
 					((UserFunction*) f)->addSubfunction(ssub, g_b);
 					b = gtk_tree_model_iter_next(GTK_TREE_MODEL(tSubfunctions_store), &iter);

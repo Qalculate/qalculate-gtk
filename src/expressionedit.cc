@@ -1636,18 +1636,17 @@ void update_expression_font(bool initial) {
 		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
 		g_free(gstr);
 	} else {
-		PangoFontDescription *font_desc;
-		gtk_style_context_get(gtk_widget_get_style_context(expression_edit_widget()), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-		pango_font_description_set_size(font_desc, pango_font_description_get_size(font_desc) * 1.2);
-		char *gstr_l = pango_font_description_to_string(font_desc);
-		if(custom_expression_font.empty()) custom_expression_font = gstr_l;
-		pango_font_description_free(font_desc);
-		gchar *gstr;
-		if(RUNTIME_CHECK_GTK_VERSION(3, 20)) gstr = font_name_to_css(gstr_l, "textview.view");
-		else gstr = font_name_to_css(gstr_l);
-		gtk_css_provider_load_from_data(expression_provider, gstr, -1, NULL);
-		g_free(gstr);
-		g_free(gstr_l);
+		if(initial && custom_expression_font.empty()) {
+			PangoFontDescription *font_desc;
+			gtk_style_context_get(gtk_widget_get_style_context(expression_edit_widget()), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+			pango_font_description_set_size(font_desc, round(pango_font_description_get_size(font_desc) * 1.2 / PANGO_SCALE) * PANGO_SCALE);
+			char *gstr = pango_font_description_to_string(font_desc);
+			custom_expression_font = gstr;
+			g_free(gstr);
+			pango_font_description_free(font_desc);
+		}
+		if(RUNTIME_CHECK_GTK_VERSION(3, 20)) gtk_css_provider_load_from_data(expression_provider, "textview.view {font-size: 120%;}", -1, NULL);
+		else gtk_css_provider_load_from_data(expression_provider, "* {font-size: 120%;}", -1, NULL);
 	}
 	if(!initial) {
 		expression_font_modified();

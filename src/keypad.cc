@@ -1432,7 +1432,7 @@ gboolean on_keypad_button_button_event(GtkWidget *w, GdkEventButton *event, gpoi
 	}
 	return FALSE;
 }
-
+bool block_del = false;
 gboolean on_button_del_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
 	if((event->button == 1 && custom_buttons[26].type[0] != -1) || (event->button == 3 && custom_buttons[26].type[1] != -1) || (event->button == 2 && custom_buttons[26].type[2] != -1)) return on_keypad_button_button_event(w, event, NULL);
 	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
@@ -1443,7 +1443,10 @@ gboolean on_button_del_button_event(GtkWidget *w, GdkEventButton *event, gpointe
 		button_press_timeout_side = 0;
 		if(button_press_timeout_done) {
 			button_press_timeout_done = false;
-			if(b_this) return TRUE;
+			if(b_this) {
+				block_del = true;
+				return FALSE;
+			}
 		}
 	}
 	if(event->type == GDK_BUTTON_PRESS && event->button == 1) {
@@ -1468,7 +1471,7 @@ gboolean on_button_move2_button_event(GtkWidget *w, GdkEventButton *event, gpoin
 		button_press_timeout_side = 0;
 		if(button_press_timeout_done) {
 			button_press_timeout_done = false;
-			if(b_this) return TRUE;
+			if(b_this) return FALSE;
 		}
 	}
 	if(event->type == GDK_BUTTON_PRESS && event->button == 1) {
@@ -1514,7 +1517,7 @@ gboolean on_button_move_button_event(GtkWidget *w, GdkEventButton *event, gpoint
 		button_press_timeout_side = 0;
 		if(button_press_timeout_done) {
 			button_press_timeout_done = false;
-			if(b_this) return TRUE;
+			if(b_this) return FALSE;
 		}
 	}
 	if(event->type == GDK_BUTTON_PRESS && event->button == 1) {
@@ -1762,6 +1765,7 @@ void on_button_euro_clicked(GtkButton*, gpointer) {
 	DEL button clicked -- delete in expression entry
 */
 void on_button_del_clicked(GtkButton*, gpointer) {
+	if(block_del) {block_del = false; return;}
 	DO_CUSTOM_BUTTON_1(26)
 	if(gtk_text_buffer_get_has_selection(expression_edit_buffer())) {
 		overwrite_expression_selection(NULL);
