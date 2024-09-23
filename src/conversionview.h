@@ -23,6 +23,7 @@ void update_unit_selector_tree();
 std::string current_conversion_expression();
 void focus_conversion_entry();
 bool conversionview_continuous_conversion();
+void convert_from_convert_entry_unit();
 
 bool read_conversion_view_settings_line(std::string &svar, std::string &svalue, int &v);
 void write_conversion_view_settings(FILE *file);

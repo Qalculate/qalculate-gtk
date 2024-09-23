@@ -1298,11 +1298,11 @@ void do_completion(bool to_menu) {
 								else if(str.empty() && p_type >= 202 && !current_from_struct->isInteger()) b_match = 0;
 							} else if(p_type >= 300 && p_type < 400) {
 								if(p_type == 300) {
-									if(!contains_rational_number(to_menu ? *current_displayed_result() : *current_from_struct)) b_match = 0;
+									if(!contains_rational_number(to_menu && current_displayed_result() ? *current_displayed_result() : *current_from_struct)) b_match = 0;
 								} else if(p_type == 302) {
-									if((to_menu && !contains_fraction(*current_displayed_result())) || (!to_menu && (printops.number_fraction_format == FRACTION_DECIMAL || !contains_rational_number(*current_from_struct)))) b_match = 0;
+									if((to_menu && current_displayed_result() && !contains_fraction(*current_displayed_result())) || (!to_menu && (printops.number_fraction_format == FRACTION_DECIMAL || !contains_rational_number(*current_from_struct)))) b_match = 0;
 								} else if(p_type == 301) {
-									if((to_menu || (!current_from_struct->isNumber() || current_from_struct->number().isInteger() || current_from_struct->number().hasImaginaryPart())) && (!to_menu || (!current_displayed_result()->isNumber() || current_displayed_result()->number().isInteger() || current_displayed_result()->number().hasImaginaryPart()))) {
+									if((to_menu || (!current_from_struct->isNumber() || current_from_struct->number().isInteger() || current_from_struct->number().hasImaginaryPart())) && (!to_menu || !current_displayed_result() || (!current_displayed_result()->isNumber() || current_displayed_result()->number().isInteger() || current_displayed_result()->number().hasImaginaryPart()))) {
 										bool b = false;
 										for(size_t i = 0; i < current_from_units.size(); i++) {
 											if(current_from_units[i]->system().find("Imperial") != string::npos) {

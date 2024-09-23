@@ -153,8 +153,8 @@ void result_view_clear() {
 void on_popup_menu_item_parsed_in_result_activate(GtkMenuItem *w, gpointer) {
 	set_parsed_in_result(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
 }
-bool test_can_approximate(const MathStructure &m, bool top = true) {
-	if((m.isVariable() && m.variable()->isKnown()) || (m.isNumber() && !top)) return true;
+bool test_can_approximate(const MathStructure &m, bool = true) {
+	if((m.isVariable() && m.variable()->isKnown()) || (m.isFunction() && m.size() > 0 && !m[0].containsUnknowns()) || (m.isPower() && !m.containsUnknowns())) return true;
 	if(m.isUnit_exp()) return false;
 	for(size_t i = 0; i < m.size(); i++) {
 		if(test_can_approximate(m[i], false)) return true;
@@ -991,7 +991,7 @@ void update_resultview_popup() {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_simplify")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_expand_partial_fractions")));
 	}
-	if(!b_parsed && current_result() && (current_result()->isApproximate() || test_can_approximate(*current_result()))) {
+	if(!b_parsed && current_result() && ((evalops.approximation != APPROXIMATION_EXACT && current_result()->isApproximate()) || (evalops.approximation == APPROXIMATION_EXACT && test_can_approximate(*current_result())))) {
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_exact")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "separator_popup_nonzero")));
 		if(!current_result()->isApproximate() && current_result()->containsDivision()) gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_assume_nonzero_denominators")));

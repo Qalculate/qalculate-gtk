@@ -1343,6 +1343,8 @@ bool button_press_timeout_done = false;
 
 void on_button_del_clicked(GtkButton*, gpointer);
 
+GdkEventButton long_press_menu_event;
+
 gboolean keypad_long_press_timeout(gpointer data) {
 	if(!button_press_timeout_w) {
 		button_press_timeout_id = 0;
@@ -1358,7 +1360,7 @@ gboolean keypad_long_press_timeout(gpointer data) {
 			update_mb_to_menu();
 		}
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
-		gtk_menu_popup_at_widget(GTK_MENU(data), button_press_timeout_w, GDK_GRAVITY_SOUTH_WEST, GDK_GRAVITY_NORTH_WEST, gtk_get_current_event());
+		gtk_menu_popup_at_widget(GTK_MENU(data), button_press_timeout_w, GDK_GRAVITY_SOUTH_WEST, GDK_GRAVITY_NORTH_WEST, (GdkEvent*) &long_press_menu_event);
 #else
 		gtk_menu_popup(GTK_MENU(data), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
 #endif
@@ -1553,6 +1555,7 @@ gboolean on_keypad_menu_button_button_event(GtkWidget *w, GdkEventButton *event,
 	if(event->type == GDK_BUTTON_PRESS && event->button == 1) {
 		button_press_timeout_w = w;
 		button_press_timeout_side = 0;
+		long_press_menu_event = *event;
 		button_press_timeout_id = g_timeout_add(500, keypad_long_press_timeout, data);
 		return FALSE;
 	}
@@ -1814,6 +1817,7 @@ void on_button_to_clicked(GtkButton*, gpointer) {
 	GtkTextIter istart, iend;
 	gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iend);
 	gtk_text_buffer_select_range(expression_edit_buffer(), &iend, &iend);
+	if(!gtk_widget_is_focus(expression_edit_widget())) gtk_widget_grab_focus(expression_edit_widget());
 	if(printops.use_unicode_signs && can_display_unicode_string_function("➞", (void*) expression_edit_widget())) {
 		to_str = "➞";
 	} else {
@@ -1826,7 +1830,6 @@ void on_button_to_clicked(GtkButton*, gpointer) {
 		g_free(gstr);
 	}
 	gtk_text_buffer_insert_at_cursor(expression_edit_buffer(), to_str.c_str(), -1);
-	if(!gtk_widget_is_focus(expression_edit_widget())) gtk_widget_grab_focus(expression_edit_widget());
 }
 void on_button_new_function_clicked(GtkButton*, gpointer) {
 	edit_function("", NULL, main_window());
@@ -2376,7 +2379,6 @@ void update_mb_to_menu() {
 		gtk_widget_destroy(GTK_WIDGET(l->data));
 	}
 	g_list_free(list);
-	if(!current_displayed_result()) return;
 	do_completion(true);
 	GtkWidget *item;
 	GtkTreeIter iter;
@@ -2386,7 +2388,7 @@ void update_mb_to_menu() {
 	void *o = NULL;
 	int n = 0, n2 = 0;
 	gint index = 0;
-	if(contains_convertible_unit(*current_displayed_result())) {
+	if(current_displayed_result() && contains_convertible_unit(*current_displayed_result())) {
 		bool b = true;
 		do {
 			gtk_tree_model_get(GTK_TREE_MODEL(completion_sort), &iter, 2, &o, 8, &p_type, -1);
@@ -2447,9 +2449,19 @@ void update_mb_to_menu() {
 		} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(completion_sort), &iter));
 	}
 }
+
+gboolean on_mb_to_button_press_event(GtkWidget, GdkEventButton*, gpointer) {
+	if(RUNTIME_CHECK_GTK_VERSION_LESS(3, 22)) {
+		if(calculator_busy()) return TRUE;
+		update_mb_to_menu();
+	}
+	return FALSE;
+}
 gboolean on_mb_to_button_release_event(GtkWidget, GdkEventButton*, gpointer) {
-	if(calculator_busy()) return TRUE;
-	update_mb_to_menu();
+	if(RUNTIME_CHECK_GTK_VERSION(3, 22)) {
+		if(calculator_busy()) return TRUE;
+		update_mb_to_menu();
+	}
 	return FALSE;
 }
 
@@ -3706,6 +3718,6 @@ void create_keypad() {
 	}
 	gtk_builder_add_callback_symbols(main_builder, "on_button_programmers_keypad_toggled", G_CALLBACK(on_button_programmers_keypad_toggled), "on_button_exact_toggled", G_CALLBACK(on_button_exact_toggled), "on_button_fraction_toggled", G_CALLBACK(on_button_fraction_toggled), "on_button_xequals_clicked", G_CALLBACK(on_button_xequals_clicked), "on_button_x_clicked", G_CALLBACK(on_button_x_clicked), "on_button_y_clicked", G_CALLBACK(on_button_y_clicked), "on_button_z_clicked", G_CALLBACK(on_button_z_clicked), "on_button_fac_clicked", G_CALLBACK(on_button_fac_clicked), "on_button_new_function_clicked", G_CALLBACK(on_button_new_function_clicked), "on_button_store_clicked", G_CALLBACK(on_button_store_clicked), "on_button_bases_clicked", G_CALLBACK(on_button_bases_clicked), "on_button_i_clicked", G_CALLBACK(on_button_i_clicked), "on_button_units_clicked", G_CALLBACK(on_button_units_clicked), "on_button_to_clicked", G_CALLBACK(on_button_to_clicked), "on_button_euro_clicked", G_CALLBACK(on_button_euro_clicked), "on_button_si_clicked", G_CALLBACK(on_button_si_clicked), "on_button_factorize_clicked", G_CALLBACK(on_button_factorize_clicked), "on_button_bin_toggled", G_CALLBACK(on_button_bin_toggled), "on_button_oct_toggled", G_CALLBACK(on_button_oct_toggled), "on_button_dec_toggled", G_CALLBACK(on_button_dec_toggled), "on_button_hex_toggled", G_CALLBACK(on_button_hex_toggled), "on_button_twos_in_toggled", G_CALLBACK(on_button_twos_in_toggled), "on_button_twos_out_toggled", G_CALLBACK(on_button_twos_out_toggled), "on_button_a_clicked", G_CALLBACK(on_button_a_clicked), "on_button_b_clicked", G_CALLBACK(on_button_b_clicked), "on_button_c_clicked", G_CALLBACK(on_button_c_clicked), "on_button_d_clicked", G_CALLBACK(on_button_d_clicked), "on_button_e_clicked", G_CALLBACK(on_button_e_clicked), "on_button_f_clicked", G_CALLBACK(on_button_f_clicked), "on_button_reciprocal_clicked", G_CALLBACK(on_button_reciprocal_clicked), "on_button_idiv_clicked", G_CALLBACK(on_button_idiv_clicked), "on_button_factorize2_clicked", G_CALLBACK(on_button_factorize2_clicked), "on_button_fp_clicked", G_CALLBACK(on_button_fp_clicked), "on_button_c16_clicked", G_CALLBACK(on_button_c16_clicked), "on_button_c17_clicked", G_CALLBACK(on_button_c17_clicked), "on_button_c18_clicked", G_CALLBACK(on_button_c18_clicked), "on_button_c19_clicked", G_CALLBACK(on_button_c19_clicked), "on_button_c20_clicked", G_CALLBACK(on_button_c20_clicked), "on_button_c11_clicked", G_CALLBACK(on_button_c11_clicked), "on_button_c12_clicked", G_CALLBACK(on_button_c12_clicked), "on_button_c13_clicked", G_CALLBACK(on_button_c13_clicked), "on_button_c14_clicked", G_CALLBACK(on_button_c14_clicked), "on_button_c15_clicked", G_CALLBACK(on_button_c15_clicked), "on_button_c6_clicked", G_CALLBACK(on_button_c6_clicked), "on_button_c7_clicked", G_CALLBACK(on_button_c7_clicked), "on_button_c8_clicked", G_CALLBACK(on_button_c8_clicked), "on_button_c9_clicked", G_CALLBACK(on_button_c9_clicked), "on_button_c10_clicked", G_CALLBACK(on_button_c10_clicked), "on_button_c1_clicked", G_CALLBACK(on_button_c1_clicked), "on_button_c2_clicked", G_CALLBACK(on_button_c2_clicked), "on_button_c3_clicked", G_CALLBACK(on_button_c3_clicked), "on_button_c4_clicked", G_CALLBACK(on_button_c4_clicked), "on_button_c5_clicked", G_CALLBACK(on_button_c5_clicked), "on_button_execute_clicked", G_CALLBACK(on_button_execute_clicked), "on_button_del_button_event", G_CALLBACK(on_button_del_button_event), "on_button_del_clicked", G_CALLBACK(on_button_del_clicked), "on_button_ac_clicked", G_CALLBACK(on_button_ac_clicked), "on_button_move_button_event", G_CALLBACK(on_button_move_button_event), "on_button_move_clicked", G_CALLBACK(on_button_move_clicked), "on_button_ans_clicked", G_CALLBACK(on_button_ans_clicked), "on_button_move2_button_event", G_CALLBACK(on_button_move2_button_event), "on_button_move2_clicked", G_CALLBACK(on_button_move2_clicked), "on_button_dot_clicked", G_CALLBACK(on_button_dot_clicked), "on_button_zero_clicked", G_CALLBACK(on_button_zero_clicked), "on_button_one_clicked", G_CALLBACK(on_button_one_clicked), "on_button_two_clicked", G_CALLBACK(on_button_two_clicked), "on_button_three_clicked", G_CALLBACK(on_button_three_clicked), "on_button_six_clicked", G_CALLBACK(on_button_six_clicked), "on_button_five_clicked", G_CALLBACK(on_button_five_clicked), "on_button_four_clicked", G_CALLBACK(on_button_four_clicked), "on_button_eight_clicked", G_CALLBACK(on_button_eight_clicked), "on_button_nine_clicked", G_CALLBACK(on_button_nine_clicked), "on_button_exp_clicked", G_CALLBACK(on_button_exp_clicked), "on_button_brace_close_clicked", G_CALLBACK(on_button_brace_close_clicked), "on_button_brace_open_clicked", G_CALLBACK(on_button_brace_open_clicked), "on_button_brace_wrap_clicked", G_CALLBACK(on_button_brace_wrap_clicked), "on_button_seven_clicked", G_CALLBACK(on_button_seven_clicked), "on_button_add_clicked", G_CALLBACK(on_button_add_clicked), "on_button_sub_clicked", G_CALLBACK(on_button_sub_clicked), "on_button_times_clicked", G_CALLBACK(on_button_times_clicked), "on_button_divide_clicked", G_CALLBACK(on_button_divide_clicked), "on_button_xy_clicked", G_CALLBACK(on_button_xy_clicked), "on_button_plusminus_clicked", G_CALLBACK(on_button_plusminus_clicked), "on_button_percent_clicked", G_CALLBACK(on_button_percent_clicked), "on_button_comma_clicked", G_CALLBACK(on_button_comma_clicked), NULL);
 	gtk_builder_add_callback_symbols(main_builder, "on_menu_item_x_default_activate", G_CALLBACK(on_menu_item_x_default_activate), "on_menu_item_x_none_activate", G_CALLBACK(on_menu_item_x_none_activate), "on_menu_item_x_nonmatrix_activate", G_CALLBACK(on_menu_item_x_nonmatrix_activate), "on_menu_item_x_number_activate", G_CALLBACK(on_menu_item_x_number_activate), "on_menu_item_x_complex_activate", G_CALLBACK(on_menu_item_x_complex_activate), "on_menu_item_x_real_activate", G_CALLBACK(on_menu_item_x_real_activate), "on_menu_item_x_rational_activate", G_CALLBACK(on_menu_item_x_rational_activate), "on_menu_item_x_integer_activate", G_CALLBACK(on_menu_item_x_integer_activate), "on_menu_item_x_boolean_activate", G_CALLBACK(on_menu_item_x_boolean_activate), "on_menu_item_x_unknown_activate", G_CALLBACK(on_menu_item_x_unknown_activate), "on_menu_item_x_nonzero_activate", G_CALLBACK(on_menu_item_x_nonzero_activate), "on_menu_item_x_positive_activate", G_CALLBACK(on_menu_item_x_positive_activate), "on_menu_item_x_nonnegative_activate", G_CALLBACK(on_menu_item_x_nonnegative_activate), "on_menu_item_x_negative_activate", G_CALLBACK(on_menu_item_x_negative_activate), "on_menu_item_x_nonpositive_activate", G_CALLBACK(on_menu_item_x_nonpositive_activate), "on_menu_item_y_default_activate", G_CALLBACK(on_menu_item_y_default_activate), "on_menu_item_y_none_activate", G_CALLBACK(on_menu_item_y_none_activate), "on_menu_item_y_nonmatrix_activate", G_CALLBACK(on_menu_item_y_nonmatrix_activate), "on_menu_item_y_number_activate", G_CALLBACK(on_menu_item_y_number_activate), "on_menu_item_y_complex_activate", G_CALLBACK(on_menu_item_y_complex_activate), "on_menu_item_y_real_activate", G_CALLBACK(on_menu_item_y_real_activate), "on_menu_item_y_rational_activate", G_CALLBACK(on_menu_item_y_rational_activate), "on_menu_item_y_integer_activate", G_CALLBACK(on_menu_item_y_integer_activate), "on_menu_item_y_boolean_activate", G_CALLBACK(on_menu_item_y_boolean_activate), "on_menu_item_y_unknown_activate", G_CALLBACK(on_menu_item_y_unknown_activate), "on_menu_item_y_nonzero_activate", G_CALLBACK(on_menu_item_y_nonzero_activate), "on_menu_item_y_positive_activate", G_CALLBACK(on_menu_item_y_positive_activate), "on_menu_item_y_nonnegative_activate", G_CALLBACK(on_menu_item_y_nonnegative_activate), "on_menu_item_y_negative_activate", G_CALLBACK(on_menu_item_y_negative_activate), "on_menu_item_y_nonpositive_activate", G_CALLBACK(on_menu_item_y_nonpositive_activate), "on_menu_item_z_default_activate", G_CALLBACK(on_menu_item_z_default_activate), "on_menu_item_z_none_activate", G_CALLBACK(on_menu_item_z_none_activate), "on_menu_item_z_nonmatrix_activate", G_CALLBACK(on_menu_item_z_nonmatrix_activate), "on_menu_item_z_number_activate", G_CALLBACK(on_menu_item_z_number_activate), "on_menu_item_z_complex_activate", G_CALLBACK(on_menu_item_z_complex_activate), "on_menu_item_z_real_activate", G_CALLBACK(on_menu_item_z_real_activate), "on_menu_item_z_rational_activate", G_CALLBACK(on_menu_item_z_rational_activate), "on_menu_item_z_integer_activate", G_CALLBACK(on_menu_item_z_integer_activate), "on_menu_item_z_boolean_activate", G_CALLBACK(on_menu_item_z_boolean_activate), "on_menu_item_z_unknown_activate", G_CALLBACK(on_menu_item_z_unknown_activate), "on_menu_item_z_nonzero_activate", G_CALLBACK(on_menu_item_z_nonzero_activate), "on_menu_item_z_positive_activate", G_CALLBACK(on_menu_item_z_positive_activate), "on_menu_item_z_nonnegative_activate", G_CALLBACK(on_menu_item_z_nonnegative_activate), "on_menu_item_z_negative_activate", G_CALLBACK(on_menu_item_z_negative_activate), "on_menu_item_z_nonpositive_activate", G_CALLBACK(on_menu_item_z_nonpositive_activate), NULL);
-	gtk_builder_add_callback_symbols(main_builder, "on_menu_item_mb_degrees_activate", G_CALLBACK(on_menu_item_mb_degrees_activate), "on_menu_item_mb_radians_activate", G_CALLBACK(on_menu_item_mb_radians_activate), "on_menu_item_mb_gradians_activate", G_CALLBACK(on_menu_item_mb_gradians_activate), "hide_tooltip", G_CALLBACK(hide_tooltip), "on_combobox_numerical_display_changed", G_CALLBACK(on_combobox_numerical_display_changed), "on_combobox_base_changed", G_CALLBACK(on_combobox_base_changed), "on_keypad_menu_button_button_event", G_CALLBACK(on_keypad_menu_button_button_event), "on_mb_x_toggled", G_CALLBACK(on_mb_x_toggled), "on_mb_y_toggled", G_CALLBACK(on_mb_y_toggled), "on_mb_z_toggled", G_CALLBACK(on_mb_z_toggled), "on_mb_to_button_release_event", G_CALLBACK(on_mb_to_button_release_event), "on_keypad_button_button_event", G_CALLBACK(on_keypad_button_button_event), "on_combobox_bits_changed", G_CALLBACK(on_combobox_bits_changed), "insert_bitwise_and", G_CALLBACK(insert_bitwise_and), "insert_bitwise_or", G_CALLBACK(insert_bitwise_or), "insert_bitwise_xor", G_CALLBACK(insert_bitwise_xor), "insert_bitwise_not", G_CALLBACK(insert_bitwise_not), "insert_left_shift", G_CALLBACK(insert_left_shift), "insert_right_shift", G_CALLBACK(insert_right_shift), "on_hide_left_buttons_button_release_event", G_CALLBACK(on_hide_left_buttons_button_release_event), "on_hide_right_buttons_button_release_event", G_CALLBACK(on_hide_right_buttons_button_release_event), NULL);
+	gtk_builder_add_callback_symbols(main_builder, "on_menu_item_mb_degrees_activate", G_CALLBACK(on_menu_item_mb_degrees_activate), "on_menu_item_mb_radians_activate", G_CALLBACK(on_menu_item_mb_radians_activate), "on_menu_item_mb_gradians_activate", G_CALLBACK(on_menu_item_mb_gradians_activate), "hide_tooltip", G_CALLBACK(hide_tooltip), "on_combobox_numerical_display_changed", G_CALLBACK(on_combobox_numerical_display_changed), "on_combobox_base_changed", G_CALLBACK(on_combobox_base_changed), "on_keypad_menu_button_button_event", G_CALLBACK(on_keypad_menu_button_button_event), "on_mb_x_toggled", G_CALLBACK(on_mb_x_toggled), "on_mb_y_toggled", G_CALLBACK(on_mb_y_toggled), "on_mb_z_toggled", G_CALLBACK(on_mb_z_toggled), "on_mb_to_button_release_event", G_CALLBACK(on_mb_to_button_release_event), "on_mb_to_button_press_event", G_CALLBACK(on_mb_to_button_press_event), "on_keypad_button_button_event", G_CALLBACK(on_keypad_button_button_event), "on_combobox_bits_changed", G_CALLBACK(on_combobox_bits_changed), "insert_bitwise_and", G_CALLBACK(insert_bitwise_and), "insert_bitwise_or", G_CALLBACK(insert_bitwise_or), "insert_bitwise_xor", G_CALLBACK(insert_bitwise_xor), "insert_bitwise_not", G_CALLBACK(insert_bitwise_not), "insert_left_shift", G_CALLBACK(insert_left_shift), "insert_right_shift", G_CALLBACK(insert_right_shift), "on_hide_left_buttons_button_release_event", G_CALLBACK(on_hide_left_buttons_button_release_event), "on_hide_right_buttons_button_release_event", G_CALLBACK(on_hide_right_buttons_button_release_event), NULL);
 
 }

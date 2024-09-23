@@ -67,7 +67,10 @@ void on_fp_entry_dec_changed(GtkEditable *editable, gpointer) {
 	if(changing_in_fp_dialog) return;
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
-	if(str.empty()) return;
+	if(str.empty()) {
+		update_fp_entries(str, 10);
+		return;
+	}
 	if(last_is_operator(str, true)) return;
 	unsigned int bits = get_fp_bits();
 	unsigned int expbits = get_fp_expbits();
@@ -107,7 +110,10 @@ void on_fp_buffer_bin_changed(GtkTextBuffer *w, gpointer) {
 	string str = gtext;
 	g_free(gtext);
 	remove_blanks(str);
-	if(str.empty()) return;
+	if(str.empty()) {
+		update_fp_entries(str, 2);
+		return;
+	}
 	changing_in_fp_dialog = true;
 	block_error();
 	unsigned int bits = get_fp_bits();
@@ -124,7 +130,10 @@ void on_fp_entry_hex_changed(GtkEditable *editable, gpointer) {
 	if(changing_in_fp_dialog) return;
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blanks(str);
-	if(str.empty()) return;
+	if(str.empty()) {
+		update_fp_entries(str, 16);
+		return;
+	}
 	changing_in_fp_dialog = true;
 	unsigned int bits = get_fp_bits();
 	block_error();

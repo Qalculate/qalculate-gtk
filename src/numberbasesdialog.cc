@@ -96,7 +96,7 @@ int nbases_get_base() {
 	return 10;
 }
 
-void update_nbases_entries(const MathStructure &value, int base) {
+void update_nbases_entries(const MathStructure &value, int base, bool empty_value = false) {
 	GtkWidget *w_dec, *w_bin, *w_oct, *w_hex, *w_duo, *w_roman;
 	w_dec = GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_entry_decimal"));
 	w_bin = GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_entry_binary"));
@@ -131,12 +131,42 @@ void update_nbases_entries(const MathStructure &value, int base) {
 	po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 	po.round_halfway_to_even = printops.round_halfway_to_even;
 	string str;
-	if(base != 10) {po.base = 10; str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po); if(str.length() > 1000) {str = _("result is too long");} gtk_entry_set_text(GTK_ENTRY(w_dec), str.c_str());}
-	if(base != 8) {po.base = 8; str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po); if(str.length() > 1000) {str = _("result is too long");} gtk_entry_set_text(GTK_ENTRY(w_oct), str.c_str());}
-	if(base != 12) {po.base = 12; str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po); if(str.length() > 1000) {str = _("result is too long");} gtk_entry_set_text(GTK_ENTRY(w_duo), str.c_str());}
-	if(base != 16) {po.base = 16; str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po); if(str.length() > 1000) {str = _("result is too long");} gtk_entry_set_text(GTK_ENTRY(w_hex), str.c_str());}
+	if(base != 10) {
+		if(!empty_value) {
+			po.base = 10;
+			str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po);
+			if(str.length() > 1000) str = _("result is too long");
+		}
+		gtk_entry_set_text(GTK_ENTRY(w_dec), str.c_str());
+	}
+	if(base != 8) {
+		if(!empty_value) {
+			po.base = 8;
+			str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po);
+			if(str.length() > 1000) str = _("result is too long");
+		}
+		gtk_entry_set_text(GTK_ENTRY(w_oct), str.c_str());
+	}
+	if(base != 12) {
+		if(!empty_value) {
+			po.base = 12;
+			str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po);
+			if(str.length() > 1000) str = _("result is too long");
+		}
+		gtk_entry_set_text(GTK_ENTRY(w_duo), str.c_str());
+	}
+	if(base != 16) {
+		if(!empty_value) {
+			po.base = 16;
+			str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po);
+			if(str.length() > 1000) str = _("result is too long");
+		}
+		gtk_entry_set_text(GTK_ENTRY(w_hex), str.c_str());
+	}
 	if(base != BASE_ROMAN_NUMERALS) {
-		if(value.isAborted()) {
+		if(empty_value) {
+			gtk_entry_set_text(GTK_ENTRY(w_roman), "");
+		} else if(value.isAborted()) {
 			gtk_entry_set_text(GTK_ENTRY(w_roman), CALCULATOR->timedOutString().c_str());
 		} else if(!value.isNumber() || !value.number().isReal() || !(value.number() <= 9999) || !(value.number() >= -9999)) {
 			gtk_entry_set_text(GTK_ENTRY(w_roman), "-");
@@ -147,7 +177,15 @@ void update_nbases_entries(const MathStructure &value, int base) {
 			gtk_entry_set_text(GTK_ENTRY(w_roman), nr.print(po).c_str());
 		}
 	}
-	if(base != 2) {po.base = 2; po.base_display = BASE_DISPLAY_NORMAL; str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po); if(str.length() > 1000) {str = _("result is too long");} gtk_entry_set_text(GTK_ENTRY(w_bin), str.c_str());}
+	if(base != 2) {
+		if(!empty_value) {
+			po.base = 2;
+			po.base_display = BASE_DISPLAY_NORMAL;
+			str = value.isAborted() ? CALCULATOR->timedOutString().c_str() : CALCULATOR->print(value, 200, po);
+			if(str.length() > 1000) str = _("result is too long");
+		}
+		gtk_entry_set_text(GTK_ENTRY(w_bin), str.c_str());
+	}
 	g_signal_handlers_unblock_matched((gpointer) w_dec, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_decimal_changed, NULL);
 	g_signal_handlers_unblock_matched((gpointer) w_bin, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_binary_changed, NULL);
 	g_signal_handlers_unblock_matched((gpointer) w_oct, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_nbases_entry_octal_changed, NULL);
@@ -231,7 +269,10 @@ void on_nbases_entry_decimal_changed(GtkEditable *editable, gpointer) {
 	if(changing_in_nbases_dialog) return;
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
-	if(str.empty()) return;
+	if(str.empty()) {
+		update_nbases_entries(m_zero, 10, true);
+		return;
+	}
 	if(last_is_operator(str, true)) return;
 	changing_in_nbases_dialog = true;
 	EvaluationOptions eo;
@@ -251,7 +292,10 @@ void on_nbases_entry_binary_changed(GtkEditable *editable, gpointer) {
 	if(changing_in_nbases_dialog) return;
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
-	if(str.empty()) return;
+	if(str.empty()) {
+		update_nbases_entries(m_zero, 2, true);
+		return;
+	}
 	if(last_is_operator(str)) return;
 	EvaluationOptions eo;
 	eo.parse_options = evalops.parse_options;
@@ -271,7 +315,10 @@ void on_nbases_entry_octal_changed(GtkEditable *editable, gpointer) {
 	if(changing_in_nbases_dialog) return;
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
-	if(str.empty()) return;
+	if(str.empty()) {
+		update_nbases_entries(m_zero, 8, true);
+		return;
+	}
 	if(last_is_operator(str)) return;
 	EvaluationOptions eo;
 	eo.parse_options = evalops.parse_options;
@@ -291,7 +338,10 @@ void on_nbases_entry_hexadecimal_changed(GtkEditable *editable, gpointer) {
 	if(changing_in_nbases_dialog) return;
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
-	if(str.empty()) return;
+	if(str.empty()) {
+		update_nbases_entries(m_zero, 16, true);
+		return;
+	}
 	if(last_is_operator(str)) return;
 	EvaluationOptions eo;
 	eo.parse_options = evalops.parse_options;
@@ -312,7 +362,10 @@ void on_nbases_entry_duo_changed(GtkEditable *editable, gpointer) {
 	if(changing_in_nbases_dialog) return;
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
-	if(str.empty()) return;
+	if(str.empty()) {
+		update_nbases_entries(m_zero, 12, true);
+		return;
+	}
 	if(last_is_operator(str)) return;
 	EvaluationOptions eo;
 	eo.parse_options = evalops.parse_options;
@@ -332,7 +385,10 @@ void on_nbases_entry_roman_changed(GtkEditable *editable, gpointer) {
 	if(changing_in_nbases_dialog) return;
 	string str = gtk_entry_get_text(GTK_ENTRY(editable));
 	remove_blank_ends(str);
-	if(str.empty()) return;
+	if(str.empty()) {
+		update_nbases_entries(m_zero, BASE_ROMAN_NUMERALS, true);
+		return;
+	}
 	if(last_is_operator(str) && (str[str.length() - 1] != '|' || str.find('|') == str.length() - 1)) return;
 	EvaluationOptions eo;
 	eo.parse_options = evalops.parse_options;
@@ -843,8 +899,7 @@ void convert_number_bases(GtkWindow *parent, const gchar *initial_expression, in
 	GtkWidget *dialog = get_nbases_dialog();
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), parent);
 	if(strlen(initial_expression) == 0) {
-		update_nbases_entries(m_zero, 0);
-		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_decimal")), "");
+		update_nbases_entries(m_zero, 0, true);
 	} else {
 		switch(base) {
 			case BASE_BINARY: {
@@ -872,8 +927,7 @@ void convert_number_bases(GtkWindow *parent, const gchar *initial_expression, in
 				break;
 			}
 			default: {
-				update_nbases_entries(m_zero, 0);
-				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(nbases_builder, "nbases_entry_decimal")), "");
+				update_nbases_entries(m_zero, 0, true);
 			}
 		}
 	}

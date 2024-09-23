@@ -3790,27 +3790,35 @@ void set_option(string str) {
 		else if(equalsIgnoreCase(svalue, "exact")) v = FRACTION_DECIMAL_EXACT;
 		else if(empty_value || equalsIgnoreCase(svalue, "on")) v = FRACTION_FRACTIONAL;
 		else if(equalsIgnoreCase(svalue, "combined") || equalsIgnoreCase(svalue, "mixed")) v = FRACTION_COMBINED;
-		else if(equalsIgnoreCase(svalue, "long")) v = FRACTION_COMBINED_FIXED_DENOMINATOR + 1;
-		else if(equalsIgnoreCase(svalue, "dual")) v = FRACTION_COMBINED_FIXED_DENOMINATOR + 2;
+		else if(equalsIgnoreCase(svalue, "long")) v = FRACTION_PERMYRIAD + 1;
+		else if(equalsIgnoreCase(svalue, "dual")) v = FRACTION_PERMYRIAD + 2;
 		else if(equalsIgnoreCase(svalue, "auto")) v = -1;
 		else if(svalue.find_first_not_of(SPACES NUMBERS) == string::npos) {
 			v = s2i(svalue);
-			if(v == FRACTION_COMBINED + 1) v = FRACTION_COMBINED_FIXED_DENOMINATOR + 1;
-			else if(v == FRACTION_COMBINED + 2) v = FRACTION_COMBINED_FIXED_DENOMINATOR + 2;
-			else if(v == FRACTION_COMBINED_FIXED_DENOMINATOR + 1) v = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
-			else if(v == FRACTION_COMBINED_FIXED_DENOMINATOR + 2) v = FRACTION_COMBINED_FIXED_DENOMINATOR;
+			if(v == FRACTION_COMBINED + 1) v = FRACTION_PERMYRIAD + 1;
+			else if(v == FRACTION_COMBINED + 2) v = FRACTION_PERMYRIAD + 2;
+			else if(v > FRACTION_COMBINED + 2) v -= 2;
 		} else {
-			int tofr = 0;
-			long int fden = get_fixed_denominator_gtk(unlocalize_expression(svalue), tofr, true);
-			if(fden != 0) {
-				if(tofr == 1) v = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
-				else v = FRACTION_COMBINED_FIXED_DENOMINATOR;
-				if(fden > 0) CALCULATOR->setFixedDenominator(fden);
+			Variable *var = CALCULATOR->getActiveVariable(svalue);
+			if(var && var->referenceName() == "percent") {
+				v = FRACTION_PERCENT;
+			} else if(var && var->referenceName() == "permille") {
+				v = FRACTION_PERMILLE;
+			} else if(var && var->referenceName() == "permyriad") {
+				v = FRACTION_PERMYRIAD;
+			} else {
+				int tofr = 0;
+				long int fden = get_fixed_denominator_gtk(unlocalize_expression(svalue), tofr, true);
+				if(fden != 0) {
+					if(tofr == 1) v = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
+					else v = FRACTION_COMBINED_FIXED_DENOMINATOR;
+					if(fden > 0) CALCULATOR->setFixedDenominator(fden);
+				}
 			}
 		}
-		if(v > FRACTION_COMBINED_FIXED_DENOMINATOR + 2) {
+		if(v > FRACTION_PERMYRIAD + 2) {
 			CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
-		} else if(v < 0 || v > FRACTION_COMBINED_FIXED_DENOMINATOR + 1) {
+		} else if(v < 0 || v > FRACTION_PERMYRIAD + 1) {
 			CALCULATOR->error(true, "Unsupported value: %s.", svalue.c_str(), NULL);
 		} else {
 			int dff = default_fraction_fraction;
@@ -4196,21 +4204,24 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					update_fmenu();
 					clear_expression_text();
 				}
-			} else if(equalsIgnoreCase(scom, "keep")) {
+			} else if(equalsIgnoreCase(scom, "keep") || equalsIgnoreCase(scom, "unkeep")) {
+				bool unkeep = equalsIgnoreCase(scom, "unkeep");
 				str = str.substr(ispace + 1, slen - (ispace + 1));
 				remove_blank_ends(str);
 				Variable *v = CALCULATOR->getActiveVariable(str);
 				bool b = v && v->isLocal();
-				if(b && v->category() == CALCULATOR->temporaryCategory()) {
-					v->setCategory("");
+				if(b && (v->category() == CALCULATOR->temporaryCategory()) == !unkeep) {
+					if(unkeep) v->setCategory(CALCULATOR->temporaryCategory());
+					else v->setCategory("");
 					update_fmenu();
 					clear_expression_text();
 				} else {
 					if(str.length() > 2 && str[str.length() - 2] == '(' && str[str.length() - 1] == ')') str = str.substr(0, str.length() - 2);
 					MathFunction *f = CALCULATOR->getActiveFunction(str);
 					if(f && f->isLocal()) {
-						if(f->category() == CALCULATOR->temporaryCategory()) {
-							f->setCategory("");
+						if((f->category() == CALCULATOR->temporaryCategory()) == !unkeep) {
+							if(unkeep) f->setCategory(CALCULATOR->temporaryCategory());
+							else f->setCategory("");
 							update_fmenu();
 							clear_expression_text();
 						}
@@ -6725,7 +6736,7 @@ void set_binary_bits(unsigned int i, bool recalculate) {
 void set_fraction_format(int nff) {
 	to_fraction = 0;
 	to_fixed_fraction = 0;
-	if(nff > FRACTION_COMBINED_FIXED_DENOMINATOR) {
+	if(nff > FRACTION_PERMYRIAD) {
 		nff = FRACTION_FRACTIONAL;
 		printops.restrict_fraction_length = false;
 	} else {
@@ -8009,6 +8020,9 @@ void on_expander_convert_expanded(GObject *o, GParamSpec*, gpointer) {
 	if(gtk_expander_get_expanded(GTK_EXPANDER(o))) {
 		gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 2);
 		show_tabs(true);
+		if(conversionview_continuous_conversion() && !current_conversion_expression().empty() && current_displayed_result() && current_displayed_result()->containsType(STRUCT_UNIT) > 0) {
+			convert_from_convert_entry_unit();
+		}
 		if(!persistent_keypad && gtk_expander_get_expanded(GTK_EXPANDER(expander_keypad))) {
 			gtk_expander_set_expanded(GTK_EXPANDER(expander_keypad), FALSE);
 		} else if(gtk_expander_get_expanded(GTK_EXPANDER(expander_history))) {

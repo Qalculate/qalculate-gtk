@@ -5885,6 +5885,7 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                         <property name="can-focus">True</property>
                                         <property name="receives-default">True</property>
                                         <property name="popup">menu_to</property>
+                                        <signal name="button-press-event" handler="on_mb_to_button_press_event" swapped="no"/>
                                         <signal name="button-release-event" handler="on_mb_to_button_release_event" swapped="no"/>
                                         <child>
                                           <placeholder/>

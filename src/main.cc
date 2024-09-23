@@ -93,7 +93,7 @@ gboolean create_menus_etc(gpointer) {
 	else if(enable_tooltips > 1) set_tooltips_enabled(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")), FALSE);
 
 	update_completion();
-	
+
 	unblock_completion();
 
 	test_border();

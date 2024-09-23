@@ -56,7 +56,6 @@ unordered_map<string, GtkTreeIter> convert_category_map;
 void on_convert_entry_search_changed(GtkEntry *w, gpointer);
 void on_tUnitSelector_selection_changed(GtkTreeSelection *treeselection, gpointer);
 void on_tUnitSelectorCategories_selection_changed(GtkTreeSelection *treeselection, gpointer);
-void convert_from_convert_entry_unit();
 
 bool read_conversion_view_settings_line(string &svar, string&, int &v) {
 	if(svar == "continuous_conversion") {
