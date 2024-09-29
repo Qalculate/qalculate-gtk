@@ -234,7 +234,17 @@ void add_expression_to_undo() {
 void overwrite_expression_selection(const gchar *text) {
 	block_completion();
 	block_undo();
-	gtk_text_buffer_delete_selection(expression_edit_buffer(), FALSE, TRUE);
+	if(gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget())) && !gtk_text_buffer_get_has_selection(expression_edit_buffer())) {
+		GtkTextIter ipos;
+		gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &ipos, gtk_text_buffer_get_insert(expression_edit_buffer()));
+		if(!gtk_text_iter_is_end(&ipos)) {
+			GtkTextIter ipos2 = ipos;
+			gtk_text_iter_forward_char(&ipos2);
+			gtk_text_buffer_delete(expression_edit_buffer(), &ipos, &ipos2);
+		}
+	} else {
+		gtk_text_buffer_delete_selection(expression_edit_buffer(), FALSE, TRUE);
+	}
 	unblock_undo();
 	if(text) gtk_text_buffer_insert_at_cursor(expression_edit_buffer(), text, -1);
 	unblock_completion();
@@ -852,7 +862,7 @@ return TRUE;}
 				return TRUE;
 			}
 			if(expression_in_quotes()) break;
-			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
+			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN && !gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget()))) {
 				if(do_chain_mode(input_xor ? " xor " : "^")) return TRUE;
 				wrap_expression_selection();
 			}
@@ -886,7 +896,7 @@ return TRUE;}
 				return TRUE;
 			}
 			if(expression_in_quotes()) break;
-			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
+			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN && !gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget()))) {
 				if(do_chain_mode(expression_divide_sign())) return TRUE;
 				wrap_expression_selection();
 			}
@@ -900,7 +910,7 @@ return TRUE;}
 				return TRUE;
 			}
 			if(expression_in_quotes()) break;
-			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
+			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN && !gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget()))) {
 				if(do_chain_mode(expression_add_sign())) return TRUE;
 				wrap_expression_selection();
 			}
@@ -931,7 +941,7 @@ return TRUE;}
 				return TRUE;
 			}
 			if(expression_in_quotes()) break;
-			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
+			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN && !gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget()))) {
 				if(do_chain_mode(expression_sub_sign())) return TRUE;
 				wrap_expression_selection();
 			}
@@ -945,7 +955,7 @@ return TRUE;}
 					calculateRPN(OPERATION_RAISE);
 					return TRUE;
 				}
-				if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
+				if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN && !gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget()))) {
 					if(do_chain_mode("^")) return TRUE;
 					wrap_expression_selection();
 				}
@@ -957,7 +967,7 @@ return TRUE;}
 				return TRUE;
 			}
 			if(expression_in_quotes()) break;
-			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
+			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN && !gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget()))) {
 				if(do_chain_mode(expression_times_sign())) return TRUE;
 				wrap_expression_selection();
 			}
@@ -970,7 +980,7 @@ return TRUE;}
 					calculateRPN(OPERATION_EXP10);
 					return TRUE;
 				}
-				if((evalops.parse_options.parsing_mode != PARSING_MODE_RPN && wrap_expression_selection() > 0) || (evalops.parse_options.base != 10 && evalops.parse_options.base >= 2)) {
+				if((evalops.parse_options.parsing_mode != PARSING_MODE_RPN && !gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget())) && wrap_expression_selection() > 0) || (evalops.parse_options.base != 10 && evalops.parse_options.base >= 2)) {
 					insert_text((expression_times_sign() + i2s(evalops.parse_options.base) + "^").c_str());
 				} else {
 					if(printops.exp_display == EXP_LOWERCASE_E) insert_text("e");
