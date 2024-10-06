@@ -366,7 +366,7 @@ void load_preferences_search() {
 	search_ignore_locale = false;
 	search_adaptive_interval_display = true;
 
-	bool simplified_percentage = true;
+	int simplified_percentage = 1;
 
 	CALCULATOR->useIntervalArithmetic(true);
 	CALCULATOR->useBinaryPrefixes(0);
