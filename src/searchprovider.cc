@@ -366,7 +366,7 @@ void load_preferences_search() {
 	search_ignore_locale = false;
 	search_adaptive_interval_display = true;
 
-	bool simplified_percentage = true;
+	bool search_simplified_percentage = true;
 
 	CALCULATOR->useIntervalArithmetic(true);
 	CALCULATOR->useBinaryPrefixes(0);
@@ -437,7 +437,7 @@ void load_preferences_search() {
 						search_eo.parse_options.parsing_mode = (ParsingMode) v;
 					}
 				} else if(svar == "simplified_percentage") {
-					simplified_percentage = v;
+					search_simplified_percentage = v;
 				} else if(svar == "place_units_separately") {
 					search_po.place_units_separately = v;
 				} else if(svar == "variable_units_enabled") {
@@ -596,7 +596,7 @@ void load_preferences_search() {
 		}
 		fclose(file);
 	}
-	if(simplified_percentage) search_eo.parse_options.parsing_mode = (ParsingMode) (search_eo.parse_options.parsing_mode | PARSE_PERCENT_AS_ORDINARY_CONSTANT);
+	if(search_simplified_percentage) search_eo.parse_options.parsing_mode = (ParsingMode) (search_eo.parse_options.parsing_mode | PARSE_PERCENT_AS_ORDINARY_CONSTANT);
 }
 
 
