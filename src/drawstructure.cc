@@ -697,12 +697,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 							pango_layout_set_markup(layout, str2.c_str(), -1);
 							pango_layout_get_pixel_size(layout, NULL, &central_point);
 						}
-						TTBP_SMALL(str)
+						if(!fix_supsub_result) {TTBP_SMALL(str)}
 						str += "<sub>";
 						str += number_base_map[(void*) &m.number()];
 						str += "</sub>";
 						FIX_SUB_RESULT(str)
-						TTE(str)
+						if(!fix_supsub_result) {TTE(str)}
 					}
 					TTE(str)
 					pango_layout_set_markup(layout, str.c_str(), -1);
@@ -2130,17 +2130,6 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				}
 				str += ename->formattedName(TYPE_UNIT, true, true, false, true, true);
 				FIX_SUB_RESULT(str)
-				size_t i = 0;
-				while(true) {
-					i = str.find("<sub>", i);
-					if(i == string::npos) break;
-					string str_s;
-					TTBP_SMALL(str_s);
-					str.insert(i, str_s);
-					i = str.find("</sub>", i);
-					if(i == string::npos) break;
-					str.insert(i + 6, TEXT_TAGS_END);
-				}
 				TTE(str);
 				PangoLayout *layout = gtk_widget_create_pango_layout(result_view_widget(), NULL);
 				pango_layout_set_markup(layout, str.c_str(), -1);
@@ -2185,17 +2174,6 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				TTBP(str);
 				str += ename->formattedName(TYPE_VARIABLE, true, true, false, true, true);
 				FIX_SUB_RESULT(str)
-				size_t i = 0;
-				while(true) {
-					i = str.find("<sub>", i);
-					if(i == string::npos) break;
-					string str_s;
-					TTBP_SMALL(str_s);
-					str.insert(i, str_s);
-					i = str.find("</sub>", i);
-					if(i == string::npos) break;
-					str.insert(i + 6, TEXT_TAGS_END);
-				}
 				TTE(str);
 				if(cursive) str += "</i>";
 
@@ -2538,25 +2516,15 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 
 				const ExpressionName *ename = &m.function()->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, po.use_reference_names, po.can_display_unicode_string_function, po.can_display_unicode_string_arg);
 				str += ename->formattedName(TYPE_FUNCTION, true, true, false, true, true);
-				FIX_SUB_RESULT(str)
-				size_t i = 0;
-				bool b_sub = false;
-				while(true) {
-					i = str.find("<sub>", i);
-					if(i == string::npos) break;
-					b_sub = true;
-					string str_s;
-					TTBP_SMALL(str_s);
-					str.insert(i, str_s);
-					i = str.find("</sub>", i);
-					if(i == string::npos) break;
-					str.insert(i + 6, TEXT_TAGS_END);
-				}
-				if(!b_sub && (m.function() == CALCULATOR->f_lambert_w || m.function() == CALCULATOR->f_logn) && m.size() == 2 && ((m[1].size() == 0 && (!m[1].isNumber() || (m[1].number().isInteger() && m[1].number() < 100 && m[1].number() > -100))) || (m[1].isNegate() && m[1][0].size() == 0 && (!m[1][0].isNumber() || (m[1][0].number().isInteger() && m[1][0].number() < 100 && m[1][0].number() > -100))))) {
+
+				if(str.find("<sub>") != string::npos) {
+					FIX_SUB_RESULT(str);
+				} else if((m.function() == CALCULATOR->f_lambert_w || m.function() == CALCULATOR->f_logn) && m.size() == 2 && ((m[1].size() == 0 && (!m[1].isNumber() || (m[1].number().isInteger() && m[1].number() < 100 && m[1].number() > -100))) || (m[1].isNegate() && m[1][0].size() == 0 && (!m[1][0].isNumber() || (m[1][0].number().isInteger() && m[1][0].number() < 100 && m[1][0].number() > -100))))) {
 					argcount = 1;
 					str += "<sub>";
 					str += m[1].print(po);
 					str += "</sub>";
+					FIX_SUB_RESULT(str);
 				}
 
 				TTE(str);

@@ -862,9 +862,9 @@ return TRUE;}
 				return TRUE;
 			}
 			if(expression_in_quotes()) break;
-			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN && !gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget()))) {
+			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
 				if(do_chain_mode(input_xor ? " xor " : "^")) return TRUE;
-				wrap_expression_selection();
+				if(!gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget()))) wrap_expression_selection();
 			}
 			overwrite_expression_selection(input_xor ? " xor " : "^");
 			return TRUE;
@@ -896,9 +896,9 @@ return TRUE;}
 				return TRUE;
 			}
 			if(expression_in_quotes()) break;
-			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN && !gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget()))) {
+			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
 				if(do_chain_mode(expression_divide_sign())) return TRUE;
-				wrap_expression_selection();
+				if(!gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget()))) wrap_expression_selection();
 			}
 			overwrite_expression_selection(expression_divide_sign());
 			return TRUE;
@@ -910,9 +910,9 @@ return TRUE;}
 				return TRUE;
 			}
 			if(expression_in_quotes()) break;
-			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN && !gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget()))) {
+			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
 				if(do_chain_mode(expression_add_sign())) return TRUE;
-				wrap_expression_selection();
+				if(!gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget()))) wrap_expression_selection();
 			}
 			overwrite_expression_selection(expression_add_sign());
 			return TRUE;
@@ -941,9 +941,9 @@ return TRUE;}
 				return TRUE;
 			}
 			if(expression_in_quotes()) break;
-			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN && !gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget()))) {
+			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
 				if(do_chain_mode(expression_sub_sign())) return TRUE;
-				wrap_expression_selection();
+				if(!gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget()))) wrap_expression_selection();
 			}
 			overwrite_expression_selection(expression_sub_sign());
 			return TRUE;
@@ -955,9 +955,9 @@ return TRUE;}
 					calculateRPN(OPERATION_RAISE);
 					return TRUE;
 				}
-				if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN && !gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget()))) {
+				if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
 					if(do_chain_mode("^")) return TRUE;
-					wrap_expression_selection();
+					if(!gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget()))) wrap_expression_selection();
 				}
 				overwrite_expression_selection("^");
 				return TRUE;
@@ -967,9 +967,9 @@ return TRUE;}
 				return TRUE;
 			}
 			if(expression_in_quotes()) break;
-			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN && !gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget()))) {
+			if(evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
 				if(do_chain_mode(expression_times_sign())) return TRUE;
-				wrap_expression_selection();
+				if(!gtk_text_view_get_overwrite(GTK_TEXT_VIEW(expression_edit_widget()))) wrap_expression_selection();
 			}
 			overwrite_expression_selection(expression_times_sign());
 			return TRUE;
@@ -1242,7 +1242,7 @@ void expression_redo() {
 void on_popup_menu_item_completion_level_toggled(GtkCheckMenuItem *w, gpointer p) {
 	if(!gtk_check_menu_item_get_active(w)) return;
 	int completion_level = GPOINTER_TO_INT(p);
-	set_expression_completion_settings(completion_level > 0, completion_level > 2, completion_level > 1 ? 1 : 2, completion_level > 3 ? 1 : 2);
+	set_expression_completion_settings(completion_level > 0, completion_level > 2, completion_level == 2 || completion_level > 3 ? 1 : 2, completion_level > 3 ? 1 : 2);
 	preferences_update_completion();
 }
 void on_popup_menu_item_completion_delay_toggled(GtkCheckMenuItem *w, gpointer) {

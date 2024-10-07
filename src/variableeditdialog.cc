@@ -79,7 +79,17 @@ gboolean on_variable_edit_textview_value_key_press_event(GtkWidget *w, GdkEventK
 	if(!key) return FALSE;
 	if(strlen(key) > 0) {
 		GtkTextBuffer *expression_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(w));
-		gtk_text_buffer_delete_selection(expression_buffer, FALSE, TRUE);
+		if(gtk_text_view_get_overwrite(GTK_TEXT_VIEW(w)) && !gtk_text_buffer_get_has_selection(expression_buffer)) {
+			GtkTextIter ipos;
+			gtk_text_buffer_get_iter_at_mark(expression_buffer, &ipos, gtk_text_buffer_get_insert(expression_buffer));
+			if(!gtk_text_iter_is_end(&ipos)) {
+				GtkTextIter ipos2 = ipos;
+				gtk_text_iter_forward_char(&ipos2);
+				gtk_text_buffer_delete(expression_buffer, &ipos, &ipos2);
+			}
+		} else {
+			gtk_text_buffer_delete_selection(expression_buffer, FALSE, TRUE);
+		}
 		gtk_text_buffer_insert_at_cursor(expression_buffer, key, -1);
 		return TRUE;
 	}

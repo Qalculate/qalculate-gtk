@@ -55,8 +55,6 @@ string calc_arg, file_arg;
 
 QalculateDateTime last_version_check_date;
 
-#define VERSION_BEFORE(i1, i2, i3) (version_numbers[0] < i1 || (version_numbers[0] == i1 && (version_numbers[1] < i2 || (version_numbers[1] == i2 && version_numbers[2] < i3))))
-
 static GOptionEntry options[] = {
 	{"file", 'f', 0, G_OPTION_ARG_STRING, NULL, N_("Execute expressions and commands from a file"), N_("FILE")},
 	{"new-instance", 'n', 0, G_OPTION_ARG_NONE, NULL, N_("Start a new instance of the application"), NULL},

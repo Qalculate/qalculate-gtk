@@ -622,7 +622,12 @@ gboolean on_nbases_entry_roman_focus_in_event(GtkWidget*, GdkEventFocus*, gpoint
 
 void nbases_insert_text(GtkWidget *w, const gchar *text) {
 	changing_in_nbases_dialog = true;
-	gtk_editable_delete_selection(GTK_EDITABLE(w));
+	if(gtk_entry_get_overwrite_mode(GTK_ENTRY(w)) && !gtk_editable_get_selection_bounds(GTK_EDITABLE(w), NULL, NULL)) {
+		gint pos = gtk_editable_get_position(GTK_EDITABLE(w));
+		gtk_editable_delete_text(GTK_EDITABLE(w), pos, pos + 1);
+	} else {
+		gtk_editable_delete_selection(GTK_EDITABLE(w));
+	}
 	changing_in_nbases_dialog = false;
 	gint pos = gtk_editable_get_position(GTK_EDITABLE(w));
 	gtk_editable_insert_text(GTK_EDITABLE(w), text, -1, &pos);
@@ -958,4 +963,10 @@ void convert_number_bases(GtkWindow *parent, const gchar *initial_expression, in
 	}
 	gtk_widget_show(dialog);
 	gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
+}
+
+void numberbases_dialog_result_has_changed(const MathStructure *value) {
+	if(nbases_builder && gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "nbases_dialog"))) && value && value->isInteger() && value->number().integerLength() < 20) {
+		update_nbases_entries(*value, 0);
+	}
 }

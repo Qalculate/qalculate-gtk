@@ -238,3 +238,11 @@ void show_calendarconversion_dialog(GtkWindow *parent, QalculateDateTime *dateti
 	gtk_widget_show(dialog);
 	gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
 }
+
+void calendarconversion_dialog_result_has_changed(const MathStructure *value) {
+	if(calendarconversion_builder && gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(calendarconversion_builder, "calendar_dialog"))) && value && value->isDateTime()) {
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(cal_year[CALENDAR_GREGORIAN]), value->datetime()->year());
+		gtk_combo_box_set_active(GTK_COMBO_BOX(cal_month[CALENDAR_GREGORIAN]), value->datetime()->month() - 1);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(cal_day[CALENDAR_GREGORIAN]), value->datetime()->day() - 1);
+	}
+}

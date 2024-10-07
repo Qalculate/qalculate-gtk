@@ -120,19 +120,21 @@ GtkWidget *keypad_widget() {
 		else n2++;\
 	}
 
-bool read_keypad_settings_line(string &svar, string &svalue, int &v) {
-	if(custom_buttons.empty()) {
-		custom_buttons.resize(49);
-		for(size_t i = 0; i < 49; i++) {
-			custom_buttons[i].type[0] = -1;
-			custom_buttons[i].type[1] = -1;
-			custom_buttons[i].type[2] = -1;
-			custom_buttons[i].value[0] = "";
-			custom_buttons[i].value[1] = "";
-			custom_buttons[i].value[2] = "";
-			custom_buttons[i].text = "";
-		}
+void initialize_custom_buttons() {
+	custom_buttons.resize(49);
+	for(size_t i = 0; i < 49; i++) {
+		custom_buttons[i].type[0] = -1;
+		custom_buttons[i].type[1] = -1;
+		custom_buttons[i].type[2] = -1;
+		custom_buttons[i].value[0] = "";
+		custom_buttons[i].value[1] = "";
+		custom_buttons[i].value[2] = "";
+		custom_buttons[i].text = "";
 	}
+}
+
+bool read_keypad_settings_line(string &svar, string &svalue, int &v) {
+	if(custom_buttons.empty()) initialize_custom_buttons();
 	if(svar == "horizontal_button_padding") {
 		horizontal_button_padd = v;
 	} else if(svar == "vertical_button_padding") {
@@ -3312,6 +3314,7 @@ void set_horizontal_button_padding(int i) {
 int vertical_button_padding() {return vertical_button_padd;}
 int horizontal_button_padding() {return horizontal_button_padd;}
 void update_keypad_button_text() {
+	if(custom_buttons.empty()) initialize_custom_buttons();
 	if(printops.use_unicode_signs) {
 		if(custom_buttons[24].text.empty()) {
 			if(can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(main_builder, "label_sub"))) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_sub")), SIGN_MINUS);

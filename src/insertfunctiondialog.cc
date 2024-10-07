@@ -892,56 +892,76 @@ void insert_button_function(MathFunction *f, bool save_to_recent, bool apply_to_
 	gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &ipos, mpos);
 	if(!gtk_text_buffer_get_has_selection(expression_edit_buffer()) && gtk_text_iter_is_end(&ipos)) {
 		if(!rpn_mode && chain_mode) {
-			string str;
-			GtkTextIter ibegin;
-			gtk_text_buffer_get_end_iter(expression_edit_buffer(), &ibegin);
-			gchar *p = expr + strlen(expr), *prev_p = p;
-			int nr_of_p = 0;
-			bool prev_plusminus = false;
-			while(p != expr) {
-				p = g_utf8_prev_char(p);
-				if(p[0] == LEFT_PARENTHESIS_CH) {
-					if(nr_of_p == 0) {
-						if(!prev_plusminus) {gtk_text_iter_backward_char(&ibegin);}
-						break;
-					}
-					nr_of_p--;
-				} else if(p[0] == RIGHT_PARENTHESIS_CH) {
-					if(nr_of_p == 0 && prev_p != expr + strlen(expr)) {
-						if(prev_plusminus) {gtk_text_iter_forward_char(&ibegin);}
-						break;
-					}
-					nr_of_p++;
-				} else if(nr_of_p == 0) {
-					if((signed char) p[0] < 0) {
-						for(size_t i = 0; p + i < prev_p; i++) str += p[i];
-						CALCULATOR->parseSigns(str);
-						if(!str.empty() && (signed char) str[0] > 0) {
-							if(is_in("+-", str[0])) {
-								prev_plusminus = true;
-							} else if(is_in("*/&|=><^", str[0])) {
-								break;
-							} else if(prev_plusminus) {
-								gtk_text_iter_forward_char(&ibegin);
-								break;
-							}
-						}
-					} else if(is_in("+-", p[0])) {
-						prev_plusminus = true;
-					} else if(is_in("*/&|=><^", p[0])) {
-						break;
-					} else if(prev_plusminus) {
-						gtk_text_iter_forward_char(&ibegin);
-						break;
-					}
-				}
-				gtk_text_iter_backward_char(&ibegin);
-				prev_p = p;
+			string str = CALCULATOR->unlocalizeExpression(expr, evalops.parse_options);
+			remove_blanks(str);
+			size_t par_n = 0, vec_n = 0;
+			for(size_t i = 0; i < str.length(); i++) {
+				if(str[i] == LEFT_PARENTHESIS_CH) par_n++;
+				else if(par_n > 0 && str[i] == RIGHT_PARENTHESIS_CH) par_n--;
+				else if(str[i] == LEFT_VECTOR_WRAP_CH) vec_n++;
+				else if(vec_n > 0 && str[i] == RIGHT_VECTOR_WRAP_CH) vec_n--;
 			}
-			gtk_text_buffer_select_range(expression_edit_buffer(), &ibegin, &iend);
+			if(par_n <= 0 && vec_n <= 0 && !str.empty() && str[0] != '/' && !CALCULATOR->hasToExpression(str, true, evalops) && !CALCULATOR->hasWhereExpression(str, evalops) && !last_is_operator(str)) {
+				GtkTextIter ibegin;
+				gtk_text_buffer_get_end_iter(expression_edit_buffer(), &ibegin);
+				gchar *p = expr + strlen(expr), *prev_p = p;
+				int nr_of_p = 0;
+				bool prev_plusminus = false;
+				while(p != expr) {
+					p = g_utf8_prev_char(p);
+					if(p[0] == LEFT_PARENTHESIS_CH) {
+						if(nr_of_p == 0) {
+							if(!prev_plusminus) {gtk_text_iter_backward_char(&ibegin);}
+							break;
+						}
+						nr_of_p--;
+					} else if(p[0] == RIGHT_PARENTHESIS_CH) {
+						if(nr_of_p == 0 && prev_p != expr + strlen(expr)) {
+							if(prev_plusminus) {gtk_text_iter_forward_char(&ibegin);}
+							break;
+						}
+						nr_of_p++;
+					} else if(nr_of_p == 0) {
+						if((signed char) p[0] < 0) {
+							str = "";
+							for(size_t i = 0; p + i < prev_p; i++) str += p[i];
+							CALCULATOR->parseSigns(str);
+							if(!str.empty() && (signed char) str[0] > 0) {
+								if(is_in("+-", str[0])) {
+									prev_plusminus = true;
+								} else if(is_in("*/&|=><^", str[0])) {
+									break;
+								} else if(prev_plusminus) {
+									gtk_text_iter_forward_char(&ibegin);
+									break;
+								}
+							}
+						} else if(is_in("+-", p[0])) {
+							prev_plusminus = true;
+						} else if(is_in("*/&|=><^", p[0])) {
+							break;
+						} else if(prev_plusminus) {
+							gtk_text_iter_forward_char(&ibegin);
+							break;
+						}
+					}
+					gtk_text_iter_backward_char(&ibegin);
+					prev_p = p;
+				}
+				gtk_text_buffer_select_range(expression_edit_buffer(), &ibegin, &iend);
+			}
 		} else if(last_is_number(expr)) {
-			// special case: the user just entered a number, then select all, so that it gets executed
-			gtk_text_buffer_select_range(expression_edit_buffer(), &istart, &iend);
+			size_t par_n = 0, vec_n = 0;
+			for(size_t i = 0; i < strlen(expr); i++) {
+				if(expr[i] == LEFT_PARENTHESIS_CH) par_n++;
+				else if(par_n > 0 && expr[i] == RIGHT_PARENTHESIS_CH) par_n--;
+				else if(expr[i] == LEFT_VECTOR_WRAP_CH) vec_n++;
+				else if(vec_n > 0 && expr[i] == RIGHT_VECTOR_WRAP_CH) vec_n--;
+			}
+			if(par_n <= 0 && vec_n <= 0) {
+				// special case: the user just entered a number, then select all, so that it gets executed
+				gtk_text_buffer_select_range(expression_edit_buffer(), &istart, &iend);
+			}
 		}
 	}
 	string str2;

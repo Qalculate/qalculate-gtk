@@ -19,4 +19,6 @@ class MathStructure;
 void convert_floatingpoint(const MathStructure *initial_value, GtkWindow *parent);
 void convert_floatingpoint(const gchar *initial_expression, int base, GtkWindow *parent);
 
+void floatingpoint_dialog_result_has_changed(const MathStructure *value);
+
 #endif /* FLOATINGPOINT_DIALOG_H */

@@ -20,6 +20,8 @@ class MathStructure;
 void convert_number_bases(GtkWindow *parent, const MathStructure *initial_value);
 void convert_number_bases(GtkWindow *parent, const gchar *initial_expression = "", int base = 10);
 
+void numberbases_dialog_result_has_changed(const MathStructure *value);
+
 bool read_number_bases_dialog_settings_line(std::string &svar, std::string &svalue, int &v);
 void write_number_bases_dialog_settings(FILE *file);
 

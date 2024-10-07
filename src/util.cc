@@ -713,7 +713,12 @@ bool contains_prefix(const MathStructure &m) {
 }
 
 void entry_insert_text(GtkWidget *w, const gchar *text) {
-	gtk_editable_delete_selection(GTK_EDITABLE(w));
+	if(gtk_entry_get_overwrite_mode(GTK_ENTRY(w)) && !gtk_editable_get_selection_bounds(GTK_EDITABLE(w), NULL, NULL)) {
+		gint pos = gtk_editable_get_position(GTK_EDITABLE(w));
+		gtk_editable_delete_text(GTK_EDITABLE(w), pos, pos + 1);
+	} else {
+		gtk_editable_delete_selection(GTK_EDITABLE(w));
+	}
 	gint pos = gtk_editable_get_position(GTK_EDITABLE(w));
 	gtk_editable_insert_text(GTK_EDITABLE(w), text, -1, &pos);
 	gtk_editable_set_position(GTK_EDITABLE(w), pos);

@@ -91,10 +91,10 @@ p.roffit {
 <div class="level0"><span Class="bold">exrates</span> Downloads current exchange rates from the Internet. <p/></div>
 <div class="level0"><span Class="bold">factor</span> Factorizes the current result. <p/></div>
 <div class="level0"><span Class="bold">find, list [name]</span> Displays a list of variables, functions and units. Enter with argument 'currencies', 'functions', 'variables', 'units', or 'prefixes' to show a list of all currencies, functions, variables, units, or prefixes. Enter a search term to find matching variables, functions, units, and/or prefixes. If command is called with no argument all user-definied objects are listed. <br>Example: list functions. <br>Example: find dinar. <br>Example: find variables planck. <p/></div>
-<div class="level0"><span Class="bold">function name expression</span> Creates a function with the specified name and expression. Use '\x', '\y', '\z', '\a', etc. for arguments in the expression. <br>Example: function func1 5*\x. <p/></div>
+<div class="level0"><span Class="bold">function name expression</span> Creates a function with the specified name and expression. Use '\x', '\y', '\z', '\a', etc. for arguments in the expression. The function is persistent unless the command is invoked from file or in result only mode. <br>Example: function func1 5*\x. <p/></div>
 <div class="level0"><span Class="bold">help [command]</span> <p/></div>
 <div class="level0"><span Class="bold">info name</span> Displays information about a function, variable, unit, or prefix. <br>Example: info sin. <p/></div>
-<div class="level0"><span Class="bold">keep name</span> Make the temporary user-defined variable or function with the specified name non-temporary. <br>Example: keep var1. <p/></div>
+<div class="level0"><span Class="bold">keep/unkeep name</span> Make the temporary user-defined variable or function with the specified name non-temporary. <br>Example: keep var1. <p/></div>
 <div class="level0"><span Class="bold">MC/MS/M+/M-</span> Memory operations (memory clear, memory store, memory plus, memory minus). Recall the memory using the MR/MRC variable. <p/></div>
 <div class="level0"><span Class="bold">mode</span> Displays the current mode. <p/></div>
 <div class="level0"><span Class="bold">partial fraction</span> Applies partial fraction decomposition to the current result. <p/></div>
@@ -103,7 +103,7 @@ p.roffit {
 <div class="level0"><span Class="bold">save mode</span> <p/></div>
 <div class="level0"><span Class="bold">set option value</span> <p/></div>
 <div class="level0"><span Class="bold">to, convert, -&gt; unit/to-command</span> Converts the previous result. Equivalent to using "to" at the end of an expression. Example: to m/s <br>Example: to bin <p/></div>
-<div class="level0"><span Class="bold">variable name expression</span> Create a variable with the specified name and expression. <br>Example: variable var1 pi / 2. <p/></div>
+<div class="level0"><span Class="bold">variable name expression</span> Create a variable with the specified name and expression. The variable is persistent unless the command is invoked from file or in result only mode. <br>Example: variable var1 pi / 2. <p/></div>
 <div class="level0"><span Class="bold">quit/exit</span> Terminates the program. <p/>Commands for RPN mode: <p/></div>
 <div class="level0"><span Class="bold">rpn state</span> (De)activates the Reverse Polish Notation stack and syntax. "syntax" activates only the RPN syntax and "stack" enables the RPN stack. <p/></div>
 <div class="level0"><span Class="bold">stack</span> Displays the RPN stack. <p/></div>
@@ -167,7 +167,7 @@ p.roffit {
 <div class="level0"><span Class="bold">min decimals, mindeci (-1* = off, &gt;= 0)</span> <p/></div>
 <div class="level0"><span Class="bold">repeating decimals, repdeci (on, off*)</span> If activated, 1/6 is displayed as '0.1 666...', otherwise as '0.166667'. <p/></div>
 <div class="level0"><span Class="bold">rounding (0* = half away from zero, 1 = half to even, 2 = toward zero, 3 = half to odd, 4 = half toward zero, 5 = half up, 6 = half down, 7 = half random, 8 = away from zero, 9 = up, 10 = down)</span> Determines how approximate numbers are rounded. <p/></div>
-<div class="level0"><span Class="bold">scientific notation, exp (0 = off, -1* = auto, -3 = engineering, 1 = pure, 3 = scientific, &gt;= 0)</span> Determines how scientific notation is used (e.g. 5 543 000 = 5.543E6). <p/></div>
+<div class="level0"><span Class="bold">scientific notation, exp (0 = off, -1* = auto, -3 = engineering, 1 = pure, 3 = scientific, &gt;= 0, &lt;= -2)</span> Determines how scientific notation is used (e.g. 5 543 000 = 5.543E6). A value &gt;= 0 specifies the minimum exponent used. A value &lt;= -2 specifies the multiplier used for the exponent. <p/></div>
 <div class="level0"><span Class="bold">show ending zeroes, zeroes (on*, off)</span> If actived, zeroes are kept at the end of approximate numbers. <p/></div>
 <div class="level0"><span Class="bold">two's complement, twos (on*, off)</span> Enables two's complement representation for display of negative binary numbers. <p/></div>
 <div class="level0"><span Class="bold">duodecimal symbols, duosyms (on, off*)</span> Use special symbols for digits 10 and 11 in numbers with base 12. <p/>Parsing: <p/></div>

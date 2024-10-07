@@ -1124,6 +1124,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 	Number save_nbase;
 	bool custom_base_set = false;
 	int save_base = printops.base;
+	bool save_duo = printops.duodecimal_symbols;
 	unsigned int save_bits = printops.binary_bits;
 	bool save_pre = printops.use_unit_prefixes;
 	bool save_cur = printops.use_prefixes_for_currencies;
@@ -1206,7 +1207,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 		}
 		prev_autocalc_str = str;
 		if(origstr) {
-			to_caf = -1; to_fraction = 0; to_fixed_fraction = 0; to_prefix = 0; to_base = 0; to_bits = 0; to_nbase.clear();
+			to_caf = -1; to_fraction = 0; to_fixed_fraction = 0; to_prefix = 0; to_base = 0; to_duo_syms = false; to_bits = 0; to_nbase.clear();
 		}
 		string from_str = str, to_str, str_conv;
 		bool had_to_expression = false;
@@ -1567,9 +1568,9 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 		CALCULATOR->startControl(100);
 
 		if(to_base != 0 || to_fraction > 0 || to_fixed_fraction >= 2 || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form)) {
-			if(to_base != 0 && (to_base != printops.base || to_bits != printops.binary_bits || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()) || (to_base == BASE_DUODECIMAL && to_duo_syms != printops.duodecimal_symbols))) {
+			if(to_base != 0 && (to_base != printops.base || to_bits != printops.binary_bits || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()) || (to_base == BASE_DUODECIMAL && to_duo_syms && !printops.duodecimal_symbols))) {
 				printops.base = to_base;
-				printops.duodecimal_symbols = to_duo_syms;
+				if(to_duo_syms) printops.duodecimal_symbols = true;
 				printops.binary_bits = to_bits;
 				if(to_base == BASE_CUSTOM) {
 					custom_base_set = true;
@@ -1726,6 +1727,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 
 	if(do_to) {
 		printops.base = save_base;
+		printops.duodecimal_symbols = save_duo;
 		printops.binary_bits = save_bits;
 		if(custom_base_set) CALCULATOR->setCustomOutputBase(save_nbase);
 		printops.use_unit_prefixes = save_pre;
@@ -1828,7 +1830,7 @@ bool do_chain_mode(const gchar *op) {
 		} else {
 			if(!gtk_text_iter_is_end(&iend)) return false;
 		}
-		string str = get_expression_text();
+		string str = CALCULATOR->unlocalizeExpression(get_expression_text(), evalops.parse_options);
 		remove_blanks(str);
 		if(str.empty() || str[0] == '/' || CALCULATOR->hasToExpression(str, true, evalops) || CALCULATOR->hasWhereExpression(str, evalops) || last_is_operator(str)) return false;
 		size_t par_n = 0, vec_n = 0;
@@ -1841,7 +1843,7 @@ bool do_chain_mode(const gchar *op) {
 		if(par_n > 0 || vec_n > 0) return false;
 		if(!auto_calculate) do_auto_calc();
 		rpn_mode = true;
-		if(get_expression_text().find_first_not_of(NUMBER_ELEMENTS SPACE) != string::npos && (!parsed_mstruct || ((!parsed_mstruct->isMultiplication() || op != expression_times_sign()) && (!parsed_mstruct->isAddition() || (op != expression_add_sign() && op != expression_sub_sign())) && (!parsed_mstruct->isBitwiseOr() || strcmp(op, BITWISE_OR) != 0) && (!parsed_mstruct->isBitwiseAnd() || strcmp(op, BITWISE_AND) != 0)))) {
+		if(str.find_first_not_of(NUMBER_ELEMENTS SPACE) != string::npos && (!parsed_mstruct || ((!parsed_mstruct->isMultiplication() || op != expression_times_sign()) && (!parsed_mstruct->isAddition() || (op != expression_add_sign() && op != expression_sub_sign())) && (!parsed_mstruct->isBitwiseOr() || strcmp(op, BITWISE_OR) != 0) && (!parsed_mstruct->isBitwiseAnd() || strcmp(op, BITWISE_AND) != 0)))) {
 			block_undo();
 			gtk_text_buffer_get_start_iter(expression_edit_buffer(), &istart);
 			gtk_text_buffer_insert(expression_edit_buffer(), &istart, "(", -1);
@@ -2455,6 +2457,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	Number save_nbase;
 	bool custom_base_set = false;
 	int save_base = printops.base;
+	bool save_duo = printops.duodecimal_symbols;
 	bool caf_bak = complex_angle_form;
 	unsigned int save_bits = printops.binary_bits;
 	bool save_pre = printops.use_unit_prefixes;
@@ -2470,9 +2473,9 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 
 	if(stack_index == 0) {
 		if(to_base != 0 || to_fraction > 0 || to_fixed_fraction >= 2 || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form)) {
-			if(to_base != 0 && (to_base != printops.base || to_bits != printops.binary_bits || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()) || (to_base == BASE_DUODECIMAL && to_duo_syms != printops.duodecimal_symbols))) {
+			if(to_base != 0 && (to_base != printops.base || to_bits != printops.binary_bits || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()) || (to_base == BASE_DUODECIMAL && to_duo_syms && !printops.duodecimal_symbols))) {
 				printops.base = to_base;
-				printops.duodecimal_symbols = to_duo_syms;
+				if(to_duo_syms) printops.duodecimal_symbols = true;
 				printops.binary_bits = to_bits;
 				if(to_base == BASE_CUSTOM) {
 					custom_base_set = true;
@@ -2665,6 +2668,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	if(do_to) {
 		complex_angle_form = caf_bak;
 		printops.base = save_base;
+		printops.duodecimal_symbols = save_duo;
 		printops.binary_bits = save_bits;
 		if(custom_base_set) CALCULATOR->setCustomOutputBase(save_nbase);
 		printops.use_unit_prefixes = save_pre;
@@ -3928,7 +3932,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	if(!mbak_convert.isUndefined() && stack_index == 0) mbak_convert.setUndefined();
 
 	if(execute_str.empty()) {
-		to_fraction = 0; to_fixed_fraction = 0; to_prefix = 0; to_base = 0; to_bits = 0; to_nbase.clear(); to_caf = -1;
+		to_fraction = 0; to_fixed_fraction = 0; to_prefix = 0; to_base = 0; to_duo_syms = false; to_bits = 0; to_nbase.clear(); to_caf = -1;
 	}
 
 	if(str.empty() && !do_mathoperation) {
@@ -5227,6 +5231,9 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		focus_expression();
 		expression_select_all();
 		cursor_has_moved = false;
+		if(!do_calendars) calendarconversion_dialog_result_has_changed(mstruct);
+		if(!do_bases) numberbases_dialog_result_has_changed(mstruct);
+		floatingpoint_dialog_result_has_changed(mstruct);
 	}
 	unblock_error();
 
@@ -5485,6 +5492,7 @@ void set_minimal_mode(bool b) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")));
+		set_status_bottom_border_visible(false);
 		if(expression_is_empty() || !current_displayed_result()) {
 			clearresult();
 		}
@@ -5706,7 +5714,7 @@ void load_preferences() {
 	}
 
 	version_numbers[0] = 5;
-	version_numbers[1] = 2;
+	version_numbers[1] = 3;
 	version_numbers[2] = 0;
 
 	if(file) {
@@ -6594,6 +6602,7 @@ void set_output_base(int base) {
 	bool b = (printops.base == base && base != BASE_CUSTOM);
 	to_base = 0;
 	to_bits = 0;
+	to_duo_syms = false;
 	printops.base = base;
 	update_keypad_base();
 	update_menu_base();
@@ -6927,6 +6936,7 @@ bool do_shortcut(int type, string value) {
 			Number save_nbase = CALCULATOR->customOutputBase();
 			to_base = 0;
 			to_bits = 0;
+			to_duo_syms = false;
 			Number nbase;
 			base_from_string(value, printops.base, nbase);
 			CALCULATOR->setCustomOutputBase(nbase);
@@ -7604,7 +7614,6 @@ void minimal_mode_show_resultview(bool b) {
 		gint h = -1;
 		gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), NULL, &h);
 		gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), -1, gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled"))));
-		//gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "statusseparator1")));
 		gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
 		while(gtk_events_pending()) gtk_main_iteration();
 		gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), -1, h);
@@ -7612,7 +7621,6 @@ void minimal_mode_show_resultview(bool b) {
 		gint w, h;
 		gtk_window_get_size(main_window(), &w, &h);
 		h -= gtk_widget_get_allocated_height(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
-		set_status_bottom_border_visible(false);
 		h -= 1;
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
 		gtk_window_resize(main_window(), w, h);
@@ -8556,16 +8564,6 @@ void create_main_window() {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_persistent_keypad")), persistent_keypad);
 	gtk_widget_set_vexpand(keypad_widget(), !persistent_keypad || !gtk_widget_get_visible(tabs));
 
-	if(minimal_mode) {
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
-		set_status_bottom_border_visible(false);
-		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
-		gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), TRUE);
-		gtk_widget_set_vexpand(result_view_widget(), FALSE);
-	}
-	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")), minimal_mode);
-
 	gchar *theme_name = NULL;
 	g_object_get(gtk_settings_get_default(), "gtk-theme-name", &theme_name, NULL);
 	if(theme_name) {
@@ -8584,6 +8582,16 @@ void create_main_window() {
 	create_expression_edit();
 	create_expression_status();
 	create_menubar();
+
+	if(minimal_mode) {
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar")));
+		set_status_bottom_border_visible(false);
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "resultoverlay")));
+		gtk_widget_set_vexpand(GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionscrolled")), TRUE);
+		gtk_widget_set_vexpand(result_view_widget(), FALSE);
+	}
+	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_minimal_mode")), minimal_mode);
 
 	update_colors(true);
 

@@ -50,6 +50,34 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="5.3.0" date="2024-10-07">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Show language menu in preferences on all platforms</li>
+      <li>Improve initial value and clear all other fields when edited field is empty, in number bases and floating point conversion dialogs</li>
+      <li>Allow unit expressions for insert unit action, for custom shortcuts and buttons</li>
+      <li>Set minimum characters to two for all completion with "Limited full completion"</li>
+      <li>Support x without backslash for custom function argument condition</li>
+      <li>Update parsed expression and calculate-as-you-type result if variable, function, or unit in expression has changed</li>
+      <li>Update conversion dialogs when expression has been calculated</li>
+      <li>Restructured code</li>
+      <li>Fixes for overwrite input mode</li>
+      <li>Fix Up and Down item in context menu of RPN stack</li>
+      <li>Fix tiny exponents in prefix menus</li>
+      <li>Fix copy unformatted ASCII without units when decimal separator is comma</li>
+      <li>Fix memory leaks</li>
+      <li>Fix segfault with recursive (self-referencing) function</li>
+      <li>Fix input of negative exponent in scientific e notation with RPN syntax</li>
+      <li>Fix parsing of 1°2'3" as 1°+2'+3"</li>
+      <li>Improve handling of "where" expressions with inequalities</li>
+      <li>Fix definite integral for 1/sqrt(1-x^2), with limits higher/lower than or equal to -1 and 1</li>
+      <li>Fix crash with empty vector in plot function, e.g. plot([])</li>
+      <li>Fix "did you mean..." warning for two implicitly multiplicated functions without space between (e.g. "atan2(a,b)atan2(c,d)")</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
   <release version="5.2.0" date="2024-07-01">
    <description>
     <p>Changes:</p>

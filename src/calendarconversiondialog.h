@@ -18,4 +18,6 @@ class QalculateDateTime;
 
 void show_calendarconversion_dialog(GtkWindow *parent, QalculateDateTime *datetime = NULL);
 
+void calendarconversion_dialog_result_has_changed(const MathStructure *value);
+
 #endif /* CALENDAR_CONVERSION_DIALOG_H */

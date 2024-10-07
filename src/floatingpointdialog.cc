@@ -314,7 +314,12 @@ void update_fp_entries(string sbin, int base, const Number *decnum) {
 }
 void fp_insert_text(GtkWidget *w, const gchar *text) {
 	changing_in_fp_dialog = true;
-	gtk_editable_delete_selection(GTK_EDITABLE(w));
+	if(gtk_entry_get_overwrite_mode(GTK_ENTRY(w)) && !gtk_editable_get_selection_bounds(GTK_EDITABLE(w), NULL, NULL)) {
+		gint pos = gtk_editable_get_position(GTK_EDITABLE(w));
+		gtk_editable_delete_text(GTK_EDITABLE(w), pos, pos + 1);
+	} else {
+		gtk_editable_delete_selection(GTK_EDITABLE(w));
+	}
 	changing_in_fp_dialog = false;
 	gint pos = gtk_editable_get_position(GTK_EDITABLE(w));
 	gtk_editable_insert_text(GTK_EDITABLE(w), text, -1, &pos);
@@ -440,4 +445,31 @@ void convert_floatingpoint(const gchar *initial_expression, int base, GtkWindow 
 	}
 	gtk_widget_show(dialog);
 	gtk_window_present_with_time(GTK_WINDOW(dialog), GDK_CURRENT_TIME);
+}
+
+void floatingpoint_dialog_result_has_changed(const MathStructure *value) {
+	if(floatingpoint_builder && gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(floatingpoint_builder, "floatingpoint_dialog"))) && value && value->isNumber() && value->number().isReal()) {
+		PrintOptions po;
+		po.number_fraction_format = FRACTION_DECIMAL;
+		po.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
+		po.use_unicode_signs = printops.use_unicode_signs;
+		po.exp_display = printops.exp_display;
+		po.lower_case_numbers = printops.lower_case_numbers;
+		po.rounding = printops.rounding;
+		po.base_display = BASE_DISPLAY_NONE;
+		po.abbreviate_names = printops.abbreviate_names;
+		po.digit_grouping = printops.digit_grouping;
+		po.multiplication_sign = printops.multiplication_sign;
+		po.division_sign = printops.division_sign;
+		po.short_multiplication = printops.short_multiplication;
+		po.excessive_parenthesis = printops.excessive_parenthesis;
+		po.can_display_unicode_string_function = &can_display_unicode_string_function;
+		po.can_display_unicode_string_arg = (void*) gtk_builder_get_object(floatingpoint_builder, "fp_entry_dec");
+		po.spell_out_logical_operators = printops.spell_out_logical_operators;
+		po.show_ending_zeroes = false;
+		po.min_exp = 0;
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(floatingpoint_builder, "fp_entry_dec")), value->number().print(po).c_str());
+		string sbin = to_float(value->number(), get_fp_bits(), get_fp_expbits(), get_fp_sgnpos());
+		update_fp_entries(sbin, 10, &value->number());
+	}
 }
