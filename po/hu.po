@@ -29,11 +29,11 @@ msgstr "Erőteljes és könnyen használható számológép"
 
 #: ../data/qalculate-gtk.desktop.in.h:3
 msgid "calculation;arithmetic;scientific;financial;"
-msgstr "számítás;számítás;tudományos;pénzügyi;"
+msgstr "számolj;számítás;tudományos;pénzügyi;"
 
 #: ../data/qalculate-gtk.appdata.xml.in.h:1
 msgid "Qalculate! (GTK UI)"
-msgstr "Qalculate! (GTK UI)"
+msgstr "Számolj! (GTK UI)"
 
 #: ../data/qalculate-gtk.appdata.xml.in.h:3
 msgid ""
@@ -42,6 +42,11 @@ msgid ""
 "complicated math packages, as well as useful tools for everyday needs (such "
 "as currency conversion and percent calculation)."
 msgstr ""
+"Számolj! egy többcélú, többplatformos asztali számológép. Használata "
+"egyszerű, de teljesítményt és sokoldalúságot biztosít, amely általában "
+"bonyolult matematikai csomagokhoz van fenntartva, valamint hasznos "
+"eszközöket biztosít a mindennapi szükségletekhez (például valutaváltás és "
+"százalékszámítás)."
 
 #: ../data/qalculate-gtk.appdata.xml.in.h:4
 msgid ""
@@ -80,7 +85,7 @@ msgstr "_Mégse"
 
 #: ../data/argumentrules.ui.h:3 ../data/functionedit.ui.h:25
 msgid "Do not save modifications"
-msgstr ""
+msgstr "Ne mentse el a módosításokat"
 
 #: ../data/argumentrules.ui.h:4 ../data/buttonsedit.ui.h:10
 #: ../data/csvexport.ui.h:3 ../data/csvimport.ui.h:4 ../data/datasetedit.ui.h:3
@@ -94,163 +99,165 @@ msgstr ""
 #: ../src/mainwindow.cc:904 ../src/mainwindow.cc:961 ../src/mainwindow.cc:1017
 #: ../src/mainwindow.cc:7460
 msgid "_OK"
-msgstr ""
+msgstr "_Rendben"
 
 #: ../data/argumentrules.ui.h:5
 msgid "Accept the modification of argument rules"
-msgstr ""
+msgstr "Érvelési szabályok módosításának elfogadása"
 
 #: ../data/argumentrules.ui.h:6 ../data/buttonsedit.ui.h:12
 #: ../data/shortcuts.ui.h:11
 msgid "Argument name"
-msgstr ""
+msgstr "Érvelés neve"
 
 #: ../data/argumentrules.ui.h:7
 msgid "Free"
-msgstr ""
+msgstr "Szabad"
 
 #: ../data/argumentrules.ui.h:8 ../data/datasetedit.ui.h:15 ../data/main.ui.h:7
 #: ../data/unknownedit.ui.h:9
 msgid "Number"
-msgstr ""
+msgstr "Szám"
 
 #: ../data/argumentrules.ui.h:9 ../data/main.ui.h:11
 #: ../data/unknownedit.ui.h:12
 msgid "Integer"
-msgstr ""
+msgstr "Egész szám"
 
 #: ../data/argumentrules.ui.h:10
 msgid "Symbol"
-msgstr ""
+msgstr "Szimbólum"
 
 #: ../data/argumentrules.ui.h:11 ../data/datasetedit.ui.h:14
 msgid "Text"
-msgstr ""
+msgstr "Szöveg"
 
 #: ../data/argumentrules.ui.h:12
 msgid "Date"
-msgstr ""
+msgstr "Dátum"
 
 #: ../data/argumentrules.ui.h:13 ../data/main.ui.h:22 ../data/matrix.ui.h:10
 #: ../data/matrixedit.ui.h:13 ../src/matrixdialog.cc:384
 msgid "Vector"
-msgstr ""
+msgstr "Vektor"
 
 #: ../data/argumentrules.ui.h:14 ../data/csvimport.ui.h:13 ../data/main.ui.h:21
 #: ../data/matrix.ui.h:1 ../data/matrixedit.ui.h:11 ../src/matrixdialog.cc:386
 msgid "Matrix"
-msgstr ""
+msgstr "Mátrix"
 
 #: ../data/argumentrules.ui.h:15
 msgid "Positive number"
-msgstr ""
+msgstr "Pozitív szám"
 
 #: ../data/argumentrules.ui.h:16
 msgid "Non-zero number"
-msgstr ""
+msgstr "Nullától eltérő szám"
 
 #: ../data/argumentrules.ui.h:17
 msgid "Non-negative number"
-msgstr ""
+msgstr "Nem negatív szám"
 
 #: ../data/argumentrules.ui.h:18
 msgid "Positive integer"
-msgstr ""
+msgstr "Pozitív egész szám"
 
 #: ../data/argumentrules.ui.h:19
 msgid "Non-zero integer"
-msgstr ""
+msgstr "Nullától eltérő egész szám"
 
 #: ../data/argumentrules.ui.h:20
 msgid "Non-negative integer"
-msgstr ""
+msgstr "Nem negatív egész szám"
 
 #: ../data/argumentrules.ui.h:21 ../data/main.ui.h:12
 #: ../data/unknownedit.ui.h:13
 msgid "Boolean"
-msgstr ""
+msgstr "Logikai"
 
 #: ../data/argumentrules.ui.h:22 ../src/dataseteditdialog.cc:478
 msgid "Object"
-msgstr ""
+msgstr "Objektum"
 
 #: ../data/argumentrules.ui.h:23 ../data/datasetedit.ui.h:35
 #: ../data/main.ui.h:24 ../data/plot.ui.h:9 ../src/functionsdialog.cc:579
 msgid "Function"
-msgstr ""
+msgstr "Függvény"
 
 #: ../data/argumentrules.ui.h:24 ../data/main.ui.h:26
 msgid "Unit"
-msgstr ""
+msgstr "Egység"
 
 #: ../data/argumentrules.ui.h:25 ../data/main.ui.h:20
 #: ../src/variablesdialog.cc:514
 msgid "Variable"
-msgstr ""
+msgstr "Változó"
 
 #: ../data/argumentrules.ui.h:26 ../data/csvexport.ui.h:12
 #: ../data/csvimport.ui.h:6
 msgid "File"
-msgstr ""
+msgstr "Fájl"
 
 #: ../data/argumentrules.ui.h:27
 msgid "Angle"
-msgstr ""
+msgstr "Szög"
 
 #: ../data/argumentrules.ui.h:28 ../src/expressioncompletion.cc:981
 msgid "Data object"
-msgstr ""
+msgstr "Adatobjektum"
 
 #: ../data/argumentrules.ui.h:29
 msgid "Data property"
-msgstr ""
+msgstr "Adattulajdonság"
 
 #: ../data/argumentrules.ui.h:30
 msgid "Enable rules and type test"
-msgstr ""
+msgstr "Szabályok és típusteszt engedélyezése"
 
 #: ../data/argumentrules.ui.h:31
 msgid "Custom condition"
-msgstr ""
+msgstr "Egyéni állapot"
 
 #: ../data/argumentrules.ui.h:32
 msgid ""
 "For example if argument is a matrix that must have equal number of rows and "
 "columns: rows(\\x) = columns(\\x)"
 msgstr ""
+"Például, ha az argumentum egy mátrix, amelynek egyenlő számú sorból és "
+"oszlopból kell állnia: sor(\\x) = oszlop(\\x)"
 
 #: ../data/argumentrules.ui.h:33
 msgid "Allow matrix"
-msgstr ""
+msgstr "Mátrix engedélyezése"
 
 #: ../data/argumentrules.ui.h:34
 msgid "Forbid zero"
-msgstr ""
+msgstr "Nulla tiltása"
 
 #: ../data/argumentrules.ui.h:35
 msgid "Handle vector"
-msgstr ""
+msgstr "Vektor kezelése"
 
 #: ../data/argumentrules.ui.h:36
 msgid "Calculate function for each separate element in vector."
-msgstr ""
+msgstr "A függvény kiszámítása a vektor minden egyes eleméhez."
 
 #: ../data/argumentrules.ui.h:37
 msgid "Min"
-msgstr ""
+msgstr "Legalacsonyabb"
 
 #: ../data/argumentrules.ui.h:38
 msgid "Include equals"
-msgstr ""
+msgstr "Egyenlők tartalmazása"
 
 #: ../data/argumentrules.ui.h:39
 msgid "Max"
-msgstr ""
+msgstr "Legfeljebb"
 
 #: ../data/argumentrules.ui.h:40 ../data/unknownedit.ui.h:7
 #: ../src/dataseteditdialog.cc:230 ../src/functioneditdialog.cc:449
 msgid "Type"
-msgstr ""
+msgstr "Típus"
 
 #: ../data/argumentrules.ui.h:41 ../data/csvimport.ui.h:8
 #: ../data/datasetedit.ui.h:4 ../data/functionedit.ui.h:5
@@ -260,11 +267,11 @@ msgstr ""
 #: ../src/historyview.cc:2820 ../src/menubar.cc:1165
 #: ../src/nameseditdialog.cc:155 ../src/unitsdialog.cc:1003
 msgid "Name"
-msgstr ""
+msgstr "Név"
 
 #: ../data/buttonsedit.ui.h:1 ../data/main.ui.h:65
 msgid "Customize Keypad Buttons"
-msgstr ""
+msgstr "Billentyűzet gombjainak testreszabása"
 
 #: ../data/buttonsedit.ui.h:2 ../data/calendarconversion.ui.h:2
 #: ../data/datasets.ui.h:7 ../data/decimals.ui.h:2 ../data/floatingpoint.ui.h:2
@@ -276,50 +283,50 @@ msgstr ""
 #: ../src/mainwindow.cc:706 ../src/mainwindow.cc:708 ../src/matrixdialog.cc:373
 #: ../src/periodictabledialog.cc:86
 msgid "_Close"
-msgstr ""
+msgstr "_Bezárás"
 
 #: ../data/buttonsedit.ui.h:3 ../src/buttonseditdialog.cc:418
 msgid "Label"
-msgstr ""
+msgstr "Címke"
 
 #: ../data/buttonsedit.ui.h:4 ../src/buttonseditdialog.cc:421
 msgid "Left-click"
-msgstr ""
+msgstr "Bal kattintás"
 
 #: ../data/buttonsedit.ui.h:5 ../src/buttonseditdialog.cc:424
 msgid "Right-click"
-msgstr ""
+msgstr "Jobb kattintás"
 
 #: ../data/buttonsedit.ui.h:6 ../src/buttonseditdialog.cc:427
 msgid "Middle-click"
-msgstr ""
+msgstr "Közép kattintás"
 
 #: ../data/buttonsedit.ui.h:7
 msgid "Reset"
-msgstr ""
+msgstr "Alaphelyzet"
 
 #: ../data/buttonsedit.ui.h:8
 msgid "Button Action"
-msgstr ""
+msgstr "Gombművelet"
 
 #: ../data/buttonsedit.ui.h:11 ../data/floatingpoint.ui.h:3
 #: ../data/shortcuts.ui.h:10 ../data/variableedit.ui.h:7
 #: ../src/insertfunctiondialog.cc:513 ../src/shortcutsdialog.cc:578
 #: ../src/stackview.cc:787
 msgid "Value"
-msgstr ""
+msgstr "Érték"
 
 #: ../data/calendarconversion.ui.h:1 ../data/main.ui.h:39
 msgid "Calendar Conversion"
-msgstr ""
+msgstr "Naptár átalakítása"
 
 #: ../data/csvexport.ui.h:1
 msgid "Export CSV File"
-msgstr ""
+msgstr "Exportálás CSV-fájlként"
 
 #: ../data/csvexport.ui.h:4
 msgid "Current result"
-msgstr ""
+msgstr "Jelenlegi eredmény"
 
 #: ../data/csvexport.ui.h:5
 msgid "Matrix/vector variable"
