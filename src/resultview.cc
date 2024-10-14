@@ -496,7 +496,6 @@ bool draw_result(MathStructure *displayed_mstruct_pre) {
 		if(tmp_surface) cairo_surface_destroy(tmp_surface);
 		tmp_surface = NULL;
 		displayed_mstruct_pre->unref();
-		clearresult();
 		return false;
 	} else {
 		scale_n = 0;

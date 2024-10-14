@@ -328,7 +328,7 @@ void set_status_text(string text, bool break_begin = false, bool had_errors = fa
 		pango_layout_set_markup(status_layout, str.c_str(), -1);
 		pango_layout_get_pixel_size(status_layout, &w, NULL);
 	}
-	if(((auto_calculate && !rpn_mode) || !had_errors || tooltip_text.empty()) && (w < 0 || w > gtk_widget_get_allocated_width(parse_status_widget()))) gtk_widget_set_tooltip_markup(parse_status_widget(), text.c_str());
+	if(((auto_calculate && !rpn_mode) || !had_errors || tooltip_text.empty()) && (w < 0 || w > gtk_widget_get_allocated_width(parse_status_widget())) && text.length() < 5000) gtk_widget_set_tooltip_markup(parse_status_widget(), text.c_str());
 	else gtk_widget_set_tooltip_text(parse_status_widget(), tooltip_text.c_str());
 }
 void clear_status_text() {

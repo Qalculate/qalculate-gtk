@@ -1684,22 +1684,33 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 			displayed_mstruct_pre->unref();
 			display_parse_status();
 		} else {
-			bool b = draw_result(displayed_mstruct_pre);
-			CALCULATOR->endTemporaryStopMessages(b);
+			bool b = true;
+			if(autocalc_history_timeout_id == 0 || ((printops.base == BASE_BINARY || (printops.base <= BASE_FP16 && printops.base >= BASE_FP80)) && displayed_mstruct_pre->isInteger()) || title_type == TITLE_RESULT || title_type == TITLE_APP_RESULT || displayed_mstruct_pre->countTotalChildren() > 10) {
+				PrintOptions po = printops;
+				po.base_display = BASE_DISPLAY_SUFFIX;
+				po.can_display_unicode_string_arg = (void*) main_window();
+				po.allow_non_usable = true;
+				CALCULATOR->beginTemporaryStopMessages();
+				result_text = displayed_mstruct_pre->print(po, true);
+				CALCULATOR->endTemporaryStopMessages();
+				gsub("&nbsp;", " ", result_text);
+				if(complex_angle_form) replace_result_cis_gtk(result_text);
+			} else {
+				result_text = "";
+			}
+			if(unhtmlize(result_text).length() > 900) {
+				CALCULATOR->endTemporaryStopMessages();
+				CALCULATOR->clearMessages();
+				b = false;
+				displayed_mstruct_pre->unref();
+			}
+			if(b) {
+				b = draw_result(displayed_mstruct_pre);
+				CALCULATOR->endTemporaryStopMessages(b);
+			}
 			if(b) {
 				result_autocalculated = true;
 				minimal_mode_show_resultview();
-				if(autocalc_history_timeout_id == 0 || ((printops.base == BASE_BINARY || (printops.base <= BASE_FP16 && printops.base >= BASE_FP80)) && current_displayed_result()->isInteger()) || title_type == TITLE_RESULT || title_type == TITLE_APP_RESULT) {
-					PrintOptions po = printops;
-					po.base_display = BASE_DISPLAY_SUFFIX;
-					po.can_display_unicode_string_arg = (void*) main_window();
-					po.allow_non_usable = true;
-					result_text = current_displayed_result()->print(po, true);
-					gsub("&nbsp;", " ", result_text);
-					if(complex_angle_form) replace_result_cis_gtk(result_text);
-				} else {
-					result_text = "";
-				}
 				result_text_long = "";
 				gtk_widget_set_tooltip_text(result_view_widget(), "");
 				if(!display_errors(NULL, 1)) update_expression_icons(EXPRESSION_CLEAR);
@@ -1708,7 +1719,10 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 					update_result_bases();
 				}
 			} else {
+				auto_calculate = false;
+				clearresult();
 				result_text = "";
+				auto_calculate = true;
 			}
 			if(title_type == TITLE_RESULT || title_type == TITLE_APP_RESULT) update_window_title(unhtmlize(result_text).c_str(), true);
 		}
@@ -5927,65 +5941,26 @@ void load_preferences() {
 						}
 					} else if(svar == "division_sign") {
 						if(v >= DIVISION_SIGN_SLASH && v <= DIVISION_SIGN_DIVISION) printops.division_sign = (DivisionSign) v;
-					} else if(svar == "recent_functions") {
+					} else if(svar == "recent_functions" || svar == "recent_variables" || svar == "recent_units") {
+						char t = 'f';
+						if(svar == "recent_variables") t = 'v';
+						else if(svar == "recent_units") t = 'u';
 						size_t v_i = 0;
 						while(true) {
 							v_i = svalue.find(',');
 							if(v_i == string::npos) {
 								svar = svalue.substr(0, svalue.length());
-								remove_blank_ends(svar);
-								if(!svar.empty()) {
-									recent_functions_pre.push_back(svar);
-								}
-								break;
 							} else {
 								svar = svalue.substr(0, v_i);
 								svalue = svalue.substr(v_i + 1, svalue.length() - (v_i + 1));
-								remove_blank_ends(svar);
-								if(!svar.empty()) {
-									recent_functions_pre.push_back(svar);
-								}
 							}
-						}
-					} else if(svar == "recent_variables") {
-						size_t v_i = 0;
-						while(true) {
-							v_i = svalue.find(',');
-							if(v_i == string::npos) {
-								svar = svalue.substr(0, svalue.length());
-								remove_blank_ends(svar);
-								if(!svar.empty()) {
-									recent_variables_pre.push_back(svar);
-								}
-								break;
-							} else {
-								svar = svalue.substr(0, v_i);
-								svalue = svalue.substr(v_i + 1, svalue.length() - (v_i + 1));
-								remove_blank_ends(svar);
-								if(!svar.empty()) {
-									recent_variables_pre.push_back(svar);
-								}
+							remove_blank_ends(svar);
+							if(!svar.empty()) {
+								if(t == 'v') recent_variables_pre.push_back(svar);
+								else if(t == 'u') recent_units_pre.push_back(svar);
+								else recent_functions_pre.push_back(svar);
 							}
-						}
-					} else if(svar == "recent_units") {
-						size_t v_i = 0;
-						while(true) {
-							v_i = svalue.find(',');
-							if(v_i == string::npos) {
-								svar = svalue.substr(0, svalue.length());
-								remove_blank_ends(svar);
-								if(!svar.empty()) {
-									recent_units_pre.push_back(svar);
-								}
-								break;
-							} else {
-								svar = svalue.substr(0, v_i);
-								svalue = svalue.substr(v_i + 1, svalue.length() - (v_i + 1));
-								remove_blank_ends(svar);
-								if(!svar.empty()) {
-									recent_units_pre.push_back(svar);
-								}
-							}
+							if(v_i == string::npos) break;
 						}
 					} else if(svar == "keyboard_shortcut") {
 						default_shortcuts = false;
