@@ -3068,8 +3068,8 @@ void create_base_string(string &str1, int b_almost_equal, bool b_small) {
 	str1 += " ";
 	if(printops.base != 16) {
 		str1 += result_hex;
-		if(printops.hexadecimal_twos_complement && (current_result()->isNegate() || current_result()->number().isNegative())) str1 += "16-";
-		else str1 += "16";
+		if(printops.hexadecimal_twos_complement && (current_result()->isNegate() || current_result()->number().isNegative())) str1 += "<sub>16-</sub>";
+		else str1 += "<sub>16</sub>";
 	}
 	if(printops.base != 10) {
 		if(printops.base != 16) {
@@ -3077,20 +3077,20 @@ void create_base_string(string &str1, int b_almost_equal, bool b_small) {
 			else str1 += " = ";
 		}
 		str1 += result_dec;
-		str1 += "10";
+		str1 += "<sub>10</sub>";
 	}
 	if(printops.base != 8) {
 		if(b_almost_equal) str1 += " " SIGN_ALMOST_EQUAL " ";
 		else str1 += " = ";
 		str1 += result_oct;
-		str1 += "8";
+		str1 += "<sub>8</sub>";
 	}
 	if(printops.base != 2) {
 		if(b_almost_equal) str1 += " " SIGN_ALMOST_EQUAL " ";
 		else str1 += " = ";
 		str1 += result_bin;
-		if(printops.twos_complement && (current_result()->isNegate() || current_result()->number().isNegative())) str1 += "2-";
-		else str1 += "2";
+		if(printops.twos_complement && (current_result()->isNegate() || current_result()->number().isNegative())) str1 += "<sub>2-</sub>";
+		else str1 += "<sub>2</sub>";
 	}
 	if(b_small) str1 += "</small>";
 	FIX_SUPSUB_PRE_W(result_bases);
