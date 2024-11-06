@@ -6824,6 +6824,13 @@ void report_bug() {
 #endif
 }
 
+gboolean quit_timeout(gpointer) {
+	qalculate_quit();
+	return FALSE;
+}
+
+int copy_called = -1;
+
 bool do_shortcut(int type, string value) {
 	switch(type) {
 		case SHORTCUT_TYPE_FUNCTION: {
@@ -7149,6 +7156,7 @@ bool do_shortcut(int type, string value) {
 			return true;
 		}
 		case SHORTCUT_TYPE_COPY_RESULT: {
+			if(copy_called == 0) copy_called = 1;
 			copy_result(-1, value.empty() ? 0 : s2i(value));
 			return true;
 		}
@@ -7165,7 +7173,8 @@ bool do_shortcut(int type, string value) {
 			return true;
 		}
 		case SHORTCUT_TYPE_QUIT: {
-			qalculate_quit();
+			if(copy_called == 1) g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 50, quit_timeout, NULL, NULL);
+			else qalculate_quit();
 			return true;
 		}
 		case SHORTCUT_TYPE_CHAIN_MODE: {
@@ -7225,9 +7234,11 @@ bool do_keyboard_shortcut(GdkEventKey *event) {
 	if(it == keyboard_shortcuts.end() && event->keyval == GDK_KEY_KP_Delete) it = keyboard_shortcuts.find((guint64) GDK_KEY_Delete + (guint64) G_MAXUINT32 * (guint64) state);
 	if(it != keyboard_shortcuts.end()) {
 		bool b = false;
+		copy_called = 0;
 		for(size_t i = 0; i < it->second.type.size(); i++) {
 			if(do_shortcut(it->second.type[i], it->second.value[i])) b = true;
 		}
+		copy_called = -1;
 		return b;
 	}
 	return false;
