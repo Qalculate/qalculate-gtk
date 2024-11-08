@@ -7,14 +7,15 @@ msgstr ""
 "Project-Id-Version: Qalculate!\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-07 07:09+0200\n"
-"PO-Revision-Date: 2020-12-01 18:19+0100\n"
+"PO-Revision-Date: 2024-11-07 22:35+0100\n"
 "Last-Translator: Polakrity\n"
 "Language-Team: none\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.2\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 3.5\n"
 
 #: ../data/qalculate-gtk.desktop.in.h:1
 msgid "Calculator"
@@ -210,7 +211,7 @@ msgstr "Propriété des données"
 
 #: ../data/argumentrules.ui.h:30
 msgid "Enable rules and type test"
-msgstr ""
+msgstr "Activer les règles et le type de test"
 
 #: ../data/argumentrules.ui.h:31
 msgid "Custom condition"
@@ -234,7 +235,7 @@ msgstr "Interdire zéro"
 
 #: ../data/argumentrules.ui.h:35
 msgid "Handle vector"
-msgstr ""
+msgstr "Manche de vecteur"
 
 #: ../data/argumentrules.ui.h:36
 msgid "Calculate function for each separate element in vector."
@@ -242,7 +243,7 @@ msgstr "Calculer la fonction de chaque élément distinct du vecteur."
 
 #: ../data/argumentrules.ui.h:37
 msgid "Min"
-msgstr "Min."
+msgstr "Min"
 
 #: ../data/argumentrules.ui.h:38
 msgid "Include equals"
@@ -250,12 +251,12 @@ msgstr "Inclure les égalités"
 
 #: ../data/argumentrules.ui.h:39
 msgid "Max"
-msgstr "Max."
+msgstr "Max"
 
 #: ../data/argumentrules.ui.h:40 ../data/unknownedit.ui.h:7
 #: ../src/dataseteditdialog.cc:230 ../src/functioneditdialog.cc:449
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: ../data/argumentrules.ui.h:41 ../data/csvimport.ui.h:8
 #: ../data/datasetedit.ui.h:4 ../data/functionedit.ui.h:5
@@ -628,15 +629,15 @@ msgstr "Fermer cette fenêtre"
 
 #: ../data/decimals.ui.h:4
 msgid "Min decimals"
-msgstr "Décimales min."
+msgstr "Décimales min"
 
 #: ../data/decimals.ui.h:5
 msgid "Max decimals"
-msgstr "Décimales max."
+msgstr "Décimales max"
 
 #: ../data/decimals.ui.h:6
 msgid "Minimal number of displayed decimals"
-msgstr "Nombre minimal de décimales à afficher."
+msgstr "Nombre minimal de décimales à afficher"
 
 #: ../data/decimals.ui.h:7
 msgid "Maximal number of decimals to display (and round to)"
@@ -688,11 +689,11 @@ msgstr "128-bit (quadruple précision)"
 
 #: ../data/floatingpoint.ui.h:14
 msgid "Microchip 24-bit"
-msgstr ""
+msgstr "Microchip 24-bit"
 
 #: ../data/floatingpoint.ui.h:15
 msgid "Microchip 32-bit"
-msgstr ""
+msgstr "Microchip 32-bit"
 
 #: ../data/functionedit.ui.h:1 ../src/functioneditdialog.cc:834
 msgid "Edit Function"
@@ -1151,53 +1152,51 @@ msgstr "Trier les moins en dernier"
 
 #: ../data/main.ui.h:92
 msgid "Round Halfway Numbers Away from Zero"
-msgstr ""
+msgstr "Arrondir les nombres à mi-chemin par rapport à zéro"
 
 #: ../data/main.ui.h:93
 msgid "Round Halfway Numbers to Even"
-msgstr ""
+msgstr "Arrondir les nombres à mi-chemin pour égaliser"
 
 #: ../data/main.ui.h:94
 msgid "Other Rounding Methods"
-msgstr ""
+msgstr "Autres méthodes d'arrondi"
 
 #: ../data/main.ui.h:95
 msgid "Round Halfway Numbers to Odd"
-msgstr ""
+msgstr "Arrondir les nombres à mi-chemin à impairs"
 
 #: ../data/main.ui.h:96
 msgid "Round Halfway Numbers Toward Zero"
-msgstr ""
+msgstr "Arrondir les nombres à mi-chemin vers zéro"
 
 #: ../data/main.ui.h:97
 msgid "Round Halfway Numbers to Random"
-msgstr ""
+msgstr "Arrondir les nombres à mi-chemin au hasard"
 
 #: ../data/main.ui.h:98
-#, fuzzy
 msgid "Round Halfway Numbers Up"
-msgstr "Nombre rationnel"
+msgstr "Arrondir les chiffres à mi-chemin vers le haut"
 
 #: ../data/main.ui.h:99
-#, fuzzy
 msgid "Round Halfway Numbers Down"
-msgstr "Forme nombre rationnel"
+msgstr "Arrondir les chiffres à mi-chemin vers le bas"
 
 #: ../data/main.ui.h:100
 msgid "Round Toward Zero"
-msgstr ""
+msgstr "Arrondir vers zéro"
 
 #: ../data/main.ui.h:101
 msgid "Round Away from Zero"
-msgstr ""
+msgstr "Arrondir à partir de zéro"
 
 #: ../data/main.ui.h:102
 msgid "Round Up"
-msgstr ""
+msgstr "Rassembler"
 
 #: ../data/main.ui.h:103
 msgid "Round Down"
-msgstr ""
+msgstr "Arrondir vers le bas"
 
 #: ../data/main.ui.h:104 ../src/expressioncompletion.cc:1924
 msgid "Complex Rectangular Form"
@@ -1297,13 +1296,12 @@ msgid "Plus/Minus"
 msgstr "Plus/Moins"
 
 #: ../data/main.ui.h:128 ../data/preferences.ui.h:108 ../src/mainwindow.cc:814
-#, fuzzy
 msgid "Relative"
-msgstr "Relation"
+msgstr "Relatif"
 
 #: ../data/main.ui.h:129
 msgid "Concise"
-msgstr ""
+msgstr "Concis"
 
 #: ../data/main.ui.h:130
 msgid "Midpoint"
@@ -1311,7 +1309,7 @@ msgstr "Point du milieu"
 
 #: ../data/main.ui.h:131
 msgid "Allow concise uncertainty input"
-msgstr ""
+msgstr "Autoriser une saisie concise de l'incertitude"
 
 #: ../data/main.ui.h:132
 msgid "Unit Display"
@@ -1323,7 +1321,7 @@ msgstr "Ne pas utiliser de préfixes dans le résultat"
 
 #: ../data/main.ui.h:134
 msgid "Show prefixes for primarily SI and CGS units."
-msgstr ""
+msgstr "Afficher les préfixes pour les unités principalement SI et CGS."
 
 #: ../data/main.ui.h:135
 msgid "Use prefixes for selected units"
@@ -1347,7 +1345,7 @@ msgstr ""
 
 #: ../data/main.ui.h:139
 msgid "Enable All SI Prefixes"
-msgstr ""
+msgstr "Activer tous les préfixes SI"
 
 #: ../data/main.ui.h:140
 msgid ""
@@ -1391,7 +1389,7 @@ msgstr "Aucune conversion supplémentaire"
 
 #: ../data/main.ui.h:149
 msgid "Convert to Optimal SI Unit"
-msgstr ""
+msgstr "Convertir en unité SI optimale"
 
 #: ../data/main.ui.h:150
 msgid ""
@@ -1425,8 +1423,7 @@ msgstr "Unités en constantes physiques"
 
 #: ../data/main.ui.h:158
 msgid "If not enabled, treats all variables as unknown"
-msgstr ""
-"S'il n'est pas activé, traite toutes les variables comme des inconnues."
+msgstr "S'il n'est pas activé, traite toutes les variables comme des inconnues"
 
 #: ../data/main.ui.h:159
 msgid "Calculate Variables"
@@ -1438,7 +1435,7 @@ msgstr "Désactive/active les nombres complexes dans le résultat"
 
 #: ../data/main.ui.h:161
 msgid "Allow Complex Result"
-msgstr ""
+msgstr "Autoriser les résultats complexes"
 
 #: ../data/main.ui.h:162
 msgid "Disables/enables infinite numbers in result"
@@ -1466,19 +1463,19 @@ msgstr "Approximatif"
 
 #: ../data/main.ui.h:168
 msgid "Interval Arithmetic"
-msgstr ""
+msgstr "Arithmétique des intervalles"
 
 #: ../data/main.ui.h:169
 msgid "Interval Calculation"
-msgstr ""
+msgstr "Calcul d'intervalle"
 
 #: ../data/main.ui.h:170
 msgid "Variance Formula"
-msgstr ""
+msgstr "Formule d'écart"
 
 #: ../data/main.ui.h:171
 msgid "Change angle unit used in trigonometric functions"
-msgstr ""
+msgstr "Changer l'unité d'angle utilisée dans les fonctions trigonométriques"
 
 #: ../data/main.ui.h:172
 msgid "Angle Unit"
@@ -1498,7 +1495,7 @@ msgstr "Mode algébrique"
 
 #: ../data/main.ui.h:176
 msgid "Assume that unknown denominators are non-zero"
-msgstr ""
+msgstr "Supposons que les dénominateurs inconnus soient différents de zéro"
 
 #: ../data/main.ui.h:177
 msgid "Non-Zero Denominators"
@@ -1507,10 +1504,11 @@ msgstr "Dénominateurs non nuls"
 #: ../data/main.ui.h:178
 msgid "Warn when unknown denominators are assumed non-zero"
 msgstr ""
+"Avertir lorsque des dénominateurs inconnus sont supposés différents de zéro"
 
 #: ../data/main.ui.h:179
 msgid "Warn About Denominators Assumed Non-Zero"
-msgstr ""
+msgstr "Avertir des dénominateurs supposés non nuls"
 
 #: ../data/main.ui.h:180 ../src/expressionedit.cc:1445 ../src/mainwindow.cc:961
 msgid "Parsing Mode"
@@ -1522,16 +1520,15 @@ msgstr "Analyse adaptative"
 
 #: ../data/main.ui.h:182
 msgid "Parse Implicit Multiplication First"
-msgstr ""
+msgstr "Analyser d'abord la multiplication implicite"
 
 #: ../data/main.ui.h:183
 msgid "Conventional Parsing"
 msgstr "Analyse conventionnelle"
 
 #: ../data/main.ui.h:184
-#, fuzzy
 msgid "Chain Syntax"
-msgstr "Syntaxe NPI"
+msgstr "Syntaxe de la chaîne"
 
 #: ../data/main.ui.h:185
 msgid "RPN Syntax"
@@ -1547,9 +1544,8 @@ msgstr ""
 "Activé: 100 + 20% = 100 × 120% = 120"
 
 #: ../data/main.ui.h:189
-#, fuzzy
 msgid "Simplified Percentage Calculation"
-msgstr "Pourcentage"
+msgstr "Calcul de pourcentage simplifié"
 
 #: ../data/main.ui.h:190
 msgid ""
@@ -1561,7 +1557,7 @@ msgstr ""
 
 #: ../data/main.ui.h:192
 msgid "Limit Implicit Multiplication"
-msgstr ""
+msgstr "Limiter la multiplication implicite"
 
 #: ../data/main.ui.h:193
 msgid ""
@@ -1571,6 +1567,11 @@ msgid ""
 "Off: 1.1 × 1.1 = 1.21\n"
 "On: 1.1 × 1.1 ≈ 1.2"
 msgstr ""
+"Analyser les nombres décimaux de manière approximative avec une précision "
+"égale au nombre de chiffres.\n"
+"\n"
+"Désactivé: 1.1 × 1.1 = 1.21\n"
+"Activé: 1.1 × 1.1 ≈ 1.2"
 
 #: ../data/main.ui.h:197
 msgid "Read Precision"
@@ -1589,9 +1590,8 @@ msgid "Calculate As You Type"
 msgstr "Calcul lors de la saisie"
 
 #: ../data/main.ui.h:201
-#, fuzzy
 msgid "Chain Mode"
-msgstr "Mode d'analyse"
+msgstr "Mode chaîne"
 
 #: ../data/main.ui.h:202
 msgid "Activate the RPN stack."
@@ -1603,7 +1603,7 @@ msgstr "Mode NPI"
 
 #: ../data/main.ui.h:204 ../src/expressionedit.cc:1466
 msgid "Meta Modes"
-msgstr ""
+msgstr "Modes méta"
 
 #: ../data/main.ui.h:205 ../src/expressionedit.cc:1480
 msgid "Save Mode…"
@@ -1719,27 +1719,27 @@ msgstr "Historique"
 
 #: ../data/main.ui.h:234
 msgid "Subtract the top value from the second value"
-msgstr ""
+msgstr "Soustrayez la valeur supérieure de la deuxième valeur"
 
 #: ../data/main.ui.h:235
 msgid "Multiply the top two values"
-msgstr ""
+msgstr "Multipliez les deux premières valeurs"
 
 #: ../data/main.ui.h:236
 msgid "Divide the second value by the top value"
-msgstr ""
+msgstr "Divisez la deuxième valeur par la valeur supérieure"
 
 #: ../data/main.ui.h:237
 msgid "Raise the second value to the power of the top value"
-msgstr ""
+msgstr "Augmentez la deuxième valeur à la puissance de la valeur supérieure"
 
 #: ../data/main.ui.h:238
 msgid "Negate the top value (Ctrl+-)"
-msgstr ""
+msgstr "Annuler la valeur supérieure (Ctrl+-)"
 
 #: ../data/main.ui.h:239
 msgid "Invert the top value"
-msgstr ""
+msgstr "Inverser la valeur supérieure"
 
 #: ../data/main.ui.h:240
 msgid "Calculate the square root of the top value"
@@ -1751,24 +1751,26 @@ msgstr "Calcule la somme de toutes les valeurs"
 
 #: ../data/main.ui.h:242 ../src/stackview.cc:682 ../src/stackview.cc:742
 msgid "Rotate the stack or move selected register up"
-msgstr ""
+msgstr "Faire pivoter la pile ou déplacer le registre sélectionné vers le haut"
 
 #: ../data/main.ui.h:243 ../src/stackview.cc:690 ../src/stackview.cc:743
 msgid "Rotate the stack or move selected register down"
-msgstr ""
+msgstr "Faire pivoter la pile ou déplacer le registre sélectionné vers le bas"
 
 #: ../data/main.ui.h:244 ../src/stackview.cc:698 ../src/stackview.cc:744
 msgid ""
 "Swap the two top values or move the selected value to the top of the stack"
 msgstr ""
+"Échangez les deux valeurs supérieures ou déplacez la valeur sélectionnée "
+"vers le haut de la pile"
 
 #: ../data/main.ui.h:245 ../src/stackview.cc:706 ../src/stackview.cc:745
 msgid "Copy the selected or top value to the top of the stack"
-msgstr ""
+msgstr "Copiez la valeur sélectionnée ou supérieure en haut de la pile"
 
 #: ../data/main.ui.h:246 ../src/stackview.cc:714 ../src/stackview.cc:746
 msgid "Enter the top value from before the last numeric operation"
-msgstr ""
+msgstr "Entrez la valeur supérieure avant la dernière opération numérique"
 
 #: ../data/main.ui.h:247 ../src/stackview.cc:722 ../src/stackview.cc:747
 msgid "Delete the top or selected value"
@@ -1784,7 +1786,7 @@ msgstr "Vider la pile NPI"
 
 #: ../data/main.ui.h:251
 msgid "Unit(s) and prefix to convert result to"
-msgstr ""
+msgstr "Unité(s) et préfixe vers lesquels convertir le résultat"
 
 #: ../data/main.ui.h:253
 msgid "Convert"
@@ -1868,19 +1870,19 @@ msgstr "tan"
 
 #: ../data/main.ui.h:272
 msgid "ln"
-msgstr ""
+msgstr "ln"
 
 #: ../data/main.ui.h:273
 msgid "Equals"
-msgstr ""
+msgstr "Égal"
 
 #: ../data/main.ui.h:274
 msgid "sqrt"
-msgstr ""
+msgstr "sqrt"
 
 #: ../data/main.ui.h:275
 msgid "sum"
-msgstr ""
+msgstr "sum"
 
 #: ../data/main.ui.h:276
 msgid "Unknown variable"
@@ -1901,7 +1903,7 @@ msgstr "Enregistrer le résultat sous forme de variable"
 #. Standard calculator button. Do not use more than three characters.
 #: ../data/main.ui.h:282
 msgid "STO"
-msgstr ""
+msgstr "STO"
 
 #: ../data/main.ui.h:283
 msgid "Convert number bases"
@@ -1909,7 +1911,7 @@ msgstr "Convertir des bases numériques"
 
 #: ../data/main.ui.h:284
 msgid "Imaginary unit i (√-1)"
-msgstr ""
+msgstr "Unité imaginaire i (√-1)"
 
 #: ../data/main.ui.h:285 ../src/util.cc:903
 msgid "Manage units"
@@ -1925,11 +1927,11 @@ msgstr "Kilogramme"
 
 #: ../data/main.ui.h:290 ../data/preferences.ui.h:69
 msgid "Two's complement input"
-msgstr ""
+msgstr "Entrée du complément à deux"
 
 #: ../data/main.ui.h:291 ../data/preferences.ui.h:68
 msgid "Two's complement output"
-msgstr ""
+msgstr "Sortie du complément à deux"
 
 #: ../data/main.ui.h:292 ../data/nbases.ui.h:26 ../src/buttonseditdialog.cc:371
 #: ../src/keypad.cc:387 ../src/keypad.cc:388 ../src/keypad.cc:516
@@ -1939,11 +1941,11 @@ msgstr "Bitwise Exclusive OR"
 
 #: ../data/main.ui.h:293 ../data/nbases.ui.h:32 ../src/keypad.cc:689
 msgid "Bitwise Left Shift"
-msgstr ""
+msgstr "Décalage gauche Bitwise"
 
 #: ../data/main.ui.h:294 ../data/nbases.ui.h:33 ../src/keypad.cc:690
 msgid "Bitwise Right Shift"
-msgstr ""
+msgstr "Décalage droite Bitwise"
 
 #: ../data/main.ui.h:295
 msgid "Floating point conversion"
@@ -2058,14 +2060,12 @@ msgid "Clear All"
 msgstr "Effacer tout"
 
 #: ../data/main.ui.h:325
-#, fuzzy
 msgid "Show Parsed Expression"
-msgstr "L'expression est vide."
+msgstr "Afficher l'expression analysée"
 
 #: ../data/main.ui.h:326
-#, fuzzy
 msgid "Show Result"
-msgstr "Résultat"
+msgstr "Afficher le résultat"
 
 #: ../data/main.ui.h:327
 msgid "_Copy"
@@ -2173,7 +2173,7 @@ msgstr "Utiliser des préfixes pour toutes les unités"
 
 #: ../data/main.ui.h:353
 msgid "Enable All SI Prefi_xes"
-msgstr ""
+msgstr "Activer tous SI Prefi_xes"
 
 #: ../data/main.ui.h:354
 msgid "View/Edit Matrix"
@@ -2184,9 +2184,8 @@ msgid "View/Edit Vector"
 msgstr "Afficher/Éditer vecteur"
 
 #: ../data/main.ui.h:356
-#, fuzzy
 msgid "Show Parsed Expression in Result Field"
-msgstr "Expression du champ vide."
+msgstr "Afficher l'expression analysée dans le champ de résultat"
 
 #: ../data/main.ui.h:357
 msgid "Copy Text"
@@ -2198,19 +2197,19 @@ msgstr "En haut"
 
 #: ../data/main.ui.h:359
 msgid "Swap"
-msgstr ""
+msgstr "Échanger"
 
 #: ../data/main.ui.h:360
 msgid "Up"
-msgstr ""
+msgstr "Haut"
 
 #: ../data/main.ui.h:361
 msgid "Down"
-msgstr ""
+msgstr "Bas"
 
 #: ../data/main.ui.h:362
 msgid "Negate"
-msgstr ""
+msgstr "Rejeter"
 
 #: ../data/main.ui.h:363
 msgid "Invert"
@@ -2233,7 +2232,6 @@ msgid "Select Number Base…"
 msgstr "Sélectionner la base numérique…"
 
 #: ../data/main.ui.h:368
-#, fuzzy
 msgid "Display Expression Status"
 msgstr "Afficher l'état de l'expression"
 
@@ -2377,16 +2375,16 @@ msgstr "Diviser"
 #: ../data/nbases.ui.h:24 ../src/buttonseditdialog.cc:372 ../src/keypad.cc:517
 #: ../src/keypad.cc:691 ../src/keypad.cc:1008
 msgid "Bitwise AND"
-msgstr ""
+msgstr "Bitwise AND"
 
 #: ../data/nbases.ui.h:25 ../src/buttonseditdialog.cc:375 ../src/keypad.cc:520
 #: ../src/keypad.cc:692 ../src/keypad.cc:1009
 msgid "Bitwise OR"
-msgstr ""
+msgstr "Bitwise OR"
 
 #: ../data/nbases.ui.h:27 ../src/keypad.cc:694 ../src/keypad.cc:1010
 msgid "Bitwise NOT"
-msgstr ""
+msgstr "Bitwise NOT"
 
 #: ../data/nbases.ui.h:30 ../data/percentage.ui.h:4
 #: ../src/buttonseditdialog.cc:376 ../src/expressionedit.cc:1397
@@ -2399,6 +2397,8 @@ msgid ""
 "Enter two values, of which at most one is a percentage, and the others will "
 "be calculated for you."
 msgstr ""
+"Entrez deux valeurs, dont au plus une est un pourcentage, et les autres "
+"seront calculées pour vous."
 
 #: ../data/percentage.ui.h:2
 msgid "Percentage"
@@ -2455,7 +2455,7 @@ msgstr "Vecteur/matrice"
 
 #: ../data/plot.ui.h:11
 msgid "Paired matrix"
-msgstr ""
+msgstr "Matrice appariée"
 
 #: ../data/plot.ui.h:12
 msgid "Rows"
@@ -2463,7 +2463,7 @@ msgstr "Lignes"
 
 #: ../data/plot.ui.h:13
 msgid "if you want to split matrix in rows instead of columns"
-msgstr "Si vous souhaitez diviser la matrice en lignes au lieu de colonnes."
+msgstr "si vous souhaitez diviser la matrice en lignes au lieu de colonnes"
 
 #: ../data/plot.ui.h:14
 msgid "X variable"
@@ -2499,15 +2499,15 @@ msgstr "Histogramme"
 
 #: ../data/plot.ui.h:22
 msgid "Steps"
-msgstr ""
+msgstr "Etapes"
 
 #: ../data/plot.ui.h:23
 msgid "Candlesticks"
-msgstr ""
+msgstr "Chandeliers"
 
 #: ../data/plot.ui.h:24
 msgid "Dots"
-msgstr ""
+msgstr "Points"
 
 #: ../data/plot.ui.h:25
 msgid "Polar"
@@ -2523,7 +2523,7 @@ msgstr "Monotonie"
 
 #: ../data/plot.ui.h:29
 msgid "Natural cubic splines"
-msgstr ""
+msgstr "Cannelures cubiques naturelles"
 
 #: ../data/plot.ui.h:30
 msgid "Bezier"
@@ -2563,7 +2563,7 @@ msgstr "Taux d'échantillonnage"
 
 #: ../data/plot.ui.h:42
 msgid "Step size"
-msgstr ""
+msgstr "Taille de l'étape"
 
 #: ../data/plot.ui.h:43
 msgid "Function Range"
@@ -2587,11 +2587,11 @@ msgstr "Valeur maximum de y"
 
 #: ../data/plot.ui.h:48
 msgid "Logarithmic x scale"
-msgstr ""
+msgstr "Échelle logarithmique x"
 
 #: ../data/plot.ui.h:49
 msgid "Logarithmic y scale"
-msgstr ""
+msgstr "Échelle logarithmique y"
 
 #: ../data/plot.ui.h:50
 msgid "X-axis label"
@@ -2682,7 +2682,7 @@ msgid ""
 "If changes to functions, units and variables shall be saved automatically"
 msgstr ""
 "Si les modifications effectuées sur les fonctions, unités et variables "
-"doivent être enregistrées automatiquement."
+"doivent être enregistrées automatiquement"
 
 #: ../data/preferences.ui.h:5
 msgid "Clear history on exit"
@@ -2690,11 +2690,11 @@ msgstr "Effacer l'historique à la fermeture"
 
 #: ../data/preferences.ui.h:6
 msgid "Max history lines saved"
-msgstr ""
+msgstr "Nombre maximum de lignes d'historique enregistrées"
 
 #: ../data/preferences.ui.h:7
 msgid "Save history to separate file"
-msgstr ""
+msgstr "Enregistrer l'historique dans un fichier séparé"
 
 #: ../data/preferences.ui.h:8
 msgid "Allow multiple instances"
@@ -2723,16 +2723,17 @@ msgstr "Sauvegarder le mode à la fermeture"
 
 #: ../data/preferences.ui.h:14
 msgid "If the mode of the calculator shall be restored"
-msgstr "Si le mode de la calculatrice doit être restauré."
+msgstr "Si le mode de la calculatrice doit être restauré"
 
 #: ../data/preferences.ui.h:15
 msgid "Close application with Escape key"
-msgstr ""
+msgstr "Fermez l'application avec la touche Échap"
 
 #: ../data/preferences.ui.h:16
 msgid ""
 "Close the application with the Escape key if the expression field is empty."
 msgstr ""
+"Fermez l'application avec la touche Échap si le champ d'expression est vide."
 
 #: ../data/preferences.ui.h:17
 msgid "Use keyboard keys for RPN"
@@ -2756,31 +2757,29 @@ msgstr ""
 "L'opérateur d'exponentiation (^) peut être toujours saisi grâce à Ctrl+*."
 
 #: ../data/preferences.ui.h:21
-#, fuzzy
 msgid "Expression in history"
-msgstr "Expression"
+msgstr "Expression dans l'historique"
 
 #: ../data/preferences.ui.h:22
 msgid "Parsed"
-msgstr ""
+msgstr "Analysé"
 
 #: ../data/preferences.ui.h:23
-#, fuzzy
 msgid "Entered"
-msgstr "Entrer"
+msgstr "Entré"
 
 #: ../data/preferences.ui.h:24
 msgid "Entered + parsed"
-msgstr ""
+msgstr "Entré + analysé"
 
 #: ../data/preferences.ui.h:25
-#, fuzzy
 msgid "Add calculate-as-you-type result to history"
-msgstr "Calculer l'expression et l'ajouter à la pile"
+msgstr ""
+"Ajouter le résultat calculer au fur et à mesure de la saisie à l'historique"
 
 #: ../data/preferences.ui.h:26
 msgid "Delay:"
-msgstr ""
+msgstr "Délai:"
 
 #: ../data/preferences.ui.h:27
 msgid "Time limit for plot:"
@@ -2792,15 +2791,17 @@ msgstr "Comportement"
 
 #: ../data/preferences.ui.h:29
 msgid "Use system tray icon"
-msgstr ""
+msgstr "Utiliser l'icône de la barre d'état système"
 
 #: ../data/preferences.ui.h:30
 msgid "Hides the application in the system tray when the main window is closed"
 msgstr ""
+"Masque l'application dans la barre d'état système lorsque la fenêtre "
+"principale est fermée"
 
 #: ../data/preferences.ui.h:31
 msgid "Hide on startup"
-msgstr ""
+msgstr "Masquer au démarrage"
 
 #: ../data/preferences.ui.h:32
 msgid "Remember window position"
@@ -2808,13 +2809,15 @@ msgstr "Garder la position de la fenêtre"
 
 #: ../data/preferences.ui.h:33
 msgid "Keep above other windows"
-msgstr ""
+msgstr "Rester au-dessus des autres fenêtres"
 
 #: ../data/preferences.ui.h:34
 msgid ""
 "Keep the main window above other windows (depending on platform and settings "
 "this might not work)"
 msgstr ""
+"Gardez la fenêtre principale au-dessus des autres fenêtres (en fonction de "
+"la plate-forme et des paramètres, cela peut ne pas fonctionner)"
 
 #: ../data/preferences.ui.h:35
 msgid "Enable Unicode symbols"
@@ -2824,16 +2827,15 @@ msgstr "Activer les symboles Unicode"
 msgid "Disable this if you have problems with some fancy characters"
 msgstr ""
 "Désactiver cette option, si vous rencontrez des problèmes avec certains "
-"caractères spéciaux."
+"caractères spéciaux"
 
 #: ../data/preferences.ui.h:37
 msgid "Ignore system language (requires restart)"
 msgstr "Ignorer la langue du système (redémarrage nécessaire)"
 
 #: ../data/preferences.ui.h:38
-#, fuzzy
 msgid "Button padding"
-msgstr "Bouton d'action"
+msgstr "Garniture de bouton"
 
 #: ../data/preferences.ui.h:39 ../src/buttonseditdialog.cc:183
 #: ../src/datasetsdialog.cc:525 ../src/modes.cc:46 ../src/modes.cc:57
@@ -2843,7 +2845,7 @@ msgstr "Défaut"
 
 #: ../data/preferences.ui.h:40
 msgid "/"
-msgstr ""
+msgstr "/"
 
 #: ../data/preferences.ui.h:41
 msgid "Application name"
@@ -2871,23 +2873,23 @@ msgstr "Titre de la fenêtre"
 
 #: ../data/preferences.ui.h:47
 msgid "Theme"
-msgstr ""
+msgstr "Thème"
 
 #: ../data/preferences.ui.h:48
 msgid "Light"
-msgstr ""
+msgstr "Clair"
 
 #: ../data/preferences.ui.h:49
 msgid "Dark"
-msgstr ""
+msgstr "Sombre"
 
 #: ../data/preferences.ui.h:50
 msgid "High contrast"
-msgstr ""
+msgstr "Contraste élevé"
 
 #: ../data/preferences.ui.h:51
 msgid "Dark high contrast"
-msgstr ""
+msgstr "Contraste élevé et sombre"
 
 #: ../data/preferences.ui.h:52
 msgid "Language"
@@ -2895,22 +2897,19 @@ msgstr "Langue"
 
 #: ../data/preferences.ui.h:53
 msgid "Tooltips"
-msgstr ""
+msgstr "Info-bulles"
 
 #: ../data/preferences.ui.h:54
-#, fuzzy
 msgid "Show all"
-msgstr "Afficher le clavier"
+msgstr "Afficher tout"
 
 #: ../data/preferences.ui.h:55
-#, fuzzy
 msgid "Hide in keypad"
-msgstr "Afficher/masquer le clavier droite"
+msgstr "Masquer dans le clavier"
 
 #: ../data/preferences.ui.h:56
-#, fuzzy
 msgid "Hide all"
-msgstr "Cacher"
+msgstr "Tout masquer"
 
 #: ../data/preferences.ui.h:57
 msgid "Number of expression lines"
@@ -2926,21 +2925,19 @@ msgid ""
 "entry"
 msgstr ""
 "Si l'état de l'expression au fur et à mesure doit être affiché sous l'entrée "
-"de l'expression."
+"de l'expression"
 
 #: ../data/preferences.ui.h:60
-#, fuzzy
 msgid "Show parsed expression in result field"
-msgstr "Expression du champ vide."
+msgstr "Afficher l'expression analysée dans le champ de résultat"
 
 #: ../data/preferences.ui.h:61
-#, fuzzy
 msgid ""
 "If as-you-type expression interpretation shall be displayed in the result "
 "field"
 msgstr ""
-"Si l'état de l'expression au fur et à mesure doit être affiché sous l'entrée "
-"de l'expression."
+"Si l'interprétation de l'expression au fur et à mesure de la frappe doit "
+"être affichée dans le champ de résultat"
 
 #: ../data/preferences.ui.h:62
 msgid "Persistent keypad"
@@ -2954,12 +2951,16 @@ msgstr "Apparence et présentation"
 msgid ""
 "If two's complement representation shall be used for negative binary numbers."
 msgstr ""
+"Si la représentation en complément à deux doit être utilisée pour les "
+"nombres binaires négatifs."
 
 #: ../data/preferences.ui.h:67
 msgid ""
 "If two's complement representation shall be used for negative hexadecimal "
 "numbers."
 msgstr ""
+"Si la représentation en complément à deux doit être utilisée pour les "
+"nombres hexadécimaux négatifs."
 
 #: ../data/preferences.ui.h:70
 msgid ""
@@ -2967,6 +2968,9 @@ msgid ""
 "numbers. All binary numbers starting with 1 are negative, unless binary bits "
 "is set."
 msgstr ""
+"Active la représentation en complément à deux pour la saisie de nombres "
+"binaires négatifs. Tous les nombres binaires commençant par 1 sont négatifs, "
+"sauf si des bits binaires sont définis."
 
 #: ../data/preferences.ui.h:71
 msgid ""
@@ -2974,15 +2978,17 @@ msgid ""
 "numbers. All hexadecimal numbers starting with 8 or higher are negative, "
 "unless binary bits is set."
 msgstr ""
+"Active la représentation en complément à deux pour la saisie de nombres "
+"hexadécimaux négatifs. Tous les nombres hexadécimaux commençant par 8 ou "
+"plus sont négatifs, sauf si des bits binaires sont définis."
 
 #: ../data/preferences.ui.h:72
-#, fuzzy
 msgid "Binary bits"
-msgstr "Binaire"
+msgstr "Bits binaires"
 
 #: ../data/preferences.ui.h:73
 msgid "Automatic"
-msgstr ""
+msgstr "Automatique"
 
 #: ../data/preferences.ui.h:74
 msgid "Use lower case letters in non-decimal numbers"
@@ -2991,46 +2997,53 @@ msgstr "Utiliser les lettres minuscules pour les nombres non décimaux"
 #: ../data/preferences.ui.h:75
 msgid "If lower case letters should be used in numbers with non-decimal base"
 msgstr ""
+"Si des lettres minuscules doivent être utilisées dans des nombres avec une "
+"base non décimale"
 
 #: ../data/preferences.ui.h:76
 msgid "Use special duodecimal symbols"
-msgstr ""
+msgstr "Utilisez des symboles duodécimaux spéciaux"
 
 #: ../data/preferences.ui.h:77
 msgid ""
 "If ↊ and ↋ (or X and E) shall be used instead of A and B for digits 10 and "
 "11 in numbers with base 12"
 msgstr ""
+"Si ↊ et ↋ (ou X et E)doivent être utilisés à la place de A et B pour les "
+"chiffres 10 et 11 dans les nombres en base 12"
 
 #: ../data/preferences.ui.h:78
 msgid "Alternative base prefixes"
-msgstr ""
+msgstr "Préfixes de base alternatifs"
 
 #: ../data/preferences.ui.h:79
 msgid ""
 "If hexadecimal numbers shall be displayed with \"0x0\" and binary numbers "
 "with \"0b00\" as prefixes"
 msgstr ""
+"Si les nombres hexadécimaux doivent être affichés avec \"0x0\" et les "
+"nombres binaires avec \"0b00\" comme préfixes"
 
 #: ../data/preferences.ui.h:80
 msgid "Spell out logical operators"
-msgstr ""
+msgstr "Épelez les opérateurs logiques"
 
 #: ../data/preferences.ui.h:81
 msgid "If logical and/or shall be displayed as \"&&\"/\"||\" or \"and\"/\"or\""
 msgstr ""
+"Si logique et/ou doit être affiché comme \"&&\"/\"||\" ou \"et\"/\"ou\""
 
 #: ../data/preferences.ui.h:82
 msgid "If \"e\" shall be used instead of \"E\" in numbers"
-msgstr ""
+msgstr "Si \"e\" doit être utilisé à la place de \"E\" dans les chiffres"
 
 #: ../data/preferences.ui.h:83
 msgid "Use E-notation instead of 10<sup><i>n</i></sup>"
-msgstr ""
+msgstr "Utilisez la notation E au lieu de 10<sup><i>n</i></sup>"
 
 #: ../data/preferences.ui.h:84
 msgid "Use lower case \"e\" (as in 1e10)"
-msgstr ""
+msgstr "Utilisez un \"e\" minuscule (comme dans 1e10)"
 
 #: ../data/preferences.ui.h:85
 msgid "Use comma as decimal separator"
@@ -3038,13 +3051,15 @@ msgstr "Utiliser la virgule comme séparateur décimal"
 
 #: ../data/preferences.ui.h:86
 msgid "Use 'j' as imaginary unit"
-msgstr ""
+msgstr "Utilisez 'j' comme unité imaginaire"
 
 #: ../data/preferences.ui.h:87
 msgid ""
 "Use 'j' (instead of 'i') as default symbol for the imaginary unit, and place "
 "it in front of the imaginary part."
 msgstr ""
+"Utilisez 'j' (au lieu de 'i') comme symbole par défaut pour l'unité "
+"imaginaire et placez-le devant la partie imaginaire."
 
 #: ../data/preferences.ui.h:88
 msgid "Ignore comma in numbers"
@@ -3055,10 +3070,12 @@ msgid ""
 "Allow commas, ',', to be used as thousands separator instead of as an "
 "function argument separator"
 msgstr ""
+"Autoriser l'utilisation des virgules, ',', comme séparateur de milliers au "
+"lieu de séparateur d'argument de fonction"
 
 #: ../data/preferences.ui.h:90
 msgid "Copy result as unformatted ASCII by default"
-msgstr ""
+msgstr "Copier le résultat au format ASCII non formaté par défaut"
 
 #: ../data/preferences.ui.h:91
 msgid "Ignore dots in numbers"
@@ -3069,6 +3086,8 @@ msgid ""
 "Allow dots, '.', to be used as thousands separator instead of as an "
 "alternative decimal sign"
 msgstr ""
+"Autoriser l'utilisation des points, '.', comme séparateur de milliers plutôt "
+"que comme signe décimal alternatif"
 
 #: ../data/preferences.ui.h:93
 msgid "Digit grouping"
@@ -3111,9 +3130,8 @@ msgstr ""
 "informations (ex : bytes)."
 
 #: ../data/preferences.ui.h:102
-#, fuzzy
 msgid "Copy unformatted ASCII without units"
-msgstr "Copier ASCII non formaté"
+msgstr "Copier l'ASCII non formaté sans unités"
 
 #: ../data/preferences.ui.h:103
 msgid "Conversion to local currency"
@@ -3132,17 +3150,16 @@ msgid "Exchange rates updates"
 msgstr "Mises à jour des taux de change"
 
 #: ../data/preferences.ui.h:106
-#, fuzzy
 msgid "Temperature calculation mode:"
-msgstr "Ouvrir l'outil de calcul de pourcentages"
+msgstr "Mode calcul de la température:"
 
 #: ../data/preferences.ui.h:107 ../src/mainwindow.cc:807
 msgid "Absolute"
-msgstr ""
+msgstr "Absolu"
 
 #: ../data/preferences.ui.h:109 ../src/mainwindow.cc:821
 msgid "Hybrid"
-msgstr ""
+msgstr "Hybride"
 
 #: ../data/preferences.ui.h:110
 msgid "Units & Currencies"
@@ -3231,7 +3248,7 @@ msgid ""
 "If you want to use a font other than the default for the whole application"
 msgstr ""
 "Si vous voulez utiliser une police différence que celle utilisée par défaut "
-"pour toute l'application."
+"pour toute l'application"
 
 #: ../data/preferences.ui.h:129
 msgid "Custom history font"
@@ -3286,7 +3303,7 @@ msgstr "Accepter la création/modification de cette unité"
 
 #: ../data/unitedit.ui.h:10
 msgid "System"
-msgstr ""
+msgstr "Système"
 
 #: ../data/unitedit.ui.h:12
 msgid "Hide unit"
@@ -3294,11 +3311,11 @@ msgstr "Cacher unité"
 
 #: ../data/unitedit.ui.h:13
 msgid "Imperial"
-msgstr ""
+msgstr "Impérial"
 
 #: ../data/unitedit.ui.h:14
 msgid "US Survey"
-msgstr ""
+msgstr "US étude"
 
 #: ../data/unitedit.ui.h:15
 msgid "Title displayed in menus and in unit manager"
@@ -3318,6 +3335,10 @@ msgid ""
 "relation to a single other unit, with an optional exponent, while (unnamed) "
 "derived units are defined by a unit expression with one or multiple units."
 msgstr ""
+"La classe à laquelle appartient cette unité. Les unités dérivées nommées "
+"sont définies par rapport à une seule autre unité, avec un exposant "
+"facultatif, tandis que les unités dérivées (non nommées) sont définies par "
+"une expression d'unité avec une ou plusieurs unités."
 
 #: ../data/unitedit.ui.h:20
 msgid "Base unit"
@@ -3345,12 +3366,11 @@ msgstr "Relation"
 
 #: ../data/unitedit.ui.h:26
 msgid "Inverse relation"
-msgstr ""
+msgstr "Rapport inversé"
 
 #: ../data/unitedit.ui.h:27
-#, fuzzy
 msgid "Mix with base unit"
-msgstr "unités de base"
+msgstr "Mélanger avec l'unité de base"
 
 #: ../data/unitedit.ui.h:28
 msgid "Priority"
@@ -3358,17 +3378,19 @@ msgstr "Priorité"
 
 #: ../data/unitedit.ui.h:29
 msgid "Minimum base unit number"
-msgstr ""
+msgstr "Numéro d'unité de base minimum"
 
 #: ../data/unitedit.ui.h:30
 msgid "Exponent of the base unit"
-msgstr ""
+msgstr "Exposant de l'unité de base"
 
 #: ../data/unitedit.ui.h:31
 msgid ""
 "Unit (for named derived unit) or unit expression (for unnamed derived unit) "
 "that this unit is defined in relation to"
 msgstr ""
+"Unité (pour une unité dérivée nommée) ou expression d'unité (pour une unité "
+"dérivée non nommée) par rapport à laquelle cette unité est définie"
 
 #: ../data/unitedit.ui.h:32
 msgid ""
@@ -3378,14 +3400,22 @@ msgid ""
 "For non-linear relations use \\x for the factor and \\y for the exponent (e."
 "g. \"\\x + 273.15\" for the relation between degrees Celsius and Kelvin)."
 msgstr ""
+"Relation avec l'unité de base. Pour les relations linéaires, cela devrait "
+"simplement être un nombre.\n"
+"\n"
+"Pour les relations non linéaires, utilisez \\x pour le facteur et \\y pour "
+"l'exposant (par exemple \"\\x + 273,15\" pour la relation entre les degrés "
+"Celsius et Kelvin)."
 
 #: ../data/unitedit.ui.h:35
 msgid "Specify for non-linear relation, for conversion back to the base unit."
 msgstr ""
+"Spécifiez pour une relation non linéaire, pour la reconversion vers l'unité "
+"de base."
 
 #: ../data/unitedit.ui.h:36
 msgid "Use with prefixes by default"
-msgstr ""
+msgstr "Utiliser avec des préfixes par défaut"
 
 #: ../data/units.ui.h:3
 msgid "Convert between units"
@@ -3474,7 +3504,7 @@ msgstr "Éditer variable"
 
 #: ../data/variableedit.ui.h:10
 msgid "The category this variable belongs to"
-msgstr ""
+msgstr "La catégorie à laquelle appartient cette variable"
 
 #: ../data/variables.ui.h:4
 msgid "_Variable"
@@ -3538,9 +3568,8 @@ msgstr "La base n'est pas supportée."
 
 #: ../src/buttonseditdialog.cc:283 ../src/shortcutsdialog.cc:278
 #: ../src/shortcutsdialog.cc:526
-#, fuzzy
 msgid "Unsupported value."
-msgstr "La base n'est pas supportée."
+msgstr "Valeur non prise en charge."
 
 #: ../src/buttonseditdialog.cc:347 ../src/keypad.cc:447
 msgid "Cycle through previous expression"
@@ -3556,7 +3585,7 @@ msgstr "Déplacer le curseur au début ou à la fin"
 
 #: ../src/buttonseditdialog.cc:350 ../src/keypad.cc:458
 msgid "Uncertainty/interval"
-msgstr ""
+msgstr "Incertitude/intervalle"
 
 #: ../src/buttonseditdialog.cc:350 ../src/keypad.cc:458
 msgid "Relative error"
@@ -3616,12 +3645,12 @@ msgstr "Ajouter"
 #: ../src/buttonseditdialog.cc:372 ../src/expressionstatus.cc:669
 #: ../src/keypad.cc:517 ../src/keypad.cc:2736 ../src/util.cc:909
 msgid "M+ (memory plus)"
-msgstr ""
+msgstr "M+ (mémoire +)"
 
 #: ../src/buttonseditdialog.cc:376 ../src/expressionstatus.cc:659
 #: ../src/keypad.cc:522 ../src/keypad.cc:2733 ../src/util.cc:906
 msgid "MC (memory clear)"
-msgstr ""
+msgstr "MC (mémoire effacée)"
 
 #: ../src/buttonseditdialog.cc:377 ../src/keypad.cc:523
 msgid "Backspace"
@@ -3630,7 +3659,7 @@ msgstr "Retour arrière"
 #: ../src/buttonseditdialog.cc:377 ../src/expressionstatus.cc:674
 #: ../src/keypad.cc:523 ../src/keypad.cc:2737 ../src/util.cc:910
 msgid "M− (memory minus)"
-msgstr ""
+msgstr "M− (mémoire -)"
 
 #: ../src/buttonseditdialog.cc:378 ../src/keypad.cc:524
 msgid "Previous result (static)"
@@ -3644,12 +3673,12 @@ msgstr "Calculer l'expression"
 #: ../src/buttonseditdialog.cc:379 ../src/keypad.cc:532 ../src/keypad.cc:2734
 #: ../src/util.cc:907
 msgid "MR (memory recall)"
-msgstr ""
+msgstr "MR (rappel de mémoire)"
 
 #: ../src/buttonseditdialog.cc:379 ../src/expressionstatus.cc:664
 #: ../src/keypad.cc:532 ../src/keypad.cc:2735 ../src/util.cc:908
 msgid "MS (memory store)"
-msgstr ""
+msgstr "MS (magasin de mémoire)"
 
 #: ../src/buttonseditdialog.cc:455 ../src/shortcutsdialog.cc:573
 #: ../src/shortcutsdialog.cc:600
@@ -3961,9 +3990,8 @@ msgid "Base Units"
 msgstr "Unités de base"
 
 #: ../src/expressioncompletion.cc:1872
-#, fuzzy
 msgid "Binary-Coded Decimal"
-msgstr "Décimales min."
+msgstr "Décimal codé en binaire"
 
 #: ../src/expressioncompletion.cc:1874
 msgid "Bijective Base-26"
@@ -4019,11 +4047,11 @@ msgstr "Nombre hexadécimale"
 
 #: ../src/expressioncompletion.cc:1908
 msgid "Latitude"
-msgstr ""
+msgstr "Latitude"
 
 #: ../src/expressioncompletion.cc:1910
 msgid "Longitude"
-msgstr ""
+msgstr "Longitude"
 
 #: ../src/expressioncompletion.cc:1912
 msgid "Mixed Units"
@@ -4134,7 +4162,7 @@ msgstr "NPI"
 #. Chain mode
 #: ../src/expressionstatus.cc:356
 msgid "CHN"
-msgstr ""
+msgstr "CHN"
 
 #: ../src/expressionstatus.cc:384
 msgid "ROMAN"
@@ -4257,9 +4285,8 @@ msgid "bijective base-26"
 msgstr "bijectif base-26"
 
 #: ../src/expressionstatus.cc:872
-#, fuzzy
 msgid "binary-coded decimal"
-msgstr "Décimales min."
+msgstr "décimal codé en binaire"
 
 #: ../src/expressionstatus.cc:873 ../src/mainwindow.cc:1275
 #: ../src/mainwindow.cc:1278 ../src/mainwindow.cc:1281
@@ -4275,15 +4302,14 @@ msgstr "nombre sexagésimal"
 #: ../src/expressionstatus.cc:875 ../src/expressionstatus.cc:876
 #: ../src/mainwindow.cc:1284 ../src/mainwindow.cc:1287
 #: ../src/mainwindow.cc:4574 ../src/mainwindow.cc:4577
-#, fuzzy
 msgid "latitude"
-msgstr "Relation"
+msgstr "latitude"
 
 #: ../src/expressionstatus.cc:877 ../src/expressionstatus.cc:878
 #: ../src/mainwindow.cc:1290 ../src/mainwindow.cc:1293
 #: ../src/mainwindow.cc:4580 ../src/mainwindow.cc:4583
 msgid "longitude"
-msgstr ""
+msgstr "longitude"
 
 #: ../src/expressionstatus.cc:880
 msgid "32-bit floating point"
@@ -4444,14 +4470,12 @@ msgstr "base numérique %s"
 
 #: ../src/expressionstatus.cc:979 ../src/mainwindow.cc:1415
 #: ../src/mainwindow.cc:4827
-#, fuzzy
 msgid "decimals"
-msgstr "décimal"
+msgstr "décimales"
 
 #: ../src/expressionstatus.cc:980
-#, fuzzy
 msgid "decimal fraction"
-msgstr "Fraction décimale"
+msgstr "fraction décimale"
 
 #: ../src/expressionstatus.cc:985 ../src/expressionstatus.cc:991
 #: ../src/util.cc:625
@@ -4514,7 +4538,7 @@ msgstr "optionnel"
 #. argument default, in description
 #: ../src/functionsdialog.cc:362
 msgid "default: "
-msgstr "par défaut :"
+msgstr "par défaut: "
 
 #: ../src/functionsdialog.cc:376
 msgid "Requirement"
@@ -4527,7 +4551,7 @@ msgstr "Acti_ver"
 
 #: ../src/historyview.cc:111
 msgid "History Answer Value"
-msgstr ""
+msgstr "Valeur de réponse de l'historique"
 
 #: ../src/historyview.cc:112 ../src/mainwindow.cc:8346
 msgid "answer"
@@ -4544,7 +4568,7 @@ msgstr "L'index de l'historique %s n'existe pas."
 
 #: ../src/historyview.cc:137
 msgid "History Parsed Expression"
-msgstr ""
+msgstr "Expression analysée par l'historique"
 
 #: ../src/historyview.cc:751 ../src/plotdialog.cc:464 ../src/plotdialog.cc:475
 #: ../src/plotdialog.cc:486
@@ -4556,6 +4580,9 @@ msgid ""
 "It took too long to generate the plot data. Please decrease the sampling "
 "rate or increase the time limit in preferences."
 msgstr ""
+"La génération des données de tracé a pris trop de temps. Veuillez diminuer "
+"le taux d'échantillonnage ou augmenter la limite de temps dans les "
+"préférences."
 
 #: ../src/historyview.cc:2086 ../src/mainwindow.cc:2421
 msgid "RPN Register Moved"
@@ -4690,20 +4717,20 @@ msgstr "plus"
 
 #: ../src/keypad.cc:1008
 msgid "Logical AND"
-msgstr ""
+msgstr "Logical AND"
 
 #: ../src/keypad.cc:1009
 msgid "Logical OR"
-msgstr ""
+msgstr "Logical OR"
 
 #: ../src/keypad.cc:1010
 msgid "Logical NOT"
-msgstr ""
+msgstr "Logical NOT"
 
 #: ../src/keypad.cc:1012 ../src/keypad.cc:1013 ../src/keypad.cc:1014
 #: ../src/keypad.cc:1015
 msgid "Toggle Result Base"
-msgstr ""
+msgstr "Basculer la base de résultats"
 
 #: ../src/keypad.cc:1017
 msgid "Open menu with stored variables"
@@ -4711,7 +4738,7 @@ msgstr "Ouvrir le menu avec les variables enregistrées"
 
 #: ../src/keypad.cc:1998
 msgid "log10 function not found."
-msgstr "Fonction log10 n'a pas été trouvée."
+msgstr "fonction log10 n'a pas été trouvée."
 
 #: ../src/keypad.cc:2572
 msgid "All functions"
@@ -4733,9 +4760,8 @@ msgid "ENTER"
 msgstr "Entr"
 
 #: ../src/main.cc:59
-#, fuzzy
 msgid "Execute expressions and commands from a file"
-msgstr "Calculer l'expression et l'ajouter à la pile"
+msgstr "Exécuter des expressions et des commandes à partir d'un fichier"
 
 #: ../src/main.cc:59
 msgid "FILE"
@@ -4797,18 +4823,17 @@ msgid "Set Window Title"
 msgstr "Définir le titre de la fenêtre"
 
 #: ../src/mainwindow.cc:511
-#, fuzzy
 msgid "Exchange rate source:"
 msgid_plural "Exchange rate sources:"
-msgstr[0] "Mises à jour des taux de change"
-msgstr[1] "Mises à jour des taux de change"
+msgstr[0] "Source du taux de change:"
+msgstr[1] "Sources de taux de change:"
 
 #: ../src/mainwindow.cc:513
-#, fuzzy, c-format
+#, c-format
 msgid "updated %s"
 msgid_plural "updated %s"
-msgstr[0] "Mettre à jour"
-msgstr[1] "Mettre à jour"
+msgstr[0] "%s mis à jour"
+msgstr[1] "%s mis à jour"
 
 #: ../src/mainwindow.cc:533
 msgid ""
@@ -4817,6 +4842,10 @@ msgid ""
 "changes to reflect this. If you hold the pointer over or click the icon, the "
 "message will be shown."
 msgstr ""
+"Lorsque des erreurs, des avertissements et d'autres informations sont "
+"générés pendant le calcul, l'icône dans le coin supérieur droit de l'entrée "
+"d'expression change pour refléter cela. Si vous maintenez le pointeur sur "
+"l'icône ou cliquez sur l'icône, le message s'affichera."
 
 #: ../src/mainwindow.cc:593
 msgid "Path of executable not found."
@@ -4824,7 +4853,7 @@ msgstr "Impossible de trouver le chemin de l'exécutable."
 
 #: ../src/mainwindow.cc:603
 msgid "curl not found."
-msgstr "Impossible de trouver curl."
+msgstr "impossible de trouver curl."
 
 #: ../src/mainwindow.cc:668
 #, c-format
@@ -4845,7 +4874,7 @@ msgstr "Aucune mise à jour trouvée."
 
 #: ../src/mainwindow.cc:706
 msgid "_Download"
-msgstr ""
+msgstr "_Télécharger"
 
 #: ../src/mainwindow.cc:718
 #, c-format
@@ -4870,9 +4899,8 @@ msgstr ""
 "Vous pouvez télécharger la version %s de %s."
 
 #: ../src/mainwindow.cc:794
-#, fuzzy
 msgid "Temperature Calculation Mode"
-msgstr "Outil de calcul de pourcentages"
+msgstr "Mode de calcul de température"
 
 #: ../src/mainwindow.cc:804
 msgid ""
@@ -4880,49 +4908,49 @@ msgid ""
 "Please select temperature calculation mode\n"
 "(the mode can later be changed in preferences)."
 msgstr ""
+"L'expression est ambiguë.\n"
+"Veuillez sélectionner le mode de calcul de la température\n"
+"(le mode pourra être modifié ultérieurement dans les préférences)."
 
 #: ../src/mainwindow.cc:851
-#, fuzzy
 msgid "Sinc Function"
-msgstr "Éditer la fonction"
+msgstr "Fonction Sinc"
 
 #: ../src/mainwindow.cc:861
 msgid "Please select desired variant of the sinc function."
-msgstr ""
+msgstr "Veuillez sélectionner la variante souhaitée de la fonction sinc."
 
 #: ../src/mainwindow.cc:864
-#, fuzzy
 msgid "Unnormalized"
-msgstr "Non classé"
+msgstr "Non normalisé"
 
 #: ../src/mainwindow.cc:871
-#, fuzzy
 msgid "Normalized"
-msgstr "Normal"
+msgstr "Normalisé"
 
 #: ../src/mainwindow.cc:904
 msgid "Interpretation of dots"
-msgstr ""
+msgstr "Interprétation des points"
 
 #: ../src/mainwindow.cc:914
 msgid ""
 "Please select interpretation of dots (\".\")\n"
 "(this can later be changed in preferences)."
 msgstr ""
+"Veuillez sélectionner l'interprétation des points (\".\")\n"
+"(cela peut être modifié ultérieurement dans les préférences)."
 
 #: ../src/mainwindow.cc:917
-#, fuzzy
 msgid "Both dot and comma as decimal separators"
-msgstr "Utiliser la virgule comme séparateur décimal"
+msgstr "Le point et la virgule comme séparateurs décimaux"
 
 #: ../src/mainwindow.cc:924
 msgid "Dot as thousands separator"
-msgstr ""
+msgstr "Point comme séparateur de milliers"
 
 #: ../src/mainwindow.cc:931
-#, fuzzy
 msgid "Only dot as decimal separator"
-msgstr "Utiliser la virgule comme séparateur décimal"
+msgstr "Seul un point comme séparateur décimal"
 
 #: ../src/mainwindow.cc:971
 msgid ""
@@ -4930,32 +4958,34 @@ msgid ""
 "Please select interpretation of expressions with implicit multiplication\n"
 "(this can later be changed in preferences)."
 msgstr ""
+"L'expression est ambiguë.\n"
+"Veuillez sélectionner l'interprétation des expressions avec multiplication "
+"implicite\n"
+"(cela peut être modifié ultérieurement dans les préférences)."
 
 #: ../src/mainwindow.cc:974
-#, fuzzy
 msgid "Implicit multiplication first"
-msgstr "Signe de multiplication"
+msgstr "Multiplication implicite en premier"
 
 #: ../src/mainwindow.cc:982
 msgid "Conventional"
 msgstr "Conventionnelle"
 
 #: ../src/mainwindow.cc:1017
-#, fuzzy
 msgid "Percentage Interpretation"
-msgstr "Outil de calcul de pourcentages"
+msgstr "Interprétation du pourcentage"
 
 #: ../src/mainwindow.cc:1027
 msgid "Please select interpretation of percentage addition."
-msgstr ""
+msgstr "Veuillez sélectionner l'interprétation de l'addition en pourcentage."
 
 #: ../src/mainwindow.cc:1030
 msgid "Add percentage of original value"
-msgstr ""
+msgstr "Ajouter un pourcentage de la valeur d'origine"
 
 #: ../src/mainwindow.cc:1038
 msgid "Add percentage multiplied by 1/100"
-msgstr ""
+msgstr "Ajouter un pourcentage multiplié par 1/100"
 
 #: ../src/mainwindow.cc:1963
 msgid "My Variables"
@@ -5006,27 +5036,26 @@ msgstr "Ne peut pas écrire de définitions"
 #: ../src/mainwindow.cc:6182 ../src/mainwindow.cc:6184
 #: ../src/mainwindow.cc:6227 ../src/mainwindow.cc:6229
 msgid "Ignore"
-msgstr ""
+msgstr "Ignorer"
 
 #: ../src/mainwindow.cc:5399 ../src/mainwindow.cc:6182
 #: ../src/mainwindow.cc:6227
-#, fuzzy
 msgid "Cancel"
-msgstr "_Fermer"
+msgstr "Annuler"
 
 #: ../src/mainwindow.cc:5399 ../src/mainwindow.cc:5401
 #: ../src/mainwindow.cc:6182 ../src/mainwindow.cc:6184
 #: ../src/mainwindow.cc:6227 ../src/mainwindow.cc:6229
 msgid "Retry"
-msgstr ""
+msgstr "Réessayer"
 
 #: ../src/mainwindow.cc:6180
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Couldn't write history to\n"
 "%s"
 msgstr ""
-"Impossible d'écrire les préférences dans\n"
+"L'historique n'a pas pu être écrite pour\n"
 "%s"
 
 #: ../src/mainwindow.cc:6225
@@ -5047,9 +5076,8 @@ msgid "_Import"
 msgstr "_Importer"
 
 #: ../src/mainwindow.cc:6528
-#, fuzzy
 msgid "XML Files"
-msgstr "Tous les fichiers"
+msgstr "Fichiers XML"
 
 #: ../src/mainwindow.cc:6548
 #, c-format
@@ -5068,7 +5096,7 @@ msgstr "Ne peut pas copier le fichier vers %s."
 
 #: ../src/mainwindow.cc:6816
 msgid "translator-credits"
-msgstr "Polakrity <75248644+Polakrity@users.noreply.github.com>"
+msgstr "crédits-traducteur"
 
 #: ../src/mainwindow.cc:7334 ../src/menubar.cc:1644 ../src/util.cc:1246
 #: ../src/util.cc:1247 ../src/variablesdialog.cc:137
@@ -5209,7 +5237,7 @@ msgstr "Pluriel"
 
 #: ../src/nameseditdialog.cc:180
 msgid "Avoid input"
-msgstr ""
+msgstr "Évitez les entrées"
 
 #: ../src/nameseditdialog.cc:186
 msgid "Suffix"
@@ -5543,7 +5571,7 @@ msgstr "NPI : vider pile"
 
 #: ../src/util.cc:876
 msgid "Load meta mode"
-msgstr ""
+msgstr "Charger le mode méta"
 
 #: ../src/util.cc:877
 msgid "Set expression base"
@@ -5586,24 +5614,20 @@ msgid "Toggle simple notation"
 msgstr "Bascule notation simple"
 
 #: ../src/util.cc:887
-#, fuzzy
 msgid "Toggle precision"
-msgstr "Lire précision"
+msgstr "Basculer la précision"
 
 #: ../src/util.cc:888
-#, fuzzy
 msgid "Toggle max decimals"
-msgstr "Décimales max."
+msgstr "Basculer le nombre maximum de décimales"
 
 #: ../src/util.cc:889
-#, fuzzy
 msgid "Toggle min decimals"
-msgstr "Décimales min."
+msgstr "Basculer le nombre minimal de décimales"
 
 #: ../src/util.cc:890
-#, fuzzy
 msgid "Toggle max/min decimals"
-msgstr "Basculer en mode exact"
+msgstr "Basculer les décimales max/min"
 
 #: ../src/util.cc:891
 msgid "Toggle RPN mode"
@@ -5710,58 +5734,48 @@ msgid "Quit"
 msgstr "Quitter"
 
 #: ../src/util.cc:925
-#, fuzzy
 msgid "Toggle chain mode"
-msgstr "Basculer en mode exact"
+msgstr "Basculer le mode chaîne"
 
 #: ../src/util.cc:926
-#, fuzzy
 msgid "Toggle keep above"
-msgstr "Basculer en mode exact"
+msgstr "Basculer garder au-dessus"
 
 #: ../src/util.cc:927
-#, fuzzy
 msgid "Show/hide completion"
-msgstr "Pas de complétion"
+msgstr "Afficher/masquer l'achèvement"
 
 #: ../src/util.cc:928
 msgid "Perform completion (activate first item)"
-msgstr ""
+msgstr "Effectuer la complétion (activer le premier élément)"
 
 #: ../src/util.cc:996
-#, fuzzy
 msgid "Formatted result"
-msgstr "Enregistrer résultat"
+msgstr "Résultat formaté"
 
 #: ../src/util.cc:997
-#, fuzzy
 msgid "Unformatted ASCII result"
-msgstr "Copier ASCII non formaté"
+msgstr "Résultat ASCII non formaté"
 
 #: ../src/util.cc:998
-#, fuzzy
 msgid "Unformatted ASCII result without units"
-msgstr "Copier ASCII non formaté"
+msgstr "Résultat ASCII non formaté sans unités"
 
 #: ../src/util.cc:999
-#, fuzzy
 msgid "Formatted expression"
-msgstr "L'expression est vide."
+msgstr "Expression formatée"
 
 #: ../src/util.cc:1000
-#, fuzzy
 msgid "Unformatted ASCII expression"
-msgstr "Copier ASCII non formaté"
+msgstr "Expression ASCII non formatée"
 
 #: ../src/util.cc:1001
-#, fuzzy
 msgid "Formatted expression + result"
-msgstr "Expression du champ vide."
+msgstr "Expression formatée + résultat"
 
 #: ../src/util.cc:1002
-#, fuzzy
 msgid "Unformatted ASCII expression + result"
-msgstr "Copier ASCII non formaté"
+msgstr "Expression ASCII non formatée + résultat"
 
 #: ../src/variableeditdialog.cc:172
 msgid "Edit Variable (global)"
