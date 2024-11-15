@@ -1504,40 +1504,8 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 			if(CALCULATOR->aborted()) mauto.setAborted();
 			CALCULATOR->stopControl();
 		// Always perform conversion to optimal (SI) unit when the expression is a number multiplied by a unit and input equals output
-		} else if((!parsed_tostruct || parsed_tostruct->isUndefined()) && origstr && !had_to_expression && (evalops.approximation == APPROXIMATION_EXACT || evalops.auto_post_conversion == POST_CONVERSION_OPTIMAL || evalops.auto_post_conversion == POST_CONVERSION_NONE) && parsed_mstruct && ((parsed_mstruct->isMultiplication() && parsed_mstruct->size() == 2 && (*parsed_mstruct)[0].isNumber() && (*parsed_mstruct)[1].isUnit_exp() && parsed_mstruct->equals(mauto)) || (parsed_mstruct->isNegate() && (*parsed_mstruct)[0].isMultiplication() && (*parsed_mstruct)[0].size() == 2 && (*parsed_mstruct)[0][0].isNumber() && (*parsed_mstruct)[0][1].isUnit_exp() && mauto.isMultiplication() && mauto.size() == 2 && mauto[1] == (*parsed_mstruct)[0][1] && mauto[0].isNumber() && (*parsed_mstruct)[0][0].number() == -mauto[0].number()) || (parsed_mstruct->isUnit_exp() && parsed_mstruct->equals(mauto)))) {
-			Unit *u = NULL;
-			MathStructure *munit = NULL;
-			if(mauto.isMultiplication()) munit = &mauto[1];
-			else munit = &mauto;
-			if(munit->isUnit()) u = munit->unit();
-			else u = (*munit)[0].unit();
-			if(u && u->isCurrency()) {
-				if(evalops.local_currency_conversion && CALCULATOR->getLocalCurrency() && u != CALCULATOR->getLocalCurrency()) {
-					ApproximationMode abak = evalops.approximation;
-					if(evalops.approximation == APPROXIMATION_EXACT) evalops.approximation = APPROXIMATION_TRY_EXACT;
-					mauto.set(CALCULATOR->convertToOptimalUnit(mauto, evalops, true));
-					evalops.approximation = abak;
-				}
-			} else if(u && u->subtype() != SUBTYPE_BASE_UNIT && !u->isSIUnit()) {
-				MathStructure mbak(mauto);
-				if(evalops.auto_post_conversion == POST_CONVERSION_OPTIMAL || evalops.auto_post_conversion == POST_CONVERSION_NONE) {
-					if(munit->isUnit() && u->referenceName() == "oF") {
-						u = CALCULATOR->getActiveUnit("oC");
-						if(u) mauto.set(CALCULATOR->convert(mauto, u, evalops, true, false, false));
-					} else if(munit->isUnit() && u->referenceName() == "oC") {
-						u = CALCULATOR->getActiveUnit("oF");
-						if(u) mauto.set(CALCULATOR->convert(mauto, u, evalops, true, false, false));
-					} else {
-						mauto.set(CALCULATOR->convertToOptimalUnit(mauto, evalops, true));
-					}
-				}
-				if(evalops.approximation == APPROXIMATION_EXACT && ((evalops.auto_post_conversion != POST_CONVERSION_OPTIMAL && evalops.auto_post_conversion != POST_CONVERSION_NONE) || mauto.equals(mbak))) {
-					evalops.approximation = APPROXIMATION_TRY_EXACT;
-					if(evalops.auto_post_conversion == POST_CONVERSION_BASE) mauto.set(CALCULATOR->convertToBaseUnits(mauto, evalops));
-					else mauto.set(CALCULATOR->convertToOptimalUnit(mauto, evalops, true));
-					evalops.approximation = APPROXIMATION_EXACT;
-				}
-			}
+		} else if((!parsed_tostruct || parsed_tostruct->isUndefined()) && origstr && !had_to_expression && (evalops.approximation == APPROXIMATION_EXACT || evalops.auto_post_conversion == POST_CONVERSION_OPTIMAL || evalops.auto_post_conversion == POST_CONVERSION_NONE) && parsed_mstruct) {
+			convert_unchanged_quantity_with_unit(*parsed_mstruct, mauto, evalops);
 		}
 		if(delay_complex) {
 			CALCULATOR->startControl(100);
@@ -1698,7 +1666,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 			} else {
 				result_text = "";
 			}
-			if(unhtmlize(result_text).length() > 900) {
+			if(unformatted_length(result_text) > 900) {
 				CALCULATOR->endTemporaryStopMessages();
 				CALCULATOR->clearMessages();
 				b = false;
@@ -2339,7 +2307,7 @@ void ViewThread::run() {
 		}
 		printops.can_display_unicode_string_arg = NULL;
 
-		if(!b_stack && (m.isAborted() || unhtmlize(result_text).length() > 900)) {
+		if(!b_stack && (m.isAborted() || unformatted_length(result_text) > 900)) {
 			*printops.is_approximate = false;
 			draw_result_failure(m, !m.isAborted());
 		} else if(!b_stack) {
@@ -2640,7 +2608,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	}
 	bool implicit_warning = false;
 	if(stack_index != 0) {
-		if(result_text.length() > 500000) {
+		if(unformatted_length(result_text) > 500000) {
 			if(mstruct->isMatrix()) {
 				result_text = "matrix ("; result_text += i2s(mstruct->rows()); result_text += SIGN_MULTIPLICATION; result_text += i2s(mstruct->columns()); result_text += ")";
 			} else {
@@ -2655,7 +2623,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		int mtype_highest = MESSAGE_INFORMATION;
 		add_result_to_history(update_history, update_parse, register_moved, b_rpn_operation, result_text, b_approx, parsed_text, parsed_approx, transformation, supress_dialog ? NULL : main_window(), &error_str, &mtype_highest, &implicit_warning);
 		error_icon = expression_display_errors(supress_dialog ? NULL : main_window(), 1, true, error_str, mtype_highest);
-		if(update_history && result_text.length() < 1000) {
+		if(update_history && unformatted_length(result_text) < 1000) {
 			string str;
 			if(!b_approx) {
 				str = "=";
@@ -5150,40 +5118,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	}
 
 	// Always perform conversion to optimal (SI) unit when the expression is a number multiplied by a unit and input equals output
-	if(!rpn_mode && (!parsed_tostruct || parsed_tostruct->isUndefined()) && execute_str.empty() && !had_to_expression && (evalops.approximation == APPROXIMATION_EXACT || evalops.auto_post_conversion == POST_CONVERSION_OPTIMAL || evalops.auto_post_conversion == POST_CONVERSION_NONE) && parsed_mstruct && mstruct && ((parsed_mstruct->isMultiplication() && parsed_mstruct->size() == 2 && (*parsed_mstruct)[0].isNumber() && (*parsed_mstruct)[1].isUnit_exp() && parsed_mstruct->equals(*mstruct)) || (parsed_mstruct->isNegate() && (*parsed_mstruct)[0].isMultiplication() && (*parsed_mstruct)[0].size() == 2 && (*parsed_mstruct)[0][0].isNumber() && (*parsed_mstruct)[0][1].isUnit_exp() && mstruct->isMultiplication() && mstruct->size() == 2 && (*mstruct)[1] == (*parsed_mstruct)[0][1] && (*mstruct)[0].isNumber() && (*parsed_mstruct)[0][0].number() == -(*mstruct)[0].number()) || (parsed_mstruct->isUnit_exp() && parsed_mstruct->equals(*mstruct)))) {
-		Unit *u = NULL;
-		MathStructure *munit = NULL;
-		if(mstruct->isMultiplication()) munit = &(*mstruct)[1];
-		else munit = mstruct;
-		if(munit->isUnit()) u = munit->unit();
-		else u = (*munit)[0].unit();
-		if(u && u->isCurrency()) {
-			if(evalops.local_currency_conversion && CALCULATOR->getLocalCurrency() && u != CALCULATOR->getLocalCurrency()) {
-				ApproximationMode abak = evalops.approximation;
-				if(evalops.approximation == APPROXIMATION_EXACT) evalops.approximation = APPROXIMATION_TRY_EXACT;
-				mstruct->set(CALCULATOR->convertToOptimalUnit(*mstruct, evalops, true));
-				evalops.approximation = abak;
-			}
-		} else if(u && u->subtype() != SUBTYPE_BASE_UNIT && !u->isSIUnit()) {
-			MathStructure mbak(*mstruct);
-			if(evalops.auto_post_conversion == POST_CONVERSION_OPTIMAL || evalops.auto_post_conversion == POST_CONVERSION_NONE) {
-				if(munit->isUnit() && u->referenceName() == "oF") {
-					u = CALCULATOR->getActiveUnit("oC");
-					if(u) mstruct->set(CALCULATOR->convert(*mstruct, u, evalops, true, false, false));
-				} else if(munit->isUnit() && u->referenceName() == "oC") {
-					u = CALCULATOR->getActiveUnit("oF");
-					if(u) mstruct->set(CALCULATOR->convert(*mstruct, u, evalops, true, false, false));
-				} else {
-					mstruct->set(CALCULATOR->convertToOptimalUnit(*mstruct, evalops, true));
-				}
-			}
-			if(evalops.approximation == APPROXIMATION_EXACT && ((evalops.auto_post_conversion != POST_CONVERSION_OPTIMAL && evalops.auto_post_conversion != POST_CONVERSION_NONE) || mstruct->equals(mbak))) {
-				evalops.approximation = APPROXIMATION_TRY_EXACT;
-				if(evalops.auto_post_conversion == POST_CONVERSION_BASE) mstruct->set(CALCULATOR->convertToBaseUnits(*mstruct, evalops));
-				else mstruct->set(CALCULATOR->convertToOptimalUnit(*mstruct, evalops, true));
-				evalops.approximation = APPROXIMATION_EXACT;
-			}
-		}
+	if(!rpn_mode && (!parsed_tostruct || parsed_tostruct->isUndefined()) && execute_str.empty() && !had_to_expression && (evalops.approximation == APPROXIMATION_EXACT || evalops.auto_post_conversion == POST_CONVERSION_OPTIMAL || evalops.auto_post_conversion == POST_CONVERSION_NONE) && parsed_mstruct && mstruct) {
+		convert_unchanged_quantity_with_unit(*parsed_mstruct, *mstruct, evalops);
 	}
 
 	if(!do_mathoperation && ((test_ask_tc(*parsed_mstruct) && ask_tc()) || ((test_ask_sinc(*parsed_mstruct) || test_ask_sinc(*mstruct)) && ask_sinc()) || (test_ask_percent() && ask_percent()) || (check_exrates && check_exchange_rates(NULL, stack_index == 0 && !do_bases && !do_calendars && !do_pfe && !do_factors && !do_expand)))) {
@@ -5669,10 +5605,6 @@ void load_preferences() {
 	enable_tooltips = 1;
 	toe_changed = false;
 
-	save_initial_modes();
-
-	size_t mode_index = 1;
-
 	win_x = 0;
 	win_y = 0;
 	win_monitor = 0;
@@ -5712,6 +5644,10 @@ void load_preferences() {
 
 	default_shortcuts = true;
 	keyboard_shortcuts.clear();
+
+	save_initial_modes();
+
+	size_t mode_index = 1;
 
 	last_version_check_date.setToCurrentDate();
 
@@ -7227,11 +7163,11 @@ bool do_shortcut(int type, string value) {
 	}
 	return false;
 }
-bool do_keyboard_shortcut(GdkEventKey *event) {
-	guint state = CLEAN_MODIFIERS(event->state);
+bool do_keyboard_shortcut(guint keyval, GdkModifierType state) {
+	state = CLEAN_MODIFIERS(state);
 	FIX_ALT_GR
-	unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find((guint64) event->keyval + (guint64) G_MAXUINT32 * (guint64) state);
-	if(it == keyboard_shortcuts.end() && event->keyval == GDK_KEY_KP_Delete) it = keyboard_shortcuts.find((guint64) GDK_KEY_Delete + (guint64) G_MAXUINT32 * (guint64) state);
+	unordered_map<guint64, keyboard_shortcut>::iterator it = keyboard_shortcuts.find((guint64) keyval + (guint64) G_MAXUINT32 * (guint64) state);
+	if(it == keyboard_shortcuts.end() && keyval == GDK_KEY_KP_Delete) it = keyboard_shortcuts.find((guint64) GDK_KEY_Delete + (guint64) G_MAXUINT32 * (guint64) state);
 	if(it != keyboard_shortcuts.end()) {
 		bool b = false;
 		copy_called = 0;
@@ -7677,7 +7613,7 @@ void update_accels(int type) {
 }
 
 gboolean on_event(GtkWidget*, GdkEvent *e, gpointer) {
-	if(e->type == GDK_EXPOSE || e->type == GDK_PROPERTY_NOTIFY || e->type == GDK_CONFIGURE || e->type == GDK_FOCUS_CHANGE || e->type == GDK_VISIBILITY_NOTIFY) {
+	if(gdk_event_get_event_type(e) == GDK_EXPOSE || gdk_event_get_event_type(e) == GDK_PROPERTY_NOTIFY || gdk_event_get_event_type(e) == GDK_CONFIGURE || gdk_event_get_event_type(e) == GDK_FOCUS_CHANGE || gdk_event_get_event_type(e) == GDK_VISIBILITY_NOTIFY) {
 		return FALSE;
 	}
 	return TRUE;
@@ -7691,29 +7627,47 @@ gboolean on_configure_event(GtkWidget*, GdkEventConfigure*, gpointer) {
 }
 
 bool disable_history_arrow_keys = false;
+#ifdef EVENT_CONTROLLER_TEST
+gboolean on_key_release_event(GtkEventControllerKey*, guint, guint, GdkModifierType, gpointer) {
+#else
 gboolean on_key_release_event(GtkWidget*, GdkEventKey*, gpointer) {
+#endif
 	disable_history_arrow_keys = false;
 	return FALSE;
 }
 bool block_input = false;
+#ifdef EVENT_CONTROLLER_TEST
+gboolean on_key_press_event(GtkEventControllerKey*, guint keyval, guint, GdkModifierType state, gpointer) {
+#else
 gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
-	if(block_input && (event->keyval == GDK_KEY_q || event->keyval == GDK_KEY_Q) && !(event->state & GDK_CONTROL_MASK)) {block_input = false; return TRUE;}
-	if(gtk_widget_has_focus(expression_edit_widget()) || editing_stack() || editing_history()) return FALSE;
-	if(!b_busy && gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "mb_to"))) && !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "mb_to"))) && (event->keyval == GDK_KEY_Return || event->keyval == GDK_KEY_ISO_Enter || event->keyval == GDK_KEY_KP_Enter || event->keyval == GDK_KEY_space)) {update_mb_to_menu(); gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "mb_to")));}
-	if((event->keyval == GDK_KEY_ISO_Left_Tab || event->keyval == GDK_KEY_Tab) && (CLEAN_MODIFIERS(event->state) == 0 || CLEAN_MODIFIERS(event->state) == GDK_SHIFT_MASK)) return FALSE;
-	if(do_keyboard_shortcut(event)) return TRUE;
+	GdkModifierType state; guint keyval = 0;
+	gdk_event_get_state((GdkEvent*) event, &state);
+	gdk_event_get_keyval((GdkEvent*) event, &keyval);
+#endif
+	if(block_input && (keyval == GDK_KEY_q || keyval == GDK_KEY_Q) && !(state & GDK_CONTROL_MASK)) {block_input = false; return TRUE;}
+	if(gtk_widget_has_focus(expression_edit_widget())) {
+#ifdef EVENT_CONTROLLER_TEST
+		return on_expressiontext_key_press_event(NULL, keyval, 0, state, NULL);
+#else
+		return FALSE;
+#endif
+	}
+	if(editing_stack() || editing_history()) return FALSE;
+	if(!b_busy && gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "mb_to"))) && !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "mb_to"))) && (keyval == GDK_KEY_Return || keyval == GDK_KEY_ISO_Enter || keyval == GDK_KEY_KP_Enter || keyval == GDK_KEY_space)) {update_mb_to_menu(); gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "mb_to")));}
+	if((keyval == GDK_KEY_ISO_Left_Tab || keyval == GDK_KEY_Tab) && (CLEAN_MODIFIERS(state) == 0 || CLEAN_MODIFIERS(state) == GDK_SHIFT_MASK)) return FALSE;
+	if(do_keyboard_shortcut(keyval, state)) return TRUE;
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_unit")))) {
 		return FALSE;
 	}
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")))) {
-		if(event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_Page_Up || event->keyval == GDK_KEY_Page_Down || event->keyval == GDK_KEY_KP_Page_Up || event->keyval == GDK_KEY_KP_Page_Down) {
+		if(keyval == GDK_KEY_Up || keyval == GDK_KEY_Down || keyval == GDK_KEY_Page_Up || keyval == GDK_KEY_Page_Down || keyval == GDK_KEY_KP_Page_Up || keyval == GDK_KEY_KP_Page_Down) {
 			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_treeview_unit")));
 		}
 		return FALSE;
 	}
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_treeview_unit")))) {
-		if(!(event->keyval >= GDK_KEY_KP_Multiply && event->keyval <= GDK_KEY_KP_9) && !(event->keyval >= GDK_KEY_parenleft && event->keyval <= GDK_KEY_A)) {
-			if(gdk_keyval_to_unicode(event->keyval) > 32) {
+		if(!(keyval >= GDK_KEY_KP_Multiply && keyval <= GDK_KEY_KP_9) && !(keyval >= GDK_KEY_parenleft && keyval <= GDK_KEY_A)) {
+			if(gdk_keyval_to_unicode(keyval) > 32) {
 				if(!gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")))) {
 					gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_entry_search")));
 				}
@@ -7722,23 +7676,28 @@ gboolean on_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
 		}
 	}
 	if(gtk_widget_has_focus(history_view_widget())) {
-		guint state = CLEAN_MODIFIERS(event->state);
+		state = CLEAN_MODIFIERS(state);
 		FIX_ALT_GR
-		if((state == 0 && (event->keyval == GDK_KEY_F2 || event->keyval == GDK_KEY_KP_Enter || event->keyval == GDK_KEY_Return)) || (state == GDK_CONTROL_MASK && event->keyval == GDK_KEY_c) || (state == GDK_SHIFT_MASK && event->keyval == GDK_KEY_Delete)) {
+		if((state == 0 && (keyval == GDK_KEY_F2 || keyval == GDK_KEY_KP_Enter || keyval == GDK_KEY_Return)) || (state == GDK_CONTROL_MASK && keyval == GDK_KEY_c) || (state == GDK_SHIFT_MASK && keyval == GDK_KEY_Delete)) {
 			return FALSE;
 		}
 	}
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(main_builder, "convert_treeview_category")))) {
-		if(!(event->keyval >= GDK_KEY_KP_Multiply && event->keyval <= GDK_KEY_KP_9) && !(event->keyval >= GDK_KEY_parenleft && event->keyval <= GDK_KEY_A)) {
+		if(!(keyval >= GDK_KEY_KP_Multiply && keyval <= GDK_KEY_KP_9) && !(keyval >= GDK_KEY_parenleft && keyval <= GDK_KEY_A)) {
 			return FALSE;
 		}
 	}
-	if(gtk_widget_has_focus(history_view_widget()) && event->keyval == GDK_KEY_F2) return FALSE;
-	if(event->keyval > GDK_KEY_Hyper_R || event->keyval < GDK_KEY_Shift_L) {
+	if(gtk_widget_has_focus(history_view_widget()) && keyval == GDK_KEY_F2) return FALSE;
+	if(keyval > GDK_KEY_Hyper_R || keyval < GDK_KEY_Shift_L) {
+#ifdef EVENT_CONTROLLER_TEST
+		focus_keeping_selection();
+		if(on_expressiontext_key_press_event(NULL, keyval, 0, state, NULL)) return TRUE;
+#else
 		GtkWidget *w = gtk_window_get_focus(main_window());
 		if(w && gtk_bindings_activate_event(G_OBJECT(w), event)) return TRUE;
 		if(gtk_bindings_activate_event(G_OBJECT(o), event)) return TRUE;
 		focus_keeping_selection();
+#endif
 	}
 	return FALSE;
 }
@@ -7912,22 +7871,26 @@ void on_popup_menu_item_persistent_keypad_toggled(GtkCheckMenuItem *w, gpointer)
 	update_persistent_keypad(true);
 }
 gboolean on_image_keypad_lock_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS && event->button != 1) {
+	guint button = 0;
+	gdk_event_get_button((GdkEvent*) event, &button);
+	if(gdk_event_triggers_context_menu((GdkEvent*) event) && gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_PRESS && button != 1) {
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_expander_keypad")), (GdkEvent*) event);
 #else
-		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_expander_keypad")), NULL, NULL, NULL, NULL, event->button, event->time);
+		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_expander_keypad")), NULL, NULL, NULL, NULL, button, gdk_event_get_time((GdkEvent*) event));
 #endif
 		return TRUE;
 	}
 	return FALSE;
 }
 gboolean on_expander_keypad_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
+	if(gdk_event_triggers_context_menu((GdkEvent*) event) && gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_PRESS) {
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_expander_keypad")), (GdkEvent*) event);
 #else
-		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_expander_keypad")), NULL, NULL, NULL, NULL, event->button, event->time);
+		guint button = 0;
+		gdk_event_get_button((GdkEvent*) event, &button);
+		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_expander_keypad")), NULL, NULL, NULL, NULL, button, gdk_event_get_time((GdkEvent*) event));
 #endif
 		return TRUE;
 	}
@@ -8583,7 +8546,17 @@ void create_main_window() {
 
 	if(!rpn_mode) gtk_widget_hide(expander_stack);
 
-	gtk_builder_add_callback_symbols(main_builder, "on_main_window_button_press_event", G_CALLBACK(on_main_window_button_press_event), "on_main_window_close", G_CALLBACK(on_main_window_close), "on_message_bar_response", G_CALLBACK(on_message_bar_response), "on_expander_keypad_button_press_event", G_CALLBACK(on_expander_keypad_button_press_event), "on_expander_keypad_expanded", G_CALLBACK(on_expander_keypad_expanded), "on_expander_history_expanded", G_CALLBACK(on_expander_history_expanded), "on_expander_convert_activate", G_CALLBACK(on_expander_convert_activate), "on_expander_convert_expanded", G_CALLBACK(on_expander_convert_expanded), "on_expander_stack_expanded", G_CALLBACK(on_expander_stack_expanded), "on_configure_event", G_CALLBACK(on_configure_event), "on_key_press_event", G_CALLBACK(on_key_press_event), "on_key_release_event", G_CALLBACK(on_key_release_event), "on_image_keypad_lock_button_press_event", G_CALLBACK(on_image_keypad_lock_button_press_event), "on_image_keypad_lock_button_release_event", G_CALLBACK(on_image_keypad_lock_button_release_event), "on_popup_menu_item_persistent_keypad_toggled", G_CALLBACK(on_popup_menu_item_persistent_keypad_toggled), NULL);
+#ifdef EVENT_CONTROLLER_TEST
+	GtkEventController *controller = gtk_event_controller_key_new(GTK_WIDGET(main_window()));
+	gtk_event_controller_set_propagation_phase(controller, GTK_PHASE_CAPTURE);
+	g_signal_connect(G_OBJECT(controller), "key-pressed", G_CALLBACK(on_key_press_event), NULL);
+	g_signal_connect(G_OBJECT(controller), "key-released", G_CALLBACK(on_key_release_event), NULL);
+#else
+	g_signal_connect(G_OBJECT(main_window()), "key-press-event", G_CALLBACK(on_key_press_event), NULL);
+	g_signal_connect(G_OBJECT(main_window()), "key-release-event", G_CALLBACK(on_key_release_event), NULL);
+#endif
+
+	gtk_builder_add_callback_symbols(main_builder, "on_main_window_button_press_event", G_CALLBACK(on_main_window_button_press_event), "on_main_window_close", G_CALLBACK(on_main_window_close), "on_message_bar_response", G_CALLBACK(on_message_bar_response), "on_expander_keypad_button_press_event", G_CALLBACK(on_expander_keypad_button_press_event), "on_expander_keypad_expanded", G_CALLBACK(on_expander_keypad_expanded), "on_expander_history_expanded", G_CALLBACK(on_expander_history_expanded), "on_expander_convert_activate", G_CALLBACK(on_expander_convert_activate), "on_expander_convert_expanded", G_CALLBACK(on_expander_convert_expanded), "on_expander_stack_expanded", G_CALLBACK(on_expander_stack_expanded), "on_configure_event", G_CALLBACK(on_configure_event), "on_image_keypad_lock_button_press_event", G_CALLBACK(on_image_keypad_lock_button_press_event), "on_image_keypad_lock_button_release_event", G_CALLBACK(on_image_keypad_lock_button_release_event), "on_popup_menu_item_persistent_keypad_toggled", G_CALLBACK(on_popup_menu_item_persistent_keypad_toggled), NULL);
 
 	gtk_builder_connect_signals(main_builder, NULL);
 

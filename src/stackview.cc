@@ -401,11 +401,13 @@ void update_stackview_popup() {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_stack_delete")), b_sel);
 }
 gboolean on_stackview_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
+	gdouble x = 0, y = 0;
+	gdk_event_get_coords((GdkEvent*) event, &x, &y);
 	GtkTreePath *path = NULL;
 	GtkTreeSelection *select = NULL;
-	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
+	if(gdk_event_triggers_context_menu((GdkEvent*) event) && gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_PRESS) {
 		if(calculator_busy()) return TRUE;
-		if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(stackview), event->x, event->y, &path, NULL, NULL, NULL)) {
+		if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(stackview), x, y, &path, NULL, NULL, NULL)) {
 			select = gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview));
 			if(!gtk_tree_selection_path_is_selected(select, path)) {
 				gtk_tree_selection_unselect_all(select);
@@ -417,7 +419,9 @@ gboolean on_stackview_button_press_event(GtkWidget*, GdkEventButton *event, gpoi
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_stackview")), (GdkEvent*) event);
 #else
-		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_stackview")), NULL, NULL, NULL, NULL, event->button, event->time);
+		guint button = 0;
+		gdk_event_get_button((GdkEvent*) event, &button);
+		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_stackview")), NULL, NULL, NULL, NULL, button, gdk_event_get_time((GdkEvent*) event));
 #endif
 		return TRUE;
 	}

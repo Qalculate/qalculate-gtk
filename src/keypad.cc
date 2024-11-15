@@ -1407,13 +1407,15 @@ gboolean keypad_unblock_timeout(gpointer w) {
 }
 
 gboolean on_keypad_button_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
-	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
+	guint button = 0;
+	gdk_event_get_button((GdkEvent*) event, &button);
+	if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
 		g_source_remove(button_press_timeout_id);
 		button_press_timeout_id = 0;
 		button_press_timeout_w = NULL;
 		button_press_timeout_side = 0;
 		button_press_timeout_done = false;
-	} else if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_done) {
+	} else if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_RELEASE && button_press_timeout_done) {
 		button_press_timeout_done = false;
 		bool b_this = (button_press_timeout_w == w);
 		button_press_timeout_w = NULL;
@@ -1425,21 +1427,23 @@ gboolean on_keypad_button_button_event(GtkWidget *w, GdkEventButton *event, gpoi
 			return FALSE;
 		}
 	}
-	if(event->type == GDK_BUTTON_PRESS && event->button == 1) {
+	if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_PRESS && button == 1) {
 		button_press_timeout_w = w;
 		button_press_timeout_side = 0;
 		button_press_timeout_id = g_timeout_add(500, keypad_long_press_timeout, NULL);
 		return FALSE;
 	}
-	if(event->type == GDK_BUTTON_RELEASE && (event->button == 2 || event->button == 3)) {
-		if(on_keypad_button_alt(w, event->button == 2)) return TRUE;
+	if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_RELEASE && (button == 2 || button == 3)) {
+		if(on_keypad_button_alt(w, button == 2)) return TRUE;
 	}
 	return FALSE;
 }
 bool block_del = false;
 gboolean on_button_del_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
-	if((event->button == 1 && custom_buttons[26].type[0] != -1) || (event->button == 3 && custom_buttons[26].type[1] != -1) || (event->button == 2 && custom_buttons[26].type[2] != -1)) return on_keypad_button_button_event(w, event, NULL);
-	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
+	guint button = 0;
+	gdk_event_get_button((GdkEvent*) event, &button);
+	if((button == 1 && custom_buttons[26].type[0] != -1) || (button == 3 && custom_buttons[26].type[1] != -1) || (button == 2 && custom_buttons[26].type[2] != -1)) return on_keypad_button_button_event(w, event, NULL);
+	if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
 		g_source_remove(button_press_timeout_id);
 		bool b_this = (button_press_timeout_w == w);
 		button_press_timeout_id = 0;
@@ -1453,21 +1457,25 @@ gboolean on_button_del_button_event(GtkWidget *w, GdkEventButton *event, gpointe
 			}
 		}
 	}
-	if(event->type == GDK_BUTTON_PRESS && event->button == 1) {
+	if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_PRESS && button == 1) {
 		button_press_timeout_w = w;
 		button_press_timeout_side = 0;
 		button_press_timeout_id = g_timeout_add(250, keypad_long_press_timeout, NULL);
 		return FALSE;
 	}
-	if(event->type == GDK_BUTTON_RELEASE && (event->button == 2 || event->button == 3)) {
-		on_keypad_button_alt(w, event->button == 2);
+	if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_RELEASE && (button == 2 || button == 3)) {
+		on_keypad_button_alt(w, button == 2);
 	}
 	return FALSE;
 }
 gboolean on_button_move2_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
-	if((event->button == 1 && custom_buttons[1].type[0] != -1) || (event->button == 3 && custom_buttons[1].type[1] != -1) || (event->button == 2 && custom_buttons[1].type[2] != -1)) return on_keypad_button_button_event(w, event, NULL);
+	guint button = 0;
+	gdouble x = 0, y = 0;
+	gdk_event_get_button((GdkEvent*) event, &button);
+	gdk_event_get_coords((GdkEvent*) event, &x, &y);
+	if((button == 1 && custom_buttons[1].type[0] != -1) || (button == 3 && custom_buttons[1].type[1] != -1) || (button == 2 && custom_buttons[1].type[2] != -1)) return on_keypad_button_button_event(w, event, NULL);
 	hide_tooltip(w);
-	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
+	if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
 		g_source_remove(button_press_timeout_id);
 		bool b_this = (button_press_timeout_w == w);
 		button_press_timeout_id = 0;
@@ -1478,18 +1486,18 @@ gboolean on_button_move2_button_event(GtkWidget *w, GdkEventButton *event, gpoin
 			if(b_this) return FALSE;
 		}
 	}
-	if(event->type == GDK_BUTTON_PRESS && event->button == 1) {
+	if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_PRESS && button == 1) {
 		button_press_timeout_w = w;
-		if(event->window && event->x > gdk_window_get_width(event->window) / 2) button_press_timeout_side = 2;
+		if(gdk_event_get_window((GdkEvent*) event) && x > gdk_window_get_width(gdk_event_get_window((GdkEvent*) event)) / 2) button_press_timeout_side = 2;
 		else button_press_timeout_side = 1;
 		button_press_timeout_id = g_timeout_add(250, keypad_long_press_timeout, NULL);
 		return FALSE;
 	}
 	hide_tooltip(w);
-	if(event->button == 2 || event->button == 3) {
-		if(event->type == GDK_BUTTON_RELEASE) {
+	if(button == 2 || button == 3) {
+		if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_RELEASE) {
 			GtkTextIter iter;
-			if(event->window && event->x > gdk_window_get_width(event->window) / 2) {
+			if(gdk_event_get_window((GdkEvent*) event) && x > gdk_window_get_width(gdk_event_get_window((GdkEvent*) event)) / 2) {
 				gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iter);
 			} else {
 				gtk_text_buffer_get_start_iter(expression_edit_buffer(), &iter);
@@ -1499,7 +1507,7 @@ gboolean on_button_move2_button_event(GtkWidget *w, GdkEventButton *event, gpoin
 	} else {
 		GtkTextIter iter;
 		gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &iter, gtk_text_buffer_get_insert(expression_edit_buffer()));
-		if(event->window && event->x > gdk_window_get_width(event->window) / 2) {
+		if(gdk_event_get_window((GdkEvent*) event) && x > gdk_window_get_width(gdk_event_get_window((GdkEvent*) event)) / 2) {
 			if(gtk_text_iter_is_end(&iter)) gtk_text_buffer_get_start_iter(expression_edit_buffer(), &iter);
 			else gtk_text_iter_forward_char(&iter);
 		} else {
@@ -1511,9 +1519,13 @@ gboolean on_button_move2_button_event(GtkWidget *w, GdkEventButton *event, gpoin
 	return FALSE;
 }
 gboolean on_button_move_button_event(GtkWidget *w, GdkEventButton *event, gpointer) {
-	if((event->button == 1 && custom_buttons[0].type[0] != -1) || (event->button == 3 && custom_buttons[0].type[1] != -1) || (event->button == 2 && custom_buttons[0].type[2] != -1)) return on_keypad_button_button_event(w, event, NULL);
+	guint button = 0;
+	gdouble x = 0, y = 0;
+	gdk_event_get_button((GdkEvent*) event, &button);
+	gdk_event_get_coords((GdkEvent*) event, &x, &y);
+	if((button == 1 && custom_buttons[0].type[0] != -1) || (button == 3 && custom_buttons[0].type[1] != -1) || (button == 2 && custom_buttons[0].type[2] != -1)) return on_keypad_button_button_event(w, event, NULL);
 	hide_tooltip(w);
-	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
+	if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
 		g_source_remove(button_press_timeout_id);
 		bool b_this = (button_press_timeout_w == w);
 		button_press_timeout_id = 0;
@@ -1524,44 +1536,46 @@ gboolean on_button_move_button_event(GtkWidget *w, GdkEventButton *event, gpoint
 			if(b_this) return FALSE;
 		}
 	}
-	if(event->type == GDK_BUTTON_PRESS && event->button == 1) {
+	if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_PRESS && button == 1) {
 		button_press_timeout_w = w;
-		if(event->window && event->x > gdk_window_get_width(event->window) / 2) button_press_timeout_side = 2;
+		if(gdk_event_get_window((GdkEvent*) event) && x > gdk_window_get_width(gdk_event_get_window((GdkEvent*) event)) / 2) button_press_timeout_side = 2;
 		else button_press_timeout_side = 1;
 		button_press_timeout_id = g_timeout_add(250, keypad_long_press_timeout, NULL);
 		return FALSE;
 	}
 	hide_tooltip(w);
-	if(event->type == GDK_BUTTON_RELEASE && event->button == 1) {
-		if(event->window && (event->x < 0 || event->y < 0 || event->x > gdk_window_get_width(event->window) || event->y > gdk_window_get_height(event->window))) return FALSE;
-		if(event->window && event->x > gdk_window_get_width(event->window) / 2) expression_history_down();
+	if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_RELEASE && button == 1) {
+		if(gdk_event_get_window((GdkEvent*) event) && (x < 0 || y < 0 || x > gdk_window_get_width(gdk_event_get_window((GdkEvent*) event)) || y > gdk_window_get_height(gdk_event_get_window((GdkEvent*) event)))) return FALSE;
+		if(gdk_event_get_window((GdkEvent*) event) && x > gdk_window_get_width(gdk_event_get_window((GdkEvent*) event)) / 2) expression_history_down();
 		else expression_history_up();
 	}
 	return FALSE;
 }
 
 gboolean on_keypad_menu_button_button_event(GtkWidget *w, GdkEventButton *event, gpointer data) {
-	if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
+	guint button = 0;
+	gdk_event_get_button((GdkEvent*) event, &button);
+	if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_RELEASE && button_press_timeout_id != 0) {
 		g_source_remove(button_press_timeout_id);
 		button_press_timeout_id = 0;
 		button_press_timeout_w = NULL;
 		button_press_timeout_side = 0;
 		button_press_timeout_done = false;
-	} else if(event->type == GDK_BUTTON_RELEASE && button_press_timeout_done) {
+	} else if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_RELEASE && button_press_timeout_done) {
 		button_press_timeout_done = false;
 		bool b_this = (button_press_timeout_w == w);
 		button_press_timeout_w = NULL;
 		button_press_timeout_side = 0;
 		if(b_this) return TRUE;
 	}
-	if(event->type == GDK_BUTTON_PRESS && event->button == 1) {
+	if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_PRESS && button == 1) {
 		button_press_timeout_w = w;
 		button_press_timeout_side = 0;
 		long_press_menu_event = *event;
 		button_press_timeout_id = g_timeout_add(500, keypad_long_press_timeout, data);
 		return FALSE;
 	}
-	bool b = (event->type == GDK_BUTTON_RELEASE && (event->button == 2 || event->button == 3));
+	bool b = (gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_RELEASE && (button == 2 || button == 3));
 	if(b) {
 		if(GTK_WIDGET(data) == GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_to"))) {
 			if(calculator_busy()) return TRUE;
@@ -1570,7 +1584,7 @@ gboolean on_keypad_menu_button_button_event(GtkWidget *w, GdkEventButton *event,
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 		gtk_menu_popup_at_pointer(GTK_MENU(data), (GdkEvent*) event);
 #else
-		gtk_menu_popup(GTK_MENU(data), NULL, NULL, NULL, NULL, event->button, event->time);
+		gtk_menu_popup(GTK_MENU(data), NULL, NULL, NULL, NULL, button, gdk_event_get_time((GdkEvent*) event));
 #endif
 		return TRUE;
 	}
@@ -2536,7 +2550,7 @@ gboolean on_menu_fx_popup_menu(GtkWidget*, gpointer data) {
 
 gboolean on_menu_fx_button_press(GtkWidget *widget, GdkEventButton *event, gpointer data) {
 	/* Ignore double-clicks and triple-clicks */
-	if(gdk_event_triggers_context_menu((GdkEvent *) event) && event->type == GDK_BUTTON_PRESS) {
+	if(gdk_event_triggers_context_menu((GdkEvent *) event) && gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_PRESS) {
 		on_menu_fx_popup_menu(widget, data);
 		return TRUE;
 	}
@@ -2705,7 +2719,7 @@ gboolean on_menu_sto_popup_menu(GtkWidget*, gpointer data) {
 
 gboolean on_menu_sto_button_press(GtkWidget *widget, GdkEventButton *event, gpointer data) {
 	/* Ignore double-clicks and triple-clicks */
-	if(gdk_event_triggers_context_menu((GdkEvent *) event) && event->type == GDK_BUTTON_PRESS) {
+	if(gdk_event_triggers_context_menu((GdkEvent *) event) && gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_PRESS) {
 		on_menu_sto_popup_menu(widget, data);
 		return TRUE;
 	}
@@ -2899,7 +2913,9 @@ void on_button_programmers_keypad_toggled(GtkToggleButton *w, gpointer) {
 }
 
 gboolean on_hide_left_buttons_button_release_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(event->type == GDK_BUTTON_RELEASE && event->button == 1) {
+	guint button = 0;
+	gdk_event_get_button((GdkEvent*) event, &button);
+	if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_RELEASE && button == 1) {
 		bool hide_left_keypad = gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "stack_left_buttons")));
 		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "stack_left_buttons")), !hide_left_keypad);
 		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "event_hide_right_buttons")), !hide_left_keypad);
@@ -2917,7 +2933,9 @@ gboolean on_hide_left_buttons_button_release_event(GtkWidget*, GdkEventButton *e
 	return FALSE;
 }
 gboolean on_hide_right_buttons_button_release_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(event->type == GDK_BUTTON_RELEASE && event->button == 1) {
+	guint button = 0;
+	gdk_event_get_button((GdkEvent*) event, &button);
+	if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_RELEASE && button == 1) {
 		bool hide_right_keypad = gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_right_buttons")));
 		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_right_buttons")), !hide_right_keypad);
 		gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "event_hide_left_buttons")), !hide_right_keypad);
@@ -3117,7 +3135,7 @@ void set_result_bases(const MathStructure &m) {
 		po.min_exp = 0;
 		if(printops.base != 2) {
 			po.base = 2;
-			if(!po.twos_complement || !m.number().isNegative()) {
+			if(!po.twos_complement || !nr.isNegative()) {
 				po.binary_bits = 0;
 			} else {
 				po.binary_bits = printops.binary_bits;
@@ -3136,7 +3154,7 @@ void set_result_bases(const MathStructure &m) {
 		}
 		if(printops.base != 16) {
 			po.base = 16;
-			if(!po.hexadecimal_twos_complement || !m.number().isNegative()) {
+			if(!po.hexadecimal_twos_complement || !nr.isNegative()) {
 				po.binary_bits = 0;
 			} else {
 				po.binary_bits = printops.binary_bits;

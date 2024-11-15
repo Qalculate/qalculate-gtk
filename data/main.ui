@@ -695,8 +695,6 @@
     <signal name="configure-event" handler="on_configure_event" swapped="no"/>
     <signal name="delete-event" handler="on_main_window_close" swapped="no"/>
     <signal name="destroy-event" handler="on_main_window_close" swapped="no"/>
-    <signal name="key-press-event" handler="on_key_press_event" swapped="no"/>
-    <signal name="key-release-event" handler="on_key_release_event" swapped="no"/>
     <child>
       <object class="GtkBox" id="top_vbox">
         <property name="visible">True</property>
@@ -1179,7 +1177,7 @@
                       <object class="GtkMenuItem" id="menu_item_open_settings_folder">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Open Settings Folder(s)</property>
+                        <property name="label">Open Settings Folder(s)</property>
                         <property name="use-underline">True</property>
                         <signal name="activate" handler="on_menu_item_open_settings_folder_activate" swapped="no"/>
                       </object>
@@ -3008,7 +3006,6 @@ On: 1.1 × 1.1 ≈ 1.2</property>
                                     <property name="accepts-tab">False</property>
                                     <signal name="button-press-event" handler="on_expressiontext_button_press_event" swapped="no"/>
                                     <signal name="focus-out-event" handler="on_expressiontext_focus_out_event" swapped="no"/>
-                                    <signal name="key-press-event" handler="on_expressiontext_key_press_event" swapped="no"/>
                                     <signal name="populate-popup" handler="on_expressiontext_populate_popup" swapped="no"/>
                                   </object>
                                 </child>

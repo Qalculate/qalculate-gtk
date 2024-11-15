@@ -186,7 +186,9 @@ void on_menu_item_copy_ascii_status_activate(GtkMenuItem*, gpointer) {
 }
 
 gboolean on_status_left_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(event->type == GDK_BUTTON_PRESS && event->button == 3 && !calculator_busy()) {
+	guint button = 0;
+	gdk_event_get_button((GdkEvent*) event, &button);
+	if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_PRESS && button == 3 && !calculator_busy()) {
 		g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_parsed_in_result"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_parsed_in_result_activate, NULL);
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_parsed_in_result")), parsed_in_result && !rpn_mode);
 		g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_parsed_in_result"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_menu_item_parsed_in_result_activate, NULL);
@@ -199,29 +201,33 @@ gboolean on_status_left_button_press_event(GtkWidget*, GdkEventButton *event, gp
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_status_left")), (GdkEvent*) event);
 #else
-		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_status_left")), NULL, NULL, NULL, NULL, event->button, event->time);
+		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_status_left")), NULL, NULL, NULL, NULL, button, gdk_event_get_time((GdkEvent*) event));
 #endif
 		return TRUE;
 	}
 	return FALSE;
 }
 gboolean on_status_right_button_release_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(event->type == GDK_BUTTON_RELEASE && event->button == 1) {
+	guint button = 0;
+	gdk_event_get_button((GdkEvent*) event, &button);
+	if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_RELEASE && button == 1) {
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_status_right")), (GdkEvent*) event);
 #else
-		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_status_right")), NULL, NULL, NULL, NULL, event->button, event->time);
+		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_status_right")), NULL, NULL, NULL, NULL, button, gdk_event_get_time((GdkEvent*) event));
 #endif
 		return TRUE;
 	}
 	return FALSE;
 }
 gboolean on_status_right_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS && event->button != 1) {
+	guint button = 0;
+	gdk_event_get_button((GdkEvent*) event, &button);
+	if(gdk_event_triggers_context_menu((GdkEvent*) event) && gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_PRESS && button != 1) {
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_status_right")), (GdkEvent*) event);
 #else
-		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_status_right")), NULL, NULL, NULL, NULL, event->button, event->time);
+		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_status_right")), NULL, NULL, NULL, NULL, button, gdk_event_get_time((GdkEvent*) event));
 #endif
 		return TRUE;
 	}
@@ -321,14 +327,14 @@ void set_status_text(string text, bool break_begin = false, bool had_errors = fa
 
 	gtk_label_set_markup(GTK_LABEL(parse_status_widget()), str.c_str());
 	gint w = 0;
-	if(str.length() > 500) {
+	if(unformatted_length(str) > 500) {
 		w = -1;
-	} else if(str.length() > 20) {
+	} else if(unformatted_length(str) > 20) {
 		if(!status_layout) status_layout = gtk_widget_create_pango_layout(parse_status_widget(), "");
 		pango_layout_set_markup(status_layout, str.c_str(), -1);
 		pango_layout_get_pixel_size(status_layout, &w, NULL);
 	}
-	if(((auto_calculate && !rpn_mode) || !had_errors || tooltip_text.empty()) && (w < 0 || w > gtk_widget_get_allocated_width(parse_status_widget())) && text.length() < 5000) gtk_widget_set_tooltip_markup(parse_status_widget(), text.c_str());
+	if(((auto_calculate && !rpn_mode) || !had_errors || tooltip_text.empty()) && (w < 0 || w > gtk_widget_get_allocated_width(parse_status_widget())) && unformatted_length(text) < 5000) gtk_widget_set_tooltip_markup(parse_status_widget(), text.c_str());
 	else gtk_widget_set_tooltip_text(parse_status_widget(), tooltip_text.c_str());
 }
 void clear_status_text() {

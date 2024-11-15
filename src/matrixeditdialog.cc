@@ -101,7 +101,9 @@ void on_tMatrixEdit_edited(GtkCellRendererText *cell, gchar *path_string, gchar 
 	on_matrix_changed();
 }
 gboolean on_tMatrixEdit_editable_key_press_event(GtkWidget *w, GdkEventKey *event, gpointer) {
-	switch(event->keyval) {
+	guint keyval = 0;
+	gdk_event_get_keyval((GdkEvent*) event, &keyval);
+	switch(keyval) {
 		case GDK_KEY_Up: {}
 		case GDK_KEY_Down: {}
 		case GDK_KEY_Tab: {}
@@ -116,7 +118,7 @@ gboolean on_tMatrixEdit_editable_key_press_event(GtkWidget *w, GdkEventKey *even
 				if(column) {
 					for(size_t i = 0; i < matrix_edit_columns.size(); i++) {
 						if(matrix_edit_columns[i] == column) {
-							if(event->keyval == GDK_KEY_Tab) {
+							if(keyval == GDK_KEY_Tab) {
 								i++;
 								if(i >= matrix_edit_columns.size()) {
 									gtk_tree_path_next(path);
@@ -128,7 +130,7 @@ gboolean on_tMatrixEdit_editable_key_press_event(GtkWidget *w, GdkEventKey *even
 									i = 0;
 								}
 							} else {
-								if(event->keyval == GDK_KEY_Up) {
+								if(keyval == GDK_KEY_Up) {
 									if(!gtk_tree_path_prev(path)) {
 										gtk_tree_path_free(path);
 										path = gtk_tree_path_new_from_indices(gtk_tree_model_iter_n_children(GTK_TREE_MODEL(tMatrixEdit_store), NULL) - 1, -1);
@@ -138,7 +140,7 @@ gboolean on_tMatrixEdit_editable_key_press_event(GtkWidget *w, GdkEventKey *even
 									GtkTreeIter iter;
 									if(!gtk_tree_model_get_iter(GTK_TREE_MODEL(tMatrixEdit_store), &iter, path)) {
 										gtk_tree_path_free(path);
-										if(event->keyval != GDK_KEY_Up) return TRUE;
+										if(keyval != GDK_KEY_Up) return TRUE;
 										path = gtk_tree_path_new_first();
 									}
 								}
@@ -162,7 +164,9 @@ void on_tMatrixEdit_editing_started(GtkCellRenderer *renderer, GtkCellEditable *
 	g_signal_connect(G_OBJECT(editable), "key-press-event", G_CALLBACK(on_tMatrixEdit_editable_key_press_event), renderer);
 }
 gboolean on_tMatrixEdit_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
-	switch(event->keyval) {
+	guint keyval = 0;
+	gdk_event_get_keyval((GdkEvent*) event, &keyval);
+	switch(keyval) {
 		case GDK_KEY_Return: {break;}
 		case GDK_KEY_Tab: {
 			GtkTreeViewColumn *column = NULL;
@@ -199,7 +203,7 @@ gboolean on_tMatrixEdit_key_press_event(GtkWidget*, GdkEventKey *event, gpointer
 			break;
 		}
 		default: {
-			if(event->length == 0) return FALSE;
+			if(gdk_keyval_to_unicode(keyval) < 32) return FALSE;
 			GtkTreeViewColumn *column = NULL;
 			GtkTreePath *path = NULL;
 			gtk_tree_view_get_cursor(GTK_TREE_VIEW(tMatrixEdit), &path, &column);
@@ -219,10 +223,14 @@ gboolean on_tMatrixEdit_key_press_event(GtkWidget*, GdkEventKey *event, gpointer
 	return FALSE;
 }
 gboolean on_tMatrixEdit_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(event->button != 1) return FALSE;
+	guint button = 0;
+	gdouble x = 0, y = 0;
+	gdk_event_get_button((GdkEvent*) event, &button);
+	gdk_event_get_coords((GdkEvent*) event, &x, &y);
+	if(button != 1) return FALSE;
 	GtkTreeViewColumn *column = NULL;
 	GtkTreePath *path = NULL;
-	if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(tMatrixEdit), (gint) event->x, (gint) event->y, &path, &column, NULL, NULL) && path && column) {
+	if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(tMatrixEdit), (gint) x, (gint) y, &path, &column, NULL, NULL) && path && column) {
 		gtk_tree_view_set_cursor(GTK_TREE_VIEW(tMatrixEdit), path, column, TRUE);
 		gtk_tree_path_free(path);
 		return TRUE;

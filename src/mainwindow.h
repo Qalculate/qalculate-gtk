@@ -54,7 +54,7 @@ void minimal_mode_show_resultview(bool b = true);
 gboolean on_display_errors_timeout(gpointer data);
 gboolean on_check_version_idle(gpointer data);
 
-bool do_keyboard_shortcut(GdkEventKey *event);
+bool do_keyboard_shortcut(guint keyval, GdkModifierType state);
 
 void copy_result(int ascii = -1, int type = 0);
 

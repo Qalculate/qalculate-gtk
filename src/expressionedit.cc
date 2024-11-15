@@ -760,20 +760,26 @@ extern GtkTreeModel *completion_sort;
 extern GtkTreeIter tabbed_iter;
 extern bool block_input;
 
-gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
-	if(block_input && (event->keyval == GDK_KEY_q || event->keyval == GDK_KEY_Q) && !(event->state & GDK_CONTROL_MASK)) {block_input = false;
+#ifdef EVENT_CONTROLLER_TEST
+gboolean on_expressiontext_key_press_event(GtkEventControllerKey*, guint keyval, guint, GdkModifierType state, gpointer) {
+#else
+gboolean on_expressiontext_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
+	GdkModifierType state; guint keyval = 0;
+	gdk_event_get_state((GdkEvent*) event, &state);
+	gdk_event_get_keyval((GdkEvent*) event, &keyval);
+#endif
+	if(block_input && (keyval == GDK_KEY_q || keyval == GDK_KEY_Q) && !(state & GDK_CONTROL_MASK)) {block_input = false;
 return TRUE;}
 	if(calculator_busy()) {
-		if(event->keyval == GDK_KEY_Escape) {
+		if(keyval == GDK_KEY_Escape) {
 			abort_calculation();
 		}
 		return TRUE;
 	}
-	if(do_keyboard_shortcut(event)) return TRUE;
-	guint state = event->state;
+	if(do_keyboard_shortcut(keyval, state)) return TRUE;
 	FIX_ALT_GR
 	if(rpn_mode && state & GDK_CONTROL_MASK) {
-		switch(event->keyval) {
+		switch(keyval) {
 			case GDK_KEY_Up: {
 				stack_view_rotate(true);
 				return TRUE;
@@ -823,7 +829,7 @@ return TRUE;}
 			default: {}
 		}
 	}
-	switch(event->keyval) {
+	switch(keyval) {
 		case GDK_KEY_Escape: {
 			if(completion_visible()) {
 				hide_completion();
@@ -1109,12 +1115,12 @@ return TRUE;}
 			return TRUE;
 		}*/
 	}
-	if(state & GDK_CONTROL_MASK && event->keyval == GDK_KEY_c && !gtk_text_buffer_get_has_selection(expression_edit_buffer())) {
+	if(state & GDK_CONTROL_MASK && keyval == GDK_KEY_c && !gtk_text_buffer_get_has_selection(expression_edit_buffer())) {
 		copy_result();
 		return TRUE;
 	}
-	if(state & GDK_CONTROL_MASK && (event->keyval == GDK_KEY_z || event->keyval == GDK_KEY_Z)) {
-		if(state & GDK_SHIFT_MASK || event->keyval == GDK_KEY_Z) expression_redo();
+	if(state & GDK_CONTROL_MASK && (keyval == GDK_KEY_z || keyval == GDK_KEY_Z)) {
+		if(state & GDK_SHIFT_MASK || keyval == GDK_KEY_Z) expression_redo();
 		else expression_undo();
 		return TRUE;
 	}
@@ -1490,12 +1496,16 @@ gboolean epxression_tooltip_timeout(gpointer) {
 	return FALSE;
 }
 gboolean on_button_minimal_mode_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(event->button != 1) return FALSE;
+	guint button = 0;
+	gdk_event_get_button((GdkEvent*) event, &button);
+	if(button != 1) return FALSE;
 	set_minimal_mode(false);
 	return TRUE;
 }
 gboolean on_expression_button_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(event->button != 1) return FALSE;
+	guint button = 0;
+	gdk_event_get_button((GdkEvent*) event, &button);
+	if(button != 1) return FALSE;
 	GtkWidget *w = gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack")));
 	if(w == GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals"))) {
 		execute_expression();
@@ -1510,7 +1520,9 @@ gboolean on_expression_button_button_press_event(GtkWidget*, GdkEventButton *eve
 	return TRUE;
 }
 gboolean on_expression_button_button_release_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(event->button != 1) return FALSE;
+	guint button = 0;
+	gdk_event_get_button((GdkEvent*) event, &button);
+	if(button != 1) return FALSE;
 	if(gtk_stack_get_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "expression_button_stack"))) == GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon"))) {
 		g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 0, epxression_tooltip_timeout, NULL, NULL);
 		return TRUE;
@@ -1518,7 +1530,7 @@ gboolean on_expression_button_button_release_event(GtkWidget*, GdkEventButton *e
 	return FALSE;
 }
 gboolean on_expressiontext_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
+	if(gdk_event_triggers_context_menu((GdkEvent*) event) && gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_PRESS) {
 		if(calculator_busy()) return TRUE;
 	}
 	return FALSE;
@@ -1763,6 +1775,14 @@ void create_expression_edit() {
 
 	gtk_widget_set_visible(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button")), FALSE);
 
-	gtk_builder_add_callback_symbols(main_builder, "on_expressionbuffer_changed", G_CALLBACK(on_expressionbuffer_changed), "on_expressionbuffer_cursor_position_notify", G_CALLBACK(on_expressionbuffer_cursor_position_notify), "on_expressionbuffer_paste_done", G_CALLBACK(on_expressionbuffer_paste_done), "on_expressiontext_button_press_event", G_CALLBACK(on_expressiontext_button_press_event), "on_expressiontext_focus_out_event", G_CALLBACK(on_expressiontext_focus_out_event), "on_expressiontext_key_press_event", G_CALLBACK(on_expressiontext_key_press_event), "on_expressiontext_populate_popup", G_CALLBACK(on_expressiontext_populate_popup), "on_expression_button_button_press_event", G_CALLBACK(on_expression_button_button_press_event), "on_expression_button_button_release_event", G_CALLBACK(on_expression_button_button_release_event), "on_button_minimal_mode_button_press_event", G_CALLBACK(on_button_minimal_mode_button_press_event), NULL);
+#ifdef EVENT_CONTROLLER_TEST
+	GtkEventController *controller = gtk_event_controller_key_new(expression_edit_widget());
+	gtk_event_controller_set_propagation_phase(controller, GTK_PHASE_CAPTURE);
+	g_signal_connect(G_OBJECT(controller), "key-pressed", G_CALLBACK(on_expressiontext_key_press_event), NULL);
+#else
+	g_signal_connect(G_OBJECT(expression_edit_widget()), "key-press-event", G_CALLBACK(on_expressiontext_key_press_event), NULL);
+#endif
+
+	gtk_builder_add_callback_symbols(main_builder, "on_expressionbuffer_changed", G_CALLBACK(on_expressionbuffer_changed), "on_expressionbuffer_cursor_position_notify", G_CALLBACK(on_expressionbuffer_cursor_position_notify), "on_expressionbuffer_paste_done", G_CALLBACK(on_expressionbuffer_paste_done), "on_expressiontext_button_press_event", G_CALLBACK(on_expressiontext_button_press_event), "on_expressiontext_focus_out_event", G_CALLBACK(on_expressiontext_focus_out_event), "on_expressiontext_populate_popup", G_CALLBACK(on_expressiontext_populate_popup), "on_expression_button_button_press_event", G_CALLBACK(on_expression_button_button_press_event), "on_expression_button_button_release_event", G_CALLBACK(on_expression_button_button_release_event), "on_button_minimal_mode_button_press_event", G_CALLBACK(on_button_minimal_mode_button_press_event), NULL);
 
 }

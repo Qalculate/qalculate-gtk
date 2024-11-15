@@ -330,7 +330,9 @@ void fp_insert_text(GtkWidget *w, const gchar *text) {
 
 gboolean on_floatingpoint_dialog_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
 	if(calculator_busy()) {
-		if(event->keyval == GDK_KEY_Escape) {
+		guint keyval = 0;
+		gdk_event_get_keyval((GdkEvent*) event, &keyval);
+		if(keyval == GDK_KEY_Escape) {
 			abort_calculation();
 		}
 		return TRUE;

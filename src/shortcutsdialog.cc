@@ -124,24 +124,30 @@ void on_tShortcutsType_selection_changed(GtkTreeSelection *treeselection, gpoint
 
 GtkWidget *shortcut_label = NULL;
 gboolean on_shortcut_key_released(GtkWidget *w, GdkEventKey *event, gpointer) {
-	guint state = CLEAN_MODIFIERS(event->state);
+	GdkModifierType state; guint keyval = 0;
+	gdk_event_get_state((GdkEvent*) event, &state);
+	gdk_event_get_keyval((GdkEvent*) event, &keyval);
+	state = CLEAN_MODIFIERS(state);
 	FIX_ALT_GR
-	if(event->keyval == 0 || (event->keyval >= GDK_KEY_Shift_L && event->keyval <= GDK_KEY_Hyper_R)) return FALSE;
-	if(state == 0 && event->keyval == GDK_KEY_Escape) {
+	if(keyval == 0 || (keyval >= GDK_KEY_Shift_L && keyval <= GDK_KEY_Hyper_R)) return FALSE;
+	if(state == 0 && keyval == GDK_KEY_Escape) {
 		gtk_dialog_response(GTK_DIALOG(w), GTK_RESPONSE_CANCEL);
 		return TRUE;
 	}
-	if(state == 0 && event->keyval >= GDK_KEY_ampersand && event->keyval <= GDK_KEY_z) return FALSE;
-	current_shortcut_key = event->keyval;
+	if(state == 0 && keyval >= GDK_KEY_ampersand && keyval <= GDK_KEY_z) return FALSE;
+	current_shortcut_key = keyval;
 	current_shortcut_modifier = state;
 	gtk_dialog_response(GTK_DIALOG(w), GTK_RESPONSE_OK);
 	return TRUE;
 }
 gboolean on_shortcut_key_pressed(GtkWidget*, GdkEventKey *event, gpointer) {
-	guint state = CLEAN_MODIFIERS(event->state);
+	GdkModifierType state; guint keyval = 0;
+	gdk_event_get_state((GdkEvent*) event, &state);
+	gdk_event_get_keyval((GdkEvent*) event, &keyval);
+	state = CLEAN_MODIFIERS(state);
 	FIX_ALT_GR
 	string str = "<span size=\"large\">";
-	str += shortcut_to_text(event->keyval, state);
+	str += shortcut_to_text(keyval, state);
 	str += "</span>";
 	gtk_label_set_markup(GTK_LABEL(shortcut_label), str.c_str());
 	return FALSE;

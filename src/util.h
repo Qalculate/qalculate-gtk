@@ -70,9 +70,9 @@ struct tree_struct {
 #define VERSION_AFTER(i1, i2, i3) (version_numbers[0] > i1 || (version_numbers[0] == i1 && (version_numbers[1] > i2 || (version_numbers[1] == i2 && version_numbers[2] > i3))))
 
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
-#	define CLEAN_MODIFIERS(x) (x & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(GTK_WIDGET(main_window()))), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK))
+#	define CLEAN_MODIFIERS(x) (GdkModifierType) (x & gdk_keymap_get_modifier_mask(gdk_keymap_get_for_display(gtk_widget_get_display(GTK_WIDGET(main_window()))), GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK))
 #else
-#	define CLEAN_MODIFIERS(x) (x & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SUPER_MASK | GDK_HYPER_MASK | GDK_META_MASK))
+#	define CLEAN_MODIFIERS(x) (GdkModifierType) (x & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SUPER_MASK | GDK_HYPER_MASK | GDK_META_MASK))
 #endif
 #ifdef _WIN32
 #	define FIX_ALT_GR if(state & GDK_MOD1_MASK && state & GDK_MOD2_MASK && state & GDK_CONTROL_MASK) state &= ~GDK_CONTROL_MASK;
@@ -148,6 +148,7 @@ void update_tooltips_enabled();
 gchar *font_name_to_css(const char *font_name, const char *w = "*");
 
 std::string unhtmlize(std::string str, bool b_ascii = false);
+size_t unformatted_length(const std::string &str);
 
 bool last_is_operator(std::string str, bool allow_exp = false);
 

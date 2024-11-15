@@ -230,15 +230,20 @@ void on_help_previous_match(GtkWidget*, gpointer view) {
 	webkit_find_controller_search_previous(webkit_web_view_get_find_controller(WEBKIT_WEB_VIEW(view)));
 }
 gboolean on_help_configure_event(GtkWidget*, GdkEventConfigure *event, gpointer) {
-	if(help_width != -1 || event->width != 800 || event->height != 600) {
-		help_width = event->width;
-		help_height = event->height;
+	int w = gdk_window_get_width(gdk_event_get_window((GdkEvent*) event));
+	int h = gdk_window_get_height(gdk_event_get_window((GdkEvent*) event));
+	if(help_width != -1 || w != 800 || h != 600) {
+		help_width = w;
+		help_height = h;
 	}
 	return FALSE;
 }
 gboolean on_help_key_press_event(GtkWidget *d, GdkEventKey *event, gpointer w) {
+	GdkModifierType state; guint keyval = 0;
+	gdk_event_get_state((GdkEvent*) event, &state);
+	gdk_event_get_keyval((GdkEvent*) event, &keyval);
 	GtkWidget *entry_find = help_find_entries[GTK_WIDGET(w)];
-	switch(event->keyval) {
+	switch(keyval) {
 		case GDK_KEY_Escape: {
 			string str = gtk_entry_get_text(GTK_ENTRY(entry_find));
 			remove_blank_ends(str);
@@ -257,14 +262,14 @@ gboolean on_help_key_press_event(GtkWidget *d, GdkEventKey *event, gpointer w) {
 			return TRUE;
 		}
 		case GDK_KEY_Left: {
-			if(event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) {
+			if(state & GDK_CONTROL_MASK || state & GDK_MOD1_MASK) {
 				webkit_web_view_go_back(WEBKIT_WEB_VIEW(w));
 				return TRUE;
 			}
 			break;
 		}
 		case GDK_KEY_Right: {
-			if(event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) {
+			if(state & GDK_CONTROL_MASK || state & GDK_MOD1_MASK) {
 				webkit_web_view_go_forward(WEBKIT_WEB_VIEW(w));
 				return TRUE;
 			}
@@ -272,7 +277,7 @@ gboolean on_help_key_press_event(GtkWidget *d, GdkEventKey *event, gpointer w) {
 		}
 		case GDK_KEY_KP_Add: {}
 		case GDK_KEY_plus: {
-			if(event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) {
+			if(state & GDK_CONTROL_MASK || state & GDK_MOD1_MASK) {
 				help_zoom = webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) + 0.1;
 				webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), help_zoom);
 				gtk_widget_set_sensitive(button_zoomout, TRUE);
@@ -282,7 +287,7 @@ gboolean on_help_key_press_event(GtkWidget *d, GdkEventKey *event, gpointer w) {
 		}
 		case GDK_KEY_KP_Subtract: {}
 		case GDK_KEY_minus: {
-			if((event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) && webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) > 0.11) {
+			if((state & GDK_CONTROL_MASK || state & GDK_MOD1_MASK) && webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) > 0.11) {
 				help_zoom = webkit_web_view_get_zoom_level(WEBKIT_WEB_VIEW(w)) - 0.1;
 				webkit_web_view_set_zoom_level(WEBKIT_WEB_VIEW(w), help_zoom);
 				gtk_widget_set_sensitive(button_zoomout, help_zoom > 0.11);
@@ -291,14 +296,14 @@ gboolean on_help_key_press_event(GtkWidget *d, GdkEventKey *event, gpointer w) {
 			break;
 		}
 		case GDK_KEY_Home: {
-			if(event->state & GDK_CONTROL_MASK || event->state & GDK_MOD1_MASK) {
+			if(state & GDK_CONTROL_MASK || state & GDK_MOD1_MASK) {
 				webkit_web_view_load_uri(WEBKIT_WEB_VIEW(w), get_doc_uri("index.html").c_str());
 				return TRUE;
 			}
 			break;
 		}
 		case GDK_KEY_f: {
-			if(event->state & GDK_CONTROL_MASK) {
+			if(state & GDK_CONTROL_MASK) {
 				gtk_widget_grab_focus(GTK_WIDGET(entry_find));
 				return TRUE;
 			}

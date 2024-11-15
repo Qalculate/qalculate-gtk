@@ -822,15 +822,17 @@ void on_units_convert_search_changed(GtkEntry *w, gpointer) {
 }
 
 gboolean on_units_dialog_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
-	if(gtk_widget_has_focus(GTK_WIDGET(tUnits)) && gdk_keyval_to_unicode(event->keyval) > 32) {
+	guint keyval = 0;
+	gdk_event_get_keyval((GdkEvent*) event, &keyval);
+	if(gtk_widget_has_focus(GTK_WIDGET(tUnits)) && gdk_keyval_to_unicode(keyval) > 32) {
 		gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_entry_search")));
 	}
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_entry_search")))) {
-		if(event->keyval == GDK_KEY_Escape) {
+		if(keyval == GDK_KEY_Escape) {
 			gtk_widget_hide(o);
 			return TRUE;
 		}
-		if(event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_Page_Up || event->keyval == GDK_KEY_Page_Down || event->keyval == GDK_KEY_KP_Page_Up || event->keyval == GDK_KEY_KP_Page_Down) {
+		if(keyval == GDK_KEY_Up || keyval == GDK_KEY_Down || keyval == GDK_KEY_Page_Up || keyval == GDK_KEY_Page_Down || keyval == GDK_KEY_KP_Page_Up || keyval == GDK_KEY_KP_Page_Down) {
 			gtk_widget_grab_focus(GTK_WIDGET(tUnits));
 		}
 	}
@@ -842,8 +844,10 @@ gboolean on_units_convert_to_button_focus_out_event(GtkWidget*, GdkEvent*, gpoin
 	return FALSE;
 }
 gboolean on_units_convert_to_button_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
+	guint keyval = 0;
+	gdk_event_get_keyval((GdkEvent*) event, &keyval);
 	if(!gtk_widget_get_visible(units_convert_window)) return FALSE;
-	switch(event->keyval) {
+	switch(keyval) {
 		case GDK_KEY_Escape: {
 			gtk_widget_hide(units_convert_window);
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(units_builder, "units_convert_to_button")), FALSE);
@@ -881,7 +885,7 @@ gboolean on_units_convert_to_button_key_press_event(GtkWidget*, GdkEventKey *eve
 			GtkTreeIter iter;
 			GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(units_convert_view));
 			bool b = false;
-			if(event->keyval == GDK_KEY_Up) {
+			if(keyval == GDK_KEY_Up) {
 				if(gtk_tree_selection_get_selected(selection, NULL, &iter)) {
 					if(gtk_tree_model_iter_previous(units_convert_filter, &iter)) b = true;
 					else gtk_tree_selection_unselect_all(selection);
@@ -894,14 +898,14 @@ gboolean on_units_convert_to_button_key_press_event(GtkWidget*, GdkEventKey *eve
 						b = true;
 					}
 				}
-			} else if(event->keyval == GDK_KEY_Down) {
+			} else if(keyval == GDK_KEY_Down) {
 				if(gtk_tree_selection_get_selected(selection, NULL, &iter)) {
 					if(gtk_tree_model_iter_next(units_convert_filter, &iter)) b = true;
 					else gtk_tree_selection_unselect_all(selection);
 				} else {
 					if(gtk_tree_model_get_iter_first(units_convert_filter, &iter)) b = true;
 				}
-			} else if(event->keyval == GDK_KEY_End) {
+			} else if(keyval == GDK_KEY_End) {
 				gint rows = gtk_tree_model_iter_n_children(units_convert_filter, NULL);
 				if(rows > 0) {
 					GtkTreePath *path = gtk_tree_path_new_from_indices(rows - 1, -1);
@@ -909,9 +913,9 @@ gboolean on_units_convert_to_button_key_press_event(GtkWidget*, GdkEventKey *eve
 					gtk_tree_path_free(path);
 					b = true;
 				}
-			} else if(event->keyval == GDK_KEY_Home) {
+			} else if(keyval == GDK_KEY_Home) {
 				if(gtk_tree_model_get_iter_first(units_convert_filter, &iter)) b = true;
-			} else if(event->keyval == GDK_KEY_KP_Page_Down || event->keyval == GDK_KEY_Page_Down) {
+			} else if(keyval == GDK_KEY_KP_Page_Down || keyval == GDK_KEY_Page_Down) {
 				if(gtk_tree_selection_get_selected(selection, NULL, &iter)) {
 					b = true;
 					for(size_t i = 0; i < 20; i++) {
@@ -928,7 +932,7 @@ gboolean on_units_convert_to_button_key_press_event(GtkWidget*, GdkEventKey *eve
 						}
 					}
 				}
-			} else if(event->keyval == GDK_KEY_KP_Page_Up || event->keyval == GDK_KEY_Page_Up) {
+			} else if(keyval == GDK_KEY_KP_Page_Up || keyval == GDK_KEY_Page_Up) {
 				if(gtk_tree_selection_get_selected(selection, NULL, &iter)) {
 					b = true;
 					for(size_t i = 0; i < 20; i++) {
@@ -952,9 +956,9 @@ gboolean on_units_convert_to_button_key_press_event(GtkWidget*, GdkEventKey *eve
 			return TRUE;
 		}
 	}
-	if(gdk_keyval_to_unicode(event->keyval) > 32) {
+	if(gdk_keyval_to_unicode(keyval) > 32) {
 		gchar buffer[10];
-		buffer[g_unichar_to_utf8(gdk_keyval_to_unicode(event->keyval), buffer)] = '\0';
+		buffer[g_unichar_to_utf8(gdk_keyval_to_unicode(keyval), buffer)] = '\0';
 		string str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_convert_search")));
 		str += buffer;
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(units_builder, "units_convert_search")), str.c_str());

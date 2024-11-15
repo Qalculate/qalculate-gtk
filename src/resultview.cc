@@ -1164,32 +1164,38 @@ void update_resultview_popup() {
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_complex_angle"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_complex_angle_activate, NULL);
 }
 gboolean on_resultspinner_button_press_event(GtkWidget *w, GdkEventButton *event, gpointer) {
-	if(event->button != 1 || !gtk_widget_is_visible(w)) return FALSE;
+	guint button = 0;
+	gdk_event_get_button((GdkEvent*) event, &button);
+	if(button != 1 || !gtk_widget_is_visible(w)) return FALSE;
 	abort_calculation();
 	return TRUE;
 }
 guint32 prev_result_press_time = 0;
 gboolean on_resultview_button_press_event(GtkWidget*, GdkEventButton *event, gpointer) {
+	guint button = 0;
+	gdouble cx = 0, cy = 0;
+	gdk_event_get_button((GdkEvent*) event, &button);
+	gdk_event_get_coords((GdkEvent*) event, &cx, &cy);
 	if(calculator_busy()) return FALSE;
-	if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
+	if(gdk_event_triggers_context_menu((GdkEvent*) event) && gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_PRESS) {
 		update_resultview_popup();
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_resultview")), (GdkEvent*) event);
 #else
-		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_resultview")), NULL, NULL, NULL, NULL, event->button, event->time);
+		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_resultview")), NULL, NULL, NULL, NULL, button, gdk_event_get_time((GdkEvent*) event));
 #endif
 		return TRUE;
 	}
-	if(event->button == 1 && event->time > prev_result_press_time + 100 && surface_result && !show_parsed_instead_of_result && event->x >= gtk_widget_get_allocated_width(result_view_widget()) - cairo_image_surface_get_width(surface_result) - 20) {
-		gint x = event->x - binary_x_diff;
-		gint y = event->y - binary_y_diff;
+	if(button == 1 && gdk_event_get_time((GdkEvent*) event) > prev_result_press_time + 100 && surface_result && !show_parsed_instead_of_result && cx >= gtk_widget_get_allocated_width(result_view_widget()) - cairo_image_surface_get_width(surface_result) - 20) {
+		gint x = cx - binary_x_diff;
+		gint y = cy - binary_y_diff;
 		int binary_pos = get_binary_result_pos(x, y);
 		if(binary_pos >= 0) {
-			prev_result_press_time = event->time;
+			prev_result_press_time = gdk_event_get_time((GdkEvent*) event);
 			toggle_binary_pos(binary_pos);
 			return TRUE;
 		} else {
-			prev_result_press_time = event->time;
+			prev_result_press_time = gdk_event_get_time((GdkEvent*) event);
 			copy_result(-1);
 			// Result was copied
 			show_notification(_("Copied"));

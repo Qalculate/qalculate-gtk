@@ -509,15 +509,17 @@ void on_functions_button_deactivate_clicked(GtkButton*, gpointer) {
 }
 
 gboolean on_functions_dialog_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
-	if(gtk_widget_has_focus(GTK_WIDGET(tFunctions)) && gdk_keyval_to_unicode(event->keyval) > 32) {
+	guint keyval = 0;
+	gdk_event_get_keyval((GdkEvent*) event, &keyval);
+	if(gtk_widget_has_focus(GTK_WIDGET(tFunctions)) && gdk_keyval_to_unicode(keyval) > 32) {
 		gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_entry_search")));
 	}
 	if(gtk_widget_has_focus(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_entry_search")))) {
-		if(event->keyval == GDK_KEY_Escape) {
+		if(keyval == GDK_KEY_Escape) {
 			gtk_widget_hide(o);
 			return TRUE;
 		}
-		if(event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_Page_Up || event->keyval == GDK_KEY_Page_Down || event->keyval == GDK_KEY_KP_Page_Up || event->keyval == GDK_KEY_KP_Page_Down) {
+		if(keyval == GDK_KEY_Up || keyval == GDK_KEY_Down || keyval == GDK_KEY_Page_Up || keyval == GDK_KEY_Page_Down || keyval == GDK_KEY_KP_Page_Up || keyval == GDK_KEY_KP_Page_Down) {
 			gtk_widget_grab_focus(GTK_WIDGET(tFunctions));
 		}
 	}

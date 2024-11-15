@@ -95,6 +95,21 @@ string unhtmlize(string str, bool b_ascii) {
 	return str;
 }
 
+size_t unformatted_length(const string &str) {
+	size_t l = 0;
+	bool intag = false;
+	for(size_t i = 0; i < str.length(); i++) {
+		if(intag) {
+			if(str[i] == '>') intag = false;
+		} else if(str[i] == '<') {
+			intag = true;
+		} else if((signed char) str[i] > 0 || (unsigned char) str[i] >= 0xC0) {
+			l++;
+		}
+	}
+	return l;
+}
+
 void remove_separator(string &copy_text) {
 	for(size_t i = ((CALCULATOR->local_digit_group_separator.empty() || CALCULATOR->local_digit_group_separator == " " || CALCULATOR->local_digit_group_separator == printops.decimalpoint()) ? 1 : 0); i < 4; i++) {
 		string str_sep;
@@ -244,12 +259,15 @@ bool entry_in_quotes(GtkEntry *w) {
 
 extern bool block_input;
 const gchar *key_press_get_symbol(GdkEventKey *event, bool do_caret_as_xor, bool unit_expression) {
-	if(block_input && (event->keyval == GDK_KEY_q || event->keyval == GDK_KEY_Q) && !(event->state & GDK_CONTROL_MASK)) {block_input = false; return "";}
-	guint state = CLEAN_MODIFIERS(event->state);
+	GdkModifierType state; guint keyval = 0;
+	gdk_event_get_state((GdkEvent*) event, &state);
+	gdk_event_get_keyval((GdkEvent*) event, &keyval);
+	if(block_input && (keyval == GDK_KEY_q || keyval == GDK_KEY_Q) && !(state & GDK_CONTROL_MASK)) {block_input = false; return "";}
+	state = CLEAN_MODIFIERS(state);
 	FIX_ALT_GR
-	state = state & ~GDK_SHIFT_MASK;
+	state = (GdkModifierType) (state & ~GDK_SHIFT_MASK);
 	if(state == GDK_CONTROL_MASK) {
-		switch(event->keyval) {
+		switch(keyval) {
 			case GDK_KEY_asciicircum: {}
 			case GDK_KEY_dead_circumflex: {
 				bool input_xor = !do_caret_as_xor || !caret_as_xor;
@@ -262,7 +280,7 @@ const gchar *key_press_get_symbol(GdkEventKey *event, bool do_caret_as_xor, bool
 		}
 	}
 	if(state != 0) return NULL;
-	switch(event->keyval) {
+	switch(keyval) {
 		case GDK_KEY_dead_circumflex: {
 #ifdef _WIN32
 			// fix dead key

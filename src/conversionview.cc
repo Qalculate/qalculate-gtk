@@ -326,9 +326,13 @@ void on_popup_menu_convert_convert_activate(GtkMenuItem*, gpointer) {
 }
 gboolean on_convert_treeview_unit_button_press_event(GtkWidget *w, GdkEventButton *event, gpointer) {
 	GtkTreePath *path = NULL;
-	if(event->type == GDK_BUTTON_PRESS && event->button == 2) {
+	guint button = 0;
+	gdouble x = 0, y = 0;
+	gdk_event_get_button((GdkEvent*) event, &button);
+	gdk_event_get_coords((GdkEvent*) event, &x, &y);
+	if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_PRESS && button == 2) {
 		if(calculator_busy()) return TRUE;
-		if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(w), event->x, event->y, &path, NULL, NULL, NULL)) {
+		if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(w), x, y, &path, NULL, NULL, NULL)) {
 			GtkTreeIter iter;
 			if(gtk_tree_model_get_iter(tUnitSelector_store_filter, &iter, path)) {
 				Unit *u = NULL;
@@ -339,9 +343,9 @@ gboolean on_convert_treeview_unit_button_press_event(GtkWidget *w, GdkEventButto
 			}
 			gtk_tree_path_free(path);
 		}
-	} else if(gdk_event_triggers_context_menu((GdkEvent*) event) && event->type == GDK_BUTTON_PRESS) {
+	} else if(gdk_event_triggers_context_menu((GdkEvent*) event) && gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_PRESS) {
 		if(calculator_busy()) return TRUE;
-		if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(w), event->x, event->y, &path, NULL, NULL, NULL)) {
+		if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(w), x, y, &path, NULL, NULL, NULL)) {
 			GtkTreeIter iter;
 			if(gtk_tree_model_get_iter(tUnitSelector_store_filter, &iter, path)) {
 				gtk_tree_model_get(tUnitSelector_store_filter, &iter, 1, &popup_convert_unit, -1);
@@ -355,7 +359,7 @@ gboolean on_convert_treeview_unit_button_press_event(GtkWidget *w, GdkEventButto
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
 		gtk_menu_popup_at_pointer(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_convert")), (GdkEvent*) event);
 #else
-		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_convert")), NULL, NULL, NULL, NULL, event->button, event->time);
+		gtk_menu_popup(GTK_MENU(gtk_builder_get_object(main_builder, "popup_menu_convert")), NULL, NULL, NULL, NULL, button, gdk_event_get_time((GdkEvent*) event));
 #endif
 		return TRUE;
 	}

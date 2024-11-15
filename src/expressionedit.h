@@ -34,6 +34,12 @@ void block_expression_history();
 void unblock_expression_history();
 bool expression_history_blocked();
 
+#ifdef EVENT_CONTROLLER_TEST
+gboolean on_expressiontext_key_press_event(GtkEventControllerKey*, guint keyval, guint, GdkModifierType state, gpointer);
+#else
+gboolean on_expressiontext_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer);
+#endif
+
 const char *expression_add_sign();
 const char *expression_sub_sign();
 const char *expression_times_sign();

@@ -63,7 +63,9 @@ void write_number_bases_dialog_settings(FILE *file) {
 }
 
 gboolean on_nbases_event_hide_buttons_button_release_event(GtkWidget*, GdkEventButton *event, gpointer) {
-	if(event->type == GDK_BUTTON_RELEASE && event->button == 1) {
+	guint button = 0;
+	gdk_event_get_button((GdkEvent*) event, &button);
+	if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_RELEASE && button == 1) {
 		show_bases_keypad = !gtk_widget_is_visible(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "box_keypad")));
 		if(show_bases_keypad) {
 			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(nbases_builder, "box_keypad")));
@@ -734,7 +736,9 @@ void on_nbases_button_ac_clicked(GtkToggleButton*, gpointer) {
 
 gboolean on_nbases_dialog_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
 	if(calculator_busy()) {
-		if(event->keyval == GDK_KEY_Escape) {
+		guint keyval = 0;
+		gdk_event_get_keyval((GdkEvent*) event, &keyval);
+		if(keyval == GDK_KEY_Escape) {
 			abort_calculation();
 		}
 		return TRUE;
