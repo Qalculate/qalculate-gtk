@@ -3754,7 +3754,11 @@ void set_option(string str) {
 	} else if(equalsIgnoreCase(svar, "interval arithmetic") || svar == "ia" || svar == "interval") SET_BOOL_MENU("menu_item_interval_arithmetic")
 	else if(equalsIgnoreCase(svar, "variable units") || svar == "varunits") SET_BOOL_MENU("menu_item_enable_variable_units")
 	else if(equalsIgnoreCase(svar, "color")) CALCULATOR->error(true, "Unsupported option: %s.", svar.c_str(), NULL);
-	else if(equalsIgnoreCase(svar, "max decimals") || svar == "maxdeci") {
+	else if(equalsIgnoreCase(svar, "calculate as you type") || svar == "autocalc") {
+		bool b = auto_calculate;
+		SET_BOOL(b)
+		set_autocalculate(b);
+	} else if(equalsIgnoreCase(svar, "max decimals") || svar == "maxdeci") {
 		int v = -1;
 		if(equalsIgnoreCase(svalue, "off")) v = -1;
 		else if(!empty_value && svalue.find_first_not_of(SPACES NUMBERS) == string::npos) v = s2i(svalue);
@@ -3770,6 +3774,23 @@ void set_option(string str) {
 		printops.use_min_decimals = v >= 0;
 		result_format_updated();
 		update_decimals();
+	} else if(equalsIgnoreCase(svar, "digits")) {
+		int v = -1;
+		if(equalsIgnoreCase(svalue, "off") || equalsIgnoreCase(svalue, "auto") || equalsIgnoreCase(svalue, "precision")) v = -1;
+		else if(!empty_value && svalue.find_first_not_of(SPACES NUMBERS) == string::npos) v = s2i(svalue);
+		if(v <= 0 || v == PRECISION) {
+			printops.max_decimals = -1;
+			printops.use_max_decimals = false;
+			result_format_updated();
+			update_decimals();
+		} else if(v >= 2 && v < PRECISION) {
+			printops.max_decimals = -v;
+			printops.use_max_decimals = true;
+			result_format_updated();
+			update_decimals();
+		} else {
+			CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
+		}
 	} else if(equalsIgnoreCase(svar, "fractions") || svar == "fr") {
 		int v = -1;
 		if(equalsIgnoreCase(svalue, "off")) v = FRACTION_DECIMAL;
@@ -5214,7 +5235,7 @@ void execute_from_file(string command_file) {
 		ispace = str.find_first_of(SPACES);
 		if(ispace == string::npos) scom = "";
 		else scom = str.substr(0, ispace);
-		if(equalsIgnoreCase(str, "exrates") || equalsIgnoreCase(str, "stack") || equalsIgnoreCase(str, "swap") || equalsIgnoreCase(str, "rotate") || equalsIgnoreCase(str, "copy") || equalsIgnoreCase(str, "clear stack") || equalsIgnoreCase(str, "exact") || equalsIgnoreCase(str, "approximate") || equalsIgnoreCase(str, "approx") || equalsIgnoreCase(str, "factor") || equalsIgnoreCase(str, "partial fraction") || equalsIgnoreCase(str, "simplify") || equalsIgnoreCase(str, "expand") || equalsIgnoreCase(str, "mode") || equalsIgnoreCase(str, "help") || equalsIgnoreCase(str, "?") || equalsIgnoreCase(str, "list") || equalsIgnoreCase(str, "exit") || equalsIgnoreCase(str, "quit") || equalsIgnoreCase(str, "clear") || equalsIgnoreCase(str, "clear history") || equalsIgnoreCase(scom, "variable") || equalsIgnoreCase(scom, "function") || equalsIgnoreCase(scom, "set") || equalsIgnoreCase(scom, "save") || equalsIgnoreCase(scom, "store") || equalsIgnoreCase(scom, "swap") || equalsIgnoreCase(scom, "delete") || equalsIgnoreCase(scom, "keep") || equalsIgnoreCase(scom, "assume") || equalsIgnoreCase(scom, "base") || equalsIgnoreCase(scom, "rpn") || equalsIgnoreCase(scom, "move") || equalsIgnoreCase(scom, "rotate") || equalsIgnoreCase(scom, "copy") || equalsIgnoreCase(scom, "pop") || equalsIgnoreCase(scom, "convert") || (equalsIgnoreCase(scom, "to") && scom != "to") || equalsIgnoreCase(scom, "list") || equalsIgnoreCase(scom, "find") || equalsIgnoreCase(scom, "info") || equalsIgnoreCase(scom, "help")) str.insert(0, 1, '/');
+		if(equalsIgnoreCase(str, "exrates") || equalsIgnoreCase(str, "stack") || equalsIgnoreCase(str, "swap") || equalsIgnoreCase(str, "rotate") || equalsIgnoreCase(str, "copy") || equalsIgnoreCase(str, "clear stack") || equalsIgnoreCase(str, "exact") || equalsIgnoreCase(str, "approximate") || equalsIgnoreCase(str, "approx") || equalsIgnoreCase(str, "factor") || equalsIgnoreCase(str, "partial fraction") || equalsIgnoreCase(str, "simplify") || equalsIgnoreCase(str, "expand") || equalsIgnoreCase(str, "mode") || equalsIgnoreCase(str, "help") || equalsIgnoreCase(str, "?") || equalsIgnoreCase(str, "list") || equalsIgnoreCase(str, "exit") || equalsIgnoreCase(str, "quit") || equalsIgnoreCase(str, "clear") || equalsIgnoreCase(str, "clear history") || equalsIgnoreCase(scom, "variable") || equalsIgnoreCase(scom, "function") || equalsIgnoreCase(scom, "set") || equalsIgnoreCase(scom, "save") || equalsIgnoreCase(scom, "store") || equalsIgnoreCase(scom, "swap") || equalsIgnoreCase(scom, "delete") || equalsIgnoreCase(scom, "keep") || equalsIgnoreCase(scom, "unkeep") || equalsIgnoreCase(scom, "assume") || equalsIgnoreCase(scom, "base") || equalsIgnoreCase(scom, "rpn") || equalsIgnoreCase(scom, "move") || equalsIgnoreCase(scom, "rotate") || equalsIgnoreCase(scom, "copy") || equalsIgnoreCase(scom, "pop") || equalsIgnoreCase(scom, "convert") || (equalsIgnoreCase(scom, "to") && scom != "to") || equalsIgnoreCase(scom, "list") || equalsIgnoreCase(scom, "find") || equalsIgnoreCase(scom, "info") || equalsIgnoreCase(scom, "help")) str.insert(0, 1, '/');
 		if(!str.empty()) execute_expression(true, false, OPERATION_ADD, NULL, false, 0, "", str.c_str(), false);
 	}
 	clear_expression_text();
@@ -5664,7 +5685,7 @@ void load_preferences() {
 	}
 
 	version_numbers[0] = 5;
-	version_numbers[1] = 3;
+	version_numbers[1] = 4;
 	version_numbers[2] = 0;
 
 	if(file) {
@@ -6154,7 +6175,7 @@ bool save_preferences(bool mode, bool allow_cancel) {
 	update_units_settings();
 	update_functions_settings();
 	fprintf(file, "\n[General]\n");
-	fprintf(file, "version=%s\n", "5.0.1");
+	fprintf(file, "version=%s\n", VERSION);
 	fprintf(file, "allow_multiple_instances=%i\n", allow_multiple_instances);
 	if(title_type != TITLE_APP) fprintf(file, "window_title_mode=%i\n", title_type);
 	if(minimal_width > 0 && minimal_mode) {
@@ -6544,6 +6565,7 @@ void set_precision(int v, int recalc) {
 	CALCULATOR->setPrecision(v);
 	if(recalc > 0) execute_expression(true, false, OPERATION_ADD, NULL, rpn_mode);
 	else if(recalc < 0) {update_precision(); expression_calculation_updated();}
+	decimals_precision_changed();
 	previous_precision = 0;
 }
 void set_approximation(ApproximationMode approx) {

@@ -17,4 +17,6 @@
 void open_decimals(GtkWindow *parent);
 void update_decimals();
 
+void decimals_precision_changed();
+
 #endif /* DECIMALS_DIALOG_H */

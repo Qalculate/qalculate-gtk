@@ -50,6 +50,25 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="5.4.0" date="2024-11-25">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Option to specify number of displayed significant digits, instead of using precision</li>
+      <li>Option, in menu, to open settings folder(s)</li>
+      <li>Improve decision to automatically convert unchanged quantity with unit</li>
+      <li>New functions: tripleProduct(), multilimit()</li>
+      <li>Hungarian translation</li>
+      <li>Updated French translation</li>
+      <li>Fix number base subscripts in programming keypad</li>
+      <li>Fix keyboard shortcut with copy followed by quit</li>
+      <li>Fix precision in Preset mode</li>
+      <li>Fix case conversion of µ to M and similar</li>
+      <li>Fix segfault with very large integer raised by very large integer</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
   <release version="5.3.0" date="2024-10-07">
    <description>
     <p>Changes:</p>

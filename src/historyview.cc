@@ -2377,6 +2377,12 @@ void on_popup_menu_item_history_delete_activate(GtkMenuItem*, gpointer) {
 						gtk_tree_model_get(model, &iter2, 1, &hindex2, -1);
 						if(hindex2 >= 0 && (ITEM_IS_EXPRESSION(hindex2) || inhistory_type[hindex2] == QALCULATE_HISTORY_OLD)) {
 							del_prev = true;
+							iter3 = iter;
+							if(gtk_tree_model_iter_next(model, &iter3)) {
+								gint hindex3 = 0;
+								gtk_tree_model_get(model, &iter3, 1, &hindex3, -1);
+								if(hindex3 < 0) gtk_list_store_remove(GTK_LIST_STORE(model), &iter3);
+							}
 						}
 					}
 				}

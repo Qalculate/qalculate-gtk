@@ -13,6 +13,13 @@
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkAdjustment" id="adjustment_maxdigits">
+    <property name="lower">2</property>
+    <property name="upper">100000</property>
+    <property name="value">10</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
   <object class="GtkDialog" id="decimals_dialog">
     <property name="can_focus">False</property>
     <property name="border_width">6</property>
@@ -96,6 +103,21 @@
                 <property name="top_attach">1</property>
               </packing>
             </child>
+	    <child>
+              <object class="GtkCheckButton" id="decimals_dialog_checkbutton_maxdigits">
+                <property name="label" translatable="yes">Significant digits</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_underline">True</property>
+                <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_decimals_dialog_checkbutton_maxdigits_toggled" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">2</property>
+              </packing>
+            </child>
             <child>
               <object class="GtkSpinButton" id="decimals_dialog_spinbutton_min">
                 <property name="visible">True</property>
@@ -130,6 +152,25 @@
               <packing>
                 <property name="left_attach">1</property>
                 <property name="top_attach">1</property>
+              </packing>
+            </child>
+	    <child>
+              <object class="GtkSpinButton" id="decimals_dialog_spinbutton_maxdigits">
+                <property name="visible">True</property>
+                <property name="sensitive">False</property>
+                <property name="can_focus">True</property>
+                <property name="tooltip_text" translatable="yes">Maximal number of significant digits to display (by default determined by precision)</property>
+                <property name="hexpand">True</property>
+                <property name="adjustment">adjustment_maxdigits</property>
+                <property name="climb_rate">1</property>
+                <property name="snap_to_ticks">True</property>
+                <property name="numeric">True</property>
+                <property name="value">10</property>
+                <signal name="value-changed" handler="on_decimals_dialog_spinbutton_maxdigits_value_changed" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">2</property>
               </packing>
             </child>
           </object>
