@@ -164,7 +164,7 @@ void insert_function_do(MathFunction *f, FunctionDialog *fd) {
 	string str = f->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_FUNCTION, true) + "(", str2;
 
 	int argcount = fd->args;
-	if(f->maxargs() > 0 && f->minargs() < f->maxargs() && argcount > f->minargs()) {
+	if((f->maxargs() < 0 || f->minargs() < f->maxargs()) && argcount > f->minargs()) {
 		while(true) {
 			string defstr = localize_expression(f->getDefaultValue(argcount));
 			remove_blank_ends(defstr);
