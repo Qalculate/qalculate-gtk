@@ -126,6 +126,18 @@ void stop_expression_spinner() {
 	gtk_spinner_stop(GTK_SPINNER(gtk_builder_get_object(main_builder, "expressionspinner")));
 }
 
+GtkTextIter selstore_start, selstore_end;
+void store_expression_selection() {
+	gtk_text_buffer_get_selection_bounds(expression_edit_buffer(), &selstore_start, &selstore_end);
+}
+void restore_expression_selection() {
+	if(!gtk_text_iter_equal(&selstore_start, &selstore_end)) {
+		block_undo();
+		gtk_text_buffer_select_range(expression_edit_buffer(), &selstore_start, &selstore_end);
+		unblock_undo();
+	}
+}
+
 int wrap_expression_selection(const char *insert_before, bool return_true_if_whole_selected) {
 	if(!gtk_text_buffer_get_has_selection(expression_edit_buffer())) return false;
 	GtkTextMark *mstart = gtk_text_buffer_get_selection_bound(expression_edit_buffer());
@@ -550,6 +562,7 @@ void highlight_parentheses() {
 
 extern bool tabbed_completion;
 void on_expressionbuffer_cursor_position_notify() {
+	selstore_end = selstore_start;
 	tabbed_completion = false;
 	cursor_has_moved = true;
 	if(expression_has_changed_pos) {
@@ -586,6 +599,7 @@ void set_expression_modified(bool b, bool handle, bool autocalc) {
 }
 
 void on_expressionbuffer_changed(GtkTextBuffer *o, gpointer) {
+	selstore_end = selstore_start;
 	set_expression_modified(true, true, o != NULL);
 }
 

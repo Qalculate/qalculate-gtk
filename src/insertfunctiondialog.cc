@@ -257,6 +257,7 @@ void insert_function_do(MathFunction *f, FunctionDialog *fd) {
 		str += str2;
 	}
 	str += ")";
+	restore_expression_selection();
 	insert_text(str.c_str());
 	if(fd->add_to_menu) function_inserted(f);
 }
@@ -386,8 +387,7 @@ void insert_function(MathFunction *f, GtkWindow *parent, bool add_to_menu) {
 		return;
 	}
 
-	GtkTextIter istart, iend;
-	gtk_text_buffer_get_selection_bounds(expression_edit_buffer(), &istart, &iend);
+	store_expression_selection();
 
 	if(function_dialogs.find(f) != function_dialogs.end()) {
 		FunctionDialog *fd = function_dialogs[f];
@@ -424,7 +424,7 @@ void insert_function(MathFunction *f, GtkWindow *parent, bool add_to_menu) {
 	} else if(f->minargs() > 0) {
 		args = f->minargs();
 		while(!f->getDefaultValue(args + 1).empty()) args++;
-		args++;
+		if(args == 1 || f->id() == FUNCTION_ID_PLOT) args++;
 	} else {
 		args = 1;
 		has_vector = true;
@@ -841,10 +841,6 @@ void insert_function(MathFunction *f, GtkWindow *parent, bool add_to_menu) {
 	g_signal_connect(G_OBJECT(fd->dialog), "delete-event", G_CALLBACK(on_insert_function_delete), (gpointer) f);
 
 	gtk_widget_show_all(fd->dialog);
-
-	block_undo();
-	gtk_text_buffer_select_range(expression_edit_buffer(), &istart, &iend);
-	unblock_undo();
 
 }
 

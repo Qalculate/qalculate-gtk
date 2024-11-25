@@ -79,6 +79,8 @@ void expression_redo();
 void clear_expression_history();
 void start_expression_spinner();
 void stop_expression_spinner();
+void store_expression_selection();
+void restore_expression_selection();
 
 #define EXPRESSION_STOP 1
 #define EXPRESSION_SPINNER 2

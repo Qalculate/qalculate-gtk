@@ -1788,7 +1788,13 @@ void handle_expression_modified(bool autocalc) {
 	show_parsed_instead_of_result = false;
 	if(!parsed_in_result || rpn_mode) display_parse_status();
 	if(autocalc && !rpn_mode && auto_calculate && !parsed_in_result) do_auto_calc(2);
-	if(result_text.empty() && !autocalc_history_timeout_id && (!parsed_in_result || rpn_mode) && (!chain_mode || auto_calculate)) return;
+	if(result_text.empty() && !autocalc_history_timeout_id && (!parsed_in_result || rpn_mode) && (!chain_mode || auto_calculate)) {
+		if(!rpn_mode && !auto_calculate && (visible_keypad & PROGRAMMING_KEYPAD)) {
+			clear_result_bases();
+			autocalc_result_bases();
+		}
+		return;
+	}
 	if((!autocalc || !auto_calculate || parsed_in_result) && !rpn_mode) {
 		clearresult();
 	}

@@ -75,7 +75,7 @@ struct tree_struct {
 #	define CLEAN_MODIFIERS(x) (GdkModifierType) (x & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SUPER_MASK | GDK_HYPER_MASK | GDK_META_MASK))
 #endif
 #ifdef _WIN32
-#	define FIX_ALT_GR if(state & GDK_MOD1_MASK && state & GDK_MOD2_MASK && state & GDK_CONTROL_MASK) state &= ~GDK_CONTROL_MASK;
+#	define FIX_ALT_GR if(state & GDK_MOD1_MASK && state & GDK_MOD2_MASK && state & GDK_CONTROL_MASK) state = (GdkModifierType) (state & ~GDK_CONTROL_MASK);
 #else
 #	define FIX_ALT_GR
 #endif
