@@ -169,6 +169,8 @@ void set_angle_unit(AngleUnit au);
 void set_custom_angle_unit(Unit *u);
 void set_precision(int v, int recalc = -1);
 
+void set_disable_cursor_blinking(bool);
+
 void update_exchange_rates();
 void import_definitions_file();
 void show_about();

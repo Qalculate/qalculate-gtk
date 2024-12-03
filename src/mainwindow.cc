@@ -57,6 +57,7 @@ bool save_mode_on_exit;
 bool save_defs_on_exit;
 bool save_history_separately = false;
 int gtk_theme = -1;
+bool disable_cursor_blinking = false;
 bool use_custom_app_font;
 bool save_custom_app_font = false;
 string custom_app_font;
@@ -5504,6 +5505,13 @@ void set_minimal_mode(bool b) {
 	set_expression_size_request();
 }
 
+void set_disable_cursor_blinking(bool b) {
+	if(b != disable_cursor_blinking) {
+		disable_cursor_blinking = b;
+		g_object_set(gtk_settings_get_default(), "gtk-cursor-blink", !b, NULL);
+	}
+}
+
 /*
 	load preferences from ~/.conf/qalculate/qalculate-gtk.cfg
 */
@@ -5665,6 +5673,7 @@ void load_preferences() {
 	first_error = true;
 	gtk_theme = -1;
 	custom_lang = "";
+	disable_cursor_blinking = false;
 
 	CALCULATOR->setPrecision(10);
 	previous_precision = 0;
@@ -5879,6 +5888,8 @@ void load_preferences() {
 						if(v > 0) gtk_theme = 1;
 					} else if(svar == "gtk_theme") {
 						gtk_theme = v;
+					} else if(svar == "disable_cursor_blinking") {
+						set_disable_cursor_blinking(v);
 					} else if(svar == "use_custom_application_font") {
 						use_custom_app_font = v;
 					} else if(svar == "custom_application_font") {
@@ -6319,6 +6330,7 @@ bool save_preferences(bool mode, bool allow_cancel) {
 	fprintf(file, "comma_as_separator=%i\n", evalops.parse_options.comma_as_separator);
 	if(previous_precision > 0) fprintf(file, "previous_precision=%i\n", previous_precision);
 	if(gtk_theme >= 0) fprintf(file, "gtk_theme=%i\n", gtk_theme);
+	if(disable_cursor_blinking) fprintf(file, "disable_cursor_blinking=%i\n", disable_cursor_blinking);
 	fprintf(file, "use_custom_application_font=%i\n", use_custom_app_font);
 	if(use_custom_app_font || save_custom_app_font) fprintf(file, "custom_application_font=%s\n", custom_app_font.c_str());
 	if(text_color_set) fprintf(file, "text_color=%s\n", text_color.c_str());

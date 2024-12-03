@@ -559,6 +559,9 @@ void on_preferences_combo_theme_changed(GtkComboBox *w, gpointer) {
 	gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(gtk_builder_get_object(preferences_builder, "colorbutton_status_warning_color")), &c);
 #endif
 }
+void on_preferences_checkbutton_disable_cursor_blinking_toggled(GtkToggleButton *w, gpointer) {
+	set_disable_cursor_blinking(gtk_toggle_button_get_active(w));
+}
 #ifdef _WIN32
 void on_preferences_checkbutton_use_systray_icon_toggled(GtkToggleButton *w, gpointer) {
 	bool b = gtk_toggle_button_get_active(w);
@@ -1016,7 +1019,8 @@ GtkWidget* get_preferences_dialog() {
 		"on_preferences_button_result_font_font_set", G_CALLBACK(on_preferences_button_result_font_font_set), "on_preferences_checkbutton_custom_keypad_font_toggled", G_CALLBACK(on_preferences_checkbutton_custom_keypad_font_toggled), "on_preferences_button_keypad_font_font_set", G_CALLBACK(on_preferences_button_keypad_font_font_set),
 		"on_colorbutton_status_warning_color_color_set", G_CALLBACK(on_colorbutton_status_warning_color_color_set), "on_colorbutton_status_error_color_color_set", G_CALLBACK(on_colorbutton_status_error_color_color_set), "on_colorbutton_text_color_color_set", G_CALLBACK(on_colorbutton_text_color_color_set), "on_preferences_button_app_font_font_set",
 		G_CALLBACK(on_preferences_button_app_font_font_set), "on_preferences_button_history_font_font_set", G_CALLBACK(on_preferences_button_history_font_font_set), "on_preferences_checkbutton_custom_app_font_toggled", G_CALLBACK(on_preferences_checkbutton_custom_app_font_toggled), "on_preferences_checkbutton_custom_history_font_toggled",
-		G_CALLBACK(on_preferences_checkbutton_custom_history_font_toggled), NULL);
+		G_CALLBACK(on_preferences_checkbutton_custom_history_font_toggled), "on_preferences_checkbutton_disable_cursor_blinking_toggled",
+		G_CALLBACK(on_preferences_checkbutton_disable_cursor_blinking_toggled), NULL);
 
 		gtk_builder_connect_signals(preferences_builder, NULL);
 
