@@ -127,8 +127,30 @@ int AnswerFunction::calculate(MathStructure &mstruct, const MathStructure &vargs
 			if(vargs[0].size() == 1) mstruct.setUndefined();
 			else mstruct.addChild(m_undefined);
 		} else {
-			if(vargs[0].size() == 1) mstruct.set(*history_answer[(size_t) index - 1]);
-			else mstruct.addChild(*history_answer[(size_t) index - 1]);
+			if(is_equation_solutions(*history_answer[(size_t) index - 1])) {
+				MathStructure m(*history_answer[(size_t) index - 1]);
+				if(m.isLogicalAnd()) {
+					m.setToChild(1);
+					m.setToChild(2);
+				} else if(m.isLogicalOr()) {
+					m.setType(STRUCT_VECTOR);
+					for(size_t i = 0; i < m.size(); i++) {
+						if(m[i].isLogicalAnd()) {
+							m[i].setToChild(1);
+							m[i].setToChild(2);
+						} else {
+							m[i].setToChild(2);
+						}
+					}
+				} else {
+					m.setToChild(2);
+				}
+				if(vargs[0].size() == 1) mstruct.set(m);
+				else mstruct.addChild(m);
+			} else {
+				if(vargs[0].size() == 1) mstruct.set(*history_answer[(size_t) index - 1]);
+				else mstruct.addChild(*history_answer[(size_t) index - 1]);
+			}
 		}
 	}
 	return 1;

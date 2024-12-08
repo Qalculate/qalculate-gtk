@@ -147,6 +147,7 @@ void dataset_edited(DataSet *ds);
 bool is_answer_variable(Variable *v);
 bool is_memory_variable(Variable *v);
 void insert_answer_variable(size_t index = 0);
+bool is_equation_solutions(const MathStructure &m);
 
 void insert_variable(Variable *v, bool add_to_menu = true);
 void insert_unit(Unit *u, bool add_to_recent = false);
