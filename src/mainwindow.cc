@@ -1453,7 +1453,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 			evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
 		}
 		if(origstr) {
-			size_t i = str.find_first_of(SPACES LEFT_PARENTHESIS);
+			size_t i = str.find_first_of(SPACES);
 			if(i != string::npos) {
 				to_str = str.substr(0, i);
 				if(to_str == "factor" || equalsIgnoreCase(to_str, "factorize") || equalsIgnoreCase(to_str, _("factorize"))) {
@@ -4918,7 +4918,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		evalops.complex_number_form = COMPLEX_NUMBER_FORM_RECTANGULAR;
 	}
 	if(execute_str.empty()) {
-		size_t i = str.find_first_of(SPACES LEFT_PARENTHESIS);
+		size_t i = str.find_first_of(SPACES);
 		if(i != string::npos) {
 			to_str = str.substr(0, i);
 			if(to_str == "factor" || equalsIgnoreCase(to_str, "factorize") || equalsIgnoreCase(to_str, _("factorize"))) {

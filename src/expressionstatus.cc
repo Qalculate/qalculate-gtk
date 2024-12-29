@@ -685,7 +685,7 @@ void display_parse_status() {
 	gsub(ID_WRAP_LEFT, LEFT_PARENTHESIS, text);
 	gsub(ID_WRAP_RIGHT, RIGHT_PARENTHESIS, text);
 	remove_duplicate_blanks(text);
-	size_t i = text.find_first_of(SPACES LEFT_PARENTHESIS);
+	size_t i = text.find_first_of(SPACES);
 	if(i != string::npos) {
 		str_f = text.substr(0, i);
 		if(str_f == "factor" || equalsIgnoreCase(str_f, "factorize") || equalsIgnoreCase(str_f, _("factorize"))) {
@@ -1015,7 +1015,7 @@ void display_parse_status() {
 							mparse_to = u;
 							if(!had_to_conv && !str_e.empty()) {
 								CALCULATOR->beginTemporaryStopMessages();
-								MathStructure to_struct = get_units_for_parsed_expression(&mparse, u, evalops, current_from_struct && !current_from_struct->isAborted() ? current_from_struct : NULL);
+								MathStructure to_struct = get_units_for_parsed_expression(&mparse, u, evalops, current_from_struct && !current_from_struct->isAborted() ? current_from_struct : NULL, str_e);
 								if(!to_struct.isZero()) {
 									mparse2 = new MathStructure();
 									CALCULATOR->parse(mparse2, str_e, evalops.parse_options);
@@ -1038,7 +1038,7 @@ void display_parse_status() {
 							int i_warn = 0, i_error = CALCULATOR->endTemporaryStopMessages(NULL, &i_warn);
 							if(!had_to_conv && cu.countUnits() > 0 && !str_e.empty()) {
 								CALCULATOR->beginTemporaryStopMessages();
-								MathStructure to_struct = get_units_for_parsed_expression(&mparse, &cu, evalops, current_from_struct && !current_from_struct->isAborted() ? current_from_struct : NULL);
+								MathStructure to_struct = get_units_for_parsed_expression(&mparse, &cu, evalops, current_from_struct && !current_from_struct->isAborted() ? current_from_struct : NULL, str_e);
 								if(!to_struct.isZero()) {
 									mparse2 = new MathStructure();
 									CALCULATOR->parse(mparse2, str_e, evalops.parse_options);
