@@ -3920,23 +3920,32 @@ void set_option(string str) {
 bool is_equation_solutions(const MathStructure &m) {
 	if(m.isComparison()) {
 		return m.comparisonType() == COMPARISON_EQUALS && m[0].isUnknown();
-	} else if(m.isLogicalAnd() && m.size() >= 1 && m[0].isComparison() && m[0].comparisonType() == COMPARISON_EQUALS && m[0][0].isUnknown()) {
-		for(size_t i = 1; i < m.size(); i++) {
-			if(!m[i].isComparison() || m[i].comparisonType() == COMPARISON_EQUALS) {
+	} else if(m.isLogicalAnd()) {
+		bool b = false;
+		for(size_t i = 0; i < m.size(); i++) {
+			if(!m[i].isComparison()) {
 				return false;
+			} else if(m[i].comparisonType() == COMPARISON_EQUALS) {
+				if(b || !m[i][0].isUnknown()) return false;
+				b = true;
 			}
 		}
-		return true;
+		return b;
 	} else if(m.isLogicalOr()) {
 		for(size_t i = 0; i < m.size(); i++) {
 			if(m[i].isComparison()) {
 				if(m[i].comparisonType() != COMPARISON_EQUALS || !m[i][0].isUnknown()) return false;
-			} else if(m[i].isLogicalAnd() && m[i].size() >= 1 && m[i][0].isComparison() && m[i][0].comparisonType() == COMPARISON_EQUALS && m[i][0][0].isUnknown()) {
-				for(size_t i2 = 1; i2 < m[i].size(); i2++) {
-					if(!m[i][i2].isComparison() || m[i][i2].comparisonType() == COMPARISON_EQUALS) {
+			} else if(m[i].isLogicalAnd()) {
+				bool b = false;
+				for(size_t i2 = 0; i2 < m[i].size(); i2++) {
+					if(!m[i][i2].isComparison()) {
 						return false;
+					} else if(m[i][i2].comparisonType() == COMPARISON_EQUALS) {
+						if(b || !m[i][i2][0].isUnknown()) return false;
+						b = true;
 					}
 				}
+				if(!b) return false;
 			} else {
 				return false;
 			}
@@ -5206,13 +5215,23 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		mstruct->replace(vans[0], vans[1]);
 		if(is_equation_solutions(*mstruct)) {
 			if(mstruct->isLogicalAnd()) {
-				vans[0]->set((*mstruct)[0][1]);
+				for(size_t i = 0; i < mstruct->size(); i++) {
+					if((*mstruct)[i].comparisonType() == COMPARISON_EQUALS) {
+						vans[0]->set((*mstruct)[i][1]);
+						break;
+					}
+				}
 			} else if(mstruct->isLogicalOr()) {
 				MathStructure m(*mstruct);
 				m.setType(STRUCT_VECTOR);
 				for(size_t i = 0; i < m.size(); i++) {
 					if(m[i].isLogicalAnd()) {
-						m[i].setToChild(1);
+						for(size_t i2 = 0; i2 < m[i].size(); i2++) {
+							if(m[i][i2].comparisonType() == COMPARISON_EQUALS) {
+								m[i].setToChild(i2 + 1);
+								break;
+							}
+						}
 						m[i].setToChild(2);
 					} else {
 						m[i].setToChild(2);
@@ -5749,7 +5768,7 @@ void load_preferences() {
 	}
 
 	version_numbers[0] = 5;
-	version_numbers[1] = 4;
+	version_numbers[1] = 5;
 	version_numbers[2] = 0;
 
 	if(file) {
@@ -8381,6 +8400,7 @@ GtkWindow *main_window() {
 void initialize_variables_and_functions() {
 	string ans_str = _("ans");
 	vans[0] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str, m_undefined, _("Last Answer"), false));
+	vans[0]->setDescription(_("Contains the result of the most recent calculation. Multiple results of an equation is represented as a vector. Access separate solutions using ans(n) (e.g. ans(1) for the first solution)."));
 	vans[0]->addName(_("answer"));
 	vans[0]->addName(ans_str + "1");
 	vans[1] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str + "2", m_undefined, _("Answer 2"), false));

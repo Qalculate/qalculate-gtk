@@ -130,13 +130,23 @@ int AnswerFunction::calculate(MathStructure &mstruct, const MathStructure &vargs
 			if(is_equation_solutions(*history_answer[(size_t) index - 1])) {
 				MathStructure m(*history_answer[(size_t) index - 1]);
 				if(m.isLogicalAnd()) {
-					m.setToChild(1);
+					for(size_t i = 0; i < m.size(); i++) {
+						if(m[i].comparisonType() == COMPARISON_EQUALS) {
+							m.setToChild(i + 1);
+							break;
+						}
+					}
 					m.setToChild(2);
 				} else if(m.isLogicalOr()) {
 					m.setType(STRUCT_VECTOR);
 					for(size_t i = 0; i < m.size(); i++) {
 						if(m[i].isLogicalAnd()) {
-							m[i].setToChild(1);
+							for(size_t i2 = 0; i2 < m[i].size(); i2++) {
+								if(m[i][i2].comparisonType() == COMPARISON_EQUALS) {
+									m[i].setToChild(i2 + 1);
+									break;
+								}
+							}
 							m[i].setToChild(2);
 						} else {
 							m[i].setToChild(2);

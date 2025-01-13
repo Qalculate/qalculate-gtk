@@ -50,6 +50,24 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="5.5.0" date="2025-01-13">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Set ans variable to solution(s) of equation (as if solve() function were used)</li>
+      <li>Option to disable cursor blinking</li>
+      <li>a(i) and a[i] syntax (the latter with support for functions) for element in vector</li>
+      <li>New function: factor()</li>
+      <li>Use hours or minutes as default unit for conversion to time unit of expression with time format but no units (e.g. "0:00:12 to s")</li>
+      <li>Always use four digits for year in date (e.g. "0064-07-18" instead of "64-07-18"), and support input of date using DD-MM-YYYY format</li>
+      <li>Fix solving of x^4-4x^3+10x^2-12x+1=0, and similar, in exact mode</li>
+      <li>Fix rounding in 1/# conversion to integer (e.g. "1/2 to 0.99")</li>
+      <li>Fix unability to find approximate solutions to some high degree equations (e.g. "x⁴ − 4x³ + 10x² − 12x = −1")</li>
+      <li>Fix automatic variable detection in select()</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
   <release version="5.4.0" date="2024-11-25">
    <description>
     <p>Changes:</p>
