@@ -3078,8 +3078,8 @@ void update_historyview_popup() {
 		str += " (";
 		str += i2s(tmdate.tm_year + 1900);
 		str += "-";
-		if(tmdate.tm_mon < 10) str += "0";
-		str += i2s(tmdate.tm_mon);
+		if(tmdate.tm_mon < 9) str += "0";
+		str += i2s(tmdate.tm_mon + 1);
 		str += "-";
 		if(tmdate.tm_mday < 10) str += "0";
 		str += i2s(tmdate.tm_mday);
