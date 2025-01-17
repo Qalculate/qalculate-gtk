@@ -310,8 +310,15 @@ void set_clipboard(string str, int ascii, bool html, bool is_result, int copy_wi
 					if(m.isMultiplication() || m.isDivision()) {
 						str = str.substr(0, i);
 					}
+				} else if(m.isNumber() && CALCULATOR->getActiveUnit(str.substr(0, i))) {
+					str = str.substr(i + 1, str.length() - (i + 1));
 				}
 				CALCULATOR->endTemporaryStopMessages();
+			} else {
+				i = str.find_first_of(NUMBERS);
+				if(i != string::npos && i > 0 && CALCULATOR->getActiveUnit(str.substr(0, i)) && str.find_first_not_of(NUMBER_ELEMENTS, i) == string::npos) {
+					str = str.substr(i, str.length() - i);
+				}
 			}
 		}
 		gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), str.c_str(), -1);
