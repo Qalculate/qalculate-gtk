@@ -334,9 +334,9 @@ void on_tVariables_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_deactivate")), !is_answer_variable(v) && !is_memory_variable(v));
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_export")), v->isKnown());
 			if(v->isActive()) {
-				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(variables_builder, "variables_buttonlabel_deactivate")), _("Deacti_vate"));
+				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(variables_builder, "variables_buttonlabel_deactivate")), _("Deac_tivate"));
 			} else {
-				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(variables_builder, "variables_buttonlabel_deactivate")), _("Acti_vate"));
+				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(variables_builder, "variables_buttonlabel_deactivate")), _("Ac_tivate"));
 			}
 			//user cannot delete global definitions
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variables_builder, "variables_button_delete")), v->isLocal() && !is_answer_variable(v) && !is_memory_variable(v) && v != CALCULATOR->v_x && v != CALCULATOR->v_y && v != CALCULATOR->v_z);

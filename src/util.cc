@@ -1315,11 +1315,11 @@ gint int_string_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, g
 
 void fix_deactivate_label_width(GtkWidget *w) {
 	gint w1, w2;
-	string str = _("Deacti_vate");
+	string str = _("Deac_tivate");
 	size_t i = str.find("_"); if(i != string::npos) str.erase(i, 1);
 	PangoLayout *layout_test = gtk_widget_create_pango_layout(w, str.c_str());
 	pango_layout_get_pixel_size(layout_test, &w1, NULL);
-	str = _("Acti_vate");
+	str = _("Ac_tivate");
 	i = str.find("_"); if(i != string::npos) str.erase(i, 1);
 	pango_layout_set_text(layout_test, str.c_str(), -1);
 	pango_layout_get_pixel_size(layout_test, &w2, NULL);

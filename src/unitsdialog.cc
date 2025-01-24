@@ -383,9 +383,9 @@ void on_tUnits_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_button_edit")), !u->isBuiltin());
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_button_deactivate")), TRUE);
 			if(u->isActive()) {
-				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(units_builder, "units_buttonlabel_deactivate")), _("Deacti_vate"));
+				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(units_builder, "units_buttonlabel_deactivate")), _("Deac_tivate"));
 			} else {
-				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(units_builder, "units_buttonlabel_deactivate")), _("Acti_vate"));
+				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(units_builder, "units_buttonlabel_deactivate")), _("Ac_tivate"));
 			}
 		}
 	} else {

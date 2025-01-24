@@ -428,9 +428,9 @@ void on_tFunctions_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_edit")), !f->isBuiltin());
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_deactivate")), TRUE);
 			if(f->isActive()) {
-				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(functions_builder, "functions_buttonlabel_deactivate")), _("Deacti_vate"));
+				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(functions_builder, "functions_buttonlabel_deactivate")), _("Deac_tivate"));
 			} else {
-				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(functions_builder, "functions_buttonlabel_deactivate")), _("Acti_vate"));
+				gtk_label_set_text_with_mnemonic(GTK_LABEL(gtk_builder_get_object(functions_builder, "functions_buttonlabel_deactivate")), _("Ac_tivate"));
 			}
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_insert")), f->isActive());
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functions_builder, "functions_button_apply")), f->isActive() && ((f->minargs() <= 1 && f != CALCULATOR->f_logn) || rpn_mode));

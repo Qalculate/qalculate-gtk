@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qalculate-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-12 08:45+0100\n"
+"POT-Creation-Date: 2025-01-24 08:16+0100\n"
 "PO-Revision-Date: 2024-05-04 12:28+0700\n"
 "Last-Translator: Damir Islamov <damir@secretlaboratory.ru>\n"
 "Language-Team: Russian <kde-russian@lists.kde.ru>\n"
@@ -23,7 +23,7 @@ msgid "Calculator"
 msgstr "Калькулятор"
 
 #: ../data/qalculate-gtk.desktop.in.h:2
-#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/mainwindow.cc:6836
+#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/mainwindow.cc:6843
 msgid "Powerful and easy to use calculator"
 msgstr "Мощный и простой в использовании калькулятор"
 
@@ -60,7 +60,7 @@ msgstr ""
 "распространение неопределенности, интервальную арифметику, построение "
 "графиков и удобный интерфейс."
 
-#: ../data/argumentrules.ui.h:1 ../data/functionedit.ui.h:24
+#: ../data/argumentrules.ui.h:1 ../data/functionedit.ui.h:25
 msgid "Argument Rules"
 msgstr "Правила для аргументов"
 
@@ -75,14 +75,14 @@ msgstr "Правила для аргументов"
 #: ../src/importcsvdialog.cc:51 ../src/insertfunctiondialog.cc:65
 #: ../src/insertfunctiondialog.cc:108 ../src/insertfunctiondialog.cc:110
 #: ../src/insertfunctiondialog.cc:975 ../src/insertfunctiondialog.cc:1083
-#: ../src/mainwindow.cc:702 ../src/mainwindow.cc:6540 ../src/mainwindow.cc:6542
-#: ../src/mainwindow.cc:7490 ../src/matrixdialog.cc:389 ../src/menubar.cc:1190
+#: ../src/mainwindow.cc:709 ../src/mainwindow.cc:6547 ../src/mainwindow.cc:6549
+#: ../src/mainwindow.cc:7497 ../src/matrixdialog.cc:389 ../src/menubar.cc:1190
 #: ../src/menubar.cc:1248 ../src/plotdialog.cc:378 ../src/plotdialog.cc:380
 #: ../src/resultview.cc:548 ../src/resultview.cc:550
 msgid "_Cancel"
 msgstr "О_тмена"
 
-#: ../data/argumentrules.ui.h:3 ../data/functionedit.ui.h:25
+#: ../data/argumentrules.ui.h:3 ../data/functionedit.ui.h:26
 msgid "Do not save modifications"
 msgstr "Не сохранять изменения"
 
@@ -94,9 +94,9 @@ msgstr "Не сохранять изменения"
 #: ../src/expressionedit.cc:1321 ../src/historyview.cc:2775
 #: ../src/historyview.cc:2870 ../src/insertfunctiondialog.cc:65
 #: ../src/insertfunctiondialog.cc:975 ../src/insertfunctiondialog.cc:1083
-#: ../src/mainwindow.cc:702 ../src/mainwindow.cc:795 ../src/mainwindow.cc:852
-#: ../src/mainwindow.cc:905 ../src/mainwindow.cc:962 ../src/mainwindow.cc:1018
-#: ../src/mainwindow.cc:7490
+#: ../src/mainwindow.cc:709 ../src/mainwindow.cc:802 ../src/mainwindow.cc:859
+#: ../src/mainwindow.cc:912 ../src/mainwindow.cc:969 ../src/mainwindow.cc:1025
+#: ../src/mainwindow.cc:7497
 msgid "_OK"
 msgstr "_OK"
 
@@ -278,8 +278,8 @@ msgstr "Настроить кнопки клавиатуры"
 #: ../data/percentage.ui.h:5 ../data/plot.ui.h:5 ../data/precision.ui.h:2
 #: ../data/preferences.ui.h:2 ../data/setbase.ui.h:2 ../data/shortcuts.ui.h:2
 #: ../data/units.ui.h:2 ../data/variables.ui.h:2 ../src/historyview.cc:2740
-#: ../src/insertfunctiondialog.cc:449 ../src/mainwindow.cc:706
-#: ../src/mainwindow.cc:707 ../src/mainwindow.cc:709 ../src/matrixdialog.cc:381
+#: ../src/insertfunctiondialog.cc:449 ../src/mainwindow.cc:713
+#: ../src/mainwindow.cc:714 ../src/mainwindow.cc:716 ../src/matrixdialog.cc:381
 #: ../src/periodictabledialog.cc:86
 msgid "_Close"
 msgstr "В_ыход"
@@ -441,7 +441,7 @@ msgstr "Пользовательский разделитель"
 msgid "Edit Data Property"
 msgstr "Изменить свойство данных"
 
-#: ../data/datasetedit.ui.h:6 ../data/functionedit.ui.h:22
+#: ../data/datasetedit.ui.h:6 ../data/functionedit.ui.h:23
 #: ../data/matrixedit.ui.h:21 ../data/unitedit.ui.h:11
 #: ../data/variableedit.ui.h:14
 msgid "Description"
@@ -508,7 +508,7 @@ msgstr "Авторские права"
 msgid "Description of this data set"
 msgstr "Описание этого набора данных"
 
-#: ../data/datasetedit.ui.h:24 ../data/unitedit.ui.h:17
+#: ../data/datasetedit.ui.h:24 ../data/unitedit.ui.h:18
 msgid "General"
 msgstr "Основное"
 
@@ -720,8 +720,8 @@ msgid ""
 "Use \\x for the first, \\y for the second and \\z for the third argument. "
 "For more information click the help button."
 msgstr ""
-"Используйте \\x для первого аргумента, \\y для второго и \\z для третьего."
-"Для получения дополнительной информации нажмите кнопку справки."
+"Используйте \\x для первого аргумента, \\y для второго и \\z для "
+"третьего.Для получения дополнительной информации нажмите кнопку справки."
 
 #: ../data/functionedit.ui.h:9 ../data/matrixedit.ui.h:16
 #: ../data/variableedit.ui.h:9
@@ -770,17 +770,21 @@ msgstr "Заголовок, отображаемый в меню и в дисп�
 msgid "Hide function"
 msgstr "Скрыть функцию"
 
-#: ../data/functionedit.ui.h:23
+#: ../data/functionedit.ui.h:22
+msgid "If this function shall be hidden in menus"
+msgstr "Если эта функция должна быть скрыта в меню"
+
+#: ../data/functionedit.ui.h:24
 msgid "Example"
 msgstr "Пример"
 
-#: ../data/functionedit.ui.h:26 ../src/functioneditdialog.cc:474
+#: ../data/functionedit.ui.h:27 ../src/functioneditdialog.cc:474
 msgid "Precalculate"
 msgstr "Предварительно рассчитать"
 
-#: ../data/functionedit.ui.h:27
-msgid "If this function shall be hidden in menus"
-msgstr "Если эта функция должна быть скрыта в меню"
+#: ../data/functionedit.ui.h:28
+msgid "Calculate the subfunction once only, before the main function"
+msgstr "Вычислить подфункцию только один раз, перед основной."
 
 #: ../data/functions.ui.h:1 ../data/main.ui.h:46
 msgid "Functions"
@@ -817,7 +821,7 @@ msgstr "(Де)активировать выбранную функцию"
 #: ../data/functions.ui.h:13 ../data/units.ui.h:18 ../data/variables.ui.h:13
 #: ../src/functionsdialog.cc:431 ../src/unitsdialog.cc:386 ../src/util.cc:1318
 #: ../src/variablesdialog.cc:337
-msgid "Deacti_vate"
+msgid "Deac_tivate"
 msgstr "_Деактивировать"
 
 #: ../data/functions.ui.h:14
@@ -828,7 +832,7 @@ msgstr "_Рассчитать"
 msgid "Insert (or execute) the selected function into the expression entry"
 msgstr "Вставить (или выполнить) выбранную функцию в выражение"
 
-#: ../data/functions.ui.h:16 ../data/plot.ui.h:36 ../src/mainwindow.cc:7490
+#: ../data/functions.ui.h:16 ../data/plot.ui.h:36 ../src/mainwindow.cc:7497
 msgid "_Apply"
 msgstr "П_рименить"
 
@@ -1276,7 +1280,7 @@ msgstr ""
 "Выкл.: 1/2 × pi ≈ 1,5707963\n"
 "Вкл.: 1/2 × pi = 0,5 pi"
 
-#: ../data/main.ui.h:123 ../src/mainwindow.cc:991
+#: ../data/main.ui.h:123 ../src/mainwindow.cc:998
 msgid "Adaptive"
 msgstr "Адаптивный"
 
@@ -1299,7 +1303,7 @@ msgstr "Интервал"
 msgid "Plus/Minus"
 msgstr "Плюс/минус"
 
-#: ../data/main.ui.h:128 ../data/preferences.ui.h:109 ../src/mainwindow.cc:815
+#: ../data/main.ui.h:128 ../data/preferences.ui.h:109 ../src/mainwindow.cc:822
 msgid "Relative"
 msgstr "Относительный"
 
@@ -1514,7 +1518,7 @@ msgstr "Предупреждать, когда неизвестные знаме
 msgid "Warn About Denominators Assumed Non-Zero"
 msgstr "Предупреждать о предположениях о  ненулевых знаменателях"
 
-#: ../data/main.ui.h:180 ../src/expressionedit.cc:1465 ../src/mainwindow.cc:962
+#: ../data/main.ui.h:180 ../src/expressionedit.cc:1465 ../src/mainwindow.cc:969
 msgid "Parsing Mode"
 msgstr "Режим анализа"
 
@@ -3122,8 +3126,8 @@ msgstr "Использовать двоичные префиксы для инф
 
 #: ../data/preferences.ui.h:102
 msgid ""
-"Use binary, instead of decimal, prefixes by default for information units (e."
-"g. bytes)."
+"Use binary, instead of decimal, prefixes by default for information units "
+"(e.g. bytes)."
 msgstr ""
 "По умолчанию использовать двоичные префиксы вместо десятичных для "
 "информационных единиц (например, байтов)."
@@ -3152,11 +3156,11 @@ msgstr "Обновления курсов валют"
 msgid "Temperature calculation mode:"
 msgstr "Режим расчёта температуры"
 
-#: ../data/preferences.ui.h:108 ../src/mainwindow.cc:808
+#: ../data/preferences.ui.h:108 ../src/mainwindow.cc:815
 msgid "Absolute"
 msgstr "Абсолютный"
 
-#: ../data/preferences.ui.h:110 ../src/mainwindow.cc:822
+#: ../data/preferences.ui.h:110 ../src/mainwindow.cc:829
 msgid "Hybrid"
 msgstr "Гибридный"
 
@@ -3310,26 +3314,30 @@ msgid "Hide unit"
 msgstr "Скрыть единицу измерения"
 
 #: ../data/unitedit.ui.h:13
+msgid "If this unit shall be hidden in menus"
+msgstr "Если эта единица измерения должна быть скрыта в меню"
+
+#: ../data/unitedit.ui.h:14
 msgid "Imperial"
 msgstr "Имперская/Британская"
 
-#: ../data/unitedit.ui.h:14
+#: ../data/unitedit.ui.h:15
 msgid "US Survey"
 msgstr "Американская геодезическая"
 
-#: ../data/unitedit.ui.h:15
+#: ../data/unitedit.ui.h:16
 msgid "Title displayed in menus and in unit manager"
 msgstr "Заголовок, отображаемый в меню и в диспетчере единиц измерения"
 
-#: ../data/unitedit.ui.h:16
+#: ../data/unitedit.ui.h:17
 msgid "Singular form of this unit's name"
 msgstr "Форма единственного числа в названии этой единицы измерения"
 
-#: ../data/unitedit.ui.h:18
+#: ../data/unitedit.ui.h:19
 msgid "Class"
 msgstr "Класс"
 
-#: ../data/unitedit.ui.h:19
+#: ../data/unitedit.ui.h:20
 msgid ""
 "The class that this unit belongs to. Named derived units are defined in "
 "relation to a single other unit, with an optional exponent, while (unnamed) "
@@ -3340,51 +3348,51 @@ msgstr ""
 "необязательным показателем, в то время как безымянные производные единицы "
 "измерения определяются выражением через одну или несколько единиц измерения."
 
-#: ../data/unitedit.ui.h:20
+#: ../data/unitedit.ui.h:21
 msgid "Base unit"
 msgstr "Основная единица измерения"
 
-#: ../data/unitedit.ui.h:21
+#: ../data/unitedit.ui.h:22
 msgid "Named derived unit"
 msgstr "Именованная производная единица измерения"
 
-#: ../data/unitedit.ui.h:22
+#: ../data/unitedit.ui.h:23
 msgid "Derived unit"
 msgstr "Производная единица измерения"
 
-#: ../data/unitedit.ui.h:23
+#: ../data/unitedit.ui.h:24
 msgid "Base unit(s)"
 msgstr "Основная(ые) единица(ы) измерения"
 
-#: ../data/unitedit.ui.h:24
+#: ../data/unitedit.ui.h:25
 msgid "Exponent"
 msgstr "Показатель"
 
-#: ../data/unitedit.ui.h:25
+#: ../data/unitedit.ui.h:26
 msgid "Relation"
 msgstr "Отношение"
 
-#: ../data/unitedit.ui.h:26
+#: ../data/unitedit.ui.h:27
 msgid "Inverse relation"
 msgstr "Обратное отношение"
 
-#: ../data/unitedit.ui.h:27
+#: ../data/unitedit.ui.h:28
 msgid "Mix with base unit"
 msgstr "Смешивать с базовой единицей измерения"
 
-#: ../data/unitedit.ui.h:28
+#: ../data/unitedit.ui.h:29
 msgid "Priority"
 msgstr "Приоритет"
 
-#: ../data/unitedit.ui.h:29
+#: ../data/unitedit.ui.h:30
 msgid "Minimum base unit number"
 msgstr "Минимальное количество базовой единицы измерения"
 
-#: ../data/unitedit.ui.h:30
+#: ../data/unitedit.ui.h:31
 msgid "Exponent of the base unit"
 msgstr "Показатель базовой единицы измерения"
 
-#: ../data/unitedit.ui.h:31
+#: ../data/unitedit.ui.h:32
 msgid ""
 "Unit (for named derived unit) or unit expression (for unnamed derived unit) "
 "that this unit is defined in relation to"
@@ -3393,13 +3401,13 @@ msgstr ""
 "выражение единицы измерения (для безымянной производной единицы измерения), "
 "в отношении которой определена редактируемая единица измерения"
 
-#: ../data/unitedit.ui.h:32
+#: ../data/unitedit.ui.h:33
 msgid ""
 "Relation to the base unit. For linear relations this should just be a "
 "number.\n"
 "\n"
-"For non-linear relations use \\x for the factor and \\y for the exponent (e."
-"g. \"\\x + 273.15\" for the relation between degrees Celsius and Kelvin)."
+"For non-linear relations use \\x for the factor and \\y for the exponent "
+"(e.g. \"\\x + 273.15\" for the relation between degrees Celsius and Kelvin)."
 msgstr ""
 "Отношение к основной единице измерения. Для линейных отношений это должно "
 "быть просто число.\n"
@@ -3408,13 +3416,13 @@ msgstr ""
 "показателя степени (например, «\\x + 273,15» для отношения между градусами "
 "Цельсия и Кельвина)."
 
-#: ../data/unitedit.ui.h:35
+#: ../data/unitedit.ui.h:36
 msgid "Specify for non-linear relation, for conversion back to the base unit."
 msgstr ""
 "Указать для нелинейного отношения, чтобы обратно преобразовать в базовую "
 "единицу измерения."
 
-#: ../data/unitedit.ui.h:36
+#: ../data/unitedit.ui.h:37
 msgid "Use with prefixes by default"
 msgstr "По умолчанию использовать с префиксами"
 
@@ -3507,6 +3515,10 @@ msgstr "Изменить переменную"
 msgid "The category this variable belongs to"
 msgstr "Категория, к которой принадлежит эта переменная"
 
+#: ../data/variableedit.ui.h:16
+msgid "If this variable shall be hidden in menus"
+msgstr "Если эта переменная должна быть скрыта в меню"
+
 #: ../data/variables.ui.h:4
 msgid "_Variable"
 msgstr "_Переменная"
@@ -3555,7 +3567,7 @@ msgstr "Переменная не найдена."
 msgid "Unit not found."
 msgstr "Единица измерения не найдена."
 
-#: ../src/buttonseditdialog.cc:259 ../src/mainwindow.cc:7026
+#: ../src/buttonseditdialog.cc:259 ../src/mainwindow.cc:7033
 #: ../src/shortcutsdialog.cc:260 ../src/shortcutsdialog.cc:508
 msgid "Mode not found."
 msgstr "Режим не найден."
@@ -3755,8 +3767,8 @@ msgstr "Все"
 #: ../src/conversionview.cc:132 ../src/conversionview.cc:179
 #: ../src/conversionview.cc:460 ../src/functionsdialog.cc:144
 #: ../src/functionsdialog.cc:145 ../src/functionsdialog.cc:196
-#: ../src/mainwindow.cc:7334 ../src/mainwindow.cc:7366
-#: ../src/mainwindow.cc:7390 ../src/unitsdialog.cc:166
+#: ../src/mainwindow.cc:7341 ../src/mainwindow.cc:7373
+#: ../src/mainwindow.cc:7397 ../src/unitsdialog.cc:166
 #: ../src/unitsdialog.cc:167 ../src/unitsdialog.cc:233
 #: ../src/variablesdialog.cc:146 ../src/variablesdialog.cc:147
 #: ../src/variablesdialog.cc:199
@@ -3841,7 +3853,7 @@ msgstr "Новый объект данных"
 #: ../src/historyview.cc:1333 ../src/historyview.cc:1586
 #: ../src/historyview.cc:1646 ../src/historyview.cc:2168
 #: ../src/insertfunctiondialog.cc:297 ../src/keypad.cc:3084
-#: ../src/mainwindow.cc:2642 ../src/searchprovider.cc:91
+#: ../src/mainwindow.cc:2649 ../src/searchprovider.cc:91
 #: ../src/searchprovider.cc:92 ../src/searchprovider.cc:169
 #: ../src/variablesdialog.cc:289
 msgid "approx."
@@ -4209,19 +4221,19 @@ msgid "Too many arguments for %s()."
 msgstr "Слишком много аргументов для %s()."
 
 #: ../src/expressionstatus.cc:691 ../src/expressionstatus.cc:693
-#: ../src/mainwindow.cc:1459 ../src/mainwindow.cc:4933
+#: ../src/mainwindow.cc:1466 ../src/mainwindow.cc:4940
 #: ../src/searchprovider.cc:133
 msgid "factorize"
 msgstr "разложить на множители"
 
 #: ../src/expressionstatus.cc:694 ../src/expressionstatus.cc:696
-#: ../src/mainwindow.cc:1462 ../src/mainwindow.cc:4936
+#: ../src/mainwindow.cc:1469 ../src/mainwindow.cc:4943
 #: ../src/searchprovider.cc:133
 msgid "expand"
 msgstr "раскрывать"
 
-#: ../src/expressionstatus.cc:861 ../src/mainwindow.cc:1247
-#: ../src/mainwindow.cc:4584
+#: ../src/expressionstatus.cc:861 ../src/mainwindow.cc:1254
+#: ../src/mainwindow.cc:4591
 msgid "hexadecimal"
 msgstr "шестнадцатеричное"
 
@@ -4229,8 +4241,8 @@ msgstr "шестнадцатеричное"
 msgid "hexadecimal number"
 msgstr "шестнадцатеричное число"
 
-#: ../src/expressionstatus.cc:863 ../src/mainwindow.cc:1250
-#: ../src/mainwindow.cc:4587
+#: ../src/expressionstatus.cc:863 ../src/mainwindow.cc:1257
+#: ../src/mainwindow.cc:4594
 msgid "octal"
 msgstr "восьмеричное"
 
@@ -4238,8 +4250,8 @@ msgstr "восьмеричное"
 msgid "octal number"
 msgstr "восьмеричное число"
 
-#: ../src/expressionstatus.cc:865 ../src/mainwindow.cc:1253
-#: ../src/mainwindow.cc:4590
+#: ../src/expressionstatus.cc:865 ../src/mainwindow.cc:1260
+#: ../src/mainwindow.cc:4597
 msgid "decimal"
 msgstr "десятеричное"
 
@@ -4247,8 +4259,8 @@ msgstr "десятеричное"
 msgid "decimal number"
 msgstr "десятичное число"
 
-#: ../src/expressionstatus.cc:867 ../src/mainwindow.cc:1256
-#: ../src/mainwindow.cc:4593
+#: ../src/expressionstatus.cc:867 ../src/mainwindow.cc:1263
+#: ../src/mainwindow.cc:4600
 msgid "duodecimal"
 msgstr "двенадцатеричное"
 
@@ -4256,8 +4268,8 @@ msgstr "двенадцатеричное"
 msgid "duodecimal number"
 msgstr "двенадцатеричное число"
 
-#: ../src/expressionstatus.cc:871 ../src/mainwindow.cc:1264
-#: ../src/mainwindow.cc:4601
+#: ../src/expressionstatus.cc:871 ../src/mainwindow.cc:1271
+#: ../src/mainwindow.cc:4608
 msgid "binary"
 msgstr "двоичное"
 
@@ -4265,8 +4277,8 @@ msgstr "двоичное"
 msgid "binary number"
 msgstr "двоичное число"
 
-#: ../src/expressionstatus.cc:873 ../src/mainwindow.cc:1267
-#: ../src/mainwindow.cc:4604
+#: ../src/expressionstatus.cc:873 ../src/mainwindow.cc:1274
+#: ../src/mainwindow.cc:4611
 msgid "roman"
 msgstr "римское число"
 
@@ -4274,8 +4286,8 @@ msgstr "римское число"
 msgid "roman numerals"
 msgstr "римские цифры"
 
-#: ../src/expressionstatus.cc:875 ../src/mainwindow.cc:1270
-#: ../src/mainwindow.cc:4607
+#: ../src/expressionstatus.cc:875 ../src/mainwindow.cc:1277
+#: ../src/mainwindow.cc:4614
 msgid "bijective"
 msgstr "биективное"
 
@@ -4287,10 +4299,10 @@ msgstr "биективное основание-26"
 msgid "binary-coded decimal"
 msgstr "двоично-десятичный код"
 
-#: ../src/expressionstatus.cc:879 ../src/mainwindow.cc:1276
-#: ../src/mainwindow.cc:1279 ../src/mainwindow.cc:1282
-#: ../src/mainwindow.cc:4613 ../src/mainwindow.cc:4616
-#: ../src/mainwindow.cc:4619
+#: ../src/expressionstatus.cc:879 ../src/mainwindow.cc:1283
+#: ../src/mainwindow.cc:1286 ../src/mainwindow.cc:1289
+#: ../src/mainwindow.cc:4620 ../src/mainwindow.cc:4623
+#: ../src/mainwindow.cc:4626
 msgid "sexagesimal"
 msgstr "шестидесятеричное"
 
@@ -4299,14 +4311,14 @@ msgid "sexagesimal number"
 msgstr "шестидесятеричное число"
 
 #: ../src/expressionstatus.cc:881 ../src/expressionstatus.cc:882
-#: ../src/mainwindow.cc:1285 ../src/mainwindow.cc:1288
-#: ../src/mainwindow.cc:4622 ../src/mainwindow.cc:4625
+#: ../src/mainwindow.cc:1292 ../src/mainwindow.cc:1295
+#: ../src/mainwindow.cc:4629 ../src/mainwindow.cc:4632
 msgid "latitude"
 msgstr "широта"
 
 #: ../src/expressionstatus.cc:883 ../src/expressionstatus.cc:884
-#: ../src/mainwindow.cc:1291 ../src/mainwindow.cc:1294
-#: ../src/mainwindow.cc:4628 ../src/mainwindow.cc:4631
+#: ../src/mainwindow.cc:1298 ../src/mainwindow.cc:1301
+#: ../src/mainwindow.cc:4635 ../src/mainwindow.cc:4638
 msgid "longitude"
 msgstr "долгота"
 
@@ -4330,8 +4342,8 @@ msgstr "80-битное (x86) с плавающей запятой"
 msgid "128-bit floating point"
 msgstr "128-битное с плавающей запятой"
 
-#: ../src/expressionstatus.cc:895 ../src/mainwindow.cc:1312
-#: ../src/mainwindow.cc:4649
+#: ../src/expressionstatus.cc:895 ../src/mainwindow.cc:1319
+#: ../src/mainwindow.cc:4656
 msgid "time"
 msgstr "время"
 
@@ -4339,8 +4351,8 @@ msgstr "время"
 msgid "time format"
 msgstr "формат времени"
 
-#: ../src/expressionstatus.cc:899 ../src/mainwindow.cc:1363
-#: ../src/mainwindow.cc:4723
+#: ../src/expressionstatus.cc:899 ../src/mainwindow.cc:1370
+#: ../src/mainwindow.cc:4730
 msgid "bases"
 msgstr "основания"
 
@@ -4349,12 +4361,12 @@ msgid "number bases"
 msgstr "основания систем счисления"
 
 #: ../src/expressionstatus.cc:901 ../src/expressionstatus.cc:902
-#: ../src/mainwindow.cc:1365 ../src/mainwindow.cc:4733
+#: ../src/mainwindow.cc:1372 ../src/mainwindow.cc:4740
 msgid "calendars"
 msgstr "календари"
 
-#: ../src/expressionstatus.cc:903 ../src/mainwindow.cc:1387
-#: ../src/mainwindow.cc:4808
+#: ../src/expressionstatus.cc:903 ../src/mainwindow.cc:1394
+#: ../src/mainwindow.cc:4815
 msgid "optimal"
 msgstr "оптимально"
 
@@ -4362,8 +4374,8 @@ msgstr "оптимально"
 msgid "optimal unit"
 msgstr "оптимальные единицы измерения"
 
-#: ../src/expressionstatus.cc:905 ../src/mainwindow.cc:1392
-#: ../src/mainwindow.cc:4820
+#: ../src/expressionstatus.cc:905 ../src/mainwindow.cc:1399
+#: ../src/mainwindow.cc:4827
 msgid "prefix"
 msgstr "префикс"
 
@@ -4372,8 +4384,8 @@ msgid "optimal prefix"
 msgstr "оптимальный префикс"
 
 #: ../src/expressionstatus.cc:907 ../src/expressionstatus.cc:980
-#: ../src/mainwindow.cc:1396 ../src/mainwindow.cc:1412
-#: ../src/mainwindow.cc:4824 ../src/mainwindow.cc:4871
+#: ../src/mainwindow.cc:1403 ../src/mainwindow.cc:1419
+#: ../src/mainwindow.cc:4831 ../src/mainwindow.cc:4878
 msgid "base"
 msgstr "основание"
 
@@ -4381,8 +4393,8 @@ msgstr "основание"
 msgid "base units"
 msgstr "основные единицы измерения"
 
-#: ../src/expressionstatus.cc:909 ../src/mainwindow.cc:1401
-#: ../src/mainwindow.cc:4836
+#: ../src/expressionstatus.cc:909 ../src/mainwindow.cc:1408
+#: ../src/mainwindow.cc:4843
 msgid "mixed"
 msgstr "смешано"
 
@@ -4391,12 +4403,12 @@ msgid "mixed units"
 msgstr "смешанные единицы"
 
 #: ../src/expressionstatus.cc:911 ../src/expressionstatus.cc:912
-#: ../src/mainwindow.cc:1406 ../src/mainwindow.cc:4851
+#: ../src/mainwindow.cc:1413 ../src/mainwindow.cc:4858
 msgid "factors"
 msgstr "множители"
 
-#: ../src/expressionstatus.cc:913 ../src/mainwindow.cc:1409
-#: ../src/mainwindow.cc:4861
+#: ../src/expressionstatus.cc:913 ../src/mainwindow.cc:1416
+#: ../src/mainwindow.cc:4868
 msgid "partial fraction"
 msgstr "частичная дробь"
 
@@ -4404,13 +4416,13 @@ msgstr "частичная дробь"
 msgid "expanded partial fractions"
 msgstr "расширенные дробные числа"
 
-#: ../src/expressionstatus.cc:915 ../src/mainwindow.cc:1367
-#: ../src/mainwindow.cc:4743
+#: ../src/expressionstatus.cc:915 ../src/mainwindow.cc:1374
+#: ../src/mainwindow.cc:4750
 msgid "rectangular"
 msgstr "прямоугоная"
 
-#: ../src/expressionstatus.cc:915 ../src/mainwindow.cc:1367
-#: ../src/mainwindow.cc:4743
+#: ../src/expressionstatus.cc:915 ../src/mainwindow.cc:1374
+#: ../src/mainwindow.cc:4750
 msgid "cartesian"
 msgstr "декартова"
 
@@ -4418,8 +4430,8 @@ msgstr "декартова"
 msgid "complex rectangular form"
 msgstr "прямоугольная форма комплексных чисел"
 
-#: ../src/expressionstatus.cc:917 ../src/mainwindow.cc:1371
-#: ../src/mainwindow.cc:4756
+#: ../src/expressionstatus.cc:917 ../src/mainwindow.cc:1378
+#: ../src/mainwindow.cc:4763
 msgid "exponential"
 msgstr "экспоненциальная"
 
@@ -4427,8 +4439,8 @@ msgstr "экспоненциальная"
 msgid "complex exponential form"
 msgstr "экспоненциальная форма комплексных чисел"
 
-#: ../src/expressionstatus.cc:919 ../src/mainwindow.cc:1375
-#: ../src/mainwindow.cc:4769
+#: ../src/expressionstatus.cc:919 ../src/mainwindow.cc:1382
+#: ../src/mainwindow.cc:4776
 msgid "polar"
 msgstr "полярная"
 
@@ -4440,8 +4452,8 @@ msgstr "полярная форма комплексных чисел"
 msgid "complex cis form"
 msgstr "сисоидная форма комплексных чисел"
 
-#: ../src/expressionstatus.cc:923 ../src/mainwindow.cc:1383
-#: ../src/mainwindow.cc:4795
+#: ../src/expressionstatus.cc:923 ../src/mainwindow.cc:1390
+#: ../src/mainwindow.cc:4802
 msgid "angle"
 msgstr "угловая"
 
@@ -4449,8 +4461,8 @@ msgstr "угловая"
 msgid "complex angle notation"
 msgstr "комплексные числа в обозначении угла"
 
-#: ../src/expressionstatus.cc:925 ../src/mainwindow.cc:1383
-#: ../src/mainwindow.cc:4795
+#: ../src/expressionstatus.cc:925 ../src/mainwindow.cc:1390
+#: ../src/mainwindow.cc:4802
 msgid "phasor"
 msgstr "фазовая"
 
@@ -4467,8 +4479,8 @@ msgstr "часовой пояс UTC"
 msgid "number base %s"
 msgstr "основание системы счисления %s"
 
-#: ../src/expressionstatus.cc:985 ../src/mainwindow.cc:1416
-#: ../src/mainwindow.cc:4875
+#: ../src/expressionstatus.cc:985 ../src/mainwindow.cc:1423
+#: ../src/mainwindow.cc:4882
 msgid "decimals"
 msgstr "десятеричные дроби"
 
@@ -4498,14 +4510,14 @@ msgid "Empty expression field."
 msgstr "Пустое поле выражения."
 
 #: ../src/functionsdialog.cc:135 ../src/functionsdialog.cc:136
-#: ../src/functionsdialog.cc:200 ../src/mainwindow.cc:7332
+#: ../src/functionsdialog.cc:200 ../src/mainwindow.cc:7339
 #: ../src/menubar.cc:1594 ../src/util.cc:1268 ../src/util.cc:1269
 msgid "User functions"
 msgstr "Пользовательские функции"
 
 #: ../src/functionsdialog.cc:153 ../src/functionsdialog.cc:154
-#: ../src/functionsdialog.cc:198 ../src/mainwindow.cc:7330
-#: ../src/mainwindow.cc:7362 ../src/mainwindow.cc:7386
+#: ../src/functionsdialog.cc:198 ../src/mainwindow.cc:7337
+#: ../src/mainwindow.cc:7369 ../src/mainwindow.cc:7393
 #: ../src/unitsdialog.cc:174 ../src/unitsdialog.cc:175
 #: ../src/unitsdialog.cc:235 ../src/util.cc:1270 ../src/util.cc:1271
 #: ../src/variablesdialog.cc:155 ../src/variablesdialog.cc:156
@@ -4545,14 +4557,14 @@ msgstr "Требование"
 
 #: ../src/functionsdialog.cc:433 ../src/unitsdialog.cc:388 ../src/util.cc:1322
 #: ../src/variablesdialog.cc:339
-msgid "Acti_vate"
+msgid "Ac_tivate"
 msgstr "Акти_вировать"
 
 #: ../src/historyview.cc:111
 msgid "History Answer Value"
 msgstr "Значение ответа в истории"
 
-#: ../src/historyview.cc:112 ../src/mainwindow.cc:8404
+#: ../src/historyview.cc:112 ../src/mainwindow.cc:8411
 msgid "answer"
 msgstr "ответ"
 
@@ -4582,12 +4594,12 @@ msgstr ""
 "Создание графика для данных заняло слишком много времени. Уменьшите частоту "
 "дискретизации или увеличьте ограничение по времени в настройках."
 
-#: ../src/historyview.cc:2137 ../src/mainwindow.cc:2410
+#: ../src/historyview.cc:2137 ../src/mainwindow.cc:2417
 msgid "RPN Register Moved"
 msgstr "Регистр ПОЛИЗ перемещён"
 
-#: ../src/historyview.cc:2143 ../src/mainwindow.cc:2411
-#: ../src/mainwindow.cc:5166
+#: ../src/historyview.cc:2143 ../src/mainwindow.cc:2418
+#: ../src/mainwindow.cc:5173
 msgid "RPN Operation"
 msgstr "ПОЛИЗ операция"
 
@@ -4746,7 +4758,7 @@ msgstr "Все функции"
 msgid "All variables"
 msgstr "Все переменные"
 
-#: ../src/keypad.cc:2677 ../src/mainwindow.cc:7410
+#: ../src/keypad.cc:2677 ../src/mainwindow.cc:7417
 #: ../src/variablesdialog.cc:246 ../src/variablesdialog.cc:403
 #: ../src/variablesdialog.cc:418 ../src/variablesdialog.cc:434
 #: ../src/variablesdialog.cc:455
@@ -4819,7 +4831,7 @@ msgstr ""
 msgid "Set Window Title"
 msgstr "Установить заголовок окна"
 
-#: ../src/mainwindow.cc:512
+#: ../src/mainwindow.cc:519
 msgid "Exchange rate source:"
 msgid_plural "Exchange rate sources:"
 msgstr[0] "Источник курсов валют:"
@@ -4827,7 +4839,7 @@ msgstr[1] "Источники курсов валют:"
 msgstr[2] "Источники курсов валют:"
 msgstr[3] "Источник курсов валют:"
 
-#: ../src/mainwindow.cc:514
+#: ../src/mainwindow.cc:521
 #, c-format
 msgid "updated %s"
 msgid_plural "updated %s"
@@ -4836,7 +4848,7 @@ msgstr[1] "обновлены %s"
 msgstr[2] "обновлены %s"
 msgstr[3] "обновлён %s"
 
-#: ../src/mainwindow.cc:534
+#: ../src/mainwindow.cc:541
 msgid ""
 "When errors, warnings and other information are generated during "
 "calculation, the icon in the upper right corner of the expression entry "
@@ -4848,15 +4860,15 @@ msgstr ""
 "отразить это. Если удерживать указатель мыши или щелкнуть на значок, будет "
 "показано сообщение."
 
-#: ../src/mainwindow.cc:594
+#: ../src/mainwindow.cc:601
 msgid "Path of executable not found."
 msgstr "Путь к исполняемому файлу не найден."
 
-#: ../src/mainwindow.cc:604
+#: ../src/mainwindow.cc:611
 msgid "curl not found."
 msgstr "Программа curl не найдена."
 
-#: ../src/mainwindow.cc:669
+#: ../src/mainwindow.cc:676
 #, c-format
 msgid ""
 "Failed to run update script.\n"
@@ -4865,19 +4877,19 @@ msgstr ""
 "Не удалось запустить скрипт обновления.\n"
 "%s"
 
-#: ../src/mainwindow.cc:693
+#: ../src/mainwindow.cc:700
 msgid "Failed to check for updates."
 msgstr "Не удалось проверить наличие обновлений."
 
-#: ../src/mainwindow.cc:693
+#: ../src/mainwindow.cc:700
 msgid "No updates found."
 msgstr "Обновлений не найдено."
 
-#: ../src/mainwindow.cc:707
+#: ../src/mainwindow.cc:714
 msgid "_Download"
 msgstr "_Скачать"
 
-#: ../src/mainwindow.cc:719
+#: ../src/mainwindow.cc:726
 #, c-format
 msgid ""
 "A new version of %s is available at %s.\n"
@@ -4888,7 +4900,7 @@ msgstr ""
 "\n"
 "Вы хотите обновиться до версии %s?"
 
-#: ../src/mainwindow.cc:721
+#: ../src/mainwindow.cc:728
 #, c-format
 msgid ""
 "A new version of %s is available.\n"
@@ -4899,11 +4911,11 @@ msgstr ""
 "\n"
 "Вы можете получить версию %s на %s."
 
-#: ../src/mainwindow.cc:795
+#: ../src/mainwindow.cc:802
 msgid "Temperature Calculation Mode"
 msgstr "Режим расчёта температуры"
 
-#: ../src/mainwindow.cc:805
+#: ../src/mainwindow.cc:812
 msgid ""
 "The expression is ambiguous.\n"
 "Please select temperature calculation mode\n"
@@ -4913,27 +4925,27 @@ msgstr ""
 "Выберите режим расчёта температуры\n"
 "(режим позже можно изменить в настройках)."
 
-#: ../src/mainwindow.cc:852
+#: ../src/mainwindow.cc:859
 msgid "Sinc Function"
 msgstr "Функция sinc"
 
-#: ../src/mainwindow.cc:862
+#: ../src/mainwindow.cc:869
 msgid "Please select desired variant of the sinc function."
 msgstr "Выберите нужный вариант функции sinc."
 
-#: ../src/mainwindow.cc:865
+#: ../src/mainwindow.cc:872
 msgid "Unnormalized"
 msgstr "Ненормированная"
 
-#: ../src/mainwindow.cc:872
+#: ../src/mainwindow.cc:879
 msgid "Normalized"
 msgstr "Нормированная"
 
-#: ../src/mainwindow.cc:905
+#: ../src/mainwindow.cc:912
 msgid "Interpretation of dots"
 msgstr "Использование точки"
 
-#: ../src/mainwindow.cc:915
+#: ../src/mainwindow.cc:922
 msgid ""
 "Please select interpretation of dots (\".\")\n"
 "(this can later be changed in preferences)."
@@ -4941,19 +4953,19 @@ msgstr ""
 "Выберите использование точки («.»)\n"
 "(позже это можно изменить в настройках)."
 
-#: ../src/mainwindow.cc:918
+#: ../src/mainwindow.cc:925
 msgid "Both dot and comma as decimal separators"
 msgstr "Точка и запятая в качестве десятичных разделителей"
 
-#: ../src/mainwindow.cc:925
+#: ../src/mainwindow.cc:932
 msgid "Dot as thousands separator"
 msgstr "Точка как разделитель тысяч"
 
-#: ../src/mainwindow.cc:932
+#: ../src/mainwindow.cc:939
 msgid "Only dot as decimal separator"
 msgstr "Только точка в качестве десятичного разделителя"
 
-#: ../src/mainwindow.cc:972
+#: ../src/mainwindow.cc:979
 msgid ""
 "The expression is ambiguous.\n"
 "Please select interpretation of expressions with implicit multiplication\n"
@@ -4963,63 +4975,63 @@ msgstr ""
 "Выберите интерпретацию выражений с неявным умножением\n"
 "(позже это можно изменить в настройках)."
 
-#: ../src/mainwindow.cc:975
+#: ../src/mainwindow.cc:982
 msgid "Implicit multiplication first"
 msgstr "Сначала анализировать неявное умножение"
 
-#: ../src/mainwindow.cc:983
+#: ../src/mainwindow.cc:990
 msgid "Conventional"
 msgstr "Общепринятый синтаксический анализ"
 
-#: ../src/mainwindow.cc:1018
+#: ../src/mainwindow.cc:1025
 msgid "Percentage Interpretation"
 msgstr "Процентная интерпретация"
 
-#: ../src/mainwindow.cc:1028
+#: ../src/mainwindow.cc:1035
 msgid "Please select interpretation of percentage addition."
 msgstr "Пожалуйста, выберите интерпретацию процентного сложения."
 
-#: ../src/mainwindow.cc:1031
+#: ../src/mainwindow.cc:1038
 msgid "Add percentage of original value"
 msgstr "Добавить процент от первоначального значения"
 
-#: ../src/mainwindow.cc:1039
+#: ../src/mainwindow.cc:1046
 msgid "Add percentage multiplied by 1/100"
 msgstr "Добавить процент, умноженный на 1/100."
 
-#: ../src/mainwindow.cc:1952
+#: ../src/mainwindow.cc:1959
 msgid "My Variables"
 msgstr "Мои переменные"
 
-#: ../src/mainwindow.cc:2571
+#: ../src/mainwindow.cc:2578
 msgid "Processing…"
 msgstr "Обработка…"
 
-#: ../src/mainwindow.cc:2830
+#: ../src/mainwindow.cc:2837
 msgid "Factorizing…"
 msgstr "Факторизация…"
 
-#: ../src/mainwindow.cc:2834
+#: ../src/mainwindow.cc:2841
 msgid "Expanding partial fractions…"
 msgstr "Расширение дробных чисел…"
 
-#: ../src/mainwindow.cc:2838
+#: ../src/mainwindow.cc:2845
 msgid "Expanding…"
 msgstr "Расширение…"
 
-#: ../src/mainwindow.cc:2843 ../src/mainwindow.cc:5106
+#: ../src/mainwindow.cc:2850 ../src/mainwindow.cc:5113
 msgid "Calculating…"
 msgstr "Расчёт…"
 
-#: ../src/mainwindow.cc:2847
+#: ../src/mainwindow.cc:2854
 msgid "Converting…"
 msgstr "Преобразование…"
 
-#: ../src/mainwindow.cc:4700
+#: ../src/mainwindow.cc:4707
 msgid "Time zone parsing failed."
 msgstr "Не удалось выполнить синтаксический анализ часового пояса."
 
-#: ../src/mainwindow.cc:5291 ../src/mainwindow.cc:6861 ../src/openhelp.cc:361
+#: ../src/mainwindow.cc:5298 ../src/mainwindow.cc:6868 ../src/openhelp.cc:361
 #, c-format
 msgid ""
 "Failed to open %s.\n"
@@ -5028,28 +5040,28 @@ msgstr ""
 "Не удалось открыть %s.\n"
 "%s"
 
-#: ../src/mainwindow.cc:5443
+#: ../src/mainwindow.cc:5450
 msgid "Couldn't write definitions"
 msgstr "Не удалось записать определения"
 
-#: ../src/mainwindow.cc:5445 ../src/mainwindow.cc:5447
-#: ../src/mainwindow.cc:6199 ../src/mainwindow.cc:6201
-#: ../src/mainwindow.cc:6244 ../src/mainwindow.cc:6246
+#: ../src/mainwindow.cc:5452 ../src/mainwindow.cc:5454
+#: ../src/mainwindow.cc:6206 ../src/mainwindow.cc:6208
+#: ../src/mainwindow.cc:6251 ../src/mainwindow.cc:6253
 msgid "Ignore"
 msgstr "Игнорировать"
 
-#: ../src/mainwindow.cc:5445 ../src/mainwindow.cc:6199
-#: ../src/mainwindow.cc:6244
+#: ../src/mainwindow.cc:5452 ../src/mainwindow.cc:6206
+#: ../src/mainwindow.cc:6251
 msgid "Cancel"
 msgstr "Отменить"
 
-#: ../src/mainwindow.cc:5445 ../src/mainwindow.cc:5447
-#: ../src/mainwindow.cc:6199 ../src/mainwindow.cc:6201
-#: ../src/mainwindow.cc:6244 ../src/mainwindow.cc:6246
+#: ../src/mainwindow.cc:5452 ../src/mainwindow.cc:5454
+#: ../src/mainwindow.cc:6206 ../src/mainwindow.cc:6208
+#: ../src/mainwindow.cc:6251 ../src/mainwindow.cc:6253
 msgid "Retry"
 msgstr "Повторить попытку"
 
-#: ../src/mainwindow.cc:6197
+#: ../src/mainwindow.cc:6204
 #, fuzzy, c-format
 msgid ""
 "Couldn't write history to\n"
@@ -5058,7 +5070,7 @@ msgstr ""
 "Не удалось записать настройки в\n"
 "%s"
 
-#: ../src/mainwindow.cc:6242
+#: ../src/mainwindow.cc:6249
 #, c-format
 msgid ""
 "Couldn't write preferences to\n"
@@ -5067,93 +5079,93 @@ msgstr ""
 "Не удалось записать настройки в\n"
 "%s"
 
-#: ../src/mainwindow.cc:6540 ../src/mainwindow.cc:6542
+#: ../src/mainwindow.cc:6547 ../src/mainwindow.cc:6549
 msgid "Select definitions file"
 msgstr "Выбрать файл определений"
 
-#: ../src/mainwindow.cc:6540 ../src/mainwindow.cc:6542
+#: ../src/mainwindow.cc:6547 ../src/mainwindow.cc:6549
 msgid "_Import"
 msgstr "_Импорт"
 
-#: ../src/mainwindow.cc:6546
+#: ../src/mainwindow.cc:6553
 msgid "XML Files"
 msgstr "XML файлы"
 
-#: ../src/mainwindow.cc:6566
+#: ../src/mainwindow.cc:6573
 #, c-format
 msgid "Could not copy %s to %s."
 msgstr "С удалось скопировать %s в %s."
 
-#: ../src/mainwindow.cc:6574
+#: ../src/mainwindow.cc:6581
 #, c-format
 msgid "Could not read %s."
 msgstr "С удалось прочитать %s."
 
-#: ../src/mainwindow.cc:6582
+#: ../src/mainwindow.cc:6589
 #, c-format
 msgid "Could not copy file to %s."
 msgstr "С удалось скопировать файл в %s."
 
-#: ../src/mainwindow.cc:6835
+#: ../src/mainwindow.cc:6842
 msgid "translator-credits"
 msgstr "Damir Islamov <damir@secretlaboratory.ru>"
 
-#: ../src/mainwindow.cc:7364 ../src/menubar.cc:1676 ../src/util.cc:1264
+#: ../src/mainwindow.cc:7371 ../src/menubar.cc:1676 ../src/util.cc:1264
 #: ../src/util.cc:1265 ../src/variablesdialog.cc:137
 #: ../src/variablesdialog.cc:138 ../src/variablesdialog.cc:203
 msgid "User variables"
 msgstr "Пользовательские переменные"
 
-#: ../src/mainwindow.cc:7388 ../src/menubar.cc:1422 ../src/menubar.cc:1517
+#: ../src/mainwindow.cc:7395 ../src/menubar.cc:1422 ../src/menubar.cc:1517
 #: ../src/unitsdialog.cc:158 ../src/unitsdialog.cc:159
 #: ../src/unitsdialog.cc:237 ../src/util.cc:1266 ../src/util.cc:1267
 msgid "User units"
 msgstr "Пользовательские единицы"
 
-#: ../src/mainwindow.cc:7484
+#: ../src/mainwindow.cc:7491
 msgid "No unknowns in result."
 msgstr "В результате нет неизвестных."
 
-#: ../src/mainwindow.cc:7490
+#: ../src/mainwindow.cc:7497
 msgid "Set Unknowns"
 msgstr "Установить неизвестные"
 
-#: ../src/mainwindow.cc:8203 ../src/mainwindow.cc:8210
+#: ../src/mainwindow.cc:8210 ../src/mainwindow.cc:8217
 msgid "Qalculate!"
 msgstr "Qalculate!"
 
-#: ../src/mainwindow.cc:8401
+#: ../src/mainwindow.cc:8408
 msgid "ans"
 msgstr "отв"
 
-#: ../src/mainwindow.cc:8402
+#: ../src/mainwindow.cc:8409
 msgid "Last Answer"
 msgstr "Последний ответ"
 
-#: ../src/mainwindow.cc:8403
+#: ../src/mainwindow.cc:8410
 msgid ""
 "Contains the result of the most recent calculation. Multiple results of an "
 "equation is represented as a vector. Access separate solutions using ans(n) "
 "(e.g. ans(1) for the first solution)."
 msgstr ""
 
-#: ../src/mainwindow.cc:8406
+#: ../src/mainwindow.cc:8413
 msgid "Answer 2"
 msgstr "Ответ 2"
 
-#: ../src/mainwindow.cc:8407
+#: ../src/mainwindow.cc:8414
 msgid "Answer 3"
 msgstr "Ответ 3"
 
-#: ../src/mainwindow.cc:8408
+#: ../src/mainwindow.cc:8415
 msgid "Answer 4"
 msgstr "Ответ 4"
 
-#: ../src/mainwindow.cc:8409
+#: ../src/mainwindow.cc:8416
 msgid "Answer 5"
 msgstr "Ответ 5"
 
-#: ../src/mainwindow.cc:8419
+#: ../src/mainwindow.cc:8426
 msgid "Memory"
 msgstr "Память"
 
@@ -5816,6 +5828,10 @@ msgstr "вектор"
 msgid "not matrix"
 msgstr "не матрица"
 
+#, fuzzy
+#~ msgid "Act_ivate"
+#~ msgstr "Акти_вировать"
+
 #~ msgid "Update exchange rates on start"
 #~ msgstr "Обновлять курсы валют при запуске"
 
@@ -5885,9 +5901,6 @@ msgstr "не матрица"
 #~ msgid "Edit conditions for selected argument"
 #~ msgstr "Изменить условия для выбранного аргумента"
 
-#~ msgid "Calculate the subfunction only once, before the parent function"
-#~ msgstr "Вычислить подфункцию только один раз, перед основной."
-
 #~ msgid "Add entered subfunction"
 #~ msgstr "Добавить введённую подфункцию"
 
@@ -5937,9 +5950,6 @@ msgstr "не матрица"
 #~ "Используйте \\x, \\y и \\z для 1-го, 2-го и 3-го аргумента функции "
 #~ "соответственно. Это позволяет избежать потенциальных конфликтов с "
 #~ "переменными, функциями и единицами измерения."
-
-#~ msgid "If this unit shall be hidden in menus"
-#~ msgstr "Если эта единица измерения должна быть скрыта в меню"
 
 #~ msgid "Relation is exact"
 #~ msgstr "Отношение точно"
