@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Qalculate!\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-24 08:16+0100\n"
+"POT-Creation-Date: 2025-01-26 14:37+0100\n"
 "PO-Revision-Date: 2024-11-25 09:09+0100\n"
 "Last-Translator: Polakrity\n"
 "Language-Team: none\n"
@@ -377,7 +377,7 @@ msgstr "Importer comme"
 msgid "Descriptive name"
 msgstr "Nom descriptif"
 
-#: ../data/csvimport.ui.h:10 ../data/functionedit.ui.h:18 ../data/main.ui.h:252
+#: ../data/csvimport.ui.h:10 ../data/functionedit.ui.h:18 ../data/main.ui.h:251
 #: ../data/matrixedit.ui.h:18 ../data/unitedit.ui.h:8
 #: ../data/variableedit.ui.h:11 ../src/conversionview.cc:519
 #: ../src/functionsdialog.cc:595 ../src/unitsdialog.cc:1021
@@ -475,7 +475,7 @@ msgstr "Valeur utilise des crochets"
 msgid "Hide"
 msgstr "Cacher"
 
-#: ../data/datasetedit.ui.h:13 ../data/main.ui.h:250
+#: ../data/datasetedit.ui.h:13 ../data/main.ui.h:249
 msgid "Unit expression"
 msgstr "Expression d'unité"
 
@@ -711,7 +711,7 @@ msgstr "Microchip 32-bit"
 msgid "Edit Function"
 msgstr "Éditer la fonction"
 
-#: ../data/functionedit.ui.h:2 ../data/main.ui.h:211 ../data/matrixedit.ui.h:2
+#: ../data/functionedit.ui.h:2 ../data/main.ui.h:210 ../data/matrixedit.ui.h:2
 #: ../data/plot.ui.h:2 ../data/unitedit.ui.h:2 ../data/unknownedit.ui.h:2
 #: ../data/variableedit.ui.h:2
 msgid "_Help"
@@ -798,17 +798,17 @@ msgstr "Fonctions"
 
 #: ../data/functions.ui.h:3 ../data/units.ui.h:8 ../data/variables.ui.h:3
 msgid "Categor_y"
-msgstr "Catégor_ie"
+msgstr "_Catégorie"
 
 #: ../data/functions.ui.h:4
 msgid "_Function"
-msgstr "_Fonction"
+msgstr "F_onction"
 
 #: ../data/functions.ui.h:5 ../data/units.ui.h:10 ../data/variables.ui.h:5
 msgid "Descri_ption"
 msgstr "Descri_ption"
 
-#: ../data/functions.ui.h:7 ../data/main.ui.h:278
+#: ../data/functions.ui.h:7 ../data/main.ui.h:277
 msgid "Create a new function"
 msgstr "Créer une nouvelle fonction"
 
@@ -830,17 +830,17 @@ msgstr "(Dés)activer la fonction sélectionnée"
 msgid "Deac_tivate"
 msgstr "Désac_tiver"
 
-#: ../data/functions.ui.h:14
-msgid "_Calculate"
-msgstr "_Calculer"
+#: ../data/functions.ui.h:14 ../src/insertfunctiondialog.cc:453
+msgid "C_alculate"
+msgstr "C_alculer"
 
 #: ../data/functions.ui.h:15
 msgid "Insert (or execute) the selected function into the expression entry"
 msgstr ""
 "Insérer (ou exécuter) la fonction sélectionnée dans l'expression entrée"
 
-#: ../data/functions.ui.h:16 ../data/plot.ui.h:36 ../src/mainwindow.cc:7497
-msgid "_Apply"
+#: ../data/functions.ui.h:16
+msgid "A_pply"
 msgstr "_Appliquer"
 
 #: ../data/functions.ui.h:17
@@ -1279,79 +1279,63 @@ msgstr "Mixte"
 msgid "Interval Display"
 msgstr "Affichage d'intervalle"
 
-#: ../data/main.ui.h:121
-msgid ""
-"Off: 1/2 × pi ≈ 1.5707963\n"
-"On: 1/2 × pi = 0.5 pi"
-msgstr ""
-"Désactivé : 1/2 × pi ≈ 1,5707963\n"
-"Activé : 1/2 × pi = 0,5 pi"
-
-#: ../data/main.ui.h:123 ../src/mainwindow.cc:998
+#: ../data/main.ui.h:121 ../src/mainwindow.cc:998
 msgid "Adaptive"
 msgstr "Adaptif"
 
-#: ../data/main.ui.h:124
-msgid ""
-"Calculates an interval of possible values and keeps track of precision "
-"changes."
-msgstr ""
-"Calcule un intervalle de valeurs possibles et assure le suivi des "
-"modifications de précision."
-
-#: ../data/main.ui.h:125
+#: ../data/main.ui.h:122
 msgid "Significant Digits"
 msgstr "Chiffres significatifs"
 
-#: ../data/main.ui.h:126 ../src/buttonseditdialog.cc:350 ../src/keypad.cc:458
+#: ../data/main.ui.h:123 ../src/buttonseditdialog.cc:350 ../src/keypad.cc:458
 msgid "Interval"
 msgstr "Intervalle"
 
-#: ../data/main.ui.h:127
+#: ../data/main.ui.h:124
 msgid "Plus/Minus"
 msgstr "Plus/Moins"
 
-#: ../data/main.ui.h:128 ../data/preferences.ui.h:109 ../src/mainwindow.cc:822
+#: ../data/main.ui.h:125 ../data/preferences.ui.h:109 ../src/mainwindow.cc:822
 msgid "Relative"
 msgstr "Relatif"
 
-#: ../data/main.ui.h:129
+#: ../data/main.ui.h:126
 msgid "Concise"
 msgstr "Concis"
 
-#: ../data/main.ui.h:130
+#: ../data/main.ui.h:127
 msgid "Midpoint"
 msgstr "Point du milieu"
 
-#: ../data/main.ui.h:131
+#: ../data/main.ui.h:128
 msgid "Allow concise uncertainty input"
 msgstr "Autoriser une saisie concise de l'incertitude"
 
-#: ../data/main.ui.h:132
+#: ../data/main.ui.h:129
 msgid "Unit Display"
 msgstr "Affichage de l'unité"
 
-#: ../data/main.ui.h:133
+#: ../data/main.ui.h:130
 msgid "Do not use any prefixes in result"
 msgstr "Ne pas utiliser de préfixes dans le résultat"
 
-#: ../data/main.ui.h:134
+#: ../data/main.ui.h:131
 msgid "Show prefixes for primarily SI and CGS units."
 msgstr "Afficher les préfixes pour les unités principalement SI et CGS."
 
-#: ../data/main.ui.h:135
+#: ../data/main.ui.h:132
 msgid "Use prefixes for selected units"
 msgstr "Utiliser des préfixes pour les unités sélectionnées"
 
-#: ../data/main.ui.h:136
+#: ../data/main.ui.h:133
 msgid "Use prefixes also for currencies"
 msgstr "Utiliserz également des préfixes pour les devises"
 
-#: ../data/main.ui.h:137
+#: ../data/main.ui.h:134
 msgid "Use prefixs for all units"
 msgstr "Utiliser des préfixes pour toutes les unités"
 
-#: ../data/main.ui.h:138
+#: ../data/main.ui.h:135
 msgid ""
 "Enables automatic use of hekto, deka, deci and centi when prefixes are "
 "enabled"
@@ -1359,11 +1343,11 @@ msgstr ""
 "Active automatiquement l'utilisation de hekto, déka, déci et centi lorsque "
 "les préfixes sont activés"
 
-#: ../data/main.ui.h:139
+#: ../data/main.ui.h:136
 msgid "Enable All SI Prefixes"
 msgstr "Activer tous les préfixes SI"
 
-#: ../data/main.ui.h:140
+#: ../data/main.ui.h:137
 msgid ""
 "Enables automatic setting of prefix for denominator in addition to the "
 "numerator"
@@ -1371,11 +1355,11 @@ msgstr ""
 "Permet la définition automatique du préfixe du dénominateur en plus du "
 "numérateur"
 
-#: ../data/main.ui.h:141
+#: ../data/main.ui.h:138
 msgid "Enable Denominator Prefixes"
 msgstr "Activer les préfixes du dénominateur"
 
-#: ../data/main.ui.h:142
+#: ../data/main.ui.h:139
 msgid ""
 "Off: J / K\n"
 "On: J·K^-1"
@@ -1383,11 +1367,11 @@ msgstr ""
 "Désactivé : J / K\n"
 "Activé : J·K^-1"
 
-#: ../data/main.ui.h:144
+#: ../data/main.ui.h:141
 msgid "Negative Exponents"
 msgstr "Exposants négatifs"
 
-#: ../data/main.ui.h:145
+#: ../data/main.ui.h:142
 msgid ""
 "Off: (2 m)/s\n"
 "On: 2 (m/s)"
@@ -1395,19 +1379,19 @@ msgstr ""
 "Désactivé : (2 m)/s\n"
 "Activé : 2 (m/s)"
 
-#: ../data/main.ui.h:147
+#: ../data/main.ui.h:144
 msgid "Place Units Separately"
 msgstr "Placer les unités séparément"
 
-#: ../data/main.ui.h:148
+#: ../data/main.ui.h:145
 msgid "No Additional Conversion"
 msgstr "Aucune conversion supplémentaire"
 
-#: ../data/main.ui.h:149
+#: ../data/main.ui.h:146
 msgid "Convert to Optimal SI Unit"
 msgstr "Convertir en unité SI optimale"
 
-#: ../data/main.ui.h:150
+#: ../data/main.ui.h:147
 msgid ""
 "If enabled:\n"
 "15 in = 1 ft + 3 in\n"
@@ -1417,140 +1401,148 @@ msgstr ""
 "15 in = 1 ft + 3 in\n"
 "3,2 h = 3 h + 12 min"
 
-#: ../data/main.ui.h:153
+#: ../data/main.ui.h:150
 msgid "Convert to Mixed Units"
 msgstr "Convertir en unités mixtes"
 
-#: ../data/main.ui.h:154
+#: ../data/main.ui.h:151
 msgid "Abbreviate Names"
 msgstr "Noms abrégés"
 
-#: ../data/main.ui.h:155
+#: ../data/main.ui.h:152
 msgid "Enabled Objects"
 msgstr "Objets activés"
 
-#: ../data/main.ui.h:156
+#: ../data/main.ui.h:153
 msgid "Unknowns"
 msgstr "Inconnues"
 
-#: ../data/main.ui.h:157
+#: ../data/main.ui.h:154
 msgid "Units in Physical Constants"
 msgstr "Unités en constantes physiques"
 
-#: ../data/main.ui.h:158
+#: ../data/main.ui.h:155
 msgid "If not enabled, treats all variables as unknown"
 msgstr "S'il n'est pas activé, traite toutes les variables comme des inconnues"
 
-#: ../data/main.ui.h:159
+#: ../data/main.ui.h:156
 msgid "Calculate Variables"
 msgstr "Calculer les variables"
 
-#: ../data/main.ui.h:160
+#: ../data/main.ui.h:157
 msgid "Disables/enables complex numbers in result"
 msgstr "Désactive/active les nombres complexes dans le résultat"
 
-#: ../data/main.ui.h:161
+#: ../data/main.ui.h:158
 msgid "Allow Complex Result"
 msgstr "Autoriser les résultats complexes"
 
-#: ../data/main.ui.h:162
+#: ../data/main.ui.h:159
 msgid "Disables/enables infinite numbers in result"
 msgstr "Désactive/active les nombres infinis comme résultat"
 
-#: ../data/main.ui.h:163
+#: ../data/main.ui.h:160
 msgid "Allow Infinite Result"
 msgstr "Autoriser infini comme résultat"
 
-#: ../data/main.ui.h:164
+#: ../data/main.ui.h:161
 msgid "Approximation"
 msgstr "Approximation"
 
-#: ../data/main.ui.h:165
+#: ../data/main.ui.h:162
+msgid ""
+"Off: 1/2 × pi ≈ 1.5707963\n"
+"On: 1/2 × pi = 0.5 pi"
+msgstr ""
+"Désactivé : 1/2 × pi ≈ 1,5707963\n"
+"Activé : 1/2 × pi = 0,5 pi"
+
+#: ../data/main.ui.h:164
 msgid "Always Exact"
 msgstr "Toujours exact"
 
-#: ../data/main.ui.h:166
+#: ../data/main.ui.h:165
 msgid "Try Exact"
 msgstr "Essayer exactitude"
 
-#: ../data/main.ui.h:167 ../src/datasetsdialog.cc:526
+#: ../data/main.ui.h:166 ../src/datasetsdialog.cc:526
 msgid "Approximate"
 msgstr "Approximatif"
 
-#: ../data/main.ui.h:168
+#: ../data/main.ui.h:167
 msgid "Interval Arithmetic"
 msgstr "Arithmétique des intervalles"
 
-#: ../data/main.ui.h:169
+#: ../data/main.ui.h:168
 msgid "Interval Calculation"
 msgstr "Calcul d'intervalle"
 
-#: ../data/main.ui.h:170
+#: ../data/main.ui.h:169
 msgid "Variance Formula"
 msgstr "Formule d'écart"
 
-#: ../data/main.ui.h:171
+#: ../data/main.ui.h:170
 msgid "Change angle unit used in trigonometric functions"
 msgstr "Changer l'unité d'angle utilisée dans les fonctions trigonométriques"
 
-#: ../data/main.ui.h:172
+#: ../data/main.ui.h:171
 msgid "Angle Unit"
 msgstr "Unité d'angle"
 
-#: ../data/main.ui.h:173 ../data/plot.ui.h:27 ../src/buttonseditdialog.cc:462
+#: ../data/main.ui.h:172 ../data/plot.ui.h:27 ../src/buttonseditdialog.cc:462
 msgid "None"
 msgstr "Aucune"
 
-#: ../data/main.ui.h:174
+#: ../data/main.ui.h:173
 msgid "Assumptions"
 msgstr "Suppositions"
 
-#: ../data/main.ui.h:175
+#: ../data/main.ui.h:174
 msgid "Algebraic Mode"
 msgstr "Mode algébrique"
 
-#: ../data/main.ui.h:176
+#: ../data/main.ui.h:175
 msgid "Assume that unknown denominators are non-zero"
 msgstr "Supposons que les dénominateurs inconnus soient différents de zéro"
 
-#: ../data/main.ui.h:177
+#: ../data/main.ui.h:176
 msgid "Non-Zero Denominators"
 msgstr "Dénominateurs non nuls"
 
-#: ../data/main.ui.h:178
+#: ../data/main.ui.h:177
 msgid "Warn when unknown denominators are assumed non-zero"
 msgstr ""
 "Avertir lorsque des dénominateurs inconnus sont supposés différents de zéro"
 
-#: ../data/main.ui.h:179
+#: ../data/main.ui.h:178
 msgid "Warn About Denominators Assumed Non-Zero"
 msgstr "Avertir des dénominateurs supposés non nuls"
 
-#: ../data/main.ui.h:180 ../src/expressionedit.cc:1465 ../src/mainwindow.cc:969
+#: ../data/main.ui.h:179 ../src/expressionedit.cc:1465 ../src/mainwindow.cc:969
 msgid "Parsing Mode"
 msgstr "Mode d'analyse"
 
-#: ../data/main.ui.h:181
+#: ../data/main.ui.h:180
 msgid "Adaptive Parsing"
 msgstr "Analyse adaptative"
 
-#: ../data/main.ui.h:182
+#: ../data/main.ui.h:181
 msgid "Parse Implicit Multiplication First"
 msgstr "Analyser d'abord la multiplication implicite"
 
-#: ../data/main.ui.h:183
+#: ../data/main.ui.h:182
 msgid "Conventional Parsing"
 msgstr "Analyse conventionnelle"
 
-#: ../data/main.ui.h:184
+#: ../data/main.ui.h:183
 msgid "Chain Syntax"
 msgstr "Syntaxe de la chaîne"
 
-#: ../data/main.ui.h:185
+#: ../data/main.ui.h:184
 msgid "RPN Syntax"
 msgstr "Syntaxe NPI"
 
-#: ../data/main.ui.h:187
+#: ../data/main.ui.h:186
 #, no-c-format
 msgid ""
 "Off: 100 + 20% = 100 +  20/100 = 100.2\n"
@@ -1559,11 +1551,11 @@ msgstr ""
 "Désactivé: 100 + 20% = 100 +  20/100 = 100,2\n"
 "Activé: 100 + 20% = 100 × 120% = 120"
 
-#: ../data/main.ui.h:189
+#: ../data/main.ui.h:188
 msgid "Simplified Percentage Calculation"
 msgstr "Calcul de pourcentage simplifié"
 
-#: ../data/main.ui.h:190
+#: ../data/main.ui.h:189
 msgid ""
 "Off: xy = x × y\n"
 "On: xy != x × y"
@@ -1571,11 +1563,11 @@ msgstr ""
 "Désactivé : xy = x × y\n"
 "Activé : xy != x × y"
 
-#: ../data/main.ui.h:192
+#: ../data/main.ui.h:191
 msgid "Limit Implicit Multiplication"
 msgstr "Limiter la multiplication implicite"
 
-#: ../data/main.ui.h:193
+#: ../data/main.ui.h:192
 msgid ""
 "Parse decimal numbers as approximate with precision equal to the number of "
 "digits.\n"
@@ -1589,91 +1581,91 @@ msgstr ""
 "Désactivé: 1.1 × 1.1 = 1.21\n"
 "Activé: 1.1 × 1.1 ≈ 1.2"
 
-#: ../data/main.ui.h:197
+#: ../data/main.ui.h:196
 msgid "Read Precision"
 msgstr "Lire précision"
 
-#: ../data/main.ui.h:198
+#: ../data/main.ui.h:197
 msgid "_Precision"
 msgstr "_Précision"
 
-#: ../data/main.ui.h:199
+#: ../data/main.ui.h:198
 msgid "_Decimals"
 msgstr "_Décimals"
 
-#: ../data/main.ui.h:200
+#: ../data/main.ui.h:199
 msgid "Calculate As You Type"
 msgstr "Calcul lors de la saisie"
 
-#: ../data/main.ui.h:201
+#: ../data/main.ui.h:200
 msgid "Chain Mode"
 msgstr "Mode chaîne"
 
-#: ../data/main.ui.h:202
+#: ../data/main.ui.h:201
 msgid "Activate the RPN stack."
 msgstr "Activer la pile NPI."
 
-#: ../data/main.ui.h:203
+#: ../data/main.ui.h:202
 msgid "RPN Mode"
 msgstr "Mode NPI"
 
-#: ../data/main.ui.h:204 ../src/expressionedit.cc:1486
+#: ../data/main.ui.h:203 ../src/expressionedit.cc:1486
 msgid "Meta Modes"
 msgstr "Modes méta"
 
-#: ../data/main.ui.h:205 ../src/expressionedit.cc:1500
+#: ../data/main.ui.h:204 ../src/expressionedit.cc:1500
 msgid "Save Mode…"
 msgstr "Sauvegarder mode…"
 
-#: ../data/main.ui.h:206
+#: ../data/main.ui.h:205
 msgid "Delete Mode…"
 msgstr "Supprimer mode…"
 
-#: ../data/main.ui.h:207
+#: ../data/main.ui.h:206
 msgid "Save Default _Mode"
 msgstr "Sauvegarder _Mode par défaut"
 
-#: ../data/main.ui.h:208
+#: ../data/main.ui.h:207
 msgid "Fu_nctions"
 msgstr "Fo_nctions"
 
-#: ../data/main.ui.h:209
+#: ../data/main.ui.h:208
 msgid "_Variables"
 msgstr "_Variables"
 
-#: ../data/main.ui.h:210
+#: ../data/main.ui.h:209
 msgid "_Units"
 msgstr "_Unités"
 
-#: ../data/main.ui.h:212
+#: ../data/main.ui.h:211
 msgid "_Contents"
 msgstr "Manuel"
 
-#: ../data/main.ui.h:213
+#: ../data/main.ui.h:212
 msgid "Report a Bug"
 msgstr "Reporter un bug"
 
-#: ../data/main.ui.h:214
+#: ../data/main.ui.h:213
 msgid "Check for Updates"
 msgstr "Vérifier les mises à jour"
 
-#: ../data/main.ui.h:215
+#: ../data/main.ui.h:214
 msgid "_About"
 msgstr "_À propos"
 
-#: ../data/main.ui.h:216 ../src/util.cc:918
+#: ../data/main.ui.h:215 ../src/util.cc:918
 msgid "Toggle minimal window"
 msgstr "Basculer en fenêtre minimale"
 
-#: ../data/main.ui.h:217
+#: ../data/main.ui.h:216
 msgid "Calculation result"
 msgstr "Résultat du calcul"
 
-#: ../data/main.ui.h:218
+#: ../data/main.ui.h:217
 msgid "_Keypad"
 msgstr "_Clavier"
 
-#: ../data/main.ui.h:219
+#: ../data/main.ui.h:218
 msgid ""
 "Toggles persistent keypad (makes it possible to show keypad and history "
 "simultaneously)"
@@ -1681,138 +1673,138 @@ msgstr ""
 "Active/désactive le clavier permanent (permet d'afficher simultanément le "
 "clavier et l'historique)"
 
-#: ../data/main.ui.h:220
+#: ../data/main.ui.h:219
 msgid "_History"
 msgstr "_Historique"
 
-#: ../data/main.ui.h:221
+#: ../data/main.ui.h:220
 msgid "C_onversion"
 msgstr "C_onversion"
 
-#: ../data/main.ui.h:222
+#: ../data/main.ui.h:221
 msgid "RPN Stack"
 msgstr "Pile NPI"
 
-#: ../data/main.ui.h:223
+#: ../data/main.ui.h:222
 msgid "Insert the selected value"
 msgstr "Insérer la valeur sélectionnée"
 
-#: ../data/main.ui.h:224
+#: ../data/main.ui.h:223
 msgid "Insert the selected text"
 msgstr "Insérer le texte sélectionné"
 
-#: ../data/main.ui.h:225
+#: ../data/main.ui.h:224
 msgid "Copy the selected text"
 msgstr "Copier le texte sélectionné"
 
-#: ../data/main.ui.h:226
+#: ../data/main.ui.h:225
 msgid "Add the selected value(s)"
 msgstr "Ajouter la valeur selectionnée"
 
-#: ../data/main.ui.h:227
+#: ../data/main.ui.h:226
 msgid "Subtract the selected value(s)"
 msgstr "Soustraire les valeurs sélectionnées"
 
-#: ../data/main.ui.h:228
+#: ../data/main.ui.h:227
 msgid "Multiply the selected value(s)"
 msgstr "Multiplier les valeurs sélectionnées"
 
-#: ../data/main.ui.h:229
+#: ../data/main.ui.h:228
 msgid "Divide the the selected value(s)"
 msgstr "Diviser les valeurs sélectionnées"
 
-#: ../data/main.ui.h:230
+#: ../data/main.ui.h:229
 msgid "Raise to the power of the selected value"
 msgstr "Élever la valeur sélectionnée à la puissance"
 
-#: ../data/main.ui.h:231
+#: ../data/main.ui.h:230
 msgid "Calculate the square root of the selected value"
 msgstr "Calculer la racine carrée de la valeur sélectionnée"
 
-#: ../data/main.ui.h:232 ../src/historyview.cc:3554
+#: ../data/main.ui.h:231 ../src/historyview.cc:3554
 msgid "History"
 msgstr "Historique"
 
-#: ../data/main.ui.h:234
+#: ../data/main.ui.h:233
 msgid "Subtract the top value from the second value"
 msgstr "Soustrayez la valeur supérieure de la deuxième valeur"
 
-#: ../data/main.ui.h:235
+#: ../data/main.ui.h:234
 msgid "Multiply the top two values"
 msgstr "Multipliez les deux premières valeurs"
 
-#: ../data/main.ui.h:236
+#: ../data/main.ui.h:235
 msgid "Divide the second value by the top value"
 msgstr "Divisez la deuxième valeur par la valeur supérieure"
 
-#: ../data/main.ui.h:237
+#: ../data/main.ui.h:236
 msgid "Raise the second value to the power of the top value"
 msgstr "Augmentez la deuxième valeur à la puissance de la valeur supérieure"
 
-#: ../data/main.ui.h:238
+#: ../data/main.ui.h:237
 msgid "Negate the top value (Ctrl+-)"
 msgstr "Annuler la valeur supérieure (Ctrl+-)"
 
-#: ../data/main.ui.h:239
+#: ../data/main.ui.h:238
 msgid "Invert the top value"
 msgstr "Inverser la valeur supérieure"
 
-#: ../data/main.ui.h:240
+#: ../data/main.ui.h:239
 msgid "Calculate the square root of the top value"
 msgstr "Calculer la racine carrée de la valeur supérieure"
 
-#: ../data/main.ui.h:241
+#: ../data/main.ui.h:240
 msgid "Calculate the sum of all values"
 msgstr "Calcule la somme de toutes les valeurs"
 
-#: ../data/main.ui.h:242 ../src/stackview.cc:686 ../src/stackview.cc:746
+#: ../data/main.ui.h:241 ../src/stackview.cc:686 ../src/stackview.cc:746
 msgid "Rotate the stack or move selected register up"
 msgstr "Faire pivoter la pile ou déplacer le registre sélectionné vers le haut"
 
-#: ../data/main.ui.h:243 ../src/stackview.cc:694 ../src/stackview.cc:747
+#: ../data/main.ui.h:242 ../src/stackview.cc:694 ../src/stackview.cc:747
 msgid "Rotate the stack or move selected register down"
 msgstr "Faire pivoter la pile ou déplacer le registre sélectionné vers le bas"
 
-#: ../data/main.ui.h:244 ../src/stackview.cc:702 ../src/stackview.cc:748
+#: ../data/main.ui.h:243 ../src/stackview.cc:702 ../src/stackview.cc:748
 msgid ""
 "Swap the two top values or move the selected value to the top of the stack"
 msgstr ""
 "Échangez les deux valeurs supérieures ou déplacez la valeur sélectionnée "
 "vers le haut de la pile"
 
-#: ../data/main.ui.h:245 ../src/stackview.cc:710 ../src/stackview.cc:749
+#: ../data/main.ui.h:244 ../src/stackview.cc:710 ../src/stackview.cc:749
 msgid "Copy the selected or top value to the top of the stack"
 msgstr "Copiez la valeur sélectionnée ou supérieure en haut de la pile"
 
-#: ../data/main.ui.h:246 ../src/stackview.cc:718 ../src/stackview.cc:750
+#: ../data/main.ui.h:245 ../src/stackview.cc:718 ../src/stackview.cc:750
 msgid "Enter the top value from before the last numeric operation"
 msgstr "Entrez la valeur supérieure avant la dernière opération numérique"
 
-#: ../data/main.ui.h:247 ../src/stackview.cc:726 ../src/stackview.cc:751
+#: ../data/main.ui.h:246 ../src/stackview.cc:726 ../src/stackview.cc:751
 msgid "Delete the top or selected value"
 msgstr "Supprimer la valeur supérieure ou sélectionnée"
 
-#: ../data/main.ui.h:248
+#: ../data/main.ui.h:247
 msgid "Edit the selected value"
 msgstr "Éditer la valeur sélectionnée"
 
-#: ../data/main.ui.h:249 ../src/stackview.cc:734 ../src/stackview.cc:752
+#: ../data/main.ui.h:248 ../src/stackview.cc:734 ../src/stackview.cc:752
 msgid "Clear the RPN stack"
 msgstr "Vider la pile NPI"
 
-#: ../data/main.ui.h:251
+#: ../data/main.ui.h:250
 msgid "Unit(s) and prefix to convert result to"
 msgstr "Unité(s) et préfixe vers lesquels convertir le résultat"
 
-#: ../data/main.ui.h:253
+#: ../data/main.ui.h:252
 msgid "Convert"
 msgstr "Convertir"
 
-#: ../data/main.ui.h:254
+#: ../data/main.ui.h:253
 msgid "Continuous conversion"
 msgstr "Conversion continue"
 
-#: ../data/main.ui.h:255
+#: ../data/main.ui.h:254
 msgid ""
 "Automatically convert result to the current unit expression as long as the "
 "conversion box is visible."
@@ -1820,11 +1812,11 @@ msgstr ""
 "Converti automatiquement le résultat dans l'expression unité actuel aussi "
 "longtemps que la boîte de conversion est visible."
 
-#: ../data/main.ui.h:256
+#: ../data/main.ui.h:255
 msgid "Add prefix"
 msgstr "Ajouter préfixe"
 
-#: ../data/main.ui.h:257
+#: ../data/main.ui.h:256
 msgid ""
 "If unit expression does not contain any prefixes, use optimal prefix.\n"
 "\n"
@@ -1835,433 +1827,433 @@ msgstr ""
 "\n"
 "Ceci peut être écrasé en ajoutant à l'expression unitaire \"?\" ou \"0\"."
 
-#: ../data/main.ui.h:260
+#: ../data/main.ui.h:259
 msgid "Conversion"
 msgstr "Conversion"
 
-#: ../data/main.ui.h:261 ../src/keypad.cc:3542 ../src/keypad.cc:3572
+#: ../data/main.ui.h:260 ../src/keypad.cc:3542 ../src/keypad.cc:3572
 msgid "Show/hide programming keypad"
 msgstr "Afficher/masquer le clavier de programmation"
 
-#: ../data/main.ui.h:262 ../src/datasetsdialog.cc:527
+#: ../data/main.ui.h:261 ../src/datasetsdialog.cc:527
 msgid "Exact"
 msgstr "Exact"
 
-#: ../data/main.ui.h:263 ../src/expressioncompletion.cc:1900
+#: ../data/main.ui.h:262 ../src/expressioncompletion.cc:1900
 #: ../src/expressioncompletion.cc:1902
 msgid "Fraction"
 msgstr "Fraction"
 
-#: ../data/main.ui.h:264
+#: ../data/main.ui.h:263
 msgid "Numerical display"
 msgstr "Affichage numérique"
 
-#: ../data/main.ui.h:265
+#: ../data/main.ui.h:264
 msgid "Pure"
 msgstr "Pur"
 
-#: ../data/main.ui.h:266
+#: ../data/main.ui.h:265
 msgid "Number base"
 msgstr "Base numérique"
 
-#: ../data/main.ui.h:267 ../data/setbase.ui.h:9
+#: ../data/main.ui.h:266 ../data/setbase.ui.h:9
 msgid "Time format"
 msgstr "Format de l'heure"
 
-#: ../data/main.ui.h:268
+#: ../data/main.ui.h:267
 msgid "Roman"
 msgstr "Romain"
 
-#: ../data/main.ui.h:269
+#: ../data/main.ui.h:268
 msgid "sin"
 msgstr "sin"
 
-#: ../data/main.ui.h:270
+#: ../data/main.ui.h:269
 msgid "cos"
 msgstr "cos"
 
-#: ../data/main.ui.h:271
+#: ../data/main.ui.h:270
 msgid "tan"
 msgstr "tan"
 
-#: ../data/main.ui.h:272
+#: ../data/main.ui.h:271
 msgid "ln"
 msgstr "ln"
 
-#: ../data/main.ui.h:273
+#: ../data/main.ui.h:272
 msgid "Equals"
 msgstr "Égal"
 
-#: ../data/main.ui.h:274
+#: ../data/main.ui.h:273
 msgid "sqrt"
 msgstr "sqrt"
 
-#: ../data/main.ui.h:275
+#: ../data/main.ui.h:274
 msgid "sum"
 msgstr "sum"
 
-#: ../data/main.ui.h:276
+#: ../data/main.ui.h:275
 msgid "Unknown variable"
 msgstr "Variable inconnue"
 
-#: ../data/main.ui.h:277
+#: ../data/main.ui.h:276
 msgid "mod"
 msgstr "mod"
 
-#: ../data/main.ui.h:279
+#: ../data/main.ui.h:278
 msgid "mean"
 msgstr "moyenne"
 
-#: ../data/main.ui.h:280 ../src/keypad.cc:1017
+#: ../data/main.ui.h:279 ../src/keypad.cc:1017
 msgid "Store result as a variable"
 msgstr "Enregistrer le résultat sous forme de variable"
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:282
+#: ../data/main.ui.h:281
 msgid "STO"
 msgstr "STO"
 
-#: ../data/main.ui.h:283
+#: ../data/main.ui.h:282
 msgid "Convert number bases"
 msgstr "Convertir des bases numériques"
 
-#: ../data/main.ui.h:284
+#: ../data/main.ui.h:283
 msgid "Imaginary unit i (√-1)"
 msgstr "Unité imaginaire i (√-1)"
 
-#: ../data/main.ui.h:285 ../src/util.cc:921
+#: ../data/main.ui.h:284 ../src/util.cc:921
 msgid "Manage units"
 msgstr "Gérer les unités"
 
-#: ../data/main.ui.h:287
+#: ../data/main.ui.h:286
 msgid "Conversion operator"
 msgstr "Opérateur de conversion"
 
-#: ../data/main.ui.h:289
+#: ../data/main.ui.h:288
 msgid "Kilogram"
 msgstr "Kilogramme"
 
-#: ../data/main.ui.h:290 ../data/preferences.ui.h:70
+#: ../data/main.ui.h:289 ../data/preferences.ui.h:70
 msgid "Two's complement input"
 msgstr "Entrée du complément à deux"
 
-#: ../data/main.ui.h:291 ../data/preferences.ui.h:69
+#: ../data/main.ui.h:290 ../data/preferences.ui.h:69
 msgid "Two's complement output"
 msgstr "Sortie du complément à deux"
 
-#: ../data/main.ui.h:292 ../data/nbases.ui.h:26 ../src/buttonseditdialog.cc:371
+#: ../data/main.ui.h:291 ../data/nbases.ui.h:26 ../src/buttonseditdialog.cc:371
 #: ../src/keypad.cc:387 ../src/keypad.cc:388 ../src/keypad.cc:516
 #: ../src/keypad.cc:693
 msgid "Bitwise Exclusive OR"
 msgstr "Bitwise Exclusive OR"
 
-#: ../data/main.ui.h:293 ../data/nbases.ui.h:32 ../src/keypad.cc:689
+#: ../data/main.ui.h:292 ../data/nbases.ui.h:32 ../src/keypad.cc:689
 msgid "Bitwise Left Shift"
 msgstr "Décalage gauche Bitwise"
 
-#: ../data/main.ui.h:294 ../data/nbases.ui.h:33 ../src/keypad.cc:690
+#: ../data/main.ui.h:293 ../data/nbases.ui.h:33 ../src/keypad.cc:690
 msgid "Bitwise Right Shift"
 msgstr "Décalage droite Bitwise"
 
-#: ../data/main.ui.h:295
+#: ../data/main.ui.h:294
 msgid "Floating point conversion"
 msgstr "Conversion en virgule flottante"
 
-#: ../data/main.ui.h:296
+#: ../data/main.ui.h:295
 msgid "Show/hide left keypad"
 msgstr "Afficher/masquer le clavier gauche"
 
-#: ../data/main.ui.h:297
+#: ../data/main.ui.h:296
 msgid "Show/hide right keypad"
 msgstr "Afficher/masquer le clavier droite"
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:299 ../data/nbases.ui.h:29 ../src/keypad.cc:523
+#: ../data/main.ui.h:298 ../data/nbases.ui.h:29 ../src/keypad.cc:523
 msgid "DEL"
 msgstr "DEL"
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:301 ../data/nbases.ui.h:31 ../src/keypad.cc:522
+#: ../data/main.ui.h:300 ../data/nbases.ui.h:31 ../src/keypad.cc:522
 msgid "AC"
 msgstr "AC"
 
-#: ../data/main.ui.h:302 ../src/buttonseditdialog.cc:378 ../src/keypad.cc:524
+#: ../data/main.ui.h:301 ../src/buttonseditdialog.cc:378 ../src/keypad.cc:524
 msgid "Previous result"
 msgstr "Résultat précédent"
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:304 ../src/keypad.cc:524
+#: ../data/main.ui.h:303 ../src/keypad.cc:524
 msgid "ANS"
 msgstr "ANS"
 
-#: ../data/main.ui.h:305 ../src/keypad.cc:477
+#: ../data/main.ui.h:304 ../src/keypad.cc:477
 msgid "EXP"
 msgstr "EXP"
 
-#: ../data/main.ui.h:306
+#: ../data/main.ui.h:305
 msgid "Add to Expression"
 msgstr "Ajouter à l'expression"
 
-#: ../data/main.ui.h:307
+#: ../data/main.ui.h:306
 msgid "Persistent Keypad"
 msgstr "Clavier permanent"
 
-#: ../data/main.ui.h:308
+#: ../data/main.ui.h:307
 msgid "Edit"
 msgstr "Éditer"
 
-#: ../data/main.ui.h:309 ../data/nbases.ui.h:28 ../src/buttonseditdialog.cc:377
+#: ../data/main.ui.h:308 ../data/nbases.ui.h:28 ../src/buttonseditdialog.cc:377
 #: ../src/keypad.cc:523
 msgid "Delete"
 msgstr "Supprimer"
 
-#: ../data/main.ui.h:310
+#: ../data/main.ui.h:309
 msgid "Update"
 msgstr "Mettre à jour"
 
-#: ../data/main.ui.h:311
+#: ../data/main.ui.h:310
 msgid "Insert Value"
 msgstr "Insérer valeur"
 
-#: ../data/main.ui.h:312
+#: ../data/main.ui.h:311
 msgid "Insert Text"
 msgstr "Insérer texte"
 
-#: ../data/main.ui.h:313
+#: ../data/main.ui.h:312
 msgid "Insert Parsed Text"
 msgstr "Insérer texte analysé"
 
-#: ../data/main.ui.h:314 ../src/searchprovider.cc:210
+#: ../data/main.ui.h:313 ../src/searchprovider.cc:210
 msgid "Copy"
 msgstr "Copier"
 
-#: ../data/main.ui.h:315
+#: ../data/main.ui.h:314
 msgid "Copy Unformatted ASCII"
 msgstr "Copier ASCII non formaté"
 
-#: ../data/main.ui.h:316
+#: ../data/main.ui.h:315
 msgid "Copy Full Text"
 msgstr "Copier le texte entier"
 
-#: ../data/main.ui.h:317
+#: ../data/main.ui.h:316
 msgid "Search…"
 msgstr "Rechercher…"
 
-#: ../data/main.ui.h:318 ../src/historyview.cc:3076 ../src/historyview.cc:3091
+#: ../data/main.ui.h:317 ../src/historyview.cc:3076 ../src/historyview.cc:3091
 msgid "Search by Date…"
 msgstr "Rechercher par date…"
 
-#: ../data/main.ui.h:319 ../src/historyview.cc:3073
+#: ../data/main.ui.h:318 ../src/historyview.cc:3073
 msgid "Add Bookmark…"
 msgstr "Ajouter favoris…"
 
-#: ../data/main.ui.h:320
+#: ../data/main.ui.h:319
 msgid "Bookmarks"
 msgstr "Favoris"
 
-#: ../data/main.ui.h:321
+#: ../data/main.ui.h:320
 msgid "Protect"
 msgstr "Protéger"
 
-#: ../data/main.ui.h:322
+#: ../data/main.ui.h:321
 msgid "Move To Top"
 msgstr "Se déplacer en haut"
 
-#: ../data/main.ui.h:323
+#: ../data/main.ui.h:322
 msgid "Remove"
 msgstr "Supprimer"
 
-#: ../data/main.ui.h:324
+#: ../data/main.ui.h:323
 msgid "Clear All"
 msgstr "Effacer tout"
 
-#: ../data/main.ui.h:325
+#: ../data/main.ui.h:324
 msgid "Show Parsed Expression"
 msgstr "Afficher l'expression analysée"
 
-#: ../data/main.ui.h:326
+#: ../data/main.ui.h:325
 msgid "Show Result"
 msgstr "Afficher le résultat"
 
-#: ../data/main.ui.h:327
+#: ../data/main.ui.h:326
 msgid "_Copy"
 msgstr "_Copier"
 
-#: ../data/main.ui.h:328
+#: ../data/main.ui.h:327
 msgid "_Store…"
 msgstr "_Enregistrer…"
 
-#: ../data/main.ui.h:329
+#: ../data/main.ui.h:328
 msgid "Save Image…"
 msgstr "Sauvegarder l'image…"
 
-#: ../data/main.ui.h:330
+#: ../data/main.ui.h:329
 msgid "_Factorize"
 msgstr "_Factoriser"
 
-#: ../data/main.ui.h:331
+#: ../data/main.ui.h:330
 msgid "_Expand"
 msgstr "_Développer"
 
-#: ../data/main.ui.h:332
+#: ../data/main.ui.h:331
 msgid "_Normal"
 msgstr "_Normal"
 
-#: ../data/main.ui.h:333
+#: ../data/main.ui.h:332
 msgid "Sc_ientific"
 msgstr "Sc_ientifique"
 
-#: ../data/main.ui.h:334
+#: ../data/main.ui.h:333
 msgid "Purel_y Scientific"
 msgstr "Puremen_t scientifique"
 
-#: ../data/main.ui.h:335
+#: ../data/main.ui.h:334
 msgid "Simp_le"
 msgstr "Simp_le"
 
-#: ../data/main.ui.h:336
+#: ../data/main.ui.h:335
 msgid "_Binary"
 msgstr "_Binaire"
 
-#: ../data/main.ui.h:337
+#: ../data/main.ui.h:336
 msgid "_Octal"
 msgstr "_Octal"
 
-#: ../data/main.ui.h:338
+#: ../data/main.ui.h:337
 msgid "_Decimal"
 msgstr "_Décimal"
 
-#: ../data/main.ui.h:339
+#: ../data/main.ui.h:338
 msgid "_Hexadecimal"
 msgstr "_Hexadécimal"
 
-#: ../data/main.ui.h:340 ../src/expressioncompletion.cc:1904
+#: ../data/main.ui.h:339 ../src/expressioncompletion.cc:1904
 msgid "Decimal Fraction"
 msgstr "Fraction décimale"
 
-#: ../data/main.ui.h:341
+#: ../data/main.ui.h:340
 msgid "Exact Decimal Fraction"
 msgstr "Fraction décimale exacte"
 
-#: ../data/main.ui.h:342
+#: ../data/main.ui.h:341
 msgid "Simple Fraction"
 msgstr "Fraction simple"
 
-#: ../data/main.ui.h:343
+#: ../data/main.ui.h:342
 msgid "Mixed Fraction"
 msgstr "Fraction mixte"
 
-#: ../data/main.ui.h:344
+#: ../data/main.ui.h:343
 msgid "_Abbreviate Names"
 msgstr "_Noms abrégés"
 
-#: ../data/main.ui.h:345
+#: ../data/main.ui.h:344
 msgid "C_onvert…"
 msgstr "C_onvertir…"
 
-#: ../data/main.ui.h:346
+#: ../data/main.ui.h:345
 msgid "Convert to Base _Units"
 msgstr "Convertir en _unités de base"
 
-#: ../data/main.ui.h:347
+#: ../data/main.ui.h:346
 msgid "Convert _to Optimal Unit"
 msgstr "Convertir _en unité optimale"
 
-#: ../data/main.ui.h:348
+#: ../data/main.ui.h:347
 msgid "Use Optimal Prefix"
 msgstr "Utiliser le préfixe optimal"
 
-#: ../data/main.ui.h:349
+#: ../data/main.ui.h:348
 msgid "Convert to"
 msgstr "Convertir vers"
 
-#: ../data/main.ui.h:350
+#: ../data/main.ui.h:349
 msgid "Convert to UTC"
 msgstr "Convertir vers UTC"
 
-#: ../data/main.ui.h:351
+#: ../data/main.ui.h:350
 msgid "Convert to Calendars"
 msgstr "Convertir vers calendriers"
 
-#: ../data/main.ui.h:352
+#: ../data/main.ui.h:351
 msgid "Use prefixes for all units"
 msgstr "Utiliser des préfixes pour toutes les unités"
 
-#: ../data/main.ui.h:353
+#: ../data/main.ui.h:352
 msgid "Enable All SI Prefi_xes"
 msgstr "Activer tous SI Prefi_xes"
 
-#: ../data/main.ui.h:354
+#: ../data/main.ui.h:353
 msgid "View/Edit Matrix"
 msgstr "Afficher/éditer matrice"
 
-#: ../data/main.ui.h:355
+#: ../data/main.ui.h:354
 msgid "View/Edit Vector"
 msgstr "Afficher/Éditer vecteur"
 
-#: ../data/main.ui.h:356
+#: ../data/main.ui.h:355
 msgid "Show Parsed Expression in Result Field"
 msgstr "Afficher l'expression analysée dans le champ de résultat"
 
-#: ../data/main.ui.h:357
+#: ../data/main.ui.h:356
 msgid "Copy Text"
 msgstr "Copier texte"
 
-#: ../data/main.ui.h:358
+#: ../data/main.ui.h:357
 msgid "To Top"
 msgstr "En haut"
 
-#: ../data/main.ui.h:359
+#: ../data/main.ui.h:358
 msgid "Swap"
 msgstr "Échanger"
 
-#: ../data/main.ui.h:360
+#: ../data/main.ui.h:359
 msgid "Up"
 msgstr "Haut"
 
-#: ../data/main.ui.h:361
+#: ../data/main.ui.h:360
 msgid "Down"
 msgstr "Bas"
 
-#: ../data/main.ui.h:362
+#: ../data/main.ui.h:361
 msgid "Negate"
 msgstr "Rejeter"
 
-#: ../data/main.ui.h:363
+#: ../data/main.ui.h:362
 msgid "Invert"
 msgstr "Intervertir"
 
-#: ../data/main.ui.h:364
+#: ../data/main.ui.h:363
 msgid "Square"
 msgstr "Carré"
 
-#: ../data/main.ui.h:365
+#: ../data/main.ui.h:364
 msgid "Square Root"
 msgstr "Racine carrée"
 
-#: ../data/main.ui.h:366
+#: ../data/main.ui.h:365
 msgid "Clear Stack"
 msgstr "Vider pile"
 
-#: ../data/main.ui.h:367
+#: ../data/main.ui.h:366
 msgid "Select Number Base…"
 msgstr "Sélectionner la base numérique…"
 
-#: ../data/main.ui.h:368
+#: ../data/main.ui.h:367
 msgid "Display Expression Status"
 msgstr "Afficher l'état de l'expression"
 
-#: ../data/main.ui.h:369 ../src/util.cc:923
+#: ../data/main.ui.h:368 ../src/util.cc:923
 msgid "Store result"
 msgstr "Enregistrer résultat"
 
 #. Add current result to variable value
-#: ../data/main.ui.h:371
+#: ../data/main.ui.h:370
 msgid "Add result"
 msgstr "Ajouter résultat"
 
 #. Subtruct current result from variable value
-#: ../data/main.ui.h:373
+#: ../data/main.ui.h:372
 msgid "Subtract result"
 msgstr "Soustraire résultat"
 
@@ -2560,6 +2552,10 @@ msgstr "Primaire"
 #: ../data/plot.ui.h:34
 msgid "Secondary"
 msgstr "Secondaire"
+
+#: ../data/plot.ui.h:36 ../src/mainwindow.cc:7497
+msgid "_Apply"
+msgstr "_Appliquer"
 
 #: ../data/plot.ui.h:38
 msgid "Data"
@@ -4689,10 +4685,6 @@ msgstr "Garder ouvert"
 msgid "Enter"
 msgstr "Entrer"
 
-#: ../src/insertfunctiondialog.cc:453
-msgid "C_alculate"
-msgstr "C_alculer"
-
 #: ../src/insertfunctiondialog.cc:456
 msgid "Apply to Stack"
 msgstr "Appliquer à la pile"
@@ -5841,6 +5833,16 @@ msgstr "un vecteur"
 #: ../src/variablesdialog.cc:317
 msgid "not matrix"
 msgstr "pas de matrice"
+
+#~ msgid "_Calculate"
+#~ msgstr "_Calculer"
+
+#~ msgid ""
+#~ "Calculates an interval of possible values and keeps track of precision "
+#~ "changes."
+#~ msgstr ""
+#~ "Calcule un intervalle de valeurs possibles et assure le suivi des "
+#~ "modifications de précision."
 
 #, fuzzy
 #~ msgid "Act_ivate"

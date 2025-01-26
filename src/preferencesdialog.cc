@@ -259,7 +259,7 @@ void on_preferences_combo_language_changed(GtkComboBox *w, gpointer) {
 #else
 	switch(gtk_combo_box_get_active(w)) {
 		case 0: {custom_lang = ""; break;}
-		case 1: {custom_lang = "ca_CA.UTF8"; break;}
+		case 1: {custom_lang = "ca_ES.UTF8"; break;}
 		case 2: {custom_lang = "de_DE.UTF8"; break;}
 		case 3: {custom_lang = "en_US.UTF8"; break;}
 		case 4: {custom_lang = "es_ES.UTF8"; break;}
@@ -957,7 +957,7 @@ GtkWidget* get_preferences_dialog() {
 		gtk_range_set_value(GTK_RANGE(gtk_builder_get_object(preferences_builder, "preferences_scale_plot_time")), nr.floatValue() - 0.322);
 		string lang = custom_lang;
 		if(lang.length() > 2) lang = lang.substr(0, 2);
-		if(custom_lang == "ca") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 1);
+		if(lang == "ca") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 1);
 		else if(lang == "de") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 2);
 		else if(lang == "en") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 3);
 		else if(lang == "es") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 4);
