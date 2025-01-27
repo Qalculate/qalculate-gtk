@@ -1421,7 +1421,7 @@ void create_umenu() {
 	if(!user_units.empty()) {
 		SUBMENU_ITEM_PREPEND(_("User units"), sub)
 		for(size_t i = 0; i < user_units.size(); i++) {
-			MENU_ITEM_WITH_OBJECT(user_units[i], insert_unit_from_menu);
+			if(user_units[i]->isActive() && !user_units[i]->isHidden()) {MENU_ITEM_WITH_OBJECT(user_units[i], insert_unit_from_menu);}
 		}
 	}
 
@@ -1516,7 +1516,7 @@ void create_umenu2() {
 	if(!user_units.empty()) {
 		SUBMENU_ITEM_PREPEND(_("User units"), sub)
 		for(size_t i = 0; i < user_units.size(); i++) {
-			MENU_ITEM_WITH_OBJECT(user_units[i], insert_unit_from_menu);
+			if(user_units[i]->isActive() && !user_units[i]->isHidden()) {MENU_ITEM_WITH_OBJECT(user_units[i], insert_unit_from_menu);}
 		}
 	}
 }
@@ -1593,7 +1593,7 @@ void create_fmenu() {
 	if(!user_functions.empty()) {
 		SUBMENU_ITEM_PREPEND(_("User functions"), sub)
 		for(size_t i = 0; i < user_functions.size(); i++) {
-			MENU_ITEM_WITH_OBJECT(user_functions[i], insert_function_from_menu);
+			if(user_functions[i]->isActive() && !user_functions[i]->isHidden()) {MENU_ITEM_WITH_OBJECT(user_functions[i], insert_function_from_menu);}
 		}
 	}
 }
@@ -1675,7 +1675,7 @@ void create_vmenu() {
 	if(!user_variables.empty()) {
 		SUBMENU_ITEM_PREPEND(_("User variables"), sub)
 		for(size_t i = 0; i < user_variables.size(); i++) {
-			MENU_ITEM_WITH_OBJECT(user_variables[i], insert_variable_from_menu);
+			if(user_variables[i]->isActive() && !user_variables[i]->isHidden()) {MENU_ITEM_WITH_OBJECT(user_variables[i], insert_variable_from_menu);}
 		}
 	}
 

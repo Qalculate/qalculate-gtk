@@ -7347,14 +7347,14 @@ void function_edited(MathFunction *f) {
 	selected_function = f;
 	if(current_parsed_result() && current_parsed_result()->containsFunction(f)) expression_format_updated(false);
 	update_fmenu();
-	function_inserted(f);
+	if(f->isActive() && !f->isHidden()) function_inserted(f);
 }
 void dataset_edited(DataSet *ds) {
 	if(!ds) return;
 	selected_dataset = ds;
 	update_fmenu();
 	if(current_parsed_result() && current_parsed_result()->containsFunction(ds)) expression_format_updated(false);
-	function_inserted(ds);
+	if(ds->isActive() && !ds->isHidden()) function_inserted(ds);
 	update_datasets_tree();
 }
 void function_inserted(MathFunction *object) {
@@ -7377,7 +7377,7 @@ void variable_edited(Variable *v) {
 	}
 	if(current_parsed_result() && current_parsed_result()->contains(v)) expression_format_updated(false);
 	update_vmenu();
-	variable_inserted(v);
+	if(v->isActive() && !v->isHidden()) variable_inserted(v);
 }
 void variable_inserted(Variable *object) {
 	if(!object || object == CALCULATOR->v_x || object == CALCULATOR->v_y || object == CALCULATOR->v_z) {
@@ -7401,7 +7401,7 @@ void unit_edited(Unit *u) {
 	}
 	if(current_parsed_result() && current_parsed_result()->contains(u)) expression_format_updated(false);
 	update_umenus();
-	unit_inserted(u);
+	if(u->isActive() && !u->isHidden()) unit_inserted(u);
 }
 void unit_inserted(Unit *object) {
 	if(!object) return;
