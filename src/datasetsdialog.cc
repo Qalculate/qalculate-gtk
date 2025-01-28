@@ -364,9 +364,8 @@ void on_datasets_button_editset_clicked(GtkButton*, gpointer) {
 }
 void on_datasets_button_delset_clicked(GtkButton*, gpointer) {
 	if(selected_dataset && selected_dataset->isLocal()) {
-		selected_dataset->destroy();
 		selected_dataobject = NULL;
-		function_removed(selected_dataset);
+		remove_function(selected_dataset);
 		selected_dataset = NULL;
 		update_datasets_tree();
 		on_tDatasets_selection_changed(gtk_tree_view_get_selection(GTK_TREE_VIEW(tDatasets)), NULL);

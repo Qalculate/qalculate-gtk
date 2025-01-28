@@ -7434,20 +7434,29 @@ void insert_unit(Unit *u, bool add_to_recent) {
 	}
 	if(add_to_recent) unit_inserted(u);
 }
-void variable_removed(Variable *v) {
+void remove_variable(Variable *v) {
 	remove_from_recent_variables(v);
+	v->ref();
+	v->destroy();
 	if(current_parsed_result() && current_parsed_result()->contains(v)) expression_format_updated(false);
 	update_vmenu();
+	v->unref();
 }
-void unit_removed(Unit *u) {
+void remove_unit(Unit *u) {
 	remove_from_recent_units(u);
+	u->ref();
+	u->destroy();
 	if(current_parsed_result() && current_parsed_result()->contains(u)) expression_format_updated(false);
 	update_umenus();
+	u->unref();
 }
-void function_removed(MathFunction *f) {
+void remove_function(MathFunction *f) {
 	remove_from_recent_functions(f);
+	f->ref();
+	f->destroy();
 	if(current_parsed_result() && current_parsed_result()->containsFunction(f)) expression_format_updated(false);
 	update_fmenu();
+	f->unref();
 }
 
 void new_function(GtkMenuItem*, gpointer) {

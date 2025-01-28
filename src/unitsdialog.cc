@@ -754,16 +754,15 @@ void on_units_button_delete_clicked(GtkButton*, gpointer) {
 		show_message(_("Cannot delete unit as it is needed by other units."), GTK_WINDOW(gtk_builder_get_object(units_builder, "units_dialog")));
 		return;
 	}
-	u->destroy();
 	if(gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnits)), &model, &iter)) {
 		//reselect selected unit category
 		GtkTreePath *path = gtk_tree_model_get_path(model, &iter);
 		string str = selected_unit_category;
-		unit_removed(u);
+		remove_unit(u);
 		if(str == selected_unit_category) gtk_tree_selection_select_path(gtk_tree_view_get_selection(GTK_TREE_VIEW(tUnits)), path);
 		gtk_tree_path_free(path);
 	} else {
-		unit_removed(u);
+		remove_unit(u);
 	}
 }
 

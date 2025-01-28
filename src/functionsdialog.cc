@@ -479,20 +479,18 @@ void on_functions_button_delete_clicked(GtkButton*, gpointer) {
 	GtkTreeIter iter;
 	MathFunction *f = get_selected_function();
 	if(!f || !f->isLocal()) return;
-	//ensure removal of all references in Calculator
-	f->destroy();
 	//update menus and trees
 	if(gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctions)), &model, &iter)) {
 		//reselected selected function category
 		GtkTreePath *path = gtk_tree_model_get_path(model, &iter);
 		string str = selected_function_category;
-		function_removed(f);
+		remove_function(f);
 		if(str == selected_function_category) {
 			gtk_tree_selection_select_path(gtk_tree_view_get_selection(GTK_TREE_VIEW(tFunctions)), path);
 		}
 		gtk_tree_path_free(path);
 	} else {
-		function_removed(f);
+		remove_function(f);
 	}
 }
 

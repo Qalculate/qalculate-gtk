@@ -2523,10 +2523,7 @@ void on_popup_menu_fx_edit_activate(GtkMenuItem*, gpointer data) {
 }
 void on_popup_menu_fx_delete_activate(GtkMenuItem*, gpointer data) {
 	MathFunction *f = (MathFunction*) data;
-	if(f && f->isLocal()) {
-		f->destroy();
-		function_removed(f);
-	}
+	if(f && f->isLocal()) remove_function(f);
 	gtk_menu_popdown(GTK_MENU(gtk_builder_get_object(main_builder, "menu_fx")));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "mb_fx")), FALSE);
 	focus_keeping_selection();
@@ -2677,8 +2674,7 @@ void on_popup_menu_sto_delete_activate(GtkMenuItem*, gpointer data) {
 		show_message(_("Variable does not exist anymore."));
 		update_vmenu();
 	} else if(v && v->isLocal()) {
-		v->destroy();
-		variable_removed(v);
+		remove_variable(v);
 	}
 	gtk_menu_popdown(GTK_MENU(gtk_builder_get_object(main_builder, "menu_sto")));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "mb_sto")), FALSE);

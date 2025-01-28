@@ -436,16 +436,15 @@ void on_variables_button_delete_clicked(GtkButton*, gpointer) {
 		return;
 	}
 	if(!v->isLocal()) return;
-	v->destroy();
 	if(gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariables)), &model, &iter)) {
 		//reselect selected variable category
 		GtkTreePath *path = gtk_tree_model_get_path(model, &iter);
 		string str = selected_variable_category;
-		variable_removed(v);
+		remove_variable(v);
 		if(str == selected_variable_category) gtk_tree_selection_select_path(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariables)), path);
 		gtk_tree_path_free(path);
 	} else {
-		variable_removed(v);
+		remove_variable(v);
 	}
 }
 

@@ -136,9 +136,9 @@ void function_inserted(MathFunction *object);
 void variable_inserted(Variable *object);
 void unit_inserted(Unit *object);
 
-void variable_removed(Variable *v);
-void unit_removed(Unit *u);
-void function_removed(MathFunction *f);
+void remove_variable(Variable *v);
+void remove_unit(Unit *u);
+void remove_function(MathFunction *f);
 void variable_edited(Variable *v);
 void function_edited(MathFunction *f);
 void unit_edited(Unit *u);
