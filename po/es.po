@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Qalculate!\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-26 14:37+0100\n"
+"POT-Creation-Date: 2025-01-30 10:08+0100\n"
 "PO-Revision-Date: 2022-05-13 19:30-0300\n"
 "Last-Translator: VicSanRoPe\n"
 "Language-Team: none\n"
@@ -72,8 +72,8 @@ msgstr "Reglas de argumento"
 #: ../src/insertfunctiondialog.cc:108 ../src/insertfunctiondialog.cc:110
 #: ../src/insertfunctiondialog.cc:975 ../src/insertfunctiondialog.cc:1083
 #: ../src/mainwindow.cc:709 ../src/mainwindow.cc:6547 ../src/mainwindow.cc:6549
-#: ../src/mainwindow.cc:7497 ../src/matrixdialog.cc:389 ../src/menubar.cc:1190
-#: ../src/menubar.cc:1248 ../src/plotdialog.cc:378 ../src/plotdialog.cc:380
+#: ../src/mainwindow.cc:7506 ../src/matrixdialog.cc:389 ../src/menubar.cc:1191
+#: ../src/menubar.cc:1249 ../src/plotdialog.cc:378 ../src/plotdialog.cc:380
 #: ../src/resultview.cc:548 ../src/resultview.cc:550
 msgid "_Cancel"
 msgstr "_Cancelar"
@@ -92,7 +92,7 @@ msgstr "No guardar modificaciones"
 #: ../src/insertfunctiondialog.cc:975 ../src/insertfunctiondialog.cc:1083
 #: ../src/mainwindow.cc:709 ../src/mainwindow.cc:802 ../src/mainwindow.cc:859
 #: ../src/mainwindow.cc:912 ../src/mainwindow.cc:969 ../src/mainwindow.cc:1025
-#: ../src/mainwindow.cc:7497
+#: ../src/mainwindow.cc:7506
 msgid "_OK"
 msgstr "_Aceptar"
 
@@ -175,7 +175,7 @@ msgid "Object"
 msgstr "Objeto"
 
 #: ../data/argumentrules.ui.h:23 ../data/datasetedit.ui.h:35
-#: ../data/main.ui.h:24 ../data/plot.ui.h:9 ../src/functionsdialog.cc:581
+#: ../data/main.ui.h:24 ../data/plot.ui.h:9 ../src/functionsdialog.cc:579
 msgid "Function"
 msgstr "Función"
 
@@ -184,7 +184,7 @@ msgid "Unit"
 msgstr "Unidad"
 
 #: ../data/argumentrules.ui.h:25 ../data/main.ui.h:20
-#: ../src/variablesdialog.cc:516
+#: ../src/variablesdialog.cc:515
 msgid "Variable"
 msgstr "Variable"
 
@@ -259,8 +259,8 @@ msgstr "Tipo"
 #: ../data/matrixedit.ui.h:6 ../data/unitedit.ui.h:7 ../data/unknownedit.ui.h:5
 #: ../data/variableedit.ui.h:5 ../src/conversionview.cc:508
 #: ../src/dataseteditdialog.cc:227 ../src/functioneditdialog.cc:443
-#: ../src/historyview.cc:2877 ../src/menubar.cc:1197
-#: ../src/nameseditdialog.cc:155 ../src/unitsdialog.cc:1007
+#: ../src/historyview.cc:2877 ../src/menubar.cc:1198
+#: ../src/nameseditdialog.cc:155 ../src/unitsdialog.cc:1006
 msgid "Name"
 msgstr "Nombre"
 
@@ -376,8 +376,8 @@ msgstr "Nombre descriptivo"
 #: ../data/csvimport.ui.h:10 ../data/functionedit.ui.h:18 ../data/main.ui.h:251
 #: ../data/matrixedit.ui.h:18 ../data/unitedit.ui.h:8
 #: ../data/variableedit.ui.h:11 ../src/conversionview.cc:519
-#: ../src/functionsdialog.cc:595 ../src/unitsdialog.cc:1021
-#: ../src/variablesdialog.cc:530
+#: ../src/functionsdialog.cc:593 ../src/unitsdialog.cc:1020
+#: ../src/variablesdialog.cc:529
 msgid "Category"
 msgstr "Categoría"
 
@@ -530,7 +530,7 @@ msgid "_Edit"
 msgstr "_Editar"
 
 #: ../data/datasetedit.ui.h:29 ../data/functions.ui.h:10 ../data/units.ui.h:15
-#: ../data/variables.ui.h:10 ../src/menubar.cc:1248
+#: ../data/variables.ui.h:10 ../src/menubar.cc:1249
 msgid "_Delete"
 msgstr "_Eliminar"
 
@@ -555,7 +555,7 @@ msgstr "Propiedad por defecto"
 msgid "Name used to invoke the function in expressions"
 msgstr "Nombre usado para llamar la función en expresiones"
 
-#: ../data/datasets.ui.h:1 ../src/datasetsdialog.cc:478
+#: ../data/datasets.ui.h:1 ../src/datasetsdialog.cc:477
 msgid "Edit Data Object"
 msgstr "Editar objeto de datos"
 
@@ -571,7 +571,7 @@ msgstr "Aceptar la creación/modificación de este objeto de datos"
 msgid "Data Sets"
 msgstr "Conjuntos de datos"
 
-#: ../data/datasets.ui.h:8 ../data/main.ui.h:25 ../src/datasetsdialog.cc:433
+#: ../data/datasets.ui.h:8 ../data/main.ui.h:25 ../src/datasetsdialog.cc:432
 msgid "Data Set"
 msgstr "Conjunto de datos"
 
@@ -797,7 +797,7 @@ msgid "_Function"
 msgstr "_Función"
 
 #: ../data/functions.ui.h:5 ../data/units.ui.h:10 ../data/variables.ui.h:5
-msgid "Descri_ption"
+msgid "Desc_ription"
 msgstr "Descri_pción"
 
 #: ../data/functions.ui.h:7 ../data/main.ui.h:277
@@ -976,13 +976,13 @@ msgstr "Variables"
 msgid "Units"
 msgstr "Unidades"
 
-#: ../data/main.ui.h:49 ../src/keypad.cc:815 ../src/keypad.cc:3273
-#: ../src/keypad.cc:3391
+#: ../data/main.ui.h:49 ../src/keypad.cc:815 ../src/keypad.cc:3269
+#: ../src/keypad.cc:3387
 msgid "Factorize"
 msgstr "Factorizar"
 
-#: ../data/main.ui.h:50 ../src/keypad.cc:813 ../src/keypad.cc:3282
-#: ../src/keypad.cc:3394
+#: ../data/main.ui.h:50 ../src/keypad.cc:813 ../src/keypad.cc:3278
+#: ../src/keypad.cc:3390
 msgid "Expand"
 msgstr "Expandir"
 
@@ -1463,7 +1463,7 @@ msgstr "Siempre exacto"
 msgid "Try Exact"
 msgstr "Intentar exacto"
 
-#: ../data/main.ui.h:166 ../src/datasetsdialog.cc:526
+#: ../data/main.ui.h:166 ../src/datasetsdialog.cc:525
 msgid "Approximate"
 msgstr "Aproximado"
 
@@ -1570,14 +1570,14 @@ msgid ""
 "Parse decimal numbers as approximate with precision equal to the number of "
 "digits.\n"
 "\n"
-"Off: 1.1 × 1.1 = 1.21\n"
-"On: 1.1 × 1.1 ≈ 1.2"
+"Off: 1.10 × 1.10 = 1.21\n"
+"On: 1.10 × 1.10 ≈ 1.2"
 msgstr ""
 "Analizar números decimales como aproximados con precisión igual a la "
 "cantidad de dígitos.\n"
 "\n"
-"Desactivado: 1,1 × 1,1 = 1,21\n"
-"Activado: 1,1 × 1,1 ≈ 1,2"
+"Desactivado: 1,10 × 1,10 = 1,21\n"
+"Activado: 1,10 × 1,10 ≈ 1,2"
 
 #: ../data/main.ui.h:196
 msgid "Read Precision"
@@ -1829,11 +1829,11 @@ msgstr ""
 msgid "Conversion"
 msgstr "Conversión"
 
-#: ../data/main.ui.h:260 ../src/keypad.cc:3542 ../src/keypad.cc:3572
+#: ../data/main.ui.h:260 ../src/keypad.cc:3538 ../src/keypad.cc:3568
 msgid "Show/hide programming keypad"
 msgstr "Mostrar/Ocultar teclado de programación"
 
-#: ../data/main.ui.h:261 ../src/datasetsdialog.cc:527
+#: ../data/main.ui.h:261 ../src/datasetsdialog.cc:526
 msgid "Exact"
 msgstr "Exacto"
 
@@ -2444,7 +2444,7 @@ msgstr "Cambio de 2 a 1"
 msgid "Plot"
 msgstr "Graficar"
 
-#: ../data/plot.ui.h:3 ../src/menubar.cc:1190 ../src/plotdialog.cc:378
+#: ../data/plot.ui.h:3 ../src/menubar.cc:1191 ../src/plotdialog.cc:378
 #: ../src/plotdialog.cc:380 ../src/resultview.cc:548 ../src/resultview.cc:550
 msgid "_Save"
 msgstr "_Guardar"
@@ -2553,7 +2553,7 @@ msgstr "Primario"
 msgid "Secondary"
 msgstr "Secundario"
 
-#: ../data/plot.ui.h:36 ../src/mainwindow.cc:7497
+#: ../data/plot.ui.h:36 ../src/mainwindow.cc:7506
 msgid "_Apply"
 msgstr "_Aplicar"
 
@@ -2850,7 +2850,7 @@ msgid "Button padding"
 msgstr "Relleno de botón"
 
 #: ../data/preferences.ui.h:39 ../src/buttonseditdialog.cc:183
-#: ../src/datasetsdialog.cc:525 ../src/modes.cc:46 ../src/modes.cc:57
+#: ../src/datasetsdialog.cc:524 ../src/modes.cc:46 ../src/modes.cc:58
 #: ../src/util.cc:1022
 msgid "Default"
 msgstr "Predeterminado"
@@ -2871,7 +2871,7 @@ msgstr "Resultado"
 msgid "Application name + result"
 msgstr "Nombre de aplicación + resultado"
 
-#: ../data/preferences.ui.h:44 ../src/menubar.cc:1255
+#: ../data/preferences.ui.h:44 ../src/menubar.cc:1256
 msgid "Mode"
 msgstr "Modo"
 
@@ -3625,8 +3625,8 @@ msgstr "Espacio en blanco"
 msgid "New line"
 msgstr "Nueva línea"
 
-#: ../src/buttonseditdialog.cc:352 ../src/keypad.cc:460 ../src/keypad.cc:3525
-#: ../src/keypad.cc:3562 ../src/keypad.cc:3565
+#: ../src/buttonseditdialog.cc:352 ../src/keypad.cc:460 ../src/keypad.cc:3521
+#: ../src/keypad.cc:3558 ../src/keypad.cc:3561
 msgid "Smart parentheses"
 msgstr "Paréntesis inteligentes"
 
@@ -3663,12 +3663,12 @@ msgid "Add"
 msgstr "Añadir"
 
 #: ../src/buttonseditdialog.cc:372 ../src/expressionstatus.cc:675
-#: ../src/keypad.cc:517 ../src/keypad.cc:2750 ../src/util.cc:927
+#: ../src/keypad.cc:517 ../src/keypad.cc:2746 ../src/util.cc:927
 msgid "M+ (memory plus)"
 msgstr "M+ (añadir a la memoria)"
 
 #: ../src/buttonseditdialog.cc:376 ../src/expressionstatus.cc:665
-#: ../src/keypad.cc:522 ../src/keypad.cc:2747 ../src/util.cc:924
+#: ../src/keypad.cc:522 ../src/keypad.cc:2743 ../src/util.cc:924
 msgid "MC (memory clear)"
 msgstr "MC (limpiar la memoria)"
 
@@ -3677,7 +3677,7 @@ msgid "Backspace"
 msgstr "Retroceso"
 
 #: ../src/buttonseditdialog.cc:377 ../src/expressionstatus.cc:680
-#: ../src/keypad.cc:523 ../src/keypad.cc:2751 ../src/util.cc:928
+#: ../src/keypad.cc:523 ../src/keypad.cc:2747 ../src/util.cc:928
 msgid "M− (memory minus)"
 msgstr "M- (quitar de la memoria)"
 
@@ -3686,17 +3686,17 @@ msgid "Previous result (static)"
 msgstr "Resultado anterior (estático)"
 
 #: ../src/buttonseditdialog.cc:379 ../src/expressionedit.cc:757
-#: ../src/keypad.cc:532 ../src/keypad.cc:3509
+#: ../src/keypad.cc:532 ../src/keypad.cc:3505
 msgid "Calculate expression"
 msgstr "Calcular expresión"
 
-#: ../src/buttonseditdialog.cc:379 ../src/keypad.cc:532 ../src/keypad.cc:2748
+#: ../src/buttonseditdialog.cc:379 ../src/keypad.cc:532 ../src/keypad.cc:2744
 #: ../src/util.cc:925
 msgid "MR (memory recall)"
 msgstr "MR (valor de la memoria)"
 
 #: ../src/buttonseditdialog.cc:379 ../src/expressionstatus.cc:670
-#: ../src/keypad.cc:532 ../src/keypad.cc:2749 ../src/util.cc:926
+#: ../src/keypad.cc:532 ../src/keypad.cc:2745 ../src/util.cc:926
 msgid "MS (memory store)"
 msgstr "MS (guardar en la memoria)"
 
@@ -3762,11 +3762,11 @@ msgstr "Indio (nacional)"
 #: ../src/conversionview.cc:83 ../src/conversionview.cc:139
 #: ../src/conversionview.cc:177 ../src/functionsdialog.cc:90
 #: ../src/functionsdialog.cc:160 ../src/functionsdialog.cc:194
-#: ../src/functionsdialog.cc:566 ../src/unitsdialog.cc:113
+#: ../src/functionsdialog.cc:564 ../src/unitsdialog.cc:113
 #: ../src/unitsdialog.cc:182 ../src/unitsdialog.cc:231
-#: ../src/unitsdialog.cc:977 ../src/variablesdialog.cc:91
+#: ../src/unitsdialog.cc:976 ../src/variablesdialog.cc:91
 #: ../src/variablesdialog.cc:162 ../src/variablesdialog.cc:197
-#: ../src/variablesdialog.cc:501
+#: ../src/variablesdialog.cc:500
 msgid "All"
 msgstr "Todas"
 
@@ -3786,7 +3786,7 @@ msgstr "No categorizado"
 msgid "Clear expression"
 msgstr "Limpiar expresión"
 
-#: ../src/conversionview.cc:505 ../src/unitsdialog.cc:1004
+#: ../src/conversionview.cc:505 ../src/unitsdialog.cc:1003
 msgid "Flag"
 msgstr "Bandera"
 
@@ -3815,7 +3815,7 @@ msgstr "clave"
 
 #: ../src/dataseteditdialog.cc:306 ../src/dataseteditdialog.cc:442
 #: ../src/functioneditdialog.cc:907 ../src/importcsvdialog.cc:149
-#: ../src/matrixeditdialog.cc:550 ../src/menubar.cc:1216
+#: ../src/matrixeditdialog.cc:550 ../src/menubar.cc:1217
 #: ../src/uniteditdialog.cc:326 ../src/unknowneditdialog.cc:191
 #: ../src/variableeditdialog.cc:276
 msgid "Empty name field."
@@ -3850,7 +3850,7 @@ msgstr "Función de recuperación de datos"
 msgid "argument"
 msgstr "argumento"
 
-#: ../src/datasetsdialog.cc:480
+#: ../src/datasetsdialog.cc:479
 msgid "New Data Object"
 msgstr "Nuevo objeto de datos"
 
@@ -3859,7 +3859,7 @@ msgstr "Nuevo objeto de datos"
 #: ../src/historyview.cc:702 ../src/historyview.cc:1280
 #: ../src/historyview.cc:1333 ../src/historyview.cc:1586
 #: ../src/historyview.cc:1646 ../src/historyview.cc:2168
-#: ../src/insertfunctiondialog.cc:297 ../src/keypad.cc:3084
+#: ../src/insertfunctiondialog.cc:297 ../src/keypad.cc:3080
 #: ../src/mainwindow.cc:2649 ../src/searchprovider.cc:91
 #: ../src/searchprovider.cc:92 ../src/searchprovider.cc:169
 #: ../src/variablesdialog.cc:289
@@ -4087,7 +4087,7 @@ msgstr "Unidades óptimas"
 msgid "Expanded Partial Fractions"
 msgstr "Fracciones parciales expandidas"
 
-#: ../src/expressioncompletion.cc:1922 ../src/menubar.cc:1735
+#: ../src/expressioncompletion.cc:1922 ../src/menubar.cc:1736
 msgid "Optimal Prefix"
 msgstr "Prefijo óptimo"
 
@@ -4108,7 +4108,7 @@ msgid "Stop process"
 msgstr "Detener proceso"
 
 #: ../src/expressionedit.cc:757 ../src/expressionedit.cc:1784
-#: ../src/keypad.cc:3505
+#: ../src/keypad.cc:3501
 msgid "Calculate expression and add to stack"
 msgstr "Calcular expresión y añadir a la pila"
 
@@ -4520,7 +4520,7 @@ msgstr "Campo de expresión vacío."
 
 #: ../src/functionsdialog.cc:135 ../src/functionsdialog.cc:136
 #: ../src/functionsdialog.cc:200 ../src/mainwindow.cc:7339
-#: ../src/menubar.cc:1594 ../src/util.cc:1268 ../src/util.cc:1269
+#: ../src/menubar.cc:1595 ../src/util.cc:1268 ../src/util.cc:1269
 msgid "User functions"
 msgstr "Funciones de usuario"
 
@@ -4573,7 +4573,7 @@ msgstr "Ac_tivar"
 msgid "History Answer Value"
 msgstr "Valor de respuesta de historial"
 
-#: ../src/historyview.cc:112 ../src/mainwindow.cc:8411
+#: ../src/historyview.cc:112 ../src/mainwindow.cc:8420
 msgid "answer"
 msgstr "respuesta"
 
@@ -4725,7 +4725,7 @@ msgstr "Definir incógnitas"
 
 #. Show further items in a submenu
 #: ../src/keypad.cc:858 ../src/keypad.cc:946 ../src/keypad.cc:949
-#: ../src/keypad.cc:2458 ../src/menubar.cc:1391 ../src/menubar.cc:1486
+#: ../src/keypad.cc:2458 ../src/menubar.cc:1392 ../src/menubar.cc:1487
 #: ../src/resultview.cc:894
 msgid "more"
 msgstr "más"
@@ -4755,24 +4755,35 @@ msgstr "Abrir menú con variables almacenadas"
 msgid "log10 function not found."
 msgstr "Función log10 no encontrada."
 
-#: ../src/keypad.cc:2586
+#: ../src/keypad.cc:2583
 msgid "All functions"
 msgstr "Todas las funciones"
 
-#: ../src/keypad.cc:2639
+#: ../src/keypad.cc:2636
 msgid "All variables"
 msgstr "Todas las variables"
 
-#: ../src/keypad.cc:2677 ../src/mainwindow.cc:7417
+#: ../src/keypad.cc:2674 ../src/mainwindow.cc:7417
 #: ../src/variablesdialog.cc:246 ../src/variablesdialog.cc:403
 #: ../src/variablesdialog.cc:418 ../src/variablesdialog.cc:434
-#: ../src/variablesdialog.cc:455
+#: ../src/variablesdialog.cc:454
 msgid "Variable does not exist anymore."
 msgstr "La variable ya no existe más."
 
-#: ../src/keypad.cc:3504
+#: ../src/keypad.cc:3500
 msgid "ENTER"
 msgstr ""
+
+#. Fixes missing support for context in ui file translations
+#: ../src/keypad.cc:3738
+msgctxt "Manage units button"
+msgid "u"
+msgstr "u"
+
+#: ../src/keypad.cc:3739
+msgctxt "Button for convert to operator"
+msgid "to"
+msgstr "a"
 
 #: ../src/main.cc:59
 msgid "Execute expressions and commands from a file"
@@ -5116,62 +5127,62 @@ msgstr "No se pudo copiar el archivo a %s."
 msgid "translator-credits"
 msgstr "VicSanRoPe"
 
-#: ../src/mainwindow.cc:7371 ../src/menubar.cc:1676 ../src/util.cc:1264
+#: ../src/mainwindow.cc:7371 ../src/menubar.cc:1677 ../src/util.cc:1264
 #: ../src/util.cc:1265 ../src/variablesdialog.cc:137
 #: ../src/variablesdialog.cc:138 ../src/variablesdialog.cc:203
 msgid "User variables"
 msgstr "Variables de usuario"
 
-#: ../src/mainwindow.cc:7395 ../src/menubar.cc:1422 ../src/menubar.cc:1517
+#: ../src/mainwindow.cc:7395 ../src/menubar.cc:1423 ../src/menubar.cc:1518
 #: ../src/unitsdialog.cc:158 ../src/unitsdialog.cc:159
 #: ../src/unitsdialog.cc:237 ../src/util.cc:1266 ../src/util.cc:1267
 msgid "User units"
 msgstr "Unidades de usuario"
 
-#: ../src/mainwindow.cc:7491
+#: ../src/mainwindow.cc:7500
 msgid "No unknowns in result."
 msgstr "No hay incógnitas en el resultado."
 
-#: ../src/mainwindow.cc:7497
+#: ../src/mainwindow.cc:7506
 msgid "Set Unknowns"
 msgstr "Definir incógnitas"
 
-#: ../src/mainwindow.cc:8210 ../src/mainwindow.cc:8217
+#: ../src/mainwindow.cc:8219 ../src/mainwindow.cc:8226
 msgid "Qalculate!"
 msgstr "Qalculate!"
 
-#: ../src/mainwindow.cc:8408
+#: ../src/mainwindow.cc:8417
 msgid "ans"
 msgstr "ans"
 
-#: ../src/mainwindow.cc:8409
+#: ../src/mainwindow.cc:8418
 msgid "Last Answer"
 msgstr "Última respuesta"
 
-#: ../src/mainwindow.cc:8410
+#: ../src/mainwindow.cc:8419
 msgid ""
 "Contains the result of the most recent calculation. Multiple results of an "
 "equation is represented as a vector. Access separate solutions using ans(n) "
 "(e.g. ans(1) for the first solution)."
 msgstr ""
 
-#: ../src/mainwindow.cc:8413
+#: ../src/mainwindow.cc:8422
 msgid "Answer 2"
 msgstr "Respuesta 2"
 
-#: ../src/mainwindow.cc:8414
+#: ../src/mainwindow.cc:8423
 msgid "Answer 3"
 msgstr "Respuesta 3"
 
-#: ../src/mainwindow.cc:8415
+#: ../src/mainwindow.cc:8424
 msgid "Answer 4"
 msgstr "Respuesta 4"
 
-#: ../src/mainwindow.cc:8416
+#: ../src/mainwindow.cc:8425
 msgid "Answer 5"
 msgstr "Respuesta 5"
 
-#: ../src/mainwindow.cc:8426
+#: ../src/mainwindow.cc:8435
 msgid "Memory"
 msgstr "Memoria"
 
@@ -5215,27 +5226,27 @@ msgstr "Nueva matriz"
 msgid "Unit does not exist"
 msgstr "La unidad no existe"
 
-#: ../src/menubar.cc:1190
+#: ../src/menubar.cc:1191
 msgid "Save Mode"
 msgstr "Guardar modo"
 
-#: ../src/menubar.cc:1220
+#: ../src/menubar.cc:1221
 msgid "Preset mode cannot be overwritten."
 msgstr "Modo predefinido no puede ser sobreescrito."
 
-#: ../src/menubar.cc:1248
+#: ../src/menubar.cc:1249
 msgid "Delete Mode"
 msgstr "Eliminar modo"
 
-#: ../src/menubar.cc:1430
+#: ../src/menubar.cc:1431
 msgid "Prefixes"
 msgstr "Prefijos"
 
-#: ../src/menubar.cc:1734
+#: ../src/menubar.cc:1735
 msgid "No Prefix"
 msgstr "Ningún prefijo"
 
-#: ../src/menubar.cc:2681
+#: ../src/menubar.cc:2684
 msgid "Open Settings Folder"
 msgid_plural "Open Settings Folders"
 msgstr[0] ""
@@ -5244,6 +5255,14 @@ msgstr[1] ""
 #: ../src/modes.cc:46 ../src/modes.cc:56
 msgid "Preset"
 msgstr "Predefinido"
+
+#: ../src/modes.cc:57
+msgid "Default mode loaded at first startup for new users"
+msgstr ""
+
+#: ../src/modes.cc:59
+msgid "Mode loaded at each startup and, by default, saved at exit"
+msgstr ""
 
 #: ../src/nameseditdialog.cc:101
 msgid "Illegal name"
@@ -5287,6 +5306,12 @@ msgstr "Solo completado"
 #: ../src/numberbasesdialog.cc:187
 msgid "result is too long"
 msgstr "resultado es muy largo"
+
+#. Fixes missing support for context in ui file translations
+#: ../src/numberbasesdialog.cc:865
+msgctxt "Keypad"
+msgid "Add"
+msgstr "Sumar"
 
 #: ../src/openhelp.cc:379
 msgid "Could not display help for Qalculate!."
@@ -5470,6 +5495,12 @@ msgstr ""
 #: ../src/shortcutsdialog.cc:588
 msgid "Key combination"
 msgstr "Combinación de teclas"
+
+#. Fixes missing support for context in ui file translations
+#: ../src/stackview.cc:836
+msgctxt "Keypad"
+msgid "Add the two top values together"
+msgstr "Sumar los dos primeros valores"
 
 #: ../src/uniteditdialog.cc:190
 msgid "Edit Unit (global)"
@@ -5836,6 +5867,9 @@ msgstr "un vector"
 msgid "not matrix"
 msgstr "no matriz"
 
+#~ msgid "Descri_ption"
+#~ msgstr "Descri_pción"
+
 #~ msgid "_Calculate"
 #~ msgstr "_Calcular"
 
@@ -6118,22 +6152,6 @@ msgstr "no matriz"
 
 #~ msgid "Use dark theme"
 #~ msgstr "Usar el tema oscuro"
-
-#~ msgctxt "Keypad"
-#~ msgid "Add the two top values"
-#~ msgstr "Sumar los dos primeros valores"
-
-#~ msgctxt "Manage units button"
-#~ msgid "u"
-#~ msgstr "u"
-
-#~ msgctxt "Button for convert to operator"
-#~ msgid "to"
-#~ msgstr "a"
-
-#~ msgctxt "Keypad"
-#~ msgid "Add"
-#~ msgstr "Sumar"
 
 #~ msgid "Alias"
 #~ msgstr "Alias"

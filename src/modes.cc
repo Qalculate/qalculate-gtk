@@ -54,7 +54,9 @@ bool load_mode(string name) {
 
 void save_initial_modes() {
 	save_mode_as(_("Preset"));
+	modes[0].description = _("Default mode loaded at first startup for new users");
 	save_mode_as(_("Default"));
+	modes[1].description = _("Mode loaded at each startup and, by default, saved at exit");
 }
 
 void save_default_mode(const char *custom_angle_unit) {

@@ -2691,8 +2691,8 @@ On: xy != x × y</property>
                                 <property name="can-focus">False</property>
                                 <property name="tooltip-text" translatable="yes">Parse decimal numbers as approximate with precision equal to the number of digits.
 
-Off: 1.1 × 1.1 = 1.21
-On: 1.1 × 1.1 ≈ 1.2</property>
+Off: 1.10 × 1.10 = 1.21
+On: 1.10 × 1.10 ≈ 1.2</property>
                                 <property name="label" translatable="yes">Read Precision</property>
                                 <signal name="activate" handler="on_menu_item_read_precision_activate" swapped="no"/>
                               </object>
@@ -3829,7 +3829,7 @@ On: 1.1 × 1.1 ≈ 1.2</property>
                                     <property name="sensitive">False</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">False</property>
-                                    <property name="tooltip-text" translatable="yes" context="Keypad">Add the two top values</property>
+                                    <property name="tooltip-text" translatable="yes" context="Keypad">Add the two top values together</property>
                                     <property name="use-underline">True</property>
                                     <signal name="clicked" handler="on_button_rpn_add_clicked" swapped="no"/>
                                     <child>

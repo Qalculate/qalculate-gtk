@@ -893,6 +893,7 @@ void on_menu_item_algebraic_mode_factorize_activate(GtkMenuItem *w, gpointer) {
 void on_menu_item_read_precision_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) evalops.parse_options.read_precision = READ_PRECISION_WHEN_DECIMALS;
 	else evalops.parse_options.read_precision = DONT_READ_PRECISION;
+	update_status_menu();
 	expression_format_updated(true);
 }
 void on_menu_item_new_unknown_activate(GtkMenuItem*, gpointer) {
@@ -928,8 +929,8 @@ void on_menu_item_rpn_mode_activate(GtkMenuItem *w, gpointer) {
 }
 void on_menu_item_rpn_syntax_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	update_status_menu();
 	evalops.parse_options.parsing_mode = PARSING_MODE_RPN;
+	update_status_menu();
 	expression_format_updated(false);
 }
 void on_menu_item_limit_implicit_multiplication_activate(GtkMenuItem *w, gpointer) {
@@ -944,28 +945,28 @@ void on_menu_item_simplified_percentage_activate(GtkMenuItem *w, gpointer) {
 }
 void on_menu_item_adaptive_parsing_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	update_status_menu();
 	evalops.parse_options.parsing_mode = PARSING_MODE_ADAPTIVE;
+	update_status_menu();
 	expression_format_updated(true);
 }
 void on_menu_item_ignore_whitespace_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	update_status_menu();
 	evalops.parse_options.parsing_mode = PARSING_MODE_IMPLICIT_MULTIPLICATION_FIRST;
+	update_status_menu();
 	implicit_question_asked = true;
 	expression_format_updated(true);
 }
 void on_menu_item_no_special_implicit_multiplication_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	update_status_menu();
 	evalops.parse_options.parsing_mode = PARSING_MODE_CONVENTIONAL;
+	update_status_menu();
 	implicit_question_asked = true;
 	expression_format_updated(true);
 }
 void on_menu_item_chain_syntax_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
-	update_status_menu();
 	evalops.parse_options.parsing_mode = PARSING_MODE_CHAIN;
+	update_status_menu();
 	expression_format_updated(true);
 }
 
@@ -2655,6 +2656,7 @@ void create_menubar() {
 		mode_struct *mode = get_mode(i);
 		if(!mode) break;
 		GtkWidget *item = gtk_menu_item_new_with_label(mode->name.c_str());
+		gtk_widget_set_tooltip_text(item, mode->description.c_str());
 		gtk_widget_show(item);
 		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(on_menu_item_meta_mode_activate), (gpointer) mode->name.c_str());
 		g_signal_connect(G_OBJECT(item), "button-press-event", G_CALLBACK(on_menu_item_meta_mode_button_press), (gpointer) mode->name.c_str());
@@ -2662,6 +2664,7 @@ void create_menubar() {
 		gtk_menu_shell_insert(GTK_MENU_SHELL(gtk_builder_get_object(main_builder, "menu_meta_modes")), item, (gint) i);
 		mode_items.push_back(item);
 		item = gtk_menu_item_new_with_label(mode->name.c_str());
+		gtk_widget_set_tooltip_text(item, mode->description.c_str());
 		gtk_widget_show(item);
 		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(on_menu_item_meta_mode_activate), (gpointer) mode->name.c_str());
 		g_signal_connect(G_OBJECT(item), "button-press-event", G_CALLBACK(on_menu_item_meta_mode_button_press), (gpointer) mode->name.c_str());

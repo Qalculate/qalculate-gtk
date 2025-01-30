@@ -24,6 +24,7 @@ struct mode_struct {
 	Number custom_input_base;
 	int precision;
 	std::string name;
+	std::string description;
 	bool rpn_mode;
 	bool interval;
 	bool adaptive_interval_display;
