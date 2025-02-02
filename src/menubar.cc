@@ -1183,6 +1183,8 @@ gboolean on_menu_item_meta_mode_button_press(GtkWidget *widget, GdkEventButton *
 	return FALSE;
 }
 
+void update_mode_menu();
+
 void on_menu_item_meta_mode_activate(GtkMenuItem*, gpointer user_data) {
 	const char *name = (const char*) user_data;
 	load_mode(name);
@@ -1221,26 +1223,9 @@ run_meta_mode_save_dialog:
 			show_message(_("Preset mode cannot be overwritten."), GTK_WINDOW(dialog));
 			goto run_meta_mode_save_dialog;
 		}
-		size_t index = save_mode_as(name, &new_mode, true);
+		save_mode_as(name, &new_mode, true);
 		update_window_title();
-		if(new_mode) {
-			mode_struct *mode = get_mode(index);
-			GtkWidget *item = gtk_menu_item_new_with_label(mode->name.c_str());
-			gtk_widget_show(item);
-			g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(on_menu_item_meta_mode_activate), (gpointer) mode->name.c_str());
-			g_signal_connect(G_OBJECT(item), "button-press-event", G_CALLBACK(on_menu_item_meta_mode_button_press), (gpointer) mode->name.c_str());
-			g_signal_connect(G_OBJECT(item), "popup-menu", G_CALLBACK(on_menu_item_meta_mode_popup_menu), (gpointer) mode->name.c_str());
-			gtk_menu_shell_insert(GTK_MENU_SHELL(gtk_builder_get_object(main_builder, "menu_meta_modes")), item, (gint) index);
-			mode_items.push_back(item);
-			item = gtk_menu_item_new_with_label(mode->name.c_str());
-			gtk_widget_show(item);
-			g_signal_connect(G_OBJECT(item), "button-press-event", G_CALLBACK(on_menu_item_meta_mode_button_press), (gpointer) mode->name.c_str());
-			g_signal_connect(G_OBJECT(item), "popup-menu", G_CALLBACK(on_menu_item_meta_mode_popup_menu), (gpointer) mode->name.c_str());
-			g_signal_connect(G_OBJECT(item), "popup-menu", G_CALLBACK(on_menu_item_meta_mode_popup_menu), (gpointer) mode->name.c_str());
-			gtk_menu_shell_insert(GTK_MENU_SHELL(gtk_builder_get_object(main_builder, "menu_result_popup_meta_modes")), item, (gint) index);
-			popup_result_mode_items.push_back(item);
-			if(mode_count(false) == 1) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_meta_mode_delete")), TRUE);
-		}
+		if(new_mode) update_mode_menu();
 	}
 	gtk_widget_destroy(dialog);
 }
@@ -1268,13 +1253,8 @@ void on_menu_item_meta_mode_delete_activate(GtkMenuItem*, gpointer) {
 	gtk_widget_show(menu);
 	gint response = gtk_dialog_run(GTK_DIALOG(dialog));
 	if(response == GTK_RESPONSE_ACCEPT && gtk_combo_box_get_active(GTK_COMBO_BOX(menu)) >= 0) {
-		size_t index = gtk_combo_box_get_active(GTK_COMBO_BOX(menu)) + 2;
-		gtk_widget_destroy(mode_items[index]);
-		gtk_widget_destroy(popup_result_mode_items[index]);
 		remove_mode(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(menu)));
-		mode_items.erase(mode_items.begin() + index);
-		popup_result_mode_items.erase(popup_result_mode_items.begin() + index);
-		if(mode_count(false) == 0) gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_meta_mode_delete")), FALSE);
+		update_mode_menu();
 	}
 	gtk_widget_destroy(dialog);
 }
@@ -2648,10 +2628,11 @@ void update_menu_accels(int type) {
 	}
 }
 
-void create_menubar() {
-	set_mode_items(get_mode(1), true);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), FALSE);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_fetch_exchange_rates")), CALCULATOR->canFetch());
+void update_mode_menu() {
+	for(size_t i = 0; i < mode_items.size(); i++) gtk_widget_destroy(mode_items[i]);
+	for(size_t i = 0; i < popup_result_mode_items.size(); i++) gtk_widget_destroy(popup_result_mode_items[i]);
+	mode_items.clear();
+	popup_result_mode_items.clear();
 	for(size_t i = 0; ; i++) {
 		mode_struct *mode = get_mode(i);
 		if(!mode) break;
@@ -2673,6 +2654,13 @@ void create_menubar() {
 		popup_result_mode_items.push_back(item);
 	}
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_meta_mode_delete")), mode_count(false) > 0);
+}
+
+void create_menubar() {
+	set_mode_items(get_mode(1), true);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), FALSE);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_fetch_exchange_rates")), CALCULATOR->canFetch());
+	update_mode_menu();
 
 	if(RUNTIME_CHECK_GTK_VERSION(3, 22)) {
 		g_signal_connect(G_OBJECT(gtk_builder_get_object(main_builder, "file_menu_menu")), "popped-up", G_CALLBACK(hide_completion), NULL);
