@@ -522,6 +522,9 @@ void on_preferences_checkbutton_autocalc_history_toggled(GtkToggleButton *w, gpo
 }
 void preferences_update_expression_status() {
 	if(!preferences_builder) return;
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_display_expression_status"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_display_expression_status_toggled, NULL);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_display_expression_status")), display_expression_status);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_display_expression_status"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_display_expression_status_toggled, NULL);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_parsed_in_result_toggled, NULL);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result")), parsed_in_result);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_parsed_in_result_toggled, NULL);

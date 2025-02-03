@@ -134,11 +134,11 @@ void on_menu_item_expression_status_activate(GtkMenuItem *w, gpointer) {
 	display_expression_status = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
 	if(display_expression_status) {
 		display_parse_status();
-		preferences_update_expression_status();
 	} else {
 		set_parsed_in_result(false);
 		clear_status_text();
 	}
+	preferences_update_expression_status();
 }
 void on_menu_item_status_degrees_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) set_angle_unit(ANGLE_UNIT_DEGREES);
