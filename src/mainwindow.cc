@@ -5361,6 +5361,7 @@ void set_parsed_in_result(bool b) {
 		parsed_in_result = false;
 		clear_parsed_in_result();
 	}
+	preferences_update_expression_status();
 	if(parsed_in_result) {
 		if(autocalc_history_timeout_id) {
 			g_source_remove(autocalc_history_timeout_id);
@@ -5382,7 +5383,6 @@ void set_parsed_in_result(bool b) {
 		show_parsed(false);
 	}
 	display_parse_status();
-	preferences_update_expression_status();
 }
 void set_rpn_mode(bool b) {
 	if(b == rpn_mode) return;
