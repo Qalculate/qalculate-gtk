@@ -369,7 +369,7 @@ void update_custom_buttons_edit(int index, bool update_label_entry) {
 		} else if(i == 20 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2("x^y", _("Raise"), CALCULATOR->f_sqrt->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) tButtonsEdit).c_str())
 		else if(i == 21 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2B("label_divide", _("Divide"), "1/x")
 		else if(i == 22 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2B("label_times", _("Multiply"), _("Bitwise Exclusive OR"))
-		else if(i == 23 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3B("label_add", _("Add"), _("M+ (memory plus)"), _("Bitwise AND"))
+		else if(i == 23 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3B("label_add", _c("Keypad", "Add"), _("M+ (memory plus)"), _("Bitwise AND"))
 		else if(i == 24 && (index == i || index < 0)) {
 			MathFunction *f = CALCULATOR->getActiveFunction("neg");
 			SET_BUTTONS_EDIT_ITEM_3B("label_sub", _("Subtract"), f ? f->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) tButtonsEdit).c_str() : "-", _("Bitwise OR"));

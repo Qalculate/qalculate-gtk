@@ -514,7 +514,7 @@ void update_custom_buttons(int index) {
 	}
 	SET_LABEL_AND_TOOLTIP_2NL(21, "button_divide", _("Divide"), "1/x")
 	SET_LABEL_AND_TOOLTIP_2NL(22, "button_times", _("Multiply"), _("Bitwise Exclusive OR"))
-	SET_LABEL_AND_TOOLTIP_3(23, "label_add", "button_add", "+", _("Add"), _("M+ (memory plus)"), _("Bitwise AND"))
+	SET_LABEL_AND_TOOLTIP_3(23, "label_add", "button_add", "+", _c("Keypad", "Add"), _("M+ (memory plus)"), _("Bitwise AND"))
 	if(index < 0 || index == 24) {
 		MathFunction *f = CALCULATOR->getActiveFunction("neg");
 		SET_LABEL_AND_TOOLTIP_3NL(24, "button_sub", _("Subtract"), f ? f->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) main_window()).c_str() : NULL, _("Bitwise OR"));
