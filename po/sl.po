@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-30 10:08+0100\n"
+"POT-Creation-Date: 2025-01-30 14:26+0100\n"
 "PO-Revision-Date: 2020-06-19 16:56+0200\n"
 "Last-Translator: Nejc Bertoncelj <nejc@bertoncelj.eu.org>\n"
 "Language-Team: Slovenian <lugos-slo@lugos.si>\n"
@@ -3639,9 +3639,13 @@ msgstr "Decimalno mesto"
 msgid "Raise"
 msgstr "Dvigni"
 
+#. Fixes missing support for context in ui file translations
+#. Mathematical operation
 #: ../src/buttonseditdialog.cc:372 ../src/keypad.cc:517
+#: ../src/numberbasesdialog.cc:866
+msgctxt "Keypad"
 msgid "Add"
-msgstr "Dodaj"
+msgstr "Prištej"
 
 #: ../src/buttonseditdialog.cc:372 ../src/expressionstatus.cc:675
 #: ../src/keypad.cc:517 ../src/keypad.cc:2746 ../src/util.cc:927
@@ -5296,12 +5300,6 @@ msgstr "Le dopolnjevanje"
 msgid "result is too long"
 msgstr "rezultat je predolg"
 
-#. Fixes missing support for context in ui file translations
-#: ../src/numberbasesdialog.cc:865
-msgctxt "Keypad"
-msgid "Add"
-msgstr "Prištej"
-
 #: ../src/openhelp.cc:379
 msgid "Could not display help for Qalculate!."
 msgstr "Napaka pri prikazu pomoči za Qalculate!."
@@ -5862,6 +5860,9 @@ msgstr "vektor"
 #: ../src/variablesdialog.cc:317
 msgid "not matrix"
 msgstr "ni matrika"
+
+#~ msgid "Add"
+#~ msgstr "Dodaj"
 
 #~ msgid "Descri_ption"
 #~ msgstr "O_pis"

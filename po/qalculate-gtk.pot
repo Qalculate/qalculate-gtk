@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-30 10:08+0100\n"
+"POT-Creation-Date: 2025-01-30 14:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3520,7 +3520,11 @@ msgstr ""
 msgid "Raise"
 msgstr ""
 
+#. Fixes missing support for context in ui file translations
+#. Mathematical operation
 #: ../src/buttonseditdialog.cc:372 ../src/keypad.cc:517
+#: ../src/numberbasesdialog.cc:866
+msgctxt "Keypad"
 msgid "Add"
 msgstr ""
 
@@ -5107,12 +5111,6 @@ msgstr ""
 #: ../src/numberbasesdialog.cc:156 ../src/numberbasesdialog.cc:164
 #: ../src/numberbasesdialog.cc:187
 msgid "result is too long"
-msgstr ""
-
-#. Fixes missing support for context in ui file translations
-#: ../src/numberbasesdialog.cc:865
-msgctxt "Keypad"
-msgid "Add"
 msgstr ""
 
 #: ../src/openhelp.cc:379

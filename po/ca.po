@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qalculate-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-30 10:08+0100\n"
+"POT-Creation-Date: 2025-01-30 14:26+0100\n"
 "PO-Revision-Date: 2021-06-10 22:39-0600\n"
 "Last-Translator: Alex Henrie <alexhenrie24@gmail.com>\n"
 "Language-Team: Catalan <ca@dodds.net>\n"
@@ -3662,7 +3662,12 @@ msgstr "Punt decimal"
 msgid "Raise"
 msgstr "Exponencia"
 
+#. Fixes missing support for context in ui file translations
+#. Mathematical operation
 #: ../src/buttonseditdialog.cc:372 ../src/keypad.cc:517
+#: ../src/numberbasesdialog.cc:866
+#, fuzzy
+msgctxt "Keypad"
 msgid "Add"
 msgstr "Addiciona"
 
@@ -5318,13 +5323,6 @@ msgstr "Només compleció"
 msgid "result is too long"
 msgstr "el resultat és massa llarg"
 
-#. Fixes missing support for context in ui file translations
-#: ../src/numberbasesdialog.cc:865
-#, fuzzy
-msgctxt "Keypad"
-msgid "Add"
-msgstr "Addiciona"
-
 #: ../src/openhelp.cc:379
 msgid "Could not display help for Qalculate!."
 msgstr "No s'ha pogut mostrar l'ajuda del Qalculate!."
@@ -5881,6 +5879,9 @@ msgstr "un vector"
 #: ../src/variablesdialog.cc:317
 msgid "not matrix"
 msgstr "no matriu"
+
+#~ msgid "Add"
+#~ msgstr "Addiciona"
 
 #~ msgid "Descri_ption"
 #~ msgstr "Descri_pció"

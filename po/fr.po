@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Qalculate!\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-30 10:08+0100\n"
+"POT-Creation-Date: 2025-01-30 14:26+0100\n"
 "PO-Revision-Date: 2024-11-25 09:09+0100\n"
 "Last-Translator: Polakrity\n"
 "Language-Team: none\n"
@@ -3662,7 +3662,11 @@ msgstr "Virgule"
 msgid "Raise"
 msgstr "Élever"
 
+#. Fixes missing support for context in ui file translations
+#. Mathematical operation
 #: ../src/buttonseditdialog.cc:372 ../src/keypad.cc:517
+#: ../src/numberbasesdialog.cc:866
+msgctxt "Keypad"
 msgid "Add"
 msgstr "Ajouter"
 
@@ -5309,12 +5313,6 @@ msgstr "Complétion seulement"
 msgid "result is too long"
 msgstr "le résultat est trop long"
 
-#. Fixes missing support for context in ui file translations
-#: ../src/numberbasesdialog.cc:865
-msgctxt "Keypad"
-msgid "Add"
-msgstr "Ajouter"
-
 #: ../src/openhelp.cc:379
 msgid "Could not display help for Qalculate!."
 msgstr "Impossible d'afficher l'aide pour Qalculate!."
@@ -5864,6 +5862,9 @@ msgstr "un vecteur"
 #: ../src/variablesdialog.cc:317
 msgid "not matrix"
 msgstr "pas de matrice"
+
+#~ msgid "Add"
+#~ msgstr "Ajouter"
 
 #~ msgid "Descri_ption"
 #~ msgstr "Descri_ption"

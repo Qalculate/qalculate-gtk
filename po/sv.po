@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-30 10:08+0100\n"
+"POT-Creation-Date: 2025-01-30 14:26+0100\n"
 "PO-Revision-Date: 2006-05-04 12:29+0200\n"
 "Last-Translator: Hanna Knutsson <hanna.knutsson@protonmail.com>\n"
 "Language-Team: Swedish\n"
@@ -3622,7 +3622,11 @@ msgstr "Decimalkomma"
 msgid "Raise"
 msgstr "Upphöj"
 
+#. Fixes missing support for context in ui file translations
+#. Mathematical operation
 #: ../src/buttonseditdialog.cc:372 ../src/keypad.cc:517
+#: ../src/numberbasesdialog.cc:866
+msgctxt "Keypad"
 msgid "Add"
 msgstr "Addera"
 
@@ -5265,12 +5269,6 @@ msgstr "Enbart komplettering"
 msgid "result is too long"
 msgstr "resultet är för långt"
 
-#. Fixes missing support for context in ui file translations
-#: ../src/numberbasesdialog.cc:865
-msgctxt "Keypad"
-msgid "Add"
-msgstr "Addera"
-
 #: ../src/openhelp.cc:379
 msgid "Could not display help for Qalculate!."
 msgstr "Kunde inte visa hjälp för Qalculate!."
@@ -5816,6 +5814,9 @@ msgstr "en vektor"
 #: ../src/variablesdialog.cc:317
 msgid "not matrix"
 msgstr "inte matris"
+
+#~ msgid "Add"
+#~ msgstr "Addera"
 
 #~ msgid "Descri_ption"
 #~ msgstr "Beskri_vning"

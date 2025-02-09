@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Qalculate 3.16\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-30 10:08+0100\n"
+"POT-Creation-Date: 2025-01-30 14:26+0100\n"
 "PO-Revision-Date: 2021-08-23 16:48+0800\n"
 "Last-Translator: tuberry <orzun@foxmail.com>\n"
 "Language-Team: Chinese (Simplified) <orzun@foxmail.com>\n"
@@ -3592,7 +3592,11 @@ msgstr "小数点"
 msgid "Raise"
 msgstr "幂"
 
+#. Fixes missing support for context in ui file translations
+#. Mathematical operation
 #: ../src/buttonseditdialog.cc:372 ../src/keypad.cc:517
+#: ../src/numberbasesdialog.cc:866
+msgctxt "Keypad"
 msgid "Add"
 msgstr "加"
 
@@ -5237,12 +5241,6 @@ msgstr "仅补全"
 msgid "result is too long"
 msgstr "结果过长"
 
-#. Fixes missing support for context in ui file translations
-#: ../src/numberbasesdialog.cc:865
-msgctxt "Keypad"
-msgid "Add"
-msgstr "加"
-
 #: ../src/openhelp.cc:379
 msgid "Could not display help for Qalculate!."
 msgstr "无法显示 Qalculate! 的帮助。"
@@ -5796,6 +5794,9 @@ msgstr "一个向量"
 #: ../src/variablesdialog.cc:317
 msgid "not matrix"
 msgstr "非矩阵"
+
+#~ msgid "Add"
+#~ msgstr "加"
 
 #~ msgid "Descri_ption"
 #~ msgstr "描述(_P)"

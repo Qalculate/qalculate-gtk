@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qalculate-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-30 10:08+0100\n"
+"POT-Creation-Date: 2025-01-30 14:26+0100\n"
 "PO-Revision-Date: 2021-05-19:37+0200\n"
 "Last-Translator: Jaap Woldringh <jjh.woldringh@planet.nl>\n"
 "Language-Team:  <kde-i18n-nl@kde.org.>\n"
@@ -3703,7 +3703,11 @@ msgstr "Decimale komma"
 msgid "Raise"
 msgstr "Machtsverheffen"
 
+#. Fixes missing support for context in ui file translations
+#. Mathematical operation
 #: ../src/buttonseditdialog.cc:372 ../src/keypad.cc:517
+#: ../src/numberbasesdialog.cc:866
+msgctxt "Keypad"
 msgid "Add"
 msgstr "Optellen"
 
@@ -5370,12 +5374,6 @@ msgstr "Voltooien toestaan"
 msgid "result is too long"
 msgstr "antwoord te lang"
 
-#. Fixes missing support for context in ui file translations
-#: ../src/numberbasesdialog.cc:865
-msgctxt "Keypad"
-msgid "Add"
-msgstr "Optellen"
-
 #: ../src/openhelp.cc:379
 #, fuzzy
 msgid "Could not display help for Qalculate!."
@@ -5969,6 +5967,9 @@ msgstr "een vector"
 #: ../src/variablesdialog.cc:317
 msgid "not matrix"
 msgstr "geen matrix"
+
+#~ msgid "Add"
+#~ msgstr "Optellen"
 
 #~ msgid "Descri_ption"
 #~ msgstr "Beschri_jving"
