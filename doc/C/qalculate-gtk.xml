@@ -110,7 +110,7 @@ The main window provides a menu bar, the expression entry, the result display an
 The expression entry is the most important part of the &app; user interface. The normal calculation procedure in &app; is to type in a mathematical expression (e.g. <quote>5 + 5</quote>) and press <keycap>Enter</keycap> (or click <guibutton>=</guibutton>). The result (<quote>10</quote>) is then displayed below the expression entry in the result display.
 </para>
 <para>
-The icon in the upper right corner of the expression entry changes function depending on the current status. While editing the expression an equals sign is shown. When the icon is clicked the expression will be calculated. If this results in an error or a warning, the be corresponding icon will be displayed instead, and if this is clicked, or if the pointer is placed over it, the error/warning text will be shown. If no error or warning is triggered, activation of the icon will instead clear the expression entry. No icon is shown when the expression is empty.
+The icon in the upper right corner of the expression entry changes function depending on the current status. While editing the expression an equals sign is shown. When the icon is clicked the expression will be calculated. If this results in an error or a warning, the corresponding icon will be displayed instead, and if this is clicked, or if the pointer is placed over it, the error/warning text will be shown. If no error or warning is triggered, activation of the icon will instead clear the expression entry. No icon is shown when the expression is empty.
 </para>
 <figure id="qalculate-FIG-completion">
 	<title>Completion</title>
@@ -126,7 +126,7 @@ The icon in the upper right corner of the expression entry changes function depe
 &app; helps out with the expression by giving a list of possible endings to words representing functions, variables and units. Titles, and countries for currencies, will also be searched, but any matches will be placed at the end of the list. The list will narrow with each letter typed. Select an item in the list and the name will be completed. If a function was selected, parenthesis will be added and the position moved for immediate entry of arguments. Completion can be configured from the context menu, or in more detail, from the preferences dialog.
 </para>
 <para>
-As the expression is typed in, the area directly directly below the expression entry, to the left, will show useful information. By default the calculator's interpretation of the expression is shown (e.g. <quote>5 × meter</quote> for <quote>5m</quote>). The interpretation will be displayed in red (configurable) if there are errors in the expression or in blue for lesser errors (for example too many arguments in a function). If the last typed in text represents a function and arguments are about to be entered, the functions name and its arguments will be displayed. The first argument in the information text is highlighted and includes information about its type and restrictions and when an argument has been entered, the next will be highlighted.
+As the expression is typed in, the area directly below the expression entry, to the left, will show useful information. By default the calculator's interpretation of the expression is shown (e.g. <quote>5 × meter</quote> for <quote>5m</quote>). The interpretation will be displayed in red (configurable) if there are errors in the expression or in blue for lesser errors (for example too many arguments in a function). If the last typed-in text represents a function and arguments are about to be entered, the function's name and its arguments will be displayed. The first argument in the information text is highlighted and includes information about its type and restrictions and when an argument has been entered, the next will be highlighted.
 </para>
 <para>
 After execution of an expression, the whole expression will be marked. This normally means that if something new is entered, the old expression will be overwritten. If, however, an operator (+, −, ×, /, ^) is entered first, the old expression will instead be the target of action. The operator will then apply to the whole expression, which is put in parenthesis. This works on all marked ranges, meaning that this way an expression can conveniently be put in parenthesis. Functions set the selection as their first argument.
@@ -187,7 +187,7 @@ Click on the padlock icon to enable/disable persistent keypad, which makes it po
 The top buttons (from left to right) switches between the general keypad and the programming keypad (affects the buttons on the left side, see <xref linkend="qalculate-TBL-programming-keypad"/>), switches between exact and approximate calculation, changes rational number form, selects display mode and selects number base in result (see <xref linkend="qalculate-mode"/>).
 </para>
 <para>
-The buttons below is separated in two areas. The buttons on the right inserts basic numbers and operators, while most of the buttons to the left inserts or applies mathematical functions to the expression. All buttons on the left is paired with buttons, with downward arrows, that opens a menu with related functionality (generally more mathematical functions).
+The buttons below are separated in two areas. The buttons on the right inserts basic numbers and operators, while most of the buttons to the left inserts or applies mathematical functions to the expression. All buttons on the left is paired with buttons, with downward arrows, that opens a menu with related functionality (generally more mathematical functions).
 </para>
 <para>
 Most of buttons to the right will do something different depending on which button on the pointing device (mouse) that is clicked (for details see the table below; all actions are displayed as tooltips when holding the pointer over a button). Button press and hold on a button (for approximately half a second) will generally perform the same action as right-click. Right-click or long press on the buttons to the left will open the associated menu.
@@ -398,7 +398,7 @@ All actions and labels of the buttons on the right can be customed using <menuch
 </table>
 </para>
 <para>
-<guibutton>DEL</guibutton> deletes one character the to the right or, if the cursor is at the end of the expression, to the left of the cursor (right-click always deletes the character to the left of the cursor). Long press on the button will continuously delete.
+<guibutton>DEL</guibutton> deletes one character to the right or, if the cursor is at the end of the expression, to the left of the cursor (right-click always deletes the character to the left of the cursor). Long press on the button will continuously delete.
 </para>
 <para>
 <guibutton>EXP</guibutton> inserts the shorthand notation (E or e) for ten raised to the power of x. This only applies to digits (<quote>2E6</quote> equals <quote>2 × 10^6</quote>, <quote>xEy &ne; x × 10^y</quote>). If whole or part of the current expression is selected, <quote>×10^</quote> will instead be inserted after the wrapped selection. If current input base is not 10, than the selected number base will be used as base (e.g. <quote>×16^</quote> for hexadecimal input).
@@ -693,7 +693,7 @@ The buttons on the left side can be replaced (using the top left button or <keyc
 			</row>
 			<row valign="top">
 				<entry><para>int</para></entry>
-				<entry><para>Integer part function (<quote>frac(-5.2) = -5</quote>)</para></entry>
+				<entry><para>Integer part function (<quote>int(-5.2) = -5</quote>)</para></entry>
 				<entry><para>-</para></entry>
 			</row>
 			<row valign="top">
@@ -781,10 +781,10 @@ The history view provides access to previous calculation results (50 rows are re
 	</screenshot>
 </figure>
 </para>
-<para>Double click an item in the history list or use the <guibutton>Value</guibutton> or the <guibutton>Text</guibutton> button to paste the selected value or expression into the expression entry. The <guibutton>Value</guibutton> button inserts the actual value, using the answer() and expression() functions (for results and parsed expressions, respectively) with the current history index (indicated in the left column of the list), as argument, instead of the text (which might be inexact and is not guaranteed to be parsed correctly). This is not possible for the history entries of previous sessions. When an item is double clicked the the actual value is used for results, but the text for expressions, allowing editing of the expression. 
+<para>Double click an item in the history list or use the <guibutton>Value</guibutton> or the <guibutton>Text</guibutton> button to paste the selected value or expression into the expression entry. The <guibutton>Value</guibutton> button inserts the actual value, using the answer() and expression() functions (for results and parsed expressions, respectively) with the current history index (indicated in the left column of the list), as argument, instead of the text (which might be inexact and is not guaranteed to be parsed correctly). This is not possible for the history entries of previous sessions. When an item is double clicked the actual value is used for results, but the text for expressions, allowing editing of the expression.
 </para>
 <para>
-The to right of the list are also buttons for mathematical operations. These acts on the selected history items (the <guibutton>+</guibutton> will calculate the sum of the selected values, while the <guibutton>−</guibutton> will calculated the difference between the first, uppermost, selected value and the rest, in order). If no value is marked the sign for the operator will be inserted into the expression entry (as the buttons on the keypad). If only one item is selected the buttons also uses the current expression (the <guibutton>+</guibutton> button will append <quote>+ [value]</quote> to the current expression). The square root button will however only act on single values. When persistent keypad are active, the corresponding buttons on the right side of the keypad provide the same functionality.
+To the right of the list are also buttons for mathematical operations. These act on the selected history items (the <guibutton>+</guibutton> will calculate the sum of the selected values, while the <guibutton>−</guibutton> will calculated the difference between the first, uppermost, selected value and the rest, in order). If no value is marked the sign for the operator will be inserted into the expression entry (as the buttons on the keypad). If only one item is selected the buttons also use the current expression (the <guibutton>+</guibutton> button will append <quote>+ [value]</quote> to the current expression). The square root button will however only act on single values. When persistent keypad is active, the corresponding buttons on the right side of the keypad provide the same functionality.
 </para>
 <para>
 Additional actions are available in the context menu of the history list. This includes options to copy the full text of one or multiple entries, search the history, delete or move entries, to clear the whole list, and to bookmark and/or protect entries from deletion when the list becomes too long or is cleared.
@@ -1021,7 +1021,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			</row>
 			<row valign="top">
 				<entry><para>Customize Keypad Buttons</para></entry>
-				<entry><para>Opens a dialog for customizing the labels and actions for the the keypad buttons on the right side, and optionally adding additional columns of buttons.</para></entry>
+				<entry><para>Opens a dialog for customizing the labels and actions for the keypad buttons on the right side, and optionally adding additional columns of buttons.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Preferences</para></entry>
@@ -1247,7 +1247,7 @@ The variables, functions, and units windows provide a structural way of working 
 	</screenshot>
 </figure>
 <para>
-To the left is a category tree and beside that is a list of all objects in the selected category, including all subcategories. Objects without a category are put under <quote>Uncategorized</quote>. Object created by the user can also be found under the category <quote>User variables</quote>, <quote>User functions</quote>, and <quote>User units</quote>, shown at the top of the list. Deactivated objects are only found in the <quote>Inactive</quote> top category. Below the categories and objects lists, a description of the selected object is shown.
+To the left is a category tree and beside that is a list of all objects in the selected category, including all subcategories. Objects without a category are put under <quote>Uncategorized</quote>. Objects created by the user can also be found under the category <quote>User variables</quote>, <quote>User functions</quote>, and <quote>User units</quote>, shown at the top of the list. Deactivated objects are only found in the <quote>Inactive</quote> top category. Below the categories and objects lists, a description of the selected object is shown.
 </para>
 <para>
 The buttons on the right work on the selected object in the list. <guibutton>New</guibutton> opens a dialog for creation of a new object, while <guibutton>Edit</guibutton> opens the same dialog to edit the selected unit. <guibutton>Delete</guibutton> removes the object and <guibutton>(De)activate</guibutton> toggles recognition in expressions on/off. <guibutton>Insert</guibutton> in the variables and units windows adds the object to the current expression, while <guibutton>Calculate</guibutton> in the functions window opens a dialog for entering arguments and provides options for insertion of the function or direct calculation. The unit manager provide an additional button for conversion of the current result, the variable manager a button for export to a data file, and the function manager a button for applying functions with a single argument directly to the current expression.
@@ -2064,10 +2064,10 @@ When the RPN stack is enabled, full expressions can still be entered (you can ad
 <para>
 The RPN mode adds a third page to the main window, for display and manipulation of the values on the stack. This shows a list of values on the stack, with the last added value on the top.</para>
 <para>
-On the right are buttons for manipulation of the stack. The buttons move the selected value up (<keycombo><keycap>Ctrl</keycap><keycap>Up</keycap></keycombo>) or down (<keycombo><keycap>Ctrl</keycap><keycap>Down</keycap></keycombo>), move it to the top (<keycombo><keycap>Ctrl</keycap><keycap>Right</keycap></keycombo>), copy it (<keycombo><keycap>Ctrl</keycap><keycap>Shift</keycap><keycap>C</keycap></keycombo>), edit it, or remove it (<keycombo><keycap>Ctrl</keycap><keycap>Delete</keycap></keycombo>), in order. If no stack row is selected, the up and down buttons rotates the stack, the swap button swaps the places of the first and second value and the copy and delete buttons acts on the the top value of the stack. The button between copy and delete enters the top value from before the last numeric operation (<keycombo><keycap>Ctrl</keycap><keycap>Left</keycap></keycombo>). The last button removes all values from the stack (<keycombo><keycap>Ctrl</keycap><keycap>Shift</keycap><keycap>Delete</keycap></keycombo>).
+On the right are buttons for manipulation of the stack. The buttons move the selected value up (<keycombo><keycap>Ctrl</keycap><keycap>Up</keycap></keycombo>) or down (<keycombo><keycap>Ctrl</keycap><keycap>Down</keycap></keycombo>), move it to the top (<keycombo><keycap>Ctrl</keycap><keycap>Right</keycap></keycombo>), copy it (<keycombo><keycap>Ctrl</keycap><keycap>Shift</keycap><keycap>C</keycap></keycombo>), edit it, or remove it (<keycombo><keycap>Ctrl</keycap><keycap>Delete</keycap></keycombo>), in order. If no stack row is selected, the up and down buttons rotates the stack, the swap button swaps the places of the first and second value and the copy and delete buttons acts on the top value of the stack. The button between copy and delete enters the top value from before the last numeric operation (<keycombo><keycap>Ctrl</keycap><keycap>Left</keycap></keycombo>). The last button removes all values from the stack (<keycombo><keycap>Ctrl</keycap><keycap>Shift</keycap><keycap>Delete</keycap></keycombo>).
 </para>
 <para>
-On the left are buttons for applying mathematical operations to the stack. The top left buttons applies addition, subtraction, multiplication, division, and exponentiation to the top two values. If only one value is available addition, multiplication, and exponentiation uses this value twice, while the subtraction button negates the value and the division button calculates the reciprocal. The buttons below negates the top value, calculates the reciprocal, and calculates the square root of the the top value. The last button calculates the sum of all values on the stack. Changes in the display of results only affects the first value on the stack.
+On the left are buttons for applying mathematical operations to the stack. The top left buttons applies addition, subtraction, multiplication, division, and exponentiation to the top two values. If only one value is available addition, multiplication, and exponentiation uses this value twice, while the subtraction button negates the value and the division button calculates the reciprocal. The buttons below negates the top value, calculates the reciprocal, and calculates the square root of the top value. The last button calculates the sum of all values on the stack. Changes in the display of results only affects the first value on the stack.
 </para>
 <para>
 Reverse Polish Notation can also be used directly in expression. This can be activated or deactivated separately from the RPN stack (<menuchoice><guimenu>Mode</guimenu><guimenuitem>Parsing Mode</guimenuitem><guimenuitem>RPN Syntax</guimenuitem></menuchoice>). When using RPN syntax, a temporary stack, separate from the previously mentioned stack, is created from the contents of each mathematical expression entered. To calculate <quote>(5 + 3)/2</quote>, as in the example above, with RPN syntax you should enter the expression <quote>5 3 + 2 /</quote>. Instead of actually pressing enter on the keyboard, each separate value on the stack is separated by a blank space. The RPN syntax only supports functions that require exactly one argument.
@@ -2471,7 +2471,7 @@ Alternatively the unit conversion view can be used. It is opened using <guilabel
 </figure>
 </para>
 <para>
-The the result context menu and the menu associated with the <guibutton>to (x ➞)</guibutton> keypad button also provides a list of units for conversion.
+The result context menu and the menu associated with the <guibutton>to (x ➞)</guibutton> keypad button also provides a list of units for conversion.
 </para>
 <para>
 The final way to convert the result to another unit is to use <menuchoice><guimenu>Edit</guimenu><guisubmenu>Convert To Unit</guisubmenu></menuchoice> menu or to press <guibutton>Convert Result</guibutton> in the unit manager, which also provides quick conversion of a value between two selected units. <menuchoice><guimenu>Edit</guimenu><guisubmenu>Set Prefix</guisubmenu></menuchoice> can be used to select a prefix.
