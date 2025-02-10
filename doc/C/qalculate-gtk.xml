@@ -1902,17 +1902,17 @@ Note that <quote>to</quote> and <quote>where</quote> can only be applied to the 
 						<row valign="top">
 							<entry><para>12</para></entry>
 							<entry><para>1-10, ↊/X/A/a, ↋/E/B/b</para></entry>
-							<entry><para>Support all functions, variables and units that does not conflict with digits.</para></entry>
+							<entry><para>Supports all functions, variables and units that do not conflict with digits.</para></entry>
 						</row>
 						<row valign="top">
 							<entry><para>11-36</para></entry>
 							<entry><para>1-10, A-Z (case insensitive)</para></entry>
-							<entry><para>Support all functions, variables and units that does not conflict with digits.</para></entry>
+							<entry><para>Supports all functions, variables and units that do not conflict with digits.</para></entry>
 						</row>
 						<row valign="top">
 							<entry><para>37-62</para></entry>
 							<entry><para>1-10, A-Z, a-z</para></entry>
-							<entry><para>Support all functions, variables and units that does not conflict with digits.</para></entry>
+							<entry><para>Supports all functions, variables and units that do not conflict with digits.</para></entry>
 						</row>
 						<row valign="top">
 							<entry><para>> 62</para></entry>
@@ -1932,7 +1932,7 @@ Note that <quote>to</quote> and <quote>where</quote> can only be applied to the 
 					</tbody>
 				</tgroup>
 			</table>
-			The convert number bases dialog (see <xref linkend="qalculate-convert-number-bases-dialog"/>) and the programming keypad (see <xref linkend="qalculate-TBL-programming-keypad"/>) provides efficient conversion between common bases. For output of a single value to a specific number base use of the <quote>to</quote>-operator is recommended (see <xref linkend="qalculate-to"/>). For input of single number in a specific base, the <command>base()</command> function, which in addition supports non-numerical bases, or base prefixes (<quote>0b</quote>, <quote>0o</quote>, <quote>0d</quote>, and <quote>0x</quote> for base 2, 8, 12, and 16, respectively) can be used.
+			The convert number bases dialog (see <xref linkend="qalculate-convert-number-bases-dialog"/>) and the programming keypad (see <xref linkend="qalculate-TBL-programming-keypad"/>) provides efficient conversion between common bases. For output of a single value to a specific number base use of the <quote>to</quote>-operator is recommended (see <xref linkend="qalculate-to"/>). For input of a single number in a specific base, the <command>base()</command> function, which in addition supports non-numerical bases, or base prefixes (<quote>0b</quote>, <quote>0o</quote>, <quote>0d</quote>, and <quote>0x</quote> for base 2, 8, 12, and 16, respectively) can be used.
 			</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -2004,7 +2004,7 @@ Note that <quote>to</quote> and <quote>where</quote> can only be applied to the 
 	<varlistentry>
 		<term>Approximation</term>
 		<listitem><para>
-			When always exact mode is on, the calculation will not go further than what can be calculated exactly (e.g. <quote>sqrt(2 + 3) = sqrt(5)</quote>). The  default <quote>Try Exact</quote> mode, will calculate the result exact as far as possible and then approximately. Approximate mode will directly calculate a approximate result, thus being a bit faster but giving a less correct approximate indication (<quote>sin(pi/2)</quote> return approximately one instead of exactly one). If the interval arithmetic mode is activated the precision of the final result is guaranteed by calculating an interval for every approximate value (See <xref linkend="qalculate-interval-arithmetic"/>).
+			When always exact mode is on, the calculation will not go further than what can be calculated exactly (e.g. <quote>sqrt(2 + 3) = sqrt(5)</quote>). The  default <quote>Try Exact</quote> mode, will calculate the result exact as far as possible and then approximately. Approximate mode will directly calculate an approximate result, thus being a bit faster but giving a less correct approximate indication (<quote>sin(pi/2)</quote> return approximately one instead of exactly one). If the interval arithmetic mode is activated the precision of the final result is guaranteed by calculating an interval for every approximate value (See <xref linkend="qalculate-interval-arithmetic"/>).
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -2017,14 +2017,14 @@ Note that <quote>to</quote> and <quote>where</quote> can only be applied to the 
 	<varlistentry>
 		<term>Parsing Mode</term>
 		<listitem><para>
-			These options controls how expressions are interpreted. There are three main modes, which mainly controls if implicit multiplication is handled differently from explicit multiplication and if spaces are taken into account or not.  See <xref linkend="qalculate-implicit-multiplication"/>.
-			If the read precsion option is activated, decimal numbers are intrepeted as approximate with precision equal to the number of digits (e.g. <quote>1.1 × 3.20 = 1.1±0.05 × 3.20±0.005 ≈ 3.5±0.2</quote>).
+			These options control how expressions are interpreted. There are three main modes, which mainly controls if implicit multiplication is handled differently from explicit multiplication and if spaces are taken into account or not.  See <xref linkend="qalculate-implicit-multiplication"/>.
+			If the read precsion option is activated, decimal numbers are interpreted as approximate with precision equal to the number of digits (e.g. <quote>1.1 × 3.20 = 1.1±0.05 × 3.20±0.005 ≈ 3.5±0.2</quote>).
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
 		<term>Precision</term>
 		<listitem><para>
-			Precision specifies the default number of significant digits displayed and determines the precision used for approximate calculations. The internal precision is higher than the one specified, but will nevertheless not completely protect against loss of significance/catastrophic cancellation (and you will not be alterted unless interval arithmetic is activated).
+			Precision specifies the default number of significant digits displayed and determines the precision used for approximate calculations. The internal precision is higher than the one specified, but will nevertheless not completely protect against loss of significance/catastrophic cancellation (and you will not be alerted unless interval arithmetic is activated).
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>
@@ -2046,10 +2046,10 @@ Central to the RPN mode is the stack, a list of registers/values that is operate
 For example, <command>5 ENTER 3 + 2 /</command> adds 5 to the stack, then adds 3 to the stack and moves 5 down a step and adds 3 to 5. The first value, 3, is removed from the stack and the value left is 8. Then 2 is added to the stack and 8 is divided by 2, resulting in 4. This would in a single expression with non-RPN (infix) syntax be entered as <quote>(5 + 3)/2</quote>.
 </para>
 <para>
-Functions operate on the top values of the stack. Functions which require multiply arguments, fill the arguments in reversed order from the top (e.g. <command>5 ENTER 2 ENTER rem</command> equals <quote>rem(5, 2)</quote>). Functions with a vector argument uses all stack regsters (unless the top value is a vector). This is quite useful for statistical functions (e.g. <command>5 ENTER 2 ENTER 3 ENTER 4 ENTER harmmean</command> calculates the harmonic mean of 5, 2, 3, and 4 and leaves the result, 3.1169, as the only value on the stack).
+Functions operate on the top values of the stack. Functions which require multiply arguments, fill the arguments in reversed order from the top (e.g. <command>5 ENTER 2 ENTER rem</command> equals <quote>rem(5, 2)</quote>). Functions with a vector argument use all stack regsters (unless the top value is a vector). This is quite useful for statistical functions (e.g. <command>5 ENTER 2 ENTER 3 ENTER 4 ENTER harmmean</command> calculates the harmonic mean of 5, 2, 3, and 4 and leaves the result, 3.1169, as the only value on the stack).
 </para>
 <para>
-When the RPN stack is enabled, full expressions can still be entered (you can add e.g. <quote>5x + 3 + 23 + sin(2)</quote> directly to the stack). The buttons on the keypad do not insert operators and functions in the expression entry, but instead applies them to the stack. This is also true for the keys on the keyboard, unless deactivated in the preferences (<menuchoice><guimenu>Edit</guimenu><guimenuitem>Preferences</guimenuitem></menuchoice>, <guilabel>Use only keypad keys for RPN</guilabel>). <keycap>Enter</keycap> calculates the current expressions and adds it to the stack (calculated mathematical expressions are automatically added to the stack when the RPN stack is enabled). If the expression entry is not empty when applying an operator or function to the stack, the expression is first calculated and added to the stack. If the expression only contains an operator or a single function without arguments, the operator/function is applied to the stack.
+When the RPN stack is enabled, full expressions can still be entered (you can add e.g. <quote>5x + 3 + 23 + sin(2)</quote> directly to the stack). The buttons on the keypad do not insert operators and functions in the expression entry, but instead apply them to the stack. This is also true for the keys on the keyboard, unless deactivated in the preferences (<menuchoice><guimenu>Edit</guimenu><guimenuitem>Preferences</guimenuitem></menuchoice>, <guilabel>Use only keypad keys for RPN</guilabel>). <keycap>Enter</keycap> calculates the current expression and adds it to the stack (calculated mathematical expressions are automatically added to the stack when the RPN stack is enabled). If the expression entry is not empty when applying an operator or function to the stack, the expression is first calculated and added to the stack. If the expression only contains an operator or a single function without arguments, the operator/function is applied to the stack.
 </para>
 <figure id="qalculate-FIG-rpn-mode">
 	<title>RPN Mode</title>
@@ -2064,7 +2064,7 @@ When the RPN stack is enabled, full expressions can still be entered (you can ad
 <para>
 The RPN mode adds a third page to the main window, for display and manipulation of the values on the stack. This shows a list of values on the stack, with the last added value on the top.</para>
 <para>
-On the right are buttons for manipulation of the stack. The buttons move the selected value up (<keycombo><keycap>Ctrl</keycap><keycap>Up</keycap></keycombo>) or down (<keycombo><keycap>Ctrl</keycap><keycap>Down</keycap></keycombo>), move it to the top (<keycombo><keycap>Ctrl</keycap><keycap>Right</keycap></keycombo>), copy it (<keycombo><keycap>Ctrl</keycap><keycap>Shift</keycap><keycap>C</keycap></keycombo>), edit it, or removes it (<keycombo><keycap>Ctrl</keycap><keycap>Delete</keycap></keycombo>), in order. If no stack row is selected, the up and down buttons rotates the stack, the swap button swaps the places of the first and second value and the copy and delete buttons acts on the the top value of the stack. The button between copy and delete enters the top value from before the last numeric operation (<keycombo><keycap>Ctrl</keycap><keycap>Left</keycap></keycombo>). The last button removes all values from the stack (<keycombo><keycap>Ctrl</keycap><keycap>Shift</keycap><keycap>Delete</keycap></keycombo>).
+On the right are buttons for manipulation of the stack. The buttons move the selected value up (<keycombo><keycap>Ctrl</keycap><keycap>Up</keycap></keycombo>) or down (<keycombo><keycap>Ctrl</keycap><keycap>Down</keycap></keycombo>), move it to the top (<keycombo><keycap>Ctrl</keycap><keycap>Right</keycap></keycombo>), copy it (<keycombo><keycap>Ctrl</keycap><keycap>Shift</keycap><keycap>C</keycap></keycombo>), edit it, or remove it (<keycombo><keycap>Ctrl</keycap><keycap>Delete</keycap></keycombo>), in order. If no stack row is selected, the up and down buttons rotates the stack, the swap button swaps the places of the first and second value and the copy and delete buttons acts on the the top value of the stack. The button between copy and delete enters the top value from before the last numeric operation (<keycombo><keycap>Ctrl</keycap><keycap>Left</keycap></keycombo>). The last button removes all values from the stack (<keycombo><keycap>Ctrl</keycap><keycap>Shift</keycap><keycap>Delete</keycap></keycombo>).
 </para>
 <para>
 On the left are buttons for applying mathematical operations to the stack. The top left buttons applies addition, subtraction, multiplication, division, and exponentiation to the top two values. If only one value is available addition, multiplication, and exponentiation uses this value twice, while the subtraction button negates the value and the division button calculates the reciprocal. The buttons below negates the top value, calculates the reciprocal, and calculates the square root of the the top value. The last button calculates the sum of all values on the stack. Changes in the display of results only affects the first value on the stack.
