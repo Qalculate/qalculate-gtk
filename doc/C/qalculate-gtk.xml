@@ -2449,7 +2449,7 @@ For a complete list of available units see <xref linkend="qalculate-definitions-
 <para>
 Among units, &app; has support for currencies with up-to-date exchange rates. Currencies are normally referenced with the standard three letter code due to name clashes, but a number of currency unit can also be accessed through their regular name and symbol. U.S. dollars can, for example, be referenced both as USD and dollar/dollars or the $ symbol, unless the same name and/or symbol are used by the local currency. 
 </para>
-<para>The exchange rates can to be updated manually using <menuchoice><guimenu>File</guimenu><guimenuitem>Update Exchange Rates</guimenuitem></menuchoice>, or automatically at specific intervals (by default once every week, but this can be changed in the preferences dialog), when needed (when currencies are converted).
+<para>The exchange rates can be updated manually using <menuchoice><guimenu>File</guimenu><guimenuitem>Update Exchange Rates</guimenuitem></menuchoice>, or automatically at specific intervals (by default once every week, but this can be changed in the preferences dialog), when needed (when currencies are converted).
 </para>
 </sect1>
 <sect1 id="qalculate-unit-conversion">
@@ -2518,13 +2518,13 @@ Depending on the unit class, different elements in the relation page of the dial
 </figure>
 </para>
 <para>
-For named derived units, base unit, exponent and relation must all be specified (although the exponent and relation may both left as <quote>1</quote>). The base unit can be of any unit class and it is recommended that named derived units are defined in relation to the closest unit (e.g. 1 ft = 3 hands, 1 hand = 4 in, and 1 in = 0.0254 m). The relation is usually just a number that tells how large quantity of the base unit is needed to get the derived unit (derived unit = relation × base unit<superscript>exponent</superscript>).
+For named derived units, base unit, exponent and relation must all be specified (although the exponent and relation may both be left as <quote>1</quote>). The base unit can be of any unit class and it is recommended that named derived units are defined in relation to the closest unit (e.g. 1 ft = 3 hands, 1 hand = 4 in, and 1 in = 0.0254 m). The relation is usually just a number that tells how large quantity of the base unit is needed to get the derived unit (derived unit = relation × base unit<superscript>exponent</superscript>).
 </para>
 <para>
 It is possible to create units with non-linear relation to the base unit. Replace the factor with <quote>\x</quote> and the exponent with <quote>\y</quote> (e.g. <quote>\x + 273.15</quote> for degrees Celsius with Kelvin as base unit). For non-linear relations the reverse relation (for conversion back from the base unit) should also be specified (<quote>\x - 273.15</quote> for degrees Celsius).
 </para>
 <para>
-Base unit mixing can be enabled (by default) for named derived units. This is used for units such as feet and minutes, which are often combined with other units instead of using decimals (e.g. <quote>5.25 ft = 5 ft + 3 in</quote>, <quote>250 s = 4 min + 10 s</quote>). This behaviour can be fine-tuned used the priority and minumum base unit number properties.
+Base unit mixing can be enabled (by default) for named derived units. This is used for units such as feet and minutes, which are often combined with other units instead of using decimals (e.g. <quote>5.25 ft = 5 ft + 3 in</quote>, <quote>250 s = 4 min + 10 s</quote>). This behaviour can be fine-tuned using the priority and minumum base unit number properties.
 </para>
 <para>
 For unnamed derived units a unit expression, with one or multiple units, must be specified in the base units field. This expressions may only contain units, prefixes, exponents, multiplication and division (e.g. <quote>km/h</quote>). 
