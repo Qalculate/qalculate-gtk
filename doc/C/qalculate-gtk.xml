@@ -2212,7 +2212,7 @@ The <command>load()</command> function can be used to access a CSV file directly
 Functions are essentially mathematical formulas. They are used to store expressions with variable values, arguments. To execute a function, the values for a number of arguments need to specified. These arguments are then inserted into the expression, making it possible to calculate.
 </para>
 <para>
-Functions is normally entered in an expression by writing the name followed by arguments, separated by commas (or semicolons in languages with comma as decimal point), in parenthesis, thus following the syntax <command>name(arg1, arg2, ...)</command>. &app; will give a helpful error message if the arguments are not correct.
+Functions are normally entered in an expression by writing the name followed by arguments, separated by commas (or semicolons in languages with comma as decimal point), in parenthesis, thus following the syntax <command>name(arg1, arg2, ...)</command>. &app; will give a helpful error message if the arguments are not correct.
 </para>
 <figure id="qalculate-FIG-insert-function">
 	<title>Insert function dialog</title>
@@ -2371,7 +2371,7 @@ Trigonometric functions, including <command>sin()</command>, <command>cos()</com
 <varlistentry>
 <term>Utilities</term>
 <listitem><para>
-Various utility functions. Most are only useful in definition of other functions. The <command>save()</command> function can however be a quick way of storing a value in a variable, and <command>csum()</command> can be a powerful tool for data processing. This category also contains some functions, such as <command>char()</command> and <command>ascii()</command>, that might be useful for programmers. , <command>replace()</command> provides an easy way of replacing unknown variables by known expressions in a value (e.g. <quote>replace(5x^2 + x, x, 3)</quote> equals <quote>5 × 3^2 + 3</quote>).
+Various utility functions. Most are only useful in definition of other functions. The <command>save()</command> function can however be a quick way of storing a value in a variable, and <command>csum()</command> can be a powerful tool for data processing. This category also contains some functions, such as <command>char()</command> and <command>ascii()</command>, that might be useful for programmers. <command>replace()</command> provides an easy way of replacing unknown variables by known expressions in a value (e.g. <quote>replace(5x^2 + x, x, 3)</quote> equals <quote>5 × 3^2 + 3</quote>).
 </para></listitem>
 </varlistentry>
 </variablelist>
@@ -2383,7 +2383,7 @@ Various utility functions. Most are only useful in definition of other functions
 Functions are a bit more complex than variables, but can nevertheless be relatively easily created. Select <menuchoice><guimenu>File</guimenu><guisubmenu>New</guisubmenu><guimenuitem>Function</guimenuitem></menuchoice>, or click the <guibutton>f(x)</guibutton> on the keypad or <guibutton>New</guibutton> in the function manager and a function edit dialog pops up.
 </para>
 <para>
-The function edit dialog are divided in three pages, where the first page contains the only required properties — name and an expression. x, y and z with or wihout (default) a backslash are used as argument placeholders in the expression.
+The function edit dialog is divided in three pages, where the first page contains the only required properties — name and an expression. x, y and z with or wihout (default) a backslash are used as argument placeholders in the expression.
 </para>
 <figure id="qalculate-FIG-edit-function">
 	<title>Function Edit Dialog</title>
@@ -2402,10 +2402,10 @@ First enter a name, used to reference the function in an expression. Then enter 
 The expression of a function is basically a normal expression with placeholders for arguments. The expression <quote>x^4</quote> creates a function which calculates the fourth power of a single argument. If you name it for example <quote>sqsq</quote>, <quote>sqsq(2)</quote> will calculate <quote>2^4</quote>.
 </para>
 <para>
-The argument placeholders consists of a backslash and a letter — x, y, z for the 1st, 2nd and 3rd arguments and a to u for argument 4 to 24. The backslash can however be omitted, but avoids any possible conflict with existing variables, units and functions used in the expression. The argument symbols replaced by entered arguments when a function is calculated. They also decide the number of arguments that a function requires. For example the function for triangle area (<quote>base × height / 2</quote>) has the name triangle and the expression <quote>(\x × \y)/2</quote>, which gives that <quote>triangle(2, 3)</quote> equals <quote>(2 × 3) / 2</quote> and returns <quote>3</quote> as result. An argument can be used more than one time and all arguments must not necessarily be in order in the expression.
+The argument placeholders consist of a backslash and a letter — x, y, z for the 1st, 2nd and 3rd arguments and a to u for argument 4 to 24. The backslash can however be omitted, but avoids any possible conflict with existing variables, units and functions used in the expression. The argument symbols are replaced by entered arguments when a function is calculated. They also decide the number of arguments that a function requires. For example the function for triangle area (<quote>base × height / 2</quote>) has the name triangle and the expression <quote>(\x × \y)/2</quote>, which gives that <quote>triangle(2, 3)</quote> equals <quote>(2 × 3) / 2</quote> and returns <quote>3</quote> as result. An argument can be used more than one time and all arguments must not necessarily be in order in the expression.
 </para>
 <para>
-Additionally, optional arguments can be put in the expression with upper-case (X, Y, Z, ...) instead of lower-case letters (x, y, z, ...). The default value should be put in brackets after the letter (e.g. <quote>\X{2}</quote>). The default value may be omitted and is then zero. All additional arguments after an optional argument must also be optional.
+Additionally, optional arguments can be put in the expression with upper-case (X, Y, Z, ...) instead of lower-case letters (x, y, z, ...). The default value should be put in curly brackets after the letter (e.g. <quote>\X{2}</quote>). The default value may be omitted and is then zero. All additional arguments after an optional argument must also be optional.
 </para>
 <figure id="qalculate-FIG-edit-function-details">
 	<title>Function Edit Dialog</title>
@@ -2430,7 +2430,7 @@ Sub-functions can be useful for complex functions, they use the same syntax as t
 Name, type, and required conditions can be specified for each argument.
 </para>
 <para>
-The third page allows entering of category, descriptive name (shown as title in menus) and description. The function can also hidden from menus with the corresponding check box, which can be useful for functions only used in other functions.
+The third page allows entering of category, descriptive name (shown as title in menus) and description. The function can also be hidden from menus with the corresponding check box, which can be useful for functions only used in other functions.
 </para>
 <para>
 Global, system-wide functions can not actually be changed by the user, but if one of these functions is edited, they are deactivated and seemingly replaced by a new function. Some functions are however hard-coded and cannot be changed by the user. Once the user function is removed or deactivated the original function is automatically reactivated.
