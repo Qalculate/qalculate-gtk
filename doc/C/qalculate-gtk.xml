@@ -1441,14 +1441,14 @@ The following operators are defined in &app; and may be used in expressions. Wor
 			<row valign="top">
 				<entry><para>Remainder</para></entry>
 				<entry align="center"><para>%, rem</para></entry>
-				<entry><para>Returns the remainder after division.</para></entry>
+				<entry><para>Returns the remainder after (truncated) division.  The result will have the same sign as the dividend.</para></entry>
 				<entry align="center"><para>3%2</para></entry>
 				<entry align="right"><para>1</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Modulo</para></entry>
 				<entry align="center"><para>%%, mod</para></entry>
-				<entry><para>Returns the remainder after division.</para></entry>
+				<entry><para>Returns the remainder after (floored) division.  The result will have the same sign as the divisor.</para></entry>
 				<entry align="center"><para>3 mod -2</para></entry>
 				<entry align="right"><para>-1</para></entry>
 			</row>
