@@ -124,19 +124,12 @@ void on_tShortcutsType_selection_changed(GtkTreeSelection *treeselection, gpoint
 
 GtkWidget *shortcut_label = NULL;
 gboolean on_shortcut_key_released(GtkWidget *w, GdkEventKey *event, gpointer) {
-	GdkModifierType state; guint keyval = 0;
-	gdk_event_get_state((GdkEvent*) event, &state);
-	gdk_event_get_keyval((GdkEvent*) event, &keyval);
-	state = CLEAN_MODIFIERS(state);
-	FIX_ALT_GR
-	if(keyval == 0 || (keyval >= GDK_KEY_Shift_L && keyval <= GDK_KEY_Hyper_R)) return FALSE;
-	if(state == 0 && keyval == GDK_KEY_Escape) {
+	if(current_shortcut_key == 0 || (current_shortcut_key >= GDK_KEY_Shift_L && current_shortcut_key <= GDK_KEY_Hyper_R)) return FALSE;
+	if(current_shortcut_modifier == 0 && current_shortcut_key == GDK_KEY_Escape) {
 		gtk_dialog_response(GTK_DIALOG(w), GTK_RESPONSE_CANCEL);
 		return TRUE;
 	}
-	if(state == 0 && keyval >= GDK_KEY_ampersand && keyval <= GDK_KEY_z) return FALSE;
-	current_shortcut_key = keyval;
-	current_shortcut_modifier = state;
+	if(current_shortcut_modifier == 0 && current_shortcut_key >= GDK_KEY_ampersand && current_shortcut_key <= GDK_KEY_z) return FALSE;
 	gtk_dialog_response(GTK_DIALOG(w), GTK_RESPONSE_OK);
 	return TRUE;
 }
@@ -150,6 +143,8 @@ gboolean on_shortcut_key_pressed(GtkWidget*, GdkEventKey *event, gpointer) {
 	str += shortcut_to_text(keyval, state);
 	str += "</span>";
 	gtk_label_set_markup(GTK_LABEL(shortcut_label), str.c_str());
+	current_shortcut_key = keyval;
+	current_shortcut_modifier = state;
 	return FALSE;
 }
 bool get_keyboard_shortcut(GtkWindow *parent) {
